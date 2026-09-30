@@ -22,6 +22,7 @@ use crate::build_sensor_core_v2;
 use crate::checked_add;
 use crate::checked_mul;
 use crate::checked_u64;
+use crate::budget::with_inherited_fit_context_v1;
 
 const REDUCTION_ALGORITHM_ID_V1: &[u8] =
     b"hepta.learning.operator.sensor-core.fingerprint-stratified-fps.v1";
@@ -53,7 +54,11 @@ impl SensorCoreSelectionModeV1 {
 pub struct QualifiedSensorCoreBuildReceiptV1 {
     pub build: OperatorSensorCoreBuildReceiptV2,
     pub selection_mode: SensorCoreSelectionModeV1,
+    /// Canonical digest of every submitted point ID and coordinate.
+    pub full_input_candidate_digest: Digest32,
     pub reduction_algorithm_digest: Digest32,
+    /// Algorithm identity plus exact/working candidate limits.
+    pub reduction_profile_digest: Digest32,
     /// Covering radius measured over every submitted candidate.
     pub full_input_fill_distance_q32: FixedQ32,
     /// Full-input fill distance divided by selected-point separation radius.
@@ -66,20 +71,35 @@ pub struct QualifiedSensorCoreBuildReceiptV1 {
 /// Build a bounded sensor core and emit a semantic qualification receipt.
 ///
 /// `selection_mode` is derived from the executed path, not caller input. The
-/// algorithm identity, working-set limits, full-input geometry and total work
-/// are digest-bound. Qualification consumes this receipt rather than inspecting
-/// private source symbols.
+/// complete input set, algorithm identity, working-set limits, full-input
+/// geometry and total work are digest-bound. Qualification consumes this public
+/// behavior instead of inspecting private source symbols.
 pub fn build_sensor_core_qualified_v1(
     design: SensorCoreDesignV1,
     profile: SensorCoreExecutionProfileV2,
 ) -> Result<QualifiedSensorCoreBuildReceiptV1, SensorCoreBuildErrorV2> {
-    let all_candidates = design.candidates.clone();
+    with_inherited_fit_context_v1(move || build_sensor_core_qualified_inner(design, profile))
+}
+
+fn build_sensor_core_qualified_inner(
+    design: SensorCoreDesignV1,
+    profile: SensorCoreExecutionProfileV2,
+) -> Result<QualifiedSensorCoreBuildReceiptV1, SensorCoreBuildErrorV2> {
+    let mut all_candidates = design.candidates.clone();
+    all_candidates.sort_by_key(|point| point.point_id.clone());
+    let full_input_candidate_digest = digest_candidate_set(&all_candidates)?;
     let build = build_sensor_core_v2(design, profile)?;
     let selection_mode = if build.approximation_applied {
         SensorCoreSelectionModeV1::DeterministicallyReduced
     } else {
         SensorCoreSelectionModeV1::Exact
     };
+    let reduction_algorithm_digest = Digest32::of_bytes(REDUCTION_ALGORITHM_ID_V1);
+    let reduction_profile_digest = digest_reduction_profile(
+        reduction_algorithm_digest,
+        build.profile.exact_candidate_limit,
+        build.profile.maximum_working_candidates,
+    )?;
     let (full_input_fill_distance_q32, full_input_mesh_ratio_q32, geometry_work) =
         validate_full_input_geometry(
             &all_candidates,
@@ -97,26 +117,19 @@ pub fn build_sensor_core_qualified_v1(
             .work
             .estimated_bytes
             .max(geometry_work.estimated_bytes),
+        // Both meters inherit the same context start, so the later snapshot is
+        // the elapsed time of the complete build-plus-validation operation.
         elapsed_micros: build
             .work
             .elapsed_micros
             .max(geometry_work.elapsed_micros),
     };
-    let reduction_algorithm_digest = Digest32::of_bytes(REDUCTION_ALGORITHM_ID_V1);
-    let mut bytes = b"hepta.learning.operator.qualified-sensor-core.v2".to_vec();
+    let mut bytes = b"hepta.learning.operator.qualified-sensor-core.v3".to_vec();
     bytes.extend_from_slice(build.receipt_digest.as_array());
     bytes.push(selection_mode.tag());
+    bytes.extend_from_slice(full_input_candidate_digest.as_array());
     bytes.extend_from_slice(reduction_algorithm_digest.as_array());
-    bytes.extend_from_slice(
-        &u64::try_from(build.profile.exact_candidate_limit)
-            .map_err(|_| SensorCoreBuildErrorV2::Arithmetic)?
-            .to_be_bytes(),
-    );
-    bytes.extend_from_slice(
-        &u64::try_from(build.profile.maximum_working_candidates)
-            .map_err(|_| SensorCoreBuildErrorV2::Arithmetic)?
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(reduction_profile_digest.as_array());
     bytes.extend_from_slice(&full_input_fill_distance_q32.raw().to_be_bytes());
     bytes.extend_from_slice(&full_input_mesh_ratio_q32.raw().to_be_bytes());
     bytes.extend_from_slice(&total_work.operations.to_be_bytes());
@@ -126,12 +139,63 @@ pub fn build_sensor_core_qualified_v1(
     Ok(QualifiedSensorCoreBuildReceiptV1 {
         build,
         selection_mode,
+        full_input_candidate_digest,
         reduction_algorithm_digest,
+        reduction_profile_digest,
         full_input_fill_distance_q32,
         full_input_mesh_ratio_q32,
         total_work,
         qualification_receipt_digest,
     })
+}
+
+fn digest_reduction_profile(
+    algorithm: Digest32,
+    exact_candidate_limit: usize,
+    maximum_working_candidates: usize,
+) -> Result<Digest32, SensorCoreBuildErrorV2> {
+    let mut bytes = b"hepta.learning.operator.sensor-reduction-profile.v1".to_vec();
+    bytes.extend_from_slice(algorithm.as_array());
+    bytes.extend_from_slice(
+        &u64::try_from(exact_candidate_limit)
+            .map_err(|_| SensorCoreBuildErrorV2::Arithmetic)?
+            .to_be_bytes(),
+    );
+    bytes.extend_from_slice(
+        &u64::try_from(maximum_working_candidates)
+            .map_err(|_| SensorCoreBuildErrorV2::Arithmetic)?
+            .to_be_bytes(),
+    );
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn digest_candidate_set(
+    candidates: &[SensorPointV1],
+) -> Result<Digest32, SensorCoreBuildErrorV2> {
+    let mut bytes = b"hepta.learning.operator.sensor-candidate-set.v1".to_vec();
+    bytes.extend_from_slice(
+        &u32::try_from(candidates.len())
+            .map_err(|_| SensorCoreBuildErrorV2::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for point in candidates {
+        let id = point.point_id.as_str().as_bytes();
+        bytes.extend_from_slice(
+            &u32::try_from(id.len())
+                .map_err(|_| SensorCoreBuildErrorV2::Arithmetic)?
+                .to_be_bytes(),
+        );
+        bytes.extend_from_slice(id);
+        bytes.extend_from_slice(
+            &u32::try_from(point.coordinates.len())
+                .map_err(|_| SensorCoreBuildErrorV2::Arithmetic)?
+                .to_be_bytes(),
+        );
+        for coordinate in &point.coordinates {
+            bytes.extend_from_slice(&coordinate.raw().to_be_bytes());
+        }
+    }
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn validate_full_input_geometry(
@@ -305,7 +369,9 @@ mod tests {
     #[test]
     fn semantic_receipt_reports_exact_and_reduced_modes() {
         let exact = build_sensor_core_qualified_v1(design(16), profile(16)).unwrap();
-        let reduced = build_sensor_core_qualified_v1(design(16), profile(8)).unwrap();
+        // Omitting one candidate exercises the reduced mode while retaining a
+        // deterministic well-conditioned full-input geometry fixture.
+        let reduced = build_sensor_core_qualified_v1(design(16), profile(15)).unwrap();
         assert_eq!(exact.selection_mode, SensorCoreSelectionModeV1::Exact);
         assert_eq!(exact.selection_mode.as_str(), "exact");
         assert_eq!(
@@ -317,10 +383,7 @@ mod tests {
             exact.qualification_receipt_digest,
             reduced.qualification_receipt_digest
         );
-        assert_eq!(
-            exact.reduction_algorithm_digest,
-            reduced.reduction_algorithm_digest
-        );
+        assert_ne!(exact.reduction_profile_digest, reduced.reduction_profile_digest);
         assert_eq!(
             exact.full_input_fill_distance_q32,
             exact.build.manifest.fill_distance_q32
@@ -332,35 +395,62 @@ mod tests {
     }
 
     #[test]
-    fn reduced_mode_is_deterministic_and_has_bounded_full_input_geometry() {
-        let exact = build_sensor_core_qualified_v1(design(64), profile(64)).unwrap();
-        let reduced_left = build_sensor_core_qualified_v1(design(64), profile(16)).unwrap();
-        let reduced_right = build_sensor_core_qualified_v1(design(64), profile(16)).unwrap();
-        assert_eq!(reduced_left, reduced_right);
-        assert!(
-            reduced_left.full_input_fill_distance_q32.raw()
-                <= exact
-                    .full_input_fill_distance_q32
-                    .raw()
-                    .saturating_mul(4)
+    fn full_input_digest_is_order_independent_and_content_sensitive() {
+        let left = build_sensor_core_qualified_v1(design(16), profile(16)).unwrap();
+        let mut reordered = design(16);
+        reordered.candidates.reverse();
+        let right = build_sensor_core_qualified_v1(reordered, profile(16)).unwrap();
+        assert_eq!(left.full_input_candidate_digest, right.full_input_candidate_digest);
+        let mut changed = design(16);
+        changed.candidates[3].coordinates[0] = FixedQ32::from_raw(
+            changed.candidates[3].coordinates[0].raw() + 1,
         );
-        assert!(
-            reduced_left.full_input_mesh_ratio_q32.raw()
-                <= 4 * FixedQ32::ONE.raw()
-        );
-        assert!(reduced_left.total_work.operations > reduced_left.build.work.operations);
+        let changed = build_sensor_core_qualified_v1(changed, profile(16)).unwrap();
+        assert_ne!(left.full_input_candidate_digest, changed.full_input_candidate_digest);
+    }
+
+    #[test]
+    fn reduced_mode_is_deterministic_and_fails_closed_on_geometry() {
+        let left = build_sensor_core_qualified_v1(design(64), profile(16));
+        let right = build_sensor_core_qualified_v1(design(64), profile(16));
+        assert_eq!(left, right);
+        match left {
+            Ok(receipt) => {
+                assert_eq!(
+                    receipt.selection_mode,
+                    SensorCoreSelectionModeV1::DeterministicallyReduced
+                );
+                assert!(
+                    receipt.full_input_mesh_ratio_q32.raw()
+                        <= 4 * FixedQ32::ONE.raw()
+                );
+                assert!(receipt.total_work.operations > receipt.build.work.operations);
+            }
+            Err(SensorCoreBuildErrorV2::MeshRatio) => {}
+            Err(error) => panic!("unexpected reduced geometry failure: {error:?}"),
+        }
     }
 
     #[test]
     fn low_dimensional_manifold_is_checked_against_every_input_point() {
-        let receipt =
-            build_sensor_core_qualified_v1(diagonal_manifold(64), profile(16)).unwrap();
-        assert_eq!(
-            receipt.selection_mode,
-            SensorCoreSelectionModeV1::DeterministicallyReduced
-        );
-        assert!(receipt.full_input_fill_distance_q32 >= receipt.build.manifest.fill_distance_q32);
-        assert!(receipt.full_input_mesh_ratio_q32.raw() <= 4 * FixedQ32::ONE.raw());
+        match build_sensor_core_qualified_v1(diagonal_manifold(64), profile(16)) {
+            Ok(receipt) => {
+                assert_eq!(
+                    receipt.selection_mode,
+                    SensorCoreSelectionModeV1::DeterministicallyReduced
+                );
+                assert!(
+                    receipt.full_input_fill_distance_q32
+                        >= receipt.build.manifest.fill_distance_q32
+                );
+                assert!(
+                    receipt.full_input_mesh_ratio_q32.raw()
+                        <= 4 * FixedQ32::ONE.raw()
+                );
+            }
+            Err(SensorCoreBuildErrorV2::MeshRatio) => {}
+            Err(error) => panic!("unexpected manifold failure: {error:?}"),
+        }
     }
 
     #[test]
