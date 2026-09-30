@@ -14,13 +14,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_GATES = {
     "coverage",
+    "default-api-surface",
     "documentation-map",
     "exact-head",
+    "fresh-process-load",
     "lifecycle-state-space",
     "module-tests",
     "mutation-profile",
     "payload-replay",
     "performance-profile",
+    "product-shadow-e2e",
     "static-quality",
     "synthetic-merge",
     "target-build",
