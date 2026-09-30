@@ -1,0 +1,73 @@
+name: Platform wire production surface
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/hepta-types/**"
+      - "scripts/platform_wire_production_surface.py"
+      - ".github/workflows/platform-wire-production-surface.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/hepta-types/**"
+      - "scripts/platform_wire_production_surface.py"
+      - ".github/workflows/platform-wire-production-surface.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-wire-production-surface-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  production-surface:
+    name: Enforce the unique bound production owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify exact checkout
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Self-test production surface verifier
+        shell: bash
+        run: python3 scripts/platform_wire_production_surface.py self-test
+
+      - name: Compile positive and negative production-only fixtures
+        shell: bash
+        run: python3 scripts/platform_wire_production_surface.py verify
+
+      - name: Run platform.wire regression suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire --all-targets
+          cargo check --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire --no-default-features --features production
+
+      - name: Verify the checkout remains quiescent
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all)"

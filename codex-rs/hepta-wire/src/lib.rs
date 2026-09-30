@@ -6,11 +6,13 @@
 //! transport authority: consumers must validate an independently issued grant
 //! at the effect boundary.
 //!
-//! Production callers should enter through [`HardenedWireSession`]. The lower
-//! framing, compatibility and test primitives remain public for staged legacy
-//! migration, protocol tooling and qualification, but they are not an alternate
-//! production owner and do not by themselves establish canonical authenticated
-//! application payloads.
+//! Production callers enter through [`HardenedManagedWireSession`] and may
+//! convert that unique owner into a [`HardenedRecordStream`]. That path combines
+//! direction-separated authentication, terminal lifecycle ownership, frozen
+//! registry admission, exact codec binding, canonical re-encoding and bounded
+//! streaming. Raw authenticated owners remain available only to tests and the
+//! `protocol-tooling` compatibility feature; they are not exported by a
+//! production-only build.
 
 #![forbid(unsafe_code)]
 
@@ -23,6 +25,8 @@ mod envelope_v2;
 mod feed;
 mod frame;
 mod frame_header;
+mod hardened_managed_session;
+mod hardened_record_stream;
 mod hardened_session;
 mod managed_session;
 mod record_stream;
@@ -42,7 +46,16 @@ pub use codec_binding::BoundWireSessionError;
 pub use codec_binding::CodecBindingError;
 pub use codec_binding::PayloadCodecBinding;
 pub use codec_binding::verify_codec_binding;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use directional_session::AuthenticatedWireSession;
+#[cfg(not(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+)))]
+pub(crate) use directional_session::AuthenticatedWireSession;
 pub use directional_session::SessionEndpoint;
 pub use directional_session::SessionMacKey;
 pub use envelope::MAX_WIRE_PAYLOAD_BYTES;
@@ -64,14 +77,59 @@ pub use frame_header::MAX_WIRE_IDENTITY_BYTES;
 pub use frame_header::ValidatedFrameHeader;
 pub use frame_header::WIRE_HEADER_BYTES;
 pub use frame_header::WIRE_MAGIC;
+pub use hardened_managed_session::HardenedManagedSessionError;
+pub use hardened_managed_session::HardenedManagedWireSession;
+pub use hardened_record_stream::HardenedRecordStream;
+pub use hardened_record_stream::HardenedRecordStreamBatch;
+pub use hardened_record_stream::HardenedRecordStreamBudget;
+pub use hardened_record_stream::HardenedRecordStreamError;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use hardened_session::HardenedWireSession;
 pub use hardened_session::HardenedWireSessionError;
+pub use hardened_session::WireSessionMetadata;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use managed_session::ManagedAuthenticatedWireSession;
+#[cfg(not(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+)))]
+pub(crate) use managed_session::ManagedAuthenticatedWireSession;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use managed_session::ManagedSessionError;
+#[cfg(not(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+)))]
+pub(crate) use managed_session::ManagedSessionError;
 pub use managed_session::SessionLifecycleState;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use record_stream::ManagedRecordStream;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use record_stream::RecordStreamBatch;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use record_stream::RecordStreamBudget;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use record_stream::RecordStreamError;
 pub use record_stream::RecordStreamLimits;
 pub use registry::CanonicalizationProfile;
@@ -94,16 +152,50 @@ pub use secure_session::AuthenticatedSessionError;
 pub use secure_session::MAX_AUTHENTICATED_RECORD_BYTES;
 pub use secure_session::MAX_CHANNEL_BINDING_BYTES;
 pub use secure_session::MIN_CHANNEL_BINDING_BYTES;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use secure_session::NegotiationTranscript;
+#[cfg(not(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+)))]
+pub(crate) use secure_session::NegotiationTranscript;
 pub use secure_session::SessionErrorContext;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use secure_session::WireSession;
+#[cfg(not(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+)))]
+pub(crate) use secure_session::WireSession;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use secure_session::WireSession as NegotiatedSession;
 pub use secure_session::WireSessionError;
 pub use session::NegotiatedDecodeBatch;
 pub use session::NegotiatedDecodeError;
 pub use session::NegotiatedStreamingDecoder;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use session::WireSessionDecodeBatch;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use session::WireSessionDecodeError;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
 pub use session::WireSessionDecoder;
 pub use stream::MAX_BUFFERED_WIRE_FRAMES;
 pub use stream::MAX_WIRE_FRAMES_PER_FEED;

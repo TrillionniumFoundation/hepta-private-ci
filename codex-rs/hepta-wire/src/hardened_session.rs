@@ -1,51 +1,170 @@
 use std::error::Error;
 use std::fmt;
 
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::AuthenticatedSessionError;
-use crate::AuthenticatedWireSession;
 use crate::BoundPayloadCodec;
 use crate::BoundWireSessionError;
+use crate::NegotiatedWire;
 use crate::SchemaCodecError;
 use crate::SessionEndpoint;
+use crate::SessionLifecycleState;
 use crate::SessionMacKey;
 use crate::WireSession;
+use crate::directional_session::AuthenticatedWireSession;
+use crate::verify_codec_binding;
 
-/// Single production-facing owner for an authenticated, policy-bound wire
-/// session.
+/// Non-secret immutable posture exposed by a hardened owner.
 ///
-/// This facade deliberately does not expose raw frame, unbound typed, replay
-/// counter, reset, or inner-session escape hatches. Inbound records are opened
-/// in the following order: authenticate and sequence-check, frozen registry
-/// admission, exact codec binding, typed decode, then byte-for-byte canonical
-/// re-encoding. Any terminal failure poisons this owner; recovery requires a
-/// fresh transport, channel binding, negotiation transcript and session key.
+/// This snapshot deliberately carries no registry object, codec, replay
+/// counter, transport handle or key-bearing session. It can therefore be used
+/// for diagnostics after retirement without recreating a lower-level wire
+/// escape hatch.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WireSessionMetadata {
+    session_id: Digest32,
+    endpoint: SessionEndpoint,
+    role: StableId,
+    negotiated: NegotiatedWire,
+    registry_digest: Digest32,
+    transcript_digest: Digest32,
+}
+
+impl WireSessionMetadata {
+    fn from_session(session: &WireSession, endpoint: SessionEndpoint) -> Self {
+        Self {
+            session_id: session.session_id(),
+            endpoint,
+            role: session.role().clone(),
+            negotiated: session.negotiated(),
+            registry_digest: session.registry().snapshot_digest(),
+            transcript_digest: session.transcript().digest(),
+        }
+    }
+
+    pub const fn session_id(&self) -> Digest32 {
+        self.session_id
+    }
+
+    pub const fn endpoint(&self) -> SessionEndpoint {
+        self.endpoint
+    }
+
+    pub fn role(&self) -> &StableId {
+        &self.role
+    }
+
+    pub const fn negotiated(&self) -> NegotiatedWire {
+        self.negotiated
+    }
+
+    pub const fn registry_digest(&self) -> Digest32 {
+        self.registry_digest
+    }
+
+    pub const fn transcript_digest(&self) -> Digest32 {
+        self.transcript_digest
+    }
+}
+
+/// Bound authenticated owner used internally by the final managed facade.
+///
+/// The key-bearing directional session is stored in an `Option`. Every
+/// authentication, admission, binding, typed-decoding or canonicalization
+/// failure takes and drops that state immediately. Only immutable metadata is
+/// observable after failure; the underlying `WireSession` is never returned.
 #[derive(Debug)]
 pub struct HardenedWireSession {
-    inner: AuthenticatedWireSession,
-    poisoned: bool,
+    inner: Option<AuthenticatedWireSession>,
+    metadata: WireSessionMetadata,
+    state: SessionLifecycleState,
 }
 
 impl HardenedWireSession {
+    /// Compatibility constructor for tests and protocol tooling.
+    ///
+    /// Production-only builds do not export either this type or `WireSession`;
+    /// callers establish [`crate::HardenedManagedWireSession`] instead.
+    #[cfg(any(
+        test,
+        all(feature = "protocol-tooling", not(feature = "production"))
+    ))]
     pub fn new(
         session: WireSession,
         master_key: SessionMacKey,
         endpoint: SessionEndpoint,
     ) -> Result<Self, AuthenticatedSessionError> {
+        Self::from_parts(session, master_key, endpoint)
+    }
+
+    pub(crate) fn from_parts(
+        session: WireSession,
+        master_key: SessionMacKey,
+        endpoint: SessionEndpoint,
+    ) -> Result<Self, AuthenticatedSessionError> {
+        let metadata = WireSessionMetadata::from_session(&session, endpoint);
+        let inner = AuthenticatedWireSession::new(session, master_key, endpoint)?;
         Ok(Self {
-            inner: AuthenticatedWireSession::new(session, master_key, endpoint)?,
-            poisoned: false,
+            inner: Some(inner),
+            metadata,
+            state: SessionLifecycleState::Active,
         })
     }
 
-    pub fn session(&self) -> &WireSession {
-        self.inner.session()
+    pub fn metadata(&self) -> &WireSessionMetadata {
+        &self.metadata
+    }
+
+    pub fn state(&self) -> SessionLifecycleState {
+        if self.state == SessionLifecycleState::Active
+            && self
+                .inner
+                .as_ref()
+                .is_some_and(AuthenticatedWireSession::is_poisoned)
+        {
+            SessionLifecycleState::Poisoned
+        } else {
+            self.state
+        }
     }
 
     pub fn is_poisoned(&self) -> bool {
-        self.poisoned || self.inner.is_poisoned()
+        self.state() == SessionLifecycleState::Poisoned
+    }
+
+    /// Destroy key-bearing state and make this owner terminal.
+    pub fn retire(&mut self) {
+        self.inner = None;
+        self.state = SessionLifecycleState::Retired;
+    }
+
+    pub(crate) fn policy_matches(&self, other: &WireSessionMetadata) -> bool {
+        self.metadata.role == other.role
+            && self.metadata.negotiated == other.negotiated
+            && self.metadata.registry_digest == other.registry_digest
+            && self.metadata.endpoint == other.endpoint
+    }
+
+    pub(crate) fn verify_bound_codec<C: BoundPayloadCodec>(
+        &mut self,
+        codec: &C,
+    ) -> Result<(), HardenedWireSessionError> {
+        self.ensure_live()?;
+        let result = self
+            .inner
+            .as_ref()
+            .expect("live hardened owner must retain its session")
+            .session()
+            .registry();
+        if let Err(error) = verify_codec_binding(result, codec) {
+            return self.fail(HardenedWireSessionError::Bound(
+                BoundWireSessionError::Binding(error),
+            ));
+        }
+        Ok(())
     }
 
     /// Encode through the exact semantic codec frozen into the session and
@@ -60,13 +179,20 @@ impl HardenedWireSession {
         self.ensure_live()?;
         let envelope = match self
             .inner
+            .as_ref()
+            .expect("live hardened owner must retain its session")
             .session()
             .encode_bound_typed_envelope(producer, generation, codec, value)
         {
             Ok(envelope) => envelope,
             Err(error) => return self.fail(HardenedWireSessionError::Bound(error)),
         };
-        match self.inner.seal_envelope(&envelope) {
+        match self
+            .inner
+            .as_mut()
+            .expect("live hardened owner must retain its session")
+            .seal_envelope(&envelope)
+        {
             Ok(record) => Ok(record),
             Err(error) => self.fail(HardenedWireSessionError::Authenticated(error)),
         }
@@ -80,12 +206,19 @@ impl HardenedWireSession {
         codec: &C,
     ) -> Result<C::Value, HardenedWireSessionError> {
         self.ensure_live()?;
-        let envelope = match self.inner.open_record(record) {
+        let envelope = match self
+            .inner
+            .as_mut()
+            .expect("live hardened owner must retain its session")
+            .open_record(record)
+        {
             Ok(envelope) => envelope,
             Err(error) => return self.fail(HardenedWireSessionError::Authenticated(error)),
         };
         let value = match self
             .inner
+            .as_ref()
+            .expect("live hardened owner must retain its session")
             .session()
             .decode_bound_typed_envelope(&envelope, codec)
         {
@@ -107,20 +240,35 @@ impl HardenedWireSession {
         Ok(value)
     }
 
-    fn ensure_live(&self) -> Result<(), HardenedWireSessionError> {
-        if self.is_poisoned() {
-            Err(HardenedWireSessionError::Poisoned)
-        } else {
-            Ok(())
+    fn ensure_live(&mut self) -> Result<(), HardenedWireSessionError> {
+        if self.state != SessionLifecycleState::Active || self.inner.is_none() {
+            return Err(HardenedWireSessionError::Poisoned);
         }
+        if self
+            .inner
+            .as_ref()
+            .is_some_and(AuthenticatedWireSession::is_poisoned)
+        {
+            self.state = SessionLifecycleState::Poisoned;
+            self.inner = None;
+            return Err(HardenedWireSessionError::Poisoned);
+        }
+        Ok(())
     }
 
     fn fail<T>(
         &mut self,
         error: HardenedWireSessionError,
     ) -> Result<T, HardenedWireSessionError> {
-        self.poisoned = true;
+        self.state = SessionLifecycleState::Poisoned;
+        let retired = self.inner.take();
+        drop(retired);
         Err(error)
+    }
+
+    #[cfg(test)]
+    fn key_state_retired(&self) -> bool {
+        self.inner.is_none()
     }
 }
 
@@ -141,7 +289,7 @@ impl fmt::Display for HardenedWireSessionError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Poisoned => formatter.write_str(
-                "hardened wire session is poisoned; establish a fresh authenticated session",
+                "hardened wire session is terminal; establish a fresh authenticated session",
             ),
             Self::Authenticated(error) => error.fmt(formatter),
             Self::Bound(error) => error.fmt(formatter),
@@ -175,9 +323,8 @@ impl Error for HardenedWireSessionError {
 mod tests {
     use std::sync::Arc;
 
-    use codex_hepta_types::Digest32;
-
     use crate::CanonicalizationProfile;
+    use crate::CodecBindingError;
     use crate::DecodedEnvelope;
     use crate::FrozenSchemaRegistry;
     use crate::FrozenSchemaRegistryBuilder;
@@ -212,6 +359,9 @@ mod tests {
         fn encode_value(&self, value: &Self::Value) -> Result<Vec<u8>, SchemaCodecError> {
             if value.0.is_empty() {
                 return Err(SchemaCodecError::Rejected("empty message"));
+            }
+            if value.0 == "explode" {
+                return Err(SchemaCodecError::Rejected("canonical encode failed"));
             }
             Ok(value.0.as_bytes().to_vec())
         }
@@ -292,15 +442,14 @@ mod tests {
     #[test]
     fn bound_canonical_records_round_trip() -> Result<(), Box<dyn Error>> {
         let fixture = fixture()?;
-        let key = SessionMacKey::new([0x31; 32])?;
         let mut sender = HardenedWireSession::new(
             fixture.initiator,
-            key.clone(),
+            SessionMacKey::new([0x31; 32])?,
             SessionEndpoint::Initiator,
         )?;
         let mut receiver = HardenedWireSession::new(
             fixture.responder,
-            key,
+            SessionMacKey::new([0x31; 32])?,
             SessionEndpoint::Responder,
         )?;
         let bound = PayloadCodecBinding::new(
@@ -316,25 +465,25 @@ mod tests {
             &expected,
         )?;
         assert_eq!(receiver.open_bound_typed(&record, &bound)?, expected);
-        assert!(!receiver.is_poisoned());
+        assert_eq!(receiver.state(), SessionLifecycleState::Active);
         Ok(())
     }
 
     #[test]
-    fn noncanonical_authenticated_payload_is_rejected_and_poisons_owner(
+    fn noncanonical_authenticated_payload_drops_key_state_immediately(
     ) -> Result<(), Box<dyn Error>> {
         let fixture = fixture()?;
-        let key = SessionMacKey::new([0x31; 32])?;
         let mut weak_sender = AuthenticatedWireSession::new(
             fixture.initiator,
-            key.clone(),
+            SessionMacKey::new([0x31; 32])?,
             SessionEndpoint::Initiator,
         )?;
         let mut receiver = HardenedWireSession::new(
             fixture.responder,
-            key,
+            SessionMacKey::new([0x31; 32])?,
             SessionEndpoint::Responder,
         )?;
+        let session_id = receiver.metadata().session_id();
         let bound = PayloadCodecBinding::new(
             &fixture.codec,
             fixture.revision,
@@ -351,11 +500,75 @@ mod tests {
             receiver.open_bound_typed(&record, &bound),
             Err(HardenedWireSessionError::NonCanonicalPayload { .. })
         ));
-        assert!(receiver.is_poisoned());
+        assert_eq!(receiver.state(), SessionLifecycleState::Poisoned);
+        assert!(receiver.key_state_retired());
+        assert_eq!(receiver.metadata().session_id(), session_id);
         assert!(matches!(
             receiver.open_bound_typed(&record, &bound),
             Err(HardenedWireSessionError::Poisoned)
         ));
+        Ok(())
+    }
+
+    #[test]
+    fn wrong_codec_revision_is_terminal_before_sealing() -> Result<(), Box<dyn Error>> {
+        let fixture = fixture()?;
+        let mut sender = HardenedWireSession::new(
+            fixture.initiator,
+            SessionMacKey::new([0x31; 32])?,
+            SessionEndpoint::Initiator,
+        )?;
+        let wrong = PayloadCodecBinding::new(
+            &fixture.codec,
+            Digest32::of_bytes(b"wrong-revision"),
+            CanonicalizationProfile::CanonicalJsonV1,
+        )?;
+        assert!(matches!(
+            sender.seal_bound_typed(
+                fixture.producer,
+                Generation::new(1)?,
+                &wrong,
+                &Message("hello".to_string()),
+            ),
+            Err(HardenedWireSessionError::Bound(
+                BoundWireSessionError::Binding(CodecBindingError::SchemaRevisionMismatch { .. })
+            ))
+        ));
+        assert!(sender.key_state_retired());
+        assert_eq!(sender.state(), SessionLifecycleState::Poisoned);
+        Ok(())
+    }
+
+    #[test]
+    fn canonical_reencode_failure_is_terminal() -> Result<(), Box<dyn Error>> {
+        let fixture = fixture()?;
+        let mut weak_sender = AuthenticatedWireSession::new(
+            fixture.initiator,
+            SessionMacKey::new([0x31; 32])?,
+            SessionEndpoint::Initiator,
+        )?;
+        let mut receiver = HardenedWireSession::new(
+            fixture.responder,
+            SessionMacKey::new([0x31; 32])?,
+            SessionEndpoint::Responder,
+        )?;
+        let bound = PayloadCodecBinding::new(
+            &fixture.codec,
+            fixture.revision,
+            CanonicalizationProfile::CanonicalJsonV1,
+        )?;
+        let envelope = DecodedEnvelope::V2(WireEnvelopeV2::new(
+            bound.descriptor().schema().clone(),
+            fixture.producer,
+            Generation::new(1)?,
+            b"explode".to_vec(),
+        )?);
+        let record = weak_sender.seal_envelope(&envelope)?;
+        assert!(matches!(
+            receiver.open_bound_typed(&record, &bound),
+            Err(HardenedWireSessionError::CanonicalEncode(_))
+        ));
+        assert!(receiver.key_state_retired());
         Ok(())
     }
 }

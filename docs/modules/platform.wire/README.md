@@ -5,11 +5,12 @@ This file is the navigation entry for the current `platform.wire` implementation
 ## Canonical reading order
 
 1. [`CURRENT_IMPLEMENTATION.md`](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md) describes the current executable/source contract and named product callers.
-2. [`TECHNICAL.md`](TECHNICAL.md) records the broader architecture, ownership, compatibility and work-package design.
-3. [`SECURITY_AND_QUALIFICATION.md`](SECURITY_AND_QUALIFICATION.md) defines session security, key and channel-binding responsibilities, qualification receipts and nonclaims.
-4. [`PERFORMANCE_INTAKE_20260929.md`](PERFORMANCE_INTAKE_20260929.md) defines the registered five-path comparison with the gRPC reference. Every path must satisfy package-size ratio `<= 0.70` and p99 ratio `<= 0.80`.
-5. [`PRODUCTION_INTAKE_20260929.md`](PRODUCTION_INTAKE_20260929.md) defines the registered eight-scenario production-composition observation: authenticated non-loopback ingress, gateway/provider E2E, bounded pressure, deadline/cancellation, reconnect/restart, key rotation/retirement, mixed-version rolling and canary rollback.
-6. [`STATUS.md`](STATUS.md) is generated from source-bound receipts by `scripts/platform_wire_status.py` and is the lifecycle truth. Do not edit its booleans by hand.
+2. [`HARDENED_SESSION.md`](HARDENED_SESSION.md) defines the unique production owner, typed bound record stream, terminal key destruction, feature boundary, rotation and compile-fail API contract.
+3. [`TECHNICAL.md`](TECHNICAL.md) records the broader architecture, ownership, compatibility and work-package design.
+4. [`SECURITY_AND_QUALIFICATION.md`](SECURITY_AND_QUALIFICATION.md) defines session security, key and channel-binding responsibilities, qualification receipts and nonclaims.
+5. [`PERFORMANCE_INTAKE_20260929.md`](PERFORMANCE_INTAKE_20260929.md) defines the registered five-path comparison with the gRPC reference. Every path must satisfy package-size ratio `<= 0.70` and p99 ratio `<= 0.80`.
+6. [`PRODUCTION_INTAKE_20260929.md`](PRODUCTION_INTAKE_20260929.md) defines the registered eight-scenario production-composition observation: authenticated non-loopback ingress, gateway/provider E2E, bounded pressure, deadline/cancellation, reconnect/restart, key rotation/retirement, mixed-version rolling and canary rollback.
+7. [`STATUS.md`](STATUS.md) is generated from source-bound receipts by `scripts/platform_wire_status.py` and is the lifecycle truth. Do not edit its booleans by hand.
 
 Dated remediation and resource documents preserve implementation rationale and historical source identities. They do not override the current source candidate, the generated lifecycle state or exact-source workflow receipts.
 
@@ -25,14 +26,28 @@ Dated remediation and resource documents preserve implementation rationale and h
 
 Source code, ordinary pull-request CI, local fixtures and in-process profiles cannot self-issue production observation, reviewer acceptance, operations acceptance or release. Missing, stale, malformed, failing or source-inconsistent evidence fails closed.
 
+## Production API contract
+
+Production integrations disable default features and enable only `production`. Their only authenticated owner chain is:
+
+```text
+HardenedManagedWireSession
+    -> HardenedRecordStream<C: BoundPayloadCodec>
+    -> C::Value
+```
+
+The raw `WireSession`, authenticated owner, managed owner and raw-envelope record stream are compatibility surfaces for tests, fuzzing, qualification and migration. They are absent from the production-only public API. Any terminal authentication, admission, binding, typed-decode or canonicalization error immediately drops the unique key-bearing child owner. Only immutable `WireSessionMetadata` remains observable.
+
 ## Evidence producers and workflows
 
 - `.github/workflows/platform-wire-core.yml` runs the actual crate, resource/consumer contracts, strict Clippy and release profiles on source-head and ordered merge.
+- `.github/workflows/platform-wire-production-surface.yml` compiles the positive production-only surface and requires lower-level escape fixtures to fail.
 - `.github/workflows/platform-wire-exact.yml` produces exact-source and deterministic synthetic-merge qualification evidence.
 - `.github/workflows/platform-wire-target-host.yml` is the protected selected-host qualification path.
 - `.github/workflows/platform-wire-performance-intake.yml` admits only a registered exact-source five-path measurement artifact.
 - `.github/workflows/platform-wire-production-contract.yml` validates the closed production evidence contracts on source-head and ordered merge; it does not claim a deployment occurred.
 - `.github/workflows/platform-wire-production-intake.yml` admits only a registered exact-source deployment-observation artifact in the protected `platform-wire-production` environment.
+- `.github/workflows/actionlint.yml` statically validates every workflow's syntax, expressions and context availability.
 
 `PERFORMANCE_PRODUCERS.json` and `PRODUCTION_PRODUCERS.json` are closed registries. Dispatch inputs select an enabled, reviewed registration; they cannot create or widen one. An empty registry intentionally means that no external producer is currently accepted.
 
@@ -41,9 +56,12 @@ Source code, ordinary pull-request CI, local fixtures and in-process profiles ca
 ```bash
 python3 scripts/platform_wire_performance_gate.py --self-test
 python3 scripts/platform_wire_production_gate.py --self-test
+python3 scripts/platform_wire_production_surface.py self-test
+python3 scripts/platform_wire_production_surface.py verify
 python3 scripts/platform_wire_status.py self-test
 python3 scripts/platform_wire_status.py check-doc
 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets
+cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --no-default-features --features production
 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets --no-deps -- -D warnings
 ```
 

@@ -47,8 +47,6 @@ jobs:
       PLAN_SHA256: ${{ inputs.plan_sha256 }}
       MAX_ARTIFACT_BYTES: 20971520
       REGISTRY: docs/modules/platform.wire/PERFORMANCE_PRODUCERS.json
-      INPUT_DIR: ${{ runner.temp }}/platform-wire-performance-${{ github.run_id }}-${{ github.run_attempt }}/input
-      RECORDS: ${{ runner.temp }}/platform-wire-performance-${{ github.run_id }}-${{ github.run_attempt }}/evidence
 
     steps:
       - name: Check out dispatched exact source
@@ -57,6 +55,13 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 0
+
+      - name: Initialize bounded evidence paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "INPUT_DIR=$RUNNER_TEMP/platform-wire-performance-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/input" >> "$GITHUB_ENV"
+          echo "RECORDS=$RUNNER_TEMP/platform-wire-performance-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/evidence" >> "$GITHUB_ENV"
 
       - name: Verify selected source and bounded input identities
         id: setup
@@ -69,243 +74,35 @@ jobs:
           [[ "$MEASUREMENT_RUN_ID" =~ ^[0-9]{1,20}$ ]]
           test "$EXPECTED_SOURCE_SHA" = "$SOURCE_SHA"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test "$MEASUREMENT_WORKFLOW_PATH" != ".github/workflows/platform-wire-performance-intake.yml"
-          [[ "$MEASUREMENT_WORKFLOW_PATH" =~ ^\.github/workflows/[A-Za-z0-9._/-]+\.ya?ml$ ]]
-          [[ "$MEASUREMENT_ARTIFACT" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$ ]]
           test -f "$REGISTRY" && test ! -L "$REGISTRY"
           test "$(stat -c %s "$REGISTRY")" -le $((256 * 1024))
           git diff --check
           test -z "$(git status --porcelain --untracked-files=all)"
           python3 scripts/platform_wire_performance_gate.py --self-test
+          python3 scripts/platform_wire_performance_intake.py self-test
           python3 scripts/platform_wire_status.py self-test
 
-      - name: Bind registered producer run and artifact metadata
+      - name: Bind and extract the registered exact-source artifact
         id: metadata
         env:
           GH_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
         shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-          import re
-          import urllib.request
-
-          token = os.environ["GH_TOKEN"]
-          repository = os.environ["REPOSITORY"]
-          run_id = int(os.environ["MEASUREMENT_RUN_ID"])
-          source = os.environ["SOURCE_SHA"]
-          expected_path = os.environ["MEASUREMENT_WORKFLOW_PATH"]
-          expected_artifact = os.environ["MEASUREMENT_ARTIFACT"]
-          records = Path(os.environ["RECORDS"])
-
-          def get(path: str):
-              request = urllib.request.Request(
-                  f"https://api.github.com/repos/{repository}{path}",
-                  headers={
-                      "Authorization": f"Bearer {token}",
-                      "Accept": "application/vnd.github+json",
-                      "X-GitHub-Api-Version": "2022-11-28",
-                      "User-Agent": "hepta-platform-wire-performance-intake",
-                  },
-              )
-              with urllib.request.urlopen(request, timeout=30) as response:
-                  return json.load(response)
-
-          run = get(f"/actions/runs/{run_id}")
-          if run.get("head_sha") != source:
-              raise SystemExit("measurement run does not bind the selected source")
-          if run.get("status") != "completed" or run.get("conclusion") != "success":
-              raise SystemExit("measurement run is not a completed success")
-          if run.get("event") != "workflow_dispatch":
-              raise SystemExit("measurement run must be an operator-dispatched workflow")
-          if run.get("path") != expected_path:
-              raise SystemExit("measurement workflow path differs from the selected producer")
-          if run.get("repository", {}).get("full_name") != repository:
-              raise SystemExit("measurement run belongs to another repository")
-          attempt = run.get("run_attempt")
-          if type(attempt) is not int or attempt <= 0:
-              raise SystemExit("measurement run attempt is missing")
-
-          artifacts = get(f"/actions/runs/{run_id}/artifacts?per_page=100").get("artifacts")
-          if not isinstance(artifacts, list):
-              raise SystemExit("artifact listing is malformed")
-          matches = [item for item in artifacts if item.get("name") == expected_artifact]
-          if len(matches) != 1:
-              raise SystemExit("exactly one selected measurement artifact is required")
-          artifact = matches[0]
-          size = artifact.get("size_in_bytes")
-          maximum = int(os.environ["MAX_ARTIFACT_BYTES"])
-          if type(size) is not int or not 1 <= size <= maximum:
-              raise SystemExit("measurement artifact exceeds the bounded intake size")
-          if artifact.get("expired") is not False:
-              raise SystemExit("selected measurement artifact is expired")
-          digest = artifact.get("digest")
-          if not isinstance(digest, str) or re.fullmatch(r"sha256:[0-9a-f]{64}", digest) is None:
-              raise SystemExit("measurement artifact has no immutable SHA-256 digest")
-          if artifact.get("workflow_run", {}).get("head_sha") != source:
-              raise SystemExit("measurement artifact source differs from the selected source")
-
-          records.mkdir(parents=True, exist_ok=True)
-          (records / "measurement-run.json").write_text(
-              json.dumps(
-                  {
-                      "id": run["id"],
-                      "attempt": attempt,
-                      "repository": repository,
-                      "name": run.get("name"),
-                      "path": run["path"],
-                      "event": run["event"],
-                      "head_sha": run["head_sha"],
-                      "status": run["status"],
-                      "conclusion": run["conclusion"],
-                      "created_at": run.get("created_at"),
-                      "updated_at": run.get("updated_at"),
-                      "html_url": run.get("html_url"),
-                  },
-                  indent=2,
-                  sort_keys=True,
-              ) + "\n",
-              encoding="utf-8",
-          )
-          (records / "measurement-artifact.json").write_text(
-              json.dumps(
-                  {
-                      "id": artifact["id"],
-                      "name": artifact["name"],
-                      "size_in_bytes": size,
-                      "digest": digest,
-                      "created_at": artifact.get("created_at"),
-                      "expires_at": artifact.get("expires_at"),
-                  },
-                  indent=2,
-                  sort_keys=True,
-              ) + "\n",
-              encoding="utf-8",
-          )
-          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as environment:
-              environment.write(f"MEASUREMENT_RUN_ATTEMPT={attempt}\n")
-              environment.write(
-                  "MEASUREMENT_RUN_IDENTITY="
-                  f"github-actions:{repository}:{run_id}:{attempt}\n"
-              )
-          PY
-
-      - name: Download, verify and extract exact paired evidence
-        id: download
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from io import BytesIO
-          import hashlib
-          import json
-          import os
-          from pathlib import Path
-          import re
-          import stat
-          import urllib.request
-          import zipfile
-
-          records = Path(os.environ["RECORDS"])
-          destination = Path(os.environ["INPUT_DIR"])
-          metadata = json.loads(
-              (records / "measurement-artifact.json").read_text(encoding="utf-8")
-          )
-          artifact_id = metadata.get("id")
-          if type(artifact_id) is not int or artifact_id <= 0:
-              raise SystemExit("measurement artifact id is invalid")
-          expected_digest = metadata.get("digest")
-          if not isinstance(expected_digest, str) or re.fullmatch(
-              r"sha256:[0-9a-f]{64}", expected_digest
-          ) is None:
-              raise SystemExit("measurement artifact digest is invalid")
-          maximum = int(os.environ["MAX_ARTIFACT_BYTES"])
-          request = urllib.request.Request(
-              f"https://api.github.com/repos/{os.environ['REPOSITORY']}"
-              f"/actions/artifacts/{artifact_id}/zip",
-              headers={
-                  "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
-                  "Accept": "application/vnd.github+json",
-                  "X-GitHub-Api-Version": "2022-11-28",
-                  "User-Agent": "hepta-platform-wire-performance-intake",
-              },
-          )
-          chunks = []
-          total = 0
-          with urllib.request.urlopen(request, timeout=60) as response:
-              while True:
-                  chunk = response.read(min(1024 * 1024, maximum + 1 - total))
-                  if not chunk:
-                      break
-                  chunks.append(chunk)
-                  total += len(chunk)
-                  if total > maximum:
-                      raise SystemExit("measurement archive exceeded the bounded download size")
-          archive = b"".join(chunks)
-          actual_digest = hashlib.sha256(archive).hexdigest()
-          if actual_digest != expected_digest.removeprefix("sha256:"):
-              raise SystemExit("downloaded measurement archive digest mismatch")
-
-          limits = {
-              "performance-plan.json": 256 * 1024,
-              "paired-measurements.json": 16 * 1024 * 1024,
-          }
-          destination.mkdir(parents=True, exist_ok=True)
-          with zipfile.ZipFile(BytesIO(archive)) as package:
-              entries = package.infolist()
-              if sorted(entry.filename for entry in entries) != sorted(limits):
-                  raise SystemExit("measurement archive must contain exactly two root files")
-              if len(entries) != len(limits):
-                  raise SystemExit("measurement archive contains duplicate entries")
-              for entry in entries:
-                  if entry.is_dir() or entry.flag_bits & 0x1:
-                      raise SystemExit("measurement archive contains a directory or encrypted entry")
-                  mode = (entry.external_attr >> 16) & 0o170000
-                  if mode not in (0, stat.S_IFREG):
-                      raise SystemExit("measurement archive contains a non-regular entry")
-                  limit = limits[entry.filename]
-                  if not 0 < entry.file_size <= limit or entry.compress_size > maximum:
-                      raise SystemExit("measurement archive entry exceeds its byte limit")
-                  if entry.compress_type not in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED):
-                      raise SystemExit("measurement archive uses an unsupported compression method")
-                  with package.open(entry, "r") as stream:
-                      content = stream.read(limit + 1)
-                      if len(content) != entry.file_size or len(content) > limit:
-                          raise SystemExit("measurement archive entry size is inconsistent")
-                  target = destination / entry.filename
-                  target.write_bytes(content)
-                  target.chmod(0o600)
-          (records / "measurement-archive.sha256").write_text(
-              f"{actual_digest}  measurement-artifact.zip\n", encoding="utf-8"
-          )
-          PY
+        run: python3 scripts/platform_wire_performance_intake.py intake
 
       - name: Validate registered frozen five-path measurements
         id: validation
         shell: bash
         run: |
           set -euo pipefail
-          plan="$INPUT_DIR/performance-plan.json"
-          report="$INPUT_DIR/paired-measurements.json"
-          test -f "$plan" && test ! -L "$plan"
-          test -f "$report" && test ! -L "$report"
-          test "$(stat -c %s "$plan")" -le $((256 * 1024))
-          test "$(stat -c %s "$report")" -le $((16 * 1024 * 1024))
           python3 scripts/platform_wire_performance_gate.py \
             --registry "$REGISTRY" \
             --producer-workflow-path "$MEASUREMENT_WORKFLOW_PATH" \
             --artifact-name "$MEASUREMENT_ARTIFACT" \
             --producer-run-identity "$MEASUREMENT_RUN_IDENTITY" \
-            --plan "$plan" \
+            --plan "$INPUT_DIR/performance-plan.json" \
             --plan-sha256 "$PLAN_SHA256" \
-            --report "$report" \
+            --report "$INPUT_DIR/paired-measurements.json" \
             --source-sha "$SOURCE_SHA" \
             > "$RECORDS/performance-check.json"
 
@@ -314,161 +111,12 @@ jobs:
         env:
           SETUP_OUTCOME: ${{ steps.setup.outcome }}
           METADATA_OUTCOME: ${{ steps.metadata.outcome }}
-          DOWNLOAD_OUTCOME: ${{ steps.download.outcome }}
           VALIDATION_OUTCOME: ${{ steps.validation.outcome }}
           REPOSITORY: ${{ github.repository }}
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RECORDS"
-          python3 - <<'PY'
-          from datetime import datetime, timezone
-          import hashlib
-          import json
-          import os
-          from pathlib import Path
-          import re
-
-          records = Path(os.environ["RECORDS"])
-          input_dir = Path(os.environ["INPUT_DIR"])
-          source = os.environ["SOURCE_SHA"]
-          outcomes = {
-              "setup": os.environ.get("SETUP_OUTCOME"),
-              "metadata": os.environ.get("METADATA_OUTCOME"),
-              "download": os.environ.get("DOWNLOAD_OUTCOME"),
-              "validation": os.environ.get("VALIDATION_OUTCOME"),
-          }
-          errors = [
-              f"{name} outcome was {value}"
-              for name, value in outcomes.items()
-              if value != "success"
-          ]
-
-          def read_json(path: Path, limit: int):
-              if path.is_symlink():
-                  raise ValueError(f"symlinked evidence rejected: {path.name}")
-              raw = path.read_bytes()
-              if len(raw) > limit:
-                  raise ValueError(f"evidence exceeds limit: {path.name}")
-              return json.loads(raw), raw
-
-          artifact_meta = {}
-          run_meta = {}
-          try:
-              artifact_meta, _ = read_json(
-                  records / "measurement-artifact.json", 64 * 1024
-              )
-              run_meta, _ = read_json(records / "measurement-run.json", 64 * 1024)
-          except (OSError, ValueError, json.JSONDecodeError) as error:
-              errors.append(f"producer metadata: {error}")
-
-          check = None
-          report = None
-          registry_digest = None
-          plan_digest = None
-          report_digest = None
-          try:
-              _, registry_raw = read_json(Path(os.environ["REGISTRY"]), 256 * 1024)
-              registry_digest = hashlib.sha256(registry_raw).hexdigest()
-              _, plan_raw = read_json(
-                  input_dir / "performance-plan.json", 256 * 1024
-              )
-              plan_digest = hashlib.sha256(plan_raw).hexdigest()
-              if plan_digest != os.environ["PLAN_SHA256"]:
-                  raise ValueError("plan digest differs from the selected plan")
-              report, report_raw = read_json(
-                  input_dir / "paired-measurements.json", 16 * 1024 * 1024
-              )
-              report_digest = hashlib.sha256(report_raw).hexdigest()
-              check, _ = read_json(
-                  records / "performance-check.json", 1024 * 1024
-              )
-          except (OSError, ValueError, json.JSONDecodeError) as error:
-              errors.append(f"paired evidence: {error}")
-
-          artifact_digest = artifact_meta.get("digest")
-          if isinstance(artifact_digest, str) and artifact_digest.startswith("sha256:"):
-              artifact_digest = artifact_digest.removeprefix("sha256:")
-          else:
-              artifact_digest = None
-          if (
-              artifact_digest is not None
-              and re.fullmatch(r"[0-9a-f]{64}", artifact_digest) is None
-          ):
-              errors.append("artifact digest is malformed")
-              artifact_digest = None
-
-          status = "passed" if not errors else "failed"
-          run_attempt = run_meta.get("attempt")
-          if type(run_attempt) is not int or run_attempt <= 0:
-              run_attempt = 0
-          receipt = {
-              "schema": "hepta.platform-wire.receipt.v2",
-              "kind": "platform-wire-performance",
-              "source_sha": source,
-              "tested_sha": source,
-              "status": status,
-              "errors": errors,
-              "workflow": os.environ.get("GITHUB_WORKFLOW"),
-              "workflow_ref": os.environ.get("GITHUB_WORKFLOW_REF"),
-              "workflow_sha": os.environ.get("GITHUB_WORKFLOW_SHA"),
-              "run_id": int(os.environ["GITHUB_RUN_ID"]),
-              "run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
-              "event": os.environ.get("GITHUB_EVENT_NAME"),
-              "generated_at": datetime.now(timezone.utc).isoformat(),
-              "environment": "platform-wire-performance",
-              "measurement_repository": os.environ["REPOSITORY"],
-              "measurement_run_id": (
-                  int(os.environ["MEASUREMENT_RUN_ID"])
-                  if os.environ["MEASUREMENT_RUN_ID"].isdigit()
-                  else 0
-              ),
-              "measurement_run_attempt": run_attempt,
-              "measurement_workflow_path": os.environ["MEASUREMENT_WORKFLOW_PATH"],
-              "measurement_artifact": os.environ["MEASUREMENT_ARTIFACT"],
-              "path_count": 0,
-              "independent_acceptance": False,
-              "activation": False,
-              "release": False,
-          }
-          if status == "passed":
-              assert isinstance(check, dict) and isinstance(report, dict)
-              paths = check.get("paths")
-              registration = check.get("registration")
-              if not isinstance(paths, list) or len(paths) != 5:
-                  raise SystemExit("validated output did not retain five paths")
-              if not isinstance(registration, dict):
-                  raise SystemExit("validated output did not retain registration")
-              receipt.update(
-                  {
-                      "measurement_artifact_digest": artifact_digest,
-                      "registry_sha256": registry_digest,
-                      "registered_owner": registration.get("owner"),
-                      "plan_sha256": plan_digest,
-                      "report_sha256": report_digest,
-                      "host_profile": report.get("host_profile"),
-                      "runner_identity": report.get("runner_identity"),
-                      "toolchain": report.get("toolchain"),
-                      "measurement_run_identity": report.get("run_identity"),
-                      "reference_transport": report.get("reference_transport"),
-                      "path_count": len(paths),
-                      "size_ratio_numerator": 70,
-                      "size_ratio_denominator": 100,
-                      "p99_ratio_numerator": 80,
-                      "p99_ratio_denominator": 100,
-                      "paths": paths,
-                      "scope": (
-                          "protected intake of an exact-source, same-repository, "
-                          "registered paired-measurement archive; independent "
-                          "benchmark review remains external"
-                      ),
-                  }
-              )
-          (records / "platform-wire-performance.json").write_text(
-              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          PY
+          python3 scripts/platform_wire_performance_intake.py receipt
           python3 scripts/platform_wire_status.py validate-receipt \
             --path "$RECORDS/platform-wire-performance.json" \
             --kind platform-wire-performance

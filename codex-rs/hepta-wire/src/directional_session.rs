@@ -11,8 +11,8 @@ use codex_hepta_types::StableId;
 use crate::DecodedEnvelope;
 use crate::PayloadCodec;
 use crate::secure_session::AuthenticatedSessionError;
-use crate::secure_session::AuthenticatedWireSession as UndirectedAuthenticatedWireSession;
-use crate::secure_session::SessionMacKey as UndirectedSessionMacKey;
+use crate::secure_session::AuthenticatedWireSession as OrderedMacChannel;
+use crate::secure_session::SessionMacKey as RecordMacKey;
 use crate::secure_session::WireSession;
 
 const DIRECTIONAL_KEY_DOMAIN: &[u8] = b"HPTA-AUTHENTICATED-RECORD-KEY-V1\0";
@@ -44,8 +44,16 @@ impl SessionEndpoint {
 ///
 /// Distinct transmit and receive keys are derived from this key, the immutable
 /// session identifier, and the endpoint direction. Debug output never exposes
-/// key bytes and an all-zero master key is rejected.
-#[derive(Clone)]
+/// key bytes and an all-zero master key is rejected. The key is intentionally
+/// non-cloneable in a production-only build; compatibility tests and protocol
+/// tooling retain a temporary migration clone surface.
+#[cfg_attr(
+    any(
+        test,
+        all(feature = "protocol-tooling", not(feature = "production"))
+    ),
+    derive(Clone)
+)]
 pub struct SessionMacKey(Zeroizing<[u8; 32]>);
 
 impl SessionMacKey {
@@ -66,15 +74,15 @@ impl fmt::Debug for SessionMacKey {
 /// Direction-separated authenticated record layer for a completed wire
 /// session.
 ///
-/// Internally, each direction owns an independent replay counter and a key
+/// Internally, each direction owns an independent ordered MAC channel and a key
 /// derived from the master key plus the immutable session identifier. Any
 /// terminal record error poisons both directions. Establish a fresh transport
 /// channel and negotiate a new session instead of resetting this object.
 #[derive(Debug)]
 pub struct AuthenticatedWireSession {
     endpoint: SessionEndpoint,
-    outbound: UndirectedAuthenticatedWireSession,
-    inbound: UndirectedAuthenticatedWireSession,
+    outbound: OrderedMacChannel,
+    inbound: OrderedMacChannel,
     poisoned: bool,
 }
 
@@ -89,14 +97,8 @@ impl AuthenticatedWireSession {
         let send_key = derive_directional_key(&master_key.0, session_id, send_label)?;
         let receive_key = derive_directional_key(&master_key.0, session_id, receive_label)?;
         debug_assert!(send_key != receive_key, "directional session keys must differ");
-        let outbound = UndirectedAuthenticatedWireSession::new(
-            session.clone(),
-            UndirectedSessionMacKey::new(send_key)?,
-        );
-        let inbound = UndirectedAuthenticatedWireSession::new(
-            session,
-            UndirectedSessionMacKey::new(receive_key)?,
-        );
+        let outbound = OrderedMacChannel::new(session.clone(), RecordMacKey::new(send_key)?);
+        let inbound = OrderedMacChannel::new(session, RecordMacKey::new(receive_key)?);
         Ok(Self {
             endpoint,
             outbound,
@@ -139,7 +141,10 @@ impl AuthenticatedWireSession {
         value: &C::Value,
     ) -> Result<Vec<u8>, AuthenticatedSessionError> {
         self.ensure_live()?;
-        match self.outbound.seal_typed(producer, generation, codec, value) {
+        match self
+            .outbound
+            .seal_typed(producer, generation, codec, value)
+        {
             Ok(record) => Ok(record),
             Err(error) => {
                 self.poison();
@@ -258,14 +263,16 @@ mod tests {
 
     #[test]
     fn opposite_endpoints_exchange_records() -> Result<(), Box<dyn Error>> {
-        let key = SessionMacKey::new([9_u8; 32])?;
         let mut initiator = AuthenticatedWireSession::new(
             session(&[7_u8; 32])?,
-            key.clone(),
+            SessionMacKey::new([9_u8; 32])?,
             SessionEndpoint::Initiator,
         )?;
-        let mut responder =
-            AuthenticatedWireSession::new(session(&[7_u8; 32])?, key, SessionEndpoint::Responder)?;
+        let mut responder = AuthenticatedWireSession::new(
+            session(&[7_u8; 32])?,
+            SessionMacKey::new([9_u8; 32])?,
+            SessionEndpoint::Responder,
+        )?;
         let outbound = envelope()?;
         let record = initiator.seal_envelope(&outbound)?;
         assert_eq!(responder.open_record(&record)?, outbound);
@@ -294,14 +301,16 @@ mod tests {
 
     #[test]
     fn same_endpoint_direction_is_not_interoperable() -> Result<(), Box<dyn Error>> {
-        let key = SessionMacKey::new([9_u8; 32])?;
         let mut sender = AuthenticatedWireSession::new(
             session(&[7_u8; 32])?,
-            key.clone(),
+            SessionMacKey::new([9_u8; 32])?,
             SessionEndpoint::Initiator,
         )?;
-        let mut wrong_receiver =
-            AuthenticatedWireSession::new(session(&[7_u8; 32])?, key, SessionEndpoint::Initiator)?;
+        let mut wrong_receiver = AuthenticatedWireSession::new(
+            session(&[7_u8; 32])?,
+            SessionMacKey::new([9_u8; 32])?,
+            SessionEndpoint::Initiator,
+        )?;
         let record = sender.seal_envelope(&envelope()?)?;
         assert!(matches!(
             wrong_receiver.open_record(&record),

@@ -10,6 +10,16 @@ name = "codex_hepta_wire"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = ["protocol-tooling"]
+# Compatibility surface for protocol tools, migration callers, fuzzers and
+# qualification fixtures. Production callers must disable default features and
+# enable only `production`.
+protocol-tooling = []
+legacy-migration = ["protocol-tooling"]
+# Exposes only the bound, lifecycle-owning authenticated production chain.
+production = []
+
 [lints]
 workspace = true
 
