@@ -1230,3 +1230,6 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
 
 #[path = "authorized_effect/adversarial.rs"]
 mod adversarial;
+
+#[path = "authorized_effect/projection_recovery.rs"]
+mod projection_recovery;
