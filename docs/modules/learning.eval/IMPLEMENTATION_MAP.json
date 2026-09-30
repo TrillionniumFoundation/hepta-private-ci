@@ -4,12 +4,15 @@
     "activation": false,
     "actualProducerJobConclusionVerificationSourcePresent": true,
     "candidateExecutionReadOnlyWorkflowSourcePresent": true,
+    "candidateWorkflowByteIdentityGuardSourcePresent": true,
     "candidateWorkflowPermissionTextValidationSourcePresent": true,
     "canonicalProductFacadeSourcePresent": true,
     "checkpointTailRecoveryImplemented": true,
     "consumerBoundAdmissionComposed": true,
+    "currentPrBaseAndSyntheticMergeReconciliationSourcePresent": true,
     "durableAttemptJournalImplemented": true,
     "filteredTestDiscoveryGuardSourcePresent": true,
+    "gitObjectIdentityReconciliationSourcePresent": true,
     "independentAcceptance": false,
     "isolatedTrustedCompatibilityFixtureSourcePresent": true,
     "lifecycleCapacityReservationImplemented": true,
@@ -292,10 +295,10 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "dd8e4309c79a6c0610d5e409c3c9ec73940d744f",
-    "tree": "e0fa6abd461fb8c8c418f342871d7d6b9e507b71"
+    "commit": "f3163f72de44b82e1ea50128fabefe9655784e6b",
+    "tree": "d246d08989d95415fabc5506e0d20697333b3388"
   },
-  "sourceBaseSemantics": "Exact source, CI, recovery, API-surface and documentation observation immediately preceding this map-only rebind. It includes fail-closed nextest discovery, isolated compatibility execution, a canonical authority-free product facade, versioned typed failure identity, read-only candidate execution, a trusted default-branch workflow_run reporter that treats artifacts and candidate workflow YAML as untrusted data, re-queries the producer workflow and latest-attempt job conclusions from GitHub, rejects forged green summaries and stale PR heads, and isolates attestation to non-executing main-only jobs. This observation is not a target-host qualification, independent acceptance, activation, promotion or release authority.",
+  "sourceBaseSemantics": "Exact source, CI, recovery, API-surface and documentation observation immediately preceding this map-only rebind. It includes fail-closed nextest discovery, isolated compatibility execution, a canonical authority-free product facade, versioned typed failure identity, read-only candidate execution, and a trusted default-branch workflow_run reporter that requires byte-for-byte identity with the trusted producer workflow, treats artifacts and workflow YAML as untrusted data, verifies the Git commit tree plus current PR head/base/synthetic-merge identities, re-queries latest-attempt producer job conclusions, rejects forged green summaries, workflow drift and stale runs, and isolates attestation to non-executing main-only jobs. This observation is not a target-host qualification, independent acceptance, activation, promotion or release authority.",
   "sourceIdentityPolicy": "exact_observation_plus_candidate_unchanged_v2",
   "sourceRootPresent": true,
   "technicalGuide": "docs/modules/learning.eval/TECHNICAL.md"
