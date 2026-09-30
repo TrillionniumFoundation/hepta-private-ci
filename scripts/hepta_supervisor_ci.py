@@ -52,7 +52,8 @@ PLANS = {
                          "--", "-D", "warnings"]),
     "lint": (0, ["cargo", "clippy", "--manifest-path", "codex-rs/Cargo.toml",
                  "--locked", "-p", PACKAGE, "--no-deps", "--all-targets",
-                 "--features", "production-authority", "--", "-D", "warnings"]),
+                 "--features", "qualification,production-authority",
+                 "--", "-D", "warnings"]),
 }
 # Test identity includes the nextest binary ID, not just the unqualified name.
 LIBRARY_REQUIREMENTS = (
