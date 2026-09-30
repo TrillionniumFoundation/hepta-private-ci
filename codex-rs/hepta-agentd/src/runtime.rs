@@ -20,6 +20,9 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::CognitiveRetrievalMode;
+
+#[path = "runtime_cognitive_maintenance.rs"]
+mod cognitive_maintenance;
 use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::AutomationService;
@@ -261,6 +264,7 @@ pub async fn run(
         federation_owner_layouts,
     )
     .await?;
+    cognitive_maintenance::maintain_once(&state, &cognitive_runtime).await?;
     let automation_service = AutomationService::open(Arc::clone(&state), module_profile).await?;
     if let Some(path) = automation_effect_host_file {
         state.refresh_generation()?;
@@ -281,6 +285,14 @@ pub async fn run(
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        tasks.spawn_required(
+            "cognitive-federation-maintenance",
+            cognitive_maintenance::run(
+                Arc::clone(&state),
+                cognitive_runtime.clone(),
+                cancellation.clone(),
+            ),
+        )?;
         if let Some(owner) = self_iteration_runtime {
             tasks.spawn_required("self-iteration-owner", owner.run(cancellation.clone()))?;
         }

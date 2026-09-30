@@ -17,6 +17,8 @@ use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as Cogn
 use codex_hepta_agent_components::cognitive_store::DurableCognitiveStoreError as CognitiveStoreError;
 use codex_hepta_agent_components::contracts::AgentId;
 use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::control_plane::ObservedContextV1;
+use codex_hepta_agent_components::control_plane::plan_observed_context;
 use codex_hepta_agent_components::memory::CognitiveAccess;
 use codex_hepta_agent_components::memory::CognitiveScope;
 use codex_hepta_agent_components::memory::DurableCognitiveSnapshot;
@@ -28,8 +30,6 @@ use codex_hepta_agent_components::types::Digest32;
 use codex_hepta_agent_components::types::Generation;
 use codex_hepta_agent_components::types::ProbabilityQ32;
 use codex_hepta_agent_components::types::StableId;
-use codex_hepta_control_plane::ObservedContextV1;
-use codex_hepta_control_plane::plan_observed_context;
 
 use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;

@@ -163,6 +163,14 @@ pub enum AgentRunError {
     Persistence(String),
 }
 
+impl std::fmt::Display for AgentRunError {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl std::error::Error for AgentRunError {}
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 struct RunRecord {
     snapshot: RunSnapshot,

@@ -22,6 +22,7 @@ pub use codex_hepta_memory::DurableCognitiveSnapshotCursor;
 pub use codex_hepta_memory::DurableCognitiveSnapshotPage;
 pub use codex_hepta_memory::ForgetMemoryDraft;
 pub use codex_hepta_memory::KgFactSetDraft;
+pub use codex_hepta_memory::KgRelationFactDraft;
 pub use codex_hepta_memory::LedgerSourceKind;
 pub use codex_hepta_memory::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
 pub use codex_hepta_memory::MAX_LANE_C_PAGE_CITATIONS;

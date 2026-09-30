@@ -36,6 +36,7 @@ server = [
     "dep:libc",
     "dep:sha2",
     "dep:tokio-util",
+    "dep:tracing",
 ]
 production-cognitive-write = ["server"]
 # Adds the qualification-only turn-lifecycle witness seam on top of the real
@@ -104,6 +105,7 @@ tokio = { workspace = true, features = [
     "time",
 ] }
 tokio-util = { optional = true, workspace = true }
+tracing = { optional = true, workspace = true }
 
 codex-hepta-automation = { path = "../hepta-automation", default-features = false }
 codex-hepta-contracts = { workspace = true }

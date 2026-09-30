@@ -3505,6 +3505,7 @@ dependencies = [
  "codex-hepta-app-host",
  "codex-hepta-automation",
  "codex-hepta-cognitive-types",
+ "codex-hepta-context-compiler",
  "codex-hepta-contracts",
  "codex-hepta-evidence",
  "codex-hepta-infer-core",
@@ -3521,6 +3522,8 @@ dependencies = [
  "core_test_support",
  "ed25519-dalek",
  "http 1.4.0",
+ "libc",
+ "rand 0.9.3",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -3529,6 +3532,7 @@ dependencies = [
  "thiserror 2.0.18",
  "tokio",
  "tokio-util",
+ "tracing",
  "wiremock",
 ]
 
@@ -3788,6 +3792,7 @@ name = "codex-hepta-infer-core"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "rand 0.9.3",
  "serde",
  "serde_json",
 ]
@@ -3808,10 +3813,12 @@ dependencies = [
  "core_test_support",
  "ed25519-dalek",
  "libc",
+ "rand 0.9.3",
  "rustix 1.1.4",
  "serde",
  "serde_json",
  "sha2 0.10.9",
+ "sqlx",
  "tempfile",
  "tokio",
  "tokio-util",

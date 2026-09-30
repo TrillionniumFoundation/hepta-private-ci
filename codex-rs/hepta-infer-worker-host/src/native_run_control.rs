@@ -273,9 +273,9 @@ impl AppServerModelDriver {
             if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
                 let request_id = record.request.request_id.clone();
                 let settled = control.settle_native(&request_id, reconciled)?;
-                let output = settled.observation.ok_or_else(|| {
-                    "durable reconciliation omitted its normalized observation".into()
-                })?;
+                let output = settled
+                    .observation
+                    .ok_or("durable reconciliation omitted its normalized observation")?;
                 self.publish_pending_intelligence_terminal(control, &request_id)
                     .await?;
                 return Ok(output);
@@ -329,9 +329,9 @@ impl AppServerModelDriver {
                     control.cancel_native(&request_id)?;
                 }
                 let settled = control.settle_native(&request_id, output)?;
-                let output = settled.observation.ok_or_else(|| {
-                    "durable execution settlement omitted its normalized observation".into()
-                })?;
+                let output = settled
+                    .observation
+                    .ok_or("durable execution settlement omitted its normalized observation")?;
                 self.publish_pending_intelligence_terminal(control, &request_id)
                     .await?;
                 Ok(output)

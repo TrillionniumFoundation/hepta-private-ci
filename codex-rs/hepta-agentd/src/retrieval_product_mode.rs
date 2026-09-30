@@ -288,14 +288,14 @@ impl CurrentMemoryRetrievalContext for ModeRoutedContext {
         body_generation: u64,
         deadline: std::time::Instant,
     ) -> Result<(RetrievalExecutionContextV1, Digest32, Option<u64>), String> {
-        crate::check_retrieval_deadline(deadline)?;
+        crate::cognitive_retrieval_context::check_retrieval_deadline(deadline)?;
         if let Some(error) = &self.policy.validation_error {
             return Err(error.clone());
         }
         let acquired = self
             .reader
             .acquire_context_before(owner, body_generation, deadline)?;
-        crate::check_retrieval_deadline(deadline)?;
+        crate::cognitive_retrieval_context::check_retrieval_deadline(deadline)?;
         self.bind_acquired_context(owner, acquired)
     }
 

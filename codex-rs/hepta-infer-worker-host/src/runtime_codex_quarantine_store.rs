@@ -717,6 +717,8 @@ mod durable_store_tests {
             dispatch_sha256: quarantine.local_dispatch_sha256,
             evidence_set_sha256: quarantine.evidence_set_sha256().expect("evidence digest"),
             authority_epoch: quarantine.authority_epoch,
+            resolution_authority_epoch: 1,
+            resolution_key_epoch: 1,
             resolution_sequence: 1,
             nonce: rand::random(),
             not_before_unix_ms: 1_000,

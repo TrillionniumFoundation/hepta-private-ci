@@ -36,6 +36,7 @@ pub use durable::DurableCognitiveStore;
 pub use durable::DurableCognitiveStoreError;
 pub use durable::ForgetMemoryDraft;
 pub use durable::KgFactSetDraft;
+pub use durable::KgRelationFactDraft;
 pub use durable::LedgerSourceKind;
 pub use durable::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
 pub use durable::MAX_LANE_C_PAGE_CITATIONS;
