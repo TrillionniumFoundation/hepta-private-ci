@@ -59,6 +59,36 @@ class LaneEClosedWorldTests(unittest.TestCase):
         CLOSURE.verify_traceability(changed, modules, findings)
         self.assertIn("case_closed_world", [item.code for item in findings.items])
 
+    def test_duplicate_operations_do_not_silently_overwrite_a_record(self):
+        for prepend in (True, False):
+            changed = copy.deepcopy(self.matrix)
+            operations = changed["modules"][0]["operations"]
+            duplicate = {**operations[0], "status": "not_implemented"}
+            if prepend:
+                operations.insert(0, duplicate)
+            else:
+                operations.append(duplicate)
+            _, findings = self.matrix_findings(changed)
+            self.assertIn("duplicate_operation", [item.code for item in findings.items])
+
+    def test_duplicate_external_gate_cannot_hide_a_self_certification(self):
+        for prepend in (True, False):
+            changed = copy.deepcopy(self.matrix)
+            gates = changed["externalGates"]
+            duplicate = {**gates[0], "repositoryMaySelfCertify": True}
+            if prepend:
+                gates.insert(0, duplicate)
+            else:
+                gates.append(duplicate)
+            _, findings = self.matrix_findings(changed)
+            self.assertIn("duplicate_external_gate", [item.code for item in findings.items])
+
+    def test_malformed_external_gate_record_is_not_discarded(self):
+        changed = copy.deepcopy(self.matrix)
+        changed["externalGates"].append({"repositoryMaySelfCertify": True})
+        _, findings = self.matrix_findings(changed)
+        self.assertIn("invalid_external_gate", [item.code for item in findings.items])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -275,7 +275,11 @@ def verify_matrix(
             ):
                 findings.add("invalid_operation", f"{module} has an invalid operation")
                 continue
-            operations[operation["operation"]] = operation
+            name = operation["operation"]
+            if name in operations:
+                findings.add("duplicate_operation", f"duplicate operation: {module}.{name}")
+                continue
+            operations[name] = operation
         findings.require(
             set(operations) == EXPECTED_OPERATIONS[module],
             "operation_closed_world",
@@ -332,7 +336,13 @@ def verify_matrix(
     if isinstance(external_raw, list):
         for item in external_raw:
             if isinstance(item, dict) and isinstance(item.get("id"), str):
-                external[item["id"]] = item
+                gate_id = item["id"]
+                if gate_id in external:
+                    findings.add("duplicate_external_gate", f"duplicate external gate: {gate_id}")
+                    continue
+                external[gate_id] = item
+            else:
+                findings.add("invalid_external_gate", "invalid external gate record")
     findings.require(
         set(external) == EXPECTED_EXTERNAL_GATES,
         "external_gate_closed_world",
