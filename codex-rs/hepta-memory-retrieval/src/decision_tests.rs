@@ -282,3 +282,80 @@ fn assignment_digest_detects_selected_set_tampering() {
         Err(AssignmentErrorV1::DigestMismatch)
     );
 }
+
+#[test]
+fn recomputed_recall_cannot_misattribute_selection_evidence() {
+    let (cue, policy, input, mut recall) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    recall.packet.selections[0].support_digests = vec![digest("unobserved-support")];
+    recall.packet.packet_digest = recall.packet.compute_packet_digest();
+    recall.receipt_digest = recall.compute_receipt_digest();
+    recall
+        .validate()
+        .expect("self-consistent digest is not provenance");
+    assert_eq!(
+        observe_retrieval_assignment(&cue, &policy, &input, &recall),
+        Err(AssignmentErrorV1::SelectedEvidenceMismatch)
+    );
+}
+
+#[test]
+fn recomputed_recall_cannot_hide_omitted_candidate_count() {
+    let (cue, policy, input, mut recall) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    recall.packet.engram = None;
+    recall.packet.omitted_count = 1;
+    recall.packet.packet_digest = recall.packet.compute_packet_digest();
+    recall.receipt_digest = recall.compute_receipt_digest();
+    recall.validate().expect("self-consistent recall");
+    assert_eq!(
+        observe_retrieval_assignment(&cue, &policy, &input, &recall),
+        Err(AssignmentErrorV1::RecallUnionMismatch)
+    );
+}
+
+#[test]
+fn assignment_candidate_bounds_and_zero_digests_fail_after_rehash() {
+    let (cue, policy, input, recall) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    let original =
+        observe_retrieval_assignment(&cue, &policy, &input, &recall).expect("assignment");
+    let mut invalid = original.clone();
+    invalid.enumerated_candidates[0].record_digest = Digest32::ZERO;
+    invalid.observation_digest = invalid.compute_observation_digest();
+    assert_eq!(
+        invalid.validate(),
+        Err(AssignmentErrorV1::EmptyDigest("assignment_candidate"))
+    );
+    let mut invalid = original;
+    invalid.omitted_by_policy_limits = 513;
+    invalid.observation_digest = invalid.compute_observation_digest();
+    assert_eq!(
+        invalid.validate(),
+        Err(AssignmentErrorV1::CandidateLimitExceeded)
+    );
+}
+
+#[test]
+fn plain_assignment_replays_deterministic_selection_after_rehash() {
+    let (cue, mut policy, input, _) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    policy.maximum_results = 1;
+    let full = crate::build_candidate_union_from_generated(&cue, &policy, &input).expect("union");
+    let mut recall = crate::recall_generated(&cue, &policy, &input).expect("recall");
+    observe_retrieval_assignment(&cue, &policy, &input, &recall).expect("valid plain assignment");
+    let other = &full.union.entries[1];
+    recall.packet.selections[0] = crate::RecallSelectionV1 {
+        record_id: other.record.record_id.clone(),
+        record_revision: other.record.revision,
+        record_digest: other.record.record_digest(),
+        weighted_score: other.weighted_score,
+        maximum_ood: other.maximum_ood,
+        channels: other.channels.clone(),
+        support_digests: other.support_digests.clone(),
+        contradiction_group_digests: other.contradiction_group_digests.clone(),
+    };
+    recall.packet.packet_digest = recall.packet.compute_packet_digest();
+    recall.receipt_digest = recall.compute_receipt_digest();
+    recall.validate().expect("legal but not assigned candidate");
+    assert_eq!(
+        observe_retrieval_assignment(&cue, &policy, &input, &recall),
+        Err(AssignmentErrorV1::RecallUnionMismatch)
+    );
+}

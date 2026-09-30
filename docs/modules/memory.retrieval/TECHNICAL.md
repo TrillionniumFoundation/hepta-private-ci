@@ -289,3 +289,108 @@ The source candidate is checked by `.github/workflows/hepta-consolidated-source.
 ### Canonical HNMF recall migration
 
 The current `generation_bound::RecallPacketV1` remains the compatibility receipt during migration; it is **not** silently reinterpreted as `cognitive.types::hnmf_learning::RecallPacketV1`. `adapt_generation_bound_recall_to_canonical_shadow_v1` emits only a shadow canonical packet and requires an explicit bridge that binds the exact legacy cue/candidate-union/generation-vector digests plus every selected legacy record ID/revision/digest to an independently supplied canonical event identity/revision/digest. A legacy binary cue digest is never reused as the canonical JSON cue digest, and a legacy record ID is never inferred to be a canonical event ID. The adapter carries no attachment, model-call, writer, selection, promotion, or release authority. Product replacement remains false until downstream owner callsites have migrated and exact-candidate qualification is current.
+
+## 18. Adversarial validation and development checklist (2026-10-01)
+
+The development baseline for this review is main commit
+`a126987b84737dbc2ee2592442a314117bddb4a2`. The global guide remains
+`docs/DEVELOPMENT.md`; the module implementation design is
+`qualification/module-execution-dossiers/detail/memory.retrieval.md`.
+The implementation map records historical observations and pending qualification;
+its booleans must not be promoted by a local test run.
+
+### Concrete data flow and trust boundary
+
+1. `CognitiveStore::observe_memory_retrieval` enumerates a bounded SQLite read cut.
+2. `cognitive_retrieval_adapter` converts owner ranks, exact record revisions,
+   supports and saturation state into generator batches.
+3. `compile_cue` binds the objective, approved context, request and Lane C vector.
+4. `build_candidate_union_from_generated` requires all positive-weight channels,
+   rejects unavailable owners, validates every raw candidate before truncation,
+   and builds a deterministic weighted union.
+5. `recall_generated_with_engram` expands and settles a supplied immutable engram
+   snapshot, then emits a selection or an explicit abstention.
+6. `observe_retrieval_assignment` reconstructs the legal union and checks selected
+   record digests, scores, OOD, channel/support/contradiction evidence, generation,
+   channel coverage, result limit and recalled omission count against that cut.
+   Plain recall is replayed to verify the exact deterministic selection. HNMF
+   assignment consumes the trusted engine output: this API has no engram snapshot
+   argument and cannot independently replay settling from an arbitrary receipt.
+7. Agentd orders/budgets the final subset and performs final owner/current-context
+   revalidation before materialization. `learning.ledger` records delivery evidence.
+
+`Digest32` is an integrity binding, not a signature or source-authentication
+mechanism. These public Rust structs and their constructors do not authenticate
+an arbitrary caller. Owner authentication and freshness come from the owner adapter
+and current-context provider. Standalone `validate()` rejects structural violations;
+it cannot prove that an otherwise internally consistent candidate universe was
+actually observed. At a contextual boundary, compare with the retained trusted
+input, as the assignment operation does. Recomputing a digest is never acceptance.
+
+### Deterministic ranking and settling
+
+Channel events are ordered by channel, rank, record ID and revision before the
+per-channel limit. Each admitted channel contributes
+`normalized_score.checked_mul(weight)`; checked addition is clamped to `[0, 1]`.
+The union orders by descending weighted score, then ascending record ID/revision.
+Zero-weight channels cannot provide coverage. OOD is the maximum observed signal,
+not an average; shared contradiction groups and active contradicting synapses
+can force abstention according to the two policies.
+
+Engram direct drive is the clamped sum of union scores for a node's exact supports.
+Each recurrent step adds the previous activation times `leak`, subtracts threshold,
+and adds signed incoming synapse contributions, then clamps and applies sparse
+population competition. HNMF ranks admitted, score-qualified records by maximum
+active support strength, then union score, then record ID/revision. Product defaults
+are four settling steps, two expansion hops, 64 active nodes per population,
+448 total active nodes and 64 retained activation paths. All arithmetic uses the
+shared `FixedQ32` checked operations; arithmetic errors are explicit failures.
+
+### Enforced adversarial invariants
+
+| Surface | Required check | Failure behavior |
+| --- | --- | --- |
+| Union/selection evidence | At most one support and contradiction-group digest per contributing channel; union plus omitted events <=512 | Structural rejection before digest traversal |
+| Full raw candidate cut | A record ID/revision has one record digest across every channel, including events omitted by policy | `ConflictingRecordRevision` before truncation |
+| Generated union/recall | Total generator counts <=512; available owners; admitted/selected channels and counts fit supplied owner receipts | `CandidateLimitExceeded`, `RequiredGeneratorUnavailable` or `CandidateCountMismatch` |
+| Assignment observation | Enumerated/legal <=512, selected <=16, policy omissions <=512, nonzero record digests | Bounded rejection before set allocation |
+| Assignment creation | Selected metadata matches reconstructed union; generation, coverage, result budget and recalled omission count agree | `RecallUnionMismatch` or `SelectedEvidenceMismatch` |
+| Engram snapshot and active receipt | Each node has at most 512 exact support identities | `PolicyBoundExceeded` before support traversal/cloning |
+| Engram construction | <=4096 nodes and <=32768 synapses before sorting/hashing | Existing node/synapse limit errors |
+
+The support limit bounds nested work that node-count ceilings alone did not bound.
+It allows supports outside the current candidate cut, which are needed for graph
+expansion; only supports present in the current cut can enter `selected_support`.
+Existing valid digest domains and byte scopes remain unchanged. Inputs newly
+rejected by these checks were inconsistent or outside the bounded product profile.
+
+### Reproduction and review
+
+From the repository root with Rust 1.95.0, `just` and `cargo-nextest` installed:
+
+```sh
+just test -p codex-hepta-memory-retrieval
+cd codex-rs
+cargo check -p codex-hepta-memory-retrieval --all-targets --locked
+cargo clippy -p codex-hepta-memory-retrieval --all-targets --locked -- -D warnings
+cargo fmt -p codex-hepta-memory-retrieval -- --check
+```
+
+For owner composition, run focused `codex-hepta-memory`, `codex-hepta-agentd`
+and `codex-hepta-learning-ledger` tests using `just test -p <package>`. Retain exact
+source identity and logs; a copied minimal workspace is fallback unit evidence,
+not full-workspace or owner-composition qualification. The qualification-host
+workflow records capacity probes; an approved production target host is still
+needed for performance/activation claims.
+
+Regression fixtures modify public fields and recompute all affected digests;
+ordinary stale-digest tests alone cannot exercise this threat. Review both the
+full candidate enumeration and the post-policy legal set. Omitted channel events
+are counted separately from omitted unique records, so do not derive policy-event
+omissions by subtracting the two unique candidate-set lengths.
+
+Remaining work is the map's existing current-context provider composition,
+real Vector owner, exact-head/synthetic-merge CI, target-host measurements and
+independent semantic/operator acceptance. The compatibility/canonical shadow
+bridge also remains separate from a complete downstream canonical migration.
+No local audit grants activation, acceptance, promotion or release.

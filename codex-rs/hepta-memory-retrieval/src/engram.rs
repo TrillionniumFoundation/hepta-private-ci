@@ -101,6 +101,9 @@ pub struct EngramNodeV1 {
 
 impl EngramNodeV1 {
     fn validate(&self, generation_vector_digest: Digest32) -> Result<(), EngramErrorV1> {
+        if self.support.len() > MAX_GENERATION_BOUND_CANDIDATES {
+            return Err(EngramErrorV1::PolicyBoundExceeded);
+        }
         if self.support.is_empty() {
             return Err(EngramErrorV1::EmptySupport(self.node_id.to_string()));
         }
@@ -166,6 +169,15 @@ impl EngramSnapshotV1 {
         mut nodes: Vec<EngramNodeV1>,
         mut synapses: Vec<SynapseV1>,
     ) -> Result<Self, EngramErrorV1> {
+        if nodes.len() > MAX_ENGRAM_NODES {
+            return Err(EngramErrorV1::NodeLimitExceeded);
+        }
+        if synapses.len() > MAX_ENGRAM_SYNAPSES {
+            return Err(EngramErrorV1::SynapseLimitExceeded);
+        }
+        for node in &nodes {
+            node.validate(generation_vector_digest)?;
+        }
         nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
         synapses.sort_by_key(synapse_key);
         let mut value = Self {
@@ -483,6 +495,9 @@ impl EngramRecallReceiptV1 {
         let mut population_counts = BTreeMap::<EngramPopulationV1, usize>::new();
         let mut previous_active: Option<&ActiveEngramNodeV1> = None;
         for node in &self.active_nodes {
+            if node.support.len() > MAX_GENERATION_BOUND_CANDIDATES {
+                return Err(EngramErrorV1::PolicyBoundExceeded);
+            }
             if node.activation < FixedQ32::ZERO || node.activation > FixedQ32::ONE {
                 return Err(EngramErrorV1::ScoreOutOfRange("active_node_activation"));
             }

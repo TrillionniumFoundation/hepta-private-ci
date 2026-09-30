@@ -573,3 +573,136 @@ fn product_generation_construction_is_confined_to_owner_adapter() {
         "product retrieval candidates must originate at the canonical SQLite owner adapter: {violations:#?}"
     );
 }
+
+#[test]
+fn recomputed_generator_receipts_cannot_exceed_total_candidate_ceiling() {
+    let input = GeneratedCandidateInputV1::new(vec![
+        batch(
+            RetrievalGeneratorOwnerV1::CognitiveLexical,
+            Vec::new(),
+            RetrievalSourceCompletenessV1::Exhausted,
+        ),
+        batch(
+            RetrievalGeneratorOwnerV1::CognitiveEntity,
+            Vec::new(),
+            RetrievalSourceCompletenessV1::Exhausted,
+        ),
+        batch(
+            RetrievalGeneratorOwnerV1::CognitiveTemporal,
+            Vec::new(),
+            RetrievalSourceCompletenessV1::Exhausted,
+        ),
+    ])
+    .expect("input");
+    let mut generated =
+        build_candidate_union_from_generated(&cue(), &policy(), &input).expect("union");
+    for receipt in &mut generated.generator_receipts {
+        receipt.candidate_count = 256;
+        receipt.receipt_digest = receipt.compute_receipt_digest();
+    }
+    let mut bytes = SOURCE_COMPLETENESS_DOMAIN.to_vec();
+    push_len(&mut bytes, generated.generator_receipts.len());
+    for receipt in &generated.generator_receipts {
+        push_digest(&mut bytes, receipt.receipt_digest);
+    }
+    generated.source_completeness_digest = Digest32::of_bytes(&bytes);
+    generated.receipt_digest = generated.compute_receipt_digest();
+    assert_eq!(
+        generated.validate(),
+        Err(GeneratorErrorV1::CandidateLimitExceeded)
+    );
+
+    let mut recalled = recall_generated(&cue(), &policy(), &input).expect("recall");
+    recalled.generator_receipts = generated.generator_receipts;
+    recalled.source_completeness_digest = generated.source_completeness_digest;
+    recalled.receipt_digest = recalled.compute_receipt_digest();
+    assert_eq!(
+        recalled.validate(),
+        Err(GeneratorErrorV1::CandidateLimitExceeded)
+    );
+}
+
+#[test]
+fn channel_truncation_cannot_hide_conflicting_record_revision() {
+    let lexical = candidate(record(1), RetrievalChannelV1::Lexical, 1, "lexical");
+    let first_entity = candidate(record(2), RetrievalChannelV1::Entity, 1, "entity-1");
+    let mut conflicting = candidate(record(1), RetrievalChannelV1::Entity, 2, "entity-2");
+    conflicting.record.content_digest = digest("conflicting-content");
+    let mut policy = policy();
+    policy.channel_weights[1].maximum_candidates = 1;
+    let candidates = vec![lexical.clone(), first_entity.clone(), conflicting.clone()];
+    assert_eq!(
+        build_candidate_union(&cue(), &policy, candidates),
+        Err(RecallErrorV1::ConflictingRecordRevision(
+            "memory:1".to_string()
+        ))
+    );
+    let input = GeneratedCandidateInputV1::new(vec![
+        batch(
+            RetrievalGeneratorOwnerV1::CognitiveLexical,
+            vec![lexical],
+            RetrievalSourceCompletenessV1::Exhausted,
+        ),
+        batch(
+            RetrievalGeneratorOwnerV1::CognitiveEntity,
+            vec![first_entity, conflicting],
+            RetrievalSourceCompletenessV1::Exhausted,
+        ),
+        batch(
+            RetrievalGeneratorOwnerV1::CognitiveTemporal,
+            Vec::new(),
+            RetrievalSourceCompletenessV1::Exhausted,
+        ),
+    ])
+    .expect("structurally valid batches");
+    assert_eq!(
+        build_candidate_union_from_generated(&cue(), &policy, &input),
+        Err(GeneratorErrorV1::Recall(
+            RecallErrorV1::ConflictingRecordRevision("memory:1".to_string())
+        ))
+    );
+}
+
+#[test]
+fn recomputed_wrappers_reject_unobserved_candidates_and_unavailable_owners() {
+    let input = GeneratedCandidateInputV1::new(vec![batch(
+        RetrievalGeneratorOwnerV1::CognitiveLexical,
+        vec![candidate(
+            record(1),
+            RetrievalChannelV1::Lexical,
+            1,
+            "lexical",
+        )],
+        RetrievalSourceCompletenessV1::Exhausted,
+    )])
+    .expect("input");
+    let original_union =
+        build_candidate_union_from_generated(&cue(), &lexical_policy(), &input).expect("union");
+    let original_recall = recall_generated(&cue(), &lexical_policy(), &input).expect("recall");
+    for completeness in [
+        RetrievalSourceCompletenessV1::Exhausted,
+        RetrievalSourceCompletenessV1::Unavailable,
+    ] {
+        let empty = batch(
+            RetrievalGeneratorOwnerV1::CognitiveLexical,
+            Vec::new(),
+            completeness,
+        );
+        let source_digest = completeness_digest(std::slice::from_ref(&empty)).expect("digest");
+        let mut union = original_union.clone();
+        union.generator_receipts = vec![empty.receipt.clone()];
+        union.source_completeness_digest = source_digest;
+        union.receipt_digest = union.compute_receipt_digest();
+        let mut recall = original_recall.clone();
+        recall.generator_receipts = vec![empty.receipt];
+        recall.source_completeness_digest = source_digest;
+        recall.receipt_digest = recall.compute_receipt_digest();
+        let error = if completeness == RetrievalSourceCompletenessV1::Unavailable {
+            GeneratorErrorV1::RequiredGeneratorUnavailable(RetrievalChannelV1::Lexical)
+        } else {
+            GeneratorErrorV1::CandidateCountMismatch
+        };
+        assert_eq!(union.validate(), Err(error.clone()));
+        assert_eq!(recall.validate(), Err(error));
+    }
+}

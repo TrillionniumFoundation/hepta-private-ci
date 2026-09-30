@@ -243,7 +243,12 @@ impl CandidateUnionV1 {
         ] {
             ensure_digest(name, digest)?;
         }
-        if self.entries.len() > MAX_GENERATION_BOUND_CANDIDATES {
+        if self
+            .entries
+            .len()
+            .saturating_add(usize::try_from(self.omitted_by_channel_limits).unwrap_or(usize::MAX))
+            > MAX_GENERATION_BOUND_CANDIDATES
+        {
             return Err(RecallErrorV1::CandidateLimitExceeded);
         }
         if self.authority.grants_any() {
@@ -270,7 +275,11 @@ impl CandidateUnionV1 {
             if entry.weighted_score < FixedQ32::ZERO || entry.weighted_score > FixedQ32::ONE {
                 return Err(RecallErrorV1::ScoreOutOfRange("union_weighted_score"));
             }
-            if entry.channels.is_empty() || entry.support_digests.is_empty() {
+            if entry.channels.is_empty()
+                || entry.support_digests.is_empty()
+                || entry.support_digests.len() > entry.channels.len()
+                || entry.contradiction_group_digests.len() > entry.channels.len()
+            {
                 return Err(RecallErrorV1::InvalidUnionEntry(
                     entry.record.record_id.to_string(),
                 ));
@@ -460,7 +469,11 @@ impl RecallPacketV1 {
             {
                 return Err(RecallErrorV1::ScoreOutOfRange("selection_weighted_score"));
             }
-            if selection.channels.is_empty() || selection.support_digests.is_empty() {
+            if selection.channels.is_empty()
+                || selection.support_digests.is_empty()
+                || selection.support_digests.len() > selection.channels.len()
+                || selection.contradiction_group_digests.len() > selection.channels.len()
+            {
                 return Err(RecallErrorV1::InvalidRecallSelection(
                     selection.record_id.to_string(),
                 ));
@@ -746,6 +759,26 @@ pub fn build_candidate_union(
         return Err(RecallErrorV1::CandidateLimitExceeded);
     }
     let generation_vector_digest = cue.snapshot_key.vector_digest;
+    // Validate the entire observed cut before policy truncation. An omitted
+    // channel event must not hide conflicting content for an exact revision.
+    let mut records = BTreeMap::new();
+    for candidate in &candidates {
+        candidate.validate(generation_vector_digest)?;
+        let identity = (
+            candidate.record.record_id.clone(),
+            candidate.record.revision,
+        );
+        let digest = candidate.record.record_digest();
+        if records
+            .insert(identity, digest)
+            .is_some_and(|previous| previous != digest)
+        {
+            return Err(RecallErrorV1::ConflictingRecordRevision(
+                candidate.record.record_id.to_string(),
+            ));
+        }
+    }
+
     let policy_rows = policy
         .channel_weights
         .iter()
@@ -767,7 +800,6 @@ pub fn build_candidate_union(
     });
 
     for candidate in candidates {
-        candidate.validate(generation_vector_digest)?;
         let Some(policy_row) = policy_rows.get(&candidate.channel) else {
             return Err(RecallErrorV1::ChannelNotEnabled(candidate.channel));
         };

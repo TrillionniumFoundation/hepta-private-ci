@@ -652,3 +652,59 @@ fn target_host_hnmf_validates_full_structural_ceiling() {
         resources.traversed_synapses,
     );
 }
+
+#[test]
+fn node_support_has_a_hard_bound_in_snapshot_and_public_receipt() {
+    let mut supports = (1..=513).map(support).collect::<Vec<_>>();
+    supports.sort();
+    let oversized = node(
+        "node:oversized",
+        EngramPopulationV1::SemanticConcept,
+        supports.clone(),
+        FixedQ32::ZERO,
+    );
+    assert_eq!(
+        EngramSnapshotV1::new(
+            cue().snapshot_key.vector_digest,
+            digest("engram-generation"),
+            vec![oversized],
+            Vec::new()
+        ),
+        Err(EngramErrorV1::PolicyBoundExceeded)
+    );
+    let snapshot = EngramSnapshotV1::new(
+        cue().snapshot_key.vector_digest,
+        digest("engram-generation"),
+        vec![node(
+            "node:1",
+            EngramPopulationV1::SemanticConcept,
+            vec![support(1)],
+            FixedQ32::ZERO,
+        )],
+        Vec::new(),
+    )
+    .expect("snapshot");
+    let mut invalid_snapshot = snapshot.clone();
+    invalid_snapshot.nodes[0].support = supports.clone();
+    invalid_snapshot.snapshot_digest = invalid_snapshot.compute_snapshot_digest();
+    assert_eq!(
+        invalid_snapshot.validate(),
+        Err(EngramErrorV1::PolicyBoundExceeded)
+    );
+    let union = build_candidate_union(
+        &cue(),
+        &retrieval_policy(1),
+        vec![candidate(1, FixedQ32::ONE.raw())],
+    )
+    .expect("union");
+    let mut receipt = settle_engram(
+        &cue(),
+        &union,
+        &snapshot,
+        &EngramDynamicsPolicyV1::product_default().expect("policy"),
+    )
+    .expect("settled");
+    receipt.active_nodes[0].support = supports;
+    receipt.receipt_digest = receipt.compute_receipt_digest();
+    assert_eq!(receipt.validate(), Err(EngramErrorV1::PolicyBoundExceeded));
+}
