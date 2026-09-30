@@ -183,6 +183,14 @@ mod tests {
     }
 
     #[test]
+    fn parser_error_text_inside_a_value_cannot_spoof_duplicate_classification() {
+        assert_eq!(
+            validate_json_structure(b"{\"message\":\"duplicate JSON object key\"}"),
+            Ok(())
+        );
+    }
+
+    #[test]
     fn malformed_or_trailing_json_is_invalid() {
         for value in [b"{\"key\":]".as_slice(), b"{} {}".as_slice()] {
             assert_eq!(
