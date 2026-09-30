@@ -628,7 +628,8 @@ impl FederatedMemoryReader {
         access: &FederationConsumerAccess,
         request: &RetrievalRequest,
     ) -> Result<FederatedRetrievalBatch, CognitiveStoreError> {
-        let (batch, _observed_frontier) = self.retrieve_with_frontier(access, request).await?;
+        let (batch, _observed_frontier, _owner_exhausted) =
+            self.retrieve_with_frontier(access, request).await?;
         Ok(batch)
     }
 
@@ -636,13 +637,13 @@ impl FederatedMemoryReader {
         &self,
         access: &FederationConsumerAccess,
         request: &RetrievalRequest,
-    ) -> Result<(FederatedRetrievalBatch, u64), CognitiveStoreError> {
+    ) -> Result<(FederatedRetrievalBatch, u64, bool), CognitiveStoreError> {
         require_authorized(
             self.validate_capability(access, request.now_unix_seconds())
                 .await?,
         )?;
         let owner_access = owner_access(&self.capability);
-        let (batch, observed_frontier) = self
+        let (batch, observed_frontier, owner_exhausted) = self
             .owner
             .retrieve_memory_candidates_for_scope(
                 &owner_access,
@@ -673,6 +674,7 @@ impl FederatedMemoryReader {
                 candidates,
             },
             observed_frontier,
+            owner_exhausted,
         ))
     }
 

@@ -79,7 +79,15 @@ impl RetrievalObservation {
 
 pub(super) struct GeneratedRetrieval {
     pub(super) ranked: Vec<(MemoryKey, AggregatedRank)>,
-    channels: Vec<RetrievalChannelObservation>,
+    pub(super) channels: Vec<RetrievalChannelObservation>,
+}
+
+impl GeneratedRetrieval {
+    pub(super) fn exhausted(&self) -> bool {
+        self.channels
+            .iter()
+            .all(|channel| channel.limit == RetrievalLimitObservation::Exhausted)
+    }
 }
 
 impl CognitiveStore {
@@ -178,12 +186,42 @@ impl CognitiveStore {
         request: &RetrievalRequest,
         fts_query: &str,
     ) -> Result<GeneratedRetrieval, CognitiveStoreError> {
+        self.generate_retrieval_scoped_tx(transaction, access, request, fts_query, None)
+            .await
+    }
+
+    pub(super) async fn generate_retrieval_for_scope_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        request: &RetrievalRequest,
+        fts_query: &str,
+    ) -> Result<GeneratedRetrieval, CognitiveStoreError> {
+        self.generate_retrieval_scoped_tx(
+            transaction,
+            access,
+            request,
+            fts_query,
+            Some(scope),
+        )
+        .await
+    }
+
+    async fn generate_retrieval_scoped_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        request: &RetrievalRequest,
+        fts_query: &str,
+        exact_scope: Option<&CognitiveScope>,
+    ) -> Result<GeneratedRetrieval, CognitiveStoreError> {
         let now = request.now_unix_seconds;
         let memory = self
-            .memory_fts_channel_tx(transaction, access, fts_query, now)
+            .memory_fts_channel_scoped_tx(transaction, access, fts_query, now, exact_scope)
             .await?;
         let seeds = self
-            .entity_fts_channel_tx(transaction, access, fts_query, now)
+            .entity_fts_channel_scoped_tx(transaction, access, fts_query, now, exact_scope)
             .await?;
         let entity = seeds
             .values
@@ -222,10 +260,11 @@ impl CognitiveStore {
             )
             .await?;
         let recency = self
-            .recency_channel_tx(
+            .recency_channel_scoped_tx(
                 transaction,
                 access.workspace_sha256().map(Sha256Digest::as_str),
                 now,
+                exact_scope,
             )
             .await?;
         let mut ranked = BTreeMap::new();

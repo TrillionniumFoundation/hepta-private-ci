@@ -158,6 +158,10 @@ impl EphemeralModelInputFinalUseGuard for FederatedFinalUseGuard {
                         final_use_now,
                         explanation.capability.effective_at_unix_seconds(),
                         explanation.capability.expires_at_unix_seconds(),
+                    ) || !final_use_memory_window_current(
+                        final_use_now,
+                        explanation.explanation.memory.valid_from_unix_seconds,
+                        explanation.explanation.memory.valid_to_unix_seconds,
                     )
                 }
                 FederatedRevalidationStatus::Stale(_) => true,
@@ -865,6 +869,14 @@ fn federation_source_binding(
     ))
 }
 
+fn final_use_memory_window_current(
+    final_use_now: i64,
+    valid_from: i64,
+    valid_to: Option<i64>,
+) -> bool {
+    valid_from <= final_use_now && valid_to.is_none_or(|until| final_use_now < until)
+}
+
 fn final_use_capability_window_current(
     revalidation_started_at: i64,
     final_use_now: i64,
@@ -916,6 +928,7 @@ mod tests {
     use super::combine_cognitive_materials;
     use super::federation_source_binding;
     use super::final_use_capability_window_current;
+    use super::final_use_memory_window_current;
     use super::now_unix_seconds;
     use crate::cognitive::CognitiveProposalMaterial;
     use crate::extension::HeptaMemoryThreadState;
@@ -931,6 +944,11 @@ mod tests {
         assert!(!final_use_capability_window_current(100, 101, 99, 101));
         assert!(!final_use_capability_window_current(100, 99, 99, 101));
         assert!(!final_use_capability_window_current(100, 100, 101, 102));
+
+        assert!(final_use_memory_window_current(100, 99, None));
+        assert!(final_use_memory_window_current(100, 100, Some(101)));
+        assert!(!final_use_memory_window_current(101, 100, Some(101)));
+        assert!(!final_use_memory_window_current(99, 100, None));
     }
 
     #[test]

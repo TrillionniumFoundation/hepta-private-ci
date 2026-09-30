@@ -727,6 +727,7 @@ async fn retrieve_federated_product(
                     Arc::new(Mutex::new(None)),
                 ));
             }
+            let captured = Arc::new(Mutex::new(None));
             let (query, lease) = build_product_query_and_lease(
                 &reader,
                 access,
@@ -734,7 +735,6 @@ async fn retrieve_federated_product(
                 logical_start_ms,
                 global_deadline_ms,
             )?;
-            let captured = Arc::new(Mutex::new(None));
             let transport = ProductReaderTransport {
                 reader: &reader,
                 access,
@@ -768,7 +768,15 @@ async fn retrieve_federated_product(
         .await;
 
     for attempt in attempts {
-        let (result, captured) = attempt?;
+        let (result, captured) = match attempt {
+            Ok(value) => value,
+            Err(_) => {
+                coverage.failed_peers = coverage.failed_peers.saturating_add(1);
+                coverage.failures.integrity_rejected =
+                    coverage.failures.integrity_rejected.saturating_add(1);
+                continue;
+            }
+        };
         let result = match result {
             Ok(result) => result,
             Err(error) => {
@@ -1124,7 +1132,7 @@ struct ProductReaderTransport<'a> {
 impl FederationTransportV2 for ProductReaderTransport<'_> {
     fn send_once<'a>(&'a self, query: &'a FederatedQueryV2) -> FederationTransportFuture<'a> {
         Box::pin(async move {
-            let (batch, observed_frontier) = self
+            let (batch, observed_frontier, owner_exhausted) = self
                 .reader
                 .retrieve_with_frontier(self.access, self.request)
                 .await
@@ -1135,14 +1143,15 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
                 .map(product_evidence_item)
                 .collect::<Result<Vec<_>, _>>()?;
             let maximum_results = usize::try_from(query.maximum_results).unwrap_or(usize::MAX);
-            let completeness = if items.is_empty() {
+            let completeness = if items.is_empty() && owner_exhausted {
                 FederatedCompletenessV2::Empty
-            } else if items.len() >= maximum_results {
-                // Reaching the bounded top-K ceiling does not prove that
-                // the owner scope has no additional matching evidence.
-                FederatedCompletenessV2::Partial
-            } else {
+            } else if owner_exhausted && items.len() < maximum_results {
                 FederatedCompletenessV2::Complete
+            } else {
+                // Completeness is owner-observed from the same exact-scope
+                // SQLite snapshot. Returning fewer than top-K never proves
+                // exhaustion by itself.
+                FederatedCompletenessV2::Partial
             };
             let expires_unix_ms = capability_expiry_ms(self.reader.capability())
                 .map_err(|_| FederationV2Error::TransportRejected)?;
@@ -1185,16 +1194,24 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
         _lease: &'a FederatedLeaseV2,
     ) -> FederationAuthorityFuture<'a> {
         Box::pin(async move {
-            let observed_unix_ms = elapsed_logical_ms(self.logical_start_ms, self.started_at);
-            let now_unix_seconds = i64::try_from(observed_unix_ms / 1_000)
+            let observation_started_unix_ms =
+                elapsed_logical_ms(self.logical_start_ms, self.started_at);
+            let discovery_unix_seconds = i64::try_from(observation_started_unix_ms / 1_000)
                 .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
             let readers = FederatedMemoryReader::discover(
                 self.owner_layout,
                 self.consumer_agent_id,
-                now_unix_seconds,
+                discovery_unix_seconds,
             )
             .await
             .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
+            // The authority observation is timestamped after the asynchronous
+            // owner-store read completes. A pre-I/O timestamp must never be
+            // reused as proof that authority was current at completion.
+            let observed_unix_ms = elapsed_logical_ms(self.logical_start_ms, self.started_at);
+            if observed_unix_ms < observation_started_unix_ms {
+                return Err(FederationV2Error::AuthorityObservationRegressed);
+            }
             let current = readers
                 .iter()
                 .find(|reader| reader.capability().id() == self.expected_capability.id());
