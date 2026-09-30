@@ -62,6 +62,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends sqlite3 libsqlite3-dev binutils
           mkdir -p "$RUNNER_TEMP/matrix-source-head"
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Resolve immutable identities
         run: |
           set -euo pipefail
@@ -119,6 +123,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends sqlite3 libsqlite3-dev binutils
           mkdir -p "$RUNNER_TEMP/matrix-base-merge"
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Materialize deterministic base merge
         run: |
           set -euo pipefail

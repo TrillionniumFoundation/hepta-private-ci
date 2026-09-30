@@ -70,6 +70,16 @@ class ChannelMatrixDocumentationTests(unittest.TestCase):
         self.assertNotIn("git commit", workflow)
         self.assertIn("test_channel_matrix_documentation", workflow)
 
+    def test_all_matrix_qualification_workflows_are_read_only(self) -> None:
+        workflows = sorted((ROOT / ".github/workflows").glob("channel-matrix-*.yml"))
+        self.assertTrue(workflows)
+        for workflow in workflows:
+            source = workflow.read_text(encoding="utf-8")
+            self.assertNotIn("contents: write", source, workflow.name)
+            self.assertNotIn("git push", source, workflow.name)
+        self.assertFalse((ROOT / ".github/channel-matrix-repair.py").exists())
+        self.assertFalse((ROOT / ".matrix-staging").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

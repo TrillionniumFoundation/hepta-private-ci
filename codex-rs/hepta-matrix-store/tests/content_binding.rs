@@ -16,10 +16,9 @@ use codex_hepta_matrix_store::OutboxKind;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
-use sqlx::Connection;
-use sqlx::SqliteConnection;
-use sqlx::sqlite::SqliteConnectOptions;
 use tempfile::TempDir;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
@@ -161,14 +160,19 @@ async fn new_pre_pin_cancellation_survives_reopen_and_keeps_transaction_identity
 async fn a_same_named_weakened_trigger_fails_the_content_boundary_check() -> TestResult {
     let (_temp, _layout, store) = fixture().await?;
     let claimed = claim(&store, /*now_ms*/ 10).await?;
-    let options = SqliteConnectOptions::new().filename(store.path());
-    let mut connection = SqliteConnection::connect_with(&options).await?;
+    let path = store.path();
+    let parent = path
+        .parent()
+        .ok_or_else(|| std::io::Error::other("matrix store parent is missing"))?;
+    let sqlite = SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(parent.to_path_buf())?);
+    let pool = sqlite.open_durable_evidence_pool(path).await?;
     sqlx::query("DROP TRIGGER matrix_dispatch_content_bindings_no_update")
-        .execute(&mut connection)
+        .execute(&pool)
         .await?;
     sqlx::query("CREATE TRIGGER matrix_dispatch_content_bindings_no_update BEFORE UPDATE ON matrix_dispatch_content_bindings BEGIN SELECT 1; END")
-        .execute(&mut connection).await?;
-    connection.close().await?;
+        .execute(&pool)
+        .await?;
+    pool.close().await;
     assert_eq!(
         store
             .pin_outbox_content(
