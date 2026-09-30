@@ -35,6 +35,8 @@ pub use coordinator::VerifiedCompactionSelectionV2;
 pub use durable::DurableCompactionDisposition;
 pub use durable::DurableCompactionError;
 pub use durable::DurableCompactionOutboxEventV1;
+pub use fenced_coordinator::CurrentSourceValidatedRecoveryErrorV1;
+pub use fenced_coordinator::CurrentSourceValidatedSelectionV1;
 pub use fenced_coordinator::MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2;
 pub use fenced_coordinator::MemoryCheckpointCoordinatorV2;
 pub use operational_contract::CompactionCapacityUsageV2;
