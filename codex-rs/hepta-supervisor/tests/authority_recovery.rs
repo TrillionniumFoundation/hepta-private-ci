@@ -1,4 +1,4 @@
-#![cfg(unix)]
+#![cfg(all(unix, feature = "offline-authority-tools"))]
 
 use std::os::unix::fs::PermissionsExt;
 use std::process::Command;

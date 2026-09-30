@@ -43,6 +43,7 @@ use sha2::Sha256;
 
 use crate::daemon_protocol::ControlStateDigest;
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
+use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_REQUEST_BYTES;
 use crate::daemon_protocol::MAX_SUPERVISORD_ROSTER;
 use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
 use crate::daemon_protocol::SupervisorEpoch;
@@ -130,6 +131,7 @@ pub fn generated_robrix_control_artifacts() -> Result<BTreeMap<String, Vec<u8>>>
         schema_version: ROBRIX_CONTROL_PROJECTION_SCHEMA_VERSION,
         supervisord_schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
         supervisord_max_frame_bytes: MAX_SUPERVISORD_CONTROL_FRAME_BYTES,
+        supervisord_max_request_bytes: MAX_SUPERVISORD_CONTROL_REQUEST_BYTES,
         supervisord_allowed_methods: ROBRIX_SUPERVISORD_ALLOWED_METHODS,
         matrixd_schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
         matrixd_max_frame_bytes: MAX_MATRIXD_CONTROL_FRAME_BYTES,
@@ -182,9 +184,14 @@ pub fn verify_robrix_control_corpus(bytes: &[u8]) -> Result<usize> {
             "{} contains multiple frames",
             case.id
         );
-        let frame_bound = match case.plane {
-            CorpusPlane::Supervisord => MAX_SUPERVISORD_CONTROL_FRAME_BYTES,
-            CorpusPlane::Matrixd => MAX_MATRIXD_CONTROL_FRAME_BYTES,
+        let frame_bound = match (case.plane, case.direction) {
+            (CorpusPlane::Supervisord, CorpusDirection::Request) => {
+                MAX_SUPERVISORD_CONTROL_REQUEST_BYTES
+            }
+            (CorpusPlane::Supervisord, CorpusDirection::Response) => {
+                MAX_SUPERVISORD_CONTROL_FRAME_BYTES
+            }
+            (CorpusPlane::Matrixd, _) => MAX_MATRIXD_CONTROL_FRAME_BYTES,
         };
         ensure!(
             case.wire_bytes <= frame_bound,
@@ -349,6 +356,9 @@ fn verify_corpus_coverage(document: &CorpusDocument) -> Result<()> {
         ("supervisord_response_matrix_generation_drift", false),
         ("supervisord_response_active_matrix_inactive_agent", false),
         ("supervisord_response_active_matrix_nonrunning_agent", false),
+        ("supervisord_response_control_matrix_diagnostic", false),
+        ("supervisord_response_bidi_matrix_diagnostic", false),
+        ("supervisord_response_oversized_matrix_diagnostic", false),
         ("matrixd_request_runtime_id_utf8_byte_overflow", false),
         ("matrixd_request_control_runtime_id", false),
         ("matrixd_request_whitespace_runtime_id", false),
@@ -511,6 +521,7 @@ struct ProjectionManifest {
     schema_version: u32,
     supervisord_schema_version: u32,
     supervisord_max_frame_bytes: u64,
+    supervisord_max_request_bytes: u64,
     supervisord_allowed_methods: [&'static str; 3],
     matrixd_schema_version: u32,
     matrixd_max_frame_bytes: u64,
@@ -810,6 +821,39 @@ fn corpus() -> Result<CorpusDocument> {
             expectation(Some(true), /*decode*/ true, /*validate*/ true),
             CorpusContext {
                 expected_request_id: Some(request_id),
+                ..CorpusContext::default()
+            },
+        )?);
+    }
+
+    for (id, message) in [
+        (
+            "supervisord_response_control_matrix_diagnostic",
+            "fault\npath".to_string(),
+        ),
+        (
+            "supervisord_response_bidi_matrix_diagnostic",
+            "fault\u{202e}path".to_string(),
+        ),
+        (
+            "supervisord_response_oversized_matrix_diagnostic",
+            "x".repeat(1_025),
+        ),
+    ] {
+        let mut diagnostic_status = status.clone();
+        diagnostic_status.matrix.last_error = Some(message);
+        cases.push(corpus_case(
+            id,
+            CorpusPlane::Supervisord,
+            CorpusDirection::Response,
+            &SupervisordResponse {
+                schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
+                request_id: 24,
+                payload: SupervisordPayload::Agent(diagnostic_status),
+            },
+            expectation(Some(true), /*decode*/ true, /*validate*/ false),
+            CorpusContext {
+                expected_request_id: Some(24),
                 ..CorpusContext::default()
             },
         )?);
@@ -1235,7 +1279,7 @@ fn corpus() -> Result<CorpusDocument> {
         },
     )?;
     ensure!(
-        maximum_case.wire_bytes > MAX_SUPERVISORD_CONTROL_FRAME_BYTES
+        maximum_case.wire_bytes > MAX_SUPERVISORD_CONTROL_REQUEST_BYTES
             && maximum_case.wire_bytes <= MAX_MATRIXD_CONTROL_FRAME_BYTES,
         "maximum Matrix projection must distinguish the 64 KiB and 1 MiB bounds"
     );
@@ -1263,7 +1307,7 @@ fn corpus() -> Result<CorpusDocument> {
         },
     )?;
     ensure!(
-        maximum_events_case.wire_bytes > MAX_SUPERVISORD_CONTROL_FRAME_BYTES
+        maximum_events_case.wire_bytes > MAX_SUPERVISORD_CONTROL_REQUEST_BYTES
             && maximum_events_case.wire_bytes <= MAX_MATRIXD_CONTROL_FRAME_BYTES,
         "maximum Matrix event projection must distinguish the 64 KiB and 1 MiB bounds"
     );
@@ -1807,6 +1851,7 @@ fn generated_constants_source() -> String {
          pub(crate) const ROBRIX_CONTROL_PROJECTION_SCHEMA_VERSION: u32 = {ROBRIX_CONTROL_PROJECTION_SCHEMA_VERSION};\n\
          pub(crate) const ROBRIX_SUPERVISORD_SCHEMA_VERSION: u32 = {SUPERVISORD_CONTROL_SCHEMA_VERSION};\n\
          pub(crate) const ROBRIX_SUPERVISORD_MAX_FRAME_BYTES: usize = {MAX_SUPERVISORD_CONTROL_FRAME_BYTES};\n\
+         pub(crate) const ROBRIX_SUPERVISORD_MAX_REQUEST_BYTES: usize = {MAX_SUPERVISORD_CONTROL_REQUEST_BYTES};\n\
          pub(crate) const ROBRIX_SUPERVISORD_MAX_ROSTER: u16 = {MAX_SUPERVISORD_ROSTER};\n\
          pub(crate) const ROBRIX_SUPERVISORD_ALLOWED_METHODS: [&str; 3] = [\"health\", \"roster\", \"snapshot\"];\n\
          pub(crate) const MATRIXD_CONTROL_SCHEMA_VERSION: u32 = {MATRIXD_CONTROL_SCHEMA_VERSION};\n\

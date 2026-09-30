@@ -1,4 +1,5 @@
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::ReleaseId;
 use pretty_assertions::assert_eq;
 
 use super::*;
@@ -90,6 +91,64 @@ fn all_256_observations_are_addressable_and_roster_limits_remain_exact() {
             agents: view.agents.values().take(8).cloned().collect(),
         })
     );
+}
+
+#[test]
+fn complete_roster_with_maximum_diagnostics_fits_the_response_ceiling() {
+    let now = Instant::now();
+    let mut view = observation(now, /*count*/ 256);
+    for status in view.agents.values_mut() {
+        status.lifecycle = AgentLifecycle::Running;
+        status.lifecycle_generation = u64::MAX;
+        status.active = true;
+        status.process_id = Some(u64::MAX);
+        status.spawn_generation = Some(u64::MAX);
+        status.runtime_generation = Some(u64::MAX);
+        status.current_release = Some(ReleaseId::parse("c".repeat(128)).expect("release"));
+        status.previous_release = Some(ReleaseId::parse("p".repeat(128)).expect("predecessor"));
+        status.control_fence.lifecycle = status.lifecycle;
+        status.control_fence.lifecycle_generation = status.lifecycle_generation;
+        status.control_fence.spawn_generation = status.spawn_generation;
+        status.control_fence.runtime_generation = status.runtime_generation;
+        status.control_fence.current_release = status.current_release.clone();
+        status.control_fence.previous_release = status.previous_release.clone();
+        status.matrix = SupervisordMatrixStatus {
+            configured: true,
+            active: true,
+            healthy: false,
+            degraded: true,
+            process_id: Some(u64::MAX),
+            attached_agent_generation: Some(u64::MAX),
+            binding_revision: Some(u64::MAX),
+            restart_attempt: u32::MAX,
+            // Quotes exercise the largest JSON escaping expansion that the
+            // bounded safe diagnostic projection can emit.
+            last_error: Some("\"".repeat(crate::runtime::MAX_FAULT_BYTES)),
+        };
+    }
+    let cache = ReadView {
+        current: RwLock::new(Some(Arc::new(view))),
+    };
+    let response = super::super::SupervisordResponse {
+        schema_version: super::super::SUPERVISORD_CONTROL_SCHEMA_VERSION,
+        request_id: 1,
+        payload: cache
+            .respond(
+                &SupervisordMethod::Roster { limit: 256 },
+                now,
+                /*observed_faults*/ 0,
+            )
+            .expect("cached roster"),
+    };
+    let projection = crate::robrix_protocol::RobrixSupervisordResponse::try_from(response.clone())
+        .expect("read-only projection");
+    projection.validate(1).expect("coherent full roster");
+    let wire_bytes = serde_json::to_vec(&response)
+        .expect("serialize roster")
+        .len() as u64
+        + 1;
+    assert!(wire_bytes > crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_REQUEST_BYTES);
+    assert!(wire_bytes <= crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES);
 }
 
 #[test]

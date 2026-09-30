@@ -2,16 +2,16 @@
   "authoritative_semantic_validator": "generated_cross_parser_corpus_with_rust_protocol_validation",
   "files": {
     "cross-parser-corpus-v2.json": {
-      "bytes": 1846236,
-      "sha256": "8227b8a80e21a2f7202b6127950c0e2c44b84b1b890c54748493f0d809b439e3"
+      "bytes": 1852490,
+      "sha256": "05bd7eb5634a07df613684e807be7574ab0008dc2d5e3d158a5cf0cdbb7827ce"
     },
     "matrixd-control-v2.schema.json": {
       "bytes": 25875,
       "sha256": "16d3f43c4fd94dac8d55b2371a093ee8e6e4a5128cabdeff18b64528d09cc1e4"
     },
     "robrix_control_projection.rs": {
-      "bytes": 1202,
-      "sha256": "aeac02f987444d875bbfde01c931c21e8eebccb0513a583279c0eebed237764d"
+      "bytes": 1274,
+      "sha256": "ee51f845b336fa1fdf1a07394f5faac4eaabb6b0bba9fe581dd953393f1a816e"
     },
     "supervisord-readonly-v2.schema.json": {
       "bytes": 21482,
@@ -54,7 +54,8 @@
     "roster",
     "snapshot"
   ],
-  "supervisord_max_frame_bytes": 65536,
+  "supervisord_max_frame_bytes": 1048576,
+  "supervisord_max_request_bytes": 65536,
   "supervisord_non_schema_invariants": [
     "response_request_id_matches_outstanding_request",
     "agent_status_fields_equal_control_fence",

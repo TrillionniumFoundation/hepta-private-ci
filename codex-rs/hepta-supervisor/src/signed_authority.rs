@@ -13,7 +13,9 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::H7ArtifactVerifier;
 use codex_hepta_memory::H7SignedArtifactEnvelope;
 use ed25519_dalek::Signature;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 use ed25519_dalek::Signer as _;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 use ed25519_dalek::SigningKey;
 use ed25519_dalek::Verifier as _;
 use ed25519_dalek::VerifyingKey;
@@ -221,12 +223,14 @@ pub struct H7H89ProductionGrant {
 /// A signer is used by an external authority service or an operator ceremony,
 /// never by the lifecycle supervisor itself.
 #[derive(Clone)]
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub struct H7H89ProductionGrantSigner {
     signer_id: String,
     signer_epoch: u64,
     signing_key: SigningKey,
 }
 
+#[cfg(any(test, feature = "offline-authority-tools"))]
 impl H7H89ProductionGrantSigner {
     pub fn new(
         signer_id: impl Into<String>,

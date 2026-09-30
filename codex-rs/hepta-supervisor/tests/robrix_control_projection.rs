@@ -53,7 +53,8 @@ fn robrix_control_v2_generated_projection_and_cross_parser_corpus() -> Result<()
             .get(GENERATED_CONSTANTS_FILE)
             .context("generated constants are missing")?,
     )?;
-    assert!(constants.contains("ROBRIX_SUPERVISORD_MAX_FRAME_BYTES: usize = 65536"));
+    assert!(constants.contains("ROBRIX_SUPERVISORD_MAX_FRAME_BYTES: usize = 1048576"));
+    assert!(constants.contains("ROBRIX_SUPERVISORD_MAX_REQUEST_BYTES: usize = 65536"));
     assert!(constants.contains("MAX_MATRIXD_CONTROL_FRAME_BYTES: usize = 1048576"));
     assert!(constants.contains("[\"health\", \"roster\", \"snapshot\"]"));
     for mutation in [

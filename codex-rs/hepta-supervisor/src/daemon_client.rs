@@ -19,6 +19,7 @@ use crate::ProductionMutationState;
 use crate::ProductionRecoveryDecision;
 use crate::SupervisorError;
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
+use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_REQUEST_BYTES;
 use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
 use crate::daemon_protocol::SupervisordAgentStatus;
 use crate::daemon_protocol::SupervisordControlFence;
@@ -234,7 +235,7 @@ impl SupervisordClient {
         let mut bytes = serde_json::to_vec(&request)
             .map_err(|error| SupervisorError::Invalid(format!("encode request: {error}")))?;
         bytes.push(b'\n');
-        if bytes.len() as u64 > MAX_SUPERVISORD_CONTROL_FRAME_BYTES {
+        if bytes.len() as u64 > MAX_SUPERVISORD_CONTROL_REQUEST_BYTES {
             return Err(SupervisorError::Invalid(
                 "supervisord request exceeded frame bound".to_string(),
             ));

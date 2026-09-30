@@ -38,6 +38,7 @@ pub struct LockTelemetrySnapshot {
 }
 
 impl LockTelemetrySnapshot {
+    #[cfg(any(test, feature = "qualification"))]
     pub fn delta(self, earlier: Self) -> Self {
         Self {
             acquisitions: self.acquisitions.saturating_sub(earlier.acquisitions),

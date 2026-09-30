@@ -11,6 +11,54 @@ use super::super::owner::SingleInstanceLock;
 use super::super::shutdown_tests::Fixture;
 use super::*;
 
+#[test]
+fn release_resolution_completes_with_one_blocking_worker() -> Result<()> {
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .max_blocking_threads(1)
+        .build()?;
+    let outcome = runtime.block_on(async {
+        let fixture = Fixture::new()?;
+        let fence = super::super::SupervisordControlFence {
+            agent_id: codex_hepta_contracts::AgentId::parse(
+                "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+            )?,
+            supervisor_epoch: fixture.state.supervisor_epoch.clone(),
+            lifecycle: codex_hepta_fleet::AgentLifecycle::Stopped,
+            lifecycle_generation: 0,
+            spawn_generation: None,
+            runtime_generation: None,
+            current_release: None,
+            previous_release: None,
+            release_change_pending: false,
+            state_digest: super::super::ControlStateDigest::from_bytes([0; 32]),
+        };
+        let release_id = codex_hepta_fleet::ReleaseId::parse("missing")?;
+        for method in [
+            SupervisordMethod::Start {
+                fence: fence.clone(),
+                release_id: release_id.clone(),
+            },
+            SupervisordMethod::Upgrade { fence, release_id },
+        ] {
+            let response = timeout(
+                Duration::from_secs(2),
+                handle(Arc::clone(&fixture.state), method),
+            )
+            .await?;
+            assert!(matches!(
+                response,
+                SupervisordPayload::Error { ref code, .. } if code == "control_state_unavailable"
+            ));
+        }
+        Ok::<(), anyhow::Error>(())
+    });
+    // The regression must report its timeout rather than hanging forever in
+    // runtime destruction if a nested blocking resolver is reintroduced.
+    runtime.shutdown_timeout(Duration::from_millis(100));
+    outcome
+}
+
 #[tokio::test(flavor = "current_thread")]
 async fn cancelled_waiter_retains_writer_and_capacity_until_blocking_work_finishes() -> Result<()> {
     let Fixture {

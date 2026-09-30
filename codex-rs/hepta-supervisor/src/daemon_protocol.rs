@@ -17,7 +17,10 @@ use crate::ProductionMutationState;
 use crate::ProductionRecoveryDecision;
 
 pub const SUPERVISORD_CONTROL_SCHEMA_VERSION: u32 = 2;
-pub const MAX_SUPERVISORD_CONTROL_FRAME_BYTES: u64 = 65_536;
+/// Response transport ceiling includes the complete supported 256-Agent roster.
+pub const MAX_SUPERVISORD_CONTROL_FRAME_BYTES: u64 = 1_048_576;
+/// Request admission retains the smaller ceiling, including signed requests.
+pub const MAX_SUPERVISORD_CONTROL_REQUEST_BYTES: u64 = 65_536;
 pub const MAX_SUPERVISORD_ROSTER: u16 = 256;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

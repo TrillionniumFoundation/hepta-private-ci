@@ -214,6 +214,9 @@ fn validate_agent_status(status: &SupervisordAgentStatus) -> Result<(), RobrixPr
 }
 
 fn validate_matrix_status(status: &SupervisordMatrixStatus) -> Result<(), RobrixProtocolError> {
+    if let Some(message) = &status.last_error {
+        validate_safe_message(message)?;
+    }
     let runtime_fields_present = status.process_id.is_some()
         && status.attached_agent_generation.is_some()
         && status.binding_revision.is_some();

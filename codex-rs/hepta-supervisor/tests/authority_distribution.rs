@@ -1,3 +1,5 @@
+#![cfg(feature = "offline-authority-tools")]
+
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentManifest;

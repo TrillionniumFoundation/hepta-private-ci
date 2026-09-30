@@ -18,8 +18,44 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::SupervisordClient;
+use pretty_assertions::assert_eq;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn product_binary_serves_the_complete_256_agent_roster() -> Result<()> {
+    let temp = tempfile::Builder::new()
+        .prefix("hsup-roster-")
+        .tempdir_in("/tmp")?;
+    let root = temp.path().canonicalize()?;
+    let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    let mut expected = Vec::new();
+    for index in 0..256_u16 {
+        let agent_id = AgentId::parse(format!("018f4f72-5f8f-7cc1-8f55-{index:012x}"))
+            .map_err(anyhow::Error::msg)?;
+        let workspace = root.join(format!("workspace-{index}"));
+        std::fs::create_dir(&workspace)?;
+        registry.register(AgentManifest::new(
+            agent_id.clone(),
+            WorkspaceBinding::new(workspace.canonicalize()?, &fleet_root)?,
+            ResourceBudget::local_default(),
+        )?)?;
+        expected.push(agent_id);
+    }
+    let mut daemon = DaemonChild::spawn(fleet_root.as_path())?;
+    let client = wait_for_daemon(&registry).await?;
+    let roster = client.roster(256).await?;
+    assert_eq!(
+        roster
+            .into_iter()
+            .map(|status| status.agent_id)
+            .collect::<Vec<_>>(),
+        expected,
+    );
+    daemon.terminate()?;
+    Ok(())
+}
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolated() -> Result<()> {
