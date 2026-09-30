@@ -33,27 +33,34 @@ fn fixture() -> &'static str {
     env!("CARGO_BIN_EXE_planner_store_process_fixture")
 }
 
-fn spawn_lock_holder(root: &Path) -> ChildGuard {
-    let mut child = Command::new(fixture())
+fn spawn_lock_holder(root: &Path) -> std::io::Result<ChildGuard> {
+    let child = Command::new(fixture())
         .arg("hold")
         .arg(root)
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit())
-        .spawn()
-        .expect("spawn planner store holder");
-    let stdout = child.stdout.take().expect("holder stdout");
+        .spawn()?;
+    // Own cleanup before any fallible readiness operation.
+    let mut holder = ChildGuard(child);
+    let stdout = holder
+        .0
+        .stdout
+        .take()
+        .ok_or_else(|| std::io::Error::other("planner store holder stdout is unavailable"))?;
     let mut line = String::new();
-    BufReader::new(stdout)
-        .read_line(&mut line)
-        .expect("read holder readiness");
-    assert_eq!(line.trim(), "READY");
-    ChildGuard(child)
+    BufReader::new(stdout).read_line(&mut line)?;
+    if line.trim() != "READY" {
+        return Err(std::io::Error::other(
+            "planner store holder did not become ready",
+        ));
+    }
+    Ok(holder)
 }
 
 #[test]
 fn operating_system_lock_is_reclaimed_after_abnormal_owner_exit() {
     let directory = tempdir().expect("temporary store");
-    let mut holder = spawn_lock_holder(directory.path());
+    let mut holder = spawn_lock_holder(directory.path()).expect("ready store holder");
     assert!(matches!(
         PlannerStoreV1::open(directory.path(), PlannerStoreConfigV1::default()),
         Err(PlannerStoreError::Locked)
@@ -116,7 +123,7 @@ fn restore_holds_the_destination_owner_boundary_for_the_whole_replacement() {
         .expect("backup source");
     drop(source_store);
 
-    let mut holder = spawn_lock_holder(destination.path());
+    let mut holder = spawn_lock_holder(destination.path()).expect("ready destination holder");
     assert!(matches!(
         PlannerStoreV1::restore_from_backup(
             backup.path(),

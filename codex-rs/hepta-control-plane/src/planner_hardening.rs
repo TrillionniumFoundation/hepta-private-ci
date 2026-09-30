@@ -98,6 +98,17 @@ pub fn prepare_plan(
 pub fn bind_ndu_plan_evaluation_v1(
     input: NduPlanEvaluationInputV1,
 ) -> Result<NduPlanEvaluationV1, PlannerError> {
+    // Bound both the full evaluated/rejected partition and the Pareto subset
+    // before the native adapter sorts or allocates its identity indexes.
+    if input
+        .evaluated_candidate_ids
+        .len()
+        .saturating_add(input.rejected_candidate_ids.len())
+        > MAX_CANDIDATES
+        || input.pareto_candidate_ids.len() > MAX_CANDIDATES
+    {
+        return Err(PlannerError::LimitExceeded("NDU candidate sets"));
+    }
     super::planner::bind_ndu_plan_evaluation_v1(input)
 }
 

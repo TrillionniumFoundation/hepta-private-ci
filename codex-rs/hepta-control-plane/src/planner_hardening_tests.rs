@@ -181,3 +181,62 @@ fn abstain_cannot_carry_an_effect_payload() {
     ));
     assert_eq!(error, PlannerError::AbstainUnavailable);
 }
+
+fn bounded_ndu_input() -> super::NduPlanEvaluationInputV1 {
+    super::NduPlanEvaluationInputV1 {
+        objective_digest: digest("objective"),
+        body_generation: must(Generation::new(7)),
+        evaluation_policy_digest: digest("policy"),
+        evaluation_digest: digest("evaluation"),
+        evaluated_candidate_ids: vec![id("work")],
+        rejected_candidate_ids: vec![],
+        pareto_candidate_ids: vec![id("work")],
+        advisory_candidate_id: Some(id("work")),
+        uncertainty_digest: digest("uncertainty"),
+        disposition:
+            super::super::planner::PlanningEvaluationDispositionV1::UniqueParetoRecommendation,
+    }
+}
+
+#[test]
+fn ndu_result_cardinality_is_bounded_before_sorting_or_indexing() {
+    for field in ["evaluated", "rejected", "pareto"] {
+        let mut input = bounded_ndu_input();
+        let oversized = (0..129)
+            .map(|index| id(&format!("candidate-{index}")))
+            .collect();
+        match field {
+            "evaluated" => input.evaluated_candidate_ids = oversized,
+            "rejected" => input.rejected_candidate_ids = oversized,
+            "pareto" => input.pareto_candidate_ids = oversized,
+            _ => unreachable!(),
+        }
+        assert_eq!(
+            must_err(super::bind_ndu_plan_evaluation_v1(input)),
+            PlannerError::LimitExceeded("NDU candidate sets")
+        );
+    }
+}
+
+#[test]
+fn ndu_evaluated_and_rejected_sets_share_one_candidate_budget() {
+    let mut input = bounded_ndu_input();
+    input.evaluated_candidate_ids = (0..64)
+        .map(|index| id(&format!("evaluated-{index}")))
+        .collect();
+    input.rejected_candidate_ids = (0..64)
+        .map(|index| id(&format!("rejected-{index}")))
+        .collect();
+    input.pareto_candidate_ids = vec![id("evaluated-0")];
+    input.advisory_candidate_id = Some(id("evaluated-0"));
+    let accepted = must(super::bind_ndu_plan_evaluation_v1(input.clone()));
+    assert_eq!(
+        accepted.evaluated_candidate_ids().len() + accepted.rejected_candidate_ids().len(),
+        128
+    );
+    input.rejected_candidate_ids.push(id("rejected-extra"));
+    assert_eq!(
+        must_err(super::bind_ndu_plan_evaluation_v1(input)),
+        PlannerError::LimitExceeded("NDU candidate sets")
+    );
+}

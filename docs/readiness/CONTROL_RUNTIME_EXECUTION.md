@@ -130,6 +130,8 @@ Control runtime consumes NDU only through `NduPlanEvaluationV1`. The adapter inp
 - uncertainty digest;
 - one bounded disposition.
 
+Before sorting or building identity indexes, the adapter rejects an evaluated/rejected total above 128 or a Pareto list above 128. Evaluated and rejected IDs share the prepared-candidate budget; separate per-list limits cannot admit a larger union.
+
 The adapter canonicalizes all sets, rejects duplicates, requires evaluated and rejected sets to be disjoint, requires every Pareto member to have been evaluated, validates disposition/advisory consistency and computes a control-side binding digest. This binding digest does not replace the NDU owner’s evaluation digest; it proves the exact projection that `control.runtime` consumed.
 
 Disposition invariants are:

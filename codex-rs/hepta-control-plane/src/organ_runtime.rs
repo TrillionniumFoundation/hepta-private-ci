@@ -456,4 +456,3 @@ fn route_map(graph: &OrganGraphsV1) -> BTreeMap<(StableId, usize), Vec<(StableId
     }
     routes
 }
-
