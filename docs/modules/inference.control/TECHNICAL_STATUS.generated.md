@@ -50,10 +50,12 @@ Exact candidate success is not stored here; it is carried by a CI evidence recei
 
 - obtain green exact-source-head and deterministic base-merge receipts for the final commit
 - retain native-host process-kill, disk-fault, torn-write, vault and App Server command records as CI artifacts
-- complete signed output-vault deletion confirmation rather than treating a maintenance receipt as deletion proof
-- export runtime metrics to the selected telemetry backend and qualify alert delivery
+- complete signed output-vault deletion confirmation and archive retention/transfer lifecycle rather than treating a maintenance receipt as deletion proof
+- export last-published, queue and owner runtime metrics to the selected telemetry backend and qualify alert delivery; cached observations are not authority
 - qualify host-selected mailbox, response and shutdown limits under real provider and storage contention
-- deliver last-published and queue metrics to the selected telemetry backend; cached observations are not authority
+- compose the real inference-control neuron feature port and selected worker into the Agentd daemon lifecycle; typed feature receipts alone do not execute a model
+- connect real enrolled-worker scheduling, measured device capacity and provider usage/billing to their existing owners; signed declared leases are not physical observations
+- define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities
 
 ## External evidence gates
 

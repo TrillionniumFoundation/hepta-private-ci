@@ -11,9 +11,21 @@ This projection records source facts and required evidence. It is not an accepta
 - external effect requires a still-live exact execution binding and final-use grant
 - indeterminate release requires a signed terminal receipt or revision-bound dual-control retirement
 - the active journal never stores plaintext output on the exact-plan production path
-- checkpoint installation preserves one locked durable writer and verifies content-addressed history
+- checkpoint replacement preserves the stable lifecycle sidecar owner lock and validates checkpoint content plus recorded archive bindings; replay does not rehash the complete archive history
 - post-effect recovery re-verifies historical execution identity and requires fresh rotated recovery authority
 - a pre-effect capability is consumed before the external effect and cannot be recreated after restart
+- verified execution-plan and recovery/retirement authority are checked at durable application; the actor uses its own current wall clock rather than the time supplied before queue admission
+- dual-control retirement requires distinct signer IDs, key IDs and actual verification public keys
+- matching terminal usage above the signed pre-effect quota is retained with released capacity and quarantined qualification when exact binding and current output policy admit the observation; late usage cannot upgrade denied success qualification
+- protected-output metadata is revalidated against the signed policy at durable consumption; metadata validation alone does not prove independent encryption or deletion
+- a poisoned owner refuses mutation and capability issuance, including idempotent calls
+- signed terminal recovery preserves historical owner authority or Unverified when absent; a receipt cannot mint ObservedReady or erase prior authority loss
+- new checkpoints use schema 2; schema 1 signed-reconciliation readiness without independent owner evidence is downgraded to Unverified while provider terminal and usage facts remain retained
+- checkpoint load validates state, observation and audit semantics, including release evidence; digest integrity alone cannot release capacity
+- retirement audits persist distinct actual verification-key fingerprints; historical audits lacking them remain held Indeterminate until fresh revision-bound approval, and excess recovered capacity fails closed
+- authorized worker return qualification is projected from durable settlement; empty encrypted terminal output still requires output protection
+- the four execution-authority roles require distinct actual verification public keys in normal and historical verification
+- protected-output structure is checked on journal and checkpoint replay even after a valid retention TTL expires
 
 ## Required exact-candidate commands
 

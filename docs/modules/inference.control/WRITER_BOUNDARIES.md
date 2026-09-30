@@ -16,6 +16,12 @@ DurableInferenceControl owner. No provider await enters that writer, no second
 journal is introduced, and no recovered effect is automatically dispatched.
 The existing output-protection and signed-recovery paths remain in force.
 
+The owner acquires a stable lifecycle sidecar lock before active journal
+open/replay and retains it across checkpoint inode replacement. The active
+generation also retains an inode lock for compatibility. Do not remove the
+sidecar after shutdown or maintenance; its stable identity is part of the
+writer fence.
+
 ## Admission and response are different outcomes
 
 `Overloaded` and `Closed` from admission mean the command was not delivered to
@@ -36,6 +42,10 @@ the source of truth. Unknown after dispatch retains its slot.
 Response and shutdown budgets are configurable independently. Neither is a
 filesystem syscall cancellation mechanism. A blocked writer retains its actual
 lifecycle lock until it exits. A shutdown timeout never certifies cleanup.
+
+Exact-plan bind, authorized dispatch and settlement, and signed recovery/retirement
+sample authority freshness at writer application time. A queued command cannot
+keep an expired proof live by supplying its earlier admission-time timestamp.
 
 ## Two admission quotas, one FIFO ordering
 

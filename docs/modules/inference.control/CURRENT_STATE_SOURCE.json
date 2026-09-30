@@ -8,7 +8,7 @@
   "provenance": {
     "baselineCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "baselineTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
-    "implementationBranch": "codex/inference-control-v2-closure-20260927",
+    "implementationBranch": "codex/inference-control-boundary-capacity-20260929",
     "exactEvidencePolicy": "ci_receipt_binds_source_tested_base_tree_check_runs_and_command_records"
   },
   "ownership": {
@@ -54,9 +54,21 @@
     "external effect requires a still-live exact execution binding and final-use grant",
     "indeterminate release requires a signed terminal receipt or revision-bound dual-control retirement",
     "the active journal never stores plaintext output on the exact-plan production path",
-    "checkpoint installation preserves one locked durable writer and verifies content-addressed history",
+    "checkpoint replacement preserves the stable lifecycle sidecar owner lock and validates checkpoint content plus recorded archive bindings; replay does not rehash the complete archive history",
     "post-effect recovery re-verifies historical execution identity and requires fresh rotated recovery authority",
-    "a pre-effect capability is consumed before the external effect and cannot be recreated after restart"
+    "a pre-effect capability is consumed before the external effect and cannot be recreated after restart",
+    "verified execution-plan and recovery/retirement authority are checked at durable application; the actor uses its own current wall clock rather than the time supplied before queue admission",
+    "dual-control retirement requires distinct signer IDs, key IDs and actual verification public keys",
+    "matching terminal usage above the signed pre-effect quota is retained with released capacity and quarantined qualification when exact binding and current output policy admit the observation; late usage cannot upgrade denied success qualification",
+    "protected-output metadata is revalidated against the signed policy at durable consumption; metadata validation alone does not prove independent encryption or deletion",
+    "a poisoned owner refuses mutation and capability issuance, including idempotent calls",
+    "signed terminal recovery preserves historical owner authority or Unverified when absent; a receipt cannot mint ObservedReady or erase prior authority loss",
+    "new checkpoints use schema 2; schema 1 signed-reconciliation readiness without independent owner evidence is downgraded to Unverified while provider terminal and usage facts remain retained",
+    "checkpoint load validates state, observation and audit semantics, including release evidence; digest integrity alone cannot release capacity",
+    "retirement audits persist distinct actual verification-key fingerprints; historical audits lacking them remain held Indeterminate until fresh revision-bound approval, and excess recovered capacity fails closed",
+    "authorized worker return qualification is projected from durable settlement; empty encrypted terminal output still requires output protection",
+    "the four execution-authority roles require distinct actual verification public keys in normal and historical verification",
+    "protected-output structure is checked on journal and checkpoint replay even after a valid retention TTL expires"
   ],
   "operations": [
     {
@@ -267,10 +279,12 @@
   "repositoryControlledGaps": [
     "obtain green exact-source-head and deterministic base-merge receipts for the final commit",
     "retain native-host process-kill, disk-fault, torn-write, vault and App Server command records as CI artifacts",
-    "complete signed output-vault deletion confirmation rather than treating a maintenance receipt as deletion proof",
-    "export runtime metrics to the selected telemetry backend and qualify alert delivery",
+    "complete signed output-vault deletion confirmation and archive retention/transfer lifecycle rather than treating a maintenance receipt as deletion proof",
+    "export last-published, queue and owner runtime metrics to the selected telemetry backend and qualify alert delivery; cached observations are not authority",
     "qualify host-selected mailbox, response and shutdown limits under real provider and storage contention",
-    "deliver last-published and queue metrics to the selected telemetry backend; cached observations are not authority"
+    "compose the real inference-control neuron feature port and selected worker into the Agentd daemon lifecycle; typed feature receipts alone do not execute a model",
+    "connect real enrolled-worker scheduling, measured device capacity and provider usage/billing to their existing owners; signed declared leases are not physical observations",
+    "define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities"
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
