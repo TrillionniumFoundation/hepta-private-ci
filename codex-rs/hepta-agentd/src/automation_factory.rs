@@ -123,6 +123,13 @@ impl AutomationService {
             }
         }
         self.state.refresh_generation()?;
+        if self
+            .selection
+            .as_ref()
+            .is_some_and(|selection| selection.selected.is_none())
+        {
+            self.state.mark_automation_absent()?;
+        }
         let generation = self
             .selection
             .as_ref()

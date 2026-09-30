@@ -384,3 +384,37 @@ async fn compiled_optional_owner_retains_its_existing_degraded_startup_policy() 
     );
     assert!(unpublished, "degraded does not mean attached");
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn absence_publication_rechecks_retained_state_after_selection_observation() {
+    let fixture = fixture(None).await;
+    let service = AutomationService::open(
+        Arc::clone(&fixture.state),
+        RuntimeModuleProfileV1::SupervisorSelected,
+    )
+    .await
+    .expect("initially empty optional module");
+    let owner = codex_hepta_agent_components::automation::AutomationStore::open(
+        &fixture.state.identity().layout,
+    )
+    .await
+    .expect("state appeared before publication");
+    let stop = CancellationToken::new();
+    let mut tasks = RuntimeTasks::new(stop.clone(), Duration::from_secs(2)).expect("host");
+    let result = service.spawn(&mut tasks, stop.clone()).await;
+    let rejected = matches!(result, Err(AgentdError::GenerationFenced(_)));
+    let active = tasks.active_count();
+    let available = fixture
+        .state
+        .automation_is_available()
+        .expect("attachment state");
+    tasks.shutdown().await;
+    owner.close().await;
+    finish(fixture).await;
+    assert!(
+        rejected,
+        "absence cannot discard state created during bounded startup"
+    );
+    assert_eq!(active, 0);
+    assert!(!available);
+}

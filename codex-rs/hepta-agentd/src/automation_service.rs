@@ -68,7 +68,7 @@ pub(crate) async fn spawn_automation_service<Q: AutomationTurnQueue + 'static>(
             // Unpublish the live task route without deleting the durable owner
             // or its historical task/dedupe records. Do not resume, hand off,
             // mint a new generation, or advertise an idle worker as active.
-            state.mark_automation_unavailable()?;
+            state.retain_automation_for_drain()?;
             return Ok(());
         }
     }
@@ -143,7 +143,7 @@ pub(crate) async fn spawn_automation_service<Q: AutomationTurnQueue + 'static>(
             // Remove the product attachment only after drain. Quarantine keeps
             // its module writer reservation: task retirement alone must not
             // authorize a replacement module or a second durable writer.
-            retirement_state.mark_automation_unavailable()
+            retirement_state.retain_automation_for_drain()
         },
     )
 }

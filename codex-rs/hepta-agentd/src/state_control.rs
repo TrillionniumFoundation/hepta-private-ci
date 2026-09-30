@@ -77,7 +77,12 @@ impl AgentdState {
                 runtime.fenced,
             )
         };
-        let automation = self.automation.lock().map_err(poisoned_state)?.clone();
+        let automation = self
+            .automation
+            .lock()
+            .map_err(poisoned_state)?
+            .serving()
+            .cloned();
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         // Automation remains an explicitly optional plane and therefore does
         // not gate core Agent readiness. The required cognitive owner is
@@ -187,9 +192,7 @@ impl AgentdState {
                 required_ports_ready,
                 admission_open,
             }),
-            crate::AgentdMethod::Drain => {
-                AgentdPayload::Drain(self.request_drain(automation.as_ref()).await?)
-            }
+            crate::AgentdMethod::Drain => AgentdPayload::Drain(self.request_drain().await?),
             crate::AgentdMethod::SessionIngress => {
                 if lifecycle != AgentLifecycle::Running
                     || !app_server_ready

@@ -5,7 +5,6 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_agent_components::authbus::SignedMessage;
 use codex_hepta_agent_components::authbus::SignedMessageClaims;
-use codex_hepta_agent_components::automation::AutomationStore;
 use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_agent_components::contracts::Sha256Digest;
 use codex_hepta_agent_components::fleet::AgentLifecycle;
@@ -26,6 +25,10 @@ use crate::AgentdIdentity;
 use crate::EventBuffer;
 use crate::RunReceipt;
 use crate::RuntimeComposition;
+
+#[path = "automation_attachment.rs"]
+mod automation_attachment;
+use automation_attachment::AutomationAttachment;
 
 #[path = "state_control.rs"]
 mod control;
@@ -55,7 +58,7 @@ pub(crate) struct AgentdState {
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
     events: Mutex<EventBuffer>,
-    automation: Mutex<Option<AutomationStore>>,
+    automation: Mutex<AutomationAttachment>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
     runs: Mutex<AgentRunCoordinator>,
     app_server_drain: AppServerDrainHandle,
@@ -152,7 +155,7 @@ impl AgentdState {
             identity,
             registry,
             events: Mutex::new(events),
-            automation: Mutex::new(None),
+            automation: Mutex::new(AutomationAttachment::default()),
             cognitive: Mutex::new(None),
             runs: Mutex::new(run_coordinator),
             app_server_drain: AppServerDrainHandle::new(),
@@ -242,25 +245,6 @@ impl AgentdState {
         })
     }
 
-    pub(crate) fn attach_automation_store(
-        &self,
-        store: AutomationStore,
-    ) -> Result<(), AgentdError> {
-        if store.owner_agent_id() != &self.identity.agent_id {
-            return Err(AgentdError::GenerationFenced(
-                "automation store owner does not match agentd identity".to_string(),
-            ));
-        }
-        let mut automation = self.automation.lock().map_err(poisoned_state)?;
-        if automation.is_some() {
-            return Err(AgentdError::Protocol(
-                "automation store was attached more than once".to_string(),
-            ));
-        }
-        *automation = Some(store);
-        Ok(())
-    }
-
     pub(crate) fn attach_automation_effect_host(
         &self,
         host: Arc<crate::automation_effect_host::AgentdAutomationEffectHost>,
@@ -274,15 +258,6 @@ impl AgentdState {
         &self,
     ) -> Option<Arc<crate::automation_effect_host::AgentdAutomationEffectHost>> {
         self.automation_effect.get().cloned()
-    }
-
-    pub(crate) fn mark_automation_unavailable(&self) -> Result<(), AgentdError> {
-        self.automation.lock().map_err(poisoned_state)?.take();
-        Ok(())
-    }
-
-    pub(crate) fn automation_is_available(&self) -> Result<bool, AgentdError> {
-        Ok(self.automation.lock().map_err(poisoned_state)?.is_some())
     }
 
     pub(crate) fn identity(&self) -> &AgentdIdentity {
@@ -475,10 +450,7 @@ impl AgentdState {
         self.app_server_drain.clone()
     }
 
-    pub(crate) async fn request_drain(
-        &self,
-        automation: Option<&AutomationStore>,
-    ) -> Result<DrainSnapshot, AgentdError> {
+    pub(crate) async fn request_drain(&self) -> Result<DrainSnapshot, AgentdError> {
         self.refresh_generation()?;
         {
             let runtime = self.runtime.lock().map_err(poisoned_state)?;
@@ -490,10 +462,8 @@ impl AgentdState {
             }
         }
         self.mark_draining()?;
-        let automation_blockers = match automation {
-            Some(store) => store.drain_blockers().await?,
-            None => 1,
-        };
+        let attachment = self.automation.lock().map_err(poisoned_state)?.clone();
+        let automation_blockers = attachment.drain_blockers().await?;
         self.drain_snapshot(automation_blockers)
     }
 

@@ -479,6 +479,11 @@ than being flattened into absence.
 An explicitly selected owner that is unavailable or corrupt rejects startup with
 an owner-recovery diagnostic; it is not converted into an absent optional module.
 The default compiled profile retains its existing optional-degradation policy.
+Attachment state distinguishes verified empty absence, a serving owner, a withdrawn
+route with its retained drain reader, and unavailable state. Graceful restart may
+drain verified absence; unavailable state still blocks. Withdrawn or permanently
+retired timer routes query the existing owner's drain policy rather than being
+assumed empty. This does not retire TaskFlow data or erase uncertain effects.
 The ordinary-binary tests separately exercise selected restart, absent restart,
 wrong executable, retained-but-unselected state, selected corruption and permanent
 timer retirement. They do not certify automatic topology adoption or cross-schema
