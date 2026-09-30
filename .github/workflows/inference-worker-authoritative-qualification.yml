@@ -8,7 +8,7 @@ on:
       - .github/workflows/inference-worker-authoritative-qualification.yml
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: inference-worker-final-source-materialization
@@ -128,6 +128,131 @@ jobs:
             | xargs -0 sha256sum > "$PAYLOAD_DIR/payload-sha256.txt"
           test -s "$PAYLOAD_DIR/manifest.tsv"
           test -s "$PAYLOAD_DIR/materialized-source.patch"
+
+      - name: Publish immutable blobs, tree and commit without updating a ref
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PAYLOAD_DIR: ${{ runner.temp }}/inference-worker-materialized-source
+          COMMIT_MESSAGE: inference.worker: materialize runtime closure as ordinary source
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$EXPECTED_TARGET_SHA"
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          import subprocess
+          import urllib.error
+          import urllib.request
+          from pathlib import Path
+
+          repository = os.environ["GITHUB_REPOSITORY"]
+          token = os.environ["GH_TOKEN"]
+          source_sha = os.environ["SOURCE_SHA"]
+          expected_target_sha = os.environ["EXPECTED_TARGET_SHA"]
+          payload = Path(os.environ["PAYLOAD_DIR"])
+
+          def git(*args: str, binary: bool = False):
+              result = subprocess.run(
+                  ["git", *args],
+                  check=True,
+                  stdout=subprocess.PIPE,
+                  stderr=subprocess.PIPE,
+              )
+              return result.stdout if binary else result.stdout.decode("utf-8").strip()
+
+          def api(method: str, suffix: str, body=None):
+              url = f"https://api.github.com/repos/{repository}/{suffix}"
+              data = None if body is None else json.dumps(body, separators=(",", ":")).encode("utf-8")
+              request = urllib.request.Request(
+                  url,
+                  data=data,
+                  method=method,
+                  headers={
+                      "Accept": "application/vnd.github+json",
+                      "Authorization": f"Bearer {token}",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                      "User-Agent": "hepta-inference-materializer",
+                      "Content-Type": "application/json",
+                  },
+              )
+              try:
+                  with urllib.request.urlopen(request, timeout=60) as response:
+                      return json.load(response)
+              except urllib.error.HTTPError as error:
+                  detail = error.read().decode("utf-8", "replace")
+                  raise SystemExit(f"GitHub API {method} {suffix} failed: {error.code}: {detail}") from error
+
+          target_ref = api("GET", f"git/ref/heads/{os.environ['TARGET_BRANCH']}")
+          if target_ref["object"]["sha"] != expected_target_sha:
+              raise SystemExit("authoritative target moved during materialization")
+
+          changed_raw = git("diff", "--cached", "--name-only", "--diff-filter=ACMRTUXB", "-z", binary=True)
+          changed = [os.fsdecode(path) for path in changed_raw.split(b"\0") if path]
+          deleted_raw = git("diff", "--cached", "--name-only", "--diff-filter=D", "-z", binary=True)
+          deleted = [os.fsdecode(path) for path in deleted_raw.split(b"\0") if path]
+          entries = []
+
+          for path in changed:
+              index_line = git("ls-files", "-s", "--", path)
+              mode, local_blob_sha, stage_and_path = index_line.split(maxsplit=2)
+              stage = stage_and_path.split("\t", 1)[0]
+              if stage != "0":
+                  raise SystemExit(f"nonzero index stage for {path}: {stage}")
+              content = Path(path).read_bytes()
+              remote_blob = api(
+                  "POST",
+                  "git/blobs",
+                  {
+                      "content": base64.b64encode(content).decode("ascii"),
+                      "encoding": "base64",
+                  },
+              )
+              if remote_blob["sha"] != local_blob_sha:
+                  raise SystemExit(
+                      f"blob identity mismatch for {path}: local={local_blob_sha} remote={remote_blob['sha']}"
+                  )
+              entries.append({"path": path, "mode": mode, "type": "blob", "sha": local_blob_sha})
+
+          for path in deleted:
+              original = git("ls-tree", source_sha, "--", path)
+              if not original:
+                  raise SystemExit(f"deleted path absent from source tree: {path}")
+              metadata, observed_path = original.split("\t", 1)
+              mode, object_type, _old_sha = metadata.split()
+              if observed_path != path or object_type != "blob":
+                  raise SystemExit(f"unsupported deleted entry: {original}")
+              entries.append({"path": path, "mode": mode, "type": object_type, "sha": None})
+
+          expected_tree = git("write-tree")
+          base_tree = git("rev-parse", f"{source_sha}^{{tree}}")
+          remote_tree = api(
+              "POST",
+              "git/trees",
+              {"base_tree": base_tree, "tree": entries},
+          )
+          if remote_tree["sha"] != expected_tree:
+              raise SystemExit(
+                  f"tree identity mismatch: local={expected_tree} remote={remote_tree['sha']}"
+              )
+
+          remote_commit = api(
+              "POST",
+              "git/commits",
+              {
+                  "message": os.environ["COMMIT_MESSAGE"],
+                  "tree": expected_tree,
+                  "parents": [source_sha],
+              },
+          )
+          if remote_commit["tree"]["sha"] != expected_tree:
+              raise SystemExit("remote commit does not bind the expected tree")
+          (payload / "remote-commit-sha.txt").write_text(remote_commit["sha"] + "\n", encoding="utf-8")
+          (payload / "remote-tree-sha.txt").write_text(expected_tree + "\n", encoding="utf-8")
+          print(f"remote_commit_sha={remote_commit['sha']}")
+          print(f"remote_tree_sha={expected_tree}")
+          PY
 
       - name: Retain immutable ordinary-source payload
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
