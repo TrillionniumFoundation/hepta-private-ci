@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   export:
-    runs-on: ubuntu-24.04
+    runs-on: macos-latest
     timeout-minutes: 15
     steps:
       - name: Check out exact source
@@ -33,8 +33,9 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${{ github.sha }}"
           mkdir -p "$RUNNER_TEMP/export"
-          git archive --format=tar.gz --output="$RUNNER_TEMP/export/hepta-private-ci-${{ github.sha }}.tar.gz" HEAD
-          sha256sum "$RUNNER_TEMP/export/hepta-private-ci-${{ github.sha }}.tar.gz" > "$RUNNER_TEMP/export/hepta-private-ci-${{ github.sha }}.tar.gz.sha256"
+          archive="$RUNNER_TEMP/export/hepta-private-ci-${{ github.sha }}.tar.gz"
+          git archive --format=tar.gz --output="$archive" HEAD
+          shasum -a 256 "$archive" > "$archive.sha256"
 
       - name: Retain source snapshot
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
