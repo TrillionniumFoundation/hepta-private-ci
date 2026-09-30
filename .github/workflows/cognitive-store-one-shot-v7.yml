@@ -3,7 +3,7 @@ name: Cognitive store one-shot v7 source apply
 on:
   push:
     branches:
-      - codex/cognitive-store-full-closure-20260927
+      - codex/cognitive-store-v7-worker
     paths:
       - scripts/cognitive_store_v7.patch.b64.*
       - .github/workflows/cognitive-store-one-shot-v7.yml
@@ -12,12 +12,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: cognitive-store-one-shot-v7
-  cancel-in-progress: false
+  group: cognitive-store-one-shot-v7-worker
+  cancel-in-progress: true
 
 jobs:
   apply:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
