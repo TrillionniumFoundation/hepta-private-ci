@@ -2,7 +2,7 @@
 //!
 //! The selector, CURRENT owner, filesystem root and clock are host-owned inputs.
 //! Request bytes cannot choose artifacts, roots, trust, or freshness.  V1
-//! registry fields are used deliberately: model support binds the model manifest,
+//! registry fields are used deliberately: model support binds the admitted V2 manifest,
 //! calibration/OOD content binds the exact registered evidence payload, their
 //! support fields bind host-pinned independent lineage, and compatibility binds
 //! the complete frozen Neuron execution profile.
@@ -18,23 +18,32 @@ use codex_hepta_agent_components::contracts::AuthorityClock;
 use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
 use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
 use codex_hepta_agent_components::learning_artifacts::ArtifactSelectionVerifierV1;
+use codex_hepta_agent_components::learning_artifacts::LearningArtifactManifestV2;
 use codex_hepta_agent_components::learning_artifacts::LearningArtifactOwnerHost;
 use codex_hepta_agent_components::learning_artifacts::SignedArtifactSelectionV1;
 use codex_hepta_agent_components::learning_artifacts::VerifiedCurrentRegistryViewV1;
 use codex_hepta_agent_components::learning_artifacts::load_selected_candidate;
+use codex_hepta_agent_components::learning_artifacts::validate_artifact_manifest_v2;
 use codex_hepta_agent_components::neuron::NeuronAdmissionError;
 use codex_hepta_agent_components::neuron::NeuronAdmissionGuard;
 use codex_hepta_agent_components::neuron::NeuronRuntimeConfigV1;
 use codex_hepta_agent_components::neuron::NeuronTickInputV1;
 use codex_hepta_agent_components::types::Digest32;
 
+#[path = "neuron_artifact_refresh.rs"]
+mod refresh;
+pub use refresh::AgentdNeuronSelectionRefreshIngressV1;
+
 /// Three independently signed immutable selections from one authenticated
 /// CURRENT, plus the lineage digests pinned by daemon bootstrap configuration.
-#[derive(Clone)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronSelectedArtifactsV1 {
     pub model: SignedArtifactSelectionV1,
     pub calibration: SignedArtifactSelectionV1,
     pub ood: SignedArtifactSelectionV1,
+    /// Complete canonical native admission preimage authenticated by the
+    /// CURRENT model support digest. Its lineage pins the CPU descriptor SHA.
+    pub model_artifact_manifest: LearningArtifactManifestV2,
     pub calibration_lineage_digest: Digest32,
     pub ood_lineage_digest: Digest32,
 }
@@ -46,6 +55,8 @@ pub struct AgentdNeuronArtifactAdmissionV1 {
     selections: NeuronSelectedArtifactsV1,
     clock: Arc<dyn AuthorityClock>,
     configuration: Digest32,
+    runtime_configuration: NeuronRuntimeConfigV1,
+    pending_refresh: Arc<Mutex<Option<NeuronSelectedArtifactsV1>>>,
     last_time: u64,
     selection_expiries: [u64; 3],
     closed: bool,
@@ -120,6 +131,8 @@ impl AgentdNeuronArtifactAdmissionV1 {
             selections,
             clock,
             configuration,
+            runtime_configuration: config.clone(),
+            pending_refresh: Arc::new(Mutex::new(None)),
             last_time: 0,
             selection_expiries,
             closed: false,
@@ -133,13 +146,16 @@ impl AgentdNeuronArtifactAdmissionV1 {
         config: &NeuronRuntimeConfigV1,
         payload_check: PayloadCheck,
     ) -> Result<(), NeuronAdmissionError> {
-        if self.closed || config.semantic_digest().ok() != Some(self.configuration) {
+        if config.semantic_digest().ok() != Some(self.configuration) {
             self.closed = true;
             return Err(NeuronAdmissionError::BindingMismatch);
         }
-        // Any failed refresh permanently closes this installed consumer.  A
-        // caller must reconstruct the owner with fresh selections; rewinding a
-        // clock, CURRENT directory or backup cannot revive the old handle.
+        self.consume_selection_refresh(config)?;
+        if self.closed {
+            return Err(NeuronAdmissionError::BindingMismatch);
+        }
+        // Failure fences the installed consumer. Only an explicit independently
+        // signed refresh reconstructed against actual CURRENT can reopen it.
         self.closed = true;
         let now = self
             .clock
@@ -158,6 +174,28 @@ impl AgentdNeuronArtifactAdmissionV1 {
         let profile = config
             .execution_profile_digest_v1()
             .map_err(|_| NeuronAdmissionError::BindingMismatch)?;
+        let model_manifest =
+            validate_artifact_manifest_v2(self.selections.model_artifact_manifest.clone(), now)
+                .map_err(|_| NeuronAdmissionError::BindingMismatch)?;
+        let model = &model_manifest.manifest;
+        if model.artifact_id != self.selections.model.artifact_id
+            || model.kind != ArtifactKind::Model
+            || model.generation != config.generation
+            || model.bytes_digest != config.weights_digest
+            || model.encoded_size_bytes != self.selections.model.encoded_size_bytes
+            || model.runtime_tuple_digest != profile
+            || model.compatibility_digest != profile
+            || model.device_profile_digest != config.device_digest
+            || model.normalization_digest != config.normalization_digest
+            || model.objective_class_digest != self.selections.model.objective_digest
+            || !model
+                .lineage_digests
+                .contains(&config.model_manifest_digest)
+            || model.predecessor_ids.len() > 1
+            || model.predecessor_ids.first() != self.selections.model.predecessor_id.as_ref()
+        {
+            return Err(NeuronAdmissionError::BindingMismatch);
+        }
         let calibration = config
             .calibration_evidence_payload_v1()
             .map_err(|_| NeuronAdmissionError::BindingMismatch)?;
@@ -184,7 +222,7 @@ impl AgentdNeuronArtifactAdmissionV1 {
             ArtifactKind::Model,
             config.generation,
             config.weights_digest,
-            config.model_manifest_digest,
+            model_manifest.manifest_digest,
             profile,
             None,
             payload_check,
@@ -332,6 +370,9 @@ impl AgentdNeuronArtifactAdmissionV1 {
             || manifest.support_digest != expected_support
             || manifest.compatibility_digest != expected_compatibility
             || manifest.encoded_size_bytes != selection.encoded_size_bytes
+            || manifest.predecessor_id != selection.predecessor_id
+            || (expected_kind == ArtifactKind::Model
+                && manifest.producer_id != self.selections.model_artifact_manifest.producer_id)
         {
             return Err(NeuronAdmissionError::BindingMismatch);
         }

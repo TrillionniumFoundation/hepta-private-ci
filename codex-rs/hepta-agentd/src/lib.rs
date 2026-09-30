@@ -343,6 +343,8 @@ pub use lane_b_runtime::RuntimeComposition;
 #[cfg(feature = "server")]
 pub use neuron_artifact_admission::AgentdNeuronArtifactAdmissionV1;
 #[cfg(feature = "server")]
+pub use neuron_artifact_admission::AgentdNeuronSelectionRefreshIngressV1;
+#[cfg(feature = "server")]
 pub use neuron_artifact_admission::NeuronSelectedArtifactsV1;
 #[cfg(feature = "server")]
 pub use neuron_runtime::AgentdNeuronHandleV1;

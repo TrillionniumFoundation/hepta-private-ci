@@ -477,3 +477,41 @@ The bootstrap source-location obligation for `neuron.runtime` is implemented by 
 - `codex-rs/hepta-neuron`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Installed CPU generations and independent selection refresh
+
+`bootstrap_installed_cpu_neuron_v1` admits generation 1 with empty native
+runtime stores only after genuine model, calibration and OOD selections have
+passed the current artifact gate. All three selections must have generation 1
+and no selected predecessor. An evaluation comparator does not create a runtime
+predecessor. Later generations use `open_installed_cpu_neuron_generation_v1` and
+the existing durable generation, index and witness owners.
+
+`NeuronSelectedArtifactsV1.model_artifact_manifest` carries the complete native
+V2 admission preimage. Its canonical digest must equal the model support in the
+signed selection and authenticated registry. Its bytes, execution profile,
+objective, producer, predecessor, device and normalization must match the
+installed tuple, and its authenticated lineage must include the actual CPU
+JSON descriptor digest. The CPU loader independently checks descriptor bytes,
+weights, encoder, heads, runtime, tokenizer, preprocessing, quantization, device
+and input/output dimensions before creating generation stores. A matching
+weight file alone does not authorize a different descriptor.
+
+Publishing any new CURRENT fences cached selections. The installer captures
+`admission.selection_refresh_ingress()` before transferring the admission guard
+into its physical owner. The independent Selector transport can submit a newly
+signed triple through `submit_current_selections`. The single pending slot
+accepts only the same immutable artifacts and full admitted model preimage.
+Submission identifies a pending input; it is not a durable ACK or activation.
+The guard rechecks actual CURRENT and original payloads when consuming it.
+Revocation, stale signatures, changed tuples and clock rollback remain failures;
+a registry extension alone never reopens a fenced consumer.
+
+`CpuNeuronGovernedParameterCompilerV1` implements the existing parameter factory
+for bounded exact Q32 deltas on `neuron.sparse.rates.q24.v1`. It consumes the
+original governed proposal and anchor, uses the same inference-control writer,
+and creates physical +1/+2 owners while preserving frozen tensors and body
+structure. It holds a Generator credential and no Selector credential. Tensor
+training and independent model qualification remain separate operations. A
+failed calibration candidate supplies rejection evidence and cannot bootstrap
+or refresh a selected model.
