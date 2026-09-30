@@ -8,6 +8,7 @@
 //! write production state.
 #![forbid(unsafe_code)]
 
+#[cfg(any(test, feature = "compatibility-api"))]
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -29,6 +30,7 @@ pub use profiles::TrainingProfileV1;
 pub use profiles::WorldModelProfileV1;
 
 mod authenticated;
+#[cfg(feature = "compatibility-api")]
 mod dataset_bound;
 mod owner_terminal;
 pub use owner_terminal::FrozenTerminalCellV1;
@@ -55,6 +57,7 @@ pub use authenticated::SignedOperatorEvidenceV2;
 pub use authenticated::admit_operator_regularity_with_signed_evidence_v2;
 pub use authenticated::validate_applicability_with_signed_evidence_v2;
 
+#[cfg(feature = "compatibility-api")]
 pub use dataset_bound::OperatorDatasetBindingError;
 #[cfg(feature = "compatibility-api")]
 pub use dataset_bound::VerifiedTabularOperatorPlanV2;
@@ -115,10 +118,9 @@ pub use world_model::TransitionEstimateV1;
 pub use world_model::WorldModelError;
 pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
+pub use world_model::fit_transition_model_controlled_v3;
 #[cfg(feature = "compatibility-api")]
 pub use world_model::fit_transition_model;
-#[cfg(not(feature = "compatibility-api"))]
-pub(crate) use world_model::fit_transition_model;
 #[cfg(feature = "compatibility-api")]
 pub use world_model::predict_transition;
 
@@ -139,7 +141,9 @@ pub use final_use::revalidate_world_model_candidate_for_publication_v3;
 pub use final_use::verify_tabular_operator_plan_v3;
 pub use final_use::verify_world_model_dataset_v3;
 
+#[cfg(any(test, feature = "compatibility-api"))]
 const MAX_SAMPLES: usize = 16_384;
+#[cfg(any(test, feature = "compatibility-api"))]
 const SCALE: i128 = 1_i128 << 32;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
