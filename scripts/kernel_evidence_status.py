@@ -9,7 +9,6 @@ be interpreted as current qualification receipts.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import subprocess
@@ -216,10 +215,6 @@ def validate_status(status: dict[str, Any], *, check_git: bool = True) -> None:
         raise ValueError("canonical status source is stale for: " + changed)
 
 
-def status_sha256() -> str:
-    return hashlib.sha256(STATUS_PATH.read_bytes()).hexdigest()
-
-
 def render_block(status: dict[str, Any]) -> str:
     lines = [
         STATUS_BEGIN,
@@ -229,10 +224,11 @@ def render_block(status: dict[str, Any]) -> str:
         "Runtime readiness is separately bound to the exact tested SHA by",
         "`scripts/kernel_evidence_readiness.py`; neither source claims nor CI may",
         "self-issue independent acceptance, production activation, or release.",
+        "The readiness manifest, rather than this projection, retains the complete",
+        "SHA-256 inventory for source, tests, migrations, documentation, and artifacts.",
         "",
         f"- Source anchor commit: `{status['asOfCommit']}`",
         f"- Source anchor tree: `{status['asOfTree']}`",
-        f"- Canonical status SHA-256: `{status_sha256()}`",
         f"- Workflow run ID: `{status['workflowRunId'] or 'none'}`",
         f"- Retained artifact digest: `{status['artifactDigest'] or 'none'}`",
         "",
