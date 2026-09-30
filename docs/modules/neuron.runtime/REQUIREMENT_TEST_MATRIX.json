@@ -97,6 +97,39 @@
       "gates": [
         "all"
       ]
+    },
+    {
+      "id": "NR-S-001",
+      "statement": "The joint admission/provider rollback gap remains explicit and target-host product evidence rejects an open disposition.",
+      "tests": [
+        "scripts/neuron/test_docs_contracts.py::NeuronDocumentationContractTests.test_joint_rollback_gap_is_formal_and_blocking",
+        "scripts/neuron/test_target_host_acceptance.py::TargetHostAcceptanceTests.test_open_joint_rollback_gap_is_rejected"
+      ],
+      "gates": [
+        "all"
+      ]
+    },
+    {
+      "id": "NR-E-001",
+      "statement": "Target-host product evidence binds one candidate, real authenticated artifacts, every durable cut and the complete fault matrix without authorizing activation or release.",
+      "tests": [
+        "scripts/neuron/test_target_host_acceptance.py",
+        "scripts/neuron/test_docs_contracts.py::NeuronDocumentationContractTests.test_target_host_validator_keeps_activation_separate"
+      ],
+      "gates": [
+        "all"
+      ]
+    },
+    {
+      "id": "NR-M-001",
+      "statement": "A future V3 segment manifest cannot reinterpret V2 bytes and must preserve success, failure, reservation, dispatch, receipt, checkpoint, witness and historical-query meaning across every migration crash cut.",
+      "tests": [
+        "scripts/neuron/test_segment_manifest_v3.py",
+        "scripts/neuron/test_docs_contracts.py"
+      ],
+      "gates": [
+        "all"
+      ]
     }
   ]
 }
