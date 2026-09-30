@@ -6,29 +6,39 @@ on:
       - auth-authbus-boundary-convergence-20260928
     paths:
       - ".github/workflows/authority-convergence-once.yml"
+      - "scripts/authbus-materialize-boundaries-once.py"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/authority-convergence-once.yml"
+      - "scripts/authbus-materialize-boundaries-once.py"
 
 permissions:
   contents: write
 
 concurrency:
-  group: authbus-exact-source-convergence-${{ github.ref }}
+  group: authbus-exact-source-convergence-${{ github.event.pull_request.head.ref || github.ref }}
   cancel-in-progress: false
 
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: "1"
   RUST_TOOLCHAIN: "1.95.0"
+  TARGET_BRANCH: auth-authbus-boundary-convergence-20260928
+  EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   converge:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.ref == 'auth-authbus-boundary-convergence-20260928' }}
     name: Materialize reviewed AuthBus source boundaries
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
-      - name: Checkout exact triggering head
+      - name: Checkout exact source head
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.EXPECTED_HEAD }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -42,153 +52,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          def replace_once(path: str, old: str, new: str) -> None:
-              target = Path(path)
-              text = target.read_text(encoding="utf-8")
-              old_count = text.count(old)
-              new_count = text.count(new)
-              if old_count == 1:
-                  target.write_text(text.replace(old, new), encoding="utf-8")
-                  return
-              if old_count == 0 and new_count == 1:
-                  return
-              raise SystemExit(
-                  f"expected one old or one already-applied replacement in {path}; "
-                  f"old={old_count} new={new_count}"
-              )
-
-          def replace_count(path: str, old: str, new: str, count: int) -> None:
-              target = Path(path)
-              text = target.read_text(encoding="utf-8")
-              old_count = text.count(old)
-              new_count = text.count(new)
-              if old_count == count:
-                  target.write_text(text.replace(old, new), encoding="utf-8")
-                  return
-              if old_count == 0 and new_count == count:
-                  return
-              raise SystemExit(
-                  f"expected {count} old or already-applied replacements in {path}; "
-                  f"old={old_count} new={new_count}"
-              )
-
-          # Retry-safe database/checkpoint bootstrap is the only public entry.
-          replace_once(
-              "codex-rs/hepta-authbus/src/host.rs",
-              "    pub async fn bootstrap(\n",
-              "    pub(crate) async fn bootstrap(\n",
-          )
-          replace_once(
-              "codex-rs/hepta-authbus/src/bin/hepta-authbus-admin.rs",
-              "use codex_hepta_authbus::AuthBusAuthorityHost;\n",
-              "use codex_hepta_authbus::AuthBusAuthorityHost;\nuse codex_hepta_authbus::bootstrap_retryable;\n",
-          )
-          replace_once(
-              "codex-rs/hepta-authbus/src/bin/hepta-authbus-admin.rs",
-              "    let host = AuthBusAuthorityHost::bootstrap(\n",
-              "    let host = bootstrap_retryable(\n",
-          )
-
-          # Evidence owns one durable monotonic floor for ingress, leases,
-          # retention, recovery and operational projections.
-          replace_once(
-              "codex-rs/hepta-evidence/src/lib.rs",
-              "mod authbus_store;\n#[cfg(test)]",
-              "mod authbus_store;\nmod authbus_time;\n#[cfg(test)]",
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/lib.rs",
-              "pub use authbus_store::AuthBusAdmissionError;\n",
-              "pub use authbus_store::AuthBusAdmissionError;\npub use authbus_time::AuthBusTimeFloor;\n",
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/schema_validation.rs",
-              "#[path = \"authbus_recovery_schema.rs\"]\nmod authbus_recovery_schema;\n",
-              "#[path = \"authbus_recovery_schema.rs\"]\nmod authbus_recovery_schema;\n#[path = \"authbus_time_schema.rs\"]\nmod authbus_time_schema;\n",
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/schema_validation.rs",
-              "        .chain(authbus_recovery_schema::REQUIRED_SCHEMA_OBJECTS)\n",
-              "        .chain(authbus_recovery_schema::REQUIRED_SCHEMA_OBJECTS)\n        .chain(authbus_time_schema::REQUIRED_SCHEMA_OBJECTS)\n",
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/authbus_store.rs",
-              "use crate::schema_validation::classify_sqlx_error;\nuse crate::store::now_millis;\n",
-              "use crate::authbus_time::authbus_now;\nuse crate::schema_validation::classify_sqlx_error;\n",
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/authbus_store.rs",
-              "        let now = u64::try_from(now_millis()?)\n",
-              "        let now = u64::try_from(authbus_now(&mut transaction).await?)\n",
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/authbus_outbox.rs",
-              "use crate::schema_validation::classify_sqlx_error;\nuse crate::store::now_millis;\n",
-              "use crate::authbus_time::authbus_now;\nuse crate::schema_validation::classify_sqlx_error;\n",
-          )
-          replace_count(
-              "codex-rs/hepta-evidence/src/authbus_outbox.rs",
-              "let now = now_millis()?;",
-              "let now = authbus_now(&mut tx).await?;",
-              3,
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
-              "use crate::schema_validation::classify_sqlx_error;\nuse crate::store::now_millis;\n",
-              "use crate::authbus_time::authbus_now;\nuse crate::schema_validation::classify_sqlx_error;\n",
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
-              "    let now = now_millis()?;\n",
-              "    let now = authbus_now(&mut tx).await?;\n",
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/authbus_recovery.rs",
-              "use crate::schema_validation::classify_sqlx_error;\nuse crate::store::now_millis;\n",
-              "use crate::authbus_time::authbus_now;\nuse crate::schema_validation::classify_sqlx_error;\n",
-          )
-          replace_count(
-              "codex-rs/hepta-evidence/src/authbus_recovery.rs",
-              ".bind(now_millis()?)",
-              ".bind(authbus_now(&mut tx).await?)",
-              4,
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/authbus_operations.rs",
-              "use crate::schema_validation::classify_sqlx_error;\nuse crate::store::now_millis;\n",
-              "use crate::schema_validation::classify_sqlx_error;\n",
-          )
-          replace_once(
-              "codex-rs/hepta-evidence/src/authbus_operations.rs",
-              "        let observed_at_ms = now_millis()?;\n",
-              "        let observed_at_ms = i64::try_from(self.authbus_monotonic_now_ms().await?)\n            .map_err(|_| EvidenceError::Unavailable(\"AuthBus time floor exceeds i64\".into()))?;\n",
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/authbus_ingress.rs",
-              "    let now = now_ms()?;\n    if request.expires_at_ms <= now",
-              "    let now = host\n        .evidence\n        .authbus_monotonic_now_ms()\n        .await\n        .map_err(|error| invalid(&error.to_string()))?;\n    if request.expires_at_ms <= now",
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/authbus_ingress.rs",
-              "            now_ms()?,\n        )\n        .map_err(|error| invalid(&error.to_string()))?;\n",
-              "            host.evidence\n                .authbus_monotonic_now_ms()\n                .await\n                .map_err(|error| invalid(&error.to_string()))?,\n        )\n        .map_err(|error| invalid(&error.to_string()))?;\n",
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/authbus_dispatch.rs",
-              "use crate::authbus_ingress::now_ms;\n",
-              "",
-          )
-          replace_count(
-              "codex-rs/hepta-agentd/src/authbus_dispatch.rs",
-              "            now_ms()?,\n",
-              "            host.evidence\n                .authbus_monotonic_now_ms()\n                .await\n                .map_err(|error| invalid(&error.to_string()))?,\n",
-              2,
-          )
-          PY
-
+          python3 scripts/authbus-materialize-boundaries-once.py
           cargo fmt --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-authbus \
             -p codex-hepta-evidence \
@@ -196,7 +60,7 @@ jobs:
             -p codex-hepta-operations \
             -p codex-hepta-bao-adapter
 
-      - name: Compile and test the exact affected boundary
+      - name: Compile and test the affected authority boundary
         shell: bash
         run: |
           set -euo pipefail
@@ -211,26 +75,21 @@ jobs:
             -p codex-hepta-agentd -p codex-hepta-operations \
             -p codex-hepta-bao-adapter --all-targets --all-features -- -D warnings
           cd ..
-          test "$(grep -RIl 'store::now_millis' \
-            codex-rs/hepta-evidence/src/authbus_*.rs | sort)" = \
-            "codex-rs/hepta-evidence/src/authbus_time.rs"
           ! grep -q 'pub async fn bootstrap(' codex-rs/hepta-authbus/src/host.rs
           grep -q 'let host = bootstrap_retryable(' \
             codex-rs/hepta-authbus/src/bin/hepta-authbus-admin.rs
+          ! grep -RIl 'store::now_millis' codex-rs/hepta-evidence/src/authbus_*.rs \
+            | grep -v 'authbus_time.rs'
           python3 scripts/check-authbus-composition-root.py --check
 
-      - name: Commit a self-contained source candidate
+      - name: Commit one self-contained candidate
         shell: bash
-        env:
-          TARGET_BRANCH: auth-authbus-boundary-convergence-20260928
         run: |
           set -euo pipefail
           remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
-          if test "$remote_head" != "$GITHUB_SHA"; then
-            echo "A newer candidate exists; refusing to rewrite it."
-            exit 1
-          fi
-          git rm .github/workflows/authority-convergence-once.yml
+          test "$remote_head" = "$EXPECTED_HEAD"
+          git rm .github/workflows/authority-convergence-once.yml \
+            scripts/authbus-materialize-boundaries-once.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
