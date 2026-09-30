@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "c92f0b55956b3652ac2df087c307ca84f39650b4",
+    "tree": "7149bb9ea540d6984c5d62d880aa39808283c6a0"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "context.compiler",
@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "legacy_v1_read_only_source_composed_verified_v2_not_composed",
+  "productCallerState": "legacy_v1_composed_revision_bound_v2_ingress_source_implemented_product_use_pending",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -33,7 +33,8 @@
       "sourcePathExists": true,
       "designOperation": "compile",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "1f20f5e8974ee3c1e5012bc7dad54fee98ce416b"
     },
     {
       "operation": "compile_with_requirements",
@@ -47,7 +48,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_with_requirements",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "33f723317f83feec2b6e8be8c45d058f58288a7e"
     },
     {
       "operation": "compile_candidate_bound",
@@ -61,7 +63,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_candidate_bound",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "52efe73b0da51c5cbb054e8cdcfe3e59e4b08ba6"
     },
     {
       "operation": "verify_admission_snapshot_v2",
@@ -75,7 +78,8 @@
       "sourcePathExists": true,
       "designOperation": "revalidate_attachment",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "4cdfefe9c84369962444354ec9613bac9d882bfb"
     },
     {
       "operation": "verify_admission_snapshot_successor_v2",
@@ -89,7 +93,8 @@
       "sourcePathExists": true,
       "designOperation": "revalidate_attachment",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "4cdfefe9c84369962444354ec9613bac9d882bfb"
     },
     {
       "operation": "verify_admission_v2",
@@ -103,7 +108,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_context",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "4cdfefe9c84369962444354ec9613bac9d882bfb"
     },
     {
       "operation": "compile_v2",
@@ -117,7 +123,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_context",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "4cdfefe9c84369962444354ec9613bac9d882bfb"
     },
     {
       "operation": "record_serialization",
@@ -131,7 +138,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_context",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "4cdfefe9c84369962444354ec9613bac9d882bfb"
     },
     {
       "operation": "build_attachment",
@@ -145,7 +153,8 @@
       "sourcePathExists": true,
       "designOperation": "revalidate_attachment",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "4cdfefe9c84369962444354ec9613bac9d882bfb"
     },
     {
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
@@ -159,7 +168,8 @@
       "delegatedCallees": [],
       "operation": "prepare_delivery_v2",
       "nativeSymbol": "prepare_delivery_v2",
-      "designOperation": "revalidate_attachment"
+      "designOperation": "revalidate_attachment",
+      "sourceBlob": "4cdfefe9c84369962444354ec9613bac9d882bfb"
     },
     {
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
@@ -173,7 +183,8 @@
       "delegatedCallees": [],
       "operation": "observe_delivery",
       "nativeSymbol": "observe_delivery",
-      "designOperation": "compile_context"
+      "designOperation": "compile_context",
+      "sourceBlob": "4cdfefe9c84369962444354ec9613bac9d882bfb"
     },
     {
       "operation": "wire_v2_compatibility_receipt",
@@ -187,7 +198,72 @@
       "sourcePathExists": true,
       "designOperation": "compile_context",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "6e0583a81b064eec7ceb0b785bc9a48bd801a2f1"
+    },
+    {
+      "operation": "verify_cognitive_read_ingress_v2",
+      "nativeSymbol": "verify_cognitive_read_ingress_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/cognitive_read_ingress_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs",
+          "symbol": "CanonicalAuthoritativeReadShadowV2::validate"
+        }
+      ],
+      "sourceBlob": "a2d33db17df6484bce5d40abfbb7e341498c944a"
+    },
+    {
+      "operation": "compile_cognitive_read_v2",
+      "nativeSymbol": "compile_cognitive_read_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/cognitive_read_ingress_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+          "symbol": "compile_v2"
+        }
+      ],
+      "sourceBlob": "a2d33db17df6484bce5d40abfbb7e341498c944a"
+    },
+    {
+      "operation": "compile_revision_bound_cognitive_read_v2",
+      "nativeSymbol": "compile_revision_bound_cognitive_read_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/cognitive_read_ingress_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress.rs",
+          "symbol": "verify_cognitive_read_ingress_v2"
+        },
+        {
+          "path": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress.rs",
+          "symbol": "compile_cognitive_read_v2"
+        }
+      ],
+      "sourceBlob": "a2d33db17df6484bce5d40abfbb7e341498c944a"
     }
   ],
   "repositoryControlledGaps": [
@@ -228,8 +304,12 @@
       "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
     },
     {
+      "path": "codex-rs/hepta-cognitive-read/src/revisioned_shadow.rs",
+      "object": "b6a6b6c6008253e4098dd691c5547909b3104108"
+    },
+    {
       "path": "codex-rs/hepta-context-compiler",
-      "object": "517aa2bbba2f31ab5d4bf2ce96f5f4d8ec4fa662"
+      "object": "23c796a1f26af50b5dd85ad942bdd18470d9e57e"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
@@ -240,8 +320,16 @@
       "object": "28c5a29b1dd4108c3570c3189a8a414ae5728795"
     },
     {
+      "path": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress.rs",
+      "object": "a2d33db17df6484bce5d40abfbb7e341498c944a"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress_tests.rs",
+      "object": "743150d00314efbcd21cc9638ae649c9c7722065"
+    },
+    {
       "path": "codex-rs/hepta-context-compiler/src/lib.rs",
-      "object": "da1711e6575e0921ec4d2ae7b305fe8013f2e775"
+      "object": "1f20f5e8974ee3c1e5012bc7dad54fee98ce416b"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/lib_tests.rs",
@@ -257,7 +345,7 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "object": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
+      "object": "4cdfefe9c84369962444354ec9613bac9d882bfb"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
