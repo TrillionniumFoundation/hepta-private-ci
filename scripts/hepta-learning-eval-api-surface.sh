@@ -42,6 +42,26 @@ print(result)
 PY
 }
 
+dependency_artifact() {
+  python3 - "$1" "$2" <<'PY'
+import json
+import pathlib
+import sys
+rows = [json.loads(line) for line in pathlib.Path(sys.argv[1]).read_text().splitlines() if line.strip()]
+found = set()
+for row in rows:
+    if row.get('reason') != 'compiler-artifact' or row.get('target', {}).get('name') != sys.argv[2]:
+        continue
+    found.update(str(pathlib.Path(name).resolve()) for name in row['filenames'] if name.endswith('.rlib'))
+if len(found) != 1:
+    raise SystemExit(f'expected one exact {sys.argv[2]} rlib, found {len(found)}')
+result = pathlib.Path(next(iter(found)))
+if not result.is_file():
+    raise SystemExit(f'compiler-reported {sys.argv[2]} artifact is missing')
+print(result)
+PY
+}
+
 dependency_dir() {
   local rlib="$1"
   local directory
@@ -58,6 +78,7 @@ dependency_dir() {
 
 cargo build --locked -p codex-hepta-intelligence-eval --message-format=json >"${tmp}/default-build.jsonl"
 rlib="$(artifact "${tmp}/default-build.jsonl" default)"
+ledger_rlib="$(dependency_artifact "${tmp}/default-build.jsonl" codex_hepta_learning_ledger)"
 deps="$(dependency_dir "${rlib}")"
 
 cat >"${tmp}/positive.rs" <<'RS'
@@ -192,6 +213,58 @@ if not any(row.get('level') == 'error' and (row.get('code') or {}).get('code') =
     raise SystemExit('volatile journal fixture failed for an unrelated reason')
 PY
 
+cat >"${tmp}/bare_selected_host_trust.rs" <<'RS'
+use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
+use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
+use codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+
+#[allow(dead_code)]
+fn bypass<S: FinalHoldoutCasStoreV1, J: DurableProductEvaluationAttemptJournalV1>(
+    runner: &RecordedProductEvaluationRunnerV1<S>,
+    verifier: &LearningEvidenceVerifierV1,
+    journal: &mut J,
+) {
+    let _ = runner.qualify_and_persist_on_selected_host(
+        todo!(),
+        todo!(),
+        todo!(),
+        todo!(),
+        todo!(),
+        verifier,
+        0,
+        journal,
+        std::path::Path::new(""),
+        std::path::Path::new(""),
+        todo!(),
+    );
+}
+fn main() {}
+RS
+if rustc --edition=2024 --crate-name learning_eval_bare_selected_host_trust --error-format=json \
+    "${tmp}/bare_selected_host_trust.rs" \
+    --extern "codex_hepta_intelligence_eval=${rlib}" \
+    --extern "codex_hepta_learning_ledger=${ledger_rlib}" \
+    -L "dependency=${deps}" -o "${tmp}/bare-selected-host-trust" \
+    >"${tmp}/bare-selected-host-trust.stdout" 2>"${tmp}/bare-selected-host-trust.stderr"
+then
+  echo "selected-host qualification accepts a bare learning-evidence verifier" >&2
+  exit 1
+fi
+python3 - "${tmp}/bare-selected-host-trust.stderr" <<'PY'
+import json
+import pathlib
+rows = [json.loads(line) for line in pathlib.Path(__import__('sys').argv[1]).read_text().splitlines() if line.strip()]
+if not any(
+    row.get('level') == 'error'
+    and (row.get('code') or {}).get('code') == 'E0308'
+    and 'ActivatedLearningTrustV1' in (row.get('rendered') or row.get('message', ''))
+    and 'LearningEvidenceVerifierV1' in (row.get('rendered') or row.get('message', ''))
+    for row in rows
+):
+    raise SystemExit('selected-host activated-trust fixture failed for an unrelated reason')
+PY
+
 for symbol in recover_persisted_qualification recover_persisted_outcome_qualification \
   recover_selected_host_qualification recover_selected_host_outcome_qualification
 do
@@ -231,4 +304,4 @@ printf 'use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;\nfn main()
 rustc --edition=2024 --crate-name learning_eval_compat_surface "${tmp}/compat.rs" \
   --extern "codex_hepta_intelligence_eval=${compat}" -L "dependency=${compat_deps}" \
   -o "${tmp}/compat"
-printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"callerDecisionDecoderAccepted":false,"unarchivedRecordedQualificationPublic":false,"unarchivedOutcomeQualificationPublic":false,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
+printf '%s\n' '{"schema":"hepta.learning-eval.api-surface.v1","publicAdmission":true,"publicRecordedRunner":true,"verifiedRecoveryPublic":true,"callerDecisionDecoderAccepted":false,"bareVerifierSelectedHostAccepted":false,"unarchivedRecordedQualificationPublic":false,"unarchivedOutcomeQualificationPublic":false,"unverifiedPublicationRecoveryPublic":false,"lowLevelV2Public":false,"lowLevelV3Public":false,"volatileJournalDefaultAccepted":false,"rawRunnerDefaultPublic":false,"rawRunnerExplicitCompatibilityPublic":true}'
