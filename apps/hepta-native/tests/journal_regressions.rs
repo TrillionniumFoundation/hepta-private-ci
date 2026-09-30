@@ -1,5 +1,8 @@
 mod common;
 
+#[path = "common/snapshot.rs"]
+mod snapshot;
+
 use common::private_tempdir;
 use hepta_native::journal::OperationJournal;
 use hepta_native::journal::OperationPhase;
@@ -37,6 +40,24 @@ fn terminal() -> OperationRecord {
     }
 }
 
+fn wal_path(path: &std::path::Path) -> std::path::PathBuf {
+    let mut name = path.as_os_str().to_os_string();
+    name.push(".wal");
+    name.into()
+}
+
+// Exercise the real bounded WAL checkpoint policy without a test-only flush API.
+fn advance_to_checkpoint(
+    journal: &mut OperationJournal,
+) -> Result<(), hepta_native::error::ShellError> {
+    while journal.capacity().wal_entries != 0 {
+        let mut record = prepared();
+        record.key.operation_id = format!("checkpoint.{}", journal.all().len());
+        journal.upsert(record)?;
+    }
+    Ok(())
+}
+
 #[test]
 fn terminal_observation_cannot_be_rewritten_even_with_same_operation_binding() {
     let root = private_tempdir();
@@ -44,7 +65,7 @@ fn terminal_observation_cannot_be_rewritten_even_with_same_operation_binding() {
     let mut journal = OperationJournal::open(&path).unwrap();
     let receipt = terminal();
     journal.upsert(receipt.clone()).unwrap();
-    let before = std::fs::read(&path).unwrap();
+    let before = std::fs::read(wal_path(&path)).unwrap();
     journal.upsert(receipt.clone()).unwrap();
     let mut conflicting = receipt.clone();
     conflicting.terminal_status = Some(TerminalStatus::Failed);
@@ -52,7 +73,7 @@ fn terminal_observation_cannot_be_rewritten_even_with_same_operation_binding() {
     let mut conflicting = receipt.clone();
     conflicting.outcome_digest = Some("5".repeat(64));
     assert!(journal.upsert(conflicting).is_err());
-    assert_eq!(std::fs::read(&path).unwrap(), before);
+    assert_eq!(std::fs::read(wal_path(&path)).unwrap(), before);
     drop(journal);
     let reopened = OperationJournal::open(&path).unwrap();
     assert_eq!(reopened.find(&receipt.key), Some(&receipt));
@@ -70,6 +91,43 @@ fn operation_identity_cannot_move_between_endpoints() {
     assert_eq!(journal.find(&record.key), Some(&record));
 }
 
+#[cfg(unix)]
+#[test]
+fn journal_rejects_a_dangling_lock_without_creating_its_target() {
+    let root = private_tempdir();
+    let path = root.path().join("operations.json");
+    let target = root.path().join("unrelated-state");
+    std::os::unix::fs::symlink(&target, path.with_extension("lock")).unwrap();
+
+    assert!(OperationJournal::open(path).is_err());
+    assert!(!target.exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn journal_rejects_a_replaced_root_before_writing_under_another_owner() {
+    let parent = private_tempdir();
+    let root = parent.path().join("native-state");
+    let path = root.join("operations.json");
+    let mut journal = OperationJournal::open(&path).unwrap();
+    let record = prepared();
+    journal.upsert(record.clone()).unwrap();
+    std::fs::rename(&root, parent.path().join("original-state")).unwrap();
+
+    let _replacement_owner = OperationJournal::open(&path).unwrap();
+    assert!(journal.ensure_healthy().is_err());
+    assert!(
+        journal
+            .upsert(OperationRecord {
+                phase: OperationPhase::Invoking,
+                ..record.clone()
+            })
+            .is_err()
+    );
+    assert_eq!(journal.find(&record.key), Some(&record));
+    assert!(!root.join("operations.json.wal").exists());
+}
+
 #[test]
 fn reopened_snapshot_rejects_duplicate_operation_keys() {
     let root = private_tempdir();
@@ -82,7 +140,7 @@ fn reopened_snapshot_rejects_duplicate_operation_keys() {
         "schema": "hepta.native-operation-journal.v2",
         "operations": [record.clone(), record],
     });
-    std::fs::write(&path, serde_json::to_vec(&state).unwrap()).unwrap();
+    snapshot::write_private_json(&path, &state);
     assert!(
         OperationJournal::open(&path)
             .unwrap_err()
@@ -97,6 +155,7 @@ fn reopened_snapshot_rejects_unknown_critical_fields() {
     let path = root.path().join("operations.json");
     let mut journal = OperationJournal::open(&path).unwrap();
     journal.upsert(prepared()).unwrap();
+    advance_to_checkpoint(&mut journal).unwrap();
     drop(journal);
     let mut state: serde_json::Value =
         serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
@@ -113,15 +172,16 @@ fn failed_persistence_fences_owner_until_reopen() {
     let mut journal = OperationJournal::open(&path).unwrap();
     let record = prepared();
     journal.upsert(record.clone()).unwrap();
-    std::fs::rename(&path, &backup).unwrap();
-    std::fs::create_dir(&path).unwrap();
+    let wal = wal_path(&path);
+    std::fs::rename(&wal, &backup).unwrap();
+    std::fs::create_dir(&wal).unwrap();
     let invoking = OperationRecord {
         phase: OperationPhase::Invoking,
         ..record.clone()
     };
     assert!(journal.upsert(invoking.clone()).is_err());
-    std::fs::remove_dir(&path).unwrap();
-    std::fs::rename(&backup, &path).unwrap();
+    std::fs::remove_dir(&wal).unwrap();
+    std::fs::rename(&backup, &wal).unwrap();
     assert!(journal.ensure_healthy().is_err());
     assert!(journal.upsert(invoking).is_err());
     drop(journal);
@@ -204,13 +264,15 @@ fn duplicate_or_overlapping_retirement_frontier_is_rejected_on_reopen() {
         .as_object_mut()
         .unwrap()
         .remove("retirement_checkpoint");
+    state.as_object_mut().unwrap().remove("wal_sequence");
+    state.as_object_mut().unwrap().remove("wal_frontier");
     state["retired_operation_digests"] = serde_json::json!(["1".repeat(64), "1".repeat(64)]);
     std::fs::write(&path, serde_json::to_vec(&state).unwrap()).unwrap();
     assert!(OperationJournal::open(&path).is_err());
 }
 
 #[test]
-fn legacy_v2_journal_migrates_on_first_persisted_change() {
+fn legacy_v2_journal_recovers_wal_and_migrates_at_the_next_checkpoint() {
     let root = private_tempdir();
     let path = root.path().join("operations.json");
     std::fs::write(
@@ -224,10 +286,15 @@ fn legacy_v2_journal_migrates_on_first_persisted_change() {
         std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).unwrap();
     }
     let mut journal = OperationJournal::open(&path).unwrap();
-    journal.upsert(prepared()).unwrap();
+    let record = prepared();
+    journal.upsert(record.clone()).unwrap();
+    drop(journal);
+    let mut journal = OperationJournal::open(&path).unwrap();
+    assert_eq!(journal.find(&record.key), Some(&record));
+    advance_to_checkpoint(&mut journal).unwrap();
     drop(journal);
     let state: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    assert_eq!(state["schema"], "hepta.native-operation-journal.v6");
+    assert_eq!(state["schema"], "hepta.native-operation-journal.v7");
     assert_eq!(state["retired_operation_digests"], serde_json::json!([]));
 }
 
@@ -252,7 +319,9 @@ fn valid_json_content_corruption_is_detected_without_falling_back() {
     let path = root.path().join("operations.json");
     let mut journal = OperationJournal::open(&path).unwrap();
     journal.upsert(prepared()).unwrap();
+    advance_to_checkpoint(&mut journal).unwrap();
     journal.upsert(terminal()).unwrap();
+    advance_to_checkpoint(&mut journal).unwrap();
     drop(journal);
     let backup = root.path().join("operations.json.previous");
     let checkpoint = std::fs::read(&backup).unwrap();
@@ -272,7 +341,9 @@ fn missing_primary_never_replays_the_older_prepared_checkpoint() {
     let path = root.path().join("operations.json");
     let mut journal = OperationJournal::open(&path).unwrap();
     journal.upsert(prepared()).unwrap();
+    advance_to_checkpoint(&mut journal).unwrap();
     journal.upsert(terminal()).unwrap();
+    advance_to_checkpoint(&mut journal).unwrap();
     drop(journal);
     std::fs::remove_file(&path).unwrap();
     assert!(OperationJournal::open(&path).is_err());
@@ -280,27 +351,29 @@ fn missing_primary_never_replays_the_older_prepared_checkpoint() {
 }
 
 #[test]
-fn corruption_while_owned_is_not_overwritten_by_a_new_transition() {
+fn corruption_while_owned_is_not_overwritten_by_a_new_checkpoint() {
     let root = private_tempdir();
     let path = root.path().join("operations.json");
     let mut journal = OperationJournal::open(&path).unwrap();
     journal.upsert(prepared()).unwrap();
+    advance_to_checkpoint(&mut journal).unwrap();
     std::fs::write(&path, b"truncated").unwrap();
-    assert!(journal.upsert(terminal()).is_err());
+    journal.upsert(terminal()).unwrap();
+    assert!(advance_to_checkpoint(&mut journal).is_err());
     assert!(journal.ensure_healthy().is_err());
     assert_eq!(std::fs::read(&path).unwrap(), b"truncated");
 }
 
 #[test]
-fn exact_duplicate_does_not_create_a_new_checkpoint() {
+fn exact_duplicate_does_not_append_a_new_wal_entry() {
     let root = private_tempdir();
     let path = root.path().join("operations.json");
     let mut journal = OperationJournal::open(&path).unwrap();
     let record = prepared();
     journal.upsert(record.clone()).unwrap();
-    let before = std::fs::read(&path).unwrap();
+    let before = std::fs::read(wal_path(&path)).unwrap();
     journal.upsert(record).unwrap();
-    assert_eq!(std::fs::read(&path).unwrap(), before);
+    assert_eq!(std::fs::read(wal_path(&path)).unwrap(), before);
     assert!(!root.path().join("operations.json.previous").exists());
 }
 
@@ -395,10 +468,13 @@ fn v4_cannot_smuggle_v5_observation_closure() {
     };
     journal.upsert(record.clone()).unwrap();
     journal.close_observation(&record.key).unwrap();
+    advance_to_checkpoint(&mut journal).unwrap();
     drop(journal);
     let mut state: serde_json::Value =
         serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
     state["schema"] = "hepta.native-operation-journal.v4".into();
+    state.as_object_mut().unwrap().remove("wal_sequence");
+    state.as_object_mut().unwrap().remove("wal_frontier");
     state["checksum"] = hepta_native::model::sha256_hex(
         serde_json::to_vec(&(
             &state["schema"],

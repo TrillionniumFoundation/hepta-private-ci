@@ -564,7 +564,8 @@ pub fn run_packaged_e2e() -> Result<PackagedQualificationReceipt, ShellError> {
         .lock()
         .map_err(|_| ShellError::State("qualification platform lock poisoned".to_owned()))?;
     let parent_death_ack_loss_reconciled = restarted
-        .operation_history()
+        .operation_history_page(/*requested_page*/ 0, /*page_size*/ 64)?
+        .receipts
         .iter()
         .any(|receipt| receipt.terminal_observed)
         && crash_observation.invoke_calls == 0

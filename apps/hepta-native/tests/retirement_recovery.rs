@@ -1,5 +1,8 @@
 mod common;
 
+#[path = "common/snapshot.rs"]
+mod snapshot;
+
 use common::private_tempdir;
 use hepta_native::journal::{OperationJournal, OperationPhase, OperationRecord};
 use hepta_native::model::{OperationKey, PlatformAction, sha256_hex};
@@ -32,19 +35,14 @@ fn full_legacy_frontier_migrates_without_deleting_any_identity() {
         .map(|index| sha256_hex(format!("legacy.{index}")))
         .collect();
     let record = unknown("operation.new");
-    let mut journal = OperationJournal::open(&path).unwrap();
-    journal.upsert(record.clone()).unwrap();
-    drop(journal);
-    let mut state: serde_json::Value =
-        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
-    state["schema"] = "hepta.native-operation-journal.v3".into();
-    state.as_object_mut().unwrap().remove("checksum");
-    state
-        .as_object_mut()
-        .unwrap()
-        .remove("retirement_checkpoint");
-    state["retired_operation_digests"] = serde_json::to_value(&legacy).unwrap();
-    std::fs::write(&path, serde_json::to_vec(&state).unwrap()).unwrap();
+    snapshot::write_private_json(
+        &path,
+        &serde_json::json!({
+            "schema": "hepta.native-operation-journal.v3",
+            "operations": [record.clone()],
+            "retired_operation_digests": legacy,
+        }),
+    );
     let mut journal = OperationJournal::open(&path).unwrap();
     journal.close_observation(&record.key).unwrap();
     journal.compact_closed_history(0).unwrap();
@@ -67,11 +65,23 @@ fn crash_after_retirement_head_before_journal_replacement_preserves_no_replay() 
     let mut journal = OperationJournal::open(&path).unwrap();
     journal.upsert(record.clone()).unwrap();
     journal.close_observation(&record.key).unwrap();
-    let pre_retirement = std::fs::read(&path).unwrap();
+    // A pre-WAL checkpoint models the durable snapshot at this publication
+    // boundary without requiring each modern transition to rewrite it.
+    let schema = "hepta.native-operation-journal.v5";
+    let operations = vec![journal.find(&record.key).unwrap().clone()];
+    let retired_operation_digests = Vec::<String>::new();
+    let checksum =
+        sha256_hex(serde_json::to_vec(&(schema, &operations, &retired_operation_digests)).unwrap());
+    let pre_retirement = serde_json::json!({
+        "schema": schema,
+        "operations": operations,
+        "retired_operation_digests": retired_operation_digests,
+        "checksum": checksum,
+    });
     journal.compact_closed_history(0).unwrap();
     drop(journal);
     // Simulate the durable publication boundary, retaining the new segment head.
-    std::fs::write(&path, pre_retirement).unwrap();
+    snapshot::write_private_json(&path, &pre_retirement);
     let mut journal = OperationJournal::open(&path).unwrap();
     assert_eq!(journal.pending().count(), 0);
     assert_eq!(journal.retired_count(), 1);
@@ -86,11 +96,14 @@ fn old_live_backup_cannot_override_newer_retirement_evidence() {
     let record = unknown("operation.first");
     let mut journal = OperationJournal::open(&path).unwrap();
     journal.upsert(record.clone()).unwrap();
-    let live = std::fs::read(&path).unwrap();
+    let live = serde_json::json!({
+        "schema": "hepta.native-operation-journal.v2",
+        "operations": [record.clone()],
+    });
     journal.close_observation(&record.key).unwrap();
     journal.compact_closed_history(0).unwrap();
     drop(journal);
-    std::fs::write(&path, live).unwrap();
+    snapshot::write_private_json(&path, &live);
     assert!(
         OperationJournal::open(&path)
             .unwrap_err()

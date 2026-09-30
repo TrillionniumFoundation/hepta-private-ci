@@ -5,6 +5,11 @@ use super::WAL_CHECKPOINT_ENTRIES;
 use crate::model::OperationKey;
 use crate::model::PlatformAction;
 
+#[path = "private_state_test_support.rs"]
+mod common;
+
+use common::private_tempdir;
+
 fn record(operation_id: &str, phase: OperationPhase) -> OperationRecord {
     OperationRecord {
         endpoint_id: "runtime.one".to_owned(),
@@ -27,7 +32,7 @@ fn record(operation_id: &str, phase: OperationPhase) -> OperationRecord {
 
 #[test]
 fn wal_recovers_prepared_and_invoking_without_blind_replay() {
-    let root = tempfile::tempdir().unwrap();
+    let root = private_tempdir();
     let path = root.path().join("operations.json");
     let prepared = record("operation.one", OperationPhase::Prepared);
     let key = prepared.key.clone();
@@ -60,7 +65,7 @@ fn wal_recovers_prepared_and_invoking_without_blind_replay() {
 
 #[test]
 fn bounded_wal_checkpoints_and_reopens_with_exact_index() {
-    let root = tempfile::tempdir().unwrap();
+    let root = private_tempdir();
     let path = root.path().join("operations.json");
     {
         let mut journal = OperationJournal::open(&path).unwrap();

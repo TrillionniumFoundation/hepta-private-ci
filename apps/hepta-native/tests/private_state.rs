@@ -48,3 +48,30 @@ fn private_state_root_rejects_a_symlink() {
     symlink(&target, &redirected).unwrap();
     assert!(PrivateStateRoot::open_existing(redirected).is_err());
 }
+
+#[cfg(unix)]
+#[test]
+fn private_state_root_and_clones_reject_an_equally_private_replacement() {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let parent = private_tempdir();
+    let path = parent.path().join("native-state");
+    let state = PrivateStateRoot::open(&path).unwrap();
+    let cloned = state.clone();
+    std::fs::rename(&path, parent.path().join("original-state")).unwrap();
+    std::fs::create_dir(&path).unwrap();
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o700)).unwrap();
+
+    assert!(
+        state
+            .verify()
+            .unwrap_err()
+            .to_string()
+            .contains("identity changed")
+    );
+    assert!(cloned.verify().is_err());
+    PrivateStateRoot::open_existing(path)
+        .unwrap()
+        .verify()
+        .unwrap();
+}

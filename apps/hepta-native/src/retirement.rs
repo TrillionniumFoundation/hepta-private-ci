@@ -255,7 +255,8 @@ impl RetirementStore {
         }
         let manifest_digest =
             write_content_addressed(&self.root, "index", &manifest_bytes, INDEX_MANIFEST_BYTES)?;
-        crate::journal_storage::write(
+        crate::journal_storage::write_private(
+            &self.root,
             &self.root.path().join("head.json"),
             &serde_json::to_vec(&Head {
                 schema: HEAD_SCHEMA.to_owned(),
@@ -338,7 +339,7 @@ impl RetirementStore {
                     }
                 }
                 Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-                    crate::journal_storage::write(&path, &bytes)?;
+                    crate::journal_storage::write_private(&self.root, &path, &bytes)?;
                 }
                 Err(error) => return Err(error.into()),
             }
@@ -380,15 +381,6 @@ impl RetirementStore {
                 ));
             }
             let digest = write_content_addressed(&self.root, "segment", &bytes, SEGMENT_BYTES)?;
-            // Segment files retain the historical bare digest name.
-            let bare = self.root.path().join(format!("{digest}.json"));
-            let named = self.root.path().join(format!("segment-{digest}.json"));
-            if !bare.exists() {
-                std::fs::rename(&named, &bare)?;
-                sync_parent(&bare)?;
-            } else {
-                let _ = std::fs::remove_file(named);
-            }
             checkpoint = Checkpoint {
                 head: Some(digest),
                 count: checkpoint
@@ -733,7 +725,14 @@ fn write_content_addressed(
         )));
     }
     let digest = sha256_hex(bytes);
-    let path = root.path().join(format!("{kind}-{digest}.json"));
+    // Segments keep their historical bare digest name. Publish directly at
+    // that name so there is no second path-based rename after the rooted write.
+    let name = if kind == "segment" {
+        format!("{digest}.json")
+    } else {
+        format!("{kind}-{digest}.json")
+    };
+    let path = root.path().join(name);
     match std::fs::symlink_metadata(&path) {
         Ok(_) => {
             if crate::file_input::read_bytes(&path, maximum)? != bytes {
@@ -743,25 +742,11 @@ fn write_content_addressed(
             }
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            crate::journal_storage::write(&path, bytes)?;
+            crate::journal_storage::write_private(root, &path, bytes)?;
         }
         Err(error) => return Err(error.into()),
     }
     Ok(digest)
-}
-
-#[cfg(unix)]
-fn sync_parent(path: &Path) -> Result<(), ShellError> {
-    use std::fs::File;
-    if let Some(parent) = path.parent() {
-        File::open(parent)?.sync_all()?;
-    }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn sync_parent(_path: &Path) -> Result<(), ShellError> {
-    Ok(())
 }
 
 #[cfg(test)]

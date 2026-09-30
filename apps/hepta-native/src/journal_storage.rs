@@ -1,7 +1,6 @@
 //! Durable snapshot and append-only WAL writes. Injection is a private test
 //! parameter, never an environment variable or product API that can weaken
 //! persistence.
-#[cfg(unix)]
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read as _;
@@ -13,17 +12,26 @@ use atomic_write_file::AtomicWriteFile;
 
 use crate::error::ShellError;
 use crate::model::sha256_hex;
+use crate::private_state::PrivateStateRoot;
 
 const WAL_MAGIC: &[u8; 8] = b"HPTNWAL1";
 const WAL_HEADER_BYTES: usize = 8 + 4 + 64;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Boundary {
+    ParentVerified,
     Opened,
     Written,
     FileSynced,
     Replaced,
     DirectorySynced,
+}
+
+pub(crate) enum FileAccess {
+    Read,
+    Write,
+    Append,
+    Lock,
 }
 
 #[derive(Debug)]
@@ -46,11 +54,53 @@ pub(crate) fn wal_path(path: &Path) -> PathBuf {
     PathBuf::from(name)
 }
 
-pub(crate) fn write(path: &Path, bytes: &[u8]) -> Result<(), ShellError> {
-    write_at_boundaries(path, bytes, |_| Ok(()))
+pub(crate) fn write_private(
+    root: &PrivateStateRoot,
+    path: &Path,
+    bytes: &[u8],
+) -> Result<(), ShellError> {
+    write_at_boundaries(root, path, bytes, |_| Ok(()))
+}
+
+fn write_at_boundaries(
+    root: &PrivateStateRoot,
+    path: &Path,
+    bytes: &[u8],
+    mut observe: impl FnMut(Boundary) -> Result<(), ShellError>,
+) -> Result<(), ShellError> {
+    root.verify()?;
+    private_child_name(root, path)?;
+    observe(Boundary::ParentVerified)?;
+    let mut file = AtomicWriteFile::open(path)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt as _;
+        let directory = file.directory().ok_or_else(|| {
+            ShellError::Security("atomic native state write lacks its parent descriptor".to_owned())
+        })?;
+        let actual = rustix::fs::fstat(directory).map_err(std::io::Error::from)?;
+        let expected = rustix::fs::fstat(root.directory_handle()).map_err(std::io::Error::from)?;
+        if actual.st_dev != expected.st_dev || actual.st_ino != expected.st_ino {
+            return Err(ShellError::Security(
+                "atomic native state parent identity changed".to_owned(),
+            ));
+        }
+        file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
+    }
+    observe(Boundary::Opened)?;
+    file.write_all(bytes)?;
+    observe(Boundary::Written)?;
+    file.sync_all()?;
+    observe(Boundary::FileSynced)?;
+    file.commit()?;
+    observe(Boundary::Replaced)?;
+    sync_private_root(root)?;
+    observe(Boundary::DirectorySynced)?;
+    Ok(())
 }
 
 pub(crate) fn append_wal_frame(
+    root: &PrivateStateRoot,
     snapshot_path: &Path,
     payload: &[u8],
     maximum_total: u64,
@@ -63,11 +113,8 @@ pub(crate) fn append_wal_frame(
     }
     let path = wal_path(snapshot_path);
     let existed = path.exists();
-    let existing = if existed {
-        std::fs::metadata(&path)?.len()
-    } else {
-        0
-    };
+    let mut file = open_private_file_in(root, &path, FileAccess::Append, existed)?;
+    let existing = file.metadata()?.len();
     let frame_bytes = WAL_HEADER_BYTES
         .checked_add(payload.len())
         .ok_or_else(|| ShellError::State("native journal WAL size overflow".to_owned()))?;
@@ -79,33 +126,29 @@ pub(crate) fn append_wal_frame(
             "native journal WAL reached its checkpoint budget".to_owned(),
         ));
     }
-    let mut options = OpenOptions::new();
-    options.create(true).append(true).read(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt as _;
-        options.mode(0o600);
-    }
-    let mut file = options.open(&path)?;
-    ensure_private_file(&path, existed)?;
     file.write_all(WAL_MAGIC)?;
     file.write_all(&(payload.len() as u32).to_be_bytes())?;
     file.write_all(sha256_hex(payload).as_bytes())?;
     file.write_all(payload)?;
     file.sync_all()?;
     if !existed {
-        sync_parent(&path)?;
+        sync_private_root(root)?;
     }
+    root.verify()?;
     Ok(next)
 }
 
 pub(crate) fn read_wal_frames(
+    root: &PrivateStateRoot,
     snapshot_path: &Path,
     maximum_total: u64,
     maximum_frame: u64,
 ) -> Result<WalFrames, ShellError> {
+    root.verify()?;
     let path = wal_path(snapshot_path);
-    if !path.exists() {
+    if std::fs::symlink_metadata(&path)
+        .is_err_and(|error| error.kind() == std::io::ErrorKind::NotFound)
+    {
         return Ok(WalFrames {
             frames: Vec::new(),
             valid_bytes: 0,
@@ -113,17 +156,15 @@ pub(crate) fn read_wal_frames(
             partial_tail: false,
         });
     }
-    ensure_private_file(&path, true)?;
-    let metadata = std::fs::metadata(&path)?;
+    let file = open_private_file_in(root, &path, FileAccess::Read, /*preexisting*/ true)?;
+    let metadata = file.metadata()?;
     if metadata.len() > maximum_total {
         return Err(ShellError::State(
             "native journal WAL exceeds its byte budget".to_owned(),
         ));
     }
     let mut bytes = Vec::with_capacity(metadata.len() as usize);
-    crate::file_input::open_regular_file(&path)?
-        .take(maximum_total + 1)
-        .read_to_end(&mut bytes)?;
+    file.take(maximum_total + 1).read_to_end(&mut bytes)?;
     if bytes.len() as u64 > maximum_total {
         return Err(ShellError::State(
             "native journal WAL read exceeded its byte budget".to_owned(),
@@ -184,9 +225,16 @@ pub(crate) fn read_wal_frames(
     })
 }
 
-pub(crate) fn truncate_wal(snapshot_path: &Path, length: u64) -> Result<(), ShellError> {
+pub(crate) fn truncate_wal(
+    root: &PrivateStateRoot,
+    snapshot_path: &Path,
+    length: u64,
+) -> Result<(), ShellError> {
+    root.verify()?;
     let path = wal_path(snapshot_path);
-    if !path.exists() {
+    if std::fs::symlink_metadata(&path)
+        .is_err_and(|error| error.kind() == std::io::ErrorKind::NotFound)
+    {
         if length == 0 {
             return Ok(());
         }
@@ -194,43 +242,131 @@ pub(crate) fn truncate_wal(snapshot_path: &Path, length: u64) -> Result<(), Shel
             "native journal WAL disappeared before truncation".to_owned(),
         ));
     }
-    ensure_private_file(&path, true)?;
-    let file = OpenOptions::new().write(true).open(&path)?;
+    let file = open_private_file_in(root, &path, FileAccess::Write, /*preexisting*/ true)?;
     file.set_len(length)?;
     file.sync_all()?;
-    sync_parent(&path)
+    sync_private_root(root)
 }
 
-fn write_at_boundaries(
+fn private_child_name<'a>(
+    root: &PrivateStateRoot,
+    path: &'a Path,
+) -> Result<&'a std::ffi::OsStr, ShellError> {
+    if path.parent() != Some(root.path()) {
+        return Err(ShellError::Security(
+            "native state file is outside its private root".to_owned(),
+        ));
+    }
+    path.file_name()
+        .ok_or_else(|| ShellError::Security("native state file has no name".to_owned()))
+}
+
+pub(crate) fn open_private_file_in(
+    root: &PrivateStateRoot,
     path: &Path,
-    bytes: &[u8],
-    mut observe: impl FnMut(Boundary) -> Result<(), ShellError>,
-) -> Result<(), ShellError> {
-    let mut file = AtomicWriteFile::open(path)?;
+    access: FileAccess,
+    preexisting: bool,
+) -> Result<File, ShellError> {
+    root.verify()?;
+    let name = private_child_name(root, path)?;
+    #[cfg(unix)]
+    let file: File = {
+        let access = match access {
+            FileAccess::Read => rustix::fs::OFlags::RDONLY,
+            FileAccess::Write => rustix::fs::OFlags::WRONLY,
+            FileAccess::Append => {
+                rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE | rustix::fs::OFlags::APPEND
+            }
+            FileAccess::Lock => rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE,
+        };
+        rustix::fs::openat(
+            root.directory_handle(),
+            name,
+            access
+                | rustix::fs::OFlags::NOFOLLOW
+                | rustix::fs::OFlags::NONBLOCK
+                | rustix::fs::OFlags::CLOEXEC,
+            rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
+        )
+        .map_err(std::io::Error::from)?
+        .into()
+    };
+    #[cfg(not(unix))]
+    let file = {
+        let _ = name;
+        let mut options = OpenOptions::new();
+        match access {
+            FileAccess::Read => {
+                options.read(true);
+            }
+            FileAccess::Write => {
+                options.write(true);
+            }
+            FileAccess::Append => {
+                options.read(true).append(true).create(true);
+            }
+            FileAccess::Lock => {
+                options.read(true).write(true).create(true);
+            }
+        }
+        open_private_file(path, &mut options, preexisting)?
+    };
+    validate_private_file(&file, path, preexisting)?;
+    root.verify()?;
+    Ok(file)
+}
+
+fn sync_private_root(root: &PrivateStateRoot) -> Result<(), ShellError> {
+    #[cfg(unix)]
+    root.directory_handle().sync_all()?;
+    root.verify()
+}
+
+/// Validate the same handle used for mutation. A path-only check followed by a
+/// normal open can follow a replaced link or create a dangling link's target.
+pub(crate) fn open_private_file(
+    path: &Path,
+    options: &mut OpenOptions,
+    preexisting: bool,
+) -> Result<File, ShellError> {
+    #[cfg(not(unix))]
+    let _ = preexisting;
     #[cfg(unix)]
     {
-        use std::os::unix::fs::PermissionsExt as _;
-        file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
+        use std::os::unix::fs::OpenOptionsExt as _;
+        options.mode(0o600).custom_flags(
+            (rustix::fs::OFlags::NOFOLLOW | rustix::fs::OFlags::NONBLOCK).bits() as i32,
+        );
     }
-    observe(Boundary::Opened)?;
-    file.write_all(bytes)?;
-    observe(Boundary::Written)?;
-    file.sync_all()?;
-    observe(Boundary::FileSynced)?;
-    file.commit()?;
-    observe(Boundary::Replaced)?;
-    sync_parent(path)?;
-    observe(Boundary::DirectorySynced)?;
-    Ok(())
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt as _;
+        options.custom_flags(0x0020_0000); // FILE_FLAG_OPEN_REPARSE_POINT
+    }
+    let file = options.open(path)?;
+    validate_private_file(&file, path, preexisting)?;
+    Ok(file)
 }
 
-fn ensure_private_file(path: &Path, preexisting: bool) -> Result<(), ShellError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
+fn validate_private_file(file: &File, path: &Path, preexisting: bool) -> Result<(), ShellError> {
+    #[cfg(not(unix))]
+    let _ = preexisting;
+    let metadata = file.metadata()?;
+    if !metadata.is_file() {
         return Err(ShellError::Security(format!(
-            "native journal WAL is not a regular local file: {}",
+            "native journal state is not a regular local file: {}",
             path.display()
         )));
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::MetadataExt as _;
+        if metadata.file_attributes() & 0x400 != 0 {
+            return Err(ShellError::Security(format!(
+                "native journal state is a reparse point: {}",
+                path.display()
+            )));
+        }
     }
     #[cfg(unix)]
     {
@@ -243,22 +379,9 @@ fn ensure_private_file(path: &Path, preexisting: bool) -> Result<(), ShellError>
             )));
         }
         if mode != 0o600 {
-            std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+            file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
         }
     }
-    Ok(())
-}
-
-#[cfg(unix)]
-fn sync_parent(path: &Path) -> Result<(), ShellError> {
-    if let Some(parent) = path.parent() {
-        File::open(parent)?.sync_all()?;
-    }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn sync_parent(_path: &Path) -> Result<(), ShellError> {
     Ok(())
 }
 

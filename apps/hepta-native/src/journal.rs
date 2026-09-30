@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::fs::File;
-use std::fs::OpenOptions;
 use std::io::Read as _;
 use std::path::Path;
 use std::path::PathBuf;
@@ -307,16 +306,12 @@ impl OperationJournal {
         let private_root = PrivateStateRoot::open(parent.to_path_buf())?;
         let lock_path = path.with_extension("lock");
         let lock_existed = lock_path.exists();
-        if lock_existed {
-            ensure_private_state_file(&lock_path, true)?;
-        }
-        let lock = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .truncate(false)
-            .open(&lock_path)?;
-        ensure_private_state_file(&lock_path, lock_existed)?;
+        let lock = crate::journal_storage::open_private_file_in(
+            &private_root,
+            &lock_path,
+            crate::journal_storage::FileAccess::Lock,
+            lock_existed,
+        )?;
         lock.try_lock().map_err(|_| {
             ShellError::State(format!(
                 "operation journal is already owned by another native process: {}",
@@ -326,7 +321,7 @@ impl OperationJournal {
 
         let wal_path = crate::journal_storage::wal_path(&path);
         let mut state = if path.exists() {
-            read_snapshot(&path)?
+            read_snapshot(&private_root, &path)?
         } else {
             let has_previous =
                 std::fs::symlink_metadata(crate::journal_storage::previous_path(&path)).is_ok();
@@ -380,6 +375,7 @@ impl OperationJournal {
         }
 
         let replay = replay_wal(
+            &private_root,
             &path,
             &mut state.operations,
             state.wal_sequence,
@@ -388,12 +384,12 @@ impl OperationJournal {
         state.wal_sequence = replay.sequence;
         state.wal_frontier = replay.frontier.clone();
         if replay.partial_tail {
-            crate::journal_storage::truncate_wal(&path, replay.valid_bytes)?;
+            crate::journal_storage::truncate_wal(&private_root, &path, replay.valid_bytes)?;
         }
         if replay.applied_entries == 0 && replay.total_bytes != 0 {
             // A durable checkpoint already includes every complete frame. The
             // stale WAL may be cleared only after its chain was fully verified.
-            crate::journal_storage::truncate_wal(&path, 0)?;
+            crate::journal_storage::truncate_wal(&private_root, &path, 0)?;
         }
 
         let mut retired = HashSet::with_capacity(state.retired_operation_digests.len());
@@ -606,6 +602,7 @@ impl OperationJournal {
         let entry = JournalWalEntry::new(sequence, self.wal_frontier.clone(), record)?;
         let bytes = serde_json::to_vec(&entry)?;
         self.wal_bytes = crate::journal_storage::append_wal_frame(
+            &self.private_root,
             &self.path,
             &bytes,
             MAX_WAL_BYTES,
@@ -771,15 +768,16 @@ impl OperationJournal {
                 "operation journal would exceed {MAX_JOURNAL_BYTES} bytes"
             )));
         }
-        if let Some(parent) = self.path.parent() {
-            std::fs::create_dir_all(parent)?;
-        }
         if self.path.exists() {
-            ensure_private_state_file(&self.path, true)?;
             let mut previous = Vec::new();
-            crate::file_input::open_regular_file(&self.path)?
-                .take(MAX_JOURNAL_BYTES + 1)
-                .read_to_end(&mut previous)?;
+            crate::journal_storage::open_private_file_in(
+                &self.private_root,
+                &self.path,
+                crate::journal_storage::FileAccess::Read,
+                /*preexisting*/ true,
+            )?
+            .take(MAX_JOURNAL_BYTES + 1)
+            .read_to_end(&mut previous)?;
             if previous.len() as u64 > MAX_JOURNAL_BYTES {
                 return Err(ShellError::State(
                     "prior journal exceeded byte limit".to_owned(),
@@ -788,16 +786,11 @@ impl OperationJournal {
             let prior: JournalFile = serde_json::from_slice(&previous)?;
             prior.verify_integrity()?;
             let backup = crate::journal_storage::previous_path(&self.path);
-            if backup.exists() {
-                ensure_private_state_file(&backup, true)?;
-            }
             // A forensic checkpoint only: automatic fallback can resurrect an effect.
-            crate::journal_storage::write(&backup, &previous)?;
-            ensure_private_state_file(&backup, false)?;
+            crate::journal_storage::write_private(&self.private_root, &backup, &previous)?;
         }
-        crate::journal_storage::write(&self.path, &bytes)?;
-        ensure_private_state_file(&self.path, false)?;
-        crate::journal_storage::truncate_wal(&self.path, 0)?;
+        crate::journal_storage::write_private(&self.private_root, &self.path, &bytes)?;
+        crate::journal_storage::truncate_wal(&self.private_root, &self.path, 0)?;
         Ok(())
     }
 }
@@ -812,18 +805,21 @@ struct WalReplay {
     partial_tail: bool,
 }
 
-fn read_snapshot(path: &Path) -> Result<JournalFile, ShellError> {
-    ensure_private_state_file(path, true)?;
-    let metadata = std::fs::metadata(path)?;
+fn read_snapshot(root: &PrivateStateRoot, path: &Path) -> Result<JournalFile, ShellError> {
+    let file = crate::journal_storage::open_private_file_in(
+        root,
+        path,
+        crate::journal_storage::FileAccess::Read,
+        /*preexisting*/ true,
+    )?;
+    let metadata = file.metadata()?;
     if metadata.len() > MAX_JOURNAL_BYTES {
         return Err(ShellError::State(format!(
             "operation journal exceeds {MAX_JOURNAL_BYTES} bytes"
         )));
     }
     let mut bytes = Vec::new();
-    crate::file_input::open_regular_file(path)?
-        .take(MAX_JOURNAL_BYTES + 1)
-        .read_to_end(&mut bytes)?;
+    file.take(MAX_JOURNAL_BYTES + 1).read_to_end(&mut bytes)?;
     if bytes.len() as u64 > MAX_JOURNAL_BYTES {
         return Err(ShellError::State(
             "operation journal read exceeded byte limit".to_owned(),
@@ -833,12 +829,14 @@ fn read_snapshot(path: &Path) -> Result<JournalFile, ShellError> {
 }
 
 fn replay_wal(
+    root: &PrivateStateRoot,
     path: &Path,
     operations: &mut Vec<OperationRecord>,
     snapshot_sequence: u64,
     snapshot_frontier: Option<String>,
 ) -> Result<WalReplay, ShellError> {
-    let frames = crate::journal_storage::read_wal_frames(path, MAX_WAL_BYTES, MAX_WAL_FRAME_BYTES)?;
+    let frames =
+        crate::journal_storage::read_wal_frames(root, path, MAX_WAL_BYTES, MAX_WAL_FRAME_BYTES)?;
     let mut index = build_operation_index(operations)?;
     let mut sequence = snapshot_sequence;
     let mut frontier = snapshot_frontier.clone();
@@ -1041,31 +1039,6 @@ fn phase_transition_allowed(from: OperationPhase, to: OperationPhase) -> bool {
         OperationPhase::Terminal => to == OperationPhase::Terminal,
         OperationPhase::ObservationClosed => to == OperationPhase::ObservationClosed,
     }
-}
-
-fn ensure_private_state_file(path: &Path, _preexisting: bool) -> Result<(), ShellError> {
-    let metadata = std::fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return Err(ShellError::Security(format!(
-            "native operation journal state is not a regular local file: {}",
-            path.display()
-        )));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt as _;
-        let mode = metadata.permissions().mode() & 0o777;
-        if _preexisting && mode & 0o077 != 0 {
-            return Err(ShellError::Security(format!(
-                "native operation journal state is group/world accessible: {}",
-                path.display()
-            )));
-        }
-        if mode != 0o600 {
-            std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
-        }
-    }
-    Ok(())
 }
 
 #[cfg(test)]

@@ -95,10 +95,19 @@ struct Platform {
 
 impl PlatformAdapter for Platform {
     fn permission(&self, _payload: &PlatformPayload) -> Result<PermissionDecision, ShellError> {
-        // Read the actual durable file, not the runtime's in-memory vector.
-        let value: serde_json::Value =
-            serde_json::from_slice(&std::fs::read(&self.journal_path).unwrap()).unwrap();
-        assert_eq!(value["operations"][0]["phase"], "prepared");
+        // Prepared is durably appended before permission, even before the
+        // first bounded snapshot checkpoint. Verify its actual WAL frame.
+        let bytes = std::fs::read(self.journal_path.with_extension("json.wal")).unwrap();
+        assert_eq!(&bytes[..8], b"HPTNWAL1");
+        let length = u32::from_be_bytes(bytes[8..12].try_into().unwrap()) as usize;
+        let payload = &bytes[76..];
+        assert_eq!(length, payload.len());
+        assert_eq!(
+            std::str::from_utf8(&bytes[12..76]).unwrap(),
+            hepta_native::model::sha256_hex(payload)
+        );
+        let value: serde_json::Value = serde_json::from_slice(payload).unwrap();
+        assert_eq!(value["record"]["phase"], "prepared");
         let mut state = self.state.lock().unwrap();
         state.permission_calls += 1;
         if state.permission_fails {
@@ -260,7 +269,13 @@ fn old_view_cannot_authorize_new_generation_before_permission() {
     let error = shell.request_platform_capability(request).unwrap_err();
     assert!(error.to_string().contains("stale runtime view"));
     assert_eq!(state.lock().unwrap().permission_calls, 0);
-    assert!(shell.operation_history().is_empty());
+    assert!(
+        shell
+            .operation_history_page(/*requested_page*/ 0, /*page_size*/ 64)
+            .unwrap()
+            .receipts
+            .is_empty()
+    );
 }
 
 #[test]
@@ -332,7 +347,7 @@ fn malformed_permission_observation_is_terminal_without_dispatch() {
 }
 
 #[test]
-fn failed_close_invalidates_session_and_view() {
+fn failed_close_retains_only_cleanup_identity_and_invalidates_view() {
     let temp = private_tempdir();
     let state = Arc::new(Mutex::new(State::default()));
     let mut shell = runtime(
@@ -341,12 +356,23 @@ fn failed_close_invalidates_session_and_view() {
         vec![7],
         false,
     );
-    shell.connect_runtime(&manifest()).unwrap();
+    let original = shell.connect_runtime(&manifest()).unwrap();
     shell.refresh_runtime_view().unwrap();
     state.lock().unwrap().close_fails = true;
     assert!(shell.close().is_err());
-    assert!(shell.session().is_none());
+    assert_eq!(shell.session(), Some(&original));
     assert!(shell.view().is_none());
+    assert!(
+        shell
+            .refresh_runtime_view()
+            .unwrap_err()
+            .to_string()
+            .contains("closing")
+    );
+    state.lock().unwrap().close_fails = false;
+    shell.close().unwrap();
+    assert!(shell.session().is_none());
+    assert_eq!(state.lock().unwrap().closes, 2);
 }
 
 #[test]
@@ -359,13 +385,20 @@ fn failed_reconnect_close_does_not_retain_previous_view() {
         vec![7],
         false,
     );
-    shell.connect_runtime(&manifest()).unwrap();
+    let original = shell.connect_runtime(&manifest()).unwrap();
     shell.refresh_runtime_view().unwrap();
     state.lock().unwrap().close_fails = true;
     assert!(shell.connect_runtime(&manifest()).is_err());
-    assert!(shell.session().is_none());
+    assert_eq!(shell.session(), Some(&original));
     assert!(shell.view().is_none());
     assert_eq!(state.lock().unwrap().connects, 1);
+    assert!(shell.refresh_runtime_view().is_err());
+    state.lock().unwrap().close_fails = false;
+    let replacement = shell.connect_runtime(&manifest()).unwrap();
+    assert_ne!(replacement, original);
+    assert_eq!(shell.session(), Some(&replacement));
+    assert_eq!(state.lock().unwrap().closes, 2);
+    assert_eq!(state.lock().unwrap().connects, 2);
 }
 
 #[test]
