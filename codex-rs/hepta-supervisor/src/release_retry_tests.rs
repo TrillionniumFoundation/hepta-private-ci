@@ -338,3 +338,573 @@ fn terminal_journal_ambiguity_then_target_exit_keeps_the_observed_healthy_outcom
     }
     Ok(())
 }
+
+#[test]
+fn healthy_target_cannot_overwrite_an_unrelated_release_state_generation()
+-> Result<(), SupervisorError> {
+    for external_target_pair in [false, true] {
+        let fleet = TestFleet::new()?;
+        let control = FakeControl::default();
+        let now = Instant::now();
+        let mut supervisor = start_source(&fleet, &control, now)?;
+        supervisor.upgrade(
+            &fleet.first,
+            admitted_release(&fleet, &fleet.first, "drift-target")?,
+            now,
+        )?;
+        finish_release_drain(&mut supervisor, &control, &fleet.first, now);
+        let before = supervisor.record(&fleet.first)?.release_state;
+        let first = fleet.registry.compare_and_set_release_state(
+            &fleet.first,
+            before.generation,
+            Some(ReleaseId::parse("unrelated-release")?),
+            None,
+        )?;
+        let external = if external_target_pair {
+            fleet.registry.compare_and_set_release_state(
+                &fleet.first,
+                first.generation,
+                Some(ReleaseId::parse("drift-target")?),
+                Some(ReleaseId::parse("retry-source")?),
+            )?
+        } else {
+            first
+        };
+        control.set_healthy(&fleet.first);
+        let failed = supervisor.tick(now);
+        assert_eq!(failed.faults.len(), 1);
+        assert_eq!(supervisor.record(&fleet.first)?.release_state, external);
+        assert!(
+            supervisor
+                .snapshot(&fleet.first)
+                .expect("snapshot")
+                .release_change_pending
+        );
+        assert_eq!(supervisor.tick(now).faults.len(), 1);
+        assert_eq!(supervisor.record(&fleet.first)?.release_state, external);
+        assert_eq!(control.spawn_count(&fleet.first), 2);
+    }
+    Ok(())
+}
+
+#[test]
+fn failed_signed_explicit_rollback_terminalizes_restoration_of_its_source()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let mut supervisor = start_source(&fleet, &control, now)?;
+    let target = admitted_release(&fleet, &fleet.first, "rejected-signed-rollback-target")?;
+    control.reject_spawn_program(target.command().program.clone());
+    queue_signed_change(
+        &mut supervisor,
+        &fleet,
+        target,
+        now,
+        H7H89ProductionTransition::Rollback,
+    )?;
+    finish_release_drain(&mut supervisor, &control, &fleet.first, now);
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let restored = supervisor.snapshot(&fleet.first).expect("snapshot");
+    assert_eq!(restored.active_release.as_deref(), Some("retry-source"));
+    assert!(!restored.release_change_pending);
+    let record = supervisor.record(&fleet.first)?;
+    assert_eq!(
+        read_intent(record.layout.run_root())
+            .expect("intent read")
+            .expect("intent")
+            .status,
+        SignedIntentStatus::RolledBack
+    );
+    assert!(!supervisor.production_recovery_required(&fleet.first)?);
+    // Reconstruct the cut where the rollback outcome is durable but the
+    // signed receipt is still queued when a new owner starts.
+    let queued = read_intent(record.layout.run_root())
+        .expect("intent read")
+        .expect("intent")
+        .with_status(SignedIntentStatus::Queued)
+        .expect("queued crash cut");
+    write_intent(record.layout.run_root(), &queued).expect("write queued crash cut");
+    let (recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    assert!(!recovered.production_recovery_required(&fleet.first)?);
+    assert_eq!(
+        read_intent(record.layout.run_root())
+            .expect("intent read")
+            .expect("intent")
+            .status,
+        SignedIntentStatus::RolledBack
+    );
+    Ok(())
+}
+
+#[test]
+fn healthy_active_target_does_not_complete_an_unrelated_signed_intent()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let mut supervisor = start_source(&fleet, &control, now)?;
+    supervisor.with_slot(&fleet.first, |supervisor, slot| {
+        let record = supervisor.record(&fleet.first)?;
+        let intent = SignedSupervisorIntent::new(
+            Sha256Digest::for_bytes(b"unrelated-qualified-grant"),
+            fleet.first.to_string(),
+            H7H89ProductionTransition::Upgrade,
+            "unrelated-source",
+            "retry-source",
+            slot.control_revision,
+            record.lifecycle.generation,
+            /*authority_epoch*/ 7,
+            SignedIntentStatus::Queued,
+        )
+        .expect("unrelated intent");
+        write_intent(record.layout.run_root(), &intent).expect("persist unrelated intent");
+        slot.signed_intent = Some(intent);
+        Ok(())
+    })?;
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let record = supervisor.record(&fleet.first)?;
+    assert_eq!(
+        read_intent(record.layout.run_root())
+            .expect("intent read")
+            .expect("intent")
+            .status,
+        SignedIntentStatus::Queued
+    );
+    Ok(())
+}
+
+#[test]
+fn recovering_a_committed_target_preserves_its_rollback_predecessor_and_generation()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let mut supervisor = start_source(&fleet, &control, now)?;
+    supervisor.upgrade(
+        &fleet.first,
+        admitted_release(&fleet, &fleet.first, "recover-committed-target")?,
+        now,
+    )?;
+    finish_release_drain(&mut supervisor, &control, &fleet.first, now);
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let committed = supervisor.record(&fleet.first)?.release_state;
+    drop(supervisor);
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    assert_eq!(recovered.record(&fleet.first)?.release_state, committed);
+    assert_eq!(
+        recovered
+            .snapshot(&fleet.first)
+            .expect("snapshot")
+            .previous_release
+            .as_deref(),
+        Some("retry-source")
+    );
+    assert_eq!(recovered.tick(now), TickReport::default());
+    assert_eq!(recovered.record(&fleet.first)?.release_state, committed);
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    Ok(())
+}
+
+#[test]
+fn recovering_target_running_before_release_state_cas_defers_publication_until_health()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let mut supervisor = start_source(&fleet, &control, now)?;
+    supervisor.upgrade(
+        &fleet.first,
+        admitted_release(&fleet, &fleet.first, "recover-before-cas-target")?,
+        now,
+    )?;
+    finish_release_drain(&mut supervisor, &control, &fleet.first, now);
+    let source_state = supervisor.record(&fleet.first)?.release_state;
+    let starting = supervisor.record(&fleet.first)?.lifecycle;
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    control.set_healthy(&fleet.first);
+    drop(supervisor);
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    assert_eq!(recovered.record(&fleet.first)?.release_state, source_state);
+    assert_eq!(
+        recovered
+            .snapshot(&fleet.first)
+            .expect("snapshot")
+            .active_release
+            .as_deref(),
+        Some("recover-before-cas-target")
+    );
+    assert_eq!(recovered.tick(now), TickReport::default());
+    let record = recovered.record(&fleet.first)?;
+    assert_eq!(
+        record.release_state.current,
+        Some(ReleaseId::parse("recover-before-cas-target")?)
+    );
+    assert_eq!(
+        record.release_state.previous,
+        Some(ReleaseId::parse("retry-source")?)
+    );
+    assert_eq!(record.release_state.generation, source_state.generation + 1);
+    assert_eq!(
+        read_release_transaction(record.layout.run_root())
+            .expect("transaction read")
+            .expect("transaction")
+            .phase,
+        ReleaseTransactionPhase::Committed
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    Ok(())
+}
+
+#[test]
+fn public_verified_grant_commits_registered_source_and_rejects_qualification_sources()
+-> Result<(), SupervisorError> {
+    use crate::H7H89ProductionGrantVerifier;
+    use crate::signed_authority::H7H89ProductionGrantSigner;
+    use codex_hepta_memory::H7ArtifactSigner;
+    use codex_hepta_memory::H7QualificationRuntime;
+    use codex_hepta_memory::H7SignedArtifactTransition;
+
+    for source_case in ["registered", "unregistered", "noncanonical"] {
+        let fleet = TestFleet::new()?;
+        let control = FakeControl::default();
+        let now = Instant::now();
+        let mut supervisor = if source_case == "registered" {
+            start_source(&fleet, &control, now)?
+        } else {
+            if source_case == "noncanonical" {
+                admitted_release(&fleet, &fleet.first, "retry-source")?;
+            }
+            let (mut supervisor, report) =
+                Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+            assert_eq!(report, TickReport::default());
+            supervisor.start_release(
+                &fleet.first,
+                AgentRelease::new(
+                    "retry-source",
+                    AgentCommand::new(fake_program("fixture-source"), Vec::new())?,
+                )?,
+                now,
+            )?;
+            control.set_healthy(&fleet.first);
+            assert_eq!(supervisor.tick(now), TickReport::default());
+            supervisor
+        };
+        admitted_release(&fleet, &fleet.first, "verified-grant-target")?;
+        let snapshot = supervisor.snapshot(&fleet.first).expect("snapshot");
+        let lifecycle_generation = supervisor.record(&fleet.first)?.lifecycle.generation;
+
+        let mut h7_runtime = H7QualificationRuntime::new();
+        let event = codex_hepta_memory::H7TrajectoryEvent::new(
+            "release-grant-trajectory",
+            /*event_seq*/ 1,
+            "reload",
+            /*reward_bps*/ 100,
+            /*safety_ok*/ true,
+            /*authority_epoch*/ 1,
+            /*owner_epoch*/ 1,
+            /*generation*/ 1,
+            Sha256Digest::for_bytes(b"qualified-h7-fence"),
+        )
+        .expect("trajectory event");
+        h7_runtime
+            .append_trajectory_event(event)
+            .expect("append trajectory");
+        h7_runtime
+            .evaluate_trajectory("release-grant-trajectory")
+            .expect("evaluate trajectory");
+        let artifact = h7_runtime
+            .propose_artifact(
+                "release-grant-artifact",
+                "release-grant-trajectory",
+                /*generation*/ 1,
+            )
+            .expect("qualified artifact");
+        // Public deterministic fixture material, never a deployment trust anchor.
+        let h7_signer =
+            H7ArtifactSigner::from_seed("h7-fixture", /*signer_epoch*/ 1, [41; 32])
+                .expect("H7 fixture signer");
+        let envelope = h7_signer
+            .sign(
+                &artifact,
+                /*ope*/ None,
+                H7SignedArtifactTransition::Reload,
+                /*expected_runtime_generation*/ 0,
+                /*predecessor_artifact_sha256*/ None,
+                /*issued_at_unix_seconds*/ 100,
+                /*expires_at_unix_seconds*/ 200,
+            )
+            .expect("H7 envelope");
+        let signer = H7H89ProductionGrantSigner::from_seed(
+            "operator-fixture",
+            /*signer_epoch*/ 4,
+            [53; 32],
+        )
+        .expect("independent fixture signer");
+        let grant = signer
+            .sign(
+                &fleet.first,
+                "retry-source",
+                "verified-grant-target",
+                H7H89ProductionTransition::Upgrade,
+                &envelope,
+                snapshot.control_revision,
+                lifecycle_generation,
+                /*authority_epoch*/ 7,
+                /*issued_at_unix_seconds*/ 100,
+                /*expires_at_unix_seconds*/ 200,
+            )
+            .expect("production grant");
+        let verifier = H7H89ProductionGrantVerifier::new_with_h7_verifier(
+            "operator-fixture",
+            /*signer_epoch*/ 4,
+            signer.verifying_key(),
+            h7_signer.verifier(),
+        )
+        .expect("pinned verifier");
+        let admission = supervisor.apply_production_grant(
+            &fleet.first,
+            &grant,
+            &envelope,
+            &verifier,
+            /*expected_authority_epoch*/ 7,
+            /*now_unix_seconds*/ 150,
+            now,
+        );
+        if source_case != "registered" {
+            assert!(
+                matches!(admission, Err(SupervisorError::ProductionAuthority(_))),
+                "{source_case}"
+            );
+            assert_eq!(
+                supervisor
+                    .snapshot(&fleet.first)
+                    .expect("rejected snapshot")
+                    .control_revision,
+                snapshot.control_revision
+            );
+            assert_eq!(control.counts(&fleet.first), (0, 0, 0));
+            assert_eq!(control.spawn_count(&fleet.first), 1);
+            let record = supervisor.record(&fleet.first)?;
+            assert!(
+                read_intent(record.layout.run_root())
+                    .expect("no intent")
+                    .is_none()
+            );
+            assert!(
+                read_release_transaction(record.layout.run_root())
+                    .expect("no transaction")
+                    .is_none()
+            );
+            continue;
+        }
+        let receipt = admission?;
+        assert_eq!(receipt.status, crate::ProductionMutationStatus::Queued);
+        assert_eq!(receipt.control_revision, snapshot.control_revision + 1);
+        finish_release_drain(&mut supervisor, &control, &fleet.first, now);
+        control.set_healthy(&fleet.first);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        assert_eq!(
+            supervisor
+                .production_mutation_state(&fleet.first)?
+                .expect("mutation")
+                .receipt
+                .status,
+            crate::ProductionMutationStatus::Committed
+        );
+        let committed = supervisor
+            .snapshot(&fleet.first)
+            .expect("committed snapshot");
+        assert!(matches!(
+            supervisor.apply_production_grant(
+                &fleet.first,
+                &grant,
+                &envelope,
+                &verifier,
+                /*expected_authority_epoch*/ 7,
+                /*now_unix_seconds*/ 150,
+                now
+            ),
+            Err(SupervisorError::ProductionAuthority(_))
+        ));
+        assert_eq!(
+            supervisor
+                .snapshot(&fleet.first)
+                .expect("replay snapshot")
+                .control_revision,
+            committed.control_revision
+        );
+        assert_eq!(control.spawn_count(&fleet.first), 2);
+    }
+    Ok(())
+}
+
+#[test]
+fn revoked_earlier_predecessor_remains_durable_through_recovery_upgrade_and_restoration()
+-> Result<(), SupervisorError> {
+    for reject_target in [false, true] {
+        let fleet = TestFleet::new()?;
+        let control = FakeControl::default();
+        let now = Instant::now();
+        let supervisor = start_source(&fleet, &control, now)?;
+        let predecessor = admitted_release(&fleet, &fleet.first, "revoked-predecessor")?;
+        let record = supervisor.record(&fleet.first)?;
+        let durable_source = fleet.registry.compare_and_set_release_state(
+            &fleet.first,
+            record.release_state.generation,
+            Some(ReleaseId::parse("retry-source")?),
+            Some(predecessor.release_id().clone()),
+        )?;
+        fleet
+            .registry
+            .revoke_release(&fleet.first, predecessor.release_id())?;
+        drop(supervisor);
+        let (mut recovered, report) =
+            Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+        assert_eq!(report, TickReport::default());
+        assert_eq!(
+            recovered
+                .snapshot(&fleet.first)
+                .expect("snapshot")
+                .previous_release,
+            None
+        );
+        assert_eq!(recovered.tick(now), TickReport::default());
+        assert_eq!(
+            recovered.record(&fleet.first)?.release_state,
+            durable_source
+        );
+        let target = admitted_release(&fleet, &fleet.first, "revoked-predecessor-target")?;
+        if reject_target {
+            control.reject_spawn_program(target.command().program.clone());
+        }
+        recovered.upgrade(&fleet.first, target, now)?;
+        finish_release_drain(&mut recovered, &control, &fleet.first, now);
+        drop(recovered);
+        let (mut recovered, report) =
+            Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+        assert_eq!(report, TickReport::default());
+        control.set_healthy(&fleet.first);
+        assert_eq!(recovered.tick(now), TickReport::default());
+        let record = recovered.record(&fleet.first)?;
+        if reject_target {
+            assert_eq!(record.release_state, durable_source);
+        } else {
+            assert_eq!(
+                record.release_state.current,
+                Some(ReleaseId::parse("revoked-predecessor-target")?)
+            );
+            assert_eq!(
+                record.release_state.previous,
+                Some(ReleaseId::parse("retry-source")?)
+            );
+            assert_eq!(
+                record.release_state.generation,
+                durable_source.generation + 1
+            );
+        }
+        assert!(
+            !recovered
+                .snapshot(&fleet.first)
+                .expect("snapshot")
+                .release_change_pending
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn rollback_spawn_and_failed_outcome_publication_retain_the_failed_transition_until_retry()
+-> Result<(), SupervisorError> {
+    for signed in [false, true] {
+        let fleet = TestFleet::new()?;
+        let control = FakeControl::default();
+        let now = Instant::now();
+        let mut supervisor = start_source(&fleet, &control, now)?;
+        let source = supervisor.slots[&fleet.first]
+            .active_release
+            .as_ref()
+            .expect("source")
+            .clone();
+        let target = admitted_release(&fleet, &fleet.first, "rejected-double-failure-target")?;
+        control.reject_spawn_program(source.command().program.clone());
+        control.reject_spawn_program(target.command().program.clone());
+        if signed {
+            queue_signed_change(
+                &mut supervisor,
+                &fleet,
+                target,
+                now,
+                H7H89ProductionTransition::Upgrade,
+            )?;
+        } else {
+            supervisor.upgrade(&fleet.first, target, now)?;
+        }
+        control.set_drained(&fleet.first);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        control.set_exit(&fleet.first);
+        // TargetStarting and AutomaticRollbackStarting publish successfully; the
+        // failed source's RecoveryRequired publication is the third journal write.
+        let failed = with_qualification_fault_after(
+            "release_transaction.file_write",
+            ErrorKind::Other,
+            /*successful_occurrences*/ 2,
+            || supervisor.tick(now),
+        );
+        assert_eq!(failed.faults.len(), 1);
+        let snapshot = supervisor
+            .snapshot(&fleet.first)
+            .expect("pending failed transition");
+        assert!(snapshot.release_change_pending);
+        assert!(!snapshot.events.iter().any(|event| matches!(
+            event.kind,
+            SupervisorEventKind::AutomaticRollbackFailed { .. }
+        )));
+        let record = supervisor.record(&fleet.first)?;
+        assert_eq!(
+            read_release_transaction(record.layout.run_root())
+                .expect("transaction read")
+                .expect("transaction")
+                .phase,
+            ReleaseTransactionPhase::AutomaticRollbackStarting
+        );
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        assert_eq!(
+            read_release_transaction(record.layout.run_root())
+                .expect("transaction read")
+                .expect("transaction")
+                .phase,
+            ReleaseTransactionPhase::RecoveryRequired
+        );
+        assert!(
+            !supervisor
+                .snapshot(&fleet.first)
+                .expect("failed transition acknowledged")
+                .release_change_pending
+        );
+        assert_eq!(control.spawn_count(&fleet.first), 1);
+        if signed {
+            assert!(supervisor.production_recovery_required(&fleet.first)?);
+            assert_eq!(
+                read_intent(record.layout.run_root())
+                    .expect("intent read")
+                    .expect("intent")
+                    .status,
+                SignedIntentStatus::RecoveryRequired
+            );
+        }
+    }
+    Ok(())
+}
