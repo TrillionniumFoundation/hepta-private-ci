@@ -203,7 +203,7 @@ mod tests {
             std::env::temp_dir().join("agent-b-private-home"),
         ];
         for home in homes {
-            let mut host = options(37);
+            let mut host = options(/*turn_queue_capacity*/ 37);
             host.home_root = home.clone();
             host.credential_profile_home = Some(profile.clone());
             let runtime = runtime_options(host).expect("explicit profile binding");
@@ -222,7 +222,8 @@ mod tests {
                     .map(AbsolutePathBuf::as_path)
             );
         }
-        let runtime = runtime_options(options(37)).expect("default private credentials");
+        let runtime = runtime_options(options(/*turn_queue_capacity*/ 37))
+            .expect("default private credentials");
         assert!(runtime.credential_profile_home.is_none());
     }
 }

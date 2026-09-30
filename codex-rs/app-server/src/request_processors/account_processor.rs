@@ -376,9 +376,12 @@ impl AccountRequestProcessor {
     }
 
     fn configured_auth_owned_by_host_error(&self) -> JSONRPCErrorError {
-        invalid_request(
-            "Configured authentication is owned by the app-server host and cannot be changed through account RPCs.",
-        )
+        let message = if self.auth_profile_owned_by_host {
+            "Configured credential profile is owned by the app-server host and cannot be changed through account RPCs."
+        } else {
+            "Configured external authentication is owned by the app-server host and cannot be changed through account RPCs."
+        };
+        invalid_request(message)
     }
 
     fn ensure_bedrock_login_allowed(&self) -> Result<(), JSONRPCErrorError> {
