@@ -9,6 +9,7 @@ identity is bound by generated implementation and readiness receipts.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -31,9 +32,13 @@ def load_json(path: str) -> dict[str, Any]:
     try:
         value = json.loads(read(path))
     except json.JSONDecodeError as error:
-        raise SystemExit(f"learning.operator contract verification failed: invalid JSON {path}: {error}") from error
+        raise SystemExit(
+            f"learning.operator contract verification failed: invalid JSON {path}: {error}"
+        ) from error
     if not isinstance(value, dict):
-        raise SystemExit(f"learning.operator contract verification failed: {path} must be an object")
+        raise SystemExit(
+            f"learning.operator contract verification failed: {path} must be an object"
+        )
     return value
 
 
@@ -52,6 +57,14 @@ def require_absent(path: str, tokens: tuple[str, ...] | list[str]) -> None:
     text = read(path)
     for token in tokens:
         require(token not in text, f"{path} retains forbidden {token!r}")
+
+
+def sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def exact_sha(value: object) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{40}", value) is not None
 
 
 def verify_status() -> dict[str, Any]:
@@ -87,33 +100,57 @@ def verify_status() -> dict[str, Any]:
         "activation",
         "release",
     ):
-        require(status.get(key) is False, f"{key} must remain false without external evidence")
+        require(
+            status.get(key) is False,
+            f"{key} must remain false without external evidence",
+        )
     return status
 
 
 def verify_default_surface() -> None:
     manifest = read("codex-rs/hepta-bellman-operator/Cargo.toml")
     require('path = "src/authoritative_lib.rs"' in manifest, "authoritative crate root")
-    require(re.search(r"(?m)^default\s*=\s*\[\]$", manifest) is not None, "default features must remain empty")
-    require('qualification-unverified-input = []' in manifest, "compatibility feature missing")
-    surface = read("codex-rs/hepta-bellman-operator/src/authoritative_lib.rs")
+    require(
+        re.search(r"(?m)^default\s*=\s*\[\]$", manifest) is not None,
+        "default features must remain empty",
+    )
+    require(
+        'qualification-unverified-input = []' in manifest,
+        "compatibility feature missing",
+    )
+    surface_path = "codex-rs/hepta-bellman-operator/src/authoritative_lib.rs"
+    surface = read(surface_path)
     require("pub use legacy::*" not in surface, "wildcard legacy export is forbidden")
     for token in (
-        'pub mod compatibility',
-        'FinalUseTabularCapabilityV1',
-        'FinalUseWorldModelCapabilityV1',
-        'LoadedTabularOperatorV2',
-        'QualifiedSensorCoreBuildReceiptV1',
-        'SensorCoreSelectionModeV1',
-        'build_sensor_core_qualified_v1',
+        "pub mod compatibility",
+        "FinalUseTabularCapabilityV1",
+        "FinalUseWorldModelCapabilityV1",
+        "LoadedTabularOperatorV2",
+        "QualifiedSensorCoreBuildReceiptV1",
+        "SensorCoreSelectionModeV1",
+        "build_sensor_core_qualified_v1",
     ):
         require(token in surface, f"authoritative public surface missing {token!r}")
+    for forbidden in (
+        "pub use legacy::VerifiedTabularOperatorPlanV3;",
+        "pub use legacy::VerifiedWorldModelDatasetV3;",
+        "pub use legacy::fit_tabular_operator_verified_v3;",
+        "pub use legacy::fit_transition_model_verified_v3;",
+        "pub use legacy::verify_tabular_operator_plan_v3;",
+        "pub use legacy::verify_world_model_dataset_v3;",
+    ):
+        require(forbidden not in surface, f"default surface exposes direct V3 bypass: {forbidden}")
     require_tokens(
         "scripts/hepta-learning-operator-api-surface.py",
         [
             "default-authoritative-pass",
             "feature-compatibility-pass",
             "raw-fitter",
+            "bounded-raw-fitter",
+            "direct-v3-tabular-verifier",
+            "direct-v3-tabular-fitter",
+            "direct-v3-world-verifier",
+            "direct-v3-world-fitter",
             "compatibility-module",
             "activation-port",
             "publish-port",
@@ -137,8 +174,26 @@ def verify_semantic_sensor_contract() -> None:
         ],
     )
     contract = read("scripts/hepta-learning-operator-contract.py")
-    old_scan = 'require_tokens(\n        "codex-rs/hepta-bellman-operator/src/sensor_core_v2.rs"'
+    old_scan = (
+        'require_tokens(\n'
+        '        "codex-rs/hepta-bellman-operator/src/sensor_core_v2.rs"'
+    )
     require(old_scan not in contract, "private sensor implementation token scan remains")
+
+
+def verify_fit_context_contract() -> None:
+    require_tokens(
+        "codex-rs/hepta-bellman-operator/src/budget.rs",
+        [
+            "struct FitBudgetLedger",
+            "operations: AtomicU64",
+            "reserved_bytes: AtomicU64",
+            "BudgetExpansion",
+            "operation_budget_is_cumulative_across_worker_meters",
+            "concurrent_memory_reservations_share_one_absolute_ceiling",
+            "worker_cannot_expand_an_already_bound_budget",
+        ],
+    )
 
 
 def verify_final_use_contract() -> None:
@@ -177,18 +232,71 @@ def verify_final_use_contract() -> None:
 
 def verify_status_projection(status: dict[str, Any]) -> None:
     implementation = load_json(MAP_PATH)
-    require(implementation.get("module") == "learning.operator", "implementation map identity")
+    require(
+        implementation.get("module") == "learning.operator",
+        "implementation map identity",
+    )
+    require(
+        implementation.get("statusSource") == STATUS_PATH,
+        "implementation map must point to canonical STATUS.json",
+    )
+    require(
+        implementation.get("statusProjectionSha256") == sha256_text(read(STATUS_PATH)),
+        "implementation map status projection digest drift",
+    )
+    require(
+        implementation.get("sourceIdentityRole") == "navigation_provenance_only",
+        "checked-in map identity must be navigation-only",
+    )
+    require(
+        implementation.get("qualificationIdentitySource")
+        == status.get("sourceIdentityPolicy"),
+        "qualification identity must be derived from STATUS.json",
+    )
+    require(
+        implementation.get("sourceIdentityPolicy")
+        == "candidate_or_exact_observation_v1",
+        "navigation map must use the repository-supported observation policy",
+    )
+    source_base = implementation.get("sourceBase")
+    observed = implementation.get("observedAtHead")
+    require(
+        isinstance(source_base, dict)
+        and isinstance(observed, dict)
+        and exact_sha(source_base.get("commit"))
+        and exact_sha(source_base.get("tree"))
+        and source_base == observed,
+        "navigation source observation must be exact and self-consistent",
+    )
+
     boundary = implementation.get("claimBoundary")
     require(isinstance(boundary, dict), "implementation claim boundary")
     for status_key, map_key in {
         "explicitReadConsumerComposed": "explicitReadConsumerComposed",
         "defaultLoopWired": "defaultProductLoopWired",
+        "freshProcessLoadInAuthoritativeGate": "freshProcessLoadInAuthoritativeGate",
+        "productShadowProtocolE2EInAuthoritativeGate": "productShadowProtocolE2EInAuthoritativeGate",
         "productExecutionProved": "productExecutionProved",
         "productionImplementation": "productionImplementation",
         "activation": "activation",
         "release": "release",
     }.items():
-        require(status.get(status_key) == boundary.get(map_key), f"status/map disagreement: {status_key}")
+        require(
+            status.get(status_key) == boundary.get(map_key),
+            f"status/map disagreement: {status_key}",
+        )
+    require(
+        implementation.get("productionImplementation")
+        == status.get("productionImplementation"),
+        "top-level production implementation status",
+    )
+    require(
+        implementation.get("productCallerState")
+        == "explicit_read_consumer_and_default_shadow_only_loop_composed"
+        and status.get("explicitReadConsumerComposed") is True
+        and status.get("defaultLoopWired") is True,
+        "product caller projection",
+    )
     require(
         implementation.get("productionWriterState") == "not_established"
         and status.get("productionWriterEstablished") is False,
@@ -207,6 +315,8 @@ def verify_status_projection(status: dict[str, Any]) -> None:
         "load_pinned_tabular_operator_v2",
         "coordinate_learning_operator_shadow_v1",
         "emit_qualification_manifest_v3",
+        "emit_qualification_readiness_v1",
+        "assert_default_public_api_v1",
     ):
         require(operation in operations, f"implementation operation absent: {operation}")
 
@@ -214,27 +324,52 @@ def verify_status_projection(status: dict[str, Any]) -> None:
 def verify_documents() -> None:
     documents = {
         "TECHNICAL.md": read("docs/modules/learning.operator/TECHNICAL.md"),
-        "ADMISSION_CONTRACT.md": read("docs/modules/learning.operator/ADMISSION_CONTRACT.md"),
-        "execution dossier": read("qualification/module-execution-dossiers/detail/learning.operator.md"),
+        "ADMISSION_CONTRACT.md": read(
+            "docs/modules/learning.operator/ADMISSION_CONTRACT.md"
+        ),
+        "execution dossier": read(
+            "qualification/module-execution-dossiers/detail/learning.operator.md"
+        ),
     }
     for label, text in documents.items():
         lowered = text.lower()
-        require("status.json" in lowered, f"{label} must name the canonical status source")
-        require("activation remains false" in lowered, f"{label} must retain the activation boundary")
+        require(
+            "status.json" in lowered,
+            f"{label} must name the canonical status source",
+        )
+        require(
+            "activation remains false" in lowered,
+            f"{label} must retain the activation boundary",
+        )
     for phrase in (
         "default training/evaluation/selection loop remains uncomposed",
         "default training/evaluation/selection composition",
     ):
-        require(phrase not in documents["TECHNICAL.md"], f"TECHNICAL.md retains stale status: {phrase}")
-        require(phrase not in documents["execution dossier"], f"execution dossier retains stale status: {phrase}")
-    require("LoadedTabularOperatorV2" in documents["ADMISSION_CONTRACT.md"], "admission must name V2 loader")
-    require("LoadedTabularOperatorV2" in documents["execution dossier"], "dossier must name V2 loader")
+        require(
+            phrase not in documents["TECHNICAL.md"],
+            f"TECHNICAL.md retains stale status: {phrase}",
+        )
+        require(
+            phrase not in documents["execution dossier"],
+            f"execution dossier retains stale status: {phrase}",
+        )
+    require(
+        "LoadedTabularOperatorV2" in documents["ADMISSION_CONTRACT.md"],
+        "admission must name V2 loader",
+    )
+    require(
+        "LoadedTabularOperatorV2" in documents["execution dossier"],
+        "dossier must name V2 loader",
+    )
 
 
 def verify_schema_and_wiring() -> None:
-    compatibility = load_json("docs/modules/learning.operator/SCHEMA_COMPATIBILITY.json")
+    compatibility = load_json(
+        "docs/modules/learning.operator/SCHEMA_COMPATIBILITY.json"
+    )
     require(
-        compatibility.get("schema") == "hepta.learning-operator-schema-compatibility.v2"
+        compatibility.get("schema")
+        == "hepta.learning-operator-schema-compatibility.v2"
         and compatibility.get("schemaVersion") == 2,
         "compatibility schema",
     )
@@ -250,7 +385,10 @@ def verify_schema_and_wiring() -> None:
         "default final-use qualification path",
     )
     workflow = read(".github/workflows/learning-operator-authoritative.yml")
-    require("workflow_call:" in workflow and "contents: read" in workflow, "read-only reusable workflow")
+    require(
+        "workflow_call:" in workflow and "contents: read" in workflow,
+        "read-only reusable workflow",
+    )
     require("qualification-result" in workflow, "stable final qualification check")
     authoritative = read("scripts/hepta-learning-operator-authoritative.sh")
     for token in (
@@ -262,15 +400,22 @@ def verify_schema_and_wiring() -> None:
         "synthetic-merge",
         "readiness-manifest.json",
     ):
-        require(token in authoritative, f"authoritative qualification missing {token!r}")
+        require(
+            token in authoritative,
+            f"authoritative qualification missing {token!r}",
+        )
     blocking = read(".github/workflows/blocking-ci.yml")
-    require("uses: ./.github/workflows/learning-operator-authoritative.yml" in blocking, "protected CI fan-in")
+    require(
+        "uses: ./.github/workflows/learning-operator-authoritative.yml" in blocking,
+        "protected CI fan-in",
+    )
 
 
 def verify_source() -> None:
     status = verify_status()
     verify_default_surface()
     verify_semantic_sensor_contract()
+    verify_fit_context_contract()
     verify_final_use_contract()
     verify_status_projection(status)
     verify_documents()
@@ -285,7 +430,13 @@ def main() -> None:
     verify_source()
     if args.receipt:
         subprocess.run(
-            ["python3", "scripts/hepta-learning-operator-receipt.py", "verify", "--path", args.receipt],
+            [
+                "python3",
+                "scripts/hepta-learning-operator-receipt.py",
+                "verify",
+                "--path",
+                args.receipt,
+            ],
             cwd=ROOT,
             check=True,
         )
