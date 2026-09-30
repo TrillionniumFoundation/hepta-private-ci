@@ -250,6 +250,30 @@ def check_frozen_implementation(implementation: str) -> None:
         "ls-files", "--others", "--exclude-standard", "--", *paths
     )
     _require(untracked == "", "product implementation has untracked source files")
+    check_frozen_storage_budgets(implementation)
+
+
+def check_frozen_storage_budgets(implementation: str) -> None:
+    # This JSON is embedded by include_str! in the qualification executable.
+    # Only the two source-navigation anchors may continue after its source freeze.
+    relative = "apps/hepta-native/STORAGE_BUDGETS.json"
+    path = ROOT / relative
+    frozen_exists = _git_success("cat-file", "-e", f"{implementation}:{relative}")
+    if not frozen_exists and not path.exists():
+        return  # Small isolated source fixtures need not define storage budgets.
+    _require(
+        frozen_exists and path.is_file() and not path.is_symlink(),
+        "storage budget contract is missing from the frozen or current source",
+    )
+    frozen = json.loads(_git_value("show", f"{implementation}:{relative}") or "null")
+    current = _load_json(relative)
+    _require(isinstance(frozen, dict), "frozen storage budget contract is not an object")
+    navigation = {"implementationSourceSha", "implementationSourceTree"}
+    _require(
+        {key: value for key, value in frozen.items() if key not in navigation}
+        == {key: value for key, value in current.items() if key not in navigation},
+        "storage budget contract changed after the frozen source",
+    )
 
 
 def check_repository() -> dict[str, Any]:

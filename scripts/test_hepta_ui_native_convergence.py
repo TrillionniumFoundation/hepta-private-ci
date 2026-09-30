@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import subprocess
 import tempfile
 import unittest
@@ -79,6 +80,47 @@ class FrozenImplementationTests(unittest.TestCase):
     def test_untracked_product_source_rejects(self) -> None:
         self.path.with_name("extra.py").write_text("extra\n", encoding="utf-8")
         with self.assertRaisesRegex(RuntimeError, "untracked source"):
+            self.check()
+
+    def freeze_storage_budget(self) -> Path:
+        path = self.root / "apps/hepta-native/STORAGE_BUDGETS.json"
+        path.write_text(json.dumps({
+            "implementationSourceSha": "1" * 40,
+            "implementationSourceTree": "2" * 40,
+            "performance": {"mutationP95Milliseconds": 100},
+            "structural": {"maxActiveRecords": 4096},
+            "productionQualified": False,
+        }), encoding="utf-8")
+        self.git("add", ".")
+        self.git("commit", "--quiet", "-m", "freeze compiled storage budget contract")
+        self.implementation = self.git("rev-parse", "HEAD").strip()
+        return path
+
+    def test_storage_budget_source_anchors_can_continue(self) -> None:
+        path = self.freeze_storage_budget()
+        budget = json.loads(path.read_text(encoding="utf-8"))
+        budget.update(implementationSourceSha="3" * 40, implementationSourceTree="4" * 40)
+        path.write_text(json.dumps(budget, indent=2), encoding="utf-8")
+        self.git("add", ".")
+        self.git("commit", "--quiet", "-m", "source navigation anchors only")
+        self.check()
+
+    def test_committed_storage_budget_relaxation_rejects(self) -> None:
+        path = self.freeze_storage_budget()
+        budget = json.loads(path.read_text(encoding="utf-8"))
+        budget["performance"]["mutationP95Milliseconds"] = 1000000
+        path.write_text(json.dumps(budget), encoding="utf-8")
+        self.git("add", ".")
+        self.git("commit", "--quiet", "-m", "relaxed ceiling without implementation freeze")
+        with self.assertRaisesRegex(RuntimeError, "budget contract changed"):
+            self.check()
+
+    def test_worktree_storage_budget_subject_drift_rejects(self) -> None:
+        path = self.freeze_storage_budget()
+        budget = json.loads(path.read_text(encoding="utf-8"))
+        budget["structural"]["maxActiveRecords"] = 10
+        path.write_text(json.dumps(budget), encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "budget contract changed"):
             self.check()
 
 
