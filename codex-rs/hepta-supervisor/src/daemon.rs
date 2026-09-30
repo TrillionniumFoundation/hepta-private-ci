@@ -394,12 +394,10 @@ async fn run_supervisord_inner(
             SupervisorError::Invalid(format!("selection server failed: {error}"))
         })??;
     }
-    if !maintenance_finished {
-        if let Some(task) = local_maintenance {
-            task.await.map_err(|error| {
-                SupervisorError::Invalid(format!("local resource owner failed: {error}"))
-            })??;
-        }
+    if !maintenance_finished && let Some(task) = local_maintenance {
+        task.await.map_err(|error| {
+            SupervisorError::Invalid(format!("local resource owner failed: {error}"))
+        })??;
     }
     let ticker_result = ticker.await;
     if ticker_result.is_err() || state.execution.failed() {

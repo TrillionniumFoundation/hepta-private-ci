@@ -140,16 +140,16 @@ impl ManagedProcess for UnixManagedProcess {
                 Some(status) => {
                     self.health_probe.shutdown();
                     #[cfg(all(target_os = "linux", feature = "local-host"))]
-                    if let Some((host, id)) = &self.resource_execution {
-                        if !host.finish_exit(id)? {
-                            return Ok(ProcessObservation {
-                                state: ProcessState::Running {
-                                    healthy: false,
-                                    drained: false,
-                                },
-                                logs,
-                            });
-                        }
+                    if let Some((host, id)) = &self.resource_execution
+                        && !host.finish_exit(id)?
+                    {
+                        return Ok(ProcessObservation {
+                            state: ProcessState::Running {
+                                healthy: false,
+                                drained: false,
+                            },
+                            logs,
+                        });
                     }
                     return Ok(ProcessObservation {
                         state: ProcessState::Exited(ProcessExit {
@@ -165,16 +165,16 @@ impl ManagedProcess for UnixManagedProcess {
                 if let Some(exit) = poll_adopted_process(reference)? {
                     self.health_probe.shutdown();
                     #[cfg(all(target_os = "linux", feature = "local-host"))]
-                    if let Some((host, id)) = &self.resource_execution {
-                        if !host.finish_exit(id)? {
-                            return Ok(ProcessObservation {
-                                state: ProcessState::Running {
-                                    healthy: false,
-                                    drained: false,
-                                },
-                                logs,
-                            });
-                        }
+                    if let Some((host, id)) = &self.resource_execution
+                        && !host.finish_exit(id)?
+                    {
+                        return Ok(ProcessObservation {
+                            state: ProcessState::Running {
+                                healthy: false,
+                                drained: false,
+                            },
+                            logs,
+                        });
                     }
                     return Ok(ProcessObservation {
                         state: ProcessState::Exited(exit),
@@ -303,7 +303,7 @@ impl ProcessDriver for UnixProcessDriver {
         );
         #[cfg(all(target_os = "linux", feature = "local-host"))]
         if let (Some(host), Some(execution)) = (&self.local_host, execution) {
-            spawned.process.resource_execution = Some((Arc::clone(host), execution.id.clone()));
+            spawned.process.resource_execution = Some((Arc::clone(host), execution.id));
             if let Err(error) = binding {
                 spawned
                     .process
@@ -411,7 +411,7 @@ impl ProcessDriver for UnixProcessDriver {
         );
         #[cfg(all(target_os = "linux", feature = "local-host"))]
         if let (Some(host), Some(execution)) = (&self.local_host, execution) {
-            spawned.process.resource_execution = Some((Arc::clone(host), execution.id.clone()));
+            spawned.process.resource_execution = Some((Arc::clone(host), execution.id));
             if let Err(error) = binding {
                 spawned
                     .process
