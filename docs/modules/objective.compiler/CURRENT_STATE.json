@@ -6,7 +6,7 @@
     "core": "source_complete",
     "productComposition": "source_composed_durable_proof_bound_not_activated",
     "semanticHardening": "source_complete_pending_exact_candidate_receipts",
-    "qualificationEvidence": "dynamic_receipt_projection_required",
+    "qualificationEvidence": "trusted_verifier_dynamic_receipt_projection_required",
     "independentAcceptance": "external_receipt_required",
     "canaryPromotionRollback": "source_policy_not_activated"
   },
@@ -27,6 +27,7 @@
     "manualPassFieldsForbidden": true
   },
   "requiredChecks": [
+    "objective.compiler normative consistency",
     "Hepta objective admission qualification",
     "Hepta objective product composition / source-head",
     "Hepta objective product composition / synthetic-merge",
@@ -37,7 +38,9 @@
     "objective release guard"
   ],
   "externalGates": [
+    "ephemeral selected deployment target-host provisioning",
     "selected deployment target-host measurement and resource-policy acceptance",
+    "storage durability and destructive recovery acceptance",
     "independent semantic and security review",
     "operator acceptance",
     "canary observation",
