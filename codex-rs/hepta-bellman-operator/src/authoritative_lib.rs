@@ -1,17 +1,18 @@
 //! Authoritative learning.operator surface.
 //!
 //! Default consumers receive an explicit, reviewed allowlist. Raw structural
-//! fitters and caller-authored verification inputs remain available only under
-//! the non-default `qualification-unverified-input` feature and are grouped in
-//! `compatibility`. Adding a new public item now requires an intentional edit to
-//! this file instead of leaking through a wildcard re-export.
+//! fitters, caller-authored verification inputs, and direct owner-bound V3
+//! fitting remain available only under the non-default
+//! `qualification-unverified-input` feature and are grouped in `compatibility`.
+//! Adding a new public item requires an intentional edit to this file instead of
+//! leaking through a wildcard re-export.
 #![forbid(unsafe_code)]
 
 #[path = "lib.rs"]
 mod legacy;
 
-// Explicit default surface required by the current read-only product adapters,
-// owner-authenticated training path and independently pinned V2 loader.
+// Explicit default surface required by current read-only product adapters,
+// final-use training capabilities and the independently pinned V2 loader.
 pub use legacy::ApplicabilityDecisionV1;
 pub use legacy::AuthenticatedApplicabilityAdmissionV2;
 pub use legacy::AuthenticatedOperatorError;
@@ -68,9 +69,7 @@ pub use legacy::Transition;
 pub use legacy::TransitionBranchV1;
 pub use legacy::TransitionEstimateV1;
 pub use legacy::ValidatedTabularOperatorV1;
-pub use legacy::VerifiedTabularOperatorPlanV3;
 pub use legacy::VerifiedTerminalCellV3;
-pub use legacy::VerifiedWorldModelDatasetV3;
 pub use legacy::WorldModelError;
 pub use legacy::WorldModelPredictionV1;
 pub use legacy::WorldModelSampleV1;
@@ -80,20 +79,34 @@ pub use legacy::build_sensor_core;
 pub use legacy::build_targets;
 pub use legacy::encode_tabular_payload_v1;
 pub use legacy::evaluate_bellman_reference;
-pub use legacy::fit_tabular_operator_verified_v3;
 pub use legacy::fit_terminal_cell_from_owner_v1;
 pub use legacy::fit_terminal_cell_verified_v3;
-pub use legacy::fit_transition_model_verified_v3;
 pub use legacy::freeze_terminal_cell_from_owner_v1;
 pub use legacy::preflight_signed_tabular_v3;
 pub use legacy::prepare_terminal_cell_from_owner_v3;
-pub use legacy::tabular_training_signing_payload_v2;
 pub use legacy::validate_applicability_certificate;
 pub use legacy::validate_applicability_with_signed_evidence_v2;
 pub use legacy::validate_tabular_artifact_v1;
-pub use legacy::verify_tabular_operator_plan_v3;
-pub use legacy::verify_world_model_dataset_v3;
-pub use legacy::world_model_training_signing_payload_v2;
+
+// The final-use implementation needs these owner-bound primitives internally,
+// but ordinary dependencies must not be able to call them directly and bypass
+// opaque single-use capabilities.
+#[cfg(not(feature = "qualification-unverified-input"))]
+pub(crate) use legacy::VerifiedTabularOperatorPlanV3;
+#[cfg(not(feature = "qualification-unverified-input"))]
+pub(crate) use legacy::VerifiedWorldModelDatasetV3;
+#[cfg(not(feature = "qualification-unverified-input"))]
+pub(crate) use legacy::fit_tabular_operator_verified_v3;
+#[cfg(not(feature = "qualification-unverified-input"))]
+pub(crate) use legacy::fit_transition_model_verified_v3;
+#[cfg(not(feature = "qualification-unverified-input"))]
+pub(crate) use legacy::tabular_training_signing_payload_v2;
+#[cfg(not(feature = "qualification-unverified-input"))]
+pub(crate) use legacy::verify_tabular_operator_plan_v3;
+#[cfg(not(feature = "qualification-unverified-input"))]
+pub(crate) use legacy::verify_world_model_dataset_v3;
+#[cfg(not(feature = "qualification-unverified-input"))]
+pub(crate) use legacy::world_model_training_signing_payload_v2;
 
 mod budget;
 pub use budget::FitContextV1;
@@ -152,23 +165,32 @@ pub use world_model_v2::fit_world_model_v2;
 #[cfg(feature = "qualification-unverified-input")]
 pub use world_model_v2::predict_world_model_v2;
 
-/// Non-default compatibility surface for structural fitters and V2 caller-
-/// authored verified inputs. These functions do not grant final-use authority.
+/// Non-default compatibility surface for structural fitters, caller-authored
+/// verification inputs and direct V3 owner-bound fitting. None of these items
+/// grants final-use or activation authority.
 #[cfg(feature = "qualification-unverified-input")]
 pub mod compatibility {
     pub use super::legacy::VerifiedTabularOperatorPlanV2;
+    pub use super::legacy::VerifiedTabularOperatorPlanV3;
     pub use super::legacy::VerifiedWorldModelDatasetV2;
+    pub use super::legacy::VerifiedWorldModelDatasetV3;
     pub use super::legacy::fit_tabular_operator;
     pub use super::legacy::fit_tabular_operator_strict_v2;
     pub use super::legacy::fit_tabular_operator_verified_v2;
+    pub use super::legacy::fit_tabular_operator_verified_v3;
     pub use super::legacy::fit_transition_model;
     pub use super::legacy::fit_transition_model_verified_v2;
+    pub use super::legacy::fit_transition_model_verified_v3;
     pub use super::legacy::predict_tabular_operator;
     pub use super::legacy::predict_tabular_operator_indexed_v2;
     pub use super::legacy::predict_transition;
+    pub use super::legacy::tabular_training_signing_payload_v2;
     pub use super::legacy::train;
     pub use super::legacy::verify_tabular_operator_plan_v2;
+    pub use super::legacy::verify_tabular_operator_plan_v3;
     pub use super::legacy::verify_world_model_dataset_v2;
+    pub use super::legacy::verify_world_model_dataset_v3;
+    pub use super::legacy::world_model_training_signing_payload_v2;
     pub use super::tabular_v2::TabularFitReceiptV2;
     pub use super::tabular_v2::fit_tabular_operator_bounded_v2;
     pub use super::world_model_v2::TransitionEstimateV2;
@@ -186,7 +208,11 @@ pub mod compatibility {
 #[cfg(feature = "qualification-unverified-input")]
 pub use compatibility::VerifiedTabularOperatorPlanV2;
 #[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::VerifiedTabularOperatorPlanV3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use compatibility::VerifiedWorldModelDatasetV2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::VerifiedWorldModelDatasetV3;
 #[cfg(feature = "qualification-unverified-input")]
 pub use compatibility::fit_tabular_operator;
 #[cfg(feature = "qualification-unverified-input")]
@@ -194,9 +220,13 @@ pub use compatibility::fit_tabular_operator_strict_v2;
 #[cfg(feature = "qualification-unverified-input")]
 pub use compatibility::fit_tabular_operator_verified_v2;
 #[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::fit_tabular_operator_verified_v3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use compatibility::fit_transition_model;
 #[cfg(feature = "qualification-unverified-input")]
 pub use compatibility::fit_transition_model_verified_v2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::fit_transition_model_verified_v3;
 #[cfg(feature = "qualification-unverified-input")]
 pub use compatibility::predict_tabular_operator;
 #[cfg(feature = "qualification-unverified-input")]
@@ -204,9 +234,17 @@ pub use compatibility::predict_tabular_operator_indexed_v2;
 #[cfg(feature = "qualification-unverified-input")]
 pub use compatibility::predict_transition;
 #[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::tabular_training_signing_payload_v2;
+#[cfg(feature = "qualification-unverified-input")]
 pub use compatibility::verify_tabular_operator_plan_v2;
 #[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::verify_tabular_operator_plan_v3;
+#[cfg(feature = "qualification-unverified-input")]
 pub use compatibility::verify_world_model_dataset_v2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::verify_world_model_dataset_v3;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::world_model_training_signing_payload_v2;
 
 mod final_use;
 pub use final_use::FinalUseErrorV1;
