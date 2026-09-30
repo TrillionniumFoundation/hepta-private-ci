@@ -1,7 +1,6 @@
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-use crate::AdmittedObjectiveV1;
 use crate::ObjectiveAdmissionContextV1;
 use crate::ObjectiveAdmissionError;
 use crate::ObjectiveSourceAuthenticationV1;
@@ -102,12 +101,11 @@ pub(crate) fn build_admission_proof_v1(
     envelope: &ObjectiveSourceEnvelopeV1,
     profile: &ValidatedAdmissionProfileV1,
     context: &ObjectiveAdmissionContextV1,
-    admitted: &AdmittedObjectiveV1,
+    admitted_source_digest: Digest32,
 ) -> Result<ObjectiveAdmissionProofV1, ObjectiveAdmissionError> {
     let source_envelope_digest = source_envelope_proof_digest_v1(envelope)?;
     let authentication_context_digest = authentication_context_digest_v1(context);
     let compiler_contract_digest = compiler_contract_digest_v1();
-    let admitted_source_digest = admitted.receipt().admitted_source_digest;
     let proof_digest = Digest32::of_bytes(&canonical_admission_proof_bytes([
         source_envelope_digest,
         profile.profile_digest(),

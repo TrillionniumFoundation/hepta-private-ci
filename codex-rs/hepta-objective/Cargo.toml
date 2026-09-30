@@ -12,10 +12,13 @@ doctest = false
 
 [features]
 default = []
-# Explicitly qualification-only compatibility surface. Product code must use
-# ValidatedAdmissionProfileV1 + compile_authoritative_objective_v1; diagnostics
-# must use preflight_validate_objective_v1 and must not publish its result.
-qualification-legacy-compile = []
+# Raw-profile admission/convenience compatibility is unavailable to ordinary
+# product builds. Product code uses a generation-frozen
+# ValidatedAdmissionProfileV1 and compile_authoritative_objective_v1.
+objective-compatibility-api = []
+# Explicitly qualification-only legacy compile surface. Enabling it also enables
+# the raw compatibility API required by historical parity fixtures.
+qualification-legacy-compile = ["objective-compatibility-api"]
 
 [lints]
 workspace = true

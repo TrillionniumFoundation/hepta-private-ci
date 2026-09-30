@@ -3,6 +3,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+use crate::BoundObjectivePublicationV1;
 use crate::ConstraintClass;
 use crate::ObjectiveAbstentionRuleProfileV1;
 use crate::ObjectiveActionProfileV1;
@@ -15,6 +16,7 @@ use crate::ObjectiveEvidenceRequirementV1;
 use crate::ObjectivePredicateComparatorV1;
 use crate::ObjectivePredicateProfileV1;
 use crate::ObjectiveProvenanceV1;
+use crate::ObjectivePublicationBindingV1;
 use crate::ObjectiveResourceAxisProfileV1;
 use crate::ObjectiveResourceProfileV1;
 use crate::ObjectiveResourcesV1;
@@ -31,6 +33,7 @@ use crate::ObjectiveSourceEnvelopeV1;
 use crate::ObjectiveSourcePredicateV1;
 use crate::ObjectiveSourceTrustV1;
 use crate::ObjectiveStructuredIntentV1;
+use crate::ProofBearingObjectiveCompileV1;
 use crate::ValidatedAdmissionProfileV1;
 use crate::canonical_objective_intent_digest_v1;
 use crate::compile_authoritative_objective_v1;
@@ -43,6 +46,19 @@ fn id(text: &str) -> StableId {
 
 fn digest(text: &str) -> Digest32 {
     Digest32::of_bytes(text.as_bytes())
+}
+
+fn bind(result: ProofBearingObjectiveCompileV1) -> BoundObjectivePublicationV1 {
+    result.bind_publication(
+        ObjectivePublicationBindingV1::new(
+            digest("run-start-destination-owner"),
+            id("run.proof-projection"),
+            Digest32::ZERO,
+            9,
+            digest("generation-fence"),
+        )
+        .expect("publication binding"),
+    )
 }
 
 fn axis(name: &str) -> ObjectiveResourceAxisProfileV1 {
@@ -235,6 +251,40 @@ fn context(
 }
 
 #[test]
+fn publication_binding_rejects_zero_owner_generation_and_fence() {
+    assert!(
+        ObjectivePublicationBindingV1::new(
+            Digest32::ZERO,
+            id("run.invalid-owner"),
+            Digest32::ZERO,
+            1,
+            digest("fence"),
+        )
+        .is_err()
+    );
+    assert!(
+        ObjectivePublicationBindingV1::new(
+            digest("owner"),
+            id("run.invalid-generation"),
+            Digest32::ZERO,
+            0,
+            digest("fence"),
+        )
+        .is_err()
+    );
+    assert!(
+        ObjectivePublicationBindingV1::new(
+            digest("owner"),
+            id("run.invalid-fence"),
+            Digest32::ZERO,
+            1,
+            Digest32::ZERO,
+        )
+        .is_err()
+    );
+}
+
+#[test]
 fn proof_projection_matches_independent_authenticated_recompilation() {
     let raw = profile();
     let source = source();
@@ -249,12 +299,16 @@ fn proof_projection_matches_independent_authenticated_recompilation() {
         &result.outcome().receipt,
     )
     .expect("independent projection");
+    let authority_free = !result.outcome().receipt.authority.grants_any();
+    let publication = bind(result);
+    assert_eq!(publication.binding().run_id().as_str(), "run.proof-projection");
+    assert_eq!(publication.binding().generation(), 9);
     assert_eq!(
-        encode_proof_bearing_objective_function_v1(&result, &source, &frozen)
+        encode_proof_bearing_objective_function_v1(&publication, &source, &frozen)
             .expect("proof projection"),
         expected,
     );
-    assert!(!result.outcome().receipt.authority.grants_any());
+    assert!(authority_free);
 }
 
 #[test]
@@ -263,8 +317,9 @@ fn proof_projection_rejects_metadata_intent_and_profile_substitution() {
     let original = source();
     let frozen = ValidatedAdmissionProfileV1::from_profile(&raw).expect("frozen");
     let current = context(&raw, &original);
-    let compiled =
-        compile_authoritative_objective_v1(&original, &frozen, &current).expect("compile");
+    let compiled = bind(
+        compile_authoritative_objective_v1(&original, &frozen, &current).expect("compile"),
+    );
     let mut alternatives = Vec::new();
     let mut changed = original.clone();
     changed.request_id = "request.other".to_owned();
@@ -341,14 +396,17 @@ fn proof_projection_rejects_conflict_but_preserves_explicit_abstain() {
         .push("read".to_owned());
     source.intent_digest = canonical_objective_intent_digest_v1(&source).expect("intent");
     let current = context(&raw, &source);
-    let conflict =
-        compile_authoritative_objective_v1(&source, &frozen, &current).expect("conflict");
+    let conflict = bind(
+        compile_authoritative_objective_v1(&source, &frozen, &current).expect("conflict"),
+    );
     assert!(conflict.outcome().compile_result.is_err());
     assert!(encode_proof_bearing_objective_function_v1(&conflict, &source, &frozen).is_err());
     source.structured_intent.legal_action_classes.clear();
     source.intent_digest = canonical_objective_intent_digest_v1(&source).expect("abstain intent");
     let current = context(&raw, &source);
-    let abstain = compile_authoritative_objective_v1(&source, &frozen, &current).expect("abstain");
+    let abstain = bind(
+        compile_authoritative_objective_v1(&source, &frozen, &current).expect("abstain"),
+    );
     assert_eq!(
         abstain
             .outcome()
@@ -405,8 +463,6 @@ fn q32_boundaries_preserve_exact_scalar_semantics_through_product_projection() {
                 (constraint.relation, constraint.bound.raw()),
                 (relation, bound)
             );
-            let projected = encode_proof_bearing_objective_function_v1(&compiled, &input, &frozen)
-                .expect("proof projection");
             let reference = encode_authenticated_objective_function_v1(
                 native,
                 &input,
@@ -415,6 +471,13 @@ fn q32_boundaries_preserve_exact_scalar_semantics_through_product_projection() {
                 &compiled.outcome().receipt,
             )
             .expect("independent reference");
+            let proof_bytes = compiled.proof().canonical_bytes();
+            let proof_digest = compiled.proof().proof_digest();
+            let authority_free = !compiled.outcome().receipt.authority.grants_any();
+            let publication = bind(compiled);
+            let projected =
+                encode_proof_bearing_objective_function_v1(&publication, &input, &frozen)
+                    .expect("proof projection");
             assert_eq!(projected, reference);
             let decoded = crate::decode_objective_function_v1(projected.canonical_bytes())
                 .expect("strict canonical protocol validator");
@@ -428,11 +491,8 @@ fn q32_boundaries_preserve_exact_scalar_semantics_through_product_projection() {
                 .expect("wire field");
             assert_eq!(field["boundQ32"].as_i64(), Some(bound));
             assert_eq!(field["relation"].as_str(), Some(wire_relation));
-            assert_eq!(
-                Digest32::of_bytes(&compiled.proof().canonical_bytes()),
-                compiled.proof().proof_digest()
-            );
-            assert!(!compiled.outcome().receipt.authority.grants_any());
+            assert_eq!(Digest32::of_bytes(&proof_bytes), proof_digest);
+            assert!(authority_free);
         }
     }
 }

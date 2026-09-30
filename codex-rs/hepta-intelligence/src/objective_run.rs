@@ -28,6 +28,8 @@ use codex_hepta_objective::ObjectiveAdmissionReceiptV1;
 use codex_hepta_objective::ObjectiveCompileReceipt;
 use codex_hepta_objective::ObjectiveConflictReceipt;
 use codex_hepta_objective::ObjectiveFunctionV1Error;
+use codex_hepta_objective::ObjectivePublicationBindingError;
+use codex_hepta_objective::ObjectivePublicationBindingV1;
 use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
 use codex_hepta_objective::ValidatedAdmissionProfileV1;
 use codex_hepta_objective::canonical_native_objective_conflict_bytes_v1;
@@ -37,6 +39,9 @@ use codex_hepta_objective::encode_proof_bearing_objective_function_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+
+const RUN_START_DESTINATION_OWNER_V1: &[u8] =
+    b"hepta.learning-ledger.run-start-journal.owner.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveRunBindingsV1 {
@@ -70,6 +75,7 @@ pub struct PublishedObjectiveRunV1 {
 #[derive(Debug)]
 pub enum ObjectiveRunError {
     Admission(ObjectiveAdmissionError),
+    PublicationBinding(ObjectivePublicationBindingError),
     Conflict {
         conflict: ObjectiveConflictReceipt,
         publication: RunStartAppendReceipt,
@@ -88,6 +94,11 @@ impl Error for ObjectiveRunError {}
 impl From<ObjectiveAdmissionError> for ObjectiveRunError {
     fn from(error: ObjectiveAdmissionError) -> Self {
         Self::Admission(error)
+    }
+}
+impl From<ObjectivePublicationBindingError> for ObjectiveRunError {
+    fn from(error: ObjectivePublicationBindingError) -> Self {
+        Self::PublicationBinding(error)
     }
 }
 impl From<ObjectiveFunctionV1Error> for ObjectiveRunError {
@@ -137,17 +148,25 @@ pub fn compile_and_publish_validated_objective_run_v1(
     bindings: ObjectiveRunBindingsV1,
     journal: &mut dyn RunStartJournal,
 ) -> Result<PublishedObjectiveRunV1, ObjectiveRunError> {
-    let proof_bearing = compile_authoritative_objective_v1(envelope, profile, context)?;
-    let protocol = if proof_bearing.outcome().compile_result.is_ok() {
+    let publication_binding = ObjectivePublicationBindingV1::new(
+        Digest32::of_bytes(RUN_START_DESTINATION_OWNER_V1),
+        bindings.run_id.clone(),
+        bindings.expected_run_start_head,
+        bindings.generation,
+        bindings.fence_digest,
+    )?;
+    let publication = compile_authoritative_objective_v1(envelope, profile, context)?
+        .bind_publication(publication_binding);
+    let protocol = if publication.outcome().compile_result.is_ok() {
         Some(encode_proof_bearing_objective_function_v1(
-            &proof_bearing,
+            &publication,
             envelope,
             profile,
         )?)
     } else {
         None
     };
-    let (outcome, admission_proof) = proof_bearing.into_parts();
+    let (outcome, admission_proof, publication_binding) = publication.into_parts();
     let receipt = outcome.receipt;
     let deadline_unix_micros = receipt
         .deadline_unix_micros
@@ -177,11 +196,11 @@ pub fn compile_and_publish_validated_objective_run_v1(
                 ));
             }
             let publication = journal.append_objective_conflict(
-                bindings.expected_run_start_head,
+                publication_binding.expected_predecessor(),
                 RunStartConflictRecordV1 {
                     authentication: bindings.authentication.clone(),
                     admission,
-                    run_id: bindings.run_id.clone(),
+                    run_id: publication_binding.run_id().clone(),
                     runtime_body_digest: bindings.runtime_body_digest,
                     conflict_digest: conflict.conflict_digest,
                     conflict_receipt_bytes,
@@ -209,7 +228,7 @@ pub fn compile_and_publish_validated_objective_run_v1(
         ));
     }
     let run_start = RunStartSnapshotV1 {
-        run_id: bindings.run_id,
+        run_id: publication_binding.run_id().clone(),
         objective_digest: objective.objective.semantic_digest,
         hard_constraint_digest: objective.objective.hard_constraint_digest,
         preference_state_digest: bindings.preference_state_digest,
@@ -217,15 +236,15 @@ pub fn compile_and_publish_validated_objective_run_v1(
         prompt_registry_digest: bindings.prompt_registry_digest,
         artifact_set_digest: bindings.artifact_set_digest,
         authority_epoch: bindings.authority_epoch,
-        generation: bindings.generation,
-        fence_digest: bindings.fence_digest,
+        generation: publication_binding.generation(),
+        fence_digest: publication_binding.fence_digest(),
     };
     let disposition = match objective.disposition {
         CompileDisposition::Compiled => RunStartObjectiveDispositionV1::Compiled,
         CompileDisposition::ExplicitAbstain => RunStartObjectiveDispositionV1::ExplicitAbstain,
     };
     let publication = journal.append_run_start(
-        bindings.expected_run_start_head,
+        publication_binding.expected_predecessor(),
         RunStartRecordV1 {
             authentication: bindings.authentication,
             admission,

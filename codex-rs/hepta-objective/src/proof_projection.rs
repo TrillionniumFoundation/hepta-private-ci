@@ -1,29 +1,31 @@
-//! Protocol projection from an opaque authoritative compile result.
+//! Protocol projection from an opaque authoritative publication value.
 //!
 //! This is part of the existing objective compiler publication path. It does
 //! not authenticate a new request or grant effect authority. The product owner
 //! still rechecks current trust, deadlines, generation and fence at final use.
 
+use crate::BoundObjectivePublicationV1;
 use crate::ObjectiveFunctionV1Artifact;
 use crate::ObjectiveFunctionV1Error;
 use crate::ObjectiveSourceEnvelopeV1;
-use crate::ProofBearingObjectiveCompileV1;
 use crate::ValidatedAdmissionProfileV1;
 use crate::admission_proof::source_envelope_proof_digest_v1;
 
-/// Encode only an outcome that the authoritative compiler paired with its proof.
+/// Encode only an outcome that the authoritative compiler paired with its proof
+/// and that has been bound to one exact destination-owned publication attempt.
 ///
 /// Complete source-envelope identity is rebound, including metadata absent from
 /// the native semantic digest. The existing strict projection and wire decoder
 /// remain mandatory. Unlike the compatibility encoder, this entrypoint does not
 /// admit or solve the same objective a second time.
 pub fn encode_proof_bearing_objective_function_v1(
-    proof_bearing: &ProofBearingObjectiveCompileV1,
+    publication: &BoundObjectivePublicationV1,
     source: &ObjectiveSourceEnvelopeV1,
     profile: &ValidatedAdmissionProfileV1,
 ) -> Result<ObjectiveFunctionV1Artifact, ObjectiveFunctionV1Error> {
-    let proof = proof_bearing.proof();
-    let outcome = proof_bearing.outcome();
+    let proof = publication.proof();
+    let outcome = publication.outcome();
+    let binding = publication.binding();
     if source_envelope_proof_digest_v1(source)
         .map_err(|_| ObjectiveFunctionV1Error::ProjectionMismatch("proof source structure"))?
         != proof.source_envelope_digest()
@@ -31,9 +33,13 @@ pub fn encode_proof_bearing_objective_function_v1(
         || profile.profile_digest() != proof.profile_digest()
         || outcome.receipt.profile_digest != proof.profile_digest()
         || outcome.receipt.admitted_source_digest != proof.admitted_source_digest()
+        || binding.destination_owner_digest().is_zero()
+        || binding.generation() == 0
+        || binding.fence_digest().is_zero()
+        || binding.binding_digest().is_zero()
     {
         return Err(ObjectiveFunctionV1Error::ProjectionMismatch(
-            "opaque admission proof binding",
+            "opaque admission and publication binding",
         ));
     }
     let compiled = outcome.compile_result.as_ref().map_err(|_| {

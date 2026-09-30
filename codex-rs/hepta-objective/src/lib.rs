@@ -15,6 +15,7 @@ mod error;
 mod error_policy;
 mod feasibility;
 mod feasibility_model;
+mod indexed_admission;
 mod model;
 mod objective_admission;
 mod objective_function_v1;
@@ -31,7 +32,10 @@ pub use admission_profile_json::MAX_OBJECTIVE_ADMISSION_PROFILE_JSON_BYTES;
 pub use admission_profile_json::ObjectiveAdmissionProfileJsonError;
 pub use admission_profile_json::decode_admission_profile_json_v1;
 pub use admission_proof::ObjectiveAdmissionProofV1;
+pub use admission_results::BoundObjectivePublicationV1;
 pub use admission_results::ObjectivePreflightReportV1;
+pub use admission_results::ObjectivePublicationBindingError;
+pub use admission_results::ObjectivePublicationBindingV1;
 pub use admission_results::ProofBearingObjectiveCompileV1;
 pub use admission_results::ValidatedObjectiveAdmissionV1;
 pub use compiler::canonical_native_objective_conflict_bytes_v1;
@@ -83,7 +87,9 @@ pub use objective_admission::ObjectiveResourceProfileV1;
 pub use objective_admission::ObjectiveRiskProfileV1;
 pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
+#[cfg(feature = "objective-compatibility-api")]
 pub use objective_admission::admit_and_compile_objective_v1;
+#[cfg(feature = "objective-compatibility-api")]
 pub use objective_admission::admit_objective_v1;
 pub use objective_admission::canonical_objective_intent_digest_v1;
 pub use objective_admission::compile_admitted_objective_v1;
