@@ -1,0 +1,49 @@
+name: channel.matrix temporary exact-source export
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/channel-matrix-source-export-temporary.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: channel-matrix-source-export-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export immutable Git tree
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v2 --untracked-files=all)"
+          git archive --format=tar.gz --output="$RUNNER_TEMP/channel-matrix-exact-source.tar.gz" HEAD
+          sha256sum "$RUNNER_TEMP/channel-matrix-exact-source.tar.gz" > "$RUNNER_TEMP/channel-matrix-exact-source.tar.gz.sha256"
+          git rev-parse HEAD > "$RUNNER_TEMP/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/source-tree.txt"
+      - name: Upload immutable source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-exact-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/channel-matrix-exact-source.tar.gz
+            ${{ runner.temp }}/channel-matrix-exact-source.tar.gz.sha256
+            ${{ runner.temp }}/source-sha.txt
+            ${{ runner.temp }}/source-tree.txt
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0

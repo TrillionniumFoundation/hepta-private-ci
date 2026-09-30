@@ -1,0 +1,43 @@
+{
+  "identityFields": [
+    "binding_revision",
+    "device_id",
+    "generation",
+    "homeserver_id",
+    "matrix_user_id",
+    "room_id",
+    "session_generation"
+  ],
+  "productionTransport": {
+    "authorityPath": "codex-rs/hepta-matrix-sdk/src/authority.rs",
+    "compositionPath": "codex-rs/hepta-matrixd/src/runner.rs",
+    "crate": "codex-hepta-matrix-sdk",
+    "facadePath": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+    "implementationPaths": [
+      "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "codex-rs/hepta-matrix-sdk/src/sdk_implementation.rs"
+    ],
+    "privateImplementationPath": "codex-rs/hepta-matrix-sdk/src/sdk_implementation.rs",
+    "type": "MatrixSdkClient"
+  },
+  "requiredQualificationBindings": [
+    "agentd_sha256",
+    "configuration_sha256",
+    "homeserver_image_digest",
+    "matrixd_sha256",
+    "process_identity_ledger_sha256",
+    "runner_image",
+    "target_triple",
+    "test_binary_sha256"
+  ],
+  "schema": "hepta.channel-matrix-transport-tcb.v1",
+  "schemaVersion": 1,
+  "testTransportPolicy": "public_trait_fixtures_only_not_product_composition",
+  "trustModes": {
+    "dynamicLibrary": "forbidden",
+    "ffi": "forbidden",
+    "remoteSidecarPhysicalSend": "forbidden",
+    "safeRust": "allowed_only_with_crate_forbid_unsafe",
+    "unsafeRust": "forbidden"
+  }
+}

@@ -50,3 +50,18 @@ jobs:
           python3 scripts/hepta-implementation-dossiers.py verify
           # Includes module, algorithm, readiness, CNS and HNMF checks.
           python3 scripts/hepta-docs.py verify
+      - name: Bind channel.matrix source composition to the exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_channel_matrix_candidate.py \
+            --expected-sha "${GITHUB_SHA}" \
+            --output "${RUNNER_TEMP}/channel-matrix-candidate.json"
+      - name: Retain channel.matrix exact-candidate receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/channel-matrix-candidate.json
+          if-no-files-found: error
+          retention-days: 14

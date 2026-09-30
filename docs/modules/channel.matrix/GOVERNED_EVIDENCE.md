@@ -1,0 +1,216 @@
+# channel.matrix governed evidence receipts
+
+Local compilation, native tests, lint and formatting do not prove a real
+homeserver, encrypted session rotation, protected restore, sustained capacity or
+independent operator/security acceptance. This document defines how the evidence
+status renderer may consume those externally governed receipts without treating
+them as activation or release authority.
+
+## 1. Trust boundary
+
+The governance policy and public keys must be canonical regular files outside
+the candidate checkout. The evidence directory itself must also be a canonical
+non-symlink directory outside the checkout. The status command never
+auto-discovers a trust policy:
+
+```sh
+python3 scripts/channel_matrix_status.py \
+  --directory "$EVIDENCE_DIRECTORY" \
+  --governance-policy /protected/channel-matrix/policy.json
+```
+
+A policy has the closed schema:
+
+```json
+{
+  "schema": "hepta.channel-matrix-governance-policy.v1",
+  "namespace": "hepta-channel-matrix",
+  "principals": {
+    "target_qualification": "matrix-target-operator",
+    "independent_acceptance": "matrix-independent-acceptance"
+  },
+  "publicKeys": {
+    "target_qualification": "target-qualification.public.pem",
+    "independent_acceptance": "independent-acceptance.public.pem"
+  }
+}
+```
+
+The two scopes require distinct **canonical Ed25519 SubjectPublicKeyInfo**
+values. Distinct filenames or bytewise-different PEM encodings are not enough:
+the verifier normalizes each public key to DER SPKI and rejects equal underlying
+keys. RSA, EC and other key algorithms are rejected before any receipt is
+accepted. Key paths are sibling file names; symlinks, checkout-local trust
+roots, duplicate JSON fields, path traversal and oversized inputs fail closed.
+
+## 2. Exact receipt identity
+
+The evidence directory may contain these fixed files:
+
+- `target-qualification.attestation.json` and `.sig`;
+- `independent-acceptance.attestation.json` and `.sig`.
+
+Each JSON receipt has schema
+`hepta.channel-matrix-governed-attestation.v1` and exactly these fields:
+
+```json
+{
+  "schema": "hepta.channel-matrix-governed-attestation.v1",
+  "scope": "target_qualification",
+  "candidate": {
+    "commit": "40-lowercase-hex",
+    "tree": "40-lowercase-hex"
+  },
+  "result": "pass",
+  "principal": "matrix-target-operator",
+  "issuedAtUnixMs": 1800000000000,
+  "evidenceManifest": {
+    "path": "target.manifest.json",
+    "bytes": 1234,
+    "sha256": "64-lowercase-hex"
+  },
+  "checks": [
+    "encrypted_room_rotation",
+    "protected_backup_restore"
+  ],
+  "authorityGranted": false,
+  "activation": false,
+  "release": false
+}
+```
+
+The candidate commit and tree must exactly match `source.json`. The manifest must
+be a sibling regular file with the declared byte count and SHA-256. Check names
+are closed-format identifiers, not free-form logs or secrets. Policy, keys,
+receipts, signatures and manifests are read into bounded byte snapshots and
+rejected if their file identity changes during the read.
+
+## 3. Complete production-evidence profile
+
+Before a target or independent principal signs an attestation, validate its
+external evidence manifest against the closed profile in
+`PRODUCTION_QUALIFICATION_PROFILE.json`:
+
+```sh
+python3 scripts/channel_matrix_production_qualification.py \
+  --manifest /protected/evidence/target.manifest.json \
+  --expected-commit "$CANDIDATE_SHA" \
+  --expected-tree "$CANDIDATE_TREE" \
+  --output /protected/evidence/target.validation.json
+```
+
+The target inventory includes exact source-head and deterministic-merge results,
+a real enrolled homeserver, encrypted-room and multi-device/session rotation,
+protected backup restore, ENOSPC, permission loss, WAL/SHM corruption, stale
+snapshot recovery, sustained capacity, 429, disconnect/reconnect, slow server,
+long unknown effects, ACK/response loss, delayed echo, redaction, concurrent
+retry, sync rollback, final-use broker rotation and all owner/claim/session/
+authority/supervisor fencing cases. The independent inventory separately
+requires evidence reproduction, operator runbook review, security threat review,
+restore/rollback drill review and release-boundary review.
+
+Every required check must appear exactly once with `result: pass` and a distinct,
+canonical sibling artifact whose size and SHA-256 match. Missing, duplicate,
+failed, tampered, wrong-candidate, checkout-local or authority-granting evidence
+fails closed. The generated validation JSON is the manifest that should be bound
+by the scope-specific governed attestation. It still grants no activation or
+release authority.
+
+## 4. Signature contract
+
+The detached signature is a raw, exactly 64-byte Ed25519 signature over:
+
+```text
+"hepta.channel-matrix-governed-attestation.v1\0"
+|| namespace || "\0" || scope || "\0" || exact_receipt_bytes
+```
+
+Verification uses the scope-specific canonical Ed25519 key through
+`openssl pkeyutl`. Changing whitespace, candidate identity, manifest digest,
+checks, result, principal or any denial flag invalidates the signature.
+Independent acceptance is rejected unless target qualification is also present
+and valid.
+
+Private signing keys and signing operations belong to separately protected
+target/operator workflows. They must never be stored in the repository, emitted
+to artifacts or made available to a candidate-authored workflow.
+
+## 5. Status semantics
+
+A valid receipt changes only the matching evidence state to `passed`.
+`activation`, `release` and `authority_granted` remain `false`. Missing receipts
+remain `not_proved`; malformed, tampered, wrongly signed, wrong-candidate,
+wrong-principal, wrong-algorithm or same-key-cross-scope receipts fail the status
+command rather than degrading to a green or ambiguous state.
+
+The evidence status output records the policy digest, bytewise public-key
+digests, canonical SPKI digests, receipt/signature digests,
+evidence-manifest digest, principal and check identities. It does not reproduce
+target logs or message content.
+
+## 6. Protected production bundle
+
+The production gate is stricter than the compatibility status view. It requires
+three distinct governance principals and three distinct canonical Ed25519 keys:
+
+```json
+{
+  "schema": "hepta.channel-matrix-production-governance-policy.v1",
+  "namespace": "hepta-channel-matrix-production",
+  "principals": {
+    "target_qualification": "matrix-target-operator",
+    "security_acceptance": "matrix-security-review",
+    "operations_acceptance": "matrix-operations-review"
+  },
+  "publicKeys": {
+    "target_qualification": "target.public.pem",
+    "security_acceptance": "security.public.pem",
+    "operations_acceptance": "operations.public.pem"
+  }
+}
+```
+
+The protected evidence directory for one exact candidate contains:
+
+- `target-qualification.manifest.json`;
+- `independent-acceptance.manifest.json`;
+- `target-qualification.validation.json`;
+- `independent-acceptance.validation.json`;
+- target, security and operations attestations plus detached signatures.
+
+The two validation files must be the exact canonical JSON emitted by
+`channel_matrix_production_qualification.py` for the corresponding manifests;
+the bundle verifier recomputes both results byte-for-byte before accepting any
+signature. The target attestation binds the complete target qualification
+inventory. Security acceptance binds exactly evidence reproduction,
+release-boundary review and security-threat review. Operations acceptance binds
+exactly the operator runbook and restore/rollback drill reviews. The two
+independent signatures bind the same independently validated acceptance
+manifest, must use different principals and keys, and must be issued after the
+target attestation.
+
+Run the closed bundle validator as follows:
+
+```sh
+python3 scripts/channel_matrix_production_bundle.py \
+  --directory "/protected/evidence/$CANDIDATE_SHA" \
+  --governance-policy /protected/channel-matrix/production-policy.json \
+  --expected-commit "$CANDIDATE_SHA" \
+  --expected-tree "$CANDIDATE_TREE" \
+  --output /protected/results/production-bundle.json
+```
+
+A valid bundle may set `productionQualified = true`; it always keeps
+`authorityGranted`, `activation`, `promotion` and `release` false. The manual
+`channel.matrix protected production qualification` workflow may run only from
+`refs/heads/main` in the protected `channel-matrix-production-qualification`
+environment on a labeled self-hosted runner. It checks out and executes only the
+trusted verifier revision from `main`, requires the candidate commit/tree to
+already be an ancestor of that trusted revision, and never checks out or
+executes candidate code. The verifier/profile/workflow commit and tree are bound
+into retained receipts separately from the qualified candidate identity.
+
+The workflow reads candidate-specific evidence from a protected external mount,
+validates the three signatures and closed manifests, and uploads only bounded
+validation receipts. It receives no signing keys and cannot edit, commit or push
+source.

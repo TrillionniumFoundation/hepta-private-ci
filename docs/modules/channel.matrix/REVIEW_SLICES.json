@@ -1,0 +1,189 @@
+{
+  "historyPolicy": "append_only_review_slices_no_history_rewrite",
+  "module": "channel.matrix",
+  "rangePolicy": "derive_first_last_touch_from_exact_base_and_head",
+  "schema": "hepta.channel-matrix-review-slices.v1",
+  "schemaVersion": 1,
+  "slices": [
+    {
+      "commands": [
+        "cargo test --locked -p codex-hepta-matrix-sdk",
+        "cargo test --locked -p codex-hepta-matrix-sdk --doc"
+      ],
+      "deputy": "security-authority",
+      "id": "01-sdk-final-use",
+      "invariants": [
+        "entered_result_cannot_become_pre_entry",
+        "final_use_binding_is_canonical",
+        "post_entry_fault_is_indeterminate",
+        "stable_transaction_identity_is_preserved"
+      ],
+      "owner": "channels-platform",
+      "paths": [
+        "codex-rs/hepta-matrix-sdk/src/authority.rs",
+        "codex-rs/hepta-matrix-sdk/src/content.rs",
+        "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs",
+        "codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs",
+        "codex-rs/hepta-matrix-sdk/src/outbound_v2/permit.rs",
+        "codex-rs/hepta-matrix-sdk/src/outbound_v2/settlement.rs",
+        "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+        "codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs",
+        "codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs"
+      ]
+    },
+    {
+      "commands": [
+        "cargo test --locked -p codex-hepta-matrix-store",
+        "python3 scripts/channel_matrix_migrations.py --check"
+      ],
+      "deputy": "storage-integrity",
+      "id": "02-durable-store-migrations",
+      "invariants": [
+        "active_claim_is_fenced",
+        "dispatch_lineage_is_immutable",
+        "store_open_validates_exact_schema",
+        "sync_cursor_and_terminality_commit_atomically"
+      ],
+      "owner": "channels-platform",
+      "paths": [
+        "codex-rs/hepta-matrix-store/migrations",
+        "codex-rs/hepta-matrix-store/src/claim",
+        "codex-rs/hepta-matrix-store/src/dispatch.rs",
+        "codex-rs/hepta-matrix-store/src/recovery.rs",
+        "codex-rs/hepta-matrix-store/src/store.rs",
+        "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+        "codex-rs/hepta-matrix-store/tests"
+      ]
+    },
+    {
+      "commands": [
+        "cargo test --locked -p codex-hepta-matrixd",
+        "cargo test --locked -p codex-hepta-supervisor matrix"
+      ],
+      "deputy": "runtime-agentd",
+      "id": "03-runtime-recovery",
+      "invariants": [
+        "current_generation_only",
+        "recovery_is_bounded_and_fair",
+        "startup_sync_precedes_recovery",
+        "unexpected_task_exit_stops_generation"
+      ],
+      "owner": "channels-platform",
+      "paths": [
+        "codex-rs/hepta-matrixd/src/runner.rs",
+        "codex-rs/hepta-matrixd/src/runner_startup_tests.rs",
+        "codex-rs/hepta-matrixd/src/runtime",
+        "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+        "codex-rs/hepta-supervisor/src/matrix.rs"
+      ]
+    },
+    {
+      "commands": [
+        "python3 scripts/channel_matrix_transport_tcb.py",
+        "python3 -m unittest scripts.tests.test_channel_matrix_transport_tcb -v"
+      ],
+      "deputy": "security-authority",
+      "id": "04-transport-adapter-tcb",
+      "invariants": [
+        "dynamic_physical_send_is_forbidden",
+        "raw_sdk_client_does_not_escape",
+        "sealed_adapter_is_non_overridable",
+        "transport_identity_is_bound_to_external_artifacts"
+      ],
+      "owner": "channels-platform",
+      "paths": [
+        "codex-rs/hepta-matrix-sdk/src/lib.rs",
+        "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+        "codex-rs/hepta-matrix-sdk/src/sdk_implementation.rs",
+        "docs/modules/channel.matrix/TRANSPORT_TCB.json",
+        "docs/modules/channel.matrix/TRANSPORT_TCB.md",
+        "scripts/channel_matrix_transport_tcb.py",
+        "scripts/tests/test_channel_matrix_transport_tcb.py"
+      ]
+    },
+    {
+      "commands": [
+        "cargo test --locked -p codex-hepta-matrix-sdk clock",
+        "python3 -m unittest scripts.tests.test_channel_matrix_alerts scripts.tests.test_channel_matrix_diagnostics -v"
+      ],
+      "deputy": "operations",
+      "id": "05-observability-clock",
+      "invariants": [
+        "clock_rollback_never_extends_grant",
+        "forward_jump_fails_closed",
+        "metrics_are_bounded_and_identity_free",
+        "observability_is_not_dispatch_truth"
+      ],
+      "owner": "channels-platform",
+      "paths": [
+        "codex-rs/hepta-matrix-sdk/src/outbound_v2/clock.rs",
+        "codex-rs/hepta-matrix-sdk/src/outbound_v2/clock_tests.rs",
+        "codex-rs/hepta-matrix-sdk/src/outbound_v2/latency.rs",
+        "codex-rs/hepta-matrix-sdk/src/outbound_v2/telemetry.rs",
+        "codex-rs/hepta-matrix-sdk/src/outbound_v2/telemetry_tests.rs",
+        "docs/modules/channel.matrix/ALERTING_AND_DIAGNOSTICS.md",
+        "docs/modules/channel.matrix/CLOCK_DISCIPLINE.md",
+        "docs/modules/channel.matrix/OPERATIONS_RUNBOOK.md",
+        "scripts/channel_matrix_alerts.py",
+        "scripts/channel_matrix_diagnostics.py"
+      ]
+    },
+    {
+      "commands": [
+        "python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' -v",
+        "python3 scripts/channel_matrix_focused_gate.py"
+      ],
+      "deputy": "release-governance",
+      "id": "06-qualification-evidence",
+      "invariants": [
+        "candidate_lanes_share_one_run_attempt",
+        "production_evidence_is_external_and_exact",
+        "readiness_manifest_is_non_mixable",
+        "source_closure_is_tracked_only",
+        "workflow_source_authoring_is_closed"
+      ],
+      "owner": "channels-platform",
+      "paths": [
+        ".github/workflows/channel-matrix-preserve-unknown.yml",
+        "docs/modules/channel.matrix/PROCESS_FAULT_MATRIX.json",
+        "docs/modules/channel.matrix/PROCESS_QUALIFICATION.md",
+        "docs/modules/channel.matrix/PRODUCTION_QUALIFICATION_PROFILE.json",
+        "docs/modules/channel.matrix/QUALIFICATION_SCENARIOS.json",
+        "docs/modules/channel.matrix/SOURCE_PURITY_AND_CANDIDATE_FREEZE.md",
+        "scripts/channel_matrix_evidence_v2.py",
+        "scripts/channel_matrix_pair_acceptance_v2.py",
+        "scripts/channel_matrix_process_qualification.py",
+        "scripts/channel_matrix_production_qualification.py",
+        "scripts/channel_matrix_readiness.py",
+        "scripts/channel_matrix_source_provenance.py",
+        "scripts/tests/test_channel_matrix_closure_workflow.py"
+      ]
+    },
+    {
+      "commands": [
+        "python3 scripts/channel_matrix_docs.py --check",
+        "python3 -m unittest scripts.tests.test_channel_matrix_docs -v"
+      ],
+      "deputy": "documentation-governance",
+      "id": "07-documentation-generated-status",
+      "invariants": [
+        "generated_markdown_matches_machine_sources",
+        "handwritten_docs_do_not_define_current_claim_state",
+        "production_claims_remain_false_without_external_receipts",
+        "review_slices_are_closed_and_ordered"
+      ],
+      "owner": "channels-platform",
+      "paths": [
+        ".github/workflows/channel-matrix-materialize.yml",
+        "docs/modules/channel.matrix/CURRENT_STATUS.md",
+        "docs/modules/channel.matrix/DOCUMENT_SOURCES.json",
+        "docs/modules/channel.matrix/MODULE_STATUS.json",
+        "docs/modules/channel.matrix/QUALIFICATION_SUMMARY.md",
+        "docs/modules/channel.matrix/REVIEW_GUIDE.md",
+        "docs/modules/channel.matrix/REVIEW_SLICES.json",
+        "scripts/channel_matrix_docs.py",
+        "scripts/tests/test_channel_matrix_docs.py"
+      ]
+    }
+  ]
+}

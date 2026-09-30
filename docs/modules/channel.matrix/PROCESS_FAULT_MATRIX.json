@@ -1,0 +1,173 @@
+{
+  "qualificationScope": "external_process_crash_consistency_not_activation_or_release",
+  "scenarios": [
+    {
+      "id": "MATRIX-PF01",
+      "name": "kill_before_final_use_entry",
+      "requiredInvariants": [
+        "no_remote_effect_before_entry",
+        "same_stable_transaction_identity",
+        "stale_claim_cannot_commit"
+      ]
+    },
+    {
+      "id": "MATRIX-PF02",
+      "name": "kill_after_entry_before_transport_poll",
+      "requiredInvariants": [
+        "entered_proof_retained",
+        "same_stable_transaction_identity",
+        "unknown_never_not_started"
+      ]
+    },
+    {
+      "id": "MATRIX-PF03",
+      "name": "kill_after_remote_acceptance_before_local_outcome",
+      "requiredInvariants": [
+        "no_duplicate_nonrepeatable_effect",
+        "same_stable_transaction_identity",
+        "sync_reconciliation_only",
+        "unknown_never_not_started"
+      ]
+    },
+    {
+      "id": "MATRIX-PF04",
+      "name": "lease_expiry_and_stale_token",
+      "requiredInvariants": [
+        "expired_owner_cannot_mutate",
+        "new_attempt_monotonic",
+        "old_token_cannot_continue"
+      ]
+    },
+    {
+      "id": "MATRIX-PF05",
+      "name": "stale_generation_commit",
+      "requiredInvariants": [
+        "current_owner_only",
+        "stale_generation_cannot_commit"
+      ]
+    },
+    {
+      "id": "MATRIX-PF06",
+      "name": "dual_writer_contention",
+      "requiredInvariants": [
+        "current_owner_only",
+        "durable_memory_state_no_silent_split",
+        "single_writer_lock_enforced"
+      ]
+    },
+    {
+      "id": "MATRIX-PF07",
+      "name": "recovery_writer_contention",
+      "requiredInvariants": [
+        "current_owner_only",
+        "no_duplicate_nonrepeatable_effect",
+        "one_recovery_progressor"
+      ]
+    },
+    {
+      "id": "MATRIX-PF08",
+      "name": "network_partition_and_reconnect",
+      "requiredInvariants": [
+        "bounded_reconciliation",
+        "same_stable_transaction_identity",
+        "unknown_never_not_started"
+      ]
+    },
+    {
+      "id": "MATRIX-PF09",
+      "name": "sync_rollback_and_prefix_replay",
+      "requiredInvariants": [
+        "cursor_cannot_outrun_terminal_observation",
+        "prefix_replay_idempotent",
+        "same_stable_transaction_identity"
+      ]
+    },
+    {
+      "id": "MATRIX-PF10",
+      "name": "wal_shm_corruption_and_restore",
+      "requiredInvariants": [
+        "corruption_fails_closed",
+        "no_silent_projection_rebuild",
+        "restored_frontier_monotonic"
+      ]
+    },
+    {
+      "id": "MATRIX-PF11",
+      "name": "storage_transient_and_persistent_failure",
+      "requiredInvariants": [
+        "persistent_failure_stops_owner",
+        "transient_failure_retains_identity",
+        "unknown_never_not_started"
+      ]
+    },
+    {
+      "id": "MATRIX-PF12",
+      "name": "cancellation_before_and_after_entry",
+      "requiredInvariants": [
+        "post_entry_cancel_indeterminate",
+        "pre_entry_cancel_zero_effect",
+        "same_stable_transaction_identity"
+      ]
+    },
+    {
+      "id": "MATRIX-PF13",
+      "name": "journal_capacity_and_compaction",
+      "requiredInvariants": [
+        "journal_bound_enforced",
+        "required_outcome_evidence_retained",
+        "unresolved_never_compacted"
+      ]
+    },
+    {
+      "id": "MATRIX-PF14",
+      "name": "archive_and_tombstone",
+      "requiredInvariants": [
+        "final_archive_preserves_lineage",
+        "terminal_state_never_reopens",
+        "tombstone_prevents_resurrection"
+      ]
+    },
+    {
+      "id": "MATRIX-PF15",
+      "name": "long_unknown_reconciliation_fairness",
+      "requiredInvariants": [
+        "bounded_reconciliation",
+        "new_work_fair_progress",
+        "unknown_identity_preserved"
+      ]
+    },
+    {
+      "id": "MATRIX-PF16",
+      "name": "grant_claim_persistence_failure",
+      "requiredInvariants": [
+        "burned_nonce_never_reused",
+        "fresh_grant_required",
+        "reservation_never_terminal",
+        "zero_remote_effect_without_entry"
+      ]
+    },
+    {
+      "id": "MATRIX-PF17",
+      "name": "wall_clock_discontinuity",
+      "requiredInvariants": [
+        "expiry_storm_reason_classified",
+        "forward_jump_fails_closed",
+        "rollback_never_extends_grant"
+      ]
+    },
+    {
+      "id": "MATRIX-PF18",
+      "name": "jit_claim_sustained_pressure",
+      "requiredInvariants": [
+        "claim_to_entry_bounded",
+        "later_work_unclaimed_until_execution",
+        "one_lease_per_worker",
+        "recovery_and_new_work_fair"
+      ]
+    }
+  ],
+  "schema": "hepta.channel-matrix-process-fault-profile.v1",
+  "schemaVersion": 1,
+  "storeBackend": "sqlite_wal_single_writer",
+  "transport": "matrix_synapse_authenticated"
+}
