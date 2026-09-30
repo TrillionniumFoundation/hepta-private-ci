@@ -30,13 +30,13 @@ general ordering and never chooses a lexical winner for competing identities.
 
 | Decision | DB write | External overwrite | Audit | Epoch advance | Repair authority | Automatic retry |
 | --- | --- | --- | --- | --- | --- | --- |
-| `ExactDuplicate` | no new row | no | duplicate observation only | no | no | safe no-op |
-| `IncomingStale` | no | no | optional rejection | no | no | no |
-| `IncomingWins` | exact successor transaction | CAS only | required | exactly +1 | no | same operation only |
-| `ConflictSameOrderDifferentIdentity` | no | no | required | no | cannot repair in place | no |
-| `InvalidIncoming` | no | no | required | no | no | no |
-| `InvalidCurrent` | no | no | required | no | external recovery required | no |
-| `RepairRequired` | only after exact authorization | exact target only | required | bound by authorization | yes | no blind retry |
+| `ExactDuplicate` | no new row | no | no new commit | no | no | verified no-op only |
+| `IncomingStale` | no | no | rejection diagnostic | no | no | no |
+| `IncomingWins` | exact successor transaction | normal CAS only | required | exactly +1 | no | same durable operation only |
+| `ConflictSameOrderDifferentIdentity` | no | no | incident diagnostic | no | cannot repair in place | no |
+| `InvalidIncoming` | no | no | rejection diagnostic | no | no | no |
+| `InvalidCurrent` | no | no | incident diagnostic | no | external recovery required | no |
+| `RepairRequired` | no through normal admission | no through normal CAS | authorization/incident evidence only | no implicit advance | exact signed authorization required | no blind retry |
 
 Automatic successors require the same store and backend, generation `current+1`,
 non-regressing timestamps, qualification sequence and signer-policy generation,
@@ -44,6 +44,14 @@ and stable source/build/qualification/migration/issuer-authority identities.
 Signer-registry rotation requires a strict signer-policy generation increase.
 A source, backend, build, qualification, migration or issuer-authority change is
 an explicit transition, not an incidental overwrite.
+
+Both external backend implementations reclassify the proposed transition while
+holding their serialization lock and before writing an audit byte. On reopen,
+the single-file journal and the production segmented backend replay the same
+state machine. Segmented replay walks the immutable predecessor chain from
+genesis, validates every segment and record in order, then validates the
+archive-to-active boundary. Recomputing record, metadata or latest-index hashes
+cannot turn a semantic `RepairRequired` transition into an automatic successor.
 
 ## 3. Repair transition
 
@@ -55,16 +63,29 @@ not revoked. Changing any bound field invalidates the signature. A same-
 generation split must be resolved by producing a new generation; it is never
 rewritten in place.
 
+The repository implements and tests the exact authorization verifier. The
+ordinary legacy and segmented backend CAS surfaces intentionally reject
+`RepairRequired`; they do not reinterpret a signed document as permission to use
+the normal publication path. A production repair publisher must additionally
+retain the authorization and one-time nonce in its durable external audit
+record, execute only the signed current→target transition, and be independently
+qualified and activated. Until that separately governed path exists,
+`RepairRequired` remains a stop condition rather than an online overwrite.
+
 ## 4. Qualification identity
 
 The following are distinct objects and are recorded separately:
 
-- source head;
+- source head and source tree;
 - immutable base;
 - deterministic two-parent merge;
 - GitHub pull-request synthetic merge;
 - workflow definition SHA;
 - final real merge SHA.
 
-No successful status is copied between them. After merge, the real merge commit
-is re-run and `final_merge_sha` is populated by that run only.
+The four required candidate receipts and the crash-matrix summary must also
+match one workflow run ID, attempt, runner image and target triple. A receipt
+from another attempt, tree, base, merge object, workflow object, runner or target
+is non-success even when its command passed. No successful status is copied
+between candidates. After merge, the real merge commit is rerun and
+`final_merge_sha` is populated by that run only.
