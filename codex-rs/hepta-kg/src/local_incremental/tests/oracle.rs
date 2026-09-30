@@ -2,6 +2,8 @@ use crate::KnowledgeGenerationErrorV2;
 use crate::KnowledgeNodeV2;
 use crate::apply_incremental_delta;
 
+use super::super::KnowledgeLocalIncrementalErrorV3;
+use super::super::KnowledgeLocalIncrementalStateV3;
 use super::fixtures::chain_generation;
 use super::fixtures::edge;
 use super::fixtures::generation;
@@ -10,8 +12,6 @@ use super::fixtures::local_delta;
 use super::fixtures::node;
 use super::fixtures::tombstone;
 use super::fixtures::v2_delta;
-use super::super::KnowledgeLocalIncrementalErrorV3;
-use super::super::KnowledgeLocalIncrementalStateV3;
 
 #[test]
 fn local_frontier_plan_matches_complete_v2_oracle() {
@@ -37,6 +37,8 @@ fn local_frontier_plan_matches_complete_v2_oracle() {
     };
     assert_eq!(prepared.resulting_node_count, 3);
     assert_eq!(prepared.resulting_edge_count, 3);
+    assert_eq!(prepared.work.predecessor_nodes_read, 2);
+    assert_eq!(prepared.work.predecessor_edges_read, 0);
     assert_eq!(prepared.work.full_entries_scanned, 0);
     assert_eq!(prepared.work.treap_leaf_updates, 2);
     assert!(prepared.work.treap_nodes_rehashed >= 2);
@@ -124,6 +126,32 @@ fn node_removal_closes_only_direct_incident_frontier() {
         panic!("local removal must audit");
     };
     assert_eq!(audit, expected);
+}
+
+#[test]
+fn local_work_counts_shared_incident_edges_once() {
+    let predecessor = chain_generation(1, false);
+    let state_result = KnowledgeLocalIncrementalStateV3::from_generation(predecessor);
+    let Ok(state) = state_result else {
+        panic!("local state must build");
+    };
+    let prepare_result = state.prepare(
+        local_delta(
+            &state,
+            vec![id("node:a"), id("node:b")],
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+        ),
+        32,
+    );
+    let Ok(prepared) = prepare_result else {
+        panic!("shared-frontier removal must prepare");
+    };
+    assert_eq!(prepared.work.predecessor_nodes_read, 2);
+    assert_eq!(prepared.work.predecessor_edges_read, 2);
+    assert_eq!(prepared.remove_edge_identities.len(), 2);
+    assert_eq!(prepared.work.full_entries_scanned, 0);
 }
 
 #[test]
