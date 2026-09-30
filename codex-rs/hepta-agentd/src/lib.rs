@@ -184,6 +184,8 @@ pub use intelligence_learning::append_intelligence_outcome_v1;
 pub use intelligence_learning::intelligence_physical_terminal_binding_digest_v1;
 pub use intelligence_learning::intelligence_run_snapshot_digest_v1;
 pub use intelligence_learning_runtime::AgentdIntelligenceLearningRuntimeConfigV1;
+pub use intelligence_learning_runtime::AgentdIntelligenceLearningRuntimeMetricsSnapshotV1;
+pub use intelligence_learning_runtime::AgentdIntelligenceLearningRuntimeMetricsV1;
 pub use intelligence_membership::AgentdLegalCandidateMembershipProofV1;
 pub use intelligence_observability::AgentdIntelligenceRunDwellSnapshotV1;
 pub use intelligence_observability::AgentdIntelligenceRunPhaseDurationV1;
