@@ -21,7 +21,7 @@ jobs:
     runs-on: macos-14
     timeout-minutes: 180
     env:
-      EXPECTED_PARENT: dcbd72e170673cfd617d07a73f0534cf173a1c5e
+      EXPECTED_PARENT: 88ea0c563afd1fa701c9ddd51f3ffedeb5f4c117
       BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
       TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
       RUST_MIN_STACK: "8388608"
@@ -90,7 +90,7 @@ jobs:
               "lane_c_scope_witness",
               "cognitive_read_sqlite_write_capacity.py",
               "REQUIRED_SCHEMA_OBJECTS",
-              "trusted_now_unix_seconds",
+              "trusted_compaction_now_unix_seconds",
           )
           candidates = [block for block in blocks if all(marker in block for marker in markers)]
           if len(candidates) != 1:
