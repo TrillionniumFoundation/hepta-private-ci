@@ -193,3 +193,7 @@ impl NeuronAdmissionGuard for MeasurementGuard<'_> {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "self_iteration_measurement_tests.rs"]
+mod tests;

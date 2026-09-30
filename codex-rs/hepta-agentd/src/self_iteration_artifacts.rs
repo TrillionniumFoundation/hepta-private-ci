@@ -108,10 +108,8 @@ pub fn inspect_self_iteration_artifacts_v1(
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
-        if metadata.mode() & 0o077 != 0 || metadata.uid() != unsafe { libc::geteuid() } {
-            return Err(invalid(
-                "artifact inventory directory must be private and host-owned",
-            ));
+        if metadata.mode() & 0o077 != 0 {
+            return Err(invalid("artifact inventory directory must be private"));
         }
     }
     validate_filename(manifest_filename)?;
@@ -224,9 +222,13 @@ fn open_private_file(path: &Path, limit: u64) -> Result<Option<File>, AgentdErro
         use std::os::unix::fs::MetadataExt;
         if metadata.mode() & 0o077 != 0
             || metadata.nlink() != 1
-            || metadata.uid() != unsafe { libc::geteuid() }
+            || metadata.uid()
+                != std::fs::metadata(path.parent().ok_or_else(|| invalid("artifact parent"))?)?
+                    .uid()
         {
-            return Err(invalid("artifact must be private, host-owned and unlinked"));
+            return Err(invalid(
+                "artifact must be private, inventory-owned and unlinked",
+            ));
         }
     }
     let file = File::open(path)?;

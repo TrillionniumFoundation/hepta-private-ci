@@ -121,3 +121,7 @@ impl AgentdSelfIterationLocalSignerV1 {
         Ok(evidence)
     }
 }
+
+#[cfg(test)]
+#[path = "self_iteration_signer_tests.rs"]
+mod tests;

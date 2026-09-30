@@ -291,17 +291,17 @@ impl NeuronInferenceControlPort for SlowControl {
 
 impl DurableNeuronInferenceControlPort for SlowControl {}
 
-struct RuntimeFixture {
+pub(crate) struct RuntimeFixture {
     _root: TempDir,
-    handle: AgentdNeuronHandleV2,
+    pub(crate) handle: AgentdNeuronHandleV2,
     invocation: AgentdNeuronInvocationV2,
-    input: NeuronTickInputV1,
-    canonical: CanonicalPortInputV1,
-    calls: Arc<AtomicUsize>,
+    pub(crate) input: NeuronTickInputV1,
+    pub(crate) canonical: CanonicalPortInputV1,
+    pub(crate) calls: Arc<AtomicUsize>,
     started: Arc<AtomicBool>,
 }
 
-fn runtime_fixture(
+pub(crate) fn runtime_fixture(
     generation_value: u64,
     provider_delay: Duration,
     witness_delay: Duration,
