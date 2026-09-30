@@ -35,12 +35,18 @@ SHA_FIELD = re.compile(
     r"(?:^|_)(?:commit|candidate|head|base|tree|merge|final_merge|workflow)_?sha$",
     re.IGNORECASE,
 )
+# Checkout/reset may be needed to materialize an immutable exact candidate in a
+# detached runner worktree. They are not repository publication. What is
+# forbidden is changing the reviewed branch or synthesizing source and then
+# committing/pushing it as though that were the original candidate.
 SOURCE_MUTATION = re.compile(
     r"(?im)(?:^\s*contents:\s*write\s*(?:#.*)?$|"
-    r"\bgit\s+(?:add|commit|push|reset|checkout)\b|"
+    r"\bgit\s+(?:add|commit|push|merge|rebase|cherry-pick|am)\b|"
     r"^\s*persist-credentials:\s*true\s*(?:#.*)?$|"
     r"\bauthbus-materialize[^\s]*\.py\b|"
-    r"\bauthority-convergence-once\b)"
+    r"\bauthority-convergence-once\b|"
+    r"check-authbus-closed-world\.py\s+--write\b|"
+    r"cargo\s+fmt(?!\s+--(?:all\s+)?--check)(?:\s|$))"
 )
 FORBIDDEN_AUTHORING_WORKFLOWS = {
     ".github/workflows/authbus-bootstrap-api-authoring.yml",
