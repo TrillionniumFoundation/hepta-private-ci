@@ -86,6 +86,31 @@ class ConvergenceAcceptanceTests(unittest.TestCase):
         self.assertNotIn('mkdir -p "$output"', trust_lane)
         self.assertNotIn('--output "$output/', trust_lane)
 
+    def test_target_capacity_never_materializes_candidate_bytes(self) -> None:
+        workflow = (
+            convergence.ROOT
+            / ".github/workflows/kernel-authority-target-capacity.yml"
+        ).read_text(encoding="utf-8")
+        self.assertEqual(workflow.count("uses: actions/checkout@"), 1)
+        for forbidden in (
+            "Checkout candidate",
+            "path: subject",
+            "GITHUB_WORKSPACE/subject",
+            "ref: ${{ inputs.candidate_sha }}",
+            'git -C "$subject"',
+        ):
+            self.assertNotIn(forbidden, workflow)
+        for required in (
+            "GITHUB_API_URL: ${{ github.api_url }}",
+            "GITHUB_REPOSITORY: ${{ github.repository }}",
+            "/git/commits/{candidate_sha}",
+            "payload.get(\"sha\") != candidate_sha",
+            "candidate identity response did not contain an exact tree",
+            'test ! -e "$EVIDENCE_ROOT"',
+            "kernel-authority-target-capacity-${{ github.run_id }}-${{ github.run_attempt }}",
+        ):
+            self.assertIn(required, workflow)
+
 
 if __name__ == "__main__":
     unittest.main()
