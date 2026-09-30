@@ -1,69 +1,46 @@
 {
   "authority": "DENY_ALL",
-  "deploymentCapabilities": {
-    "attemptAnchorAuthority": {
-      "adapterIdentity": "UNBOUND_EXTERNAL",
-      "contract": "ProductEvaluationAttemptAnchorStoreV1",
-      "targetHostQualified": false
-    },
-    "outcomeProvider": {
-      "adapterIdentity": "UNBOUND_EXTERNAL",
-      "contract": "FinalOutcomeHoldoutProviderV1 / FinalHoldoutProviderV1",
-      "targetHostQualified": false
-    },
-    "publicationOwner": {
-      "adapterIdentity": "UNBOUND_EXTERNAL",
-      "contract": "ProductQualificationPublicationStoreV1",
-      "targetHostQualified": false
-    },
-    "selectedHost": {
-      "attestationIdentity": "UNBOUND_EXTERNAL",
-      "targetHostQualified": false
-    }
+  "bootstrapScope": {
+    "moduleImplementationIncluded": false,
+    "productExecutionQualified": false,
+    "trustedControlPlaneOnly": true
   },
   "externalClaims": {
     "activationAuthorized": false,
     "independentAcceptanceIssued": false,
     "releaseAuthorized": false,
+    "sourceQualifiedByThisBootstrap": false,
     "targetHostQualified": false
   },
   "module": "learning.eval",
   "releasePosture": "NO_GO",
   "schema": "hepta.learning-eval.qualification-matrix.v1",
   "sourceFacts": {
-    "activatedTrustExpiryCheckSourcePresent": true,
-    "anchoredKnownNoWriteRejectionSourcePresent": true,
-    "anchoredStateMachineCrashCutMatrixSourcePresent": true,
+    "auxiliaryControlPlaneByteIdentitySourcePresent": true,
     "candidateExecutionReadOnlyWorkflowSourcePresent": true,
-    "canonicalProductFacadeSourcePresent": true,
-    "compatibilityFixtureIsolationSourcePresent": true,
+    "closedWorldLearningEvalWorkflowInventorySourcePresent": true,
     "completeProducerJobInventorySourcePresent": true,
-    "defaultProductionCoverageSeparatedSourcePresent": true,
-    "defaultRawRunnerCompileRejectionSourcePresent": true,
+    "compatibilityFixtureIsolationSourcePresent": true,
     "duplicateJsonAndNonfiniteRejectionSourcePresent": true,
-    "exactControlPlaneWorkflowPathCoverageSourcePresent": true,
     "exactFilteredTestDiscoveryGuardSourcePresent": true,
     "hardenedTrustedReporterEntrypointSourcePresent": true,
-    "humanDeveloperGuidePresent": true,
     "localDeterministicEvidenceSourcePresent": true,
     "machineAuditIndexPresent": true,
     "mainOnlyAttestationIsolationSourcePresent": true,
-    "markdownLinkAnchorVerificationSourcePresent": true,
+    "markdownLinkFixtureRegressionsSourcePresent": true,
     "normalizedProducerConclusionSourcePresent": true,
     "prePatchCurrentScopeRevalidationSourcePresent": true,
-    "qualificationControlPlaneByteIdentitySourcePresent": true,
-    "recordedProductFacadeSourcePresent": true,
-    "selectedHostBareVerifierCompileRejectionSourcePresent": true,
-    "selectedHostRootActivatedTrustBoundarySourcePresent": true,
+    "secretBearingExceptionPayloadRedactionSourcePresent": true,
+    "secretBearingExceptionPayloadRegressionSourcePresent": true,
     "sourceStatusCompanionConsistencySourcePresent": true,
     "stalePrHeadReportRejectionSourcePresent": true,
     "strictAllowlistedArtifactInventorySourcePresent": true,
     "trustedDefaultBranchWorkflowRunReporterSourcePresent": true,
     "trustedReporterRegressionCount": 60,
-    "typedFailureEncodingV2SourcePresent": true,
     "untrustedArtifactValidationSourcePresent": true
   },
   "workflowClaims": {
+    "bootstrapQualifiedByThisRun": false,
     "exactHeadExecuted": false,
     "orderedParentSyntheticMergeExecuted": false,
     "sourceQualifiedByThisRun": false
