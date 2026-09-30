@@ -39,6 +39,13 @@ already admitted external effect.
 
 ## Data carried and product completion boundary
 
+The request carries `query_digest` and binding metadata, rather than the
+full owner `RetrievalRequest`. The current host-local adapter additionally
+captures that request in `hepta-memory/src/cognitive_runtime.rs`.
+A remote serving owner therefore needs an explicit bounded query/evidence
+resolution contract and its own current principal/scope/purpose grant check.
+Peer authentication alone does not authorize an owner read.
+
 The response carries owner/record identity, revision and record/support/validity
 digests. It does **not** carry model-visible memory content or complete remote
 revalidation material. A receiving host cannot construct a model attachment
@@ -79,7 +86,8 @@ this is a protocol/adapter candidate, not usable cross-host product recall.
 The product workflow also triggers on changes to canonical federation, types
 and wire dependencies. It tests the canonical engine and adapter, checks
 formatting/doctests/strict Clippy, and runs the capacity probe using its positional
-output path. Local results do not replace hosted source/merge qualification.
+output path. Capacity diagnostics are retained under the asserted event source
+SHA. Local results do not replace hosted source/merge qualification.
 
 Deployment must separately select the channel, provision/rotate secrets, own
 pending-attempt expiry maintenance, bound blocking disk work and backpressure,

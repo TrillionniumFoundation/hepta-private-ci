@@ -100,7 +100,7 @@ hosted checks must be evaluated separately from the prior run.
 | Canonical one-peer V2 checked adapter | Implemented; new adversarial regressions locally pass |
 | Local-owner product composition | Present; #1280 fixes scope-before-ranking, exhaustion, peer failure isolation and final-use validity; production qualification remains separate |
 | Authenticated wire, replay and durable recovery | Source candidates present; 97 follow-up local tests pass |
-| Cross-host model recall | Incomplete: response currently carries identity/digests, not model-visible memory payload and full remote revalidation material |
+| Cross-host model recall | Incomplete: request only carries query/binding metadata, while the local adapter separately captures RetrievalRequest; response lacks model-visible memory payload and full remote revalidation material |
 | Selected production service | Incomplete: channel selection, credential operations and Agentd network serving remain absent |
 | Deployment acceptance | Unproved: independent two-host fault/SLO/restart/rollback qualification, canary and operator/security acceptance remain gates |
 
