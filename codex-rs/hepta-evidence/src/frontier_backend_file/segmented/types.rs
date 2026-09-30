@@ -250,7 +250,6 @@ struct VerifiedArchivedHistory {
 struct SegmentedState {
     index: Option<EvidenceFrontierLatestIndexV1>,
     latest_segment_metadata: Option<EvidenceFrontierSegmentMetadataV1>,
-    archived_latest_record: Option<EvidenceFrontierAuditRecordV1>,
     active_records: Vec<EvidenceFrontierAuditRecordV1>,
     active_bytes: u64,
     active_sha256: Sha256Digest,
@@ -258,29 +257,32 @@ struct SegmentedState {
 
 impl SegmentedState {
     fn latest_record(&self) -> Option<&EvidenceFrontierAuditRecordV1> {
-        self.active_records
-            .last()
-            .or(self.archived_latest_record.as_ref())
+        self.active_records.last()
     }
 
     fn latest_generation(&self) -> Option<u64> {
         self.latest_record()
             .map(|record| record.frontier.frontier_generation)
+            .or_else(|| self.index.as_ref().map(|index| index.frontier_generation))
     }
 
     fn latest_audit_sequence(&self) -> u64 {
         self.latest_record()
             .map(|record| record.audit_sequence)
+            .or_else(|| self.index.as_ref().map(|index| index.audit_sequence))
             .unwrap_or(0)
     }
 
     fn latest_record_sha256(&self) -> Option<Sha256Digest> {
         self.latest_record()
             .map(|record| record.record_sha256.clone())
+            .or_else(|| self.index.as_ref().map(|index| index.record_sha256.clone()))
     }
 
     fn latest_frontier(&self) -> Option<EvidenceRecoveryFrontierV2> {
-        self.latest_record().map(|record| record.frontier.clone())
+        self.latest_record()
+            .map(|record| record.frontier.clone())
+            .or_else(|| self.index.as_ref().map(|index| index.frontier.clone()))
     }
 
     fn segment_count(&self) -> u64 {
