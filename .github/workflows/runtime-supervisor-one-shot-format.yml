@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: runtime-supervisor-one-shot-format
+  cancel-in-progress: true
+
 jobs:
   format:
     if: github.actor != 'github-actions[bot]'
