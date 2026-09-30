@@ -21,6 +21,7 @@
     "release": false,
     "rootActivatedRecoveryTrustImplemented": true,
     "selectedHostActivatedTrustExpiryFinalUseImplemented": true,
+    "selectedHostBareVerifierCompileRejectionSourcePresent": true,
     "selectedHostRootActivatedTrustFinalUseImplemented": true,
     "sequentialClusterConfidenceImplemented": true,
     "targetHostQualified": false,
@@ -162,7 +163,8 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/selected_host_facade.rs",
       "tests": [
         "codex-rs/hepta-intelligence-eval/tests/selected_host_recovery_e2e.rs",
-        "codex-rs/hepta-intelligence-eval/tests/cold_recovery_e2e.rs"
+        "codex-rs/hepta-intelligence-eval/tests/cold_recovery_e2e.rs",
+        "scripts/hepta-learning-eval-api-surface.sh"
       ]
     },
     {
@@ -170,7 +172,8 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/selected_host_facade.rs",
       "tests": [
         "codex-rs/hepta-intelligence-eval/tests/selected_host_outcome_recovery_e2e.rs",
-        "codex-rs/hepta-intelligence-eval/tests/cold_recovery_e2e.rs"
+        "codex-rs/hepta-intelligence-eval/tests/cold_recovery_e2e.rs",
+        "scripts/hepta-learning-eval-api-surface.sh"
       ]
     },
     {
@@ -178,7 +181,8 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/selected_host_facade.rs",
       "tests": [
         "codex-rs/hepta-intelligence-eval/tests/selected_host_recovery_e2e.rs",
-        "codex-rs/hepta-intelligence-eval/tests/cold_recovery_e2e.rs"
+        "codex-rs/hepta-intelligence-eval/tests/cold_recovery_e2e.rs",
+        "scripts/hepta-learning-eval-api-surface.sh"
       ]
     },
     {
@@ -186,7 +190,8 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/selected_host_facade.rs",
       "tests": [
         "codex-rs/hepta-intelligence-eval/tests/selected_host_outcome_recovery_e2e.rs",
-        "codex-rs/hepta-intelligence-eval/tests/cold_recovery_e2e.rs"
+        "codex-rs/hepta-intelligence-eval/tests/cold_recovery_e2e.rs",
+        "scripts/hepta-learning-eval-api-surface.sh"
       ]
     },
     {
@@ -330,10 +335,10 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "38e29a43ed918ab56d5db43548abd3e32cd3cc57",
-    "tree": "6944546d477fc11674b1908742173cf232ef7104"
+    "commit": "c7bca91cb40198d2c4a8826bb1f624ee52b9b23c",
+    "tree": "e596bc313a13bd7a9a967207385b681862ef2d5b"
   },
-  "sourceBaseSemantics": "Exact source/test/documentation observation immediately preceding this map-only rebind. It binds anchored known-no-write rejection recovery, anchored near-capacity completion, accepted-unknown poisoning, every legal lifecycle prefix and single-crash-cut recovery, repaired audit navigation, fail-closed Markdown link/anchor validation with lexical symlink-component and symlink-source rejection before resolution, separately reported default-production versus compatibility coverage, trusted default-branch closed-world discovery of every hepta-learning-eval workflow, and selected-host root-signed ActivatedLearningTrustV1 final-use admission with signed distribution expiry validation before publication-store access. The candidate workflow inventory must be exactly equal to the trusted default-branch inventory; additions, removals and byte drift fail closed. Every workflow plus the Markdown, projection, Rust-identifier and status-model auxiliary control-plane files is compared byte-for-byte before any PR marker update. Root activation is a repository trust-distribution fact and does not authenticate a real target host, anchor service, provider or publication owner. This observation is not passing exact-head or ordered-parent execution, target-host qualification, independent acceptance, activation, promotion or release authority.",
+  "sourceBaseSemantics": "Exact source/test/documentation observation immediately preceding this map-only rebind. It binds anchored known-no-write rejection recovery, anchored near-capacity completion, accepted-unknown poisoning, every legal lifecycle prefix and single-crash-cut recovery, repaired audit navigation, fail-closed Markdown link/anchor validation with lexical symlink-component and symlink-source rejection before resolution, separately reported default-production versus compatibility coverage, trusted default-branch closed-world discovery of every hepta-learning-eval workflow, selected-host root-signed ActivatedLearningTrustV1 final-use admission with signed distribution expiry validation before publication-store access, and a compiler-negative fixture that accepts only the intended ActivatedLearningTrustV1-versus-LearningEvidenceVerifierV1 type mismatch as proof. The candidate workflow inventory must be exactly equal to the trusted default-branch inventory; additions, removals and byte drift fail closed. Every workflow plus the API, Markdown, projection, Rust-identifier and status-model auxiliary control-plane files is compared byte-for-byte before any PR marker update. Root activation is a repository trust-distribution fact and does not authenticate a real target host, anchor service, provider or publication owner. This observation is not passing exact-head or ordered-parent execution, target-host qualification, independent acceptance, activation, promotion or release authority.",
   "sourceIdentityPolicy": "exact_observation_plus_candidate_unchanged_v2",
   "sourceRootPresent": true,
   "technicalGuide": "docs/modules/learning.eval/TECHNICAL.md"
