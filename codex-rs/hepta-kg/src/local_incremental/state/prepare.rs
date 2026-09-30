@@ -58,7 +58,8 @@ impl KnowledgeLocalIncrementalStateV3 {
         let mut upsert_nodes = BTreeMap::<StableId, KnowledgeNodeV2>::new();
         let mut seen_upsert_nodes = BTreeSet::new();
         for node in delta.upsert_nodes {
-            if !seen_upsert_nodes.insert(node.node_id.clone()) {
+            let node_id = node.node_id.clone();
+            if !seen_upsert_nodes.insert(node_id.clone()) {
                 return Err(KnowledgeLocalIncrementalErrorV3::DuplicateDeltaIdentity);
             }
             work.supports_inspected = work
@@ -69,7 +70,7 @@ impl KnowledgeLocalIncrementalStateV3 {
                     upsert_nodes.insert(node.node_id.clone(), node);
                 }
                 None => {
-                    remove_node_ids.insert(node.node_id);
+                    remove_node_ids.insert(node_id);
                 }
             }
         }
@@ -90,7 +91,8 @@ impl KnowledgeLocalIncrementalStateV3 {
         let mut upsert_edges = BTreeMap::<KnowledgeEdgeIdentityV2, KnowledgeEdgeV2>::new();
         let mut seen_upsert_edges = BTreeSet::new();
         for edge in delta.upsert_edges {
-            if !seen_upsert_edges.insert(edge.identity.clone()) {
+            let identity = edge.identity.clone();
+            if !seen_upsert_edges.insert(identity.clone()) {
                 return Err(KnowledgeLocalIncrementalErrorV3::DuplicateDeltaIdentity);
             }
             work.supports_inspected = work
@@ -114,7 +116,7 @@ impl KnowledgeLocalIncrementalStateV3 {
                     upsert_edges.insert(edge.identity.clone(), edge);
                 }
                 None => {
-                    remove_edge_identities.insert(edge.identity);
+                    remove_edge_identities.insert(identity);
                 }
             }
         }
@@ -215,7 +217,7 @@ pub(super) fn resulting_node_count(
 pub(super) fn resulting_edge_count(
     state: &KnowledgeLocalIncrementalStateV3,
     remove_edge_identities: &[KnowledgeEdgeIdentityV2],
-    upsert_edges: &[KnowledgeEdgeV2],
+    upsert_edges: &[KnowledgeEdeV2],
 ) -> u64 {
     let mut touched = remove_edge_identities
         .iter()
