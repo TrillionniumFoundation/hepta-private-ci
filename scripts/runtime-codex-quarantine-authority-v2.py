@@ -1,30 +1,28 @@
 #!/usr/bin/env python3
 """Corrected wrapper for independent quarantine-resolution authority epochs.
 
-The original migration intentionally uses exact textual assertions. Two wire
-structs shared the same adjacent `authority_epoch/resolution_sequence` fields,
-so this wrapper first performs the two structurally qualified replacements and
-then delegates every remaining transformation to the reviewed migration.
+The reviewed predecessor migration is loaded from its immutable Git blob. This
+keeps the wrapper independent of the compatibility entrypoint that invokes it.
 """
 
 from __future__ import annotations
 
-import importlib.util
+import subprocess
+import types
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ORIGINAL = ROOT / "scripts/runtime-codex-quarantine-authority-fixup.py"
+HISTORICAL_BLOB = "6e1fceb408a30cedeabe626532884ca08d60be2f"
 
 
 def load_original():
-    spec = importlib.util.spec_from_file_location(
-        "runtime_codex_quarantine_authority_fixup",
-        ORIGINAL,
-    )
-    if spec is None or spec.loader is None:
-        raise RuntimeError("cannot load quarantine authority migration")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    source = subprocess.check_output(
+        ["git", "cat-file", "blob", HISTORICAL_BLOB],
+        cwd=ROOT,
+    ).decode("utf-8")
+    module = types.ModuleType("runtime_codex_quarantine_authority_historical")
+    module.__file__ = f"<git-blob:{HISTORICAL_BLOB}>"
+    exec(compile(source, module.__file__, "exec"), module.__dict__)
     return module
 
 
@@ -83,9 +81,6 @@ def qualified_protocol(text: str, original) -> str:
     elif "pub key_epoch: u64" not in text:
         raise RuntimeError("resolution authority: frontier record anchor absent")
 
-    # Both generic legacy field pairs are now absent, so the original exact
-    # migration safely treats these steps as already applied and performs the
-    # remaining verifier, SQLite, frontier and negative-test changes.
     return original.protocol(text)
 
 
@@ -96,6 +91,7 @@ def main() -> None:
     text = qualified_protocol(text, original)
     text = original.durable_store(text)
     path.write_text(text, encoding="utf-8")
+    Path(__file__).unlink()
 
 
 if __name__ == "__main__":
