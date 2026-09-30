@@ -53,6 +53,7 @@ mod lifecycle {
         ProductTrustFixture,
         MemoryCheckpointCoordinatorV2,
         VerifiedCompactionPublicationV1,
+        CompactionPublicationReceiptV2,
     ) {
         let owner = id(owner_label);
         let fixture = ProductTrustFixture::new(&owner);
@@ -78,16 +79,16 @@ mod lifecycle {
         )
         .await
         .expect("open fenced product owner");
-        coordinator
+        let receipt = coordinator
             .publish_verified_checkpoint(operation, &publication, NOW + 900, NOW)
             .await
             .expect("publish checkpoint");
-        (temp, fixture, coordinator, publication)
+        (temp, fixture, coordinator, publication, receipt)
     }
 
     #[tokio::test]
     async fn live_outbox_claim_survives_checkpoint_read() {
-        let (_temp, _fixture, coordinator, _publication) = published_owner(
+        let (_temp, _fixture, coordinator, _publication, _receipt) = published_owner(
             "agent:recovery:live-claim",
             "operation:recovery:live-claim",
             "recovery-live-claim",
@@ -131,7 +132,7 @@ mod lifecycle {
 
     #[tokio::test]
     async fn only_expired_claim_is_requeued_and_old_completion_is_fenced() {
-        let (_temp, _fixture, coordinator, _publication) = published_owner(
+        let (_temp, _fixture, coordinator, _publication, _receipt) = published_owner(
             "agent:recovery:expired-claim",
             "operation:recovery:expired-claim",
             "recovery-expired-claim",
@@ -180,7 +181,7 @@ mod lifecycle {
 
     #[tokio::test]
     async fn response_loss_queries_original_operation_identity() {
-        let (_temp, _fixture, coordinator, publication) = published_owner(
+        let (_temp, _fixture, coordinator, publication, receipt) = published_owner(
             "agent:recovery:operation-query",
             "operation:recovery:query",
             "recovery-operation-query",
@@ -200,7 +201,7 @@ mod lifecycle {
                     checkpoint_digest,
                     publication.candidate().checkpoint().checkpoint_digest
                 );
-                assert_eq!(publication_digest, publication.publication_digest());
+                assert_eq!(publication_digest, receipt.publication_digest);
             }
             other => panic!("expected committed operation, got {other:?}"),
         }
@@ -215,7 +216,7 @@ mod lifecycle {
 
     #[tokio::test]
     async fn payload_return_requires_current_source_owner_acceptance() {
-        let (_temp, _fixture, coordinator, publication) = published_owner(
+        let (_temp, _fixture, coordinator, publication, _receipt) = published_owner(
             "agent:recovery:source-use",
             "operation:recovery:source-use",
             "recovery-source-use",
