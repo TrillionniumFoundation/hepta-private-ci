@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 use std::os::unix::fs::PermissionsExt;
@@ -9,6 +10,24 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
+use codex_hepta_agent_components::authbus::IssuerRegistration;
+use codex_hepta_agent_components::authbus::SignedMessage;
+use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::evidence::EvidenceCandidateV1;
+use codex_hepta_agent_components::evidence::EvidenceClaimClassV1;
+use codex_hepta_agent_components::evidence::EvidenceDispositionV1;
+use codex_hepta_agent_components::evidence::EvidenceId;
+use codex_hepta_agent_components::evidence::EvidenceIssuerRoleV1;
+use codex_hepta_agent_components::evidence::EvidenceReceiptKindV1;
+use codex_hepta_agent_components::evidence::HeptaEvidenceStore;
+use codex_hepta_agent_components::evidence::IndependentDecisionReceiptV1;
+use codex_hepta_agent_components::evidence::IndependentDecisionRoleV1;
+use codex_hepta_agent_components::evidence::IndependentDecisionV1;
+use codex_hepta_agent_components::evidence::QualificationEvidenceEnvelopeV1;
+use codex_hepta_agent_components::evidence::evidence_set_digest;
+use codex_hepta_agent_components::evidence::qualification_envelope_bytes;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::EvidenceRecoveryFrontierV1;
 use codex_hepta_agentd::KernelEvidenceAppendIngress;
@@ -17,24 +36,6 @@ use codex_hepta_agentd::KernelEvidenceQueryV1;
 use codex_hepta_agentd::KernelEvidenceVerifyV1;
 use codex_hepta_agentd::evidence_recovery_frontier_signing_bytes;
 use codex_hepta_agentd::kernel_evidence_claims;
-use codex_hepta_authbus::IssuerRegistration;
-use codex_hepta_authbus::SignedMessage;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_evidence::EvidenceCandidateV1;
-use codex_hepta_evidence::EvidenceClaimClassV1;
-use codex_hepta_evidence::EvidenceDispositionV1;
-use codex_hepta_evidence::EvidenceId;
-use codex_hepta_evidence::EvidenceIssuerRoleV1;
-use codex_hepta_evidence::EvidenceReceiptKindV1;
-use codex_hepta_evidence::HeptaEvidenceStore;
-use codex_hepta_evidence::IndependentDecisionReceiptV1;
-use codex_hepta_evidence::IndependentDecisionRoleV1;
-use codex_hepta_evidence::IndependentDecisionV1;
-use codex_hepta_evidence::QualificationEvidenceEnvelopeV1;
-use codex_hepta_evidence::evidence_set_digest;
-use codex_hepta_evidence::qualification_envelope_bytes;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
@@ -799,7 +800,7 @@ async fn append_direct_evidence(
 fn write_recovery_frontier(
     directory: &Path,
     store_id: &str,
-    snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV1,
+    snapshot: codex_hepta_agent_components::evidence::EvidenceRecoverySnapshotV1,
 ) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
     let signer_key = SigningKey::from_bytes(&[63; 32]);
     let mut frontier = EvidenceRecoveryFrontierV1 {

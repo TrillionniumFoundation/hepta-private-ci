@@ -1,38 +1,10 @@
 name: Hepta Agentd process qualification
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    paths:
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-agent-protocol/**
-      - codex-rs/hepta-cognitive-read/**
-      - codex-rs/hepta-infer-core/**
-      - codex-rs/hepta-infer-worker-host/**
-      - codex-rs/hepta-fleet/**
-      - codex-rs/hepta-control-plane/**
-      - codex-rs/hepta-automation/**
-      - codex-rs/hepta-supervisor/**
-      - codex-rs/hepta-memory/**
-      - codex-rs/hepta-plasticity/**
-      - codex-rs/hepta-intelligence/**
-      - codex-rs/hepta-learning-artifacts/**
-      - codex-rs/hepta-learning-ledger/**
-      - codex-rs/hepta-ndu/**
-      - codex-rs/hepta-neuron/**
-      - codex-rs/hepta-runtime/**
-      - codex-rs/app-server/**
-      - codex-rs/app-server-client/**
-      - codex-rs/app-server-transport/**
-      - codex-rs/uds/**
-      - .github/scripts/check_ci_results.py
-      - scripts/test_hepta_agentd_ci.py
-      - scripts/hepta_ci_candidate.py
-      - scripts/hepta_workspace.py
-      - scripts/test_hepta_workspace.py
-      - .github/workflows/hepta-gap-agentd-process.yml
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -160,6 +132,10 @@ jobs:
           just test --locked --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
             -p codex-hepta-supervisor --test-threads=1
+          # The child fixture is the real test executable: avoid copying/hash
+          # amplification from debug symbols, not identity or durability checks.
+          just test --locked --cargo-profile dev-small -p codex-hepta-supervisor \
+            --test paired_process_product --retries 0 --test-threads=1
       - name: Exercise actual optional retirement and durable destination recovery
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs

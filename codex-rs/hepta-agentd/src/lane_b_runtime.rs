@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
-use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
-use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_agent_components::learning_ledger::RunStartObjectiveDispositionV1;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
 
 const MAX_SUPPORTED_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;

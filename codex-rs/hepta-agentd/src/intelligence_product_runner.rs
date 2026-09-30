@@ -29,7 +29,7 @@ impl AgentdIntelligenceProductRunnerV1 {
     /// No request or wire field can install an evaluator key or grant itself trust.
     pub fn with_evaluation_trust(
         mut self,
-        trust: codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+        trust: codex_hepta_agent_components::learning_ledger::ActivatedLearningTrustV1,
     ) -> Result<Self, AgentdIntelligenceProductError> {
         if self.evaluation_trust.is_some() {
             return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
@@ -93,15 +93,16 @@ impl AgentdIntelligenceProductRunnerV1 {
             return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
         }
 
-        // Freeze the identity of the existing owner, never a new coordinator
-        // or a caller-selected body/model generation. Agentd validates this
-        // fence again at the actual admission and attachment boundary.
-        let generation = composition.agentd_generation;
-        let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-        fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
+        // The process launch generation belongs to the frozen composition. The
+        // exact Running generation belongs to the authenticated request snapshot.
+        // Keep both in the same fence used by ObjectiveStart publication.
+        let generation = request.snapshot.body_generation().get();
+        let fence_digest = crate::intelligence_ingress::objective_run_fence_digest_v1(
+            &composition.agent_id,
+            composition.agentd_generation,
+            generation,
+        )
+        .to_string();
         let snapshot = request.snapshot.clone();
         let timeout_micros = request.budget.total_micros;
         let started_ms = wall_clock_ms()?;

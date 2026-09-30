@@ -30,8 +30,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "PLATFORM-0-TYPE-BOUNDARY",
-      "technicalDocument": "docs/modules/platform.types/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_and_release_remain_separate"
+      "technicalDocument": "docs/modules/platform.types/TECHNICAL.md"
     },
     {
       "module": "platform.wire",
@@ -50,8 +49,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.7E-DEPENDENCY-INVERSION",
-      "technicalDocument": "docs/modules/platform.wire/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_and_release_remain_separate"
+      "technicalDocument": "docs/modules/platform.wire/TECHNICAL.md"
     },
     {
       "module": "kernel.authority",
@@ -71,8 +69,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.7B-B0-VERIFIED-USE",
-      "technicalDocument": "docs/modules/kernel.authority/TECHNICAL.md",
-      "interpretation": "evidence_roots_are_non_authoritative_and_documentation_readiness_is_not_implementation"
+      "technicalDocument": "docs/modules/kernel.authority/TECHNICAL.md"
     },
     {
       "module": "kernel.operations",
@@ -94,8 +91,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.7D-FAULT-MATRIX",
-      "technicalDocument": "docs/modules/kernel.operations/TECHNICAL.md",
-      "interpretation": "exclusive contract root is hepta-operations; durable source implementation is delegated into the existing CognitiveStore owner, Agentd exposes a final-use-only host composition primitive, and current Automation consumes producer-owned OperationIntentV1; default daemon activation, remaining destinations, long-lived compaction, qualification and release remain separate"
+      "technicalDocument": "docs/modules/kernel.operations/TECHNICAL.md"
     },
     {
       "module": "kernel.evidence",
@@ -114,8 +110,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.9-EXTERNAL-GATES",
-      "technicalDocument": "docs/modules/kernel.evidence/TECHNICAL.md",
-      "interpretation": "evidence_roots_are_non_authoritative_and_documentation_readiness_is_not_implementation"
+      "technicalDocument": "docs/modules/kernel.evidence/TECHNICAL.md"
     },
     {
       "module": "runtime.supervisor",
@@ -134,8 +129,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.7A-RUNTIME-BOOTSTRAP",
-      "technicalDocument": "docs/modules/runtime.supervisor/TECHNICAL.md",
-      "interpretation": "evidence_roots_are_non_authoritative_and_documentation_readiness_is_not_implementation"
+      "technicalDocument": "docs/modules/runtime.supervisor/TECHNICAL.md"
     },
     {
       "module": "runtime.fleet",
@@ -154,8 +148,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "FLEET-1-ALLOCATION-CONTRACT",
-      "technicalDocument": "docs/modules/runtime.fleet/TECHNICAL.md",
-      "interpretation": "evidence_roots_are_non_authoritative_and_documentation_readiness_is_not_implementation"
+      "technicalDocument": "docs/modules/runtime.fleet/TECHNICAL.md"
     },
     {
       "module": "runtime.agentd",
@@ -170,12 +163,13 @@
         "codex-rs/hepta-agentd"
       ],
       "sourceEvidenceRoots": [
+        "codex-rs/hepta-agentd-core",
+        "codex-rs/hepta-agent-components",
         "codex-rs/hepta-agentd"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.8B-READINESS",
-      "technicalDocument": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "interpretation": "evidence_roots_are_non_authoritative_and_documentation_readiness_is_not_implementation"
+      "technicalDocument": "docs/modules/runtime.agentd/TECHNICAL.md"
     },
     {
       "module": "runtime.codex",
@@ -184,21 +178,26 @@
       "source_root_present": true,
       "production_implementation": false,
       "declaredRoots": [
-        "codex-rs/codex-app-server",
-        "codex-rs/hepta-codex-adapter"
+        "codex-rs/app-server",
+        "codex-rs/hepta-codex-adapter",
+        "codex-rs/hepta-app-bridge",
+        "codex-rs/hepta-app-host"
       ],
       "existingDeclaredRoots": [
-        "codex-rs/codex-app-server",
-        "codex-rs/hepta-codex-adapter"
+        "codex-rs/app-server",
+        "codex-rs/hepta-codex-adapter",
+        "codex-rs/hepta-app-bridge",
+        "codex-rs/hepta-app-host"
       ],
       "sourceEvidenceRoots": [
-        "codex-rs/codex-app-server",
+        "codex-rs/app-server",
+        "codex-rs/hepta-app-bridge",
+        "codex-rs/hepta-app-host",
         "codex-rs/hepta-codex-adapter"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.7B-B1B-MODEL-BOUNDARY",
-      "technicalDocument": "docs/modules/runtime.codex/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/runtime.codex/TECHNICAL.md"
     },
     {
       "module": "auth.authbus",
@@ -220,8 +219,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "AUTHBUS-P1.3-V12",
-      "technicalDocument": "docs/modules/auth.authbus/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/auth.authbus/TECHNICAL.md"
     },
     {
       "module": "secrets.heptabao",
@@ -243,8 +241,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "HEPTABAO-1-SECRET-BOUNDARY",
-      "technicalDocument": "docs/modules/secrets.heptabao/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/secrets.heptabao/TECHNICAL.md"
     },
     {
       "module": "inference.control",
@@ -266,8 +263,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "P0.7B-B1A-PROVIDER-BOUNDARY",
-      "technicalDocument": "docs/modules/inference.control/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/inference.control/TECHNICAL.md"
     },
     {
       "module": "inference.worker",
@@ -286,8 +282,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "INFER-V4-T4",
-      "technicalDocument": "docs/modules/inference.worker/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/inference.worker/TECHNICAL.md"
     },
     {
       "module": "objective.compiler",
@@ -306,8 +301,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "OBJ-0-OBJECTIVE-CONTRACTS",
-      "technicalDocument": "docs/modules/objective.compiler/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/objective.compiler/TECHNICAL.md"
     },
     {
       "module": "utility.ndu",
@@ -326,8 +320,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
-      "technicalDocument": "docs/modules/utility.ndu/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/utility.ndu/TECHNICAL.md"
     },
     {
       "module": "neuron.runtime",
@@ -346,8 +339,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "BIO-0-NEURON-INTUITION-CONTRACTS",
-      "technicalDocument": "docs/modules/neuron.runtime/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/neuron.runtime/TECHNICAL.md"
     },
     {
       "module": "intuition.policy",
@@ -366,8 +358,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "INT-1-CALIBRATED-INTUITION-POLICY",
-      "technicalDocument": "docs/modules/intuition.policy/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/intuition.policy/TECHNICAL.md"
     },
     {
       "module": "prompt.registry",
@@ -386,8 +377,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
-      "technicalDocument": "docs/modules/prompt.registry/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/prompt.registry/TECHNICAL.md"
     },
     {
       "module": "prompt.optimizer",
@@ -406,8 +396,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
-      "technicalDocument": "docs/modules/prompt.optimizer/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/prompt.optimizer/TECHNICAL.md"
     },
     {
       "module": "context.compiler",
@@ -426,8 +415,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "CTX-1-CONTEXT-COMPILER",
-      "technicalDocument": "docs/modules/context.compiler/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/context.compiler/TECHNICAL.md"
     },
     {
       "module": "intelligence.control",
@@ -446,8 +434,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "INTELLIGENCE-A0-Q0.63",
-      "technicalDocument": "docs/modules/intelligence.control/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/intelligence.control/TECHNICAL.md"
     },
     {
       "module": "cognitive.types",
@@ -466,8 +453,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-0-TYPES",
-      "technicalDocument": "docs/modules/cognitive.types/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/cognitive.types/TECHNICAL.md"
     },
     {
       "module": "cognitive.store",
@@ -487,8 +473,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-1-STORE",
-      "technicalDocument": "docs/modules/cognitive.store/TECHNICAL.md",
-      "interpretation": "normal_agentd_runtime_accepts_only_the_sealed_exact_cut_recovered_cognitive_mutation_capability;_production_implementation_remains_false_until_exact_candidate_execution_and_external_bootstrap_evidence_are_current"
+      "technicalDocument": "docs/modules/cognitive.store/TECHNICAL.md"
     },
     {
       "module": "cognitive.read",
@@ -507,8 +492,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-READ-1-SNAPSHOT-PORT",
-      "technicalDocument": "docs/modules/cognitive.read/TECHNICAL.md",
-      "interpretation": "declared_root_and_product_read_path_are_materialized; exact_candidate_execution_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/cognitive.read/TECHNICAL.md"
     },
     {
       "module": "memory.retrieval",
@@ -527,8 +511,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-2-RETRIEVAL",
-      "technicalDocument": "docs/modules/memory.retrieval/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/memory.retrieval/TECHNICAL.md"
     },
     {
       "module": "memory.federation",
@@ -547,8 +530,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-3-FEDERATION",
-      "technicalDocument": "docs/modules/memory.federation/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/memory.federation/TECHNICAL.md"
     },
     {
       "module": "knowledge.graph",
@@ -567,8 +549,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-4-KG",
-      "technicalDocument": "docs/modules/knowledge.graph/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/knowledge.graph/TECHNICAL.md"
     },
     {
       "module": "compact.engine",
@@ -587,8 +568,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-5-COMPACT",
-      "technicalDocument": "docs/modules/compact.engine/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/compact.engine/TECHNICAL.md"
     },
     {
       "module": "learning.ledger",
@@ -607,8 +587,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
-      "technicalDocument": "docs/modules/learning.ledger/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/learning.ledger/TECHNICAL.md"
     },
     {
       "module": "learning.operator",
@@ -627,8 +606,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
-      "technicalDocument": "docs/modules/learning.operator/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/learning.operator/TECHNICAL.md"
     },
     {
       "module": "learning.eval",
@@ -647,8 +625,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "LRN-2-CAUSAL-EVALUATION",
-      "technicalDocument": "docs/modules/learning.eval/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/learning.eval/TECHNICAL.md"
     },
     {
       "module": "learning.artifacts",
@@ -667,8 +644,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "ART-1-LEARNING-ARTIFACT-REGISTRY",
-      "technicalDocument": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/learning.artifacts/TECHNICAL.md"
     },
     {
       "module": "learning.plasticity",
@@ -687,8 +663,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "PLS-1-PARAMETER-PLASTICITY",
-      "technicalDocument": "docs/modules/learning.plasticity/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/learning.plasticity/TECHNICAL.md"
     },
     {
       "module": "automation.taskflow",
@@ -707,8 +682,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "TASKFLOW-1-EXECUTION-BOUNDARY",
-      "technicalDocument": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "interpretation": "evidence_roots_are_non_authoritative_and_documentation_readiness_is_not_implementation"
+      "technicalDocument": "docs/modules/automation.taskflow/TECHNICAL.md"
     },
     {
       "module": "channel.matrix",
@@ -732,8 +706,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MATRIX-1-CHANNEL-BOUNDARY",
-      "technicalDocument": "docs/modules/channel.matrix/TECHNICAL.md",
-      "interpretation": "evidence_roots_are_non_authoritative_and_documentation_readiness_is_not_implementation"
+      "technicalDocument": "docs/modules/channel.matrix/TECHNICAL.md"
     },
     {
       "module": "browser.servo",
@@ -755,8 +728,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "BROWSER-WEB-C1",
-      "technicalDocument": "docs/modules/browser.servo/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/browser.servo/TECHNICAL.md"
     },
     {
       "module": "ui.control",
@@ -775,8 +747,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "UI-V5",
-      "technicalDocument": "docs/modules/ui.control/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/ui.control/TECHNICAL.md"
     },
     {
       "module": "ui.native",
@@ -795,8 +766,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "UI-NATIVE-1-SHELL",
-      "technicalDocument": "docs/modules/ui.native/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/ui.native/TECHNICAL.md"
     },
     {
       "module": "control.runtime",
@@ -815,8 +785,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "RCP-1-RUNTIME-CONTROL-PLANE",
-      "technicalDocument": "docs/modules/control.runtime/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/control.runtime/TECHNICAL.md"
     },
     {
       "module": "control.engineering",
@@ -835,8 +804,7 @@
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "ECP-1-ENGINEERING-CONTROL-PLANE",
-      "technicalDocument": "docs/modules/control.engineering/TECHNICAL.md",
-      "interpretation": "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
+      "technicalDocument": "docs/modules/control.engineering/TECHNICAL.md"
     }
   ],
   "authorityFlags": {

@@ -1,0 +1,78 @@
+schema = "hepta.module-manifest.v1"
+order = 8
+id = "runtime.codex"
+plane = "execution"
+kind = "adapter"
+lifecycle = "existing"
+state = "stateful"
+architectureRole = "execution_plant"
+writes = ["thread_session"]
+uses = ["platform.wire", "kernel.authority"]
+owner = "codex-integration"
+deputy = "agent-runtime"
+denies = ["hepta_domain_implementation_dependency"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/app-server", "codex-rs/hepta-app-bridge", "codex-rs/hepta-app-host", "codex-rs/hepta-codex-adapter"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "P0.7B-B1B-MODEL-BOUNDARY"
+technicalDocument = "docs/modules/runtime.codex/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/app-server"
+mode = "exclusive"
+
+[[rootBindings]]
+path = "codex-rs/hepta-codex-adapter"
+mode = "exclusive"
+
+[[rootBindings]]
+path = "codex-rs/hepta-app-bridge"
+mode = "exclusive"
+
+[[rootBindings]]
+path = "codex-rs/hepta-app-host"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/ext/hepta-memory"
+compileLayer = 4
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/ext/hepta-prompt"
+compileLayer = 1
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-codex-adapter"
+compileLayer = 2
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-app-bridge"
+compileLayer = 5
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-app-host"
+compileLayer = 6
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-native-gateway"
+compileLayer = 4
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

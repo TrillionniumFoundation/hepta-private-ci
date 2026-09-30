@@ -6,10 +6,8 @@ use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_arg0::Arg0DispatchPaths;
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
-use codex_hepta_memory::CognitiveRuntime;
+use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_agent_components::memory::CognitiveRuntime;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::time::Instant;
 use tokio::time::sleep;
@@ -24,7 +22,7 @@ use crate::AgentdState;
 use crate::CognitiveRetrievalMode;
 use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
-use crate::automation::spawn_automation_service;
+use crate::automation::AutomationService;
 
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
@@ -39,6 +37,9 @@ pub async fn run(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
+    // Reject partial product composition before opening owners or publishing sockets.
+    config.require_intelligence_composition()?;
+    let module_profile = config.runtime_module_profile();
     let production_operations = config.take_production_operations();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
@@ -222,14 +223,7 @@ pub async fn run(
         federation_owner_layouts,
     )
     .await?;
-    let automation_layout = identity.layout.clone();
-    let automation_store = open_automation_store_after_generation_fence(&state, || async move {
-        AutomationStore::open(&automation_layout).await
-    })
-    .await?;
-    if let Some(store) = automation_store.as_ref() {
-        state.attach_automation_store(store.clone())?;
-    }
+    let automation_service = AutomationService::open(Arc::clone(&state), module_profile).await?;
     if let Some(path) = automation_effect_host_file {
         state.refresh_generation()?;
         let host =
@@ -292,14 +286,9 @@ pub async fn run(
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }
-        spawn_automation_service(
-            &mut tasks,
-            automation_store,
-            Arc::clone(&state),
-            identity,
-            cancellation.clone(),
-        )
-        .await?;
+        automation_service
+            .spawn(&mut tasks, cancellation.clone())
+            .await?;
         Ok(())
     }
     .await;
@@ -352,28 +341,10 @@ fn require_cognitive_runtime_for_profile(
     Ok(runtime)
 }
 
-async fn open_automation_store_after_generation_fence<Open, OpenFuture>(
-    state: &AgentdState,
-    open: Open,
-) -> Result<Option<AutomationStore>, AgentdError>
-where
-    Open: FnOnce() -> OpenFuture,
-    OpenFuture: Future<Output = Result<AutomationStore, codex_hepta_automation::AutomationError>>,
-{
-    state.refresh_generation()?;
-    let opened = open().await;
-    state.refresh_generation()?;
-    match opened {
-        Ok(store) => Ok(Some(store)),
-        Err(AutomationError::Unavailable | AutomationError::Corrupt) => Ok(None),
-        Err(error) => Err(error.into()),
-    }
-}
-
 async fn attach_federation_after_generation_fence(
     state: &AgentdState,
     runtime: CognitiveRuntime,
-    owner_layouts: Vec<codex_hepta_paths::HeptaAgentLayout>,
+    owner_layouts: Vec<codex_hepta_agent_components::paths::HeptaAgentLayout>,
 ) -> Result<CognitiveRuntime, AgentdError> {
     if runtime.available_store().is_none() || owner_layouts.is_empty() {
         return Ok(runtime);
@@ -392,7 +363,9 @@ async fn open_cognitive_runtime_after_generation_fence<Open, OpenFuture>(
 ) -> Result<CognitiveRuntime, AgentdError>
 where
     Open: FnOnce() -> OpenFuture,
-    OpenFuture: Future<Output = Result<CognitiveStore, codex_hepta_memory::CognitiveStoreError>>,
+    OpenFuture: Future<
+        Output = Result<CognitiveStore, codex_hepta_agent_components::memory::CognitiveStoreError>,
+    >,
 {
     state.refresh_generation()?;
     let cognitive_runtime = CognitiveRuntime::from_open_result(open().await);

@@ -121,6 +121,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if slot.signed_recovery_required() {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
         if slot.release_change.is_some() {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }

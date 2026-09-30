@@ -110,7 +110,7 @@ impl ArtifactPublicationTransactionV1 {
         now: u64,
     ) -> Result<Self, ArtifactPublicationError> {
         validate_artifact_publication_v3(&admission, withdrawal_registry, now)?;
-        if registry.snapshot().head_digest != expected_registry_predecessor_head {
+        if registry.head_digest() != expected_registry_predecessor_head {
             return Err(ArtifactPublicationError::RegistryPredecessorMismatch);
         }
         let intent_digest = digest_intent(
@@ -195,7 +195,7 @@ impl ArtifactPublicationTransactionV1 {
             || receipt.file_digest.is_zero()
             || receipt.head_digest.is_zero()
             || receipt.records != registry.records().len()
-            || receipt.head_digest != registry.snapshot().head_digest
+            || receipt.head_digest != registry.head_digest()
         {
             return Err(ArtifactPublicationError::RegistryReceiptMismatch);
         }
@@ -601,7 +601,7 @@ mod tests {
     fn snapshot_receipt(registry: &ArtifactRegistry) -> RegistrySnapshotReceipt {
         RegistrySnapshotReceipt {
             binding: digest("publication-scope"),
-            head_digest: registry.snapshot().head_digest,
+            head_digest: registry.head_digest(),
             file_digest: digest("registry-file"),
             records: registry.records().len(),
             encoded_bytes: 128,
@@ -612,7 +612,7 @@ mod tests {
         RegistryHeadWitnessV1 {
             registry_id: id("artifact-registry"),
             generation: generation(2),
-            head_digest: registry.snapshot().head_digest,
+            head_digest: registry.head_digest(),
             predecessor_head_digest: Digest32::ZERO,
             authority_epoch: 5,
             signer_id: id("registry-signer"),

@@ -39,22 +39,23 @@ use crate::thread_state::ThreadStateManager;
 
 #[derive(Clone)]
 pub(crate) struct HeptaExtensionBindings {
-    pub(crate) cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
+    pub(crate) cognitive_runtime: codex_hepta_app_bridge::memory::CognitiveRuntime,
     pub(crate) cognitive_production_mutation:
-        Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
+        Option<Arc<dyn codex_hepta_app_bridge::memory::ProductionCognitiveMutation>>,
     pub(crate) local_turn_lifecycle_enabled: bool,
     pub(crate) local_development_policy:
-        Option<codex_hepta_memory::LocalDevelopmentLifecyclePolicy>,
+        Option<codex_hepta_app_bridge::memory::LocalDevelopmentLifecyclePolicy>,
     pub(crate) qualification_turn_writer_enabled: bool,
     pub(crate) qualification_turn_writer:
-        Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
-    pub(crate) prompt_runtime_host: Option<codex_hepta_prompt_extension::PromptRuntimeHost>,
+        Option<codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost>,
+    pub(crate) prompt_runtime_host:
+        Option<codex_hepta_app_bridge::prompt_extension::PromptRuntimeHost>,
 }
 
 impl HeptaExtensionBindings {
     pub(crate) fn absent() -> Self {
         Self {
-            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Absent,
+            cognitive_runtime: codex_hepta_app_bridge::memory::CognitiveRuntime::Absent,
             cognitive_production_mutation: None,
             local_turn_lifecycle_enabled: false,
             local_development_policy: None,
@@ -100,10 +101,10 @@ pub(crate) struct ThreadExtensionDependencies {
 /// synthesized when any input is absent or invalid.
 pub(crate) fn qualification_turn_writer_capability(
     enabled: bool,
-    policy: Option<&codex_hepta_memory::LocalDevelopmentLifecyclePolicy>,
-    runtime: &codex_hepta_memory::CognitiveRuntime,
-    host: Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
-) -> Option<codex_hepta_memory_extension::QualificationTurnWriterHost> {
+    policy: Option<&codex_hepta_app_bridge::memory::LocalDevelopmentLifecyclePolicy>,
+    runtime: &codex_hepta_app_bridge::memory::CognitiveRuntime,
+    host: Option<codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost>,
+) -> Option<codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost> {
     if enabled
         && policy.is_some_and(|policy| policy.validate().is_ok())
         && runtime.available_store().is_some()
@@ -169,15 +170,19 @@ where
         git_attribution_base_url,
         http_client_factory,
     );
-    codex_hepta_governance::install(&mut builder, state_db.clone(), |config: &Config| {
-        config
-            .features
-            .enabled(codex_features::Feature::HeptaGovernance)
-    });
+    codex_hepta_app_bridge::governance::install(
+        &mut builder,
+        state_db.clone(),
+        |config: &Config| {
+            config
+                .features
+                .enabled(codex_features::Feature::HeptaGovernance)
+        },
+    );
     if let Some(host) = hepta_prompt_runtime_host {
-        codex_hepta_prompt_extension::install_prompt_runtime(&mut builder, host);
+        codex_hepta_app_bridge::prompt_extension::install_prompt_runtime(&mut builder, host);
     }
-    codex_hepta_memory_extension::install_with_turn_writer(
+    codex_hepta_app_bridge::memory_extension::install_with_turn_writer(
         &mut builder,
         state_db,
         hepta_cognitive_runtime,
@@ -187,7 +192,7 @@ where
         hepta_qualification_turn_writer_enabled,
         hepta_qualification_turn_writer,
         |config: &Config| {
-            codex_hepta_memory_extension::HeptaMemoryThreadConfig::for_features(
+            codex_hepta_app_bridge::memory_extension::HeptaMemoryThreadConfig::for_features(
                 hepta_memory_feature_flags(&config.features),
             )
         },
@@ -231,8 +236,8 @@ where
 
 fn hepta_memory_feature_flags(
     features: &codex_features::Features,
-) -> codex_hepta_memory_extension::HeptaMemoryFeatureFlags {
-    codex_hepta_memory_extension::HeptaMemoryFeatureFlags {
+) -> codex_hepta_app_bridge::memory_extension::HeptaMemoryFeatureFlags {
+    codex_hepta_app_bridge::memory_extension::HeptaMemoryFeatureFlags {
         governance_enabled: features.enabled(codex_features::Feature::HeptaGovernance),
         memory_enabled: features.enabled(codex_features::Feature::HeptaMemory),
         read_only_enabled: features.enabled(codex_features::Feature::HeptaMemoryReadOnly),
@@ -494,21 +499,22 @@ mod tests {
 
     #[test]
     fn qualification_writer_gate_requires_every_positive_input() {
-        let host = codex_hepta_memory_extension::QualificationTurnWriterHost::from_fn(
+        let host = codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost::from_fn(
             "app-server-test",
             |_turn_id| async {
                 Err::<
-                    codex_hepta_memory_extension::QualificationTurnWriterInput,
-                    codex_hepta_memory_extension::QualificationTurnWriterInputError,
+                    codex_hepta_app_bridge::memory_extension::QualificationTurnWriterInput,
+                    codex_hepta_app_bridge::memory_extension::QualificationTurnWriterInputError,
                 >(
-                    codex_hepta_memory_extension::QualificationTurnWriterInputError::Invalid(
+                    codex_hepta_app_bridge::memory_extension::QualificationTurnWriterInputError::Invalid(
                         "test host is not invoked".to_string(),
                     ),
                 )
             },
         );
-        let policy = codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only();
-        let absent = codex_hepta_memory::CognitiveRuntime::Absent;
+        let policy =
+            codex_hepta_app_bridge::memory::LocalDevelopmentLifecyclePolicy::qualification_only();
+        let absent = codex_hepta_app_bridge::memory::CognitiveRuntime::Absent;
         assert!(qualification_turn_writer_capability(
             false,
             Some(&policy),

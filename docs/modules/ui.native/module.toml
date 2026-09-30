@@ -1,0 +1,36 @@
+schema = "hepta.module-manifest.v1"
+order = 37
+id = "ui.native"
+plane = "presentation"
+kind = "native"
+lifecycle = "target"
+state = "ephemeral"
+architectureRole = "presentation"
+writes = []
+uses = ["runtime.agentd"]
+owner = "ui-platform"
+deputy = "accessibility"
+denies = ["authority_issuance", "direct_store_write"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["apps/hepta-native"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "UI-NATIVE-1-SHELL"
+technicalDocument = "docs/modules/ui.native/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "apps/hepta-native"
+mode = "exclusive"

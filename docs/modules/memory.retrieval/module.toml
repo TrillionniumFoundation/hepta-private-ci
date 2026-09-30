@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 24
+id = "memory.retrieval"
+plane = "domain"
+kind = "engine"
+lifecycle = "target"
+state = "read_only"
+architectureRole = "execution_plant"
+writes = []
+uses = ["cognitive.read", "knowledge.graph"]
+owner = "cognitive-platform"
+deputy = "performance"
+denies = ["write_authority", "central_rpc_hot_path"]
+localHotPathCentralRpc = "forbidden"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-memory-retrieval"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "MEM-2-RETRIEVAL"
+technicalDocument = "docs/modules/memory.retrieval/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-memory-retrieval"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-memory-retrieval"
+compileLayer = 2
+ciGroups = ["learning"]

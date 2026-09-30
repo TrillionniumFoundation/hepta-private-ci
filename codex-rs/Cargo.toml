@@ -44,54 +44,7 @@ members = [
     "core-plugins",
     "diagnostics",
     "hooks",
-    "hepta-agent-protocol",
-    "hepta-agentd",
-    "hepta-automation",
-    "hepta-contracts",
-    "hepta-evidence",
-    "hepta-authbus",
-    "hepta-authbus-p1-3-qualification",
-    "hepta-bao-adapter",
-    "hepta-codex-adapter",
-    "hepta-cognitive-read",
-    "hepta-cognitive-store",
-    "hepta-cognitive-types",
-    "hepta-compact-engine",
-    "hepta-context-compiler",
-    "hepta-control-plane",
-    "hepta-infer-core",
-    "hepta-inferd",
-    "hepta-intelligence",
-    "hepta-kg",
-    "hepta-memory-federation",
-    "hepta-memory-retrieval",
-    "hepta-bellman-operator",
-    "hepta-infer-worker-host",
-    "hepta-intelligence-eval",
-    "hepta-intuition",
-    "hepta-neuron",
-    "hepta-plasticity",
-    "hepta-prompt-optimizer",
-    "hepta-prompt-registry",
-    "hepta-learning-artifacts",
-    "hepta-learning-ledger",
-    "hepta-ndu",
-    "hepta-objective",
-    "hepta-fleet",
-    "hepta-matrix-store",
-    "hepta-matrix-sdk",
-    "hepta-supervisor",
-    "hepta-memory",
-    "hepta-operations",
-    "hepta-types",
-    "hepta-wire",
-    "hepta-matrix-protocol",
-    "hepta-matrixd",
-    "hepta-native-gateway",
-    "hepta-operator-acceptance",
-    "hepta-paths",
-    "hepta-runtime",
-    "hepta-shadow-qualification",
+    "hepta-*",
     "history",
     "http-client",
     "secrets",
@@ -231,6 +184,10 @@ codex-code-mode-runtime = { path = "code-mode-runtime" }
 codex-home = { path = "codex-home" }
 codex-http-client = { path = "http-client" }
 codex-hepta-agent-protocol = { path = "hepta-agent-protocol" }
+codex-hepta-agentd-core = { path = "hepta-agentd-core" }
+codex-hepta-agent-components = { path = "hepta-agent-components" }
+codex-hepta-app-bridge = { path = "hepta-app-bridge" }
+codex-hepta-app-host = { path = "hepta-app-host" }
 codex-hepta-agentd = { path = "hepta-agentd" }
 codex-hepta-automation = { path = "hepta-automation" }
 codex-hepta-operations = { path = "hepta-operations" }
@@ -628,6 +585,13 @@ ignored = [
 # Keep line tables/backtraces while avoiding expensive full variable debug info
 # across local dev builds.
 debug = "limited"
+
+# Identity checks stream the real executable, including large debug binaries.
+# Optimize only the hash implementation instead of skipping bytes, substituting
+# a manifest digest, or relaxing the normal test deadline. Test/ci-test inherit
+# this override; debug assertions and overflow checks remain enabled.
+[profile.dev.package.sha2]
+opt-level = 3
 
 [profile.dev-small]
 inherits = "dev"

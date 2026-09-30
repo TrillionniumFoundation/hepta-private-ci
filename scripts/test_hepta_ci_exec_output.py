@@ -246,6 +246,55 @@ class CommandOutputTests(unittest.TestCase):
         self.assertEqual(record["observed_passed_tests"], 1)
         self.assertEqual(result.returncode, 1)
 
+    def test_pytest_terminal_summary_counts_only_executed_successes(self):
+        result, record = self.execute(
+            "print('5 passed, 37 deselected in 0.27s')", minimum=5
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(record["observed_passed_tests"], 5)
+        self.assertEqual(record["observed_failed_tests"], 0)
+
+    def test_pytest_skips_and_nested_runner_output_do_not_satisfy_minimum(self):
+        result, record = self.execute(
+            "print('Ran 8 tests in 0.01s\\n\\nOK'); print('=== 1 passed, 8 skipped, 3 xfailed in 0.10s ===')",
+            minimum=2,
+        )
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(record["observed_passed_tests"], 1)
+
+    def test_pytest_swallowed_failure_or_error_cannot_become_success(self):
+        for summary in (
+            "1 passed, 1 failed",
+            "1 passed, 1 error",
+            "1 passed, 2 errors",
+            "1 passed, 1 xpassed",
+        ):
+            with self.subTest(summary=summary):
+                self.receipt = self.root / (
+                    summary.replace(" ", "-").replace(",", "") + ".json"
+                )
+                result, record = self.execute(
+                    "print(" + repr(summary + " in 0.10s") + ")"
+                )
+                self.assertEqual(record["command_exit_code"], 0)
+                self.assertEqual(result.returncode, 1)
+                self.assertGreater(record["observed_failed_tests"], 0)
+
+    def test_pytest_nonterminal_or_skipped_only_output_is_not_execution(self):
+        for output in (
+            "collected 5 tests",
+            "5 passed",
+            "note: 5 passed in 0.27s",
+            "5 skipped, 2 deselected in 0.27s",
+        ):
+            with self.subTest(output=output):
+                self.receipt = self.root / (
+                    output.replace(" ", "-").replace(":", "") + ".json"
+                )
+                result, record = self.execute("print(" + repr(output) + ")")
+                self.assertEqual(result.returncode, 1)
+                self.assertEqual(record["observed_passed_tests"], 0)
+
     def test_existing_log_cannot_be_reused(self):
         log = self.root / "retained.log"
         log.write_bytes(b"older run")

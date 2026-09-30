@@ -273,8 +273,18 @@ impl RevalidatingCandidate {
         current: RegistrySnapshotReceipt,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        let registry = read_registry_snapshot(snapshot, current)?;
-        self.with_verified_registry(current, registry, consume)
+        // The production ranker removes its cache before acquiring CURRENT.
+        // Keep this raw-file test ingress equally fail-closed on reader errors.
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        match read_registry_snapshot(snapshot, current) {
+            Ok(registry) => self.with_verified_registry(current, registry, consume),
+            Err(error) => {
+                self.unavailable = true;
+                Err(error.into())
+            }
+        }
     }
 }
 

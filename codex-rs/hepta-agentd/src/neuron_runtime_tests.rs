@@ -1,10 +1,10 @@
+use codex_hepta_agent_components::neuron::AnchorWitnessStore;
+use codex_hepta_agent_components::neuron::JournalAnchor;
+use codex_hepta_agent_components::neuron::NeuronInferenceControlPort;
+use codex_hepta_agent_components::neuron::NeuronModelError;
+use codex_hepta_agent_components::neuron::WitnessStoreError;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
-use codex_hepta_neuron::AnchorWitnessStore;
-use codex_hepta_neuron::JournalAnchor;
-use codex_hepta_neuron::NeuronInferenceControlPort;
-use codex_hepta_neuron::NeuronModelError;
-use codex_hepta_neuron::WitnessStoreError;
 
 use super::AgentdNeuronOwner;
 

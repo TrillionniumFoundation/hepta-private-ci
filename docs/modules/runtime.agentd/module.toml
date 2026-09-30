@@ -1,0 +1,60 @@
+schema = "hepta.module-manifest.v1"
+order = 7
+id = "runtime.agentd"
+plane = "composition"
+kind = "daemon"
+lifecycle = "existing"
+state = "ephemeral"
+architectureRole = "execution_plant"
+writes = ["runtime_health_observation"]
+uses = ["runtime.supervisor", "runtime.codex"]
+owner = "agent-runtime"
+deputy = "runtime-control"
+denies = ["product_domain_durable_fact"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = [
+  "codex-rs/hepta-agentd-core",
+  "codex-rs/hepta-agent-components",
+  "codex-rs/hepta-agentd",
+]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "P0.8B-READINESS"
+technicalDocument = "docs/modules/runtime.agentd/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-agentd"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-agentd-core"
+compileLayer = 2
+ciGroups = ["lifecycle"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-agent-protocol"
+compileLayer = 3
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-agent-components"
+compileLayer = 6
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-agentd"
+compileLayer = 7
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

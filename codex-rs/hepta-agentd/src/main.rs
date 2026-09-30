@@ -1,13 +1,13 @@
 use std::path::PathBuf;
 
+use codex_hepta_agent_components::types::Digest32;
 use codex_hepta_agentd::AgentdConfig;
-use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
+use codex_hepta_agentd::CanonicalIntelligenceProviderProfileV1;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
+use codex_hepta_agentd::compose_durable_abstain_intelligence_profile_v1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
-use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::ffi::OsString;
-use std::sync::Arc;
 
 fn main() -> anyhow::Result<()> {
     let mut config = AgentdConfig::from_process_environment()?;
@@ -17,9 +17,11 @@ fn main() -> anyhow::Result<()> {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
         let mut authbus_trust = None;
+        let mut runtime_module_profile = None;
         let mut intelligence_authority_file = None;
         let mut intelligence_authority_signer = None;
         let mut intelligence_authority_verifying_key = None;
+        let mut canonical_intelligence_provider_profile = None;
         let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
         let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
         let mut objective_profile = None;
@@ -32,7 +34,17 @@ fn main() -> anyhow::Result<()> {
             let path = args
                 .next()
                 .ok_or_else(|| anyhow::anyhow!("{flag:?} requires a path"))?;
-            if flag == "--authbus-trust-file" {
+            if flag == "--runtime-module-profile" {
+                anyhow::ensure!(
+                    runtime_module_profile.is_none(),
+                    "duplicate --runtime-module-profile"
+                );
+                let value = path
+                    .into_string()
+                    .map_err(|_| anyhow::anyhow!("runtime module profile must be UTF-8"))?;
+                runtime_module_profile =
+                    Some(value.parse::<codex_hepta_agentd::RuntimeModuleProfileV1>()?);
+            } else if flag == "--authbus-trust-file" {
                 anyhow::ensure!(authbus_trust.is_none(), "duplicate --authbus-trust-file");
                 authbus_trust = Some(path);
             } else if flag == "--plasticity-bootstrap-descriptor" {
@@ -74,6 +86,19 @@ fn main() -> anyhow::Result<()> {
                     "duplicate --intelligence-authority-verifying-key"
                 );
                 intelligence_authority_verifying_key = Some(parse_verifying_key_hex(path)?);
+            } else if flag == "--canonical-intelligence-provider-profile" {
+                anyhow::ensure!(
+                    canonical_intelligence_provider_profile.is_none(),
+                    "duplicate --canonical-intelligence-provider-profile"
+                );
+                let value = path.into_string().map_err(|_| {
+                    anyhow::anyhow!("canonical intelligence provider profile must be UTF-8")
+                })?;
+                canonical_intelligence_provider_profile = Some(
+                    value
+                        .parse::<CanonicalIntelligenceProviderProfileV1>()
+                        .map_err(anyhow::Error::from)?,
+                );
             } else if flag == "--objective-profile-file" {
                 anyhow::ensure!(
                     objective_profile.is_none(),
@@ -111,26 +136,40 @@ fn main() -> anyhow::Result<()> {
                 anyhow::bail!("unknown Agentd argument {flag:?}");
             }
         }
+        if let Some(profile) = runtime_module_profile {
+            config = config.with_runtime_module_profile(profile);
+        }
         match (
             intelligence_authority_file,
             intelligence_authority_signer,
             intelligence_authority_verifying_key,
+            canonical_intelligence_provider_profile,
         ) {
-            (None, None, None) => {}
-            (Some(path), Some(signer_id), Some(verifying_key)) => {
-                let runner = AgentdIntelligenceProductRunnerV1::new(
+            (None, None, None, None) => {}
+            (
+                Some(path),
+                Some(signer_id),
+                Some(verifying_key),
+                Some(CanonicalIntelligenceProviderProfileV1::DurableSafeAbstainV1),
+            ) => {
+                config = compose_durable_abstain_intelligence_profile_v1(
+                    config,
                     path,
                     IntelligenceAuthorityVerifierV1 {
                         signer_id,
                         verifying_key,
                     },
                 )?;
-                config = config.with_intelligence_product_runner(Arc::new(runner))?;
+            }
+            (Some(_), Some(_), Some(_), None) => {
+                anyhow::bail!(
+                    "canonical intelligence authority requires --canonical-intelligence-provider-profile durable-safe-abstain-v1"
+                );
             }
             _ => {
-                return Err(anyhow::anyhow!(
-                    "--intelligence-authority-file, --intelligence-authority-signer and --intelligence-authority-verifying-key must be supplied together"
-                ));
+                anyhow::bail!(
+                    "--intelligence-authority-file, --intelligence-authority-signer, --intelligence-authority-verifying-key and --canonical-intelligence-provider-profile must be supplied together"
+                );
             }
         }
         anyhow::ensure!(

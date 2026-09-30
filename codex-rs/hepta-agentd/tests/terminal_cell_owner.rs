@@ -1,11 +1,13 @@
-use codex_hepta_bellman_operator::*;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+#![cfg(feature = "server")]
 
-use codex_hepta_learning_artifacts as artifacts;
-use codex_hepta_learning_ledger::*;
-use codex_hepta_types::FixedQ32;
+use codex_hepta_agent_components::bellman_operator::*;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
+
+use codex_hepta_agent_components::learning_artifacts as artifacts;
+use codex_hepta_agent_components::learning_ledger::*;
+use codex_hepta_agent_components::types::FixedQ32;
 use std::fs::File;
 
 #[path = "support/terminal_cell_owner.rs"]
@@ -334,22 +336,22 @@ fn durable_owner_history_and_concurrent_training_profile() {
 
 #[tokio::test]
 async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
+    use codex_hepta_agent_components::contracts::AgentId;
+    use codex_hepta_agent_components::contracts::Sha256Digest;
+    use codex_hepta_agent_components::memory::CognitiveAccess;
+    use codex_hepta_agent_components::memory::CognitiveScope;
+    use codex_hepta_agent_components::memory::CognitiveStore;
+    use codex_hepta_agent_components::memory::FederationConsumerAccess;
+    use codex_hepta_agent_components::memory::LedgerSourceKind;
+    use codex_hepta_agent_components::memory::MemoryDraft;
+    use codex_hepta_agent_components::memory::MemoryLifecycleState;
+    use codex_hepta_agent_components::memory::MemoryRevisionDraft;
+    use codex_hepta_agent_components::memory::MemoryVerification;
+    use codex_hepta_agent_components::memory::SharedExperienceGrantV1;
+    use codex_hepta_agent_components::memory::SharedExperiencePurposeV1;
+    use codex_hepta_agent_components::memory::SourceDraft;
+    use codex_hepta_agent_components::paths::HeptaFleetRoot;
     use codex_hepta_agentd::AgentdSharedReplayHostV1;
-    use codex_hepta_contracts::AgentId;
-    use codex_hepta_contracts::Sha256Digest;
-    use codex_hepta_memory::CognitiveAccess;
-    use codex_hepta_memory::CognitiveScope;
-    use codex_hepta_memory::CognitiveStore;
-    use codex_hepta_memory::FederationConsumerAccess;
-    use codex_hepta_memory::LedgerSourceKind;
-    use codex_hepta_memory::MemoryDraft;
-    use codex_hepta_memory::MemoryLifecycleState;
-    use codex_hepta_memory::MemoryRevisionDraft;
-    use codex_hepta_memory::MemoryVerification;
-    use codex_hepta_memory::SharedExperienceGrantV1;
-    use codex_hepta_memory::SharedExperiencePurposeV1;
-    use codex_hepta_memory::SourceDraft;
-    use codex_hepta_paths::HeptaFleetRoot;
     use std::sync::Arc;
 
     let temp = tempfile::tempdir().unwrap();
@@ -583,7 +585,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     assert!(read.value > stop.value);
     assert_eq!(
         read.authority,
-        codex_hepta_types::AuthorityPosture::DENY_ALL
+        codex_hepta_agent_components::types::AuthorityPosture::DENY_ALL
     );
     let mut tampered = payload.clone();
     tampered[0] ^= 1;

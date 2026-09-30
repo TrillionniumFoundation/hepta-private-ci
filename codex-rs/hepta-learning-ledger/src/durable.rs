@@ -248,6 +248,15 @@ impl DurableLedger {
         }
     }
 
+    /// Read the validated owner's current head without cloning its history.
+    /// Poison remains a hard failure; this is not an independent trust witness.
+    pub fn head_digest(&self) -> Result<Digest32, DurableLedgerError> {
+        Ok(self
+            .records()?
+            .last()
+            .map_or(Digest32::ZERO, |record| record.chain_digest))
+    }
+
     pub fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {
         if self.poisoned {
             Err(DurableLedgerError::Poisoned)

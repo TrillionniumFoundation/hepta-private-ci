@@ -57,12 +57,22 @@ class ReadinessSemanticsTests(unittest.TestCase):
         )
         self.verify()
 
-    def test_missing_required_contract_section_still_rejects(self):
-        self.path.write_text(self.text.replace("## Interface", "## Notes"))
-        with self.assertRaisesRegex(SystemExit, "sections"):
+    def test_reworded_headings_preserve_registered_protocol_and_gap_checks(self):
+        self.path.write_text(
+            self.text.replace("## Interface", "## Contract").replace(
+                "## Appendix A. Closed gap and protocol mapping", "## Traceability"
+            )
+        )
+        with patch("sys.stderr") as diagnostics:
+            self.verify()
+        self.assertTrue(diagnostics.write.called)
+
+    def test_empty_readiness_document_still_rejects(self):
+        self.path.write_text(" \n")
+        with self.assertRaisesRegex(SystemExit, "empty document"):
             self.verify()
 
-    def test_unknown_or_uncited_protocol_and_gap_still_reject(self):
+    def test_unknown_protocol_and_gap_still_reject(self):
         for protocols, gaps, message in [
             (set(), {"GAP-TEST"}, "unknown protocol"),
             ({"FixtureProtocolV1"}, set(), "unknown gap"),
@@ -70,14 +80,47 @@ class ReadinessSemanticsTests(unittest.TestCase):
             with self.subTest(message=message):
                 with self.assertRaisesRegex(SystemExit, message):
                     self.verify(protocols, gaps)
-        for omitted, message in [
-            ("FixtureProtocolV1", "protocol not cited"),
-            ("GAP-TEST", "gap not cited"),
-        ]:
-            self.path.write_text(self.text.replace(omitted, "omitted"))
-            with self.subTest(omitted=omitted):
-                with self.assertRaisesRegex(SystemExit, message):
+
+    def test_registry_references_need_not_be_duplicated_in_prose(self):
+        self.path.write_text("# Owner contract\nSee the registered protocol mapping.\n")
+        with patch("sys.stderr") as diagnostics:
+            self.verify()
+        output = "".join(call.args[0] for call in diagnostics.write.call_args_list)
+        self.assertIn("FixtureProtocolV1", output)
+        self.assertIn("GAP-TEST", output)
+
+    def test_reference_shape_and_duplicate_identity_still_reject(self):
+        for field in ("protocols", "gapIds"):
+            original = self.row[field]
+            for invalid in (None, {}, "FixtureProtocolV1", [None], [""], original * 2):
+                with self.subTest(field=field, invalid=invalid):
+                    self.row[field] = invalid
+                    with self.assertRaisesRegex(SystemExit, "invalid .* references"):
+                        self.verify()
+            self.row[field] = original
+
+    def test_document_path_escape_and_noncanonical_paths_reject(self):
+        for path in (
+            "/tmp/outside.md",
+            "../outside.md",
+            "docs/../guide.md",
+            "docs//guide.md",
+            "docs\\guide.md",
+            "docs/\x00.md",
+        ):
+            with self.subTest(path=path):
+                self.row["path"] = path
+                with self.assertRaisesRegex(SystemExit, "invalid document path"):
                     self.verify()
+
+    def test_document_symlink_escape_rejects(self):
+        with tempfile.TemporaryDirectory() as outside:
+            target = Path(outside) / "outside.md"
+            target.write_text(self.text)
+            self.path.unlink()
+            self.path.symlink_to(target)
+            with self.assertRaisesRegex(SystemExit, "escaped document path"):
+                self.verify()
 
     def test_module_guide_edit_needs_no_prose_digest_or_section_inventory(self):
         self.path.write_text(
@@ -97,7 +140,7 @@ class ReadinessSemanticsTests(unittest.TestCase):
         flags = dict.fromkeys(reversed(VERIFIER.AUTHORITY_KEYS), False)
         VERIFIER.false_authority(flags, "fixture")
         flags["unknown"] = flags.pop("merge")
-        with self.assertRaisesRegex(SystemExit, "key closure"):
+        with self.assertRaisesRegex(SystemExit, "authority"):
             VERIFIER.false_authority(flags, "fixture")
 
     def test_falsey_non_boolean_and_positive_authority_still_reject(self):
@@ -108,25 +151,43 @@ class ReadinessSemanticsTests(unittest.TestCase):
                 with self.assertRaisesRegex(SystemExit, "authority"):
                     VERIFIER.false_authority(flags, "fixture")
 
-
     def test_field_schema_object_key_order_is_not_semantic(self):
         schemas = [
             {"name": "id", "type": "u64", "required": True},
             {"name": "label", "type": "utf8", "required": True, "maxBytes": 32},
             {"type": "enum", "maxBytes": 32, "values": ["first", "second"]},
-            {"type": "bounded_array", "maxBytes": 64, "minItems": 0,
-             "maxItems": 4, "uniqueItems": False, "items": {"type": "u64"}},
-            {"type": "bounded_fixed_point_vector", "maxBytes": 64, "scale": "Q24",
-             "minItems": 1, "maxItems": 4, "items": {"type": "i64"}},
-            {"type": "bounded_object", "maxBytes": 64, "minProperties": 1,
-             "maxProperties": 1, "additionalProperties": False,
-             "properties": [{"required": True, "type": "u64", "name": "id"}]},
+            {
+                "type": "bounded_array",
+                "maxBytes": 64,
+                "minItems": 0,
+                "maxItems": 4,
+                "uniqueItems": False,
+                "items": {"type": "u64"},
+            },
+            {
+                "type": "bounded_fixed_point_vector",
+                "maxBytes": 64,
+                "scale": "Q24",
+                "minItems": 1,
+                "maxItems": 4,
+                "items": {"type": "i64"},
+            },
+            {
+                "type": "bounded_object",
+                "maxBytes": 64,
+                "minProperties": 1,
+                "maxProperties": 1,
+                "additionalProperties": False,
+                "properties": [{"required": True, "type": "u64", "name": "id"}],
+            },
         ]
         for schema in schemas:
             for keys in itertools.permutations(schema):
                 with self.subTest(schema=schema["type"], keys=keys):
                     VERIFIER.validate_schema_node(
-                        {key: schema[key] for key in keys}, 128, "fixture",
+                        {key: schema[key] for key in keys},
+                        128,
+                        "fixture",
                         named="name" in schema,
                     )
 
@@ -137,7 +198,9 @@ class ReadinessSemanticsTests(unittest.TestCase):
             with self.subTest(missing=key), self.assertRaises(SystemExit):
                 VERIFIER.validate_schema_node(invalid, 128, "fixture", named=True)
         with self.assertRaisesRegex(SystemExit, "key closure"):
-            VERIFIER.validate_schema_node(schema | {"extra": False}, 128, "fixture", named=True)
+            VERIFIER.validate_schema_node(
+                schema | {"extra": False}, 128, "fixture", named=True
+            )
 
     def test_json_duplicate_schema_keys_are_not_collapsed(self):
         with self.assertRaises(VERIFIER.DuplicateKey):

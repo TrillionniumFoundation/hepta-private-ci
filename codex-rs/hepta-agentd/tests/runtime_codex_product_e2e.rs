@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 use std::collections::BTreeSet;
@@ -12,10 +13,10 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
-use codex_hepta_contracts::FinalUseBinding;
-use codex_hepta_contracts::FinalUseGrant;
-use codex_hepta_contracts::FinalUseRevocations;
-use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_agent_components::contracts::FinalUseBinding;
+use codex_hepta_agent_components::contracts::FinalUseGrant;
+use codex_hepta_agent_components::contracts::FinalUseRevocations;
+use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::final_use_authorizer::FinalUseAuthorizerConfig;
 use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;

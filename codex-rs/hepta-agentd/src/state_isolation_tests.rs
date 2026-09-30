@@ -4,28 +4,40 @@ use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 
 use super::*;
-use codex_hepta_authbus::SignedMessageClaims;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_learning_ledger::DurableRunStartJournal;
-use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
-use codex_hepta_learning_ledger::RunStartAuthenticationV1;
-use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
-use codex_hepta_learning_ledger::RunStartRecordV1;
-use codex_hepta_learning_ledger::RunStartSnapshotV1;
-use codex_hepta_paths::HeptaFleetRoot;
-use codex_hepta_types::AuthorityPosture;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::authbus::SignedMessageClaims;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::learning_ledger::DurableRunStartJournal;
+use codex_hepta_agent_components::learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_agent_components::learning_ledger::RunStartAuthenticationV1;
+use codex_hepta_agent_components::learning_ledger::RunStartObjectiveDispositionV1;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
+use codex_hepta_agent_components::learning_ledger::RunStartSnapshotV1;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
+use codex_hepta_agent_components::types::AuthorityPosture;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
 use crate::RunPhase;
+
+struct MustNotBuildCanonicalInvocation;
+
+impl crate::AgentdIntelligenceInvocationProviderV1 for MustNotBuildCanonicalInvocation {
+    fn build(
+        &self,
+        _identity: &crate::AgentdIdentity,
+        _record: &RunStartRecordV1,
+    ) -> Result<crate::AgentdIntelligenceInvocationV1, crate::AgentdError> {
+        panic!("provider must not run before durable owner currentness validation")
+    }
+}
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
@@ -194,7 +206,7 @@ fn run_fence(state: &AgentdState, current_generation: u64) -> String {
     material.extend_from_slice(state.identity.agent_id.as_str().as_bytes());
     material.extend_from_slice(&state.identity.spawn_generation.to_be_bytes());
     material.extend_from_slice(&current_generation.to_be_bytes());
-    codex_hepta_contracts::Sha256Digest::for_bytes(&material)
+    codex_hepta_agent_components::contracts::Sha256Digest::for_bytes(&material)
         .as_str()
         .to_string()
 }
@@ -423,10 +435,11 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     fs::set_permissions(&state.identity.home_root, fs::Permissions::from_mode(0o700))
         .expect("private home");
 
-    let cognitive =
-        codex_hepta_cognitive_store::DurableCognitiveStore::open(&state.identity.layout)
-            .await
-            .expect("cognitive owner");
+    let cognitive = codex_hepta_agent_components::cognitive_store::DurableCognitiveStore::open(
+        &state.identity.layout,
+    )
+    .await
+    .expect("cognitive owner");
     state
         .attach_cognitive_store(Arc::new(cognitive))
         .expect("attach cognitive owner");
@@ -462,7 +475,7 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     let checkpoint_file = temp.path().join("run-start-replay-checkpoint.json");
     // The external fixture witness is captured from the canonical empty owner,
     // never invented from a label or recaptured from a suspect backup.
-    let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
+    let evidence = codex_hepta_agent_components::evidence::HeptaEvidenceStore::open(
         &codex_state::SqliteConfig::from_sqlite_home(
             codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(
                 &state.identity.home_root,
@@ -582,6 +595,26 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     assert_eq!(admitted.generation, 2);
 
     write_trust(true);
+    let intelligence_signer = SigningKey::from_bytes(&[78; 32]);
+    let intelligence_runner = crate::AgentdIntelligenceProductRunnerV1::new(
+        temp.path().join("unopened-intelligence-authority.json"),
+        crate::IntelligenceAuthorityVerifierV1 {
+            signer_id: "intelligence.owner".to_string(),
+            verifying_key: intelligence_signer.verifying_key().to_bytes(),
+        },
+    )
+    .expect("bounded runner");
+    state
+        .intelligence_product
+        .set(Arc::new(intelligence_runner))
+        .map_err(|_| ())
+        .expect("attach intelligence runner");
+    state
+        .intelligence_invocation
+        .set(Arc::new(MustNotBuildCanonicalInvocation))
+        .map_err(|_| ())
+        .expect("attach intelligence provider");
+
     let second_id = StableId::new("run.durable.revoked").expect("run id");
     let mut second = journal
         .get(&run_id)
@@ -602,6 +635,10 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         expires_at_ms: second.authentication.expires_at_ms,
     };
     second.authentication.signature = key.sign(&second_claims.signing_bytes()).to_bytes();
+    assert!(
+        state.start_canonical_intelligence(&second).await.is_err(),
+        "revoked durable owner must fail before the provider can run"
+    );
     let predecessor = journal.head_digest();
     journal
         .append(predecessor, second)

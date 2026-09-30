@@ -318,3 +318,16 @@ The bootstrap source-location obligation for `inference.worker` is implemented b
 - `codex-rs/hepta-infer-worker-host`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Control-client build and observed terminal output
+
+The Cargo production worker uses Agentd's client-only profile; live integration
+fixtures retain the default daemon. See the Agentd guide for the remaining
+App Server adapter dependencies and the separate Bazel profile boundary.
+
+An exact-turn terminal summary supplies observed assistant text when no text
+deltas were received. Existing streamed output is not appended twice. This does
+not grant owner authority or replay a model call; output byte bounds, terminal
+correlation and final owner checks remain mandatory. The live cognitive fixture
+checks accepted output, durable dispatch and no additional provider calls after
+owner tombstone/correction, then verifies the persisted results after reopening.

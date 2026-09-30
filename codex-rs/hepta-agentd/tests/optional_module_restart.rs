@@ -1,9 +1,12 @@
+#![cfg(feature = "server")]
+
 //! A real optional service on the SAME RuntimeTasks used by Agentd, backed by
 //! AutomationStore, exercised in separate OS processes. Forty required echo
 //! services represent sibling liveness; these are not forty real Codex sessions.
 //! No provider, physical effect, independent evaluator, cross-schema migration
 //! or deployed-host performance claim is made by this fixture.
 use std::fs::File;
+use std::io::Read;
 use std::path::Path;
 use std::process::Child;
 use std::process::Command;
@@ -14,23 +17,23 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::AutomationOperationReceipt;
+use codex_hepta_agent_components::automation::AutomationSchedule;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::AutomationTaskDraft;
+use codex_hepta_agent_components::automation::TimerPhase;
+use codex_hepta_agent_components::automation::automation_task_operation_intent;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
+use codex_hepta_agent_components::types::Generation;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::RuntimeTasks;
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationOperationReceipt;
-use codex_hepta_automation::AutomationSchedule;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::AutomationTaskDraft;
-use codex_hepta_automation::TimerPhase;
-use codex_hepta_automation::automation_task_operation_intent;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_operations::DestinationApplyDisposition;
-use codex_hepta_paths::HeptaFleetRoot;
-use codex_hepta_types::Generation;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 use tokio::time::timeout;
@@ -161,11 +164,14 @@ fn load_draft(root: &Path, file: &str) -> AutomationTaskDraft {
 }
 
 async fn worker(root: &Path, stage: &str) {
+    let recovery_started = Instant::now();
     let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet");
     let layout = fleet.layout().agent(&AgentId::parse(AGENT).expect("agent"));
     let store = AutomationStore::open(&layout)
         .await
         .expect("real SQLite reopen");
+    let reopen_duration_us = recovery_started.elapsed().as_micros();
+    let mut recovery_duration_us = None;
     let first = load_draft(root, "first.json");
     let second = load_draft(root, "second.json");
     let initial = store.timer_status().await.expect("durable epoch");
@@ -362,6 +368,7 @@ async fn worker(root: &Path, stage: &str) {
                 .expect("explicit compatible resume");
             assert_eq!(resumed.phase, TimerPhase::Active);
             assert_eq!(resumed.writer_epoch, initial.writer_epoch);
+            recovery_duration_us = Some(recovery_started.elapsed().as_micros());
             host.retire_optional(&name)
                 .await
                 .expect("close recovered local route");
@@ -415,6 +422,11 @@ async fn worker(root: &Path, stage: &str) {
     store.close().await;
     let report = serde_json::json!({
         "stage": stage,
+        "reopen_duration_us": reopen_duration_us,
+        "recovery_duration_us": recovery_duration_us,
+        "storage": owner_storage_sample(root),
+        "leased_occurrences": final_status.leased_occurrences,
+        "uncertain_dispatches": final_status.uncertain_dispatches,
         "writer_epoch": final_status.writer_epoch,
         "task_count": count,
         "retired": final_status.phase == TimerPhase::Retired,
@@ -463,7 +475,54 @@ impl Drop for ChildGuard {
     }
 }
 
+fn owner_storage_sample(root: &Path) -> serde_json::Value {
+    let mut pending = vec![root.join("fleet")];
+    let mut inspected = 0_usize;
+    let mut file_bytes = 0_u64;
+    let mut sqlite_main_bytes = 0_u64;
+    let mut sqlite_sidecar_bytes = 0_u64;
+    while let Some(directory) = pending.pop() {
+        for entry in std::fs::read_dir(directory).expect("owner directory") {
+            let entry = entry.expect("owner entry");
+            inspected += 1;
+            assert!(inspected <= 4096, "bounded fixture storage walk");
+            let metadata = entry.metadata().expect("owner metadata");
+            if metadata.is_dir() {
+                pending.push(entry.path());
+                continue;
+            }
+            assert!(
+                metadata.is_file(),
+                "fixture contains only directories and files"
+            );
+            file_bytes += metadata.len();
+            let name = entry.file_name();
+            let name = name.to_string_lossy();
+            if name.ends_with("-wal") || name.ends_with("-shm") || name.ends_with("-journal") {
+                sqlite_sidecar_bytes += metadata.len();
+                continue;
+            }
+            let mut header = [0; 16];
+            let mut file = File::open(entry.path()).expect("owner file");
+            match file.read_exact(&mut header) {
+                Ok(()) if &header == b"SQLite format 3\0" => {
+                    sqlite_main_bytes += metadata.len();
+                }
+                Ok(()) => {}
+                Err(error) if error.kind() == std::io::ErrorKind::UnexpectedEof => {}
+                Err(error) => panic!("owner header read: {error}"),
+            }
+        }
+    }
+    serde_json::json!({
+        "owner_file_bytes": file_bytes,
+        "sqlite_main_bytes": sqlite_main_bytes,
+        "sqlite_sidecar_bytes": sqlite_sidecar_bytes
+    })
+}
+
 fn run_process(root: &Path, stage: &str, exit: i32) -> Option<serde_json::Value> {
+    let started = Instant::now();
     let report = root.join("report.json");
     if report.exists() {
         std::fs::remove_file(&report).expect("remove stale report");
@@ -505,7 +564,8 @@ fn run_process(root: &Path, stage: &str, exit: i32) -> Option<serde_json::Value>
     }
     if exit == 0 {
         let bytes = std::fs::read(&report).expect("new stage report");
-        let value: serde_json::Value = serde_json::from_slice(&bytes).expect("report");
+        let mut value: serde_json::Value = serde_json::from_slice(&bytes).expect("report");
+        value["subprocess_wall_us"] = serde_json::json!(started.elapsed().as_micros());
         assert_eq!(value["stage"], stage);
         assert_eq!(value["required_services_responded"], 40);
         Some(value)
@@ -546,20 +606,37 @@ fn forty_first_service_survives_faults_replacement_retirement_and_real_process_r
     let isolated = run_process(&root, "isolate", 0).expect("isolated");
     assert_eq!(isolated["task_count"], 1);
     assert!(run_process(&root, "crash", CRASH_EXIT).is_none());
+    let mut replacement_samples = Vec::new();
+    let mut recovery_samples = Vec::new();
     for epoch in 2..=5 {
         let result = run_process(&root, "replace", 0).expect("replaced");
         assert_eq!(result["writer_epoch"], epoch);
         assert_eq!(result["task_count"], 2);
+        replacement_samples.push(result);
     }
+    let crash_started = Instant::now();
     assert!(run_process(&root, "crash-quiesced", CRASH_EXIT).is_none());
+    let quiesce_crash_wall_us = crash_started.elapsed().as_micros();
     let recovered = run_process(&root, "recover-draining", 0).expect("recover quiesce");
     assert_eq!(recovered["writer_epoch"], 5);
     assert_eq!(recovered["task_count"], 2);
+    recovery_samples.push(serde_json::json!({
+        "cut": "quiesced",
+        "crash_wall_us": quiesce_crash_wall_us,
+        "observation": recovered
+    }));
     for epoch in 6..=9 {
+        let crash_started = Instant::now();
         assert!(run_process(&root, "crash-cutover", CRASH_EXIT).is_none());
+        let cutover_crash_wall_us = crash_started.elapsed().as_micros();
         let recovered = run_process(&root, "recover-draining", 0).expect("recover cutover");
         assert_eq!(recovered["writer_epoch"], epoch);
         assert_eq!(recovered["task_count"], 2);
+        recovery_samples.push(serde_json::json!({
+            "cut": "cutover",
+            "crash_wall_us": cutover_crash_wall_us,
+            "observation": recovered
+        }));
     }
     let retired = run_process(&root, "retire", 0).expect("retired");
     assert_eq!(retired["writer_epoch"], 10);
@@ -567,4 +644,29 @@ fn forty_first_service_survives_faults_replacement_retirement_and_real_process_r
     assert_eq!(recovered["writer_epoch"], 10);
     assert_eq!(recovered["task_count"], 2);
     assert_eq!(recovered["retired"], true);
+    let baseline = &replacement_samples[0]["storage"];
+    let final_storage = &recovered["storage"];
+    let sqlite_growth_bytes =
+        i128::from(final_storage["sqlite_main_bytes"].as_u64().expect("bytes"))
+            - i128::from(baseline["sqlite_main_bytes"].as_u64().expect("bytes"));
+    let owner_file_growth_bytes =
+        i128::from(final_storage["owner_file_bytes"].as_u64().expect("bytes"))
+            - i128::from(baseline["owner_file_bytes"].as_u64().expect("bytes"));
+    let task_count_growth = recovered["task_count"].as_i64().expect("task count")
+        - replacement_samples[0]["task_count"]
+            .as_i64()
+            .expect("task count");
+    let report = serde_json::json!({
+        "fixture": "sqlite_owner_with_runtime_tasks_and_40_echo_siblings",
+        "replacement_success_count": replacement_samples.len(),
+        "recovery_success_count": recovery_samples.len(),
+        "replacement_samples": replacement_samples,
+        "recovery_samples": recovery_samples,
+        "retirement": retired,
+        "retired_reopen": recovered,
+        "sqlite_main_growth_bytes": sqlite_growth_bytes,
+        "owner_file_growth_bytes": owner_file_growth_bytes,
+        "task_count_growth": task_count_growth
+    });
+    println!("{report}");
 }

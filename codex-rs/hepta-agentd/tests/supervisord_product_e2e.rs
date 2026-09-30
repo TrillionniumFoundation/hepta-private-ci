@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 use std::collections::BTreeMap;
@@ -17,16 +18,16 @@ use anyhow::Result;
 use anyhow::bail;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ReleaseId;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::paths::HeptaAgentLayout;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 use codex_hepta_agentd::AgentdClient;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ReleaseId;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_paths::HeptaAgentLayout;
-use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::SupervisordAgentStatus;
 use codex_hepta_supervisor::SupervisordClient;
 use codex_hepta_supervisor::SupervisordControlFence;

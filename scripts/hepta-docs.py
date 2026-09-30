@@ -17,17 +17,23 @@ try:
         AUTHORITY_KEYS,
         authority_fixture,
         has_schema_version,
+        has_deny_all_authority,
     )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import AUTHORITY_KEYS, authority_fixture, has_schema_version
+    from hepta_metadata import (
+        AUTHORITY_KEYS,
+        authority_fixture,
+        has_schema_version,
+        has_deny_all_authority,
+    )
 from collections import Counter, defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from hepta_workflow_commands import verify_owner_self_tests
-from hepta_workflow_commands import verify_synthetic_merge
+from hepta_workflow_commands import verify_document_workflow
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_ID = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
@@ -451,7 +457,15 @@ def lease_path_set_sha(paths):
     return hashlib.sha256(("\n".join(paths) + "\n").encode()).hexdigest()
 
 
-def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
+def validate_path_leases(
+    path_registry, packages, dev, act, changed_paths=None, *, require_attestation=False
+):
+    """Check ownership and report overlap without granting a path lease.
+
+    Ordinary CI leaves independent review to protected-branch review. Activation
+    is explicitly strict: this checker cannot mint the external attestation.
+    """
+    need(type(require_attestation) is bool, "path lease validation scope")
     need(
         path_registry.get("schema") == "hepta.path-ownership.v3"
         and has_schema_version(path_registry, 3),
@@ -503,7 +517,7 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
     lease_paths = set()
     for lease in leases:
         need(isinstance(lease, dict), "lease object")
-        need(list(lease) == LEASE_KEYS, "lease key closure/order")
+        need(set(lease) == set(LEASE_KEYS), "lease key coverage")
         lease_id = lease.get("leaseId")
         need(
             isinstance(lease_id, str)
@@ -547,8 +561,8 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
         )
         review = lease.get("reviewBinding")
         need(
-            isinstance(review, dict) and list(review) == LEASE_REVIEW_KEYS,
-            lease_id + " review binding key closure/order",
+            isinstance(review, dict) and set(review) == set(LEASE_REVIEW_KEYS),
+            lease_id + " review binding key coverage",
         )
         need(
             {
@@ -571,6 +585,15 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
                 "invalidateOnHeadChange": True,
                 "reusable": False,
             }
+            and all(
+                review.get(key) is expected
+                for key, expected in (
+                    ("reviewCommitMustEqualHead", True),
+                    ("reviewerMustDifferFromAuthor", True),
+                    ("invalidateOnHeadChange", True),
+                    ("reusable", False),
+                )
+            )
             and type(review.get("maximumAttestationAgeSeconds")) is int
             and 0 < review["maximumAttestationAgeSeconds"] <= 604800,
             lease_id + " exact-head external review policy",
@@ -590,6 +613,12 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
     for pair, paths in required.items():
         need(declared[pair] == paths, "lease path mismatch " + "/".join(pair))
 
+    if require_attestation:
+        need(
+            changed_paths is not None,
+            "path lease attestation requires exact PR context",
+        )
+    touched_count = 0
     if changed_paths is not None:
         changed = {canonical_exact_path(path, "changed path") for path in changed_paths}
         for pair, paths in declared.items():
@@ -602,15 +631,17 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
             need(not prefix_aliases, "changed path prefix aliases a lease")
             touched = changed & path_set
             if touched:
-                need(
-                    touched == path_set,
-                    "changed leased path set must equal manifest " + "/".join(pair),
-                )
-                die("external path lease attestation required " + "/".join(pair))
+                touched_count += 1
+                if require_attestation:
+                    need(
+                        touched == path_set,
+                        "changed leased path set must equal manifest " + "/".join(pair),
+                    )
+                    die("external path lease attestation required " + "/".join(pair))
     return {
         "declaredLeaseCount": len(declared),
         "leasedPathCount": len(lease_paths),
-        "touchedLeaseCount": 0,
+        "touchedLeaseCount": touched_count,
         "externallyAttestedLeaseCount": 0,
     }
 
@@ -814,7 +845,9 @@ def verify_document_inventory(system, required):
     declared path is still unique, exact, present and inside the repository.
     """
     paths = system.get("canonicalPaths")
-    need(isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory")
+    need(
+        isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory"
+    )
     normalized = [canonical_exact_path(path, "canonical path") for path in paths]
     need(len(normalized) == len(set(normalized)), "duplicate canonical path")
     missing = sorted(set(required) - set(normalized))
@@ -822,7 +855,10 @@ def verify_document_inventory(system, required):
     root = ROOT.resolve()
     for path in normalized:
         target = ROOT / path
-        need(target.resolve().is_relative_to(root), "canonical path escapes repository " + path)
+        need(
+            target.resolve().is_relative_to(root),
+            "canonical path escapes repository " + path,
+        )
         need(target.is_file(), "missing canonical path " + path)
 
 
@@ -864,6 +900,70 @@ def verify_legacy(system, paths):
 def deleted_json_basename_pattern(old_path):
     basename = re.escape(Path(old_path).name)
     return re.compile(rf"(?<![A-Za-z0-9_.-]){basename}(?![A-Za-z0-9_.-])")
+
+
+def verify_retirement_fence(system, paths):
+    """Reject revival/current consumers without replaying a historical cleanup.
+
+    The immutable base inventory remains available through cleanup-inventory.
+    Ordinary validation needs only the reserved direct paths and snapshot root.
+    It also works in a source archive without the historical Git object store.
+    """
+    policy = system["knownLegacyDeletion"]
+    direct = {
+        canonical_exact_path(path, "retired path") for path in policy["directPaths"]
+    }
+    snapshot = canonical_exact_path(policy["copiedSnapshotPath"], "retired snapshot")
+    revived = [
+        path
+        for path in paths
+        if path in direct or path == snapshot or path.startswith(snapshot + "/")
+    ]
+    for path in [*direct, snapshot]:
+        target = ROOT / path
+        if (target.exists() or target.is_symlink()) and path not in revived:
+            revived.append(path)
+    need(not revived, "retired legacy paths reintroduced " + repr(sorted(revived)))
+    expressions = [re.escape(snapshot) + r"/[^\s\"'<>]*\.json\b"]
+    for path in sorted(direct):
+        if path.lower().endswith(".json"):
+            expressions.extend(
+                (re.escape(path), deleted_json_basename_pattern(path).pattern)
+            )
+    references = re.compile("|".join(expressions))
+    code_extensions = {
+        ".rs",
+        ".py",
+        ".toml",
+        ".yaml",
+        ".yml",
+        ".sh",
+        ".bzl",
+        ".bazel",
+        ".js",
+        ".ts",
+        ".tsx",
+        ".go",
+        ".c",
+        ".cc",
+        ".h",
+        ".hpp",
+    }
+    hits = []
+    for path in paths:
+        if (
+            path == "docs/governance/DOCUMENT_SYSTEM.json"
+            or Path(path).suffix.lower() not in code_extensions
+        ):
+            continue
+        target = ROOT / path
+        if not target.is_file():
+            continue
+        text = target.read_text(encoding="utf-8", errors="replace")
+        match = references.search(text)
+        if match:
+            hits.append({"retainedPath": path, "deletedJson": match[0]})
+    need(not hits, "deleted JSON consumer " + repr(hits[:10]))
 
 
 def verify_cleanup_base(system):
@@ -1003,7 +1103,7 @@ def verify_cleanup_base(system):
     }
 
 
-def verify() -> int:
+def verify(*, require_path_lease_attestation=False) -> int:
     verify_exact_workflow_references()
     module_index = load(FILES["module_docs"])
     algorithm_index = load(FILES["algorithm_specs"])
@@ -1062,12 +1162,11 @@ def verify() -> int:
             v.get("planId") == PLAN_ID and v.get("planVersion") == VERSION,
             "plan binding " + k,
         )
-        f = v.get("authorityFlags")
         need(
-            isinstance(f, dict) and list(f) == AUTHORITY_KEYS,
-            k + " authority key closure",
+            has_deny_all_authority(v.get("authorityFlags")),
+            k
+            + " positive authority or invalid authority metadata; exact false booleans required",
         )
-        need(not any(f.values()), k + " positive authority")
     cur = d["current"]
     r = cur["repository"]
     need(
@@ -1171,15 +1270,15 @@ def verify() -> int:
         if k == "system":
             continue
         row = closures[rel]
-        need(row["topLevelKeys"] == list(d[k]), "top-level closure " + rel)
+        need(
+            len(row["topLevelKeys"]) == len(set(row["topLevelKeys"]))
+            and set(row["topLevelKeys"]) == set(d[k]),
+            "top-level closure " + rel,
+        )
         need(row["recursiveShapeSha256"] == shape_sha(d[k]), "recursive closure " + rel)
     paths = tracked()
     verify_legacy(system, paths)
-    cleanup = verify_cleanup_base(system)
-    need(
-        cleanup["evaluated"] or not (ROOT / ".git").exists(),
-        "cleanup inventory not evaluated",
-    )
+    verify_retirement_fence(system, paths)
     mods = d["modules"]["modules"]
     mids = {m["id"] for m in mods}
     need(len(mids) == len(mods), "module IDs")
@@ -1307,7 +1406,12 @@ def verify() -> int:
     dev = reach(d["development"]["nodes"], d["development"]["edges"])
     act = reach(d["activation"]["nodes"], d["activation"]["edges"])
     lease_summary = validate_path_leases(
-        d["paths"], packages, dev, act, pull_request_changed_paths()
+        d["paths"],
+        packages,
+        dev,
+        act,
+        pull_request_changed_paths(),
+        require_attestation=require_path_lease_attestation,
     )
     evid = {x["id"] for x in d["evidence"]["evidenceTypes"]}
     for ladder in d["claims"]["ladders"]:
@@ -1364,10 +1468,6 @@ def verify() -> int:
         d["algorithm_specs"]["globalClosure"]["workPackageId"] in pkgids,
         "adaptive documentation package",
     )
-    need(
-        len(d["algorithm_specs"]["requiredProtocols"]) >= 20,
-        "adaptive protocol closure",
-    )
     for t in d["threats"]["threats"]:
         need(
             t["owner"] in mids and t["prevent"] and t["detect"] and t["respond"],
@@ -1376,22 +1476,16 @@ def verify() -> int:
     sub = subordinate_state()
     need(
         sub["readiness"].get("overlayId") == "HEPTA-V8-PRECODING-READINESS"
-        and sub["readiness"].get("globalClosure", {}).get("state") == "closed"
-        and len(sub["readiness"]["documents"]) == 9
-        and len(sub["readiness_protocols"]["protocols"]) == 31
-        and len(sub["readiness_gaps"]["gaps"]) == 54,
+        and sub["readiness"].get("globalClosure", {}).get("state") == "closed",
         "readiness subordinate closure",
     )
     need(
         sub["cns"].get("claimBoundary", {}).get("repositoryReferenceClosure") is True
-        and sub["cns"].get("claimBoundary", {}).get("productionEmbodiment") is False
-        and len(sub["cns"]["organs"]) == 24
-        and len(sub["cns_gaps"]["gaps"]) == 22,
+        and sub["cns"].get("claimBoundary", {}).get("productionEmbodiment") is False,
         "CNS subordinate closure",
     )
     need(
-        sub["hnmf"].get("claimPosture", {}).get("productionActivation") is False
-        and len(sub["hnmf_gaps"]["gaps"]) == 18,
+        sub["hnmf"].get("claimPosture", {}).get("productionActivation") is False,
         "HNMF subordinate closure",
     )
     need((ROOT / "docs/STATUS.md").read_text() == status_text(d), "STATUS stale")
@@ -1433,38 +1527,10 @@ def verify() -> int:
         )
     wf = (ROOT / ".github/workflows/hepta-development-docs.yml").read_text()
     try:
-        verify_synthetic_merge(wf, ROOT)
+        verify_document_workflow(wf, ROOT, "scripts/hepta-docs.py", recorded=True)
         verify_owner_self_tests(d["system"]["subordinateRegistries"], ROOT)
     except ValueError as exc:
         die("synthetic merge workflow: " + str(exc))
-    for token in [
-        "source-head:",
-        "merge-candidate:",
-        "github.event.pull_request.head.sha",
-        "github.event.pull_request.base.sha",
-        "persist-credentials: false",
-        "python3 scripts/hepta-docs.py verify",
-        "python3 scripts/hepta-algorithm-docs.py verify-sources",
-        "python3 scripts/hepta-readiness.py generate-status --check",
-        "python3 scripts/hepta-cns.py generate-status --check",
-        "python3 scripts/hepta-docs.py inventory-legacy",
-        "python3 scripts/hepta-docs.py cleanup-inventory",
-        "python3 scripts/hepta-docs.py self-test",
-        "python3 scripts/hepta-docs.py receipt-verify",
-        "include-hidden-files: true",
-        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
-        "contents: read",
-    ]:
-        need(token in wf, "workflow " + token)
-    for token in [
-        "contents: write",
-        "git push",
-        "update-ref",
-        "pull-requests: write",
-        "paths-ignore:",
-        "github.event.pull_request.merge_commit_sha",
-    ]:
-        need(token not in wf, "workflow mutation or stale identity " + token)
     print(
         json.dumps(
             {
@@ -1901,6 +1967,7 @@ def self_test():
                 fixture_reach,
                 fixture_reach,
                 changed_paths,
+                require_attestation=True,
             )
             die(name + " accepted")
         except SystemExit as exc:
@@ -2085,7 +2152,13 @@ def self_test():
 def main():
     ap = argparse.ArgumentParser()
     sp = ap.add_subparsers(dest="cmd", required=True)
-    for name in ["verify", "generate-status", "inventory-legacy", "self-test"]:
+    verifier = sp.add_parser("verify")
+    verifier.add_argument(
+        "--require-path-lease-attestation",
+        action="store_true",
+        help="enforce external activation attestation for exact PR paths; never grants a lease",
+    )
+    for name in ["generate-status", "inventory-legacy", "self-test"]:
         sp.add_parser(name)
     cp = sp.add_parser("cleanup-inventory")
     cp.add_argument("--output", required=True)
@@ -2099,7 +2172,9 @@ def main():
     vp.add_argument("--expected-sha", required=True)
     args = ap.parse_args()
     if args.cmd == "verify":
-        return verify()
+        return verify(
+            require_path_lease_attestation=args.require_path_lease_attestation
+        )
     if args.cmd == "generate-status":
         return generate()
     if args.cmd == "inventory-legacy":

@@ -30,6 +30,10 @@ fn intent(index: usize) -> OperationIntentV1 {
 }
 
 #[tokio::test]
+#[allow(
+    clippy::disallowed_methods,
+    reason = "this fault-injection test must reopen every pooled connection with max_page_count armed"
+)]
 async fn sqlite_full_never_leaves_half_of_the_ledger_outbox_transaction() {
     let directory = tempfile::tempdir().expect("tempdir");
     let path = directory.path().join("operations.sqlite3");

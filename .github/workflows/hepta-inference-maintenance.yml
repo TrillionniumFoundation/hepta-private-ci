@@ -1,27 +1,9 @@
 name: Hepta inference maintenance
 
 on:
-  push:
-    branches:
-      - main
-      - work/architecture-scalability-convergence-20260918
-    paths:
-      - 'codex-rs/hepta-infer-core/**'
-      - 'codex-rs/hepta-types/**'
-      - 'codex-rs/Cargo.toml'
-      - 'codex-rs/Cargo.lock'
-      - 'codex-rs/rust-toolchain*'
-      - 'scripts/hepta_ci_exec.py'
-      - '.github/workflows/hepta-inference-maintenance.yml'
-  pull_request:
-    paths:
-      - 'codex-rs/hepta-infer-core/**'
-      - 'codex-rs/hepta-types/**'
-      - 'codex-rs/Cargo.toml'
-      - 'codex-rs/Cargo.lock'
-      - 'codex-rs/rust-toolchain*'
-      - 'scripts/hepta_ci_exec.py'
-      - '.github/workflows/hepta-inference-maintenance.yml'
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -132,12 +114,6 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/owner.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
-      - name: Measure post-compaction growth and maintenance
-        if: steps.execution.outputs.run_native == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
       - name: Check owner formatting without modifying tested source
         if: steps.execution.outputs.run_native == 'true'
         shell: bash

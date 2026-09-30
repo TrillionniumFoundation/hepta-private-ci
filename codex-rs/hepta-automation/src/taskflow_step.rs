@@ -829,7 +829,7 @@ impl AutomationStore {
 
     async fn begin_step_tx(&self) -> Result<sqlx::Transaction<'_, sqlx::Sqlite>, TaskFlowError> {
         self.taskflow_pool()
-            .begin()
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)
     }

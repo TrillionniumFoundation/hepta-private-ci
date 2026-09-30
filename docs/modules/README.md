@@ -14,15 +14,48 @@ implementation states are preserved until explicitly versioned migration.
 
 ## Cargo registry closure
 
-`MODULES.json` is the canonical module identity registry. Compiled Rust package
-identity is discovered from `codex-rs/**/Cargo.toml` and must be explicitly
-bound by `CARGO_BINDINGS.json`; source roots in `MODULES.json` remain the
-documentation and implementation roots. Run
+`docs/modules/<module-id>/module.toml` is the single handwritten source for
+module identity, ownership, source roots and CI groups. `registry.toml` owns
+shared convergence policy. `MODULES.json`, `CARGO_BINDINGS.json`,
+`SOURCE_BINDINGS.json`, `CI_MATRIX.json` and `COMPILE_GRAPH.json` are generated
+views, not additional registries to maintain by hand. Cargo package identity
+comes from `codex-rs/**/Cargo.toml`; the manifest binds that package to its owner. Run
 `python3 scripts/hepta_module_registry.py --pretty` to emit a deterministic
 JSON drift report. An unclaimed `codex-hepta-*` package is a registry error;
 non-Rust roots (UI, tools and external systems) are reported separately as
 expected missing Cargo packages. Use `--strict` in a qualification job once
 every support package has an explicit ownership decision.
+
+## Ordinary changes and qualification boundaries
+
+Change the implementation, its behavioral tests and, only when module semantics
+change, its existing `module.toml`. Regenerate affected views with
+`python3 scripts/hepta_module_manifest.py --write`, then check with `--check`; use the
+existing architecture graph command for Cargo graph changes. Do not add a new
+workflow or module-local machine registry for each capability.
+
+CI impact and risk are separate. The existing dependency planner selects owners
+and reverse consumers from both exact Git trees, including removed providers and
+embedded inputs. The risk classifier uses old/new module semantics: display-only
+manifest edits and read-only leaf source stay ordinary; state changes retain
+recovery checks; authority, effect and unknown shared changes retain deeper
+checks. A broad build scope is not itself a release action. Unknown TOML, unknown
+state classes and invalid candidate manifests do not acquire a lightweight path.
+
+Historical dossiers and V8 cleanup inventories are retained provenance, not
+mutable delivery checklists. Do not refresh their commit IDs, hashes or pass
+claims for a normal change. New behavior belongs in its existing module contract;
+current candidate, command outcomes, reviewer decisions and measurements belong
+to the PR and retained run artifacts. Normal prose edits require no byte/word/hash
+refresh. This does not exempt a document that is actually embedded into code, a
+signed protocol input, a schema migration, or a changed security boundary.
+
+Projection tests exercise catalog generation, Cargo membership and removal
+residue in miniature workspaces. Their sentinel hosts are not product execution
+or capacity evidence. The normal host, real owner, unfinished-operation recovery
+and one-writer handoff must be tested separately. Record measurements only for
+executed workloads, with their input size, cycle count and host/build identity;
+report state retention required by the product separately from accidental growth.
 
 ## Guides
 

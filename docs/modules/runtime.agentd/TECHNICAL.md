@@ -394,6 +394,24 @@ The default `runtime.rs` path registers long-lived components through the existi
 
 The configured product profile now routes authenticated `ObjectiveStart` through the canonical runner and a host-owned invocation provider, then freezes the exact prepared envelope into the existing Agentd run/context lifecycle. Bare/compatibility profiles do not install that provider, do not advertise `intelligence.canonical_v1`, and compatibility `RunStart` is never counted as canonical execution. Real provider dispatch, durable product Decision/Outcome recovery and target-host qualification remain separate boundaries.
 
+### Conservative canonical CLI profile
+
+`--canonical-intelligence-provider-profile durable-safe-abstain-v1` selects the
+concrete durable-RunStart provider together with its signed seven-owner authority
+file, signer and verification key. The normal CLI also requires the explicit
+Objective profile and AuthBus trust/checkpoint configuration. This profile
+returns `canonical_abstained`; it is not an action-selecting or learned policy.
+
+The ordinary binary/control-socket regression lives in
+`codex-rs/hepta-agentd/tests/support/canonical_objective_product.rs`, under the
+existing `authbus_text_product` target. Its independent test producer supplies
+signed input through `ObjectiveStart`, not internal owner objects. The checks
+cover canonical disposition, byte-stable durable retry, missing-owner rejection,
+repair followed by exact retry, tampered-input rejection and zero model sends.
+These checks establish the conservative product route only. Real learned action
+selection, durable Decision/Outcome recovery and long-run efficacy remain
+separate work; the test transport does not establish provider qualification.
+
 ## 17. Source implementation receipt
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
@@ -409,3 +427,77 @@ This receipt records repository source bindings for the current documentation ca
 - Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+### Exact profile boundary
+
+The client-only Cargo profile omits Agentd server/components/App Server and the
+transitive Automation/Evidence storage implementations. Their existing public
+DTO identities and serde formats stay in their owning crates; disabling defaults
+selects storage-free values, not duplicate protocol or authority implementations.
+Both owner crates retain `runtime` in their default features. Default Agentd
+explicitly enables those runtime features; no migration or persistent format changes.
+
+`python3 scripts/hepta_architecture_graph.py --check-client-profile` resolves the
+actual normal/build Cargo tree and rejects SQL/state owners or runtime feature
+re-enablement, including transitive feature unification. Dev-dependency features
+are deliberately not evidence for a production client. The native architecture
+lane compiles the client independently and exercises both DTO-only library suites.
+
+### Client-only Cargo composition
+
+The default Agentd profile retains `server` and `production-cognitive-write`.
+`--no-default-features --lib` builds the existing bounded control client without
+the daemon composition, App Host or agent-components dependency. It does not
+start owners or grant additional authority. The inference worker's production
+dependency selects that client-only profile; its integration fixtures explicitly
+retain the full daemon. Client request/response identities, frame limits, paging
+and overload semantics remain shared, not reimplemented in a second transport.
+
+This is a Cargo client boundary, not general optional learning/automation profiles
+or a minimal inference runtime: App Server adapter dependencies remain. Default
+Bazel product targets keep the full server feature explicitly. Separate client-only
+Bazel deployment is not established by the Cargo dependency reduction.
+
+### Supervisor-selected compiled module startup
+
+The ordinary `codex-hepta-agentd` binary accepts `--runtime-module-profile
+supervisor-selected`. The default `compiled` profile preserves existing startup.
+The selected profile reads `runtime_module_selection` through the owner-local
+Supervisor socket, from the already-open durable runtime-module owner. It never
+opens a second topology store, writes a selection file, or issues activation.
+
+The initial supported consumer is the existing Automation factory. Before opening
+its store, it binds the selected owner, generation, state class, dependencies and
+domains to the canonical module definition and the actual loaded executable.
+Unknown ports/effect scopes are unsupported, not silently admitted. An absent
+selection leaves a new Automation module unopened and no idle scheduler is
+advertised. Existing files are not evidence of retirement: an absent selection
+with retained Automation state is rejected for explicit owner recovery/retirement.
+This bounded profile does not silently convert an existing compiled owner into
+a removed module. A non-serving selected writer reservation also rejects, rather
+than being flattened into absence.
+An explicitly selected owner that is unavailable or corrupt rejects startup with
+an owner-recovery diagnostic; it is not converted into an absent optional module.
+The default compiled profile retains its existing optional-degradation policy.
+Attachment state distinguishes verified empty absence, a serving owner, a withdrawn
+route with its retained drain reader, and unavailable state. Graceful restart may
+drain verified absence; unavailable state still blocks. Withdrawn or permanently
+retired timer routes query the existing owner's drain policy rather than being
+assumed empty. This does not retire TaskFlow data or erase uncertain effects.
+The ordinary-binary tests separately exercise selected restart, absent restart,
+wrong executable, retained-but-unselected state, selected corruption and permanent
+timer retirement. They do not certify automatic topology adoption or cross-schema
+writer migration; the selected dependency records are structural fixtures.
+
+The factory reobserves the same selection after bounded owner startup and before
+publishing its attachment or scheduling work. Failed publication leaves no live
+attachment. The local task generation is the selected module generation, not the
+Agent process generation; existing owner epochs remain separate writer fences.
+
+This is startup composition under the existing host trust boundary, not a hot-path
+permission cache or a live topology watcher. Active processes retain their frozen
+configuration. A replacement still requires the existing independently admitted
+selection, explicit drain, owner handoff and supervised process-generation path.
+The query cannot grant effects, reset an owner, reactivate retired timers, or
+replace state schemas. General module routing and live multi-owner replacement
+are not implied by this bounded profile.

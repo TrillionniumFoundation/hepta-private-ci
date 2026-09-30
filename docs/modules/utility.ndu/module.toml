@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 14
+id = "utility.ndu"
+plane = "domain"
+kind = "preference_utility_runtime"
+lifecycle = "target"
+state = "stateful_projection"
+architectureRole = "preference_utility_controller"
+writes = ["ndu_preference_projection", "ndu_utility_projection"]
+uses = ["platform.types", "cognitive.read", "learning.ledger", "learning.artifacts"]
+owner = "intelligence-platform"
+deputy = "learning-platform"
+denies = ["hard_constraint_mutation", "authority_issuance", "physical_effect"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-ndu"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "NDU-0-PREFERENCE-UTILITY-CONTRACTS"
+technicalDocument = "docs/modules/utility.ndu/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-ndu"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-ndu"
+compileLayer = 1
+ciGroups = ["learning", "objective"]

@@ -51,8 +51,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
             }
         }
+        // Quarantine suspends admission, not exit observation or emergency
+        // cleanup. Preserve the pending durable attempt for explicit recovery.
         if slot.runtime.is_none()
             && slot.release_change.is_none()
+            && !slot.signed_recovery_required()
             && slot.restart_pending
             && slot
                 .restart_not_before
@@ -107,14 +110,28 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.restart_pending = true;
                 slot.event(
                     record.lifecycle.generation,
-                    SupervisorEventKind::RestartQueued,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
                 );
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
-                Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
+                // Exhaustion is an observed policy terminal, not an I/O or
+                // recovery failure. claim_restart rejects out-of-bound state
+                // first, so Exhausted proves the durable attempts equal the
+                // configured maximum. Keep the owner budget intact and expose
+                // its terminal observation without scheduling another start.
+                slot.restart_attempt = self.config.restart_max_attempts;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: self.config.restart_max_attempts,
+                    },
+                );
+                None
             }
             Err(error) => {
                 slot.restart_pending = false;

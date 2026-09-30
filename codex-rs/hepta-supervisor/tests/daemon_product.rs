@@ -43,11 +43,52 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
         ResourceBudget::local_default(),
     )?)?;
 
+    let module_id = codex_hepta_types::StableId::new("optional.fixture")?;
+    let module_generation = codex_hepta_types::Generation::new(7)?;
+    {
+        let mut owner = codex_hepta_supervisor::DurableRuntimeModuleSupervisorV1::open(
+            registry.layout().runtime_module_supervisor_state(),
+        )?;
+        owner.register_bootstrap(codex_hepta_control_plane::RuntimeModuleAbiV1 {
+            module_id: module_id.clone(),
+            owner_id: codex_hepta_types::StableId::new("fixture-owner")?,
+            generation: module_generation,
+            implementation_digest: codex_hepta_types::Digest32::of_bytes(b"fixture image"),
+            candidate_artifact_digest: codex_hepta_types::Digest32::of_bytes(b"fixture candidate"),
+            predecessor_generation: None,
+            rollback_predecessor_digest: codex_hepta_types::Digest32::ZERO,
+            state_class: codex_hepta_control_plane::RuntimeModuleStateClassV1::Stateful,
+            dependencies: vec![],
+            input_ports: vec![],
+            output_ports: vec![],
+            authoritative_domains: Default::default(),
+            effect_scope: Default::default(),
+        })?;
+    }
+    let durable_before = std::fs::read(registry.layout().runtime_module_supervisor_state())?;
     let mut daemon = DaemonChild::spawn(fleet_root.as_path())?;
     let client = wait_for_daemon(&registry).await?;
     let health = client.health().await?;
     ensure!(health.ready && health.registered_agents == 1);
     let initial_epoch = health.supervisor_epoch;
+    let selected = client
+        .runtime_module_selection(module_id.to_string())
+        .await?;
+    ensure!(selected.selected.as_ref().map(|binding| binding.generation) == Some(7));
+    ensure!(
+        std::fs::read(registry.layout().runtime_module_supervisor_state())? == durable_before,
+        "selection reads mutated the owner"
+    );
+    let missing = client
+        .runtime_module_selection("not.registered".to_string())
+        .await?;
+    ensure!(missing.selected.is_none());
+    ensure!(
+        client
+            .runtime_module_selection("../bad".to_string())
+            .await
+            .is_err()
+    );
     ensure!(
         std::fs::metadata(registry.layout().supervisor_socket())?
             .permissions()
@@ -63,7 +104,7 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
             == 0o600
     );
 
-    let second = Command::new(env!("CARGO_BIN_EXE_hepta-supervisord"))
+    let second = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-supervisord")?)
         .arg("--fleet-root")
         .arg(fleet_root.as_path())
         .output()?;
@@ -110,6 +151,12 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
     let mut restarted = DaemonChild::spawn(fleet_root.as_path())?;
     let restarted_client = wait_for_daemon(&registry).await?;
     let restarted_health = restarted_client.health().await?;
+    ensure!(
+        restarted_client
+            .runtime_module_selection(module_id.to_string())
+            .await?
+            == selected
+    );
     ensure!(restarted_health.ready);
     ensure!(
         restarted_health.supervisor_epoch != initial_epoch,
@@ -118,6 +165,32 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
     let roster = restarted_client.roster(16).await?;
     ensure!(roster.len() == 1 && roster[0].agent_id == agent_id);
     restarted.terminate()?;
+    {
+        let mut owner = codex_hepta_supervisor::DurableRuntimeModuleSupervisorV1::open(
+            registry.layout().runtime_module_supervisor_state(),
+        )?;
+        // Explicit controlled witness: this tests durable observation, not a real
+        // module's independent physical drain or external-effect reconciliation.
+        owner.retire_after_reconciliation(
+            &module_id,
+            module_generation,
+            codex_hepta_supervisor::RuntimeModuleRetirementWitnessV1 {
+                drain_digest: codex_hepta_types::Digest32::of_bytes(b"fixture drain"),
+                reconciliation_digest: codex_hepta_types::Digest32::of_bytes(b"fixture reconciled"),
+                unknown_effect_count: 0,
+            },
+        )?;
+    }
+    let mut retired_daemon = DaemonChild::spawn(fleet_root.as_path())?;
+    let retired_client = wait_for_daemon(&registry).await?;
+    ensure!(
+        retired_client
+            .runtime_module_selection(module_id.to_string())
+            .await?
+            .selected
+            .is_none()
+    );
+    retired_daemon.terminate()?;
     Ok(())
 }
 
@@ -174,7 +247,7 @@ struct DaemonChild(Child);
 
 impl DaemonChild {
     fn spawn(fleet_root: &std::path::Path) -> Result<Self> {
-        let child = Command::new(env!("CARGO_BIN_EXE_hepta-supervisord"))
+        let child = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-supervisord")?)
             .arg("--fleet-root")
             .arg(fleet_root)
             .stdin(Stdio::null())

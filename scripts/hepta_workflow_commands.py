@@ -5,79 +5,130 @@ supported. Remote actions are opaque. Runtime conditions are not evaluated here.
 """
 
 from pathlib import Path
+import json
 import re
 import shlex
 
 
-def workflow_commands(text: str) -> list[list[str]]:
-    """Read executable run scalars used by this workflow, not comments or labels.
+def run_scalar_commands(scalar: str) -> list[list[str]]:
+    """Tokenize declared shell lines, excluding comments and here-document data.
 
-    This deliberately supports the workflow's plain, literal and folded run
-    forms. It does not interpret arbitrary shell/YAML programs as proof of tests.
+    This is intentionally not a shell interpreter: conditions are not evaluated
+    and a declared command never proves that CI executed it successfully.
     """
-    lines = text.splitlines()
-    commands = []
-    index = 0
-    while index < len(lines):
-        match = re.fullmatch(r"(\s*)(?:-\s+)?run:\s*(.*)", lines[index])
-        index += 1
-        if not match:
+    commands: list[list[str]] = []
+    documents: list[tuple[str, bool]] = []
+    continuation = ""
+    for physical in scalar.splitlines():
+        if documents:
+            delimiter, strip_tabs = documents[0]
+            candidate = physical.lstrip("\t") if strip_tabs else physical
+            if candidate == delimiter:
+                documents.pop(0)
             continue
-        indent, scalar = match.groups()
-        if scalar in ("|", "|-", "|+", ">", ">-", ">+"):
-            block = []
-            while index < len(lines):
-                line = lines[index]
-                if line.strip() and len(line) - len(line.lstrip()) <= len(indent):
-                    break
-                block.append(line.strip())
-                index += 1
-            scalar = (" " if scalar.startswith(">") else "\n").join(block)
-        for line in scalar.replace("\\\n", " ").splitlines():
-            try:
-                tokens = shlex.split(line, comments=True)
-            except ValueError:
-                continue
-            if tokens:
-                commands.append(tokens)
+        line = continuation + physical
+        if (len(line) - len(line.rstrip(chr(92)))) % 2:
+            continuation = line[:-1] + " "
+            continue
+        continuation = ""
+        try:
+            tokens = shlex.split(line, comments=True)
+            # Non-POSIX tokenization retains quotes, distinguishing the actual
+            # redirection operator from a string such as echo '<<'.
+            lexer = shlex.shlex(line, posix=False, punctuation_chars="<>")
+            lexer.whitespace_split = True
+            redirections = list(lexer)
+            for index, token in enumerate(redirections):
+                if token != "<<" or index + 1 == len(redirections):
+                    continue
+                word = redirections[index + 1]
+                strip_tabs = word.startswith("-")
+                if strip_tabs:
+                    word = word[1:]
+                    if not word and index + 2 < len(redirections):
+                        word = redirections[index + 2]
+                delimiter = shlex.split(word, comments=False)
+                if len(delimiter) != 1 or not delimiter[0]:
+                    raise ValueError("unsupported here-document delimiter")
+                documents.append((delimiter[0], strip_tabs))
+        except ValueError:
+            continue
+        if tokens:
+            commands.append(tokens)
     return commands
+
+
+def _executable_steps(document: dict) -> list[dict]:
+    """Read actual step slots, not matching keys in environment or input data."""
+    if "jobs" in document:
+        bodies = list(workflow_jobs(document).values())
+    elif "runs" in document:
+        bodies = [document["runs"]]
+    else:
+        # The same reader accepts a job/step fragment for focused owner tests.
+        bodies = [document]
+    result = []
+    for body in bodies:
+        if not isinstance(body, dict):
+            raise ValueError("workflow execution body must be an object")
+        steps = body.get("steps", [body] if "run" in body or "uses" in body else [])
+        if not isinstance(steps, list) or any(
+            not isinstance(step, dict) for step in steps
+        ):
+            raise ValueError("workflow steps must be objects")
+        for step in steps:
+            if "run" in step and "uses" in step:
+                raise ValueError("workflow step cannot both run and use an action")
+        result.extend(steps)
+    return result
+
+
+def workflow_commands(text: str) -> list[list[str]]:
+    """Read parsed run scalars, independent of YAML quoting, layout or anchors.
+
+    Shell tokenization describes declared commands; it is not execution evidence.
+    """
+    return [
+        command
+        for step in _executable_steps(load_workflow(text))
+        if "run" in step
+        for command in run_scalar_commands(workflow_run(step))
+    ]
 
 
 def declared_commands(
     text: str, root: Path, stack: tuple[Path, ...] = ()
 ) -> list[list[str]]:
-    """Expand local actions outside run scalars; reject cycles and path escapes."""
+    """Expand real local action steps with bounded nesting and exact containment."""
     if len(stack) >= 16:
         raise ValueError("local action nesting limit")
-    commands = workflow_commands(text)
-    lines = text.splitlines()
-    index = 0
-    while index < len(lines):
-        line = lines[index]
-        index += 1
-        run = re.fullmatch(r"(\s*)(?:-\s+)?run:\s*([|>][-+]?)", line)
-        if run:
-            while index < len(lines):
-                child = lines[index]
-                if child.strip() and len(child) - len(child.lstrip()) <= len(run[1]):
-                    break
-                index += 1
+    commands = []
+    for step in _executable_steps(load_workflow(text)):
+        if "run" in step:
+            commands.extend(run_scalar_commands(workflow_run(step)))
+        use = step.get("uses")
+        if use is None:
             continue
-        use = re.fullmatch(r"\s*(?:-\s+)?uses:\s*(\./[^\s#]+)\s*(?:#.*)?", line)
-        if not use:
-            continue
-        directory = (root / use[1]).resolve()
+        if not isinstance(use, str):
+            raise ValueError("action reference must be a string")
+        if not use.startswith("./"):
+            continue  # Remote actions remain opaque, not claimed as inspected.
+        directory = (root / use).resolve()
         if not directory.is_relative_to(root.resolve()):
             raise ValueError("local action outside repository")
-        candidates = [directory / name for name in ("action.yml", "action.yaml")]
-        present = [path for path in candidates if path.is_file()]
+        present = [
+            directory / name
+            for name in ("action.yml", "action.yaml")
+            if (directory / name).is_file()
+        ]
         if len(present) != 1:
             raise ValueError("local action missing or ambiguous")
         path = present[0].resolve()
         if not path.is_relative_to(root.resolve()) or path in stack:
             raise ValueError("local action cycle or path escape")
         action = path.read_text(encoding="utf-8")
-        if not re.search(r"^\s+using:\s*composite\s*$", action, re.M):
+        body = load_workflow(action).get("runs")
+        if not isinstance(body, dict) or body.get("using") != "composite":
             raise ValueError("unsupported local action execution profile")
         commands.extend(declared_commands(action, root, (*stack, path)))
     return commands
@@ -112,7 +163,11 @@ def verify_owner_self_tests(registries: list[dict], root: Path) -> None:
     """Each subordinate self-test must run in its owner workflow, not twice globally."""
     for registry in registries:
         validator = shlex.split(registry["validator"])
-        if len(validator) != 3 or validator[0] != "python3" or validator[-1] != "verify":
+        if (
+            len(validator) != 3
+            or validator[0] != "python3"
+            or validator[-1] != "verify"
+        ):
             raise ValueError("unsupported subordinate validator command")
         path = (root / registry["workflow"]).resolve()
         if not path.is_relative_to(root.resolve()) or not path.is_file():
@@ -120,4 +175,488 @@ def verify_owner_self_tests(registries: list[dict], root: Path) -> None:
         expected = [*validator[:-1], "self-test"]
         commands = declared_commands(path.read_text(encoding="utf-8"), root)
         if expected not in commands:
-            raise ValueError(f"owner workflow {registry['workflow']} must invoke {' '.join(expected)}")
+            raise ValueError(
+                f"owner workflow {registry['workflow']} must invoke {' '.join(expected)}"
+            )
+
+
+def load_workflow(text: str) -> dict:
+    """Parse workflow data without YAML key coercion, duplicate keys or recursion.
+
+    Parsing is not approval of arbitrary commands. Callers separately validate
+    event, credential and runner envelopes; normal source review still applies.
+    """
+    import yaml
+
+    if len(text.encode("utf-8")) > 262144:
+        raise ValueError("workflow input exceeds 256 KiB")
+    try:
+        node = yaml.compose(text, Loader=yaml.BaseLoader)
+    except yaml.YAMLError as error:
+        raise ValueError(f"invalid workflow YAML: {error}") from error
+    budget = 16384
+    active = set()
+
+    def convert(value, depth=0):
+        nonlocal budget
+        budget -= 1
+        if budget < 0 or depth > 64 or id(value) in active:
+            raise ValueError("workflow nesting or alias expansion exceeds bounds")
+        active.add(id(value))
+        try:
+            if isinstance(value, yaml.ScalarNode):
+                if value.tag not in {
+                    "tag:yaml.org,2002:str",
+                    "tag:yaml.org,2002:null",
+                    "tag:yaml.org,2002:bool",
+                    "tag:yaml.org,2002:int",
+                }:
+                    raise ValueError("unsupported workflow scalar tag")
+                return value.value
+            if isinstance(value, yaml.SequenceNode):
+                return [convert(item, depth + 1) for item in value.value]
+            if isinstance(value, yaml.MappingNode):
+                result = {}
+                for key, item in value.value:
+                    key = convert(key, depth + 1)
+                    if not isinstance(key, str) or key in result or key == "<<":
+                        raise ValueError("duplicate or ambiguous workflow key")
+                    result[key] = convert(item, depth + 1)
+                return result
+            raise ValueError("invalid workflow node")
+        finally:
+            active.remove(id(value))
+
+    result = convert(node)
+    if not isinstance(result, dict):
+        raise ValueError("workflow must be an object")
+    return result
+
+
+def workflow_events(document: dict) -> set[str]:
+    value = document.get("on")
+    if isinstance(value, str):
+        return {value} if value else set()
+    if isinstance(value, (dict, list)) and all(isinstance(item, str) for item in value):
+        if len(value) != len(set(value)):
+            raise ValueError("duplicate workflow event")
+        return set(value)
+    raise ValueError("invalid workflow event declaration")
+
+
+def workflow_jobs(document: dict) -> dict[str, dict]:
+    """Return validated executable jobs from an already parsed workflow."""
+    jobs = document.get("jobs")
+    if not isinstance(jobs, dict) or not jobs:
+        raise ValueError("workflow jobs must be a nonempty object")
+    if any(
+        not isinstance(name, str) or not isinstance(job, dict)
+        for name, job in jobs.items()
+    ):
+        raise ValueError("workflow job entries must be named objects")
+    return jobs
+
+
+def workflow_job(document: dict, name: str) -> dict:
+    try:
+        return workflow_jobs(document)[name]
+    except KeyError as error:
+        raise ValueError(f"missing workflow job: {name}") from error
+
+
+def workflow_steps(document: dict, job_name: str) -> list[dict]:
+    steps = workflow_job(document, job_name).get("steps")
+    if (
+        not isinstance(steps, list)
+        or not steps
+        or any(not isinstance(step, dict) for step in steps)
+    ):
+        raise ValueError(f"workflow job {job_name} must contain object steps")
+    return steps
+
+
+def _unique_step(document: dict, job_name: str, key: str, value: str) -> dict:
+    matches = [
+        step for step in workflow_steps(document, job_name) if step.get(key) == value
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"workflow job {job_name} requires one step with {key}={value!r}"
+        )
+    return matches[0]
+
+
+def workflow_step(document: dict, job_name: str, name: str) -> dict:
+    return _unique_step(document, job_name, "name", name)
+
+
+def workflow_step_by_id(document: dict, job_name: str, step_id: str) -> dict:
+    return _unique_step(document, job_name, "id", step_id)
+
+
+def workflow_run(step: dict) -> str:
+    value = step.get("run")
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("workflow step has no executable run scalar")
+    return value if value.endswith("\n") else value + "\n"
+
+
+def workflow_needs(job: dict) -> set[str]:
+    value = job.get("needs", [])
+    if isinstance(value, str):
+        return {value}
+    if isinstance(value, list) and all(isinstance(item, str) for item in value):
+        return set(value)
+    raise ValueError("workflow needs must be a string or string list")
+
+
+def workflow_contains_key(value: object, key: str) -> bool:
+    if isinstance(value, dict):
+        return key in value or any(
+            workflow_contains_key(item, key) for item in value.values()
+        )
+    if isinstance(value, list):
+        return any(workflow_contains_key(item, key) for item in value)
+    return False
+
+
+def workflow_expression_functions(value: object) -> set[str]:
+    """Return function calls from GitHub expression bodies, ignoring quoted text."""
+    functions: set[str] = set()
+    if not isinstance(value, str):
+        return functions
+    expressions = re.findall(r"\$\{\{(.*?)\}\}", value, flags=re.S) or [value]
+    for expression in expressions:
+        expression = re.sub(r"'(?:[^']|'')*'", "''", expression)
+        expression = re.sub(r'"(?:[^"\\]|\\.)*"', '""', expression)
+        functions.update(
+            re.findall(r"(?<![\w.])([A-Za-z_][A-Za-z0-9_]*)\s*\(", expression)
+        )
+    return functions
+
+
+def workflow_expression_references(
+    value: object, *, implicit: bool = False
+) -> set[str]:
+    """Return data-flow references from GitHub expressions in parsed YAML.
+
+    Plain prose, labels, shell text outside ``${{ ... }}``, and quoted literals
+    are ignored.  This checks declared workflow wiring, not expression truth.
+    """
+    references: set[str] = set()
+    roots = "needs|steps|matrix|github|inputs|env|vars|runner|strategy|job"
+
+    def visit(item: object) -> None:
+        if isinstance(item, dict):
+            for child in item.values():
+                visit(child)
+        elif isinstance(item, list):
+            for child in item:
+                visit(child)
+        elif isinstance(item, str):
+            expressions = re.findall(r"\$\{\{(.*?)\}\}", item, flags=re.S)
+            if implicit and not expressions:
+                expressions = [item]
+            for expression in expressions:
+                expression = re.sub(r"'(?:[^']|'')*'", "''", expression)
+                expression = re.sub(r'"(?:[^"\\]|\\.)*"', '""', expression)
+                references.update(
+                    re.findall(
+                        rf"(?<![\w.])(?:{roots})(?:\.[A-Za-z0-9_-]+)*",
+                        expression,
+                    )
+                )
+
+    visit(value)
+    return references
+
+
+def workflow_literal_collection_values(value: object) -> set[str]:
+    """Collect static string members from a list or JSON literals in expressions.
+
+    This supports direct YAML sequences and ``fromJSON`` expressions without
+    requiring one exact whitespace, quoting, or conditional spelling.
+    """
+    values: set[str] = set()
+    if isinstance(value, list):
+        if all(isinstance(item, str) and "${{" not in item for item in value):
+            return set(value)
+        return set()
+    if not isinstance(value, str):
+        return set()
+    for match in re.finditer(r"'(?:[^']|'')*'|\"(?:[^\"\\]|\\.)*\"", value):
+        token = match.group(0)
+        try:
+            decoded = (
+                token[1:-1].replace("''", "'")
+                if token.startswith("'")
+                else json.loads(token)
+            )
+            candidate = json.loads(decoded)
+        except (TypeError, ValueError, json.JSONDecodeError):
+            continue
+        if isinstance(candidate, list) and all(
+            isinstance(item, str) for item in candidate
+        ):
+            values.update(candidate)
+    return values
+
+
+def verify_document_workflow(
+    text: str, root: Path, validator: str, *, recorded: bool = False
+) -> None:
+    """Check declared validation wiring, not YAML spelling or execution success.
+
+    Commands may be direct or wrapped in the existing execution recorder. Actual
+    hosted success, arbitrary shell behavior and independent acceptance remain
+    outside this static check; comments and data are never execution evidence.
+    """
+    document = load_workflow(text)
+    workflow_events(document)
+    jobs = workflow_jobs(document)
+
+    def readonly(value):
+        if not isinstance(value, dict) or any(
+            not isinstance(v, str) or v not in {"read", "none"} for v in value.values()
+        ):
+            raise ValueError(
+                "document workflow requires explicit read-only permissions"
+            )
+
+    readonly(document.get("permissions"))
+    events = document.get("on")
+    if isinstance(events, dict) and any(
+        isinstance(v, dict) and "paths-ignore" in v for v in events.values()
+    ):
+        raise ValueError("document workflow cannot ignore required paths")
+    if "github.event.pull_request.merge_commit_sha" in workflow_expression_references(
+        document
+    ):
+        raise ValueError("document workflow uses stale merge identity")
+
+    for job in jobs.values():
+        readonly(job.get("permissions", document["permissions"]))
+
+    for lane in ("source-head", "merge-candidate"):
+        job = workflow_job(document, lane)
+        steps = workflow_steps(document, lane)
+        environment = {**document.get("env", {}), **job.get("env", {})}
+        checkouts = [
+            s for s in steps if str(s.get("uses", "")).startswith("actions/checkout@")
+        ]
+        if not checkouts:
+            raise ValueError("document workflow requires source checkout")
+        for checkout in checkouts:
+            if not re.fullmatch(r"actions/checkout@[0-9a-f]{40}", checkout["uses"]):
+                raise ValueError("document checkout must use a pinned action")
+            inputs = checkout.get("with", {})
+            if inputs.get("persist-credentials") != "false":
+                raise ValueError("document checkout must not persist credentials")
+            checkout_env = {**environment, **checkout.get("env", {})}
+            refs = workflow_expression_references(inputs.get("ref"))
+            pending = [ref[4:] for ref in refs if ref.startswith("env.")]
+            seen = set()
+            while pending:
+                name = pending.pop()
+                if name in seen:
+                    continue
+                seen.add(name)
+                indirect = workflow_expression_references(checkout_env.get(name))
+                refs.update(indirect)
+                pending.extend(ref[4:] for ref in indirect if ref.startswith("env."))
+            if "github.event.pull_request.head.sha" not in refs:
+                raise ValueError("document checkout must bind the exact source head")
+        commands = declared_commands(json.dumps({"jobs": {lane: job}}), root)
+        targets = []
+        for command in commands:
+            if (
+                command[:2] == ["python3", "scripts/hepta_ci_exec.py"]
+                and "--" in command
+            ):
+                command = command[command.index("--") + 1 :]
+            targets.append(command)
+        if ["python3", validator, "verify"] not in targets:
+            raise ValueError("document workflow must execute verifier in " + lane)
+        if lane == "source-head" and ["python3", validator, "self-test"] not in targets:
+            raise ValueError("document workflow must execute source self-test")
+        for command in commands:
+            if command[0] in {"echo", "printf", "true"}:
+                continue
+            if "git" in command:
+                tail = command[command.index("git") + 1 :]
+                if any(word in {"push", "update-ref"} for word in tail):
+                    raise ValueError(
+                        "document validation cannot mutate repository refs"
+                    )
+        if recorded:
+            if not any(
+                command[:2] == ["python3", "scripts/hepta_ci_exec.py"]
+                for command in commands
+            ):
+                raise ValueError("document validation must retain its execution record")
+            if not any(
+                re.fullmatch(
+                    r"actions/upload-artifact@[0-9a-f]{40}", str(step.get("uses", ""))
+                )
+                for step in steps
+            ):
+                raise ValueError("document validation must retain execution artifacts")
+    merge_job = workflow_job(document, "merge-candidate")
+    merge_steps = workflow_steps(document, "merge-candidate")
+    bindings = [
+        s
+        for s in merge_steps
+        if s.get("uses") == "./.github/actions/hepta-synthetic-merge"
+    ]
+    if len(bindings) != 1:
+        raise ValueError("document workflow requires its shared synthetic merge action")
+    inputs = bindings[0].get("with", {})
+    for key, reference in (
+        ("base-sha", "github.event.pull_request.base.sha"),
+        ("source-sha", "github.event.pull_request.head.sha"),
+    ):
+        if reference not in workflow_expression_references(inputs.get(key)):
+            raise ValueError("synthetic merge input must bind " + reference)
+    output = "steps." + str(bindings[0].get("id", "")) + ".outputs.sha"
+    if output not in workflow_expression_references(merge_job):
+        raise ValueError("merge validation must consume the constructed candidate")
+    verify_synthetic_merge(text, root)
+
+
+def validate_manual_workflow(text: str, maximum_minutes: int) -> None:
+    """Admit a bounded, credential-free hosted manual diagnostic envelope.
+
+    Automatic events, privileged runners and secret-bearing workflows require
+    the existing reviewed integration path; no filename can authorize them.
+    """
+    document = load_workflow(text)
+    events = workflow_events(document)
+    if not events or not events <= {"workflow_dispatch", "workflow_call"}:
+        raise ValueError("new automatic workflow requires integration review")
+
+    def permissions(value):
+        if not isinstance(value, dict) or any(
+            not isinstance(item, str) or item not in {"read", "none"}
+            for item in value.values()
+        ):
+            raise ValueError(
+                "manual diagnostic requires explicit read-only permissions"
+            )
+
+    permissions(document.get("permissions"))
+    jobs = document.get("jobs")
+    if not isinstance(jobs, dict) or not 1 <= len(jobs) <= 16:
+        raise ValueError("manual diagnostic requires bounded jobs")
+
+    def credentials(value):
+        if isinstance(value, dict):
+            if any(
+                key in value
+                for key in ("secrets", "environment", "container", "services")
+            ):
+                raise ValueError(
+                    "manual diagnostic cannot acquire deployment credentials"
+                )
+            for item in value.values():
+                credentials(item)
+        elif isinstance(value, list):
+            for item in value:
+                credentials(item)
+        elif isinstance(value, str):
+            for expression in re.findall(r"\$\{\{(.*?)\}\}", value, flags=re.S):
+                # Ignore quoted text, not identifiers: toJSON(secrets) is as
+                # credential-bearing as secrets.KEY or secrets['KEY'].
+                expression = re.sub(r"'(?:[^']|'')*'", "''", expression)
+                if re.search(r"(?<![\w.])secrets\b", expression, flags=re.I):
+                    raise ValueError("manual diagnostic cannot reference secrets")
+
+    credentials(document)
+
+    def job_bound(job):
+        strategy = job.get("strategy", {})
+        if not isinstance(strategy, dict):
+            raise ValueError("manual diagnostic requires a static strategy")
+        if "matrix" not in strategy:
+            return 1
+        matrix = strategy["matrix"]
+        if not isinstance(matrix, dict) or not matrix:
+            raise ValueError("manual diagnostic requires a finite static matrix")
+
+        def literal(value):
+            if isinstance(value, dict):
+                return all(literal(item) for item in value.values())
+            if isinstance(value, list):
+                return all(literal(item) for item in value)
+            return isinstance(value, str) and "${{" not in value
+
+        if not literal(matrix):
+            raise ValueError("dynamic matrix requires integration review")
+        axes = {
+            key: value
+            for key, value in matrix.items()
+            if key not in {"include", "exclude"}
+        }
+        combinations = 1 if axes else 0
+        for values in axes.values():
+            if not isinstance(values, list) or not values:
+                raise ValueError("matrix dimensions require nonempty static lists")
+            combinations *= len(values)
+            if combinations > 16:
+                raise ValueError("manual diagnostic exceeds expanded job budget")
+        includes = matrix.get("include", [])
+        excludes = matrix.get("exclude", [])
+        for entries in (includes, excludes):
+            if not isinstance(entries, list) or not all(
+                isinstance(item, dict) for item in entries
+            ):
+                raise ValueError("matrix include/exclude must be static objects")
+        # Upper bound: exclusions do not buy extra budget. Include-only rows may
+        # add jobs; metadata-only includes on existing axes cannot add a new job.
+        combinations += sum(
+            not axes or bool(excludes) or bool(set(row) & set(axes)) for row in includes
+        )
+        if not 1 <= combinations <= 16:
+            raise ValueError("manual diagnostic exceeds expanded job budget")
+        return combinations
+
+    expanded_jobs = 0
+    for job in jobs.values():
+        if not isinstance(job, dict) or "uses" in job:
+            raise ValueError("opaque reusable job requires integration review")
+        expanded_jobs += job_bound(job)
+        if expanded_jobs > 16:
+            raise ValueError("manual diagnostic exceeds expanded job budget")
+        permissions(job.get("permissions", document["permissions"]))
+        runner = job.get("runs-on")
+        if not isinstance(runner, str) or not re.fullmatch(
+            r"(?:ubuntu|windows|macos)-(?:latest|[0-9.]+)", runner
+        ):
+            raise ValueError("manual diagnostic requires a static hosted runner")
+        minutes = job.get("timeout-minutes", "")
+        if (
+            not isinstance(minutes, str)
+            or not minutes.isdecimal()
+            or not 1 <= int(minutes) <= maximum_minutes
+        ):
+            raise ValueError(
+                "manual diagnostic needs a timeout within the reviewed cost budget"
+            )
+        steps = job.get("steps")
+        if not isinstance(steps, list) or not steps:
+            raise ValueError("manual diagnostic needs executable steps")
+        for step in steps:
+            if not isinstance(step, dict):
+                raise ValueError("invalid diagnostic step")
+            use = step.get("uses")
+            if use is not None and (
+                not isinstance(use, str)
+                or not re.fullmatch(
+                    r"[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+@[0-9a-f]{40}", use
+                )
+            ):
+                raise ValueError(
+                    "diagnostic actions must be pinned; opaque local actions require review"
+                )
+            if isinstance(use, str) and use.startswith("actions/checkout@"):
+                if step.get("with", {}).get("persist-credentials") != "false":
+                    raise ValueError("diagnostic checkout must not persist credentials")

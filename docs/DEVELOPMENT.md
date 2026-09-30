@@ -38,6 +38,16 @@ envelope, production host binding or deployment approval merely to implement,
 test or merge authorized repository changes. Those records apply when their
 runtime, independent-evaluation or deployment boundary is actually exercised.
 Repository merge does not itself activate that boundary.
+Source-change risk still selects stateful/effect tests and exact merge-candidate
+checks. It does not request historical implementation maps or independent
+acceptance dossiers. The existing contract qualification entry requests those
+explicitly (`require_exact_source=true`); `hepta_ci_risk.py --qualification`
+produces the corresponding deep execution plan without granting any authority.
+The document verifier reports changed shared-path lease requests without
+self-attesting them. Protected-branch review remains required for integration.
+An explicit `verify --require-path-lease-attestation` checks the separate
+activation boundary and rejects touched requests without external attestation;
+a static pass never activates a lease or grants authority.
 
 The repository has two development paths. The ordinary path is the fast path:
 edit the owned source, run the affected package tests, run the applicable
@@ -106,7 +116,7 @@ Historical cleanup remains bound to the exact head/tree and 143-path deletion in
 
 ## 5. Forty-module architecture and team model
 
-`MODULES.json` is authoritative for 40 modules. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:
+`docs/modules/*/module.toml` is the handwritten source for the current 40 modules; `MODULES.json` is its generated identity projection. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:
 
 ```text
 objective.compiler
@@ -138,9 +148,14 @@ The module registries expose two separate boolean facts for every module: `sourc
 
 ## 5B. Adaptive algorithm closed world
 
-The implementation-level adaptive document set is globally governed, not an independent prose island. `docs/learning/ALGORITHM_SPECS.json` binds the six specifications, exact Git blob identities, paper claim anchors, canonical contracts and protocol schemas, data-authority domains, quantitative experiments, artifact lifecycle, work package `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`, and both read-only CI workflows.
+The algorithm registry's historical `paperTraceabilityBlobSha` field is an optional
+presentation cache. Paper content locks and exact claim anchors remain mandatory.
+Explicit qualification receipts hash the actual paper-registry bytes and lock
+values at execution, and their verifier rejects stale or substituted identities.
 
-`python3 scripts/hepta-algorithm-docs.py verify` is necessary but cannot self-certify closure. `python3 scripts/hepta-docs.py verify` must load the algorithm registry, invoke the dedicated verifier, confirm every adaptive path is in `DOCUMENT_SYSTEM.json`, and confirm the package and Development/Activation/Evidence DAG edges. Both exact source and deterministic synthetic merge candidates must pass. Temporary installers, split payloads, `contents: write`, branch pushes, and workflow-generated source mutations are forbidden in the final document tree.
+The implementation-level adaptive document set is globally governed, not an independent prose island. `docs/learning/ALGORITHM_SPECS.json` binds the six specification paths, paper claim anchors, canonical contracts and protocol schemas, data-authority domains, quantitative experiments, artifact lifecycle, work package `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`, and both read-only CI workflows.
+
+`python3 scripts/hepta-algorithm-docs.py verify` is necessary but cannot self-certify closure. `python3 scripts/hepta-docs.py verify` must load the algorithm registry, invoke the dedicated verifier, confirm every adaptive path is in `DOCUMENT_SYSTEM.json`, and confirm the package and Development/Activation/Evidence DAG edges. Both exact source and deterministic synthetic merge candidates must pass. Git and execution records bind actual specification bytes; ordinary prose edits do not refresh hand-maintained blob caches. Headings, ordering, stock declarations and keyword coverage are editorial advice, not semantic or implementation evidence. Temporary installers, split payloads, `contents: write`, branch pushes, and workflow-generated source mutations are forbidden in the final document tree.
 
 ## 5C. Pre-coding implementation-readiness closed world
 
@@ -148,7 +163,7 @@ The implementation-level adaptive document set is globally governed, not an inde
 
 Every module guide includes Section 16 and maps the module to exactly one primary lane, the applicable readiness specifications, its owned and consumed readiness protocols and a common coding-entry gate. For ordinary owner-authorized repository implementation, the coding entry is a named work package, its contracts, relevant fixtures and normal review; Git and CI supply the exact candidate identity automatically. No separately handwritten or expiring receipt is required to start coding or merge an otherwise reviewed change. Frozen runtime snapshots, independently issued authority and rollback admission apply when testing or activating their actual boundary, not to unrelated prose or pure-function edits. Autonomous candidate execution remains subject to its bounded envelope and protected evaluator; this simplification grants it no additional authority. The new embodiment and assimilation work packages define source paths and predecessors without claiming that those paths are materialized.
 
-`python3 scripts/hepta-readiness.py verify` checks document depth, protocol bounds and ownership, gap traceability, module/lane closure, package references, assimilation target-root ownership, generated status and the read-only source-head/synthetic-merge workflow. The global verifier invokes the readiness, CNS and HNMF verifiers; no subordinate layer may certify itself as globally complete. Documentation closure permits contract-first coding to begin through the declared lanes, but it does not imply source implementation, real model use, future-time efficacy, biomimicry, physical safety, external-system owner consent, operator acceptance, selection, promotion or release.
+`python3 scripts/hepta-readiness.py verify` checks document presence and registered references, protocol bounds and ownership, gap traceability, module/lane closure, package references, assimilation target-root ownership, generated status and the read-only source-head/synthetic-merge workflow. Heading wording, ordering, stock phrases and document byte counts are editorial guidance rather than proof of implementation. The global verifier invokes the readiness, CNS and HNMF verifiers; no subordinate layer may certify itself as globally complete. Documentation closure permits contract-first coding to begin through the declared lanes, but it does not imply source implementation, real model use, future-time efficacy, biomimicry, physical safety, external-system owner consent, operator acceptance, selection, promotion or release.
 
 ## 6. Objective compilation
 
@@ -637,7 +652,7 @@ Primary metrics are task success, retrieval utility, citation precision, stale r
 
 ## 21. Performance, fault and security contracts
 
-Every affected path records comparable baseline and candidate throughput, p50/p95/p99 latency, CPU, resident memory, allocations, queue depth/age, SQLite busy/WAL, file descriptors/sockets, model/provider usage, token/context cost and confidence bounds.
+Measure resources actually affected by the change: comparable baseline and candidate throughput and p50/p95/p99 latency for hot paths; CPU, resident memory and allocations for compute changes; queue depth/age, SQLite busy/WAL and file descriptors/sockets for stateful services; model/provider usage and token/context cost for model paths. Record workload size, sample count, host/build identity and uncertainty with the run. A pure value or prose change does not need an invented database, hardware target or release dossier. Stateful/effect/migration changes retain their applicable recovery and resource checks.
 
 Stateful modules cover before/after intent, commit, outbox, wakeup, claim, send, acknowledgement, source settlement, stale callback, permission loss, filesystem full, corruption, nonempty WAL, identity drift, backup/restore and process kill/reopen.
 
@@ -696,7 +711,7 @@ All authority flags remain false in this document set.
 
 ## 24. V8 audit closure and executable document integrity
 
-V8 closes the remaining V8.1 review gaps rather than merely adding prose:
+The following inventory records the V8/V8.1 historical audit boundary. Retain its original evidence, but do not refresh historical cleanup receipts or reproduce all of its paperwork for each ordinary feature change. Current ownership and executable invariants remain checked; current CI risk tiers and the module development guide determine applicable source-head and merge-candidate execution.
 
 - every logical module has at least one bounded work package;
 - cross-module contracts, critical protocol fields and durable data domains have explicit machine owners;

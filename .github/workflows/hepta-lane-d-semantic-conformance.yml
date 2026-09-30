@@ -1,37 +1,10 @@
 name: Hepta Lane D semantic conformance
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    paths:
-      - codex-rs/hepta-objective/**
-      - codex-rs/hepta-agentd/Cargo.toml
-      - codex-rs/hepta-agentd/src/objective_runtime.rs
-      - codex-rs/hepta-agentd/src/objective_runtime_tests.rs
-      - codex-rs/hepta-ndu/**
-      - codex-rs/hepta-control-plane/**
-      - docs/contracts/OBJECTIVE_ERRORS.json
-      - docs/contracts/PROTOCOL_SCHEMAS.json
-      - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
-      - docs/readiness/NDU_SYSTEM_EXECUTION.md
-      - docs/readiness/CONTROL_RUNTIME_EXECUTION.md
-      - docs/readiness/LANE_D_MATURITY.json
-      - docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json
-      - docs/governance/MODULE_IMPLEMENTATION_BASELINE.md
-      - docs/modules/objective.compiler/IMPLEMENTATION_MAP.json
-      - docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
-      - docs/modules/control.runtime/IMPLEMENTATION_MAP.json
-      - qualification/module-execution-dossiers/detail/objective.compiler.md
-      - qualification/module-execution-dossiers/detail/utility.ndu.md
-      - qualification/module-execution-dossiers/detail/control.runtime.md
-      - scripts/hepta-lane-d-semantic-conformance.py
-      - scripts/hepta-implementation-maps.py
-      - scripts/test_hepta_lane_d_scope.py
-      - scripts/verify_cargo_lock.py
-      - scripts/test_verify_cargo_lock.py
-      - .github/workflows/hepta-lane-d-semantic-conformance.yml
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

@@ -13,9 +13,11 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -132,8 +134,9 @@ fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Resu
     let _pair_product_test_guard = PAIR_PRODUCT_TEST_LOCK
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner);
-    let mut fixture = PairFleet::new(5)?;
     let started = Instant::now();
+    let mut fixture = PairFleet::new(5)?;
+    eprintln!("paired-stage fixture_ready elapsed={:?}", started.elapsed());
     fixture.warm_first_pair()?;
     eprintln!(
         "paired-stage warm_pair_complete elapsed={:?}",
@@ -187,6 +190,11 @@ fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Resu
     eprintln!(
         "paired-stage isolated_matrix_replaced elapsed={:?}",
         started.elapsed()
+    );
+    assert_eq!(
+        fixture.pids(&failed_agent)?.0,
+        adopted[0].0,
+        "a Matrix-only crash must not replace its healthy Agentd peer"
     );
     for (agent_id, expected) in fixture.agents.iter().skip(1).zip(before.iter().skip(1)) {
         assert_eq!(fixture.pids(agent_id)?, *expected, "peer pair changed");
@@ -449,6 +457,16 @@ impl PairFleet {
                 "shutdown tick faults: {:?}",
                 report.faults
             );
+            // The tick may just have observed every exit. Judge its new state,
+            // not the pre-tick snapshot, before declaring an unresolved timeout.
+            // This is a convergence watchdog, not an exit-latency measurement.
+            if self.agents.iter().all(|agent_id| {
+                supervisor
+                    .snapshot(agent_id)
+                    .is_some_and(|snapshot| !snapshot.active && !snapshot.matrix.active)
+            }) {
+                return Ok(());
+            }
             if Instant::now() >= deadline {
                 let snapshots: Vec<_> = self
                     .agents
@@ -533,10 +551,9 @@ fn run_agent_child() -> Result<()> {
     prepare_fixture_socket(&socket)?;
     let listener = UnixListener::bind(&socket)?;
     for stream in listener.incoming() {
-        let mut reader = BufReader::new(stream?);
-        let mut bytes = Vec::new();
-        reader.read_until(b'\n', &mut bytes)?;
-        let request: AgentdRequest = serde_json::from_slice(&bytes)?;
+        let Some((request, mut stream)) = read_fixture_request::<AgentdRequest>(stream?)? else {
+            continue;
+        };
         let run_root = PathBuf::from(
             std::env::var_os("HEPTA_AGENT_RUN_ROOT").context("HEPTA_AGENT_RUN_ROOT")?,
         );
@@ -545,13 +562,15 @@ fn run_agent_child() -> Result<()> {
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
-        let response = AgentdResponse {
-            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-            request_id: request.request_id,
-            agent_id: agent_id.clone(),
-            spawn_generation,
-            current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
+        let payload = match request.method {
+            AgentdMethod::Drain => AgentdPayload::Drain(DrainSnapshot {
+                admission_closed: true,
+                running_turns: 0,
+                drained: true,
+                lifecycle: lifecycle.lifecycle,
+                fenced: false,
+            }),
+            _ => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: true,
                 ready: running,
                 fenced: false,
@@ -562,9 +581,15 @@ fn run_agent_child() -> Result<()> {
                 run_root,
             }),
         };
-        let mut stream = reader.into_inner();
-        serde_json::to_writer(&mut stream, &response)?;
-        stream.write_all(b"\n")?;
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: request.request_id,
+            agent_id: agent_id.clone(),
+            spawn_generation,
+            current_generation: lifecycle.generation,
+            payload,
+        };
+        write_fixture_response(&mut stream, &response)?;
     }
     Ok(())
 }
@@ -611,10 +636,9 @@ fn run_matrix_child() -> Result<()> {
     prepare_fixture_socket(&socket)?;
     let listener = UnixListener::bind(&socket)?;
     for stream in listener.incoming() {
-        let mut reader = BufReader::new(stream?);
-        let mut bytes = Vec::new();
-        reader.read_until(b'\n', &mut bytes)?;
-        let request: MatrixdRequest = serde_json::from_slice(&bytes)?;
+        let Some((request, mut stream)) = read_fixture_request::<MatrixdRequest>(stream?)? else {
+            continue;
+        };
         let response = MatrixdResponse {
             schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
@@ -633,10 +657,65 @@ fn run_matrix_child() -> Result<()> {
                 fenced: false,
             }),
         };
-        let mut stream = reader.into_inner();
-        serde_json::to_writer(&mut stream, &response)?;
-        stream.write_all(b"\n")?;
+        write_fixture_response(&mut stream, &response)?;
     }
+    Ok(())
+}
+
+// A cancelled health-probe connection is not a crash of the process being
+// observed. Keep malformed nonempty frames fatal and never invent a response.
+fn read_fixture_request<T: serde::de::DeserializeOwned>(
+    stream: std::os::unix::net::UnixStream,
+) -> Result<Option<(T, std::os::unix::net::UnixStream)>> {
+    let mut reader = BufReader::new(stream);
+    let mut bytes = Vec::new();
+    match reader.read_until(b'\n', &mut bytes) {
+        Ok(0) => return Ok(None),
+        Err(error) if bytes.is_empty() && error.kind() == std::io::ErrorKind::ConnectionReset => {
+            return Ok(None);
+        }
+        result => {
+            result?;
+        }
+    }
+    let request = serde_json::from_slice(&bytes)?;
+    Ok(Some((request, reader.into_inner())))
+}
+
+fn write_fixture_response<T: serde::Serialize>(
+    stream: &mut std::os::unix::net::UnixStream,
+    response: &T,
+) -> Result<()> {
+    let mut bytes = serde_json::to_vec(response)?;
+    bytes.push(b'\n');
+    match stream.write_all(&bytes) {
+        Ok(()) => Ok(()),
+        Err(error)
+            if matches!(
+                error.kind(),
+                std::io::ErrorKind::BrokenPipe | std::io::ErrorKind::ConnectionReset
+            ) =>
+        {
+            Ok(())
+        }
+        Err(error) => Err(error.into()),
+    }
+}
+
+#[test]
+fn cancelled_fixture_probe_is_not_a_crash_but_malformed_input_is_rejected() -> Result<()> {
+    use std::os::unix::net::UnixStream;
+    let (client, server) = UnixStream::pair()?;
+    drop(client);
+    assert!(read_fixture_request::<AgentdRequest>(server)?.is_none());
+
+    let (mut client, server) = UnixStream::pair()?;
+    client.write_all(b"not-json\n")?;
+    assert!(read_fixture_request::<AgentdRequest>(server).is_err());
+
+    let (client, mut server) = UnixStream::pair()?;
+    drop(client);
+    write_fixture_response(&mut server, &serde_json::json!({"cancelled_probe": true}))?;
     Ok(())
 }
 

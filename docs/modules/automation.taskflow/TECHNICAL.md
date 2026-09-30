@@ -316,11 +316,15 @@ Schema v16 retains the original `automation_tasks`, `automation_runs` and dispat
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive from v3 through v16. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen; v16 persists the opaque App Server `next_cursor` used by terminal observation so each recovery pass remains bounded while older known turns remain eventually reachable. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. A binary that does not understand schema v16 must not replace the current owner against an upgraded store.
+Migrations are additive from v3 through v20. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs so an in-flight claim cannot float to a later schedule revision; v15 adds append-only reconciliation evidence for legacy dispatch-unknown rows whose historical schedule revision was never frozen; v16 persists the opaque App Server `next_cursor` used by terminal observation so each recovery pass remains bounded while older known turns remain eventually reachable. Such legacy ambiguity can open a new claim only after an exact provider-side proven-absent receipt, and the retired occurrence/client identity is never reused. Migration v17 adds kernel-operation deduplication; v18 adds the timer writer epoch and lifecycle; v19 reconciles the converged schema identity. Migration v20 adds the immutable creation-order task-listing index. A binary that does not understand schema v20 must not replace the current owner against an upgraded store.
 
 ## 7. Runtime, concurrency and transaction model
 
 One Agent generation owns the per-Agent writer. Scheduler lease generation/token becomes the TaskFlow run/step fence. Pre-dispatch intent is durable before App Server contact. App Server admission uses `thread/queue/reconcile` with stable `client_user_message_id` and canonical payload digest, eliminating a separate lookup/add race.
+
+The Agentd wake-up cadence is 250 ms, including time spent in the preceding bounded recovery/dispatch step rather than adding another 250 ms idle delay after its I/O. The first wake-up still waits one period. Missed wake-up slots are skipped, not replayed as a burst. This is only host pacing: durable overdue occurrences remain in the owner queue, and Calendar V2 missed-run/overlap policies are unchanged. Each wake-up still performs at most one bounded recovery pass and one scheduler tick. Cancellation stops the next tick, never an admitted tick's durable acknowledgement.
+
+When queue reconciliation reports a persisted turn, Agentd first commits the exact turn/payload binding through `record_occurrence_turn`, then uses the returned owner record to perform the existing bounded terminal lookup in the same recovery pass. Queue admission alone, missing history and `InProgress` remain non-success. This fast path does not enqueue, increase the page budget or extend the recovery deadline. A crash between the durable binding and terminal observation resumes from the same stored turn on the next pass.
 
 `DispatchUnknown` no longer authorizes retry or permanently kills the scheduler. The next tick first performs bounded `ReconcileOnly` recovery for the same identity. Only an explicit `Missing` result may append `requeued_proven_absent`, release that same occurrence/client identity, and allocate a new durable step attempt on reclaim.
 
@@ -478,6 +482,22 @@ The existing Agentd -> App Server automation activity now has a repository sourc
 
 Compatibility adapters and the legacy `Submitted` tick can be retired only after all callers move to occurrence-terminal semantics. Historical causal-chain records remain interpretable during retirement.
 
+TaskFlow read-modify-write transactions acquire SQLite’s existing writer reservation with `BEGIN IMMEDIATE` before reading the version or event chain. Read-only replay keeps its snapshot transaction. This avoids treating an ordinary concurrent timer write as a failed read-to-write upgrade and quarantining the whole capability; it does not add another lock owner, retry uncertain effects, or weaken the writer epoch checks.
+
+Timer retirement additionally writes one create-only `timer-retired.v1` fence in the existing private automation root, before the terminal SQLite commit. The file binds the Agent owner and terminal epoch; it grants no capability. It is synced before success and is never removed by module replacement or ordinary cleanup. Database-only restore must retain this current file. Opening an old active database against it returns corruption/quarantine before migrations; normal Agentd startup leaves the optional automation capability unavailable while retaining normal App Server operation. Torn or conflicting fences block new writes, including already-open operation-destination handles. A matching retired database remains readable for historical receipts, and a legacy retired database acquires the fence on reopen. The file is bounded terminal owner state, not a per-generation log.
+
+This protects a historical SQLite restore while the current external fence is retained; it cannot detect an administrator rolling back or deleting every copy of both the database and its fence. Such full-owner rollback requires an independently retained current recovery checkpoint. Unix process/filesystem tests exercise file and directory sync; non-Unix power-loss durability requires its own target qualification. The existing `operation_timer_fence` and `cognitive_product_e2e` suites cover this boundary; the latter's `automation_evolution` cases use the ordinary control socket, real owner storage and App Server with a local provider fixture. `HEPTA_EVOLUTION_ROUNDS=16` expands the bounded concurrent-load test; measured business-history growth is reported separately from runtime-generation retention.
+
+The bounded churn experiment explicitly configures its supervisor restart attempt
+budget from the requested round count and reports its short laboratory backoff
+alongside the measurements. Production restart defaults, durable attempts,
+per-request deadlines and writer fences are unchanged. These samples are not
+production-default restart latency or multi-day capacity evidence. Run on a named
+persistent filesystem with normal synchronization, record `TMPDIR`, and separate
+fixture/provider time and retained task history from runtime metadata. The pending
+task kill/reopen case proves an unchanged not-yet-due task and rejects the old
+control client; it does not claim recovery of an in-flight external provider effect.
+
 ### Circuit adoption and historical interpretation
 
 A circuit upgrade freezes definition, routing/termination policy, cell parameters,
@@ -523,3 +543,24 @@ This overlay changes no acceptance, activation, promotion or release authority.
 | `occurrence_terminal` | `src/lifecycle.rs` | occurs after TaskFlow reconciliation; advances forbidden-overlap recurrence |
 
 Current repository source implements bounded Calendar V2 semantics from an explicitly supplied timezone/tzdb transition profile; it does **not** prove that a selected host supplied a current authentic IANA tzdb profile, nor does it prove multi-scheduler/DST target behavior. The Agentd/App Server Codex automation activity has a real source composition path. A concrete arbitrary downstream effect provider/terminal observer, deployment, independent acceptance, activation, promotion and release remain separate evidence gates and stay false.
+
+
+### Bounded ordinary task listing
+
+The additive `automation.list_page_v1` capability keeps the existing 64-KiB
+control-frame limit. `AutomationListPageV1` reads at most 32 tasks plus one
+lookahead from the same owner, using the `(created_at_ms, task_id)` index; it
+packs at most 60 KiB of encoded JSON, including the continuation key. Escaped
+strings count by their wire bytes. An individually oversized task produces an
+explicit rejection, never a truncated prompt or a non-advancing empty page.
+
+The existing client `automation_list(limit)` negotiates this capability and
+collects at most the original 256-task bound within one overall client deadline.
+Every page retains the existing Agent/process-generation fence. Older servers
+retain their small-list path; oversized legacy responses now return a bounded
+`response_too_large` error rather than silently closing the connection.
+
+Pages are live owner reads, not a frozen multi-request snapshot, approval or
+execution receipt. Existing creation keys do not move when task state changes.
+An insertion before an already-consumed key requires a new scan to be observed.
+Retirement, operation identity, authority and outbox recovery are unchanged.

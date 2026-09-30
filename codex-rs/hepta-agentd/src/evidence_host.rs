@@ -9,26 +9,26 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_agent_components::authbus::SignedMessage;
+use codex_hepta_agent_components::authbus::SignedMessageClaims;
+use codex_hepta_agent_components::evidence::EvidenceCandidateV1;
+use codex_hepta_agent_components::evidence::EvidenceClaimClassV1;
+use codex_hepta_agent_components::evidence::EvidenceIssuerRoleV1;
+use codex_hepta_agent_components::evidence::HeptaEvidenceStore;
+use codex_hepta_agent_components::evidence::QualificationEvidenceEnvelopeV1;
+use codex_hepta_agent_components::evidence::VerifyChainRequestV1;
+use codex_hepta_agent_components::evidence::qualification_append_scope_digest;
+use codex_hepta_agent_components::evidence::qualification_envelope_bytes;
+use codex_hepta_agent_components::evidence::qualification_subject;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use codex_hepta_agent_protocol::KernelEvidenceAppendIngress;
 use codex_hepta_agent_protocol::KernelEvidenceCandidateV1;
 use codex_hepta_agent_protocol::KernelEvidenceQueryV1;
 use codex_hepta_agent_protocol::KernelEvidenceResult;
 use codex_hepta_agent_protocol::KernelEvidenceVerifyV1;
 use codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
-use codex_hepta_authbus::SignedMessage;
-use codex_hepta_authbus::SignedMessageClaims;
-use codex_hepta_evidence::EvidenceCandidateV1;
-use codex_hepta_evidence::EvidenceClaimClassV1;
-use codex_hepta_evidence::EvidenceIssuerRoleV1;
-use codex_hepta_evidence::HeptaEvidenceStore;
-use codex_hepta_evidence::QualificationEvidenceEnvelopeV1;
-use codex_hepta_evidence::VerifyChainRequestV1;
-use codex_hepta_evidence::qualification_append_scope_digest;
-use codex_hepta_evidence::qualification_envelope_bytes;
-use codex_hepta_evidence::qualification_subject;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
@@ -242,7 +242,7 @@ fn current_time_millis() -> Result<u64, AgentdError> {
     u64::try_from(millis).map_err(|error| invalid(&format!("system clock overflow: {error}")))
 }
 
-fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError {
+fn evidence_error(error: codex_hepta_agent_components::evidence::EvidenceError) -> AgentdError {
     invalid(&error.to_string())
 }
 

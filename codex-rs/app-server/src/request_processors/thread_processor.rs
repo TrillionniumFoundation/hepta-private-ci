@@ -586,7 +586,7 @@ pub(crate) struct ThreadRequestProcessor {
     pub(super) turn_cost_worker: Option<crate::turn_cost_worker::TurnCostWorkerHandle>,
     pub(super) initial_config_warnings: Arc<Vec<ConfigWarningNotification>>,
     pub(super) hepta_qualification_turn_writer:
-        Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+        Option<codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost>,
 }
 
 /// Outcome of trying to satisfy a resume request from an already loaded thread.
@@ -621,7 +621,7 @@ impl ThreadRequestProcessor {
         turn_cost_worker: Option<crate::turn_cost_worker::TurnCostWorkerHandle>,
         initial_config_warnings: Vec<ConfigWarningNotification>,
         hepta_qualification_turn_writer: Option<
-            codex_hepta_memory_extension::QualificationTurnWriterHost,
+            codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost,
         >,
     ) -> Self {
         Self {
@@ -1555,7 +1555,7 @@ impl ThreadRequestProcessor {
     async fn thread_start_task(
         listener_task_context: ListenerTaskContext,
         qualification_turn_writer: Option<
-            codex_hepta_memory_extension::QualificationTurnWriterHost,
+            codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost,
         >,
         thread_store: Arc<dyn ThreadStore>,
         config_manager: ConfigManager,
@@ -1684,7 +1684,7 @@ impl ThreadRequestProcessor {
             .sum();
         let mut thread_extension_init = ExtensionDataInit::new();
         if let Some(host) = qualification_turn_writer {
-            codex_hepta_memory_extension::insert_qualification_turn_writer_host(
+            codex_hepta_app_bridge::memory_extension::insert_qualification_turn_writer_host(
                 &mut thread_extension_init,
                 host,
             );

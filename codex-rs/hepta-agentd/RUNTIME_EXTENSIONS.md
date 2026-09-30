@@ -143,3 +143,19 @@ behavior, arbitrary cross-schema migration, multi-host handoff, target-host
 capacity, physical-effect completion, independent credential custody or
 future-window learning efficacy. No command definition or test source is a
 test-pass receipt.
+
+## Canonical composition startup
+
+The ordinary daemon rejects a partial canonical intelligence configuration before
+opening product owners or publishing control/App Server sockets. A configured
+runner requires its host-owned invocation provider, and a configured provider
+requires its runner. The pair also requires an Objective profile, AuthBus trust
+and replay-checkpoint configuration; later owner opening authenticates those
+inputs. Shape validation alone does not activate or qualify a canonical profile.
+
+Leaving both components absent retains the existing compatibility profile.
+Supplying only intelligence-authority CLI arguments is not a way to activate the
+canonical product: until the host installs the complete owner-backed provider,
+startup fails instead of silently falling back. This check reuses the existing
+configuration and lifecycle; it does not add another executor or manufacture
+missing owner inputs.

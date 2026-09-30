@@ -1,0 +1,46 @@
+schema = "hepta.module-manifest.v1"
+order = 0
+id = "platform.types"
+plane = "foundation"
+kind = "contract"
+lifecycle = "existing"
+state = "stateless"
+architectureRole = "contract"
+writes = []
+uses = []
+owner = "kernel-contracts"
+deputy = "architecture"
+denies = ["runtime_authority"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-types"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "PLATFORM-0-TYPE-BOUNDARY"
+technicalDocument = "docs/modules/platform.types/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-types"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-paths"
+compileLayer = 1
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-types"
+compileLayer = 0
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

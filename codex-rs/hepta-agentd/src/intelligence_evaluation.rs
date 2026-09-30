@@ -7,21 +7,21 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
 
-use codex_hepta_intelligence::CanonicalPortInputV1;
-use codex_hepta_intelligence::CanonicalStageV1;
-use codex_hepta_intelligence::CurrentOwnerStateV1;
-use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
-use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
-use codex_hepta_intelligence_eval::MetricRoleContractV2;
-use codex_hepta_intelligence_eval::SignedEvaluationError;
-use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
-use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
-use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-use codex_hepta_learning_ledger::SignedEvidenceError;
-use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::intelligence::CanonicalPortInputV1;
+use codex_hepta_agent_components::intelligence::CanonicalStageV1;
+use codex_hepta_agent_components::intelligence::CurrentOwnerStateV1;
+use codex_hepta_agent_components::intelligence_eval::IndependentEvaluationBundleV1;
+use codex_hepta_agent_components::intelligence_eval::IndependentEvaluationDispositionV1;
+use codex_hepta_agent_components::intelligence_eval::MetricRoleContractV2;
+use codex_hepta_agent_components::intelligence_eval::SignedEvaluationError;
+use codex_hepta_agent_components::intelligence_eval::SignedEvaluationEvidenceV1;
+use codex_hepta_agent_components::intelligence_eval::decide_with_signed_evidence_v2;
+use codex_hepta_agent_components::learning_ledger::ActivatedLearningTrustV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_agent_components::learning_ledger::SignedEvidenceError;
+use codex_hepta_agent_components::learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::StableId;
 
 /// Data supplied by the evaluator. Every field is checked again at its use site.
 #[derive(Clone, Debug)]

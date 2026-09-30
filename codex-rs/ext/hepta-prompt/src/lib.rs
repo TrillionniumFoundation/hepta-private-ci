@@ -38,7 +38,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::PromptDeliveryObservationV1;
 use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
-use tokio::sync::Mutex;
+use tokio::sync::OnceCell;
 
 const ATTACHMENT_DOMAIN: &[u8] = b"hepta.runtime-codex.prompt-attachment.v1";
 const MAX_DEVELOPER_FRAGMENTS: usize = 128;
@@ -479,7 +479,7 @@ enum ResolvedAttachment {
 
 #[derive(Default)]
 struct PromptRuntimeTurnState {
-    resolved: Mutex<Option<ResolvedAttachment>>,
+    resolved: OnceCell<ResolvedAttachment>,
     injected: AtomicBool,
 }
 
@@ -497,31 +497,34 @@ impl PromptRuntimeExtension {
         turn_store: &ExtensionData,
     ) -> ResolvedAttachment {
         let state = turn_store.get_or_init(PromptRuntimeTurnState::default);
-        let mut resolved = state.resolved.lock().await;
-        if let Some(value) = resolved.as_ref() {
-            return value.clone();
-        }
-        let value = match self
-            .host
-            .prepare(PromptRuntimePrepareRequest {
-                thread_id,
-                turn_id,
-                model_context_window,
+        // One immutable preparation result per turn, including absence or failure.
+        // The asynchronous cell serializes initialization without a mutex guard
+        // spanning an owner callback. Cancelling initialization leaves it retryable.
+        state
+            .resolved
+            .get_or_init(|| async {
+                match self
+                    .host
+                    .prepare(PromptRuntimePrepareRequest {
+                        thread_id,
+                        turn_id,
+                        model_context_window,
+                    })
+                    .await
+                {
+                    Ok(Some(attachment)) => match attachment.validate() {
+                        Ok(()) => ResolvedAttachment::Ready(attachment),
+                        Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                            "prompt_runtime_attachment_invalid",
+                            error.to_string(),
+                        )),
+                    },
+                    Ok(None) => ResolvedAttachment::None,
+                    Err(error) => ResolvedAttachment::Failed(error),
+                }
             })
             .await
-        {
-            Ok(Some(attachment)) => match attachment.validate() {
-                Ok(()) => ResolvedAttachment::Ready(attachment),
-                Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
-                    "prompt_runtime_attachment_invalid",
-                    error.to_string(),
-                )),
-            },
-            Ok(None) => ResolvedAttachment::None,
-            Err(error) => ResolvedAttachment::Failed(error),
-        };
-        *resolved = Some(value.clone());
-        value
+            .clone()
     }
 }
 
@@ -699,8 +702,12 @@ impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
     ) -> ModelProviderPolicyFuture<'static, ()> {
         Box::pin(async move {
             let observed_unix_ms = current_unix_ms().map_err(runtime_policy_error)?;
-            let (outcome, terminal_reason_code, end_turn, delivery_observation) =
-                self.map_terminal(terminal).map_err(runtime_policy_error)?;
+            let MappedPromptTerminal {
+                outcome,
+                terminal_reason_code,
+                end_turn,
+                delivery_observation,
+            } = self.map_terminal(terminal).map_err(runtime_policy_error)?;
             let record = PromptRuntimeTerminalRecordV1 {
                 compilation_id: self.attachment.compilation_id.clone(),
                 context_attachment_digest: self.attachment.context_attachment_digest,
@@ -726,6 +733,13 @@ impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
             })
         })
     }
+}
+
+struct MappedPromptTerminal {
+    outcome: PromptRuntimeTerminalOutcomeV1,
+    terminal_reason_code: Option<String>,
+    end_turn: Option<bool>,
+    delivery_observation: Option<PromptDeliveryObservationV1>,
 }
 
 impl PromptRuntimeAttemptLease {
@@ -757,53 +771,45 @@ impl PromptRuntimeAttemptLease {
     fn map_terminal(
         &self,
         terminal: ModelProviderTerminal,
-    ) -> Result<
-        (
-            PromptRuntimeTerminalOutcomeV1,
-            Option<String>,
-            Option<bool>,
-            Option<PromptDeliveryObservationV1>,
-        ),
-        PromptRuntimeError,
-    > {
+    ) -> Result<MappedPromptTerminal, PromptRuntimeError> {
         match terminal {
             ModelProviderTerminal::Completed { end_turn, .. } => {
                 let observation = self.delivery_observation(true, None)?;
-                Ok((
-                    PromptRuntimeTerminalOutcomeV1::Delivered,
-                    None,
+                Ok(MappedPromptTerminal {
+                    outcome: PromptRuntimeTerminalOutcomeV1::Delivered,
+                    terminal_reason_code: None,
                     end_turn,
-                    Some(observation),
-                ))
+                    delivery_observation: Some(observation),
+                })
             }
             ModelProviderTerminal::Rejected { reason_code } => {
                 let rejection_reason = rejection_reason(&reason_code)?;
                 let observation = self.delivery_observation(false, Some(rejection_reason))?;
-                Ok((
-                    PromptRuntimeTerminalOutcomeV1::Rejected,
-                    Some(reason_code),
-                    None,
-                    Some(observation),
-                ))
+                Ok(MappedPromptTerminal {
+                    outcome: PromptRuntimeTerminalOutcomeV1::Rejected,
+                    terminal_reason_code: Some(reason_code),
+                    end_turn: None,
+                    delivery_observation: Some(observation),
+                })
             }
-            ModelProviderTerminal::NotDispatched { reason_code } => Ok((
-                PromptRuntimeTerminalOutcomeV1::NotDispatched,
-                Some(reason_code),
-                None,
-                None,
-            )),
-            ModelProviderTerminal::Indeterminate { reason_code, .. } => Ok((
-                PromptRuntimeTerminalOutcomeV1::Indeterminate,
-                Some(reason_code),
-                None,
-                None,
-            )),
-            ModelProviderTerminal::CompletedUnary { .. } => Ok((
-                PromptRuntimeTerminalOutcomeV1::Indeterminate,
-                Some("unexpected_unary_terminal_for_turn".to_owned()),
-                None,
-                None,
-            )),
+            ModelProviderTerminal::NotDispatched { reason_code } => Ok(MappedPromptTerminal {
+                outcome: PromptRuntimeTerminalOutcomeV1::NotDispatched,
+                terminal_reason_code: Some(reason_code),
+                end_turn: None,
+                delivery_observation: None,
+            }),
+            ModelProviderTerminal::Indeterminate { reason_code, .. } => Ok(MappedPromptTerminal {
+                outcome: PromptRuntimeTerminalOutcomeV1::Indeterminate,
+                terminal_reason_code: Some(reason_code),
+                end_turn: None,
+                delivery_observation: None,
+            }),
+            ModelProviderTerminal::CompletedUnary { .. } => Ok(MappedPromptTerminal {
+                outcome: PromptRuntimeTerminalOutcomeV1::Indeterminate,
+                terminal_reason_code: Some("unexpected_unary_terminal_for_turn".to_owned()),
+                end_turn: None,
+                delivery_observation: None,
+            }),
         }
     }
 }

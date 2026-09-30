@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 use std::collections::BTreeSet;
@@ -9,24 +10,33 @@ use std::sync::atomic::Ordering;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_agent_components::cognitive_store::CognitiveAccess;
+use codex_hepta_agent_components::cognitive_store::CognitiveRecoveryRequirement;
+use codex_hepta_agent_components::cognitive_store::CognitiveScope;
+use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore;
+use codex_hepta_agent_components::cognitive_store::ForgetMemoryDraft;
+use codex_hepta_agent_components::cognitive_store::KgFactSetDraft;
+use codex_hepta_agent_components::cognitive_store::LedgerSourceKind;
+use codex_hepta_agent_components::cognitive_store::MemoryDraft;
+use codex_hepta_agent_components::cognitive_store::MemoryLifecycleState;
+use codex_hepta_agent_components::cognitive_store::MemoryRevisionDraft;
+use codex_hepta_agent_components::cognitive_store::MemoryVerification;
+use codex_hepta_agent_components::cognitive_store::ProductionAuthorityLease;
+use codex_hepta_agent_components::cognitive_store::ProductionAuthorityToken;
+use codex_hepta_agent_components::cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_agent_components::cognitive_store::SourceDraft;
+use codex_hepta_agent_components::cognitive_store::bind_canonical_event_to_durable_receipt;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::memory::LocalOutcomeState;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdProductionWriterHost;
-use codex_hepta_cognitive_store::CognitiveAccess;
-use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
-use codex_hepta_cognitive_store::CognitiveScope;
-use codex_hepta_cognitive_store::DurableCognitiveStore;
-use codex_hepta_cognitive_store::ForgetMemoryDraft;
-use codex_hepta_cognitive_store::KgFactSetDraft;
-use codex_hepta_cognitive_store::LedgerSourceKind;
-use codex_hepta_cognitive_store::MemoryDraft;
-use codex_hepta_cognitive_store::MemoryLifecycleState;
-use codex_hepta_cognitive_store::MemoryRevisionDraft;
-use codex_hepta_cognitive_store::MemoryVerification;
-use codex_hepta_cognitive_store::ProductionAuthorityLease;
-use codex_hepta_cognitive_store::ProductionAuthorityToken;
-use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
-use codex_hepta_cognitive_store::SourceDraft;
-use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
 use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
@@ -40,15 +50,6 @@ use codex_hepta_cognitive_types::hnmf::PrivacyClassV1;
 use codex_hepta_cognitive_types::hnmf::ProvenanceRefV1;
 use codex_hepta_cognitive_types::hnmf::RetentionPolicyV1;
 use codex_hepta_cognitive_types::hnmf::SpanRangeV1;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_memory::LocalOutcomeState;
-use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
 
 #[tokio::test]

@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 32
+id = "learning.plasticity"
+plane = "qualification"
+kind = "proposal_engine"
+lifecycle = "target"
+state = "stateful_shadow"
+architectureRole = "slow_learner"
+writes = ["plasticity_proposal_registry"]
+uses = ["learning.eval", "learning.artifacts", "kernel.evidence"]
+owner = "learning-platform"
+deputy = "architecture"
+denies = ["runtime_topology_mutation", "authority_mutation", "self_promotion"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-plasticity"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "PLS-1-PARAMETER-PLASTICITY"
+technicalDocument = "docs/modules/learning.plasticity/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-plasticity"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-plasticity"
+compileLayer = 1
+ciGroups = ["learning", "lifecycle"]

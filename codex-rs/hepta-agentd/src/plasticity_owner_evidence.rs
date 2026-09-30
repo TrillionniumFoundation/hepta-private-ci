@@ -11,18 +11,18 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::RwLock;
 
-use codex_hepta_learning_artifacts::ArtifactKind;
-use codex_hepta_learning_artifacts::ArtifactManifest;
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
-use codex_hepta_ndu::NduProjectionJournalV1;
-use codex_hepta_neuron::JournalAnchor;
-use codex_hepta_neuron::SparseCheckpoint;
-use codex_hepta_neuron::SparseJournal;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_agent_components::learning_ledger::verify_dataset_snapshot_receipt_v3;
+use codex_hepta_agent_components::ndu::NduProjectionJournalV1;
+use codex_hepta_agent_components::neuron::JournalAnchor;
+use codex_hepta_agent_components::neuron::SparseCheckpoint;
+use codex_hepta_agent_components::neuron::SparseJournal;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::StableId;
 
 use crate::PlasticityOwnerEvidenceErrorV1;
 use crate::PlasticityOwnerEvidenceKindV1;
@@ -121,7 +121,7 @@ impl ConcretePlasticityOwnerEvidenceResolverV1 {
         &self,
         query: &PlasticityOwnerEvidenceQueryV1,
     ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
-        let current_head = self.artifacts.snapshot().head_digest;
+        let current_head = self.artifacts.head_digest();
         if current_head.is_zero() || current_head != query.artifact_registry_head_digest {
             return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
         }
@@ -379,7 +379,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
         &self,
         artifact_registry_head_digest: Digest32,
     ) -> Result<(Digest32, StableId, Digest32), PlasticityOwnerEvidenceErrorV1> {
-        let head = self.broadcast_artifacts.snapshot().head_digest;
+        let head = self.broadcast_artifacts.head_digest();
         if head.is_zero() || head != artifact_registry_head_digest {
             return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
         }
@@ -773,17 +773,17 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_hepta_learning_artifacts::ArtifactEvent;
-    use codex_hepta_learning_artifacts::ArtifactManifest;
-    use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-    use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
-    use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
-    use codex_hepta_ndu::NduProjectionKindV1;
-    use codex_hepta_neuron::JournalScope;
-    use codex_hepta_neuron::SparseConfig;
-    use codex_hepta_neuron::SparseTick;
-    use codex_hepta_plasticity::ProposalWindowV2;
-    use codex_hepta_types::Generation;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactEvent;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
+    use codex_hepta_agent_components::learning_ledger::AuthenticatedPrincipalV1;
+    use codex_hepta_agent_components::learning_ledger::DatasetFreezeRequestV1;
+    use codex_hepta_agent_components::learning_ledger::freeze_dataset_receipt_v3;
+    use codex_hepta_agent_components::ndu::NduProjectionKindV1;
+    use codex_hepta_agent_components::neuron::JournalScope;
+    use codex_hepta_agent_components::neuron::SparseConfig;
+    use codex_hepta_agent_components::neuron::SparseTick;
+    use codex_hepta_agent_components::plasticity::ProposalWindowV2;
+    use codex_hepta_agent_components::types::Generation;
     use tempfile::tempfile;
 
     use crate::PlasticityOwnerEvidencePolicyV1;
@@ -894,7 +894,7 @@ mod tests {
                 })
                 .expect("artifact append");
         }
-        let artifact_head = artifacts.snapshot().head_digest;
+        let artifact_head = artifacts.head_digest();
         let resolver = ConcretePlasticityOwnerEvidenceResolverV1::new(
             dataset,
             artifacts,
@@ -1126,7 +1126,7 @@ mod tests {
                 ),
             })
             .expect("broadcast artifact");
-        let artifact_head = artifacts.snapshot().head_digest;
+        let artifact_head = artifacts.head_digest();
 
         let modulator = modulator_values[0];
         let learning_rate = FixedQ32::from_raw(1_i64 << 20);

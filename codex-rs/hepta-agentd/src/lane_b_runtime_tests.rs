@@ -1,11 +1,11 @@
 use super::*;
 
-use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
-use codex_hepta_learning_ledger::RunStartAuthenticationV1;
-use codex_hepta_learning_ledger::RunStartSnapshotV1;
-use codex_hepta_types::AuthorityPosture;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_agent_components::learning_ledger::RunStartAuthenticationV1;
+use codex_hepta_agent_components::learning_ledger::RunStartSnapshotV1;
+use codex_hepta_agent_components::types::AuthorityPosture;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::StableId;
 
 fn digest(byte: char) -> String {
     byte.to_string().repeat(64)

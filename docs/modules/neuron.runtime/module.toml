@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 15
+id = "neuron.runtime"
+plane = "domain"
+kind = "adaptive_signal_runtime"
+lifecycle = "target"
+state = "stateful_projection"
+architectureRole = "functional_substrate"
+writes = ["neuron_state_checkpoint", "eligibility_trace_checkpoint"]
+uses = ["platform.types", "cognitive.read", "inference.control", "learning.artifacts"]
+owner = "learning-platform"
+deputy = "inference-platform"
+denies = ["fact_authority", "physical_effect", "runtime_model_install"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-neuron"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "BIO-0-NEURON-INTUITION-CONTRACTS"
+technicalDocument = "docs/modules/neuron.runtime/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-neuron"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-neuron"
+compileLayer = 2
+ciGroups = ["learning"]

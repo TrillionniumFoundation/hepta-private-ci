@@ -7,42 +7,42 @@ use std::time::SystemTime;
 #[cfg(feature = "qualification-cognitive-write")]
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::AutomationTick;
-use codex_hepta_contracts::AgentId;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::AutomationTick;
+use codex_hepta_agent_components::contracts::AgentId;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_memory::CognitiveRuntime;
+use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::memory::CognitiveRuntime;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_agent_components::memory::CognitiveStore;
+use codex_hepta_agent_components::memory::CognitiveStoreError;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::CompactFence;
+use codex_hepta_agent_components::memory::CompactFence;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::H7TrajectoryAppend;
+use codex_hepta_agent_components::memory::H7TrajectoryAppend;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::H7TrajectoryEventKind;
+use codex_hepta_agent_components::memory::H7TrajectoryEventKind;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::H7TrajectoryRecord;
+use codex_hepta_agent_components::memory::H7TrajectoryRecord;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::LocalAdmission;
+use codex_hepta_agent_components::memory::LocalAdmission;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::LocalTurnLifecycleBinding;
+use codex_hepta_agent_components::memory::LocalTurnLifecycleBinding;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::LogicalTurnAttemptRequest;
+use codex_hepta_agent_components::memory::LogicalTurnAttemptRequest;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::LogicalTurnRequest;
+use codex_hepta_agent_components::memory::LogicalTurnRequest;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::append_h7_trajectory_event_bound;
+use codex_hepta_agent_components::memory::append_h7_trajectory_event_bound;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::h7_trajectory_local_receipt_digest;
-use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_agent_components::memory::h7_trajectory_local_receipt_digest;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
@@ -51,7 +51,6 @@ use super::AgentdState;
 use super::EVENT_CAPACITY;
 use super::drain_runtime;
 use super::monitor_runtime;
-use super::open_automation_store_after_generation_fence;
 use super::open_cognitive_runtime_after_generation_fence;
 use super::require_cognitive_retrieval_context_for_mode;
 use super::require_cognitive_runtime_for_profile;
@@ -60,13 +59,15 @@ use crate::AgentdPayload;
 use crate::CognitiveRetrievalMode;
 #[cfg(feature = "qualification-cognitive-write")]
 use crate::app_runtime::app_server_runtime_options_for_agent;
+use crate::automation::AgentdAutomationQueue;
 use crate::automation::DispatchRetryBudget;
 use crate::automation::handle_automation_tick;
+use crate::automation::open_automation_store_after_generation_fence;
 use crate::automation::run_automation_scheduler;
 #[cfg(feature = "qualification-cognitive-write")]
 use crate::qualification_writer::prepare_qualification_turn_writer_input;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory::LocalLeaseHeadDisposition;
+use codex_hepta_agent_components::memory::LocalLeaseHeadDisposition;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
@@ -121,9 +122,11 @@ fn runtime_fixture() -> RuntimeFixture {
 }
 
 async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
-    let store = codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
-        .await
-        .expect("real cognitive owner");
+    let store = codex_hepta_agent_components::cognitive_store::DurableCognitiveStore::open(
+        &fixture.identity.layout,
+    )
+    .await
+    .expect("real cognitive owner");
     fixture
         .state
         .attach_cognitive_store(Arc::new(store))
@@ -359,7 +362,7 @@ fn hnmf_required_retrieval_mode_fails_closed_without_current_context() {
 #[test]
 fn product_write_profile_fails_closed_when_cognitive_store_is_unavailable() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
-        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
+        codex_hepta_agent_components::memory::CognitiveUnavailableReason::StorageUnavailable,
     ));
     assert!(matches!(
         result,
@@ -651,7 +654,9 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         .reserve_or_replay_logical_turn(logical, old)
         .await
         .expect("seed registry attempt");
-    let codex_hepta_memory::LogicalTurnReservation::Acquired { attempt } = reservation else {
+    let codex_hepta_agent_components::memory::LogicalTurnReservation::Acquired { attempt } =
+        reservation
+    else {
         panic!("seed must acquire registry attempt")
     };
     let head = store
@@ -776,13 +781,13 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
 #[test]
 fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
-        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
+        codex_hepta_agent_components::memory::CognitiveUnavailableReason::StorageUnavailable,
     ))
     .expect("read-only profile remains availability tolerant");
     assert!(matches!(
         result,
         CognitiveRuntime::Unavailable(
-            codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable
+            codex_hepta_agent_components::memory::CognitiveUnavailableReason::StorageUnavailable
         )
     ));
 }
@@ -854,6 +859,10 @@ async fn runtime_automation_store_failure_stops_only_the_scheduler_plane() {
         .expect("attach automation store");
     let cancellation = CancellationToken::new();
     let scheduler_task = tokio::spawn(run_automation_scheduler(
+        Arc::new(AgentdAutomationQueue::new(
+            Arc::clone(&fixture.state),
+            fixture.identity.clone(),
+        )),
         store.clone(),
         Arc::clone(&fixture.state),
         fixture.identity.clone(),
@@ -939,7 +948,7 @@ async fn dispatch_uncertain_tick_stays_live_for_durable_reconciliation() {
     let mut retry_budget = DispatchRetryBudget::default();
     let should_stop = handle_automation_tick(
         AutomationTick::DispatchUncertain {
-            task_id: codex_hepta_automation::AutomationTaskId::parse(
+            task_id: codex_hepta_agent_components::automation::AutomationTaskId::parse(
                 "019153a4-3088-7000-a56a-9b1964f75009",
             )
             .expect("task id"),

@@ -220,6 +220,30 @@ The posture is least authority, bounded input, typed contracts, digest binding a
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
+### Owner-local lineage indexes
+
+The V1 registry rebuilds parent-to-child and monotone ineligibility indexes through
+its existing validated append/replay reducer. Registration still rejects an
+ineligible predecessor. Quarantine and revocation invalidate that artifact and
+its descendants without changing descendants' own states or historical receipts.
+There is no cached external authorization decision or second durable writer.
+
+Eligibility lookup no longer walks every ancestor; candidate enumeration visits
+the registry once. Each descendant is invalidated at most once across monotone
+withdrawals. Snapshots retain the unchanged record format and rebuild indexes on
+recovery. `head_digest()` reads the owner's validated tail without copying all
+historical records. Agentd topology admission uses this accessor and the ledger's
+poison-checked head accessor rather than materializing full snapshots.
+
+`registry_lineage_tests.rs` compares branching histories and snapshot/retry
+recovery against an independent ancestor-walk oracle. Its explicitly ignored
+growth diagnostic measures chain construction, query, reference walk, snapshot
+recovery and root revocation; invoke it explicitly through `just test` to obtain
+measurements for the current source/profile. It is not a timing acceptance gate.
+The existing 4,096-record durable bound is unchanged. Authenticated hot/cold
+maintenance and long-duration capacity qualification are not established by this
+in-memory index improvement.
+
 ## 10. Performance, capacity and hot-path policy
 
 Source-enforced ceilings relevant to this module include:

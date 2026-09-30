@@ -63,7 +63,7 @@ impl fmt::Debug for LearningArtifactOwnerService {
         formatter
             .debug_struct("LearningArtifactOwnerService")
             .field("host", &self.host)
-            .field("registry_head", &self.registry.snapshot().head_digest)
+            .field("registry_head", &self.registry.head_digest())
             .field("withdrawal_head", &self.withdrawal_registry.head_digest())
             .field("storage_binding", &self.storage_binding)
             .field("recovery_required", &self.recovery_required)
@@ -613,7 +613,7 @@ mod tests {
             })
             .fixture("open service");
 
-        let predecessor = service.registry().snapshot().head_digest;
+        let predecessor = service.registry().head_digest();
         let admission = admit_manifest_at_withdrawal_head_v3(
             &withdrawals,
             withdrawals.head_digest(),
@@ -635,12 +635,7 @@ mod tests {
             .host
             .stage_compatibility_registration(&preview, &mut staged, 20)
             .fixture("preview registration");
-        let request = publish_request(
-            &key,
-            &withdrawals,
-            predecessor,
-            staged.snapshot().head_digest,
-        );
+        let request = publish_request(&key, &withdrawals, predecessor, staged.head_digest());
 
         let receipt = service.publish(request.clone()).fixture("publish");
         let retry = service.publish(request.clone()).fixture("terminal retry");
@@ -668,7 +663,7 @@ mod tests {
         })
         .fixture("reopen service");
         assert_eq!(
-            reopened.registry().snapshot().head_digest,
+            reopened.registry().head_digest(),
             receipt.registry_head_digest
         );
         assert!(reopened.recovery_required().is_none());

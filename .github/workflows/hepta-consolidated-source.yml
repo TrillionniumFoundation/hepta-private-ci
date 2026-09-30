@@ -1,30 +1,10 @@
 name: Hepta consolidated source qualification (read-only)
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    paths:
-      - "codex-rs/**"
-      - "apps/**"
-      - "tools/hepta-engineering-control/**"
-      - "tools/hepta-os-evidence/**"
-      - ".cargo/**"
-      - "codex-rs/.cargo/**"
-      - "rust-toolchain"
-      - "rust-toolchain.toml"
-      - "codex-rs/rust-toolchain"
-      - "codex-rs/rust-toolchain.toml"
-      - "scripts/hepta_workspace.py"
-      - "scripts/test_hepta_native_feedback.py"
-      - "scripts/hepta_ci_v8.py"
-      - "scripts/hepta_ci_exec.py"
-      - "scripts/hepta-gap-closure.py"
-      - "scripts/verify_cargo_lock.py"
-      - "justfile"
-      - "codex-rs/justfile"
-      - ".github/workflows/hepta-consolidated-source.yml"
-      - ".github/actions/hepta-synthetic-merge/**"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -181,6 +161,7 @@ jobs:
           author-email: hepta-docs-ci@users.noreply.github.com
           message: Synthetic merge
       - name: Bind exact engineering sandbox candidate identity
+        id: sandbox-candidate
         env:
           TESTED_SHA: ${{ steps.sandbox-synthetic.outputs.sha || env.SOURCE_SHA }}
           MERGE_SHA: ${{ steps.sandbox-synthetic.outputs.sha }}
@@ -323,6 +304,7 @@ jobs:
           printf 'event_sha=%s\n' "$EVENT_BASE_SHA" >> "$GITHUB_OUTPUT"
           printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
       - name: Bind exact source identity
+        id: source-identity
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
       - name: Construct the same synthetic merge as the document gate
@@ -354,11 +336,13 @@ jobs:
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
       - name: Check workspace structure before native setup
+        id: workspace-structure
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta_workspace.py
       - name: Parse actual Cargo workspace before native setup
+        id: workspace-metadata
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
           HEPTA_CI_LANE: ${{ matrix.lane }}
@@ -368,6 +352,7 @@ jobs:
           set -euo pipefail
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/workspace-metadata.json" -- cargo metadata --locked --format-version 1 --no-deps
       - name: Formatting without source mutation
+        id: formatting
         if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
@@ -380,6 +365,7 @@ jobs:
           for package in $PACKAGES; do args+=(--package "$package"); done
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/format.json" -- cargo fmt "${args[@]}" -- --check
       - name: Prepare native owner-test prerequisites
+        id: native-prerequisites
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
@@ -401,6 +387,7 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
       - name: Compile and test actual imported packages
+        id: owner-tests
         working-directory: codex-rs
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
@@ -480,6 +467,7 @@ jobs:
             --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-max-command.json" -- \
             cargo run --locked -p codex-hepta-memory --example cognitive_store_perf
       - name: Strict Clippy independently of test outcome
+        id: strict-clippy
         if: ${{ !cancelled() && steps.native_ready.outcome == 'success' }}
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
@@ -493,6 +481,7 @@ jobs:
           for package in $PACKAGES; do args+=(-p "$package"); done
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
       - name: Retain original document and source-owner gates
+        id: document-gates
         if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
@@ -503,6 +492,7 @@ jobs:
           # Global source/merge document and script checks run once in hepta-development-docs.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/source-owner.json" -- python3 scripts/hepta-gap-closure.py verify
       - name: UI owner tests independently of document outcome
+        id: ui-tests
         if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
@@ -512,6 +502,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ui-test.json" -- node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
       - name: Clean tracked source
+        id: clean-source
         if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}

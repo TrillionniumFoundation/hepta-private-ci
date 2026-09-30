@@ -1,26 +1,26 @@
-use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
-use codex_hepta_intelligence_eval::CrossFoldPlanV1;
-use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
-use codex_hepta_intelligence_eval::EvaluationDirectionV1;
-use codex_hepta_intelligence_eval::EvaluationIntervalV1;
-use codex_hepta_intelligence_eval::FinalHoldoutRegistry;
-use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
-use codex_hepta_intelligence_eval::MetricContractV1;
-use codex_hepta_intelligence_eval::MetricGateV1;
-use codex_hepta_intelligence_eval::MetricRoleContractV2;
-use codex_hepta_intelligence_eval::MetricRoleV2;
-use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
-use codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
-use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
-use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
-use codex_hepta_learning_ledger::TrustedLearningSignerV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::intelligence_eval::CrossFoldPartitionV1;
+use codex_hepta_agent_components::intelligence_eval::CrossFoldPlanV1;
+use codex_hepta_agent_components::intelligence_eval::EvaluationClaimScopeV1;
+use codex_hepta_agent_components::intelligence_eval::EvaluationDirectionV1;
+use codex_hepta_agent_components::intelligence_eval::EvaluationIntervalV1;
+use codex_hepta_agent_components::intelligence_eval::FinalHoldoutRegistry;
+use codex_hepta_agent_components::intelligence_eval::IndependentEvaluationBundleV1;
+use codex_hepta_agent_components::intelligence_eval::MetricContractV1;
+use codex_hepta_agent_components::intelligence_eval::MetricGateV1;
+use codex_hepta_agent_components::intelligence_eval::MetricRoleContractV2;
+use codex_hepta_agent_components::intelligence_eval::MetricRoleV2;
+use codex_hepta_agent_components::intelligence_eval::SignedEvaluationEvidenceV1;
+use codex_hepta_agent_components::intelligence_eval::evaluation_signing_payload_v2;
+use codex_hepta_agent_components::intelligence_eval::freeze_cross_fold_plan_v2;
+use codex_hepta_agent_components::learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_agent_components::learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_agent_components::learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -90,15 +90,15 @@ fn sign(
 }
 
 use super::evaluation::*;
-use codex_hepta_intelligence::CanonicalPortInputV1;
-use codex_hepta_intelligence::CanonicalStageV1;
-use codex_hepta_intelligence::CurrentOwnerStateV1;
-use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
-use codex_hepta_learning_ledger::LearningTrustDistributionV1;
-use codex_hepta_learning_ledger::LearningTrustRootV1;
-use codex_hepta_learning_ledger::SignedLearningTrustDistributionV1;
-use codex_hepta_learning_ledger::activate_learning_trust;
-use codex_hepta_types::Generation;
+use codex_hepta_agent_components::intelligence::CanonicalPortInputV1;
+use codex_hepta_agent_components::intelligence::CanonicalStageV1;
+use codex_hepta_agent_components::intelligence::CurrentOwnerStateV1;
+use codex_hepta_agent_components::learning_ledger::ActivatedLearningTrustV1;
+use codex_hepta_agent_components::learning_ledger::LearningTrustDistributionV1;
+use codex_hepta_agent_components::learning_ledger::LearningTrustRootV1;
+use codex_hepta_agent_components::learning_ledger::SignedLearningTrustDistributionV1;
+use codex_hepta_agent_components::learning_ledger::activate_learning_trust;
+use codex_hepta_agent_components::types::Generation;
 use std::sync::Arc;
 
 fn activate(trust: LearningEvidenceTrustV1, now: u64) -> ActivatedLearningTrustV1 {

@@ -7,10 +7,10 @@
 //! Generator/Observer/Evaluator evidence and withholds success until the
 //! rollback-domain anchor commit succeeds.
 
-use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
-use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
-use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
-use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
+use codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceiptV1;
+use codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1;
+use codex_hepta_agent_components::intelligence::TopologyPlasticityProductReceiptV1;
+use codex_hepta_agent_components::intelligence::TopologyPlasticityProductRequestV1;
 
 use crate::PlasticityRuntimeCallErrorV1;
 use crate::PlasticityRuntimeHandleV1;

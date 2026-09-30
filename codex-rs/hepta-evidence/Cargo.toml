@@ -9,19 +9,23 @@ name = "codex_hepta_evidence"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = ["runtime"]
+runtime = ["dep:codex-hepta-authbus", "dep:codex-state", "dep:sqlx", "dep:tokio"]
+
 [lints]
 workspace = true
 
 [dependencies]
-codex-hepta-authbus = { path = "../hepta-authbus" }
+codex-hepta-authbus = { optional = true, path = "../hepta-authbus" }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-types = { workspace = true }
-codex-state = { workspace = true }
+codex-state = { optional = true, workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-sqlx = { workspace = true }
+sqlx = { optional = true, workspace = true }
 thiserror = { workspace = true }
-tokio = { workspace = true, features = ["sync"] }
+tokio = { optional = true, workspace = true, features = ["sync"] }
 
 [dev-dependencies]
 ed25519-dalek = { workspace = true }

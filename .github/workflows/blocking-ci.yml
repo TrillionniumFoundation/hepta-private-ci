@@ -26,6 +26,11 @@ jobs:
       native: ${{ steps.scope.outputs.native }}
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
+      risk: ${{ steps.scope.outputs.risk }}
+      require_exact_source: ${{ steps.scope.outputs.require_exact_source }}
+      lanes: ${{ steps.scope.outputs.lanes }}
+      scoped_timeout_minutes: ${{ steps.scope.outputs.scoped_timeout_minutes }}
+      ordinary_feedback_target_minutes: ${{ steps.scope.outputs.ordinary_feedback_target_minutes }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -33,6 +38,16 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Install locked Python policy-test dependencies
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Select the small CI Python environment
+        shell: bash
+        run: |
+          uv sync --frozen --project scripts --only-group ci
+          echo "$GITHUB_WORKSPACE/scripts/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Select dependency impact
         id: scope
@@ -52,6 +67,17 @@ jobs:
             args+=(--full)
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}"
+          python3 scripts/hepta_ci_risk.py "${args[@]}"
+
+      - name: Validate workflow and module extension boundaries
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.test_hepta_repository_surface scripts.test_hepta_ci_risk
+          python3 scripts/hepta_repository_surface.py --base "$BASE_SHA" --head "$HEAD_SHA"
 
       - name: Regression-test scoped fan-in policy
         shell: bash
@@ -71,6 +97,8 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/hepta-contract-gate.yml
+    with:
+      require_exact_source: ${{ needs.scope.outputs.require_exact_source == 'true' }}
     secrets: inherit
 
   bazel:
@@ -123,7 +151,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: ${{ fromJSON(needs.scope.outputs.scoped_timeout_minutes) }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -207,6 +235,9 @@ jobs:
           python3 scripts/asciicheck.py README.md
           python3 scripts/readme_toc.py README.md
           python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_manifest.py --check
+          python3 scripts/hepta_architecture_graph.py --check
+          python3 scripts/hepta_rust_reachability.py --strict
           python3 scripts/hepta-docs.py verify
           test -z "$(git status --porcelain --untracked-files=no)"
 

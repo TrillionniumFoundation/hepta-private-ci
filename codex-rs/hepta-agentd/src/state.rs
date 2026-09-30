@@ -3,20 +3,19 @@ use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_app_server::AppServerDrainHandle;
+use codex_hepta_agent_components::authbus::SignedMessage;
+use codex_hepta_agent_components::authbus::SignedMessageClaims;
+use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::learning_ledger::DurableRunStartJournal;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use codex_hepta_agent_protocol::DrainSnapshot;
-use codex_hepta_authbus::SignedMessage;
-use codex_hepta_authbus::SignedMessageClaims;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_learning_ledger::DurableRunStartJournal;
-use codex_hepta_learning_ledger::RunStartRecordV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_app_host::AppServerDrainHandle;
 
 use crate::AgentRunCoordinator;
 use crate::AgentRunError;
@@ -26,6 +25,10 @@ use crate::AgentdIdentity;
 use crate::EventBuffer;
 use crate::RunReceipt;
 use crate::RuntimeComposition;
+
+#[path = "automation_attachment.rs"]
+mod automation_attachment;
+use automation_attachment::AutomationAttachment;
 
 #[path = "state_control.rs"]
 mod control;
@@ -55,7 +58,7 @@ pub(crate) struct AgentdState {
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
     events: Mutex<EventBuffer>,
-    automation: Mutex<Option<AutomationStore>>,
+    automation: Mutex<AutomationAttachment>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
     runs: Mutex<AgentRunCoordinator>,
     app_server_drain: AppServerDrainHandle,
@@ -152,7 +155,7 @@ impl AgentdState {
             identity,
             registry,
             events: Mutex::new(events),
-            automation: Mutex::new(None),
+            automation: Mutex::new(AutomationAttachment::default()),
             cognitive: Mutex::new(None),
             runs: Mutex::new(run_coordinator),
             app_server_drain: AppServerDrainHandle::new(),
@@ -177,10 +180,10 @@ impl AgentdState {
     /// Callers never receive the mutable writer or a second owner handle.
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
-        request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
+        request: codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1,
         now: u64,
     ) -> Result<
-        codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
+        codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceiptV1,
         crate::PlasticityRuntimeCallErrorV1,
     > {
         let producer = self
@@ -194,10 +197,10 @@ impl AgentdState {
     /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
-        request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
+        request: codex_hepta_agent_components::intelligence::TopologyPlasticityProductRequestV1,
         now: u64,
     ) -> Result<
-        codex_hepta_intelligence::TopologyPlasticityProductReceiptV1,
+        codex_hepta_agent_components::intelligence::TopologyPlasticityProductReceiptV1,
         crate::PlasticityRuntimeCallErrorV1,
     > {
         let producer = self
@@ -242,25 +245,6 @@ impl AgentdState {
         })
     }
 
-    pub(crate) fn attach_automation_store(
-        &self,
-        store: AutomationStore,
-    ) -> Result<(), AgentdError> {
-        if store.owner_agent_id() != &self.identity.agent_id {
-            return Err(AgentdError::GenerationFenced(
-                "automation store owner does not match agentd identity".to_string(),
-            ));
-        }
-        let mut automation = self.automation.lock().map_err(poisoned_state)?;
-        if automation.is_some() {
-            return Err(AgentdError::Protocol(
-                "automation store was attached more than once".to_string(),
-            ));
-        }
-        *automation = Some(store);
-        Ok(())
-    }
-
     pub(crate) fn attach_automation_effect_host(
         &self,
         host: Arc<crate::automation_effect_host::AgentdAutomationEffectHost>,
@@ -274,15 +258,6 @@ impl AgentdState {
         &self,
     ) -> Option<Arc<crate::automation_effect_host::AgentdAutomationEffectHost>> {
         self.automation_effect.get().cloned()
-    }
-
-    pub(crate) fn mark_automation_unavailable(&self) -> Result<(), AgentdError> {
-        self.automation.lock().map_err(poisoned_state)?.take();
-        Ok(())
-    }
-
-    pub(crate) fn automation_is_available(&self) -> Result<bool, AgentdError> {
-        Ok(self.automation.lock().map_err(poisoned_state)?.is_some())
     }
 
     pub(crate) fn identity(&self) -> &AgentdIdentity {
@@ -475,10 +450,7 @@ impl AgentdState {
         self.app_server_drain.clone()
     }
 
-    pub(crate) async fn request_drain(
-        &self,
-        automation: Option<&AutomationStore>,
-    ) -> Result<DrainSnapshot, AgentdError> {
+    pub(crate) async fn request_drain(&self) -> Result<DrainSnapshot, AgentdError> {
         self.refresh_generation()?;
         {
             let runtime = self.runtime.lock().map_err(poisoned_state)?;
@@ -490,10 +462,8 @@ impl AgentdState {
             }
         }
         self.mark_draining()?;
-        let automation_blockers = match automation {
-            Some(store) => store.drain_blockers().await?,
-            None => 1,
-        };
+        let attachment = self.automation.lock().map_err(poisoned_state)?.clone();
+        let automation_blockers = attachment.drain_blockers().await?;
         self.drain_snapshot(automation_blockers)
     }
 
@@ -586,6 +556,10 @@ impl AgentdState {
             return Ok(None);
         };
 
+        // Authenticate the durable owner and current Fleet fence before any
+        // provider is allowed to derive seven-owner inputs. This applies to
+        // abstain and slow-path outcomes as well as a Ready continuation.
+        let first_now = self.require_current_run_start(record)?;
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
 
@@ -607,14 +581,13 @@ impl AgentdState {
                 ))
             })?;
 
+        // Owner preparation is asynchronous. Revalidate the durable signed
+        // Objective and Fleet fence after it completes before reporting any
+        // canonical disposition or mutating the run coordinator.
+        let second_now = self.require_current_run_start(record)?;
+        let now_ms = first_now.max(second_now);
         match outcome {
             crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
-                // Owner preparation is asynchronous. Revalidate the durable
-                // signed Objective and Fleet fence again after it completes,
-                // twice as the compatibility path does at its final boundary.
-                let first_now = self.require_current_run_start(record)?;
-                let second_now = self.require_current_run_start(record)?;
-                let now_ms = first_now.max(second_now);
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;

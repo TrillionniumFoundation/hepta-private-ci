@@ -59,7 +59,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot.matrix.degraded = false;
             slot.matrix.last_error = None;
             reset_matrix_restart_budget(slot);
-            let _ = self.persist_restart_budget(agent_id, slot);
+            let _ = self.persist_matrix_restart_budget(agent_id, slot);
             return;
         };
         slot.matrix.configured = true;
@@ -700,7 +700,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 );
             }
         }
-        if let Err(error) = self.persist_restart_budget(agent_id, slot) {
+        if let Err(error) = self.persist_matrix_restart_budget(agent_id, slot) {
             let message = bounded_message(format!(
                 "Matrix restart budget could not be persisted: {error}"
             ));

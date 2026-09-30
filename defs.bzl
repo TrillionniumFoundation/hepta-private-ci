@@ -393,6 +393,7 @@ def codex_rust_crate(
             name = binary,
             crate_name = binary.replace("-", "_"),
             crate_root = main,
+            crate_features = crate_features,
             deps = all_crate_deps() + maybe_deps + deps_extra,
             edition = crate_edition,
             # Keep per-binary Cargo link behavior scoped to the matching

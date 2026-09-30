@@ -1,4 +1,4 @@
-fn product_test_coordinator() -> AgentRunCoordinator {
+pub(crate) fn product_test_coordinator() -> AgentRunCoordinator {
     AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.product".to_string(),
         supervisor_generation: 1,
@@ -18,72 +18,72 @@ use crate::RuntimeComposition;
 use std::fs::OpenOptions;
 
 use super::*;
-use codex_hepta_context_compiler::ContextItem;
-use codex_hepta_context_compiler::ContextRole;
-use codex_hepta_intelligence::CanonicalBudgetV1;
-use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
-use codex_hepta_intelligence::CanonicalIntelligenceSnapshotV1;
-use codex_hepta_intelligence::CanonicalSnapshotRequestV1;
-use codex_hepta_intelligence::LegalActionCandidateSetRequestV1;
-use codex_hepta_intelligence::LegalActionCandidateV1;
-use codex_hepta_intelligence::OwnerBindingV1;
-use codex_hepta_intuition::AssignmentModeV1;
-use codex_hepta_intuition::CalibratedActionCandidateV1;
-use codex_hepta_intuition::CalibrationArtifactV1;
-use codex_hepta_intuition::CandidateSetCompletenessBindingV1;
-use codex_hepta_intuition::OodArtifactV1;
-use codex_hepta_intuition::RiskClass;
-use codex_hepta_intuition::canonical_candidate_order_digest_v1;
-use codex_hepta_intuition::canonical_candidate_set_digest_v1;
+use codex_hepta_agent_components::context_compiler::ContextItem;
+use codex_hepta_agent_components::context_compiler::ContextRole;
+use codex_hepta_agent_components::intelligence::CanonicalBudgetV1;
+use codex_hepta_agent_components::intelligence::CanonicalIntelligenceRunRequestV1;
+use codex_hepta_agent_components::intelligence::CanonicalIntelligenceSnapshotV1;
+use codex_hepta_agent_components::intelligence::CanonicalSnapshotRequestV1;
+use codex_hepta_agent_components::intelligence::LegalActionCandidateSetRequestV1;
+use codex_hepta_agent_components::intelligence::LegalActionCandidateV1;
+use codex_hepta_agent_components::intelligence::OwnerBindingV1;
+use codex_hepta_agent_components::intuition::AssignmentModeV1;
+use codex_hepta_agent_components::intuition::CalibratedActionCandidateV1;
+use codex_hepta_agent_components::intuition::CalibrationArtifactV1;
+use codex_hepta_agent_components::intuition::CandidateSetCompletenessBindingV1;
+use codex_hepta_agent_components::intuition::OodArtifactV1;
+use codex_hepta_agent_components::intuition::RiskClass;
+use codex_hepta_agent_components::intuition::canonical_candidate_order_digest_v1;
+use codex_hepta_agent_components::intuition::canonical_candidate_set_digest_v1;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::AppendDisposition;
+use codex_hepta_agent_components::learning_ledger::AppendDisposition;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLedger;
+use codex_hepta_agent_components::learning_ledger::DurableLedger;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::LedgerAnchor;
+use codex_hepta_agent_components::learning_ledger::LedgerAnchor;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::LedgerEvent;
+use codex_hepta_agent_components::learning_ledger::LedgerEvent;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::LedgerRecovery;
-use codex_hepta_ndu::AggregationOperator;
-use codex_hepta_ndu::AxisAggregationRule;
-use codex_hepta_ndu::AxisDirection;
-use codex_hepta_ndu::AxisValue;
-use codex_hepta_ndu::FeasibilityPosture;
-use codex_hepta_ndu::RequiredOrganSet;
-use codex_hepta_ndu::UtilityContribution;
-use codex_hepta_ndu::evaluate_candidates_with_policy;
-use codex_hepta_objective::ConstraintClass;
-use codex_hepta_objective::ObjectiveAbstentionRuleProfileV1;
-use codex_hepta_objective::ObjectiveActionProfileV1;
-use codex_hepta_objective::ObjectiveConstraintComparatorV1;
-use codex_hepta_objective::ObjectiveConstraintProfileV1;
-use codex_hepta_objective::ObjectiveEvidenceProfileV1;
-use codex_hepta_objective::ObjectiveEvidenceRequirementV1;
-use codex_hepta_objective::ObjectivePredicateComparatorV1;
-use codex_hepta_objective::ObjectivePredicateProfileV1;
-use codex_hepta_objective::ObjectiveProvenanceV1;
-use codex_hepta_objective::ObjectiveResourceAxisProfileV1;
-use codex_hepta_objective::ObjectiveResourceProfileV1;
-use codex_hepta_objective::ObjectiveResourcesV1;
-use codex_hepta_objective::ObjectiveRiskClassV1;
-use codex_hepta_objective::ObjectiveRiskProfileV1;
-use codex_hepta_objective::ObjectiveRiskV1;
-use codex_hepta_objective::ObjectiveRollbackClassV1;
-use codex_hepta_objective::ObjectiveSoftDimensionProfileV1;
-use codex_hepta_objective::ObjectiveSoftDimensionV1;
-use codex_hepta_objective::ObjectiveSoftDirectionV1;
-use codex_hepta_objective::ObjectiveSourceAuthenticationV1;
-use codex_hepta_objective::ObjectiveSourceConstraintV1;
-use codex_hepta_objective::ObjectiveSourcePredicateV1;
-use codex_hepta_objective::ObjectiveSourceTrustV1;
-use codex_hepta_objective::ObjectiveStructuredIntentV1;
-use codex_hepta_objective::admit_and_compile_objective_v1;
-use codex_hepta_objective::canonical_objective_intent_digest_v1;
-use codex_hepta_prompt_optimizer::PromptCandidate;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::ProbabilityQ32;
-use codex_hepta_types::Revision;
+use codex_hepta_agent_components::learning_ledger::LedgerRecovery;
+use codex_hepta_agent_components::ndu::AggregationOperator;
+use codex_hepta_agent_components::ndu::AxisAggregationRule;
+use codex_hepta_agent_components::ndu::AxisDirection;
+use codex_hepta_agent_components::ndu::AxisValue;
+use codex_hepta_agent_components::ndu::FeasibilityPosture;
+use codex_hepta_agent_components::ndu::RequiredOrganSet;
+use codex_hepta_agent_components::ndu::UtilityContribution;
+use codex_hepta_agent_components::ndu::evaluate_candidates_with_policy;
+use codex_hepta_agent_components::objective::ConstraintClass;
+use codex_hepta_agent_components::objective::ObjectiveAbstentionRuleProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveActionProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveConstraintComparatorV1;
+use codex_hepta_agent_components::objective::ObjectiveConstraintProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveEvidenceProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveEvidenceRequirementV1;
+use codex_hepta_agent_components::objective::ObjectivePredicateComparatorV1;
+use codex_hepta_agent_components::objective::ObjectivePredicateProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveProvenanceV1;
+use codex_hepta_agent_components::objective::ObjectiveResourceAxisProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveResourceProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveResourcesV1;
+use codex_hepta_agent_components::objective::ObjectiveRiskClassV1;
+use codex_hepta_agent_components::objective::ObjectiveRiskProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveRiskV1;
+use codex_hepta_agent_components::objective::ObjectiveRollbackClassV1;
+use codex_hepta_agent_components::objective::ObjectiveSoftDimensionProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveSoftDimensionV1;
+use codex_hepta_agent_components::objective::ObjectiveSoftDirectionV1;
+use codex_hepta_agent_components::objective::ObjectiveSourceAuthenticationV1;
+use codex_hepta_agent_components::objective::ObjectiveSourceConstraintV1;
+use codex_hepta_agent_components::objective::ObjectiveSourcePredicateV1;
+use codex_hepta_agent_components::objective::ObjectiveSourceTrustV1;
+use codex_hepta_agent_components::objective::ObjectiveStructuredIntentV1;
+use codex_hepta_agent_components::objective::admit_and_compile_objective_v1;
+use codex_hepta_agent_components::objective::canonical_objective_intent_digest_v1;
+use codex_hepta_agent_components::prompt_optimizer::PromptCandidate;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::ProbabilityQ32;
+use codex_hepta_agent_components::types::Revision;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -91,11 +91,11 @@ const Q24: i64 = 1 << 24;
 const OBSERVED_MICROS: u64 = 1_788_861_600_000_000;
 const NOW_MICROS: u64 = OBSERVED_MICROS + 1_000_000;
 
-fn id(value: &str) -> StableId {
+pub(crate) fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
 }
 
-fn digest(value: &str) -> Digest32 {
+pub(crate) fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
@@ -327,7 +327,7 @@ fn authority_signing_key() -> SigningKey {
     SigningKey::from_bytes(&[7_u8; 32])
 }
 
-fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
+pub(crate) fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
     let signing = authority_signing_key();
     IntelligenceAuthorityVerifierV1 {
         signer_id: "qualification.intelligence-authority".to_string(),
@@ -335,7 +335,11 @@ fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
     }
 }
 
-fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], frontier: Digest32) {
+pub(crate) fn write_authority_file(
+    path: &std::path::Path,
+    owners: &[OwnerBindingV1],
+    frontier: Digest32,
+) {
     let file = IntelligenceAuthorityFileV1 {
         schema_version: 1,
         authority_epoch: 11,
@@ -369,13 +373,13 @@ fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], front
     }
 }
 
-struct Fixture {
-    request: CanonicalIntelligenceRunRequestV1,
-    inputs: AgentdIntelligenceOwnerInputsV1,
-    owners: Vec<OwnerBindingV1>,
+pub(crate) struct Fixture {
+    pub(crate) request: CanonicalIntelligenceRunRequestV1,
+    pub(crate) inputs: AgentdIntelligenceOwnerInputsV1,
+    pub(crate) owners: Vec<OwnerBindingV1>,
 }
 
-fn fixture() -> Fixture {
+pub(crate) fn fixture() -> Fixture {
     let profile = objective_profile();
     let envelope = objective_envelope();
     let objective_context = objective_context(&profile, &envelope);
@@ -504,16 +508,28 @@ fn fixture() -> Fixture {
         }],
     };
 
-    let intuition_candidates = vec![CalibratedActionCandidateV1 {
-        candidate_id: id("action.read"),
-        legal: true,
-        hard_veto: false,
-        utility: FixedQ32::ONE,
-        calibrated_confidence: ProbabilityQ32::ONE,
-        ood_score: ProbabilityQ32::ZERO,
-        assignment_probability: ProbabilityQ32::ZERO,
-        support_digest: digest("action-support"),
-    }];
+    let intuition_candidates = vec![
+        CalibratedActionCandidateV1 {
+            candidate_id: id("abstain"),
+            legal: true,
+            hard_veto: false,
+            utility: FixedQ32::ZERO,
+            calibrated_confidence: ProbabilityQ32::ONE,
+            ood_score: ProbabilityQ32::ZERO,
+            assignment_probability: ProbabilityQ32::ZERO,
+            support_digest: digest("abstain-support"),
+        },
+        CalibratedActionCandidateV1 {
+            candidate_id: id("action.read"),
+            legal: true,
+            hard_veto: false,
+            utility: FixedQ32::ONE,
+            calibrated_confidence: ProbabilityQ32::ONE,
+            ood_score: ProbabilityQ32::ZERO,
+            assignment_probability: ProbabilityQ32::ZERO,
+            support_digest: digest("action-support"),
+        },
+    ];
     let intuition_candidate_digest =
         canonical_candidate_set_digest_v1(&intuition_candidates).expect("candidate digest");
     let intuition_order_digest =
@@ -540,7 +556,7 @@ fn fixture() -> Fixture {
             truncation_digest: digest("truncation"),
             candidate_set_digest: intuition_candidate_digest,
             canonical_order_digest: intuition_order_digest,
-            candidate_count: 1,
+            candidate_count: 2,
             omitted_count_bound: 0,
         },
         calibration: CalibrationArtifactV1 {
@@ -601,15 +617,17 @@ fn fixture() -> Fixture {
         candidate_producer_id: id("intuition.policy"),
         baseline_id: id("baseline.noop"),
         objective_digest,
-        comparisons: vec![codex_hepta_intelligence_eval::MetricComparison {
-            metric_id: id("quality"),
-            direction: codex_hepta_intelligence_eval::Direction::Maximize,
-            candidate: FixedQ32::ONE,
-            baseline: FixedQ32::ZERO,
-            minimum_delta: FixedQ32::ZERO,
-            hard: true,
-            support_digest: digest("evaluation-support"),
-        }],
+        comparisons: vec![
+            codex_hepta_agent_components::intelligence_eval::MetricComparison {
+                metric_id: id("quality"),
+                direction: codex_hepta_agent_components::intelligence_eval::Direction::Maximize,
+                candidate: FixedQ32::ONE,
+                baseline: FixedQ32::ZERO,
+                minimum_delta: FixedQ32::ZERO,
+                hard: true,
+                support_digest: digest("evaluation-support"),
+            },
+        ],
     };
 
     Fixture {
@@ -621,10 +639,16 @@ fn fixture() -> Fixture {
                 state_digest: objective_digest,
                 generator_id: id("intelligence.control"),
                 grammar_digest: digest("legal-grammar"),
-                candidates: vec![LegalActionCandidateV1 {
-                    candidate_id: id("action.read"),
-                    support_digest: digest("action-support"),
-                }],
+                candidates: vec![
+                    LegalActionCandidateV1 {
+                        candidate_id: id("abstain"),
+                        support_digest: digest("abstain-support"),
+                    },
+                    LegalActionCandidateV1 {
+                        candidate_id: id("action.read"),
+                        support_digest: digest("action-support"),
+                    },
+                ],
                 support_floor_ppm: 1,
             },
             budget: CanonicalBudgetV1 {
@@ -639,9 +663,11 @@ fn fixture() -> Fixture {
             },
         },
         inputs: AgentdIntelligenceOwnerInputsV1 {
-            objective_envelope: envelope,
-            objective_profile: profile,
-            objective_context,
+            objective: AgentdObjectiveOwnerInputV1::Admission {
+                envelope,
+                profile,
+                context: objective_context,
+            },
             utility_contributions,
             utility_profile,
             utility_scalarization,
@@ -662,7 +688,7 @@ fn fixture() -> Fixture {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_owner_product_path_records_decision_outcome_and_reopens() {
-    let fixture = fixture();
+    let (fixture, evaluation_trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -670,8 +696,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_evaluation_trust(evaluation_trust)
+        .expect("host-root evaluation trust");
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, fixture.request, fixture.inputs)
@@ -693,7 +721,11 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         Some(prepared.envelope.envelope_digest.to_string().as_str())
     );
     let dispatched = coordinator
-        .mark_dispatched(&attached.run_id, attached.revision)
+        .mark_dispatched(
+            wall_clock_ms().expect("wall clock"),
+            &attached.run_id,
+            attached.revision,
+        )
         .expect("commit dispatch before physical effect");
     assert_eq!(dispatched.phase, RunPhase::Dispatched);
 
@@ -825,7 +857,7 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn final_use_revocation_race_fails_before_decision_publication() {
-    let fixture = fixture();
+    let (fixture, evaluation_trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -834,7 +866,9 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         fixture.request.snapshot.revocation_frontier_digest(),
     );
     let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
-        .expect("runner");
+        .expect("runner")
+        .with_evaluation_trust(evaluation_trust)
+        .expect("host-root evaluation trust");
     let outcome = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await
@@ -987,6 +1021,10 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
         .expect("capacity restored");
     assert_eq!(ready.await.expect("new work completes"), 7);
 }
+
+#[cfg(feature = "qualification-legacy-learning-write")]
+#[path = "intelligence_product_self_evolution_tests.rs"]
+mod self_evolution;
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;

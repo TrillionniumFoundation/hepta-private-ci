@@ -21,11 +21,12 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
-use codex_hepta_automation::AutomationOccurrenceTerminalState;
-use codex_hepta_automation::AutomationOccurrenceWork;
-use codex_hepta_automation::AutomationQueueReceipt;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_agent_components::automation::AutomationOccurrence;
+use codex_hepta_agent_components::automation::AutomationOccurrenceTerminalState;
+use codex_hepta_agent_components::automation::AutomationOccurrenceWork;
+use codex_hepta_agent_components::automation::AutomationQueueReceipt;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::contracts::Sha256Digest;
 use codex_protocol::user_input::user_input_payload_sha256;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
@@ -183,13 +184,25 @@ async fn reconcile_work(
     store: &AutomationStore,
     state: &AgentdState,
     identity: &AgentdIdentity,
-    work: AutomationOccurrenceWork,
+    mut work: AutomationOccurrenceWork,
     now_ms: u64,
 ) -> Result<(), AgentdError> {
     store
         .ensure_admitted_taskflow_uncertainty(&work, now_ms)
         .await
         .map_err(taskflow_error)?;
+    if work.occurrence.turn_id.is_none() {
+        let Some(recorded) =
+            reconcile_admitted_without_turn(store, state, identity, &work, now_ms).await?
+        else {
+            return Ok(());
+        };
+        // Continue only from the actual committed owner record. A queue ACK,
+        // missing history or in-progress turn is never terminal evidence. This
+        // removes an idle tick between two read-only observations of ONE
+        // occurrence; the outer recovery deadline and page budget are unchanged.
+        work.occurrence = recorded;
+    }
     if let Some(turn_id) = work.occurrence.turn_id.as_deref() {
         let client = connect(state, identity).await?;
         let observed = find_turn(
@@ -269,7 +282,9 @@ async fn reconcile_work(
             }
         }
     } else {
-        reconcile_admitted_without_turn(store, state, identity, &work, now_ms).await
+        Err(AgentdError::Protocol(
+            "persisted automation occurrence has no recorded turn identity".to_string(),
+        ))
     }
 }
 
@@ -279,7 +294,7 @@ async fn reconcile_admitted_without_turn(
     identity: &AgentdIdentity,
     work: &AutomationOccurrenceWork,
     now_ms: u64,
-) -> Result<(), AgentdError> {
+) -> Result<Option<AutomationOccurrence>, AgentdError> {
     let input = prompt_input(&work.admission.prompt);
     let expected = input_digest(&input)?;
     let client = connect(state, identity).await?;
@@ -307,10 +322,10 @@ async fn reconcile_admitted_without_turn(
                     "automation queued reconciliation changed identity or payload".to_string(),
                 ));
             }
-            Ok(())
+            Ok(None)
         }
         ThreadQueueReconcileOutcome::Persisted { turn_id } if !turn_id.is_empty() => {
-            store
+            let recorded = store
                 .record_occurrence_turn(
                     work.occurrence.task_id,
                     work.occurrence.occurrence,
@@ -320,7 +335,7 @@ async fn reconcile_admitted_without_turn(
                     now_ms,
                 )
                 .await?;
-            Ok(())
+            Ok(Some(recorded))
         }
         ThreadQueueReconcileOutcome::Cancelled => {
             complete_work(
@@ -331,7 +346,8 @@ async fn reconcile_admitted_without_turn(
                 now_ms,
                 identity.spawn_generation,
             )
-            .await
+            .await?;
+            Ok(None)
         }
         ThreadQueueReconcileOutcome::Missing => {
             let digest = observation_digest(&response)?;
@@ -343,7 +359,7 @@ async fn reconcile_admitted_without_turn(
                     now_ms,
                 )
                 .await?;
-            Ok(())
+            Ok(None)
         }
         ThreadQueueReconcileOutcome::Persisted { .. } => Err(AgentdError::Protocol(
             "automation reconciliation returned an empty persisted turn id".to_string(),
@@ -388,7 +404,7 @@ async fn complete_work(
 
 async fn pending_exact(
     store: &AutomationStore,
-    task_id: codex_hepta_automation::AutomationTaskId,
+    task_id: codex_hepta_agent_components::automation::AutomationTaskId,
     occurrence: u64,
 ) -> Result<AutomationOccurrenceWork, AgentdError> {
     store
@@ -548,6 +564,6 @@ fn observation_digest(value: &impl serde::Serialize) -> Result<Sha256Digest, Age
     Ok(Sha256Digest::for_bytes(&serde_json::to_vec(value)?))
 }
 
-fn taskflow_error(error: codex_hepta_automation::TaskFlowError) -> AgentdError {
+fn taskflow_error(error: codex_hepta_agent_components::automation::TaskFlowError) -> AgentdError {
     AgentdError::Protocol(format!("automation TaskFlow recovery failed: {error}"))
 }

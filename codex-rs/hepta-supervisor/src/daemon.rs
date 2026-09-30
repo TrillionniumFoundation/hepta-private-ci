@@ -72,6 +72,8 @@ use crate::AgentRelease;
 #[cfg(any(unix, test))]
 use crate::AgentSupervisorSnapshot;
 #[cfg(unix)]
+use crate::DurableRuntimeModuleSupervisorV1;
+#[cfg(unix)]
 use crate::H7H89ProductionGrant;
 use crate::H7H89ProductionGrantVerifier;
 #[cfg(unix)]
@@ -145,6 +147,8 @@ struct DaemonState<D: ProcessDriver> {
     supervisor_epoch: SupervisorEpoch,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     observed_faults: AtomicU64,
+    // Opened before readiness; restores active generations and fences.
+    runtime_modules: Mutex<DurableRuntimeModuleSupervisorV1>,
 }
 
 /// Runs the one lifecycle-only supervisor daemon for a fleet.
@@ -194,6 +198,12 @@ async fn run_supervisord_inner(
     }
     let layout = registry.layout().clone();
     let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
+    let runtime_modules = DurableRuntimeModuleSupervisorV1::open(
+        layout.runtime_module_supervisor_state(),
+    )
+    .map_err(|error| {
+        SupervisorError::Invalid(format!("open durable runtime-module supervisor: {error}"))
+    })?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     let (supervisor, recovery) = Supervisor::recover(
@@ -208,6 +218,7 @@ async fn run_supervisord_inner(
         supervisor_epoch: SupervisorEpoch::new(),
         production_grant_verifier,
         observed_faults: AtomicU64::new(recovery.faults.len() as u64),
+        runtime_modules: Mutex::new(runtime_modules),
     });
     let server = SupervisordServer::bind(
         layout.supervisor_socket().to_path_buf(),
@@ -385,6 +396,20 @@ async fn handle_request<D: ProcessDriver>(
     method: SupervisordMethod,
 ) -> SupervisordPayload {
     match method {
+        SupervisordMethod::RuntimeModuleSelection { module_id } => {
+            match state
+                .runtime_modules
+                .lock()
+                .await
+                .module_selection(&module_id)
+            {
+                Ok(selection) => SupervisordPayload::RuntimeModuleSelection { selection },
+                Err(error) => {
+                    error_response(0, "module_selection_unavailable", &error.to_string(), None)
+                        .payload
+                }
+            }
+        }
         SupervisordMethod::Health => {
             let registered_agents = match state.registry.load() {
                 Ok(snapshot) => snapshot.agents.len(),

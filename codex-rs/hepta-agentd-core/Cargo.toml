@@ -1,0 +1,17 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-agentd-core"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_agentd_core"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-types = { workspace = true }

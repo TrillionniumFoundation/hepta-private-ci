@@ -13,6 +13,16 @@ struct InteractionIndex {
     edges: BTreeMap<(StableId, StableId), FixedQ32>,
 }
 
+/// The same immutable pricing/constraint view drives selection and its audit.
+#[derive(Clone, Copy)]
+struct PortfolioEvaluationContext<'a, 'price> {
+    price_map: &'a BTreeMap<StableId, &'price PromptPricingReceiptV1>,
+    constraints: &'a ConstraintIndex,
+    interactions: &'a InteractionIndex,
+    missing_policy: PromptMissingInteractionPolicyV1,
+    budget: &'a PromptPortfolioBudgetV1,
+}
+
 #[derive(Clone, Debug)]
 struct PackageEvaluation {
     root_factor_id: StableId,
@@ -327,13 +337,10 @@ fn emit_prerequisites(
 fn evaluate_package(
     root: &StableId,
     selected: &BTreeSet<StableId>,
-    price_map: &BTreeMap<StableId, &PromptPricingReceiptV1>,
-    constraints: &ConstraintIndex,
-    interactions: &InteractionIndex,
-    missing_policy: PromptMissingInteractionPolicyV1,
-    budget: &PromptPortfolioBudgetV1,
+    context: &PortfolioEvaluationContext<'_, '_>,
     used_tokens: u32,
 ) -> Result<Option<PackageEvaluation>, PolicyError> {
+    let PortfolioEvaluationContext { price_map, constraints, interactions, missing_policy, budget } = *context;
     let ordered_package = ordered_prerequisite_package(root, constraints, selected)?;
     if ordered_package.is_empty() {
         return Ok(None);
@@ -434,28 +441,21 @@ fn interaction_value(
 
 fn portfolio_candidate_audit(
     selected: &BTreeSet<StableId>,
-    price_map: &BTreeMap<StableId, &PromptPricingReceiptV1>,
-    constraints: &ConstraintIndex,
-    interaction_index: &InteractionIndex,
+    context: &PortfolioEvaluationContext<'_, '_>,
     graph: &PromptInteractionGraphV1,
-    budget: &PromptPortfolioBudgetV1,
     used_tokens: u32,
 ) -> Result<Vec<PromptPortfolioCandidateAuditV1>, PolicyError> {
     let mut decisions = Vec::with_capacity(graph.candidate_factor_ids.len());
     for factor_id in &graph.candidate_factor_ids {
         let disposition = if selected.contains(factor_id) {
             PromptPortfolioDispositionV1::Selected
-        } else if !price_map.contains_key(factor_id) {
+        } else if !context.price_map.contains_key(factor_id) {
             PromptPortfolioDispositionV1::UnavailablePricing
         } else {
             classify_unselected_factor(
                 factor_id,
                 selected,
-                price_map,
-                constraints,
-                interaction_index,
-                graph.missing_interaction_policy,
-                budget,
+                context,
                 used_tokens,
             )?
         };
@@ -470,13 +470,10 @@ fn portfolio_candidate_audit(
 fn classify_unselected_factor(
     factor_id: &StableId,
     selected: &BTreeSet<StableId>,
-    price_map: &BTreeMap<StableId, &PromptPricingReceiptV1>,
-    constraints: &ConstraintIndex,
-    interaction_index: &InteractionIndex,
-    missing_policy: PromptMissingInteractionPolicyV1,
-    budget: &PromptPortfolioBudgetV1,
+    context: &PortfolioEvaluationContext<'_, '_>,
     used_tokens: u32,
 ) -> Result<PromptPortfolioDispositionV1, PolicyError> {
+    let PortfolioEvaluationContext { price_map, constraints, budget, .. } = *context;
     let package = ordered_prerequisite_package(factor_id, constraints, selected)?;
     if package_conflicts(&package, selected, constraints) {
         return Ok(PromptPortfolioDispositionV1::HardConflict);
@@ -506,11 +503,7 @@ fn classify_unselected_factor(
     let Some(evaluation) = evaluate_package(
         factor_id,
         selected,
-        price_map,
-        constraints,
-        interaction_index,
-        missing_policy,
-        budget,
+        context,
         used_tokens,
     )? else {
         return Ok(PromptPortfolioDispositionV1::HeuristicExcluded);

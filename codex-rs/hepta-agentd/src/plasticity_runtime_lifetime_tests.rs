@@ -7,64 +7,64 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::RwLock;
 
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_intelligence::ParameterPlasticityDispositionV1;
-use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
-use codex_hepta_intelligence::TopologyAdmissionEvidenceV1;
-use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
-use codex_hepta_intelligence::no_change_disposition_signing_payload_v1;
-use codex_hepta_intelligence::plasticity_admission_signing_payload_v1;
-use codex_hepta_intelligence::topology_admission_signing_payload_v1;
-use codex_hepta_intelligence::topology_evaluation_signing_payload_v1;
-use codex_hepta_intelligence::topology_generation_signing_payload_v1;
-use codex_hepta_learning_artifacts::ArtifactEvent;
-use codex_hepta_learning_artifacts::ArtifactKind;
-use codex_hepta_learning_artifacts::ArtifactManifest;
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-use codex_hepta_learning_ledger::CandidateSetCompleteness;
-use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
-use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::EpisodeDecision;
-use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
-use codex_hepta_learning_ledger::LedgerAnchor;
-use codex_hepta_learning_ledger::LedgerEvent;
-use codex_hepta_learning_ledger::LedgerRecovery;
-use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
-use codex_hepta_learning_ledger::TrustedLearningSignerV1;
-use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
-use codex_hepta_ndu::NduProjectionJournalV1;
-use codex_hepta_ndu::NduProjectionKindV1;
-use codex_hepta_neuron::JournalScope;
-use codex_hepta_neuron::SparseConfig;
-use codex_hepta_neuron::SparseJournal;
-use codex_hepta_neuron::SparseTick;
-use codex_hepta_paths::HeptaFleetRoot;
-use codex_hepta_plasticity::AppendDisposition;
-use codex_hepta_plasticity::LayerNormDenominatorV2;
-use codex_hepta_plasticity::ParameterGeneratorProfileV3;
-use codex_hepta_plasticity::ParameterMutationRuleV1;
-use codex_hepta_plasticity::ParameterMutationSurfaceV1;
-use codex_hepta_plasticity::ParameterPlasticitySignalV3;
-use codex_hepta_plasticity::ProposalWindowV2;
-use codex_hepta_plasticity::TopologyChangeV2;
-use codex_hepta_plasticity::TopologyOperationV2;
-use codex_hepta_plasticity::build_parameter_mutation_policy_v1;
-use codex_hepta_plasticity::build_writer_handoff_plan_v1;
-use codex_hepta_plasticity::generate_parameter_candidates_v3;
-use codex_hepta_plasticity::parameter_generator_signing_payload_v3;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::ProbabilityQ32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::intelligence::ParameterPlasticityDispositionV1;
+use codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1;
+use codex_hepta_agent_components::intelligence::TopologyAdmissionEvidenceV1;
+use codex_hepta_agent_components::intelligence::TopologyPlasticityProductRequestV1;
+use codex_hepta_agent_components::intelligence::no_change_disposition_signing_payload_v1;
+use codex_hepta_agent_components::intelligence::plasticity_admission_signing_payload_v1;
+use codex_hepta_agent_components::intelligence::topology_admission_signing_payload_v1;
+use codex_hepta_agent_components::intelligence::topology_evaluation_signing_payload_v1;
+use codex_hepta_agent_components::intelligence::topology_generation_signing_payload_v1;
+use codex_hepta_agent_components::learning_artifacts::ArtifactEvent;
+use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_agent_components::learning_ledger::CandidateSetCompleteness;
+use codex_hepta_agent_components::learning_ledger::DatasetFreezeRequestV1;
+use codex_hepta_agent_components::learning_ledger::DurableLedger;
+use codex_hepta_agent_components::learning_ledger::EpisodeDecision;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_agent_components::learning_ledger::LedgerAnchor;
+use codex_hepta_agent_components::learning_ledger::LedgerEvent;
+use codex_hepta_agent_components::learning_ledger::LedgerRecovery;
+use codex_hepta_agent_components::learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_agent_components::learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_agent_components::learning_ledger::freeze_dataset_receipt_v3;
+use codex_hepta_agent_components::ndu::NduProjectionJournalV1;
+use codex_hepta_agent_components::ndu::NduProjectionKindV1;
+use codex_hepta_agent_components::neuron::JournalScope;
+use codex_hepta_agent_components::neuron::SparseConfig;
+use codex_hepta_agent_components::neuron::SparseJournal;
+use codex_hepta_agent_components::neuron::SparseTick;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
+use codex_hepta_agent_components::plasticity::AppendDisposition;
+use codex_hepta_agent_components::plasticity::LayerNormDenominatorV2;
+use codex_hepta_agent_components::plasticity::ParameterGeneratorProfileV3;
+use codex_hepta_agent_components::plasticity::ParameterMutationRuleV1;
+use codex_hepta_agent_components::plasticity::ParameterMutationSurfaceV1;
+use codex_hepta_agent_components::plasticity::ParameterPlasticitySignalV3;
+use codex_hepta_agent_components::plasticity::ProposalWindowV2;
+use codex_hepta_agent_components::plasticity::TopologyChangeV2;
+use codex_hepta_agent_components::plasticity::TopologyOperationV2;
+use codex_hepta_agent_components::plasticity::build_parameter_mutation_policy_v1;
+use codex_hepta_agent_components::plasticity::build_writer_handoff_plan_v1;
+use codex_hepta_agent_components::plasticity::generate_parameter_candidates_v3;
+use codex_hepta_agent_components::plasticity::parameter_generator_signing_payload_v3;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::ProbabilityQ32;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
@@ -336,14 +336,14 @@ impl SigningFixture {
 
 struct OwnerSources {
     artifacts: ArtifactRegistry,
-    dataset: codex_hepta_learning_ledger::DatasetSnapshotReceiptV3,
+    dataset: codex_hepta_agent_components::learning_ledger::DatasetSnapshotReceiptV3,
     ndu: Arc<RwLock<NduProjectionJournalV1>>,
     neuron: Arc<Mutex<SparseJournal>>,
-    neuron_anchor: codex_hepta_neuron::JournalAnchor,
+    neuron_anchor: codex_hepta_agent_components::neuron::JournalAnchor,
     binding: PlasticityDynamicSignalBindingV1,
     modulator_values: Vec<FixedQ32>,
     profile: ParameterGeneratorProfileV3,
-    generated: codex_hepta_plasticity::GeneratedParameterCandidateSetV3,
+    generated: codex_hepta_agent_components::plasticity::GeneratedParameterCandidateSetV3,
     owner_policy: PlasticityOwnerEvidencePolicyV1,
     objective_digest: Digest32,
     dataset_digest: Digest32,
@@ -566,7 +566,8 @@ fn build_owner_sources(
             .candidates
             .iter()
             .filter(|candidate| {
-                candidate.kind == codex_hepta_plasticity::ParameterCandidateKindV2::Update
+                candidate.kind
+                    == codex_hepta_agent_components::plasticity::ParameterCandidateKindV2::Update
             })
             .count(),
         0,
@@ -1051,7 +1052,7 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     drop(restarted_state);
 
     let (reconciled, _anchor_store): (
-        codex_hepta_intelligence::AnchoredPlasticityWriterV1,
+        codex_hepta_agent_components::intelligence::AnchoredPlasticityWriterV1,
         AgentdPlasticityAnchorStoreV1,
     ) = reopen_agentd_plasticity_writer_v1(
         existing_file(&files.parameter_registry),

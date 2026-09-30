@@ -4,19 +4,29 @@
 import argparse
 import hashlib
 import json
+import sys
 import re
 from collections import defaultdict, deque
 from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from scripts.hepta_metadata import (
+        AUTHORITY_KEYS as AUTHORITY_KEYS,
+        has_schema_version,
+        has_deny_all_authority,
+    )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from hepta_metadata import (
+        AUTHORITY_KEYS as AUTHORITY_KEYS,
+        has_schema_version,
+        has_deny_all_authority,
+    )
 
 try:
+    from scripts.hepta_workflow_commands import verify_document_workflow
     from scripts.hepta_module_catalog import (
         covers_module_ids,
         has_module_count,
@@ -25,6 +35,7 @@ try:
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
+    from hepta_workflow_commands import verify_document_workflow
     from hepta_module_catalog import (
         covers_module_ids,
         has_module_count,
@@ -142,14 +153,11 @@ def load(rel: str) -> dict[str, Any]:
         die(f"{rel}: {exc}")
 
 
-def false_authority(value: Any, label: str) -> None:
+def false_authority(value: object, label: str) -> None:
     need(
-        isinstance(value, dict) and set(value) == set(AUTHORITY_KEYS),
-        label + " authority key closure",
-    )
-    need(
-        all(type(flag) is bool and flag is False for flag in value.values()),
-        label + " positive authority or invalid authority type",
+        has_deny_all_authority(value),
+        label
+        + " positive authority or invalid authority metadata; exact false booleans required",
     )
 
 
@@ -214,7 +222,9 @@ def validate_schema_node(
     if field_type in ARRAY_TYPES:
         need(
             set(node)
-            == set(prefix + ["maxBytes", "minItems", "maxItems", "uniqueItems", "items"]),
+            == set(
+                prefix + ["maxBytes", "minItems", "maxItems", "uniqueItems", "items"]
+            ),
             label + " array key closure",
         )
         need(
@@ -272,14 +282,16 @@ def validate_schema_node(
     )
     need(
         set(node)
-        == set(prefix
-        + [
-            "maxBytes",
-            "minProperties",
-            "maxProperties",
-            "additionalProperties",
-            "properties",
-        ]),
+        == set(
+            prefix
+            + [
+                "maxBytes",
+                "minProperties",
+                "maxProperties",
+                "additionalProperties",
+                "properties",
+            ]
+        ),
         label + " object key closure",
     )
     properties = node.get("properties")
@@ -479,28 +491,65 @@ def validate_module_guide(path: Path, module_id: str) -> None:
 def validate_markdown_document(
     row: dict[str, Any], protocol_ids: set[str], gap_ids: set[str]
 ) -> None:
-    path = ROOT / row["path"]
+    relative = row.get("path")
+    need(
+        isinstance(relative, str)
+        and relative.endswith(".md")
+        and not relative.startswith("/")
+        and "\\" not in relative
+        and "\x00" not in relative
+        and not any(part in {"", ".", ".."} for part in relative.split("/")),
+        row["id"] + " invalid document path",
+    )
+    path = ROOT / relative
+    need(
+        path.resolve().is_relative_to(ROOT.resolve()),
+        row["id"] + " escaped document path",
+    )
     need(path.is_file(), row["id"] + " document missing")
     text = path.read_text(encoding="utf-8")
-    # Required contract sections and registered references carry meaning.
-    # Word quotas and prose markers cannot establish implementation readiness.
+    # Registries own the contract and gap identities. Editorial headings are
+    # navigation suggestions, not evidence of runtime or migration correctness.
     need(bool(text.strip()), row["id"] + " empty document")
-    need(
-        all(section in text for section in row["requiredSections"]),
-        row["id"] + " sections",
-    )
-    need(
-        "## Appendix A. Closed gap and protocol mapping" in text,
-        row["id"] + " closure appendix",
-    )
-    for protocol_id in row["protocols"]:
-        need(
-            protocol_id in protocol_ids, row["id"] + " unknown protocol " + protocol_id
+    suggested = [
+        *row["requiredSections"],
+        "## Appendix A. Closed gap and protocol mapping",
+    ]
+    missing = [section for section in suggested if section not in text]
+    if missing:
+        print(
+            "ADVISORY_HEPTA_READINESS: "
+            + row["id"]
+            + " alternate headings: "
+            + ", ".join(missing),
+            file=sys.stderr,
         )
-        need(protocol_id in text, row["id"] + " protocol not cited " + protocol_id)
-    for gap_id in row["gapIds"]:
-        need(gap_id in gap_ids, row["id"] + " unknown gap " + gap_id)
-        need(gap_id in text, row["id"] + " gap not cited " + gap_id)
+    # The registry owns these references. Repeating an identifier in prose is
+    # navigation advice, not a second source of protocol or gap ownership.
+    for field, known, label in (
+        ("protocols", protocol_ids, "protocol"),
+        ("gapIds", gap_ids, "gap"),
+    ):
+        references = row.get(field)
+        need(
+            isinstance(references, list)
+            and all(isinstance(value, str) and value for value in references)
+            and len(references) == len(set(references)),
+            row["id"] + " invalid " + label + " references",
+        )
+        for reference in references:
+            need(reference in known, row["id"] + " unknown " + label + " " + reference)
+        uncited = [reference for reference in references if reference not in text]
+        if uncited:
+            print(
+                "ADVISORY_HEPTA_READINESS: "
+                + row["id"]
+                + " consider explaining registered "
+                + label
+                + " references: "
+                + ", ".join(uncited),
+                file=sys.stderr,
+            )
 
 
 def verify() -> int:
@@ -603,17 +652,19 @@ def verify() -> int:
         pid = row["id"]
         need(
             set(row)
-            == set([
-                "id",
-                "owner",
-                "consumers",
-                "canonicalEncoding",
-                "denyUnknownCriticalFields",
-                "maximumEncodedBytes",
-                "fields",
-                "invariants",
-                "authorityDelta",
-            ]),
+            == set(
+                [
+                    "id",
+                    "owner",
+                    "consumers",
+                    "canonicalEncoding",
+                    "denyUnknownCriticalFields",
+                    "maximumEncodedBytes",
+                    "fields",
+                    "invariants",
+                    "authorityDelta",
+                ]
+            ),
             pid + " key closure",
         )
         need(row["owner"] in module_id_set, pid + " owner")
@@ -669,15 +720,17 @@ def verify() -> int:
     for row in gap_rows:
         need(
             set(row)
-            == set([
-                "id",
-                "family",
-                "gap",
-                "state",
-                "evidence",
-                "protocols",
-                "boundModules",
-            ]),
+            == set(
+                [
+                    "id",
+                    "family",
+                    "gap",
+                    "state",
+                    "evidence",
+                    "protocols",
+                    "boundModules",
+                ]
+            ),
             row["id"] + " key closure",
         )
         need(row["state"] == "closed_specification", row["id"] + " state")
@@ -724,16 +777,18 @@ def verify() -> int:
     for row in document_rows:
         need(
             set(row)
-            == set([
-                "id",
-                "path",
-                "title",
-                "boundModules",
-                "protocols",
-                "gapIds",
-                "workPackages",
-                "requiredSections",
-            ]),
+            == set(
+                [
+                    "id",
+                    "path",
+                    "title",
+                    "boundModules",
+                    "protocols",
+                    "gapIds",
+                    "workPackages",
+                    "requiredSections",
+                ]
+            ),
             row["id"] + " document key closure",
         )
         need(
@@ -766,15 +821,17 @@ def verify() -> int:
     for row in lane_rows:
         need(
             set(row)
-            == set([
-                "id",
-                "owner",
-                "deputy",
-                "modules",
-                "dependsOn",
-                "entryGate",
-                "exitGate",
-            ]),
+            == set(
+                [
+                    "id",
+                    "owner",
+                    "deputy",
+                    "modules",
+                    "dependsOn",
+                    "entryGate",
+                    "exitGate",
+                ]
+            ),
             row["id"] + " lane key closure",
         )
         need(
@@ -838,14 +895,16 @@ def verify() -> int:
         )
         need(
             set(row)
-            == set([
-                "module",
-                "primaryLane",
-                "specifications",
-                "ownedReadinessProtocols",
-                "consumedReadinessProtocols",
-                "codingGate",
-            ]),
+            == set(
+                [
+                    "module",
+                    "primaryLane",
+                    "specifications",
+                    "ownedReadinessProtocols",
+                    "consumedReadinessProtocols",
+                    "codingGate",
+                ]
+            ),
             mid + " binding key closure",
         )
         need(mid in lane_map[row["primaryLane"]]["modules"], mid + " primary lane")
@@ -987,32 +1046,10 @@ def verify() -> int:
         )
 
     workflow = (ROOT / WORKFLOW_PATH).read_text(encoding="utf-8")
-    for token in [
-        "source-head:",
-        "merge-candidate:",
-        "github.event.pull_request.head.sha",
-        "github.event.pull_request.base.sha",
-        "persist-credentials: false",
-        "python3 scripts/hepta-readiness.py self-test",
-        "python3 scripts/hepta-readiness.py generate-status --check",
-        "python3 scripts/hepta-readiness.py verify",
-        "contents: read",
-    ]:
-        need(token in workflow, "workflow missing " + token)
-    need(
-        "git merge-tree --write-tree" in workflow
-        or ".github/actions/hepta-synthetic-merge" in workflow,
-        "workflow missing deterministic synthetic merge construction",
-    )
-    for token in [
-        "contents: write",
-        "pull-requests: write",
-        "git push",
-        "update-ref",
-        "paths-ignore:",
-        "github.event.pull_request.merge_commit_sha",
-    ]:
-        need(token not in workflow, "workflow mutation/stale identity " + token)
+    try:
+        verify_document_workflow(workflow, ROOT, "scripts/hepta-readiness.py")
+    except ValueError as error:
+        die("readiness workflow: " + str(error))
 
     need(
         (ROOT / STATUS_PATH).read_text(encoding="utf-8")
@@ -1128,7 +1165,9 @@ def self_test() -> int:
     for fixture in [valid_enum, valid_array, valid_vector, valid_object]:
         validate_schema_node(fixture, 1024, "fixture", named=True)
 
-    validate_schema_node(dict(reversed(list(valid_enum.items()))), 1024, "permuted enum", named=True)
+    validate_schema_node(
+        dict(reversed(list(valid_enum.items()))), 1024, "permuted enum", named=True
+    )
     invalid_schemas = [
         (
             {

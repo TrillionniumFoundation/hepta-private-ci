@@ -12,19 +12,19 @@
 //! its original predecessor through a freshly recovered journal.
 
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_intelligence::AdvisoryDecisionV1;
+use codex_hepta_agent_components::intelligence::AdvisoryDecisionV1;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::AppendReceipt;
+use codex_hepta_agent_components::learning_ledger::AppendReceipt;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::CandidateSetCompleteness;
+use codex_hepta_agent_components::learning_ledger::CandidateSetCompleteness;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::EpisodeDecision;
+use codex_hepta_agent_components::learning_ledger::EpisodeDecision;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::OutcomeFinality;
+use codex_hepta_agent_components::learning_ledger::OutcomeFinality;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::OutcomeObservation;
+use codex_hepta_agent_components::learning_ledger::OutcomeObservation;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_types::FixedQ32;
+use codex_hepta_agent_components::types::FixedQ32;
 
 #[path = "intelligence_evaluation.rs"]
 mod evaluation;
@@ -44,54 +44,55 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_context_compiler::CompilationRequest;
-use codex_hepta_context_compiler::compile;
-use codex_hepta_intelligence::CanonicalFreshnessOracleV1;
-use codex_hepta_intelligence::CanonicalIntelligenceError;
-use codex_hepta_intelligence::CanonicalIntelligenceRunRequestV1;
-use codex_hepta_intelligence::CanonicalIntelligenceSnapshotV1;
-use codex_hepta_intelligence::CanonicalOwnerPortsV1;
-use codex_hepta_intelligence::CanonicalPortDecisionV1;
-use codex_hepta_intelligence::CanonicalPortFailureClassV1;
-use codex_hepta_intelligence::CanonicalPortFailureV1;
-use codex_hepta_intelligence::CanonicalPortInputV1;
-use codex_hepta_intelligence::CanonicalPortReceiptV1;
-use codex_hepta_intelligence::CanonicalRunOutcomeV1;
-use codex_hepta_intelligence::CanonicalStageV1;
-use codex_hepta_intelligence::CurrentOwnerStateV1;
-use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
-use codex_hepta_intelligence::prepare_intelligence_run;
-use codex_hepta_intelligence::validate_current_snapshot;
-use codex_hepta_intelligence_eval::EvaluationRequest;
-use codex_hepta_intuition::CalibratedDecisionRequestV1;
-use codex_hepta_intuition::CalibratedDispositionV1;
-use codex_hepta_intuition::decide_calibrated_v2;
+use codex_hepta_agent_components::context_compiler::CompilationRequest;
+use codex_hepta_agent_components::context_compiler::compile;
+use codex_hepta_agent_components::intelligence::CanonicalFreshnessOracleV1;
+use codex_hepta_agent_components::intelligence::CanonicalIntelligenceError;
+use codex_hepta_agent_components::intelligence::CanonicalIntelligenceRunRequestV1;
+use codex_hepta_agent_components::intelligence::CanonicalIntelligenceSnapshotV1;
+use codex_hepta_agent_components::intelligence::CanonicalOwnerPortsV1;
+use codex_hepta_agent_components::intelligence::CanonicalPortDecisionV1;
+use codex_hepta_agent_components::intelligence::CanonicalPortFailureClassV1;
+use codex_hepta_agent_components::intelligence::CanonicalPortFailureV1;
+use codex_hepta_agent_components::intelligence::CanonicalPortInputV1;
+use codex_hepta_agent_components::intelligence::CanonicalPortReceiptV1;
+use codex_hepta_agent_components::intelligence::CanonicalRunOutcomeV1;
+use codex_hepta_agent_components::intelligence::CanonicalStageV1;
+use codex_hepta_agent_components::intelligence::CurrentOwnerStateV1;
+use codex_hepta_agent_components::intelligence::IntelligenceHostEnvelopeV1;
+use codex_hepta_agent_components::intelligence::prepare_intelligence_run;
+use codex_hepta_agent_components::intelligence::validate_current_snapshot;
+use codex_hepta_agent_components::intelligence_eval::EvaluationRequest;
+use codex_hepta_agent_components::intuition::CalibratedDecisionRequestV1;
+use codex_hepta_agent_components::intuition::CalibratedDispositionV1;
+use codex_hepta_agent_components::intuition::decide_calibrated_v2;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLearningJournal;
-#[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::DurableLedgerError;
-use codex_hepta_learning_ledger::LedgerEvent;
-use codex_hepta_ndu::ContributionSet;
-use codex_hepta_ndu::EvaluationPolicyV1;
-use codex_hepta_ndu::ScalarizationProfile;
-use codex_hepta_ndu::UtilityProfile;
-use codex_hepta_ndu::evaluate_candidates_with_policy;
-use codex_hepta_neuron::SparseCheckpoint;
-use codex_hepta_neuron::SparseConfig;
-use codex_hepta_neuron::SparseTick;
-use codex_hepta_neuron::sparse_tick;
-use codex_hepta_objective::CompileDisposition;
-use codex_hepta_objective::ObjectiveAdmissionContextV1;
-use codex_hepta_objective::ObjectiveAdmissionProfileV1;
-use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
-use codex_hepta_objective::admit_and_compile_objective_v1;
-use codex_hepta_prompt_optimizer::OptimizationRequest;
-use codex_hepta_prompt_optimizer::optimize;
-use codex_hepta_types::AuthorityPosture;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_ledger::DurableLedger;
+use codex_hepta_agent_components::learning_ledger::DurableLedgerError;
+use codex_hepta_agent_components::learning_ledger::LedgerEvent;
+use codex_hepta_agent_components::learning_ledger::RunStartObjectiveDispositionV1;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
+use codex_hepta_agent_components::ndu::ContributionSet;
+use codex_hepta_agent_components::ndu::EvaluationPolicyV1;
+use codex_hepta_agent_components::ndu::ScalarizationProfile;
+use codex_hepta_agent_components::ndu::UtilityProfile;
+use codex_hepta_agent_components::ndu::evaluate_candidates_with_policy;
+use codex_hepta_agent_components::neuron::SparseCheckpoint;
+use codex_hepta_agent_components::neuron::SparseConfig;
+use codex_hepta_agent_components::neuron::SparseTick;
+use codex_hepta_agent_components::neuron::sparse_tick;
+use codex_hepta_agent_components::objective::CompileDisposition;
+use codex_hepta_agent_components::objective::ObjectiveAdmissionContextV1;
+use codex_hepta_agent_components::objective::ObjectiveAdmissionProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveSourceEnvelopeV1;
+use codex_hepta_agent_components::objective::admit_and_compile_objective_v1;
+use codex_hepta_agent_components::objective::decode_objective_function_v1;
+use codex_hepta_agent_components::prompt_optimizer::OptimizationRequest;
+use codex_hepta_agent_components::prompt_optimizer::optimize;
+use codex_hepta_agent_components::types::AuthorityPosture;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Verifier;
 use ed25519_dalek::VerifyingKey;
@@ -128,20 +129,25 @@ pub struct IntelligenceAuthorityVerifierV1 {
 
 const MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES: u64 = 64 * 1024;
 
-struct FileBackedFreshnessOracleV1 {
+pub(crate) struct FileBackedFreshnessOracleV1 {
     path: PathBuf,
     verifier: IntelligenceAuthorityVerifierV1,
 }
 
 impl FileBackedFreshnessOracleV1 {
-    fn new(path: PathBuf, verifier: IntelligenceAuthorityVerifierV1) -> Self {
+    pub(crate) fn new(path: PathBuf, verifier: IntelligenceAuthorityVerifierV1) -> Self {
         Self { path, verifier }
     }
 
-    fn read(
+    /// Read one authenticated file image for a composition snapshot, without
+    /// retaining it across calls. Stage/final-use freshness still reopens it.
+    pub(crate) fn current_owners(
         &self,
-        requested: &StableId,
-    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
+        requested_owners: &[StableId],
+    ) -> Result<Vec<CurrentOwnerStateV1>, CanonicalIntelligenceError> {
+        let Some(requested) = requested_owners.first() else {
+            return Ok(Vec::new());
+        };
         validate_authority_file_path(&self.path, requested)?;
         let metadata = std::fs::metadata(&self.path)
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
@@ -150,8 +156,21 @@ impl FileBackedFreshnessOracleV1 {
                 requested.clone(),
             ));
         }
-        let bytes = std::fs::read(&self.path)
+        // Bound the actual read as well as the metadata observation: an atomic
+        // replacement or concurrent writer must not turn this into an unbounded read.
+        use std::io::Read;
+        let mut bytes = Vec::new();
+        std::fs::File::open(&self.path)
+            .and_then(|file| {
+                file.take(MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES + 1)
+                    .read_to_end(&mut bytes)
+            })
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+        if bytes.len() as u64 > MAX_INTELLIGENCE_AUTHORITY_FILE_BYTES {
+            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
+                requested.clone(),
+            ));
+        }
         let file: IntelligenceAuthorityFileV1 = serde_json::from_slice(&bytes)
             .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
         verify_authority_file(&file, &self.verifier, requested)?;
@@ -177,29 +196,42 @@ impl FileBackedFreshnessOracleV1 {
                 ));
             }
         }
-        let owner = seen
-            .remove(requested)
-            .ok_or_else(|| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let generation = Generation::new(owner.generation)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let implementation_digest = Digest32::from_str(&owner.implementation_digest)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        let key_digest = Digest32::from_str(&owner.key_digest)
-            .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-        if implementation_digest.is_zero() || key_digest.is_zero() || owner.key_epoch == 0 {
-            return Err(CanonicalIntelligenceError::FreshnessUnavailable(
-                requested.clone(),
-            ));
+        let mut states = Vec::with_capacity(requested_owners.len().min(seen.len()));
+        for requested in requested_owners {
+            let owner = seen.remove(requested).ok_or_else(|| {
+                CanonicalIntelligenceError::FreshnessUnavailable(requested.clone())
+            })?;
+            let generation = Generation::new(owner.generation)
+                .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+            let implementation_digest = Digest32::from_str(&owner.implementation_digest)
+                .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+            let key_digest = Digest32::from_str(&owner.key_digest)
+                .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
+            if implementation_digest.is_zero() || key_digest.is_zero() || owner.key_epoch == 0 {
+                return Err(CanonicalIntelligenceError::FreshnessUnavailable(
+                    requested.clone(),
+                ));
+            }
+            states.push(CurrentOwnerStateV1 {
+                owner_id: requested.clone(),
+                generation,
+                implementation_digest,
+                key_digest,
+                key_epoch: owner.key_epoch,
+                authority_epoch: file.authority_epoch,
+                revocation_frontier_digest: frontier,
+            });
         }
-        Ok(CurrentOwnerStateV1 {
-            owner_id: requested.clone(),
-            generation,
-            implementation_digest,
-            key_digest,
-            key_epoch: owner.key_epoch,
-            authority_epoch: file.authority_epoch,
-            revocation_frontier_digest: frontier,
-        })
+        Ok(states)
+    }
+
+    fn read(
+        &self,
+        requested: &StableId,
+    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
+        self.current_owners(std::slice::from_ref(requested))?
+            .pop()
+            .ok_or_else(|| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))
     }
 }
 
@@ -212,10 +244,17 @@ impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
     }
 }
 
+pub enum AgentdObjectiveOwnerInputV1 {
+    Admission {
+        envelope: ObjectiveSourceEnvelopeV1,
+        profile: ObjectiveAdmissionProfileV1,
+        context: ObjectiveAdmissionContextV1,
+    },
+    DurableRunStart(Box<RunStartRecordV1>),
+}
+
 pub struct AgentdIntelligenceOwnerInputsV1 {
-    pub objective_envelope: ObjectiveSourceEnvelopeV1,
-    pub objective_profile: ObjectiveAdmissionProfileV1,
-    pub objective_context: ObjectiveAdmissionContextV1,
+    pub objective: AgentdObjectiveOwnerInputV1,
     pub utility_contributions: ContributionSet,
     pub utility_profile: UtilityProfile,
     pub utility_scalarization: Option<ScalarizationProfile>,
@@ -231,9 +270,7 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
 }
 
 struct AgentdOwnerPortsV1 {
-    objective_envelope: Option<ObjectiveSourceEnvelopeV1>,
-    objective_profile: Option<ObjectiveAdmissionProfileV1>,
-    objective_context: Option<ObjectiveAdmissionContextV1>,
+    objective: Option<AgentdObjectiveOwnerInputV1>,
     utility_contributions: Option<ContributionSet>,
     utility_profile: Option<UtilityProfile>,
     utility_scalarization: Option<Option<ScalarizationProfile>>,
@@ -255,9 +292,7 @@ impl AgentdOwnerPortsV1 {
         evaluation_session: Option<AgentdEvaluationSessionV1>,
     ) -> Self {
         Self {
-            objective_envelope: Some(value.objective_envelope),
-            objective_profile: Some(value.objective_profile),
-            objective_context: Some(value.objective_context),
+            objective: Some(value.objective),
             utility_contributions: Some(value.utility_contributions),
             utility_profile: Some(value.utility_profile),
             utility_scalarization: Some(value.utility_scalarization),
@@ -338,40 +373,55 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        let envelope = Self::take(
-            &mut self.objective_envelope,
-            input.stage,
-            "objective envelope",
-        )?;
-        let profile = Self::take(
-            &mut self.objective_profile,
-            input.stage,
-            "objective profile",
-        )?;
-        let context = Self::take(
-            &mut self.objective_context,
-            input.stage,
-            "objective context",
-        )?;
+        let objective = Self::take(&mut self.objective, input.stage, "objective input")?;
         let started = Instant::now();
-        let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
-            .map_err(|_| Self::reject(input.stage, "objective admission"))?;
+        let digest = match objective {
+            AgentdObjectiveOwnerInputV1::Admission {
+                envelope,
+                profile,
+                context,
+            } => {
+                let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
+                    .map_err(|_| Self::reject(input.stage, "objective admission"))?;
+                if outcome.receipt.authority.grants_any() {
+                    return Err(Self::reject(input.stage, "objective authority"));
+                }
+                let receipt = outcome
+                    .compile_result
+                    .map_err(|_| Self::reject(input.stage, "objective conflict"))?;
+                if receipt.disposition != CompileDisposition::Compiled
+                    || receipt.objective.semantic_digest != input.objective_digest
+                {
+                    return Err(Self::reject(input.stage, "objective binding"));
+                }
+                receipt.objective.semantic_digest
+            }
+            AgentdObjectiveOwnerInputV1::DurableRunStart(record) => {
+                if record.disposition != RunStartObjectiveDispositionV1::Compiled
+                    || record.snapshot.run_id != input.run_id
+                    || record.snapshot.objective_digest != input.objective_digest
+                    || record.admission.authority.grants_any()
+                    || record.objective_semantic_bytes.is_empty()
+                    || Digest32::of_bytes(&record.objective_semantic_bytes)
+                        != input.objective_digest
+                    || record.objective_function_v1_digest.is_zero()
+                    || record.objective_function_v1_bytes.is_empty()
+                {
+                    return Err(Self::reject(input.stage, "durable objective binding"));
+                }
+                let decoded = decode_objective_function_v1(&record.objective_function_v1_bytes)
+                    .map_err(|_| Self::reject(input.stage, "durable objective protocol"))?;
+                if decoded.protocol_digest() != record.objective_function_v1_digest {
+                    return Err(Self::reject(input.stage, "durable objective digest"));
+                }
+                input.objective_digest
+            }
+        };
         Self::within_budget(input, started)?;
-        if outcome.receipt.authority.grants_any() {
-            return Err(Self::reject(input.stage, "objective authority"));
-        }
-        let receipt = outcome
-            .compile_result
-            .map_err(|_| Self::reject(input.stage, "objective conflict"))?;
-        if receipt.disposition != CompileDisposition::Compiled
-            || receipt.objective.semantic_digest != input.objective_digest
-        {
-            return Err(Self::reject(input.stage, "objective binding"));
-        }
         Self::receipt(
             input,
             "objective.compiler",
-            receipt.objective.semantic_digest,
+            digest,
             CanonicalPortDecisionV1::Continue,
         )
     }
@@ -624,7 +674,9 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     worker_slots: std::sync::Arc<tokio::sync::Semaphore>,
     authority_file: PathBuf,
     authority_verifier: IntelligenceAuthorityVerifierV1,
-    evaluation_trust: Option<std::sync::Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
+    evaluation_trust: Option<
+        std::sync::Arc<codex_hepta_agent_components::learning_ledger::ActivatedLearningTrustV1>,
+    >,
 }
 
 #[path = "intelligence_product_runner.rs"]
@@ -736,8 +788,12 @@ impl StdError for AgentdIntelligenceLedgerError {}
 
 #[cfg(test)]
 #[path = "intelligence_product_tests.rs"]
-mod tests;
+pub(crate) mod tests;
 
 #[cfg(test)]
 #[path = "intelligence_evaluation_tests.rs"]
 mod evaluation_tests;
+
+#[cfg(test)]
+#[path = "intelligence_owner_snapshot_tests.rs"]
+mod owner_snapshot_tests;

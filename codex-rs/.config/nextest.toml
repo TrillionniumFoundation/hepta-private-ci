@@ -102,3 +102,22 @@ filter = 'package(codex-hepta-learning-ledger) & test(signed_product_history_cur
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# Agentd and worker-host tests open real SQLite owners and App Server processes,
+# including library fixtures. Bound contention BETWEEN these independent product
+# fixtures on the shared runner disk, not just the named evolution experiments.
+# The tests retain their own concurrent requests, 256 writer rotations, per-use
+# deadlines, retries and watchdogs. Pure control-plane tests remain parallel.
+[test-groups.hepta_product_lifecycle]
+max-threads = 1
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) | package(codex-hepta-infer-worker-host)'
+test-group = 'hepta_product_lifecycle'
+
+# This single experiment starts and restarts the real product repeatedly. Keep
+# each request/terminal/recovery deadline in the test; its total wall budget is
+# not the one-process default. The opt-in round count remains bounded to 32.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(normal_product_bounded_evolution_under_concurrent_load)'
+slow-timeout = { period = "60s", terminate-after = 4 }

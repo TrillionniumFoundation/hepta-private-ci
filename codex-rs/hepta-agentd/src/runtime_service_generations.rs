@@ -7,9 +7,9 @@
 
 use std::future::Future;
 
-use codex_hepta_control_plane::ActiveRuntimeModuleV1;
-use codex_hepta_control_plane::RuntimeModuleAbiV1;
-use codex_hepta_types::Generation;
+use codex_hepta_agent_components::control_plane::ActiveRuntimeModuleV1;
+use codex_hepta_agent_components::control_plane::RuntimeModuleAbiV1;
+use codex_hepta_agent_components::types::Generation;
 use tokio_util::sync::CancellationToken;
 
 use super::MAX_TASKS;

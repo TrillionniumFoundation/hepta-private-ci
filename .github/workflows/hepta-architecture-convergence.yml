@@ -23,14 +23,58 @@ env:
   CARGO_PROFILE_DEV_DEBUG: "0"
 
 jobs:
+  plan:
+    name: Select architecture risk lanes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      lanes: ${{ steps.risk.outputs.lanes }}
+      risk: ${{ steps.risk.outputs.risk }}
+      timeout_minutes: ${{ steps.risk.outputs.timeout_minutes }}
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select source-head or high-risk merge qualification
+        id: risk
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_SHA: ${{ env.SOURCE_SHA }}
+          BASE_SHA: ${{ env.BASE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.test_hepta_ci_risk
+          args=(--head "$HEAD_SHA")
+          if [ "$EVENT_NAME" = pull_request ]; then
+            args+=(--base "$BASE_SHA")
+          else
+            args+=(--full)
+          fi
+          result="$(python3 scripts/hepta_ci_risk.py "${args[@]}")"
+          risk="$(jq -er '.risk' <<<"$result")"
+          lanes="$(jq -cer '.lanes' <<<"$result")"
+          if [ "$EVENT_NAME" != pull_request ]; then
+            lanes='["source-head"]'
+          fi
+          timeout_minutes="$(jq -er '.architecture_timeout_minutes' <<<"$result")"
+          printf 'risk=%s\n' "$risk" >> "$GITHUB_OUTPUT"
+          printf 'lanes=%s\n' "$lanes" >> "$GITHUB_OUTPUT"
+          printf 'timeout_minutes=%s\n' "$timeout_minutes" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$result"
+
   qualification:
     name: Architecture convergence (${{ matrix.lane }})
+    needs: plan
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
+    timeout-minutes: ${{ fromJSON(needs.plan.outputs.timeout_minutes) }}
     strategy:
       fail-fast: false
       matrix:
-        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+        lane: ${{ fromJSON(needs.plan.outputs.lanes) }}
     steps:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -81,16 +125,23 @@ jobs:
           git diff --check
           printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
           printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
-      - name: Select exact-tree native execution
+      - name: Select exact-tree execution tier
         id: execution
         env:
           LANE: ${{ matrix.lane }}
+          RISK: ${{ needs.plan.outputs.risk }}
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/hepta-command-records"
           python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
           python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" --lane "$LANE" --github-output "$GITHUB_OUTPUT" | tee "$RUNNER_TEMP/hepta-command-records/candidate-tree.json"
+          if [ "$RISK" = ordinary ]; then
+            # Blocking CI already runs affected owners and reverse consumers.
+            # Architecture CI keeps ordinary feedback structural and bounded;
+            # native/fault/recovery execution starts at stateful/effect/release.
+            printf 'run_native=false\n' >> "$GITHUB_OUTPUT"
+          fi
       - name: Select affected architecture boundaries
         id: scope
         env:
@@ -107,6 +158,16 @@ jobs:
             args+=(--base "$BASE_SHA")
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}" | tee "$RUNNER_TEMP/hepta-command-records/scope.json"
+      - name: Install locked Python policy-test dependencies
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Select the small CI Python environment
+        shell: bash
+        run: |
+          uv sync --frozen --project scripts --only-group ci
+          echo "$GITHUB_WORKSPACE/scripts/.venv/bin" >> "$GITHUB_PATH"
+
       - name: Test execution-record rejection and retained diagnostics
         run: |
           set -euo pipefail
@@ -115,6 +176,20 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls
+      - name: Generated module truth, physical Cargo graph and add/remove acceptance
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            scripts.test_hepta_rust_reachability \
+            scripts.test_hepta_module_manifest \
+            scripts.test_hepta_architecture_graph \
+            scripts.test_hepta_module_product_acceptance \
+            scripts.test_hepta_composition_boundary \
+            scripts.test_hepta_ci_consolidation
+          python3 scripts/hepta_module_manifest.py --check
+          python3 scripts/hepta_architecture_graph.py --check
+          python3 scripts/hepta_rust_reachability.py --strict --pretty \
+            > "$RUNNER_TEMP/hepta-command-records/rust-reachability.json"
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |
@@ -164,14 +239,20 @@ jobs:
             echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
           fi
           exit "$locked_status"
+      - name: Client-only product boundary and wire compatibility
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
+        run: |
+          set -euo pipefail
+          # Separate production profile: default test builds may unify server features.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/client-profile-tree.json" -- python3 scripts/hepta_architecture_graph.py --check-client-profile
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/client-profile.json" -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --no-default-features --lib
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/automation-wire.json" --minimum-tests 2 -- just test --locked -p codex-hepta-automation --no-default-features --lib
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/evidence-wire.json" --minimum-tests 2 -- just test --locked -p codex-hepta-evidence --no-default-features --lib
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core history_growth_emits_update_recovery_memory_and_disk_curve -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-multiwriter-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core alternating_writers_replay_only_peer_deltas -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
       - name: Durable operation and external-effect recovery
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
@@ -185,13 +266,23 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/stateless-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_callback_runs_before_successor_publication
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration-rollback.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/full-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane stateful_feature_history_replace_failure_retire_preserves_effect_idempotency
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/full-lifecycle.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --test organ_stateful_lifecycle
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-catalog.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet module_catalog
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-abi.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane module_runtime
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor module_runtime
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-durable-restart.json" --minimum-tests 1 -- just test --locked -p codex-hepta-supervisor stateful_generation_replacement_survives_process_loss_and_rolls_back_fresh --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/app-bridge-host.json" --minimum-tests 1 -- just test --locked -p codex-hepta-app-bridge -p codex-hepta-app-host
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-types topology
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity topology_v3
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- just test --locked -p codex-hepta-plasticity --lib
+      - name: Supervisor-selected module startup and durable observation
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/module-selection.json" --minimum-tests 7 -- just test --locked -p codex-hepta-agentd --lib -E 'test(module_selection::tests)' --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/module-selection-wire.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agent-protocol --lib -E 'test(module_selection::tests)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/supervisor-selection-product.json" --minimum-tests 1 -- just test --locked -p codex-hepta-supervisor --test daemon_product --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-selection-product.json" --minimum-tests 6 -- just test --locked -p codex-hepta-agentd --test module_selection_product --test-threads=1
       - name: Objective and prompt policy convergence
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.objective == 'true'
         run: |
@@ -205,6 +296,15 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
+      - name: Canonical HNMF contract and adversarial behavior
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
+        run: |
+          set -euo pipefail
+          # These independent workspaces are not included by Cargo's main workspace
+          # tests. Reuse the selected learning lane and exact execution recorder.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/hnmf-contract.json" --minimum-tests 1 -- just test --locked --profile default --manifest-path ../qualification/hnmf-contract-reference/Cargo.toml
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/hnmf-reference.json" --minimum-tests 1 -- just test --locked --profile default --manifest-path ../qualification/hnmf-reference/Cargo.toml
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/hnmf-adversarial.json" --minimum-tests 1 -- just test --locked --profile default --manifest-path ../qualification/hnmf-adversarial-reference/Cargo.toml
       - name: Selected-artifact adoption and explicit rollback
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
         run: |
@@ -214,6 +314,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval self_evolution_selection
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger selector_role_is_explicit_and_independent_from_evaluator
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/product-self-evolution.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --features qualification-legacy-learning-write ordinary_product_request_drives_signed_future_window_candidate_promotion_and_rollback --test-threads=1
       - name: Optional service process lifecycle and executable identity
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
         run: |
@@ -221,37 +322,26 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-image.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd runtime_executable
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operation-timer-fence.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test operation_timer_fence
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/optional-process-restart.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --test optional_module_restart forty_first_service -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/automation-factory.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(automation::service_tests)' --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/automation-product-evolution.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --test cognitive_product_e2e -E 'test(automation_evolution)' --test-threads=1 --success-output immediate
       - name: Derived-view drift
         if: steps.scope.outputs.derived == 'true'
         run: |
           set -euo pipefail
           # Independent owner lanes remain in force; do not repeat their gates.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/derived.json" -- python3 scripts/hepta-module-docs.py refresh-derived --check
-      - name: Observe candidate Git write denial without mutating repository state
-        # Native diagnostics must run even when external credential observation fails.
-        # The same required lane STILL fails on an allowed or unknown transport.
+      - name: Verify candidate transport stays proposal-only
         if: ${{ !cancelled() && github.event_name == 'pull_request' && steps.scope.outcome == 'success' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          PYTHONPATH: scripts
         shell: bash
         run: |
           set -euo pipefail
-          # GET of receive-pack advertisement performs no ref, PR or settings
-          # write. Do not test a credential by attempting same-value PATCHes:
-          # concurrent owner changes can make a supposed no-op destructive.
-          # This bounded observation is NOT proof of admin/PR-write denial or
-          # independent credential custody. The strict activation observer
-          # remains a separate gate; no missing protection is waived here.
-          python3 - <<'PYCODE' | tee "$RUNNER_TEMP/hepta-command-records/candidate-transport.json"
-          import json
-          import os
-          from hepta_repository_controls import observe_write_transport_denial
-          observation = observe_write_transport_denial(os.environ["REPO"], os.environ["GH_TOKEN"])
-          observation.update(admin_denial_proven=False, pull_request_write_denial_proven=False)
-          print(json.dumps(observation, sort_keys=True))
-          PYCODE
+          # Ordinary source qualification must not depend on a live permission
+          # probe. Repository settings and credential separation are observed
+          # only by the protected activation boundary.
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/candidate-transport.json" \
+            --minimum-tests 1 -- \
+            python3 -m unittest -v scripts.test_hepta_candidate_transport_workflow
       - name: Verify unchanged reviewed source
         run: |
           set -euo pipefail
@@ -275,13 +365,17 @@ jobs:
   required:
     name: Architecture required
     if: ${{ always() }}
-    needs: qualification
+    needs: [plan, qualification]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Require both exact-candidate lanes
+      - name: Require all selected risk lanes
         env:
-          RESULT: ${{ needs.qualification.result }}
+          PLAN_RESULT: ${{ needs.plan.result }}
+          QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+          RISK: ${{ needs.plan.outputs.risk }}
+          LANES: ${{ needs.plan.outputs.lanes }}
         run: |
-          test "$RESULT" = success
-          echo "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success."
+          test "$PLAN_RESULT" = success
+          test "$QUALIFICATION_RESULT" = success
+          echo "Architecture risk=$RISK lanes=$LANES succeeded."

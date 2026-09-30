@@ -4,7 +4,7 @@ impl HardenedFabric {
     pub fn propose_plasticity(
         &self,
         packet: &BoundRecallPacket,
-        signal: OutcomeSignal,
+        signal: ReferenceOutcomeFeatures,
     ) -> Result<BoundPlasticityBatch, HardeningError> {
         let expected_packet = self.recall(&packet.source_cue)?;
         if &expected_packet != packet || packet.packet.contains_raw_source_payload {
@@ -37,7 +37,7 @@ impl HardenedFabric {
             let mut delta = mul_ppm(modulated, i64::from(self.runtime.learning_rate_ppm))?;
             if matches!(
                 synapse.relation,
-                SynapseRelation::Inhibitory | SynapseRelation::Contradicts
+                ReferenceSynapseRelation::Inhibitory | ReferenceSynapseRelation::Contradicts
             ) {
                 delta = -delta;
             }
@@ -48,7 +48,7 @@ impl HardenedFabric {
             );
             let new_weight = clamp(i64::from(synapse.weight_ppm) + delta, -PPM, PPM);
             if eligibility != i64::from(synapse.eligibility_ppm) || delta != 0 {
-                weight_proposals.push(WeightProposal {
+                weight_proposals.push(ReferenceWeightProposal {
                     source: synapse.source,
                     target: synapse.target,
                     relation: synapse.relation,
@@ -71,7 +71,7 @@ impl HardenedFabric {
             let difference = observed - i64::from(node.target_activity_ppm);
             let delta = mul_ppm(difference, i64::from(self.runtime.homeostasis_rate_ppm))?;
             let new_threshold = clamp(i64::from(node.threshold_ppm) + delta, -PPM, PPM);
-            threshold_proposals.push(ThresholdProposal {
+            threshold_proposals.push(ReferenceThresholdProposal {
                 node_id: node.id,
                 old_threshold_ppm: node.threshold_ppm,
                 new_threshold_ppm: new_threshold as i32,
@@ -86,7 +86,7 @@ impl HardenedFabric {
         Ok(BoundPlasticityBatch {
             source_packet: packet.clone(),
             outcome_signal: signal,
-            batch: PlasticityBatch {
+            batch: ReferencePlasticityProposalSet {
                 predecessor_generation: self.generation,
                 next_generation,
                 modulator_ppm,
@@ -158,7 +158,7 @@ impl HardenedFabric {
             .checked_add(1)
             .ok_or(HardeningError::ArithmeticOverflow)?;
         Ok(ExactForgetBatch {
-            batch: ForgetBatch {
+            batch: ReferenceForgetPlan {
                 event_id,
                 predecessor_generation: self.generation,
                 next_generation,
@@ -217,10 +217,10 @@ impl HardenedFabric {
 }
 
 pub fn select_replay_hardened(
-    candidates: &[ReplayCandidate],
+    candidates: &[ReferenceReplayCandidate],
     maximum_selected: usize,
     maximum_per_source_bucket: usize,
-) -> Result<ReplaySelectionReceipt, HardeningError> {
+) -> Result<ReferenceReplaySelection, HardeningError> {
     let mut ids = BTreeSet::new();
     for candidate in candidates {
         if candidate.event_id == 0 || !ids.insert(candidate.event_id) {

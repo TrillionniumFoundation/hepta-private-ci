@@ -12,11 +12,11 @@ use std::path::Path;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_evidence::EVIDENCE_DATABASE_LINEAGE;
-use codex_hepta_evidence::EvidenceRecoverySnapshotV1;
-use codex_hepta_evidence::HeptaEvidenceStore;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::evidence::EVIDENCE_DATABASE_LINEAGE;
+use codex_hepta_agent_components::evidence::EvidenceRecoverySnapshotV1;
+use codex_hepta_agent_components::evidence::HeptaEvidenceStore;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
@@ -273,7 +273,7 @@ fn push_part(bytes: &mut Vec<u8>, part: &[u8]) {
     bytes.extend_from_slice(part);
 }
 
-fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError {
+fn evidence_error(error: codex_hepta_agent_components::evidence::EvidenceError) -> AgentdError {
     recovery_required(&error.to_string())
 }
 

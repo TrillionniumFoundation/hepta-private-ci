@@ -1,6 +1,7 @@
 name: Hepta self-iteration activation gate
 
 on:
+  workflow_call:
   workflow_dispatch:
 
 permissions:

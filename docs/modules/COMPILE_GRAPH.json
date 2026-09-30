@@ -1,0 +1,3765 @@
+{
+  "developmentModuleEdges": [
+    {
+      "fromModule": "automation.taskflow",
+      "toModule": "runtime.fleet"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "runtime.supervisor"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "intelligence.control"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "learning.plasticity"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "neuron.runtime"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "prompt.optimizer"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "learning.operator"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "objective.compiler"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "platform.wire"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "automation.taskflow"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "inference.control"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "inference.worker"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "runtime.supervisor"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "platform.wire"
+    }
+  ],
+  "developmentPackageEdges": [
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 0,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-shadow-qualification",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 0,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-shadow-qualification",
+      "toLayer": 1,
+      "toModule": "learning.artifacts",
+      "toPackage": "codex-hepta-learning-artifacts"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 0,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-shadow-qualification",
+      "toLayer": 1,
+      "toModule": "objective.compiler",
+      "toPackage": "codex-hepta-objective"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 0,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-shadow-qualification",
+      "toLayer": 1,
+      "toModule": "platform.wire",
+      "toPackage": "codex-hepta-wire"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 0,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-shadow-qualification",
+      "toLayer": 1,
+      "toModule": "utility.ndu",
+      "toPackage": "codex-hepta-ndu"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 0,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-shadow-qualification",
+      "toLayer": 3,
+      "toModule": "learning.ledger",
+      "toPackage": "codex-hepta-learning-ledger"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 0,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-shadow-qualification",
+      "toLayer": 4,
+      "toModule": "learning.eval",
+      "toPackage": "codex-hepta-intelligence-eval"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 0,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-shadow-qualification",
+      "toLayer": 4,
+      "toModule": "learning.operator",
+      "toPackage": "codex-hepta-bellman-operator"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 2,
+      "fromModule": "automation.taskflow",
+      "fromPackage": "codex-hepta-automation",
+      "toLayer": 2,
+      "toModule": "runtime.fleet",
+      "toPackage": "codex-hepta-fleet"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 3,
+      "fromModule": "control.runtime",
+      "fromPackage": "codex-hepta-runtime",
+      "toLayer": 3,
+      "toModule": "learning.ledger",
+      "toPackage": "codex-hepta-learning-ledger"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 3,
+      "fromModule": "control.runtime",
+      "fromPackage": "codex-hepta-runtime",
+      "toLayer": 5,
+      "toModule": "intelligence.control",
+      "toPackage": "codex-hepta-intelligence"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 3,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-protocol",
+      "toLayer": 2,
+      "toModule": "automation.taskflow",
+      "toPackage": "codex-hepta-automation"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 4,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-cognitive-store",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 4,
+      "fromModule": "prompt.optimizer",
+      "fromPackage": "codex-hepta-prompt-optimizer",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 4,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-memory-extension",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 4,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-native-gateway",
+      "toLayer": 1,
+      "toModule": "platform.wire",
+      "toPackage": "codex-hepta-wire"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 1,
+      "toModule": "learning.plasticity",
+      "toPackage": "codex-hepta-plasticity"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 2,
+      "toModule": "neuron.runtime",
+      "toPackage": "codex-hepta-neuron"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 4,
+      "toModule": "prompt.optimizer",
+      "toPackage": "codex-hepta-prompt-optimizer"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 1,
+      "toModule": "cognitive.types",
+      "toPackage": "codex-hepta-cognitive-types"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 1,
+      "toModule": "inference.control",
+      "toPackage": "codex-hepta-infer-core"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 1,
+      "toModule": "kernel.operations",
+      "toPackage": "codex-hepta-operations"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 5,
+      "toModule": "runtime.supervisor",
+      "toPackage": "codex-hepta-supervisor"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 6,
+      "toModule": "runtime.agentd",
+      "toPackage": "codex-hepta-agent-components"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 8,
+      "toModule": "inference.worker",
+      "toPackage": "codex-hepta-infer-worker-host"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 8,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrixd",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 8,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrixd",
+      "toLayer": 5,
+      "toModule": "runtime.supervisor",
+      "toPackage": "codex-hepta-supervisor"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 8,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 7,
+      "toModule": "runtime.agentd",
+      "toPackage": "codex-hepta-agentd"
+    }
+  ],
+  "externalHostConsumers": [
+    {
+      "consumerPackage": "codex-app-server",
+      "dependencyKind": "normal",
+      "heptaModule": "runtime.codex",
+      "heptaPackage": "codex-hepta-app-bridge"
+    },
+    {
+      "consumerPackage": "codex-cli",
+      "dependencyKind": "normal",
+      "heptaModule": "runtime.codex",
+      "heptaPackage": "codex-hepta-native-gateway"
+    },
+    {
+      "consumerPackage": "codex-mcp-server",
+      "dependencyKind": "normal",
+      "heptaModule": "cognitive.store",
+      "heptaPackage": "codex-hepta-memory"
+    },
+    {
+      "consumerPackage": "codex-mcp-server",
+      "dependencyKind": "normal",
+      "heptaModule": "control.engineering",
+      "heptaPackage": "codex-hepta-governance"
+    },
+    {
+      "consumerPackage": "codex-mcp-server",
+      "dependencyKind": "normal",
+      "heptaModule": "runtime.codex",
+      "heptaPackage": "codex-hepta-memory-extension"
+    },
+    {
+      "consumerPackage": "codex-model-provider",
+      "dependencyKind": "normal",
+      "heptaModule": "kernel.authority",
+      "heptaPackage": "codex-hepta-contracts"
+    }
+  ],
+  "generatedFrom": [
+    "cargo metadata --locked --no-deps",
+    "docs/modules/*/module.toml"
+  ],
+  "logicalModuleEdges": [
+    {
+      "fromModule": "auth.authbus",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "auth.authbus",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "automation.taskflow",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "automation.taskflow",
+      "toModule": "runtime.codex"
+    },
+    {
+      "fromModule": "browser.servo",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "browser.servo",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "cognitive.read",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "cognitive.types",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "compact.engine",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "compact.engine",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "intuition.policy"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "platform.wire"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "prompt.optimizer"
+    },
+    {
+      "fromModule": "control.engineering",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "runtime.fleet"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "inference.control",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "inference.control",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "inference.control"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "context.compiler"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "intuition.policy"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "learning.eval"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "neuron.runtime"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "objective.compiler"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "prompt.optimizer"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "intuition.policy",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "intuition.policy",
+      "toModule": "neuron.runtime"
+    },
+    {
+      "fromModule": "intuition.policy",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "intuition.policy",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "kernel.authority",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "kernel.evidence",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "kernel.operations",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "knowledge.graph",
+      "toModule": "cognitive.store"
+    },
+    {
+      "fromModule": "knowledge.graph",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "knowledge.graph",
+      "toModule": "prompt.registry"
+    },
+    {
+      "fromModule": "learning.artifacts",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "learning.artifacts",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "learning.ledger",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "learning.ledger",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "learning.ledger",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.operator",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "learning.operator",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "learning.operator",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "learning.operator",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.plasticity",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "learning.plasticity",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "learning.plasticity",
+      "toModule": "learning.eval"
+    },
+    {
+      "fromModule": "memory.federation",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "memory.federation",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "memory.retrieval",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "memory.retrieval",
+      "toModule": "knowledge.graph"
+    },
+    {
+      "fromModule": "neuron.runtime",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "neuron.runtime",
+      "toModule": "inference.control"
+    },
+    {
+      "fromModule": "neuron.runtime",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "neuron.runtime",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "objective.compiler",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "objective.compiler",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "platform.wire",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "memory.retrieval"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "prompt.registry"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "prompt.registry",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "prompt.registry",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "runtime.codex"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "runtime.supervisor"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "platform.wire"
+    },
+    {
+      "fromModule": "runtime.fleet",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.fleet",
+      "toModule": "runtime.supervisor"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "secrets.heptabao",
+      "toModule": "auth.authbus"
+    },
+    {
+      "fromModule": "secrets.heptabao",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "ui.control",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "ui.native",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "utility.ndu",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "utility.ndu",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "utility.ndu",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "utility.ndu",
+      "toModule": "platform.types"
+    }
+  ],
+  "logicalOnlyModuleEdges": [
+    {
+      "fromModule": "auth.authbus",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "auth.authbus",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "automation.taskflow",
+      "toModule": "runtime.codex"
+    },
+    {
+      "fromModule": "browser.servo",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "browser.servo",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "compact.engine",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "compact.engine",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "intuition.policy"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "prompt.optimizer"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "runtime.fleet"
+    },
+    {
+      "fromModule": "inference.control",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "inference.control",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "intuition.policy",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "intuition.policy",
+      "toModule": "neuron.runtime"
+    },
+    {
+      "fromModule": "intuition.policy",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "kernel.authority",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "knowledge.graph",
+      "toModule": "cognitive.store"
+    },
+    {
+      "fromModule": "knowledge.graph",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "learning.artifacts",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "learning.ledger",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "learning.ledger",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "learning.operator",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "learning.operator",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "learning.plasticity",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "learning.plasticity",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "learning.plasticity",
+      "toModule": "learning.eval"
+    },
+    {
+      "fromModule": "memory.federation",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "memory.federation",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "memory.retrieval",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "memory.retrieval",
+      "toModule": "knowledge.graph"
+    },
+    {
+      "fromModule": "neuron.runtime",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "neuron.runtime",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "objective.compiler",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "memory.retrieval"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "prompt.registry",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "runtime.supervisor"
+    },
+    {
+      "fromModule": "runtime.fleet",
+      "toModule": "runtime.supervisor"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "ui.control",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "ui.native",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "utility.ndu",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "utility.ndu",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "utility.ndu",
+      "toModule": "learning.ledger"
+    }
+  ],
+  "packages": [
+    {
+      "compileLayer": 6,
+      "module": "runtime.agentd",
+      "packageName": "codex-hepta-agent-components",
+      "packagePath": "codex-rs/hepta-agent-components"
+    },
+    {
+      "compileLayer": 3,
+      "module": "runtime.agentd",
+      "packageName": "codex-hepta-agent-protocol",
+      "packagePath": "codex-rs/hepta-agent-protocol"
+    },
+    {
+      "compileLayer": 7,
+      "module": "runtime.agentd",
+      "packageName": "codex-hepta-agentd",
+      "packagePath": "codex-rs/hepta-agentd"
+    },
+    {
+      "compileLayer": 2,
+      "module": "runtime.agentd",
+      "packageName": "codex-hepta-agentd-core",
+      "packagePath": "codex-rs/hepta-agentd-core"
+    },
+    {
+      "compileLayer": 5,
+      "module": "runtime.codex",
+      "packageName": "codex-hepta-app-bridge",
+      "packagePath": "codex-rs/hepta-app-bridge"
+    },
+    {
+      "compileLayer": 6,
+      "module": "runtime.codex",
+      "packageName": "codex-hepta-app-host",
+      "packagePath": "codex-rs/hepta-app-host"
+    },
+    {
+      "compileLayer": 1,
+      "module": "auth.authbus",
+      "packageName": "codex-hepta-authbus",
+      "packagePath": "codex-rs/hepta-authbus"
+    },
+    {
+      "compileLayer": 2,
+      "module": "auth.authbus",
+      "packageName": "codex-hepta-authbus-p1-3-qualification",
+      "packagePath": "codex-rs/hepta-authbus-p1-3-qualification"
+    },
+    {
+      "compileLayer": 2,
+      "module": "automation.taskflow",
+      "packageName": "codex-hepta-automation",
+      "packagePath": "codex-rs/hepta-automation"
+    },
+    {
+      "compileLayer": 2,
+      "module": "secrets.heptabao",
+      "packageName": "codex-hepta-bao-adapter",
+      "packagePath": "codex-rs/hepta-bao-adapter"
+    },
+    {
+      "compileLayer": 4,
+      "module": "learning.operator",
+      "packageName": "codex-hepta-bellman-operator",
+      "packagePath": "codex-rs/hepta-bellman-operator"
+    },
+    {
+      "compileLayer": 2,
+      "module": "runtime.codex",
+      "packageName": "codex-hepta-codex-adapter",
+      "packagePath": "codex-rs/hepta-codex-adapter"
+    },
+    {
+      "compileLayer": 2,
+      "module": "cognitive.read",
+      "packageName": "codex-hepta-cognitive-read",
+      "packagePath": "codex-rs/hepta-cognitive-read"
+    },
+    {
+      "compileLayer": 4,
+      "module": "cognitive.store",
+      "packageName": "codex-hepta-cognitive-store",
+      "packagePath": "codex-rs/hepta-cognitive-store"
+    },
+    {
+      "compileLayer": 1,
+      "module": "cognitive.types",
+      "packageName": "codex-hepta-cognitive-types",
+      "packagePath": "codex-rs/hepta-cognitive-types"
+    },
+    {
+      "compileLayer": 2,
+      "module": "compact.engine",
+      "packageName": "codex-hepta-compact-engine",
+      "packagePath": "codex-rs/hepta-compact-engine"
+    },
+    {
+      "compileLayer": 2,
+      "module": "context.compiler",
+      "packageName": "codex-hepta-context-compiler",
+      "packagePath": "codex-rs/hepta-context-compiler"
+    },
+    {
+      "compileLayer": 0,
+      "module": "kernel.authority",
+      "packageName": "codex-hepta-contracts",
+      "packagePath": "codex-rs/hepta-contracts"
+    },
+    {
+      "compileLayer": 2,
+      "module": "control.runtime",
+      "packageName": "codex-hepta-control-plane",
+      "packagePath": "codex-rs/hepta-control-plane"
+    },
+    {
+      "compileLayer": 2,
+      "module": "kernel.evidence",
+      "packageName": "codex-hepta-evidence",
+      "packagePath": "codex-rs/hepta-evidence"
+    },
+    {
+      "compileLayer": 2,
+      "module": "runtime.fleet",
+      "packageName": "codex-hepta-fleet",
+      "packagePath": "codex-rs/hepta-fleet"
+    },
+    {
+      "compileLayer": 3,
+      "module": "control.engineering",
+      "packageName": "codex-hepta-governance",
+      "packagePath": "codex-rs/ext/hepta-governance"
+    },
+    {
+      "compileLayer": 1,
+      "module": "inference.control",
+      "packageName": "codex-hepta-infer-core",
+      "packagePath": "codex-rs/hepta-infer-core"
+    },
+    {
+      "compileLayer": 8,
+      "module": "inference.worker",
+      "packageName": "codex-hepta-infer-worker-host",
+      "packagePath": "codex-rs/hepta-infer-worker-host"
+    },
+    {
+      "compileLayer": 1,
+      "module": "inference.control",
+      "packageName": "codex-hepta-inferd",
+      "packagePath": "codex-rs/hepta-inferd"
+    },
+    {
+      "compileLayer": 5,
+      "module": "intelligence.control",
+      "packageName": "codex-hepta-intelligence",
+      "packagePath": "codex-rs/hepta-intelligence"
+    },
+    {
+      "compileLayer": 4,
+      "module": "learning.eval",
+      "packageName": "codex-hepta-intelligence-eval",
+      "packagePath": "codex-rs/hepta-intelligence-eval"
+    },
+    {
+      "compileLayer": 1,
+      "module": "intuition.policy",
+      "packageName": "codex-hepta-intuition",
+      "packagePath": "codex-rs/hepta-intuition"
+    },
+    {
+      "compileLayer": 2,
+      "module": "knowledge.graph",
+      "packageName": "codex-hepta-kg",
+      "packagePath": "codex-rs/hepta-kg"
+    },
+    {
+      "compileLayer": 1,
+      "module": "learning.artifacts",
+      "packageName": "codex-hepta-learning-artifacts",
+      "packagePath": "codex-rs/hepta-learning-artifacts"
+    },
+    {
+      "compileLayer": 3,
+      "module": "learning.ledger",
+      "packageName": "codex-hepta-learning-ledger",
+      "packagePath": "codex-rs/hepta-learning-ledger"
+    },
+    {
+      "compileLayer": 1,
+      "module": "channel.matrix",
+      "packageName": "codex-hepta-matrix-protocol",
+      "packagePath": "codex-rs/hepta-matrix-protocol"
+    },
+    {
+      "compileLayer": 3,
+      "module": "channel.matrix",
+      "packageName": "codex-hepta-matrix-sdk",
+      "packagePath": "codex-rs/hepta-matrix-sdk"
+    },
+    {
+      "compileLayer": 2,
+      "module": "channel.matrix",
+      "packageName": "codex-hepta-matrix-store",
+      "packagePath": "codex-rs/hepta-matrix-store"
+    },
+    {
+      "compileLayer": 8,
+      "module": "channel.matrix",
+      "packageName": "codex-hepta-matrixd",
+      "packagePath": "codex-rs/hepta-matrixd"
+    },
+    {
+      "compileLayer": 3,
+      "module": "cognitive.store",
+      "packageName": "codex-hepta-memory",
+      "packagePath": "codex-rs/hepta-memory"
+    },
+    {
+      "compileLayer": 4,
+      "module": "runtime.codex",
+      "packageName": "codex-hepta-memory-extension",
+      "packagePath": "codex-rs/ext/hepta-memory"
+    },
+    {
+      "compileLayer": 1,
+      "module": "memory.federation",
+      "packageName": "codex-hepta-memory-federation",
+      "packagePath": "codex-rs/hepta-memory-federation"
+    },
+    {
+      "compileLayer": 2,
+      "module": "memory.retrieval",
+      "packageName": "codex-hepta-memory-retrieval",
+      "packagePath": "codex-rs/hepta-memory-retrieval"
+    },
+    {
+      "compileLayer": 4,
+      "module": "runtime.codex",
+      "packageName": "codex-hepta-native-gateway",
+      "packagePath": "codex-rs/hepta-native-gateway"
+    },
+    {
+      "compileLayer": 1,
+      "module": "utility.ndu",
+      "packageName": "codex-hepta-ndu",
+      "packagePath": "codex-rs/hepta-ndu"
+    },
+    {
+      "compileLayer": 2,
+      "module": "neuron.runtime",
+      "packageName": "codex-hepta-neuron",
+      "packagePath": "codex-rs/hepta-neuron"
+    },
+    {
+      "compileLayer": 1,
+      "module": "objective.compiler",
+      "packageName": "codex-hepta-objective",
+      "packagePath": "codex-rs/hepta-objective"
+    },
+    {
+      "compileLayer": 1,
+      "module": "kernel.operations",
+      "packageName": "codex-hepta-operations",
+      "packagePath": "codex-rs/hepta-operations"
+    },
+    {
+      "compileLayer": 0,
+      "module": "learning.operator",
+      "packageName": "codex-hepta-operator-acceptance",
+      "packagePath": "codex-rs/hepta-operator-acceptance"
+    },
+    {
+      "compileLayer": 1,
+      "module": "platform.types",
+      "packageName": "codex-hepta-paths",
+      "packagePath": "codex-rs/hepta-paths"
+    },
+    {
+      "compileLayer": 1,
+      "module": "learning.plasticity",
+      "packageName": "codex-hepta-plasticity",
+      "packagePath": "codex-rs/hepta-plasticity"
+    },
+    {
+      "compileLayer": 1,
+      "module": "runtime.codex",
+      "packageName": "codex-hepta-prompt-extension",
+      "packagePath": "codex-rs/ext/hepta-prompt"
+    },
+    {
+      "compileLayer": 4,
+      "module": "prompt.optimizer",
+      "packageName": "codex-hepta-prompt-optimizer",
+      "packagePath": "codex-rs/hepta-prompt-optimizer"
+    },
+    {
+      "compileLayer": 1,
+      "module": "prompt.registry",
+      "packageName": "codex-hepta-prompt-registry",
+      "packagePath": "codex-rs/hepta-prompt-registry"
+    },
+    {
+      "compileLayer": 3,
+      "module": "control.runtime",
+      "packageName": "codex-hepta-runtime",
+      "packagePath": "codex-rs/hepta-runtime"
+    },
+    {
+      "compileLayer": 0,
+      "module": "learning.eval",
+      "packageName": "codex-hepta-shadow-qualification",
+      "packagePath": "codex-rs/hepta-shadow-qualification"
+    },
+    {
+      "compileLayer": 5,
+      "module": "runtime.supervisor",
+      "packageName": "codex-hepta-supervisor",
+      "packagePath": "codex-rs/hepta-supervisor"
+    },
+    {
+      "compileLayer": 0,
+      "module": "platform.types",
+      "packageName": "codex-hepta-types",
+      "packagePath": "codex-rs/hepta-types"
+    },
+    {
+      "compileLayer": 1,
+      "module": "platform.wire",
+      "packageName": "codex-hepta-wire",
+      "packagePath": "codex-rs/hepta-wire"
+    }
+  ],
+  "physicalOnlyModuleEdges": [
+    {
+      "fromModule": "auth.authbus",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "automation.taskflow",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "automation.taskflow",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "runtime.fleet"
+    },
+    {
+      "fromModule": "cognitive.read",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "knowledge.graph"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "memory.federation"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "memory.retrieval"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "compact.engine",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "compact.engine",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "control.engineering",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "learning.plasticity"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "platform.wire"
+    },
+    {
+      "fromModule": "inference.control",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "runtime.codex"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "learning.plasticity"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "prompt.registry"
+    },
+    {
+      "fromModule": "kernel.evidence",
+      "toModule": "auth.authbus"
+    },
+    {
+      "fromModule": "kernel.evidence",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "kernel.operations",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "knowledge.graph",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.ledger",
+      "toModule": "intuition.policy"
+    },
+    {
+      "fromModule": "learning.ledger",
+      "toModule": "memory.retrieval"
+    },
+    {
+      "fromModule": "learning.plasticity",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "memory.federation",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "memory.retrieval",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "memory.retrieval",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "platform.types",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "knowledge.graph"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "prompt.registry",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "auth.authbus"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "automation.taskflow"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "cognitive.store"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "context.compiler"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "control.runtime"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "intelligence.control"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "intuition.policy"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "learning.eval"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "learning.operator"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "learning.plasticity"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "memory.retrieval"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "neuron.runtime"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "objective.compiler"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "prompt.optimizer"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "prompt.registry"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "runtime.fleet"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "cognitive.store"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "control.engineering"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "control.runtime"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.fleet",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "channel.matrix"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "cognitive.store"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "control.runtime"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "learning.eval"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "runtime.fleet"
+    },
+    {
+      "fromModule": "secrets.heptabao",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "utility.ndu",
+      "toModule": "kernel.authority"
+    }
+  ],
+  "productionModuleEdges": [
+    {
+      "fromModule": "auth.authbus",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "automation.taskflow",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "automation.taskflow",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "automation.taskflow",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "channel.matrix",
+      "toModule": "runtime.fleet"
+    },
+    {
+      "fromModule": "cognitive.read",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "cognitive.read",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "kernel.operations"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "knowledge.graph"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "memory.federation"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "memory.retrieval"
+    },
+    {
+      "fromModule": "cognitive.store",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "cognitive.types",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "compact.engine",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "compact.engine",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "context.compiler",
+      "toModule": "platform.wire"
+    },
+    {
+      "fromModule": "control.engineering",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "control.engineering",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "learning.plasticity"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "platform.wire"
+    },
+    {
+      "fromModule": "control.runtime",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "inference.control",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "inference.control"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "runtime.codex"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "context.compiler"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "intuition.policy"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "learning.eval"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "learning.plasticity"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "neuron.runtime"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "objective.compiler"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "prompt.optimizer"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "prompt.registry"
+    },
+    {
+      "fromModule": "intelligence.control",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "intuition.policy",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "kernel.evidence",
+      "toModule": "auth.authbus"
+    },
+    {
+      "fromModule": "kernel.evidence",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "kernel.evidence",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "kernel.operations",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "kernel.operations",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "knowledge.graph",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "knowledge.graph",
+      "toModule": "prompt.registry"
+    },
+    {
+      "fromModule": "learning.artifacts",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.ledger",
+      "toModule": "intuition.policy"
+    },
+    {
+      "fromModule": "learning.ledger",
+      "toModule": "memory.retrieval"
+    },
+    {
+      "fromModule": "learning.ledger",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.operator",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "learning.operator",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.plasticity",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "memory.federation",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "memory.retrieval",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "memory.retrieval",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "neuron.runtime",
+      "toModule": "inference.control"
+    },
+    {
+      "fromModule": "neuron.runtime",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "objective.compiler",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "platform.types",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "platform.wire",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "knowledge.graph"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "prompt.optimizer",
+      "toModule": "prompt.registry"
+    },
+    {
+      "fromModule": "prompt.registry",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "prompt.registry",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "auth.authbus"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "automation.taskflow"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "cognitive.read"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "cognitive.store"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "context.compiler"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "control.runtime"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "intelligence.control"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "intuition.policy"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "learning.eval"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "learning.operator"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "learning.plasticity"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "memory.retrieval"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "neuron.runtime"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "objective.compiler"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "prompt.optimizer"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "prompt.registry"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "runtime.codex"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "runtime.fleet"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "utility.ndu"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "cognitive.store"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "control.engineering"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "control.runtime"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "kernel.evidence"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.codex",
+      "toModule": "platform.wire"
+    },
+    {
+      "fromModule": "runtime.fleet",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.fleet",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "channel.matrix"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "cognitive.store"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "control.runtime"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "learning.eval"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "runtime.agentd"
+    },
+    {
+      "fromModule": "runtime.supervisor",
+      "toModule": "runtime.fleet"
+    },
+    {
+      "fromModule": "secrets.heptabao",
+      "toModule": "auth.authbus"
+    },
+    {
+      "fromModule": "secrets.heptabao",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "secrets.heptabao",
+      "toModule": "platform.types"
+    },
+    {
+      "fromModule": "utility.ndu",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "utility.ndu",
+      "toModule": "platform.types"
+    }
+  ],
+  "productionPackageEdges": [
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "auth.authbus",
+      "fromPackage": "codex-hepta-authbus",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrix-protocol",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "cognitive.types",
+      "fromPackage": "codex-hepta-cognitive-types",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "inference.control",
+      "fromPackage": "codex-hepta-infer-core",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "inference.control",
+      "fromPackage": "codex-hepta-inferd",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "intuition.policy",
+      "fromPackage": "codex-hepta-intuition",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "kernel.operations",
+      "fromPackage": "codex-hepta-operations",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "kernel.operations",
+      "fromPackage": "codex-hepta-operations",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "learning.artifacts",
+      "fromPackage": "codex-hepta-learning-artifacts",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "learning.plasticity",
+      "fromPackage": "codex-hepta-plasticity",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "memory.federation",
+      "fromPackage": "codex-hepta-memory-federation",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "objective.compiler",
+      "fromPackage": "codex-hepta-objective",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "platform.types",
+      "fromPackage": "codex-hepta-paths",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "platform.wire",
+      "fromPackage": "codex-hepta-wire",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "prompt.registry",
+      "fromPackage": "codex-hepta-prompt-registry",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "prompt.registry",
+      "fromPackage": "codex-hepta-prompt-registry",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-prompt-extension",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "utility.ndu",
+      "fromPackage": "codex-hepta-ndu",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 1,
+      "fromModule": "utility.ndu",
+      "fromPackage": "codex-hepta-ndu",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "auth.authbus",
+      "fromPackage": "codex-hepta-authbus-p1-3-qualification",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "auth.authbus",
+      "fromPackage": "codex-hepta-authbus-p1-3-qualification",
+      "toLayer": 1,
+      "toModule": "auth.authbus",
+      "toPackage": "codex-hepta-authbus"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "automation.taskflow",
+      "fromPackage": "codex-hepta-automation",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "automation.taskflow",
+      "fromPackage": "codex-hepta-automation",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "automation.taskflow",
+      "fromPackage": "codex-hepta-automation",
+      "toLayer": 1,
+      "toModule": "kernel.operations",
+      "toPackage": "codex-hepta-operations"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "automation.taskflow",
+      "fromPackage": "codex-hepta-automation",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrix-store",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrix-store",
+      "toLayer": 1,
+      "toModule": "channel.matrix",
+      "toPackage": "codex-hepta-matrix-protocol"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrix-store",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "cognitive.read",
+      "fromPackage": "codex-hepta-cognitive-read",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "cognitive.read",
+      "fromPackage": "codex-hepta-cognitive-read",
+      "toLayer": 1,
+      "toModule": "cognitive.types",
+      "toPackage": "codex-hepta-cognitive-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "compact.engine",
+      "fromPackage": "codex-hepta-compact-engine",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "compact.engine",
+      "fromPackage": "codex-hepta-compact-engine",
+      "toLayer": 1,
+      "toModule": "cognitive.types",
+      "toPackage": "codex-hepta-cognitive-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "context.compiler",
+      "fromPackage": "codex-hepta-context-compiler",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "context.compiler",
+      "fromPackage": "codex-hepta-context-compiler",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "context.compiler",
+      "fromPackage": "codex-hepta-context-compiler",
+      "toLayer": 1,
+      "toModule": "platform.wire",
+      "toPackage": "codex-hepta-wire"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "control.runtime",
+      "fromPackage": "codex-hepta-control-plane",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "control.runtime",
+      "fromPackage": "codex-hepta-control-plane",
+      "toLayer": 1,
+      "toModule": "utility.ndu",
+      "toPackage": "codex-hepta-ndu"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "kernel.evidence",
+      "fromPackage": "codex-hepta-evidence",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "kernel.evidence",
+      "fromPackage": "codex-hepta-evidence",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "kernel.evidence",
+      "fromPackage": "codex-hepta-evidence",
+      "toLayer": 1,
+      "toModule": "auth.authbus",
+      "toPackage": "codex-hepta-authbus"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "knowledge.graph",
+      "fromPackage": "codex-hepta-kg",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "knowledge.graph",
+      "fromPackage": "codex-hepta-kg",
+      "toLayer": 1,
+      "toModule": "prompt.registry",
+      "toPackage": "codex-hepta-prompt-registry"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "memory.retrieval",
+      "fromPackage": "codex-hepta-memory-retrieval",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "memory.retrieval",
+      "fromPackage": "codex-hepta-memory-retrieval",
+      "toLayer": 1,
+      "toModule": "cognitive.types",
+      "toPackage": "codex-hepta-cognitive-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "neuron.runtime",
+      "fromPackage": "codex-hepta-neuron",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "neuron.runtime",
+      "fromPackage": "codex-hepta-neuron",
+      "toLayer": 1,
+      "toModule": "inference.control",
+      "toPackage": "codex-hepta-infer-core"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd-core",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-codex-adapter",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-codex-adapter",
+      "toLayer": 1,
+      "toModule": "platform.wire",
+      "toPackage": "codex-hepta-wire"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-codex-adapter",
+      "toLayer": 1,
+      "toModule": "runtime.codex",
+      "toPackage": "codex-hepta-prompt-extension"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "runtime.fleet",
+      "fromPackage": "codex-hepta-fleet",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "runtime.fleet",
+      "fromPackage": "codex-hepta-fleet",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "secrets.heptabao",
+      "fromPackage": "codex-hepta-bao-adapter",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "secrets.heptabao",
+      "fromPackage": "codex-hepta-bao-adapter",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "secrets.heptabao",
+      "fromPackage": "codex-hepta-bao-adapter",
+      "toLayer": 1,
+      "toModule": "auth.authbus",
+      "toPackage": "codex-hepta-authbus"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrix-sdk",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrix-sdk",
+      "toLayer": 1,
+      "toModule": "channel.matrix",
+      "toPackage": "codex-hepta-matrix-protocol"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrix-sdk",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrix-sdk",
+      "toLayer": 2,
+      "toModule": "channel.matrix",
+      "toPackage": "codex-hepta-matrix-store"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-memory",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-memory",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-memory",
+      "toLayer": 1,
+      "toModule": "cognitive.types",
+      "toPackage": "codex-hepta-cognitive-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-memory",
+      "toLayer": 1,
+      "toModule": "kernel.operations",
+      "toPackage": "codex-hepta-operations"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-memory",
+      "toLayer": 1,
+      "toModule": "memory.federation",
+      "toPackage": "codex-hepta-memory-federation"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-memory",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-memory",
+      "toLayer": 2,
+      "toModule": "cognitive.read",
+      "toPackage": "codex-hepta-cognitive-read"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-memory",
+      "toLayer": 2,
+      "toModule": "knowledge.graph",
+      "toPackage": "codex-hepta-kg"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-memory",
+      "toLayer": 2,
+      "toModule": "memory.retrieval",
+      "toPackage": "codex-hepta-memory-retrieval"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "control.engineering",
+      "fromPackage": "codex-hepta-governance",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "control.engineering",
+      "fromPackage": "codex-hepta-governance",
+      "toLayer": 2,
+      "toModule": "kernel.evidence",
+      "toPackage": "codex-hepta-evidence"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "control.runtime",
+      "fromPackage": "codex-hepta-runtime",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "control.runtime",
+      "fromPackage": "codex-hepta-runtime",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "control.runtime",
+      "fromPackage": "codex-hepta-runtime",
+      "toLayer": 1,
+      "toModule": "learning.plasticity",
+      "toPackage": "codex-hepta-plasticity"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "control.runtime",
+      "fromPackage": "codex-hepta-runtime",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "control.runtime",
+      "fromPackage": "codex-hepta-runtime",
+      "toLayer": 1,
+      "toModule": "platform.wire",
+      "toPackage": "codex-hepta-wire"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "control.runtime",
+      "fromPackage": "codex-hepta-runtime",
+      "toLayer": 2,
+      "toModule": "control.runtime",
+      "toPackage": "codex-hepta-control-plane"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "learning.ledger",
+      "fromPackage": "codex-hepta-learning-ledger",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "learning.ledger",
+      "fromPackage": "codex-hepta-learning-ledger",
+      "toLayer": 1,
+      "toModule": "intuition.policy",
+      "toPackage": "codex-hepta-intuition"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "learning.ledger",
+      "fromPackage": "codex-hepta-learning-ledger",
+      "toLayer": 2,
+      "toModule": "memory.retrieval",
+      "toPackage": "codex-hepta-memory-retrieval"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-protocol",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-protocol",
+      "toLayer": 2,
+      "toModule": "automation.taskflow",
+      "toPackage": "codex-hepta-automation"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 3,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-protocol",
+      "toLayer": 2,
+      "toModule": "runtime.fleet",
+      "toPackage": "codex-hepta-fleet"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-cognitive-store",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-cognitive-store",
+      "toLayer": 1,
+      "toModule": "cognitive.types",
+      "toPackage": "codex-hepta-cognitive-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-cognitive-store",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "cognitive.store",
+      "fromPackage": "codex-hepta-cognitive-store",
+      "toLayer": 3,
+      "toModule": "cognitive.store",
+      "toPackage": "codex-hepta-memory"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-intelligence-eval",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-intelligence-eval",
+      "toLayer": 3,
+      "toModule": "learning.ledger",
+      "toPackage": "codex-hepta-learning-ledger"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "learning.operator",
+      "fromPackage": "codex-hepta-bellman-operator",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "learning.operator",
+      "fromPackage": "codex-hepta-bellman-operator",
+      "toLayer": 3,
+      "toModule": "learning.ledger",
+      "toPackage": "codex-hepta-learning-ledger"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "prompt.optimizer",
+      "fromPackage": "codex-hepta-prompt-optimizer",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "prompt.optimizer",
+      "fromPackage": "codex-hepta-prompt-optimizer",
+      "toLayer": 1,
+      "toModule": "prompt.registry",
+      "toPackage": "codex-hepta-prompt-registry"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "prompt.optimizer",
+      "fromPackage": "codex-hepta-prompt-optimizer",
+      "toLayer": 2,
+      "toModule": "knowledge.graph",
+      "toPackage": "codex-hepta-kg"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "prompt.optimizer",
+      "fromPackage": "codex-hepta-prompt-optimizer",
+      "toLayer": 3,
+      "toModule": "learning.ledger",
+      "toPackage": "codex-hepta-learning-ledger"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-memory-extension",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-memory-extension",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-memory-extension",
+      "toLayer": 3,
+      "toModule": "cognitive.store",
+      "toPackage": "codex-hepta-memory"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-native-gateway",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-native-gateway",
+      "toLayer": 3,
+      "toModule": "control.runtime",
+      "toPackage": "codex-hepta-runtime"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 1,
+      "toModule": "cognitive.types",
+      "toPackage": "codex-hepta-cognitive-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 1,
+      "toModule": "intuition.policy",
+      "toPackage": "codex-hepta-intuition"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 1,
+      "toModule": "learning.artifacts",
+      "toPackage": "codex-hepta-learning-artifacts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 1,
+      "toModule": "learning.plasticity",
+      "toPackage": "codex-hepta-plasticity"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 1,
+      "toModule": "objective.compiler",
+      "toPackage": "codex-hepta-objective"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 1,
+      "toModule": "prompt.registry",
+      "toPackage": "codex-hepta-prompt-registry"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 1,
+      "toModule": "utility.ndu",
+      "toPackage": "codex-hepta-ndu"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 2,
+      "toModule": "cognitive.read",
+      "toPackage": "codex-hepta-cognitive-read"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 2,
+      "toModule": "context.compiler",
+      "toPackage": "codex-hepta-context-compiler"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 2,
+      "toModule": "neuron.runtime",
+      "toPackage": "codex-hepta-neuron"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 3,
+      "toModule": "learning.ledger",
+      "toPackage": "codex-hepta-learning-ledger"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 4,
+      "toModule": "learning.eval",
+      "toPackage": "codex-hepta-intelligence-eval"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "intelligence.control",
+      "fromPackage": "codex-hepta-intelligence",
+      "toLayer": 4,
+      "toModule": "prompt.optimizer",
+      "toPackage": "codex-hepta-prompt-optimizer"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-app-bridge",
+      "toLayer": 1,
+      "toModule": "runtime.codex",
+      "toPackage": "codex-hepta-prompt-extension"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-app-bridge",
+      "toLayer": 2,
+      "toModule": "kernel.evidence",
+      "toPackage": "codex-hepta-evidence"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-app-bridge",
+      "toLayer": 3,
+      "toModule": "cognitive.store",
+      "toPackage": "codex-hepta-memory"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-app-bridge",
+      "toLayer": 3,
+      "toModule": "control.engineering",
+      "toPackage": "codex-hepta-governance"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-app-bridge",
+      "toLayer": 4,
+      "toModule": "runtime.codex",
+      "toPackage": "codex-hepta-memory-extension"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.supervisor",
+      "fromPackage": "codex-hepta-supervisor",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.supervisor",
+      "fromPackage": "codex-hepta-supervisor",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.supervisor",
+      "fromPackage": "codex-hepta-supervisor",
+      "toLayer": 1,
+      "toModule": "channel.matrix",
+      "toPackage": "codex-hepta-matrix-protocol"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.supervisor",
+      "fromPackage": "codex-hepta-supervisor",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.supervisor",
+      "fromPackage": "codex-hepta-supervisor",
+      "toLayer": 2,
+      "toModule": "control.runtime",
+      "toPackage": "codex-hepta-control-plane"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.supervisor",
+      "fromPackage": "codex-hepta-supervisor",
+      "toLayer": 2,
+      "toModule": "runtime.fleet",
+      "toPackage": "codex-hepta-fleet"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.supervisor",
+      "fromPackage": "codex-hepta-supervisor",
+      "toLayer": 3,
+      "toModule": "cognitive.store",
+      "toPackage": "codex-hepta-memory"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.supervisor",
+      "fromPackage": "codex-hepta-supervisor",
+      "toLayer": 3,
+      "toModule": "runtime.agentd",
+      "toPackage": "codex-hepta-agent-protocol"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 5,
+      "fromModule": "runtime.supervisor",
+      "fromPackage": "codex-hepta-supervisor",
+      "toLayer": 4,
+      "toModule": "learning.eval",
+      "toPackage": "codex-hepta-intelligence-eval"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 1,
+      "toModule": "auth.authbus",
+      "toPackage": "codex-hepta-authbus"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 1,
+      "toModule": "intuition.policy",
+      "toPackage": "codex-hepta-intuition"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 1,
+      "toModule": "learning.artifacts",
+      "toPackage": "codex-hepta-learning-artifacts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 1,
+      "toModule": "learning.plasticity",
+      "toPackage": "codex-hepta-plasticity"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 1,
+      "toModule": "objective.compiler",
+      "toPackage": "codex-hepta-objective"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 1,
+      "toModule": "prompt.registry",
+      "toPackage": "codex-hepta-prompt-registry"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 1,
+      "toModule": "utility.ndu",
+      "toPackage": "codex-hepta-ndu"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 2,
+      "toModule": "automation.taskflow",
+      "toPackage": "codex-hepta-automation"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 2,
+      "toModule": "cognitive.read",
+      "toPackage": "codex-hepta-cognitive-read"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 2,
+      "toModule": "context.compiler",
+      "toPackage": "codex-hepta-context-compiler"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 2,
+      "toModule": "control.runtime",
+      "toPackage": "codex-hepta-control-plane"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 2,
+      "toModule": "kernel.evidence",
+      "toPackage": "codex-hepta-evidence"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 2,
+      "toModule": "memory.retrieval",
+      "toPackage": "codex-hepta-memory-retrieval"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 2,
+      "toModule": "neuron.runtime",
+      "toPackage": "codex-hepta-neuron"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 2,
+      "toModule": "runtime.codex",
+      "toPackage": "codex-hepta-codex-adapter"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 2,
+      "toModule": "runtime.fleet",
+      "toPackage": "codex-hepta-fleet"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 3,
+      "toModule": "cognitive.store",
+      "toPackage": "codex-hepta-memory"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 3,
+      "toModule": "learning.ledger",
+      "toPackage": "codex-hepta-learning-ledger"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 4,
+      "toModule": "cognitive.store",
+      "toPackage": "codex-hepta-cognitive-store"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 4,
+      "toModule": "learning.eval",
+      "toPackage": "codex-hepta-intelligence-eval"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 4,
+      "toModule": "learning.operator",
+      "toPackage": "codex-hepta-bellman-operator"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 4,
+      "toModule": "prompt.optimizer",
+      "toPackage": "codex-hepta-prompt-optimizer"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 4,
+      "toModule": "runtime.codex",
+      "toPackage": "codex-hepta-memory-extension"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 5,
+      "toModule": "intelligence.control",
+      "toPackage": "codex-hepta-intelligence"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.codex",
+      "fromPackage": "codex-hepta-app-host",
+      "toLayer": 5,
+      "toModule": "runtime.codex",
+      "toPackage": "codex-hepta-app-bridge"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 2,
+      "toModule": "automation.taskflow",
+      "toPackage": "codex-hepta-automation"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 2,
+      "toModule": "kernel.evidence",
+      "toPackage": "codex-hepta-evidence"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 2,
+      "toModule": "runtime.agentd",
+      "toPackage": "codex-hepta-agentd-core"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 3,
+      "toModule": "runtime.agentd",
+      "toPackage": "codex-hepta-agent-protocol"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 5,
+      "toModule": "runtime.codex",
+      "toPackage": "codex-hepta-app-bridge"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 6,
+      "toModule": "runtime.agentd",
+      "toPackage": "codex-hepta-agent-components"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 6,
+      "toModule": "runtime.codex",
+      "toPackage": "codex-hepta-app-host"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrixd",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrixd",
+      "toLayer": 1,
+      "toModule": "channel.matrix",
+      "toPackage": "codex-hepta-matrix-protocol"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrixd",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrixd",
+      "toLayer": 2,
+      "toModule": "channel.matrix",
+      "toPackage": "codex-hepta-matrix-store"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrixd",
+      "toLayer": 2,
+      "toModule": "runtime.fleet",
+      "toPackage": "codex-hepta-fleet"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrixd",
+      "toLayer": 3,
+      "toModule": "channel.matrix",
+      "toPackage": "codex-hepta-matrix-sdk"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "channel.matrix",
+      "fromPackage": "codex-hepta-matrixd",
+      "toLayer": 7,
+      "toModule": "runtime.agentd",
+      "toPackage": "codex-hepta-agentd"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 0,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 1,
+      "toModule": "inference.control",
+      "toPackage": "codex-hepta-infer-core"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 2,
+      "toModule": "runtime.codex",
+      "toPackage": "codex-hepta-codex-adapter"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 8,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 7,
+      "toModule": "runtime.agentd",
+      "toPackage": "codex-hepta-agentd"
+    }
+  ],
+  "schema": "hepta.compile-architecture-graph.v1",
+  "status": "aligned",
+  "violations": {
+    "layerDirection": [],
+    "productionModuleCycles": [],
+    "productionPackageCycles": []
+  }
+}

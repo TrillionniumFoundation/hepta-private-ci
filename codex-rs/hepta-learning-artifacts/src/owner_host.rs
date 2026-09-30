@@ -249,7 +249,7 @@ impl ArtifactOwnerVerifierV1 {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
         let registry = read_registry_snapshot(snapshot_file, snapshot_receipt)?;
-        if registry.snapshot().head_digest != signed_head.witness.head_digest {
+        if registry.head_digest() != signed_head.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
         Ok(VerifiedCurrentRegistryViewV1::new(
@@ -506,9 +506,7 @@ impl LearningArtifactOwnerHost {
         if v2.producer_id != writer.producer_id {
             return Err(ArtifactOwnerHostError::WriterLeaseContext);
         }
-        if registry.snapshot().head_digest
-            != transaction.intent().expected_registry_predecessor_head
-        {
+        if registry.head_digest() != transaction.intent().expected_registry_predecessor_head {
             return Err(ArtifactOwnerHostError::RegistryPredecessorMismatch);
         }
         let event_id = StableId::new(format!(
@@ -591,7 +589,7 @@ impl LearningArtifactOwnerHost {
         let encoded = encode_snapshot(registry, binding)?;
         let expected = RegistrySnapshotReceipt {
             binding,
-            head_digest: registry.snapshot().head_digest,
+            head_digest: registry.head_digest(),
             file_digest: Digest32::of_bytes(&encoded),
             records: registry.records().len(),
             encoded_bytes: encoded.len(),
@@ -606,7 +604,7 @@ impl LearningArtifactOwnerHost {
                 Err(crate::ArtifactStorageError::AlreadyExists) => {
                     let reopened =
                         read_registry_snapshot(File::open(self.root.join(&relative))?, expected)?;
-                    if reopened.snapshot().head_digest != expected.head_digest {
+                    if reopened.head_digest() != expected.head_digest {
                         return Err(ArtifactOwnerHostError::CheckpointMismatch);
                     }
                     expected
@@ -862,7 +860,7 @@ impl LearningArtifactOwnerHost {
         let receipt = self.current_registry_receipt(&current)?;
         let registry =
             read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
-        if registry.snapshot().head_digest != current.signed.witness.head_digest {
+        if registry.head_digest() != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
         Ok(VerifiedCurrentRegistryViewV1::new(
@@ -883,7 +881,7 @@ impl LearningArtifactOwnerHost {
         let receipt = self.current_registry_receipt(&current)?;
         let registry =
             read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
-        if registry.snapshot().head_digest != current.signed.witness.head_digest {
+        if registry.head_digest() != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
         Ok(registry)
@@ -1998,7 +1996,7 @@ mod tests {
                     let encoded = encode_snapshot(&registry, binding).fixture("encode registry");
                     let receipt = RegistrySnapshotReceipt {
                         binding,
-                        head_digest: registry.snapshot().head_digest,
+                        head_digest: registry.head_digest(),
                         file_digest: Digest32::of_bytes(&encoded),
                         records: registry.records().len(),
                         encoded_bytes: encoded.len(),
@@ -2025,7 +2023,7 @@ mod tests {
                     }
                 }
 
-                let head = signed_head(&key, scope_digest, registry.snapshot().head_digest);
+                let head = signed_head(&key, scope_digest, registry.head_digest());
                 if stage == "head-effect" {
                     let requirement = RegistryHeadRequirementV1 {
                         registry_id: id("learning-artifacts"),

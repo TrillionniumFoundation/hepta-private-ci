@@ -924,11 +924,65 @@ def write_exact_identity_receipt(
             Path(temporary_name).unlink(missing_ok=True)
 
 
+def cargo_workspace_member_roots() -> set[str]:
+    """Resolve actual workspace membership through Cargo, including glob entries."""
+    process = subprocess.run(
+        [
+            "cargo",
+            "metadata",
+            "--locked",
+            "--no-deps",
+            "--format-version=1",
+            "--manifest-path",
+            str(CARGO_MANIFEST),
+        ],
+        cwd=ROOT,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if process.returncode:
+        raise RuntimeError(
+            "cargo workspace membership unavailable: "
+            + (process.stderr or process.stdout).strip()
+        )
+    try:
+        metadata = json.loads(process.stdout)
+    except json.JSONDecodeError as error:
+        raise RuntimeError(f"invalid cargo metadata: {error}") from error
+    packages = {
+        package.get("id"): package
+        for package in metadata.get("packages", [])
+        if isinstance(package, dict) and isinstance(package.get("id"), str)
+    }
+    member_ids = metadata.get("workspace_members")
+    if not isinstance(member_ids, list) or any(
+        not isinstance(identity, str) or identity not in packages
+        for identity in member_ids
+    ):
+        raise RuntimeError("cargo metadata has an invalid workspace member set")
+    cargo_root = CARGO_MANIFEST.parent.resolve()
+    roots: set[str] = set()
+    for identity in member_ids:
+        manifest = packages[identity].get("manifest_path")
+        if not isinstance(manifest, str):
+            raise RuntimeError(f"cargo workspace member has no manifest: {identity}")
+        try:
+            relative = Path(manifest).resolve().parent.relative_to(cargo_root)
+        except ValueError as error:
+            raise RuntimeError(
+                f"cargo workspace member escapes codex-rs: {manifest}"
+            ) from error
+        roots.add(relative.as_posix())
+    return roots
+
+
 def normalize_workspace() -> bool:
-    text = CARGO_MANIFEST.read_text(encoding="utf-8")
-    missing = [member for member in RUST_PACKAGES if f'    "{member}",\n' not in text]
+    missing = sorted(set(RUST_PACKAGES) - cargo_workspace_member_roots())
     if not missing:
         return False
+    text = CARGO_MANIFEST.read_text(encoding="utf-8")
     anchor = '    "hepta-evidence",\n'
     if anchor not in text:
         raise RuntimeError("workspace member insertion anchor is missing")
@@ -1025,14 +1079,9 @@ def normalize_source() -> bool:
 def verify() -> list[str]:
     failures: list[str] = []
     try:
-        workspace_manifest = tomllib.loads(CARGO_MANIFEST.read_text(encoding="utf-8"))
-    except (OSError, tomllib.TOMLDecodeError) as error:
-        return [f"cannot parse codex-rs/Cargo.toml: {error}"]
-
-    workspace = workspace_manifest.get("workspace")
-    members = (
-        set(workspace.get("members", ())) if isinstance(workspace, dict) else set()
-    )
+        members = cargo_workspace_member_roots()
+    except RuntimeError as error:
+        return [str(error)]
     for root_name, package_name in RUST_PACKAGES.items():
         root = ROOT / "codex-rs" / root_name
         for relative in ("Cargo.toml", "BUILD.bazel", "src/lib.rs"):

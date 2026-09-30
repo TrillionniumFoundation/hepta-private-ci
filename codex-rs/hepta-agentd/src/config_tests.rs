@@ -1,10 +1,10 @@
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 
 use super::AgentdConfig;
 use super::CognitiveRetrievalMode;
@@ -49,11 +49,20 @@ fn config_binds_exact_registered_agent_roots_and_workspace() {
     assert_eq!(config.identity().agent_id, agent_id);
     assert_eq!(config.identity().workspace, workspace);
     assert_eq!(config.identity().resources, resources);
-    let runtime_options = crate::app_runtime::app_server_runtime_options(
-        config.identity(),
-        codex_hepta_memory::CognitiveRuntime::Absent,
-    )
-    .expect("manifest resources must become App Server runtime options");
+    let runtime_options =
+        codex_hepta_app_host::runtime_options(codex_hepta_app_host::HeptaAppServerHostOptions {
+            socket_path: config.identity().app_server_socket.clone(),
+            home_root: config.identity().home_root.clone(),
+            turn_queue_capacity: u64::from(config.identity().resources.turn_queue_capacity),
+            cognitive_runtime: codex_hepta_app_bridge::memory::CognitiveRuntime::Absent,
+            production_cognitive_mutation: None,
+            qualification_turn_writer: None,
+            prompt_runtime_host: None,
+            graceful_drain: None,
+            cognitive_write_profile: false,
+            qualification_turn_writer_profile: false,
+        })
+        .expect("manifest resources must become App Server runtime options");
     assert_eq!(
         Some(37),
         runtime_options
@@ -138,3 +147,6 @@ fn cognitive_retrieval_process_profile_is_explicit_and_fail_closed() {
             if message.contains("compatibility or hnmf-required")
     ));
 }
+
+#[path = "config_intelligence_tests.rs"]
+mod intelligence;

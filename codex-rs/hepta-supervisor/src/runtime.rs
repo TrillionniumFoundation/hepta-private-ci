@@ -150,12 +150,6 @@ pub(crate) struct AgentSlot<P> {
     pub restart_pending: bool,
     pub restart_not_before: Option<Instant>,
     pub restart_attempt: u32,
-    pub restart_window_started_at: Option<Instant>,
-    pub restart_window_started_unix_millis: Option<u64>,
-    pub restart_retry_at: Option<Instant>,
-    pub restart_automatic: bool,
-    pub restart_after_exit: bool,
-    pub restart_exhausted: bool,
     pub active_release: Option<AgentRelease>,
     pub previous_release: Option<AgentRelease>,
     pub release_change: Option<ReleaseChange>,
@@ -181,12 +175,6 @@ impl<P> AgentSlot<P> {
             restart_pending: false,
             restart_not_before: None,
             restart_attempt: 0,
-            restart_window_started_at: None,
-            restart_window_started_unix_millis: None,
-            restart_retry_at: None,
-            restart_automatic: false,
-            restart_after_exit: false,
-            restart_exhausted: false,
             active_release: None,
             previous_release: None,
             release_change: None,
@@ -197,6 +185,14 @@ impl<P> AgentSlot<P> {
             release_transaction: None,
             signed_intent: None,
         }
+    }
+
+    /// A restart claim is not permission to resume an unresolved signed mutation.
+    /// Keep this derived from the recovered intent, never a second mutable flag.
+    pub fn signed_recovery_required(&self) -> bool {
+        self.signed_intent.as_ref().is_some_and(|intent| {
+            intent.status == crate::signed_intent::SignedIntentStatus::RecoveryRequired
+        })
     }
 
     pub fn event(&mut self, generation: u64, kind: SupervisorEventKind) {

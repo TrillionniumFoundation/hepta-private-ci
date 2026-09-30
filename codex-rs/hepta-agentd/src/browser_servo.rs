@@ -25,12 +25,12 @@ use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseBinding;
-use codex_hepta_contracts::FinalUseError;
-use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_hepta_contracts::claim_final_use;
-use codex_hepta_contracts::dispatch_final_use;
+use codex_hepta_agent_components::contracts::FinalUseAuthority;
+use codex_hepta_agent_components::contracts::FinalUseBinding;
+use codex_hepta_agent_components::contracts::FinalUseError;
+use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
+use codex_hepta_agent_components::contracts::claim_final_use;
+use codex_hepta_agent_components::contracts::dispatch_final_use;
 use serde_json::Map;
 use serde_json::Value;
 use serde_json::json;
@@ -854,8 +854,8 @@ mod tests {
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
-    use codex_hepta_contracts::FinalUseGrant;
-    use codex_hepta_contracts::FinalUseRevocations;
+    use codex_hepta_agent_components::contracts::FinalUseGrant;
+    use codex_hepta_agent_components::contracts::FinalUseRevocations;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
 

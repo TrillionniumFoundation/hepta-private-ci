@@ -6,11 +6,11 @@ these tests do not claim native compilation or workspace qualification.
 
 from pathlib import Path
 import os
-import re
 import subprocess
 import tempfile
-import textwrap
 import unittest
+
+from hepta_workflow_commands import load_workflow, workflow_run, workflow_step_by_id
 
 
 WORKFLOW = (
@@ -19,23 +19,12 @@ WORKFLOW = (
 )
 
 
-def command_for(step_name: str) -> str:
-    text = WORKFLOW.read_text(encoding="utf-8")
-    match = re.search(
-        rf"^      - name: {re.escape(step_name)}\n"
-        r"(?P<step>.*?)(?=^      - |\Z)",
-        text,
-        re.M | re.S,
-    )
-    if match is None:
-        raise AssertionError(f"missing workflow step: {step_name}")
-    step = match.group("step")
-    if "        shell: bash\n" not in step:
-        raise AssertionError(f"shell semantics must be explicit: {step_name}")
-    marker = "        run: |\n"
-    if marker not in step:
-        raise AssertionError(f"missing shell command: {step_name}")
-    return textwrap.dedent(step.split(marker, 1)[1])
+def command_for(step_id: str) -> str:
+    workflow = load_workflow(WORKFLOW.read_text(encoding="utf-8"))
+    step = workflow_step_by_id(workflow, "source-preflight", step_id)
+    if step.get("shell") != "bash":
+        raise AssertionError(f"shell semantics must be explicit: {step_id}")
+    return workflow_run(step)
 
 
 class PreflightLoggingTests(unittest.TestCase):
@@ -58,8 +47,11 @@ class PreflightLoggingTests(unittest.TestCase):
         result = subprocess.run(
             ["bash", "-c", command_for(step)],
             cwd=root,
-            env={**os.environ, "PATH": f"{bindir}{os.pathsep}{os.environ['PATH']}",
-                 "RUNNER_TEMP": str(root)},
+            env={
+                **os.environ,
+                "PATH": f"{bindir}{os.pathsep}{os.environ['PATH']}",
+                "RUNNER_TEMP": str(root),
+            },
             capture_output=True,
             text=True,
             timeout=10,
@@ -67,25 +59,19 @@ class PreflightLoggingTests(unittest.TestCase):
         return result, logs
 
     def test_manifest_failure_retains_both_streams_and_exit_code(self):
-        result, logs = self.run_command(
-            "Check structural workspace before native work", "python3", 7
-        )
+        result, logs = self.run_command("manifest", "python3", 7)
         self.assertEqual(result.returncode, 7)
         log = (logs / "workspace-preflight.log").read_text()
         self.assertIn("fixture-stdout", log)
         self.assertIn("fixture-stderr", log)
 
     def test_manifest_success_is_preserved(self):
-        result, logs = self.run_command(
-            "Check structural workspace before native work", "python3", 0
-        )
+        result, logs = self.run_command("manifest", "python3", 0)
         self.assertEqual(result.returncode, 0)
         self.assertTrue((logs / "workspace-preflight.log").is_file())
 
     def test_metadata_failure_retains_stderr_without_corrupting_stdout(self):
-        result, logs = self.run_command(
-            "Resolve the exact checkout without updating the lockfile", "cargo", 9
-        )
+        result, logs = self.run_command("metadata", "cargo", 9)
         self.assertEqual(result.returncode, 9)
         self.assertEqual((logs / "cargo-metadata.json").read_text(), "fixture-stdout\n")
         self.assertEqual(
@@ -93,9 +79,7 @@ class PreflightLoggingTests(unittest.TestCase):
         )
 
     def test_metadata_success_preserves_separate_outputs(self):
-        result, logs = self.run_command(
-            "Resolve the exact checkout without updating the lockfile", "cargo", 0
-        )
+        result, logs = self.run_command("metadata", "cargo", 0)
         self.assertEqual(result.returncode, 0)
         self.assertNotIn("fixture-stderr", (logs / "cargo-metadata.json").read_text())
 

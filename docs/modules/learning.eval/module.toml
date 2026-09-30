@@ -1,0 +1,46 @@
+schema = "hepta.module-manifest.v1"
+order = 30
+id = "learning.eval"
+plane = "qualification"
+kind = "engine"
+lifecycle = "target"
+state = "stateful_shadow"
+architectureRole = "qualification"
+writes = []
+uses = ["learning.ledger", "learning.artifacts", "kernel.evidence"]
+owner = "learning-platform"
+deputy = "qualification-plane"
+denies = ["production_write", "production_writer_dependency", "self_issued_acceptance"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-intelligence-eval"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "LRN-2-CAUSAL-EVALUATION"
+technicalDocument = "docs/modules/learning.eval/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-intelligence-eval"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-intelligence-eval"
+compileLayer = 4
+ciGroups = ["learning"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-shadow-qualification"
+compileLayer = 0
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

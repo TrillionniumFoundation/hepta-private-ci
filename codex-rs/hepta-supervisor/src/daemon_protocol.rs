@@ -16,8 +16,8 @@ use crate::ProductionMutationReceipt;
 use crate::ProductionMutationState;
 use crate::ProductionRecoveryDecision;
 
-pub const SUPERVISORD_CONTROL_SCHEMA_VERSION: u32 = 2;
-pub const MAX_SUPERVISORD_CONTROL_FRAME_BYTES: u64 = 65_536;
+pub use codex_hepta_agent_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
+pub use codex_hepta_agent_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
 pub const MAX_SUPERVISORD_ROSTER: u16 = 256;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -49,6 +49,10 @@ impl SupervisordRequest {
             | SupervisordMethod::Snapshot { .. }
             | SupervisordMethod::ReleaseSelection { .. }
             | SupervisordMethod::ProductionMutationStatus { .. } => Ok(()),
+            SupervisordMethod::RuntimeModuleSelection { module_id } => {
+                codex_hepta_agent_protocol::validate_runtime_module_id(module_id)
+                    .map_err(|_| SupervisordRequestValidationError::InvalidRequest)
+            }
             SupervisordMethod::Roster { limit } => {
                 if (1..=MAX_SUPERVISORD_ROSTER).contains(limit) {
                     Ok(())
@@ -84,6 +88,10 @@ pub enum SupervisordRequestValidationError {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SupervisordMethod {
     Health,
+    /// Read the current durable serving selection; this cannot activate modules.
+    RuntimeModuleSelection {
+        module_id: String,
+    },
     Roster {
         limit: u16,
     },
@@ -330,6 +338,9 @@ pub struct SupervisordResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SupervisordPayload {
+    RuntimeModuleSelection {
+        selection: codex_hepta_agent_protocol::RuntimeModuleSelectionV1,
+    },
     Health(SupervisordHealth),
     Roster {
         agents: Vec<SupervisordAgentStatus>,

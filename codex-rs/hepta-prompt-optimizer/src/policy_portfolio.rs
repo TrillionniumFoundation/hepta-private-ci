@@ -41,6 +41,14 @@ pub fn select_portfolio_audited(
     let interaction_digest = digest_interaction_graph(interactions);
     let constraint_digest = digest_constraints(&interactions.hard_constraints);
 
+    let evaluation_context = PortfolioEvaluationContext {
+        price_map: &price_map,
+        constraints: &constraint_index,
+        interactions: &interaction_index,
+        missing_policy: interactions.missing_interaction_policy,
+        budget,
+    };
+
     let mut selected = BTreeSet::new();
     let mut selected_order = Vec::new();
     let mut used_tokens = 0_u32;
@@ -57,11 +65,7 @@ pub fn select_portfolio_audited(
             let evaluation = evaluate_package(
                 root,
                 &selected,
-                &price_map,
-                &constraint_index,
-                &interaction_index,
-                interactions.missing_interaction_policy,
-                budget,
+                &evaluation_context,
                 used_tokens,
             )?;
             let Some(evaluation) = evaluation else {
@@ -110,11 +114,8 @@ pub fn select_portfolio_audited(
 
     let candidate_decisions = portfolio_candidate_audit(
         &selected,
-        &price_map,
-        &constraint_index,
-        &interaction_index,
+        &evaluation_context,
         interactions,
-        budget,
         used_tokens,
     )?;
     let priced_count = u32::try_from(pricing.receipts.len()).map_err(|_| PolicyError::Arithmetic)?;

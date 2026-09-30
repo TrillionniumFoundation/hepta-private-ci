@@ -11,6 +11,10 @@ use sqlx::sqlite::SqlitePoolOptions;
 use crate::AuthBusAuthorityError;
 use crate::authority_store::storage;
 
+#[allow(
+    clippy::disallowed_methods,
+    reason = "the transient in-memory schema oracle is non-authoritative and intentionally has no durable state path"
+)]
 pub(crate) async fn verify_schema(
     pool: &SqlitePool,
     migrator: &Migrator,

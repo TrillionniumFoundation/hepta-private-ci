@@ -2130,13 +2130,7 @@ dependencies = [
  "codex-git-utils",
  "codex-goal-extension",
  "codex-guardian-v2",
- "codex-hepta-contracts",
- "codex-hepta-evidence",
- "codex-hepta-governance",
- "codex-hepta-memory",
- "codex-hepta-memory-extension",
- "codex-hepta-paths",
- "codex-hepta-prompt-extension",
+ "codex-hepta-app-bridge",
  "codex-history-notes-extension",
  "codex-home",
  "codex-hooks",
@@ -3450,6 +3444,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-hepta-agent-components"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-authbus",
+ "codex-hepta-automation",
+ "codex-hepta-bellman-operator",
+ "codex-hepta-codex-adapter",
+ "codex-hepta-cognitive-read",
+ "codex-hepta-cognitive-store",
+ "codex-hepta-context-compiler",
+ "codex-hepta-contracts",
+ "codex-hepta-control-plane",
+ "codex-hepta-evidence",
+ "codex-hepta-fleet",
+ "codex-hepta-intelligence",
+ "codex-hepta-intelligence-eval",
+ "codex-hepta-intuition",
+ "codex-hepta-learning-artifacts",
+ "codex-hepta-learning-ledger",
+ "codex-hepta-memory",
+ "codex-hepta-memory-extension",
+ "codex-hepta-memory-retrieval",
+ "codex-hepta-ndu",
+ "codex-hepta-neuron",
+ "codex-hepta-objective",
+ "codex-hepta-paths",
+ "codex-hepta-plasticity",
+ "codex-hepta-prompt-optimizer",
+ "codex-hepta-prompt-registry",
+ "codex-hepta-types",
+]
+
+[[package]]
 name = "codex-hepta-agent-protocol"
 version = "0.0.0"
 dependencies = [
@@ -3466,52 +3493,28 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "app_test_support",
- "codex-app-server",
  "codex-app-server-client",
  "codex-app-server-protocol",
  "codex-arg0",
- "codex-config",
- "codex-features",
+ "codex-hepta-agent-components",
  "codex-hepta-agent-protocol",
- "codex-hepta-authbus",
+ "codex-hepta-agentd-core",
+ "codex-hepta-app-bridge",
+ "codex-hepta-app-host",
  "codex-hepta-automation",
- "codex-hepta-bellman-operator",
- "codex-hepta-codex-adapter",
- "codex-hepta-cognitive-read",
- "codex-hepta-cognitive-store",
  "codex-hepta-cognitive-types",
- "codex-hepta-context-compiler",
  "codex-hepta-contracts",
- "codex-hepta-control-plane",
  "codex-hepta-evidence",
- "codex-hepta-fleet",
  "codex-hepta-infer-core",
  "codex-hepta-infer-worker-host",
- "codex-hepta-intelligence",
- "codex-hepta-intelligence-eval",
- "codex-hepta-intuition",
- "codex-hepta-learning-artifacts",
- "codex-hepta-learning-ledger",
- "codex-hepta-memory",
- "codex-hepta-memory-extension",
- "codex-hepta-memory-retrieval",
- "codex-hepta-ndu",
- "codex-hepta-neuron",
- "codex-hepta-objective",
  "codex-hepta-operations",
- "codex-hepta-paths",
- "codex-hepta-plasticity",
- "codex-hepta-prompt-optimizer",
- "codex-hepta-prompt-registry",
  "codex-hepta-supervisor",
- "codex-hepta-types",
  "codex-model-provider",
  "codex-protocol",
  "codex-state",
  "codex-uds",
  "codex-utils-absolute-path",
  "codex-utils-cargo-bin",
- "codex-utils-cli",
  "codex-utils-home-dir",
  "core_test_support",
  "ed25519-dalek",
@@ -3528,10 +3531,44 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-hepta-agentd-core"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-types",
+]
+
+[[package]]
+name = "codex-hepta-app-bridge"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-evidence",
+ "codex-hepta-governance",
+ "codex-hepta-memory",
+ "codex-hepta-memory-extension",
+ "codex-hepta-prompt-extension",
+]
+
+[[package]]
+name = "codex-hepta-app-host"
+version = "0.0.0"
+dependencies = [
+ "codex-app-server",
+ "codex-arg0",
+ "codex-config",
+ "codex-features",
+ "codex-hepta-app-bridge",
+ "codex-protocol",
+ "codex-utils-absolute-path",
+ "codex-utils-cli",
+]
+
+[[package]]
 name = "codex-hepta-authbus"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-state",
+ "codex-utils-absolute-path",
  "ed25519-dalek",
  "pretty_assertions",
  "serde",
@@ -3614,10 +3651,8 @@ dependencies = [
  "codex-hepta-prompt-extension",
  "codex-hepta-types",
  "codex-hepta-wire",
- "codex-protocol",
  "serde",
  "serde_json",
- "tokio",
 ]
 
 [[package]]
@@ -3633,8 +3668,12 @@ name = "codex-hepta-cognitive-store"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
+ "codex-hepta-contracts",
  "codex-hepta-memory",
+ "codex-hepta-paths",
  "codex-hepta-types",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
@@ -3686,14 +3725,9 @@ dependencies = [
 name = "codex-hepta-control-plane"
 version = "0.0.0"
 dependencies = [
- "codex-hepta-contracts",
  "codex-hepta-ndu",
- "codex-hepta-operations",
  "codex-hepta-types",
- "ed25519-dalek",
  "pretty_assertions",
- "tempfile",
- "tokio",
 ]
 
 [[package]]
@@ -3766,6 +3800,7 @@ dependencies = [
  "codex-hepta-infer-core",
  "codex-hepta-types",
  "codex-utils-absolute-path",
+ "codex-utils-cargo-bin",
  "core_test_support",
  "ed25519-dalek",
  "libc",
@@ -4055,6 +4090,8 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-state",
+ "codex-utils-absolute-path",
  "ed25519-dalek",
  "sqlx",
  "tempfile",
@@ -4197,6 +4234,7 @@ dependencies = [
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-uds",
+ "codex-utils-cargo-bin",
  "constant_time_eq",
  "ed25519-dalek",
  "jsonschema",

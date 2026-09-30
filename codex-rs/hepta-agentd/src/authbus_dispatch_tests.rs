@@ -9,14 +9,14 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
 use codex_app_server_protocol::QueuedSubmission;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_evidence::AuthBusDeliveryState;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::evidence::AuthBusDeliveryState;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -84,7 +84,7 @@ impl Fixture {
         let checkpoint_file = root.join("authbus-replay-checkpoint.json");
         // The external fixture witness is captured from the canonical empty owner,
         // never invented from a label or recaptured from a suspect backup.
-        let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
+        let evidence = codex_hepta_agent_components::evidence::HeptaEvidenceStore::open(
             &codex_state::SqliteConfig::from_sqlite_home(
                 codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(&identity.home_root)
                     .expect("owner home"),
@@ -108,10 +108,11 @@ impl Fixture {
         let state =
             Arc::new(AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16).unwrap());
         state.refresh_generation().unwrap();
-        let cognitive =
-            codex_hepta_cognitive_store::DurableCognitiveStore::open(&state.identity().layout)
-                .await
-                .unwrap();
+        let cognitive = codex_hepta_agent_components::cognitive_store::DurableCognitiveStore::open(
+            &state.identity().layout,
+        )
+        .await
+        .unwrap();
         state.attach_cognitive_store(Arc::new(cognitive)).unwrap();
         state.mark_runtime_prerequisites_ready().unwrap();
         state.mark_app_server_ready().unwrap();

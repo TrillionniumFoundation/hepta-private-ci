@@ -13,13 +13,13 @@ use codex_app_server_protocol::ThreadQueueReconcileOutcome;
 use codex_app_server_protocol::ThreadQueueReconcileParams;
 use codex_app_server_protocol::ThreadQueueReconcileResponse;
 use codex_app_server_protocol::UserInput;
-use codex_hepta_automation::AutomationAdmission;
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationFuture;
-use codex_hepta_automation::AutomationQueueReceipt;
-use codex_hepta_automation::AutomationScheduler;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::AutomationTurnQueue;
+use codex_hepta_agent_components::automation::AutomationAdmission;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::AutomationFuture;
+use codex_hepta_agent_components::automation::AutomationQueueReceipt;
+use codex_hepta_agent_components::automation::AutomationScheduler;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::AutomationTurnQueue;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio_util::sync::CancellationToken;
 
@@ -209,7 +209,8 @@ impl AutomationTurnQueue for AgentdAutomationQueue {
     }
 }
 
-pub(crate) async fn run_automation_scheduler(
+pub(crate) async fn run_automation_scheduler<Q: AutomationTurnQueue>(
+    queue: Arc<Q>,
     store: AutomationStore,
     state: Arc<AgentdState>,
     identity: AgentdIdentity,
@@ -225,10 +226,6 @@ pub(crate) async fn run_automation_scheduler(
     {
         return stop_after_automation_error(error, &state, &cancellation).await;
     }
-    let queue = Arc::new(AgentdAutomationQueue::new(
-        Arc::clone(&state),
-        identity.clone(),
-    ));
     let scheduler = match AutomationScheduler::new(
         store,
         queue,
@@ -251,11 +248,12 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
     tick_interval: Duration,
 ) -> Result<(), AgentdError> {
     let mut retry_budget = DispatchRetryBudget::default();
+    let mut ticks = scheduler_ticks(tick_interval)?;
     loop {
         tokio::select! {
             biased;
             _ = cancellation.cancelled() => return Ok(()),
-            _ = tokio::time::sleep(tick_interval) => {}
+            _ = ticks.tick() => {}
         }
         if !state.automation_is_available()? {
             return wait_for_cancellation(&cancellation).await;
@@ -304,12 +302,29 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
     }
 }
 
+/// Keep one bounded recovery/dispatch step per cadence without adding another
+/// full idle period after its I/O. Overrun skips missed slots instead of issuing
+/// a burst of catch-up dispatches. The first tick still waits a full period.
+fn scheduler_ticks(period: Duration) -> Result<tokio::time::Interval, AgentdError> {
+    if period.is_zero() {
+        return Err(AgentdError::Invalid(
+            "automation tick interval must be non-zero".to_string(),
+        ));
+    }
+    let first = tokio::time::Instant::now()
+        .checked_add(period)
+        .ok_or_else(|| AgentdError::Invalid("automation tick deadline overflow".to_string()))?;
+    let mut ticks = tokio::time::interval_at(first, period);
+    ticks.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+    Ok(ticks)
+}
+
 /// Applies the scheduler's fail-stop policy to one tick. A durable unknown
 /// dispatch no longer kills the scheduler: the next tick first enters the
 /// exact-client-id reconciliation path above. Only repeated proven
 /// pre-admission failures exhaust the bounded retry budget.
 pub(crate) async fn handle_automation_tick(
-    tick: codex_hepta_automation::AutomationTick,
+    tick: codex_hepta_agent_components::automation::AutomationTick,
     retry_budget: &mut DispatchRetryBudget,
     state: &AgentdState,
     cancellation: &CancellationToken,
@@ -332,14 +347,16 @@ pub(crate) struct DispatchRetryBudget {
 }
 
 impl DispatchRetryBudget {
-    fn observe(&mut self, tick: &codex_hepta_automation::AutomationTick) -> bool {
+    fn observe(&mut self, tick: &codex_hepta_agent_components::automation::AutomationTick) -> bool {
         match tick {
-            codex_hepta_automation::AutomationTick::RetryScheduled { .. } => {
+            codex_hepta_agent_components::automation::AutomationTick::RetryScheduled { .. } => {
                 self.consecutive_retries = self.consecutive_retries.saturating_add(1);
             }
-            codex_hepta_automation::AutomationTick::Idle
-            | codex_hepta_automation::AutomationTick::Submitted { .. }
-            | codex_hepta_automation::AutomationTick::DispatchUncertain { .. } => {
+            codex_hepta_agent_components::automation::AutomationTick::Idle
+            | codex_hepta_agent_components::automation::AutomationTick::Submitted { .. }
+            | codex_hepta_agent_components::automation::AutomationTick::DispatchUncertain {
+                ..
+            } => {
                 self.consecutive_retries = 0;
             }
         }
@@ -397,9 +414,9 @@ fn unix_time_ms() -> Result<u64, AutomationError> {
 
 #[cfg(test)]
 mod tests {
-    use codex_hepta_automation::AutomationTaskId;
-    use codex_hepta_automation::AutomationTick;
-    use codex_hepta_contracts::AgentId;
+    use codex_hepta_agent_components::automation::AutomationTaskId;
+    use codex_hepta_agent_components::automation::AutomationTick;
+    use codex_hepta_agent_components::contracts::AgentId;
 
     use super::*;
 
@@ -472,6 +489,12 @@ mod tests {
         );
     }
 }
+
+#[path = "automation_factory.rs"]
+mod factory;
+pub(crate) use factory::AutomationService;
+#[cfg(test)]
+pub(crate) use factory::open_automation_store_after_generation_fence;
 
 #[path = "automation_service.rs"]
 mod service;

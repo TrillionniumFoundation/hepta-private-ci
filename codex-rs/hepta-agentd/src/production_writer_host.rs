@@ -11,30 +11,30 @@ use std::fmt;
 use std::sync::Arc;
 use std::time::Duration;
 
-use codex_hepta_cognitive_store::CognitiveAccess;
-use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
-use codex_hepta_cognitive_store::ForgetMemoryDraft;
-use codex_hepta_cognitive_store::KgFactSetDraft;
-use codex_hepta_cognitive_store::MemoryDraft;
-use codex_hepta_cognitive_store::MemoryRevisionDraft;
-use codex_hepta_cognitive_store::ProductionAuthorityLease;
-use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
-use codex_hepta_cognitive_store::ProductionCognitiveMutation;
-use codex_hepta_cognitive_store::ProductionCognitiveMutationCapability;
-use codex_hepta_cognitive_store::ProductionCognitiveMutationReceiptV1;
-use codex_hepta_cognitive_store::ProductionDispatchReceipt;
-use codex_hepta_cognitive_store::ProductionDurableWriter;
-use codex_hepta_cognitive_store::ProductionQueuedReceipt;
+use codex_hepta_agent_components::cognitive_store::CognitiveAccess;
+use codex_hepta_agent_components::cognitive_store::CognitiveRecoveryRequirement;
+use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_agent_components::cognitive_store::ForgetMemoryDraft;
+use codex_hepta_agent_components::cognitive_store::KgFactSetDraft;
+use codex_hepta_agent_components::cognitive_store::MemoryDraft;
+use codex_hepta_agent_components::cognitive_store::MemoryRevisionDraft;
+use codex_hepta_agent_components::cognitive_store::ProductionAuthorityLease;
+use codex_hepta_agent_components::cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_agent_components::cognitive_store::ProductionCognitiveMutation;
+use codex_hepta_agent_components::cognitive_store::ProductionCognitiveMutationCapability;
+use codex_hepta_agent_components::cognitive_store::ProductionCognitiveMutationReceiptV1;
+use codex_hepta_agent_components::cognitive_store::ProductionDispatchReceipt;
+use codex_hepta_agent_components::cognitive_store::ProductionDurableWriter;
+use codex_hepta_agent_components::cognitive_store::ProductionQueuedReceipt;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_cognitive_store::ProductionWriterError;
-use codex_hepta_cognitive_store::SourceDraft;
-use codex_hepta_cognitive_store::StableMemoryId;
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseBinding;
-use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_hepta_memory::FinalUseProductionOutboxTarget;
-use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
+use codex_hepta_agent_components::cognitive_store::ProductionWriterError;
+use codex_hepta_agent_components::cognitive_store::SourceDraft;
+use codex_hepta_agent_components::cognitive_store::StableMemoryId;
+use codex_hepta_agent_components::contracts::FinalUseAuthority;
+use codex_hepta_agent_components::contracts::FinalUseBinding;
+use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
+use codex_hepta_agent_components::memory::FinalUseProductionOutboxTarget;
+use codex_hepta_agent_components::memory::ProductionFinalUseOutboxDispatcher;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
@@ -208,7 +208,7 @@ pub struct AgentdProductionWriterHost {
     // Private read-side clone of the exact recovered generation. Runtime
     // composition can reuse the same fenced owner without reopening by path or
     // exposing ProductionDurableWriter's crate-private raw-store handle.
-    cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
+    cognitive_runtime: codex_hepta_agent_components::memory::CognitiveRuntime,
     mutation: Option<Arc<ProductionCognitiveMutationCapability>>,
 }
 
@@ -287,9 +287,9 @@ impl AgentdProductionWriterHost {
         let mutation = Arc::new(writer.cognitive_mutation_capability()?);
         Ok(Self {
             writer,
-            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
-                runtime_store,
-            )),
+            cognitive_runtime: codex_hepta_agent_components::memory::CognitiveRuntime::Available(
+                Arc::new(runtime_store),
+            ),
             mutation: Some(mutation),
             dispatchers: BTreeMap::new(),
             grants: None,
@@ -319,9 +319,9 @@ impl AgentdProductionWriterHost {
             writer: Arc::new(writer),
             dispatchers: BTreeMap::new(),
             grants: None,
-            cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
-                runtime_store,
-            )),
+            cognitive_runtime: codex_hepta_agent_components::memory::CognitiveRuntime::Available(
+                Arc::new(runtime_store),
+            ),
             mutation: None,
         })
     }
@@ -387,7 +387,9 @@ impl AgentdProductionWriterHost {
     /// Reuse the exact recovered generation for Agentd's read side without
     /// reopening by path and without widening the durable writer's raw-store
     /// visibility beyond the owner crate.
-    pub(crate) fn cognitive_runtime(&self) -> codex_hepta_memory::CognitiveRuntime {
+    pub(crate) fn cognitive_runtime(
+        &self,
+    ) -> codex_hepta_agent_components::memory::CognitiveRuntime {
         self.cognitive_runtime.clone()
     }
 

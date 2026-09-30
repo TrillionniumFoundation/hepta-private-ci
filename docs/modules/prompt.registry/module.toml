@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 17
+id = "prompt.registry"
+plane = "domain"
+kind = "store"
+lifecycle = "target"
+state = "stateful"
+architectureRole = "authoritative_store"
+writes = ["prompt_factor_registry", "prompt_realization_registry", "prompt_factor_lifecycle"]
+uses = ["platform.types", "kernel.operations"]
+owner = "intelligence-platform"
+deputy = "cognitive-platform"
+denies = ["external_content_instruction_promotion", "self_activation"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-prompt-registry"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
+technicalDocument = "docs/modules/prompt.registry/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-prompt-registry"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-prompt-registry"
+compileLayer = 1
+ciGroups = ["learning", "objective"]

@@ -45,6 +45,9 @@ use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
 
+#[path = "client_automation_listing.rs"]
+mod automation_listing;
+
 pub struct AgentdClient {
     socket_path: PathBuf,
     expected_agent_id: AgentId,
@@ -584,21 +587,6 @@ impl AgentdClient {
         }
     }
 
-    pub async fn automation_list(&self, limit: u16) -> Result<Vec<AutomationTask>, AgentdError> {
-        match self
-            .send(AgentdRequest::automation_list(
-                self.request_id(),
-                self.spawn_generation,
-                limit,
-            ))
-            .await?
-            .payload
-        {
-            AgentdPayload::AutomationTasks { tasks } => Ok(tasks),
-            payload => unexpected(payload),
-        }
-    }
-
     pub async fn automation_cancel(
         &self,
         task_id: AutomationTaskId,
@@ -785,3 +773,7 @@ fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {
         ))),
     }
 }
+
+#[cfg(test)]
+#[path = "client_transport_tests.rs"]
+mod transport_tests;

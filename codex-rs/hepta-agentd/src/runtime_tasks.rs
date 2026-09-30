@@ -14,7 +14,7 @@ use std::collections::VecDeque;
 use std::future::Future;
 use std::time::Duration;
 
-use codex_hepta_types::Generation;
+use codex_hepta_agent_components::types::Generation;
 use tokio::task::Id;
 use tokio::task::JoinError;
 use tokio::task::JoinSet;

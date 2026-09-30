@@ -548,7 +548,7 @@ mod tests {
         VerifiedCurrentRegistryViewV1::new(
             RegistrySnapshotReceipt {
                 binding: digest("binding"),
-                head_digest: registry.snapshot().head_digest,
+                head_digest: registry.head_digest(),
                 file_digest: digest("snapshot-file"),
                 records: 1,
                 encoded_bytes: 1,

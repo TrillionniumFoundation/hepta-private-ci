@@ -4,12 +4,12 @@ use std::fs::OpenOptions;
 use std::path::Path;
 use std::path::PathBuf;
 
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_paths::HeptaAgentLayout;
-use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::paths::HeptaAgentLayout;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 
@@ -86,6 +86,7 @@ pub struct AgentdConfig {
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
+    runtime_module_profile: crate::RuntimeModuleProfileV1,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
@@ -96,9 +97,19 @@ pub struct AgentdConfig {
 }
 
 impl AgentdConfig {
+    /// Bind optional startup modules to the existing Supervisor serving selection.
+    pub fn with_runtime_module_profile(mut self, profile: crate::RuntimeModuleProfileV1) -> Self {
+        self.runtime_module_profile = profile;
+        self
+    }
+
+    pub(crate) fn runtime_module_profile(&self) -> crate::RuntimeModuleProfileV1 {
+        self.runtime_module_profile
+    }
+
     pub fn from_process_environment() -> Result<Self, AgentdError> {
         let cognitive_retrieval_mode = cognitive_retrieval_mode_from_process_environment()?;
-        let fleet_root = required_path(codex_hepta_paths::HEPTA_FLEET_ROOT_ENV)?;
+        let fleet_root = required_path(codex_hepta_agent_components::paths::HEPTA_FLEET_ROOT_ENV)?;
         let agent_id = required_utf8(HEPTA_AGENT_ID_ENV)?;
         let spawn_generation = required_utf8(HEPTA_AGENT_GENERATION_ENV)?
             .parse::<u64>()
@@ -209,6 +220,7 @@ impl AgentdConfig {
             production_operations: None,
             production_writer_host: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
+            runtime_module_profile: crate::RuntimeModuleProfileV1::Compiled,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
@@ -532,6 +544,31 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
         self.intelligence_invocation_provider.clone()
+    }
+
+    /// Reject a partially requested canonical profile before daemon services or
+    /// durable owners are opened. No configured component is silently ignored.
+    pub(crate) fn require_intelligence_composition(&self) -> Result<(), AgentdError> {
+        match (
+            self.intelligence_product_runner.as_ref(),
+            self.intelligence_invocation_provider.as_ref(),
+        ) {
+            (None, None) => Ok(()),
+            (Some(_), Some(_)) => {
+                if self.objective_profile_file().is_none()
+                    || self.authbus_trust_file().is_none()
+                    || self.authbus_checkpoint_file().is_none()
+                {
+                    return Err(AgentdError::Invalid(
+                        "canonical intelligence requires an Objective profile, AuthBus trust and AuthBus replay checkpoint".to_string(),
+                    ));
+                }
+                Ok(())
+            }
+            (Some(_), None) | (None, Some(_)) => Err(AgentdError::Invalid(
+                "canonical intelligence runner and invocation provider must be configured together; refusing compatibility fallback".to_string(),
+            )),
+        }
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

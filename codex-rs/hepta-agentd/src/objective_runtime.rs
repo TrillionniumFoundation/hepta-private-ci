@@ -12,27 +12,27 @@ use std::path::Path;
 use std::str::FromStr;
 use std::sync::Mutex;
 
-use codex_hepta_authbus::Error as AuthBusError;
-use codex_hepta_authbus::SignedMessage;
-use codex_hepta_authbus::SignedMessageClaims;
-use codex_hepta_intelligence::ObjectiveRunBindingsV1;
-use codex_hepta_intelligence::ObjectiveRunError;
-use codex_hepta_intelligence::compile_and_publish_objective_run_v1;
-use codex_hepta_learning_ledger::DurableRunStartJournal;
-use codex_hepta_learning_ledger::RunStartAppendDisposition;
-use codex_hepta_learning_ledger::RunStartAuthenticationV1;
-use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
-use codex_hepta_learning_ledger::RunStartRecordV1;
-use codex_hepta_learning_ledger::RunStartRecovery;
-use codex_hepta_objective::ObjectiveAdmissionContextV1;
-use codex_hepta_objective::ObjectiveAdmissionProfileV1;
-use codex_hepta_objective::ObjectiveSourceAuthenticationV1;
-use codex_hepta_objective::decode_admission_profile_json_v1;
-use codex_hepta_objective::decode_source_envelope_json_v1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::Revision;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::authbus::Error as AuthBusError;
+use codex_hepta_agent_components::authbus::SignedMessage;
+use codex_hepta_agent_components::authbus::SignedMessageClaims;
+use codex_hepta_agent_components::intelligence::ObjectiveRunBindingsV1;
+use codex_hepta_agent_components::intelligence::ObjectiveRunError;
+use codex_hepta_agent_components::intelligence::compile_and_publish_objective_run_v1;
+use codex_hepta_agent_components::learning_ledger::DurableRunStartJournal;
+use codex_hepta_agent_components::learning_ledger::RunStartAppendDisposition;
+use codex_hepta_agent_components::learning_ledger::RunStartAuthenticationV1;
+use codex_hepta_agent_components::learning_ledger::RunStartObjectiveDispositionV1;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
+use codex_hepta_agent_components::learning_ledger::RunStartRecovery;
+use codex_hepta_agent_components::objective::ObjectiveAdmissionContextV1;
+use codex_hepta_agent_components::objective::ObjectiveAdmissionProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveSourceAuthenticationV1;
+use codex_hepta_agent_components::objective::decode_admission_profile_json_v1;
+use codex_hepta_agent_components::objective::decode_source_envelope_json_v1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::Revision;
+use codex_hepta_agent_components::types::StableId;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
@@ -569,7 +569,9 @@ fn authentication_is_current(
     }
 }
 
-fn store_error(error: codex_hepta_learning_ledger::RunStartStoreError) -> AgentdError {
+fn store_error(
+    error: codex_hepta_agent_components::learning_ledger::RunStartStoreError,
+) -> AgentdError {
     invalid(&format!("objective run-start journal: {error}"))
 }
 

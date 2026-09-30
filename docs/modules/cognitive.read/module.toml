@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 23
+id = "cognitive.read"
+plane = "domain"
+kind = "port"
+lifecycle = "target"
+state = "stateless"
+architectureRole = "contract"
+writes = []
+uses = ["cognitive.types"]
+owner = "cognitive-platform"
+deputy = "agent-runtime"
+denies = ["write_authority"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-cognitive-read"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "MEM-READ-1-SNAPSHOT-PORT"
+technicalDocument = "docs/modules/cognitive.read/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-cognitive-read"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-cognitive-read"
+compileLayer = 2
+ciGroups = ["learning"]

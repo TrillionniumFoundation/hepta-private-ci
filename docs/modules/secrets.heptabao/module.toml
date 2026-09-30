@@ -1,0 +1,45 @@
+schema = "hepta.module-manifest.v1"
+order = 10
+id = "secrets.heptabao"
+plane = "external_control"
+kind = "service"
+lifecycle = "existing"
+state = "stateful_external"
+architectureRole = "authoritative_store"
+writes = ["secret_metadata", "secret_lease"]
+uses = ["kernel.authority", "auth.authbus"]
+owner = "secrets-platform"
+deputy = "security-authority"
+denies = ["raw_secret_receipt", "self_issued_operator_acceptance"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["external/HeptaBao", "codex-rs/hepta-bao-adapter"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "HEPTABAO-1-SECRET-BOUNDARY"
+technicalDocument = "docs/modules/secrets.heptabao/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "external/HeptaBao"
+mode = "exclusive"
+
+[[rootBindings]]
+path = "codex-rs/hepta-bao-adapter"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-bao-adapter"
+compileLayer = 2
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
