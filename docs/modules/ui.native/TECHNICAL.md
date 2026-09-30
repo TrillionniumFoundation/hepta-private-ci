@@ -1,11 +1,11 @@
 # ui.native technical development guide
 
-**Module:** `ui.native`  
-**Owner / deputy:** `ui-platform` / `accessibility`  
-**Canonical branch:** `work/ui-native-qualified-integration-20260928`  
-**Convergence branch:** `work/ui-native-product-closure-20260930`  
-**Immutable implementation source:** `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52`  
-**Implementation tree:** `136c62bfe0cc0ca6c7455169162c3f5a1b951f8a`
+**Module:** `ui.native`
+**Owner / deputy:** `ui-platform` / `accessibility`
+**Canonical branch:** `work/ui-native-qualified-integration-20260928`
+**Convergence branch:** `work/ui-native-adversarial-audit-20261001`
+**Immutable implementation source:** `21cbe83cf85994bcbfd29666b5acd9d82cc15294`
+**Implementation tree:** `c8af0ffedc680889f1b6ef0fbdda923e172ce435`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The product source is frozen at the
@@ -46,7 +46,9 @@ The convergence chain is a normal Git history:
 2. ordinary WAL/index source, including `4bc29cf124dc5532d04349e478bc82f5d4959fd9`;
 3. Linux portal/resource boundary `23d20707aebcdf8e5646d2bc3d74fd6751ec83d9`;
 4. UI lane split and durable paging `172fb1edaa5471c7cb28e14582c2b2a2dc1ff6f3`;
-5. closed unsigned package inventory `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52`.
+5. historical closed unsigned package inventory `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52`;
+6. audit base `9be52d267d02a76f73e8a94fd086191c351d1c70`;
+7. adversarial audit source `21cbe83cf85994bcbfd29666b5acd9d82cc15294` (this immutable candidate).
 
 Patch capsules, apply-once workflows and CI-created product commits are not
 source delivery. The sole module workflow has `contents: read`, checks explicit
@@ -59,11 +61,45 @@ updater and GUI. `backend.rs` and `native_http.rs` implement authenticated
 loopback reads. `security.rs` binds an exact displayed view, payload and optional
 resource identity to the final-use owner.
 
+`codex-rs/utils/private-state` owns reusable Windows ACL, handle identity and
+durable replacement primitives. Shared contracts depend directly on this
+utility; `hepta-private-state` remains a compatibility export for the native
+application. Domain authority stays with the calling owner. This avoids a
+shared-contract dependency on a product module while preserving OS behavior.
+
 `journal.rs` owns the active operation state machine and exact
 `HashMap<OperationKey, usize>` lookup. `journal_storage.rs` owns snapshots and
 framed WAL persistence. `retirement.rs` owns immutable segments, archived
-receipts and a rebuildable disk index. `private_state.rs` rejects unsafe roots,
-redirects and permissions.
+receipts and a rebuildable disk index. `private_state.rs` retains directory identity and rejects unsafe roots,
+redirects and permissions. Unix journal reads and mutations use the pinned
+directory descriptor; atomic replacement verifies its parent descriptor and
+synchronizes that same directory. Operator-selected ancestry remains trusted;
+local checksums do not establish an external anti-rollback authority.
+
+Startup retirement reconciliation groups at most 4096 active identities by
+index prefix, validates each referenced immutable bucket once, and preserves
+query order. Archived records still pass content hash, exact identity, closed
+phase and receipt equality checks. `journal_replay.rs` holds replay validation;
+grouped lookup neither consults a stale cache nor creates execution authority.
+
+`update_confirmation.rs` owns process-bound readiness and the helper ACK.
+Readiness keeps ActivatedUnconfirmed; receiving the ACK commits Confirmed.
+Cancellation and confirmation share the update owner lock, so timeout cleanup
+cannot kill a candidate after confirmation won. Critical copies validate the
+actual copied bytes before atomic publication.
+
+New activation admits at most four digest-named predecessor backups per target,
+each at most 512 MiB and together at most 2 GiB. The bounded directory scan
+rejects redirected or malformed matching evidence; retained predecessor files
+are not automatically deleted. Recovery of an already admitted update bypasses
+new-backup admission. Staged cleanup removes only the exact digest-bound file
+owned by the completed or cancelled lifecycle.
+
+Failure rollback first verifies that the installed target is still the admitted
+candidate or predecessor. An unrelated target is preserved and recorded as
+RecoveryRequired. The installed target has one coordinated installer owner;
+out-of-band writes during a check-to-rename interval are outside this ownership
+contract, because the filesystem replacement is not a compare-and-swap.
 
 The GUI has three supervised lanes:
 
@@ -205,14 +241,26 @@ only permits update activation after every lane and runtime close are confirmed.
 Blocking provisional ceilings live in `apps/hepta-native/STORAGE_BUDGETS.json`:
 4096 active records, one million retired identities, bounded WAL/snapshot bytes,
 mutation p50/p95/p99, cold-start p95, peak RSS, deterministic index rebuild,
-write amplification and bounded history paging.
+write amplification and bounded history paging. The audit revision adds
+20 fresh-process observations per open/rebuild population, a blocking 25 ms
+64-receipt page p95, a 2 MiB retained serialized-page ceiling and a 256 MiB
+active-subject RSS ceiling. Serialized bytes are not allocator accounting.
+OS page cache is uncontrolled; these observations do not measure cold-disk I/O.
 
-The exact-source storage job runs both ignored qualification subjects on Linux.
-The active subject measures 12,288 state transitions, cold reopen, snapshot, WAL
-and peak RSS. `strace -ff -yy` records successful write/pwrite and
+The exact-source storage job runs both ignored qualification subjects on Linux
+with the same optimized release profile used for product binaries. Raw samples
+bind the compiled profile; debug measurements are diagnostics and are rejected
+as qualification evidence.
+The active subject measures 12,288 state transitions, fresh-process reopen,
+64-receipt page latency/retained bytes, snapshot, WAL and peak RSS.
+Nearest-rank p95 is derived from complete 20-process sample arrays; validators
+recompute percentiles and reject short, substituted or non-finite populations. `strace -ff -yy` records successful write/pwrite and
 fsync/fdatasync calls whose descriptors resolve inside the qualification root.
 The retirement subject builds one million exact identities, verifies indexed
-cold open and requires deterministic legacy-index rebuild.
+cold open and requires deterministic legacy-index rebuild. It also measures
+20 actual journal opens with both 4096 active records and one million retired
+identities, followed by history pages spread across all 64 active-history pages.
+The same open, history and RSS ceilings apply to this combined population.
 
 Declared budgets remain `provisional-unqualified` until the immutable workflow
 artifact passes every ceiling and is independently reviewed.
@@ -241,8 +289,11 @@ acceptance or release authorization.
 
 ## 13. Remaining gates
 
-The source-side convergence is implemented, pending compilation and execution.
-Promotion still requires:
+The audit revision has passed 205 local application regressions, 210 related
+owner regressions and strict application/owner Clippy. These Linux container
+checks do not establish the complete same-source CI or target-platform result.
+Equivalent verified-resource Open/Reveal adapters on macOS and Windows remain
+a product implementation gap. Promotion also requires:
 
 - one successful seven-subject run against one immutable candidate;
 - every 4096/1,000,000 storage ceiling passing;
@@ -258,3 +309,12 @@ Promotion still requires:
 
 Until those gates close, `productionQualified`, `deploymentQualified` and
 `releaseAuthorized` remain false.
+
+## 14. Adversarial audit revision
+
+Read `ADVERSARIAL-AUDIT-20261001.md` for reproduced defects, fixes and local
+verification. The previous implementation source remains provenance; a new
+ordinary source commit must be frozen before qualification. Exact filenames,
+input caps, stable focus IDs and a 4 MiB worker-rendered diagnostic cache keep
+presentation bounded without changing final-use authority. Explicit staged
+package cleanup preserves unrelated files and predecessor recovery evidence.

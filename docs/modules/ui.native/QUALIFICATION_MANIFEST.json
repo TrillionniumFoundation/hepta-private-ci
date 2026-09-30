@@ -1,17 +1,24 @@
 {
   "schema": "hepta.ui.native.qualification-manifest.v3",
   "manifestStatus": "pending-executed-evidence",
-  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
-  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
+  "implementationSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+  "implementationSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
   "orderedParents": {
-    "base": "6f145464d9d58233c59aafe262a1250a5ea873a8",
+    "base": "9be52d267d02a76f73e8a94fd086191c351d1c70",
     "head": "pending-final-review-head"
   },
   "toolchain": {
     "rust": "1.95.0",
     "applicationCargoLock": "apps/hepta-native/Cargo.lock",
     "ownerCargoLock": "codex-rs/Cargo.lock",
-    "workflow": ".github/workflows/ui-native-qualification.yml"
+    "workflow": ".github/workflows/ui-native-qualification.yml",
+    "qualifiedOwnerPackages": [
+      "codex-hepta-native-gateway",
+      "codex-hepta-contracts",
+      "codex-hepta-private-state",
+      "codex-utils-private-state"
+    ],
+    "storagePerformanceBuildProfile": "release"
   },
   "evidenceCollectors": [
     "scripts/hepta_ui_native_qualification_evidence.py",
@@ -54,14 +61,20 @@
     "isolated-AppDir-gateway-keyring-Xvfb-lifecycle"
   ],
   "storageChecks": [
-    "4096-active-record-cold-restart",
+    "4096-active-record-fresh-process-reopen",
     "1000000-retired-identity-indexed-open",
     "deterministic-legacy-index-rebuild",
     "mutation-p50-p95-p99",
     "snapshot-and-WAL-bytes",
     "peak-RSS",
     "write-amplification",
-    "fsync-fdatasync-count"
+    "fsync-fdatasync-count",
+    "20-fresh-process-open-and-rebuild-samples",
+    "64-record-history-page-latency-and-serialized-retention",
+    "exact-12288-mutation-latencies-and-durability-counts",
+    "compiled-release-profile-in-summary-and-every-process-observation",
+    "combined-4096-active-and-1000000-retired-actual-journal-open",
+    "combined-64-record-history-p95-retained-bytes-and-peak-RSS"
   ],
   "implementedPendingQualification": [
     "persistent-history-paging",
@@ -71,6 +84,7 @@
     "packaged-Windows-AUMID-registrar-and-WinRT-toast-adapter"
   ],
   "stillRequiredBeforePromotion": [
+    "non-Linux-verified-Open-Reveal-resource-capability-adapter",
     "one-successful-same-source-seven-subject-run",
     "measured-source-coverage",
     "sustained-performance-soak",
@@ -91,5 +105,17 @@
   "rule": "A missing, skipped, cancelled, dirty, stale-SHA, mismatched-parent, foreign-workflow, missing-log, modified-package or over-budget subject is failure. Promotion requires one immutable implementation source and independent review.",
   "productionQualified": false,
   "deploymentQualified": false,
-  "releaseAuthorized": false
+  "releaseAuthorized": false,
+  "storageMeasurementContext": {
+    "buildProfile": "release",
+    "freshProcessesPerPopulation": 20,
+    "operatingSystemPageCache": "uncontrolled",
+    "combinedSubject": {
+      "activeRecords": 4096,
+      "retiredIdentities": 1000000,
+      "historyPageSize": 64
+    },
+    "historyBytes": "serialized-retained-receipts-not-allocator-accounting",
+    "blockingCeilingsUnchanged": true
+  }
 }

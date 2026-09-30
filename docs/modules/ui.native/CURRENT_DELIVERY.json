@@ -1,15 +1,17 @@
 {
   "schema": "hepta.ui.native.delivery.v4",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
-  "convergenceBranch": "work/ui-native-product-closure-20260930",
-  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
-  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
+  "convergenceBranch": "work/ui-native-adversarial-audit-20261001",
+  "implementationSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+  "implementationSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
   "ordinarySourceHistory": {
     "baseline": "6f145464d9d58233c59aafe262a1250a5ea873a8",
     "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
     "portalResource": "23d20707aebcdf8e5646d2bc3d74fd6751ec83d9",
     "lanesAndPaging": "172fb1edaa5471c7cb28e14582c2b2a2dc1ff6f3",
-    "packageClosure": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52"
+    "packageClosure": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
+    "auditBaseline": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+    "adversarialAudit": "21cbe83cf85994bcbfd29666b5acd9d82cc15294"
   },
   "implemented": {
     "exactActiveOperationIndex": true,
@@ -46,11 +48,19 @@
     "isolatedLinuxAppDirLifecycleHarness": true,
     "sameRunEvidenceAggregate": true,
     "failureArtifactRetention": true,
-    "sbomAndProvenanceGenerator": true
+    "sbomAndProvenanceGenerator": true,
+    "transitiveLocalCargoDependencyFreeze": true,
+    "immutableBudgetContractExceptSourceNavigation": true,
+    "privateStatePureOsUtilityWithCompatibilityFacade": true,
+    "prefixGroupedRetirementMembershipOnJournalOpen": true,
+    "releaseProfileStorageQualificationHarness": true,
+    "combinedActiveAndRetiredFreshProcessSubject": true,
+    "exactLockDerivedSbomDependencyInventory": true
   },
   "repositoryBlocking": [
+    "equivalent verified resource-capability adapters for macOS/Windows Open/Reveal remain unimplemented",
     "the final seven-subject workflow has not completed successfully for the exact review head",
-    "4096-active and 1000000-retired storage evidence has not passed every hard budget",
+    "release-profile 4096-active, 1000000-retired and combined storage evidence has not passed every hard budget with retained durability syscall traces",
     "measured source coverage and sustained soak evidence remain absent",
     "Windows AppUserModelID registration and WinRT notification require execution on a physical packaged Windows host",
     "macOS and Linux portal/notification resource paths require physical-host acceptance"
@@ -86,10 +96,108 @@
     "provenanceGenerated": false,
     "physicalPlatformAcceptanceComplete": false
   },
-  "productImplementationCandidateComplete": true,
+  "productImplementationCandidateComplete": false,
   "productionImplementation": false,
   "productionQualified": false,
   "deploymentQualified": false,
   "independentAcceptanceComplete": false,
-  "releaseAuthorized": false
+  "releaseAuthorized": false,
+  "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261001.md",
+  "localAuditVerification": {
+    "scope": "shared Linux container diagnostics, not seven-subject or physical-platform qualification",
+    "implementationSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+    "implementationSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
+    "applicationTests": {
+      "passed": 205,
+      "failed": 0,
+      "ignoredScaleSubjectsAndWorker": 3
+    },
+    "ownerTests": {
+      "passed": 210,
+      "failed": 0,
+      "qualifiedPackages": [
+        "codex-hepta-native-gateway",
+        "codex-hepta-contracts",
+        "codex-hepta-private-state",
+        "codex-utils-private-state"
+      ]
+    },
+    "strictClippy": {
+      "applicationPassed": true,
+      "ownerPassed": true,
+      "warningPolicy": "deny-warnings"
+    },
+    "pythonTests": {
+      "status": "passed",
+      "passed": 176,
+      "failed": 0,
+      "command": "python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v"
+    },
+    "releaseStorageDiagnostics": {
+      "status": "pending-execution",
+      "acceptedQualification": false
+    },
+    "durabilitySyscallCaptureAvailable": false,
+    "ciQualificationPassed": false,
+    "physicalPlatformAcceptanceComplete": false,
+    "workspaceGraph": {
+      "localManifests": 195,
+      "errors": 0,
+      "testsPassed": 53,
+      "boundaryRulesWeakened": false
+    },
+    "projectionTests": {
+      "passed": 7,
+      "failed": 0,
+      "reproducibilityVerified": true
+    },
+    "moduleRegistryTests": {
+      "passed": 4,
+      "failed": 0
+    },
+    "bazelLockChecks": {
+      "updatePassed": true,
+      "checkPassed": true,
+      "lockChanged": false,
+      "bazelVersion": "9.0.0"
+    }
+  },
+  "historicalLocalAuditVerification": [
+    {
+      "scope": "shared Linux container diagnostics, not seven-subject qualification",
+      "implementationSourceSha": "f4ce125546ab743ebedbc793762add89b1143ac3",
+      "applicationTests": {
+        "passed": 200,
+        "failed": 0,
+        "ignoredScaleSubjectsAndWorker": 3,
+        "unixSocketFixtureUnavailable": true
+      },
+      "ownerTests": {
+        "passed": 210,
+        "failed": 0
+      },
+      "pythonTests": {
+        "passed": 165,
+        "failed": 0
+      },
+      "packagePortalTests": {
+        "passed": 36,
+        "failed": 0
+      },
+      "projectionTests": {
+        "passed": 7,
+        "failed": 0
+      },
+      "moduleRegistryTests": {
+        "passed": 4,
+        "failed": 0
+      },
+      "debugBinarySelfTestPassed": true,
+      "debugBinaryProcessFaultQualificationPassed": true,
+      "activeScaleDiagnosticPassed": true,
+      "durabilitySyscallCaptureAvailable": false,
+      "ciQualificationPassed": false,
+      "claim": "historical diagnostics retained with their recorded source identity; not evidence for the latest frozen implementation"
+    }
+  ]
 }

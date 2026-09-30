@@ -40,6 +40,7 @@ Non-authoritative implementation evidence roots:
 
 - `codex-rs/hepta-contracts`
 - `codex-rs/hepta-private-state`
+- `codex-rs/utils/private-state`
 - `codex-rs/ext/hepta-governance`
 
 Declared roots not yet present:
@@ -50,7 +51,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the general lease owner is [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs), external trust interfaces are in [authority_trust.rs](../../../codex-rs/hepta-contracts/src/authority_trust.rs), and the Windows private-directory durability implementation is [codex-rs/hepta-private-state](../../../codex-rs/hepta-private-state). This is source navigation, not proof that every target port or production consumer exists. The canonical target → native API → product caller → test → qualification status is [TRACEABILITY.md](TRACEABILITY.md). The V1 general-lease trust model is frozen by [ADR-0001](ADR-0001-LEASE-TRUST-MODEL.md), and final-use ordering is normative in [LINEARIZATION.md](LINEARIZATION.md).
+The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the general lease owner is [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs), external trust interfaces are in [authority_trust.rs](../../../codex-rs/hepta-contracts/src/authority_trust.rs), and the Windows private-directory durability implementation and its inline tests are in [codex-rs/utils/private-state/src/windows.rs](../../../codex-rs/utils/private-state/src/windows.rs). Shared contracts depend directly on this OS utility. [codex-rs/hepta-private-state/src/windows.rs](../../../codex-rs/hepta-private-state/src/windows.rs) retains compatibility reexports of `PrivateStateDirectory` and `opened_resource_identity` for existing consumers; it no longer owns the implementation or inline tests. The utility has no domain authority or product dependencies, and the declared authority roots remain unchanged. This is current source navigation; the implementation map retains its historical `sourceBase` and `sourceObjects`, without promoting their qualification or permission claims. The canonical target → native API → product caller → test → qualification status is [TRACEABILITY.md](TRACEABILITY.md). The V1 general-lease trust model is frozen by [ADR-0001](ADR-0001-LEASE-TRUST-MODEL.md), and final-use ordering is normative in [LINEARIZATION.md](LINEARIZATION.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -137,7 +138,7 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 The current general authority-lease store starts at canonical store schema V2 because retired lease-ID revision lineage participates in the authoritative frontier. No schema-V1 general lease store was activated or released; V1 images are rejected rather than silently reinterpreted. Any future durable predecessor requires an explicit migration and frontier transition.
 
-FinalUse durable state uses the current v3 authority snapshot plus an append-only, checksummed single-use nonce log. Unix preserves owner-only/no-follow open, file identity and file/directory fsync semantics. Windows uses `codex-rs/hepta-private-state` to validate a local private root, owner SID/DACL, reparse-point absence, file identity and durable same-directory replacement. Unsupported platforms fail closed; there is no UI-local or in-memory production fallback. The separately documented V1 single-key and V2 key-ring inputs remain compatibility forms for signed grant verification, not weaker durable-store schemas.
+FinalUse durable state uses the current v3 authority snapshot plus an append-only, checksummed single-use nonce log. Unix preserves owner-only/no-follow open, file identity and file/directory fsync semantics. Windows uses `codex-utils-private-state` directly to validate a local private root, owner SID/DACL, reparse-point absence, file identity and durable same-directory replacement. `codex-hepta-private-state` is a compatibility export of the same utility, rather than a dependency of shared contracts. Unsupported platforms fail closed; there is no UI-local or in-memory production fallback. The separately documented V1 single-key and V2 key-ring inputs remain compatibility forms for signed grant verification, not weaker durable-store schemas.
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
@@ -188,11 +189,11 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-contracts/src/final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs); named case: `signed_claim_is_single_use_and_delivers_under_same_owner`.
 - [codex-rs/hepta-contracts/src/final_use_windows_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_windows_tests.rs); Windows-only restart/replay/revocation durability cases.
-- [codex-rs/hepta-private-state/src/windows.rs](../../../codex-rs/hepta-private-state/src/windows.rs); Windows-only private-directory, ACL, no-reparse and replacement tests.
+- [codex-rs/utils/private-state/src/windows.rs](../../../codex-rs/utils/private-state/src/windows.rs); Windows-only inline tests for worker-boundary handle traits, local absolute root paths and entry-name confinement. The ACL, no-reparse, identity and replacement implementation is in the same file; these inline tests do not establish physical Windows acceptance.
 - [codex-rs/hepta-contracts/src/agent_id_tests.rs](../../../codex-rs/hepta-contracts/src/agent_id_tests.rs); named case: `canonical_id_is_stable_across_display_parse_and_serde`.
 The previously listed dedicated kernel-authority traceability test is not present in this source tree. Its target-port and Browser B4 closed-set coverage must not be inferred from these source references.
 
-In `codex-rs`, run `just test -p codex-hepta-contracts`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-contracts -p codex-utils-private-state`. The command is a test invocation, not a stored result. The utility's inline Windows tests are compiled and executed only on Windows. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -417,7 +418,7 @@ This receipt records repository source bindings for the current documentation ca
 |---|---|---|---|
 | `finaluseauthority` | `FinalUseAuthority`, `VerifiedUseToken`, `dispatch_final_use` | `codex-rs/hepta-contracts/src/final_use.rs` | `final_use_tests.rs`, `tests/final_use_linearization.rs` |
 | `store` | `Store` | `codex-rs/hepta-contracts/src/final_use_store.rs` | `final_use_tests.rs`, `final_use_windows_tests.rs` |
-| Windows private durable directory | `PrivateStateDirectory` | `codex-rs/hepta-private-state/src/windows.rs` | inline Windows-only ACL/reparse/identity/replace tests |
+| Windows private durable directory | `PrivateStateDirectory` | `codex-rs/utils/private-state/src/windows.rs`; compatibility reexports in `codex-rs/hepta-private-state/src/windows.rs` | utility inline Windows-only handle/path/confinement tests; FinalUse Windows restart/replay/revocation tests |
 | `authority_lease` / `capability_revocation` | `AuthorityLeaseRegistry`, `AuthorityLeaseVerifier` | `codex-rs/hepta-contracts/src/authority_lease.rs` | inline unit tests |
 | trusted time / anti-rollback interface | `AuthorityClock`, `AuthorityFrontierStore` | `codex-rs/hepta-contracts/src/authority_trust.rs` | lease + FinalUse restored-snapshot tests |
 | independent approval / revocation feed | `FinalUseApprovalVerifier`, `FinalUseRevocationFeedVerifier`, `FinalUseTrustKey` | `codex-rs/hepta-contracts/src/final_use_control.rs` | inline unit tests |

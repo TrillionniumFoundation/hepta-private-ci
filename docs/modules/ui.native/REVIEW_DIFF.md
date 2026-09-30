@@ -1,47 +1,49 @@
 # ui.native ordinary-source review map
 
-The review object is a normal Git commit chain. No source archive, compressed
-patch capsule, apply-once workflow or workflow-generated future tree is part of
-the candidate.
+The current review base is `9be52d267d02a76f73e8a94fd086191c351d1c70` on
+`work/ui-native-qualified-integration-20260928`. The audit branch is
+`work/ui-native-adversarial-audit-20261001`. Read CURRENT_SOURCE.json for the
+immutable implementation SHA/tree and ADVERSARIAL-AUDIT-20261001.md for findings.
 
-## Frozen implementation chain
+Historical WAL/index, portal, paging and package commits remain ancestry. The
+old `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` freeze and
+`6f145464d9d58233c59aafe262a1250a5ea873a8` review base describe earlier work.
 
-| Role | Commit | Review scope |
-|---|---|---|
-| canonical review base | `6f145464d9d58233c59aafe262a1250a5ea873a8` | target branch identity used as ordered parent 1 |
-| WAL/index source | `4bc29cf124dc5532d04349e478bc82f5d4959fd9` | exact active index, journal-v7 WAL/checkpoint, retirement-v3 disk index and recovery tests |
-| exact-source convergence | `3e7274e8b87fbacbe0a91d076e62d21b08e02a8f` | one read-only qualification graph, storage budgets and ordinary-source cleanup |
-| portal/resource boundary | `23d20707aebcdf8e5646d2bc3d74fd6751ec83d9` | portal-first picker, verified Linux resource identity/FD handoff, absolute launchers and Windows identity/WinRT adapters |
-| lanes and persistent paging | `172fb1edaa5471c7cb28e14582c2b2a2dc1ff6f3` | picker/read/mutation lane split, shutdown join and 64-record durable history pages |
-| frozen product implementation | `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` | closed unsigned package inventory with Windows AUMID registrar and portal declarations |
-| qualification metadata continuation | current PR head | state anchors, technical/development docs, source-freeze tests, SBOM/provenance sealing and pending evidence manifest |
+| Audit source change | Commit |
+| --- | --- |
+| fence sessions and bound presentation input and diagnostics | `f8c078f8006a1e824a428540f7b63b27e2f1cb9c` |
+| pin private journal roots and repair durable recovery boundaries | `befe5c710291cf3374859535c57687cd31b1206e` |
+| bind update copies and arbitrate confirmation and rollback | `12fc86051bcb189fc21171eff9c33533fa914052` |
+| align regression fixtures and enforce strict lint | `0d8afb30f7a2d68125eb7d6f2be4eb771d82ff81` |
+| fence watchdog failures with durable update ownership | `4e307a0e69cf24b82457a636091b81fce9115a73` |
+| bind complete source and dependency evidence and measure real storage samples | `f4ce125546ab743ebedbc793762add89b1143ac3` |
+| keep semantic storage ceilings immutable after source freeze | `9dcb16b980c22dee2c215e9fb116fcf99248a77a` |
+| share Windows private state without product dependency cycles | `f93cf2913868aeef4ad2e2496804f459d47e3a46` |
+| reconcile retirement in bounded validated prefix batches | `dbde0b4fc00b1d9bdc434dcd78cee30d0823fafd` |
+| qualify combined storage using the product release profile | `d6502257d890b915d2287cfc188509d8f18bdd6b` |
+| bind WAL regression imports to the journal owner | `21cbe83cf85994bcbfd29666b5acd9d82cc15294` |
 
-The immutable implementation tree is
-`136c62bfe0cc0ca6c7455169162c3f5a1b951f8a`.
+Later review commits update validators, source anchors, technical/development
+documentation and evidence navigation. Product edits require a new freeze;
+semantic storage budgets remain frozen except the two source-anchor fields.
+The checker derives the full local Cargo dependency closure. Qualification
+tooling is reviewed at the exact candidate/workflow identity.
 
-## Recommended review commands
+Review commands:
 
 ```bash
-git diff --stat 6f145464d9d58233c59aafe262a1250a5ea873a8..bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52
-git diff 6f145464d9d58233c59aafe262a1250a5ea873a8..bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52 -- apps/hepta-native/src
-git diff 23d20707aebcdf8e5646d2bc3d74fd6751ec83d9^..23d20707aebcdf8e5646d2bc3d74fd6751ec83d9
-git diff 172fb1edaa5471c7cb28e14582c2b2a2dc1ff6f3^..172fb1edaa5471c7cb28e14582c2b2a2dc1ff6f3
-git show --stat --oneline bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52
+implementation="$(python3 -c 'import json; print(json.load(open("apps/hepta-native/CURRENT_SOURCE.json"))["implementationSourceSha"])')"
+git diff --stat 9be52d267d02a76f73e8a94fd086191c351d1c70.."$implementation"
+git diff 9be52d267d02a76f73e8a94fd086191c351d1c70.."$implementation" -- apps/hepta-native/src
+python3 scripts/check_hepta_ui_native_convergence.py
 ```
 
-Review in this order:
+Review directory-handle ownership and WAL/checkpoint recovery first; then update
+copy digests, rollback identity, ACK/cancellation arbitration, session and input
+fences. Finally inspect exact source/package/SBOM semantics, raw performance
+samples, durability counts and the seven-subject evidence aggregate.
 
-1. journal/WAL transitions, fsync/checkpoint cut points and recovery;
-2. retirement authority versus rebuildable index acceleration;
-3. Linux path identity binding and exact FD handoff;
-4. portal request observation, bounds and explicit Zenity compatibility;
-5. single mutation authority, read/picker lanes and shutdown ownership;
-6. bounded persistent history pages;
-7. Windows shortcut/AUMID registrar and WinRT adapter;
-8. deterministic package inventory;
-9. exact-head/ordered-parent subjects, storage budgets, SBOM/provenance binding
-   and permanently false release flags.
-
-The ordinary source establishes a reviewable implementation candidate. It does
-not establish physical accessibility, visible portal/notification behavior,
-production signing, deployment or release authorization.
+The result is an incomplete implementation candidate. Non-Linux verified
+Open/Reveal adapters remain absent. Physical acceptance, coverage, soak,
+production signing, independent supply-chain acceptance and release authority
+remain explicit gates.

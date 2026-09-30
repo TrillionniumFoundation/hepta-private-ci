@@ -47,15 +47,15 @@
       "tests": [
         "codex-rs/hepta-contracts/src/final_use_tests.rs",
         "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
-        "codex-rs/hepta-private-state/src/windows.rs"
+        "codex-rs/utils/private-state/src/windows.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "store",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "codex-rs/hepta-private-state/src/windows.rs"
+        "codex-rs/utils/private-state/src/windows.rs"
       ],
-      "sourceSemantics": "Current v3 authority snapshot plus append-only nonce log; Unix owner-only/no-follow durability and Windows private-directory/ACL durability fail closed without weaker fallback."
+      "sourceSemantics": "Current v3 authority snapshot plus append-only nonce log; Unix owner-only/no-follow durability and Windows private-directory/ACL durability fail closed without weaker fallback. Current Windows contracts delegate directly to codex-rs/utils/private-state/src/windows.rs, which owns the OS implementation and inline handle/path/confinement tests. codex-rs/hepta-private-state/src/windows.rs is a compatibility reexport of that utility for existing consumers. These are current navigation references; sourceBase and sourceObjects retain their historical snapshot identities and do not qualify the extraction or change authority."
     },
     {
       "operation": "authority_lease_registry",

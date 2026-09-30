@@ -1,8 +1,8 @@
 # hepta-native developer guide
 
 This guide applies to immutable implementation source
-`bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52`, tree
-`136c62bfe0cc0ca6c7455169162c3f5a1b951f8a`. The source is an implementation
+`21cbe83cf85994bcbfd29666b5acd9d82cc15294`, tree
+`c8af0ffedc680889f1b6ef0fbdda923e172ce435`. The source is an implementation
 candidate; production, deployment and release flags remain false.
 
 ## Toolchain and source identity
@@ -35,9 +35,11 @@ cargo +1.95.0 check \
 cargo +1.95.0 clippy \
   --manifest-path apps/hepta-native/Cargo.toml \
   --locked --all-targets --all-features -- -D warnings
-cargo +1.95.0 test \
-  --manifest-path apps/hepta-native/Cargo.toml \
+just test --manifest-path ../apps/hepta-native/Cargo.toml \
   --locked --all-targets
+just test --locked --all-targets --all-features \
+  -p codex-hepta-native-gateway -p codex-hepta-contracts \
+  -p codex-hepta-private-state -p codex-utils-private-state
 ```
 
 A formatting change is source. Commit and review it before freezing a new
@@ -143,18 +145,16 @@ three lanes before update activation.
 ## Storage qualification
 
 `STORAGE_BUDGETS.json` contains blocking provisional ceilings. The ignored
-subjects exercise:
+subjects require the optimized release profile and exercise:
 
 ```bash
-cargo +1.95.0 test \
-  --manifest-path apps/hepta-native/Cargo.toml --locked --lib \
-  storage_qualification_tests::storage_active_scale_qualification -- \
-  --ignored --exact --nocapture --test-threads=1
+just test --release --manifest-path ../apps/hepta-native/Cargo.toml --locked --lib \
+  --run-ignored only -E 'test(=storage_qualification_tests::storage_active_scale_qualification)' \
+  --test-threads=1
 
-cargo +1.95.0 test \
-  --manifest-path apps/hepta-native/Cargo.toml --locked --lib \
-  storage_qualification_tests::storage_retirement_scale_qualification -- \
-  --ignored --exact --nocapture --test-threads=1
+just test --release --manifest-path ../apps/hepta-native/Cargo.toml --locked --lib \
+  --run-ignored only -E 'test(=storage_qualification_tests::storage_retirement_scale_qualification)' \
+  --test-threads=1
 ```
 
 A manual run is not qualification. The workflow additionally records Linux
@@ -207,3 +207,16 @@ Required GitHub administration is recorded in
 `docs/modules/ui.native/BRANCH_PROTECTION.md`. A checked-in file cannot enable an
 administrator ruleset. Only an independent reviewer may promote the false
 production/deployment/release flags.
+
+## Audit regression and measurement semantics
+
+`ADVERSARIAL-AUDIT-20261001.md` records the revision defects and evidence limits.
+Keep real child-process tests for readiness/ACK loss/cancellation and bounded
+owner contention, copied-content drift, anchored directory replacement, stale
+session close, exact filename handling, egui paste/focus and diagnostic-limit
+invalidation. The updater confirmation owner is `src/update_confirmation.rs`.
+
+Storage probes run in 20 fresh processes per population; OS page cache is
+uncontrolled. The page metric is exact serialized receipt bytes, not an
+allocation profiler. Local manual measurements cannot promote the workflow
+manifest. Explicit staged cleanup removes only digest-bound owned packages.

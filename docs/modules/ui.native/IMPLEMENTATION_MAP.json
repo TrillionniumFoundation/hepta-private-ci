@@ -4,9 +4,9 @@
   "module": "ui.native",
   "owner": "ui-platform",
   "deputy": "accessibility",
-  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
-  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
-  "sourceMaturity": "implementation-candidate-qualification-blocked",
+  "implementationSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+  "implementationSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
+  "sourceMaturity": "implementation-candidate-incomplete-qualification-blocked",
   "declaredRoots": [
     "apps/hepta-native",
     "codex-rs/hepta-native-gateway",
@@ -25,7 +25,10 @@
       "bounded persistent-history read",
       "platform picker"
     ],
-    "rule": "read and picker coordination never become another execution or journal authority"
+    "rule": "read and picker coordination never become another execution or journal authority",
+    "privateStateOsUtility": "codex-rs/utils/private-state::codex_utils_private_state",
+    "privateStateCompatibilityFacade": "codex-rs/hepta-private-state",
+    "privateStateLayeringRule": "shared contracts use the pure OS utility; the product facade retains compatibility without an authority dependency"
   },
   "operations": [
     {
@@ -66,7 +69,8 @@
     "retirementSegment": "hepta.native-retirement.v2",
     "retirementIndex": "hepta.native-retirement-index.v1",
     "retirementIndexBucket": "hepta.native-retirement-index-bucket.v1",
-    "authorityRule": "immutable retirement segments are authoritative; manifests, buckets and caches are rebuildable acceleration only"
+    "authorityRule": "immutable retirement segments are authoritative; manifests, buckets and caches are rebuildable acceleration only",
+    "startupRetirementMembership": "prefix-grouped fallible membership batch with one validated result per active identity"
   },
   "nativeAdapters": {
     "linuxPicker": "XDG Desktop Portal primary; Zenity explicit compatibility",
@@ -96,7 +100,11 @@
     "scripts/hepta_ui_native_compile_negative.py",
     "scripts/hepta_ui_native_supply_chain.py",
     "scripts/qualify_hepta_ui_native_storage.py",
-    "scripts/test_hepta_ui_native_*.py"
+    "scripts/test_hepta_ui_native_*.py",
+    "apps/hepta-native/src/ui/*_tests.rs",
+    "apps/hepta-native/tools/tests/test_portal_lifecycle.py",
+    "apps/hepta-native/src/storage_qualification_tests/process_samples.rs",
+    "codex-rs/utils/private-state/src/windows.rs"
   ],
   "repositoryControlledEvidence": {
     "perPlatform": [
@@ -121,12 +129,23 @@
     "storageAdditional": [
       "4096 active records",
       "1000000 retired identities",
-      "indexed cold open and deterministic legacy rebuild",
+      "release-profile fresh-process indexed open and deterministic legacy rebuild",
       "p50/p95/p99 mutation latency",
-      "WAL/snapshot sizes, peak RSS, write bytes and fsync/fdatasync calls"
+      "WAL/snapshot sizes, peak RSS, write bytes and fsync/fdatasync calls",
+      "20 fresh process samples per population with uncontrolled OS page cache",
+      "raw transition latencies and independently recomputed p50/p95/p99",
+      "64-record history page latency and retained serialized bytes",
+      "actual journal opens with 4096 active records and 1000000 retired identities together"
+    ],
+    "qualifiedOwnerPackages": [
+      "codex-hepta-native-gateway",
+      "codex-hepta-contracts",
+      "codex-hepta-private-state",
+      "codex-utils-private-state"
     ]
   },
   "repositoryControlledGaps": [
+    "non-Linux verified Open/Reveal resource-capability implementation",
     "successful execution of the final seven-subject workflow",
     "measured source coverage",
     "sustained soak",
@@ -142,8 +161,8 @@
     "ordinarySourceCommitEstablished": true,
     "selfMutatingQualificationRemoved": true,
     "sevenSubjectEvidenceChainImplemented": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
-    "productImplementationCandidateComplete": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "productImplementationCandidateComplete": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -153,5 +172,9 @@
   },
   "productionQualified": false,
   "deploymentQualified": false,
-  "releaseAuthorized": false
+  "releaseAuthorized": false,
+  "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261001.md",
+  "sharedUtilityDependencies": [
+    "codex-rs/utils/private-state"
+  ]
 }
