@@ -30,7 +30,7 @@ NEGATIVE = (
 
 
 def manifest() -> str:
-    return f'''[package]
+    return f"""[package]
 name = "platform-wire-production-surface"
 version = "0.0.0"
 edition = "2024"
@@ -41,7 +41,7 @@ publish = false
 [dependencies]
 codex-hepta-wire = {{ path = {str(WIRE)!r}, default-features = false, features = ["production"] }}
 codex-hepta-types = {{ path = {str(TYPES)!r} }}
-'''
+"""
 
 
 def check(source: Path, *, expect_success: bool, target: Path) -> None:
@@ -69,7 +69,9 @@ def check(source: Path, *, expect_success: bool, target: Path) -> None:
             check=False,
         )
         if result.returncode == 0 and not expect_success:
-            raise SystemExit(f"negative production fixture unexpectedly compiled: {source.name}")
+            raise SystemExit(
+                f"negative production fixture unexpectedly compiled: {source.name}"
+            )
         if result.returncode != 0 and expect_success:
             raise SystemExit(
                 f"production surface fixture failed: {source.name}\n{result.stderr}"
@@ -78,13 +80,13 @@ def check(source: Path, *, expect_success: bool, target: Path) -> None:
 
 def verify() -> None:
     missing = [
-        name
-        for name in ("pass.rs", *NEGATIVE)
-        if not (FIXTURES / name).is_file()
+        name for name in ("pass.rs", *NEGATIVE) if not (FIXTURES / name).is_file()
     ]
     if missing:
         raise SystemExit("missing production surface fixtures: " + ", ".join(missing))
-    with tempfile.TemporaryDirectory(prefix="platform-wire-surface-target-") as directory:
+    with tempfile.TemporaryDirectory(
+        prefix="platform-wire-surface-target-"
+    ) as directory:
         target = Path(directory)
         check(FIXTURES / "pass.rs", expect_success=True, target=target)
         for name in NEGATIVE:
@@ -94,7 +96,7 @@ def verify() -> None:
 def self_test() -> None:
     assert "raw_owners.rs" in NEGATIVE
     text = manifest()
-    assert 'default-features = false' in text
+    assert "default-features = false" in text
     assert 'features = ["production"]' in text
     print("platform.wire production surface self-test passed")
 

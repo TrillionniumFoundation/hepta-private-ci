@@ -1,4 +1,5 @@
 """Fail-closed receipt loading and workflow/acceptance validation."""
+
 from __future__ import annotations
 
 import hashlib

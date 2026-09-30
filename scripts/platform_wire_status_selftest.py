@@ -1,4 +1,5 @@
 """Self-test fixtures for the platform.wire lifecycle renderer."""
+
 from __future__ import annotations
 
 import argparse

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Read-only, exact-source libFuzzer campaign; never issues lifecycle acceptance."""
+
 from __future__ import annotations
 
 import argparse
@@ -24,11 +25,15 @@ SCHEMA = "hepta.platform-wire.fuzz-campaign.v2"
 SHA = re.compile(r"[0-9a-f]{40}")
 EXECUTIONS = re.compile(r"stat::number_of_executed_units:\s*(\d+)")
 CONTEXT = {
-    "toolchain": "FUZZ_TOOLCHAIN", "cargo_fuzz_version": "CARGO_FUZZ_VERSION",
+    "toolchain": "FUZZ_TOOLCHAIN",
+    "cargo_fuzz_version": "CARGO_FUZZ_VERSION",
     "installer_toolchain": "FUZZ_INSTALL_TOOLCHAIN",
-    "workflow_sha": "GITHUB_WORKFLOW_SHA", "workflow_ref": "GITHUB_WORKFLOW_REF",
-    "run_id": "GITHUB_RUN_ID", "run_attempt": "GITHUB_RUN_ATTEMPT",
-    "event": "GITHUB_EVENT_NAME", "runner_image": "ImageOS",
+    "workflow_sha": "GITHUB_WORKFLOW_SHA",
+    "workflow_ref": "GITHUB_WORKFLOW_REF",
+    "run_id": "GITHUB_RUN_ID",
+    "run_attempt": "GITHUB_RUN_ATTEMPT",
+    "event": "GITHUB_EVENT_NAME",
+    "runner_image": "ImageOS",
     "runner_image_version": "ImageVersion",
 }
 
@@ -46,16 +51,30 @@ def digest(path: Path) -> str:
 
 
 def inventory(root: Path) -> list[dict]:
-    return [
-        {"path": str(p.relative_to(root)), "bytes": p.stat().st_size, "sha256": digest(p)}
-        for p in sorted(root.rglob("*")) if p.is_file() and not p.is_symlink()
-    ] if root.exists() else []
+    return (
+        [
+            {
+                "path": str(p.relative_to(root)),
+                "bytes": p.stat().st_size,
+                "sha256": digest(p),
+            }
+            for p in sorted(root.rglob("*"))
+            if p.is_file() and not p.is_symlink()
+        ]
+        if root.exists()
+        else []
+    )
 
 
 def seconds(event: str, requested: str) -> int:
-    raw = requested if event == "workflow_dispatch" else {
-        "pull_request": "180", "schedule": "900",
-    }.get(event, "360")
+    raw = (
+        requested
+        if event == "workflow_dispatch"
+        else {
+            "pull_request": "180",
+            "schedule": "900",
+        }.get(event, "360")
+    )
     if not re.fullmatch(r"[0-9]{1,4}", raw) or not 60 <= int(raw) <= 1800:
         raise ValueError("total campaign duration must be 60..1800 seconds")
     return int(raw)
@@ -68,10 +87,20 @@ def command(target: str, duration: int) -> list[str]:
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", toolchain):
         raise ValueError("missing or invalid fuzz toolchain")
     return [
-        "cargo", "+" + toolchain, "fuzz", "run", target,
-        "fuzz/corpus/" + target, "--", f"-max_total_time={duration}",
-        "-timeout=10", "-rss_limit_mb=2048", "-max_len=65536", "-seed=1",
-        "-print_final_stats=1", f"-artifact_prefix=fuzz/artifacts/{target}/",
+        "cargo",
+        "+" + toolchain,
+        "fuzz",
+        "run",
+        target,
+        "fuzz/corpus/" + target,
+        "--",
+        f"-max_total_time={duration}",
+        "-timeout=10",
+        "-rss_limit_mb=2048",
+        "-max_len=65536",
+        "-seed=1",
+        "-print_final_stats=1",
+        f"-artifact_prefix=fuzz/artifacts/{target}/",
     ]
 
 
@@ -88,13 +117,18 @@ def executed_units(path: Path) -> int:
 def subject(root: Path) -> dict:
     def git(*args: str) -> str:
         return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
+
     source = os.environ.get("SOURCE_SHA", "")
     tested = git("rev-parse", "HEAD")
     if SHA.fullmatch(source) is None or source != tested:
         raise ValueError("campaign must test the exact requested source SHA")
     if git("status", "--porcelain", "--untracked-files=no"):
         raise ValueError("tracked source must be clean")
-    return {"source_sha": source, "tested_sha": tested, "source_tree": git("rev-parse", "HEAD^{tree}")}
+    return {
+        "source_sha": source,
+        "tested_sha": tested,
+        "source_tree": git("rev-parse", "HEAD^{tree}"),
+    }
 
 
 def save(path: Path, receipt: dict) -> None:
@@ -114,8 +148,13 @@ def validate_binding(root: Path, receipt: dict) -> int:
     for key, value in {**subject(root), **context()}.items():
         if key not in receipt or receipt[key] != value:
             raise ValueError(f"campaign {key} mismatch")
-    duration = seconds(os.environ.get("GITHUB_EVENT_NAME", ""), os.environ.get("REQUESTED_SECONDS", ""))
-    if type(receipt.get("duration_seconds")) is not int or receipt["duration_seconds"] != duration:
+    duration = seconds(
+        os.environ.get("GITHUB_EVENT_NAME", ""), os.environ.get("REQUESTED_SECONDS", "")
+    )
+    if (
+        type(receipt.get("duration_seconds")) is not int
+        or receipt["duration_seconds"] != duration
+    ):
         raise ValueError("campaign duration mismatch")
     if receipt.get("engine") != "libFuzzer" or receipt.get("sanitizer") != "address":
         raise ValueError("campaign engine or sanitizer mismatch")
@@ -124,18 +163,28 @@ def validate_binding(root: Path, receipt: dict) -> int:
 
 def initialize(root: Path, path: Path) -> dict:
     receipt = {
-        "schema": SCHEMA, "status": "not_run", "created_at": utc_now(),
-        "source_sha": os.environ.get("SOURCE_SHA"), "tested_sha": None,
-        **context(), "engine": "libFuzzer", "sanitizer": "address",
-        "targets": {t: {"status": "not_run", "reason": "preparation_incomplete"} for t in TARGETS},
-        "production_activation": False, "independent_acceptance": False,
+        "schema": SCHEMA,
+        "status": "not_run",
+        "created_at": utc_now(),
+        "source_sha": os.environ.get("SOURCE_SHA"),
+        "tested_sha": None,
+        **context(),
+        "engine": "libFuzzer",
+        "sanitizer": "address",
+        "targets": {
+            t: {"status": "not_run", "reason": "preparation_incomplete"}
+            for t in TARGETS
+        },
+        "production_activation": False,
+        "independent_acceptance": False,
         "real_transport_acceptance": False,
     }
     # Write before parsing inputs or invoking git: preparation failure is evidence.
     save(path, receipt)
     try:
         receipt["duration_seconds"] = seconds(
-            os.environ.get("GITHUB_EVENT_NAME", ""), os.environ.get("REQUESTED_SECONDS", "")
+            os.environ.get("GITHUB_EVENT_NAME", ""),
+            os.environ.get("REQUESTED_SECONDS", ""),
         )
         receipt.update(subject(root))
     except (ValueError, OSError, subprocess.SubprocessError) as error:
@@ -153,11 +202,19 @@ def seed(root: Path) -> None:
         (fuzz / "corpus" / target).mkdir(parents=True, exist_ok=True)
         (fuzz / "artifacts" / target).mkdir(parents=True, exist_ok=True)
         for mode in SEED_MODES[target]:
-            (fuzz / "corpus" / target / f"mode-{mode}").write_bytes(bytes([mode, 13]) + b"wire-seed")
-    vector = json.loads((root / "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json").read_text())
+            (fuzz / "corpus" / target / f"mode-{mode}").write_bytes(
+                bytes([mode, 13]) + b"wire-seed"
+            )
+    vector = json.loads(
+        (
+            root / "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json"
+        ).read_text()
+    )
     corpus = fuzz / "corpus/decode_frames"
     (corpus / "hpta-v2-canonical").write_bytes(bytes.fromhex(vector["frameHex"]))
-    (corpus / "hptn-current").write_bytes(bytes.fromhex("4850544e00010200000000000000000700010002"))
+    (corpus / "hptn-current").write_bytes(
+        bytes.fromhex("4850544e00010200000000000000000700010002")
+    )
     (corpus / "truncated-header").write_bytes(b"HPTA\x00\x02")
     (corpus / "empty").write_bytes(b"")
 
@@ -172,8 +229,14 @@ def run_bounded(argv: list[str], *, cwd: Path, stdout, timeout: float) -> int:
         raise OSError("POSIX process-group ownership required")
     env = os.environ.copy()
     env["RUSTUP_TOOLCHAIN"] = os.environ["FUZZ_TOOLCHAIN"]
-    with subprocess.Popen(argv, cwd=cwd, env=env, stdout=stdout,
-                          stderr=subprocess.STDOUT, start_new_session=True) as process:
+    with subprocess.Popen(
+        argv,
+        cwd=cwd,
+        env=env,
+        stdout=stdout,
+        stderr=subprocess.STDOUT,
+        start_new_session=True,
+    ) as process:
         try:
             return process.wait(timeout=timeout)
         finally:
@@ -194,19 +257,30 @@ def run(root: Path, path: Path) -> None:
         validate_binding(root, receipt)
         log = path.parent / (target + ".log")
         argv = command(target, duration)
-        row = {"status": "running", "command": argv, "started_at": utc_now(),
-               "cwd": "codex-rs/hepta-wire", "duration_seconds": duration,
-               "timeout_seconds": duration + 120}
+        row = {
+            "status": "running",
+            "command": argv,
+            "started_at": utc_now(),
+            "cwd": "codex-rs/hepta-wire",
+            "duration_seconds": duration,
+            "timeout_seconds": duration + 120,
+        }
         receipt["targets"][target] = row
         save(path, receipt)
         started = time.monotonic()
         try:
             with log.open("w") as output:
-                code = run_bounded(argv, cwd=root / "codex-rs/hepta-wire", stdout=output,
-                                   timeout=duration + 120)
+                code = run_bounded(
+                    argv,
+                    cwd=root / "codex-rs/hepta-wire",
+                    stdout=output,
+                    timeout=duration + 120,
+                )
             row["exit_code"] = code
             row["executed_units"] = executed_units(log)
-            row["status"] = "passed" if code == 0 and row["executed_units"] > 0 else "failed"
+            row["status"] = (
+                "passed" if code == 0 and row["executed_units"] > 0 else "failed"
+            )
             if row["status"] != "passed":
                 row["reason"] = "nonzero_exit_or_no_execution_statistics"
         except (OSError, subprocess.TimeoutExpired) as error:
@@ -224,12 +298,19 @@ def valid_execution(row: dict, target: str, duration: int, log: Path) -> bool:
     return (
         row.get("command") == command(target, duration)
         and row.get("cwd") == "codex-rs/hepta-wire"
-        and type(row.get("duration_seconds")) is int and row["duration_seconds"] == duration
-        and type(row.get("timeout_seconds")) is int and row["timeout_seconds"] == duration + 120
-        and type(row.get("exit_code")) is int and row["exit_code"] == 0
-        and type(row.get("executed_units")) is int and row["executed_units"] > 0
-        and type(elapsed) in (int, float) and math.isfinite(elapsed) and elapsed > 0
-        and log.is_file() and digest(log) == row.get("log_sha256")
+        and type(row.get("duration_seconds")) is int
+        and row["duration_seconds"] == duration
+        and type(row.get("timeout_seconds")) is int
+        and row["timeout_seconds"] == duration + 120
+        and type(row.get("exit_code")) is int
+        and row["exit_code"] == 0
+        and type(row.get("executed_units")) is int
+        and row["executed_units"] > 0
+        and type(elapsed) in (int, float)
+        and math.isfinite(elapsed)
+        and elapsed > 0
+        and log.is_file()
+        and digest(log) == row.get("log_sha256")
         and executed_units(log) == row["executed_units"]
     )
 
@@ -241,8 +322,12 @@ def finalize(root: Path, path: Path) -> bool:
         if not isinstance(receipt, dict):
             raise ValueError("campaign receipt must be an object")
     except (OSError, ValueError) as error:
-        receipt = {"schema": SCHEMA, "targets": {}, "status": "failed",
-                   "finalization_error": type(error).__name__}
+        receipt = {
+            "schema": SCHEMA,
+            "targets": {},
+            "status": "failed",
+            "finalization_error": type(error).__name__,
+        }
     bound = False
     duration = 0
     try:
@@ -256,7 +341,10 @@ def finalize(root: Path, path: Path) -> bool:
     for target in TARGETS:
         row = receipt["targets"].setdefault(target, {"status": "not_run"})
         if not isinstance(row, dict):
-            row = receipt["targets"][target] = {"status": "failed", "reason": "malformed_target"}
+            row = receipt["targets"][target] = {
+                "status": "failed",
+                "reason": "malformed_target",
+            }
         if row.get("status") in ("not_run", "running"):
             row["reason"] = "preparation_failed_or_execution_interrupted"
         if row.get("status") == "running":
@@ -271,10 +359,16 @@ def finalize(root: Path, path: Path) -> bool:
                 row.update(status="failed", reason="execution_evidence_mismatch")
         for kind in ("corpus", "artifacts"):
             row[kind] = inventory(root / "codex-rs/hepta-wire/fuzz" / kind / target)
-    passed = bound and all(receipt["targets"][t].get("status") == "passed" for t in TARGETS)
-    receipt.update(status="passed" if passed else "failed", finalized_at=utc_now(),
-                   production_activation=False, independent_acceptance=False,
-                   real_transport_acceptance=False)
+    passed = bound and all(
+        receipt["targets"][t].get("status") == "passed" for t in TARGETS
+    )
+    receipt.update(
+        status="passed" if passed else "failed",
+        finalized_at=utc_now(),
+        production_activation=False,
+        independent_acceptance=False,
+        real_transport_acceptance=False,
+    )
     receipt["logs"] = inventory(path.parent / "preparation")
     lock = root / "codex-rs/hepta-wire/fuzz/Cargo.lock"
     receipt["fuzz_lock_sha256"] = digest(lock) if lock.is_file() else None

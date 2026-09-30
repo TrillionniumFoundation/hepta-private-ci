@@ -1,4 +1,5 @@
 """Closed lifecycle receipt field contracts for platform.wire evidence."""
+
 from __future__ import annotations
 
 import re
@@ -150,7 +151,10 @@ def nonneg(payload: dict, name: str) -> int:
 
 
 def perf(payload: dict) -> None:
-    if string(payload, "reference_transport") != "grpc" or pos(payload, "path_count") != 5:
+    if (
+        string(payload, "reference_transport") != "grpc"
+        or pos(payload, "path_count") != 5
+    ):
         raise ValueError("performance shape")
     policy = (
         pos(payload, "size_ratio_numerator"),

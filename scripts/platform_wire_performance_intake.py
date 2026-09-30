@@ -67,14 +67,18 @@ def download(repository: str, token: str, artifact_id: int, maximum: int) -> byt
             chunks.append(chunk)
             total += len(chunk)
             if total > maximum:
-                raise SystemExit("measurement archive exceeded the bounded download size")
+                raise SystemExit(
+                    "measurement archive exceeded the bounded download size"
+                )
     if total == 0:
         raise SystemExit("measurement archive is empty")
     return b"".join(chunks)
 
 
 def write_json(path: Path, value: object) -> None:
-    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     path.chmod(0o600)
 
 
@@ -116,7 +120,9 @@ def intake() -> None:
     if type(attempt) is not int or attempt <= 0:
         raise SystemExit("measurement run attempt is missing")
 
-    listing = json_get(repository, token, f"/actions/runs/{run_id}/artifacts?per_page=100")
+    listing = json_get(
+        repository, token, f"/actions/runs/{run_id}/artifacts?per_page=100"
+    )
     artifacts = listing.get("artifacts") if isinstance(listing, dict) else None
     if not isinstance(artifacts, list):
         raise SystemExit("artifact listing is malformed")
@@ -133,7 +139,9 @@ def intake() -> None:
     if artifact.get("expired") is not False:
         raise SystemExit("selected measurement artifact is expired")
     digest = artifact.get("digest")
-    digest_match = ARTIFACT_DIGEST.fullmatch(digest) if isinstance(digest, str) else None
+    digest_match = (
+        ARTIFACT_DIGEST.fullmatch(digest) if isinstance(digest, str) else None
+    )
     if digest_match is None:
         raise SystemExit("measurement artifact has no immutable SHA-256 digest")
     if artifact.get("workflow_run", {}).get("head_sha") != source:
@@ -157,7 +165,9 @@ def intake() -> None:
             raise SystemExit("measurement archive must contain exactly two root files")
         for entry in entries:
             if entry.is_dir() or entry.flag_bits & 0x1:
-                raise SystemExit("measurement archive contains a directory or encrypted entry")
+                raise SystemExit(
+                    "measurement archive contains a directory or encrypted entry"
+                )
             if Path(entry.filename).name != entry.filename:
                 raise SystemExit("measurement archive contains a non-root path")
             mode = (entry.external_attr >> 16) & 0o170000
@@ -167,7 +177,9 @@ def intake() -> None:
             if not 0 < entry.file_size <= limit or entry.compress_size > maximum:
                 raise SystemExit("measurement archive entry exceeds its byte limit")
             if entry.compress_type not in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED):
-                raise SystemExit("measurement archive uses an unsupported compression method")
+                raise SystemExit(
+                    "measurement archive uses an unsupported compression method"
+                )
             with package.open(entry, "r") as stream:
                 content = stream.read(limit + 1)
             if len(content) != entry.file_size or len(content) > limit:
@@ -232,7 +244,11 @@ def receipt() -> None:
         "metadata": os.environ.get("METADATA_OUTCOME"),
         "validation": os.environ.get("VALIDATION_OUTCOME"),
     }
-    errors = [f"{name} outcome was {value}" for name, value in outcomes.items() if value != "success"]
+    errors = [
+        f"{name} outcome was {value}"
+        for name, value in outcomes.items()
+        if value != "success"
+    ]
     artifact_meta: object = {}
     run_meta: object = {}
     check: object | None = None
@@ -251,14 +267,22 @@ def receipt() -> None:
         plan_digest = hashlib.sha256(plan_raw).hexdigest()
         if plan_digest != required("PLAN_SHA256"):
             raise ValueError("plan digest differs from the selected plan")
-        report, report_raw = read_json(input_dir / "paired-measurements.json", 16 * 1024 * 1024)
+        report, report_raw = read_json(
+            input_dir / "paired-measurements.json", 16 * 1024 * 1024
+        )
         report_digest = hashlib.sha256(report_raw).hexdigest()
         check, _ = read_json(records / "performance-check.json", 1024 * 1024)
     except (OSError, ValueError, json.JSONDecodeError) as error:
         errors.append(f"paired evidence: {error}")
 
-    artifact_digest = artifact_meta.get("digest") if isinstance(artifact_meta, dict) else None
-    digest_match = ARTIFACT_DIGEST.fullmatch(artifact_digest) if isinstance(artifact_digest, str) else None
+    artifact_digest = (
+        artifact_meta.get("digest") if isinstance(artifact_meta, dict) else None
+    )
+    digest_match = (
+        ARTIFACT_DIGEST.fullmatch(artifact_digest)
+        if isinstance(artifact_digest, str)
+        else None
+    )
     if digest_match is None:
         errors.append("artifact digest is absent or malformed")
         artifact_digest_value = None

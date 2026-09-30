@@ -1,4 +1,5 @@
 """Synthetic record-validation tests, never target-host qualification receipts."""
+
 from __future__ import annotations
 
 import copy
@@ -21,26 +22,48 @@ class TargetCommandEvidenceTests(unittest.TestCase):
         self.root = Path(temporary.name)
         self.argv = ["fixture-runner", "--tests"]
         self.subject = {
-            "source_sha": "a" * 40, "tested_sha": "a" * 40,
-            "tested_tree": "b" * 40, "tested_parents": ["c" * 40],
-            "run_id": "123", "run_attempt": "2", "lane": "source-head",
+            "source_sha": "a" * 40,
+            "tested_sha": "a" * 40,
+            "tested_tree": "b" * 40,
+            "tested_parents": ["c" * 40],
+            "run_id": "123",
+            "run_attempt": "2",
+            "lane": "source-head",
         }
         identity = {
-            "commit": self.subject["tested_sha"], "tree": self.subject["tested_tree"],
-            "parents": self.subject["tested_parents"], "dirty": False,
+            "commit": self.subject["tested_sha"],
+            "tree": self.subject["tested_tree"],
+            "parents": self.subject["tested_parents"],
+            "dirty": False,
         }
         self.log = b"test result: ok. 3 passed; 0 failed; 0 ignored;\n"
         self.record = {
-            "schema_version": 1, "status": "passed", "command": self.argv,
-            "command_exit_code": 0, "exit_code": 0, "returncode": 0,
-            "observed_failed_tests": 0, "observed_passed_tests": 3,
-            "minimum_tests": 3, "timed_out": False, "output_limit_exceeded": False,
-            "before": copy.deepcopy(identity), "after": copy.deepcopy(identity),
-            "log_file": "command.log", "log_bytes": len(self.log),
+            "schema_version": 1,
+            "status": "passed",
+            "command": self.argv,
+            "command_exit_code": 0,
+            "exit_code": 0,
+            "returncode": 0,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 3,
+            "minimum_tests": 3,
+            "timed_out": False,
+            "output_limit_exceeded": False,
+            "before": copy.deepcopy(identity),
+            "after": copy.deepcopy(identity),
+            "log_file": "command.log",
+            "log_bytes": len(self.log),
             "log_sha256": hashlib.sha256(self.log).hexdigest(),
-            **{key: self.subject[key] for key in (
-                "source_sha", "tested_sha", "run_id", "run_attempt", "lane",
-            )},
+            **{
+                key: self.subject[key]
+                for key in (
+                    "source_sha",
+                    "tested_sha",
+                    "run_id",
+                    "run_attempt",
+                    "lane",
+                )
+            },
         }
         (self.root / "command.log").write_bytes(self.log)
 
@@ -59,9 +82,17 @@ class TargetCommandEvidenceTests(unittest.TestCase):
                 self.verify({**self.record, "status": state})
 
     def test_boolean_or_nonzero_exit_fields_reject(self) -> None:
-        for field in ("command_exit_code", "exit_code", "returncode", "observed_failed_tests"):
+        for field in (
+            "command_exit_code",
+            "exit_code",
+            "returncode",
+            "observed_failed_tests",
+        ):
             for value in (False, True, 1, -1, None):
-                with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                with (
+                    self.subTest(field=field, value=value),
+                    self.assertRaises(ValueError),
+                ):
                     self.verify({**self.record, field: value})
 
     def test_execution_limit_flags_reject(self) -> None:
@@ -125,7 +156,12 @@ class TargetCommandEvidenceTests(unittest.TestCase):
             target.verify_command(self.root, "command", 3, self.argv, self.subject)
 
     def test_boolean_schema_and_counts_reject(self) -> None:
-        for field in ("schema_version", "minimum_tests", "log_bytes", "observed_passed_tests"):
+        for field in (
+            "schema_version",
+            "minimum_tests",
+            "log_bytes",
+            "observed_passed_tests",
+        ):
             with self.subTest(field=field), self.assertRaises(ValueError):
                 self.verify({**self.record, field: True})
 
@@ -142,20 +178,36 @@ class TargetCommandEvidenceTests(unittest.TestCase):
             return ""
 
         env = {
-            "GITHUB_SHA": "a" * 40, "GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "2",
-            "GITHUB_EVENT_NAME": "workflow_dispatch", "GITHUB_REPOSITORY": "fixture/repo",
+            "GITHUB_SHA": "a" * 40,
+            "GITHUB_RUN_ID": "123",
+            "GITHUB_RUN_ATTEMPT": "2",
+            "GITHUB_EVENT_NAME": "workflow_dispatch",
+            "GITHUB_REPOSITORY": "fixture/repo",
             "GITHUB_WORKFLOW_REF": "fixture/repo/.github/workflows/platform-wire-target-host.yml@refs/heads/test",
-            "GITHUB_WORKFLOW_SHA": "a" * 40, "GITHUB_WORKFLOW": "fixture",
-            "RUNNER_NAME": "fixture", "RUNNER_OS": "Linux", "RUNNER_ARCH": "X64",
+            "GITHUB_WORKFLOW_SHA": "a" * 40,
+            "GITHUB_WORKFLOW": "fixture",
+            "RUNNER_NAME": "fixture",
+            "RUNNER_OS": "Linux",
+            "RUNNER_ARCH": "X64",
             "RUSTUP_TOOLCHAIN": "fixture",
         }
-        with patch.object(target, "git", side_effect=fake_git), patch.dict(target.os.environ, env):
-            self.assertEqual(target.receipt(self.root, "a" * 40, "failure", "skipped"), 1)
+        with (
+            patch.object(target, "git", side_effect=fake_git),
+            patch.dict(target.os.environ, env),
+        ):
+            self.assertEqual(
+                target.receipt(self.root, "a" * 40, "failure", "skipped"), 1
+            )
         receipt = json.loads((self.root / "platform-wire-target-host.json").read_text())
         self.assertEqual(receipt["status"], "infrastructure_invalid")
         self.assertTrue(receipt["errors"])
         self.assertEqual(receipt["command_records"], {})
-        for flag in ("independent_acceptance", "activation", "release", "authenticated_network_ingress"):
+        for flag in (
+            "independent_acceptance",
+            "activation",
+            "release",
+            "authenticated_network_ingress",
+        ):
             self.assertIs(receipt[flag], False)
 
 
