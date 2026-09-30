@@ -265,3 +265,52 @@ fn h7_envelope() -> H7SignedArtifactEnvelope {
         )
         .expect("H7 envelope")
 }
+
+
+#[cfg(unix)]
+#[test]
+fn product_caller_rejects_wrong_authority_bundle_pin() {
+    use std::os::unix::fs::PermissionsExt;
+    use std::process::Command;
+
+    let current_signer =
+        H7H89ProductionGrantSigner::from_seed("release-policy", 4, [4; 32]).expect("signer");
+    let h7_signer = H7ArtifactSigner::from_seed("h7-policy", 9, [7; 32]).expect("H7 signer");
+    let bundle = ProductionAuthorityBundle::new(
+        current_signer.signer_id(),
+        current_signer.signer_epoch(),
+        current_signer.verifying_key(),
+        "h7-policy",
+        9,
+        h7_signer.verifying_key(),
+    )
+    .expect("bundle");
+    let temp = tempfile::tempdir().expect("temporary directory");
+    let fleet = temp.path().join("fleet");
+    std::fs::create_dir(&fleet).expect("fleet directory");
+    let bundle_path = temp.path().join("authority-bundle.json");
+    std::fs::write(
+        &bundle_path,
+        bundle.to_json_bytes().expect("bundle JSON"),
+    )
+    .expect("write bundle");
+    std::fs::set_permissions(&bundle_path, std::fs::Permissions::from_mode(0o600))
+        .expect("owner-only bundle");
+
+    let wrong_pin = Sha256Digest::for_bytes(b"wrong authority bundle pin");
+    let output = Command::new(env!("CARGO_BIN_EXE_hepta-supervisord"))
+        .arg("--fleet-root")
+        .arg(&fleet)
+        .arg("--authority-bundle")
+        .arg(&bundle_path)
+        .arg("--authority-bundle-sha256")
+        .arg(wrong_pin.as_str())
+        .output()
+        .expect("run product caller");
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("production authority bundle digest mismatch"),
+        "unexpected product-caller stderr: {stderr}"
+    );
+}
