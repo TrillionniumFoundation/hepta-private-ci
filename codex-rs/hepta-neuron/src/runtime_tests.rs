@@ -460,6 +460,201 @@ fn runtime_rollover_and_chain_recovery_preserve_latest_witness() {
 }
 
 #[test]
+fn premature_rollover_preserves_the_recoverable_root_and_empty_successor() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::default();
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 2,
+        config,
+        witness,
+    ));
+    let mut model = FakeModel::new();
+    let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    assert_eq!(
+        runtime
+            .rollover(fixture.named_file("successor"), /*max_records*/ 2)
+            .err(),
+        Some(NeuronRuntimeError::Journal(JournalError::Conflict))
+    );
+    assert_eq!(
+        runtime
+            .recover_next_segment(fixture.named_file("successor"), /*max_records*/ 2)
+            .err(),
+        Some(NeuronRuntimeError::Journal(JournalError::Conflict))
+    );
+    assert_eq!(checked(fs::metadata(fixture.0.join("successor"))).len(), 0);
+    let second = checked(runtime.tick(&mut model, input(2, first.tick.checkpoint_after)));
+    assert_eq!(
+        checked(runtime.current_anchor()).map(|anchor| anchor.checkpoint_digest),
+        Some(second.tick.checkpoint_after)
+    );
+}
+
+#[test]
+fn successor_lost_ack_recovery_advances_witness_before_another_tick() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::default();
+    let final_anchor = {
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(),
+            native.clone(),
+            scope(),
+            /*max_records*/ 2,
+            config.clone(),
+            witness.clone(),
+        ));
+        let mut model = FakeModel::new();
+        let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+        let second = checked(runtime.tick(&mut model, input(2, first.tick.checkpoint_after)));
+        checked(runtime.rollover(fixture.named_file("successor"), /*max_records*/ 3));
+        let third = checked(runtime.tick(&mut model, input(3, second.tick.checkpoint_after)));
+        witness.fail_next_compare_and_swap();
+        assert!(matches!(
+            runtime.tick(&mut model, input(4, third.tick.checkpoint_after)),
+            Err(NeuronRuntimeError::WitnessAfterCommit { .. })
+        ));
+        checked(runtime.current_anchor()).expect("durable tail")
+    };
+    assert_eq!(
+        checked(witness.current()).map(|anchor| anchor.sequence),
+        Some(3)
+    );
+    let mut recovered = checked(NeuronRuntime::recover_chain_root(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 2,
+        config,
+        witness.clone(),
+    ));
+    let mut model = FakeModel::new();
+    let root = checked(recovered.current_anchor()).expect("root");
+    assert_eq!(
+        recovered
+            .tick(&mut model, input(3, root.checkpoint_digest))
+            .err(),
+        Some(NeuronRuntimeError::Witness(WitnessStoreError::Conflict))
+    );
+    assert_eq!(model.calls, 0);
+    checked(recovered.recover_next_segment(fixture.named_file("successor"), /*max_records*/ 3));
+    assert_eq!(checked(recovered.current_anchor()), Some(final_anchor));
+    assert_eq!(checked(witness.current()), Some(final_anchor));
+    checked(recovered.tick(&mut model, input(5, final_anchor.checkpoint_digest)));
+    assert_eq!(model.calls, 1);
+}
+
+#[test]
+fn pending_witness_cannot_publish_a_canonical_checkpoint() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::default();
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 2,
+        config,
+        witness.clone(),
+    ));
+    witness.fail_next_compare_and_swap();
+    let mut model = FakeModel::new();
+    let tick_input = input(1, Digest32::ZERO);
+    assert!(matches!(
+        runtime.tick(&mut model, tick_input.clone()),
+        Err(NeuronRuntimeError::WitnessAfterCommit { .. })
+    ));
+    let pending_output = runtime
+        .pending
+        .as_ref()
+        .expect("pending witness")
+        .output
+        .clone();
+    assert_eq!(
+        runtime.current_eligibility_sample().err(),
+        Some(NeuronRuntimeError::PendingReconciliation)
+    );
+    assert_eq!(
+        runtime
+            .canonical_checkpoint(&pending_output.tick, /*expires_unix_ms*/ 10_000)
+            .err(),
+        Some(crate::NeuronProtocolError::BindingMismatch("witness"))
+    );
+    let output = checked(runtime.tick(&mut model, tick_input));
+    checked(runtime.canonical_checkpoint(&output.tick, /*expires_unix_ms*/ 10_000));
+}
+
+#[test]
+fn foreign_subject_or_objective_is_rejected_before_model_execution() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 2,
+        config,
+        MemoryWitness::default(),
+    ));
+    let before = checked(fs::read(fixture.0.join("journal")));
+    let mut model = FakeModel::new();
+    let mut foreign_subject = input(1, Digest32::ZERO);
+    foreign_subject.subject_id = checked(StableId::new("subject.foreign"));
+    let mut foreign_objective = input(1, Digest32::ZERO);
+    foreign_objective.objective_digest = Digest32::of_bytes(b"foreign objective");
+    for tick in [foreign_subject, foreign_objective] {
+        assert_eq!(
+            runtime.tick(&mut model, tick).err(),
+            Some(NeuronRuntimeError::InvalidInput)
+        );
+    }
+    assert_eq!(model.calls, 0);
+    assert_eq!(checked(fs::read(fixture.0.join("journal"))), before);
+    assert_eq!(checked(runtime.current_anchor()), None);
+}
+
+#[test]
+fn exhausted_file_witness_rejects_before_inference_or_journal_append() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = checked(crate::FileAnchorWitnessStore::open(
+        fixture.named_file("witness"),
+        scope(),
+        native.generation,
+        /*max_records*/ 1,
+    ));
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 2,
+        config,
+        witness,
+    ));
+    let mut model = FakeModel::new();
+    let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    let before = checked(fs::read(fixture.0.join("journal")));
+    assert_eq!(
+        runtime
+            .tick(&mut model, input(2, first.tick.checkpoint_after))
+            .err(),
+        Some(NeuronRuntimeError::Witness(WitnessStoreError::Capacity))
+    );
+    assert_eq!(model.calls, 1);
+    assert_eq!(checked(fs::read(fixture.0.join("journal"))), before);
+    assert!(runtime.pending.is_none());
+}
+
+#[test]
 fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
     let fixture = Fixture::new();
     let old_native = native_config();

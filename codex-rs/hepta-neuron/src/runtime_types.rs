@@ -335,6 +335,25 @@ impl From<io::Error> for WitnessStoreError {
 pub trait AnchorWitnessStore {
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError>;
 
+    /// Reject a known conflict or exhausted store before the journal commits.
+    /// Implementations with a bounded store must also validate their capacity.
+    /// This admission check does not replace the durable compare-and-swap.
+    fn validate_advance(
+        &self,
+        expected: Option<JournalAnchor>,
+        next_sequence: u64,
+    ) -> Result<(), WitnessStoreError> {
+        if self.current()? != expected {
+            return Err(WitnessStoreError::Conflict);
+        }
+        if expected.map_or(next_sequence != 1, |anchor| {
+            anchor.sequence.checked_add(1) != Some(next_sequence)
+        }) {
+            return Err(WitnessStoreError::InvalidAnchor);
+        }
+        Ok(())
+    }
+
     fn compare_and_swap(
         &mut self,
         expected: Option<JournalAnchor>,

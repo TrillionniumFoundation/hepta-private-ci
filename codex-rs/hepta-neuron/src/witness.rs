@@ -138,6 +138,25 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
         }
     }
 
+    fn validate_advance(
+        &self,
+        expected: Option<JournalAnchor>,
+        next_sequence: u64,
+    ) -> Result<(), WitnessStoreError> {
+        if self.current()? != expected {
+            return Err(WitnessStoreError::Conflict);
+        }
+        if expected.map_or(next_sequence != 1, |anchor| {
+            anchor.sequence.checked_add(1) != Some(next_sequence)
+        }) {
+            return Err(WitnessStoreError::InvalidAnchor);
+        }
+        if self.records >= self.max_records {
+            return Err(WitnessStoreError::Capacity);
+        }
+        Ok(())
+    }
+
     fn compare_and_swap(
         &mut self,
         expected: Option<JournalAnchor>,
@@ -146,14 +165,9 @@ impl AnchorWitnessStore for FileAnchorWitnessStore {
         if self.poisoned {
             return Err(WitnessStoreError::Poisoned);
         }
-        if self.current != expected {
-            return Err(WitnessStoreError::Conflict);
-        }
+        self.validate_advance(expected, next.sequence)?;
         if !is_successor(expected, next) {
             return Err(WitnessStoreError::InvalidAnchor);
-        }
-        if self.records >= self.max_records {
-            return Err(WitnessStoreError::Capacity);
         }
         let record = encode_record(expected, next);
         let expected_length = (HEADER + self.records * RECORD) as u64;
