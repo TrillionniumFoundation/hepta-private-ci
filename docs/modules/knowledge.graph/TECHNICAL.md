@@ -161,7 +161,7 @@ For prompt factors, `prompt.registry` remains the fact/lifecycle owner. It store
 
 For the cognitive knowledge projection, `CognitiveStore::refresh_scope_projection_tx` is the durable mutation boundary. One SQLite transaction observes the exact current source cut, derives the canonical V2 generation, reconstructs the exact predecessor, validates `publish_generation`, persists physical rows and semantic receipts, and CAS-advances `kg_projection.generation`. The selected pointer therefore cannot name a generation whose canonical receipt was not durably inserted first.
 
-The product GraphOneHop read path loads the persisted generation through `load_canonical_generation_tx`, requires the persisted `generation_sha256` to match the reconstructed V2 digest, and delegates relation selection, temporal visibility and truncation to `hepta_kg::query_relations`. SQL after that point only maps kernel-selected support identities back to their physical memory occurrences. `apply_incremental_delta` is retained as an equivalence oracle/reference path; the current durable product writer deliberately rebuilds the bounded complete generation on each logical mutation.
+The product GraphOneHop and typed relation read paths load the persisted generation through `load_canonical_generation_tx` and prepare an owned `VerifiedKnowledgeGenerationV2`. The verified generation, relation inventory and compact support index are reused only within that owner's SQLite read transaction, keyed by scope and generation. Every seed use still requires the persisted `generation_sha256` to match the reconstructed V2 digest. The verified view delegates canonical relation selection, temporal visibility and truncation to `knowledge.graph`; query-time visibility is recomputed for each temporal cut. SQL after that point only maps kernel-selected support identities back to their physical memory occurrences. `query_relations` remains the full-scan differential reference. `apply_incremental_delta` remains an equivalence oracle/reference path; the durable product writer rebuilds the bounded complete generation on each logical mutation.
 
 The prompt path is `PromptRegistry::factor_graph_source_v1 -> build_prompt_factor_projection_v1 -> optimize_with_factor_graph`. The registry view is sealed outside the owner crate. The optimizer requires every candidate factor to exist in the complete generation and queries complements/substitutes/conflicts against the exact generation digest. `PromptConflicts` are hard co-selection exclusions; `PromptSubstitutes` are hard redundancy exclusions; `PromptComplements` are observed and receipt-bound but do not manufacture a numeric bonus because the relation record carries no calibrated marginal magnitude. Any positive complement utility must come from independently supported causal interaction evidence. The complete canonical query request and result digests are both bound into the graph portfolio receipt. The optimizer remains read-only and `DENY_ALL`.
 
@@ -188,6 +188,43 @@ The posture is least authority, bounded input, typed contracts, digest binding a
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
+
+### Query preparation and admission bounds — 2026-10-01
+
+`VerifiedKnowledgeGenerationV2` owns a fully validated generation and derives
+node and incident-edge indexes without exposing mutable access. Indexed selection
+preserves the full-scan reference's canonical edge order, temporal supports,
+request/result digests and exact omitted count. Only returned supports are copied;
+exact omission counting still visits all incident matches. Preparation is real
+product work and remains included in retrieval timings. The cognitive adapter
+reuses preparation only inside one read transaction; a new request or source cut
+requires a new view.
+
+Admission rejects more than 65,536 nodes, 262,144 edges, 50,000 supports on one
+node/edge, 1,048,576 total supports or 256 MiB of canonical generation encoding.
+Input counts include tombstoned records before normalization. Complete builders,
+public validators and delta admission share these limits before sorting, lineage
+copying or digest encoding. Delta removal/upsert collections and the resulting
+source cut are bounded; node removal filters incident edges in one pass. The
+encoding budget bounds the digest buffer, not process RSS, output bytes or a
+target-host latency guarantee. The cognitive owner's stricter physical scope
+limits continue to apply.
+
+Public validation rejects noncanonical node/edge order and duplicate support
+identity `(source_id, source_revision)` even when other support fields differ.
+Joint endpoint and last-edge-support revocation produces an empty supported cut;
+live dangling relations still fail closed. Differential tests exercise indexed
+and full-scan selection, while transaction tests exercise temporal cuts, digest
+drift, correction, forgetting and reopen.
+
+The prompt-factor registry/projection/optimizer path is library composition.
+`optimize_with_factor_graph` has test callers but no named Agentd product caller
+at this candidate. This module cannot certify prompt.registry durability or
+activate that route. Product activation, target-host budgets and independent
+acceptance remain explicit upstream/integration gates.
+
+See [the 2026-10-01 audit](../../../qualification/knowledge-graph/AUDIT_20261001.md)
+for corrected staged-code claims, verification and remaining evidence gates.
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) specifies this module's algorithm and pilot ceilings. The current durable writer deliberately performs one bounded complete-generation rebuild for each logical mutation; `apply_incremental_delta` remains the independent equivalence/reference path until measurements justify selecting it as the durable runtime algorithm.
 

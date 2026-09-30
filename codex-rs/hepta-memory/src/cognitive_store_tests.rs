@@ -1091,13 +1091,81 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
                 .expect("legacy projection revoked");
         assert_eq!(count, 0, "legacy {table} rows must be revoked");
     }
+    let shared_experience_migration =
+        sqlx::query("SELECT description, success FROM _sqlx_migrations WHERE version = 15")
+            .fetch_one(&migrated.pool)
+            .await
+            .expect("shared experience migration ledger entry");
     assert_eq!(
-        sqlx::query_scalar::<_, String>(
-            "SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version",
+        shared_experience_migration
+            .try_get::<String, _>("description")
+            .expect("migration description"),
+        "shared experience use"
+    );
+    assert!(
+        shared_experience_migration
+            .try_get::<bool, _>("success")
+            .expect("migration success")
+    );
+
+    let migrated_shared_use_objects: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_schema
+         WHERE (type = 'table' AND name = 'shared_experience_use_events')
+            OR (type = 'trigger' AND name IN (
+                'shared_experience_use_no_update',
+                'shared_experience_use_no_delete'
+            ))
+            OR (type = 'index' AND name = 'shared_experience_use_consumer_lookup')",
+    )
+    .fetch_one(&migrated.pool)
+    .await
+    .expect("shared experience schema objects");
+    assert_eq!(migrated_shared_use_objects, 4);
+
+    let policy_id = "3".repeat(64);
+    let consumer_workspace_sha256 = "4".repeat(64);
+    sqlx::query(
+        "INSERT INTO shared_experience_use_events (
+            policy_id, revision, revoked, memory_id, memory_revision,
+            content_sha256, consumer_agent_id, consumer_workspace_sha256,
+            purpose, parameter_scope, artifact_consumer_id, expires_at
+         ) VALUES (?, 1, 0, ?, 1, ?, 'migration-consumer', ?,
+                   'recall', '', '', 200)",
+    )
+    .bind(&policy_id)
+    .bind(&memory_id)
+    .bind(content_sha256.as_str())
+    .bind(&consumer_workspace_sha256)
+    .execute(&migrated.pool)
+    .await
+    .expect("latest migration accepts a valid owner grant");
+    assert!(
+        sqlx::query(
+            "UPDATE shared_experience_use_events SET expires_at = 201
+             WHERE policy_id = ? AND revision = 1",
         )
-        .fetch_one(&migrated.pool)
+        .bind(&policy_id)
+        .execute(&migrated.pool)
         .await
-        .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
+        .is_err(),
+        "migrated grant history must be immutable"
+    );
+    assert!(
+        sqlx::query(
+            "INSERT INTO shared_experience_use_events (
+                policy_id, revision, revoked, memory_id, memory_revision,
+                content_sha256, consumer_agent_id, consumer_workspace_sha256,
+                purpose, parameter_scope, artifact_consumer_id, expires_at
+             ) VALUES (?, 1025, 0, ?, 1, ?, 'migration-consumer', ?,
+                       'recall', '', '', 200)",
+        )
+        .bind(&policy_id)
+        .bind(&memory_id)
+        .bind(content_sha256.as_str())
+        .bind(&consumer_workspace_sha256)
+        .execute(&migrated.pool)
+        .await
+        .is_err(),
+        "the reserved terminal revision cannot be reopened as an active grant"
     );
 }
