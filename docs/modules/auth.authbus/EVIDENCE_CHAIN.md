@@ -80,3 +80,13 @@ performance manifest. The required matrix covers concurrency 1, 8, 32 and 128,
 multiple durable-state sizes, slow storage, checkpoint publication failure and
 recovery/backup overlap. A report that omits any stage between product entry and
 caller acknowledgement is rejected.
+
+## Signed production acceptance
+
+`authbus-production-acceptance.py` validates exact-head, synthetic-merge,
+target-host, performance, KMS/HSM, rotation/revocation, backup/restore,
+dual-owner/mount and tested rollback evidence. It emits canonical payloads in
+three phases so an independent security reviewer and a distinct activation
+operator can sign the same immutable evidence set. A verified bundle is only
+`approved_for_canary`; production activation, canary promotion and release stay
+false until later signed observation evidence exists.
