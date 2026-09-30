@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+
+trap 'rc=$?; printf "::error title=runtime.agentd carrier reconstruction failed::line=%s exit=%s command=%q\n" "$LINENO" "$rc" "$BASH_COMMAND" >&2; exit "$rc"' ERR
 
 : "${TARGET_BRANCH:?}"
 : "${EXPECTED_TARGET_HEAD:?}"
@@ -18,6 +20,13 @@ python3 - <<'PY'
 from hashlib import sha256
 from pathlib import Path
 import os
+import sys
+
+
+def fail(message: str) -> None:
+    print(f"::error title=runtime.agentd carrier integrity::{message}", file=sys.stderr)
+    raise SystemExit(1)
+
 
 expected = {
     'part-000.patch': 'b73eb90040a37b19a48d90c558b696da2ff9dc8e0835e7687bccf1880b3c0e9c',
@@ -45,17 +54,21 @@ expected = {
 root = Path('.github/runtime-agentd-owned-apply')
 observed = {path.name for path in root.glob('*.patch')}
 if observed != set(expected):
-    raise SystemExit(
+    fail(
         f'carrier patch set mismatch: missing={sorted(set(expected)-observed)} '
         f'extra={sorted(observed-set(expected))}'
     )
 for name, digest in expected.items():
     actual = sha256((root / name).read_bytes()).hexdigest()
     if actual != digest:
-        raise SystemExit(f'carrier digest mismatch for {name}: {actual}')
+        fail(f'carrier digest mismatch for {name}: expected={digest} actual={actual}')
 main = b''.join((root / f'part-{index:03d}.patch').read_bytes() for index in range(20))
-if sha256(main).hexdigest() != os.environ['MAIN_PATCH_SHA256']:
-    raise SystemExit('combined main patch digest mismatch')
+main_digest = sha256(main).hexdigest()
+if main_digest != os.environ['MAIN_PATCH_SHA256']:
+    fail(
+        'combined main patch digest mismatch: '
+        f"expected={os.environ['MAIN_PATCH_SHA256']} actual={main_digest}"
+    )
 temp = Path(os.environ['RUNNER_TEMP'])
 (temp / 'runtime-agentd-main.patch').write_bytes(main)
 (temp / 'runtime-agentd-amendment.patch').write_bytes((root / 'amend-000.patch').read_bytes())
@@ -74,6 +87,13 @@ git diff --check
 python3 - <<'PY'
 from pathlib import Path
 import subprocess
+import sys
+
+
+def fail(message: str) -> None:
+    print(f"::error title=runtime.agentd carrier source delta::{message}", file=sys.stderr)
+    raise SystemExit(1)
+
 
 expected = {
     '.github/workflows/hepta-agentd-exact-head.yml',
@@ -110,11 +130,11 @@ expected = {
 }
 observed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
 if observed != expected:
-    raise SystemExit(
+    fail(
         f'unexpected source delta: missing={sorted(expected-observed)} '
         f'extra={sorted(observed-expected)}'
     )
 for path in expected:
     if not Path(path).exists():
-        raise SystemExit(f'expected path missing after apply: {path}')
+        fail(f'expected path missing after apply: {path}')
 PY
