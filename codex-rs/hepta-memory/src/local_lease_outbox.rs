@@ -2582,8 +2582,7 @@ impl LocalLeaseOutbox {
                 kind,
                 payload,
                 allowed,
-                resulting_state,
-                allow_exact_replay,
+                (resulting_state, allow_exact_replay),
             )
             .await?;
         transaction
@@ -2609,8 +2608,10 @@ impl LocalLeaseOutbox {
             "reconcile_committed",
             receipt,
             &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Committed,
-            /*allow_exact_replay*/ true,
+            (
+                LocalOutcomeState::Committed,
+                /*allow_exact_replay*/ true,
+            ),
         )
         .await
     }
@@ -2622,9 +2623,9 @@ impl LocalLeaseOutbox {
         kind: &str,
         payload: String,
         allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        replay_transition: (LocalOutcomeState, bool),
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        let (resulting_state, allow_exact_replay) = replay_transition;
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());

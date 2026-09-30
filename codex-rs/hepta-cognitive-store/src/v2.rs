@@ -273,7 +273,7 @@ impl CanonicalProductMemoryEventBindingV1 {
         let compatibility_digest = self
             .consumer_binding
             .compatibility_payload_sha256
-            .map(|digest| digest.digest());
+            .map(codex_hepta_cognitive_types::hnmf::ContractDigestV1::digest);
         if self.consumer_binding.operation_id.as_str() != expected_operation_id
             || self.consumer_binding.consumer != CanonicalConsumerV1::CognitiveStore
             || self.consumer_binding.payload_kind != CanonicalPayloadKindV1::MemoryEvent
