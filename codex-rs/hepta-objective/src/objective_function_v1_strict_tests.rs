@@ -1,6 +1,7 @@
 use super::*;
 
 use codex_hepta_types::Revision;
+use pretty_assertions::assert_eq;
 use serde_json::Value;
 
 use crate::ConstraintClass;
@@ -445,6 +446,21 @@ fn projection_rejects_native_lowering_drift() {
             &compiled, &source, &profile, &context, &receipt
         )
         .is_err()
+    );
+}
+
+#[test]
+fn strict_projection_recomputes_hard_constraint_digest_before_native_semantic_digest() {
+    let (profile, source, _context, receipt, mut compiled) = compile_fixture();
+    compiled.objective.hard_constraint_digest = Digest32::of_bytes(b"forged-constraint-digest");
+    compiled.objective.semantic_digest = Digest32::of_bytes(
+        &canonical_native_objective_semantic_bytes_v1(&compiled.objective),
+    );
+    assert_eq!(
+        encode_objective_function_v1(&compiled, &source, &profile, &receipt),
+        Err(ObjectiveFunctionV1Error::ProjectionMismatch(
+            "native hard constraint digest"
+        )),
     );
 }
 

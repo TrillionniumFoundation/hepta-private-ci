@@ -2,6 +2,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
+use pretty_assertions::assert_eq;
 
 use crate::ConstraintClass;
 use crate::ObjectiveAbstentionRuleProfileV1;
@@ -434,5 +435,52 @@ fn q32_boundaries_preserve_exact_scalar_semantics_through_product_projection() {
             );
             assert!(!compiled.outcome().receipt.authority.grants_any());
         }
+    }
+}
+
+#[test]
+fn confidence_minimum_rounds_up_without_relaxing_exact_ppm_threshold() {
+    for minimum in [0, 1, 500_000, 900_000, 999_999, 1_000_000] {
+        let raw = profile();
+        let frozen = ValidatedAdmissionProfileV1::from_profile(&raw).expect("frozen");
+        let mut source = source();
+        source.structured_intent.evidence_requirements[0].minimum_confidence_ppm = minimum;
+        source.intent_digest = canonical_objective_intent_digest_v1(&source).expect("intent");
+        let context = context(&raw, &source);
+        let compiled = compile_authoritative_objective_v1(&source, &frozen, &context)
+            .expect("confidence admission");
+        let native = compiled
+            .outcome()
+            .compile_result
+            .as_ref()
+            .expect("feasible");
+        let lower_bound = native
+            .objective
+            .success_predicates
+            .iter()
+            .find(|value| value.id.as_str() == "evidence.quality")
+            .expect("confidence requirement")
+            .bound
+            .raw();
+        let exact_numerator = i128::from(minimum) * i128::from(FixedQ32::ONE.raw());
+        assert!(i128::from(lower_bound) * 1_000_000 >= exact_numerator);
+        assert!(i128::from(lower_bound - 1) * 1_000_000 < exact_numerator);
+        let projected = encode_proof_bearing_objective_function_v1(&compiled, &source, &frozen)
+            .expect("strict projection");
+        let independently_recompiled = encode_authenticated_objective_function_v1(
+            native,
+            &source,
+            &raw,
+            &context,
+            &compiled.outcome().receipt,
+        )
+        .expect("authenticated projection");
+        assert_eq!(projected, independently_recompiled);
+        let wire: serde_json::Value =
+            serde_json::from_slice(projected.canonical_bytes()).expect("protocol artifact");
+        assert_eq!(
+            wire["evidenceRequirements"][0]["minimumConfidencePpm"],
+            minimum
+        );
     }
 }

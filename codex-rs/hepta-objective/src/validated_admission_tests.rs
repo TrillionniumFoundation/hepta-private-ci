@@ -2,6 +2,7 @@ use super::*;
 
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
+use pretty_assertions::assert_eq;
 
 use crate::ConstraintClass;
 use crate::ObjectiveAbstentionRuleProfileV1;
@@ -21,9 +22,12 @@ use crate::ObjectiveRollbackClassV1;
 use crate::ObjectiveSoftDimensionProfileV1;
 use crate::ObjectiveSoftDimensionV1;
 use crate::ObjectiveSoftDirectionV1;
+use crate::ObjectiveSourceAuthenticationV1;
 use crate::ObjectiveSourceConstraintV1;
 use crate::ObjectiveSourcePredicateV1;
+use crate::ObjectiveSourceTrustV1;
 use crate::ObjectiveStructuredIntentV1;
+use crate::canonical_objective_intent_digest_v1;
 
 const NOW_MICROS: u64 = 1_788_861_601_000_000;
 
@@ -245,6 +249,20 @@ fn validated_profile_rejects_cross_collection_semantic_collision() {
     let mut profile = profile();
     profile.evidence_requirements[0].source_requirement_id = "latency.ceiling".to_owned();
     assert!(ValidatedAdmissionProfileV1::new(profile).is_err());
+}
+
+#[test]
+fn frozen_scalar_axis_requires_one_unit_across_constraints_and_predicates() {
+    let mut raw = profile();
+    raw.predicates[0].axis = raw.constraints[0].axis.clone();
+    assert_eq!(
+        ValidatedAdmissionProfileV1::from_profile(&raw),
+        Err(ObjectiveAdmissionError::InvalidProfile(
+            "scalar axis unit collision"
+        )),
+    );
+    raw.predicates[0].expected_unit = raw.constraints[0].expected_unit.clone();
+    assert!(ValidatedAdmissionProfileV1::new(raw).is_ok());
 }
 
 #[test]

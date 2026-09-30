@@ -40,6 +40,7 @@ use crate::SoftDirection;
 use crate::SoftPreference;
 use crate::SourceTrust;
 use crate::SuccessPredicate;
+use crate::ValidatedAdmissionProfileV1;
 use crate::model::ObjectiveSourceEnvelope;
 
 const MAX_PROFILE_LOCALES: usize = 16;
@@ -443,8 +444,8 @@ pub fn admit_objective_v1(
     context: &ObjectiveAdmissionContextV1,
 ) -> Result<AdmittedObjectiveV1, ObjectiveAdmissionError> {
     envelope.validate_structure()?;
-    let profile_digest = profile.digest()?;
-    admit_profile_bound_objective_v1(envelope, profile, context, profile_digest)
+    let profile = ValidatedAdmissionProfileV1::from_profile(profile)?;
+    admit_frozen_objective_v1(envelope, &profile, context)
 }
 
 /// Internal typed boundary for a process-generation-frozen profile.
@@ -458,20 +459,16 @@ pub(crate) fn admit_frozen_objective_v1(
     context: &ObjectiveAdmissionContextV1,
 ) -> Result<AdmittedObjectiveV1, ObjectiveAdmissionError> {
     envelope.validate_structure()?;
-    admit_profile_bound_objective_v1(
-        envelope,
-        profile.profile(),
-        context,
-        profile.profile_digest(),
-    )
+    admit_profile_bound_objective_v1(envelope, profile, context)
 }
 
 fn admit_profile_bound_objective_v1(
     envelope: &ObjectiveSourceEnvelopeV1,
-    profile: &ObjectiveAdmissionProfileV1,
+    validated_profile: &ValidatedAdmissionProfileV1,
     context: &ObjectiveAdmissionContextV1,
-    profile_digest: Digest32,
 ) -> Result<AdmittedObjectiveV1, ObjectiveAdmissionError> {
+    let profile = validated_profile.profile();
+    let profile_digest = validated_profile.profile_digest();
     if context.selected_profile_digest != profile_digest {
         return Err(ObjectiveAdmissionError::ProfileDigestMismatch);
     }
@@ -489,15 +486,11 @@ fn admit_profile_bound_objective_v1(
     if envelope.principal_scope_digest != profile.principal_scope_digest {
         return Err(ObjectiveAdmissionError::PrincipalScopeMismatch);
     }
-    if !profile
-        .allowed_locales
-        .iter()
-        .any(|locale| locale == &envelope.locale)
-    {
+    if !validated_profile.locale_allowed(&envelope.locale) {
         return Err(ObjectiveAdmissionError::LocaleNotAllowed);
     }
 
-    validate_authentication(envelope, profile, &context.source_authentication)?;
+    validate_authentication(envelope, validated_profile, &context.source_authentication)?;
     let supplied_source_digest = envelope.structured_intent.provenance.source_digest;
     if supplied_source_digest.is_zero()
         || supplied_source_digest != context.source_authentication.source_digest()
@@ -537,14 +530,14 @@ fn admit_profile_bound_objective_v1(
         if deadline < observed_at_unix_micros {
             return Err(ObjectiveAdmissionError::DeadlineBeforeObservation);
         }
-        if deadline < context.now_unix_micros {
+        if deadline <= context.now_unix_micros {
             return Err(ObjectiveAdmissionError::DeadlineExpired);
         }
     }
 
     let admitted_source_digest =
         admitted_source_digest(envelope, profile_digest, &context.source_authentication);
-    let source = adapt_source(envelope, profile, context, admitted_source_digest)?;
+    let source = adapt_source(envelope, validated_profile, context, admitted_source_digest)?;
     Ok(AdmittedObjectiveV1 {
         source,
         receipt: ObjectiveAdmissionReceiptV1 {
@@ -586,15 +579,9 @@ pub fn admit_and_compile_objective_v1(
 
 fn validate_authentication(
     envelope: &ObjectiveSourceEnvelopeV1,
-    profile: &ObjectiveAdmissionProfileV1,
+    profile: &ValidatedAdmissionProfileV1,
     authentication: &ObjectiveSourceAuthenticationV1,
 ) -> Result<(), ObjectiveAdmissionError> {
-    let trusted_identity_allowed = |identity: &StableId| {
-        profile
-            .allowed_trusted_source_identities
-            .iter()
-            .any(|allowed| allowed == identity)
-    };
     match (&envelope.source_trust_class, authentication) {
         (
             ObjectiveSourceTrustV1::Principal,
@@ -608,13 +595,13 @@ fn validate_authentication(
             ObjectiveSourceAuthenticationV1::TrustedSystem {
                 source_identity, ..
             },
-        ) if trusted_identity_allowed(source_identity) => Ok(()),
+        ) if profile.trusted_source_identity_allowed(source_identity) => Ok(()),
         (
             ObjectiveSourceTrustV1::AuthorizedAdapter,
             ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
                 source_identity, ..
             },
-        ) if trusted_identity_allowed(source_identity) => Ok(()),
+        ) if profile.trusted_source_identity_allowed(source_identity) => Ok(()),
         (
             ObjectiveSourceTrustV1::UntrustedEvidence,
             ObjectiveSourceAuthenticationV1::UntrustedEvidence { .. },
@@ -630,7 +617,7 @@ fn validate_authentication(
 
 fn adapt_source(
     envelope: &ObjectiveSourceEnvelopeV1,
-    profile: &ObjectiveAdmissionProfileV1,
+    profile: &ValidatedAdmissionProfileV1,
     context: &ObjectiveAdmissionContextV1,
     admitted_source_digest: Digest32,
 ) -> Result<ObjectiveSourceEnvelope, ObjectiveAdmissionError> {
@@ -642,13 +629,9 @@ fn adapt_source(
     append_resources(
         &mut constraints,
         &envelope.structured_intent.resources,
-        &profile.resources,
+        &profile.profile().resources,
     )?;
-    append_risk(
-        &mut constraints,
-        &envelope.structured_intent.risk,
-        &profile.risk,
-    )?;
+    append_risk(&mut constraints, &envelope.structured_intent.risk, profile)?;
 
     let mut success_predicates = Vec::new();
     for source in &envelope.structured_intent.success_predicates {
@@ -698,9 +681,7 @@ fn adapt_source(
     let mut soft_preferences = Vec::new();
     for source in &envelope.structured_intent.soft_dimensions {
         let mapping = profile
-            .soft_dimensions
-            .iter()
-            .find(|mapping| mapping.source_dimension_id == source.dimension_id)
+            .soft_dimension(&source.dimension_id)
             .ok_or(ObjectiveAdmissionError::UnknownSoftDimension)?;
         if mapping.expected_unit != source.unit
             || mapping.expected_direction != source.direction
@@ -723,7 +704,7 @@ fn adapt_source(
 
     Ok(ObjectiveSourceEnvelope {
         request_id,
-        principal_scope: profile.principal_scope.clone(),
+        principal_scope: profile.profile().principal_scope.clone(),
         revision: context.revision,
         source_trust: match envelope.source_trust_class {
             ObjectiveSourceTrustV1::Principal => SourceTrust::PrincipalStructured,
@@ -744,15 +725,13 @@ fn adapt_source(
 
 fn adapt_constraint(
     source: &ObjectiveSourceConstraintV1,
-    profile: &ObjectiveAdmissionProfileV1,
+    profile: &ValidatedAdmissionProfileV1,
 ) -> Result<Constraint, ObjectiveAdmissionError> {
     if source.terminal {
         return Err(ObjectiveAdmissionError::TerminalConstraintUnsupported);
     }
     let mapping = profile
-        .constraints
-        .iter()
-        .find(|mapping| mapping.source_constraint_id == source.constraint_id)
+        .constraint(&source.constraint_id)
         .ok_or(ObjectiveAdmissionError::UnknownConstraint)?;
     if mapping.expected_unit != source.unit {
         return Err(ObjectiveAdmissionError::ConstraintUnitMismatch);
@@ -769,16 +748,14 @@ fn adapt_constraint(
 
 fn adapt_predicate(
     source: &ObjectiveSourcePredicateV1,
-    profile: &ObjectiveAdmissionProfileV1,
+    profile: &ValidatedAdmissionProfileV1,
     must_be_terminal: bool,
 ) -> Result<SuccessPredicate, ObjectiveAdmissionError> {
     if must_be_terminal != source.terminal {
         return Err(ObjectiveAdmissionError::InvalidTerminality);
     }
     let mapping = profile
-        .predicates
-        .iter()
-        .find(|mapping| mapping.source_predicate_id == source.predicate_id)
+        .predicate(&source.predicate_id)
         .ok_or(ObjectiveAdmissionError::UnknownPredicate)?;
     if mapping.expected_unit != source.unit {
         return Err(ObjectiveAdmissionError::PredicateUnitMismatch);
@@ -799,19 +776,20 @@ fn adapt_predicate(
 
 fn adapt_evidence_requirement(
     source: &ObjectiveEvidenceRequirementV1,
-    profile: &ObjectiveAdmissionProfileV1,
+    profile: &ValidatedAdmissionProfileV1,
 ) -> Result<SuccessPredicate, ObjectiveAdmissionError> {
     let mapping = profile
-        .evidence_requirements
-        .iter()
-        .find(|mapping| mapping.source_requirement_id == source.requirement_id)
+        .evidence_requirement(&source.requirement_id)
         .ok_or(ObjectiveAdmissionError::UnknownEvidenceRequirement)?;
     if source.minimum_confidence_ppm > 1_000_000 {
         return Err(ObjectiveAdmissionError::ResourceOverflow(
             "minimumConfidencePpm",
         ));
     }
-    let raw = (i128::from(source.minimum_confidence_ppm) * Q32_ONE_RAW) / 1_000_000_i128;
+    // Round a minimum upward: the native lower bound must never permit
+    // confidence below the requested exact parts-per-million threshold.
+    let raw =
+        (i128::from(source.minimum_confidence_ppm) * Q32_ONE_RAW + 999_999_i128) / 1_000_000_i128;
     Ok(SuccessPredicate {
         id: stable_id(&source.requirement_id, "requirementId")?,
         axis: mapping.axis.clone(),
@@ -865,8 +843,9 @@ fn append_resources(
 fn append_risk(
     output: &mut Vec<Constraint>,
     source: &crate::ObjectiveRiskV1,
-    profile: &ObjectiveRiskProfileV1,
+    validated_profile: &ValidatedAdmissionProfileV1,
 ) -> Result<(), ObjectiveAdmissionError> {
+    let profile = &validated_profile.profile().risk;
     let risk_value = match source.risk_class {
         ObjectiveRiskClassV1::Low => profile.low_value,
         ObjectiveRiskClassV1::Medium => profile.medium_value,
@@ -879,10 +858,8 @@ fn append_risk(
         ObjectiveRollbackClassV1::Compensatable => profile.rollback_compensatable_value,
         ObjectiveRollbackClassV1::Irreversible => profile.rollback_irreversible_value,
     };
-    let abstention_value = profile
-        .abstention_rules
-        .iter()
-        .find(|mapping| mapping.source_rule == source.abstention_rule)
+    let abstention_value = validated_profile
+        .abstention_rule(&source.abstention_rule)
         .map(|mapping| mapping.value)
         .ok_or(ObjectiveAdmissionError::InvalidProfile("abstention rule"))?;
     for (id, axis, value) in [
@@ -970,13 +947,11 @@ fn predicate_relation(
 }
 
 fn action_mapping<'a>(
-    profile: &'a ObjectiveAdmissionProfileV1,
+    profile: &'a ValidatedAdmissionProfileV1,
     source: &str,
 ) -> Result<&'a ObjectiveActionProfileV1, ObjectiveAdmissionError> {
     profile
-        .actions
-        .iter()
-        .find(|mapping| mapping.source_action_class == source)
+        .action(source)
         .ok_or(ObjectiveAdmissionError::UnknownAction)
 }
 

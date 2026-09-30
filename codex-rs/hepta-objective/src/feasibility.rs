@@ -41,10 +41,14 @@ pub fn check_feasibility_v1(
         return exhausted_receipt(registry, atoms, 0, started.elapsed());
     }
 
+    // The compatibility API promises at most n + 1 calls even when its caller
+    // supplies the global 257-call ceiling for a smaller input. Additional
+    // batching work is opt-in through the explicit deterministic API.
+    let linear_calls = u16::try_from(atoms.len().saturating_add(1)).unwrap_or(u16::MAX);
+    let max_calls = budget.max_calls.min(LEGACY_MAX_ORACLE_CALLS).min(linear_calls);
     let deterministic_budget = DeterministicOracleBudgetV1 {
-        max_calls: budget.max_calls.min(LEGACY_MAX_ORACLE_CALLS),
-        max_work_units: u64::from(budget.max_calls.min(LEGACY_MAX_ORACLE_CALLS))
-            .saturating_mul(MAX_ATOMS as u64),
+        max_calls,
+        max_work_units: u64::from(max_calls).saturating_mul(MAX_ATOMS as u64),
         max_cache_entries: 64,
     };
     let mut receipt = check_feasibility_deterministic_v1(registry, atoms, deterministic_budget);
@@ -122,7 +126,9 @@ struct OracleSessionV1<'a> {
     budget: DeterministicOracleBudgetV1,
     calls: u16,
     work_units: u64,
-    cache: BTreeMap<Vec<StableId>, Option<FeasibleAssignmentV1>>,
+    // Conflict extraction needs only satisfiability, not one full copy of the
+    // registered domains per cached candidate.
+    cache: BTreeMap<Vec<StableId>, bool>,
 }
 
 impl<'a> OracleSessionV1<'a> {
@@ -141,10 +147,6 @@ impl<'a> OracleSessionV1<'a> {
         candidate: &[&ConstraintAtomV1],
     ) -> Result<Option<FeasibleAssignmentV1>, ()> {
         let key: Vec<_> = candidate.iter().map(|atom| atom.id.clone()).collect();
-        if let Some(cached) = self.cache.get(&key) {
-            return Ok(cached.clone());
-        }
-
         let next_work = self
             .work_units
             .checked_add(candidate.len() as u64)
@@ -156,9 +158,17 @@ impl<'a> OracleSessionV1<'a> {
         self.work_units = next_work;
         let result = solve(self.registry, candidate);
         if self.cache.len() < usize::from(self.budget.max_cache_entries) {
-            self.cache.insert(key, result.clone());
+            self.cache.insert(key, result.is_some());
         }
         Ok(result)
+    }
+
+    fn is_feasible(&mut self, candidate: &[&ConstraintAtomV1]) -> Result<bool, ()> {
+        let key: Vec<_> = candidate.iter().map(|atom| atom.id.clone()).collect();
+        if let Some(cached) = self.cache.get(&key) {
+            return Ok(*cached);
+        }
+        self.solve(candidate).map(|assignment| assignment.is_some())
     }
 
     fn spare_calls_after_linear_pass(&self, core_len: usize) -> u16 {
@@ -191,13 +201,13 @@ fn minimize(
                 .chain(core[end..].iter())
                 .copied()
                 .collect();
-            match oracle.solve(&trial) {
+            match oracle.is_feasible(&trial) {
                 Err(()) => return FeasibilityOutcomeV1::Exhausted,
-                Ok(None) => {
+                Ok(false) => {
                     core = trial;
                     reduced = true;
                 }
-                Ok(Some(_)) => start = end,
+                Ok(true) => start = end,
             }
         }
         if !reduced {
@@ -211,10 +221,10 @@ fn minimize(
     while index < core.len() {
         let mut trial = core.clone();
         trial.remove(index);
-        match oracle.solve(&trial) {
+        match oracle.is_feasible(&trial) {
             Err(()) => return FeasibilityOutcomeV1::Exhausted,
-            Ok(None) => core = trial,
-            Ok(Some(_)) => index += 1,
+            Ok(false) => core = trial,
+            Ok(true) => index += 1,
         }
     }
     core.sort_by_key(|atom| (atom.precedence, &atom.axis, &atom.id));

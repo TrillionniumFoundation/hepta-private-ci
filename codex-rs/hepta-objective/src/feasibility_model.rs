@@ -70,7 +70,8 @@ pub struct ConstraintAtomV1 {
 
 /// Legacy availability wrapper. Wall time is interpreted only by the outer
 /// runtime adapter; it is never read by the deterministic semantic engine.
-/// Call limits above 257 are capped by this compatibility API.
+/// Call limits are capped at the input atom count plus one, with a global
+/// ceiling of 257, by this compatibility API.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct OracleBudgetV1 {
     pub max_calls: u16,

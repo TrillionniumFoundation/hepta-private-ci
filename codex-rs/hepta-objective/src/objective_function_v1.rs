@@ -329,6 +329,13 @@ fn validate_projection_binding_with_digest(
             "native objective identity",
         ));
     }
+    if crate::compiler::canonical_native_hard_constraint_digest_v1(&objective.constraints)
+        != objective.hard_constraint_digest
+    {
+        return Err(ObjectiveFunctionV1Error::ProjectionMismatch(
+            "native hard constraint digest",
+        ));
+    }
     let native_bytes = canonical_native_objective_semantic_bytes_v1(objective);
     if Digest32::of_bytes(&native_bytes) != objective.semantic_digest {
         return Err(ObjectiveFunctionV1Error::ProjectionMismatch(
@@ -374,7 +381,8 @@ fn encode_validated(
                 "evidence requirement",
             ))?;
         let raw = (i128::from(source_requirement.minimum_confidence_ppm)
-            * i128::from(FixedQ32::ONE.raw()))
+            * i128::from(FixedQ32::ONE.raw())
+            + 999_999_i128)
             / 1_000_000_i128;
         let expected = i64::try_from(raw)
             .map_err(|_| ObjectiveFunctionV1Error::ProjectionMismatch("evidence bound"))?;

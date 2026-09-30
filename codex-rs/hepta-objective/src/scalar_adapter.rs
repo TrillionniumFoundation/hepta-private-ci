@@ -1,6 +1,5 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
-use std::time::Duration;
 
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
@@ -9,14 +8,14 @@ use crate::AtomPrecedenceV1;
 use crate::AtomPredicateV1;
 use crate::ConstraintAtomV1;
 use crate::ConstraintRelation;
+use crate::DeterministicOracleBudgetV1;
 use crate::FeasibilityOutcomeV1;
 use crate::ObjectiveError;
-use crate::OracleBudgetV1;
 use crate::PredicateTerminality;
 use crate::RegisteredAxisV1;
 use crate::RegisteredDomainV1;
 use crate::RegisteredGrammarV1;
-use crate::check_feasibility_v1;
+use crate::check_feasibility_deterministic_v1;
 use crate::model::ObjectiveSourceEnvelope;
 
 /// Legacy envelopes already carry normalized FixedQ32 values without units.
@@ -69,11 +68,14 @@ pub(crate) fn scalar_conflict(
     // scheduling or wall-clock load change a valid objective into Exhausted.
     // Callers of the explicit feasibility API may still supply a real-time
     // availability budget of their own.
-    let budget = OracleBudgetV1 {
-        max_calls: 257,
-        wall_time: Duration::MAX,
+    let max_calls = u16::try_from(atoms.len().saturating_add(1))
+        .map_err(|_| ObjectiveError::Arithmetic)?;
+    let budget = DeterministicOracleBudgetV1 {
+        max_calls,
+        max_work_units: u64::from(max_calls) * 256,
+        max_cache_entries: 64,
     };
-    match check_feasibility_v1(&registry, atoms, budget).outcome {
+    match check_feasibility_deterministic_v1(&registry, atoms, budget).outcome {
         FeasibilityOutcomeV1::Feasible(_) => Ok(None),
         FeasibilityOutcomeV1::Infeasible {
             inclusion_minimal_conflicting_ids,

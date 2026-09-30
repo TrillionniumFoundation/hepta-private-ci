@@ -482,6 +482,49 @@ fn two_phase_admission_matches_convenience_wrapper() {
     assert_eq!(staged, direct);
 }
 
+#[test]
+fn public_admission_rejects_frozen_profile_identity_violations() {
+    let mut reserved = profile();
+    reserved.actions[0].action_id = id("abstain");
+    let mut aliased_actions = profile();
+    aliased_actions.actions[1].action_id = aliased_actions.actions[0].action_id.clone();
+    let mut semantic_collision = profile();
+    semantic_collision.evidence_requirements[0].source_requirement_id = semantic_collision
+        .constraints[0]
+        .source_constraint_id
+        .clone();
+    let mut aliased_soft = profile();
+    let mut second_dimension = aliased_soft.soft_dimensions[0].clone();
+    second_dimension.source_dimension_id = "quality.other".to_owned();
+    aliased_soft.soft_dimensions.push(second_dimension);
+
+    for (raw, reason) in [
+        (reserved, "reserved abstain action target"),
+        (aliased_actions, "duplicate action target"),
+        (semantic_collision, "global semantic identity collision"),
+        (aliased_soft, "duplicate soft target"),
+    ] {
+        let source = envelope();
+        let context = context(&raw, &source);
+        assert_eq!(
+            admit_objective_v1(&source, &raw, &context),
+            Err(ObjectiveAdmissionError::InvalidProfile(reason)),
+        );
+    }
+}
+
+#[test]
+fn fresh_source_with_deadline_equal_to_admission_time_is_expired() {
+    let profile = profile();
+    let mut source = envelope();
+    source.deadline = Some("2026-09-08T10:00:01Z".to_owned());
+    let context = context(&profile, &source);
+    assert_eq!(
+        admit_objective_v1(&source, &profile, &context),
+        Err(ObjectiveAdmissionError::DeadlineExpired),
+    );
+}
+
 fn measurement_sample_count(default: usize, maximum: usize) -> usize {
     std::env::var("HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES")
         .ok()

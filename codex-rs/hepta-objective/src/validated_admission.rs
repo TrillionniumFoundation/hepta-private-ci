@@ -12,6 +12,7 @@ use std::collections::BTreeSet;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::ObjectiveAbstentionRuleProfileV1;
 use crate::ObjectiveActionProfileV1;
 use crate::ObjectiveAdmissionContextV1;
 use crate::ObjectiveAdmissionError;
@@ -48,6 +49,9 @@ pub struct ValidatedAdmissionProfileReuseKeyV1 {
 pub struct ValidatedAdmissionProfileV1 {
     profile: ObjectiveAdmissionProfileV1,
     profile_digest: Digest32,
+    allowed_locales: BTreeSet<String>,
+    trusted_source_identities: BTreeSet<StableId>,
+    abstention_sources: BTreeMap<String, usize>,
     constraint_sources: BTreeMap<String, usize>,
     predicate_sources: BTreeMap<String, usize>,
     action_sources: BTreeMap<String, usize>,
@@ -59,6 +63,20 @@ pub struct ValidatedAdmissionProfileV1 {
 impl ValidatedAdmissionProfileV1 {
     pub fn new(profile: ObjectiveAdmissionProfileV1) -> Result<Self, ObjectiveAdmissionError> {
         let profile_digest = profile.digest()?;
+        let allowed_locales = profile.allowed_locales.iter().cloned().collect();
+        let trusted_source_identities = profile
+            .allowed_trusted_source_identities
+            .iter()
+            .cloned()
+            .collect();
+        let abstention_sources = source_index(
+            profile
+                .risk
+                .abstention_rules
+                .iter()
+                .map(|mapping| mapping.source_rule.as_str()),
+            "abstention rule source index",
+        )?;
         let constraint_sources = source_index(
             profile
                 .constraints
@@ -115,6 +133,26 @@ impl ValidatedAdmissionProfileV1 {
                 .map(|mapping| &mapping.dimension),
             "duplicate soft target",
         )?;
+        let mut axis_units = BTreeMap::new();
+        for (axis, unit) in profile
+            .constraints
+            .iter()
+            .map(|mapping| (&mapping.axis, &mapping.expected_unit))
+            .chain(
+                profile
+                    .predicates
+                    .iter()
+                    .map(|mapping| (&mapping.axis, &mapping.expected_unit)),
+            )
+        {
+            if let Some(previous) = axis_units.insert(axis, unit)
+                && previous != unit
+            {
+                return Err(ObjectiveAdmissionError::InvalidProfile(
+                    "scalar axis unit collision",
+                ));
+            }
+        }
 
         let mut semantic_ids = BTreeSet::new();
         for source_id in profile
@@ -148,6 +186,9 @@ impl ValidatedAdmissionProfileV1 {
         Ok(Self {
             profile,
             profile_digest,
+            allowed_locales,
+            trusted_source_identities,
+            abstention_sources,
             constraint_sources,
             predicate_sources,
             action_sources,
@@ -180,6 +221,23 @@ impl ValidatedAdmissionProfileV1 {
             profile_revision: self.profile.profile_revision.get(),
             compiler_contract_digest: compiler_contract_digest_v1(),
         }
+    }
+
+    #[must_use]
+    pub fn locale_allowed(&self, locale: &str) -> bool {
+        self.allowed_locales.contains(locale)
+    }
+
+    #[must_use]
+    pub fn trusted_source_identity_allowed(&self, identity: &StableId) -> bool {
+        self.trusted_source_identities.contains(identity)
+    }
+
+    #[must_use]
+    pub fn abstention_rule(&self, source_rule: &str) -> Option<&ObjectiveAbstentionRuleProfileV1> {
+        self.abstention_sources
+            .get(source_rule)
+            .and_then(|index| self.profile.risk.abstention_rules.get(*index))
     }
 
     #[must_use]

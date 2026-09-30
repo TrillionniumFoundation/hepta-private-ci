@@ -81,8 +81,7 @@ pub fn decode_admission_profile_json_v1(
         }
     })?;
     let profile = wire.try_into_profile()?;
-    profile
-        .digest()
+    crate::ValidatedAdmissionProfileV1::from_profile(&profile)
         .map_err(ObjectiveAdmissionProfileJsonError::Admission)?;
     Ok(profile)
 }

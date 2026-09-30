@@ -81,7 +81,7 @@ pub(crate) fn compile(
     } else {
         CompileDisposition::Compiled
     };
-    let hard_constraint_digest = digest_constraints(&source.constraints);
+    let hard_constraint_digest = canonical_native_hard_constraint_digest_v1(&source.constraints);
     let semantic_digest = digest_objective(&source, &legal_actions, hard_constraint_digest);
     let objective = ObjectiveFunction {
         request_id: source.request_id,
@@ -293,7 +293,12 @@ fn encode_conflict_semantics(
     bytes
 }
 
-fn digest_constraints(constraints: &[Constraint]) -> Digest32 {
+/// Recompute the native hard-constraint identity from the full constraint
+/// payload, in the canonical order emitted by the compiler.
+///
+/// Projection validation must use this rather than trust the digest field in a
+/// caller-supplied `ObjectiveFunction`.
+pub(crate) fn canonical_native_hard_constraint_digest_v1(constraints: &[Constraint]) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(CONSTRAINT_DIGEST_DOMAIN);
     push_len(&mut bytes, constraints.len());

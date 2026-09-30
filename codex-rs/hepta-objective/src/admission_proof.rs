@@ -10,7 +10,7 @@ use crate::ObjectiveSourceTrustV1;
 use crate::ValidatedAdmissionProfileV1;
 use crate::canonical_objective_intent_digest_v1;
 
-const COMPILER_CONTRACT_V1: &[u8] = b"hepta.objective.compiler.contract.v1:indexed-profile:conservative-ms-deadline:proof-bearing-admission";
+const COMPILER_CONTRACT_V1: &[u8] = b"hepta.objective.compiler.contract.v1:indexed-profile:conservative-ms-deadline:conservative-q32-confidence:proof-bearing-admission";
 
 #[must_use]
 pub(crate) fn compiler_contract_digest_v1() -> Digest32 {
