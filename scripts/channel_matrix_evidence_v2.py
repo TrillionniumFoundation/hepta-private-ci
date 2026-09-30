@@ -25,6 +25,7 @@ EXTRA_SOURCE_ROOTS = (
     "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh",
     "tests/fixtures/run-hermetic-synapse.sh",
     ".github/workflows/channel-matrix-materialize.yml",
+    ".github/workflows/channel-matrix-protected-production.yml",
 )
 
 # The exact candidate binds these transitive owners, so the same read-only
