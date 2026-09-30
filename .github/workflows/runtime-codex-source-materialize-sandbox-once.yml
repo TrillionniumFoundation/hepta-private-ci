@@ -1,0 +1,202 @@
+name: runtime.codex one-shot sandboxed source materialization
+
+on:
+  push:
+    branches:
+      - automation/runtime-codex-source-materialize-sandbox-20260930
+    paths:
+      - .github/workflows/runtime-codex-source-materialize-sandbox-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-one-shot-source-materialize-sandbox
+  cancel-in-progress: true
+
+env:
+  LOG_DIR: qualification/runtime-codex-materialize-debug
+  TARGET_BRANCH: automation/runtime-codex-source-materialize-sandbox-20260930
+
+jobs:
+  materialize-source:
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Verify strong sandbox prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RUNNER_NAME" = desktop
+          command -v bwrap
+          command -v python3
+          command -v git
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1)"
+
+      - name: Materialize reviewed source inside no-network Bubblewrap
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$LOG_DIR"
+          mkdir -p "$LOG_DIR"
+
+          bwrap_args=(
+            --unshare-all
+            --die-with-parent
+            --new-session
+            --clearenv
+            --setenv PATH /usr/local/bin:/usr/bin:/bin
+            --setenv HOME /tmp
+            --setenv LANG C.UTF-8
+            --setenv LC_ALL C.UTF-8
+            --setenv PYTHONDONTWRITEBYTECODE 1
+            --ro-bind /usr /usr
+            --ro-bind /bin /bin
+            --ro-bind /lib /lib
+            --dev /dev
+            --proc /proc
+            --tmpfs /tmp
+            --dir /run
+            --bind "$GITHUB_WORKSPACE" /work
+            --chdir /work
+          )
+          if test -d /lib64; then
+            bwrap_args+=(--ro-bind /lib64 /lib64)
+          fi
+
+          bwrap "${bwrap_args[@]}" /bin/bash -lc '
+            set -Eeuo pipefail
+            log_dir=qualification/runtime-codex-materialize-debug
+            input_sha="$(git rev-parse HEAD)"
+            printf "input_sha=%s\nrunner=%s\nsandbox=bubblewrap-unshare-all-no-network\n" \
+              "$input_sha" "${RUNNER_NAME:-cleared}" > "$log_dir/status.txt"
+
+            migrations=(
+              scripts/runtime-codex-maintainer.py
+              scripts/runtime-codex-maintainer-followup.py
+              scripts/runtime-codex-durability-migration.py
+              scripts/runtime-codex-durability-fixup.py
+              scripts/runtime-codex-transactional-owner-fixup.py
+              scripts/runtime-codex-quarantine-migration.py
+              scripts/runtime-codex-quarantine-authority-fixup.py
+              scripts/runtime-codex-deadline-migration.py
+              scripts/runtime-codex-cleanup-migration.py
+              scripts/runtime-codex-storage-fixup.py
+              scripts/runtime-codex-terminal-outbox-migration.py
+              scripts/runtime-codex-product-executor-migration.py
+              scripts/runtime-codex-product-executor-hardening.py
+              scripts/runtime-codex-effect-guard-fixup.py
+              scripts/runtime-codex-deadline-ceiling-fixup.py
+              scripts/runtime-codex-structured-sequence-migration.py
+              scripts/runtime-codex-process-crash-migration.py
+              scripts/runtime-codex-process-crash-expansion.py
+              scripts/runtime-codex-qualification-fixup.py
+              scripts/runtime-codex-final-closure.py
+            )
+            support=(
+              scripts/runtime-codex-owner-lineage-fixup.py
+              scripts/runtime-codex-quarantine-authority-v2.py
+              scripts/runtime-codex-process-crash-expansion-v2.py
+            )
+            finalizers=(
+              scripts/runtime-codex-finalize-map.py
+              scripts/runtime-codex-finalize-map-followup.py
+            )
+
+            preserve_failure() {
+              local rc="$1"
+              local failed="$2"
+              set +e
+              printf "result=failed\nfailed_step=%s\nexit_code=%s\n" "$failed" "$rc" \
+                >> "$log_dir/status.txt"
+              git status --short > "$log_dir/worktree-status.txt"
+              git diff --stat > "$log_dir/materialized-diff-stat.txt"
+              git diff --check > "$log_dir/materialized-diff-check.txt" 2>&1
+              git diff > "$log_dir/materialized-partial.patch"
+              exit "$rc"
+            }
+
+            set +e
+            python3 -m py_compile "${migrations[@]}" "${support[@]}" "${finalizers[@]}" \
+              > "$log_dir/py_compile.log" 2>&1
+            rc=$?
+            set -e
+            if test "$rc" -ne 0; then
+              preserve_failure "$rc" py_compile
+            fi
+
+            for script in "${migrations[@]}"; do
+              name="$(basename "$script" .py)"
+              printf "START %s\n" "$name" | tee -a "$log_dir/status.txt"
+              set +e
+              python3 "$script" > "$log_dir/${name}.log" 2>&1
+              rc=$?
+              set -e
+              printf "%s=%s\n" "$name" "$rc" | tee -a "$log_dir/status.txt"
+              if test "$rc" -ne 0; then
+                tail -n 500 "$log_dir/${name}.log" > "$log_dir/${name}.tail.log"
+                preserve_failure "$rc" "$name"
+              fi
+            done
+
+            set +e
+            git diff --check > "$log_dir/materialized-diff-check.txt" 2>&1
+            rc=$?
+            set -e
+            if test "$rc" -ne 0; then
+              preserve_failure "$rc" git-diff-check
+            fi
+            printf "result=materialized\n" >> "$log_dir/status.txt"
+          '
+
+      - name: Commit ordinary source
+        if: success()
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          rm -rf "$LOG_DIR"
+          git config user.name 'runtime.codex source materializer'
+          git config user.email 'runtime-codex-source@invalid'
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -m 'fix(runtime.codex): materialize durable owner convergence source'
+          auth="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $auth" \
+            push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" \
+            origin "HEAD:refs/heads/${TARGET_BRANCH}"
+
+      - name: Retain only failure evidence
+        if: failure()
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test -f "$LOG_DIR/status.txt"
+          rm -rf /tmp/runtime-codex-materialize-debug
+          cp -a "$LOG_DIR" /tmp/runtime-codex-materialize-debug
+          git reset --hard "$GITHUB_SHA"
+          git clean -fdx
+          mkdir -p "$(dirname "$LOG_DIR")"
+          cp -a /tmp/runtime-codex-materialize-debug "$LOG_DIR"
+          git config user.name 'runtime.codex source diagnostics'
+          git config user.email 'runtime-codex-source@invalid'
+          git add "$LOG_DIR"
+          git commit -m 'test(runtime.codex): retain sandboxed source migration failure'
+          auth="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $auth" \
+            push --force-with-lease="refs/heads/${TARGET_BRANCH}:${GITHUB_SHA}" \
+            origin "HEAD:refs/heads/${TARGET_BRANCH}"
