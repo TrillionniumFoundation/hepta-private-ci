@@ -1,0 +1,75 @@
+name: runtime.codex terminal outbox diagnostic
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-p0-durable-convergence-20260930
+    paths:
+      - .github/workflows/runtime-codex-terminal-outbox-diagnostic.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-terminal-outbox-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Reproduce migration failure and retain traceback
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          input_sha="${GITHUB_SHA}"
+          trace="$(mktemp)"
+          status_file="$(mktemp)"
+          set +e
+          {
+            for script in \
+              runtime-codex-maintainer.py \
+              runtime-codex-maintainer-followup.py \
+              runtime-codex-durability-migration.py \
+              runtime-codex-durability-fixup.py \
+              runtime-codex-transactional-owner-fixup.py \
+              runtime-codex-quarantine-migration.py \
+              runtime-codex-quarantine-authority-fixup.py \
+              runtime-codex-deadline-migration.py \
+              runtime-codex-cleanup-migration.py \
+              runtime-codex-storage-fixup.py \
+              runtime-codex-terminal-outbox-migration.py
+            do
+              echo "START ${script}"
+              python3 "scripts/${script}"
+              code=$?
+              echo "EXIT ${script}=${code}"
+              if [ "$code" -ne 0 ]; then
+                exit "$code"
+              fi
+            done
+          } >"$trace" 2>&1
+          status=$?
+          set -e
+          printf 'input_sha=%s\nexit=%s\n' "$input_sha" "$status" >"$status_file"
+          git reset --hard "$input_sha"
+          git clean -fdx
+          mkdir -p qualification/runtime-codex-materialize-debug
+          cp "$trace" qualification/runtime-codex-materialize-debug/terminal-outbox-traceback.txt
+          cp "$status_file" qualification/runtime-codex-materialize-debug/terminal-outbox-diagnostic-status.txt
+          git add -f qualification/runtime-codex-materialize-debug/terminal-outbox-traceback.txt \
+            qualification/runtime-codex-materialize-debug/terminal-outbox-diagnostic-status.txt
+          if git diff --cached --quiet; then
+            exit "$status"
+          fi
+          git config user.name "runtime.codex P0 diagnostics"
+          git config user.email "runtime-codex-p0@invalid"
+          git commit -m "test(runtime.codex): retain terminal outbox migration traceback"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          exit 0
