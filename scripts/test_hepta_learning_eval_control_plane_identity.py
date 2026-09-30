@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from contextlib import redirect_stderr
 import importlib.util
+import io
+import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 SPEC = importlib.util.spec_from_file_location(
     "hepta_learning_eval_control_plane_identity",
@@ -154,6 +158,35 @@ class ControlPlaneIdentityTests(unittest.TestCase):
                     fetcher=fetcher,
                     workflow_fetcher=lambda *_: workflows,
                 )
+
+    def test_main_redacts_exception_payload_and_token(self):
+        secret = "github-token-must-not-reach-logs"
+        stream = io.StringIO()
+        with (
+            mock.patch.object(
+                MODULE,
+                "verify_control_plane",
+                side_effect=ValueError(f"request failed with {secret}"),
+            ),
+            mock.patch.dict(os.environ, {"GITHUB_TOKEN": secret}, clear=False),
+            redirect_stderr(stream),
+        ):
+            status = MODULE.main(
+                [
+                    "--repository",
+                    "owner/repository",
+                    "--source-sha",
+                    "e" * 40,
+                ]
+            )
+        diagnostic = stream.getvalue()
+        self.assertEqual(status, 1)
+        self.assertNotIn(secret, diagnostic)
+        self.assertNotIn("request failed", diagnostic)
+        self.assertEqual(
+            diagnostic.strip(),
+            "ValueError: control-plane verification failed",
+        )
 
     def test_repository_workflow_inventory_is_closed_world(self):
         self.assertEqual(
