@@ -60,6 +60,7 @@ jobs:
             fsync-failure
             rename-failure
             checkpoint-corruption
+            performance
           )
           for scenario in "${scenarios[@]}"; do
             harness="/opt/hepta/authbus-qualification/$scenario"
@@ -143,6 +144,25 @@ jobs:
             --target-profile "$TARGET_PROFILE" \
             --receipt-dir "$evidence/receipts" \
             --output "$evidence/qualification-manifest.json"
+
+      - name: Execute full end-to-end performance matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/authbus-target-evidence"
+          sudo --non-interactive "/opt/hepta/authbus-qualification/performance" \
+            --candidate-sha "$CANDIDATE_SHA" \
+            --target-profile "$TARGET_PROFILE" \
+            --contract "$GITHUB_WORKSPACE/docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.json" \
+            --output "$evidence/performance-receipt.json"
+          test -s "$evidence/performance-receipt.json"
+          target_identity="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["targetIdentity"])' "$evidence/qualification-manifest.json")"
+          python3 scripts/authbus-performance-evidence.py \
+            --candidate-sha "$CANDIDATE_SHA" \
+            --target-profile "$TARGET_PROFILE" \
+            --expected-target-identity "$target_identity" \
+            --receipt "$evidence/performance-receipt.json" \
+            --output "$evidence/performance-manifest.json"
 
       - name: Verify qualification did not mutate source
         shell: bash
