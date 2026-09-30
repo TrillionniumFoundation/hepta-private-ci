@@ -55,6 +55,84 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  matrix-regression:
+    name: Matrix source regression (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","synthetic-merge"]' || '["source-head"]') }}
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - name: Check out exact Matrix source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify exact source checkout
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          git cat-file -e "$EXPECTED_SOURCE_SHA^{commit}"
+
+      - name: Resolve freshly fetched pull-request base
+        id: current-base
+        if: matrix.lane == 'synthetic-merge'
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_BASE_SHA"
+          test -n "$BASE_REF"
+          # Checkout fetched all origin refs; credentials are intentionally not persisted.
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+
+      - name: Construct deterministic Matrix synthetic merge
+        id: merge
+        if: matrix.lane == 'synthetic-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.current-base.outputs.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Matrix CI
+          author-email: hepta-matrix-ci@users.noreply.github.com
+          message: Synthetic Matrix source regression merge
+
+      - name: Install pinned Matrix regression tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Run exact-candidate Matrix owner regressions
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha || github.event.pull_request.head.sha || github.sha }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
+
+      - name: Assert tracked Matrix regression tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=no)"
+
   source-head:
     name: Verify exact Lane B source head
     runs-on: ubuntu-24.04
@@ -112,11 +190,6 @@ jobs:
         working-directory: codex-rs
         run: cargo fmt --all -- --check
 
-      - name: Install pinned repository test tools
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-
       - name: Verify Rust Lane B owners
         working-directory: codex-rs
         shell: bash
@@ -130,7 +203,6 @@ jobs:
           cargo test -p codex-hepta-automation
           cargo test -p codex-hepta-automation --features taskflow-structural-qualification
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
-          just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
           cargo test -p codex-app-server --test all thread_start
           cargo test -p codex-app-server --test all turn_start
           cargo test -p codex-core executed_tool_calls
@@ -186,11 +258,6 @@ jobs:
           author-email: hepta-lane-b-ci@users.noreply.github.com
           message: Synthetic Lane B merge
 
-      - name: Install pinned repository test tools
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-
       - name: Verify synthetic merge truth and tests
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
@@ -206,7 +273,6 @@ jobs:
             cd codex-rs
             cargo test -p codex-hepta-automation
             cargo test -p codex-hepta-automation --features taskflow-structural-qualification
-            just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
           )
           bazel test --test_output=errors \
             //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test \
