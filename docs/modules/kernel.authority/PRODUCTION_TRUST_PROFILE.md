@@ -36,9 +36,13 @@ validating custody only during open. `AuthorityClock::now_with_uncertainty`
 supplies a centre and radius. FinalUse requires the complete possible interval
 to lie in the signed half-open validity window at claim, after durable nonce
 persistence, and at every final-use boundary. Overflow rejects admission.
-Compatibility clocks retain their explicit zero-radius point policy. Ordinary
-general-lease validity still needs equivalent interval enforcement; this is a
-repository-controlled gap, not an externally supplied attestation.
+Compatibility clocks retain their explicit zero-radius point policy. General
+lease claim and final entry likewise require the complete possible interval to
+lie in the lease's declared half-open validity window. Pruning requires definite
+expiry at the interval's earliest time. Both paths sample after acquiring the
+owner lock; overflow and unavailable time reject admission. This source behavior
+is covered by `authority_lease_interval_tests.rs` and does not supply external
+clock attestation.
 
 ## 2. External anti-rollback frontier
 
