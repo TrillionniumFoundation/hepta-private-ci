@@ -74,7 +74,10 @@ def source_blob(path: str) -> bytes:
 
 
 def source_object(path: str) -> str:
-    return git_text("rev-parse", f":{path}")
+    # Use the candidate index tree rather than HEAD so this works for the
+    # unpushed deterministic merge tree as well as the exact source commit.
+    candidate_tree = git_text("write-tree")
+    return git_text("rev-parse", f"{candidate_tree}:{path}")
 
 
 def operation_inventory(source: dict[str, Any]) -> list[dict[str, Any]]:
