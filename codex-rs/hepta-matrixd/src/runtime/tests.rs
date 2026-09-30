@@ -56,6 +56,9 @@ struct FakeBridgeState {
     inputs: Vec<Vec<UserInput>>,
     admissions: usize,
     unbound_resolutions: usize,
+    persisted_turns: Option<Vec<Turn>>,
+    history_requests: Vec<(String, Option<String>)>,
+    force_next_cursor: Option<String>,
 }
 
 impl FakeRuntimeBridge {
@@ -107,9 +110,58 @@ impl FakeRuntimeBridge {
             recovered: true,
         }
     }
+
+    fn set_persisted_turns(&self, turns: Vec<Turn>) {
+        self.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .persisted_turns = Some(turns);
+    }
 }
 
 impl MatrixRuntimeBridge for FakeRuntimeBridge {
+    fn list_persisted_turns<'a>(
+        &'a self,
+        thread_id: &'a str,
+        cursor: Option<&'a str>,
+    ) -> MatrixRuntimeFuture<'a, BridgePage<Turn>> {
+        Box::pin(async move {
+            let mut state = self
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            state
+                .history_requests
+                .push((thread_id.to_string(), cursor.map(str::to_owned)));
+            let default_turns;
+            let turns = if let Some(turns) = &state.persisted_turns {
+                turns
+            } else {
+                default_turns = state
+                    .turns
+                    .values()
+                    .map(|id| persisted_turn(id, TurnStatus::InProgress, Vec::new()))
+                    .collect::<Vec<_>>();
+                &default_turns
+            };
+            let offset: usize = cursor.unwrap_or("0").parse().expect("fake offset cursor");
+            let data = turns
+                .iter()
+                .skip(offset)
+                .take(crate::PERSISTED_TURN_PAGE_SIZE as usize)
+                .cloned()
+                .collect::<Vec<_>>();
+            let next_offset = offset + data.len();
+            Ok(BridgePage {
+                data,
+                next_cursor: state
+                    .force_next_cursor
+                    .clone()
+                    .or_else(|| (next_offset < turns.len()).then(|| next_offset.to_string())),
+            })
+        })
+    }
+
     fn ensure_room_thread<'a>(
         &'a self,
         room_id: &'a MatrixRoomId,
@@ -286,6 +338,387 @@ fn completed_event() -> AppServerEvent {
             },
         },
     ))
+}
+
+fn persisted_turn(id: &str, status: TurnStatus, items: Vec<ThreadItem>) -> Turn {
+    let completed_at = (status != TurnStatus::InProgress).then_some(2);
+    Turn {
+        id: id.to_string(),
+        items,
+        items_view: TurnItemsView::Full,
+        status,
+        error: None,
+        started_at: Some(1),
+        completed_at,
+        duration_ms: Some(1_000),
+    }
+}
+
+fn terminal_items(client_id: &str) -> Vec<ThreadItem> {
+    vec![
+        ThreadItem::UserMessage {
+            id: "user-1".to_string(),
+            client_id: Some(client_id.to_string()),
+            content: vec![UserInput::Text {
+                text: "offline completion".to_string(),
+                text_elements: Vec::new(),
+            }],
+        },
+        ThreadItem::AgentMessage {
+            id: "agent-message-1".to_string(),
+            text: "durable final".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        },
+    ]
+}
+
+#[tokio::test]
+async fn offline_terminal_recovery_replays_existing_final_once_and_ignores_late_delta()
+-> anyhow::Result<()> {
+    for status in [
+        TurnStatus::Completed,
+        TurnStatus::Failed,
+        TurnStatus::Interrupted,
+    ] {
+        let temp = TempDir::new()?;
+        let agent_id = agent_id();
+        let layout = layout(&temp, &agent_id);
+        let store = open_bound_store(&layout).await?;
+        let fake = FakeRuntimeBridge::new(agent_id.clone());
+        let event_id = event_id("$offline-terminal");
+        store
+            .ingest_inbox(&text_inbox(
+                event_id.clone(),
+                br#"{"msgtype":"m.text","body":"offline completion"}"#,
+            ))
+            .await?;
+        let runtime = MatrixRuntime::new(store, fake.clone());
+        runtime.process_event(&event_id, 20).await?;
+        let client_id = client_user_message_id(&agent_id, &room_id(), &event_id);
+        fake.admit(&client_id, "turn-1");
+        runtime
+            .project_app_server_event(&final_event("durable final"), 30)
+            .await?;
+        let original_final = runtime.store().pending_outbox(10).await?.remove(0);
+        fake.set_persisted_turns(vec![persisted_turn(
+            "turn-1",
+            status.clone(),
+            terminal_items(&client_id),
+        )]);
+        runtime.store().close().await;
+        drop(runtime);
+        let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+        let restarted = MatrixRuntime::new(store, fake.clone());
+        let recovered = restarted.recover_pending(10, 40).await?;
+        assert!(matches!(
+            recovered.outcomes.as_slice(),
+            [MatrixDispatchOutcome::Completed { .. }]
+        ));
+        let outbox = restarted.store().pending_outbox(10).await?;
+        assert_eq!(outbox[0], original_final);
+        assert_eq!(
+            outbox.iter().map(|entry| entry.kind).collect::<Vec<_>>(),
+            vec![OutboxKind::Final, OutboxKind::Terminal]
+        );
+        assert_eq!(
+            outbox[1].payload,
+            match status {
+                TurnStatus::Completed => b"completed".to_vec(),
+                TurnStatus::Failed => b"failed".to_vec(),
+                TurnStatus::Interrupted => b"interrupted".to_vec(),
+                TurnStatus::InProgress => unreachable!(),
+            }
+        );
+        assert_eq!(
+            restarted
+                .project_app_server_event(&delta_event("late delta"), 50)
+                .await?,
+            MatrixEventProjection::Ignored
+        );
+        assert!(matches!(
+            restarted
+                .project_app_server_event(&final_event("durable final"), 51)
+                .await?,
+            MatrixEventProjection::Stored {
+                disposition: OutboxDisposition::Duplicate(_),
+                ..
+            }
+        ));
+        restarted
+            .project_app_server_event(
+                &notification(ServerNotification::TurnCompleted(
+                    TurnCompletedNotification {
+                        thread_id: "thread-matrix-room".to_string(),
+                        turn: persisted_turn("turn-1", status, Vec::new()),
+                    },
+                )),
+                52,
+            )
+            .await?;
+        assert!(restarted.recover_pending(10, 60).await?.outcomes.is_empty());
+        assert_eq!(restarted.store().pending_outbox(10).await?, outbox);
+        assert_eq!(fake.admissions(), 1);
+        restarted.store().close().await;
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn bounded_history_cursor_survives_restart_and_reaches_turn_older_than_1600()
+-> anyhow::Result<()> {
+    let temp = TempDir::new()?;
+    let agent_id = agent_id();
+    let layout = layout(&temp, &agent_id);
+    let store = open_bound_store(&layout).await?;
+    let fake = FakeRuntimeBridge::new(agent_id.clone());
+    let event_id = event_id("$old-terminal");
+    store
+        .ingest_inbox(&text_inbox(
+            event_id.clone(),
+            br#"{"msgtype":"m.text","body":"offline completion"}"#,
+        ))
+        .await?;
+    let runtime = MatrixRuntime::new(store, fake.clone());
+    runtime.process_event(&event_id, 20).await?;
+    let client_id = client_user_message_id(&agent_id, &room_id(), &event_id);
+    fake.admit(&client_id, "turn-1");
+    let mut history = (0..1600)
+        .map(|index| {
+            persisted_turn(
+                &format!("unrelated-{index}"),
+                TurnStatus::Completed,
+                Vec::new(),
+            )
+        })
+        .collect::<Vec<_>>();
+    history.push(persisted_turn(
+        "turn-1",
+        TurnStatus::Completed,
+        terminal_items(&client_id),
+    ));
+    fake.set_persisted_turns(history);
+    let first = runtime.recover_pending(10, 30).await?;
+    let [MatrixDispatchOutcome::Admitted { dispatch }] = first.outcomes.as_slice() else {
+        panic!("bounded scan should remain admitted")
+    };
+    assert_eq!(
+        runtime.store().turn_recovery_cursor(dispatch).await?,
+        Some("1600".to_string())
+    );
+    assert!(runtime.store().pending_outbox(10).await?.is_empty());
+    let mut drifted = dispatch.clone();
+    drifted.turn_id = Some("another-turn".to_string());
+    assert_eq!(
+        runtime.store().turn_recovery_cursor(&drifted).await,
+        Err(MatrixDurableError::AccessDenied)
+    );
+    assert_eq!(
+        runtime
+            .store()
+            .advance_turn_recovery_cursor(dispatch, Some("stale-cursor"), Some("next"))
+            .await,
+        Err(MatrixDurableError::Conflict)
+    );
+    runtime.store().close().await;
+    drop(runtime);
+    let restarted = MatrixRuntime::new(
+        MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?,
+        fake.clone(),
+    );
+    assert!(matches!(
+        restarted.recover_pending(10, 40).await?.outcomes.as_slice(),
+        [MatrixDispatchOutcome::Completed { .. }]
+    ));
+    let requests = fake
+        .state
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .history_requests
+        .clone();
+    assert_eq!(requests.len(), 17);
+    assert_eq!(
+        requests.last(),
+        Some(&("thread-matrix-room".to_string(), Some("1600".to_string())))
+    );
+    assert_eq!(fake.admissions(), 1);
+    assert_eq!(restarted.store().pending_outbox(10).await?.len(), 2);
+    restarted.store().close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn persisted_terminal_identity_or_incomplete_items_cannot_complete_dispatch()
+-> anyhow::Result<()> {
+    let temp = TempDir::new()?;
+    let agent_id = agent_id();
+    let layout = layout(&temp, &agent_id);
+    let store = open_bound_store(&layout).await?;
+    let fake = FakeRuntimeBridge::new(agent_id.clone());
+    let event_id = event_id("$identity-drift");
+    store
+        .ingest_inbox(&text_inbox(
+            event_id.clone(),
+            br#"{"msgtype":"m.text","body":"offline completion"}"#,
+        ))
+        .await?;
+    let runtime = MatrixRuntime::new(store, fake.clone());
+    runtime.process_event(&event_id, 20).await?;
+    let client_id = client_user_message_id(&agent_id, &room_id(), &event_id);
+    fake.admit(&client_id, "turn-1");
+    fake.set_persisted_turns(vec![persisted_turn(
+        "foreign-turn",
+        TurnStatus::Completed,
+        terminal_items(&client_id),
+    )]);
+    assert!(matches!(
+        runtime.recover_pending(10, 30).await?.outcomes.as_slice(),
+        [MatrixDispatchOutcome::Admitted { .. }]
+    ));
+    fake.set_persisted_turns(vec![persisted_turn(
+        "turn-1",
+        TurnStatus::Completed,
+        terminal_items("foreign-client"),
+    )]);
+    assert!(matches!(
+        runtime.recover_pending(10, 40).await,
+        Err(MatrixRuntimeError::Protocol(_))
+    ));
+    let mut changed_items = terminal_items(&client_id);
+    if let ThreadItem::UserMessage { content, .. } = &mut changed_items[0] {
+        *content = vec![UserInput::Text {
+            text: "different payload".to_string(),
+            text_elements: Vec::new(),
+        }];
+    }
+    fake.set_persisted_turns(vec![persisted_turn(
+        "turn-1",
+        TurnStatus::Completed,
+        changed_items,
+    )]);
+    assert!(matches!(
+        runtime.recover_pending(10, 45).await,
+        Err(MatrixRuntimeError::Protocol(_))
+    ));
+    let mut partial = persisted_turn("turn-1", TurnStatus::Completed, terminal_items(&client_id));
+    partial.items_view = TurnItemsView::Summary;
+    fake.set_persisted_turns(vec![partial]);
+    assert!(matches!(
+        runtime.recover_pending(10, 50).await,
+        Err(MatrixRuntimeError::Protocol(_))
+    ));
+    fake.set_persisted_turns(vec![persisted_turn(
+        "foreign-turn",
+        TurnStatus::Completed,
+        Vec::new(),
+    )]);
+    fake.state
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .force_next_cursor = Some("0".to_string());
+    assert!(matches!(
+        runtime.recover_pending(10, 55).await,
+        Err(MatrixRuntimeError::Protocol(_))
+    ));
+    assert!(runtime.store().pending_outbox(10).await?.is_empty());
+    assert_eq!(
+        runtime
+            .store()
+            .inbox(&event_id)
+            .await?
+            .expect("inbox")
+            .state,
+        InboxState::Pending
+    );
+    assert_eq!(fake.admissions(), 1);
+    runtime.store().close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn shared_page_budget_does_not_starve_a_second_known_terminal_turn() -> anyhow::Result<()> {
+    let temp = TempDir::new()?;
+    let agent_id = agent_id();
+    let store = open_bound_store(&layout(&temp, &agent_id)).await?;
+    let fake = FakeRuntimeBridge::new(agent_id.clone());
+    let runtime = MatrixRuntime::new(store, fake.clone());
+    let first_id = event_id("$missing-turn");
+    let second_id = event_id("$reachable-turn");
+    for event_id in [&first_id, &second_id] {
+        runtime
+            .store()
+            .ingest_inbox(&text_inbox(
+                event_id.clone(),
+                br#"{"msgtype":"m.text","body":"offline completion"}"#,
+            ))
+            .await?;
+        runtime.process_event(event_id, 20).await?;
+    }
+    fake.admit(
+        &client_user_message_id(&agent_id, &room_id(), &first_id),
+        "missing-turn",
+    );
+    let second_client = client_user_message_id(&agent_id, &room_id(), &second_id);
+    fake.admit(&second_client, "turn-1");
+    let mut history = vec![persisted_turn(
+        "turn-1",
+        TurnStatus::Completed,
+        terminal_items(&second_client),
+    )];
+    history.extend((0..1601).map(|index| {
+        persisted_turn(
+            &format!("unrelated-{index}"),
+            TurnStatus::Completed,
+            Vec::new(),
+        )
+    }));
+    fake.set_persisted_turns(history);
+    let first = runtime.recover_pending(10, 30).await?;
+    assert!(
+        first
+            .outcomes
+            .iter()
+            .all(|outcome| matches!(outcome, MatrixDispatchOutcome::Admitted { .. }))
+    );
+    assert_eq!(
+        fake.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .history_requests
+            .len(),
+        TURN_PAGE_BUDGET
+    );
+    let second = runtime.recover_pending(10, 40).await?;
+    assert!(second.outcomes.iter().any(|outcome| matches!(outcome, MatrixDispatchOutcome::Completed { dispatch } if dispatch.event_id == second_id)));
+    let requests = fake
+        .state
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .history_requests
+        .len();
+    assert!(requests - TURN_PAGE_BUDGET <= TURN_PAGE_BUDGET);
+    assert_eq!(
+        runtime
+            .store()
+            .inbox(&first_id)
+            .await?
+            .expect("first inbox")
+            .state,
+        InboxState::Pending
+    );
+    assert_eq!(
+        runtime
+            .store()
+            .inbox(&second_id)
+            .await?
+            .expect("second inbox")
+            .state,
+        InboxState::Processed
+    );
+    assert_eq!(fake.admissions(), 2);
+    runtime.store().close().await;
+    Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
