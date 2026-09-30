@@ -5,6 +5,7 @@
   "materializationAuthority": "separate_development_workflow",
   "mergeReady": false,
   "module": "secrets.heptabao",
+  "productCallerEvidenceRule": "productComposed may become true only from a repository-owned hepta.secrets-heptabao-product-caller.v1 manifest whose non-test source contains the declared constructor symbol and SqliteBaoProductRuntimeV1",
   "productCallerState": "not_composed",
   "productionQualified": false,
   "qualificationAuthority": "read_only",
@@ -18,6 +19,26 @@
     "activated",
     "operatorAccepted",
     "released"
+  ],
+  "requiredProductCallerFields": [
+    "schema",
+    "callerId",
+    "ownerModule",
+    "binaryPackage",
+    "binaryTarget",
+    "sourcePath",
+    "constructorSymbol",
+    "databasePathSource",
+    "providerConfigurationSource",
+    "consumerRegistrySource",
+    "trustedTimeSource",
+    "settlementEvidenceSource",
+    "checkpointService",
+    "metricsSink",
+    "recoveryWorker",
+    "shutdownDrainDeadlineMs",
+    "deploymentTopology",
+    "configurationDigest"
   ],
   "requiredReceiptFields": [
     "candidateSha",
@@ -42,7 +63,9 @@
     "qualificationProfileSha256",
     "implementationMapSha256",
     "documentationSha256",
-    "artifactHashes"
+    "artifactHashes",
+    "productCaller",
+    "productCallerManifestSha256"
   ],
   "schema": "hepta.secrets-heptabao-readiness-policy.v2"
 }
