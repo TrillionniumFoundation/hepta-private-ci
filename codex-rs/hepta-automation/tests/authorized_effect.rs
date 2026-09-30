@@ -1227,3 +1227,6 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
     );
     assert_eq!(must_not_dispatch.calls, 0);
 }
+
+#[path = "authorized_effect/adversarial.rs"]
+mod adversarial;
