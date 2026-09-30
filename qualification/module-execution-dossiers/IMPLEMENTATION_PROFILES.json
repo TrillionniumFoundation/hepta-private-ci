@@ -1426,28 +1426,72 @@
       "nativeImplementation": {
         "entrypoints": [
           {
-            "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
-            "symbol": "PromptRegistry"
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "DurablePromptRegistry"
           },
           {
-            "path": "codex-rs/hepta-prompt-registry/src/v2.rs",
-            "symbol": "register_realization_v2"
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "register_factor"
           },
           {
-            "path": "codex-rs/hepta-prompt-registry/src/v2.rs",
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "admit_factor_final_use"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "register_realization_payload_final_use_v2"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "retire_factor_final_use"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "revoke_factor_final_use"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "snapshot_v2"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
             "symbol": "read_compatible_v2"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+            "symbol": "dereference_realization_v2"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/protocol.rs",
+            "symbol": "PromptFactorV1"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/protocol.rs",
+            "symbol": "PromptRealizationV1"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
+            "symbol": "factor_graph_source_v1"
           }
         ],
-        "stateAndRecovery": "The registry uses bounded in-memory factor/realization maps with revision and terminal revocation cascade. V2 lookup checks the exact model tuple, active realization, expiry and required factors; snapshots bind content but do not add durable storage.",
+        "stateAndRecovery": "DurablePromptRegistry locks the Unix owner directory before creating and retaining registry.lock, and retains a bounded in-memory image. Initial owner-directory creation synchronizes its parent. A proven pre-rename first-publication failure removes only the opener's newly created marker and synchronizes cleanup; existing/migration and indeterminate-publication markers remain. Storage V3 selects immutable digest-checked registry.payloads extents through atomic registry.json metadata publication. Typed V1/V2/V3 decoding rejects duplicate members, and restore verifies semantic lineage, actor/evidence shape, source trust, reviewer separation, unique grants/revisions and complete active model profiles before discarding unselected tails. Uncertain post-rename durability poisons reads and writes until reopen. Internal integrity does not establish an independently current head against restoration of an older valid backup.",
         "testFiles": [
           "codex-rs/hepta-prompt-registry/src/v2_tests.rs",
-          "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+          "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/durable.rs",
+          "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/durable_restore_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/protocol.rs",
+          "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
         ],
         "runtimeDocuments": [
           "docs/modules/prompt.registry/TECHNICAL.md"
         ],
         "remainingWork": [
-          "Connect authenticated admission/current revocation and durable owner publication/reopen; digest-only realizations do not prove that a model received their actual instructions."
+          "Agentd opens the named durable registry owner and attaches its runtime host, but no product caller invokes enumerate_candidates or compile_and_stage. Compose authenticated product draft/admission/realization/lifecycle ingress with independently provisioned trust and scope, and a registered selection/compilation/staging caller.",
+          "Revalidate current registry and revocation at the physical provider boundary; actual payload materialization is not proof of provider delivery or causal uplift. Bind independently trusted current-head freshness before claiming non-resurrection across arbitrary backup replacement.",
+          "Registry token cost is a declared nonzero bound, not an independent exact-tokenizer measurement. Metadata hashing and owner images remain size-dependent; governed retention/compaction and PIM-3 evolution require separate implementation. Factor relations export only from the in-memory image: no durable relation schema or governed relation write port exists, and durable publication rejects relation-bearing images before selecting bytes.",
+          "Obtain current exact-candidate execution, target-host measurements, independent review, acceptance, canary, promotion and release evidence at their corresponding boundaries."
         ]
       }
     },

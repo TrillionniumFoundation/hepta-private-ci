@@ -18,49 +18,208 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "partial_owner_bootstrap_and_runtime_host_staging_ingress_pending",
+  "productionWriterState": "not_established_no_authenticated_product_ingress",
   "operations": [
     {
-      "operation": "promptregistry",
-      "nativeSymbol": "PromptRegistry",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/lib.rs",
+      "operation": "durablepromptregistry",
+      "nativeSymbol": "DurablePromptRegistry",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        }
+      ],
       "sourcePathExists": true,
-      "designOperation": "promptregistry",
+      "designOperation": "durablepromptregistry",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "register_realization_v2",
-      "nativeSymbol": "register_realization_v2",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2.rs",
+      "operation": "register_factor",
+      "nativeSymbol": "register_factor",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        }
+      ],
       "sourcePathExists": true,
-      "designOperation": "register_realization_v2",
+      "designOperation": "register_factor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_factor_final_use",
+      "nativeSymbol": "admit_factor_final_use",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "requires_independently_provisioned_final_use_grant",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_factor_final_use",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "register_realization_payload_final_use_v2",
+      "nativeSymbol": "register_realization_payload_final_use_v2",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "requires_independently_provisioned_final_use_grant",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "register_realization_payload_final_use_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "retire_factor_final_use",
+      "nativeSymbol": "retire_factor_final_use",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "requires_independently_provisioned_final_use_grant",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retire_factor_final_use",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revoke_factor_final_use",
+      "nativeSymbol": "revoke_factor_final_use",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "requires_independently_provisioned_final_use_grant",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke_factor_final_use",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "snapshot_v2",
+      "nativeSymbol": "snapshot_v2",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "snapshot_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
       "operation": "read_compatible_v2",
       "nativeSymbol": "read_compatible_v2",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2.rs",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "read_compatible_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "dereference_realization_v2",
+      "nativeSymbol": "dereference_realization_v2",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "dereference_realization_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "promptfactorv1",
+      "nativeSymbol": "PromptFactorV1",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/protocol.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "promptfactorv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "promptrealizationv1",
+      "nativeSymbol": "PromptRealizationV1",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/protocol.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "promptrealizationv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "factor_graph_source_v1",
+      "nativeSymbol": "factor_graph_source_v1",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/lib.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "factor_graph_source_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Connect governed admission, payload registration and lifecycle mutation to a named authenticated product ingress with independently provisioned trust.",
+    "Connect enumerate_candidates and compile_and_stage to actual turn ingress; bind current registry/revocation revalidation at the physical provider-send boundary.",
+    "Bind production restore to an independently retained monotonic owner frontier; internal digests do not reject an older valid complete backup.",
+    "Define governed durable relation publication, retention/compaction and token-cost attestation; in-memory relation projection is not a durable write API.",
+    "Run exact-head and deterministic synthetic-merge qualification before any production or execution claim changes."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -79,5 +238,16 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-prompt-registry"
+  ],
+  "productCallerBindingPolicy": "closed_world",
+  "productCallerBindings": [
+    {
+      "mustContain": "AgentdPromptPipelineOwner::open_state_dirs",
+      "callerPath": "codex-rs/hepta-agentd/src/state.rs"
+    },
+    {
+      "mustContain": "prompt_pipeline_owner()",
+      "callerPath": "codex-rs/hepta-agentd/src/app_runtime.rs"
+    }
   ]
 }

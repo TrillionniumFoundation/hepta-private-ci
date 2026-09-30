@@ -81,6 +81,52 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Native API and mutation sequence
+
+The native store is `DurablePromptRegistry`; `PromptRegistry` is its deterministic
+in-memory state image. Use the durable API for owner publication. The internal
+`register_realization_v2` metadata helper is not a production payload writer.
+
+| Component | Implemented surface | Invariant |
+| --- | --- | --- |
+| `lib.rs` | Factor identity, lifecycle, relations, graph-source image | Immutable factor semantics; terminal retirement/revocation; one revision per change |
+| `admission.rs` | Reviewer signature verification and final-use binding | Exact factor/scope/evidence; separately configured trust; expiring single-use mutation grants |
+| `v2.rs` | Model tuple, snapshot, compatible set | Exact model ID/version and all profile digests; canonical bounded set; required factor coverage |
+| `delivery.rs` | Payload registration, supersession, dereference | Exact stored bytes/digest; one active realization per complete profile; current snapshot/lifecycle |
+| `durable.rs` / `durable_payloads.rs` | V1/V2 migration, V3 publication and reopen | Single owner lock; semantic replay validation; immutable committed extents |
+| `protocol.rs` | `PromptFactorV1` / `PromptRealizationV1` JSON codecs | Bounded input, canonical dimensions, unknown/duplicate critical member rejection |
+
+1. Register an immutable draft factor. Validate bounded semantics before insertion;
+   registration alone grants no instruction or selection authority.
+2. Call `admit_factor_final_use` with an independently provisioned
+   `FinalUseAuthority`, a matching signed grant, factor ID, reviewed scope and
+   evidence digest. The reviewer identity is bound by the signed grant;
+   `FinalUseAdmissionAuthority` verifies the operation inside this call. A reused
+   admission identity with changed semantics conflicts.
+3. Call `register_realization_payload_final_use_v2` with the complete binding and
+   bytes. An existing active profile requires an explicit predecessor; registration
+   atomically deactivates that predecessor without deleting its history.
+4. Freeze `snapshot_v2` using the host generation-vector digest and exact model
+   tuple. `read_compatible_v2` canonicalizes required factor IDs and checks current
+   snapshot, lifecycle, expiry, profile and result capacity. Rehashed containers
+   must still satisfy every semantic invariant.
+5. Dereference selected IDs with `dereference_realization_v2` against that same
+   current snapshot immediately before compiling bytes. Digest equality alone is
+   neither an authenticated source nor selection authority.
+6. Retire/revoke through the final-use durable APIs. Cascaded realization
+   deactivation and lifecycle publication share one owner revision. Optimizers
+   cannot mutate these records.
+
+Native ceilings are 16,384 total records, 128 compatible realizations and required
+factor IDs, and 64 KiB per payload. V3 metadata and payload extent files each have
+a 32 MiB ceiling. A smaller configured record ceiling is persisted and cannot
+silently change on reopen. These bounds are enforcement, not latency measurements.
+
+`register_factor_relation` and `factor_graph_source_v1` belong to the in-memory
+image. The current durable schema has no relation records or governed relation
+write port. Durable publication rejects a relation-bearing image before changing
+selected files; a graph-source export does not establish persistent KG integration.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
@@ -148,6 +194,16 @@ while delivery still returns owned bounded bytes. Metadata serialization, semant
 hashing and the full in-memory registry remain size-dependent; this change reduces
 payload copy/write amplification, not unlimited-history recovery or retention cost.
 
+The owner locks its Unix directory descriptor before creating `registry.lock`,
+then retains both locks for its lifetime. First creation synchronizes the parent
+directory entry. Invalid zero capacity fails before creating owner state. If the
+first metadata publication fails before rename, only the newly created marker
+belonging to that opener is removed and the owner directory is synchronized,
+allowing a fresh retry. Existing-owner and migration markers are retained;
+uncertain post-rename durability also retains the marker. This cleanup addresses
+observed pre-publication failures, not automatic repair after an arbitrary crash.
+Missing committed metadata behind an existing owner marker remains corrupt.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md).
@@ -159,6 +215,22 @@ The [current native implementation](../../../qualification/module-execution-doss
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+
+For native recovery, `Corrupt` rejects malformed/duplicate JSON members, invalid
+lifecycle replay, missing payload extents and digest/profile inconsistencies.
+`StateLocked` rejects a concurrent owner. A failure before metadata rename preserves
+the predecessor; `IndeterminateDurability` after rename makes `requires_reopen()`
+true and all subsequent reads/writes fail with `ReopenRequired`. Reopen reconciles
+the selected manifest before discarding an unselected extent tail. Do not retry a
+consumed final-use grant as if an uncertain commit had failed.
+
+Native Unix file opening rejects symlinks and non-regular files without blocking
+on a FIFO. Non-Unix durable owner opening currently fails closed. Backup integrity
+checks prove the copied image's internal consistency; they do not prove freshness
+against an independently pinned current revision. Restoring a valid older complete
+owner image can roll back revocation. A production restore therefore still needs
+an independent monotonic frontier and an approved recovery procedure; native
+`open_state_dir` currently accepts no such external frontier.
 
 ## 9. Security, privacy and threat controls
 
@@ -213,6 +285,18 @@ Source implementation completes only when the declared target root exists, publi
 ## 14. Activation, compatibility and retirement
 
 Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+
+Current Agentd bootstrap opens the durable owner in `state.rs` and installs the
+prompt runtime host in `app_runtime.rs`. `enumerate_candidates` and
+`compile_and_stage` currently have no live turn-ingress caller. Governed durable
+mutation APIs likewise have no authenticated product ingress or configured trust.
+The compiler now seals its verified delivery set, exact stored bytes, portfolio
+validity and profile; Agentd accepts only the same model identifier and caps the
+staged deadline by portfolio and realization expiry. Model aliases require an
+explicit validated adapter rather than implicit prefix conversion. Already-staged
+attachments still need current registry/revocation revalidation at physical send
+before activating a live mutation pipeline. Source safety repairs do not close
+that integration gate.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
@@ -344,8 +428,23 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `prompt.registry` is implemented by work package `PIM-0-PROMPT-INTERVENTION-CONTRACTS` in:
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
 
-- `codex-rs/hepta-prompt-registry`
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `durablepromptregistry` | `DurablePromptRegistry` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `register_factor` | `register_factor` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `admit_factor_final_use` | `admit_factor_final_use` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `register_realization_payload_final_use_v2` | `register_realization_payload_final_use_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `retire_factor_final_use` | `retire_factor_final_use` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `revoke_factor_final_use` | `revoke_factor_final_use` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `snapshot_v2` | `snapshot_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/v2_tests.rs` |
+| `read_compatible_v2` | `read_compatible_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/v2_tests.rs` |
+| `dereference_realization_v2` | `dereference_realization_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `promptfactorv1` | `PromptFactorV1` | `codex-rs/hepta-prompt-registry/src/protocol.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `promptrealizationv1` | `PromptRealizationV1` | `codex-rs/hepta-prompt-registry/src/protocol.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
+| `factor_graph_source_v1` | `factor_graph_source_v1` | `codex-rs/hepta-prompt-registry/src/lib.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Consumer callsites and durable owner stores remain explicit follow-up evidence when not listed above.
+- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
