@@ -80,6 +80,8 @@ pub use generation_bound::RetrievalChannelWeightV1;
 pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::adapt_generation_bound_recall_to_canonical_shadow_v1;
 pub use generation_bound::build_candidate_union;
+#[cfg(not(any(test, feature = "legacy-uncontrolled-retrieval")))]
+use generation_bound::recall;
 #[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub use generation_bound::recall;
 pub use generator::GeneratedCandidateInputV1;
