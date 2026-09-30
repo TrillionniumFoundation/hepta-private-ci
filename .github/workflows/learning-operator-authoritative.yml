@@ -3,38 +3,22 @@ name: Learning operator authoritative qualification
 on:
   pull_request:
   push:
-    branches:
-      - main
-      - codex/learning-operator-authoritative-convergence-20260930
   workflow_dispatch:
 
 permissions:
   contents: read
-  id-token: write
-  attestations: write
-
-concurrency:
-  group: learning-operator-authoritative-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
-env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
   qualification-result:
     name: qualification-result
     runs-on: ubuntu-24.04
     timeout-minutes: 240
-    env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/learning-operator-target
     steps:
-      - name: Check out exact source head
+      - name: Check out candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ env.SOURCE_SHA }}
 
       - name: Install pinned qualification tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -49,19 +33,19 @@ jobs:
 
       - name: Run exact-source and deterministic synthetic-merge qualification
         shell: bash
-        run: bash scripts/hepta-learning-operator-authoritative.sh
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          export CARGO_TARGET_DIR="${RUNNER_TEMP}/learning-operator-target"
+          bash scripts/hepta-learning-operator-authoritative.sh
 
       - name: Retain immutable qualification evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: learning-operator-authoritative-${{ env.SOURCE_SHA }}
+          name: learning-operator-authoritative-${{ github.event.pull_request.head.sha || github.sha }}
           path: .hepta-evidence/learning-operator/
           if-no-files-found: error
           retention-days: 90
-
-      - name: Attest qualification manifest
-        if: success() && github.event_name == 'push'
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
-        with:
-          subject-path: .hepta-evidence/learning-operator/qualification-manifest.json
