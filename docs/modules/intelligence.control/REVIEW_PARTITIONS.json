@@ -1,0 +1,228 @@
+{
+  "schema": "hepta.intelligence-control-review-partitions.v1",
+  "schemaVersion": 1,
+  "module": "intelligence.control",
+  "policy": "Every implementation-map source path belongs to exactly one source-review allocation. Allocation is not independent review or acceptance; changed prerequisite scopes remain explicit in F.",
+  "partitions": [
+    {
+      "id": "A",
+      "title": "canonical contract",
+      "owner": "intelligence-platform",
+      "sourcePaths": [
+        "codex-rs/hepta-intelligence/src/canonical.rs",
+        "codex-rs/hepta-intelligence/src/canonical_invariants.rs",
+        "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+        "codex-rs/hepta-intelligence/src/canonical_budget.rs",
+        "codex-rs/hepta-intelligence/src/prompt_delivery.rs"
+      ],
+      "reviewGlobs": [
+        "codex-rs/hepta-intelligence/**"
+      ],
+      "requirementIds": [
+        "canonical_candidates_and_outcomes",
+        "seven_owner_currentness",
+        "actual_owner_outputs"
+      ],
+      "requiredCommandRecords": [
+        "intelligence-tests.json",
+        "agentd-default-tests.json"
+      ],
+      "risks": [
+        "candidate identity drift",
+        "owner-currentness widening"
+      ],
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "B",
+      "title": "Agentd profile and runner",
+      "owner": "runtime-platform",
+      "sourcePaths": [
+        "codex-rs/hepta-agentd/src/config.rs",
+        "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+        "codex-rs/hepta-agentd/src/intelligence_files.rs",
+        "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+        "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+        "codex-rs/hepta-agentd/src/intelligence_prepared_integrity.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_ports.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+        "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs",
+        "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+        "codex-rs/hepta-agentd/src/objective_runtime.rs",
+        "codex-rs/hepta-agentd/src/runtime.rs",
+        "codex-rs/hepta-agentd/src/state.rs",
+        "codex-rs/hepta-agentd/src/intelligence_profile.rs",
+        "codex-rs/hepta-agentd/src/intelligence_membership.rs",
+        "codex-rs/hepta-agentd/src/intelligence_commit_state.rs",
+        "codex-rs/hepta-agentd/src/intelligence_worker_state.rs",
+        "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
+        "codex-rs/hepta-agentd/src/prompt_runtime.rs"
+      ],
+      "reviewGlobs": [
+        "codex-rs/hepta-agentd/src/intelligence_product*",
+        "codex-rs/hepta-agentd/src/intelligence_profile.rs",
+        "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+        "codex-rs/hepta-agentd/src/intelligence_observability.rs",
+        "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs",
+        "codex-rs/hepta-agentd/src/config.rs",
+        "codex-rs/hepta-agentd/src/intelligence_authority_rollback.rs",
+        "codex-rs/hepta-agentd/src/intelligence_files.rs",
+        "codex-rs/hepta-agentd/src/intelligence_prepared_integrity.rs",
+        "codex-rs/hepta-agentd/src/lane_b_bound.rs",
+        "codex-rs/hepta-agentd/src/objective_runtime.rs",
+        "codex-rs/hepta-agentd/src/runtime.rs",
+        "codex-rs/hepta-agentd/src/state.rs",
+        "codex-rs/hepta-agentd/src/intelligence_membership.rs",
+        "codex-rs/hepta-agentd/src/intelligence_commit_state.rs",
+        "codex-rs/hepta-agentd/src/intelligence_worker_state.rs",
+        "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
+        "codex-rs/hepta-agentd/src/prompt_runtime.rs"
+      ],
+      "requirementIds": [
+        "generation_fence",
+        "independent_worker_supervision",
+        "bounded_telemetry",
+        "authority_manifest_anti_rollback"
+      ],
+      "requiredCommandRecords": [
+        "agentd-default-tests.json",
+        "agentd-all-targets.json"
+      ],
+      "risks": [
+        "partial profile activation",
+        "timeout-accounting races"
+      ],
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "C",
+      "title": "durable operation and learning",
+      "owner": "kernel-operations",
+      "sourcePaths": [
+        "codex-rs/hepta-agentd/src/intelligence_learning.rs",
+        "codex-rs/hepta-agentd/src/intelligence_learning_clock.rs",
+        "codex-rs/hepta-agentd/src/intelligence_learning_io.rs",
+        "codex-rs/hepta-agentd/src/intelligence_learning_payload.rs",
+        "codex-rs/hepta-agentd/src/intelligence_learning_runtime.rs",
+        "codex-rs/hepta-learning-ledger/src/production.rs",
+        "codex-rs/hepta-operations/src/durable_model.rs",
+        "codex-rs/hepta-operations/src/durable_store.rs",
+        "codex-rs/hepta-operations/src/pre_dispatch_defer.rs",
+        "codex-rs/hepta-operations/src/reconciliation_cursor.rs"
+      ],
+      "reviewGlobs": [
+        "codex-rs/hepta-agentd/src/intelligence_learning*",
+        "codex-rs/hepta-operations/**",
+        "codex-rs/hepta-learning-ledger/**"
+      ],
+      "requirementIds": [
+        "current_learning_time",
+        "exact_learning_identity",
+        "fair_recovery",
+        "learning_file_publication"
+      ],
+      "requiredCommandRecords": [
+        "operations-tests.json",
+        "ledger-tests.json",
+        "agentd-default-tests.json"
+      ],
+      "risks": [
+        "duplicate effect",
+        "unknown commit misclassification"
+      ],
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "D",
+      "title": "physical host",
+      "owner": "inference-platform",
+      "sourcePaths": [
+        "codex-rs/hepta-agentd/src/intelligence_execution.rs",
+        "codex-rs/hepta-agentd/src/intelligence_prompt_binding.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_intelligence_embedding.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_intelligence_product.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_tests.rs"
+      ],
+      "reviewGlobs": [
+        "codex-rs/hepta-infer-worker-host/**",
+        "codex-rs/hepta-agentd/src/intelligence_execution.rs",
+        "codex-rs/hepta-agentd/src/intelligence_prompt_binding.rs"
+      ],
+      "requirementIds": [
+        "actual_owner_outputs",
+        "exact_learning_identity"
+      ],
+      "requiredCommandRecords": [
+        "native-tests.json",
+        "agentd-default-tests.json",
+        "operations-tests.json",
+        "ledger-tests.json"
+      ],
+      "risks": [
+        "provider redispatch",
+        "terminal/evidence substitution"
+      ],
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "E",
+      "title": "qualification and evidence",
+      "owner": "qualification-plane",
+      "sourcePaths": [],
+      "reviewGlobs": [
+        "docs/modules/intelligence.control/**",
+        "scripts/hepta-intelligence-*.py",
+        ".github/workflows/hepta-intelligence-*.yml",
+        "qualification/module-execution-dossiers/detail/intelligence.control.md"
+      ],
+      "requirementIds": [
+        "legacy_learning_regression"
+      ],
+      "requiredCommandRecords": [
+        "fmt.json",
+        "clippy.json",
+        "agentd-all-targets.json",
+        "agentd-qualification-tests.json"
+      ],
+      "risks": [
+        "wrong-SHA evidence",
+        "partial lane promotion"
+      ],
+      "reviewStatus": "pending"
+    },
+    {
+      "id": "F",
+      "title": "prerequisite fixes",
+      "owner": "integration-owners",
+      "sourcePaths": [],
+      "reviewGlobs": [
+        "codex-rs/core/src/client.rs",
+        "codex-rs/hepta-authbus/**",
+        "codex-rs/hepta-prompt-registry/**",
+        "codex-rs/state/**",
+        "codex-rs/Cargo.lock",
+        "codex-rs/hepta-context-compiler/**",
+        "codex-rs/hepta-ndu/**"
+      ],
+      "requirementIds": [],
+      "requiredCommandRecords": [
+        "agentd-all-targets.json",
+        "clippy.json"
+      ],
+      "risks": [
+        "unowned cross-module change",
+        "workspace drift"
+      ],
+      "reviewStatus": "pending"
+    }
+  ],
+  "executionStatus": "pending",
+  "sourceIdentity": {
+    "commit": "CI_EXACT_HEAD",
+    "lane": "tracked",
+    "executionStatus": "pending"
+  }
+}
