@@ -174,14 +174,20 @@ The protected evidence directory for one exact candidate contains:
 
 - `target-qualification.manifest.json`;
 - `independent-acceptance.manifest.json`;
+- `target-qualification.validation.json`;
+- `independent-acceptance.validation.json`;
 - target, security and operations attestations plus detached signatures.
 
-The target attestation binds the complete target qualification inventory.
-Security acceptance binds exactly evidence reproduction, release-boundary review
-and security-threat review. Operations acceptance binds exactly the operator
-runbook and restore/rollback drill reviews. The two independent signatures bind
-the same independently validated acceptance manifest, must use different
-principals and keys, and must be issued after the target attestation.
+The two validation files must be the exact canonical JSON emitted by
+`channel_matrix_production_qualification.py` for the corresponding manifests;
+the bundle verifier recomputes both results byte-for-byte before accepting any
+signature. The target attestation binds the complete target qualification
+inventory. Security acceptance binds exactly evidence reproduction,
+release-boundary review and security-threat review. Operations acceptance binds
+exactly the operator runbook and restore/rollback drill reviews. The two
+independent signatures bind the same independently validated acceptance
+manifest, must use different principals and keys, and must be issued after the
+target attestation.
 
 Run the closed bundle validator as follows:
 
