@@ -3077,6 +3077,21 @@
       "authorityDelta": "none",
       "payloadClass": "contract_specific",
       "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "ComputerActionIRV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "platform.wire",
+      "consumers": [
+        "browser.servo",
+        "ui.native"
+      ],
+      "transport": "canonical_binary_hac1_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
     }
   ],
   "authorityFlags": {

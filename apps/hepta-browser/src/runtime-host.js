@@ -120,6 +120,7 @@ export class BrowserProfileHost {
           processId,
           pageGeneration: 0,
           documentDigest: null,
+          currentOrigin: null,
           allowedOrigins,
           effectGrants,
           operations: new Map(),
@@ -197,6 +198,7 @@ export class BrowserProfileHost {
       const originAllowed = state.allowedOrigins.has(origin);
       state.pageGeneration = pageGeneration;
       state.documentDigest = originAllowed ? documentDigest : null;
+      state.currentOrigin = originAllowed ? origin : null;
       return freezeResult({
         kind: "PageObservationV1",
         profileId: state.profileId,
@@ -208,6 +210,29 @@ export class BrowserProfileHost {
         originAllowed,
         quarantined: !originAllowed,
         terminalObserved: true,
+      });
+    });
+  }
+
+  async binaryActionContext(input) {
+    requireRecord(input, "input");
+    const profileId = stableId(input.profileId, "profileId");
+    return exclusive(this.#locks, profileId, async () => {
+      const state = this.#profile(input, true);
+      if (
+        state.pageGeneration < 1 ||
+        state.documentDigest === null ||
+        state.currentOrigin === null
+      ) {
+        throw new TypeError("binary browser action requires a current admitted page");
+      }
+      return freezeResult({
+        profileId: state.profileId,
+        principalId: state.principalId,
+        generation: state.generation,
+        pageGeneration: state.pageGeneration,
+        documentDigest: state.documentDigest,
+        currentOrigin: state.currentOrigin,
       });
     });
   }
@@ -557,6 +582,9 @@ export class BrowserProfileHost {
       action: semantics.action,
       destinationOrigin: semantics.destinationOrigin,
       finalPayloadDigest: semantics.finalPayloadDigest,
+      ...(semantics.sourceActionDigest === undefined
+        ? {}
+        : { sourceActionDigest: semantics.sourceActionDigest }),
       profileGrantDigest: semantics.profileGrantDigest,
       effectGrantDigest: semantics.effectGrantDigest,
       authorityEpoch: semantics.authorityEpoch,
@@ -633,7 +661,13 @@ export class BrowserProfileHost {
         ],
       ]),
     };
-    const normalizedInput = { ...input, deadlineMs: Number.MAX_SAFE_INTEGER };
+    const normalizedInput = {
+      ...input,
+      ...(durable.sourceActionDigest === undefined
+        ? {}
+        : { sourceActionDigest: durable.sourceActionDigest }),
+      deadlineMs: Number.MAX_SAFE_INTEGER,
+    };
     const admitted = admitNewOperation(typedState, normalizedInput, 1);
     return Object.freeze({ ...admitted.requestSemantics, deadlineMs: durable.deadlineMs });
   }

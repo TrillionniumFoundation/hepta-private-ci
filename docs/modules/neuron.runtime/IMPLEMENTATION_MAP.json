@@ -2,14 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "e4b41036f87630603a4390a0cf1283b16499fd1e",
+    "tree": "e4e093e29101427fb74936b68003c45932e48adf"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "neuron.runtime",
   "owner": "learning-platform",
   "deputy": "inference-platform",
-  "technicalGuide": "docs/modules/neuron.runtime/TECHNICAL.md",
+  "technicalGuide": "docs/modules/neuron.runtime/V2_CONTROL_PLANE.md",
+  "durableControlStateGuide": "docs/modules/neuron.runtime/V2_DURABLE_CONTROL_STATE.md",
+  "operationalRunbook": "docs/modules/neuron.runtime/V2_RUNBOOK.md",
   "declaredRoots": [
     "codex-rs/hepta-neuron"
   ],
@@ -18,47 +20,75 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_owner_source_compiled_not_daemon_lifecycle_composed",
-  "productionWriterState": "durable_v1_owner_external_witness_source_implemented_not_activated",
+  "productCallerState": "agentd_v2_owner_generation_controller_durable_handoff_descriptor_verified_owner_private_state_and_actionable_operations_source_composed_not_product_activated",
+  "productionWriterState": "durable_v2_generation_index_witness_terminal_history_and_non_authorizing_agentd_control_state_source_implemented_not_activated",
   "operations": [
     {
       "operation": "neuron_runtime_tick",
-      "nativeSymbol": "NeuronRuntime::tick",
-      "sourcePath": "codex-rs/hepta-neuron/src/runtime.rs",
-      "state": "source_implemented_owner_not_activated",
+      "nativeSymbol": "NeuronRuntimeV2::tick_guarded",
+      "sourcePath": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_facade.rs",
+      "state": "source_implemented_guarded_v2_execution_and_recovery_not_product_activated",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/runtime_tests.rs"
+        "codex-rs/hepta-neuron/src/runtime_v2_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_v2_closure_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_v2_process_closure_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_control_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_decision_cell_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_decision_cell_provider_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "neuron_runtime_tick",
       "mappingClass": "owner_native",
       "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-neuron/src/inference_control.rs",
-          "symbol": "InferenceControlModelPort",
-          "role": "source_declaration"
+          "path": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_recover.rs",
+          "symbol": "NeuronRuntimeV2::recover_operation",
+          "role": "exact_operation_recovery_without_new_execution"
         },
         {
-          "path": "codex-rs/hepta-neuron/src/journal.rs",
-          "symbol": "SparseJournal",
-          "role": "source_declaration"
+          "path": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_query.rs",
+          "symbol": "NeuronRuntimeV2::query_operation / query_result_guarded",
+          "role": "terminal_truth_and_current_use_boundaries"
         },
         {
-          "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
-          "symbol": "AnchorWitnessStore",
-          "role": "source_declaration"
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_controller.rs",
+          "symbol": "AgentdNeuronGenerationControllerV2",
+          "role": "daemon_lifecycle_generation_handoff_restart_topology_and_execution_epoch_fence"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state.rs",
+          "symbol": "AgentdNeuronGenerationStateV2",
+          "role": "descriptor_verified_owner_private_checksummed_non_authorizing_crash_visible_lifecycle_and_handoff_intent"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_owner_handle.rs",
+          "symbol": "AgentdNeuronHandleV2",
+          "role": "serialized_product_owner_boundary"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_decision_cell.rs",
+          "symbol": "AgentdNeuronGenerationControllerV2::prepare_decision_cell / recover_existing_decision_cell_operation / close_unexecuted_decision_cell_operation",
+          "role": "typed_context_same_owner_lifecycle_and_current_use_boundaries"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_shared.rs",
+          "symbol": "SharedNeuronOwnerV2::recover_typed_or_neuron_control",
+          "role": "shared_serialized_typed_and_untyped_owner_and_recovery_counters"
         }
       ]
     },
     {
       "operation": "inference_control_model_port",
-      "nativeSymbol": "InferenceControlModelPort",
-      "sourcePath": "codex-rs/hepta-neuron/src/inference_control.rs",
-      "state": "source_implemented_authenticated_owner_adapter",
+      "nativeSymbol": "DurableNeuronModelPort",
+      "sourcePath": "codex-rs/hepta-neuron/src/runtime_v2.rs",
+      "state": "source_implemented_exact_operation_execute_and_reconcile_contract",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/inference_control_tests.rs"
+        "codex-rs/hepta-neuron/src/runtime_v2_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_v2_process_closure_tests.rs",
+        "codex-rs/hepta-neuron/src/decision_cell_control_port_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "inference_control_model_port",
@@ -68,32 +98,51 @@
           "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
           "symbol": "inference.control::NeuronFeatureReceiptV1",
           "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/decision_cell_control_port_v2.rs",
+          "symbol": "DecisionCellModelPortV2 for DurableInferenceControlModelPort",
+          "role": "typed_dispatch_and_query_only_reconciliation_through_installed_durable_control_owner"
         }
       ]
     },
     {
       "operation": "sparse_journal",
-      "nativeSymbol": "SparseJournal",
-      "sourcePath": "codex-rs/hepta-neuron/src/journal.rs",
-      "state": "source_implemented_durable_owner_primitive",
+      "nativeSymbol": "NeuronGenerationStoreV2 / NeuronRuntimeIndexV2",
+      "sourcePath": "codex-rs/hepta-neuron/src/generation_store_v2.rs",
+      "state": "source_implemented_bounded_durable_v2_generation_and_discovery_index",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
-        "codex-rs/hepta-neuron/src/journal_segment_tests.rs"
+        "codex-rs/hepta-neuron/src/generation_store_v2_tests.rs",
+        "codex-rs/hepta-neuron/src/generation_store_v2_process_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_index_v2_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "sparse_journal",
       "mappingClass": "owner_native",
+      "delegatedCalleees": [
+        {
+          "path": "codex-rs/hepta-neuron/src/runtime_index_v2_lifecycle.rs",
+          "symbol": "NeuronRuntimeIndexV2",
+          "role": "bounded_operation_discovery_and_dispatch_fence"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/store_manifest.rs",
+          "symbol": "NeuronStoreManifestV1",
+          "role": "generation_handoff_manifest_source"
+        }
+      ],
       "delegatedCallees": []
     },
     {
       "operation": "anchor_witness_store",
       "nativeSymbol": "FileAnchorWitnessStore",
       "sourcePath": "codex-rs/hepta-neuron/src/witness.rs",
-      "state": "source_implemented_durable_external_witness",
+      "state": "source_implemented_durable_external_witness_with_recovery_outbox",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/witness_tests.rs"
+        "codex-rs/hepta-neuron/src/witness_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_v2_closure_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "anchor_witness_store",
@@ -126,35 +175,98 @@
       "sourcePathExists": true,
       "designOperation": "deletion_rebuild_admission",
       "mappingClass": "owner_native",
+      "delegatedCalleees": [],
       "delegatedCallees": []
     },
     {
       "operation": "qualification_surfaces",
-      "nativeSymbol": "summarize_resource_samples",
-      "sourcePath": "codex-rs/hepta-neuron/src/qualification.rs",
-      "state": "source_implemented_evidence_binding_not_empirical_acceptance",
+      "nativeSymbol": "NeuronRuntimeMeasurementV2 / summarize",
+      "sourcePath": "codex-rs/hepta-neuron/src/runtime_observation_v2.rs",
+      "state": "source_implemented_exact_head_diagnostics_and_storage_cost_decomposition_not_empirical_acceptance",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/qualification_tests.rs"
+        "codex-rs/hepta-neuron/src/runtime_v2_closure_tests.rs",
+        "scripts/neuron/test_measurements.py",
+        "scripts/neuron/test_qualification_scope.py",
+        "codex-rs/hepta-neuron/qualification/test_bakeoff_panel.py"
       ],
       "sourcePathExists": true,
       "designOperation": "qualification_surfaces",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "path": "scripts/neuron/summarize_measurements.py",
+          "symbol": "summarize",
+          "role": "p50_p95_p99_phase_and_sync_summary"
+        },
+        {
+          "path": ".github/workflows/neuron-runtime-closure.yml",
+          "symbol": "Neuron runtime closure qualification",
+          "role": "exact_source_and_synthetic_merge_validation"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/qualification/bakeoff_panel.py",
+          "symbol": "run_panel",
+          "role": "isolated_complete_backend_execution_panel_with_retained_failures_not_selection"
+        }
+      ]
     },
     {
       "operation": "canonical_neuron_protocols",
-      "nativeSymbol": "canonical_runtime_config_v1 / canonical_tick_receipt_v1 / canonical_checkpoint_v1",
-      "sourcePath": "codex-rs/hepta-neuron/src/protocol.rs",
-      "state": "source_implemented_registered_json_projection_not_activation",
+      "nativeSymbol": "NeuronOperationStatusV2 / NeuronOperationKeyV2",
+      "sourcePath": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_status.rs",
+      "state": "source_implemented_stable_operation_status_error_and_action_codes_not_activation",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-neuron/src/protocol_tests.rs"
+        "codex-rs/hepta-neuron/src/runtime_v2_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_control_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "canonical_neuron_protocols",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_errors.rs",
+          "symbol": "AgentdNeuronControlErrorV2",
+          "role": "classified_owner_lifecycle_and_control_state_failures"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_operational.rs",
+          "symbol": "AgentdNeuronOperationalSnapshotV2 / AgentdNeuronGenerationControllerSnapshotV2",
+          "role": "read_only_operational_projection_and_action_codes"
+        }
+      ]
+    },
+    {
+      "operation": "agentd_generation_control_state",
+      "nativeSymbol": "AgentdNeuronGenerationStateV2",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state.rs",
+      "state": "source_implemented_descriptor_verified_owner_private_parent_and_file_checksummed_atomic_non_authorizing_lifecycle_topology_state_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "agentd_generation_control_state",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_controller.rs",
+          "symbol": "AgentdNeuronGenerationControllerV2::from_recovered_generations_with_state_path",
+          "role": "interrupted_handoff_restart_resolution_and_fail_closed_gate_ownership"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "symbol": "AgentdNeuronGenerationStateV2 / read_agentd_neuron_generation_state_v2 / write_agentd_neuron_generation_state_v2",
+          "role": "stable_crate_root_product_api"
+        },
+        {
+          "path": "docs/modules/neuron.runtime/V2_DURABLE_CONTROL_STATE.md",
+          "symbol": "restart resolution and file-identity contract",
+          "role": "operator_and_developer_contract"
+        }
+      ]
     },
     {
       "operation": "population_sparse_v2",
@@ -172,10 +284,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Stack/rebase the compiled AgentdNeuronOwner onto the daemon-owned runtime.agentd run lifecycle and bind a concrete current inference.control feature port plus selected-artifact/witness lifecycle; a compiled owner boundary is not daemon activation.",
-    "If PopulationSparseConfigV2 is promoted beyond qualification, implement a separately versioned durable journal/owner migration and recovery path; never reinterpret V1 journal bytes as V2 state.",
-    "Run current exact-head, deterministic synthetic-merge and product-host qualification before changing productionImplementation or productExecutionProved.",
-    "Execute unified-candidate rollover/anchor, learned feature host and lost-witness-ack reconciliation tests."
+    "Execute exact-head source, deterministic synthetic-merge, Linux ARM and macOS qualification for the mapped V2 source before changing productionImplementation or productExecutionProved.",
+    "Implement any unified V2 segment rollover or compaction only under a separately versioned manifest and migration that preserves success, failure, dispatch and witness history.",
+    "Execute target-host storage-full, runtime/control-state sync-failure, namespace-replacement, owner-panic reconstruction, interrupted handoff and long-horizon growth rehearsals with retained immutable evidence."
   ],
   "externalEvidenceGates": [
     "target-host product execution with authenticated selected model/runtime/device evidence",
@@ -197,9 +308,24 @@
   ],
   "productCallers": [
     {
-      "state": "compiled_long_lived_owner_boundary_not_daemon_activated",
-      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "nativeSymbol": "AgentdNeuronOwner"
+      "state": "compiled_v2_owner_and_restart_generation_controller_not_product_activated",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_base.rs",
+      "nativeSymbol": "ProductNeuronOwnerV2"
+    },
+    {
+      "state": "compiled_v2_owner_execution_epoch_restart_generation_controller_and_classified_control_state_errors_not_product_activated",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_errors.rs",
+      "nativeSymbol": "AgentdNeuronGenerationControllerV2"
+    },
+    {
+      "state": "compiled_descriptor_verified_owner_private_parent_and_file_checksummed_durable_handoff_intent_not_product_activated",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state.rs",
+      "nativeSymbol": "AgentdNeuronGenerationStateV2"
+    },
+    {
+      "state": "crate_root_durable_control_state_api_exported_not_product_activated",
+      "sourcePath": "codex-rs/hepta-agentd/src/lib.rs",
+      "nativeSymbol": "AgentdNeuronGenerationStateV2"
     },
     {
       "state": "typed_intelligence_caller_source_implemented",
@@ -209,8 +335,68 @@
   ],
   "sourceObjects": [
     {
-      "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "object": "3e880ef975af2b7210a7466b9fb4e12f62937d9c"
+      "path": ".github/workflows/neuron-runtime-closure.yml",
+      "object": "2beaaeb7713fb5737f42acbc7f525370fb0e846c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "object": "b2c5e25724b6c93e72dd666f6b2ee18ddbd5e84d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2.rs",
+      "object": "5b873a26c14e63f6ba49497f6f7027360fb09276"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_base.rs",
+      "object": "04aa8358ef4aa6c57297f9786d4ed97038589fc0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_control_tests.rs",
+      "object": "2d49d81ebf20355338eebd47ae95909a9c758f32"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_controller.rs",
+      "object": "456298f0ad32e0154a909d767256a66c3bc3a69a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_decision_cell.rs",
+      "object": "59277489836ab6f87bc5d9f050fa782a0ae8d765"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_decision_cell_provider_tests.rs",
+      "object": "d3f1f188ded690b5c9f31278cfc4dde889ac6717"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_decision_cell_tests.rs",
+      "object": "063ccfc805a838e19460324455dab88192ac9922"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state.rs",
+      "object": "b4c8458cd8c002c24c14cec9a48d74ae8a8f21f8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs",
+      "object": "7c9915dc0ab86061cebf912dce2343b95ccc3a1e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_errors.rs",
+      "object": "05cf73e54406806c3d18e1d45b4387216908c0f3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_modules.rs",
+      "object": "a988542c20d1c8afbf1179f55ba73b842de5b8ea"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_operational.rs",
+      "object": "3cde9bd7cda57dff78885d72ac25a4eeb0d41b41"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_owner_handle.rs",
+      "object": "8b58660e8597031f230d96933d193487616739a6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_runtime_v2_shared.rs",
+      "object": "f54007f57243ca00190073703612df84c261f27a"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/neuron_feature.rs",
@@ -222,7 +408,23 @@
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "2e0cb699ff6d11dd63e996040d935153f4e63f57"
+      "object": "8b9d45b81fac191a479ad4b8f731b402b6f480f6"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/qualification/bakeoff_panel.py",
+      "object": "e2ea7b847fda8ccc96bc92b192a70afd6a0b3bf7"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/qualification/test_bakeoff_panel.py",
+      "object": "8516d3e43338bb6e2679e6c9254776b8fe6fa132"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/decision_cell_control_port_tests.rs",
+      "object": "299479d500f14b4927911d2c06ed0df6cf9ac993"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/decision_cell_control_port_v2.rs",
+      "object": "cab2500290668412ec01f53aaf2c0faa7c9549d5"
     },
     {
       "path": "codex-rs/hepta-neuron/src/deletion.rs",
@@ -233,24 +435,16 @@
       "object": "d3a39d590a251f971c50d2162385ed498ebe8433"
     },
     {
-      "path": "codex-rs/hepta-neuron/src/inference_control.rs",
-      "object": "8a85a1e433f29b1354b4ee3c73f27b85a1842b31"
+      "path": "codex-rs/hepta-neuron/src/generation_store_v2.rs",
+      "object": "869f91a5008084ad5ac9c0eee5124518a43394a6"
     },
     {
-      "path": "codex-rs/hepta-neuron/src/inference_control_tests.rs",
-      "object": "c9c80a99f0442ec4f91bd41e4a144202b5dde997"
+      "path": "codex-rs/hepta-neuron/src/generation_store_v2_process_tests.rs",
+      "object": "d50b7e2408bfd3b2452fdfc2a59acf5f902ccc83"
     },
     {
-      "path": "codex-rs/hepta-neuron/src/journal.rs",
-      "object": "4a1a9cbba6082e259da3b8df7414aea8f87c79bb"
-    },
-    {
-      "path": "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
-      "object": "94b34ffce20dae73053185c05d1ff838747df25b"
-    },
-    {
-      "path": "codex-rs/hepta-neuron/src/journal_segment_tests.rs",
-      "object": "29158c335533fd09687aa1941317e8253aa1f369"
+      "path": "codex-rs/hepta-neuron/src/generation_store_v2_tests.rs",
+      "object": "2f507bbee25a599f95bcb31f3d94bc1a13199a07"
     },
     {
       "path": "codex-rs/hepta-neuron/src/plasticity.rs",
@@ -269,44 +463,80 @@
       "object": "5dec0a2793fd1dab221c67864cf3a4cff326155c"
     },
     {
-      "path": "codex-rs/hepta-neuron/src/protocol.rs",
-      "object": "7afd7cdb43063e35dab9ca89f5d3b94765f43665"
+      "path": "codex-rs/hepta-neuron/src/runtime_index_v2_tests.rs",
+      "object": "edecd5a61d402f8fbf00ba8dc94b1375952cb3e9"
     },
     {
-      "path": "codex-rs/hepta-neuron/src/protocol_tests.rs",
-      "object": "631d1b4932fc4aa1fb486adbd475ea54c08711a7"
+      "path": "codex-rs/hepta-neuron/src/runtime_observation_v2.rs",
+      "object": "70c132530b05ecc156da1db85815dcb8ec6d4a02"
     },
     {
-      "path": "codex-rs/hepta-neuron/src/qualification.rs",
-      "object": "2794951279cdb1795623dfe420d7f9f4f5f6a6d1"
+      "path": "codex-rs/hepta-neuron/src/runtime_v2.rs",
+      "object": "f2a12f15bb082e79995765f2d721726c11a7682e"
     },
     {
-      "path": "codex-rs/hepta-neuron/src/qualification_tests.rs",
-      "object": "61badd8e4f810715f727522b135e1c83700079b8"
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_closure_tests.rs",
+      "object": "13864d8910463c57f400253205b73cda7274d9b7"
     },
     {
-      "path": "codex-rs/hepta-neuron/src/runtime.rs",
-      "object": "d483e00a69756339254124a633eb4fdcd05664d7"
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_facade.rs",
+      "object": "1179cec706a27b639213dba9abdba57cd5948aab"
     },
     {
-      "path": "codex-rs/hepta-neuron/src/runtime_tests.rs",
-      "object": "4e46c63f3c0d915ae5bbe5474dfe3ca6b13e99d6"
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_query.rs",
+      "object": "9826d845b72f969e7a66d0e59de9140628a51e7d"
     },
     {
-      "path": "codex-rs/hepta-neuron/src/runtime_types.rs",
-      "object": "d15b3a4f8be07c35d1884f660b6a20d494c8e5e4"
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_recover.rs",
+      "object": "9365747b82dbcabbfeab20171a1f456466ca5e9e"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_status.rs",
+      "object": "07d58687d3d400ef43bc58352c4b7934477f57de"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_process_closure_tests.rs",
+      "object": "a13027713111107ed0f015ec196c8e1dffb07f80"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/runtime_v2_tests.rs",
+      "object": "8b48489a274a2dae8dd79c89bdc8a12cfcd9201c"
     },
     {
       "path": "codex-rs/hepta-neuron/src/witness.rs",
-      "object": "c56bad3540aa606fcadf0d45dc4fea45145cb4c6"
+      "object": "9601c19957022995f21bca741dc857c14116ae09"
     },
     {
       "path": "codex-rs/hepta-neuron/src/witness_tests.rs",
-      "object": "586bddeee18e2c9e9c8e1680397608410b23b0f0"
+      "object": "d7ac77954afd9c31fe20aa099e9c47b87fccacda"
     },
     {
-      "path": "docs/modules/neuron.runtime/TECHNICAL.md",
-      "object": "aff785fa12439d958f035ca8a069029004864c24"
+      "path": "docs/modules/neuron.runtime/README.md",
+      "object": "6ef13f5feacc94d155acd4efa7204649ef343de0"
+    },
+    {
+      "path": "docs/modules/neuron.runtime/V2_CONTROL_PLANE.md",
+      "object": "beed1b751cb88830c2ae9dab57407fa0e42dae83"
+    },
+    {
+      "path": "docs/modules/neuron.runtime/V2_DURABLE_CONTROL_STATE.md",
+      "object": "5a39f86f97cfac3951802a1b844462a2ebd1d7ca"
+    },
+    {
+      "path": "docs/modules/neuron.runtime/V2_RUNBOOK.md",
+      "object": "caf3ade7319e4145376863ebd306286542319183"
+    },
+    {
+      "path": "scripts/neuron/summarize_measurements.py",
+      "object": "08bc6241dc2779ac47139bc1d09409656613de27"
+    },
+    {
+      "path": "scripts/neuron/test_measurements.py",
+      "object": "afdea8fe7144d1cc014ada37b5c4c1b914af0d01"
+    },
+    {
+      "path": "scripts/neuron/test_qualification_scope.py",
+      "object": "8c0818b6ea7e8154b4d57c726d9fa1d8208651bb"
     }
   ]
 }

@@ -106,13 +106,16 @@
         "## 17. Source implementation receipt"
       ],
       "producedContracts": [
+        "ComputerActionIRV1",
         "ModulePort::platform.wire::context.compiler",
         "ModulePort::platform.wire::runtime.codex"
       ],
       "consumedContracts": [
         "ModulePort::platform.types::platform.wire"
       ],
-      "protocols": [],
+      "protocols": [
+        "ComputerActionIRV1"
+      ],
       "ownedDomains": [],
       "readDomains": [],
       "workPackages": [
@@ -2645,6 +2648,7 @@
         "DomainRead::browser_profile_stateV1"
       ],
       "consumedContracts": [
+        "ComputerActionIRV1",
         "DomainRead::authority_leaseV1",
         "DomainRead::capability_revocationV1",
         "DomainRead::runtime_health_observationV1",
@@ -2652,7 +2656,9 @@
         "ModulePort::runtime.agentd::browser.servo",
         "VerifiedUseTokenWitnessV1"
       ],
-      "protocols": [],
+      "protocols": [
+        "ComputerActionIRV1"
+      ],
       "ownedDomains": [
         "browser_profile_state"
       ],
@@ -2741,10 +2747,13 @@
       ],
       "producedContracts": [],
       "consumedContracts": [
+        "ComputerActionIRV1",
         "DomainRead::runtime_health_observationV1",
         "ModulePort::runtime.agentd::ui.native"
       ],
-      "protocols": [],
+      "protocols": [
+        "ComputerActionIRV1"
+      ],
       "ownedDomains": [],
       "readDomains": [
         "runtime_health_observation"

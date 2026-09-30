@@ -1026,7 +1026,9 @@ mod tests {
 
         let authority = harness.authority.clone();
         let (revoked_tx, revoked_rx) = mpsc::channel();
+        let (revoke_started_tx, revoke_started_rx) = mpsc::channel();
         let revoke = thread::spawn(move || {
+            revoke_started_tx.send(()).expect("revocation started");
             let result = authority.update_revocations(FinalUseRevocations {
                 authority_epoch: 7,
                 revision: 2,
@@ -1034,6 +1036,7 @@ mod tests {
             });
             revoked_tx.send(result).expect("revocation result");
         });
+        revoke_started_rx.recv().expect("revocation thread started");
         assert!(matches!(
             revoked_rx.recv_timeout(Duration::from_millis(50)),
             Err(mpsc::RecvTimeoutError::Timeout)
@@ -1052,6 +1055,17 @@ mod tests {
                 }),
             ))
             .expect("dispatch boundary");
+
+        // Revocation must finish before the final browser response exists. This
+        // proves that the fence ends at dispatch, not at result delivery. Join
+        // under the test runner's timeout instead of imposing a one-second
+        // scheduler/filesystem budget on the authority owner's durable update.
+        revoke.join().expect("revocation thread");
+        revoked_rx
+            .try_recv()
+            .expect("revocation completed at dispatch boundary")
+            .expect("revocation succeeded");
+
         harness
             .inbound
             .send(inbound_frame(
@@ -1067,11 +1081,6 @@ mod tests {
 
         let result = call.join().expect("call thread").expect("Browser result");
         assert_eq!(result["status"], "indeterminate");
-        revoked_rx
-            .recv_timeout(Duration::from_secs(1))
-            .expect("revocation unblocked")
-            .expect("revocation succeeded");
-        revoke.join().expect("revocation thread");
     }
 
     #[test]

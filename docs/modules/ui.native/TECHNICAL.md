@@ -52,6 +52,7 @@ The registered primary source is [apps/hepta-native/src/native.js](../../../apps
 
 Direct dependencies:
 
+- `platform.wire`
 - `runtime.agentd`
 
 Authoritative write domains:
@@ -82,6 +83,39 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Implemented HAC1 reference boundary and query-only observation
+
+[NativeShellRuntime](../../../apps/hepta-native/src/shell-runtime.js) accepts
+`requestPlatformCapabilityBinary` through the registered `ComputerActionIRV1`
+consumer. The existing six-field text API remains unchanged. The host installs
+principal, selected body generation, bounded read-only reference resolver and
+monotonic clock. Body generation is independent of UI projection generation.
+The adapter supports only the existing open/reveal/copy/notify reference actions;
+no raw host paths, arbitrary desktop events or executable model bytes are accepted.
+
+Frame bytes and the source view are frozen before asynchronous resolution. The
+existing platform owner receives the full action digest, resolved payload digest,
+operation and session identities, and deadline. The deadline is checked both before
+awaiting and after promise settlement; a microtask beating an overdue timer cannot
+turn late evidence into an on-time result. Failure before invoke permits only the
+existing local-reservation cleanup. After invoke, timeout or malformed/lost reply
+stays indeterminate and cannot be blindly retried or replaced by late success.
+
+`observePlatformOperationBinary({operationId, sourceActionDigest})` reads the
+retained exact local operation without requiring a live view or unexpired action.
+Its phases are `not_recorded`, `permission_pending`, `dispatched` and `observed`;
+an observed receipt separately retains rejected/succeeded/failed/indeterminate.
+It neither resolves references nor calls permission/invoke, and rejects a changed
+action digest. This is an owner-local library method, not a new unauthenticated RPC.
+The installed caller must retain its existing authenticated principal/session scope.
+
+Operation memory is bounded to 1024 entries; unknown identities are not evicted.
+The observer does not persist history across process restart, make local absence a
+proof of nonapplication, or supply authoritative external reconciliation. A real
+platform adapter still needs kernel-owned final-use revocation, durable operation
+identity and independent OS outcome observation. Selected OS-driver/bootstrap,
+physical cancellation and packaged restart acceptance remain incomplete.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
@@ -90,12 +124,13 @@ None.
 
 Consumed contracts:
 
+- `ComputerActionIRV1`
 - `DomainRead::runtime_health_observationV1`
 - `ModulePort::runtime.agentd::ui.native`
 
 Critical protocol schemas:
 
-None.
+- `ComputerActionIRV1` (registered HAC1 encoding; no additional effect authority).
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -162,7 +197,9 @@ Current focused test sources (source references, not pass receipts):
 - [apps/hepta-native/test/native.test.js](../../../apps/hepta-native/test/native.test.js); named case: `native intent requires exact payload binding`.
 - [apps/hepta-native/test/shell-runtime.test.js](../../../apps/hepta-native/test/shell-runtime.test.js); named case: `executes a final-payload-bound platform request`.
 
-From the repository root, run `node --test apps/hepta-native/test/native.test.js apps/hepta-native/test/shell-runtime.test.js`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
+- [apps/hepta-native/test/computer-action.test.js](../../../apps/hepta-native/test/computer-action.test.js) covers exact frame and body binding, asynchronous deadlines, late replies and query-only operation observation.
+
+From the repository root, run `node --test apps/hepta-native/test/*.test.js codex-rs/hepta-wire/js/*test.mjs`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -269,3 +306,58 @@ The bootstrap source-location obligation for `ui.native` is implemented by work 
 - `apps/hepta-native`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+### Native shell request identity and concurrent lifecycle
+
+`NativeShellRuntime.requestPlatformCapability` snapshots exactly six own scalar
+data fields before asynchronous permission: operation ID, action, resource reference,
+displayed revision, final-payload digest and grant-payload digest. An operation is
+reserved before awaiting permission. Equal concurrent requests share one result;
+changed action/resource/session/view semantics conflict even when the caller repeats
+the same digest. The retained operation ceiling is 1024, with explicit backpressure
+and no eviction of unknown outcomes to reclaim capacity.
+
+Close, reconnect or view replacement during permission prevents predecessor dispatch.
+A superseded authentication response cannot install a stale session. Exceptions or
+malformed observations after platform invocation preserve `indeterminate` and cannot
+license another invocation; only proven pre-invoke errors release local reservations.
+The focused regressions are in `apps/hepta-native/test/shell-runtime.test.js`.
+
+This is bounded process-local shell behavior, not durable exactly-once OS execution.
+The platform owner must still implement authenticated final-use authority, persistent
+operation reconciliation, resource resolution and trusted terminal observation.
+Native binary consumer installation, packaged OS integration and deployment acceptance
+are not implied by these local request/lifecycle checks.
+
+### Optional Linux/X11 clipboard source profile
+
+The optional [X11 clipboard adapter](../../../apps/hepta-native/src/x11-clipboard.js)
+implements only the existing native `copy_text` platform port with exact
+content-addressed resources and a host-installed final-use callback. It starts one
+pinned foreground helper and observes clipboard contents through a separate bounded
+read process. It does not install a daemon profile, issue authority, own a durable
+effect ledger or establish independent acceptance. Process-local history still
+cannot recover an unknown effect after a native-shell restart.
+
+[Focused tests](../../../apps/hepta-native/test/x11-clipboard.test.js) exercise
+resource/payload substitution, explicit host configuration, accessors, deadlines,
+closed authorizers and retirement without launching an OS effect. The separate
+[real-OS qualification entry](../../../apps/hepta-native/qualification/x11-clipboard.mjs)
+requires an explicitly authorized disposable X display and uses test-only
+backend/authorization ports. Its presence does not imply successful execution.
+The [native operating notes](../../../apps/hepta-native/README.md) retain clipboard
+lifetime, external-host assumptions and unresolved-stop handling.
+
+
+### Diagnostic model-support veto
+
+The optional model-to-X11 qualification path consumes
+`hepta.model-native-probe-input.v2`, including the bound worker's explicit boolean
+`modelSupported`. A denied model decision must abstain before Xvfb or the native
+binary actuator starts, even when the diagnostic probability thresholds would
+otherwise select a clipboard target. A true flag grants no final-use authority.
+Old local probe packets are not silently upgraded; ComputerActionIR bytes and the
+production native owner are unchanged. The independent native evidence evaluator
+retains a bound actual readback even after policy failure, while refusing a task
+pass or replay authority. The [qualification contract](../../../codex-rs/hepta-neuron/qualification/README.md#model-support-is-preserved-across-the-diagnostic-boundary)
+defines versions, negative cases and the distinction from calibrated OOD trust.

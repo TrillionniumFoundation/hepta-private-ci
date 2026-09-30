@@ -57,3 +57,19 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 - **Compatibility boundary:** the current durable mechanism remains the single-population/same-width `SparseConfig` Q24 profile. `PopulationSparseConfigV2` closes the pure target-mechanism source gap without rewriting V1 journal history; durable V2 migration/rollover requires its own versioned store/owner qualification.
 - **Remaining repository work:** stack/rebase the compiled `AgentdNeuronOwner` onto the daemon-owned run lifecycle from the `runtime.agentd` convergence line and bind the selected artifact/witness lifecycle there; decide and implement the versioned V2 durable-state migration if V2 is promoted beyond qualification; then run current exact-head, synthetic-merge and product-host qualification.
 - **External evidence gates:** independently selected real-model execution, target-host latency/allocation/write-amplification measurements, future-window calibration/OOD/retention/unlearning evidence, independent semantic/security/statistical review, operator acceptance, canary, promotion and release remain separate. No source test self-certifies those gates.
+
+## V2 lifecycle remediation candidate (starting source c8c6e9d)
+
+The implementation adds config-relative preflight before reservation; distinct
+reserved/dispatched admission states; durable negative-transition tombstones;
+query-only durable model recovery; concrete worker-host reconciliation; local
+status independent of witness availability; descriptor identity checks; measured
+syncs and complete-call diagnostics; advisory bounded capacity; and additional
+native regression/process tests. See `docs/modules/neuron.runtime/V2_DEVELOPMENT.md`.
+
+These are source changes, not execution receipts. Native compile/test/Clippy/fmt
+and platform outcomes must be taken from the exact committed candidate's workflow
+artifacts. The local evidence-parser unit tests do not replace native Rust tests.
+Production activation, target-host acceptance and independent acceptance remain
+false. Unified V2 compaction/rollover, generation reload, and independently
+anchored failure-history rollback protection remain explicit outstanding items.

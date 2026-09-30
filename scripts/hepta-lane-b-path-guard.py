@@ -10,6 +10,8 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
+from hepta_module_source_roots import resolve_source_roots
+
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
 
@@ -79,6 +81,27 @@ def canonical_path(
 
 def inside(path: str, roots: list[str]) -> bool:
     return any(path == root or path.startswith(root + "/") for root in roots)
+
+
+def registered_module_roots(root: Path) -> dict[str, list[str]]:
+    registry = load(root / "docs/modules/MODULES.json")
+    modules = registry.get("modules")
+    need(isinstance(modules, list) and modules, "registered modules")
+    resolved: dict[str, list[str]] = {}
+    for module in modules:
+        need(isinstance(module, dict), "registered module entry")
+        module_id = module.get("id")
+        need(
+            isinstance(module_id, str) and module_id and module_id not in resolved,
+            "registered module identity",
+        )
+        try:
+            roots = resolve_source_roots(root, module)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise Invalid(f"{module_id}: registered source roots: {exc}") from exc
+        need(roots, f"{module_id}: registered source roots")
+        resolved[module_id] = roots
+    return resolved
 
 
 def delegated_dependency_matches(
@@ -189,6 +212,12 @@ def verify(root: Path = ROOT) -> int:
         maps[module] = row
         roots[module] = resolved_roots
 
+    # Delegated callees may be owned by another registered lane. Lane
+    # membership is not repository ownership, so resolve every named owner from
+    # the canonical module registry while still validating the Lane B maps only.
+    for owner, owner_roots in registered_module_roots(root).items():
+        roots.setdefault(owner, owner_roots)
+
     operations = tests = delegates = 0
     for module, row in maps.items():
         items = row.get("operations")
@@ -288,6 +317,24 @@ def self_test() -> int:
                 pass
             else:
                 raise Invalid("accepted symlink binding")
+        modules_dir = root / "docs/modules"
+        modules_dir.mkdir(parents=True)
+        (modules_dir / "MODULES.json").write_text(
+            json.dumps(
+                {
+                    "modules": [
+                        {"id": "lane.b", "rootBindings": [{"path": "owned"}]},
+                        {"id": "lane.f", "rootBindings": [{"path": "foreign"}]},
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        need(
+            registered_module_roots(root)
+            == {"lane.b": ["owned"], "lane.f": ["foreign"]},
+            "registered cross-lane roots",
+        )
     print(
         json.dumps(
             {"status": "PASS_HEPTA_LANE_B_CANONICAL_PATH_GUARD_SELF_TEST"},

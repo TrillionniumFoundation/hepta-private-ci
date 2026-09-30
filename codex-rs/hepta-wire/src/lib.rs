@@ -8,6 +8,7 @@
 
 #![forbid(unsafe_code)]
 
+mod computer_action;
 mod envelope;
 mod envelope_v2;
 mod frame;
@@ -15,6 +16,17 @@ mod schema;
 mod stream;
 mod version;
 
+pub use computer_action::COMPUTER_ACTION_FRAME_VERSION;
+pub use computer_action::ComputerActionCodecError;
+pub use computer_action::ComputerActionFrameV1;
+pub use computer_action::ComputerActionOpcodeV1;
+pub use computer_action::ComputerActionPayloadV1;
+pub use computer_action::MAX_COMPUTER_ACTION_FRAME_BYTES;
+pub use computer_action::computer_action_authority_binding_digest_v1;
+pub use computer_action::computer_action_frame_digest_v1;
+pub use computer_action::computer_action_payload_digest_v1;
+pub use computer_action::decode_computer_action_frame_v1;
+pub use computer_action::encode_computer_action_frame_v1;
 pub use envelope::MAX_WIRE_PAYLOAD_BYTES;
 pub use envelope::WireEnvelope;
 pub use envelope::WireError;

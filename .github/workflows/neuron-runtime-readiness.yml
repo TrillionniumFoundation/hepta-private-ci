@@ -1,0 +1,379 @@
+name: Neuron runtime unified readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact source commit to qualify
+        required: true
+        type: string
+      base_sha:
+        description: Exact integration base commit
+        required: true
+        type: string
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain*"
+      - "scripts/neuron/**"
+      - "docs/modules/neuron.runtime/**"
+      - ".github/workflows/neuron-runtime-readiness.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-runtime-readiness-${{ github.event.pull_request.number || inputs.source_sha }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || inputs.source_sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  qualification:
+    name: Neuron readiness (${{ matrix.gate }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - gate: linux-stable-source-head
+            runner: ubuntu-24.04
+            toolchain: stable
+            lane: source-head
+            frozen_python: true
+          - gate: linux-stable-synthetic-merge
+            runner: ubuntu-24.04
+            toolchain: stable
+            lane: synthetic-merge
+            frozen_python: true
+          - gate: linux-msrv-source-head
+            runner: ubuntu-24.04
+            toolchain: msrv
+            lane: source-head
+            frozen_python: false
+          - gate: linux-msrv-synthetic-merge
+            runner: ubuntu-24.04
+            toolchain: msrv
+            lane: synthetic-merge
+            frozen_python: false
+          - gate: linux-arm64-source-head
+            runner: ubuntu-24.04-arm
+            toolchain: stable
+            lane: source-head
+            frozen_python: false
+          - gate: linux-arm64-synthetic-merge
+            runner: ubuntu-24.04-arm
+            toolchain: stable
+            lane: synthetic-merge
+            frozen_python: false
+          - gate: macos-arm64-source-head
+            runner: macos-15
+            toolchain: stable
+            lane: source-head
+            frozen_python: false
+          - gate: macos-arm64-synthetic-merge
+            runner: macos-15
+            toolchain: stable
+            lane: synthetic-merge
+            frozen_python: false
+
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source and candidate tree
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            tree=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME=hepta-qualification
+            export GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid
+            export GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z
+            export GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            tested=$(printf '%s\n' 'Qualification only; no selection or release' |
+              git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            test "$(git show -s --format=%P "$tested")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$tested"
+            test "$(git rev-parse HEAD^{tree})" = "$tree"
+          fi
+          printf 'tested_sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          printf 'tested_tree=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+          printf 'source=%s\nbase=%s\nlane=%s\ntested=%s\ntree=%s\n' \
+            "$SOURCE_SHA" "$BASE_SHA" '${{ matrix.lane }}' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Install pinned repository test tools
+        id: tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Select MSRV toolchain
+        id: compiler
+        if: matrix.toolchain == 'msrv'
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.88.0 --profile minimal
+          rustup override set 1.88.0 --path codex-rs
+          (cd codex-rs && test "$(rustc --version | awk '{print $2}')" = 1.88.0)
+
+      - name: Execute frozen encoder and tensor regressions
+        id: frozen
+        if: matrix.frozen_python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/decision-cell-tests"
+          py="$RUNNER_TEMP/decision-cell-tests/bin/python"
+          "$py" -m pip install --disable-pip-version-check \
+            --index-url https://download.pytorch.org/whl/cpu torch==2.14.0
+          "$py" -m pip install --disable-pip-version-check \
+            numpy==1.26.4 safetensors==0.8.0
+          "$py" -m pip freeze > "$RUNNER_TEMP/decision-cell-environment.txt"
+          "$py" -m unittest discover -v \
+            -s codex-rs/hepta-neuron/qualification -p 'test_*.py' \
+            2>&1 | tee "$RUNNER_TEMP/decision-cell-tests.log"
+
+      - name: Validate exact candidate
+        id: validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/neuron-readiness-${{ matrix.gate }}.log"
+          exec > >(tee "$log") 2>&1
+          printf 'source_sha=%s\nbase_sha=%s\ntested_sha=%s\ntested_tree=%s\n' \
+            "$SOURCE_SHA" "$BASE_SHA" \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+          rustc -Vv
+          cargo -V
+          python3 --version
+
+          python3 scripts/neuron/readiness.py render --check
+          python3 -m unittest discover -v -s scripts/neuron -p 'test_*.py'
+          python3 scripts/verify_cargo_lock.py
+
+          cd codex-rs
+          cargo metadata --locked --format-version=1 >/dev/null
+          if [ '${{ matrix.toolchain }}' = msrv ]; then
+            # Rust 1.88 is the durable Neuron core MSRV. The wider Agentd/App
+            # Server product graph is intentionally not claimed at 1.88: its
+            # locked AWS/Smithy dependencies require a newer compiler and are
+            # qualified by the stable target lanes below.
+            cargo check --locked \
+              -p codex-hepta-neuron \
+              -p codex-hepta-infer-core \
+              --lib
+            cargo test --locked -p codex-hepta-neuron --lib
+            cargo test --locked -p codex-hepta-infer-core --lib
+          else
+            cargo check --locked \
+              -p codex-hepta-neuron \
+              -p codex-hepta-agentd \
+              -p codex-hepta-infer-core \
+              -p codex-hepta-infer-worker-host \
+              --all-targets
+            cargo build --locked -p codex-cli --bin codex
+            export CARGO_BIN_EXE_codex="$(
+              cargo metadata --locked --format-version=1 --no-deps |
+                python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"] + "/debug/codex")'
+            )"
+            test -x "$CARGO_BIN_EXE_codex"
+
+            # The complete stable Neuron suite includes every named crash cut,
+            # Agentd lifecycle, external adapter and process-runner boundary.
+            just test --locked --retries 0 \
+              -p codex-hepta-neuron \
+              -p codex-hepta-infer-core \
+              -p codex-hepta-infer-worker-host
+            just test --locked --retries 0 -p codex-hepta-agentd \
+              -E 'test(/neuron_runtime_v2/)'
+          fi
+
+          if [ '${{ matrix.toolchain }}' = stable ]; then
+            cargo clippy --locked \
+              -p codex-hepta-neuron \
+              -p codex-hepta-agentd \
+              -p codex-hepta-infer-worker-host \
+              --all-targets -- -D warnings
+            cargo fmt \
+              --package codex-hepta-neuron \
+              --package codex-hepta-agentd \
+              --package codex-hepta-infer-core \
+              --package codex-hepta-infer-worker-host \
+              -- --check
+            export HEPTA_NEURON_DIAGNOSTIC_SOURCE_SHA="$(git rev-parse HEAD)"
+            just test --locked -p codex-hepta-neuron --run-ignored only \
+              -E 'test(runtime_v2_diagnostic_measurements)' \
+              --success-output immediate \
+              2>&1 | tee "$RUNNER_TEMP/neuron-v2-diagnostic.log"
+          fi
+          cd ..
+
+          if [ '${{ matrix.toolchain }}' = stable ]; then
+            python3 scripts/neuron/summarize_measurements.py \
+              "$RUNNER_TEMP/neuron-v2-diagnostic.log" \
+              --source-sha "$(git rev-parse HEAD)" \
+              --output "$RUNNER_TEMP/neuron-v2-diagnostic-summary.json"
+          fi
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Capture immutable gate provenance
+        if: always()
+        shell: bash
+        env:
+          VALIDATION_RESULT: ${{ steps.validate.outcome }}
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+          GATE_ID: ${{ matrix.gate }}
+        run: |
+          set -euo pipefail
+          target="$(cd codex-rs && rustc -Vv | sed -n 's/^host: //p')"
+          stages="$(python3 - <<'PY_STAGES'
+          import json, os, sys
+          sys.path.insert(0, 'scripts/neuron')
+          import readiness
+          spec = readiness.load_json(readiness.DEFAULT_SPEC)
+          gate = readiness.gate_by_id(spec, os.environ['GATE_ID'])
+          steps = json.loads(os.environ['STEP_OUTCOMES'])
+          print(json.dumps({key: steps.get(key, {}).get('outcome', 'skipped')
+                            for key in readiness.required_stages(gate)}))
+          PY_STAGES
+          )"
+          python3 scripts/neuron/readiness.py capture \
+            --gate '${{ matrix.gate }}' \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --tested-sha '${{ steps.candidate.outputs.tested_sha }}' \
+            --tree-sha '${{ steps.candidate.outputs.tested_tree }}' \
+            --lane '${{ matrix.lane }}' \
+            --toolchain '${{ matrix.toolchain }}' \
+            --target-triple "$target" \
+            --workflow "$GITHUB_WORKFLOW" \
+            --run-id "$GITHUB_RUN_ID" \
+            --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --job '${{ matrix.gate }}' \
+            --repository "$GITHUB_REPOSITORY" \
+            --runner-name "${RUNNER_NAME:-unknown}" \
+            --runner-os "${RUNNER_OS:-unknown}" \
+            --runner-arch "${RUNNER_ARCH:-unknown}" \
+            --runner-image "${ImageOS:-${ImageVersion:-unknown}}" \
+            --stage-outcomes "$stages" \
+            --result "${VALIDATION_RESULT:-failure}" \
+            --output "$RUNNER_TEMP/${{ matrix.gate }}.provenance.json"
+
+      - name: Retain exact gate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-readiness-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.gate }}
+          path: |
+            ${{ runner.temp }}/${{ matrix.gate }}.provenance.json
+            ${{ runner.temp }}/neuron-readiness-${{ matrix.gate }}.log
+            ${{ runner.temp }}/decision-cell-tests.log
+            ${{ runner.temp }}/decision-cell-environment.txt
+            ${{ runner.temp }}/neuron-v2-diagnostic.log
+            ${{ runner.temp }}/neuron-v2-diagnostic-summary.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Verify source remained unmodified
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+  readiness:
+    name: Neuron unified readiness
+    if: ${{ always() }}
+    needs: [qualification]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download all gate evidence
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: neuron-readiness-${{ github.run_id }}-${{ github.run_attempt }}-*
+          path: ${{ runner.temp }}/neuron-readiness-evidence
+          merge-multiple: true
+
+      - name: Aggregate same-candidate manifest
+        id: aggregate
+        continue-on-error: true
+        shell: bash
+        env:
+          QUALIFICATION_OUTCOME: ${{ needs.qualification.result }}
+          DOWNLOAD_OUTCOME: ${{ steps.download.outcome }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/neuron-readiness-evidence"
+          python3 scripts/neuron/readiness.py render --check
+          python3 scripts/neuron/readiness.py aggregate \
+            --evidence-dir "$RUNNER_TEMP/neuron-readiness-evidence" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --workflow "$GITHUB_WORKFLOW" \
+            --run-id "$GITHUB_RUN_ID" \
+            --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --repository "$GITHUB_REPOSITORY" \
+            --qualification-outcome "$QUALIFICATION_OUTCOME" \
+            --download-outcome "$DOWNLOAD_OUTCOME" \
+            --output "$RUNNER_TEMP/READINESS_MANIFEST.json"
+
+      - name: Retain single readiness manifest
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-readiness-manifest-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/READINESS_MANIFEST.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Require every target and candidate gate
+        if: always()
+        shell: bash
+        env:
+          AGGREGATE_OUTCOME: ${{ steps.aggregate.outcome }}
+          QUALIFICATION_OUTCOME: ${{ needs.qualification.result }}
+          DOWNLOAD_OUTCOME: ${{ steps.download.outcome }}
+        run: |
+          set -euo pipefail
+          test "$QUALIFICATION_OUTCOME" = success
+          test "$DOWNLOAD_OUTCOME" = success
+          test "$AGGREGATE_OUTCOME" = success
