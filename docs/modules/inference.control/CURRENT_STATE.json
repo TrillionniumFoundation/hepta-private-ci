@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "module": "inference.control",
   "generatedFrom": "docs/modules/inference.control/CURRENT_STATE_SOURCE.json",
-  "sourceManifestSha256": "6bb2ed9884870dd451870548fe49e70c68779a6257ebc13d46f1444d25e3094b",
+  "sourceManifestSha256": "eea3397e62fffd21879e931c25805a04a8750d044577d716425f473778a180f1",
   "provenance": {
     "baselineCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "baselineTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
@@ -264,7 +264,7 @@
       "cargo test -p codex-hepta-infer-core",
       "cargo test -p codex-hepta-infer-worker-host --all-targets --all-features",
       "cargo clippy -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets --all-features -- -D warnings",
-      "cargo test -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --exact",
+      "cargo test --locked -p codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve -- --ignored --exact",
       "cargo test -p codex-hepta-infer-core --test process_crash_recovery -- --nocapture --test-threads=1",
       "python3 scripts/hepta-inference-control-current-state.py check",
       "python3 scripts/hepta-inference-control-ownership.py check",

@@ -34,7 +34,7 @@ This projection records source facts and required evidence. It is not an accepta
 - `cargo test -p codex-hepta-infer-core`
 - `cargo test -p codex-hepta-infer-worker-host --all-targets --all-features`
 - `cargo clippy -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets --all-features -- -D warnings`
-- `cargo test -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --exact`
+- `cargo test --locked -p codex-hepta-infer-core durable_control::native::v2_tests::post_compaction_multi_generation_curve -- --ignored --exact`
 - `cargo test -p codex-hepta-infer-core --test process_crash_recovery -- --nocapture --test-threads=1`
 - `python3 scripts/hepta-inference-control-current-state.py check`
 - `python3 scripts/hepta-inference-control-ownership.py check`
