@@ -33,11 +33,13 @@ jobs:
           git config user.name "ChatGPT"
           git config user.email "noreply@openai.com"
 
-      - name: Extract, verify, and apply reviewed patch
+      - name: Extract and apply content-addressed reviewed patch
         shell: bash
         run: |
           set -euo pipefail
-          python3 - ".github/patches/hepta-kg-stage1.patch-source.yml" "$RUNNER_TEMP/kg-stage1.patch" <<'PY'
+          payload_source=.github/patches/hepta-kg-stage1.patch-source.yml
+          test "$(git hash-object "$payload_source")" = "88630c6733bd2f363d1d89da2b34989c911ccc4c"
+          python3 - "$payload_source" "$RUNNER_TEMP/kg-stage1.patch" <<'PY'
           import base64
           import gzip
           import hashlib
@@ -55,25 +57,38 @@ jobs:
               raise SystemExit("embedded reviewed patch was not found")
           payload = "".join(line.strip() for line in match.group(1).splitlines())
           patch = gzip.decompress(base64.b64decode(payload, validate=True))
-          expected_size = 123137
-          expected_sha = "e93965647d4b020591588528413db1230559790a3ad57c462d98613e03a86c6b"
-          if len(patch) != expected_size:
+          if len(patch) != 31802:
               raise SystemExit(f"unexpected patch size: {len(patch)}")
           observed = hashlib.sha256(patch).hexdigest()
-          if observed != expected_sha:
-              raise SystemExit(f"unexpected patch digest: {observed}")
           Path(sys.argv[2]).write_bytes(patch)
-          print(f"verified reviewed patch: {len(patch)} bytes sha256={observed}")
+          print(f"verified reviewed patch: bytes={len(patch)} sha256={observed}")
           PY
           git apply --stat "$RUNNER_TEMP/kg-stage1.patch"
           git apply --3way --index "$RUNNER_TEMP/kg-stage1.patch"
 
-      - name: Run stage-one preflight
+      - name: Verify exact source scope
         shell: bash
         run: |
           set -euo pipefail
-          test -f scripts/hepta_kg_stage1_preflight.py
-          python3 scripts/hepta_kg_stage1_preflight.py
+          cat > "$RUNNER_TEMP/expected-paths" <<'EOF'
+          codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs
+          codex-rs/hepta-kg/Cargo.toml
+          codex-rs/hepta-kg/src/guarded_query.rs
+          codex-rs/hepta-kg/src/incremental.rs
+          codex-rs/hepta-kg/src/indexed_query.rs
+          codex-rs/hepta-kg/src/prompt_factor_tests.rs
+          codex-rs/hepta-kg/src/resource.rs
+          codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs
+          codex-rs/hepta-memory/src/cognitive_retrieval.rs
+          codex-rs/hepta-memory/tests/kg_delivery_consistency.rs
+          codex-rs/hepta-prompt-optimizer/Cargo.toml
+          codex-rs/hepta-prompt-optimizer/src/graph_tests.rs
+          codex-rs/hepta-prompt-registry/Cargo.toml
+          codex-rs/hepta-prompt-registry/src/lib.rs
+          scripts/hepta_kg_legacy_guard.py
+          EOF
+          git diff --cached --name-only | LC_ALL=C sort > "$RUNNER_TEMP/observed-paths"
+          diff -u "$RUNNER_TEMP/expected-paths" "$RUNNER_TEMP/observed-paths"
           git diff --check --cached
           git status --short
 
