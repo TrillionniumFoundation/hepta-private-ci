@@ -87,10 +87,24 @@ async fn production_actor_denies_unsigned_dispatch_and_retains_one_writer() {
             },
         )
         .await;
-    assert!(matches!(rejected, Err(codex_hepta_infer_worker_host::NativeControlActorError::LegacyDisabled)));
-    assert_eq!(writer.record(request_id.clone()).await.unwrap().unwrap().state, NativeReservationState::Reserved);
+    assert!(matches!(
+        rejected,
+        Err(codex_hepta_infer_worker_host::NativeControlActorError::LegacyDisabled)
+    ));
+    assert_eq!(
+        writer
+            .record(request_id.clone())
+            .await
+            .unwrap()
+            .unwrap()
+            .state,
+        NativeReservationState::Reserved
+    );
     let released = writer
-        .stop_before_dispatch(request_id.clone(), "unsigned execution refused before effect".to_string())
+        .stop_before_dispatch(
+            request_id.clone(),
+            "unsigned execution refused before effect".to_string(),
+        )
         .await
         .unwrap();
     assert_eq!(released.state, NativeReservationState::Released);

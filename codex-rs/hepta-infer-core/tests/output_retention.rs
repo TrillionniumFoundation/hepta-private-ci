@@ -71,12 +71,7 @@ fn digest(domain: &[u8], payload: &[u8]) -> String {
     format!("{:x}", hash.finalize())
 }
 
-fn trust_key(
-    key_id: &str,
-    signer_id: &str,
-    role: TrustRole,
-    key: &SigningKey,
-) -> TrustKey {
+fn trust_key(key_id: &str, signer_id: &str, role: TrustRole, key: &SigningKey) -> TrustKey {
     TrustKey {
         key_id: key_id.to_string(),
         signer_id: signer_id.to_string(),
@@ -88,12 +83,7 @@ fn trust_key(
     }
 }
 
-fn signature(
-    key_id: &str,
-    signer_id: &str,
-    key: &SigningKey,
-    message: &[u8],
-) -> ControlSignature {
+fn signature(key_id: &str, signer_id: &str, key: &SigningKey, message: &[u8]) -> ControlSignature {
     ControlSignature {
         key_id: key_id.to_string(),
         signer_id: signer_id.to_string(),
