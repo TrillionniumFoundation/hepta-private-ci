@@ -19,6 +19,7 @@ use std::time::UNIX_EPOCH;
 
 use codex_arg0::Arg0DispatchPaths;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
@@ -39,6 +40,7 @@ use codex_hepta_memory::SourceRevisionId;
 use codex_hepta_memory::StableMemoryId;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
@@ -51,6 +53,9 @@ use crate::app_runtime::run_app_server;
 
 pub type TestResult<T> = Result<T, Box<dyn StdError + Send + Sync>>;
 
+// Readiness covers private evidence preparation and the cold App Server: SQLite,
+// transport binding, and the real initialize/home-binding protocol probe.
+const APP_SERVER_STARTUP_TIMEOUT: Duration = Duration::from_secs(120);
 const READY_TIMEOUT: Duration = Duration::from_secs(10);
 const EVENT_CAPACITY: usize = 32;
 
@@ -121,6 +126,19 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        let startup_deadline = Instant::now() + APP_SERVER_STARTUP_TIMEOUT;
+        // Normal Agentd prepares this same private durable evidence lineage
+        // before runtime readiness. No evidence authority is registered here.
+        let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
+            identity.home_root.clone(),
+        )?);
+        tokio::time::timeout_at(tokio::time::Instant::from_std(startup_deadline), async {
+            let evidence = HeptaEvidenceStore::open(&sqlite).await?;
+            evidence.close().await;
+            Ok::<(), codex_hepta_evidence::EvidenceError>(())
+        })
+        .await
+        .map_err(|_| "timed out preparing Agentd test private evidence store")??;
         state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
@@ -148,42 +166,90 @@ impl CognitiveTestHost {
             /*production_writer_host*/ None,
         ));
 
-        let deadline = Instant::now() + READY_TIMEOUT;
-        while !identity.app_server_socket.exists() {
-            if app_server_task.is_finished() {
-                let outcome = app_server_task.await?;
-                return Err(
-                    format!("Agentd test App Server exited before readiness: {outcome:?}").into(),
-                );
-            }
-            if Instant::now() >= deadline {
-                return Err("timed out waiting for Agentd test App Server socket".into());
-            }
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
-        state.mark_app_server_ready()?;
-
-        let client = AgentdClient::new(identity.control_socket.clone(), agent_id.clone(), 1)?;
-        let deadline = Instant::now() + READY_TIMEOUT;
-        loop {
-            match client.health().await {
-                Ok(health) if health.ready => break,
-                _ if Instant::now() >= deadline => {
-                    return Err("timed out waiting for Agentd test control readiness".into());
-                }
-                _ => tokio::time::sleep(Duration::from_millis(10)).await,
-            }
-        }
-
-        Ok(Self {
+        // Own both tasks before any fallible readiness wait so a cancelled
+        // start or a startup error cannot leave detached test services running.
+        let mut host = Self {
             _root: root,
             agent_id,
-            layout: identity.layout,
+            layout: identity.layout.clone(),
             store,
             cancellation,
             control_task: Some(control_task),
             app_server_task: Some(app_server_task),
-        })
+        };
+        let readiness: TestResult<()> = async {
+            let deadline = startup_deadline;
+            let mut last_probe_error = None;
+            loop {
+                if host
+                    .app_server_task
+                    .as_ref()
+                    .is_some_and(JoinHandle::is_finished)
+                {
+                    let task = host
+                        .app_server_task
+                        .take()
+                        .ok_or("Agentd test App Server task is missing")?;
+                    let outcome = task.await?;
+                    return Err(format!(
+                        "Agentd test App Server exited before transport readiness: {outcome:?}"
+                    )
+                    .into());
+                }
+                if Instant::now() >= deadline {
+                    return Err(format!(
+                        "timed out initializing Agentd test App Server (socket bound: {}, last protocol probe: {last_probe_error:?})",
+                        identity.app_server_socket.exists(),
+                    )
+                    .into());
+                }
+                if identity.app_server_socket.exists() {
+                    match tokio::time::timeout_at(
+                        tokio::time::Instant::from_std(deadline),
+                        crate::runtime::probe_app_server(&identity),
+                    )
+                    .await
+                    {
+                        Ok(Ok(())) => break,
+                        Ok(Err(error @ crate::AgentdError::GenerationFenced(_))) => {
+                            return Err(error.into());
+                        }
+                        Ok(Err(error)) => last_probe_error = Some(error.to_string()),
+                        Err(_) => {
+                            return Err("timed out waiting for Agentd test App Server initialize/home-binding readiness".into());
+                        }
+                    }
+                }
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+            state.mark_app_server_ready()?;
+
+            let client = AgentdClient::new(
+                identity.control_socket.clone(),
+                host.agent_id.clone(),
+                1,
+            )?;
+            let deadline = Instant::now() + READY_TIMEOUT;
+            loop {
+                match client.health().await {
+                    Ok(health) if health.ready => break,
+                    outcome if Instant::now() >= deadline => {
+                        return Err(format!(
+                            "timed out waiting for Agentd test control readiness: {outcome:?}"
+                        )
+                        .into());
+                    }
+                    _ => tokio::time::sleep(Duration::from_millis(10)).await,
+                }
+            }
+            Ok(())
+        }
+        .await;
+        if let Err(error) = readiness {
+            host.shutdown().await;
+            return Err(error);
+        }
+        Ok(host)
     }
 
     pub fn agent_id(&self) -> &AgentId {

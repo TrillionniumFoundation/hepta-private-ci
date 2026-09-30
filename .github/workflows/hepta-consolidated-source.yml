@@ -400,6 +400,18 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Build local Codex helper for embedded App Server owner tests
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/worker-helper-build.json" -- \
+            cargo build --locked --manifest-path codex-rs/Cargo.toml \
+              -p codex-exec --bin codex-exec
       - name: Compile and test actual imported packages
         working-directory: codex-rs
         env:

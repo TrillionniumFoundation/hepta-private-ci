@@ -466,7 +466,7 @@ async fn monitor_runtime(
     }
 }
 
-async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> {
+pub(crate) async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> {
     let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)?;
     let client = timeout(
         APP_SERVER_PROBE_TIMEOUT,
