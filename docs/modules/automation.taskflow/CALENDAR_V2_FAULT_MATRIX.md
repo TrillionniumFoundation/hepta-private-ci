@@ -34,6 +34,8 @@ Each target-host run records:
   (`first`/`second`), missed-run policy and execution overlap policy (`allow`/`forbid`);
 - scheduler Agent/generation/fencing identity;
 - deterministic occurrence ID and canonical UTC instant;
+- for an exercised external effect: owner Agent, persisted `provider_effect_key`,
+  destination, payload digest and provider-profile pin digest;
 - backup/restore source digest when applicable;
 - start/end timestamps and measured latency/resource observations.
 
@@ -68,7 +70,11 @@ between: lease acquisition, occurrence materialization, durable TaskFlow step
 preparation, queue admission, turn persistence, provider dispatch and terminal
 projection. Recovery always uses the original durable identity; the harness must
 fail if a second logical occurrence or provider key is created merely because a
-process generation changed.
+process generation changed. For v21 effects, restart and takeover reuse the exact
+stored owner-scoped key; different owner Agents cannot share one logical-effect
+identity merely because run/step names match. Legacy null keys remain unresolved:
+the harness cannot manufacture owner-isolation evidence or infer provider absence
+from a replacement endpoint.
 
 ## tzdb provenance
 

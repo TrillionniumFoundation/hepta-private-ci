@@ -82,7 +82,7 @@ External TaskFlow effect
   -> kernel FinalUseAuthority exact intent/payload binding
   -> synchronous driver OR async final-use/provider-effect bridge
   -> exact wire bytes hashed inside automation before grant consumption
-  -> provider-stable logical key derived from destination + TaskFlow run/step
+  -> persisted provider-stable key binding owner Agent + destination + TaskFlow run/step
   -> durable succeeded/failed/indeterminate observation
   -> provider-specific status reconciliation when required
 ```
@@ -113,13 +113,15 @@ OrganCall/WaitJoin/Effect/Exit roles onto the existing bounded V1 TaskFlow owner
 `neural_circuit_runtime.rs` then persists the durable activation ID, activation
 round, causal event, circuit and compiled-definition identities, route/parameter
 pins, an externally owned Fleet lease reference, and caller-supplied DecisionCell/organ
-receipt digests plus a selected-port reference. Replaying an identical command
+receipt digests plus a selected successor reference in the legacy `selected_port`
+field. Replaying an identical command
 returns the matching durable receipt; it does not rerun a decision policy. This
-is a metadata ledger, not an executing choice-before-effect product path. A
-trusted composition caller still has to verify the actual legal candidates,
-receipt provenance and current Fleet lease, then bind the committed choice to
-its downstream operation. Arbitrary feedback loops, quorum joins, nested child
-execution and general recursive circuit interpretation remain target work and
+is a metadata ledger, not an executing choice-before-effect product path. The
+ledger validates admitted nodes, frozen policy pins and the selected successor
+edge. The trusted composition caller must still verify external causal evidence,
+DecisionCell/organ receipt provenance and the current Fleet lease, then bind the
+committed choice to its downstream operation. Arbitrary feedback loops, quorum
+joins, nested child execution and general recursive circuit interpretation remain target work and
 are not smuggled into `TaskFlowNodeKind`.
 
 ### 4.2 Typed control program and admissible feedback
@@ -310,7 +312,7 @@ Consumed contracts:
 
 The current external-effect source path uses automation-owned `AuthorizedEffectIntent` only for TaskFlow orchestration identity (run/step/attempt/dependencies/compensation). `AuthorizedEffectIntent::operation_intent_v1()` constructs the producer-owned `kernel.operations::OperationIntentV1` for operation/subject/destination/payload/scope/policy/predecessor semantics, and the TaskFlow digest layers its orchestration fields over that canonical semantic digest. Neither type grants authority.
 
-The synchronous seam remains available. The additive async seam uses `FinalUseAuthority::with_verified_use_async` plus `ProviderEffectTaskFlowDriver`: automation hashes the exact caller-supplied wire bytes before consuming the grant, requires that digest to equal the durable TaskFlow payload digest, and derives a provider logical-effect key from the final-use-bound destination plus TaskFlow run/step. The local step attempt is deliberately excluded from that provider key, so a new local attempt after provider-proven absence cannot silently create a new external effect identity; a changed payload under the same logical effect becomes a provider key/payload conflict. Restart lookup re-derives the provider intent from the durable `AuthorizedEffectPending` record rather than accepting a caller-supplied key.
+The synchronous seam remains available. The additive async seam uses `FinalUseAuthority::with_verified_use_async` plus `ProviderEffectTaskFlowDriver`: automation hashes the exact caller-supplied wire bytes before consuming the grant, requires that digest to equal the durable TaskFlow payload digest, and derives a provider logical-effect key in the final-use-bound destination namespace from the length-framed owner Agent and TaskFlow run/step identity. The exact key is persisted before provider contact. The local step attempt is deliberately excluded from that provider key, so a new local attempt after provider-proven absence cannot silently create a new external effect identity; a changed payload under the same logical effect becomes a provider key/payload conflict. Restart lookup constructs the provider intent from the exact persisted `AuthorizedEffectPending::provider_effect_key` and payload digest; it neither accepts a caller-supplied replacement key nor recomputes a legacy identity. A legacy null key remains unresolved and cannot authorize lookup or retry.
 
 The repository now has one named reference product composition in `codex-rs/hepta-agentd/src/automation_effect_host.rs`. Agentd loads independently provisioned FinalUse verification material plus a durable revocation head, verifies a signed `HttpProviderEffectContractAttestation`, constructs `HttpProviderEffectAdapter`, and enters the TaskFlow provider path only through `ProviderEffectTaskFlowDriver` + `execute_authorized_taskflow_effect_async`. The generation-fenced control surface advertises `automation.external_effect@1.0` only when that host is attached. `CALLERS.toml` closes these privileged call sites. This is repository product-source composition, not proof that a selected host actually loaded authentic production keys/provider configuration or completed a live provider operation. Those facts are retained separately in `TASKFLOW_PRODUCT_QUALIFICATION.json`.
 
@@ -332,7 +334,7 @@ The current schema v21 retains the original `automation_tasks`, `automation_runs
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive through schema v21. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs; v15 adds append-only reconciliation evidence for pre-v14 dispatch-unknown rows; v16 persists the opaque App Server terminal-observer cursor; v17 adds kernel-operation destination dedupe; v18 persists timer lifecycle; v19 converges the owner schema; and v20 adds append-only Neural Circuit activation and choice evidence. V20 records activation/round, circuit and compiled-TaskFlow identities, causal/policy/parameter digests, an externally owned Fleet lease reference with bounded resource projections, and the exact durable decision receipt/selected port. It does not create a second resource authority or general cyclic executor. Migration v21 persists the owner-scoped, length-framed provider effect key before contact and reuses it across local attempts and restarts. Pre-v21 attempts retain their original identity bytes with a null key; the reference HTTP host quarantines them from lookup and retry because provider key/payload alone cannot prove which Agent owns an old unscoped acknowledgement. They require independently established owner/provider isolation evidence before reconciliation. A binary that does not understand schema v21 must not replace the current owner against an upgraded store.
+Migrations are additive through schema v21. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs; v15 adds append-only reconciliation evidence for pre-v14 dispatch-unknown rows; v16 persists the opaque App Server terminal-observer cursor; v17 adds kernel-operation destination dedupe; v18 persists timer lifecycle; v19 converges the owner schema; and v20 adds append-only Neural Circuit activation and choice evidence. V20 records activation/round, circuit and compiled-TaskFlow identities, causal/policy/parameter digests, an externally owned Fleet lease reference with bounded resource projections, and the exact stored decision-receipt digest/selected successor reference. Internal digest and admitted-edge consistency checks do not authenticate an external DecisionCell/organ issuer or current Fleet lease. It does not create a second resource authority or general cyclic executor. Migration v21 persists the owner-scoped, length-framed provider effect key before contact and reuses it across local attempts and restarts. Pre-v21 attempts retain their original identity bytes with a null key; the reference HTTP host quarantines them from lookup and retry because provider key/payload alone cannot prove which Agent owns an old unscoped acknowledgement. They require independently established owner/provider isolation evidence before reconciliation. A binary that does not understand schema v21 must not replace the current owner against an upgraded store.
 
 ## 7. Runtime, concurrency and transaction model
 

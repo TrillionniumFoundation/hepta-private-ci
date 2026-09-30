@@ -54,7 +54,8 @@
     "durableOwnerScopedProviderIdentity": true,
     "providerProfilePinnedBeforeAuthorityOpen": true,
     "legacyKeylessAttemptsQuarantined": true,
-    "unpinnedInitializedAuthorityQuarantined": true
+    "unpinnedInitializedAuthorityQuarantined": true,
+    "providerIdentitySemantics": "Before contact, persist the exact provider key derived from the length-framed owner Agent + TaskFlow run/step identity within the final-use-bound destination namespace. Reuse it and the stored payload digest across local attempts and restart lookup; legacy null keys remain unresolved and quarantined from lookup/retry without independent owner/provider isolation evidence."
   },
   "targetHostEvidence": {
     "status": "required_not_embedded_in_repository",

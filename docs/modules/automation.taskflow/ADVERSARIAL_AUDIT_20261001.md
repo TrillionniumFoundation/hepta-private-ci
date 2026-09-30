@@ -21,7 +21,7 @@ Neural Circuit 编译及记录接口没有产品调用者，目前是静态 DAG 
 | Circuit 检查 fence 与写入分离，存在竞态 | BEGIN IMMEDIATE 包含当前 run、事件链、定义验证与 INSERT |
 | activation 可引用非法节点/替换编译策略，choice 可选任意目标 | 校验已准入节点、策略摘要与合法出边 |
 | Circuit 重放和重开仅信任已存摘要 | 重建 payload；一致快照按 128 行分页校验全部记录；覆盖跨页损坏 |
-| provider key 的分隔符歧义和跨 Agent 碰撞 | schema 21 在接触前持久化 owner-scoped key，重试和重启复用 |
+| provider key 的分隔符歧义和跨 Agent 碰撞 | schema 21 在接触前持久化 destination namespace 下按长度分帧的 owner Agent + run/step key，重试和重启复用精确存储值 |
 | Unknown 后有合法 provider absence 证据仍无法领取 | claim 优先使用 append-only reconciliation，覆盖重开及换 fence 重试 |
 | 同 revocation epoch/revision 的不同撤销集被忽略 | 接触 provider 前拒绝同 frontier 分歧 |
 | 更换 provider endpoint 后借新服务 NotFound 推断旧 effect 不存在 | 持久化配置身份 pin；无 pin 的非空 authority 目录拒绝恢复 |
