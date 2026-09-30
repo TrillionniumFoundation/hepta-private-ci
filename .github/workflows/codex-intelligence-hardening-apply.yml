@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   apply:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     steps:
       - name: Check out exact staging branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -23,9 +23,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base64 --decode .codex/intelligence-hardening.patch.xz.b64 \
-            | xz --decompress \
-            > "$RUNNER_TEMP/intelligence-hardening.patch"
+          python3 - <<'PY'
+          import base64
+          import lzma
+          import os
+          from pathlib import Path
+          encoded = Path('.codex/intelligence-hardening.patch.xz.b64').read_bytes()
+          output = Path(os.environ['RUNNER_TEMP']) / 'intelligence-hardening.patch'
+          output.write_bytes(lzma.decompress(base64.b64decode(encoded)))
+          PY
           git apply --index "$RUNNER_TEMP/intelligence-hardening.patch"
           git rm -r .codex
           git rm .github/workflows/codex-intelligence-hardening-apply.yml
