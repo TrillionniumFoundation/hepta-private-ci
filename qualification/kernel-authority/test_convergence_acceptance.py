@@ -71,6 +71,21 @@ class ConvergenceAcceptanceTests(unittest.TestCase):
                 {"never": "written"},
             )
 
+    def test_convergence_projection_does_not_precreate_native_output(self) -> None:
+        workflow = (
+            convergence.ROOT
+            / ".github/workflows/kernel-authority-production-closure.yml"
+        ).read_text(encoding="utf-8")
+        trust_lane = workflow.split("trust-bundle)", 1)[1].split(";;", 1)[0]
+        self.assertIn(
+            'convergence="$RUNNER_TEMP/authority-evidence/convergence-projection.json"',
+            trust_lane,
+        )
+        self.assertIn('--output "$convergence"', trust_lane)
+        self.assertIn('--output-dir "$output"', trust_lane)
+        self.assertNotIn('mkdir -p "$output"', trust_lane)
+        self.assertNotIn('--output "$output/', trust_lane)
+
 
 if __name__ == "__main__":
     unittest.main()
