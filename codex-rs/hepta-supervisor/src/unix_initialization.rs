@@ -56,6 +56,10 @@ pub(super) fn finish_child(
     } else {
         format!("unix-pid-{}-generation-{generation}", child.id())
     };
+    #[expect(
+        clippy::expect_used,
+        reason = "the OS child PID is positive and the generated ASCII incarnation is below 128 bytes; preserve the acquired child owner"
+    )]
     let identity = ProcessIdentity::new(u64::from(child.id()), incarnation)
         .expect("OS child PID and bounded generated incarnation satisfy ProcessIdentity");
     let (health_probe, mut failure) = retain_probe(probe);

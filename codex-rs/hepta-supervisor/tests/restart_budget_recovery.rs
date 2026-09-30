@@ -1,3 +1,8 @@
+#![expect(
+    clippy::expect_used,
+    reason = "fixture state and recovery observations must fail the test immediately when setup invariants fail"
+)]
+
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::sync::Mutex;

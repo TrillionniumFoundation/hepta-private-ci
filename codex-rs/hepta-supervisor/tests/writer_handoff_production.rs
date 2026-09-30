@@ -1,3 +1,8 @@
+#![expect(
+    clippy::expect_used,
+    reason = "fixture identity, setup and writer handoff observations must fail the integration test immediately"
+)]
+
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::time::SystemTime;
