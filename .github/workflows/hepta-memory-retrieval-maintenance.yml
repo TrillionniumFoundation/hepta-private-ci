@@ -26,17 +26,20 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Run policy, qualification, status, SLO, archive, source-refresh and feature regressions
+      - name: Run policy, qualification, vector-contract, status, SLO, archive, source-refresh and feature regressions
         run: >-
           python3 -m unittest -v
           scripts.tests.test_hepta_memory_retrieval_policy
           scripts.tests.test_hepta_memory_retrieval_qualification
+          scripts.tests.test_hepta_memory_retrieval_vector_contract
           scripts.tests.test_hepta_memory_retrieval_status
           scripts.tests.test_hepta_memory_retrieval_workflow_policy
           scripts.tests.test_hepta_memory_retrieval_feature_policy
           scripts.tests.test_hepta_memory_retrieval_slo
           scripts.tests.test_hepta_memory_retrieval_archive
           scripts.tests.test_hepta_memory_retrieval_refresh_map
+      - name: Validate source-only vector publication contract
+        run: python3 scripts/hepta_memory_retrieval_vector_contract.py
       - name: Enforce read-only retrieval workflows
         run: python3 scripts/hepta_memory_retrieval_workflow_policy.py
       - name: Enforce default-controlled feature policy
