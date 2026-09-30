@@ -40,6 +40,16 @@ jobs:
           python3 scripts/cognitive_store_map_generate.py \
             --source-commit "$GITHUB_SHA" \
             > "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json"
+      - name: Resolve and retain the exact Cargo lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata \
+            --manifest-path codex-rs/Cargo.toml \
+            --format-version 1 \
+            --no-deps \
+            > "$RUNNER_TEMP/cargo-metadata.json"
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/Cargo.lock.generated"
       - name: Render canonical formatting and status projections
         shell: bash
         run: |
@@ -63,6 +73,8 @@ jobs:
           name: cognitive-store-authoring-${{ github.sha }}
           path: |
             ${{ runner.temp }}/IMPLEMENTATION_MAP.generated.json
+            ${{ runner.temp }}/Cargo.lock.generated
+            ${{ runner.temp }}/cargo-metadata.json
             ${{ runner.temp }}/authoring.patch
             ${{ runner.temp }}/cognitive-source.tar.gz
             ${{ runner.temp }}/cognitive-source.commit
