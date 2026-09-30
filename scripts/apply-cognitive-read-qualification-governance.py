@@ -52,24 +52,43 @@ def make_proposal_manual_only() -> None:
     boundary = body.find("\n# Mutable repair is deliberately separated")
     if boundary < 0:
         raise ValueError("local proposal workflow boundary drift")
+
+    # Replace the event surface as one block rather than matching the previous
+    # push/pull-request spelling. Repair authoring may legitimately rename the
+    # proposal job, but qualification governance must still force manual-only,
+    # credential-free execution.
     body = (
         "name: Cognitive read local source proposal\n\n"
         "on:\n"
         "  workflow_dispatch:\n"
         + body[boundary:]
     )
-    old_if = """    if: >-
-      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
-      ((github.event_name == 'push' && github.ref == 'refs/heads/work/cognitive-read-production-convergence-20260927') ||
-       (github.event_name == 'pull_request' && github.head_ref == 'work/cognitive-read-production-convergence-20260927'))
-"""
-    new_if = """    if: >-
-      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
-      github.event_name == 'workflow_dispatch'
-"""
-    if body.count(old_if) != 1:
-        raise ValueError("local proposal job condition shape drift")
-    PROPOSAL_WORKFLOW.write_text(body.replace(old_if, new_if, 1))
+
+    jobs_marker = "\njobs:\n"
+    if body.count(jobs_marker) != 1:
+        raise ValueError("local proposal jobs shape drift")
+    jobs_start = body.index(jobs_marker) + len(jobs_marker)
+    runs_start = body.find("    runs-on:", jobs_start)
+    if runs_start < 0:
+        raise ValueError("local proposal runner shape drift")
+    condition_start = body.find("    if:", jobs_start, runs_start)
+    new_if = (
+        "    if: >-\n"
+        "      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&\n"
+        "      github.event_name == 'workflow_dispatch'\n"
+    )
+    if condition_start < 0:
+        body = body[:runs_start] + new_if + body[runs_start:]
+    else:
+        body = body[:condition_start] + new_if + body[runs_start:]
+
+    forbidden = ("\n  push:\n", "\n  pull_request:\n", "contents: write", "git push")
+    for token in forbidden:
+        if token in body:
+            raise ValueError(f"local proposal retained forbidden capability: {token!r}")
+    if "persist-credentials: false" not in body or "contents: read" not in body:
+        raise ValueError("local proposal lost its credential-free read-only boundary")
+    PROPOSAL_WORKFLOW.write_text(body)
 
 
 def bind_receipt_inputs() -> None:
