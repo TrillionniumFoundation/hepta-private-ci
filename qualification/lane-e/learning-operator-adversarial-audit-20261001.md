@@ -5,7 +5,7 @@
 本报告供独立 reviewer 评估已核实的源码行为、执行证据、修复和真实剩余工作。
 代码来源整合 `audit/learning-operator-20261001` 与 `codex/learning-operator-authoritative-convergence-20260930`。
 保留离线算法修复与 owner-bound 能力，未以删除功能、清空真实 blocker 或降低验收条件来取得闭合。
-源码导航 commit：`f01103b381656eec58d881d7821c93f52c6f2381`（tree `b0795ff2ba85da00e9c10cb071efd591c3c68822`）。导航身份不构成当前候选执行 receipt。
+源码导航 commit：`986eae8438285bf6d9a97e5f12ab6a3b1240afea`（tree `6352a2bdf4785ba1e18ffc9be1124b10b4f871e7`）。该远端源码树与本地审计候选 `a318fec911d96af3ca755fd7c5b7fac8eb03a4fa` 完全一致；原本地提交历史见 [LOCAL_AUDIT_HISTORY.md](learning-operator-audit-20261001/LOCAL_AUDIT_HISTORY.md)。导航身份不构成当前候选执行 receipt。
 
 ## 1. 技术开发文档确实存在
 
