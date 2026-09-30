@@ -1,0 +1,160 @@
+name: Learning plasticity authoring projection
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-agentd/src/plasticity_*.rs"
+      - "codex-rs/hepta-agentd/src/state.rs"
+      - "scripts/project_learning_plasticity_runtime_hardening.py"
+      - ".github/workflows/learning-plasticity-authoring-projection.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-plasticity-authoring-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  runtime-hardening-projection:
+    name: Project and verify runtime hardening
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Create isolated detached authoring worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git worktree add --detach "$RUNNER_TEMP/plasticity-runtime-worktree" "$SOURCE_SHA"
+      - name: Apply reviewed runtime hardening projection
+        id: project
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/project_learning_plasticity_runtime_hardening.py \
+            --worktree "$RUNNER_TEMP/plasticity-runtime-worktree" \
+            --output "$RUNNER_TEMP/plasticity-runtime-projection"
+          code=$?
+          set -e
+          printf 'helper_exit=%s\n' "$code" >> "$GITHUB_OUTPUT"
+          # The helper intentionally has a narrow expected-file set. rustfmt may
+          # additionally touch an already-known plasticity source; collect only
+          # the bounded Agentd plasticity/state surface and verify it below.
+          cargo fmt \
+            --manifest-path "$RUNNER_TEMP/plasticity-runtime-worktree/codex-rs/Cargo.toml" \
+            --package codex-hepta-agentd
+          mkdir -p "$RUNNER_TEMP/plasticity-runtime-projection/files"
+          git -C "$RUNNER_TEMP/plasticity-runtime-worktree" diff --name-only \
+            > "$RUNNER_TEMP/plasticity-runtime-projection/changed-files.txt"
+          python3 - "$RUNNER_TEMP/plasticity-runtime-worktree" \
+            "$RUNNER_TEMP/plasticity-runtime-projection" <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import shutil
+          import subprocess
+          import sys
+
+          worktree = pathlib.Path(sys.argv[1])
+          output = pathlib.Path(sys.argv[2])
+          changed = [
+              line.strip()
+              for line in (output / "changed-files.txt").read_text().splitlines()
+              if line.strip()
+          ]
+          required = {
+              "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+              "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+              "codex-rs/hepta-agentd/src/state.rs",
+              "codex-rs/hepta-agentd/src/plasticity_iteration_coordinator.rs",
+              "codex-rs/hepta-agentd/src/plasticity_topology_iteration_coordinator.rs",
+          }
+          missing = sorted(required.difference(changed))
+          if missing:
+              raise SystemExit("missing projected files: " + ", ".join(missing))
+          allowed_exact = {
+              "codex-rs/hepta-agentd/src/state.rs",
+              "codex-rs/hepta-agentd/src/lib.rs",
+          }
+          unexpected = []
+          for path in changed:
+              candidate = pathlib.PurePosixPath(path)
+              allowed = (
+                  path in allowed_exact
+                  or (
+                      str(candidate.parent) == "codex-rs/hepta-agentd/src"
+                      and "plasticity" in candidate.name
+                  )
+                  or (
+                      str(candidate.parent) == "codex-rs/hepta-agentd/tests"
+                      and "plasticity" in candidate.name
+                  )
+              )
+              if not allowed:
+                  unexpected.append(path)
+          if unexpected:
+              raise SystemExit("unexpected authoring paths: " + ", ".join(sorted(unexpected)))
+          rows = []
+          for relative in sorted(changed):
+              source = worktree / relative
+              destination = output / "files" / relative
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(source, destination)
+              data = destination.read_bytes()
+              rows.append({
+                  "path": relative,
+                  "sha256": hashlib.sha256(data).hexdigest(),
+                  "bytes": len(data),
+              })
+          patch = subprocess.check_output(
+              ["git", "-C", str(worktree), "diff", "--binary", "--", *sorted(changed)],
+              text=True,
+          )
+          (output / "authoring.patch").write_text(patch)
+          (output / "files.json").write_text(json.dumps(rows, indent=2) + "\n")
+          PY
+      - name: Compile exact projected source
+        id: check
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo check --locked -p codex-hepta-agentd --all-targets \
+            --manifest-path "$RUNNER_TEMP/plasticity-runtime-worktree/codex-rs/Cargo.toml" \
+            2>&1 | tee "$RUNNER_TEMP/plasticity-runtime-projection/compile.log"
+      - name: Run indeterminate-outcome tests
+        id: tests
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test --locked -p codex-hepta-agentd --lib plasticity_post_queue_ \
+            --manifest-path "$RUNNER_TEMP/plasticity-runtime-worktree/codex-rs/Cargo.toml" \
+            -- --test-threads=1 \
+            2>&1 | tee "$RUNNER_TEMP/plasticity-runtime-projection/tests.log"
+      - name: Verify source checkout stayed immutable
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: plasticity-runtime-projection-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/plasticity-runtime-projection/
+          retention-days: 7
+          if-no-files-found: error
