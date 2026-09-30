@@ -17,9 +17,9 @@ use codex_hepta_types::RuntimeTopologyDeltaV1;
 use codex_hepta_types::RuntimeTopologyOperationV1;
 use codex_hepta_types::StableId;
 use codex_hepta_types::prompt_delivery_v2::PromptDeliveryErrorV2;
-use codex_hepta_types::protocol_catalog_v2::identity_profile_for_protocol_field_v2;
 use codex_hepta_types::prompt_delivery_v2::PromptDeliveryObservationV2;
 use codex_hepta_types::prompt_delivery_v2::PromptDeliveryRejectReasonV2;
+use codex_hepta_types::protocol_catalog_v2::identity_profile_for_protocol_field_v2;
 use serde::Deserialize;
 use serde::Deserializer;
 use serde::Serialize;
@@ -146,7 +146,7 @@ pub fn decode_prompt_delivery_v2_json(
                 &value,
                 "rejected_reason",
             )?)
-                .map_err(PlatformTypesWireError::Prompt)
+            .map_err(PlatformTypesWireError::Prompt)
         })
         .transpose()?;
     let legacy_v1_digest = wire
