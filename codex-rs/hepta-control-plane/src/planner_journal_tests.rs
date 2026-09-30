@@ -6,10 +6,14 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+use super::MAGIC;
 use super::PlannerJournalError;
+use super::PlannerJournalHeadV1;
 use super::PlannerJournalKindV1;
 use super::PlannerJournalV1;
+use super::digest_entry;
 use crate::FeasiblePlanReceiptV1;
+use crate::GlobalStateSnapshotV1;
 use crate::NduPlanEvaluationInputV1;
 use crate::OwnerReadinessV1;
 use crate::OwnerSummaryV1;
@@ -129,22 +133,39 @@ fn evaluation(prepared: &PreparedPlanInputV1) -> crate::NduPlanEvaluationV1 {
     }))
 }
 
-fn receipt() -> FeasiblePlanReceiptV1 {
+fn snapshot_and_receipt() -> (GlobalStateSnapshotV1, FeasiblePlanReceiptV1) {
     let snapshot = must(collect_snapshot(snapshot_request(), vec![summary()]));
     let prepared = must(prepare_plan(&snapshot, planning_request()));
     let evaluation = evaluation(&prepared);
-    must(finalize_plan(&snapshot, &prepared, &evaluation, 110))
+    let receipt = must(finalize_plan(&snapshot, &prepared, &evaluation, 110));
+    (snapshot, receipt)
+}
+
+fn serialized_record(
+    kind: PlannerJournalKindV1,
+    identity: Digest32,
+    payload: Digest32,
+) -> Vec<u8> {
+    let sequence = 1;
+    let predecessor = Digest32::ZERO;
+    let entry = digest_entry(sequence, kind, identity, payload, predecessor);
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(MAGIC);
+    bytes.extend_from_slice(&1_u32.to_be_bytes());
+    bytes.extend_from_slice(&sequence.to_be_bytes());
+    bytes.push(kind.tag());
+    bytes.extend_from_slice(identity.as_array());
+    bytes.extend_from_slice(payload.as_array());
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(entry.as_array());
+    bytes
 }
 
 #[test]
 fn hash_chain_round_trips_and_preserves_selected_pointer() {
     let mut journal = PlannerJournalV1::new();
-    let receipt = receipt();
-    must(journal.append(
-        PlannerJournalKindV1::Snapshot,
-        digest("snapshot-identity"),
-        digest("snapshot"),
-    ));
+    let (snapshot, receipt) = snapshot_and_receipt();
+    must(journal.record_snapshot(&snapshot));
     must(journal.record_decision(&receipt));
     must(journal.select_plan(digest("selection-operation"), &receipt));
     let bytes = journal.export_bytes();
@@ -155,15 +176,25 @@ fn hash_chain_round_trips_and_preserves_selected_pointer() {
         reopened.selected_plan_digest(),
         Some(receipt.receipt_digest())
     );
+    assert_eq!(reopened.head(), journal.head());
+    assert!(reopened.contains_head(journal.head()));
+    assert!(reopened.contains_head(PlannerJournalHeadV1::empty()));
 }
 
 #[test]
 fn identical_identity_is_idempotent_but_payload_drift_conflicts() {
     let mut journal = PlannerJournalV1::new();
     let identity = digest("identity");
-    let payload = digest("payload");
-    let first = must(journal.append(PlannerJournalKindV1::Decision, identity, payload));
-    let replay = must(journal.append(PlannerJournalKindV1::Decision, identity, payload));
+    let first = must(journal.append(
+        PlannerJournalKindV1::Decision,
+        identity,
+        identity,
+    ));
+    let replay = must(journal.append(
+        PlannerJournalKindV1::Decision,
+        identity,
+        identity,
+    ));
     assert_eq!(first, replay);
     assert_eq!(journal.entries().len(), 1);
 
@@ -182,11 +213,8 @@ fn identical_identity_is_idempotent_but_payload_drift_conflicts() {
 #[test]
 fn truncation_and_tampering_fail_closed() {
     let mut journal = PlannerJournalV1::new();
-    must(journal.append(
-        PlannerJournalKindV1::Snapshot,
-        digest("identity"),
-        digest("payload"),
-    ));
+    let (snapshot, _) = snapshot_and_receipt();
+    must(journal.record_snapshot(&snapshot));
     let bytes = journal.export_bytes();
     assert_eq!(
         PlannerJournalV1::reopen(&bytes[..bytes.len() - 1])
@@ -206,7 +234,7 @@ fn truncation_and_tampering_fail_closed() {
 #[test]
 fn revocation_clears_selection_and_prevents_reselection() {
     let mut journal = PlannerJournalV1::new();
-    let receipt = receipt();
+    let (_, receipt) = snapshot_and_receipt();
     must(journal.record_decision(&receipt));
     must(journal.select_plan(digest("select-1"), &receipt));
     must(journal.revoke(digest("revoke-1"), receipt.receipt_digest()));
@@ -216,5 +244,65 @@ fn revocation_clears_selection_and_prevents_reselection() {
             .select_plan(digest("select-2"), &receipt)
             .expect_err("revoked plan must not be reselected"),
         PlannerJournalError::RevokedPlan
+    );
+}
+
+#[test]
+fn typed_api_rejects_revocation_without_a_recorded_decision() {
+    let mut journal = PlannerJournalV1::new();
+    assert_eq!(
+        journal
+            .revoke(digest("revoke"), digest("unknown-decision"))
+            .expect_err("unknown target must reject"),
+        PlannerJournalError::RevocationTargetNotRecorded
+    );
+}
+
+#[test]
+fn reopen_replays_semantics_and_rejects_selection_without_decision() {
+    let bytes = serialized_record(
+        PlannerJournalKindV1::SelectedPlan,
+        digest("selection"),
+        digest("missing-decision"),
+    );
+    assert_eq!(
+        PlannerJournalV1::reopen(&bytes).expect_err("semantic replay must reject"),
+        PlannerJournalError::DecisionNotRecorded
+    );
+}
+
+#[test]
+fn reopen_replays_semantics_and_rejects_revocation_without_decision() {
+    let bytes = serialized_record(
+        PlannerJournalKindV1::Revocation,
+        digest("revocation"),
+        digest("missing-decision"),
+    );
+    assert_eq!(
+        PlannerJournalV1::reopen(&bytes).expect_err("semantic replay must reject"),
+        PlannerJournalError::RevocationTargetNotRecorded
+    );
+}
+
+#[test]
+fn reopen_rejects_noncanonical_snapshot_and_decision_records() {
+    let snapshot = serialized_record(
+        PlannerJournalKindV1::Snapshot,
+        digest("snapshot-identity"),
+        digest("snapshot-payload"),
+    );
+    assert_eq!(
+        PlannerJournalV1::reopen(&snapshot).expect_err("snapshot identity must bind payload"),
+        PlannerJournalError::InvalidSnapshotRecord
+    );
+
+    let decision = serialized_record(
+        PlannerJournalKindV1::Decision,
+        digest("decision-identity"),
+        digest("decision-payload"),
+    );
+    assert_eq!(
+        PlannerJournalV1::reopen(&decision).expect_err("decision identity must bind payload"),
+        PlannerJournalError::InvalidDecisionRecord
     );
 }
