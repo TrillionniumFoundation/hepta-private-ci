@@ -7,6 +7,7 @@ on:
       - "codex-rs/hepta-contracts/src/final_use*.rs"
       - "codex-rs/hepta-contracts/FINAL_USE*.md"
       - "codex-rs/hepta-agentd/**"
+      - "docs/modules/secrets.heptabao/DYNAMIC_PROVIDER_ACCEPTANCE_V1.md"
       - "scripts/verify_openbao_compatibility.py"
       - ".github/workflows/openbao-compatibility.yml"
   push:
@@ -17,6 +18,7 @@ on:
       - "codex-rs/hepta-contracts/src/final_use*.rs"
       - "codex-rs/hepta-contracts/FINAL_USE*.md"
       - "codex-rs/hepta-agentd/**"
+      - "docs/modules/secrets.heptabao/DYNAMIC_PROVIDER_ACCEPTANCE_V1.md"
       - "scripts/verify_openbao_compatibility.py"
       - ".github/workflows/openbao-compatibility.yml"
   workflow_dispatch:
@@ -25,8 +27,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: openbao-compatibility-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: openbao-compatibility-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+  cancel-in-progress: false
 
 jobs:
   compatibility:
@@ -41,10 +43,54 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Require exact pristine source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
       - name: Validate compatibility state without blocking ordinary source merge
         if: github.event_name != 'workflow_dispatch'
         run: python3 scripts/verify_openbao_compatibility.py --report-only
 
+      - name: Record absent real dynamic-provider evidence fail closed
+        if: github.event_name != 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/openbao-evidence"
+          python3 codex-rs/hepta-bao-adapter/qa/verify_dynamic_provider_evidence.py \
+            --expected-source-sha "${{ github.event.pull_request.head.sha || github.sha }}" \
+            --output "$RUNNER_TEMP/openbao-evidence/dynamic-provider-gate.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          path = Path(os.environ["RUNNER_TEMP"]) / "openbao-evidence/dynamic-provider-gate.json"
+          status = json.loads(path.read_text())
+          assert status["receiptPresent"] is False
+          assert status["dynamicLeaseExecutionProved"] is False
+          PY
+
       - name: Run explicit fail-closed replacement qualification
         if: github.event_name == 'workflow_dispatch'
-        run: python3 scripts/verify_openbao_compatibility.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_openbao_compatibility.py
+          python3 codex-rs/hepta-bao-adapter/qa/verify_dynamic_provider_evidence.py \
+            --expected-source-sha "${{ github.sha }}" \
+            --output "$RUNNER_TEMP/dynamic-provider-gate.json" \
+            --require-qualified
+
+      - name: Upload dynamic-provider gate status
+        if: always() && github.event_name != 'workflow_dispatch'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: openbao-dynamic-provider-gate-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/openbao-evidence
+          if-no-files-found: error
+          retention-days: 90
