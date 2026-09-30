@@ -1,5 +1,5 @@
-# exact-dispatch: this workflow existed in the parent commit before this trigger
-name: Prompt registry phase 2 exact closeout
+# exact-export: validate locally and export reviewed source bytes for Git-data publication
+name: Prompt registry phase 2 verified export
 
 on:
   push:
@@ -9,19 +9,19 @@ on:
       - .github/workflows/zz-prompt-registry-phase2-closeout.yml
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: prompt-registry-phase2-exact-closeout
-  cancel-in-progress: false
+  group: prompt-registry-phase2-verified-export
+  cancel-in-progress: true
 
 jobs:
-  closeout:
+  export:
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     env:
-      TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
-      EXPECTED_TRIGGER_PARENT: 0370f2ee23092735f5a72d5393f3af0eaed4db11
+      EXPECTED_TRIGGER_PARENT: ae491f090f71bd909796eb51aee9f61fe4e3e6b8
+      EXPECTED_WORKFLOW_PARENT: 0370f2ee23092735f5a72d5393f3af0eaed4db11
       EXPECTED_DELIVERY_PARENT: 8825996f927ca1cb3e1271ffcce0261ce25b398e
       AUTHOR_BRANCH: ops/prompt-registry-phase2-author-20260930
       CARGO_INCREMENTAL: '0'
@@ -34,6 +34,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Bind exact trigger and reviewed transformations
         shell: bash
@@ -41,8 +42,8 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test "$(git rev-parse HEAD^)" = "$EXPECTED_TRIGGER_PARENT"
-          test "$(git rev-parse HEAD^^)" = "$EXPECTED_DELIVERY_PARENT"
-          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^^)" = "$EXPECTED_WORKFLOW_PARENT"
+          test "$(git rev-parse HEAD^^^)" = "$EXPECTED_DELIVERY_PARENT"
           git fetch origin "refs/heads/$AUTHOR_BRANCH:refs/remotes/origin/$AUTHOR_BRANCH"
           git show "refs/remotes/origin/$AUTHOR_BRANCH:.github/scripts/prompt_registry_phase2_20260930.py" > "$RUNNER_TEMP/phase2.py"
           git show "refs/remotes/origin/$AUTHOR_BRANCH:.github/scripts/prompt_registry_phase2_fixups_20260930.py" > "$RUNNER_TEMP/phase2-fixups.py"
@@ -116,7 +117,7 @@ jobs:
             -p codex-hepta-prompt-extension \
             --all-targets --no-deps -- -D warnings
 
-      - name: Commit ordinary source and remove the one-shot workflow
+      - name: Build locally committed exact candidate and generated truth
         shell: bash
         run: |
           set -euo pipefail
@@ -141,14 +142,33 @@ jobs:
           if test -n "$(git diff --cached --name-only)"; then
             git commit -m 'docs(prompt.registry): bind closed-world capability truth'
           fi
-
           python3 scripts/hepta-prompt-registry-map.py --check
           git diff --check
           test -z "$(git status --porcelain)"
 
-      - name: Publish only as an exact fast-forward
+      - name: Export exact final tree delta
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$GITHUB_SHA"
-          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          export_root="$RUNNER_TEMP/prompt-registry-phase2-export"
+          mkdir -p "$export_root/files"
+          git diff --name-status "$EXPECTED_DELIVERY_PARENT"..HEAD > "$export_root/name-status.txt"
+          git diff --binary "$EXPECTED_DELIVERY_PARENT"..HEAD > "$export_root/candidate.patch"
+          git rev-parse HEAD > "$export_root/local-head.txt"
+          git rev-parse HEAD^{tree} > "$export_root/local-tree.txt"
+          git rev-parse "$EXPECTED_DELIVERY_PARENT" > "$export_root/delivery-parent.txt"
+          while IFS= read -r path; do
+            mkdir -p "$export_root/files/$(dirname "$path")"
+            cp "$path" "$export_root/files/$path"
+          done < <(git diff --name-only --diff-filter=ACMRT "$EXPECTED_DELIVERY_PARENT"..HEAD)
+          tar -C "$export_root" -czf "$RUNNER_TEMP/prompt-registry-phase2-export.tar.gz" .
+          sha256sum "$RUNNER_TEMP/prompt-registry-phase2-export.tar.gz" > "$RUNNER_TEMP/prompt-registry-phase2-export.sha256"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-phase2-export-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/prompt-registry-phase2-export.tar.gz
+            ${{ runner.temp }}/prompt-registry-phase2-export.sha256
+          if-no-files-found: error
+          retention-days: 30
