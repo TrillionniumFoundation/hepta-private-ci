@@ -1,0 +1,302 @@
+name: Kernel authority production closure
+
+on:
+  push:
+    branches: [main, work/kernel-authority-convergence-20260925]
+    paths:
+      - 'codex-rs/hepta-contracts/**'
+      - 'codex-rs/hepta-fleet/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-automation/**'
+      - 'codex-rs/hepta-prompt-registry/**'
+      - 'codex-rs/hepta-bao-adapter/**'
+      - 'codex-rs/model-provider/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/rust-toolchain*'
+      - 'codex-rs/.cargo/**'
+      - 'codex-rs/.config/**'
+      - 'justfile'
+      - 'scripts/just-shell.py'
+      - 'CALLERS.toml'
+      - 'qa/b4-no-bypass/**'
+      - 'scripts/verify_hepta_callers.py'
+      - 'scripts/kernel_authority_status.py'
+      - 'qualification/kernel-authority/**'
+      - 'docs/modules/kernel.authority/**'
+      - '.github/workflows/kernel-authority*.yml'
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-contracts/**'
+      - 'codex-rs/hepta-fleet/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-automation/**'
+      - 'codex-rs/hepta-prompt-registry/**'
+      - 'codex-rs/hepta-bao-adapter/**'
+      - 'codex-rs/model-provider/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/rust-toolchain*'
+      - 'codex-rs/.cargo/**'
+      - 'codex-rs/.config/**'
+      - 'justfile'
+      - 'scripts/just-shell.py'
+      - 'CALLERS.toml'
+      - 'qa/b4-no-bypass/**'
+      - 'scripts/verify_hepta_callers.py'
+      - 'scripts/kernel_authority_status.py'
+      - 'qualification/kernel-authority/**'
+      - 'docs/modules/kernel.authority/**'
+      - '.github/workflows/kernel-authority*.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-authority-production-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  identity:
+    name: Pin immutable source and base
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      source: ${{ steps.pin.outputs.source }}
+      source_tree: ${{ steps.pin.outputs.source_tree }}
+      base: ${{ steps.pin.outputs.base }}
+      modes: ${{ steps.pin.outputs.modes }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - id: pin
+        shell: bash
+        env:
+          EVENT_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_BASE: ${{ github.event.pull_request.base.sha || '' }}
+        run: |
+          set -euo pipefail
+          source="$(git rev-parse HEAD)"
+          test "$source" = "$EVENT_SOURCE"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          if [ -n "$EVENT_BASE" ]; then
+            git fetch --no-tags origin "$EVENT_BASE"
+            base="$(git rev-parse "$EVENT_BASE^{commit}")"
+          else
+            git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main
+            base="$(git rev-parse refs/remotes/origin/main)"
+          fi
+          modes='["exact-head","synthetic-merge"]'
+          if [ "$GITHUB_REF" = refs/heads/main ] && [ -z "$EVENT_BASE" ]; then
+            modes='["exact-head"]'
+          fi
+          printf 'source=%s\nsource_tree=%s\nbase=%s\nmodes=%s\n' \
+            "$source" "$source_tree" "$base" "$modes" >> "$GITHUB_OUTPUT"
+          test -z "$(git status --porcelain)"
+
+  qualify:
+    name: Closure (${{ matrix.mode }}, ${{ matrix.lane }})
+    needs: identity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        mode: ${{ fromJSON(needs.identity.outputs.modes) }}
+        lane: [trust-bundle, product-pilot, product-process, performance]
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+      CARGO_INCREMENTAL: 0
+      RUST_BACKTRACE: 1
+      RUST_MIN_STACK: 8388608
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.identity.outputs.source }}
+          persist-credentials: false
+      - name: Verify source then prepare immutable candidate
+        shell: bash
+        env:
+          EXPECTED_SOURCE: ${{ needs.identity.outputs.source }}
+          EXPECTED_TREE: ${{ needs.identity.outputs.source_tree }}
+          EXPECTED_BASE: ${{ needs.identity.outputs.base }}
+          MODE: ${{ matrix.mode }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$EXPECTED_TREE"
+          test -z "$(git status --porcelain)"
+          mkdir -p "$RUNNER_TEMP/authority-evidence"
+          python3 -B qualification/kernel-authority/prepare_candidate.py \
+            --mode "$MODE" --base-sha "$EXPECTED_BASE" \
+            --output "$RUNNER_TEMP/authority-evidence/identity.json"
+      - name: Reject stale or cross-candidate identity
+        shell: bash
+        env:
+          MODE: ${{ matrix.mode }}
+          SOURCE: ${{ needs.identity.outputs.source }}
+          BASE: ${{ needs.identity.outputs.base }}
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY'
+          import json, os, pathlib, subprocess
+          identity = json.loads((pathlib.Path(os.environ["RUNNER_TEMP"]) / "authority-evidence/identity.json").read_text())
+          fields = {"schema", "mode", "sourceCommit", "baseCommit", "candidateCommit", "candidateTree", "activationGranted", "releaseGranted"}
+          if set(identity) != fields: raise SystemExit("candidate identity fields drifted")
+          if identity["schema"] != "hepta.kernel-authority-candidate.v1": raise SystemExit("candidate schema mismatch")
+          for key, variable in (("mode", "MODE"), ("sourceCommit", "SOURCE"), ("baseCommit", "BASE")):
+              if identity[key] != os.environ[variable]: raise SystemExit(f"candidate {key} mismatch")
+          for key, ref in (("candidateCommit", "HEAD"), ("candidateTree", "HEAD^{tree}")):
+              if identity[key] != subprocess.check_output(["git", "rev-parse", ref], text=True).strip(): raise SystemExit(f"candidate {key} mismatch")
+          if identity["activationGranted"] is not False or identity["releaseGranted"] is not False: raise SystemExit("qualification cannot grant authority")
+          PY
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        if: matrix.lane == 'trust-bundle'
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Execute exact-candidate read-only lane
+        shell: bash
+        env:
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          identity="$RUNNER_TEMP/authority-evidence/identity.json"
+          output="$RUNNER_TEMP/authority-evidence/$LANE"
+          case "$LANE" in
+            trust-bundle)
+              python3 -B qualification/kernel-authority/run_native_checks.py \
+                --identity "$identity" --output-dir "$output"
+              ;;
+            product-pilot)
+              python3 -B qualification/kernel-authority/runtime_qualification.py \
+                --identity "$identity" --output-dir "$output/product-paths" pilot
+              python3 -B qualification/kernel-authority/owner_runtime_qualification.py \
+                --identity "$identity" --output-dir "$output/owned-effect-runtime"
+              ;;
+            product-process)
+              python3 -B qualification/kernel-authority/test_product_process_recovery.py
+              cd codex-rs
+              cargo fmt --check -p codex-hepta-agentd
+              cargo clippy --locked -p codex-hepta-agentd \
+                --test authority_effect_process_restart -- -D warnings
+              cd ..
+              python3 -B qualification/kernel-authority/product_process_recovery.py \
+                --identity "$identity" --output-dir "$output"
+              ;;
+            performance)
+              python3 -B qualification/kernel-authority/runtime_qualification.py \
+                --identity "$identity" --output-dir "$output/source-benchmark" benchmark --samples 128
+              python3 -B qualification/kernel-authority/capacity_matrix.py self-test \
+                --output "$output/capacity-matrix-self-test.json"
+              ;;
+            *) exit 2 ;;
+          esac
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Retain results including partial or failed execution
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kernel-authority-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ needs.identity.outputs.source }}-${{ matrix.mode }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/authority-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+  port-acceptance:
+    name: Reopen executable port acceptance matrix
+    needs: [identity, qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.identity.outputs.source }}
+          persist-credentials: false
+      - name: Download exact-head product pilot
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: kernel-authority-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ needs.identity.outputs.source }}-exact-head-product-pilot
+          path: ${{ runner.temp }}/authority-port-acceptance/pilot
+      - name: Download exact-head product-process recovery
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: kernel-authority-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ needs.identity.outputs.source }}-exact-head-product-process
+          path: ${{ runner.temp }}/authority-port-acceptance/process
+      - name: Reopen raw logs and project lifecycle obligations
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/authority-port-acceptance"
+          cmp "$root/pilot/identity.json" "$root/process/identity.json"
+          python3 -B qualification/kernel-authority/port_acceptance.py \
+            --identity "$root/pilot/identity.json" \
+            --pilot-dir "$root/pilot/product-pilot/product-paths" \
+            --product-process-dir "$root/process/product-process" \
+            --output "$root/port-acceptance.json"
+          python3 -B - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "authority-port-acceptance"
+          value = json.loads((root / "port-acceptance.json").read_text())
+          if value["schema"] != "hepta.kernel-authority-port-acceptance.v2":
+              raise SystemExit("port acceptance schema mismatch")
+          if value["nativeEvidence"] != "pilot-and-product-process-raw-logs-reopened":
+              raise SystemExit("port acceptance did not reopen both evidence classes")
+          if value["productProcessVerified"] is not True:
+              raise SystemExit("product-process recovery was not verified")
+          if any(value[field] is not False for field in (
+              "productionTrustProved", "independentAcceptance",
+              "activationGranted", "releaseGranted",
+          )):
+              raise SystemExit("port acceptance cannot grant production authority")
+          PY
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Retain executable port acceptance matrix
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kernel-authority-port-acceptance-${{ github.run_id }}-${{ github.run_attempt }}-${{ needs.identity.outputs.source }}
+          path: ${{ runner.temp }}/authority-port-acceptance
+          if-no-files-found: error
+          retention-days: 14
+
+  merge-gate:
+    name: Production closure gate
+    if: always()
+    needs: [identity, qualify, port-acceptance]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require all applicable immutable subjects
+        shell: bash
+        env:
+          IDENTITY_RESULT: ${{ needs.identity.result }}
+          QUALIFY_RESULT: ${{ needs.qualify.result }}
+          PORT_ACCEPTANCE_RESULT: ${{ needs.port-acceptance.result }}
+          SOURCE: ${{ needs.identity.outputs.source }}
+          SOURCE_TREE: ${{ needs.identity.outputs.source_tree }}
+          BASE: ${{ needs.identity.outputs.base }}
+        run: |
+          set -euo pipefail
+          test "$IDENTITY_RESULT" = success
+          test "$QUALIFY_RESULT" = success
+          test "$PORT_ACCEPTANCE_RESULT" = success
+          test "${#SOURCE}" -eq 40
+          test "${#SOURCE_TREE}" -eq 40
+          test "${#BASE}" -eq 40
+          printf 'repository checks passed source=%s tree=%s base=%s; no deployment/release authority\n' \
+            "$SOURCE" "$SOURCE_TREE" "$BASE"
