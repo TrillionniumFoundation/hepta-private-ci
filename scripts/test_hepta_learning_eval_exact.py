@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Hermetic tests for exact-tree receipts, not statistical or host acceptance."""
+
 import hashlib
 import importlib.util
 import json
@@ -28,7 +29,14 @@ class ExactQualificationTests(unittest.TestCase):
         for command in [
             ["git", "init", "-q", str(self.root)],
             ["git", "-C", str(self.root), "config", "user.name", "Receipt test"],
-            ["git", "-C", str(self.root), "config", "user.email", "test@example.invalid"],
+            [
+                "git",
+                "-C",
+                str(self.root),
+                "config",
+                "user.email",
+                "test@example.invalid",
+            ],
         ]:
             subprocess.run(command, check=True)
         (self.root / "source.txt").write_text("immutable source\n")
@@ -38,14 +46,28 @@ class ExactQualificationTests(unittest.TestCase):
 
     def commit(self, message):
         subprocess.run(["git", "-C", str(self.root), "add", "source.txt"], check=True)
-        subprocess.run(["git", "-C", str(self.root), "commit", "-qm", message], check=True)
+        subprocess.run(
+            ["git", "-C", str(self.root), "commit", "-qm", message], check=True
+        )
 
     def run_main(self):
-        return MODULE.main(["--source-commit", self.head, "--candidate-commit", self.head,
-                            "--kind", "head"])
+        return MODULE.main(
+            [
+                "--source-commit",
+                self.head,
+                "--candidate-commit",
+                self.head,
+                "--kind",
+                "head",
+            ]
+        )
 
     def manifest(self):
-        return json.loads((self.root / ".hepta-evidence/learning-eval/head/convergence.json").read_text())
+        return json.loads(
+            (
+                self.root / ".hepta-evidence/learning-eval/head/convergence.json"
+            ).read_text()
+        )
 
     def test_head_requires_full_exact_clean_commit(self):
         MODULE.validate_checkout(self.root, self.head, self.head, None, "head")
@@ -62,7 +84,9 @@ class ExactQualificationTests(unittest.TestCase):
         self.commit("candidate")
         head = MODULE.git(self.root, "rev-parse", "HEAD")
         tree = MODULE.git(self.root, "rev-parse", "HEAD^{tree}")
-        merge = MODULE.git(self.root, "commit-tree", tree, "-p", base, "-p", head, "-m", "merge")
+        merge = MODULE.git(
+            self.root, "commit-tree", tree, "-p", base, "-p", head, "-m", "merge"
+        )
         subprocess.run(["git", "checkout", "-q", "--detach", merge], check=True)
         result = MODULE.validate_checkout(self.root, merge, head, base, "merge")
         self.assertEqual(result["orderedParents"], [base, head])
@@ -71,7 +95,15 @@ class ExactQualificationTests(unittest.TestCase):
 
     def test_failed_command_retains_log_exit_code_and_skipped_status(self):
         commands = [
-            ("failure", [sys.executable, "-c", "print('durable failure evidence'); raise SystemExit(7)"], "."),
+            (
+                "failure",
+                [
+                    sys.executable,
+                    "-c",
+                    "print('durable failure evidence'); raise SystemExit(7)",
+                ],
+                ".",
+            ),
             ("not-executed", [sys.executable, "-c", "raise SystemExit(0)"], "."),
         ]
         with mock.patch.object(MODULE, "commands", return_value=commands):
@@ -82,27 +114,49 @@ class ExactQualificationTests(unittest.TestCase):
         self.assertEqual(first["status"], "failed")
         self.assertEqual(second["status"], "not_run_after_failure")
         log = self.root / ".hepta-evidence/learning-eval/head" / first["log"]["path"]
-        self.assertEqual(first["log"]["sha256"], hashlib.sha256(log.read_bytes()).hexdigest())
+        self.assertEqual(
+            first["log"]["sha256"], hashlib.sha256(log.read_bytes()).hexdigest()
+        )
         self.assertIn("durable failure evidence", log.read_text())
         self.assertFalse(value["claims"]["sourceQualifiedByThisRun"])
 
     def test_success_never_issues_external_acceptance(self):
         commands = [("check", [sys.executable, "-c", "print('source check')"], ".")]
-        with mock.patch.object(MODULE, "commands", return_value=commands), \
-                mock.patch.object(MODULE, "validate_outputs", return_value={"testFixture": True}):
+        with (
+            mock.patch.object(MODULE, "commands", return_value=commands),
+            mock.patch.object(
+                MODULE, "validate_outputs", return_value={"testFixture": True}
+            ),
+        ):
             self.assertEqual(self.run_main(), 0)
         value = self.manifest()
         self.assertTrue(value["claims"]["sourceQualifiedByThisRun"])
         self.assertTrue(value["trackedSourceUnchanged"])
         self.assertEqual(value["authority"], "DENY_ALL")
-        for key in ["targetHostQualified", "independentAcceptance", "activationAuthorized", "releaseAuthorized"]:
+        for key in [
+            "targetHostQualified",
+            "independentAcceptance",
+            "activationAuthorized",
+            "releaseAuthorized",
+        ]:
             self.assertFalse(value["claims"][key])
 
     def test_source_mutation_during_execution_cannot_qualify(self):
-        commands = [("bad-command", [sys.executable, "-c",
-                    "from pathlib import Path; Path('source.txt').write_text('changed')"], ".")]
-        with mock.patch.object(MODULE, "commands", return_value=commands), \
-                mock.patch.object(MODULE, "validate_outputs", return_value={}):
+        commands = [
+            (
+                "bad-command",
+                [
+                    sys.executable,
+                    "-c",
+                    "from pathlib import Path; Path('source.txt').write_text('changed')",
+                ],
+                ".",
+            )
+        ]
+        with (
+            mock.patch.object(MODULE, "commands", return_value=commands),
+            mock.patch.object(MODULE, "validate_outputs", return_value={}),
+        ):
             self.assertEqual(self.run_main(), 1)
         value = self.manifest()
         self.assertFalse(value["claims"]["sourceQualifiedByThisRun"])
@@ -111,10 +165,67 @@ class ExactQualificationTests(unittest.TestCase):
     def test_launch_error_is_not_exit_zero(self):
         output = self.root / "logs"
         output.mkdir()
-        result = MODULE.execute("missing", ["/nonexistent/hepta-test-command"], self.root, output)
+        result = MODULE.execute(
+            "missing", ["/nonexistent/hepta-test-command"], self.root, output
+        )
         self.assertEqual(result["status"], "failed")
         self.assertIsNone(result["exitCode"])
         self.assertIn("FileNotFoundError", result["error"])
+
+
+class StorageProfileEvidenceTests(unittest.TestCase):
+    def assert_invalid_profile_rejected(self, mutate):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            coverage = {
+                "data": [
+                    {
+                        "totals": {
+                            "lines": {
+                                "count": 100,
+                                "covered": 90,
+                                "percent": 90.0,
+                            }
+                        }
+                    }
+                ]
+            }
+            for name in ("coverage.json", "compatibility-coverage.json"):
+                (output / name).write_text(json.dumps(coverage), encoding="utf-8")
+            profile = {
+                "schema": "hepta.learning-eval.storage-profile.v1",
+                "attempts": {"attemptCount": 1024, "eventCount": 7168},
+                "holdout": {
+                    "fenceTransitions": 512,
+                    "planRecords": 512,
+                    "retryPreserved": True,
+                    "anchorPreserved": True,
+                    "beforeBytes": 4096,
+                    "afterBytes": 2048,
+                },
+            }
+            path = output / "storage-profile.json"
+            path.write_text(json.dumps(profile), encoding="utf-8")
+            MODULE.validate_outputs(output)
+            mutate(profile["holdout"])
+            path.write_text(json.dumps(profile), encoding="utf-8")
+            with self.assertRaises((KeyError, ValueError)):
+                MODULE.validate_outputs(output)
+
+    def test_profile_cannot_omit_plan_and_retry_evidence(self):
+        for field in ("planRecords", "retryPreserved"):
+            with self.subTest(field=field):
+                self.assert_invalid_profile_rejected(lambda holdout: holdout.pop(field))
+
+    def test_empty_plan_profile_cannot_qualify_compaction(self):
+        self.assert_invalid_profile_rejected(
+            lambda holdout: holdout.update(planRecords=0)
+        )
+
+    def test_lost_retry_profile_cannot_qualify_compaction(self):
+        self.assert_invalid_profile_rejected(
+            lambda holdout: holdout.update(retryPreserved=False)
+        )
 
 
 if __name__ == "__main__":

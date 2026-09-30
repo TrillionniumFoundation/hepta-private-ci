@@ -8,14 +8,24 @@ use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
+use codex_hepta_intelligence_eval::CrossFoldPlanReceiptV1;
+use codex_hepta_intelligence_eval::CrossFoldPlanV1;
+use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
+use codex_hepta_intelligence_eval::EvaluationDirectionV1;
 use codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1;
+use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
+use codex_hepta_intelligence_eval::HoldoutUseDispositionV1;
 use codex_hepta_intelligence_eval::HoldoutWriterFenceV1;
 use codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1;
 use codex_hepta_intelligence_eval::LockedFileProductEvaluationAttemptJournalV1;
+use codex_hepta_intelligence_eval::MetricContractV1;
 use codex_hepta_intelligence_eval::ProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::ProductEvaluationAttemptPhaseV1;
 use codex_hepta_intelligence_eval::ProductEvaluationAttemptTransitionV1;
+use codex_hepta_intelligence_eval::freeze_cross_fold_plan;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 #[derive(Clone, Debug)]
@@ -143,17 +153,46 @@ fn run_profile(root: &std::path::Path, args: &Args) -> Result<String, Box<dyn Er
     let first_fence = fence(1)?;
     let mut owner = FencedFinalHoldoutOwnerV1::initialize(store, holdout_binding, first_fence)?;
     let holdout_write_start = Instant::now();
-    for generation in 2..=args.fences {
-        owner = FencedFinalHoldoutOwnerV1::recover(
-            owner.into_store(),
-            holdout_binding,
-            fence(generation)?,
-        )?;
+    // Keep the existing fence budget and consume one distinct, frozen source
+    // fixture per generation so takeover, reopen and compaction retain records.
+    for generation in 1..=args.fences {
+        if generation > 1 {
+            owner = FencedFinalHoldoutOwnerV1::recover(
+                owner.into_store(),
+                holdout_binding,
+                fence(generation)?,
+            )?;
+        }
+        let plan = frozen_holdout_plan(generation)?;
+        let receipt = owner.consume(&plan)?;
+        if receipt.disposition != HoldoutUseDispositionV1::Recorded {
+            return Err("profile failed to record a distinct final-holdout plan".into());
+        }
     }
     let holdout_write_micros = holdout_write_start.elapsed().as_micros();
     let anchor = owner.anchor();
     let mut store = owner.into_store();
     let before = store.capacity();
+    if before.record_count != args.fences || anchor.record_count != args.fences {
+        return Err("holdout profile lost consumed plans".into());
+    }
+    let expected_state = store
+        .load(holdout_binding)?
+        .ok_or("missing holdout state")?;
+    drop(store);
+    let source_recovery_start = Instant::now();
+    let mut store = LockedFileFinalHoldoutCasStoreV1::recover(
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&holdout_path)?,
+        holdout_binding,
+        Some(anchor),
+    )?;
+    let source_recovery_micros = source_recovery_start.elapsed().as_micros();
+    if store.load(holdout_binding)?.as_ref() != Some(&expected_state) {
+        return Err("source holdout reopen changed consumed history".into());
+    }
     let compaction_start = Instant::now();
     let (compacted, compaction) = store.compact_into(create_empty(&compacted_path)?)?;
     let compaction_micros = compaction_start.elapsed().as_micros();
@@ -164,7 +203,7 @@ fn run_profile(root: &std::path::Path, args: &Args) -> Result<String, Box<dyn Er
     }
     drop(compacted);
     let holdout_recovery_start = Instant::now();
-    let recovered_holdout = LockedFileFinalHoldoutCasStoreV1::recover(
+    let mut recovered_holdout = LockedFileFinalHoldoutCasStoreV1::recover(
         OpenOptions::new()
             .read(true)
             .write(true)
@@ -173,8 +212,24 @@ fn run_profile(root: &std::path::Path, args: &Args) -> Result<String, Box<dyn Er
         Some(anchor),
     )?;
     let holdout_recovery_micros = holdout_recovery_start.elapsed().as_micros();
-    if recovered_holdout.anchor() != Some(anchor) {
-        return Err("compacted holdout recovery changed the authoritative anchor".into());
+    if recovered_holdout.anchor() != Some(anchor)
+        || recovered_holdout.load(holdout_binding)?.as_ref() != Some(&expected_state)
+    {
+        return Err("compacted holdout recovery changed the authoritative history".into());
+    }
+    let recovered_bytes = recovered_holdout.byte_len();
+    let mut owner = FencedFinalHoldoutOwnerV1::recover(
+        recovered_holdout,
+        holdout_binding,
+        fence(args.fences)?,
+    )?;
+    let retry = owner.consume(&frozen_holdout_plan(args.fences)?)?;
+    let store = owner.into_store();
+    if retry.disposition != HoldoutUseDispositionV1::IdempotentReplay
+        || store.anchor() != Some(anchor)
+        || store.byte_len() != recovered_bytes
+    {
+        return Err("reopened final-holdout retry changed persisted history".into());
     }
 
     let body = format!(
@@ -190,13 +245,16 @@ fn run_profile(root: &std::path::Path, args: &Args) -> Result<String, Box<dyn Er
             "  }},\n",
             "  \"holdout\": {{\n",
             "    \"fenceTransitions\": {},\n",
+            "    \"planRecords\": {},\n",
             "    \"beforeBytes\": {},\n",
             "    \"afterBytes\": {},\n",
             "    \"bytesLimit\": {},\n",
             "    \"recordLimit\": {},\n",
             "    \"writeMicros\": {},\n",
+            "    \"sourceRecoveryMicros\": {},\n",
             "    \"compactionMicros\": {},\n",
             "    \"recoveryMicros\": {},\n",
+            "    \"retryPreserved\": true,\n",
             "    \"anchorPreserved\": true\n",
             "  }}\n",
             "}}"
@@ -207,11 +265,13 @@ fn run_profile(root: &std::path::Path, args: &Args) -> Result<String, Box<dyn Er
         attempt_write_micros,
         attempt_recovery_micros,
         args.fences,
+        before.record_count,
         before.bytes_used,
         after.bytes_used,
         before.bytes_limit,
         before.record_limit,
         holdout_write_micros,
+        source_recovery_micros,
         compaction_micros,
         holdout_recovery_micros,
     );
@@ -277,4 +337,48 @@ fn fence(generation: u64) -> Result<HoldoutWriterFenceV1, Box<dyn Error>> {
         generation,
         lease_digest: digest(&format!("profile-lease:{generation}")),
     })
+}
+
+// Synthetic preregistered plans exercise storage semantics, not measured efficacy.
+fn frozen_holdout_plan(index: u64) -> Result<CrossFoldPlanReceiptV1, Box<dyn Error>> {
+    let final_window = id(&format!("profile-final-window:{index}"))?;
+    let folds = ["a", "b"]
+        .into_iter()
+        .map(|label| {
+            Ok(CrossFoldPartitionV1 {
+                fold_id: id(&format!("profile-fold:{label}"))?,
+                training_principals: vec![id(&format!("profile-training-principal:{label}"))?],
+                training_episodes: vec![id(&format!("profile-training-episode:{label}"))?],
+                training_windows: vec![id(&format!("profile-training-window:{label}"))?],
+                holdout_principals: vec![id(&format!("profile-held-principal:{label}"))?],
+                holdout_episodes: vec![id(&format!("profile-held-episode:{label}"))?],
+                holdout_windows: vec![if label == "b" {
+                    final_window.clone()
+                } else {
+                    id(&format!("profile-holdout-window:{index}:{label}"))?
+                }],
+                model_digest: digest(&format!("profile-model:{index}:{label}")),
+                predictions_digest: digest(&format!("profile-predictions:{index}:{label}")),
+            })
+        })
+        .collect::<Result<Vec<_>, Box<dyn Error>>>()?;
+    Ok(freeze_cross_fold_plan(CrossFoldPlanV1 {
+        plan_id: id(&format!("profile-holdout-plan:{index}"))?,
+        claim_scope: EvaluationClaimScopeV1::Qualification,
+        candidate_id: id("profile-candidate")?,
+        baseline_id: id("profile-baseline")?,
+        objective_digest: digest("profile-objective"),
+        dataset_digest: digest("profile-dataset"),
+        estimand_digest: digest("profile-estimand"),
+        metric_contracts: vec![MetricContractV1 {
+            metric_id: id("profile-utility")?,
+            direction: EvaluationDirectionV1::Maximize,
+            safety_floor: Some(FixedQ32::ZERO),
+        }],
+        family_alpha_ppm: 50_000,
+        simultaneous_comparisons: 1,
+        folds,
+        final_holdout_window_id: final_window,
+        final_holdout_digest: digest(&format!("profile-final-holdout:{index}")),
+    })?)
 }
