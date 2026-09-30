@@ -1,9 +1,9 @@
 //! Bounded observability for canonical intelligence execution.
 //!
 //! Counters contain no prompt, objective or owner payload. They expose only
-//! bounded lifecycle totals, stage latency aggregates and failure classes. The
-//! snapshot is suitable for health/qualification surfaces without transferring
-//! another owner's facts.
+//! bounded lifecycle totals, admission/permit timing, stage latency aggregates,
+//! authority-manifest timing and failure classes. The snapshot is suitable for
+//! health/qualification surfaces without transferring another owner's facts.
 
 use std::array;
 use std::collections::BTreeMap;
@@ -12,6 +12,9 @@ use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_intelligence::CanonicalPortFailureClassV1;
 use codex_hepta_intelligence::CanonicalStageV1;
@@ -22,6 +25,7 @@ use crate::RunReceipt;
 const STAGE_COUNT: usize = 7;
 const RUN_PHASE_COUNT: usize = 8;
 const MAX_TRACKED_RUN_DWELL: usize = 1_024;
+const RATIO_SCALE_PPM: u64 = 1_000_000;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdIntelligenceStageTelemetrySnapshotV1 {
@@ -56,20 +60,38 @@ pub struct AgentdIntelligenceTelemetrySnapshotV1 {
     pub provider_configured: bool,
     pub active_workers: u64,
     pub peak_active_workers: u64,
+    pub timed_out_active_workers: u64,
     pub worker_slots: u64,
     pub busy_rejections: u64,
     pub request_timeouts: u64,
     pub late_worker_completions: u64,
     pub hard_timeout_trips: u64,
     pub worker_crashes: u64,
+    pub queue_wait_observations: u64,
+    pub queue_wait_total_micros: u64,
+    pub queue_wait_max_micros: u64,
+    pub permit_hold_observations: u64,
+    pub permit_hold_total_micros: u64,
+    pub permit_hold_max_micros: u64,
     pub run_identity_rejections: u64,
     pub currentness_rejections: u64,
     pub canonical_rejections: u64,
     pub ready_runs: u64,
     pub abstained_runs: u64,
     pub slow_path_runs: u64,
+    pub ready_ratio_ppm: u32,
+    pub abstained_ratio_ppm: u32,
+    pub slow_path_ratio_ppm: u32,
+    pub candidate_count_observations: u64,
+    pub candidate_count_total: u64,
+    pub candidate_count_max: u64,
     pub last_authority_epoch: u64,
     pub authority_manifest_reads: u64,
+    pub authority_manifest_observed_at_ms: Option<u64>,
+    pub authority_snapshot_age_ms: Option<u64>,
+    pub manifest_verification_observations: u64,
+    pub manifest_verification_total_micros: u64,
+    pub manifest_verification_max_micros: u64,
     pub tracked_run_dwell: u64,
     pub run_dwell_evictions: u64,
     pub stages: Vec<AgentdIntelligenceStageTelemetrySnapshotV1>,
@@ -98,20 +120,34 @@ pub struct AgentdIntelligenceTelemetryV1 {
     provider_configured: AtomicBool,
     active_workers: AtomicU64,
     peak_active_workers: AtomicU64,
+    timed_out_active_workers: AtomicU64,
     worker_slots: u64,
     busy_rejections: AtomicU64,
     request_timeouts: AtomicU64,
     late_worker_completions: AtomicU64,
     hard_timeout_trips: AtomicU64,
     worker_crashes: AtomicU64,
+    queue_wait_observations: AtomicU64,
+    queue_wait_total_micros: AtomicU64,
+    queue_wait_max_micros: AtomicU64,
+    permit_hold_observations: AtomicU64,
+    permit_hold_total_micros: AtomicU64,
+    permit_hold_max_micros: AtomicU64,
     run_identity_rejections: AtomicU64,
     currentness_rejections: AtomicU64,
     canonical_rejections: AtomicU64,
     ready_runs: AtomicU64,
     abstained_runs: AtomicU64,
     slow_path_runs: AtomicU64,
+    candidate_count_observations: AtomicU64,
+    candidate_count_total: AtomicU64,
+    candidate_count_max: AtomicU64,
     last_authority_epoch: AtomicU64,
     authority_manifest_reads: AtomicU64,
+    authority_manifest_observed_at_ms: AtomicU64,
+    manifest_verification_observations: AtomicU64,
+    manifest_verification_total_micros: AtomicU64,
+    manifest_verification_max_micros: AtomicU64,
     run_dwell: Mutex<BTreeMap<String, RunDwellRecord>>,
     run_dwell_evictions: AtomicU64,
     stages: [StageCounters; STAGE_COUNT],
@@ -124,20 +160,34 @@ impl AgentdIntelligenceTelemetryV1 {
             provider_configured: AtomicBool::new(false),
             active_workers: AtomicU64::new(0),
             peak_active_workers: AtomicU64::new(0),
+            timed_out_active_workers: AtomicU64::new(0),
             worker_slots: u64::try_from(worker_slots).unwrap_or(u64::MAX),
             busy_rejections: AtomicU64::new(0),
             request_timeouts: AtomicU64::new(0),
             late_worker_completions: AtomicU64::new(0),
             hard_timeout_trips: AtomicU64::new(0),
             worker_crashes: AtomicU64::new(0),
+            queue_wait_observations: AtomicU64::new(0),
+            queue_wait_total_micros: AtomicU64::new(0),
+            queue_wait_max_micros: AtomicU64::new(0),
+            permit_hold_observations: AtomicU64::new(0),
+            permit_hold_total_micros: AtomicU64::new(0),
+            permit_hold_max_micros: AtomicU64::new(0),
             run_identity_rejections: AtomicU64::new(0),
             currentness_rejections: AtomicU64::new(0),
             canonical_rejections: AtomicU64::new(0),
             ready_runs: AtomicU64::new(0),
             abstained_runs: AtomicU64::new(0),
             slow_path_runs: AtomicU64::new(0),
+            candidate_count_observations: AtomicU64::new(0),
+            candidate_count_total: AtomicU64::new(0),
+            candidate_count_max: AtomicU64::new(0),
             last_authority_epoch: AtomicU64::new(0),
             authority_manifest_reads: AtomicU64::new(0),
+            authority_manifest_observed_at_ms: AtomicU64::new(0),
+            manifest_verification_observations: AtomicU64::new(0),
+            manifest_verification_total_micros: AtomicU64::new(0),
+            manifest_verification_max_micros: AtomicU64::new(0),
             run_dwell: Mutex::new(BTreeMap::new()),
             run_dwell_evictions: AtomicU64::new(0),
             stages: array::from_fn(|_| StageCounters::default()),
@@ -155,8 +205,46 @@ impl AgentdIntelligenceTelemetryV1 {
         AgentdIntelligenceWorkerGuardV1 {
             telemetry: Arc::clone(self),
             timed_out: Arc::new(AtomicBool::new(false)),
+            timeout_counted: Arc::new(AtomicBool::new(false)),
             finished: Arc::new(AtomicBool::new(false)),
+            permit_started: Instant::now(),
         }
+    }
+
+    pub(crate) fn record_queue_wait(&self, elapsed_micros: u64) {
+        record_duration(
+            &self.queue_wait_observations,
+            &self.queue_wait_total_micros,
+            &self.queue_wait_max_micros,
+            elapsed_micros,
+        );
+    }
+
+    fn record_permit_hold(&self, elapsed_micros: u64) {
+        record_duration(
+            &self.permit_hold_observations,
+            &self.permit_hold_total_micros,
+            &self.permit_hold_max_micros,
+            elapsed_micros,
+        );
+    }
+
+    pub(crate) fn mark_worker_timed_out(
+        &self,
+        timed_out: &AtomicBool,
+        timeout_counted: &AtomicBool,
+        finished: &AtomicBool,
+    ) -> bool {
+        if timed_out.swap(true, Ordering::AcqRel) {
+            return false;
+        }
+        if !timeout_counted.swap(true, Ordering::AcqRel) {
+            saturating_increment(&self.timed_out_active_workers);
+        }
+        if finished.load(Ordering::Acquire) && timeout_counted.swap(false, Ordering::AcqRel) {
+            decrement_nonzero(&self.timed_out_active_workers);
+        }
+        true
     }
 
     pub(crate) fn record_busy(&self) {
@@ -199,19 +287,40 @@ impl AgentdIntelligenceTelemetryV1 {
         saturating_increment(&self.slow_path_runs);
     }
 
-    pub(crate) fn record_authority_manifest(&self, authority_epoch: u64) {
+    pub(crate) fn record_candidate_count(&self, count: usize) {
+        let count = u64::try_from(count).unwrap_or(u64::MAX);
+        saturating_increment(&self.candidate_count_observations);
+        saturating_add(&self.candidate_count_total, count);
+        self.candidate_count_max.fetch_max(count, Ordering::AcqRel);
+    }
+
+    pub(crate) fn record_authority_manifest(
+        &self,
+        authority_epoch: u64,
+        observed_at_ms: u64,
+        verification_micros: u64,
+    ) {
         self.last_authority_epoch
             .fetch_max(authority_epoch, Ordering::AcqRel);
         saturating_increment(&self.authority_manifest_reads);
+        self.authority_manifest_observed_at_ms
+            .store(observed_at_ms, Ordering::Release);
+        record_duration(
+            &self.manifest_verification_observations,
+            &self.manifest_verification_total_micros,
+            &self.manifest_verification_max_micros,
+            verification_micros,
+        );
     }
 
     pub(crate) fn record_stage_latency(&self, stage: CanonicalStageV1, elapsed_micros: u64) {
         let counters = &self.stages[stage_index(stage)];
-        saturating_increment(&counters.latency_observations);
-        saturating_add(&counters.latency_total_micros, elapsed_micros);
-        counters
-            .latency_max_micros
-            .fetch_max(elapsed_micros, Ordering::AcqRel);
+        record_duration(
+            &counters.latency_observations,
+            &counters.latency_total_micros,
+            &counters.latency_max_micros,
+            elapsed_micros,
+        );
     }
 
     pub(crate) fn record_stage_failure(
@@ -314,30 +423,70 @@ impl AgentdIntelligenceTelemetryV1 {
 
     #[must_use]
     pub fn snapshot(&self) -> AgentdIntelligenceTelemetrySnapshotV1 {
+        self.snapshot_at(wall_clock_ms().unwrap_or(0))
+    }
+
+    #[must_use]
+    pub fn snapshot_at(&self, observed_at_ms: u64) -> AgentdIntelligenceTelemetrySnapshotV1 {
         let tracked_run_dwell = self
             .run_dwell
             .lock()
             .ok()
             .and_then(|value| u64::try_from(value.len()).ok())
             .unwrap_or(u64::MAX);
+        let ready_runs = self.ready_runs.load(Ordering::Acquire);
+        let abstained_runs = self.abstained_runs.load(Ordering::Acquire);
+        let slow_path_runs = self.slow_path_runs.load(Ordering::Acquire);
+        let decision_observations = ready_runs
+            .saturating_add(abstained_runs)
+            .saturating_add(slow_path_runs);
+        let authority_manifest_observed_at_ms =
+            nonzero(self.authority_manifest_observed_at_ms.load(Ordering::Acquire));
         AgentdIntelligenceTelemetrySnapshotV1 {
             provider_configured: self.provider_configured.load(Ordering::Acquire),
             active_workers: self.active_workers.load(Ordering::Acquire),
             peak_active_workers: self.peak_active_workers.load(Ordering::Acquire),
+            timed_out_active_workers: self.timed_out_active_workers.load(Ordering::Acquire),
             worker_slots: self.worker_slots,
             busy_rejections: self.busy_rejections.load(Ordering::Acquire),
             request_timeouts: self.request_timeouts.load(Ordering::Acquire),
             late_worker_completions: self.late_worker_completions.load(Ordering::Acquire),
             hard_timeout_trips: self.hard_timeout_trips.load(Ordering::Acquire),
             worker_crashes: self.worker_crashes.load(Ordering::Acquire),
+            queue_wait_observations: self.queue_wait_observations.load(Ordering::Acquire),
+            queue_wait_total_micros: self.queue_wait_total_micros.load(Ordering::Acquire),
+            queue_wait_max_micros: self.queue_wait_max_micros.load(Ordering::Acquire),
+            permit_hold_observations: self.permit_hold_observations.load(Ordering::Acquire),
+            permit_hold_total_micros: self.permit_hold_total_micros.load(Ordering::Acquire),
+            permit_hold_max_micros: self.permit_hold_max_micros.load(Ordering::Acquire),
             run_identity_rejections: self.run_identity_rejections.load(Ordering::Acquire),
             currentness_rejections: self.currentness_rejections.load(Ordering::Acquire),
             canonical_rejections: self.canonical_rejections.load(Ordering::Acquire),
-            ready_runs: self.ready_runs.load(Ordering::Acquire),
-            abstained_runs: self.abstained_runs.load(Ordering::Acquire),
-            slow_path_runs: self.slow_path_runs.load(Ordering::Acquire),
+            ready_runs,
+            abstained_runs,
+            slow_path_runs,
+            ready_ratio_ppm: ratio_ppm(ready_runs, decision_observations),
+            abstained_ratio_ppm: ratio_ppm(abstained_runs, decision_observations),
+            slow_path_ratio_ppm: ratio_ppm(slow_path_runs, decision_observations),
+            candidate_count_observations: self
+                .candidate_count_observations
+                .load(Ordering::Acquire),
+            candidate_count_total: self.candidate_count_total.load(Ordering::Acquire),
+            candidate_count_max: self.candidate_count_max.load(Ordering::Acquire),
             last_authority_epoch: self.last_authority_epoch.load(Ordering::Acquire),
             authority_manifest_reads: self.authority_manifest_reads.load(Ordering::Acquire),
+            authority_manifest_observed_at_ms,
+            authority_snapshot_age_ms: authority_manifest_observed_at_ms
+                .map(|value| observed_at_ms.saturating_sub(value)),
+            manifest_verification_observations: self
+                .manifest_verification_observations
+                .load(Ordering::Acquire),
+            manifest_verification_total_micros: self
+                .manifest_verification_total_micros
+                .load(Ordering::Acquire),
+            manifest_verification_max_micros: self
+                .manifest_verification_max_micros
+                .load(Ordering::Acquire),
             tracked_run_dwell,
             run_dwell_evictions: self.run_dwell_evictions.load(Ordering::Acquire),
             stages: stage_order()
@@ -364,13 +513,20 @@ impl AgentdIntelligenceTelemetryV1 {
 pub(crate) struct AgentdIntelligenceWorkerGuardV1 {
     telemetry: Arc<AgentdIntelligenceTelemetryV1>,
     timed_out: Arc<AtomicBool>,
+    timeout_counted: Arc<AtomicBool>,
     finished: Arc<AtomicBool>,
+    permit_started: Instant,
 }
 
 impl AgentdIntelligenceWorkerGuardV1 {
     #[must_use]
     pub(crate) fn timed_out_flag(&self) -> Arc<AtomicBool> {
         Arc::clone(&self.timed_out)
+    }
+
+    #[must_use]
+    pub(crate) fn timeout_counted_flag(&self) -> Arc<AtomicBool> {
+        Arc::clone(&self.timeout_counted)
     }
 
     #[must_use]
@@ -382,9 +538,14 @@ impl AgentdIntelligenceWorkerGuardV1 {
 impl Drop for AgentdIntelligenceWorkerGuardV1 {
     fn drop(&mut self) {
         self.finished.store(true, Ordering::Release);
+        self.telemetry
+            .record_permit_hold(duration_micros(self.permit_started.elapsed()));
         decrement_nonzero(&self.telemetry.active_workers);
         if self.timed_out.load(Ordering::Acquire) {
             saturating_increment(&self.telemetry.late_worker_completions);
+        }
+        if self.timeout_counted.swap(false, Ordering::AcqRel) {
+            decrement_nonzero(&self.telemetry.timed_out_active_workers);
         }
     }
 }
@@ -437,6 +598,40 @@ const fn run_phase_index(phase: RunPhase) -> usize {
         RunPhase::Failed => 6,
         RunPhase::Indeterminate => 7,
     }
+}
+
+fn record_duration(
+    observations: &AtomicU64,
+    total: &AtomicU64,
+    maximum: &AtomicU64,
+    elapsed_micros: u64,
+) {
+    saturating_increment(observations);
+    saturating_add(total, elapsed_micros);
+    maximum.fetch_max(elapsed_micros, Ordering::AcqRel);
+}
+
+fn duration_micros(value: std::time::Duration) -> u64 {
+    u64::try_from(value.as_micros()).unwrap_or(u64::MAX)
+}
+
+fn wall_clock_ms() -> Option<u64> {
+    let value = SystemTime::now().duration_since(UNIX_EPOCH).ok()?;
+    u64::try_from(value.as_millis()).ok()
+}
+
+const fn nonzero(value: u64) -> Option<u64> {
+    if value == 0 { None } else { Some(value) }
+}
+
+fn ratio_ppm(value: u64, total: u64) -> u32 {
+    if total == 0 {
+        return 0;
+    }
+    let scaled = u128::from(value)
+        .saturating_mul(u128::from(RATIO_SCALE_PPM))
+        / u128::from(total);
+    u32::try_from(scaled).unwrap_or(u32::MAX)
 }
 
 fn saturating_increment(value: &AtomicU64) -> u64 {
@@ -498,15 +693,25 @@ mod tests {
     }
 
     #[test]
-    fn worker_timeout_is_visible_after_late_completion() {
+    fn worker_timeout_is_visible_while_active_and_after_late_completion() {
         let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(4));
         let guard = telemetry.worker_started();
-        guard.timed_out_flag().store(true, Ordering::Release);
+        let timed_out = guard.timed_out_flag();
+        let timeout_counted = guard.timeout_counted_flag();
+        let finished = guard.finished_flag();
+        assert!(telemetry.mark_worker_timed_out(
+            &timed_out,
+            &timeout_counted,
+            &finished
+        ));
+        assert_eq!(telemetry.snapshot().timed_out_active_workers, 1);
         drop(guard);
         let snapshot = telemetry.snapshot();
         assert_eq!(snapshot.active_workers, 0);
+        assert_eq!(snapshot.timed_out_active_workers, 0);
         assert_eq!(snapshot.peak_active_workers, 1);
         assert_eq!(snapshot.late_worker_completions, 1);
+        assert_eq!(snapshot.permit_hold_observations, 1);
     }
 
     #[test]
@@ -522,6 +727,26 @@ mod tests {
         assert_eq!(stage.latency_total_micros, 17);
         assert_eq!(stage.quarantined, 1);
         assert_eq!(stage.rejected, 0);
+    }
+
+    #[test]
+    fn ratios_candidate_counts_and_manifest_age_are_bounded() {
+        let telemetry = AgentdIntelligenceTelemetryV1::new(4);
+        telemetry.record_ready();
+        telemetry.record_abstained();
+        telemetry.record_slow_path();
+        telemetry.record_candidate_count(3);
+        telemetry.record_candidate_count(7);
+        telemetry.record_authority_manifest(9, 100, 17);
+        let snapshot = telemetry.snapshot_at(125);
+        assert_eq!(snapshot.ready_ratio_ppm, 333_333);
+        assert_eq!(snapshot.abstained_ratio_ppm, 333_333);
+        assert_eq!(snapshot.slow_path_ratio_ppm, 333_333);
+        assert_eq!(snapshot.candidate_count_observations, 2);
+        assert_eq!(snapshot.candidate_count_total, 10);
+        assert_eq!(snapshot.candidate_count_max, 7);
+        assert_eq!(snapshot.authority_snapshot_age_ms, Some(25));
+        assert_eq!(snapshot.manifest_verification_total_micros, 17);
     }
 
     #[test]
