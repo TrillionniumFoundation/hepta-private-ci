@@ -12,6 +12,7 @@
   "technicalGuide": "docs/modules/memory.retrieval/TECHNICAL.md",
   "statusGuide": "docs/modules/memory.retrieval/STATUS.md",
   "recoveryGuide": "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
+  "controlledApiGuide": "docs/modules/memory.retrieval/CONTROLLED_API.md",
   "qualificationPolicy": "qualification/memory-retrieval/qualification-policy.json",
   "recoveryMatrix": "qualification/memory-retrieval/recovery-matrix.json",
   "runtimeStatusArtifact": "qualification-manifest.json",
@@ -26,6 +27,14 @@
   "productCallerState": "source_composed_explicit_profile_not_product_qualified",
   "productionWriterState": "not_established",
   "activationMode": "compatibility",
+  "controlledApi": {
+    "defaultFeatures": [],
+    "workControlRequired": true,
+    "absoluteDeadlineForwardingRequired": true,
+    "legacyFeature": "legacy-uncontrolled-retrieval",
+    "legacyFeatureDefault": false,
+    "legacyFeatureProductionAllowed": false
+  },
   "operations": [
     {
       "operation": "retrieve_v2",
@@ -59,24 +68,26 @@
       ]
     },
     {
-      "operation": "settle_engram",
-      "nativeSymbol": "settle_engram",
+      "operation": "settle_engram_controlled",
+      "nativeSymbol": "settle_engram_controlled",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram.rs",
-      "state": "source_implemented_not_product_qualified",
+      "state": "source_implemented_mandatory_work_control_not_product_qualified",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs"
+        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs",
+        "codex-rs/hepta-memory-retrieval/tests/controlled_api.rs"
       ]
     },
     {
-      "operation": "recall_generated_with_engram",
-      "nativeSymbol": "recall_generated_with_engram",
+      "operation": "recall_generated_with_engram_controlled",
+      "nativeSymbol": "recall_generated_with_engram_controlled",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator.rs",
-      "state": "source_implemented_not_product_qualified",
+      "state": "source_implemented_mandatory_work_control_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
-        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs"
+        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs",
+        "codex-rs/hepta-memory-retrieval/tests/controlled_api.rs"
       ]
     },
     {
@@ -113,10 +124,11 @@
       "operation": "recall",
       "nativeSymbol": "recall",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_migration_feature_only_not_product_composed",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
+        "codex-rs/hepta-memory-retrieval/tests/controlled_api.rs"
       ]
     },
     {
@@ -241,8 +253,8 @@
   ],
   "sourceIdentityPolicy": "exact_parent_observation_plus_runtime_manifest_v1",
   "observedAtHead": {
-    "commit": "79c21fdd6d222ad58f04afb6c0c93baf50b5df60",
-    "tree": "272f4cb850c0a225cd81d326ece159f72e212934"
+    "commit": "f0de8179dfa5460d8fcefab1300ab951c7d7a9b4",
+    "tree": "07a591b3dc66f98433e80d1e3c72396e4a6027eb"
   },
   "observedSourcePaths": [
     ".github/workflows",
@@ -257,7 +269,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-memory-retrieval",
-      "object": "3aaf69e026546338c59b089ded26197b4e4ee6c9"
+      "object": "44316ab1464da323b519683f7cad9c9dcac581da"
     }
   ],
   "observedMissingPaths": []
