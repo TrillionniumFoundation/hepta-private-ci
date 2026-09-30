@@ -1,0 +1,141 @@
+{
+  "claims": {
+    "activation": false,
+    "independentAcceptance": false,
+    "productionImplementation": false,
+    "release": false,
+    "targetHostQualified": false
+  },
+  "externalEvidenceGates": [
+    "authenticated target-host identity and independently administered anchor authority",
+    "real future-calendar observations and independent outcome provenance",
+    "retention, change-point, statistical power, subgroup and privacy evidence",
+    "unlearning and backup non-resurrection evidence",
+    "independent semantic and operator acceptance",
+    "selection, canary, promotion and release authority"
+  ],
+  "module": "learning.eval",
+  "qualification": {
+    "compatibilityCoverage": "reported_separately_non_gating",
+    "coverageThresholdPct": 85,
+    "crossHostFilesystem": "requires_external_linearizability_and_fsync_qualification",
+    "defaultProductionCoverage": "no_default_features_all_targets_gating",
+    "exactHead": "requires_passing_commit_addressed_ci_artifact",
+    "orderedParentSyntheticMerge": "requires_passing_commit_addressed_ci_artifact",
+    "targetHost": "requires_authenticated_external_host_evidence"
+  },
+  "repositoryControlledGaps": [
+    "Execute formatting, compilation, default and compatibility API checks, owner and consumer tests, process-fault tests, strict lint, coverage, exact-head execution and ordered-parent synthetic-merge execution on one immutable final candidate.",
+    "Bind the selected-host facade and persistent recovery controller to an independently administered anchor authority, real provider and publication store on the declared target topology.",
+    "Execute near-capacity admission, unresolved backlog, independently anchored checkpoint rotation, cold startup and sustained recovery qualification on the selected storage topology."
+  ],
+  "schema": "hepta.learning-eval.current-status.v1",
+  "sourceFacts": {
+    "callers": [
+      {
+        "authority": "deny_all",
+        "kind": "consumer_bound_admission",
+        "nativeSymbol": "AgentdEvaluationSessionV1::evaluate",
+        "sourcePath": "codex-rs/hepta-agentd/src/intelligence_evaluation.rs"
+      },
+      {
+        "authority": "deny_all",
+        "kind": "consumer_bound_admission",
+        "nativeSymbol": "propose_authenticated_parameter_plasticity_v1",
+        "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs"
+      },
+      {
+        "authority": "deny_all",
+        "kind": "sealed_product_qualification_consumer",
+        "nativeSymbol": "run_evaluated_shadow_v1",
+        "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs"
+      },
+      {
+        "authority": "deny_all",
+        "kind": "sealed_multi_outcome_qualification_consumer",
+        "nativeSymbol": "AgentdEvaluationBindingV1::consume_outcome_qualification_v1",
+        "sourcePath": "codex-rs/hepta-agentd/src/intelligence_outcome_evaluation.rs"
+      }
+    ],
+    "capacitySource": {
+      "anchoredKnownNoWriteRejectionSafe": true,
+      "anchoredRestartInterval": 128,
+      "checkpointTailAttempts": 64,
+      "configuredAttempts": 4096,
+      "executionStatus": "not_established_by_source_scan",
+      "expectedLifecycleEvents": 28672,
+      "fullLifecycleReservation": true,
+      "independentlyAnchoredCheckpointTailRecovery": true,
+      "indexedPendingDiscovery": true,
+      "nearCapacityAnchoredRegression": true,
+      "nearCapacityFileJournalRegression": true,
+      "sustainedProfileSourcePresent": true
+    },
+    "consumerBoundAdmission": true,
+    "documentationSource": {
+      "auditIndexLinksCurrent": true,
+      "markdownFileAndAnchorValidation": true
+    },
+    "durableEvaluationAttemptJournal": true,
+    "externalLowLevelDecisionCallers": [],
+    "externalRawProductRunnerCallers": [],
+    "externalRawRunnerReferencesAbsentInLexicalInventory": true,
+    "idempotentPublicationReconciliation": true,
+    "implementationMapVerified": true,
+    "lowLevelDecisionPrimitivesCratePrivate": true,
+    "outcomeSource": {
+      "completePayloadDigestBinding": true,
+      "downstreamConsumer": "agentd_current_owner_and_signed_exact_use_binding_present",
+      "executionStatus": "not_established_by_source_scan",
+      "hostSealedArtifactRecovery": "single_and_multi_outcome_typed_archive_source_present",
+      "maximumBatchRows": 100000,
+      "maximumChannels": 32,
+      "measurementAuthentication": "requires_selected_host_evidence",
+      "separateNativeChannelEstimates": true,
+      "signedMultiOutcomeBindingE2EFixture": true,
+      "singleConsumptionRecordedComposition": true,
+      "typedFrozenChannelContracts": true
+    },
+    "recoverySource": {
+      "acceptedUnknownAnchorRequiresReopen": true,
+      "boundedPendingDiscovery": true,
+      "canonicalTypedQualificationArchive": true,
+      "coldRestartDoesNotRetainPreCrashTypedObjects": true,
+      "completeQualificationArtifactsPersisted": true,
+      "cursorAdvancesPastUnresolvedAttempts": true,
+      "decidedOnlyResumeReverifiesSignatures": true,
+      "defaultRawRunnerFeatureGated": true,
+      "defaultRecordedRunnerRequiresAnchoredJournalCapability": true,
+      "executionStatus": "not_established_by_source_scan",
+      "externalOwnerReadOnlyReconciliation": true,
+      "fullHistoryValidation": true,
+      "incrementalAppendAndStreamingReplay": true,
+      "independentAttemptAnchorProtocol": true,
+      "independentlyAnchoredCheckpointProtocol": true,
+      "knownNoWriteRejectionPreservesOwner": true,
+      "legalPrefixCrashCutMatrixSourcePresent": true,
+      "lifecycleCapacityReservation": true,
+      "moduleInternalArchiveReverification": true,
+      "persistentRecoveryController": true,
+      "persistentRecoveryCursor": true,
+      "persistentSelectedHostPublicationStore": true,
+      "preConsumptionIntent": true,
+      "processKillFixtureCutCount": 7,
+      "rootActivatedTrustResolvedPerAttempt": true,
+      "selectedHostArtifactResumeE2EFixture": true,
+      "selectedHostBindingSwapRejected": true,
+      "trustFrontierMonotonicWithinPage": true,
+      "unverifiedResumeHelperCratePrivate": true,
+      "writeAheadPublicationPhases": true
+    },
+    "statisticalSource": {
+      "crossFitFoldLineageAndDigestReverification": true,
+      "executionStatus": "not_established_by_source_scan",
+      "fixedAnalysisOnly": true,
+      "sequentialClusterConfidenceSourcePresent": true,
+      "temporalCrossFitExecutorSourcePresent": true
+    },
+    "verifiedHoldoutCompaction": true
+  },
+  "statusSemantics": "Generated lexical source inventory only; compilation, product invocation, exact-tree execution, target-host qualification, independent acceptance, activation and release are separate facts."
+}
