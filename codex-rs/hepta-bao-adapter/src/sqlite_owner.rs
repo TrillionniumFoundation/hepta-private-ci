@@ -14,10 +14,12 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Digest32Builder;
 use serde::Serialize;
 use sqlx::Row;
 use sqlx::Sqlite;
@@ -257,6 +259,22 @@ pub struct SqliteBaoOwnerV1 {
     runtime_metrics: Arc<Mutex<SqliteBaoOwnerRuntimeMetricsOwnerV1>>,
 }
 
+struct OwnerUncertainOutcomeFence<'a> {
+    owner: &'a SqliteBaoOwnerV1,
+    armed: bool,
+}
+
+impl Drop for OwnerUncertainOutcomeFence<'_> {
+    fn drop(&mut self) {
+        if self.armed {
+            self.owner.fenced.store(true, Ordering::Release);
+            if let Ok(mut metrics) = self.owner.runtime_metrics.lock() {
+                metrics.writer_fence_events = metrics.writer_fence_events.saturating_add(1);
+            }
+        }
+    }
+}
+
 impl std::fmt::Debug for SqliteBaoOwnerV1 {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter
@@ -353,6 +371,7 @@ impl SqliteBaoOwnerV1 {
                 > usize::try_from(MAX_ACTIVE_OPERATIONS).unwrap_or(usize::MAX)
             || snapshot.consumptions.len()
                 > usize::try_from(MAX_ACTIVE_OPERATIONS).unwrap_or(usize::MAX)
+            || snapshot.leases.len() > usize::try_from(MAX_ACTIVE_OPERATIONS).unwrap_or(usize::MAX)
         {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
@@ -1961,10 +1980,8 @@ impl SqliteBaoOwnerV1 {
         if archived >= MAX_ARCHIVED_TERMINALS {
             return Err(SqliteBaoOwnerErrorV1::CapacityExceeded);
         }
-        let rows = sqlx::query(
-            "SELECT operation_id, semantic_sha256, terminal_kind, terminal_code,
-                    terminal_evidence_sha256, terminal_observed_cost, row_json,
-                    owner_revision, created_at_unix_ms, updated_at_unix_ms
+        let operation_ids: Vec<String> = sqlx::query_scalar(
+            "SELECT operation_id
              FROM bao_consumption
              WHERE state IN ('succeeded', 'failed') AND updated_at_unix_ms < ?
              ORDER BY updated_at_unix_ms, operation_id LIMIT ?",
@@ -1976,13 +1993,26 @@ impl SqliteBaoOwnerV1 {
         .map_err(storage)?;
         let mut count = 0_u32;
         let mut latest_revision = meta_revision(&mut tx).await?;
-        for row in rows {
+        for operation_id in operation_ids {
             if archived + i64::from(count) >= MAX_ARCHIVED_TERMINALS {
                 return Err(SqliteBaoOwnerErrorV1::CapacityExceeded);
             }
-            let operation_id: String = row.try_get("operation_id").map_err(storage)?;
+            let row = sqlx::query(
+                "SELECT row_json, owner_revision, created_at_unix_ms, updated_at_unix_ms
+                 FROM bao_consumption WHERE operation_id = ?",
+            )
+            .bind(&operation_id)
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(storage)?;
             let row_json: Vec<u8> = row.try_get("row_json").map_err(storage)?;
             let decoded: BaoConsumptionOperationV1 = decode_row(&row_json)?;
+            validate_consumption_stored(&decoded)?;
+            if decoded.operation_id != operation_id || !decoded.state.is_terminal() {
+                return Err(SqliteBaoOwnerErrorV1::CorruptState(
+                    "invalid terminal archive source",
+                ));
+            }
             let kind = decoded
                 .terminal_kind
                 .as_deref()
@@ -2061,77 +2091,9 @@ impl SqliteBaoOwnerV1 {
 
     pub async fn checkpoint(&self) -> Result<BaoOwnerCheckpointV1, SqliteBaoOwnerErrorV1> {
         let mut tx = self.pool.begin().await.map_err(storage)?;
-        let generation = meta_revision(&mut tx).await?;
-        let time_frontier_unix_ms = meta_time_frontier(&mut tx).await?;
-        let mut bytes = b"hepta.bao.sqlite-owner-checkpoint.v1\0".to_vec();
-        bytes.extend_from_slice(&generation.to_be_bytes());
-        bytes.extend_from_slice(&time_frontier_unix_ms.to_be_bytes());
-        append_query_rows_tx(
-            &mut tx,
-            "SELECT operation_id, domain, kind, semantic_sha256, updated_at_unix_ms, terminal
-             FROM bao_operation ORDER BY operation_id",
-            &mut bytes,
-        )
-        .await?;
-        append_query_rows_tx(
-            &mut tx,
-            "SELECT operation_id, owner_revision, state, row_json
-             FROM bao_consumption ORDER BY operation_id",
-            &mut bytes,
-        )
-        .await?;
-        append_query_rows_tx(
-            &mut tx,
-            "SELECT lease_id, generation, state, row_json FROM bao_lease ORDER BY lease_id",
-            &mut bytes,
-        )
-        .await?;
-        append_query_rows_tx(
-            &mut tx,
-            "SELECT operation_id, operation_kind, COALESCE(lease_id, ''),
-                    COALESCE(expected_generation, x''),
-                    COALESCE(resulting_generation, x''), state, row_json,
-                    COALESCE(terminal_result_sha256, x'')
-             FROM bao_lease_operation ORDER BY operation_id",
-            &mut bytes,
-        )
-        .await?;
-        append_query_rows_tx(
-            &mut tx,
-            "SELECT operation_id, reason, next_attempt_at_unix_ms, attempt_count,
-                    COALESCE(last_error_sha256, x'')
-             FROM bao_reconciliation_queue ORDER BY operation_id",
-            &mut bytes,
-        )
-        .await?;
-        append_query_rows_tx(
-            &mut tx,
-            "SELECT operation_id, owner_revision, row_json, archived_at_unix_ms
-             FROM bao_terminal_archive ORDER BY operation_id",
-            &mut bytes,
-        )
-        .await?;
-        append_query_rows_tx(
-            &mut tx,
-            "SELECT singleton, source_schema_version, source_revision,
-                    source_time_frontier_unix_ms, source_sha256, imported_at_unix_ms
-             FROM bao_reference_import ORDER BY singleton",
-            &mut bytes,
-        )
-        .await?;
-        append_query_rows_tx(
-            &mut tx,
-            "SELECT sequence, revision, operation_id, COALESCE(from_state, ''),
-                    to_state, evidence_sha256, observed_at_unix_ms
-             FROM bao_transition ORDER BY sequence",
-            &mut bytes,
-        )
-        .await?;
+        let checkpoint = checkpoint_tx(&mut tx).await?;
         tx.commit().await.map_err(storage)?;
-        Ok(BaoOwnerCheckpointV1 {
-            generation,
-            state_sha256: Digest32::of_bytes(&bytes).into_array(),
-        })
+        Ok(checkpoint)
     }
 
     /// Publish the current authoritative checkpoint through a caller-owned,
@@ -2148,15 +2110,22 @@ impl SqliteBaoOwnerV1 {
         F: FnOnce(Option<BaoOwnerCheckpointV1>, BaoOwnerCheckpointV1) -> Fut,
         Fut: Future<Output = Result<(), E>>,
     {
-        self.ensure_writable()?;
-        let checkpoint = self.checkpoint().await?;
+        // Hold the SQLite writer reservation until publication resolves. A
+        // competing local transaction must not commit beyond the snapshot
+        // while its external predecessor is still being decided.
+        let mut publication = self.begin().await?;
+        let checkpoint = checkpoint_tx(&mut publication).await?;
+        // Cancellation is an uncertain external CAS outcome too. Arm the
+        // guard before invoking the callback and retain it through unlock.
+        let mut publication_fence = OwnerUncertainOutcomeFence {
+            owner: self,
+            armed: true,
+        };
         if publisher(expected_previous, checkpoint).await.is_err() {
-            self.fenced.store(true, Ordering::Release);
-            if let Ok(mut metrics) = self.runtime_metrics.lock() {
-                metrics.writer_fence_events = metrics.writer_fence_events.saturating_add(1);
-            }
             return Err(SqliteBaoOwnerErrorV1::ExternalCheckpointUnavailable);
         }
+        publication.rollback().await.map_err(storage)?;
+        publication_fence.armed = false;
         Ok(checkpoint)
     }
 
@@ -2194,14 +2163,12 @@ impl SqliteBaoOwnerV1 {
                 .fetch_one(&mut *tx)
                 .await
                 .map_err(storage)?;
-        let rows = sqlx::query(
+        let mut rows = sqlx::Executor::fetch(
+            &mut *tx,
             "SELECT row_json, updated_at_unix_ms FROM bao_consumption
              WHERE state NOT IN ('succeeded', 'failed')
              ORDER BY updated_at_unix_ms, operation_id",
-        )
-        .fetch_all(&mut *tx)
-        .await
-        .map_err(storage)?;
+        );
         let mut pending_by_state = BTreeMap::new();
         let mut pending_by_recovery_action = BTreeMap::new();
         let mut pending_quota_amount = 0_u64;
@@ -2209,7 +2176,9 @@ impl SqliteBaoOwnerV1 {
         let mut observer_pending = 0_u64;
         let mut settlement_pending = 0_u64;
         let mut oldest_pending_at = None::<u64>;
-        for row in rows {
+        while let Some(row) = std::future::poll_fn(|context| rows.as_mut().poll_next(context)).await
+        {
+            let row = row.map_err(storage)?;
             let operation: BaoConsumptionOperationV1 =
                 decode_row(&row.try_get::<Vec<u8>, _>("row_json").map_err(storage)?)?;
             validate_consumption_stored(&operation)?;
@@ -2251,6 +2220,7 @@ impl SqliteBaoOwnerV1 {
             oldest_pending_at =
                 Some(oldest_pending_at.map_or(updated_at, |oldest| oldest.min(updated_at)));
         }
+        drop(rows);
         tx.commit().await.map_err(storage)?;
         let oldest_pending_age_ms =
             oldest_pending_at.map(|value| now_unix_ms.saturating_sub(value));
@@ -2317,12 +2287,23 @@ impl SqliteBaoOwnerV1 {
         if let Ok(mut metrics) = self.runtime_metrics.lock() {
             metrics.record_begin_wait(started);
         }
-        result
+        let tx = result?;
+        // The writer may have waited behind a failed checkpoint publisher or
+        // uncertain commit. Recheck after acquiring the database reservation.
+        self.ensure_writable()?;
+        Ok(tx)
     }
 
     async fn commit(&self, tx: Transaction<'static, Sqlite>) -> Result<(), SqliteBaoOwnerErrorV1> {
+        self.ensure_writable()?;
         let started = Instant::now();
-        match tx.commit().await {
+        let mut commit_fence = OwnerUncertainOutcomeFence {
+            owner: self,
+            armed: true,
+        };
+        let result = tx.commit().await;
+        commit_fence.armed = false;
+        match result {
             Ok(()) => {
                 if let Ok(mut metrics) = self.runtime_metrics.lock() {
                     metrics.record_commit(started, true);
@@ -2340,6 +2321,82 @@ impl SqliteBaoOwnerV1 {
             }
         }
     }
+}
+
+async fn checkpoint_tx(
+    tx: &mut Transaction<'_, Sqlite>,
+) -> Result<BaoOwnerCheckpointV1, SqliteBaoOwnerErrorV1> {
+    let generation = meta_revision(tx).await?;
+    let time_frontier_unix_ms = meta_time_frontier(tx).await?;
+    let mut bytes = Digest32Builder::default();
+    bytes.update(b"hepta.bao.sqlite-owner-checkpoint.v1\0");
+    bytes.update(&generation.to_be_bytes());
+    bytes.update(&time_frontier_unix_ms.to_be_bytes());
+    append_query_rows_tx(
+        tx,
+        "SELECT operation_id, domain, kind, semantic_sha256, updated_at_unix_ms, terminal
+         FROM bao_operation ORDER BY operation_id",
+        &mut bytes,
+    )
+    .await?;
+    append_query_rows_tx(
+        tx,
+        "SELECT operation_id, owner_revision, state, row_json
+         FROM bao_consumption ORDER BY operation_id",
+        &mut bytes,
+    )
+    .await?;
+    append_query_rows_tx(
+        tx,
+        "SELECT lease_id, generation, state, row_json FROM bao_lease ORDER BY lease_id",
+        &mut bytes,
+    )
+    .await?;
+    append_query_rows_tx(
+        tx,
+        "SELECT operation_id, operation_kind, COALESCE(lease_id, ''),
+                COALESCE(expected_generation, x''),
+                COALESCE(resulting_generation, x''), state, row_json,
+                COALESCE(terminal_result_sha256, x'')
+         FROM bao_lease_operation ORDER BY operation_id",
+        &mut bytes,
+    )
+    .await?;
+    append_query_rows_tx(
+        tx,
+        "SELECT operation_id, reason, next_attempt_at_unix_ms, attempt_count,
+                COALESCE(last_error_sha256, x'')
+         FROM bao_reconciliation_queue ORDER BY operation_id",
+        &mut bytes,
+    )
+    .await?;
+    append_query_rows_tx(
+        tx,
+        "SELECT operation_id, owner_revision, row_json, archived_at_unix_ms
+         FROM bao_terminal_archive ORDER BY operation_id",
+        &mut bytes,
+    )
+    .await?;
+    append_query_rows_tx(
+        tx,
+        "SELECT singleton, source_schema_version, source_revision,
+                source_time_frontier_unix_ms, source_sha256, imported_at_unix_ms
+         FROM bao_reference_import ORDER BY singleton",
+        &mut bytes,
+    )
+    .await?;
+    append_query_rows_tx(
+        tx,
+        "SELECT sequence, revision, operation_id, COALESCE(from_state, ''),
+                to_state, evidence_sha256, observed_at_unix_ms
+         FROM bao_transition ORDER BY sequence",
+        &mut bytes,
+    )
+    .await?;
+    Ok(BaoOwnerCheckpointV1 {
+        generation,
+        state_sha256: bytes.finish().into_array(),
+    })
 }
 
 async fn verify_schema(pool: &SqlitePool) -> Result<(), SqliteBaoOwnerErrorV1> {
@@ -3012,14 +3069,12 @@ async fn count_tx(
 async fn append_query_rows_tx(
     tx: &mut Transaction<'_, Sqlite>,
     query: &'static str,
-    bytes: &mut Vec<u8>,
+    bytes: &mut Digest32Builder,
 ) -> Result<(), SqliteBaoOwnerErrorV1> {
-    let rows = sqlx::query(query)
-        .fetch_all(&mut **tx)
-        .await
-        .map_err(storage)?;
-    for row in rows {
-        bytes.extend_from_slice(&u64::try_from(row.len()).unwrap_or(u64::MAX).to_be_bytes());
+    let mut rows = sqlx::Executor::fetch(&mut **tx, query);
+    while let Some(row) = std::future::poll_fn(|context| rows.as_mut().poll_next(context)).await {
+        let row = row.map_err(storage)?;
+        bytes.update(&u64::try_from(row.len()).unwrap_or(u64::MAX).to_be_bytes());
         for index in 0..row.len() {
             if let Ok(value) = row.try_get::<Vec<u8>, _>(index) {
                 append_value(bytes, &value);
@@ -3041,6 +3096,7 @@ async fn append_query_rows_tx(
 fn prepare_private_storage(path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
     use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
 
     let parent = path.parent().unwrap_or_else(|| Path::new("."));
     if !parent.exists() {
@@ -3192,9 +3248,9 @@ fn percentile(samples: &[u64], percentile: usize) -> u64 {
     samples[index]
 }
 
-fn append_value(bytes: &mut Vec<u8>, value: &[u8]) {
-    bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
-    bytes.extend_from_slice(value);
+fn append_value(bytes: &mut Digest32Builder, value: &[u8]) {
+    bytes.update(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
+    bytes.update(value);
 }
 
 fn validate_consumption_input(
