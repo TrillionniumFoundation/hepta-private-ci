@@ -9,7 +9,9 @@ use std::sync::Barrier;
 use codex_hepta_contracts::Sha256Digest;
 use tempfile::TempDir;
 
+use super::EvidenceFrontierAuditRecordV1;
 use super::LockedFileEvidenceFrontierBackend;
+use super::audit_record_sha256;
 use super::checked_journal_length_after_append;
 use crate::EVIDENCE_DATABASE_LINEAGE;
 use crate::EVIDENCE_FRONTIER_BACKEND_IDENTITY_FILENAME;
@@ -22,6 +24,7 @@ use crate::EvidenceFrontierHistoryRangeV1;
 use crate::EvidenceRecoveryFrontierSignatureV2;
 use crate::EvidenceRecoveryFrontierV2;
 use crate::EvidenceRecoverySnapshotV1;
+use crate::evidence_recovery_frontier_v2_sha256;
 use crate::evidence_recovery_ledger_root_v2;
 use crate::frontier_backend::EVIDENCE_FRONTIER_BACKEND_IDENTITY_SCHEMA_VERSION;
 use crate::frontier_backend::EVIDENCE_FRONTIER_BACKEND_STORAGE_CLASS;
@@ -281,6 +284,57 @@ fn locked_backend_reclassifies_repair_required_successors_under_the_lock() {
         frontier.snapshot.migration_set_sha256 = Sha256Digest::for_bytes(b"changed-migrations");
         frontier.ledger_root_sha256 = evidence_recovery_ledger_root_v2(&frontier.snapshot);
     });
+}
+
+#[test]
+fn locked_backend_rejects_rehashed_non_automatic_history_on_reopen() {
+    let fixture = Fixture::new();
+    let mut backend = fixture.open();
+    backend
+        .compare_and_swap(
+            "store:kernel-evidence",
+            None,
+            &frontier(1, fixture.identity_sha256.clone()),
+        )
+        .expect("publish first frontier");
+    backend
+        .compare_and_swap(
+            "store:kernel-evidence",
+            Some(1),
+            &frontier(2, fixture.identity_sha256.clone()),
+        )
+        .expect("publish second frontier");
+
+    let journal = backend
+        .journal_path("store:kernel-evidence")
+        .expect("journal path");
+    let bytes = std::fs::read(&journal).expect("read audit journal");
+    let mut records: Vec<EvidenceFrontierAuditRecordV1> = bytes
+        .split(|byte| *byte == b'\n')
+        .filter(|line| !line.is_empty())
+        .map(|line| serde_json::from_slice(line).expect("decode audit record"))
+        .collect();
+    assert_eq!(records.len(), 2);
+    records[1].frontier.source_commit = "c".repeat(40);
+    records[1].frontier_sha256 =
+        evidence_recovery_frontier_v2_sha256(&records[1].frontier)
+            .expect("hash tampered frontier");
+    records[1].record_sha256 =
+        audit_record_sha256(&records[1]).expect("rehash tampered audit record");
+    let mut rewritten = Vec::new();
+    for record in &records {
+        serde_json::to_writer(&mut rewritten, record).expect("encode audit record");
+        rewritten.push(b'\n');
+    }
+    std::fs::write(&journal, rewritten).expect("rewrite audit journal");
+
+    let mut reopened = fixture.open();
+    assert!(matches!(
+        reopened.get_latest("store:kernel-evidence"),
+        Err(EvidenceFrontierBackendError::Corrupt(message))
+            if message.contains("non-automatic transition")
+                && message.contains("RepairRequired")
+    ));
 }
 
 #[test]
