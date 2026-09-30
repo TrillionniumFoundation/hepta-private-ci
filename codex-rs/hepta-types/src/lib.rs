@@ -31,6 +31,7 @@ pub use canonical_digest::canonical_digest_v1;
 pub use canonical_digest::canonical_encode_v1;
 pub use canonical_digest::canonical_validate_v1;
 pub use digest::Digest32;
+pub use digest::Digest32Builder;
 pub use digest::DigestParseError;
 pub use fixed::FIXED_Q32_ARITHMETIC_PROFILE_V1;
 pub use fixed::FixedQ32;

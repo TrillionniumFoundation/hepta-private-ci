@@ -1,6 +1,22 @@
 use super::Digest32;
+use super::Digest32Builder;
 use std::io;
 use std::io::Read;
+
+#[test]
+fn incremental_digest_preserves_exact_stream_across_chunk_boundaries() {
+    for length in [0, 1, 63, 64, 65, 32769, 131072] {
+        let bytes: Vec<u8> = (0..length).map(|index| (index % 251) as u8).collect();
+        for chunk_size in [1, 63, 64, 65, 8192] {
+            let mut builder = Digest32Builder::default();
+            builder.update(&[]);
+            for chunk in bytes.chunks(chunk_size) {
+                builder.update(chunk);
+            }
+            assert_eq!(builder.finish(), Digest32::of_bytes(&bytes));
+        }
+    }
+}
 
 #[test]
 fn bounded_stream_digest_matches_bytes_at_buffer_boundaries() {
