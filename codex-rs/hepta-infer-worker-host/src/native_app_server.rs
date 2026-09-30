@@ -80,6 +80,10 @@ use tokio::time::timeout;
 use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
+#[path = "native_output.rs"]
+mod native_output;
+use native_output::NativeOutputProjection;
+
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
@@ -900,30 +904,33 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut output_projection = NativeOutputProjection::default();
         let result = self
             .observe(
                 &mut client,
-                &mut output,
+                (&mut output, &mut output_projection),
                 deadline,
                 cancellation,
                 Some(&owner),
                 &binding,
             )
             .await;
+        // Materialize at observation boundaries, not for every interleaved
+        // delta, so bounded output cannot induce quadratic full-text copying.
+        output.output = output_projection.text();
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -943,13 +950,14 @@ impl AppServerModelDriver {
             let _ = self
                 .observe(
                     &mut client,
-                    &mut output,
+                    (&mut output, &mut output_projection),
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
                     &binding,
                 )
                 .await;
+            output.output = output_projection.text();
             loss_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
@@ -1007,12 +1015,13 @@ impl AppServerModelDriver {
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
-        output: &mut NativeRunOutput,
+        output_state: (&mut NativeRunOutput, &mut NativeOutputProjection),
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
         binding: &CodexTurnBinding,
     ) -> std::result::Result<(), String> {
+        let (output, output_projection) = output_state;
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
             let event = tokio::select! {
@@ -1029,7 +1038,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, output_projection, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1419,6 +1428,7 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    projection: &mut NativeOutputProjection,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
@@ -1429,10 +1439,14 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            projection.append_delta(&delta.item_id, &delta.delta)?;
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                projection.complete_item(id, text)?;
             }
-            output.output.push_str(&delta.delta);
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -1453,6 +1467,10 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            // Completed items are canonical output, including valid provider
+            // responses that emitted no text deltas. Summary items supplement
+            // earlier observed messages rather than replacing the whole turn.
+            projection.complete_items(&completed.turn.items)?;
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;
