@@ -52,10 +52,11 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
-      - name: Regression-test candidate and workflow binding
+      - name: Regression-test candidate, workflow and evidence binding
         run: |
           python3 -m unittest discover -s scripts -p 'test_platform_types_candidate_binding.py' -v
           python3 scripts/test_platform_types_workflow_security.py
+          python3 scripts/test_platform_types_ci_gate.py -v
       - id: bind
         shell: bash
         env:
@@ -114,19 +115,39 @@ jobs:
             uname -a
           } > "$RUNNER_TEMP/platform-types-context/source-head/environment.txt"
       - id: schema
-        continue-on-error: true
+        name: Record schema qualification outcome
         shell: bash
-        run: >-
-          scripts/run_platform_types_schema_qualification.sh
-          "${{ runner.temp }}/platform-types-schema/source-head"
+        env:
+          SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+          BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+        run: |
+          python3 scripts/platform_types_ci_gate.py run \
+            --name schema \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/source-head" \
+            -- bash scripts/run_platform_types_schema_qualification.sh \
+              "$RUNNER_TEMP/platform-types-schema/source-head"
       - id: qualify
-        if: steps.schema.outcome == 'success'
-        continue-on-error: true
+        name: Record deep qualification outcome
         shell: bash
         env:
           PLATFORM_TYPES_API_BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
           SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
-        run: scripts/run_platform_types_deep_qualification.sh source-head "$SOURCE_SHA" "$SOURCE_SHA"
+          BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+        run: |
+          python3 scripts/platform_types_ci_gate.py run \
+            --name deep-qualification \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/source-head" \
+            -- bash scripts/run_platform_types_deep_qualification.sh \
+              source-head "$SOURCE_SHA" "$SOURCE_SHA"
+      - name: Materialize source-head qualification summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          python3 scripts/platform_types_ci_gate.py summary \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/source-head" \
+            --candidate-kind source-head \
+            --required schema \
+            --required deep-qualification
       - id: artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -139,12 +160,13 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
-      - if: ${{ always() }}
+      - name: Enforce source-head summary after evidence upload
+        if: ${{ always() }}
         shell: bash
         run: |
-          test "${{ steps.schema.outcome }}" = success
-          test "${{ steps.qualify.outcome }}" = success
           test "${{ steps.artifacts.outcome }}" = success
+          python3 scripts/platform_types_ci_gate.py assert \
+            --summary "$RUNNER_TEMP/platform-types-context/source-head/qualification-summary.json"
 
   merge:
     name: Qualify deterministic platform.types merge candidate
@@ -191,14 +213,20 @@ jobs:
           author-email: hepta-platform-types-ci@users.noreply.github.com
           message: Synthetic platform.types deep qualification merge
       - id: schema
-        continue-on-error: true
+        name: Record merge schema qualification outcome
         shell: bash
-        run: >-
-          scripts/run_platform_types_schema_qualification.sh
-          "${{ runner.temp }}/platform-types-schema/synthetic-merge"
+        env:
+          SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+          BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+        run: |
+          python3 scripts/platform_types_ci_gate.py run \
+            --name schema \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/synthetic-merge" \
+            -- bash scripts/run_platform_types_schema_qualification.sh \
+              "$RUNNER_TEMP/platform-types-schema/synthetic-merge"
       - id: qualify
-        if: steps.schema.outcome == 'success'
-        continue-on-error: true
+        name: Record merge deep qualification outcome
         shell: bash
         env:
           PLATFORM_TYPES_API_BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
@@ -206,9 +234,21 @@ jobs:
           BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
           MERGE_SHA: ${{ steps.merge.outputs.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: >-
-          scripts/run_platform_types_deep_qualification.sh
-          synthetic-merge "$MERGE_SHA" "$SOURCE_SHA" "$BASE_SHA" "$PR_NUMBER"
+        run: |
+          python3 scripts/platform_types_ci_gate.py run \
+            --name deep-qualification \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/synthetic-merge" \
+            -- bash scripts/run_platform_types_deep_qualification.sh \
+              synthetic-merge "$MERGE_SHA" "$SOURCE_SHA" "$BASE_SHA" "$PR_NUMBER"
+      - name: Materialize merge qualification summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          python3 scripts/platform_types_ci_gate.py summary \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/synthetic-merge" \
+            --candidate-kind synthetic-merge \
+            --required schema \
+            --required deep-qualification
       - id: artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -221,9 +261,10 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
-      - if: ${{ always() }}
+      - name: Enforce merge summary after evidence upload
+        if: ${{ always() }}
         shell: bash
         run: |
-          test "${{ steps.schema.outcome }}" = success
-          test "${{ steps.qualify.outcome }}" = success
           test "${{ steps.artifacts.outcome }}" = success
+          python3 scripts/platform_types_ci_gate.py assert \
+            --summary "$RUNNER_TEMP/platform-types-context/synthetic-merge/qualification-summary.json"
