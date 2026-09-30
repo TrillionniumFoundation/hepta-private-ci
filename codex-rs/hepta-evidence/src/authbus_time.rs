@@ -2,7 +2,11 @@ use serde::Serialize;
 use sqlx::Sqlite;
 use sqlx::Transaction;
 #[cfg(test)]
+use sqlx::sqlite::SqliteConnectOptions;
+#[cfg(test)]
 use sqlx::sqlite::SqlitePool;
+#[cfg(test)]
+use sqlx::sqlite::SqlitePoolOptions;
 
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
@@ -102,10 +106,7 @@ async fn advance_authbus_time_floor(
 mod tests {
     use super::*;
 
-    async fn pool() -> SqlitePool {
-        let pool = SqlitePool::connect("sqlite::memory:")
-            .await
-            .expect("in-memory SQLite");
+    async fn install_schema(pool: &SqlitePool) {
         sqlx::query(
             "CREATE TABLE authbus_time_floor (
                 singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
@@ -113,9 +114,17 @@ mod tests {
                 revision INTEGER NOT NULL CHECK (revision >= 1)
              ) WITHOUT ROWID",
         )
-        .execute(&pool)
+        .execute(pool)
         .await
         .expect("time-floor table");
+        sqlx::query(
+            "CREATE TRIGGER authbus_time_floor_identity_immutable
+             BEFORE UPDATE OF singleton ON authbus_time_floor
+             BEGIN SELECT RAISE(ABORT, 'identity'); END",
+        )
+        .execute(pool)
+        .await
+        .expect("identity trigger");
         sqlx::query(
             "CREATE TRIGGER authbus_time_floor_monotonic
              BEFORE UPDATE OF observed_at_ms, revision ON authbus_time_floor
@@ -123,16 +132,31 @@ mod tests {
                OR NEW.revision != OLD.revision + 1
              BEGIN SELECT RAISE(ABORT, 'monotonic'); END",
         )
-        .execute(&pool)
+        .execute(pool)
         .await
         .expect("time-floor trigger");
+        sqlx::query(
+            "CREATE TRIGGER authbus_time_floor_delete_forbidden
+             BEFORE DELETE ON authbus_time_floor
+             BEGIN SELECT RAISE(ABORT, 'delete'); END",
+        )
+        .execute(pool)
+        .await
+        .expect("delete trigger");
         sqlx::query(
             "INSERT INTO authbus_time_floor(singleton, observed_at_ms, revision)
              VALUES (1, 0, 1)",
         )
-        .execute(&pool)
+        .execute(pool)
         .await
         .expect("time-floor singleton");
+    }
+
+    async fn pool() -> SqlitePool {
+        let pool = SqlitePool::connect("sqlite::memory:")
+            .await
+            .expect("in-memory SQLite");
+        install_schema(&pool).await;
         pool
     }
 
@@ -160,5 +184,55 @@ mod tests {
         tx.commit().await.expect("commit");
         assert_eq!(later.wall_time_ms, 150);
         assert_eq!(later.revision, first.revision + 1);
+    }
+
+    #[tokio::test]
+    async fn forward_jump_and_restart_never_restore_younger_time() {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let path = directory.path().join("evidence.sqlite");
+        let options = SqliteConnectOptions::new()
+            .filename(&path)
+            .create_if_missing(true);
+        let first_pool = SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(options.clone())
+            .await
+            .expect("first pool");
+        install_schema(&first_pool).await;
+        let mut tx = first_pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .expect("first tx");
+        let jumped = advance_authbus_time_floor(&mut tx, 1_000_000)
+            .await
+            .expect("forward jump");
+        tx.commit().await.expect("commit jump");
+        first_pool.close().await;
+
+        let reopened = SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(options)
+            .await
+            .expect("reopen");
+        let mut tx = reopened
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .expect("rollback tx");
+        let rollback = advance_authbus_time_floor(&mut tx, 100)
+            .await
+            .expect("clamp after restart");
+        tx.commit().await.expect("commit rollback");
+        assert_eq!(rollback, jumped);
+
+        let mut tx = reopened
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .expect("later tx");
+        let later = advance_authbus_time_floor(&mut tx, 1_000_001)
+            .await
+            .expect("advance after restart");
+        tx.commit().await.expect("commit later");
+        assert_eq!(later.wall_time_ms, 1_000_001);
+        assert_eq!(later.revision, jumped.revision + 1);
     }
 }
