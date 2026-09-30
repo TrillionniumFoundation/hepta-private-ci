@@ -21,7 +21,8 @@
     "docs/lane-a-foundation/auth.authbus",
     "scripts/authbus-evidence-projection.py",
     "scripts/authbus-exact-head-evidence.py",
-    "scripts/check-authbus-closed-world.py"
+    "scripts/check-authbus-closed-world.py",
+    "scripts/authbus-performance-evidence.py"
   ],
   "laneId": "LANE-A-FOUNDATION",
   "module": "auth.authbus",
@@ -396,11 +397,28 @@
         "docs/modules/auth.authbus/TARGET_HOST_QUALIFICATION.md"
       ],
       "sourcePathExists": true
+    },
+    {
+      "operation": "performance_evidence_validation",
+      "designOperation": "performance_evidence_validation",
+      "nativeSymbol": "authbus-performance-evidence.py",
+      "sourcePath": "scripts/authbus-performance-evidence.py",
+      "state": "source_implemented_real_target_measurement_pending",
+      "authority": "evidence_validation_only",
+      "tests": [
+        "docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.json"
+      ],
+      "mappingClass": "qualification_adapter",
+      "delegatedCallees": [
+        ".github/workflows/authbus-target-host-qualification.yml",
+        "docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.md"
+      ],
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
     "Obtain terminal-success exact-head and deterministic synthetic-merge receipts for the final unchanged candidate SHA.",
-    "Execute the protected self-hosted ENOSPC, real power-loss, permission-loss and restored-old-snapshot harnesses and retain their raw immutable receipts.",
+    "Execute the protected self-hosted crash-consistency and end-to-end performance harnesses and retain their raw immutable receipts.",
     "Integrate a selected durable kernel.operations owner as the production source of operation identity; the current Bao path requires a host-supplied durable StableId."
   ],
   "externalEvidenceGates": [
@@ -415,6 +433,7 @@
     "scripts/authbus-evidence-projection.py",
     "scripts/authbus-exact-head-evidence.py",
     "scripts/authbus-target-host-evidence.py",
+    "scripts/authbus-performance-evidence.py",
     "scripts/check-authbus-closed-world.py"
   ]
 }
