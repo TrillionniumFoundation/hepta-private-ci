@@ -15,12 +15,14 @@ CRATE = ROOT / "codex-rs/hepta-bellman-operator"
 DEFAULT_PASS = """
 use codex_hepta_bellman_operator::{
     FinalUseFenceV1,
+    FitContextV1,
     LoadedTabularOperatorV2,
     QualifiedSensorCoreBuildReceiptV1,
     SensorCoreSelectionModeV1,
 };
 fn main() {
     let _ = core::mem::size_of::<FinalUseFenceV1>();
+    let _ = core::mem::size_of::<FitContextV1>();
     let _ = core::mem::size_of::<LoadedTabularOperatorV2>();
     let _ = core::mem::size_of::<QualifiedSensorCoreBuildReceiptV1>();
     let _ = SensorCoreSelectionModeV1::Exact.as_str();
