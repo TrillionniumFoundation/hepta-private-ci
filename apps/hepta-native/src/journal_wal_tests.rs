@@ -1,7 +1,7 @@
-use super::OperationJournal;
-use super::OperationPhase;
-use super::OperationRecord;
-use super::WAL_CHECKPOINT_ENTRIES;
+use crate::journal::OperationJournal;
+use crate::journal::OperationPhase;
+use crate::journal::OperationRecord;
+use crate::journal::WAL_CHECKPOINT_ENTRIES;
 use crate::model::OperationKey;
 use crate::model::PlatformAction;
 
