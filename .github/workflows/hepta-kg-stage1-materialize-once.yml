@@ -12,8 +12,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: hepta-kg-stage1-materialize-macos-${{ github.ref }}
-  cancel-in-progress: false
+  group: hepta-kg-stage1-materialize-${{ github.sha }}
+  cancel-in-progress: true
 
 jobs:
   materialize:
@@ -57,9 +57,13 @@ jobs:
               raise SystemExit("embedded reviewed patch was not found")
           payload = "".join(line.strip() for line in match.group(1).splitlines())
           patch = gzip.decompress(base64.b64decode(payload, validate=True))
-          if len(patch) != 31802:
-              raise SystemExit(f"unexpected patch size: {len(patch)}")
+          expected_size = 31802
+          expected_sha = "aab5aad22816decdf84fe945c7fd7f9fc5277ebae3e56f89a882ca20ff49a0af"
           observed = hashlib.sha256(patch).hexdigest()
+          if len(patch) != expected_size or observed != expected_sha:
+              raise SystemExit(
+                  f"unexpected patch identity: bytes={len(patch)} sha256={observed}"
+              )
           Path(sys.argv[2]).write_bytes(patch)
           print(f"verified reviewed patch: bytes={len(patch)} sha256={observed}")
           PY
@@ -90,7 +94,16 @@ jobs:
           git diff --cached --name-only | LC_ALL=C sort > "$RUNNER_TEMP/observed-paths"
           diff -u "$RUNNER_TEMP/expected-paths" "$RUNNER_TEMP/observed-paths"
           git diff --check --cached
-          git status --short
+
+      - name: Format materialized Rust source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry --package codex-hepta-prompt-optimizer --package codex-hepta-memory --package codex-hepta-agentd
+          cd ..
+          git add -A
+          git diff --cached --check
 
       - name: Commit and push ordinary source
         shell: bash
