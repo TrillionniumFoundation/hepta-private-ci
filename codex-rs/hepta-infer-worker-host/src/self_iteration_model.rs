@@ -87,7 +87,6 @@ impl SelfIterationModelPortV1 for AppServerSelfIterationModelPortV1 {
         if remaining_ms == 0 {
             return Err(SelfIterationModelErrorV1::TimedOut);
         }
-        self.maintain_history(1, std::time::Duration::from_millis(remaining_ms.min(1_000)))?;
         if self
             .cleanup_maintenance_at
             .is_none_or(|at| at.elapsed() >= std::time::Duration::from_secs(60))

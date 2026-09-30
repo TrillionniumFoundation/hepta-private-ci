@@ -137,6 +137,46 @@ fn small_capacity_survives_many_rounds_reload_and_never_replays_history() {
 }
 
 #[test]
+fn maintenance_batch_retires_available_settled_records_under_a_smaller_owner_capacity() {
+    let directory = directory();
+    let path = directory.join("batch.journal");
+    let mut control = DurableInferenceControl::open(&path, 3).unwrap();
+    control.reserve_native(request("unknown"), 2).unwrap();
+    control.dispatch_native("unknown", dispatch()).unwrap();
+    let unknown = control.native_record("unknown").unwrap().clone();
+    let mut stopped = Vec::new();
+    for id in ["closed-a", "closed-b"] {
+        control.reserve_native(request(id), 2).unwrap();
+        stopped.push(
+            control
+                .stop_native_before_dispatch(id, "not sent".to_string())
+                .unwrap(),
+        );
+    }
+    let receipt = control
+        .maintain_native_history(/*maximum_records*/ 32, Duration::from_secs(5))
+        .unwrap();
+    assert_eq!(receipt.archived_records, 2);
+    assert_eq!(receipt.resident_native_records, 1);
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 3).unwrap();
+    assert_eq!(control.native_record("unknown"), Some(&unknown));
+    for record in stopped {
+        assert_eq!(
+            control
+                .native_record_resolved(&record.request.request_id)
+                .unwrap(),
+            Some(record.clone())
+        );
+        assert_eq!(
+            control.reserve_native(record.request.clone(), 2).unwrap(),
+            record
+        );
+    }
+    control.reserve_native(request("new-work"), 2).unwrap();
+}
+
+#[test]
 fn crash_cut_after_receipt_before_journal_retirement_is_recoverable() {
     let directory = directory();
     let path = directory.join("control.journal");

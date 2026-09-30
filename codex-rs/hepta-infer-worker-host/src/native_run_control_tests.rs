@@ -515,3 +515,40 @@ async fn duplicate_pending_abort_never_falls_through_to_ordinary_observation() {
         Err(codex_hepta_infer_core::durable_control::Error::CapacityExceeded)
     );
 }
+
+#[tokio::test]
+async fn ordinary_admission_retires_closed_history_under_continuous_traffic() {
+    let (driver, path) = fixture("continuous-history");
+    let mut control = DurableInferenceControl::open(&path, 1).unwrap();
+    let cancellation = CancellationToken::new();
+    let mut previous: Option<String> = None;
+    for round in 0..6 {
+        let request_id = format!("round-{round}");
+        assert!(
+            driver
+                .run(
+                    &mut control,
+                    NativeAdmission {
+                        request_id: request_id.clone(),
+                        maximum_in_flight: 1
+                    },
+                    "prompt".to_string(),
+                    None,
+                    &cancellation
+                )
+                .await
+                .is_err()
+        );
+        let stopped = control.native_record(&request_id).unwrap().clone();
+        assert_eq!(stopped.state, NativeReservationState::Released);
+        assert!(stopped.pre_dispatch_stop.is_some());
+        assert!(stopped.observation.is_none());
+        if let Some(prior) = previous {
+            assert!(control.native_record(&prior).is_none());
+            assert!(control.native_record_resolved(&prior).unwrap().is_some());
+        }
+        previous = Some(request_id);
+        drop(control);
+        control = DurableInferenceControl::open(&path, 1).unwrap();
+    }
+}

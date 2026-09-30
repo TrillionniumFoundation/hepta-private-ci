@@ -76,7 +76,7 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        if maximum_records == 0 || maximum_records > self.capacity || budget.is_zero() {
+        if maximum_records == 0 || maximum_records > super::MAX_RECORDS || budget.is_zero() {
             return Err(Error::CapacityExceeded);
         }
         let started = Instant::now();
@@ -109,7 +109,7 @@ impl DurableInferenceControl {
                     ))
                 })
             })
-            .take(maximum_records)
+            .take(maximum_records.min(self.capacity))
             .cloned()
             .collect();
         let mut archived_records = 0;

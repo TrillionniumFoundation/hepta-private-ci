@@ -82,14 +82,12 @@ impl AppServerModelDriver {
         }
         let remaining = deadline.saturating_duration_since(Instant::now());
         if !remaining.is_zero() {
-            receipt.cleanup = Some(
-                self.maintain_native_cleanup(remaining.min(Duration::from_secs(1)))
-                    .await?,
-            );
+            receipt.cleanup = Some(self.maintain_native_cleanup(remaining / 2).await?);
         }
         let remaining = deadline.saturating_duration_since(Instant::now());
         if !remaining.is_zero() {
-            receipt.history = Some(control.maintain_native_history(1, remaining)?);
+            receipt.history =
+                Some(control.maintain_native_history(/*maximum_records*/ 32, remaining)?);
         }
         Ok(receipt)
     }

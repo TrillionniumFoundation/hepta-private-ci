@@ -248,6 +248,26 @@ impl AppServerModelDriver {
                 deadline,
             )?,
         };
+        // Retirement follows ordinary traffic as well as the idle timer. A
+        // busy worker must not consume resident history faster than it retires
+        // it; unresolved effects and unacknowledged owner outboxes stay held.
+        let history_now_ms = super::unix_time_ms()?;
+        let history_budget = match deadline {
+            NativeDeadlinePolicy::Absolute(deadline_ms) => {
+                std::time::Duration::from_millis(deadline_ms.saturating_sub(history_now_ms))
+            }
+            NativeDeadlinePolicy::Profile => intelligence.map_or(self.config.timeout, |binding| {
+                std::time::Duration::from_millis(
+                    binding.absolute_deadline_ms.saturating_sub(history_now_ms),
+                )
+            }),
+        };
+        if !history_budget.is_zero() {
+            control.maintain_native_history(
+                1,
+                history_budget.min(std::time::Duration::from_secs(1)),
+            )?;
+        }
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
         if record.state == NativeReservationState::AbortPending {
             self.reconcile_pending_pre_effect_abort(control, &record)

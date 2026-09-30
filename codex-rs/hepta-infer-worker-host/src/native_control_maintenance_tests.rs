@@ -25,11 +25,6 @@ use tokio::net::UnixListener;
 const AGENT: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
 fn prepare_dispatch(control: &mut DurableInferenceControl, id: &str) -> NativePreEffectAbortToken {
-    token
-}
-
-fn prepare(control: &mut DurableInferenceControl, id: &str) -> NativeRunRecord {
-    let token = prepare_dispatch(control, id);
     control
         .reserve_native(
             NativeRequest {
@@ -73,6 +68,11 @@ fn prepare(control: &mut DurableInferenceControl, id: &str) -> NativeRunRecord {
             },
         )
         .unwrap();
+    token
+}
+
+fn prepare(control: &mut DurableInferenceControl, id: &str) -> NativeRunRecord {
+    let token = prepare_dispatch(control, id);
     control
         .prepare_native_abort_before_effect(
             token,
@@ -301,6 +301,9 @@ async fn lost_abort_ack_reopens_original_proof_and_retires_only_after_exact_ack(
     assert_eq!(control.native_record("lost-ack"), Some(&pending));
     drop(control);
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    // An operator-selected provider model can change without granting a replay
+    // of this old request or stranding its already persisted abort proof.
+    driver.config.model = "new-provider-model".to_string();
     let server = serve_abort(&listener, &pending, Some(acknowledgement(&pending)));
     let (receipt, ()) = tokio::join!(
         driver.maintain_native_control(&mut control, Duration::from_secs(5)),

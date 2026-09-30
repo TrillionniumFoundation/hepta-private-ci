@@ -576,7 +576,6 @@ impl AppServerModelDriver {
             != codex_hepta_infer_core::durable_control::native::NativeReservationState::AbortPending
             || record.request.principal_id != self.config.agent_id.to_string()
             || record.request.worker_generation != self.config.generation
-            || record.request.model != self.config.model
             || record.turn_id.is_some()
             || record.observation.is_some()
             || record.terminal_owner.as_ref().is_some_and(|owner| {
@@ -903,7 +902,6 @@ impl AppServerModelDriver {
         };
         if record.request.principal_id != self.config.agent_id.to_string()
             || record.request.worker_generation != self.config.generation
-            || record.request.model != self.config.model
         {
             return Err("pending native terminal no longer matches its exact owner".into());
         }
