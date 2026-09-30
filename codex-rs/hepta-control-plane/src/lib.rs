@@ -23,8 +23,10 @@ mod planner_execution;
 mod planner_journal;
 mod planner_ndu;
 mod planner_store;
+mod production_owner;
 #[path = "embodiment/timing.rs"]
 mod timing;
+mod trusted_clock;
 
 pub use cart::CART_Q24_SCALE;
 pub use cart::CartCommandV1;
@@ -161,9 +163,22 @@ pub use planner_store::PlannerStoreFailpointV1;
 pub use planner_store::PlannerStoreRecordKindV1;
 pub use planner_store::PlannerStoreRecordV1;
 pub use planner_store::PlannerStoreV1;
+pub use production_owner::AuthenticatedOwnerPortV1;
+pub use production_owner::CanonicalProducerEnvelopeV1;
+pub use production_owner::CanonicalProducerVerificationErrorV1;
+pub use production_owner::CanonicalProducerVerificationV1;
+pub use production_owner::CanonicalProducerVerifierV1;
+pub use production_owner::ControlRuntimeOwnerErrorV1;
+pub use production_owner::ControlRuntimeOwnerV1;
+pub use production_owner::FinalUseObservationV1;
 pub use timing::FixedPriorityTaskV1;
 pub use timing::TimingError;
 pub use timing::fixed_priority_response_times;
+pub use trusted_clock::FreshnessWindowV1;
+pub use trusted_clock::ManualTrustedClockV1;
+pub use trusted_clock::SystemTrustedClockV1;
+pub use trusted_clock::TrustedClockErrorV1;
+pub use trusted_clock::TrustedClockV1;
 
 use std::error::Error as StdError;
 use std::fmt;
