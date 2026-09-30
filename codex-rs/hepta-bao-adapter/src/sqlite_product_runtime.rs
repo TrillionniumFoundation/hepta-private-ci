@@ -46,7 +46,7 @@ impl Default for BaoSqliteProductRuntimeConfigV1 {
 }
 
 impl BaoSqliteProductRuntimeConfigV1 {
-    fn validate(&self) -> Result<(), BaoFinalUseHostError> {
+    pub(crate) fn validate(&self) -> Result<(), BaoFinalUseHostError> {
         if !consumer_id(&self.forward_executor_id)
             || !consumer_id(&self.recovery_worker_id)
             || self.forward_executor_id == self.recovery_worker_id
@@ -234,8 +234,7 @@ impl SqliteBaoProductRuntimeV1 {
                 client,
                 authbus,
                 &self.owner,
-                &self.config.forward_executor_id,
-                self.config.forward_execution_lease_ms,
+                &self.config,
                 read,
                 evidence,
             )
@@ -275,9 +274,8 @@ impl SqliteBaoProductRuntimeV1 {
             .reconcile_sqlite_claim(authbus, &self.owner, &claim, evidence)
             .await;
         self.host.record_recovery_metric(started, &result);
-        if result.is_err() {
-            self.reschedule_claim(&mut claim, result.as_ref().unwrap_err())
-                .await?;
+        if let Err(error) = &result {
+            self.reschedule_claim(&mut claim, error).await?;
         }
         result
     }
@@ -288,25 +286,31 @@ impl SqliteBaoProductRuntimeV1 {
         evidence: &mut E,
     ) -> Result<BaoRecoveryBatchReportV1, BaoProductHostError> {
         let batch_started = Instant::now();
-        let now_unix_ms = self.host.product_now()?;
-        let claims = self
-            .owner
-            .claim_due_reconciliation(
-                &self.config.recovery_worker_id,
-                now_unix_ms,
-                self.config.recovery_lease_ms,
-                self.config.recovery_batch_limit,
-            )
-            .await
-            .map_err(BaoProductHostError::SqliteStore)?;
         let mut report = BaoRecoveryBatchReportV1 {
-            claimed: u64::try_from(claims.len()).unwrap_or(u64::MAX),
+            claimed: 0,
             succeeded: 0,
             terminal_failed: 0,
             rescheduled: 0,
         };
         let mut classes = Vec::new();
-        for mut claim in claims {
+        for _ in 0..self.config.recovery_batch_limit {
+            // Lease work only when this worker can execute it. A slow observer
+            // must not consume the leases of later rows waiting in this batch.
+            let now_unix_ms = self.host.product_now()?;
+            let mut claims = self
+                .owner
+                .claim_due_reconciliation(
+                    &self.config.recovery_worker_id,
+                    now_unix_ms,
+                    self.config.recovery_lease_ms,
+                    /*limit*/ 1,
+                )
+                .await
+                .map_err(BaoProductHostError::SqliteStore)?;
+            let Some(mut claim) = claims.pop() else {
+                break;
+            };
+            report.claimed = report.claimed.saturating_add(1);
             let started = Instant::now();
             let result = self
                 .host
@@ -315,7 +319,7 @@ impl SqliteBaoProductRuntimeV1 {
             self.host.record_recovery_metric(started, &result);
             match &result {
                 Ok(_) => report.succeeded = report.succeeded.saturating_add(1),
-                Err(BaoProductHostError::TerminalFailure(Box::new(_))) => {
+                Err(BaoProductHostError::TerminalFailure(_)) => {
                     report.terminal_failed = report.terminal_failed.saturating_add(1);
                     classes.push(BaoProductErrorClassV1::HistoricalTerminalFailure);
                 }
@@ -407,11 +411,12 @@ impl BaoFinalUseHost {
         client: &BaoClient,
         authbus: &AuthBusAuthorityHost,
         owner: &Arc<SqliteBaoOwnerV1>,
-        execution_owner: &str,
-        execution_lease_ms: u64,
+        runtime_config: &BaoSqliteProductRuntimeConfigV1,
         read: BaoApprovedReadV1<'_>,
         evidence: &mut E,
     ) -> Result<BaoSecretReceipt, BaoProductHostError> {
+        let execution_owner = &runtime_config.forward_executor_id;
+        let execution_lease_ms = runtime_config.forward_execution_lease_ms;
         let BaoApprovedReadV1 {
             admission,
             grant,
@@ -1252,8 +1257,7 @@ fn recovery_error_digest(class: BaoProductErrorClassV1) -> [u8; 32] {
 
 fn retry_delay_ms(base: u64, maximum: u64, attempt_count: u64) -> u64 {
     let exponent = u32::try_from(attempt_count.min(31)).unwrap_or(31);
-    base.checked_mul(1_u64.checked_shl(exponent).unwrap_or(u64::MAX))
-        .unwrap_or(u64::MAX)
+    base.saturating_mul(1_u64.checked_shl(exponent).unwrap_or(u64::MAX))
         .min(maximum)
 }
 

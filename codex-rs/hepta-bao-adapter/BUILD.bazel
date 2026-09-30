@@ -4,6 +4,7 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-bao-adapter",
+    compile_data = glob(["migrations/**"]),
     crate_name = "codex_hepta_bao_adapter",
 )
 

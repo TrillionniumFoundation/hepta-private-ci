@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import sys
 import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "scripts"))
+from verify_hepta_callers import _strip_cfg_test_items, _strip_rust_non_code
+from build_readiness_manifest import load_product_caller
 FAKE_FEATURES = {
     "bao-https-client",
     "authbus-admission",
@@ -75,25 +80,33 @@ def validate_materialized_source() -> None:
         "TerminalFailure(BaoConsumptionOperationV1)" not in host,
         "unboxed TerminalFailure declaration remains",
     )
-    unboxed = re.search(
+    unboxed = re.finditer(
         r"BaoProductHostError::(?:OutcomePending|TerminalFailure)"
         r"\((?!Box::new\()",
         combined,
     )
-    require(unboxed is None, "unboxed product-error constructor remains")
+    for match in unboxed:
+        # Match arms destructure an existing Box; Box::new is invalid there.
+        line_tail = combined[match.end():].split("\n", 1)[0]
+        if re.match(r"[^()]*\)\s*\)*\s*=>", line_tail):
+            continue
+        require(False, "unboxed product-error constructor remains")
 
 
 def rust_product_callers() -> list[str]:
     callers: list[str] = []
-    for path in ROOT.rglob("*.rs"):
+    excluded = {".git", "target", "tests", "test", "examples", "example", "qa", "fixtures"}
+    sources = []
+    for directory, subdirectories, files in os.walk(ROOT):
+        subdirectories[:] = [name for name in subdirectories if name not in excluded]
+        sources.extend(Path(directory) / name for name in files if name.endswith(".rs"))
+    for path in sources:
         if path == RUNTIME_DEFINITION:
             continue
         relative = path.relative_to(ROOT)
         parts = set(relative.parts)
         lower_name = path.name.lower()
-        if parts.intersection(
-            {".git", "target", "tests", "test", "examples", "example", "qa", "fixtures"}
-        ):
+        if parts.intersection(excluded):
             continue
         if "test" in lower_name or lower_name.endswith("_fixture.rs"):
             continue
@@ -101,7 +114,10 @@ def rust_product_callers() -> list[str]:
             text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             continue
-        if "SqliteBaoProductRuntimeV1::new(" in text:
+        if "SqliteBaoProductRuntimeV1" not in text:
+            continue
+        code = _strip_cfg_test_items(_strip_rust_non_code(text))
+        if re.search(r"SqliteBaoProductRuntimeV1\s*::\s*new\s*\(", code):
             callers.append(relative.as_posix())
     return sorted(callers)
 
@@ -110,14 +126,14 @@ def validate_product_composition_truth() -> None:
     manifest = json.loads(CANONICAL_MANIFEST.read_text(encoding="utf-8"))
     readiness = manifest.get("readinessDimensions", {})
     callers = rust_product_callers()
-    require(
-        not callers,
-        "non-test SQLite Bao product caller source exists without canonical "
-        f"composition evidence: {callers}",
+    caller_manifest, _ = load_product_caller(
+        "docs/modules/secrets.heptabao/PRODUCT_CALLER_MANIFEST_V1.json"
     )
+    require(callers == [caller_manifest["constructorSourcePath"]],
+            f"SQLite Bao source callers differ from the registered source helper: {callers}")
     require(
         readiness.get("productComposed") is False,
-        "canonical manifest must keep productComposed=false while no caller exists",
+        "canonical manifest must keep productComposed=false without product execution evidence",
     )
 
     inventory = tomllib.loads(CALLERS.read_text(encoding="utf-8"))
@@ -132,10 +148,14 @@ def validate_product_composition_truth() -> None:
         bao_boundaries,
         "CALLERS.toml is missing the Bao construction boundary",
     )
+    require(any(boundary.get("symbol") == "SqliteBaoProductRuntimeV1::new"
+                for boundary in bao_boundaries),
+            "CALLERS.toml is missing the SQLite Bao runtime construction boundary")
     for boundary in bao_boundaries:
+        expected = callers if boundary.get("symbol") == "SqliteBaoProductRuntimeV1::new" else []
         require(
-            boundary.get("product_callers", []) == [],
-            "CALLERS.toml must not claim a product caller while source scan is empty",
+            boundary.get("product_callers", []) == expected,
+            "CALLERS.toml source caller inventory differs from the lexical source scan",
         )
 
 
@@ -203,6 +223,9 @@ def validate_qualifiers() -> None:
 
 
 def validate_materializer_role() -> None:
+    # A frozen source candidate need not retain a retired development writer.
+    if not MATERIALIZER.exists():
+        return
     text = MATERIALIZER.read_text(encoding="utf-8")
     require(
         "permissions:\n  contents: write" in text,

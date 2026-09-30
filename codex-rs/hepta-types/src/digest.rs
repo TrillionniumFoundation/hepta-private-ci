@@ -12,6 +12,21 @@ use sha2::Sha256;
 #[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Digest32([u8; 32]);
 
+/// Incremental SHA-256 for producers whose exact byte stream arrives in parts.
+/// Retains only hash state; callers define framing and bound their own inputs.
+#[derive(Default)]
+pub struct Digest32Builder(Sha256);
+
+impl Digest32Builder {
+    pub fn update(&mut self, bytes: &[u8]) {
+        self.0.update(bytes);
+    }
+
+    pub fn finish(self) -> Digest32 {
+        Digest32::from_array(self.0.finalize().into())
+    }
+}
+
 impl Digest32 {
     pub const ZERO: Self = Self([0; 32]);
 

@@ -32,6 +32,7 @@ required_boundary_ids = [
   "bao_final_use_consumer",
   "bao_registered_consumer_new",
   "bao_final_use_host_new",
+  "bao_sqlite_product_runtime_new",
   "bao_registered_revocation_update",
   "bao_registered_final_use_host",
   "authority_lease_open_state",
@@ -296,6 +297,14 @@ definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["impl BaoFinalUseHost", "pub fn new(", "DuplicateConsumer"]
 product_callers = []
 caller_markers = []
+
+[[boundary]]
+id = "bao_sqlite_product_runtime_new"
+symbol = "SqliteBaoProductRuntimeV1::new"
+definition_path = "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs"
+definition_markers = ["pub struct SqliteBaoProductRuntimeV1", "pub fn new("]
+product_callers = ["codex-rs/hepta-bao-adapter/src/product_bootstrap.rs"]
+caller_markers = ["pub fn compose_hepta_secrets_runtime", "runtime_config.recovery_batch_limit = 1", "SqliteBaoProductRuntimeV1::new(host, owner, runtime_config)"]
 
 [[boundary]]
 id = "bao_registered_revocation_update"

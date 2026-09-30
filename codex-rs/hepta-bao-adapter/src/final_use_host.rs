@@ -35,19 +35,21 @@ use crate::BaoAuthBusError;
 use crate::BaoAuthBusEvidenceProvider;
 use crate::BaoClient;
 use crate::BaoClientError;
+use crate::BaoConsumptionOperationV1;
+use crate::BaoConsumptionRecoveryActionV1;
+use crate::BaoConsumptionStateV1;
 use crate::BaoReadRequest;
 use crate::BaoSecretReceipt;
-use crate::{
-    BaoConsumptionOperationV1, BaoConsumptionRecoveryActionV1, BaoConsumptionStateV1,
-    DurableLeaseRegistryV1, LeaseRegistryErrorV1,
-};
+use crate::DurableLeaseRegistryV1;
+use crate::LeaseRegistryErrorV1;
 
 #[path = "sqlite_product_runtime.rs"]
 mod sqlite_product_runtime;
-pub use sqlite_product_runtime::{
-    BaoRecoveryBatchReportV1, BaoRecoveryWorkerMetricsV1, BaoSqliteProductRuntimeConfigV1,
-    SqliteBaoProductRuntimeMetricsV1, SqliteBaoProductRuntimeV1,
-};
+pub use sqlite_product_runtime::BaoRecoveryBatchReportV1;
+pub use sqlite_product_runtime::BaoRecoveryWorkerMetricsV1;
+pub use sqlite_product_runtime::BaoSqliteProductRuntimeConfigV1;
+pub use sqlite_product_runtime::SqliteBaoProductRuntimeMetricsV1;
+pub use sqlite_product_runtime::SqliteBaoProductRuntimeV1;
 
 /// Independently approved operation inputs; dependencies remain host-owned.
 #[derive(Clone, Copy)]
@@ -422,6 +424,12 @@ impl BaoFinalUseHost {
         &self,
         update: &SignedFinalUseRevocationUpdate,
     ) -> Result<FinalUseRevocationReceipt, BaoFinalUseHostError> {
+        // Publish the durable head and its freshness together. Concurrent feed
+        // updates must not replace a newer head's deadline with an older one.
+        let mut fresh_until = self
+            .revocation_fresh_until_unix_ms
+            .lock()
+            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
         let now_unix_ms = self
             .clock
             .now_unix_ms()
@@ -430,10 +438,6 @@ impl BaoFinalUseHost {
             .revocation_verifier
             .apply(&self.authority, update, now_unix_ms)
             .map_err(BaoFinalUseHostError::Control)?;
-        let mut fresh_until = self
-            .revocation_fresh_until_unix_ms
-            .lock()
-            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
         *fresh_until = receipt.valid_until_unix_ms();
         Ok(receipt)
     }
@@ -1331,6 +1335,7 @@ impl std::error::Error for BaoProductHostError {}
 #[cfg(all(test, unix))]
 mod tests {
     use super::*;
+    use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
 
     fn callback() -> BaoConsumerCallback {
@@ -1411,5 +1416,79 @@ mod tests {
             settlement.class(),
             BaoProductErrorClassV1::AwaitingSettlement
         );
+    }
+
+    #[test]
+    fn unavailable_freshness_owner_cannot_advance_durable_revocation_head() {
+        use codex_hepta_contracts::FinalUseRevocationUpdate;
+        use codex_hepta_contracts::FinalUseRevocations;
+        use std::os::unix::fs::PermissionsExt;
+
+        let directory = tempfile::tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let issuer = SigningKey::from_bytes(&[41; 32]);
+        let approver = SigningKey::from_bytes(&[42; 32]);
+        let distributor = SigningKey::from_bytes(&[43; 32]);
+        let initial_head = FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: Default::default(),
+        };
+        let authority = FinalUseAuthority::open_state_dir(
+            directory.path(),
+            "security-owner".into(),
+            issuer.verifying_key().to_bytes(),
+            initial_head.clone(),
+        )
+        .unwrap();
+        let host = Arc::new(
+            BaoFinalUseHost::new(
+                authority,
+                FinalUseApprovalVerifier::new(
+                    "operator-approver".into(),
+                    approver.verifying_key().to_bytes(),
+                )
+                .unwrap(),
+                FinalUseRevocationFeedVerifier::new(
+                    "revocation-distributor".into(),
+                    distributor.verifying_key().to_bytes(),
+                )
+                .unwrap(),
+                Arc::new(codex_hepta_contracts::SystemAuthorityClock),
+                [RegisteredBaoConsumer::new("model-provider".into(), callback()).unwrap()],
+            )
+            .unwrap(),
+        );
+        let now = host.clock.now_unix_ms().unwrap();
+        let update = FinalUseRevocationUpdate::new(
+            "revocation-distributor".into(),
+            FinalUseRevocations {
+                revision: 2,
+                ..initial_head.clone()
+            },
+            now,
+            now + 30_000,
+        );
+        let update = SignedFinalUseRevocationUpdate {
+            signature: distributor
+                .sign(&update.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            update,
+        };
+        let poisoned_host = Arc::clone(&host);
+        assert!(
+            std::thread::spawn(move || {
+                let _guard = poisoned_host.revocation_fresh_until_unix_ms.lock().unwrap();
+                panic!("injected freshness owner failure");
+            })
+            .join()
+            .is_err()
+        );
+        assert_eq!(
+            host.apply_revocation_update(&update),
+            Err(BaoFinalUseHostError::Unavailable)
+        );
+        assert_eq!(host.authority.revocation_head().unwrap(), initial_head);
     }
 }

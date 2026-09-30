@@ -1,26 +1,47 @@
-"""Structural validation of native receipts, not independent execution proof."""
+"""Structural validation of current native receipts, not execution authority."""
+import hashlib
 import math
+from pathlib import Path
+import re
 
-REQUIRED_CHECKS = {"format", "tests", "clippy", "authbus-schema"}
+from qualify import CHECKS
+
+NATIVE_SCHEMA = "hepta.secrets-native-feedback.v2"
+REQUIRED_COMMANDS = {name: command for name, _, command in CHECKS}
+REQUIRED_CHECKS = frozenset(REQUIRED_COMMANDS)
+TEST_CHECKS = frozenset({"tests", "authbus-schema", "authbus-operation"})
 HEX = frozenset("0123456789abcdef")
 
 
 def validate_native_checks(value: dict, role: str) -> None:
+    if value.get("schema") != NATIVE_SCHEMA:
+        raise ValueError(f"unexpected {role} receipt schema")
     if value.get("expectedSha") != value.get("head"):
         raise ValueError(f"{role} expected SHA does not match executed source")
-    if value.get("trackedChangesBefore") != "" or value.get("trackedChangesAfter") != "":
+    if (
+        value.get("trackedAndUntrackedBefore") != ""
+        or value.get("trackedAndUntrackedAfter") != ""
+        or type(value.get("diffCheckBefore")) is not int
+        or value["diffCheckBefore"] != 0
+        or type(value.get("diffCheckAfter")) is not int
+        or value["diffCheckAfter"] != 0
+    ):
         raise ValueError(f"{role} source cleanliness is missing or inconsistent")
+    if value.get("buildSurface") != "single_complete":
+        raise ValueError(f"{role} unexpected build surface")
+    if not isinstance(value.get("rustToolchain"), str) or not value["rustToolchain"].startswith("rustc "):
+        raise ValueError(f"{role} executed Rust toolchain is missing")
     checks = value.get("checks")
     if not isinstance(checks, list) or not checks:
         raise ValueError(f"{role} has no native checks")
-    names = []
+    names = set()
     for check in checks:
         if not isinstance(check, dict):
             raise ValueError(f"{role} invalid check entry")
         name = check.get("check")
-        if not isinstance(name, str) or not name or name in names:
-            raise ValueError(f"{role} missing or duplicate native check")
-        names.append(name)
+        if not isinstance(name, str) or name not in REQUIRED_CHECKS or name in names:
+            raise ValueError(f"{role} missing, duplicate or unexpected native check")
+        names.add(name)
         if type(check.get("exitCode")) is not int or check["exitCode"] != 0:
             raise ValueError(f"{role} native check {name} failed or did not execute")
         digest = check.get("logSha256")
@@ -29,32 +50,20 @@ def validate_native_checks(value: dict, role: str) -> None:
         duration = check.get("durationSeconds")
         if type(duration) not in (int, float) or not math.isfinite(duration) or duration < 0:
             raise ValueError(f"{role} check {name} has invalid execution duration")
-        command = check.get("command")
-        if not isinstance(command, list) or not command or any(not isinstance(c, str) or not c for c in command):
-            raise ValueError(f"{role} check {name} has no executable command")
-        verb = {"format": "fmt", "tests": "test", "clippy": "clippy", "authbus-schema": "test"}.get(name)
-        if verb and (command[:2] != ["cargo", verb] or "--no-run" in command):
-            raise ValueError(f"{role} check {name} did not invoke its native gate")
-        required = {
-            "format": {"cargo", "fmt", "codex-hepta-bao-adapter", "--check"},
-            "tests": {"cargo", "test", "--locked", "codex-hepta-bao-adapter", "--all-targets"},
-            "clippy": {"cargo", "clippy", "--locked", "codex-hepta-bao-adapter", "--all-targets", "-D", "warnings"},
-            "authbus-schema": {"cargo", "test", "--locked", "codex-hepta-authbus", "authority_schema"},
-        }.get(name, set())
-        if not required.issubset(command):
+        if check.get("command") != REQUIRED_COMMANDS[name]:
             raise ValueError(f"{role} check {name} has an unexpected qualification scope")
-    if not REQUIRED_CHECKS.issubset(names):
+    if names != REQUIRED_CHECKS:
         raise ValueError(f"{role} native qualification is incomplete")
-    for flag in ("providerDynamicE2E", "productionExecutionProved", "independentAcceptance", "releaseAuthority"):
+    for flag in (
+        "providerDynamicE2E", "productionExecutionProved", "storageProfileQualified",
+        "productComposed", "independentAcceptance", "releaseAuthority",
+    ):
         if value.get(flag) is not False:
             raise ValueError(f"{role} unsupported authority claim: {flag}")
 
 
 def validate_native_logs(value: dict, role: str, directory) -> dict:
     """Recompute retained log digests and reject zero-execution test summaries."""
-    import hashlib
-    import re
-    from pathlib import Path
     directory = Path(directory)
     counts = {}
     for check in value['checks']:
@@ -74,7 +83,7 @@ def validate_native_logs(value: dict, role: str, directory) -> dict:
                     count += int(match.group(1))
         if digest.hexdigest() != check['logSha256']:
             raise ValueError(f'{role} retained log digest mismatch: {name}')
-        if name in ('tests', 'authbus-schema'):
+        if name in TEST_CHECKS:
             if count == 0:
                 raise ValueError(f'{role} zero executed native tests: {name}')
             counts[name] = count

@@ -26,10 +26,12 @@ use serde::Serialize;
 
 #[path = "consumption_lifecycle.rs"]
 mod consumption;
-pub use consumption::{
-    BaoConsumptionOperationV1, BaoConsumptionPhaseV1, BaoConsumptionRecoveryActionV1,
-    BaoConsumptionStateV1, BaoSecretReceipt, BaoSecretTelemetryV1,
-};
+pub use consumption::BaoConsumptionOperationV1;
+pub use consumption::BaoConsumptionPhaseV1;
+pub use consumption::BaoConsumptionRecoveryActionV1;
+pub use consumption::BaoConsumptionStateV1;
+pub use consumption::BaoSecretReceipt;
+pub use consumption::BaoSecretTelemetryV1;
 
 const LEGACY_SCHEMA_VERSION: u32 = 1;
 const INTERMEDIATE_SCHEMA_VERSION: u32 = 2;

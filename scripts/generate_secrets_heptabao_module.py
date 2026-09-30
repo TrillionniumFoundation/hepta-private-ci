@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-'''Generate and verify secrets.heptabao documentation projections.
+"""Generate and verify secrets.heptabao documentation projections.
 
 The canonical manifest is the semantic source of truth. Exact candidate
 identities remain external CI attestations so committed documentation never
 requires a hash of the commit that contains itself. --write explicitly rebinds
 the implementation map to the checked-out predecessor; ordinary verification
 preserves that historical source anchor.
-'''
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -53,15 +54,15 @@ def dump(value: object) -> str:
 
 
 def git(*args: str) -> str:
-    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env = {
+        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+    }
     env.update(
         GIT_CONFIG_NOSYSTEM="1",
         GIT_CONFIG_GLOBAL=os.devnull,
         GIT_NO_REPLACE_OBJECTS="1",
     )
-    return subprocess.check_output(
-        ["git", *args], cwd=ROOT, env=env, text=True
-    ).strip()
+    return subprocess.check_output(["git", *args], cwd=ROOT, env=env, text=True).strip()
 
 
 def validate(manifest: dict) -> None:
@@ -88,26 +89,34 @@ def validate(manifest: dict) -> None:
     if not isinstance(build, dict) or build.get("kind") != "single_complete":
         raise ValueError("secrets.heptabao must declare one complete build surface")
     if build.get("cargoFeatures") != []:
-        raise ValueError("single complete build surface must not declare synthetic features")
+        raise ValueError(
+            "single complete build surface must not declare synthetic features"
+        )
 
     operations = {row.get("operation") for row in manifest.get("operations", [])}
     missing = REQUIRED_SQLITE_OPERATIONS - operations
     if missing:
-        raise ValueError(f"SQLite source operations missing from manifest: {sorted(missing)}")
+        raise ValueError(
+            f"SQLite source operations missing from manifest: {sorted(missing)}"
+        )
 
     for anchor in manifest.get("sourceAnchors", []):
         path = ROOT / anchor["path"]
         text = path.read_text(encoding="utf-8")
         for needle in anchor.get("mustContain", []):
             if needle not in text:
-                raise ValueError(f"missing source anchor {needle!r} in {anchor['path']}")
+                raise ValueError(
+                    f"missing source anchor {needle!r} in {anchor['path']}"
+                )
 
     provider = manifest["provider"]
     if (
         provider["dynamicLeaseExecutionProved"]
         or provider["dynamicMutationGate"] != "fail_closed_blocked_provider_contract"
     ):
-        raise ValueError("unqualified dynamic provider mutation must remain fail closed")
+        raise ValueError(
+            "unqualified dynamic provider mutation must remain fail closed"
+        )
 
 
 def product_caller_state(m: dict) -> str:
@@ -282,9 +291,7 @@ def implementation_projection(m: dict, existing: dict, *, rebind: bool) -> dict:
                     "sourcePath": row["path"],
                     "state": row["class"],
                     "authority": (
-                        "kernel.final_use"
-                        if "consume" in row["operation"]
-                        else "none"
+                        "kernel.final_use" if "consume" in row["operation"] else "none"
                     ),
                     "tests": operation_tests(row["operation"]),
                     "sourcePathExists": True,

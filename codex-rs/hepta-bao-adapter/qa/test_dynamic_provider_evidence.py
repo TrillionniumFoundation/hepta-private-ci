@@ -1,8 +1,14 @@
 from __future__ import annotations
 
 import importlib.util
+import contextlib
+import io
+import json
+import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 MODULE_PATH = Path(__file__).with_name("verify_dynamic_provider_evidence.py")
 SPEC = importlib.util.spec_from_file_location("verify_dynamic_provider_evidence", MODULE_PATH)
@@ -39,10 +45,56 @@ def valid_receipt() -> dict:
 
 
 class DynamicProviderEvidenceTests(unittest.TestCase):
-    def test_complete_real_service_receipt_passes(self) -> None:
+    def test_complete_claim_structure_does_not_authenticate_real_execution(self) -> None:
+        complete, structure_errors = MODULE.evaluate_structure(valid_receipt(), SHA)
+        self.assertTrue(complete)
+        self.assertEqual(structure_errors, [])
         qualified, errors = MODULE.evaluate_receipt(valid_receipt(), SHA)
-        self.assertTrue(qualified)
-        self.assertEqual(errors, [])
+        self.assertFalse(qualified)
+        self.assertEqual(errors, [MODULE.AUTHENTICATION_BLOCKER])
+
+    def test_complete_self_authored_claim_cannot_pass_require_qualified(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            receipt_path = root / "receipt.json"
+            receipt_path.write_text(json.dumps(valid_receipt()), encoding="utf-8")
+            output = root / "gate.json"
+            args = ["verify_dynamic_provider_evidence.py", "--receipt", str(receipt_path),
+                    "--expected-source-sha", SHA, "--output", str(output)]
+            for required, expected_code in ((False, 0), (True, 1)):
+                with self.subTest(required=required):
+                    with patch.object(sys, "argv", args + (["--require-qualified"] if required else [])):
+                        with contextlib.redirect_stdout(io.StringIO()):
+                            self.assertEqual(MODULE.main(), expected_code)
+                    status = json.loads(output.read_text(encoding="utf-8"))
+                    self.assertTrue(status["receiptPresent"])
+                    self.assertTrue(status["receiptStructureComplete"])
+                    self.assertFalse(status["independentAuthenticationVerified"])
+                    self.assertFalse(status["dynamicLeaseExecutionProved"])
+                    self.assertEqual(status["validationReasons"], [MODULE.AUTHENTICATION_BLOCKER])
+
+    def test_zero_candidate_tree_and_evidence_digests_fail_structure(self) -> None:
+        for field in ("sourceHeadSha", "sourceTreeSha", "evidenceSha256", "attestationSha256"):
+            with self.subTest(field=field):
+                receipt = valid_receipt()
+                if field == "evidenceSha256":
+                    receipt["scenarios"]["dynamic_issue"][field] = "0" * 64
+                elif field == "attestationSha256":
+                    receipt["independentReviewers"][0][field] = "0" * 64
+                else:
+                    receipt[field] = "0" * 40
+                complete, errors = MODULE.evaluate_structure(receipt, SHA)
+                self.assertFalse(complete)
+                self.assertTrue(errors)
+
+    def test_principal_whitespace_cannot_create_distinct_reviewers(self) -> None:
+        receipt = valid_receipt()
+        receipt["independentReviewers"][1]["principal"] = (
+            " " + receipt["independentReviewers"][0]["principal"] + " "
+        )
+        complete, errors = MODULE.evaluate_structure(receipt, SHA)
+        self.assertFalse(complete)
+        self.assertTrue(any("distinct" in error for error in errors))
 
     def test_synthetic_service_cannot_qualify(self) -> None:
         receipt = valid_receipt()

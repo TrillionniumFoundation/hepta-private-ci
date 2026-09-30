@@ -1,5 +1,120 @@
 use super::*;
+use pretty_assertions::assert_eq;
 use std::os::unix::fs::PermissionsExt;
+
+struct UncertainParentSync;
+
+impl LeaseRegistryPersistenceV1 for UncertainParentSync {
+    fn write_and_sync_temp(&self, path: &Path, bytes: &[u8]) -> std::io::Result<()> {
+        FsLeaseRegistryPersistenceV1.write_and_sync_temp(path, bytes)
+    }
+
+    fn rename(&self, from: &Path, to: &Path) -> std::io::Result<()> {
+        FsLeaseRegistryPersistenceV1.rename(from, to)
+    }
+
+    fn sync_parent(&self, _parent: &Path) -> std::io::Result<()> {
+        Err(std::io::Error::other("injected parent sync uncertainty"))
+    }
+}
+
+type ConsumptionTransition = fn(&mut DurableLeaseRegistryV1) -> Result<(), LeaseRegistryErrorV1>;
+
+#[test]
+fn indeterminate_consumption_commits_cannot_be_confirmed_by_idempotent_retry() {
+    const OPERATION_ID: &str = "operation:consumption-saga";
+    const RESERVATION_ID: &str = "reservation:consumption-saga";
+    let success_steps: [ConsumptionTransition; 5] = [
+        |owner| owner.mark_consumption_reserved(OPERATION_ID, RESERVATION_ID.into()),
+        |owner| owner.mark_consumption_dispatch_fenced(OPERATION_ID, RESERVATION_ID),
+        |owner| owner.enter_consumption(OPERATION_ID, receipt()),
+        |owner| owner.observe_consumption(OPERATION_ID, /*succeeded*/ true),
+        |owner| owner.settle_consumption(OPERATION_ID).map(|_| ()),
+    ];
+    let branch_steps: [(usize, ConsumptionTransition); 4] = [
+        (2, |owner| {
+            owner.mark_consumption_indeterminate(OPERATION_ID)
+        }),
+        (2, |owner| {
+            owner.record_provider_failure(
+                OPERATION_ID,
+                "provider_denied",
+                [9; 32],
+                /*observed_cost*/ 1,
+            )
+        }),
+        (3, |owner| {
+            owner.observe_consumption_not_applied(OPERATION_ID, [10; 32])
+        }),
+        (1, |owner| {
+            owner
+                .record_consumption_abort(
+                    OPERATION_ID,
+                    /*before_dispatch*/ true,
+                    "reservation_cancelled",
+                    [11; 32],
+                )
+                .map(|_| ())
+        }),
+    ];
+    for (setup_count, transition) in success_steps.into_iter().enumerate().chain(branch_steps) {
+        let (_directory, path) = registry_path().unwrap();
+        let mut owner = reopen(&path).unwrap();
+        owner.claim_consumption(operation()).unwrap();
+        for setup in &success_steps[..setup_count] {
+            setup(&mut owner).unwrap();
+        }
+        owner.persistence = Arc::new(UncertainParentSync);
+        assert_eq!(
+            transition(&mut owner),
+            Err(LeaseRegistryErrorV1::CommitIndeterminate)
+        );
+        assert_eq!(transition(&mut owner), Err(LeaseRegistryErrorV1::Fenced));
+        drop(owner);
+        let mut owner = reopen(&path).unwrap();
+        transition(&mut owner).unwrap();
+    }
+}
+
+#[test]
+fn indeterminate_failure_settlement_requires_owner_reopen() {
+    const OPERATION_ID: &str = "operation:consumption-saga";
+    let (_directory, path) = registry_path().unwrap();
+    let mut owner = reopen(&path).unwrap();
+    owner.claim_consumption(operation()).unwrap();
+    owner
+        .mark_consumption_reserved(OPERATION_ID, "reservation:consumption-saga".into())
+        .unwrap();
+    owner
+        .mark_consumption_dispatch_fenced(OPERATION_ID, "reservation:consumption-saga")
+        .unwrap();
+    owner
+        .record_provider_failure(
+            OPERATION_ID,
+            "provider_denied",
+            [9; 32],
+            /*observed_cost*/ 1,
+        )
+        .unwrap();
+    owner.persistence = Arc::new(UncertainParentSync);
+    assert_eq!(
+        owner.settle_consumption_failure(OPERATION_ID),
+        Err(LeaseRegistryErrorV1::CommitIndeterminate)
+    );
+    assert_eq!(
+        owner.settle_consumption_failure(OPERATION_ID),
+        Err(LeaseRegistryErrorV1::Fenced)
+    );
+    drop(owner);
+    assert_eq!(
+        reopen(&path)
+            .unwrap()
+            .settle_consumption_failure(OPERATION_ID)
+            .unwrap()
+            .state,
+        BaoConsumptionStateV1::Failed
+    );
+}
 
 fn registry_path() -> std::io::Result<(tempfile::TempDir, std::path::PathBuf)> {
     let directory = tempfile::tempdir()?;

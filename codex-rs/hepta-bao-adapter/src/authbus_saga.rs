@@ -207,9 +207,18 @@ where
             ))
         }
         Err(error) if ambiguous_after_dispatch(error) => {
-            let time = authbus
-                .observe_trusted_time_attestation(&evidence.trusted_time()?)
-                .await;
+            // Updating AuthBus is best effort after an uncertain dispatch. A
+            // time-service outage must preserve the original reservation and
+            // uncertainty instead of replacing them with an admission error.
+            let time = match evidence.trusted_time() {
+                Ok(attestation) => authbus.observe_trusted_time_attestation(&attestation).await,
+                Err(_) => {
+                    return Err(BaoAuthBusError::Indeterminate {
+                        reservation_id: dispatched.reservation_id,
+                        provider_error: error,
+                    });
+                }
+            };
             if let Ok(time) = time {
                 let _ = authbus
                     .mark_indeterminate(&dispatched.reservation_id, dispatched.revision, time)

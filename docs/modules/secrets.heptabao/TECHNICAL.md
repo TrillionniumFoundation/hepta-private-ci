@@ -18,6 +18,9 @@ This stable document is the implementation guide for `secrets.heptabao`. Normati
 
 ## Current candidate implementation contract
 
+The concrete SQLite schema, API, ownership, resource limits and recovery
+contract are documented in [SQLITE_OWNER_RUNTIME_V1.md](SQLITE_OWNER_RUNTIME_V1.md).
+
 The current registered consumption state machine is specified in
 [CONSUMPTION_SAGA_V4.md](CONSUMPTION_SAGA_V4.md); the schema-4 JSON reference
 owner and migration protocol are specified in
