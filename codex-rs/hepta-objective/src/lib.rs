@@ -87,17 +87,25 @@ pub use objective_admission::ObjectiveResourceProfileV1;
 pub use objective_admission::ObjectiveRiskProfileV1;
 pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
+#[cfg(not(feature = "objective-compatibility-api"))]
+pub(crate) use objective_admission::admit_objective_v1;
 #[cfg(feature = "objective-compatibility-api")]
 pub use objective_admission::admit_and_compile_objective_v1;
 #[cfg(feature = "objective-compatibility-api")]
 pub use objective_admission::admit_objective_v1;
 pub use objective_admission::canonical_objective_intent_digest_v1;
+#[cfg(not(feature = "objective-compatibility-api"))]
+pub(crate) use objective_admission::compile_admitted_objective_v1;
+#[cfg(feature = "objective-compatibility-api")]
 pub use objective_admission::compile_admitted_objective_v1;
 pub use objective_function_v1::DecodedObjectiveFunctionV1;
 pub use objective_function_v1::MAX_OBJECTIVE_FUNCTION_V1_BYTES;
 pub use objective_function_v1::ObjectiveFunctionV1Artifact;
 pub use objective_function_v1::ObjectiveFunctionV1Error;
 pub use objective_function_v1::decode_objective_function_v1;
+#[cfg(not(feature = "objective-compatibility-api"))]
+pub(crate) use objective_function_v1::encode_authenticated_objective_function_v1;
+#[cfg(feature = "objective-compatibility-api")]
 pub use objective_function_v1::encode_authenticated_objective_function_v1;
 pub use proof_projection::encode_proof_bearing_objective_function_v1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
@@ -125,6 +133,20 @@ pub use validated_admission::admit_validated_objective_v1;
 pub use validated_admission::compile_authoritative_objective_v1;
 pub use validated_admission::compile_validated_objective_v1;
 pub use validated_admission::preflight_validate_objective_v1;
+
+/// Explicit raw-profile/revalidation compatibility surface.
+///
+/// Ordinary product builds do not contain this module. It is available only to
+/// registered migration and differential qualification callers that enable the
+/// `objective-compatibility-api` feature. The historical root names remain
+/// available under that feature for source compatibility.
+#[cfg(feature = "objective-compatibility-api")]
+pub mod compatibility {
+    pub use crate::objective_admission::admit_and_compile_objective_v1;
+    pub use crate::objective_admission::admit_objective_v1;
+    pub use crate::objective_admission::compile_admitted_objective_v1;
+    pub use crate::objective_function_v1::encode_authenticated_objective_function_v1;
+}
 
 #[cfg(feature = "qualification-legacy-compile")]
 /// Qualification-only compatibility entrypoint for pre-admitted legacy fixtures.
