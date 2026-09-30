@@ -9,6 +9,7 @@ on:
       - 'scripts/*rust_identifiers*'
       - '.github/workflows/hepta-learning-eval-*.yml'
       - 'codex-rs/hepta-intelligence-eval/fixtures/trusted-inprocess/**'
+      - 'docs/modules/learning.eval/**'
   workflow_dispatch:
 
 # This workflow validates only the default-branch reporting and evidence control
@@ -95,6 +96,78 @@ jobs:
             DocumentationContractTests.test_markdown_symlink_target_fails_closed_before_resolution \
             DocumentationContractTests.test_markdown_source_symlink_is_rejected \
             -v 2>&1 | tee "$out/markdown-link-regressions.log"
+          python3 scripts/hepta-learning-eval-markdown-links.py \
+            2>&1 | tee "$out/markdown-links.log"
+          python3 - "$out/document-contract.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          root = Path('.')
+          docs = root / 'docs/modules/learning.eval'
+          required = (
+              'AUDIT_INDEX.md',
+              'LOCAL_DETERMINISTIC_VERIFICATION.md',
+              'QUALIFICATION_MATRIX.json',
+          )
+          for name in required:
+              path = docs / name
+              assert path.is_file(), name
+              assert not path.is_symlink(), name
+
+          matrix = json.loads((docs / 'QUALIFICATION_MATRIX.json').read_text())
+          assert isinstance(matrix, dict)
+          assert matrix.get('module') == 'learning.eval'
+          assert matrix.get('authority') == 'DENY_ALL'
+          assert matrix.get('releasePosture') == 'NO_GO'
+
+          external_false = {
+              'sourceQualifiedByThisBootstrap',
+              'sourceQualifiedByThisRun',
+              'targetHostQualified',
+              'independentAcceptance',
+              'independentAcceptanceIssued',
+              'productionImplementation',
+              'productionQualified',
+              'activation',
+              'activationAuthorized',
+              'release',
+              'releaseAuthorized',
+          }
+          bare_verified = []
+          invalid_external = []
+
+          def walk(value, prefix=''):
+              if isinstance(value, dict):
+                  for key, child in value.items():
+                      path = f'{prefix}.{key}' if prefix else key
+                      if key == 'verified':
+                          bare_verified.append(path)
+                      if key in external_false and child is not False:
+                          invalid_external.append((path, child))
+                      walk(child, path)
+              elif isinstance(value, list):
+                  for index, child in enumerate(value):
+                      walk(child, f'{prefix}[{index}]')
+
+          walk(matrix)
+          assert not bare_verified, bare_verified
+          assert not invalid_external, invalid_external
+          result = {
+              'schema': 'hepta.learning-eval.bootstrap-document-contract.v1',
+              'documents': list(required),
+              'markdownInventoryValidated': True,
+              'bareVerifiedClaims': 0,
+              'externalClaimsFalse': True,
+              'authority': 'DENY_ALL',
+              'releasePosture': 'NO_GO',
+          }
+          Path(sys.argv[1]).write_text(
+              json.dumps(result, indent=2, sort_keys=True) + '\n',
+              encoding='utf-8',
+          )
+          print(json.dumps(result, sort_keys=True))
+          PY
           python3 scripts/hepta-learning-eval-target-host.py self-test \
             2>&1 | tee "$out/target-host-verifier-self-test.log"
           bash -n scripts/hepta-learning-eval-api-surface.sh
@@ -114,6 +187,7 @@ jobs:
           convergence = (root / '.github/workflows/hepta-learning-eval-convergence.yml').read_text()
           exact = (root / '.github/workflows/hepta-learning-eval-exact.yml').read_text()
           reporter = (root / '.github/workflows/hepta-learning-eval-trusted-report.yml').read_text()
+          bootstrap = (root / '.github/workflows/hepta-learning-eval-control-plane-bootstrap.yml').read_text()
 
           for name, value in [('convergence', convergence), ('exact', exact)]:
               assert 'permissions:\n  contents: read' in value, name
@@ -123,6 +197,8 @@ jobs:
               assert value.count('id-token: write') == 1, name
               assert value.count('attestations: write') == 1, name
           assert "'.github/workflows/hepta-learning-eval-*.yml'" in exact
+          assert "'docs/modules/learning.eval/**'" in bootstrap
+          assert 'hepta-learning-eval-markdown-links.py' in bootstrap
           assert 'workflow_run:' in reporter
           assert 'pull-requests: write' in reporter
           assert 'github.event.repository.default_branch' in reporter
@@ -138,6 +214,8 @@ jobs:
               'candidateOidcAuthority': False,
               'trustedReporterFromDefaultBranch': True,
               'completeLearningEvalWorkflowPathTrigger': True,
+              'bootstrapDocumentationPathTrigger': True,
+              'bootstrapDocumentationContract': True,
               'markdownSymlinkComponentRejection': True,
               'auxiliaryControlPlaneByteIdentity': True,
               'authority': 'DENY_ALL',
