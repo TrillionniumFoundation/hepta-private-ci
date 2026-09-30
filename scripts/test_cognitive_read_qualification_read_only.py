@@ -21,6 +21,9 @@ class CognitiveReadQualificationReadOnlyTests(unittest.TestCase):
         self.assertIn("cognitive_read_full_evidence.py", body)
         self.assertNotIn("qualification_with_proposal", body)
         self.assertNotIn("source_proposal", body)
+        self.assertFalse(
+            (ROOT / "scripts/cognitive_read_qualification_with_proposal.py").exists()
+        )
 
     def test_local_proposal_is_manual_and_credential_free(self) -> None:
         body = (ROOT / ".github/workflows/cognitive-read-lock-refresh.yml").read_text()
@@ -33,9 +36,9 @@ class CognitiveReadQualificationReadOnlyTests(unittest.TestCase):
         self.assertNotIn("git push", body)
 
     def test_receipt_binds_lockfile_and_toolchain(self) -> None:
-        body = (ROOT / "scripts/cognitive_read_evidence.py").read_text()
+        body = (ROOT / "scripts/cognitive_read_full_evidence.py").read_text()
         self.assertIn('"cargo_lock"', body)
-        self.assertIn('digest(root / "codex-rs/Cargo.lock")', body)
+        self.assertIn('base.digest(root / "codex-rs/Cargo.lock")', body)
         self.assertIn('"toolchain"', body)
         self.assertIn('"nextest"', body)
 
