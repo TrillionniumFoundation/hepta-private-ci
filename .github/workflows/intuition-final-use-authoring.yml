@@ -1,7 +1,7 @@
 name: intuition.policy Final-Use Authoring
 on:
   push:
-    branches: [codex/intuition-policy-production-closure-20260927]
+    branches: [work/intuition-final-use-authoring-20261001]
     paths: [.github/intuition-final-use-authoring/TRIGGER]
 permissions:
   contents: write
@@ -26,12 +26,16 @@ jobs:
       - name: Transform, qualify and push exact source
         env:
           EXPECTED_SHA: ${{ github.sha }}
-          BRANCH: codex/intuition-policy-production-closure-20260927
+          AUTHORING_BRANCH: work/intuition-final-use-authoring-20261001
+          TARGET_BRANCH: codex/intuition-policy-production-closure-20260927
+          TARGET_BASE_SHA: 68f7386d8e8ade3706549225e9ab8e5a151656cf
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          test "$(git ls-remote origin "refs/heads/$BRANCH" | awk '{print $1}')" = "$EXPECTED_SHA"
+          test "$(git ls-remote origin "refs/heads/$AUTHORING_BRANCH" | awk '{print $1}')" = "$EXPECTED_SHA"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$TARGET_BASE_SHA"
+          git merge-base --is-ancestor "$TARGET_BASE_SHA" "$EXPECTED_SHA"
           python3 - <<'PY'
           import base64, gzip
           from pathlib import Path
@@ -87,6 +91,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -s -m 'fix(intuition): revalidate final use under writer lock'
-          git fetch --no-tags origin "$BRANCH"
-          test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_SHA"
-          git push origin "HEAD:refs/heads/$BRANCH"
+          git fetch --no-tags origin "$TARGET_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$TARGET_BASE_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          git push origin --delete "$AUTHORING_BRANCH" || true
