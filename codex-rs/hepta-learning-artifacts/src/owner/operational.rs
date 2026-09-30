@@ -286,6 +286,61 @@ impl ArtifactOwnerOperationalMetricsV1 {
         output.push_str("}}");
         output
     }
+
+    /// Prometheus text exposition for deployable owner monitoring.
+    ///
+    /// Optional gauges are omitted when the owning system has not supplied a
+    /// trustworthy observation; absence is never converted to zero.
+    #[must_use]
+    pub fn prometheus_text(&self) -> String {
+        let mut output = String::new();
+        push_metric(&mut output, "hepta_learning_artifact_requests_received_total", self.base.requests_received);
+        push_metric(&mut output, "hepta_learning_artifact_authentication_failures_total", self.base.authentication_failures);
+        push_metric(&mut output, "hepta_learning_artifact_exact_replays_total", self.base.exact_replays);
+        push_metric(&mut output, "hepta_learning_artifact_replay_conflicts_total", self.base.replay_conflicts);
+        push_metric(&mut output, "hepta_learning_artifact_publications_succeeded_total", self.base.publications_succeeded);
+        push_metric(&mut output, "hepta_learning_artifact_publications_failed_total", self.base.publications_failed);
+        push_metric(&mut output, "hepta_learning_artifact_recovery_reconciliation_failures_total", self.recovery_reconciliation_failures);
+        push_metric(&mut output, "hepta_learning_artifact_withdrawal_blocks_total", self.withdrawal_blocks);
+        push_metric(&mut output, "hepta_learning_artifact_identity_conflicts_total", self.identity_conflicts);
+        push_metric(&mut output, "hepta_learning_artifact_stale_owner_rejections_total", self.stale_owner_rejections);
+        push_metric(&mut output, "hepta_learning_artifact_persistence_unknown_total", self.persistence_unknown);
+        push_metric(&mut output, "hepta_learning_artifact_capacity_rejections_total", self.capacity_rejections);
+        if let Some(value) = self.oldest_pending_attempt_age_seconds {
+            push_metric(&mut output, "hepta_learning_artifact_oldest_pending_attempt_age_seconds", value);
+        }
+        if let Some(value) = self.drain_age_seconds {
+            push_metric(&mut output, "hepta_learning_artifact_drain_age_seconds", value);
+        }
+        if let Some(retention) = self.retention {
+            push_metric(&mut output, "hepta_learning_artifact_pinned_bytes", retention.pinned_bytes);
+            push_metric(
+                &mut output,
+                "hepta_learning_artifact_pending_physical_erase_bytes",
+                retention.pending_physical_erase_bytes,
+            );
+        }
+        for (stage, summary) in &self.stage_summaries {
+            let label = stage.as_str();
+            output.push_str(&format!(
+                "hepta_learning_artifact_stage_samples_total{{stage=\"{label}\"}} {}\n",
+                summary.samples
+            ));
+            output.push_str(&format!(
+                "hepta_learning_artifact_stage_failures_total{{stage=\"{label}\"}} {}\n",
+                summary.failures
+            ));
+            output.push_str(&format!(
+                "hepta_learning_artifact_stage_total_micros{{stage=\"{label}\"}} {}\n",
+                summary.total_micros
+            ));
+            output.push_str(&format!(
+                "hepta_learning_artifact_stage_maximum_micros{{stage=\"{label}\"}} {}\n",
+                summary.maximum_micros
+            ));
+        }
+        output
+    }
 }
 
 pub struct InstrumentedLearningArtifactReferenceHostV1 {
@@ -670,6 +725,13 @@ fn contains(haystack: &[u8], needle: &[u8]) -> bool {
 
 fn elapsed_micros(started: Instant) -> u64 {
     u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX)
+}
+
+fn push_metric(output: &mut String, name: &str, value: u64) {
+    output.push_str(name);
+    output.push(' ');
+    output.push_str(&value.to_string());
+    output.push('\n');
 }
 
 fn optional_u64(value: Option<u64>) -> String {
