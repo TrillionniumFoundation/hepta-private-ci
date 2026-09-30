@@ -1,4 +1,4 @@
-name: Hepta knowledge.graph one-shot authoring export
+name: Hepta knowledge.graph one-shot authoring closure
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - .github/workflows/hepta-kg-authoring-export-once.yml
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: hepta-kg-authoring-export-once-${{ github.ref }}
@@ -21,16 +21,27 @@ env:
   CARGO_PROFILE_DEV_DEBUG: "0"
 
 jobs:
-  export:
-    name: Export formatted ordinary-source patch
+  close:
+    name: Validate and commit ordinary source once
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
+
+      - name: Bind exact authoring head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$GITHUB_REF_NAME" = "work/kg-abc-evidence-hardening-20260928"
+          git diff --exit-code
+          git diff --cached --exit-code
+          git config user.name "ChatGPT"
+          git config user.email "noreply@openai.com"
 
       - name: Prepare native prerequisites
         shell: bash
@@ -40,7 +51,7 @@ jobs:
           sudo apt-get install -y build-essential libcap-dev pkg-config protobuf-compiler
           python3 scripts/hepta_ci_v8.py
 
-      - name: Materialize reviewed compile fix and format source
+      - name: Materialize reviewed compile fix and formatting
         shell: bash
         run: |
           set -euo pipefail
@@ -57,77 +68,49 @@ jobs:
           if insertion not in text:
               if anchor not in text:
                   raise SystemExit("knowledge.graph resource export anchor is missing")
-              text = text.replace(anchor, insertion + anchor, 1)
-              path.write_text(text, encoding="utf-8")
+              path.write_text(text.replace(anchor, insertion + anchor, 1), encoding="utf-8")
           PY
           cd codex-rs
           cargo fmt --package codex-hepta-kg --package codex-hepta-memory \
             --package codex-hepta-prompt-registry --package codex-hepta-prompt-optimizer \
             --package codex-hepta-agentd
+          cargo fmt --package codex-hepta-kg --package codex-hepta-memory \
+            --package codex-hepta-prompt-registry --package codex-hepta-prompt-optimizer \
+            --package codex-hepta-agentd -- --check
 
-      - name: Validate focused source and strict lint
-        id: validate
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -uo pipefail
-          root="$RUNNER_TEMP/kg-authoring"
-          mkdir -p "$root/logs"
-          failures=0
-          run_check() {
-            local name="$1"
-            shift
-            set +e
-            (cd codex-rs && "$@") 2>&1 | tee "$root/logs/${name}.log"
-            local status=${PIPESTATUS[0]}
-            set -e
-            printf '%s\t%s\n' "$name" "$status" >> "$root/results.tsv"
-            if [[ $status -ne 0 ]]; then failures=$((failures + 1)); fi
-          }
-          : > "$root/results.tsv"
-          run_check kg cargo test --locked -p codex-hepta-kg -- --nocapture
-          run_check prepared cargo test --locked -p codex-hepta-memory \
-            --test kg_prepared_and_plans -- --nocapture --test-threads=1
-          run_check lint cargo clippy --locked \
-            -p codex-hepta-kg -p codex-hepta-memory \
-            --no-deps --all-targets -- -D warnings
-          echo "failures=$failures" >> "$GITHUB_OUTPUT"
-          test "$failures" -eq 0
-
-      - name: Export exact changed files
-        if: always()
+      - name: Validate kernel and prepared publication
         shell: bash
         run: |
           set -euo pipefail
-          root="$RUNNER_TEMP/kg-authoring"
-          mkdir -p "$root/tree"
-          git diff --name-only --diff-filter=ACMRT -z > "$root/paths.zlist"
-          while IFS= read -r -d '' path; do
-            mkdir -p "$root/tree/$(dirname "$path")"
-            cp -- "$path" "$root/tree/$path"
-          done < "$root/paths.zlist"
-          git diff --binary > "$root/authoring.patch"
-          {
-            echo "source_commit=$(git rev-parse HEAD)"
-            echo "source_tree=$(git rev-parse HEAD^{tree})"
-            echo "workflow_blob=$(git rev-parse HEAD:.github/workflows/hepta-kg-authoring-export-once.yml)"
-            echo "changed_paths=$(tr '\0' '\n' < "$root/paths.zlist" | wc -l)"
-            echo "validation_failures=${{ steps.validate.outputs.failures }}"
-          } > "$root/manifest.txt"
-          sha256sum "$root/authoring.patch" > "$root/authoring.patch.sha256"
-          cat "$root/manifest.txt"
-          tr '\0' '\n' < "$root/paths.zlist"
+          cd codex-rs
+          cargo test --locked -p codex-hepta-kg -- --nocapture
+          cargo test --locked -p codex-hepta-memory \
+            --test kg_prepared_and_plans -- --nocapture --test-threads=1
+          cargo clippy --locked -p codex-hepta-kg -p codex-hepta-memory \
+            --no-deps --all-targets -- -D warnings
 
-      - name: Upload immutable authoring artifact
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: knowledge-graph-authoring-${{ github.sha }}
-          path: ${{ runner.temp }}/kg-authoring
-          if-no-files-found: error
-          retention-days: 7
-
-      - name: Enforce validation result
-        if: always()
+      - name: Prove bounded ordinary-source change
         shell: bash
-        run: test "${{ steps.validate.outputs.failures }}" = "0"
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -n "$(git status --porcelain --untracked-files=no)"
+          if git diff --name-only | grep -E '(^|/)(.*\.patch\.(gz\.)?b64|.*\.patch$)' ; then
+            echo "encoded or tracked patch payload is not an authoring result" >&2
+            exit 1
+          fi
+          git diff --name-only
+
+      - name: Commit exact result and remove authoring seam
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin work/kg-abc-evidence-hardening-20260928
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          rm -f .github/workflows/hepta-kg-authoring-export-once.yml
+          rm -f scripts/test_hepta_kg_authoring_export_once.py
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -s -m "fix(knowledge.graph): close source formatting and query exports"
+          git push origin HEAD:work/kg-abc-evidence-hardening-20260928
