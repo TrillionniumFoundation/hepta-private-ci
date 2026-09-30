@@ -17,6 +17,7 @@ use crate::push_id;
 const SCALE: i128 = 1_i128 << 32;
 const MAX_TRAJECTORIES: usize = 4_096;
 const MAX_STEPS: usize = 65_536;
+const MAX_ABSOLUTE_Q_RETURN: i128 = 129 * SCALE;
 
 #[path = "sequential_model.rs"]
 mod model;
@@ -35,7 +36,9 @@ pub use model::TrajectoryBoundary;
 pub use model::TrajectoryClaimScope;
 pub use model::TrajectoryEstimate;
 pub use model::TrajectoryStep;
+use step::ValidatedStep;
 use step::divide;
+use step::divide_upper;
 use step::fixed;
 use step::insufficient;
 use step::multiply;
@@ -194,6 +197,8 @@ fn estimate_trajectory<'a>(
     let mut expected_history = row.initial_history;
     let mut histories = BTreeSet::from([row.initial_history]);
     let mut cumulative = SCALE;
+    let mut cumulative_upper = SCALE;
+    let mut cumulative_numeric_upper = SCALE;
     let mut discount = SCALE;
     let mut pdis = 0_i128;
     let mut values = Vec::with_capacity(row.steps.len());
@@ -221,8 +226,33 @@ fn estimate_trajectory<'a>(
         if step.observation_generation != plan.observation_generation {
             return insufficient(SequentialEvidenceGap::GenerationMismatch);
         }
-        let (rho, q, v, reward) = validate_step(plan, step, &mut bytes)?;
-        if cumulative * rho > i128::from(plan.maximum_cumulative_ratio.raw()) * SCALE {
+        let ValidatedStep {
+            ratio: rho,
+            chosen_q: q,
+            value: v,
+            reward,
+            behavior,
+            evaluation,
+        } = validate_step(plan, step, &mut bytes)?;
+        // The point estimate rounds each factor to nearest. Admission instead
+        // carries an outward envelope from the original propensity ratios, so
+        // earlier rounding cannot hide a later cumulative ceiling breach.
+        cumulative_upper = divide_upper(
+            cumulative_upper
+                .checked_mul(evaluation)
+                .ok_or(SequentialError::Arithmetic)?,
+            behavior,
+        )?;
+        cumulative_numeric_upper = divide_upper(
+            cumulative_numeric_upper
+                .checked_mul(rho)
+                .ok_or(SequentialError::Arithmetic)?,
+            SCALE,
+        )?;
+        if cumulative_upper > i128::from(plan.maximum_cumulative_ratio.raw())
+            || cumulative_numeric_upper > i128::from(plan.maximum_cumulative_ratio.raw())
+            || cumulative * rho > i128::from(plan.maximum_cumulative_ratio.raw()) * SCALE
+        {
             return insufficient(SequentialEvidenceGap::WeightLimit);
         }
         cumulative = multiply_nonzero(cumulative, rho)?;

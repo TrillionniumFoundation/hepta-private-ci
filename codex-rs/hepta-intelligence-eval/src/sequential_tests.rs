@@ -420,6 +420,40 @@ fn horizon_and_cumulative_limits_are_enforced() {
 }
 
 #[test]
+fn original_propensity_ratios_enforce_the_cumulative_ceiling_before_rounding() {
+    for (horizon, ceiling) in [(1, q(5, 4)), (2, q(5, 2))] {
+        let mut p = plan();
+        p.estimand.horizon = horizon;
+        p.maximum_cumulative_ratio = ceiling;
+        let mut row = trajectory("cumulative-rounding-boundary");
+        row.steps.truncate(usize::from(horizon));
+        row.steps.last_mut().expect("last step").boundary = TrajectoryBoundary::Terminal;
+        let actions = &mut row.steps[0].actions;
+        // The true first ratio exceeds 1.25, but its nearest Q32 value is
+        // exactly 1.25. The second ratio is exactly two, so the true product
+        // also exceeds 2.5 while both rounded point products meet the ceiling.
+        actions[0].behavior_probability =
+            ProbabilityQ32::from_raw((3 * SCALE / 4 - 1) as u64).expect("behavior");
+        actions[0].evaluation_probability =
+            ProbabilityQ32::from_raw((15 * SCALE / 16 - 1) as u64).expect("evaluation");
+        actions[1].behavior_probability = ProbabilityQ32::from_raw(
+            ProbabilityQ32::ONE.raw() - actions[0].behavior_probability.raw(),
+        )
+        .expect("behavior complement");
+        actions[1].evaluation_probability = ProbabilityQ32::from_raw(
+            ProbabilityQ32::ONE.raw() - actions[0].evaluation_probability.raw(),
+        )
+        .expect("evaluation complement");
+        assert_eq!(
+            estimate_sequential(&p, &[row]),
+            Err(SequentialError::InsufficientEvidence(
+                SequentialEvidenceGap::WeightLimit
+            ))
+        );
+    }
+}
+
+#[test]
 fn support_is_checked_at_each_depth_not_only_episode_entry() {
     let mut rows = vec![trajectory("a"), trajectory("b")];
     rows[1].steps[1].actions[0].evaluation_probability = ProbabilityQ32::ZERO;
