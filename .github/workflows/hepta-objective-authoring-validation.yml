@@ -1,0 +1,107 @@
+name: Hepta objective authoring validation
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-final-convergence-20260930
+    paths:
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-learning-ledger/**
+      - codex-rs/Cargo.lock
+      - docs/modules/objective.compiler/**
+      - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
+      - scripts/hepta-objective-*.py
+      - scripts/test_hepta_objective_*.py
+      - scripts/hepta-implementation-maps.py
+      - .github/workflows/hepta-objective-*.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+
+concurrency:
+  group: objective-authoring-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind unprivileged authoring candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p "$RUNNER_TEMP/objective-authoring"
+          git rev-parse HEAD HEAD^{tree} | tee "$RUNNER_TEMP/objective-authoring/source.txt"
+
+      - name: Regenerate objective implementation map without repository credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module objective.compiler \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-migrate.log"
+          cp docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
+            "$RUNNER_TEMP/objective-authoring/IMPLEMENTATION_MAP.json"
+          git diff -- docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
+            > "$RUNNER_TEMP/objective-authoring/implementation-map.patch"
+          git diff --check
+
+      - name: Objective compile, tests and strict lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --no-run \
+            -p codex-hepta-objective \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/cargo-no-run.log"
+          cargo test --locked -p codex-hepta-objective -- --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/objective-tests.log"
+          cargo test --locked -p codex-hepta-objective \
+            --features qualification-legacy-compile -- --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/objective-compat-tests.log"
+          cargo clippy --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            --all-targets --no-deps -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/clippy.log"
+          cargo clippy --locked -p codex-hepta-objective \
+            --all-targets --features qualification-legacy-compile --no-deps -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/clippy-compat.log"
+          cargo fmt --all -- --check \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/fmt.log"
+
+      - name: Preserve generated map and execution logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-authoring-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-authoring
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Confirm authoring job had no write path
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
