@@ -280,6 +280,7 @@ pub(crate) struct MessageProcessorArgs {
     pub(crate) config_warnings: Vec<ConfigWarningNotification>,
     pub(crate) session_source: SessionSource,
     pub(crate) auth_manager: Arc<AuthManager>,
+    pub(crate) auth_profile_owned_by_host: bool,
     pub(crate) installation_id: String,
     pub(crate) code_mode_session_provider: Option<Arc<dyn CodeModeSessionProvider>>,
     pub(crate) rpc_transport: AppServerRpcTransport,
@@ -306,6 +307,7 @@ impl MessageProcessor {
             config_warnings,
             session_source,
             auth_manager,
+            auth_profile_owned_by_host,
             installation_id,
             code_mode_session_provider,
             rpc_transport,
@@ -436,6 +438,7 @@ impl MessageProcessor {
             );
         let account_processor = AccountRequestProcessor::new(
             auth_manager.clone(),
+            auth_profile_owned_by_host,
             Arc::clone(&thread_manager),
             outgoing.clone(),
             Arc::clone(&config),

@@ -2292,6 +2292,8 @@ $demo-app Pull the latest updates from the team.
 
 The JSON-RPC auth/account surface exposes request/response methods plus server-initiated notifications (no `id`). Use these to determine auth state, start or cancel logins, logout, and inspect ChatGPT rate limits.
 
+An embedding host may set `AppServerRuntimeOptions::credential_profile_home` at startup to use an existing local credential directory while keeping its runtime home, SQLite database, and thread storage private. The canonical AuthManager loads and refreshes that profile directly; credentials are not copied into the runtime home. In this mode `account/read` and model requests remain available, while account login and logout RPCs cannot change the host-owned profile. RPC configuration overrides cannot select another credential directory. With no profile configured, ordinary runtime-local authentication is unchanged.
+
 ### Authentication modes
 
 Codex supports these authentication modes. The current mode is surfaced in `account/updated` (`authMode`), which also includes the current ChatGPT `planType` when available, and can be inferred from `account/read`. Self-serve Business ProLite accounts use the `self_serve_business_prolite` plan type; Enterprise automation accounts use `enterprise_cbp_automation`.

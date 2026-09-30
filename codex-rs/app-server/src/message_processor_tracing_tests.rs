@@ -30,7 +30,6 @@ use codex_core::config::ConfigBuilder;
 use codex_exec_server::EnvironmentManager;
 use codex_exec_server::ExecServerRuntimePaths;
 use codex_feedback::CodexFeedback;
-use codex_login::AuthManager;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::W3cTraceContext;
 use opentelemetry::global;
@@ -233,9 +232,19 @@ async fn build_test_processor(
     Arc<MessageProcessor>,
     mpsc::Receiver<crate::outgoing_message::OutgoingEnvelope>,
 ) {
+    build_test_processor_with_credential_profile(config, /*profile*/ None).await
+}
+
+async fn build_test_processor_with_credential_profile(
+    config: Arc<Config>,
+    profile: Option<codex_utils_absolute_path::AbsolutePathBuf>,
+) -> (
+    Arc<MessageProcessor>,
+    mpsc::Receiver<crate::outgoing_message::OutgoingEnvelope>,
+) {
     let (outgoing_tx, outgoing_rx) = mpsc::channel(16);
     let auth_manager =
-        AuthManager::shared_from_config(config.as_ref(), /*enable_codex_api_key_env*/ false)
+        crate::credential_profile::auth_manager_for_runtime(config.as_ref(), profile.as_ref())
             .await
             .expect("test auth manager");
     #[cfg(target_os = "linux")]
@@ -287,6 +296,7 @@ async fn build_test_processor(
         config_warnings: Vec::new(),
         session_source: SessionSource::VSCode,
         auth_manager,
+        auth_profile_owned_by_host: profile.is_some(),
         installation_id: "11111111-1111-4111-8111-111111111111".to_string(),
         code_mode_session_provider: None,
         rpc_transport: AppServerRpcTransport::Stdio,
@@ -749,3 +759,6 @@ async fn turn_start_jsonrpc_span_parents_core_turn_spans() -> Result<()> {
 
     Ok(())
 }
+
+#[path = "credential_profile_rpc_tests.rs"]
+mod credential_profile_rpc_tests;

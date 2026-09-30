@@ -53,6 +53,7 @@ fn config_binds_exact_registered_agent_roots_and_workspace() {
         codex_hepta_app_host::runtime_options(codex_hepta_app_host::HeptaAppServerHostOptions {
             socket_path: config.identity().app_server_socket.clone(),
             home_root: config.identity().home_root.clone(),
+            credential_profile_home: None,
             turn_queue_capacity: u64::from(config.identity().resources.turn_queue_capacity),
             cognitive_runtime: codex_hepta_app_bridge::memory::CognitiveRuntime::Absent,
             production_cognitive_mutation: None,

@@ -483,6 +483,7 @@ async fn start_uninitialized(args: InProcessStartArgs) -> IoResult<InProcessClie
                 config_warnings: args.config_warnings,
                 session_source: args.session_source,
                 auth_manager,
+                auth_profile_owned_by_host: false,
                 installation_id,
                 code_mode_session_provider: None,
                 rpc_transport: AppServerRpcTransport::InProcess,

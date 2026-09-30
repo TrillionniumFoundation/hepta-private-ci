@@ -10,7 +10,6 @@ use codex_config::NoopThreadConfigLoader;
 use codex_core::config::Config;
 pub use codex_core::config::ThreadStoreConfig;
 use codex_core::resolve_installation_id;
-use codex_login::AuthManager;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_cli::CliConfigOverrides;
 use std::collections::HashMap;
@@ -108,6 +107,7 @@ mod config_manager;
 mod config_manager_service;
 mod connection_cleanup;
 mod connection_rpc_gate;
+mod credential_profile;
 mod current_time;
 mod dynamic_tools;
 mod effective_plugin_change;
@@ -530,6 +530,9 @@ pub struct AppServerRuntimeOptions {
     /// state boundary can pin the fully resolved SQLite root so user, managed,
     /// or environment configuration cannot redirect durable state elsewhere.
     pub required_sqlite_home: Option<AbsolutePathBuf>,
+    /// Trusted startup-only credential storage. Requests cannot select or mutate
+    /// this profile. None retains ordinary runtime-private authentication.
+    pub credential_profile_home: Option<AbsolutePathBuf>,
     /// Optional exact thread-store mode required by the embedding runtime.
     ///
     /// Ordinary Codex leaves this unset. Embedders whose durable queue is part
@@ -592,6 +595,10 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
             .field("turn_queue_capacity", &self.turn_queue_capacity)
             .field("required_sqlite_home", &self.required_sqlite_home)
             .field(
+                "credential_profile_home",
+                &self.credential_profile_home.is_some(),
+            )
+            .field(
                 "required_thread_store_mode",
                 &self.required_thread_store_mode,
             )
@@ -638,6 +645,7 @@ impl PartialEq for AppServerRuntimeOptions {
             }
             && self.turn_queue_capacity == other.turn_queue_capacity
             && self.required_sqlite_home == other.required_sqlite_home
+            && self.credential_profile_home == other.credential_profile_home
             && self.required_thread_store_mode == other.required_thread_store_mode
             && self.hepta_cognitive_runtime == other.hepta_cognitive_runtime
             && match (
@@ -670,6 +678,7 @@ impl Default for AppServerRuntimeOptions {
             graceful_drain: None,
             turn_queue_capacity: None,
             required_sqlite_home: None,
+            credential_profile_home: None,
             required_thread_store_mode: None,
             hepta_cognitive_runtime: codex_hepta_app_bridge::memory::CognitiveRuntime::Absent,
             hepta_cognitive_production_mutation: None,
@@ -737,10 +746,12 @@ pub async fn run_main_with_transport_options(
         .await
     {
         Ok(config) => {
-            let auth_manager =
-                AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false)
-                    .await
-                    .map_err(std::io::Error::other)?;
+            let auth_manager = credential_profile::auth_manager_for_runtime(
+                &config,
+                runtime_options.credential_profile_home.as_ref(),
+            )
+            .await
+            .map_err(std::io::Error::other)?;
             config_manager.replace_cloud_config_bundle_loader(
                 auth_manager,
                 config.chatgpt_base_url.clone(),
@@ -1006,10 +1017,12 @@ pub async fn run_main_with_transport_options(
     }
     drop(unix_socket_startup_lock);
 
-    let auth_manager =
-        AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false)
-            .await
-            .map_err(std::io::Error::other)?;
+    let auth_manager = credential_profile::auth_manager_for_runtime(
+        &config,
+        runtime_options.credential_profile_home.as_ref(),
+    )
+    .await
+    .map_err(std::io::Error::other)?;
 
     let remote_control_enabled = remote_control_policy == RemoteControlPolicy::Allowed
         && remote_control_explicitly_requested
@@ -1164,6 +1177,7 @@ pub async fn run_main_with_transport_options(
             config_warnings,
             session_source,
             auth_manager,
+            auth_profile_owned_by_host: runtime_options.credential_profile_home.is_some(),
             installation_id,
             code_mode_session_provider,
             rpc_transport: analytics_rpc_transport(&transport),

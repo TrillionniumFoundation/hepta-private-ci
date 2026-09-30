@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use codex_arg0::Arg0DispatchPaths;
@@ -41,6 +42,8 @@ pub(crate) async fn run_app_server(
     let options = HeptaAppServerHostOptions {
         socket_path: socket_path.clone(),
         home_root: identity.home_root.clone(),
+        credential_profile_home: std::env::var_os("HEPTA_MODEL_CREDENTIAL_PROFILE_HOME")
+            .map(PathBuf::from),
         turn_queue_capacity: u64::from(identity.resources.turn_queue_capacity),
         cognitive_runtime,
         production_cognitive_mutation,

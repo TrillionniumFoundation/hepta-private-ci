@@ -85,6 +85,7 @@ impl Drop for ActiveLogin {
 #[derive(Clone)]
 pub(crate) struct AccountRequestProcessor {
     auth_manager: Arc<AuthManager>,
+    auth_profile_owned_by_host: bool,
     thread_manager: Arc<ThreadManager>,
     outgoing: Arc<OutgoingMessageSender>,
     config: Arc<Config>,
@@ -95,6 +96,7 @@ pub(crate) struct AccountRequestProcessor {
 impl AccountRequestProcessor {
     pub(crate) fn new(
         auth_manager: Arc<AuthManager>,
+        auth_profile_owned_by_host: bool,
         thread_manager: Arc<ThreadManager>,
         outgoing: Arc<OutgoingMessageSender>,
         config: Arc<Config>,
@@ -102,6 +104,7 @@ impl AccountRequestProcessor {
     ) -> Self {
         Self {
             auth_manager,
+            auth_profile_owned_by_host,
             thread_manager,
             outgoing,
             config,
@@ -291,7 +294,7 @@ impl AccountRequestProcessor {
         request_id: ConnectionRequestId,
         params: LoginAccountParams,
     ) -> Result<(), JSONRPCErrorError> {
-        if self.auth_manager.is_workload_identity_selected() {
+        if self.auth_profile_owned_by_host || self.auth_manager.is_workload_identity_selected() {
             return Err(self.configured_auth_owned_by_host_error());
         }
         match params {
@@ -374,12 +377,12 @@ impl AccountRequestProcessor {
 
     fn configured_auth_owned_by_host_error(&self) -> JSONRPCErrorError {
         invalid_request(
-            "Configured external authentication is owned by the app-server host and cannot be changed through account RPCs.",
+            "Configured authentication is owned by the app-server host and cannot be changed through account RPCs.",
         )
     }
 
     fn ensure_bedrock_login_allowed(&self) -> Result<(), JSONRPCErrorError> {
-        if self.auth_manager.is_workload_identity_selected() {
+        if self.auth_profile_owned_by_host || self.auth_manager.is_workload_identity_selected() {
             return Err(self.configured_auth_owned_by_host_error());
         }
         if self.auth_manager.is_external_chatgpt_auth_active() {
@@ -951,7 +954,7 @@ impl AccountRequestProcessor {
     }
 
     async fn logout_common(&self) -> std::result::Result<Option<AuthMode>, JSONRPCErrorError> {
-        if self.auth_manager.is_workload_identity_selected() {
+        if self.auth_profile_owned_by_host || self.auth_manager.is_workload_identity_selected() {
             return Err(self.configured_auth_owned_by_host_error());
         }
         let config = self.load_latest_config().await;

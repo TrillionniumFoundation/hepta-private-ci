@@ -28,6 +28,8 @@ pub use codex_app_server::AppServerDrainHandle;
 pub struct HeptaAppServerHostOptions {
     pub socket_path: PathBuf,
     pub home_root: PathBuf,
+    /// Credential storage selected by trusted daemon startup, never an RPC.
+    pub credential_profile_home: Option<PathBuf>,
     pub turn_queue_capacity: u64,
     pub cognitive_runtime: CognitiveRuntime,
     pub production_cognitive_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,
@@ -71,6 +73,10 @@ pub fn runtime_options(
         graceful_drain: options.graceful_drain,
         turn_queue_capacity: Some(turn_queue_capacity),
         required_sqlite_home: Some(AbsolutePathBuf::from_absolute_path(&options.home_root)?),
+        credential_profile_home: options
+            .credential_profile_home
+            .map(AbsolutePathBuf::from_absolute_path)
+            .transpose()?,
         required_thread_store_mode: Some(ThreadStoreConfig::Local),
         hepta_cognitive_runtime: options.cognitive_runtime,
         hepta_cognitive_production_mutation: options.production_cognitive_mutation,
@@ -127,6 +133,7 @@ mod tests {
         HeptaAppServerHostOptions {
             socket_path: std::env::temp_dir().join("hepta-app-host-test.sock"),
             home_root: std::env::temp_dir().join("hepta-app-host-home"),
+            credential_profile_home: None,
             turn_queue_capacity,
             cognitive_runtime: CognitiveRuntime::Absent,
             production_cognitive_mutation: None,
@@ -186,5 +193,36 @@ mod tests {
     fn zero_turn_queue_capacity_is_rejected() {
         let error = runtime_options(options(0)).expect_err("zero queue must fail");
         assert_eq!(std::io::ErrorKind::Other, error.kind());
+    }
+
+    #[test]
+    fn explicit_shared_credential_profile_preserves_two_private_state_roots() {
+        let profile = std::env::temp_dir().join("shared-test-credential-profile");
+        let homes = [
+            std::env::temp_dir().join("agent-a-private-home"),
+            std::env::temp_dir().join("agent-b-private-home"),
+        ];
+        for home in homes {
+            let mut host = options(37);
+            host.home_root = home.clone();
+            host.credential_profile_home = Some(profile.clone());
+            let runtime = runtime_options(host).expect("explicit profile binding");
+            assert_eq!(
+                Some(home.as_path()),
+                runtime
+                    .required_sqlite_home
+                    .as_ref()
+                    .map(AbsolutePathBuf::as_path)
+            );
+            assert_eq!(
+                Some(profile.as_path()),
+                runtime
+                    .credential_profile_home
+                    .as_ref()
+                    .map(AbsolutePathBuf::as_path)
+            );
+        }
+        let runtime = runtime_options(options(37)).expect("default private credentials");
+        assert!(runtime.credential_profile_home.is_none());
     }
 }
