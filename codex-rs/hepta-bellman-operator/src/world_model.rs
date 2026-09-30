@@ -16,7 +16,11 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
-const MAX_SAMPLES: usize = 65_536;
+use crate::WorkControlError;
+use crate::WorkControlV1;
+
+const MAX_COMPATIBILITY_SAMPLES: usize = 16_384;
+const MAX_QUALIFIED_SAMPLES: usize = 65_536;
 const MAX_STATE_ACTIONS: usize = 16_384;
 const MAX_BRANCHES_PER_STATE_ACTION: usize = 1_024;
 const Q32_SCALE: u64 = 1_u64 << 32;
@@ -81,6 +85,7 @@ pub enum WorldModelError {
     StateActionLimit,
     BranchLimit,
     UnsupportedStateAction,
+    WorkControl(WorkControlError),
     Arithmetic,
 }
 
@@ -90,7 +95,20 @@ impl fmt::Display for WorldModelError {
     }
 }
 
-impl StdError for WorldModelError {}
+impl StdError for WorldModelError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::WorkControl(error) => Some(error),
+            _ => None,
+        }
+    }
+}
+
+impl From<WorkControlError> for WorldModelError {
+    fn from(value: WorkControlError) -> Self {
+        Self::WorkControl(value)
+    }
+}
 
 #[derive(Default)]
 struct Group {
@@ -100,16 +118,50 @@ struct Group {
     evidence_digests: BTreeSet<Digest32>,
 }
 
+/// Compatibility fit with a reduced default ceiling.
 pub fn fit_transition_model(
     model_id: StableId,
     dataset_digest: Digest32,
-    mut samples: Vec<WorldModelSampleV1>,
+    samples: Vec<WorldModelSampleV1>,
 ) -> Result<TabularWorldModelV1, WorldModelError> {
+    fit_transition_model_inner(
+        model_id,
+        dataset_digest,
+        samples,
+        None,
+        MAX_COMPATIBILITY_SAMPLES,
+    )
+}
+
+/// Qualification-scale fit with cancellation, deadline and operation budget.
+pub fn fit_transition_model_controlled_v3(
+    model_id: StableId,
+    dataset_digest: Digest32,
+    samples: Vec<WorldModelSampleV1>,
+    control: &WorkControlV1,
+) -> Result<TabularWorldModelV1, WorldModelError> {
+    fit_transition_model_inner(
+        model_id,
+        dataset_digest,
+        samples,
+        Some(control),
+        MAX_QUALIFIED_SAMPLES,
+    )
+}
+
+fn fit_transition_model_inner(
+    model_id: StableId,
+    dataset_digest: Digest32,
+    mut samples: Vec<WorldModelSampleV1>,
+    control: Option<&WorkControlV1>,
+    sample_limit: usize,
+) -> Result<TabularWorldModelV1, WorldModelError> {
+    checkpoint(control, 0)?;
     require_digest(dataset_digest, "world-model dataset")?;
     if samples.is_empty() {
         return Err(WorldModelError::EmptyDataset);
     }
-    if samples.len() > MAX_SAMPLES {
+    if samples.len() > sample_limit {
         return Err(WorldModelError::SampleLimit);
     }
     samples.sort_by_key(|sample| sample.sample_id.clone());
@@ -124,7 +176,10 @@ pub fn fit_transition_model(
 
     let mut seen_evidence = BTreeSet::new();
     let mut groups: BTreeMap<(StableId, StableId), Group> = BTreeMap::new();
-    for sample in &samples {
+    for (sample_index, sample) in samples.iter().enumerate() {
+        if sample_index % 1_024 == 0 {
+            checkpoint(control, sample_index)?;
+        }
         require_digest(sample.evidence_digest, "world-model sample evidence")?;
         if !seen_evidence.insert(sample.evidence_digest) {
             return Err(WorldModelError::DuplicateEvidence);
@@ -158,7 +213,16 @@ pub fn fit_transition_model(
     }
 
     let mut estimates = Vec::with_capacity(groups.len());
-    for ((state_id, action_id), group) in groups {
+    for (group_index, ((state_id, action_id), group)) in groups.into_iter().enumerate() {
+        if group_index % 256 == 0 {
+            checkpoint(
+                control,
+                samples
+                    .len()
+                    .checked_add(group_index)
+                    .ok_or(WorldModelError::Arithmetic)?,
+            )?;
+        }
         let mean_outcome = FixedQ32::from_raw(round_ratio_i128(
             group.outcome_sum,
             i128::from(group.count),
@@ -181,6 +245,13 @@ pub fn fit_transition_model(
             estimate_digest,
         });
     }
+    checkpoint(
+        control,
+        samples
+            .len()
+            .checked_add(estimates.len())
+            .ok_or(WorldModelError::Arithmetic)?,
+    )?;
 
     let mut bytes = b"hepta.bellman-operator.tabular-world-model.v1".to_vec();
     push_id(&mut bytes, &model_id);
@@ -202,6 +273,7 @@ pub fn fit_transition_model(
     })
 }
 
+#[cfg(any(test, feature = "compatibility-api"))]
 pub fn predict_transition(
     model: &TabularWorldModelV1,
     state_id: &StableId,
@@ -223,6 +295,18 @@ pub fn predict_transition(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+fn checkpoint(
+    control: Option<&WorkControlV1>,
+    completed_operations: usize,
+) -> Result<(), WorldModelError> {
+    if let Some(control) = control {
+        control.checkpoint(
+            u64::try_from(completed_operations).map_err(|_| WorldModelError::Arithmetic)?,
+        )?;
+    }
+    Ok(())
 }
 
 fn exact_probabilities(
