@@ -13,7 +13,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 240
     env:
+      ROOT: ${{ github.workspace }}
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      FROZEN_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      OBSERVATION_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch || 'main' }}
     steps:
@@ -29,6 +32,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$FROZEN_SOURCE_SHA" = "$SOURCE_SHA"
+          test "$OBSERVATION_HEAD_SHA" = "$SOURCE_SHA"
           base="${EVENT_BASE_SHA:-}"
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
             :
