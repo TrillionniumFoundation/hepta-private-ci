@@ -1,0 +1,51 @@
+name: runtime.supervisor one-shot format
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-full-qualification-20260930
+    paths:
+      - ".github/workflows/runtime-supervisor-one-shot-format.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: ${{ github.event.head_commit.message == 'chore(supervisor): stage one-shot formatter' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Install exact Rust formatter
+        run: |
+          set -euo pipefail
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$channel" >> "$GITHUB_ENV"
+      - name: Format exact candidate
+        working-directory: codex-rs
+        run: cargo fmt --all
+      - name: Bound formatting to runtime.supervisor
+        run: |
+          set -euo pipefail
+          git diff --check
+          bad="$(git diff --name-only | grep -v '^codex-rs/hepta-supervisor/' || true)"
+          if [ -n "$bad" ]; then
+            printf 'formatter changed paths outside runtime.supervisor:\n%s\n' "$bad" >&2
+            exit 1
+          fi
+      - name: Publish formatted candidate
+        run: |
+          set -euo pipefail
+          rm .github/workflows/runtime-supervisor-one-shot-format.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "style(supervisor): normalize qualification candidate"
+          git push origin HEAD:codex/runtime-supervisor-full-qualification-20260930
