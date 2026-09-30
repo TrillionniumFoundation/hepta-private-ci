@@ -71,6 +71,37 @@ class FormatterScopeTests(unittest.TestCase):
         self.assertIn("--frozen", groups[0].commands[0].args)
         self.assertNotIn("sdk/python", groups[0].commands[0].args)
 
+    def test_github_python_and_scripts_share_one_scoped_tool_invocation(self):
+        self.write(".github/scripts/check.py")
+        self.write("scripts/new.py")
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        self.assertEqual([group.name for group in groups], ["Python scripts"])
+        (command,) = groups[0].commands
+        self.assertEqual(
+            command.args[-2:], ("./.github/scripts/check.py", "./scripts/new.py")
+        )
+        self.assertIn("--check", command.args)
+        self.assertIn("--frozen", command.args)
+
+    def test_github_ruff_configuration_affects_only_its_own_tree(self):
+        groups = FMT.scoped_formatter_groups(
+            [".github/ruff.toml", "scripts/first.py"], check=True
+        )
+        self.assertEqual([group.name for group in groups], ["Python scripts"])
+        self.assertEqual(
+            groups[0].commands[0].args[-2:], (".github", "./scripts/first.py")
+        )
+
+    def test_workflow_only_edit_does_not_start_python_tools(self):
+        self.assertEqual(
+            FMT.scoped_formatter_groups([".github/workflows/manual.yml"], check=True),
+            (),
+        )
+
+    def test_explicit_full_python_scope_includes_github_helpers(self):
+        group = FMT.python_scripts_formatter_group(check=True)
+        self.assertEqual(group.commands[0].args[-2:], ("scripts", ".github"))
+
     def test_sdk_scopes_both_lint_and_format_to_changed_files(self):
         groups = FMT.scoped_formatter_groups(["sdk/python/src/example.py"], check=True)
         self.assertEqual([group.name for group in groups], ["Python SDK"])

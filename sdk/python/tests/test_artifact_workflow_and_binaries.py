@@ -225,14 +225,10 @@ def test_root_format_driver_covers_all_formatter_groups(
         "MODULE.bazel",
         "third_party/v8/libcxx.BUILD.bazel",
     )
-    assert [group.commands[-1].args[-3:] for group in formatters[3:]] == [
-        ("ruff", "format", "sdk/python"),
-        ("ruff", "format", "scripts"),
-    ]
-    assert [group.commands[-1].args[-4:] for group in checks[3:]] == [
-        ("ruff", "format", "--check", "sdk/python"),
-        ("ruff", "format", "--check", "scripts"),
-    ]
+    assert formatters[3].commands[-1].args[-3:] == ("ruff", "format", "sdk/python")
+    assert formatters[4].commands[-1].args[-4:] == ("ruff", "format", "scripts", ".github")
+    assert checks[3].commands[-1].args[-4:] == ("ruff", "format", "--check", "sdk/python")
+    assert checks[4].commands[-1].args[-5:] == ("ruff", "format", "--check", "scripts", ".github")
 
 
 def test_root_format_driver_discards_successful_command_output(

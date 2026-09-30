@@ -151,7 +151,7 @@ def python_scripts_formatter_group(
     ]
     if check:
         args.append("--check")
-    args.extend(paths if paths is not None else ["scripts"])
+    args.extend(paths if paths is not None else ["scripts", ".github"])
     return FormatterGroup("Python scripts", (Command(tuple(args)),))
 
 
@@ -396,14 +396,15 @@ def scoped_formatter_groups(
     ]
     if build:
         groups.append(buildifier_formatter_group(check=check, paths=build))
-    for directory, factory in (
-        ("sdk/python", python_sdk_formatter_group),
-        ("scripts", python_scripts_formatter_group),
+    for roots, factory in (
+        (("sdk/python",), python_sdk_formatter_group),
+        (("scripts", ".github"), python_scripts_formatter_group),
     ):
         selected = [
             "./" + path
             for path in paths
-            if path.startswith(directory + "/") and path.endswith((".py", ".pyi"))
+            if any(path.startswith(directory + "/") for directory in roots)
+            and path.endswith((".py", ".pyi"))
         ]
         directories = set()
         for path in paths:
@@ -411,13 +412,13 @@ def scoped_formatter_groups(
             if config.name not in {"pyproject.toml", "ruff.toml", ".ruff.toml"}:
                 continue
             if config.parent == Path("."):
-                owner = directory
-            elif path.startswith(directory + "/"):
-                owner = config.parent.as_posix()
+                owners = roots
+            elif any(path.startswith(directory + "/") for directory in roots):
+                owners = (config.parent.as_posix(),)
             else:
                 continue
             if formatting_configuration_changed(path, base):
-                directories.add(owner)
+                directories.update(owners)
         # A nested configuration affects its subtree, not unrelated toolchains.
         scopes = sorted(
             value
