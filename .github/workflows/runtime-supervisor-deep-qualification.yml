@@ -58,6 +58,13 @@ jobs:
             -p codex-hepta-supervisor --features qualification \
             --test supervisor_hol_qualification -- --nocapture 2>&1 \
             | tee "$RUNNER_TEMP/runtime-supervisor/hol-256.log"
+      - name: SIGKILL durability and authority distribution
+        run: |
+          set -o pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-supervisor --features qualification \
+            --test sigkill_crash_matrix --test authority_distribution -- --nocapture 2>&1 \
+            | tee "$RUNNER_TEMP/runtime-supervisor/crash-authority.log"
       - name: Upload exact-head qualification log
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
