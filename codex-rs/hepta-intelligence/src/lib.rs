@@ -7,6 +7,7 @@
 #![forbid(unsafe_code)]
 
 mod canonical;
+mod canonical_budget;
 mod canonical_invariants;
 
 pub use canonical::AdvisoryDecisionReceiptV1;

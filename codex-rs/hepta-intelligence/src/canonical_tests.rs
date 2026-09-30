@@ -1,10 +1,12 @@
 use std::collections::BTreeMap;
+use std::time::Duration;
 
 use super::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
+use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
@@ -68,14 +70,14 @@ fn request() -> CanonicalIntelligenceRunRequestV1 {
             support_floor_ppm: 1,
         },
         budget: CanonicalBudgetV1 {
-            total_micros: 7_000,
-            objective_micros: 1_000,
-            utility_micros: 1_000,
-            neural_micros: 1_000,
-            prompt_micros: 1_000,
-            intuition_micros: 1_000,
-            context_micros: 1_000,
-            evaluation_micros: 1_000,
+            total_micros: 700_000,
+            objective_micros: 100_000,
+            utility_micros: 100_000,
+            neural_micros: 100_000,
+            prompt_micros: 100_000,
+            intuition_micros: 100_000,
+            context_micros: 100_000,
+            evaluation_micros: 100_000,
         },
     }
 }
@@ -84,8 +86,11 @@ fn request() -> CanonicalIntelligenceRunRequestV1 {
 struct Oracle {
     states: BTreeMap<StableId, CurrentOwnerStateV1>,
     drift_after_first: Option<StableId>,
+    drift_after_calls: usize,
     calls: BTreeMap<StableId, usize>,
     refreshes: usize,
+    delayed_refresh: Option<usize>,
+    refresh_delay: Duration,
 }
 
 impl Oracle {
@@ -108,8 +113,11 @@ impl Oracle {
         Self {
             states,
             drift_after_first: None,
+            drift_after_calls: 1,
             calls: BTreeMap::new(),
             refreshes: 0,
+            delayed_refresh: None,
+            refresh_delay: Duration::from_millis(20),
         }
     }
 }
@@ -120,6 +128,9 @@ impl CanonicalFreshnessOracleV1 for Oracle {
         _owner_id: &StableId,
     ) -> Result<(), CanonicalIntelligenceError> {
         self.refreshes += 1;
+        if self.delayed_refresh == Some(self.refreshes) {
+            std::thread::sleep(self.refresh_delay);
+        }
         Ok(())
     }
 
@@ -133,7 +144,7 @@ impl CanonicalFreshnessOracleV1 for Oracle {
             self.states.get(owner_id).cloned().ok_or_else(|| {
                 CanonicalIntelligenceError::FreshnessUnavailable(owner_id.clone())
             })?;
-        if self.drift_after_first.as_ref() == Some(owner_id) && *calls > 1 {
+        if self.drift_after_first.as_ref() == Some(owner_id) && *calls > self.drift_after_calls {
             current.generation = generation(current.generation.get() + 1);
         }
         Ok(current)
@@ -144,6 +155,9 @@ struct Ports {
     calls: Vec<CanonicalStageV1>,
     abstain: bool,
     wrong_owner: Option<CanonicalStageV1>,
+    delayed_stage: Option<CanonicalStageV1>,
+    failure_stage: Option<CanonicalStageV1>,
+    decision_override: Option<CanonicalPortDecisionV1>,
 }
 
 impl Ports {
@@ -152,6 +166,9 @@ impl Ports {
             calls: Vec::new(),
             abstain: false,
             wrong_owner: None,
+            delayed_stage: None,
+            failure_stage: None,
+            decision_override: None,
         }
     }
 
@@ -162,6 +179,15 @@ impl Ports {
         decision: CanonicalPortDecisionV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
         self.calls.push(input.stage);
+        if self.delayed_stage == Some(input.stage) {
+            std::thread::sleep(Duration::from_millis(20));
+        }
+        if self.failure_stage == Some(input.stage) {
+            return Err(CanonicalPortFailureV1 {
+                class: CanonicalPortFailureClassV1::Rejected,
+                evidence_digest: digest("owner rejection"),
+            });
+        }
         let producer = if self.wrong_owner == Some(input.stage) {
             id("wrong.owner")
         } else {
@@ -216,7 +242,9 @@ impl CanonicalOwnerPortsV1 for Ports {
         &mut self,
         input: &CanonicalPortInputV1,
     ) -> Result<CanonicalPortReceiptV1, CanonicalPortFailureV1> {
-        let decision = if self.abstain {
+        let decision = if let Some(decision) = &self.decision_override {
+            decision.clone()
+        } else if self.abstain {
             CanonicalPortDecisionV1::Abstained
         } else {
             CanonicalPortDecisionV1::Selected {
@@ -389,4 +417,109 @@ fn legal_candidate_set_rejects_replay_identity_with_duplicate_semantics() {
         build_legal_candidates(value).expect_err("duplicate must reject"),
         CanonicalIntelligenceError::DuplicateCandidate(id("action:one"))
     );
+}
+
+#[test]
+fn canonical_facade_rejects_ports_that_ignore_their_stage_budget() {
+    for failure in [None, Some(CanonicalStageV1::ObjectiveValidated)] {
+        let mut request = request();
+        request.budget.objective_micros = 1_000;
+        let mut oracle = Oracle::new(&request.snapshot);
+        let mut ports = Ports::new();
+        ports.delayed_stage = Some(CanonicalStageV1::ObjectiveValidated);
+        ports.failure_stage = failure;
+        let error = prepare_intelligence_run(request, &mut ports, &mut oracle)
+            .expect_err("late success and late rejection must time out");
+        assert!(matches!(
+            error,
+            CanonicalIntelligenceError::PortFailure {
+                stage: CanonicalStageV1::ObjectiveValidated,
+                class: CanonicalPortFailureClassV1::TimedOut,
+                evidence_digest,
+            } if !evidence_digest.is_zero()
+        ));
+        assert_eq!(ports.calls, vec![CanonicalStageV1::ObjectiveValidated]);
+    }
+}
+
+#[test]
+fn canonical_total_budget_includes_currentness_before_owner_calls() {
+    let mut request = request();
+    request.budget = CanonicalBudgetV1 {
+        total_micros: 7_000,
+        objective_micros: 1_000,
+        utility_micros: 1_000,
+        neural_micros: 1_000,
+        prompt_micros: 1_000,
+        intuition_micros: 1_000,
+        context_micros: 1_000,
+        evaluation_micros: 1_000,
+    };
+    let mut oracle = Oracle::new(&request.snapshot);
+    oracle.delayed_refresh = Some(1);
+    let mut ports = Ports::new();
+    assert!(matches!(
+        prepare_intelligence_run(request, &mut ports, &mut oracle),
+        Err(CanonicalIntelligenceError::PortFailure {
+            stage: CanonicalStageV1::ObjectiveValidated,
+            class: CanonicalPortFailureClassV1::TimedOut,
+            ..
+        })
+    ));
+    assert!(ports.calls.is_empty());
+}
+
+#[test]
+fn terminal_advice_rechecks_earlier_owners_at_the_final_fence() {
+    for decision in [CanonicalPortDecisionV1::Abstained, CanonicalPortDecisionV1::SlowPath] {
+        let request = request();
+        let mut oracle = Oracle::new(&request.snapshot);
+        oracle.drift_after_first = Some(id("utility.ndu"));
+        oracle.drift_after_calls = 2;
+        let mut ports = Ports::new();
+        ports.decision_override = Some(decision);
+        assert_eq!(
+            prepare_intelligence_run(request, &mut ports, &mut oracle),
+            Err(CanonicalIntelligenceError::StaleOwner(id("utility.ndu")))
+        );
+        assert_eq!(ports.calls.len(), 5);
+    }
+}
+
+#[test]
+fn canonical_total_budget_includes_selected_and_terminal_handoff_fences() {
+    for decision in [
+        CanonicalPortDecisionV1::Selected {
+            candidate_id: id("action:one"),
+            propensity: ProbabilityQ32::ONE,
+        },
+        CanonicalPortDecisionV1::Abstained,
+        CanonicalPortDecisionV1::SlowPath,
+    ] {
+        let selected = matches!(decision, CanonicalPortDecisionV1::Selected { .. });
+        let mut request = request();
+        request.budget = CanonicalBudgetV1 {
+            total_micros: 700_000,
+            objective_micros: 100_000,
+            utility_micros: 100_000,
+            neural_micros: 100_000,
+            prompt_micros: 100_000,
+            intuition_micros: 100_000,
+            context_micros: 100_000,
+            evaluation_micros: 100_000,
+        };
+        let mut oracle = Oracle::new(&request.snapshot);
+        oracle.delayed_refresh = Some(if selected { 15 } else { 11 });
+        oracle.refresh_delay = Duration::from_secs(1);
+        let mut ports = Ports::new();
+        ports.decision_override = Some(decision);
+        assert!(matches!(
+            prepare_intelligence_run(request, &mut ports, &mut oracle),
+            Err(CanonicalIntelligenceError::PortFailure {
+                class: CanonicalPortFailureClassV1::TimedOut,
+                ..
+            })
+        ));
+        assert_eq!(ports.calls.len(), if selected { 7 } else { 5 });
+    }
 }

@@ -1,6 +1,7 @@
 //! Bounded execution of the existing canonical owner composition.
 
 use super::*;
+use crate::intelligence_observability::AgentdIntelligenceWorkerStateV1;
 
 #[path = "intelligence_prepared_integrity.rs"]
 mod prepared_integrity;
@@ -9,19 +10,12 @@ mod watchdog;
 
 pub(super) struct AgentdIntelligenceWorkerV1<T> {
     handle: tokio::task::JoinHandle<T>,
-    timed_out: Arc<std::sync::atomic::AtomicBool>,
-    timeout_counted: Arc<std::sync::atomic::AtomicBool>,
-    finished: Arc<std::sync::atomic::AtomicBool>,
-    telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
+    state: Arc<AgentdIntelligenceWorkerStateV1>,
 }
 
 impl<T> AgentdIntelligenceWorkerV1<T> {
     fn mark_timed_out(&self) -> bool {
-        self.telemetry.mark_worker_timed_out(
-            &self.timed_out,
-            &self.timeout_counted,
-            &self.finished,
-        )
+        self.state.mark_timed_out()
     }
 
     #[cfg(test)]
@@ -203,13 +197,11 @@ impl AgentdIntelligenceProductRunnerV1 {
             }
         };
         let guard = self.telemetry.worker_started();
-        let timed_out = guard.timed_out_flag();
-        let timeout_counted = guard.timeout_counted_flag();
-        let finished = guard.finished_flag();
+        let state = guard.state();
         let completion = watchdog::WorkerCompletionV1::supervise(
             budget,
             self.hard_timeout_process_exit_grace,
-            Arc::clone(&timed_out),
+            Arc::clone(&state),
             Arc::clone(&self.telemetry),
         )
         .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?;
@@ -221,13 +213,7 @@ impl AgentdIntelligenceProductRunnerV1 {
             let _completion = completion;
             work()
         });
-        Ok(AgentdIntelligenceWorkerV1 {
-            handle,
-            timed_out,
-            timeout_counted,
-            finished,
-            telemetry: Arc::clone(&self.telemetry),
-        })
+        Ok(AgentdIntelligenceWorkerV1 { handle, state })
     }
 
     fn record_canonical_error(&self, error: &CanonicalIntelligenceError) {
@@ -263,20 +249,32 @@ impl AgentdIntelligenceProductRunnerV1 {
                 crate::AgentdError::Protocol("invocation deadline elapsed".to_string())
             })?;
         let budget = Duration::from_millis(remaining.min(30_000));
+        let started = Instant::now();
         let mut worker = self
             .spawn_owner_work_with_budget(move || provider.build(&identity, &record), budget)
             .map_err(|error| crate::AgentdError::Protocol(error.to_string()))?;
-        match timeout(budget, &mut worker).await {
-            Ok(Ok(result)) => result,
-            Ok(Err(error)) => Err(crate::AgentdError::Protocol(format!(
-                "invocation worker failed: {error}"
-            ))),
+        let joined = match timeout(budget, &mut worker).await {
+            Ok(joined) => joined,
             Err(_) => {
                 worker.mark_timed_out();
-                Err(crate::AgentdError::Protocol(
+                return Err(crate::AgentdError::Protocol(
                     "invocation deadline elapsed".to_string(),
-                ))
+                ));
             }
+        };
+        let observed_at =
+            wall_clock_ms().map_err(|error| crate::AgentdError::Protocol(error.to_string()))?;
+        if worker.state.timed_out() || started.elapsed() >= budget || observed_at >= deadline_ms {
+            worker.mark_timed_out();
+            return Err(crate::AgentdError::Protocol(
+                "invocation deadline elapsed".to_string(),
+            ));
+        }
+        match joined {
+            Ok(result) => result,
+            Err(error) => Err(crate::AgentdError::Protocol(format!(
+                "invocation worker failed: {error}"
+            ))),
         }
     }
 
@@ -382,15 +380,13 @@ impl AgentdIntelligenceProductRunnerV1 {
         let joined = match timeout(worker_budget, &mut worker.handle).await {
             Ok(value) => value,
             Err(_) => {
-                if worker.mark_timed_out() {
-                    self.telemetry.record_request_timeout();
-                }
+                worker.mark_timed_out();
                 worker.handle.abort();
                 return Err(AgentdIntelligenceProductError::TimedOut);
             }
         };
-        if worker.timed_out.load(std::sync::atomic::Ordering::Acquire) || started.elapsed() > budget
-        {
+        if worker.state.timed_out() || started.elapsed() >= budget {
+            worker.mark_timed_out();
             return Err(AgentdIntelligenceProductError::TimedOut);
         }
         let outcome = match joined {
@@ -404,7 +400,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 return Err(AgentdIntelligenceProductError::WorkerCrashed);
             }
         };
-        debug_assert!(worker.finished.load(std::sync::atomic::Ordering::Acquire));
+        debug_assert!(worker.state.finished());
         if let Err(error) = validate_canonical_outcome_v1(&request_for_validation, &outcome) {
             self.record_canonical_error(&error);
             return Err(AgentdIntelligenceProductError::Canonical(error));
@@ -417,6 +413,10 @@ impl AgentdIntelligenceProductRunnerV1 {
                 let telemetry = Arc::clone(&self.telemetry);
                 let final_snapshot = snapshot.clone();
                 let remaining = budget.saturating_sub(started.elapsed());
+                if remaining.is_zero() {
+                    worker.mark_timed_out();
+                    return Err(AgentdIntelligenceProductError::TimedOut);
+                }
                 let mut final_check = self.spawn_owner_work_with_budget(
                     move || {
                         let mut oracle = FileBackedFreshnessOracleV1::new_observed(
@@ -429,28 +429,31 @@ impl AgentdIntelligenceProductRunnerV1 {
                     },
                     remaining,
                 )?;
-                match timeout(remaining, &mut final_check.handle).await {
-                    Ok(Ok(Ok(()))) => {}
-                    Ok(Ok(Err(error))) => {
-                        self.record_canonical_error(&error);
-                        return Err(AgentdIntelligenceProductError::Canonical(error));
-                    }
-                    Ok(Err(_)) => return Err(AgentdIntelligenceProductError::WorkerCrashed),
+                let joined = match timeout(remaining, &mut final_check.handle).await {
+                    Ok(joined) => joined,
                     Err(_) => {
-                        if final_check.mark_timed_out() {
-                            self.telemetry.record_request_timeout();
-                        }
+                        final_check.mark_timed_out();
                         final_check.handle.abort();
                         return Err(AgentdIntelligenceProductError::TimedOut);
                     }
-                }
-                if final_check
-                    .timed_out
-                    .load(std::sync::atomic::Ordering::Acquire)
-                    || started.elapsed() > budget
+                };
+                if final_check.state.timed_out()
+                    || started.elapsed() >= budget
                     || wall_clock_ms()? >= run_identity.deadline_ms
                 {
+                    final_check.mark_timed_out();
                     return Err(AgentdIntelligenceProductError::TimedOut);
+                }
+                match joined {
+                    Ok(Ok(())) => {}
+                    Ok(Err(error)) => {
+                        self.record_canonical_error(&error);
+                        return Err(AgentdIntelligenceProductError::Canonical(error));
+                    }
+                    Err(_) => {
+                        self.telemetry.record_worker_crash();
+                        return Err(AgentdIntelligenceProductError::WorkerCrashed);
+                    }
                 }
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());

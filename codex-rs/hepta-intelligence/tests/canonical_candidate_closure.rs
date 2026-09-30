@@ -279,3 +279,81 @@ fn final_gate_rejects_positive_propensity_substitution() {
     };
     assert!(validate_canonical_outcome_v1(&request, &outcome).is_err());
 }
+
+#[test]
+fn independent_context_boundary_rehashes_mutable_advisory_semantics() {
+    let request = request();
+    let outcome = prepare_intelligence_run(
+        request.clone(),
+        &mut Ports::selected("candidate.a", 1),
+        &mut Oracle,
+    )
+    .unwrap();
+    let CanonicalRunOutcomeV1::Ready(envelope) = outcome else {
+        panic!("fixture must select a candidate");
+    };
+    let context = CanonicalPortReceiptV1 {
+        stage: CanonicalStageV1::ContextCompiled,
+        producer: id("context.compiler"),
+        snapshot_digest: envelope.snapshot_digest,
+        predecessor_digest: envelope.decision.intuition_receipt_digest,
+        output_digest: envelope.context_receipt_digest,
+        decision: CanonicalPortDecisionV1::Continue,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    assemble_context(&envelope.decision, &context).unwrap();
+    for field in 0..5 {
+        let mut changed = envelope.decision.clone();
+        match field {
+            0 => changed.run_id = id("run.foreign"),
+            1 => changed.candidate_set_digest = digest("foreign-set"),
+            2 => changed.decision_digest = digest("forged-decision"),
+            3 => {
+                changed.decision = AdvisoryDecisionV1::Selected {
+                    candidate_id: id("candidate.b"),
+                    propensity: ProbabilityQ32::from_raw(1).unwrap(),
+                };
+            }
+            4 => {
+                changed.decision = AdvisoryDecisionV1::Selected {
+                    candidate_id: id("candidate.a"),
+                    propensity: ProbabilityQ32::from_raw(2).unwrap(),
+                };
+            }
+            _ => unreachable!(),
+        }
+        assert_eq!(
+            assemble_context(&changed, &context),
+            Err(CanonicalIntelligenceError::InvalidCandidateSet("decision digest")),
+            "accepted mutable advisory field {field}"
+        );
+    }
+}
+
+#[test]
+fn independent_context_boundary_rejects_another_decision_stage() {
+    let legal = build_legal_candidates(request().legal_candidates).unwrap();
+    let intuition = CanonicalPortReceiptV1 {
+        stage: CanonicalStageV1::IntuitionDecided,
+        producer: id("intuition.policy"),
+        snapshot_digest: digest("snapshot"),
+        predecessor_digest: digest("prompt"),
+        output_digest: digest("intuition"),
+        decision: Ports::selected("candidate.a", 1).decision,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    let decision = decide_boundary(&id("run.closure"), &legal, &intuition).unwrap();
+    let context = CanonicalPortReceiptV1 {
+        stage: CanonicalStageV1::ContextCompiled,
+        producer: id("context.compiler"),
+        snapshot_digest: intuition.snapshot_digest,
+        predecessor_digest: intuition.output_digest,
+        output_digest: digest("context"),
+        decision: CanonicalPortDecisionV1::SlowPath,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    assert_eq!(
+        assemble_context(&decision, &context),
+        Err(CanonicalIntelligenceError::UnexpectedDecision)
+    );
+}

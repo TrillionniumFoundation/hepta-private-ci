@@ -9,6 +9,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::AdvisoryDecisionV1;
+use crate::AdvisoryDecisionReceiptV1;
 use crate::CanonicalIntelligenceError;
 use crate::CanonicalIntelligenceRunRequestV1;
 use crate::CanonicalPortDecisionV1;
@@ -20,6 +21,49 @@ use crate::LegalActionCandidateSetV1;
 use crate::assemble_context;
 use crate::build_legal_candidates;
 use crate::decide_boundary;
+
+/// Recompute decision semantics without claiming owner provenance or membership.
+/// Membership is checked against the legal set at admission and product use.
+pub(super) fn advisory_decision_digest_v1(
+    receipt: &AdvisoryDecisionReceiptV1,
+) -> Result<Digest32, CanonicalIntelligenceError> {
+    if receipt.authority.grants_any() {
+        return Err(CanonicalIntelligenceError::AuthorityWidening);
+    }
+    if receipt.candidate_set_digest.is_zero() || receipt.intuition_receipt_digest.is_zero() {
+        return Err(CanonicalIntelligenceError::EmptyDigest("decision"));
+    }
+    let mut bytes = b"hepta.intelligence.advisory-decision.v1\0".to_vec();
+    push_id(&mut bytes, &receipt.run_id)?;
+    bytes.extend_from_slice(receipt.candidate_set_digest.as_array());
+    bytes.extend_from_slice(receipt.intuition_receipt_digest.as_array());
+    match &receipt.decision {
+        AdvisoryDecisionV1::Selected {
+            candidate_id,
+            propensity,
+        } => {
+            if propensity.raw() == 0 {
+                return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                    "selected candidate propensity",
+                ));
+            }
+            bytes.push(0);
+            push_id(&mut bytes, candidate_id)?;
+            bytes.extend_from_slice(&propensity.raw().to_be_bytes());
+        }
+        AdvisoryDecisionV1::Abstained => bytes.push(1),
+        AdvisoryDecisionV1::SlowPath => bytes.push(2),
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn push_id(bytes: &mut Vec<u8>, id: &StableId) -> Result<(), CanonicalIntelligenceError> {
+    let raw = id.as_str().as_bytes();
+    let length = u32::try_from(raw.len()).map_err(|_| CanonicalIntelligenceError::Arithmetic)?;
+    bytes.extend_from_slice(&length.to_be_bytes());
+    bytes.extend_from_slice(raw);
+    Ok(())
+}
 
 pub fn canonical_candidate_ids_v1(
     request: &LegalActionCandidateSetRequestV1,

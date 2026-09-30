@@ -12,7 +12,6 @@ use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
-use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -21,6 +20,10 @@ use codex_hepta_intelligence::CanonicalStageV1;
 
 use crate::RunPhase;
 use crate::RunReceipt;
+
+#[path = "intelligence_worker_state.rs"]
+mod worker_state;
+pub(crate) use worker_state::AgentdIntelligenceWorkerStateV1;
 
 const STAGE_COUNT: usize = 7;
 const RUN_PHASE_COUNT: usize = 8;
@@ -203,11 +206,7 @@ impl AgentdIntelligenceTelemetryV1 {
         let active = saturating_increment(&self.active_workers);
         self.peak_active_workers.fetch_max(active, Ordering::AcqRel);
         AgentdIntelligenceWorkerGuardV1 {
-            telemetry: Arc::clone(self),
-            timed_out: Arc::new(AtomicBool::new(false)),
-            timeout_counted: Arc::new(AtomicBool::new(false)),
-            finished: Arc::new(AtomicBool::new(false)),
-            permit_started: Instant::now(),
+            state: Arc::new(AgentdIntelligenceWorkerStateV1::new(Arc::clone(self))),
         }
     }
 
@@ -227,24 +226,6 @@ impl AgentdIntelligenceTelemetryV1 {
             &self.permit_hold_max_micros,
             elapsed_micros,
         );
-    }
-
-    pub(crate) fn mark_worker_timed_out(
-        &self,
-        timed_out: &AtomicBool,
-        timeout_counted: &AtomicBool,
-        finished: &AtomicBool,
-    ) -> bool {
-        if timed_out.swap(true, Ordering::AcqRel) {
-            return false;
-        }
-        if !timeout_counted.swap(true, Ordering::AcqRel) {
-            saturating_increment(&self.timed_out_active_workers);
-        }
-        if finished.load(Ordering::Acquire) && timeout_counted.swap(false, Ordering::AcqRel) {
-            decrement_nonzero(&self.timed_out_active_workers);
-        }
-        true
     }
 
     pub(crate) fn record_busy(&self) {
@@ -440,8 +421,10 @@ impl AgentdIntelligenceTelemetryV1 {
         let decision_observations = ready_runs
             .saturating_add(abstained_runs)
             .saturating_add(slow_path_runs);
-        let authority_manifest_observed_at_ms =
-            nonzero(self.authority_manifest_observed_at_ms.load(Ordering::Acquire));
+        let authority_manifest_observed_at_ms = nonzero(
+            self.authority_manifest_observed_at_ms
+                .load(Ordering::Acquire),
+        );
         AgentdIntelligenceTelemetrySnapshotV1 {
             provider_configured: self.provider_configured.load(Ordering::Acquire),
             active_workers: self.active_workers.load(Ordering::Acquire),
@@ -468,9 +451,7 @@ impl AgentdIntelligenceTelemetryV1 {
             ready_ratio_ppm: ratio_ppm(ready_runs, decision_observations),
             abstained_ratio_ppm: ratio_ppm(abstained_runs, decision_observations),
             slow_path_ratio_ppm: ratio_ppm(slow_path_runs, decision_observations),
-            candidate_count_observations: self
-                .candidate_count_observations
-                .load(Ordering::Acquire),
+            candidate_count_observations: self.candidate_count_observations.load(Ordering::Acquire),
             candidate_count_total: self.candidate_count_total.load(Ordering::Acquire),
             candidate_count_max: self.candidate_count_max.load(Ordering::Acquire),
             last_authority_epoch: self.last_authority_epoch.load(Ordering::Acquire),
@@ -511,42 +492,19 @@ impl AgentdIntelligenceTelemetryV1 {
 }
 
 pub(crate) struct AgentdIntelligenceWorkerGuardV1 {
-    telemetry: Arc<AgentdIntelligenceTelemetryV1>,
-    timed_out: Arc<AtomicBool>,
-    timeout_counted: Arc<AtomicBool>,
-    finished: Arc<AtomicBool>,
-    permit_started: Instant,
+    state: Arc<AgentdIntelligenceWorkerStateV1>,
 }
 
 impl AgentdIntelligenceWorkerGuardV1 {
     #[must_use]
-    pub(crate) fn timed_out_flag(&self) -> Arc<AtomicBool> {
-        Arc::clone(&self.timed_out)
-    }
-
-    #[must_use]
-    pub(crate) fn timeout_counted_flag(&self) -> Arc<AtomicBool> {
-        Arc::clone(&self.timeout_counted)
-    }
-
-    #[must_use]
-    pub(crate) fn finished_flag(&self) -> Arc<AtomicBool> {
-        Arc::clone(&self.finished)
+    pub(crate) fn state(&self) -> Arc<AgentdIntelligenceWorkerStateV1> {
+        Arc::clone(&self.state)
     }
 }
 
 impl Drop for AgentdIntelligenceWorkerGuardV1 {
     fn drop(&mut self) {
-        self.finished.store(true, Ordering::Release);
-        self.telemetry
-            .record_permit_hold(duration_micros(self.permit_started.elapsed()));
-        decrement_nonzero(&self.telemetry.active_workers);
-        if self.timed_out.load(Ordering::Acquire) {
-            saturating_increment(&self.telemetry.late_worker_completions);
-        }
-        if self.timeout_counted.swap(false, Ordering::AcqRel) {
-            decrement_nonzero(&self.telemetry.timed_out_active_workers);
-        }
+        self.state.finish();
     }
 }
 
@@ -628,9 +586,7 @@ fn ratio_ppm(value: u64, total: u64) -> u32 {
     if total == 0 {
         return 0;
     }
-    let scaled = u128::from(value)
-        .saturating_mul(u128::from(RATIO_SCALE_PPM))
-        / u128::from(total);
+    let scaled = u128::from(value).saturating_mul(u128::from(RATIO_SCALE_PPM)) / u128::from(total);
     u32::try_from(scaled).unwrap_or(u32::MAX)
 }
 
@@ -696,14 +652,7 @@ mod tests {
     fn worker_timeout_is_visible_while_active_and_after_late_completion() {
         let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(4));
         let guard = telemetry.worker_started();
-        let timed_out = guard.timed_out_flag();
-        let timeout_counted = guard.timeout_counted_flag();
-        let finished = guard.finished_flag();
-        assert!(telemetry.mark_worker_timed_out(
-            &timed_out,
-            &timeout_counted,
-            &finished
-        ));
+        assert!(guard.state().mark_timed_out());
         assert_eq!(telemetry.snapshot().timed_out_active_workers, 1);
         drop(guard);
         let snapshot = telemetry.snapshot();
