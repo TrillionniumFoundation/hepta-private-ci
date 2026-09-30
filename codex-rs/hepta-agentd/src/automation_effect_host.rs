@@ -597,6 +597,7 @@ mod tests {
     use wiremock::matchers::header;
     use wiremock::matchers::method;
     use wiremock::matchers::path;
+    use wiremock::matchers::path_regex;
 
     use super::*;
 
@@ -808,49 +809,17 @@ mod tests {
         output
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn host_dispatches_exact_wire_payload_once() {
-        let fixture = Fixture::new().await;
-        let now_ms = u64::try_from(
-            SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .expect("wall clock")
-                .as_millis(),
-        )
-        .expect("millis");
-        let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
-        let intent = effect_intent(&scope);
-        prepare_effect(&fixture, now_ms, &intent).await;
 
-        let server = MockServer::start().await;
-        let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
-        let provider_key =
-            ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
-                .expect("provider key");
-        let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
-        let ack = serde_json::json!({
-            "effect_key": provider_key.as_str(),
-            "payload_sha256": intent.payload_digest.as_str(),
-            "provider_operation_id_sha256": provider_operation.as_str(),
-            "status": "completed"
-        });
-        Mock::given(method("POST"))
-            .and(path("/dispatch"))
-            .and(header(
-                PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
-                provider_key.as_str(),
-            ))
-            .and(body_bytes(WIRE.to_vec()))
-            .respond_with(ResponseTemplate::new(200).set_body_json(ack))
-            .expect(1)
-            .mount(&server)
-            .await;
-
-        let contract_signer = SigningKey::from_bytes(&[23_u8; 32]);
-        let final_use_signer = SigningKey::from_bytes(&[29_u8; 32]);
+    fn write_effect_host_file(
+        fixture: &Fixture,
+        server_uri: &str,
+        scope: &Sha256Digest,
+        contract_signer: &SigningKey,
+        final_use_signer: &SigningKey,
+    ) -> PathBuf {
         let unsigned_provider_config = HttpProviderEffectConfig {
-            dispatch_url: format!("{}/dispatch", server.uri()),
-            lookup_url_template: format!("{}/status/{{key}}", server.uri()),
+            dispatch_url: format!("{server_uri}/dispatch"),
+            lookup_url_template: format!("{server_uri}/status/{{key}}"),
             headers: HeaderMap::new(),
             timeout: Duration::from_secs(2),
             contract_id: "agentd-product-effect-contract".to_string(),
@@ -893,8 +862,8 @@ mod tests {
             "provider_scope": "provider:fixture",
             "destination_id": "provider:fixture",
             "final_use_scope_sha256": scope.as_str(),
-            "dispatch_url": format!("{}/dispatch", server.uri()),
-            "lookup_url_template": format!("{}/status/{{key}}", server.uri()),
+            "dispatch_url": format!("{server_uri}/dispatch"),
+            "lookup_url_template": format!("{server_uri}/status/{{key}}"),
             "headers": {},
             "timeout_ms": 2000,
             "contract_id": "agentd-product-effect-contract",
@@ -913,6 +882,56 @@ mod tests {
         .expect("write host file");
         fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
             .expect("host file permissions");
+        host_file
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn host_dispatches_exact_wire_payload_once() {
+        let fixture = Fixture::new().await;
+        let now_ms = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("wall clock")
+                .as_millis(),
+        )
+        .expect("millis");
+        let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
+        let intent = effect_intent(&scope);
+        prepare_effect(&fixture, now_ms, &intent).await;
+
+        let server = MockServer::start().await;
+        let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
+        let provider_key =
+            ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
+                .expect("provider key");
+        let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
+        let ack = serde_json::json!({
+            "effect_key": provider_key.as_str(),
+            "payload_sha256": intent.payload_digest.as_str(),
+            "provider_operation_id_sha256": provider_operation.as_str(),
+            "status": "completed"
+        });
+        Mock::given(method("POST"))
+            .and(path("/dispatch"))
+            .and(header(
+                PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
+                provider_key.as_str(),
+            ))
+            .and(body_bytes(WIRE.to_vec()))
+            .respond_with(ResponseTemplate::new(200).set_body_json(ack))
+            .expect(1)
+            .mount(&server)
+            .await;
+
+        let contract_signer = SigningKey::from_bytes(&[23_u8; 32]);
+        let final_use_signer = SigningKey::from_bytes(&[29_u8; 32]);
+        let host_file = write_effect_host_file(
+            &fixture,
+            &server.uri(),
+            &scope,
+            &contract_signer,
+            &final_use_signer,
+        );
 
         let host =
             AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
@@ -984,6 +1003,195 @@ mod tests {
             )
             .await
             .is_err()
+        );
+        server.verify().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn host_reopens_indeterminate_effect_and_reconciles_without_redispatch() {
+        let fixture = Fixture::new().await;
+        let now_ms = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("wall clock")
+                .as_millis(),
+        )
+        .expect("millis");
+        let scope = Sha256Digest::for_bytes(b"provider-restart-scope");
+        let intent = effect_intent(&scope);
+        prepare_effect(&fixture, now_ms, &intent).await;
+
+        let server = MockServer::start().await;
+        let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
+        let provider_key =
+            ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
+                .expect("provider key");
+        Mock::given(method("POST"))
+            .and(path("/dispatch"))
+            .and(header(
+                PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
+                provider_key.as_str(),
+            ))
+            .and(body_bytes(WIRE.to_vec()))
+            .respond_with(ResponseTemplate::new(200).set_body_string("ack-lost-or-malformed"))
+            .expect(1)
+            .mount(&server)
+            .await;
+        let terminal_ack = serde_json::json!({
+            "effect_key": provider_key.as_str(),
+            "payload_sha256": intent.payload_digest.as_str(),
+            "provider_operation_id_sha256": Sha256Digest::for_bytes(b"restart-provider-operation").as_str(),
+            "status": "completed"
+        });
+        Mock::given(method("GET"))
+            .and(path_regex(r"^/status/.*$"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(terminal_ack))
+            .expect(1)
+            .mount(&server)
+            .await;
+
+        let contract_signer = SigningKey::from_bytes(&[31_u8; 32]);
+        let final_use_signer = SigningKey::from_bytes(&[37_u8; 32]);
+        let host_file = write_effect_host_file(
+            &fixture,
+            &server.uri(),
+            &scope,
+            &contract_signer,
+            &final_use_signer,
+        );
+        let host =
+            AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
+        let grant = signed_final_use(&intent, now_ms, &final_use_signer);
+        let first = host
+            .execute(
+                &fixture.store,
+                &intent,
+                WIRE,
+                &grant,
+                "agentd-product-effect-restart",
+                now_ms + 5,
+            )
+            .await
+            .expect("ambiguous dispatch is durably quarantined");
+        assert_eq!(
+            first.observation,
+            Some(TaskFlowStepObservation::Indeterminate)
+        );
+        drop(host);
+        fixture.store.close().await;
+
+        let reopened_store = AutomationStore::open(&fixture.identity.layout)
+            .await
+            .expect("reopen automation store");
+        let reopened_host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+            .expect("reopen effect host with persisted final-use state");
+        let outcome = reopened_host
+            .reconcile(
+                &reopened_store,
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                now_ms + 6,
+            )
+            .await
+            .expect("provider status reconciliation");
+        let AgentdAutomationEffectReconcileOutcome::Observed(receipt) = outcome else {
+            panic!("terminal provider lookup must reconcile the original effect");
+        };
+        assert_eq!(
+            receipt.observation,
+            Some(TaskFlowStepObservation::Indeterminate),
+            "historical first observation remains visible"
+        );
+        assert_eq!(
+            receipt.final_outcome,
+            Some(codex_hepta_automation::TaskFlowReconcileOutcome::Succeeded)
+        );
+        server.verify().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn host_provider_not_found_requeues_without_blind_redispatch() {
+        let fixture = Fixture::new().await;
+        let now_ms = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("wall clock")
+                .as_millis(),
+        )
+        .expect("millis");
+        let scope = Sha256Digest::for_bytes(b"provider-absence-scope");
+        let intent = effect_intent(&scope);
+        prepare_effect(&fixture, now_ms, &intent).await;
+
+        let server = MockServer::start().await;
+        let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
+        let provider_key =
+            ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
+                .expect("provider key");
+        Mock::given(method("POST"))
+            .and(path("/dispatch"))
+            .and(header(
+                PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
+                provider_key.as_str(),
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_string("ambiguous"))
+            .expect(1)
+            .mount(&server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"^/status/.*$"))
+            .respond_with(ResponseTemplate::new(404))
+            .expect(1)
+            .mount(&server)
+            .await;
+
+        let contract_signer = SigningKey::from_bytes(&[41_u8; 32]);
+        let final_use_signer = SigningKey::from_bytes(&[43_u8; 32]);
+        let host_file = write_effect_host_file(
+            &fixture,
+            &server.uri(),
+            &scope,
+            &contract_signer,
+            &final_use_signer,
+        );
+        let host =
+            AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
+        let grant = signed_final_use(&intent, now_ms, &final_use_signer);
+        host.execute(
+            &fixture.store,
+            &intent,
+            WIRE,
+            &grant,
+            "agentd-product-effect-absence",
+            now_ms + 5,
+        )
+        .await
+        .expect("ambiguous dispatch is durable");
+
+        let outcome = host
+            .reconcile(
+                &fixture.store,
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                now_ms + 6,
+            )
+            .await
+            .expect("provider absence reconciliation");
+        assert!(matches!(
+            outcome,
+            AgentdAutomationEffectReconcileOutcome::ProvenAbsent
+        ));
+        assert_eq!(
+            fixture
+                .store
+                .taskflow_run(&intent.run_id)
+                .await
+                .expect("read run")
+                .expect("run")
+                .state,
+            codex_hepta_automation::TaskFlowRunState::Queued
         );
         server.verify().await;
     }
