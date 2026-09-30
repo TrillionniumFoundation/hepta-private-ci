@@ -217,7 +217,7 @@ pub(super) fn resulting_node_count(
 pub(super) fn resulting_edge_count(
     state: &KnowledgeLocalIncrementalStateV3,
     remove_edge_identities: &[KnowledgeEdgeIdentityV2],
-    upsert_edges: &[KnowledgeEdeV2],
+    upsert_edges: &[KnowledgeEdgeV2],
 ) -> u64 {
     let mut touched = remove_edge_identities
         .iter()
