@@ -51,6 +51,15 @@ def commands(records: Path) -> list[tuple[str, int, list[str]]]:
         ),
         ("wire", 102, cargo + ["-p", "codex-hepta-wire", "--all-targets"]),
         (
+            "production-surface",
+            0,
+            [
+                "python3",
+                "scripts/platform_wire_production_surface.py",
+                "verify",
+            ],
+        ),
+        (
             "resources",
             6,
             cargo

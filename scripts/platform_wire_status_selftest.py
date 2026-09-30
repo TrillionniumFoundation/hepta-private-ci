@@ -9,6 +9,7 @@ import json
 import tempfile
 from pathlib import Path
 
+from platform_wire_fuzz_campaign import command as fuzz_command
 from platform_wire_status_receipts import (
     ACCEPT,
     ASSERTS,
@@ -204,16 +205,11 @@ def fuzz_fixture(root: Path, source: str) -> tuple[dict, Path]:
         )
         targets[target] = {
             "status": "passed",
-            "command": [
-                "cargo",
-                "+nightly-2026-09-20",
-                "fuzz",
-                "run",
+            "command": fuzz_command(
                 target,
-                f"fuzz/corpus/{target}",
-                "--",
-                f"-max_total_time={target_duration}",
-            ],
+                target_duration,
+                toolchain="nightly-2026-09-20",
+            ),
             "cwd": "codex-rs/hepta-wire",
             "duration_seconds": target_duration,
             "timeout_seconds": target_duration + 120,
@@ -347,6 +343,23 @@ def run(evaluate) -> None:
         if not all(evaluate(args)["states"].values()):
             raise AssertionError("complete current-source evidence must release")
 
+        for name in DESIGN + IMPL:
+            path = root / name
+            contents = path.read_bytes()
+            path.unlink()
+            states = evaluate(args)["states"]
+            if states["implemented"] or any(
+                states[state] for state in ("qualified", "accepted", "released")
+            ):
+                raise AssertionError(
+                    f"missing required source/design must fail closed: {name}"
+                )
+            if name in DESIGN and states["designed"]:
+                raise AssertionError(
+                    f"missing required design must fail closed: {name}"
+                )
+            path.write_bytes(contents)
+
         args.fuzz = None
         if evaluate(args)["states"]["qualified"]:
             raise AssertionError("fuzz evidence must gate qualification")
@@ -361,11 +374,34 @@ def run(evaluate) -> None:
         )
         target_log.write_text(original_log, encoding="utf-8")
 
+        for changes in (
+            {"command": ["echo", "fuzz", "run", FUZZ_TARGETS[0]]},
+            {"exit_code": False},
+            {"exit_code": 0.0},
+            {"executed_units": True},
+            {"duration_seconds": float(fuzz["duration_seconds"] // len(FUZZ_TARGETS))},
+            {"timeout_seconds": 1},
+            {"cwd": "anywhere"},
+            {"elapsed_seconds": float("nan")},
+            {"elapsed_seconds": float("inf")},
+        ):
+            malformed = copy.deepcopy(fuzz)
+            malformed["targets"][FUZZ_TARGETS[0]].update(changes)
+            fuzz_path.write_text(json.dumps(malformed), encoding="utf-8")
+            expect_value_error(
+                lambda: evaluate(args),
+                f"malformed fuzz execution must fail closed: {changes}",
+            )
+        fuzz_path.write_text(json.dumps(fuzz), encoding="utf-8")
+
         original_approver = data["operations"]["approver"]
-        data["operations"]["approver"] = data["reviewer"]["approver"]
-        write("operations")
-        if evaluate(args)["states"]["accepted"]:
-            raise AssertionError("reviewer and operations identities must be distinct")
+        for same_identity in ("reviewer", " REVIEWER ", "\treviewer\n"):
+            data["operations"]["approver"] = same_identity
+            write("operations")
+            if evaluate(args)["states"]["accepted"]:
+                raise AssertionError(
+                    "reviewer and operations identities must be distinct"
+                )
         data["operations"]["approver"] = original_approver
         write("operations")
 

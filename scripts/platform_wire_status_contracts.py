@@ -19,11 +19,16 @@ DESIGN = (
     "docs/lane-a-foundation/platform.wire/WIRE_V1.md",
     "docs/lane-a-foundation/platform.wire/WIRE_V2.md",
     "docs/lane-a-foundation/platform.wire/NEGOTIATION_V1.md",
+    "docs/modules/platform.wire/HARDENED_SESSION.md",
+    "docs/modules/platform.wire/MANAGED_RECORD_STREAM.md",
+    "docs/modules/platform.wire/FRAME_AND_IO_BUDGETS_20260929.md",
     "docs/modules/platform.wire/SECURITY_AND_QUALIFICATION.md",
 )
 IMPL = tuple(
     "codex-rs/hepta-wire/src/" + name
     for name in (
+        "lib.rs",
+        "bounded_read.rs",
         "envelope.rs",
         "envelope_v2.rs",
         "frame.rs",
@@ -39,6 +44,12 @@ IMPL = tuple(
         "managed_session.rs",
         "codec_binding.rs",
         "hardened_session.rs",
+        "hardened_managed_session.rs",
+        "hardened_record_stream.rs",
+        "hardened_record_stream/impl.rs",
+        "hardened_record_stream/types.rs",
+        "record_stream.rs",
+        "record_stream_production.rs",
         "feed.rs",
     )
 )

@@ -171,6 +171,17 @@ class ExactEvidenceTests(unittest.TestCase):
         (self.root / "native-worker.json").unlink()
         self.assertEqual(self.issue()[0], 1)
 
+    def test_production_only_surface_is_required_in_the_exact_receipt(self):
+        (self.root / "production-surface.json").unlink()
+        status, receipt = self.issue()
+        self.assertEqual(status, 1)
+        self.assertTrue(
+            any(error.startswith("production-surface:") for error in receipt["errors"])
+        )
+        self.write_records()
+        self.mutate("command", ["true"], name="production-surface")
+        self.assertEqual(self.issue()[0], 1)
+
     def test_boolean_exit_status_and_duplicate_json_keys_reject(self):
         self.mutate("exit_code", False)
         self.assertEqual(self.issue()[0], 1)

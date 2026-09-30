@@ -80,10 +80,11 @@ def seconds(event: str, requested: str) -> int:
     return int(raw)
 
 
-def command(target: str, duration: int) -> list[str]:
+def command(target: str, duration: int, *, toolchain: str | None = None) -> list[str]:
     if target not in TARGETS or type(duration) is not int or not 20 <= duration <= 600:
         raise ValueError("invalid bounded target or duration")
-    toolchain = os.environ.get("FUZZ_TOOLCHAIN", "")
+    if toolchain is None:
+        toolchain = os.environ.get("FUZZ_TOOLCHAIN", "")
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", toolchain):
         raise ValueError("missing or invalid fuzz toolchain")
     return [
@@ -293,10 +294,17 @@ def run(root: Path, path: Path) -> None:
     # A failing target does not prevent the other scenarios from executing.
 
 
-def valid_execution(row: dict, target: str, duration: int, log: Path) -> bool:
+def valid_execution(
+    row: dict,
+    target: str,
+    duration: int,
+    log: Path,
+    *,
+    toolchain: str | None = None,
+) -> bool:
     elapsed = row.get("elapsed_seconds")
     return (
-        row.get("command") == command(target, duration)
+        row.get("command") == command(target, duration, toolchain=toolchain)
         and row.get("cwd") == "codex-rs/hepta-wire"
         and type(row.get("duration_seconds")) is int
         and row["duration_seconds"] == duration
@@ -309,6 +317,7 @@ def valid_execution(row: dict, target: str, duration: int, log: Path) -> bool:
         and type(elapsed) in (int, float)
         and math.isfinite(elapsed)
         and elapsed > 0
+        and not log.is_symlink()
         and log.is_file()
         and digest(log) == row.get("log_sha256")
         and executed_units(log) == row["executed_units"]

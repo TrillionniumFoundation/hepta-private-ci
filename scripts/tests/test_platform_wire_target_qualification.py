@@ -110,6 +110,25 @@ class TargetCommandEvidenceTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(ValueError):
                 self.verify({**self.record, field: value})
 
+    def test_target_production_surface_record_cannot_substitute_another_command(
+        self,
+    ) -> None:
+        name, floor, argv = next(
+            command
+            for command in target.commands(self.root)
+            if command[0] == "production-surface"
+        )
+        path = self.root / (name + ".json")
+        record = {**self.record, "command": argv, "minimum_tests": floor}
+        path.write_text(json.dumps(record))
+        target.verify_command(self.root, name, floor, argv, self.subject)
+        path.write_text(json.dumps({**record, "command": ["true"]}))
+        with self.assertRaises(ValueError):
+            target.verify_command(self.root, name, floor, argv, self.subject)
+        path.unlink()
+        with self.assertRaises(FileNotFoundError):
+            target.verify_command(self.root, name, floor, argv, self.subject)
+
     def test_dirty_changed_tree_or_parents_reject(self) -> None:
         for field, value in (("dirty", True), ("tree", "d" * 40), ("parents", [])):
             record = copy.deepcopy(self.record)

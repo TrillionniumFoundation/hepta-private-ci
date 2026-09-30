@@ -311,8 +311,14 @@ class CampaignTests(unittest.TestCase):
         while running() and time.monotonic() < deadline:
             time.sleep(0.01)
         if running():
-            os.kill(pid, signal.SIGKILL)
-            self.fail("fuzz descendant survived process-group timeout")
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                # The timeout may finish retiring the child between the final
+                # /proc observation and cleanup. That is the required outcome.
+                pass
+            else:
+                self.fail("fuzz descendant survived process-group timeout")
 
 
 if __name__ == "__main__":

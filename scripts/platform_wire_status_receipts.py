@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import hashlib
-import re
 from pathlib import Path
 
+from platform_wire_fuzz_campaign import valid_execution
 from platform_wire_receipt_subject import read_receipt
 from platform_wire_status_contracts import (
     ACCEPT,
@@ -29,26 +28,6 @@ from platform_wire_status_contracts import (
     sha,
     string,
 )
-
-_EXECUTED_UNITS = re.compile(r"stat::number_of_executed_units:\s*(\d+)")
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
-def _executed_units(path: Path) -> int:
-    count = 0
-    with path.open(errors="replace") as handle:
-        for line in handle:
-            match = _EXECUTED_UNITS.search(line)
-            if match:
-                count = max(count, int(match.group(1)))
-    return count
 
 
 def workflow(payload: dict, kind: str) -> None:
@@ -149,7 +128,8 @@ def fuzz_campaign(payload: dict, receipt_path: Path) -> None:
     status = string(payload, "status").lower()
     if payload.get("engine") != "libFuzzer" or payload.get("sanitizer") != "address":
         raise ValueError("fuzz engine/sanitizer")
-    pos(payload, "duration_seconds")
+    if not 60 <= pos(payload, "duration_seconds") <= 1800:
+        raise ValueError("fuzz campaign duration outside bounded profile")
     for name in (
         "toolchain",
         "cargo_fuzz_version",
@@ -185,28 +165,16 @@ def fuzz_campaign(payload: dict, receipt_path: Path) -> None:
         row = targets[target]
         if not isinstance(row, dict) or row.get("status") != "passed":
             raise ValueError(f"fuzz target did not pass: {target}")
-        if row.get("exit_code") != 0:
-            raise ValueError(f"fuzz target exit: {target}")
-        if type(row.get("executed_units")) is not int or row["executed_units"] <= 0:
-            raise ValueError(f"fuzz target execution count: {target}")
-        if row.get("duration_seconds") != target_seconds:
-            raise ValueError(f"fuzz target duration: {target}")
-        command = row.get("command")
-        if (
-            not isinstance(command, list)
-            or not command
-            or any(not isinstance(item, str) for item in command)
-            or "fuzz" not in command
-            or "run" not in command
-            or target not in command
-        ):
-            raise ValueError(f"fuzz target command: {target}")
-        expected_log = dig(row, "log_sha256")
+        dig(row, "log_sha256")
         log = receipt_path.parent / f"{target}.log"
-        if not log.is_file() or _sha256(log) != expected_log:
-            raise ValueError(f"fuzz target log binding: {target}")
-        if _executed_units(log) != row["executed_units"]:
-            raise ValueError(f"fuzz target log statistics: {target}")
+        if not valid_execution(
+            row,
+            target,
+            target_seconds,
+            log,
+            toolchain=payload["toolchain"],
+        ):
+            raise ValueError(f"fuzz target execution evidence: {target}")
 
 
 def acceptance(payload: dict, kind: str) -> None:
@@ -269,5 +237,5 @@ def load(path: str | None, kind: str):
         "passed": payload["status"].lower() in PASS,
         "path": str(path),
         "payload": payload,
-        "approver": payload.get("approver"),
+        "approver": string(payload, "approver") if kind in ACCEPT else None,
     }

@@ -103,6 +103,11 @@ PLAN = (
         ],
     ),
     (
+        "production-surface",
+        0,
+        ["python3", "scripts/platform_wire_production_surface.py", "verify"],
+    ),
+    (
         "consumer-contracts",
         5,
         [
