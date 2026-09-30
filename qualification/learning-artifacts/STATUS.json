@@ -4,27 +4,41 @@
   "unifiedComplete": false,
   "dimensions": {
     "sourceImplementation": "implemented",
-    "readProductComposition": "implemented",
-    "writerServiceComposition": "implemented",
+    "readProductComposition": "implemented_with_withdrawal_aware_final_use",
+    "writerServiceComposition": "implemented_over_injectable_publication_and_control_stores",
+    "ownerStorageBoundary": "repository_source_implemented",
+    "liveWithdrawalPropagation": "repository_source_implemented_fail_closed_reload_required",
+    "linuxCapabilityStorage": "openat2_repository_candidate_under_qualification",
+    "referenceDaemon": "bounded_loopback_single_writer_repository_candidate",
+    "durabilityFaultMatrix": "source_contract_implemented_external_execution_required",
     "referenceHost": "repository_candidate_under_qualification",
     "exactHeadQualification": "pending_current_candidate",
+    "deterministicMergeQualification": "pending_current_candidate",
     "targetHostDurability": "external_not_established",
+    "physicalPowerLossQualification": "external_not_established",
+    "wholeStoreRollbackQualification": "external_not_established",
     "productionActivation": "external_not_established",
     "independentAcceptance": "external_not_established",
+    "promotion": "external_not_established",
     "release": "external_not_established"
   },
   "qualificationPolicy": {
     "requiredTaskCount": 10,
     "skippedAccepted": false,
     "historicalResultAccepted": false,
+    "mixedWorkflowAttemptsAccepted": false,
     "exactCommitAndTreeRequired": true,
     "sourceObjectBindingRequired": true,
+    "completeTestInventoryRequired": true,
+    "targetHostDurabilityReportRequiredForProduction": true,
     "receiptArtifact": "learning-artifacts-exact-head-<sha>.json"
   },
   "externalGates": [
-    "target-host power-loss qualification",
+    "complete independently observed target-host durability matrix including physical power loss and filesystem replay",
+    "whole-store and single-file rollback rejection against independently retained current and withdrawal floors",
     "production owner and selector trust provisioning",
     "independent semantic and operator acceptance",
+    "server-side required-check enforcement",
     "canary, promotion and release authority"
   ]
 }
