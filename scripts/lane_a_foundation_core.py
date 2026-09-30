@@ -309,8 +309,10 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "`OperationLedger` and `Outbox` remain deterministic in-memory reference",
+            "pub use durable_store::DurableOperationStore;",
+            "pub use destination_dedupe::DestinationDedupeStore;",
+            "dedupe and domain mutation share one",
         ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",

@@ -227,7 +227,20 @@
             "pub struct FleetAuthorityPort",
             "pub fn issue(",
             ".verify_use(",
-            ".with_verified_use("
+            "dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |_| {",
+            "ledger.issue(now_ms, grant)"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "pub fn dispatch_authority_lease_with_witness<T>(",
+            "verifier.with_dispatch_boundary_witness(token, expected, dispatch_boundary)",
+            "fn with_dispatch_boundary_witness<T>(",
+            "let state = self.lock_state()?;",
+            "VerifiedUseBoundaryV1::DispatchEntry",
+            "let result = dispatch_boundary(&witness);",
+            "drop(state);"
           ]
         }
       ]
@@ -336,7 +349,21 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "tasks.spawn_required(",
+            "\"production-operation-reconciler\"",
+            ".run_until(async move {",
+            "host.reconcile(256).await?;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+          "mustContain": [
+            "pub fn spawn_required<F>",
+            "pub async fn observe_next",
+            "self.tasks.join_next_with_id().await",
+            "let Some(quarantine) = entry.quarantine else {",
+            "pub async fn run_until<S>",
+            "self.shutdown().await;"
           ]
         }
       ]
@@ -635,7 +662,8 @@
           "path": "codex-rs/hepta-bao-adapter/README.md",
           "mustContain": [
             "Authorized HeptaBao HTTPS consumer",
-            "Only read operations exist here"
+            "GET /v1/{mount}/data/{path}?version=N",
+            "It deliberately does not dispatch provider mutation APIs:"
           ]
         }
       ]

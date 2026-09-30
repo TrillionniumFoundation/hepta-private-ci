@@ -156,13 +156,13 @@
         {
           "path": "codex-rs/hepta-types/conformance/verify_rejections.py",
           "mustContain": [
-            "rejection oracle accepted invalid case"
+            "raw-byte rejection oracle accepted invalid bytes"
           ]
         },
         {
           "path": "codex-rs/hepta-types/conformance/verify_rejections.mjs",
           "mustContain": [
-            "rejection oracle accepted invalid case"
+            "raw-byte rejection oracle accepted invalid bytes"
           ]
         }
       ],
@@ -839,7 +839,7 @@
         "FleetAuthorityPort",
         "FleetAuthorityPort::issue",
         "AuthorityLeaseVerifier::verify_use",
-        "AuthorityLeaseVerifier::with_verified_use"
+        "dispatch_authority_lease_with_witness"
       ],
       "sourceEvidence": [
         {
@@ -848,8 +848,9 @@
             "pub struct FleetAuthorityPort",
             "pub fn issue(",
             ".verify_use(",
-            ".with_verified_use(",
-            "allocation_binding"
+            "dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |_| {",
+            "allocation_binding",
+            "ledger.issue(now_ms, grant)"
           ]
         },
         {
@@ -857,7 +858,13 @@
           "mustContain": [
             "pub struct AuthorityLeaseVerifier",
             "pub fn verify_use(",
-            "pub fn with_verified_use"
+            "pub fn dispatch_authority_lease_with_witness<T>(",
+            "verifier.with_dispatch_boundary_witness(token, expected, dispatch_boundary)",
+            "fn with_dispatch_boundary_witness<T>(",
+            "let state = self.lock_state()?;",
+            "VerifiedUseBoundaryV1::DispatchEntry",
+            "let result = dispatch_boundary(&witness);",
+            "drop(state);"
           ]
         }
       ],
@@ -1045,7 +1052,21 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "tasks.spawn_required(",
+            "\"production-operation-reconciler\"",
+            ".run_until(async move {",
+            "host.reconcile(256).await?;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+          "mustContain": [
+            "pub fn spawn_required<F>",
+            "pub async fn observe_next",
+            "self.tasks.join_next_with_id().await",
+            "let Some(quarantine) = entry.quarantine else {",
+            "pub async fn run_until<S>",
+            "self.shutdown().await;"
           ]
         }
       ],
@@ -1100,7 +1121,21 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "tasks.spawn_required(",
+            "\"production-operation-reconciler\"",
+            ".run_until(async move {",
+            "host.reconcile(256).await?;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+          "mustContain": [
+            "pub fn spawn_required<F>",
+            "pub async fn observe_next",
+            "self.tasks.join_next_with_id().await",
+            "let Some(quarantine) = entry.quarantine else {",
+            "pub async fn run_until<S>",
+            "self.shutdown().await;"
           ]
         }
       ],
@@ -1165,7 +1200,21 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "tasks.spawn_required(",
+            "\"production-operation-reconciler\"",
+            ".run_until(async move {",
+            "host.reconcile(256).await?;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+          "mustContain": [
+            "pub fn spawn_required<F>",
+            "pub async fn observe_next",
+            "self.tasks.join_next_with_id().await",
+            "let Some(quarantine) = entry.quarantine else {",
+            "pub async fn run_until<S>",
+            "self.shutdown().await;"
           ]
         }
       ],
@@ -1196,7 +1245,7 @@
       "summary": "explicit Agentd daemon lifecycle composition with observer-only reconciler and fail-closed default",
       "publicSymbols": [
         "AgentdConfig::with_production_operations",
-        "AgentdProductionOperationRuntimeConfig::open"
+        "AgentdProductionOperationRuntimeConfig::new"
       ],
       "sourceEvidence": [
         {
@@ -1210,10 +1259,13 @@
         {
           "path": "codex-rs/hepta-agentd/src/runtime.rs",
           "mustContain": [
-            "AgentdProductionOperationRuntimeConfig::open",
             "attach_production_operations",
             "run_production_operation_reconciler",
-            "CompletedRuntimeTask::Operations"
+            "tasks.spawn_required(",
+            "\"production-operation-reconciler\"",
+            ".run_until(async move {",
+            "host.reconcile(256).await?;",
+            "operations.attach(Arc::clone(recovered_host)).await?;"
           ]
         },
         {
@@ -1223,14 +1275,39 @@
             "product_callers = [\"codex-rs/hepta-agentd/src/runtime.rs\"]",
             "forbidden = [\"ProductionAuthorityToken::from_verified_bytes\", \"SigningKey::from_bytes\"]"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "mustContain": [
+            "impl AgentdProductionOperationRuntimeConfig",
+            "pub fn new(",
+            "pub(crate) async fn attach(",
+            "recovered_host.writer.authority() != &authority",
+            "recovered_host.writer.lease_id() != lease_id",
+            "recovered_host.writer.generation() != lease_generation",
+            "recovered_host.writer.verify_current_authority().await?;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+          "mustContain": [
+            "pub fn spawn_required<F>",
+            "pub async fn observe_next",
+            "self.tasks.join_next_with_id().await",
+            "let Some(quarantine) = entry.quarantine else {",
+            "pub async fn run_until<S>",
+            "self.shutdown().await;"
+          ]
         }
       ],
       "positiveTests": [
         {
-          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
           "mustContain": [
-            "cleanup_never_polls_the_join_handle_already_consumed_by_select",
-            "operations_task.is_finished()"
+            "shutdown_listener_error_does_not_detach_live_tasks",
+            "cooperative_shutdown_precedes_forced_abort",
+            "cancelled_observation_keeps_completion_identity",
+            "assert_eq!(host.active_count(), 0);"
           ]
         }
       ],
@@ -1241,6 +1318,13 @@
             "config_binds_exact_registered_agent_roots_and_workspace",
             "take_production_operations().is_none()",
             "default config must not manufacture production-operation authority"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+          "mustContain": [
+            "required_clean_exit_is_not_misreported_as_success",
+            "generation_fence_cannot_be_downgraded_to_optional_availability"
           ]
         }
       ],
