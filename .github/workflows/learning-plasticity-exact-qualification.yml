@@ -52,7 +52,8 @@ jobs:
           encoded = b''.join(path.read_bytes() for path in parts)
           if hashlib.sha256(encoded).hexdigest() != '83f5b4b50b24a8c61156c63baec1c9cbc04e404e44642ebd47e48ee2ab1675b6':
               raise SystemExit('reviewed P0 base64 digest mismatch')
-          archive_bytes = base64.b64decode(encoded, validate=True)
+          compact = b''.join(encoded.split())
+          archive_bytes = base64.b64decode(compact, validate=True)
           if hashlib.sha256(archive_bytes).hexdigest() != '2a5478e206eff0834eec4131717635183e29f30729a5b129ea4774c56cbe0b0d':
               raise SystemExit('reviewed P0 archive digest mismatch')
           archive = Path('/tmp/learning-plasticity-p0.tar.gz')
