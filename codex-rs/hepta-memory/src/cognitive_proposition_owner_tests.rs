@@ -21,6 +21,7 @@ use codex_hepta_memory_retrieval::EngramNodeV1;
 use codex_hepta_memory_retrieval::EngramPopulationV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
 use codex_hepta_memory_retrieval::EngramSupportV1;
+use codex_hepta_memory_retrieval::RecallWorkControlV1;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
@@ -115,13 +116,18 @@ async fn execute(store: &CognitiveStore, access: &CognitiveAccess) -> OwnerRetri
         engram_snapshot: graph,
         dynamics_policy: dynamics,
     };
-    execute_owner_observation(
+    let work = RecallWorkControlV1::bounded(
+        std::time::Instant::now() + std::time::Duration::from_secs(30),
+        1_000_000,
+    );
+    execute_owner_observation_controlled(
         &observation,
         &cut,
         &context,
         Digest32::of_bytes(b"Beacon"),
         200_000,
         205_000,
+        &work,
     )
     .expect("owner execution")
 }
