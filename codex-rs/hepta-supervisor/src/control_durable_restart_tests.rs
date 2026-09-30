@@ -309,3 +309,4 @@ fn deferred_companion_stop_continuation_does_not_cancel_the_restart_claim() -> R
     assert!(f.slot.deferred_agent_action.is_none());
     assert_eq!(f.process.lock().expect("state").signals, vec![(Signal::Stop, Some(true))]);
     Ok(())
+}
