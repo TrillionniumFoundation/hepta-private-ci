@@ -266,13 +266,37 @@ fn same_digest_output_drift_is_rejected_before_and_after_legacy_journal_replay()
             observation(),
         )
         .expect("settle");
-    let original_bytes = fs::read(&path).expect("original V1 journal bytes");
+    let original_bytes = [
+        Event::Submit(request()),
+        Event::Reserve {
+            request_id: "request.1".to_string(),
+            expected_revision: 1,
+            reservation: reservation(),
+        },
+        Event::Assign {
+            request_id: "request.1".to_string(),
+            expected_revision: 2,
+            assignment: assignment(),
+        },
+        Event::Settle {
+            request_id: "request.1".to_string(),
+            expected_revision: 3,
+            observation_digest: "6".repeat(64),
+            observation: observation(),
+        },
+    ]
+    .iter()
+    .map(|event| format!("{}\n", encode_event(event)))
+    .collect::<String>()
+    .into_bytes();
+    let mut fresh_control = Some(control);
     for reopen in [false, true] {
-        if reopen {
-            drop(control);
-            control = DurableInferenceControl::open(&path, /*capacity*/ 32)
-                .expect("replay unchanged V1 journal");
-        }
+        let mut control = if reopen {
+            DurableInferenceControl::open(&path, /*capacity*/ 32)
+                .expect("replay unchanged V1 journal")
+        } else {
+            fresh_control.take().expect("fresh live control")
+        };
         let original = control.get("request.1").expect("original record").clone();
         assert!(
             control
@@ -306,9 +330,10 @@ fn same_digest_output_drift_is_rejected_before_and_after_legacy_journal_replay()
             Err(Error::StaleRevision)
         );
         assert_eq!(control.get("request.1"), Some(&original));
+        // Windows enforces the live owner's exclusive lock against other file handles.
+        drop(control);
         assert_eq!(fs::read(&path).expect("unchanged journal"), original_bytes);
     }
-    drop(control);
     fs::remove_file(path).expect("cleanup");
 }
 
