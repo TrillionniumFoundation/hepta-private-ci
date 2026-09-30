@@ -40,12 +40,20 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           author="$RUNNER_TEMP/prompt_registry_phase1.py"
-          curl --fail --silent --show-error \
-            -H "Authorization: Bearer ${{ github.token }}" \
-            -H "Accept: application/vnd.github.raw+json" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/.github/scripts/prompt_registry_phase1_20260930.py?ref=${GITHUB_SHA}" \
-            -o "$author"
+          post="$RUNNER_TEMP/prompt_registry_phase1_post.py"
+          for item in \
+            "prompt_registry_phase1_20260930.py:$author" \
+            "prompt_registry_phase1_post_20260930.py:$post"; do
+            source_name=${item%%:*}
+            destination=${item#*:}
+            curl --fail --silent --show-error \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              -H "Accept: application/vnd.github.raw+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/.github/scripts/${source_name}?ref=${GITHUB_SHA}" \
+              -o "$destination"
+          done
           python3 "$author"
+          python3 "$post"
           cd codex-rs
           cargo fmt --all
           cargo fmt --all -- --check
