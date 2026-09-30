@@ -448,3 +448,13 @@ receipts. No source-boundary, product, independent acceptance, activation or
 release flag may be inferred true from this amendment. Keep the normal required
 checks and existing denied-authority posture; missing, queued or skipped
 execution is not a passing result.
+
+### Repository-controlled qualification implementation (2026-09-30)
+
+The source tree measures wait and hold time on the existing lifecycle-writer mutex and carries an executable 256-Agent qualification covering healthy load, 10/50/100 percent crash waves, slow process-driver work, slow durable I/O, and concurrent status/drain/tick traffic. Health, roster and Agent snapshot observations use the immutable bounded read projection and do not enter the lifecycle-writer lane while that projection is current. The evidence-trigger for any further collect/effect/apply or per-Agent refactor is fixed in [HOL_REFACTOR_DECISION.md](HOL_REFACTOR_DECISION.md).
+
+Crash-relevant process-lease, restart-record, signed-intent and release-transaction writers expose qualification-only write, fsync, publish/link and directory-sync fault points. Product builds have no runtime fault switch. A subprocess SIGKILL qualification writes the real four durable records and validates them from a fresh process; truncation tests require each real record to fail closed.
+
+The named `hepta-supervisord` product caller now accepts `--authority-bundle ABSOLUTE_PATH --authority-bundle-sha256 SHA256`. The exact-digest bundle is produced by the external release-policy owner, contains public verifier material only, and is mutually exclusive with the compatibility six-field verifier tuple. Signer rotation changes the pinned signer identity/epoch/key/digest tuple; wrong signer, stale grant, authority-epoch rollover and Fleet revocation remain fail-closed. This is source composition, not deployment activation or independent acceptance.
+
+`hepta-supervisor-recovery-diagnose` is read-only and classifies process ambiguity, release-state ambiguity, intent mismatch, Fleet-frontier drift, authority-epoch change and durability failure into bounded operator actions. It cannot terminalize a transaction or manufacture authority.
