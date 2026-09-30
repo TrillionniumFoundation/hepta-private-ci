@@ -101,18 +101,6 @@ impl CompactionErrorSemanticsV1 for CompactionCoordinatorErrorV2 {
         match self {
             Self::Durable(error) => error.error_class(),
             Self::Admission(_) => CompactionErrorClassV1::TrustRejected,
-            Self::CurrentSourceUse(error) => match error {
-                CurrentSourceUseErrorV1::InvalidBinding => {
-                    CompactionErrorClassV1::InvalidInput
-                }
-                CurrentSourceUseErrorV1::Unavailable => {
-                    CompactionErrorClassV1::RecoveryRequired
-                }
-                CurrentSourceUseErrorV1::Rejected
-                | CurrentSourceUseErrorV1::Stale => {
-                    CompactionErrorClassV1::TrustRejected
-                }
-            },
             Self::Invalid(_) => CompactionErrorClassV1::InvalidInput,
             Self::Corrupt(_) => CompactionErrorClassV1::StorageCorrupt,
         }
@@ -122,15 +110,6 @@ impl CompactionErrorSemanticsV1 for CompactionCoordinatorErrorV2 {
         match self {
             Self::Durable(error) => error.recovery_directive(),
             Self::Admission(_) => CompactionRecoveryDirectiveV1::AwaitManifestOrOperator,
-            Self::CurrentSourceUse(CurrentSourceUseErrorV1::Unavailable) => {
-                CompactionRecoveryDirectiveV1::RunReconciler
-            }
-            Self::CurrentSourceUse(CurrentSourceUseErrorV1::InvalidBinding) => {
-                CompactionRecoveryDirectiveV1::DoNotRetry
-            }
-            Self::CurrentSourceUse(
-                CurrentSourceUseErrorV1::Rejected | CurrentSourceUseErrorV1::Stale,
-            ) => CompactionRecoveryDirectiveV1::AwaitManifestOrOperator,
             Self::Invalid(_) => CompactionRecoveryDirectiveV1::DoNotRetry,
             Self::Corrupt(_) => CompactionRecoveryDirectiveV1::StopWritesAndQuarantine,
         }
