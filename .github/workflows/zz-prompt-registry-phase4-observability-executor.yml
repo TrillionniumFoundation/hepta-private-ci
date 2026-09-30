@@ -1,7 +1,7 @@
 name: Prompt registry phase 4 measurement baseline
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
     branches:
       - ops/prompt-registry-phase4-observability-executor-20260930
