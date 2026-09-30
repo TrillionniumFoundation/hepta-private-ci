@@ -652,9 +652,14 @@ fn citation_budget_inputs(count: usize) -> Vec<CompactionInputRecordV2> {
         .collect::<Vec<_>>();
     (0..count)
         .map(|value| {
-            let mut record = record(&format!("memory:{value}"), 1, None, RecordState::Live);
+            let mut record = record(
+                &format!("memory:{value}"),
+                /*revision_value*/ 1,
+                /*predecessor_digest*/ None,
+                RecordState::Live,
+            );
             record.citations = citations.clone();
-            input(record, 1)
+            input(record, /*priority*/ 1)
         })
         .collect()
 }
@@ -672,12 +677,17 @@ fn encoded_byte_boundary_inputs() -> Vec<CompactionInputRecordV2> {
         .collect::<Vec<_>>();
     let mut inputs = (0..30_146)
         .map(|value| {
-            let mut record = record("memory:temporary", 1, None, RecordState::Live);
+            let mut record = record(
+                "memory:temporary",
+                /*revision_value*/ 1,
+                /*predecessor_digest*/ None,
+                RecordState::Live,
+            );
             record.record_id = full_id(format!("memory:{value}"));
             if value < 1_024 {
                 record.citations = citations.clone();
             }
-            input(record, 1)
+            input(record, /*priority*/ 1)
         })
         .collect::<Vec<_>>();
     // V1 records with a 128-byte ID and no predecessor encode to 200 bytes;
@@ -686,11 +696,11 @@ fn encoded_byte_boundary_inputs() -> Vec<CompactionInputRecordV2> {
     inputs.push(input(
         record(
             "memory:extraXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            1,
-            None,
+            /*revision_value*/ 1,
+            /*predecessor_digest*/ None,
             RecordState::Live,
         ),
-        1,
+        /*priority*/ 1,
     ));
     inputs
 }
@@ -700,7 +710,7 @@ fn both_builders_accept_the_aggregate_citation_boundary() {
     let inputs = citation_budget_inputs(MAX_COMPACTION_CITATIONS / 64);
     assert!(
         crate::compact(
-            generation(2),
+            generation(/*value*/ 2),
             digest("snapshot"),
             inputs.iter().map(|input| input.record.clone()).collect(),
         )
@@ -708,9 +718,9 @@ fn both_builders_accept_the_aggregate_citation_boundary() {
     );
     let candidate = build_qualified_candidate(
         snapshot_key(),
-        generation(2),
+        generation(/*value*/ 2),
         Some(digest("predecessor-checkpoint")),
-        &policy(2_048, Vec::new()),
+        &policy(/*maximum*/ 2_048, Vec::new()),
         inputs,
     )
     .unwrap_or_else(|error| panic!("citation boundary must succeed: {error}"));
@@ -724,7 +734,7 @@ fn aggregate_citation_overflow_is_rejected_before_record_validation() {
     let expected = CompactionResourceError::CitationLimitExceeded;
     assert_eq!(
         crate::compact(
-            generation(2),
+            generation(/*value*/ 2),
             digest("snapshot"),
             inputs.iter().map(|input| input.record.clone()).collect(),
         ),
@@ -733,9 +743,9 @@ fn aggregate_citation_overflow_is_rejected_before_record_validation() {
     assert_eq!(
         build_qualified_candidate(
             snapshot_key(),
-            generation(2),
+            generation(/*value*/ 2),
             Some(digest("predecessor-checkpoint")),
-            &policy(2_048, Vec::new()),
+            &policy(/*maximum*/ 2_048, Vec::new()),
             inputs,
         ),
         Err(QualifiedCompactionError::ResourceBudgetExceeded(expected))
@@ -747,7 +757,7 @@ fn both_builders_accept_exactly_the_encoded_byte_boundary() {
     let inputs = encoded_byte_boundary_inputs();
     assert!(
         crate::compact(
-            generation(2),
+            generation(/*value*/ 2),
             digest("snapshot"),
             inputs.iter().map(|input| input.record.clone()).collect(),
         )
@@ -755,9 +765,9 @@ fn both_builders_accept_exactly_the_encoded_byte_boundary() {
     );
     let candidate = build_qualified_candidate(
         snapshot_key(),
-        generation(2),
+        generation(/*value*/ 2),
         Some(digest("predecessor-checkpoint")),
-        &policy(32_768, Vec::new()),
+        &policy(/*maximum*/ 32_768, Vec::new()),
         inputs,
     )
     .unwrap_or_else(|error| panic!("encoded byte boundary must succeed: {error}"));
@@ -774,7 +784,7 @@ fn both_builders_reject_one_byte_over_the_encoded_boundary() {
     let expected = CompactionResourceError::EncodedByteLimitExceeded;
     assert_eq!(
         crate::compact(
-            generation(2),
+            generation(/*value*/ 2),
             digest("snapshot"),
             inputs.iter().map(|input| input.record.clone()).collect(),
         ),
@@ -783,9 +793,9 @@ fn both_builders_reject_one_byte_over_the_encoded_boundary() {
     assert_eq!(
         build_qualified_candidate(
             snapshot_key(),
-            generation(2),
+            generation(/*value*/ 2),
             Some(digest("predecessor-checkpoint")),
-            &policy(32_768, Vec::new()),
+            &policy(/*maximum*/ 32_768, Vec::new()),
             inputs,
         ),
         Err(QualifiedCompactionError::ResourceBudgetExceeded(expected))
