@@ -7,6 +7,7 @@
 
 use std::collections::BTreeMap;
 use std::fs;
+use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -41,6 +42,7 @@ const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
 const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
 const MAX_PROVIDER_HEADERS: usize = 64;
+const PROVIDER_PROFILE_PIN_FILENAME: &str = "provider-profile.sha256";
 
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
@@ -145,7 +147,7 @@ impl AgentdAutomationEffectHost {
 
         let attestation = HttpProviderEffectContractAttestation::verify_signed(
             config.contract_id.clone(),
-            declared_contract_digest,
+            declared_contract_digest.clone(),
             config.contract_authority_epoch,
             &contract_signature,
             &contract_verifying_key,
@@ -179,6 +181,58 @@ impl AgentdAutomationEffectHost {
         {
             use std::os::unix::fs::PermissionsExt;
             fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700))?;
+        }
+        // Another endpoint's NotFound cannot establish absence for the
+        // provider that could have accepted this host's original attempts.
+        let mut profile_bytes = b"hepta.agentd.automation.provider-profile.v1\0".to_vec();
+        profile_bytes.extend_from_slice(&serde_json::to_vec(&(
+            identity.agent_id.as_str(),
+            &config.provider_scope,
+            &config.destination_id,
+            &final_use_scope_digest,
+            &declared_contract_digest,
+            config.contract_authority_epoch,
+            contract_verifying_key,
+            &config.final_use_signer_id,
+            final_use_verifying_key,
+            &config.final_use_revocations_file,
+        ))?);
+        let profile_digest = Sha256Digest::for_bytes(&profile_bytes);
+        let profile_pin = authority_root.join(PROVIDER_PROFILE_PIN_FILENAME);
+        match fs::symlink_metadata(&profile_pin) {
+            Ok(_) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                if fs::read_dir(&authority_root)?.next().transpose()?.is_some() {
+                    return Err(AgentdError::GenerationFenced(
+                        "nonempty effect authority has no provider profile pin; explicit owner recovery is required".to_string(),
+                    ));
+                }
+            }
+            Err(error) => return Err(error.into()),
+        }
+        let mut options = fs::OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        match options.open(&profile_pin) {
+            Ok(mut file) => {
+                file.write_all(profile_digest.as_str().as_bytes())?;
+                file.sync_all()?;
+                #[cfg(unix)]
+                fs::File::open(&authority_root)?.sync_all()?;
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+            Err(error) => return Err(error.into()),
+        }
+        if read_protected_file(&profile_pin, 64, "automation provider profile pin")?
+            != profile_digest.as_str().as_bytes()
+        {
+            return Err(AgentdError::GenerationFenced(
+                "automation effect provider profile differs from its durable pin".to_string(),
+            ));
         }
         let authority = FinalUseAuthority::open_state_dir(
             &authority_root,
@@ -1038,5 +1092,75 @@ mod tests {
             .is_err()
         );
         server.verify().await;
+
+        drop(host);
+        AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+            .expect("same profile reopens");
+        let rebound = HttpProviderEffectConfig {
+            dispatch_url: format!("{}/different-provider", server.uri()),
+            lookup_url_template: format!("{}/different-status/{{key}}", server.uri()),
+            headers: HeaderMap::new(),
+            timeout: Duration::from_secs(2),
+            contract_id: "agentd-product-effect-contract".to_string(),
+            attestation: None,
+        };
+        let rebound_digest = rebound
+            .contract_sha256()
+            .expect("replacement profile digest");
+        let rebound_signature = contract_signer
+            .sign(&HttpProviderEffectContractAttestation::statement_for(
+                &rebound.contract_id,
+                &rebound_digest,
+                1,
+            ))
+            .to_bytes();
+        let mut changed_host = host_json.clone();
+        changed_host["dispatch_url"] = rebound.dispatch_url.into();
+        changed_host["lookup_url_template"] = rebound.lookup_url_template.into();
+        changed_host["contract_sha256"] = rebound_digest.as_str().into();
+        changed_host["contract_signature_hex"] = hex(&rebound_signature).into();
+        fs::write(
+            &host_file,
+            serde_json::to_vec(&changed_host).expect("replacement host"),
+        )
+        .expect("replace host profile");
+        assert!(matches!(
+            AgentdAutomationEffectHost::open(&fixture.identity, &host_file),
+            Err(AgentdError::GenerationFenced(_))
+        ));
+        fs::write(
+            &host_file,
+            serde_json::to_vec(&host_json).expect("original host"),
+        )
+        .expect("restore host profile");
+        fs::remove_file(
+            fixture
+                .identity
+                .layout
+                .automation_root()
+                .join("final-use-authority")
+                .join(PROVIDER_PROFILE_PIN_FILENAME),
+        )
+        .expect("simulate missing legacy profile pin");
+        assert!(matches!(
+            AgentdAutomationEffectHost::open(&fixture.identity, &host_file),
+            Err(AgentdError::GenerationFenced(_))
+        ));
+        let authority_root = fixture
+            .identity
+            .layout
+            .automation_root()
+            .join("final-use-authority");
+        fs::remove_file(authority_root.join("authority.lock")).expect("missing restored lock");
+        assert!(authority_root.join("authority.json").is_file());
+        fs::write(
+            &host_file,
+            serde_json::to_vec(&changed_host).expect("replacement host"),
+        )
+        .expect("restore changed profile with surviving authority state");
+        assert!(matches!(
+            AgentdAutomationEffectHost::open(&fixture.identity, &host_file),
+            Err(AgentdError::GenerationFenced(_))
+        ));
     }
 }
