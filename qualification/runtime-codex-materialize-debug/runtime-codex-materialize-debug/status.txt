@@ -1,0 +1,32 @@
+input_sha=fa05d6b1f6fbeaf96c5aef0906b8e7150a555c4f
+START runtime-codex-maintainer
+runtime-codex-maintainer=0
+START runtime-codex-maintainer-followup
+runtime-codex-maintainer-followup=0
+START runtime-codex-durability-migration
+runtime-codex-durability-migration=0
+START runtime-codex-durability-fixup
+runtime-codex-durability-fixup=0
+START runtime-codex-transactional-owner-fixup
+runtime-codex-transactional-owner-fixup=0
+START runtime-codex-quarantine-migration
+runtime-codex-quarantine-migration=0
+START runtime-codex-quarantine-authority-fixup
+runtime-codex-quarantine-authority-fixup=0
+START runtime-codex-deadline-migration
+runtime-codex-deadline-migration=0
+START runtime-codex-cleanup-migration
+runtime-codex-cleanup-migration=0
+START runtime-codex-storage-fixup
+runtime-codex-storage-fixup=0
+START runtime-codex-terminal-outbox-migration
+runtime-codex-terminal-outbox-migration=0
+START runtime-codex-product-executor-migration
+runtime-codex-product-executor-migration=0
+START runtime-codex-product-executor-hardening
+runtime-codex-product-executor-hardening=0
+START runtime-codex-effect-guard-fixup
+runtime-codex-effect-guard-fixup=1
+result=failed
+failed_step=runtime-codex-effect-guard-fixup
+exit_code=1
