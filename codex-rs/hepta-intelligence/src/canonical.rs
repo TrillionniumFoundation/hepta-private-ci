@@ -546,7 +546,7 @@ pub struct CanonicalTerminalReceiptV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CanonicalRunOutcomeV1 {
-    Ready(IntelligenceHostEnvelopeV1),
+    Ready(Box<IntelligenceHostEnvelopeV1>),
     Abstained(CanonicalTerminalReceiptV1),
     SlowPath(CanonicalTerminalReceiptV1),
 }
@@ -891,22 +891,24 @@ fn prepare_intelligence_run_inner<P: CanonicalOwnerPortsV1, O: CanonicalFreshnes
         bytes.extend_from_slice(digest.as_array());
     }
 
-    Ok(CanonicalRunOutcomeV1::Ready(IntelligenceHostEnvelopeV1 {
-        run_id: request.run_id,
-        snapshot_digest,
-        objective_digest: request.snapshot.objective_digest(),
-        candidate_set_digest: legal.candidate_set_digest,
-        utility_receipt_digest,
-        neural_receipt_digest,
-        prompt_receipt_digest,
-        decision,
-        context_receipt_digest,
-        context_binding_digest: context_binding.assembly_digest,
-        evaluation_receipt_digest,
-        trace_digest,
-        envelope_digest: Digest32::of_bytes(&bytes),
-        authority: AuthorityPosture::DENY_ALL,
-    }))
+    Ok(CanonicalRunOutcomeV1::Ready(Box::new(
+        IntelligenceHostEnvelopeV1 {
+            run_id: request.run_id,
+            snapshot_digest,
+            objective_digest: request.snapshot.objective_digest(),
+            candidate_set_digest: legal.candidate_set_digest,
+            utility_receipt_digest,
+            neural_receipt_digest,
+            prompt_receipt_digest,
+            decision,
+            context_receipt_digest,
+            context_binding_digest: context_binding.assembly_digest,
+            evaluation_receipt_digest,
+            trace_digest,
+            envelope_digest: Digest32::of_bytes(&bytes),
+            authority: AuthorityPosture::DENY_ALL,
+        },
+    )))
 }
 
 pub fn prepare_intelligence_run_with_canonical_recall<

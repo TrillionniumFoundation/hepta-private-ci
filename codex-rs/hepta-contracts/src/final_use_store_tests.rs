@@ -4,9 +4,11 @@ use pretty_assertions::assert_eq;
 use std::os::unix::fs::PermissionsExt;
 
 fn private_tempdir() -> tempfile::TempDir {
-    let directory = tempfile::tempdir().unwrap();
+    let directory =
+        tempfile::tempdir().unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
     #[cfg(unix)]
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+        .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
     directory
 }
 
@@ -27,8 +29,8 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
             used_nonces: BTreeSet::from([[5; 32], [6; 32]]),
             failed: false,
         };
-        let (owner, _) =
-            Store::open_inner(directory.path(), "owner", trust, head.clone(), false).unwrap();
+        let (owner, _) = Store::open_inner(directory.path(), "owner", trust, head.clone(), false)
+            .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
         drop(owner);
         let legacy = match trust {
             StoreTrust::SingleKey(key) => serde_json::json!({
@@ -40,18 +42,23 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
         };
         std::fs::write(
             directory.path().join("authority.json"),
-            serde_json::to_vec(&legacy).unwrap(),
+            serde_json::to_vec(&legacy)
+                .unwrap_or_else(|error| panic!("store test fixture: {error:?}")),
         )
-        .unwrap();
-        std::fs::remove_file(directory.path().join("authority.claims")).unwrap();
+        .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
+        std::fs::remove_file(directory.path().join("authority.claims"))
+            .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
         let (owner, migrated) =
-            Store::open_inner(directory.path(), "owner", trust, head.clone(), false).unwrap();
+            Store::open_inner(directory.path(), "owner", trust, head.clone(), false)
+                .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
         assert_eq!(migrated.head, state.head);
         assert_eq!(migrated.used_nonces, state.used_nonces);
-        owner.append_claim(9, [7; 32]).unwrap();
+        owner
+            .append_claim(9, [7; 32])
+            .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
         drop(owner);
-        let (_, reopened) =
-            Store::open_inner(directory.path(), "owner", trust, head, false).unwrap();
+        let (_, reopened) = Store::open_inner(directory.path(), "owner", trust, head, false)
+            .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
         assert_eq!(
             reopened.used_nonces,
             BTreeSet::from([[5; 32], [6; 32], [7; 32]])
@@ -67,23 +74,26 @@ fn legacy_journal_keeps_trust_binding_and_exact_head_checks() {
         revision: 1,
         revoked_grant_ids: BTreeSet::new(),
     };
-    let (owner, _) = Store::open(directory.path(), "owner", [47; 32], head.clone()).unwrap();
-    owner.append_claim(9, [5; 32]).unwrap();
+    let (owner, _) = Store::open(directory.path(), "owner", [47; 32], head.clone())
+        .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
+    owner
+        .append_claim(9, [5; 32])
+        .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
     drop(owner);
     let legacy = serde_json::json!({
         "schema": 2, "signer_id": "owner", "verifying_key": ([47; 32]), "head": head,
     });
     std::fs::write(
         directory.path().join("authority.json"),
-        serde_json::to_vec(&legacy).unwrap(),
+        serde_json::to_vec(&legacy).unwrap_or_else(|error| panic!("store test fixture: {error:?}")),
     )
-    .unwrap();
+    .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
     assert!(matches!(
         Store::open(directory.path(), "owner", [48; 32], head.clone()),
         Err(FinalUseError::InvalidTrust)
     ));
-    let (owner, migrated) =
-        Store::open_exact(directory.path(), "owner", [47; 32], head.clone()).unwrap();
+    let (owner, migrated) = Store::open_exact(directory.path(), "owner", [47; 32], head.clone())
+        .unwrap_or_else(|error| panic!("store test fixture: {error:?}"));
     assert_eq!(migrated.used_nonces, BTreeSet::from([[5; 32]]));
     drop(owner);
     let newer = FinalUseRevocations {

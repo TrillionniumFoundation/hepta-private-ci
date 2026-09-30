@@ -1247,15 +1247,18 @@ mod tests {
     }
 
     fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir) {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory =
+            tempfile::tempdir().unwrap_or_else(|error| panic!("authority test fixture: {error:?}"));
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .unwrap_or_else(|error| panic!("authority test fixture: {error:?}"));
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
-            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
+            AuthorityLeaseFrontier::for_empty_epoch(7)
+                .unwrap_or_else(|error| panic!("authority test fixture: {error:?}")),
             Arc::new(FixedClock(2_000)),
         )
-        .unwrap();
+        .unwrap_or_else(|error| panic!("authority test fixture: {error:?}"));
         (registry, directory)
     }
 

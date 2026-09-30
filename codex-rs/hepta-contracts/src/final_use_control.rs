@@ -696,7 +696,7 @@ mod tests {
         let distributor = SigningKey::from_bytes(&[43; 32]);
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .unwrap()
+            .unwrap_or_else(|error| panic!("authority test fixture: {error:?}"))
             .as_millis() as u64;
         let grant = FinalUseGrant {
             schema_version: 1,
@@ -715,11 +715,17 @@ mod tests {
             expires_at_unix_ms: now + 30_000,
         };
         let signature = issuer
-            .sign(&grant.signing_bytes().unwrap())
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("authority test fixture: {error:?}")),
+            )
             .to_bytes()
             .to_vec();
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory =
+            tempfile::tempdir().unwrap_or_else(|error| panic!("authority test fixture: {error:?}"));
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .unwrap_or_else(|error| panic!("authority test fixture: {error:?}"));
         let authority = FinalUseAuthority::open_state_dir(
             directory.path(),
             "security-owner".into(),
@@ -730,7 +736,7 @@ mod tests {
                 revoked_grant_ids: BTreeSet::new(),
             },
         )
-        .unwrap();
+        .unwrap_or_else(|error| panic!("authority test fixture: {error:?}"));
         (
             authority,
             SignedFinalUseGrant { grant, signature },
@@ -954,7 +960,12 @@ mod tests {
             ack: ack_a,
         };
         let partial = verifier
-            .verify(&feed_verifier, &signed_update, &[signed_a.clone()], 2_100)
+            .verify(
+                &feed_verifier,
+                &signed_update,
+                std::slice::from_ref(&signed_a),
+                2_100,
+            )
             .unwrap();
         assert!(!partial.converged());
         assert_eq!(partial.missing_nodes, vec!["node-b"]);
@@ -1069,7 +1080,12 @@ mod tests {
             Err(FinalUseControlError::InvalidRevocationAck)
         );
         assert_eq!(
-            verifier.verify(&feed_verifier, &signed_update, &[signed.clone()], 2_000),
+            verifier.verify(
+                &feed_verifier,
+                &signed_update,
+                std::slice::from_ref(&signed),
+                2_000
+            ),
             Err(FinalUseControlError::RevocationFeedStale)
         );
 

@@ -39,7 +39,7 @@ const P99_BUDGET: Duration = Duration::from_millis(50);
 const MIN_THROUGHPUT_PER_SEC: f64 = 20.0;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("id")
+    StableId::new(value).unwrap_or_else(|error| panic!("id: {error:?}"))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -100,8 +100,10 @@ fn fixture(candidate_count: usize) -> Fixture {
             support_digest: digest(&format!("support:{index:03}")),
         })
         .collect::<Vec<_>>();
-    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates).expect("set");
-    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates).expect("order");
+    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates)
+        .unwrap_or_else(|error| panic!("set: {error:?}"));
+    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates)
+        .unwrap_or_else(|error| panic!("order: {error:?}"));
     let calibration_artifact_digest = digest("calibration:fast-gate");
     let ood_artifact_digest = digest("ood:fast-gate");
     let request = CalibratedDecisionRequestV1 {
@@ -124,7 +126,8 @@ fn fixture(candidate_count: usize) -> Fixture {
             truncation_digest: digest("truncation:fast-gate"),
             candidate_set_digest,
             canonical_order_digest,
-            candidate_count: u32::try_from(candidate_count).expect("bounded"),
+            candidate_count: u32::try_from(candidate_count)
+                .unwrap_or_else(|error| panic!("bounded: {error:?}")),
             omitted_count_bound: 0,
         },
         calibration: CalibrationArtifactV1 {
@@ -181,7 +184,8 @@ fn fixture(candidate_count: usize) -> Fixture {
         feature_schema_digest: profile.scorer.feature_schema_digest,
         scorer_contract_digest: profile.scorer.scorer_contract_digest,
         candidate_set_digest,
-        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).expect("scores"),
+        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request)
+            .unwrap_or_else(|error| panic!("scores: {error:?}")),
         policy_digest,
         policy_generation: 1,
     };
@@ -250,14 +254,15 @@ fn fixture(candidate_count: usize) -> Fixture {
             },
         ],
     })
-    .expect("verifier");
+    .unwrap_or_else(|error| panic!("verifier: {error:?}"));
 
-    let completeness_payload =
-        canonical_completeness_evidence_payload_v1(&request).expect("complete");
-    let profile_payload = canonical_profile_qualification_payload_v1(&profile).expect("profile");
+    let completeness_payload = canonical_completeness_evidence_payload_v1(&request)
+        .unwrap_or_else(|error| panic!("complete: {error:?}"));
+    let profile_payload = canonical_profile_qualification_payload_v1(&profile)
+        .unwrap_or_else(|error| panic!("profile: {error:?}"));
     let runtime_payload =
         canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment)
-            .expect("runtime");
+            .unwrap_or_else(|error| panic!("runtime: {error:?}"));
     let completeness = sign(
         &verifier,
         &principals[0],
@@ -321,7 +326,7 @@ fn main() {
                 &fixture.verifier,
                 150,
             )
-            .expect("warmup");
+            .unwrap_or_else(|error| panic!("warmup: {error:?}"));
         }
 
         let wall_start = Instant::now();
@@ -341,7 +346,7 @@ fn main() {
                 &fixture.verifier,
                 150,
             )
-            .expect("authenticated decision");
+            .unwrap_or_else(|error| panic!("authenticated decision: {error:?}"));
             std::hint::black_box(receipt);
             samples.push(start.elapsed());
         }
