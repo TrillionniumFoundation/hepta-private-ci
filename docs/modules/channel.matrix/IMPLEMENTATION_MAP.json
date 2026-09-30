@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "97e62f94a61d360642ce697eb554e913d18910d1",
-    "tree": "37edabad1d2f6514680c31eff93232d1a492e202"
+    "commit": "608f1440313cbfa166a9bb9a548a77e07666846f",
+    "tree": "37b1b76e8491b48dd5e7b21fbe08e5a78de0640b"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
@@ -120,7 +120,8 @@
     "Supply authenticated owner-controlled reconciliation for parked uncertain transport outcomes, preserving the stable transaction after retry exhaustion or crash without a new PUT.",
     "Supply provider-context withdrawal and authenticated resolution for durable dispatched-source redaction scope quarantine; retaining issued dispatch identity and blocking new work does not prove remote terminality or restored-data erasure.",
     "Compose the bounded gap-fill helper into the live sync path before accepting limited timelines; current live rejection preserves the cursor but is not reconnect completion.",
-    "Enforce HTTP response byte admission before SDK decoding, total retained inbox/outbox capacity and authenticated archival/rotation; event_capacity bounds batch/change/control/scrub work only and V2 journals have fixed 65536-record lifetime ceilings."
+    "Enforce HTTP response byte admission before SDK decoding, total retained inbox/outbox capacity and authenticated archival/rotation; event_capacity bounds batch/change/control/scrub work only and V2 journals have fixed 65536-record lifetime ceilings.",
+    "Add bounded persisted-history item pagination and an owner-side terminal/freshness seam; outer 16x100 turn/RPC windows do not bound per-turn Full item hydration, and the five-second client timeout does not cancel server hydration."
   ],
   "externalEvidenceGates": [
     "independently provisioned enrolled homeserver/user/device credentials, encryption and current authority/configuration trust",
