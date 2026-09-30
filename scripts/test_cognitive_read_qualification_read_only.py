@@ -18,12 +18,18 @@ class CognitiveReadQualificationReadOnlyTests(unittest.TestCase):
 
     def test_qualification_entry_point_has_no_repair_sidecar(self) -> None:
         body = (ROOT / "scripts/run-cognitive-read-qualification.sh").read_text()
-        self.assertIn("cognitive_read_full_evidence.py", body)
+        self.assertIn("cognitive_read_release_evidence.py", body)
         self.assertNotIn("qualification_with_proposal", body)
         self.assertNotIn("source_proposal", body)
         self.assertFalse(
             (ROOT / "scripts/cognitive_read_qualification_with_proposal.py").exists()
         )
+
+    def test_release_suite_requires_witness_integrity(self) -> None:
+        body = (ROOT / "scripts/cognitive_read_release_evidence.py").read_text()
+        self.assertIn("witness-integrity-tests", body)
+        self.assertIn("lane_c_witness_integrity", body)
+        self.assertIn("lane_c_witness_migration_rejects_preexisting_drift", body)
 
     def test_local_proposal_is_manual_and_credential_free(self) -> None:
         body = (ROOT / ".github/workflows/cognitive-read-lock-refresh.yml").read_text()
