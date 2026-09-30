@@ -76,6 +76,9 @@ mod control;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceReconciliationReceiptV1;
 pub use control::NativeIntelligenceRunBinding;
+#[path = "native_output_collector.rs"]
+mod output_collector;
+use output_collector::NativeOutputCollectorV1;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -88,6 +91,11 @@ const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 const LOCAL_CANCELLED: &str = "cancelled";
 const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
+
+struct NativeObservedOutputV1<'a> {
+    run: &'a mut NativeRunOutput,
+    messages: &'a mut NativeOutputCollectorV1,
+}
 
 #[cfg(test)]
 struct FinalRevalidationTestHook {
@@ -355,23 +363,22 @@ impl AppServerModelDriver {
             .as_ref()
             .ok_or("reconciled terminal receipt omitted turn id")?
             .as_str();
-        let turn = observed
-            .response()
-            .thread
-            .turns
-            .iter()
-            .find(|turn| turn.id == turn_id)
-            .ok_or("reconciled terminal receipt turn disappeared")?;
+        let turn = match unique_reconciled_output_turn(&observed.response().thread.turns, turn_id) {
+            Ok(turn) => turn,
+            Err(error) => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error);
+            }
+        };
 
         let mut output_text = String::new();
-        for item in &turn.items {
-            if let ThreadItem::AgentMessage { text, .. } = item {
-                if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output_text.len()) {
-                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Err("reconciled output byte limit exceeded".into());
-                }
-                output_text.push_str(text);
-            }
+        if let Err(reason) = NativeOutputCollectorV1::default().reconciled_turn(
+            &mut output_text,
+            &turn.items,
+            turn.items_view,
+        ) {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err(format!("reconciled output projection failed: {reason}").into());
         }
         let (status, boundary_status) = match receipt.status {
             AdapterStatus::Succeeded => {
@@ -904,10 +911,14 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut messages = NativeOutputCollectorV1::default();
         let result = self
             .observe(
                 &mut client,
-                &mut output,
+                NativeObservedOutputV1 {
+                    run: &mut output,
+                    messages: &mut messages,
+                },
                 deadline,
                 cancellation,
                 Some(&owner),
@@ -946,7 +957,10 @@ impl AppServerModelDriver {
             let _ = self
                 .observe(
                     &mut client,
-                    &mut output,
+                    NativeObservedOutputV1 {
+                        run: &mut output,
+                        messages: &mut messages,
+                    },
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
@@ -1010,12 +1024,16 @@ impl AppServerModelDriver {
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
-        output: &mut NativeRunOutput,
+        observed_output: NativeObservedOutputV1<'_>,
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
         binding: &CodexTurnBinding,
     ) -> std::result::Result<(), String> {
+        let NativeObservedOutputV1 {
+            run: output,
+            messages,
+        } = observed_output;
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
             let event = tokio::select! {
@@ -1032,7 +1050,14 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(
+                        NativeObservedOutputV1 {
+                            run: output,
+                            messages,
+                        },
+                        &event,
+                        binding,
+                    )? {
                         return Ok(());
                     }
                 }
@@ -1276,6 +1301,23 @@ fn exact_reconciled_turn(
     }
 }
 
+fn unique_reconciled_output_turn<'a>(
+    turns: &'a [codex_app_server_protocol::Turn],
+    turn_id: &str,
+) -> Result<&'a codex_app_server_protocol::Turn> {
+    if turn_id.is_empty() {
+        return Err("empty reconciled terminal turn id".into());
+    }
+    let mut matches = turns.iter().filter(|turn| turn.id == turn_id);
+    let turn = matches
+        .next()
+        .ok_or("reconciled terminal receipt turn disappeared")?;
+    if matches.next().is_some() {
+        return Err("ambiguous reconciled terminal turn id".into());
+    }
+    Ok(turn)
+}
+
 async fn reconcile_intelligence_start_unknown(
     owner: &AgentdClient,
     binding: Option<&NativeIntelligenceRunBinding>,
@@ -1421,10 +1463,14 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 }
 
 fn observe_event(
-    output: &mut NativeRunOutput,
+    observed_output: NativeObservedOutputV1<'_>,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
+    let NativeObservedOutputV1 {
+        run: output,
+        messages,
+    } = observed_output;
     let AppServerEvent::ServerNotification(notification) = observed.event() else {
         return Ok(false);
     };
@@ -1432,10 +1478,21 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            messages.delta(&mut output.output, &delta.item_id, &delta.delta)?;
+        }
+        ServerNotification::ItemStarted(started)
+            if started.thread_id == output.thread_id && started.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &started.item {
+                messages.started(&mut output.output, id, text)?;
             }
-            output.output.push_str(&delta.delta);
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                messages.completed(&mut output.output, id, text)?;
+            }
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -1456,21 +1513,23 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
-            let physical_boundary = match receipt.status {
+            let (physical_status, physical_boundary) = match receipt.status {
                 AdapterStatus::Succeeded => {
-                    output.status = NativeRunStatus::Completed;
-                    NativeBoundaryStatus::Succeeded
+                    (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
                 }
-                AdapterStatus::Failed => {
-                    output.status = NativeRunStatus::Failed;
-                    NativeBoundaryStatus::Failed
-                }
-                AdapterStatus::Interrupted => {
-                    output.status = NativeRunStatus::Interrupted;
-                    NativeBoundaryStatus::Interrupted
-                }
+                AdapterStatus::Failed => (NativeRunStatus::Failed, NativeBoundaryStatus::Failed),
+                AdapterStatus::Interrupted => (
+                    NativeRunStatus::Interrupted,
+                    NativeBoundaryStatus::Interrupted,
+                ),
                 _ => return Err("nonterminal adapter status for turn/completed".to_string()),
             };
+            messages.turn_completed(
+                &mut output.output,
+                &completed.turn.items,
+                completed.turn.items_view,
+            )?;
+            output.status = physical_status;
             if output.boundary_status == NativeBoundaryStatus::Indeterminate {
                 output.boundary_status = physical_boundary;
             }
