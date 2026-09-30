@@ -58,6 +58,61 @@ impl AgentdIntelligenceProductRunnerV1 {
         }))
     }
 
+    /// Derive host inputs outside the daemon task while retaining capacity until
+    /// the actual blocking provider retires, including after timeout/cancellation.
+    pub(crate) async fn build_host_invocation(
+        &self,
+        provider: std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>,
+        identity: crate::AgentdIdentity,
+        record: codex_hepta_agent_components::learning_ledger::RunStartRecordV1,
+    ) -> Result<crate::AgentdIntelligenceInvocationV1, crate::AgentdError> {
+        let run_identity =
+            crate::AgentdIntelligenceRunIdentityV1::from_run_start(&identity, &record)?;
+        let now =
+            wall_clock_ms().map_err(|error| crate::AgentdError::Protocol(error.to_string()))?;
+        let remaining = run_identity
+            .deadline_ms
+            .checked_sub(now)
+            .filter(|remaining| *remaining != 0)
+            .ok_or_else(|| {
+                crate::AgentdError::Protocol("invocation deadline elapsed".to_string())
+            })?;
+        let budget = Duration::from_millis(remaining).min(Duration::from_secs(30));
+        let mut worker = self
+            .spawn_owner_work(move || {
+                let mut invocation = provider.build(&identity, &record)?;
+                invocation.inputs.run_identity = Some(run_identity);
+                invocation.validate(&identity, &record)?;
+                Ok(invocation)
+            })
+            .map_err(|error| {
+                crate::AgentdError::Protocol(format!("invocation admission: {error}"))
+            })?;
+        let result = timeout(budget, &mut worker)
+            .await
+            .map_err(|_| {
+                worker.abort();
+                crate::AgentdError::Protocol("canonical invocation provider timed out".to_string())
+            })?
+            .map_err(|_| {
+                crate::AgentdError::Protocol("canonical invocation provider crashed".to_string())
+            })??;
+        let deadline = result
+            .inputs
+            .run_identity
+            .as_ref()
+            .ok_or_else(|| crate::AgentdError::Invalid("invocation lost run identity".to_string()))?
+            .deadline_ms;
+        if wall_clock_ms().map_err(|error| crate::AgentdError::Protocol(error.to_string()))?
+            >= deadline
+        {
+            return Err(crate::AgentdError::Protocol(
+                "invocation deadline elapsed".to_string(),
+            ));
+        }
+        Ok(result)
+    }
+
     pub async fn prepare(
         &self,
         coordinator: &crate::AgentRunCoordinator,

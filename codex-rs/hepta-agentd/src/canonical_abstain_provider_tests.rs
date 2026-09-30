@@ -290,3 +290,77 @@ fn durable_identity_binds_body_authentication_and_original_deadline() {
     changed.snapshot.fence_digest = digest("foreign-process-fence");
     assert!(crate::AgentdIntelligenceRunIdentityV1::from_run_start(&identity, &changed).is_err());
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn timed_out_invocation_workers_keep_capacity_until_the_provider_retires() {
+    struct BlockingProvider(std::sync::Arc<(std::sync::Mutex<bool>, std::sync::Condvar)>);
+    impl crate::AgentdIntelligenceInvocationProviderV1 for BlockingProvider {
+        fn build(
+            &self,
+            _: &AgentdIdentity,
+            _: &RunStartRecordV1,
+        ) -> Result<crate::AgentdIntelligenceInvocationV1, AgentdError> {
+            let (released, notification) = &*self.0;
+            let mut released = released.lock().expect("release lock");
+            while !*released {
+                released = notification.wait(released).expect("release notification");
+            }
+            Err(AgentdError::Protocol("provider retired".to_string()))
+        }
+    }
+    struct ReleaseWorkers(std::sync::Arc<(std::sync::Mutex<bool>, std::sync::Condvar)>);
+    impl Drop for ReleaseWorkers {
+        fn drop(&mut self) {
+            *self.0.0.lock().expect("release lock") = true;
+            self.0.1.notify_all();
+        }
+    }
+    let directory = tempfile::tempdir().expect("directory");
+    let runner = AgentdIntelligenceProductRunnerV1::new(
+        directory.path().join("unused-authority.json"),
+        authority_verifier(),
+    )
+    .expect("runner");
+    let record = durable_record(&fixture());
+    let identity = identity(directory.path(), record.snapshot.generation - 1);
+    let release = std::sync::Arc::new((std::sync::Mutex::new(false), std::sync::Condvar::new()));
+    let release_workers = ReleaseWorkers(std::sync::Arc::clone(&release));
+    let provider: std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1> =
+        std::sync::Arc::new(BlockingProvider(release));
+    for _ in 0..4 {
+        let mut short = record.clone();
+        short.admission.deadline_unix_micros = now_micros() + 50_000;
+        assert!(matches!(
+            runner.build_host_invocation(std::sync::Arc::clone(&provider), identity.clone(), short).await,
+            Err(AgentdError::Protocol(message)) if message.contains("timed out")
+        ));
+    }
+    let mut current = record.clone();
+    current.admission.deadline_unix_micros = now_micros() + 2_000_000;
+    assert!(matches!(
+        runner.build_host_invocation(std::sync::Arc::clone(&provider), identity.clone(), current.clone()).await,
+        Err(AgentdError::Protocol(message)) if message.contains("Busy")
+    ));
+    drop(release_workers);
+    let retirement_deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
+    loop {
+        let result = runner
+            .build_host_invocation(
+                std::sync::Arc::clone(&provider),
+                identity.clone(),
+                current.clone(),
+            )
+            .await;
+        match result {
+            Err(AgentdError::Protocol(message)) if message == "provider retired" => break,
+            Err(AgentdError::Protocol(message)) if message.contains("Busy") => {
+                assert!(
+                    std::time::Instant::now() < retirement_deadline,
+                    "workers must retire after release"
+                );
+                tokio::task::yield_now().await;
+            }
+            _ => panic!("unexpected provider retirement result"),
+        }
+    }
+}

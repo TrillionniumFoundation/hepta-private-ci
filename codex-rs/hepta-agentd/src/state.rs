@@ -562,10 +562,9 @@ impl AgentdState {
         // provider is allowed to derive seven-owner inputs. This applies to
         // abstain and slow-path outcomes as well as a Ready continuation.
         let first_now = self.require_current_run_start(record)?;
-        let mut invocation = provider.build(&self.identity, record)?;
-        invocation.inputs.run_identity = Some(
-            crate::AgentdIntelligenceRunIdentityV1::from_run_start(&self.identity, record)?,
-        );
+        let invocation = runner
+            .build_host_invocation(Arc::clone(provider), self.identity.clone(), record.clone())
+            .await?;
         invocation.validate(&self.identity, record)?;
 
         // Freeze only the small immutable composition while holding the run
