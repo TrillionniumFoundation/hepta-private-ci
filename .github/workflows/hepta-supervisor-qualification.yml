@@ -158,6 +158,18 @@ jobs:
       - name: Exercise production-authority library
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
         run: python3 scripts/hepta_supervisor_ci.py execute production --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Exercise qualification-only durability matrix
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci.py execute qualification-lib --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Measure 256-Agent lifecycle-writer HOL
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci.py execute hol-256 --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Execute actual SIGKILL recovery matrix
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci.py execute sigkill --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Exercise authority distribution and product pinning
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci.py execute authority-distribution --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Exercise real signer daemon pairs and durable writer handoff
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
         run: python3 scripts/hepta_supervisor_ci.py execute products --records "$RUNNER_TEMP/hepta-supervisor/records"
