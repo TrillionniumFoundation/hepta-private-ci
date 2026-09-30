@@ -18,6 +18,7 @@ fn config() -> Config {
         fleet_database: "/var/lib/hepta-model/fleet/state/fleet-resources.sqlite3".into(),
         allowed_subject_ids: BTreeSet::from(["00000000-0000-4000-8000-000000000001".into()]),
         allowed_executable_sha256: BTreeSet::from(["a".repeat(64)]),
+        allowed_executable_paths: BTreeSet::from(["/usr/bin/sleep".into()]),
         grant_lifetime_ms: 30_000,
         request_timeout_ms: 2_000,
     }
@@ -64,6 +65,19 @@ fn policy_rejects_root_workloads_and_shared_replaceable_trust() {
     assert!(candidate.validate().is_err());
     let mut candidate = config();
     candidate.cgroup_root = "/sys/fs/cgroup/hepta/../other".into();
+    assert!(candidate.validate().is_err());
+    let mut candidate = config();
+    candidate.allowed_executable_paths.clear();
+    assert!(candidate.validate().is_err());
+    let mut candidate = config();
+    candidate
+        .allowed_executable_paths
+        .insert("relative/program".into());
+    assert!(candidate.validate().is_err());
+    let mut candidate = config();
+    candidate.allowed_executable_paths = (0..=MAX_ENROLLED_EXECUTABLES)
+        .map(|index| PathBuf::from(format!("/immutable/program-{index}")))
+        .collect();
     assert!(candidate.validate().is_err());
 }
 

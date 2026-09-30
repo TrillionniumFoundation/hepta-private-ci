@@ -39,8 +39,12 @@ use tokio::net::UnixListener;
 use tokio::net::UnixStream;
 use zeroize::Zeroizing;
 
+#[path = "local_model_executable.rs"]
+mod executable;
 #[path = "local_model_authority_store.rs"]
 mod store;
+use executable::ExecutableCache;
+use executable::MAX_ENROLLED_EXECUTABLES;
 use store::ProtectedClock;
 use store::ProtectedFrontier;
 use store::protected_directory;
@@ -63,6 +67,7 @@ struct Config {
     fleet_database: PathBuf,
     allowed_subject_ids: BTreeSet<String>,
     allowed_executable_sha256: BTreeSet<String>,
+    allowed_executable_paths: BTreeSet<PathBuf>,
     grant_lifetime_ms: u64,
     request_timeout_ms: u64,
 }
@@ -82,7 +87,10 @@ impl Config {
             &self.revocations_file,
             &self.cgroup_root,
             &self.fleet_database,
-        ] {
+        ]
+        .into_iter()
+        .chain(&self.allowed_executable_paths)
+        {
             anyhow::ensure!(
                 path.is_absolute()
                     && !path
@@ -106,8 +114,10 @@ impl Config {
             "invalid grant or request lifetime"
         );
         anyhow::ensure!(
-            !self.allowed_subject_ids.is_empty() && !self.allowed_executable_sha256.is_empty(),
-            "model issuer enrollment is empty"
+            !self.allowed_subject_ids.is_empty()
+                && (1..=MAX_ENROLLED_EXECUTABLES).contains(&self.allowed_executable_sha256.len())
+                && (1..=MAX_ENROLLED_EXECUTABLES).contains(&self.allowed_executable_paths.len()),
+            "model issuer enrollment is empty or exceeds the immutable executable bound"
         );
         for subject in &self.allowed_subject_ids {
             anyhow::ensure!(
@@ -174,6 +184,7 @@ fn read_proc(pid: u32, name: &str) -> anyhow::Result<String> {
 async fn capture_peer(
     config: &Config,
     verifier: &FleetExecutionVerifier,
+    executables: &ExecutableCache,
     stream: &UnixStream,
 ) -> anyhow::Result<Peer> {
     let credentials = stream.peer_cred()?;
@@ -207,25 +218,8 @@ async fn capture_peer(
         .nth(19)
         .context("peer start identity is missing")?
         .parse()?;
-    let mut executable = File::open(format!("/proc/{pid}/exe"))?;
-    let executable_metadata = executable.metadata()?;
-    anyhow::ensure!(
-        executable_metadata.is_file()
-            && executable_metadata.uid() == 0
-            && executable_metadata.mode() & 0o022 == 0
-            && executable_metadata.len() <= 512 * 1024 * 1024,
-        "model caller executable is not root protected"
-    );
-    let mut hasher = Sha256::new();
-    let mut buffer = [0_u8; 65_536];
-    loop {
-        let count = Read::read(&mut executable, &mut buffer)?;
-        if count == 0 {
-            break;
-        }
-        hasher.update(&buffer[..count]);
-    }
-    let executable_sha256 = format!("{:x}", hasher.finalize());
+    let executable = File::open(format!("/proc/{pid}/exe"))?;
+    let executable_sha256 = executables.verify(&executable)?;
     anyhow::ensure!(
         config
             .allowed_executable_sha256
@@ -274,6 +268,7 @@ struct Issuer {
     clock: Arc<dyn AuthorityClock>,
     authority: FinalUseAuthority,
     verifier: FleetExecutionVerifier,
+    executables: ExecutableCache,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -443,7 +438,7 @@ impl Issuer {
     }
 
     async fn exchange(&self, mut stream: UnixStream) -> anyhow::Result<()> {
-        let peer = capture_peer(&self.config, &self.verifier, &stream).await?;
+        let peer = capture_peer(&self.config, &self.verifier, &self.executables, &stream).await?;
         let mut length = [0_u8; 4];
         stream.read_exact(&mut length).await?;
         let length = usize::try_from(u32::from_be_bytes(length))?;
@@ -457,7 +452,8 @@ impl Issuer {
         if let Exchange::Trust(request) = request {
             let response = self.client_trust(request, &peer)?;
             anyhow::ensure!(
-                capture_peer(&self.config, &self.verifier, &stream).await? == peer,
+                capture_peer(&self.config, &self.verifier, &self.executables, &stream).await?
+                    == peer,
                 "model caller identity changed during trust mutation"
             );
             let bytes = serde_json::to_vec(&response)?;
@@ -485,7 +481,7 @@ impl Issuer {
             &head,
         );
         anyhow::ensure!(
-            capture_peer(&self.config, &self.verifier, &stream).await? == peer,
+            capture_peer(&self.config, &self.verifier, &self.executables, &stream).await? == peer,
             "model caller identity changed during issuance"
         );
         let (grant, denial_reason) = match outcome {
@@ -521,6 +517,12 @@ pub async fn run_local_model_authority(config_path: &Path) -> anyhow::Result<()>
     );
     let config: Config = serde_json::from_slice(&read_protected(config_path, 64 * 1024, true)?)?;
     config.validate()?;
+    // Full-file hashing is a startup obligation, before any authority endpoint
+    // becomes reachable. RPCs retain exact inode and protected path checks.
+    let executables = ExecutableCache::prewarm(
+        &config.allowed_executable_paths,
+        &config.allowed_executable_sha256,
+    )?;
     protected_directory(&config.state_directory)?;
     protected_directory(&config.trust_directory)?;
     protected_directory(&config.cgroup_root)?;
@@ -613,6 +615,7 @@ pub async fn run_local_model_authority(config_path: &Path) -> anyhow::Result<()>
         clock,
         authority,
         verifier,
+        executables,
     };
     loop {
         tokio::select! {
