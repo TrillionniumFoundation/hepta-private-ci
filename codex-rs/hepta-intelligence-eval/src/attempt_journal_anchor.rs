@@ -55,6 +55,34 @@ impl<A: ProductEvaluationAttemptAnchorStoreV1> AnchoredProductEvaluationAttemptJ
         })
     }
 
+    #[cfg(test)]
+    pub(super) fn create_with_qualification_limits(
+        file: File,
+        binding: Digest32,
+        mut authority: A,
+        maximum_bytes: u64,
+        maximum_events: usize,
+    ) -> Result<Self, ProductEvaluationAttemptJournalErrorV1> {
+        if authority.load(binding)?.is_some() {
+            return Err(ProductEvaluationAttemptJournalErrorV1::AlreadyInitialized);
+        }
+        let journal =
+            LockedFileProductEvaluationAttemptJournalV1::create_with_qualification_limits(
+                file,
+                binding,
+                maximum_bytes,
+                maximum_events,
+            )?;
+        let retained = journal.anchor()?;
+        authority.compare_and_swap(binding, None, retained)?;
+        Ok(Self {
+            journal,
+            authority,
+            retained,
+            poisoned: false,
+        })
+    }
+
     pub fn recover(
         file: File,
         binding: Digest32,
@@ -147,13 +175,31 @@ impl<A: ProductEvaluationAttemptAnchorStoreV1> ProductEvaluationAttemptJournalV1
         transition: ProductEvaluationAttemptTransitionV1,
     ) -> Result<ProductEvaluationAttemptReceiptV1, ProductEvaluationAttemptJournalErrorV1> {
         self.anchor()?;
-        // Once a write is attempted, do not expose this wrapper again unless
-        // BOTH the journal and its independently retained anchor acknowledge.
-        // This also covers an error returned while reading the post-write
-        // anchor, not just an error from the anchor authority's CAS.
+
+        // The concrete journal maps every accepted-or-unknown file transition to
+        // `Indeterminate`. Validation, identity, ordering and capacity errors are
+        // known-no-write outcomes. Only the former may poison this anchored
+        // wrapper: a deterministic rejection must not strand reservations held
+        // by already admitted attempts.
         self.poisoned = true;
-        let receipt = ProductEvaluationAttemptJournalV1::append(&mut self.journal, transition)?;
-        let next = self.journal.anchor()?;
+        let receipt = match ProductEvaluationAttemptJournalV1::append(
+            &mut self.journal,
+            transition,
+        ) {
+            Ok(receipt) => receipt,
+            Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate) => {
+                return Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate);
+            }
+            Err(error) => {
+                self.poisoned = false;
+                return Err(error);
+            }
+        };
+
+        let next = self
+            .journal
+            .anchor()
+            .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
         if next != self.retained {
             self.authority
                 .compare_and_swap(next.binding, Some(self.retained), next)
@@ -192,3 +238,7 @@ impl<A: ProductEvaluationAttemptAnchorStoreV1> ProductEvaluationAttemptJournalV1
         ProductEvaluationAttemptJournalV1::pending(&mut self.journal, after, limit)
     }
 }
+
+#[cfg(test)]
+#[path = "attempt_journal_anchor_regression_tests.rs"]
+mod regression_tests;

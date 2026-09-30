@@ -293,21 +293,41 @@ jobs:
         with:
           toolchain: 1.95.0
           components: llvm-tools-preview
-      - name: Enforce evaluator library coverage
+      - name: Enforce default-production coverage and retain compatibility coverage separately
         shell: bash
         run: |
           set -euo pipefail
           out="$EVIDENCE_ROOT/coverage"
           mkdir -p "$out"
           cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-intelligence-eval --lib --all-features \
+            -p codex-hepta-intelligence-eval --all-targets --no-default-features \
             --fail-under-lines 85 --json --output-path "$out/coverage.json"
-          python3 - "$out/coverage.json" <<'PY'
+          cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            --features trusted-inprocess-eval --test operator_claim \
+            --json --output-path "$out/compatibility-coverage.json"
+          python3 - "$out/coverage.json" "$out/compatibility-coverage.json" <<'PY'
           import json, pathlib, sys
-          totals = json.loads(pathlib.Path(sys.argv[1]).read_text())['data'][0]['totals']['lines']
-          count, covered = int(totals['count']), int(totals['covered'])
+          production = json.loads(pathlib.Path(sys.argv[1]).read_text())['data'][0]['totals']['lines']
+          compatibility = json.loads(pathlib.Path(sys.argv[2]).read_text())['data'][0]['totals']['lines']
+          count, covered = int(production['count']), int(production['covered'])
+          compat_count = int(compatibility['count'])
           assert count > 0 and 0 <= covered <= count and covered * 100 >= count * 85
-          print(json.dumps({'count': count, 'covered': covered, 'percent': totals['percent']}, sort_keys=True))
+          assert compat_count > 0
+          print(json.dumps({
+              'defaultProduction': {
+                  'count': count,
+                  'covered': covered,
+                  'percent': production['percent'],
+                  'thresholdPct': 85,
+              },
+              'compatibility': {
+                  'count': compat_count,
+                  'covered': int(compatibility['covered']),
+                  'percent': compatibility['percent'],
+                  'gating': False,
+              },
+          }, sort_keys=True))
           PY
       - name: Retain coverage evidence
         if: always()

@@ -16,8 +16,8 @@ or release authority.
    lineage.
 4. [`TARGET_HOST_QUALIFICATION.md`](TARGET_HOST_QUALIFICATION.md) — external host and
    topology evidence requirements.
-5. [`RECOVERY_EVIDENCE_ADDENDUM.md`](RECOVERY_EVIDENCE_ADDENDUM.md) — persistence and
-   recovery evidence details.
+5. [`RECOVERY_AMENDMENT_20260928.md`](RECOVERY_AMENDMENT_20260928.md) — persistence,
+   active-trust, lifecycle-capacity and recovery evidence amendments.
 
 ## Machine-readable source and status projections
 
@@ -31,8 +31,8 @@ or release authority.
 
 ## Closeout and historical audit material
 
-- [`SOURCE_CLOSEOUT_CURRENT.md`](SOURCE_CLOSEOUT_CURRENT.md)
-- [`SOURCE_CLOSEOUT_CURRENT_AUDIT.md`](SOURCE_CLOSEOUT_CURRENT_AUDIT.md)
+- [`SOURCE_CLOSEOUT_20260928.md`](SOURCE_CLOSEOUT_20260928.md)
+- [`SOURCE_CLOSEOUT_20260928.json`](SOURCE_CLOSEOUT_20260928.json)
 - [`EXECUTION_CLOSEOUT.md`](EXECUTION_CLOSEOUT.md)
 
 These records explain prior observations. The current immutable workflow artifacts and
@@ -46,7 +46,8 @@ The source workflow retains:
 - `CURRENT_STATUS.run.json`;
 - per-filter nextest discovery evidence;
 - compatibility-fixture evidence;
-- logs, coverage and job conclusions.
+- separate default-production and compatibility coverage reports;
+- logs and normalized job conclusions.
 
 The exact-tree workflow retains one `convergence.json` per head/merge row plus
 `exact-summary.json`. The local deterministic entrypoint retains one

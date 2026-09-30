@@ -56,6 +56,31 @@ rejected, the first attempt consumes every reserved phase through `Published`,
 the full journal reopens at the exact boundary, and no additional intent is then
 accepted.
 
+## Known-no-write rejection and anchored poisoning
+
+`AnchoredProductEvaluationAttemptJournalV1` treats only
+`ProductEvaluationAttemptJournalErrorV1::Indeterminate` as evidence that a file
+or anchor transition may have committed. That outcome poisons the live wrapper
+until authoritative reopen and reconciliation.
+
+Validation, identity, ordering and capacity failures are known-no-write outcomes.
+They return their exact typed error and leave the anchored wrapper readable. In
+particular, rejecting a second attempt with `Capacity` or rejecting a reused plan
+with `Conflict` must not strand the lifecycle reservation held by an already
+admitted attempt.
+
+The source regressions exercise:
+
+- anchored near-capacity admission followed by completion through `Published`;
+- plan-identity conflict and missing-consumption rejection without poisoning;
+- accepted-but-unacknowledged anchor CAS with mandatory reopen;
+- every legal lifecycle prefix followed by one process restart;
+- exact replay, reservation conservation and monotonic anchor advancement.
+
+These tests establish repository source behavior only. The selected host still
+must qualify the independent anchor authority and the durability/failure domains
+on the deployed topology.
+
 ## Evidence and claim boundary
 
 External gates remain false unless their separately governed evidence and

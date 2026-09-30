@@ -18,8 +18,7 @@ on:
       - 'scripts/*rust_identifiers*'
       - 'docs/modules/learning.eval/**'
       - 'qualification/lane-e/**'
-      - '.github/workflows/hepta-learning-eval-exact.yml'
-      - '.github/workflows/hepta-learning-eval-trusted-report.yml'
+      - '.github/workflows/hepta-learning-eval-*.yml'
   pull_request:
     paths:
       - 'codex-rs/hepta-intelligence-eval/**'
@@ -34,8 +33,7 @@ on:
       - 'scripts/*rust_identifiers*'
       - 'docs/modules/learning.eval/**'
       - 'qualification/lane-e/**'
-      - '.github/workflows/hepta-learning-eval-exact.yml'
-      - '.github/workflows/hepta-learning-eval-trusted-report.yml'
+      - '.github/workflows/hepta-learning-eval-*.yml'
   workflow_dispatch:
 
 # Candidate and synthetic-merge code execute with read-only repository access.

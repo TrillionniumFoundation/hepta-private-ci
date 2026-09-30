@@ -16,8 +16,10 @@
   ],
   "module": "learning.eval",
   "qualification": {
+    "compatibilityCoverage": "reported_separately_non_gating",
     "coverageThresholdPct": 85,
     "crossHostFilesystem": "requires_external_linearizability_and_fsync_qualification",
+    "defaultProductionCoverage": "no_default_features_all_targets_gating",
     "exactHead": "requires_passing_commit_addressed_ci_artifact",
     "orderedParentSyntheticMerge": "requires_passing_commit_addressed_ci_artifact",
     "targetHost": "requires_authenticated_external_host_evidence"
@@ -56,6 +58,7 @@
       }
     ],
     "capacitySource": {
+      "anchoredKnownNoWriteRejectionSafe": true,
       "anchoredRestartInterval": 128,
       "checkpointTailAttempts": 64,
       "configuredAttempts": 4096,
@@ -64,10 +67,15 @@
       "fullLifecycleReservation": true,
       "independentlyAnchoredCheckpointTailRecovery": true,
       "indexedPendingDiscovery": true,
+      "nearCapacityAnchoredRegression": true,
       "nearCapacityFileJournalRegression": true,
       "sustainedProfileSourcePresent": true
     },
     "consumerBoundAdmission": true,
+    "documentationSource": {
+      "auditIndexLinksCurrent": true,
+      "markdownFileAndAnchorValidation": true
+    },
     "durableEvaluationAttemptJournal": true,
     "externalLowLevelDecisionCallers": [],
     "externalRawProductRunnerCallers": [],
@@ -89,6 +97,7 @@
       "typedFrozenChannelContracts": true
     },
     "recoverySource": {
+      "acceptedUnknownAnchorRequiresReopen": true,
       "boundedPendingDiscovery": true,
       "canonicalTypedQualificationArchive": true,
       "coldRestartDoesNotRetainPreCrashTypedObjects": true,
@@ -103,6 +112,8 @@
       "incrementalAppendAndStreamingReplay": true,
       "independentAttemptAnchorProtocol": true,
       "independentlyAnchoredCheckpointProtocol": true,
+      "knownNoWriteRejectionPreservesOwner": true,
+      "legalPrefixCrashCutMatrixSourcePresent": true,
       "lifecycleCapacityReservation": true,
       "moduleInternalArchiveReverification": true,
       "persistentRecoveryController": true,
