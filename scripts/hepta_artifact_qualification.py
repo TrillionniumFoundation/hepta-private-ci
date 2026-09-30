@@ -289,7 +289,7 @@ def qualify(root: Path, out: Path, source: str, base: str, lane: str) -> int:
         "process_crash": [
             "cargo", "test", *package,
             "sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion",
-            "--", "--exact", "--test-threads=1",
+            "--", "--test-threads=1",
         ],
         "daemon_process": [
             "cargo", "test", *package,
@@ -300,7 +300,7 @@ def qualify(root: Path, out: Path, source: str, base: str, lane: str) -> int:
             "cargo", "test", "--manifest-path", "codex-rs/Cargo.toml", "--locked",
             "-p", "codex-hepta-shadow-qualification",
             "existing_artifact_owner_new_process_predictions_and_revoked_rollback",
-            "--", "--exact", "--test-threads=1",
+            "--", "--test-threads=1",
         ],
     }
     gates = {}
