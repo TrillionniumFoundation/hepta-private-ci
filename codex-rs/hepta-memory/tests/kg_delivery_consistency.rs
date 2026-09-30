@@ -215,3 +215,6 @@ async fn competing_head_reopen_selects_one_complete_receipt() {
         Some(winner.projection.generation_sha256)
     );
 }
+
+#[path = "kg_prepared_and_plans.rs"]
+mod prepared_and_plans;
