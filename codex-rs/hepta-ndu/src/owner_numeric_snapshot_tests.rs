@@ -52,6 +52,16 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+fn unique_test_nonce(label: &str) -> TestResult<[u8; 32]> {
+    static SEQUENCE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    let elapsed = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)?
+        .as_nanos();
+    let sequence = SEQUENCE.fetch_add(/*value*/ 1, std::sync::atomic::Ordering::Relaxed);
+    let material = format!("{label}:{}:{elapsed}:{sequence}", std::process::id());
+    Ok(*Digest32::of_bytes(material.as_bytes()).as_bytes())
+}
+
 struct Fixture {
     owner: NduAuthenticatedOwnerV1,
     registry: NduNumericRegistryV1,
@@ -396,7 +406,7 @@ fn snapshot_bound_mutations_still_require_exact_existing_authority() -> TestResu
         signer_id: "ndu-snapshot-issuer".to_owned(),
         authority_epoch: 1,
         grant_id: "snapshot-grant".to_owned(),
-        nonce: [17; 32],
+        nonce: unique_test_nonce("snapshot-grant")?,
         binding: earlier.owner.final_use_binding(&mutation)?,
         not_before_unix_ms: now.saturating_sub(/*rhs*/ 1_000),
         expires_at_unix_ms: now.saturating_add(/*rhs*/ 60_000),
