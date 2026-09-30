@@ -21,6 +21,7 @@ QUALIFIERS = (
     ROOT / ".github/workflows/secrets-heptabao-five-closure-qualified.yml",
     ROOT / ".github/workflows/secrets-heptabao-candidate-attestation.yml",
 )
+NATIVE_QUALIFIER = ROOT / "codex-rs/hepta-bao-adapter/qa/qualify.py"
 MATERIALIZER = (
     ROOT / ".github/workflows/secrets-heptabao-development-materialize.yml"
 )
@@ -56,7 +57,10 @@ def validate_materialized_source() -> None:
         "OutcomePending(Box<BaoConsumptionOperationV1>)",
         "TerminalFailure(Box<BaoConsumptionOperationV1>)",
     ):
-        require(declaration in host, f"materialized error declaration missing: {declaration}")
+        require(
+            declaration in host,
+            f"materialized error declaration missing: {declaration}",
+        )
     require(
         "OutcomePending(BaoConsumptionOperationV1)" not in host,
         "unboxed OutcomePending declaration remains",
@@ -103,16 +107,36 @@ def validate_qualifiers() -> None:
                 f"{path.name}: undeclared feature {feature!r}",
             )
 
-    qualification = QUALIFIERS[0].read_text(encoding="utf-8")
+    source_workflow = QUALIFIERS[0].read_text(encoding="utf-8")
     for required in (
-        "cargo metadata --locked --no-deps",
         "git diff --exit-code",
+        "git diff --cached --exit-code",
         "git status --porcelain=v1 --untracked-files=all",
         "build_readiness_manifest.py",
     ):
         require(
-            required in qualification,
-            f"read-only qualifier is missing {required!r}",
+            required in source_workflow,
+            f"read-only source workflow is missing {required!r}",
+        )
+
+    native = NATIVE_QUALIFIER.read_text(encoding="utf-8")
+    for required in (
+        '"cargo",\n            "metadata"',
+        '"--locked"',
+        '"--no-deps"',
+        '"cargo",\n            "fmt"',
+        '"cargo",\n            "test"',
+        '"cargo",\n            "clippy"',
+        '"-D",\n            "warnings"',
+    ):
+        require(
+            required in native,
+            f"native qualifier is missing command fragment {required!r}",
+        )
+    for feature in FAKE_FEATURES:
+        require(
+            feature not in native,
+            f"native qualifier uses undeclared feature {feature!r}",
         )
 
 
