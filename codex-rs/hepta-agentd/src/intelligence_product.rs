@@ -130,6 +130,7 @@ struct FileBackedFreshnessOracleV1 {
     verifier: IntelligenceAuthorityVerifierV1,
     rollback: Option<Arc<crate::IntelligenceAuthorityRollbackGuardV1>>,
     telemetry: Option<Arc<crate::AgentdIntelligenceTelemetryV1>>,
+    snapshot: Option<BTreeMap<StableId, CurrentOwnerStateV1>>,
 }
 
 impl FileBackedFreshnessOracleV1 {
@@ -140,6 +141,7 @@ impl FileBackedFreshnessOracleV1 {
             verifier,
             rollback: None,
             telemetry: None,
+            snapshot: None,
         }
     }
 
@@ -153,6 +155,7 @@ impl FileBackedFreshnessOracleV1 {
             verifier,
             rollback: None,
             telemetry: Some(telemetry),
+            snapshot: None,
         }
     }
 
@@ -161,13 +164,14 @@ impl FileBackedFreshnessOracleV1 {
         rollback: Option<Arc<crate::IntelligenceAuthorityRollbackGuardV1>>,
     ) -> Self {
         self.rollback = rollback;
+        self.snapshot = None;
         self
     }
 
-    fn read(
+    fn load_snapshot(
         &self,
         requested: &StableId,
-    ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
+    ) -> Result<BTreeMap<StableId, CurrentOwnerStateV1>, CanonicalIntelligenceError> {
         let unavailable = || CanonicalIntelligenceError::FreshnessUnavailable(requested.clone());
         let bytes = crate::intelligence_files::read_bounded(
             &self.path,
@@ -225,39 +229,57 @@ impl FileBackedFreshnessOracleV1 {
                 .admit(file.authority_epoch, manifest_digest)
                 .map_err(|_| unavailable())?;
         }
-        let mut seen = BTreeMap::new();
+
+        let authority_epoch = file.authority_epoch;
+        let mut states = BTreeMap::new();
         for owner in file.owners {
-            let owner_id = StableId::new(owner.owner_id.clone()).map_err(|_| unavailable())?;
-            if seen.insert(owner_id, owner).is_some() {
+            let owner_id = StableId::new(owner.owner_id).map_err(|_| unavailable())?;
+            let generation = Generation::new(owner.generation).map_err(|_| unavailable())?;
+            let implementation_digest =
+                Digest32::from_str(&owner.implementation_digest).map_err(|_| unavailable())?;
+            let key_digest =
+                Digest32::from_str(&owner.key_digest).map_err(|_| unavailable())?;
+            let state = CurrentOwnerStateV1 {
+                owner_id: owner_id.clone(),
+                generation,
+                implementation_digest,
+                key_digest,
+                key_epoch: owner.key_epoch,
+                authority_epoch,
+                revocation_frontier_digest: frontier,
+            };
+            if states.insert(owner_id, state).is_some() {
                 return Err(unavailable());
             }
         }
-        let owner = seen.remove(requested).ok_or_else(unavailable)?;
-        let generation = Generation::new(owner.generation).map_err(|_| unavailable())?;
-        let implementation_digest =
-            Digest32::from_str(&owner.implementation_digest).map_err(|_| unavailable())?;
-        let key_digest = Digest32::from_str(&owner.key_digest).map_err(|_| unavailable())?;
-        if implementation_digest.is_zero() || key_digest.is_zero() || owner.key_epoch == 0 {
+        if !states.contains_key(requested) {
             return Err(unavailable());
         }
-        Ok(CurrentOwnerStateV1 {
-            owner_id: requested.clone(),
-            generation,
-            implementation_digest,
-            key_digest,
-            key_epoch: owner.key_epoch,
-            authority_epoch: file.authority_epoch,
-            revocation_frontier_digest: frontier,
-        })
+        Ok(states)
     }
 }
 
 impl CanonicalFreshnessOracleV1 for FileBackedFreshnessOracleV1 {
+    fn refresh_snapshot(
+        &mut self,
+        owner_id: &StableId,
+    ) -> Result<(), CanonicalIntelligenceError> {
+        self.snapshot = Some(self.load_snapshot(owner_id)?);
+        Ok(())
+    }
+
     fn current(
         &mut self,
         owner_id: &StableId,
     ) -> Result<CurrentOwnerStateV1, CanonicalIntelligenceError> {
-        self.read(owner_id)
+        if self.snapshot.is_none() {
+            self.refresh_snapshot(owner_id)?;
+        }
+        self.snapshot
+            .as_ref()
+            .and_then(|snapshot| snapshot.get(owner_id))
+            .cloned()
+            .ok_or_else(|| CanonicalIntelligenceError::FreshnessUnavailable(owner_id.clone()))
     }
 }
 
@@ -328,6 +350,24 @@ impl PreparedAgentdIntelligenceRunV1 {
     #[must_use]
     pub fn prompt_delivery(&self) -> Option<&PreparedPromptDeliveryV1> {
         self.prompt_delivery.as_ref()
+    }
+    pub fn selected_candidate_membership(
+        &self,
+    ) -> Result<crate::AgentdLegalCandidateMembershipProofV1, CanonicalIntelligenceError> {
+        self.validate_integrity()?;
+        let codex_hepta_intelligence::AdvisoryDecisionV1::Selected {
+            candidate_id,
+            propensity,
+        } = &self.envelope.decision.decision
+        else {
+            return Err(CanonicalIntelligenceError::UnexpectedDecision);
+        };
+        crate::AgentdLegalCandidateMembershipProofV1::admit(
+            self.envelope.candidate_set_digest,
+            &self.candidate_ids,
+            candidate_id,
+            *propensity,
+        )
     }
     pub fn physical_prompt(
         &self,
