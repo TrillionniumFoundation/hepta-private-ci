@@ -1368,6 +1368,15 @@ impl SqliteBaoOwnerV1 {
         {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
+        if operation.result_lease != lease {
+            return Err(SqliteBaoOwnerErrorV1::ObservationMismatch);
+        }
+        if operation
+            .observed_at_unix_ms
+            .is_some_and(|observed| observed > now_unix_ms)
+        {
+            return Err(SqliteBaoOwnerErrorV1::ObservationMismatch);
+        }
         if operation.state == LeaseOperationStateV1::Applied && lease.is_none() {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
@@ -1417,7 +1426,7 @@ impl SqliteBaoOwnerV1 {
         }
         if let Some(lease) = lease.as_ref() {
             validate_lease(lease)?;
-            apply_lease_projection(&mut tx, &current.operation, lease, now_unix_ms).await?;
+            apply_lease_projection(&mut tx, &operation, lease, now_unix_ms).await?;
         }
         let revision = next_revision(&mut tx).await?;
         let row_json = encode_row(&operation)?;
@@ -1478,13 +1487,32 @@ impl SqliteBaoOwnerV1 {
         lease_id: &str,
     ) -> Result<Option<SecretLeaseMetadataV1>, SqliteBaoOwnerErrorV1> {
         validate_identifier(lease_id)?;
-        let row: Option<Vec<u8>> =
-            sqlx::query_scalar("SELECT row_json FROM bao_lease WHERE lease_id = ?")
-                .bind(lease_id)
-                .fetch_optional(&self.pool)
-                .await
-                .map_err(storage)?;
-        row.map(|bytes| decode_row(&bytes)).transpose()
+        let row = sqlx::query(
+            "SELECT lease_id, generation, state, row_json FROM bao_lease WHERE lease_id = ?",
+        )
+        .bind(lease_id)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(storage)?;
+        row.map(|row| {
+            let lease: SecretLeaseMetadataV1 =
+                decode_row(&row.try_get::<Vec<u8>, _>("row_json").map_err(storage)?)?;
+            validate_lease(&lease).map_err(|_| {
+                SqliteBaoOwnerErrorV1::CorruptState("invalid persisted lease projection")
+            })?;
+            if lease.lease_id != row.try_get::<String, _>("lease_id").map_err(storage)?
+                || lease.generation
+                    != fixed_u64(&row.try_get::<Vec<u8>, _>("generation").map_err(storage)?)?
+                || lease_state_text(lease.state)
+                    != row.try_get::<String, _>("state").map_err(storage)?
+            {
+                return Err(SqliteBaoOwnerErrorV1::CorruptState(
+                    "lease JSON differs from immutable projection",
+                ));
+            }
+            Ok(lease)
+        })
+        .transpose()
     }
 
     pub async fn due_reconciliation(
@@ -2469,7 +2497,7 @@ async fn load_consumption_current_tx(
     operation_id: &str,
 ) -> Result<Option<SqliteConsumptionRecordV1>, SqliteBaoOwnerErrorV1> {
     let row = sqlx::query(
-        "SELECT row_json, owner_revision, created_at_unix_ms, updated_at_unix_ms
+        "SELECT *
          FROM bao_consumption WHERE operation_id = ?",
     )
     .bind(operation_id)
@@ -2484,7 +2512,7 @@ async fn load_consumption_current_pool(
     operation_id: &str,
 ) -> Result<Option<SqliteConsumptionRecordV1>, SqliteBaoOwnerErrorV1> {
     let row = sqlx::query(
-        "SELECT row_json, owner_revision, created_at_unix_ms, updated_at_unix_ms
+        "SELECT *
          FROM bao_consumption WHERE operation_id = ?",
     )
     .bind(operation_id)
@@ -2502,7 +2530,7 @@ async fn load_consumption_any_tx(
         return Ok(Some(current));
     }
     let row = sqlx::query(
-        "SELECT row_json, owner_revision, created_at_unix_ms, updated_at_unix_ms
+        "SELECT *
          FROM bao_terminal_archive WHERE operation_id = ?",
     )
     .bind(operation_id)
@@ -2520,7 +2548,7 @@ async fn load_consumption_any_pool(
         return Ok(Some(current));
     }
     let row = sqlx::query(
-        "SELECT row_json, owner_revision, created_at_unix_ms, updated_at_unix_ms
+        "SELECT *
          FROM bao_terminal_archive WHERE operation_id = ?",
     )
     .bind(operation_id)
@@ -2536,6 +2564,71 @@ fn consumption_record(
     let bytes: Vec<u8> = row.try_get("row_json").map_err(storage)?;
     let operation: BaoConsumptionOperationV1 = decode_row(&bytes)?;
     validate_consumption_stored(&operation)?;
+    if operation.operation_id != row.try_get::<String, _>("operation_id").map_err(storage)?
+        || operation.semantic_sha256.as_slice()
+            != row
+                .try_get::<Vec<u8>, _>("semantic_sha256")
+                .map_err(storage)?
+        || operation.terminal_kind
+            != row
+                .try_get::<Option<String>, _>("terminal_kind")
+                .map_err(storage)?
+        || operation.terminal_code
+            != row
+                .try_get::<Option<String>, _>("terminal_code")
+                .map_err(storage)?
+        || operation.terminal_evidence_sha256.map(Vec::from)
+            != row
+                .try_get::<Option<Vec<u8>>, _>("terminal_evidence_sha256")
+                .map_err(storage)?
+        || operation
+            .terminal_observed_cost
+            .map(|value| u64_bytes(value).to_vec())
+            != row
+                .try_get::<Option<Vec<u8>>, _>("terminal_observed_cost")
+                .map_err(storage)?
+    {
+        return Err(SqliteBaoOwnerErrorV1::CorruptState(
+            "consumption JSON differs from immutable projection",
+        ));
+    }
+    match row.try_get::<String, _>("state") {
+        Ok(state) => {
+            if state_text(operation.state) != state
+                || operation.effect_sha256.as_slice()
+                    != row
+                        .try_get::<Vec<u8>, _>("effect_sha256")
+                        .map_err(storage)?
+                || operation.request_sha256.as_slice()
+                    != row
+                        .try_get::<Vec<u8>, _>("request_sha256")
+                        .map_err(storage)?
+                || operation.consumer_id
+                    != row.try_get::<String, _>("consumer_id").map_err(storage)?
+                || operation.consumer_configuration_sha256.as_slice()
+                    != row
+                        .try_get::<Vec<u8>, _>("consumer_configuration_sha256")
+                        .map_err(storage)?
+                || operation.amount
+                    != fixed_u64(&row.try_get::<Vec<u8>, _>("amount").map_err(storage)?)?
+                || operation.reservation_id
+                    != row
+                        .try_get::<Option<String>, _>("reservation_id")
+                        .map_err(storage)?
+            {
+                return Err(SqliteBaoOwnerErrorV1::CorruptState(
+                    "consumption JSON differs from indexed projection",
+                ));
+            }
+        }
+        Err(sqlx::Error::ColumnNotFound(_)) if operation.state.is_terminal() => {}
+        Err(sqlx::Error::ColumnNotFound(_)) => {
+            return Err(SqliteBaoOwnerErrorV1::CorruptState(
+                "archive contains a nonterminal operation",
+            ));
+        }
+        Err(error) => return Err(storage(error)),
+    }
     let revision = fixed_u64(
         &row.try_get::<Vec<u8>, _>("owner_revision")
             .map_err(storage)?,
@@ -2567,7 +2660,11 @@ async fn load_lease_operation_tx(
     operation_id: &str,
 ) -> Result<Option<SqliteLeaseOperationRecordV1>, SqliteBaoOwnerErrorV1> {
     let row = sqlx::query(
-        "SELECT l.row_json, o.created_at_unix_ms, o.updated_at_unix_ms,
+        "SELECT l.operation_id, l.operation_kind, l.lease_id,
+                l.expected_generation, l.resulting_generation, l.state,
+                l.row_json, l.terminal_result_sha256, o.domain, o.kind,
+                o.semantic_sha256, o.terminal, o.created_at_unix_ms,
+                o.updated_at_unix_ms, t.to_state,
                 t.revision AS owner_revision
          FROM bao_lease_operation l
          JOIN bao_operation o ON o.operation_id = l.operation_id
@@ -2579,10 +2676,63 @@ async fn load_lease_operation_tx(
     .await
     .map_err(storage)?;
     row.map(|row| {
-        let operation = decode_row::<LeaseOperationV1>(
-            &row.try_get::<Vec<u8>, _>("row_json").map_err(storage)?,
-        )?;
-        validate_lease_operation(&operation)?;
+        let bytes: Vec<u8> = row.try_get("row_json").map_err(storage)?;
+        let operation = decode_row::<LeaseOperationV1>(&bytes)?;
+        validate_lease_operation(&operation).map_err(|_| {
+            SqliteBaoOwnerErrorV1::CorruptState("invalid persisted lease operation")
+        })?;
+        let projected_lease_id: Option<String> = row.try_get("lease_id").map_err(storage)?;
+        // For an issued result, the immutable SQL input has no lease ID. The
+        // result ID is bound by the provider observation and terminal digest.
+        let issue_result_id = operation.kind == crate::LeaseOperationKindV1::Issue
+            && operation.state == LeaseOperationStateV1::Applied
+            && projected_lease_id.is_none();
+        let terminal = matches!(
+            operation.state,
+            LeaseOperationStateV1::Applied | LeaseOperationStateV1::Denied
+        );
+        let result_digest = terminal.then(|| Digest32::of_bytes(&bytes).into_array().to_vec());
+        if operation.operation_id != operation_id
+            || operation.operation_id
+                != row.try_get::<String, _>("operation_id").map_err(storage)?
+            || row.try_get::<String, _>("domain").map_err(storage)? != "lease"
+            || lease_operation_kind_text(operation.kind)
+                != row.try_get::<String, _>("kind").map_err(storage)?
+            || lease_operation_kind_text(operation.kind)
+                != row
+                    .try_get::<String, _>("operation_kind")
+                    .map_err(storage)?
+            || operation.semantic_sha256.as_slice()
+                != row
+                    .try_get::<Vec<u8>, _>("semantic_sha256")
+                    .map_err(storage)?
+            || (!issue_result_id && operation.lease_id != projected_lease_id)
+            || operation
+                .expected_generation
+                .map(|value| u64_bytes(value).to_vec())
+                != row
+                    .try_get::<Option<Vec<u8>>, _>("expected_generation")
+                    .map_err(storage)?
+            || operation
+                .resulting_generation
+                .map(|value| u64_bytes(value).to_vec())
+                != row
+                    .try_get::<Option<Vec<u8>>, _>("resulting_generation")
+                    .map_err(storage)?
+            || lease_operation_state_text(operation.state)
+                != row.try_get::<String, _>("state").map_err(storage)?
+            || lease_operation_state_text(operation.state)
+                != row.try_get::<String, _>("to_state").map_err(storage)?
+            || i64::from(terminal) != row.try_get::<i64, _>("terminal").map_err(storage)?
+            || result_digest
+                != row
+                    .try_get::<Option<Vec<u8>>, _>("terminal_result_sha256")
+                    .map_err(storage)?
+        {
+            return Err(SqliteBaoOwnerErrorV1::CorruptState(
+                "lease operation JSON differs from immutable projection",
+            ));
+        }
         Ok(SqliteLeaseOperationRecordV1 {
             operation,
             revision: fixed_u64(
@@ -2608,12 +2758,13 @@ async fn apply_lease_projection(
     lease: &SecretLeaseMetadataV1,
     now_unix_ms: u64,
 ) -> Result<(), SqliteBaoOwnerErrorV1> {
-    let existing =
-        sqlx::query("SELECT generation, state, row_json FROM bao_lease WHERE lease_id = ?")
-            .bind(&lease.lease_id)
-            .fetch_optional(&mut **tx)
-            .await
-            .map_err(storage)?;
+    let existing = sqlx::query(
+        "SELECT generation, state, row_json, updated_at_unix_ms FROM bao_lease WHERE lease_id = ?",
+    )
+    .bind(&lease.lease_id)
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(storage)?;
     let row_json = encode_row(lease)?;
     match existing {
         None => {
@@ -2636,12 +2787,65 @@ async fn apply_lease_projection(
         Some(row) => {
             let generation = fixed_u64(&row.try_get::<Vec<u8>, _>("generation").map_err(storage)?)?;
             let state: String = row.try_get("state").map_err(storage)?;
+            let previous: SecretLeaseMetadataV1 =
+                decode_row(&row.try_get::<Vec<u8>, _>("row_json").map_err(storage)?)?;
+            validate_lease(&previous)?;
+            let previous_updated_at = fixed_u64(
+                &row.try_get::<Vec<u8>, _>("updated_at_unix_ms")
+                    .map_err(storage)?,
+            )?;
             if current_operation.expected_generation != Some(generation)
-                || lease.generation <= generation
+                || lease.generation
+                    != generation
+                        .checked_add(1)
+                        .ok_or(SqliteBaoOwnerErrorV1::CapacityExceeded)?
+                || previous.generation != generation
+                || lease_state_text(previous.state) != state
+                || lease.secret_reference_id != previous.secret_reference_id
+                || lease.consumer_id != previous.consumer_id
+                || lease.scope_sha256 != previous.scope_sha256
+                || lease.issued_at_unix_ms != previous.issued_at_unix_ms
+                || current_operation
+                    .observed_at_unix_ms
+                    .is_none_or(|observed| observed < previous_updated_at)
                 || (matches!(state.as_str(), "revoked" | "expired")
                     && lease_state_text(lease.state) != state)
             {
                 return Err(SqliteBaoOwnerErrorV1::ObservationMismatch);
+            }
+            match current_operation.kind {
+                crate::LeaseOperationKindV1::Issue => {
+                    return Err(SqliteBaoOwnerErrorV1::ObservationMismatch);
+                }
+                crate::LeaseOperationKindV1::Renew => {
+                    let pending_revoke: bool = sqlx::query_scalar(
+                        "SELECT EXISTS(SELECT 1 FROM bao_lease_operation
+                         WHERE lease_id = ? AND operation_kind = 'revoke'
+                           AND state IN ('prepared', 'unknown'))",
+                    )
+                    .bind(&lease.lease_id)
+                    .fetch_one(&mut **tx)
+                    .await
+                    .map_err(storage)?;
+                    if !previous.renewable
+                        || !matches!(
+                            previous.state,
+                            SecretLeaseStateV1::Active | SecretLeaseStateV1::RenewUnknown
+                        )
+                        || pending_revoke
+                    {
+                        return Err(SqliteBaoOwnerErrorV1::ObservationMismatch);
+                    }
+                }
+                crate::LeaseOperationKindV1::Revoke => {
+                    if matches!(
+                        previous.state,
+                        SecretLeaseStateV1::Revoked | SecretLeaseStateV1::Expired
+                    ) || lease.expires_at_unix_ms != previous.expires_at_unix_ms
+                    {
+                        return Err(SqliteBaoOwnerErrorV1::ObservationMismatch);
+                    }
+                }
             }
             let changed = sqlx::query(
                 "UPDATE bao_lease SET generation = ?, state = ?, row_json = ?,
@@ -3046,6 +3250,11 @@ fn validate_lease_operation(operation: &LeaseOperationV1) -> Result<(), SqliteBa
     {
         return Err(SqliteBaoOwnerErrorV1::InvalidInput);
     }
+    if operation.state == LeaseOperationStateV1::Denied
+        && (operation.result_lease.is_some() || operation.resulting_generation.is_some())
+    {
+        return Err(SqliteBaoOwnerErrorV1::InvalidInput);
+    }
     if let Some(snapshot) = operation.result_lease.as_ref() {
         validate_lease(snapshot)?;
         if operation.lease_id.as_deref() != Some(snapshot.lease_id.as_str())
@@ -3078,7 +3287,73 @@ fn validate_lease_operation(operation: &LeaseOperationV1) -> Result<(), SqliteBa
         ) if operation.state != LeaseOperationStateV1::Applied => {
             return Err(SqliteBaoOwnerErrorV1::InvalidInput);
         }
-        Some(_) | None => {}
+        Some(crate::ProviderLeaseObservationV1::IssueApplied { lease }) => {
+            if operation.kind != crate::LeaseOperationKindV1::Issue
+                || operation.result_lease.as_ref() != Some(lease)
+                || lease.generation != 1
+                || lease.state != SecretLeaseStateV1::Active
+                || operation.observed_at_unix_ms.is_none_or(|value| value == 0)
+            {
+                return Err(SqliteBaoOwnerErrorV1::InvalidInput);
+            }
+        }
+        Some(crate::ProviderLeaseObservationV1::RenewApplied {
+            lease_id,
+            observed_at_unix_ms,
+            expires_at_unix_ms,
+            renewable,
+            provider_metadata_sha256,
+        }) => {
+            let lease = operation
+                .result_lease
+                .as_ref()
+                .ok_or(SqliteBaoOwnerErrorV1::InvalidInput)?;
+            if operation.kind != crate::LeaseOperationKindV1::Renew
+                || lease.lease_id != *lease_id
+                || *observed_at_unix_ms == 0
+                || operation.observed_at_unix_ms != Some(*observed_at_unix_ms)
+                || lease.expires_at_unix_ms != *expires_at_unix_ms
+                || lease.expires_at_unix_ms <= *observed_at_unix_ms
+                || lease.renewable != *renewable
+                || lease.provider_metadata_sha256 != *provider_metadata_sha256
+                || lease.state != SecretLeaseStateV1::Active
+                || operation
+                    .expected_generation
+                    .and_then(|value| value.checked_add(1))
+                    != operation.resulting_generation
+            {
+                return Err(SqliteBaoOwnerErrorV1::InvalidInput);
+            }
+        }
+        Some(crate::ProviderLeaseObservationV1::RevokeApplied {
+            lease_id,
+            observed_at_unix_ms,
+            provider_metadata_sha256,
+        }) => {
+            let lease = operation
+                .result_lease
+                .as_ref()
+                .ok_or(SqliteBaoOwnerErrorV1::InvalidInput)?;
+            if operation.kind != crate::LeaseOperationKindV1::Revoke
+                || lease.lease_id != *lease_id
+                || *observed_at_unix_ms == 0
+                || operation.observed_at_unix_ms != Some(*observed_at_unix_ms)
+                || lease.provider_metadata_sha256 != *provider_metadata_sha256
+                || lease.state != SecretLeaseStateV1::Revoked
+                || lease.renewable
+                || operation
+                    .expected_generation
+                    .and_then(|value| value.checked_add(1))
+                    != operation.resulting_generation
+            {
+                return Err(SqliteBaoOwnerErrorV1::InvalidInput);
+            }
+        }
+        Some(
+            crate::ProviderLeaseObservationV1::Denied
+            | crate::ProviderLeaseObservationV1::NotApplied,
+        )
+        | None => {}
     }
     encode_row(operation).map(|_| ())
 }
