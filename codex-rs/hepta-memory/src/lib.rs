@@ -1,4 +1,11 @@
 #![forbid(unsafe_code)]
+#![cfg_attr(
+    test,
+    allow(
+        clippy::expect_used,
+        reason = "deterministic unit fixtures use immediate setup assertions; production builds keep expect_used denied"
+    )
+)]
 
 pub use codex_hepta_memory_federation::FederatedCoverageV2;
 pub use codex_hepta_memory_federation::FederatedFailureCoverageV2;

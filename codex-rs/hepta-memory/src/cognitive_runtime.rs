@@ -117,16 +117,14 @@ impl MemoryFederationHostProfile {
             || discovery_concurrency > max_owner_candidates
         {
             return Err(CognitiveStoreError::Invalid(format!(
-                "memory federation discovery concurrency must be 1..={} and no larger than owner candidates",
-                MAX_PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY
+                "memory federation discovery concurrency must be 1..={MAX_PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY} and no larger than owner candidates"
             )));
         }
         if !(1..=MAX_PRODUCT_FEDERATION_ATTEMPT_CONCURRENCY).contains(&attempt_concurrency)
             || attempt_concurrency > max_admitted_peers
         {
             return Err(CognitiveStoreError::Invalid(format!(
-                "memory federation attempt concurrency must be 1..={} and no larger than admitted peers",
-                MAX_PRODUCT_FEDERATION_ATTEMPT_CONCURRENCY
+                "memory federation attempt concurrency must be 1..={MAX_PRODUCT_FEDERATION_ATTEMPT_CONCURRENCY} and no larger than admitted peers"
             )));
         }
         if !(1..=MAX_PRODUCT_FEDERATION_REVALIDATION_CONCURRENCY)
@@ -134,8 +132,7 @@ impl MemoryFederationHostProfile {
             || revalidation_concurrency > max_admitted_peers
         {
             return Err(CognitiveStoreError::Invalid(format!(
-                "memory federation revalidation concurrency must be 1..={} and no larger than admitted peers",
-                MAX_PRODUCT_FEDERATION_REVALIDATION_CONCURRENCY
+                "memory federation revalidation concurrency must be 1..={MAX_PRODUCT_FEDERATION_REVALIDATION_CONCURRENCY} and no larger than admitted peers"
             )));
         }
         Ok(Self {
@@ -719,7 +716,7 @@ async fn retrieve_federated_product(
     };
     let mut candidates = Vec::new();
 
-    let attempts = stream::iter(readers.into_iter())
+    let attempts = stream::iter(readers)
         .map(|(owner_layout, reader)| async move {
             if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
                 return Ok((
