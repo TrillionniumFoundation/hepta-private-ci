@@ -10,6 +10,7 @@
 
 #![forbid(unsafe_code)]
 
+mod authbus_handle;
 mod destination_dedupe;
 mod dispatcher;
 mod durable_model;
@@ -20,6 +21,8 @@ mod ledger;
 mod model;
 mod outbox;
 
+pub use authbus_handle::AuthBusOperationHandle;
+pub use authbus_handle::EnteredAuthBusOperationHandle;
 pub use destination_dedupe::DestinationApplyStart;
 pub use destination_dedupe::DestinationApplyTransaction;
 pub use destination_dedupe::DestinationDedupeStore;
