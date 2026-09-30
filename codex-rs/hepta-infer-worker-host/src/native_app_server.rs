@@ -83,6 +83,8 @@ use tokio_util::sync::CancellationToken;
 #[path = "native_output.rs"]
 mod native_output;
 use native_output::NativeOutputProjection;
+#[path = "native_recovery.rs"]
+mod native_recovery;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
@@ -363,16 +365,8 @@ impl AppServerModelDriver {
             .find(|turn| turn.id == turn_id)
             .ok_or("reconciled terminal receipt turn disappeared")?;
 
-        let mut output_text = String::new();
-        for item in &turn.items {
-            if let ThreadItem::AgentMessage { text, .. } = item {
-                if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output_text.len()) {
-                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Err("reconciled output byte limit exceeded".into());
-                }
-                output_text.push_str(text);
-            }
-        }
+        let mut projection = NativeOutputProjection::default();
+        projection.complete_items(&turn.items)?;
         let (status, boundary_status) = match receipt.status {
             AdapterStatus::Succeeded => {
                 (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
@@ -394,7 +388,7 @@ impl AppServerModelDriver {
             model_provider: dispatch.model_provider.clone(),
             status,
             boundary_status,
-            output: output_text,
+            output: projection.text(),
             observed_output_tokens: None,
             terminal_observed: true,
             owner_authority: NativeOwnerAuthority::Unverified,
@@ -409,6 +403,7 @@ impl AppServerModelDriver {
                     .to_string(),
             ),
         };
+        native_recovery::retain_observed_facts(&mut output, record.observation.as_ref());
         let _ =
             verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
         downgrade_for_owner_loss(&mut output);
@@ -773,7 +768,11 @@ impl AppServerModelDriver {
             return Err("cancelled before model dispatch".into());
         }
 
-        let send_budget = remaining_before(adapter_intent.deadline_ms)?.min(RPC_TIMEOUT);
+        let (send_budget, pre_effect_abort) = native_recovery::send_budget_before_effect(
+            control,
+            pre_effect_abort,
+            adapter_intent.deadline_ms,
+        )?;
         let entered_use = match verified_use.enter(&authority_binding) {
             Ok(entered) if entered.matches(&authority_binding) => entered,
             Ok(_) => {
@@ -998,16 +997,6 @@ impl AppServerModelDriver {
             let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
                 .await;
             downgrade_for_owner_loss(&mut output);
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
-                && let Err(error) =
-                    commit_intelligence_terminal(&owner, binding, revision, &output).await
-            {
-                let note = format!("Agentd terminal reconciliation required: {error}");
-                output.stop_reason = Some(match output.stop_reason.take() {
-                    Some(existing) => format!("{existing}; {note}"),
-                    None => note,
-                });
-            }
         }
         Ok(output)
     }
@@ -1341,44 +1330,6 @@ async fn require_intelligence_handoff(
     Ok(run.revision)
 }
 
-async fn commit_intelligence_terminal(
-    owner: &AgentdClient,
-    binding: &NativeIntelligenceRunBinding,
-    expected_revision: u64,
-    output: &NativeRunOutput,
-) -> Result<()> {
-    if !output.terminal_observed
-        || !matches!(output.owner_authority, NativeOwnerAuthority::ObservedReady)
-        || output.codex_terminal_correlation_digest.is_none()
-    {
-        return Err("intelligence terminal publication requires exact observed correlation and current owner authority".into());
-    }
-    let phase = match output.status {
-        NativeRunStatus::Completed => AgentRunPhase::Succeeded,
-        NativeRunStatus::Failed => AgentRunPhase::Failed,
-        NativeRunStatus::Interrupted => AgentRunPhase::Cancelled,
-        NativeRunStatus::Indeterminate => {
-            return Err("cannot commit a nonterminal intelligence observation".into());
-        }
-    };
-    let receipt = owner
-        .run_observe_terminal(
-            binding.run_id.clone(),
-            expected_revision,
-            phase,
-            /*terminal_observed*/ true,
-        )
-        .await?;
-    if receipt.phase != phase
-        || !receipt.terminal_observed
-        || receipt.context_digest.as_deref() != Some(binding.context_digest.as_str())
-        || receipt.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
-    {
-        return Err("Agentd terminal receipt lost the intelligence handoff binding".into());
-    }
-    Ok(())
-}
-
 async fn verify_owner_health(
     output: &mut NativeRunOutput,
     health: impl Future<Output = std::result::Result<HealthSnapshot, AgentdError>>,
@@ -1439,11 +1390,15 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
+            adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server output witness: {error}"))?;
             projection.append_delta(&delta.item_id, &delta.delta)?;
         }
         ServerNotification::ItemCompleted(completed)
             if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
         {
+            adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server output witness: {error}"))?;
             if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
                 projection.complete_item(id, text)?;
             }
@@ -1451,6 +1406,8 @@ fn observe_event(
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
+            adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server usage witness: {error}"))?;
             let observed_tokens = u64::try_from(usage.token_usage.total.output_tokens)
                 .map_err(|_| "invalid negative provider usage".to_string())?;
             if output
