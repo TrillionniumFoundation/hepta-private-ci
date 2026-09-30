@@ -5,10 +5,12 @@
 //! Fleet-owned resource lease. It does not schedule work, mint resource
 //! authority, mutate Fleet state, or reinterpret a committed TaskFlow history.
 
+use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::Row;
+use sqlx::SqlitePool;
 
 use crate::AutomationStore;
 use crate::TaskFlowError;
@@ -391,20 +393,21 @@ impl AutomationStore {
 }
 
 pub(crate) async fn verify_circuit_runtime_store(
-    store: &AutomationStore,
+    pool: &SqlitePool,
+    owner_agent_id: &AgentId,
 ) -> Result<(), TaskFlowError> {
     let foreign_activations: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM taskflow_circuit_activations WHERE owner_agent_id != ?",
     )
-    .bind(store.taskflow_owner_agent_id().as_str())
-    .fetch_one(store.taskflow_pool())
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
     .await
     .map_err(|_| TaskFlowError::Unavailable)?;
     let foreign_choices: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM taskflow_circuit_choices WHERE owner_agent_id != ?",
     )
-    .bind(store.taskflow_owner_agent_id().as_str())
-    .fetch_one(store.taskflow_pool())
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
     .await
     .map_err(|_| TaskFlowError::Unavailable)?;
     if foreign_activations != 0 || foreign_choices != 0 {
