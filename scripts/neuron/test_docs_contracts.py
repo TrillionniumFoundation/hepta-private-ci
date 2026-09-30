@@ -32,7 +32,10 @@ class NeuronDocumentationContractTests(unittest.TestCase):
         compatibility = json.loads(
             (DOCS / "IMPLEMENTATION_MAP.json").read_text(encoding="utf-8")
         )
-        self.assertEqual(generated["generatedFrom"], "docs/modules/neuron.runtime/MODULE_SPEC.json")
+        self.assertEqual(
+            generated["generatedFrom"],
+            "docs/modules/neuron.runtime/MODULE_SPEC.json",
+        )
         self.assertEqual(compatibility["status"], "compatibility-pointer")
         self.assertEqual(compatibility["sourceOfTruth"], "MODULE_SPEC.json")
         self.assertEqual(
@@ -44,6 +47,26 @@ class NeuronDocumentationContractTests(unittest.TestCase):
                 "canonicalGeneratedMap",
                 "note",
             },
+        )
+        documents = {item["path"] for item in spec["documents"]}
+        self.assertIn(
+            "docs/modules/neuron.runtime/V2_SECURITY_BOUNDARY.md",
+            documents,
+        )
+        self.assertIn(
+            "docs/modules/neuron.runtime/V3_SEGMENT_MANIFEST.md",
+            documents,
+        )
+        operation_states = {
+            item["id"]: item["state"] for item in spec["operations"]
+        }
+        self.assertEqual(
+            operation_states["target_host_product_evidence"],
+            "source_implemented_external_receipt_validator_no_target_host_receipt_and_no_activation",
+        )
+        self.assertEqual(
+            operation_states["v3_segment_manifest_contract"],
+            "design_and_validator_implemented_not_runtime_selected_not_migrated",
         )
         self.assertFalse(spec["claimBoundary"]["productionActivation"])
         self.assertFalse(spec["claimBoundary"]["release"])
@@ -128,7 +151,26 @@ class NeuronDocumentationContractTests(unittest.TestCase):
         validator = (ROOT / "scripts/neuron/target_host_acceptance.py").read_text(
             encoding="utf-8"
         )
+        workflow = (
+            ROOT / ".github/workflows/neuron-runtime-target-host-acceptance.yml"
+        ).read_text(encoding="utf-8")
         self.assertIn('"productExecutionProved": True', validator)
+        self.assertIn('"productionActivation": False', validator)
+        self.assertIn('"release": False', validator)
+        self.assertIn("permissions:\n  actions: read\n  contents: read", workflow)
+        self.assertIn("persist-credentials: false", workflow)
+        self.assertNotIn("contents: write", workflow)
+
+    def test_v3_manifest_is_separate_and_non_activating(self):
+        design = (DOCS / "V3_SEGMENT_MANIFEST.md").read_text(encoding="utf-8")
+        validator = (ROOT / "scripts/neuron/segment_manifest_v3.py").read_text(
+            encoding="utf-8"
+        )
+        for identifier in ("HPTNGM03", "HPTNGS03", "HPTNGI03", "HPTNGW03"):
+            self.assertIn(identifier, design)
+            self.assertIn(identifier, validator)
+        self.assertIn("HPTNGS02", design)
+        self.assertIn('"migrationQualified": True', validator)
         self.assertIn('"productionActivation": False', validator)
         self.assertIn('"release": False', validator)
 
