@@ -29,6 +29,7 @@ mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
+pub mod learning_operator_coordinator;
 mod neuron_runtime;
 mod objective_runtime;
 mod plasticity_anchor_journal;
