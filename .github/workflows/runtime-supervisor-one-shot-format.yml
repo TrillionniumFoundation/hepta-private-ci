@@ -1,5 +1,5 @@
 name: runtime.supervisor one-shot format
-# final-candidate-restage-v3
+# final-candidate-restage-v4
 
 on:
   push:
@@ -34,7 +34,7 @@ jobs:
           printf 'RUSTUP_TOOLCHAIN=%s\n' "$channel" >> "$GITHUB_ENV"
       - name: Format exact candidate
         working-directory: codex-rs
-        run: cargo fmt --all
+        run: cargo fmt --package codex-hepta-supervisor
       - name: Bound formatting to runtime.supervisor
         run: |
           set -euo pipefail
