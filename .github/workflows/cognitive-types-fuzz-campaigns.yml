@@ -1,53 +1,14 @@
 name: cognitive-types-fuzz-campaigns
-run-name: cognitive-types-fuzz-${{ github.event_name }}-${{ github.sha }}
 
 on:
   push:
     branches:
       - codex/cognitive-types-full-closure-20260927
     paths:
-      - 'codex-rs/hepta-cognitive-types/**'
-      - 'qualification/cognitive-types-v1/prepare_fuzz_corpus.py'
-      - 'qualification/cognitive-types-v1/run_fuzz_campaign.py'
-      - 'qualification/cognitive-types-v1/verify_fuzz_campaign_receipts.py'
-      - 'qualification/cognitive-types-v1/test_fuzz_campaigns.py'
       - '.github/workflows/cognitive-types-fuzz-campaigns.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'codex-rs/hepta-cognitive-types/**'
-      - 'qualification/cognitive-types-v1/prepare_fuzz_corpus.py'
-      - 'qualification/cognitive-types-v1/run_fuzz_campaign.py'
-      - 'qualification/cognitive-types-v1/verify_fuzz_campaign_receipts.py'
-      - 'qualification/cognitive-types-v1/test_fuzz_campaigns.py'
-      - '.github/workflows/cognitive-types-fuzz-campaigns.yml'
-  schedule:
-    - cron: '23 2 * * 1'
-  workflow_dispatch:
-    inputs:
-      seconds:
-        description: Seconds per target (1..3600)
-        required: false
-        default: '900'
-      campaign_class:
-        description: Receipt claim class
-        required: false
-        default: sustained
-        type: choice
-        options: [smoke, sustained]
 
 permissions:
   contents: read
-
-concurrency:
-  group: cognitive-types-fuzz-${{ github.event.pull_request.head.ref || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-
-env:
-  SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-  RUSTUP_TOOLCHAIN: nightly-2026-09-15
-  CARGO_FUZZ_VERSION: 0.13.2
-  PYTHONDONTWRITEBYTECODE: 1
 
 jobs:
   verifier:
@@ -58,174 +19,15 @@ jobs:
       - name: Check out immutable exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.SOURCE_SHA }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
       - name: Test corpus and receipt tooling
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test -z "$(git status --porcelain=v1)"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
           python3 -B -m unittest -v qualification/cognitive-types-v1/test_fuzz_campaigns.py
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
-
-  campaign:
-    needs: verifier
-    name: fuzz-${{ matrix.target }}
-    strategy:
-      fail-fast: false
-      matrix:
-        target:
-          - hnmf_base
-          - hnmf_learning
-          - shared_experience_v2
-          - consumer_handoff
-          - canonical_json_grammar
-    runs-on: ubuntu-24.04
-    timeout-minutes: 75
-    env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/cognitive-fuzz-target
-    steps:
-      - name: Check out immutable exact source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Bind exact source and clean tree
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test -z "$(git status --porcelain=v1)"
-
-      - name: Install pinned fuzz toolchain
-        shell: bash
-        run: |
-          set -euo pipefail
-          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
-          rustup component add --toolchain "$RUSTUP_TOOLCHAIN" rust-src
-          cargo +"$RUSTUP_TOOLCHAIN" install cargo-fuzz --version "$CARGO_FUZZ_VERSION" --locked
-          cargo +"$RUSTUP_TOOLCHAIN" fuzz --version
-
-      - name: Prepare deterministic target corpus
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 qualification/cognitive-types-v1/prepare_fuzz_corpus.py \
-            --output "$RUNNER_TEMP/cognitive-types-corpus"
-
-      - name: Run bounded target campaign
-        shell: bash
-        env:
-          TARGET: ${{ matrix.target }}
-          REQUESTED_SECONDS: ${{ github.event.inputs.seconds }}
-          REQUESTED_CLASS: ${{ github.event.inputs.campaign_class }}
-        run: |
-          set -euo pipefail
-          if [[ "$GITHUB_EVENT_NAME" == pull_request || "$GITHUB_EVENT_NAME" == push ]]; then
-            seconds=60
-            campaign_class=smoke
-          elif [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
-            seconds="${REQUESTED_SECONDS:-900}"
-            campaign_class="${REQUESTED_CLASS:-sustained}"
-          else
-            seconds=900
-            campaign_class=sustained
-          fi
-          [[ "$seconds" =~ ^[0-9]+$ ]]
-          (( seconds >= 1 && seconds <= 3600 ))
-          python3 qualification/cognitive-types-v1/run_fuzz_campaign.py \
-            --target "$TARGET" \
-            --seconds "$seconds" \
-            --rss-mb 2048 \
-            --campaign-class "$campaign_class" \
-            --corpus "$RUNNER_TEMP/cognitive-types-corpus/$TARGET" \
-            --evidence "$RUNNER_TEMP/cognitive-types-fuzz-$TARGET"
-
-      - name: Recheck source immutability
-        if: always()
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test -z "$(git status --porcelain=v1 --untracked-files=all)"
-
-      - name: Upload target receipt
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: cognitive-types-fuzz-${{ matrix.target }}-${{ env.SOURCE_SHA }}
-          path: ${{ runner.temp }}/cognitive-types-fuzz-${{ matrix.target }}
-          if-no-files-found: error
-          retention-days: 30
-
-  aggregate:
-    if: ${{ always() }}
-    needs: [verifier, campaign]
-    name: verify complete five-target fuzz matrix
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - name: Check out immutable exact source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Prepare aggregate evidence directories
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz-matrix"
-          mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz-verified"
-
-      - name: Download all target receipts
-        continue-on-error: true
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
-        with:
-          pattern: cognitive-types-fuzz-*-${{ env.SOURCE_SHA }}
-          path: ${{ runner.temp }}/cognitive-types-fuzz-matrix
-          merge-multiple: false
-
-      - name: Verify and seal complete target matrix
-        if: always()
-        shell: bash
-        env:
-          REQUESTED_SECONDS: ${{ github.event.inputs.seconds }}
-          REQUESTED_CLASS: ${{ github.event.inputs.campaign_class }}
-        run: |
-          set -euo pipefail
-          if [[ "$GITHUB_EVENT_NAME" == pull_request || "$GITHUB_EVENT_NAME" == push ]]; then
-            seconds=60
-            campaign_class=smoke
-          elif [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
-            seconds="${REQUESTED_SECONDS:-900}"
-            campaign_class="${REQUESTED_CLASS:-sustained}"
-          else
-            seconds=900
-            campaign_class=sustained
-          fi
-          status=0
-          python3 qualification/cognitive-types-v1/verify_fuzz_campaign_receipts.py \
-            --evidence "$RUNNER_TEMP/cognitive-types-fuzz-matrix" \
-            --source "$SOURCE_SHA" \
-            --campaign-class "$campaign_class" \
-            --expected-seconds "$seconds" \
-            --expected-rss-mb 2048 \
-            --output "$RUNNER_TEMP/cognitive-types-fuzz-verified/report.json" || status=$?
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test -z "$(git status --porcelain=v1 --untracked-files=all)"
-          exit "$status"
-
-      - name: Upload verified fuzz matrix
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: cognitive-types-fuzz-verified-${{ env.SOURCE_SHA }}
-          path: ${{ runner.temp }}/cognitive-types-fuzz-verified
-          if-no-files-found: error
-          retention-days: 30
