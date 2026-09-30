@@ -36,4 +36,7 @@ jobs:
           go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
           "$HOME/go/bin/actionlint" -version
       - name: Lint target capacity workflow
-        run: "$HOME/go/bin/actionlint" -verbose .github/workflows/kernel-authority-target-capacity.yml
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$HOME/go/bin/actionlint" -verbose .github/workflows/kernel-authority-target-capacity.yml
