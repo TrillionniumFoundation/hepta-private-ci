@@ -168,6 +168,7 @@ jobs:
           evidence="$RUNNER_TEMP/authbus-target-evidence"
           python3 scripts/authbus-target-host-evidence.py \
             --candidate-sha "$CANDIDATE_SHA" \
+            --control-sha "$CONTROL_SHA" \
             --target-profile "$TARGET_PROFILE" \
             --receipt-dir "$evidence/receipts" \
             --output "$evidence/qualification-manifest.json"
@@ -187,6 +188,7 @@ jobs:
           target_identity="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["targetIdentity"])' "$evidence/qualification-manifest.json")"
           python3 scripts/authbus-performance-evidence.py \
             --candidate-sha "$CANDIDATE_SHA" \
+            --control-sha "$CONTROL_SHA" \
             --target-profile "$TARGET_PROFILE" \
             --expected-target-identity "$target_identity" \
             --receipt "$evidence/performance-receipt.json" \
