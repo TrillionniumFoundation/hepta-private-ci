@@ -16,6 +16,7 @@ on:
       - codex-rs/hepta-automation/**
       - codex-rs/hepta-supervisor/**
       - codex-rs/hepta-memory/**
+      - codex-rs/hepta-memory-retrieval/**
       - codex-rs/hepta-plasticity/**
       - codex-rs/hepta-intelligence/**
       - codex-rs/hepta-learning-artifacts/**
@@ -204,6 +205,7 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=no)"
 
   qualification-result:
+    name: Agentd process qualification result
     if: ${{ always() }}
     needs: [derived-projections, owner-formatting, catalog-admission, process-qualification]
     runs-on: ubuntu-24.04
