@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import base64
 import importlib.util
 import json
 from pathlib import Path
@@ -16,6 +17,7 @@ MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 SPEC.loader.exec_module(MODULE)
 
+ROOT = Path(__file__).resolve().parents[1]
 SOURCE = "1" * 40
 TREE = "2" * 40
 BASE = "3" * 40
@@ -23,6 +25,7 @@ MERGE = "4" * 40
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 RUN_ID = "12345"
 RUN_ATTEMPT = "2"
+PR_NUMBER = 1011
 
 
 def source_summary() -> dict[str, object]:
@@ -57,6 +60,96 @@ def pull_request(head: str = SOURCE) -> dict[str, object]:
         "body": "intro\n",
         "head": {"sha": head, "repo": {"full_name": REPOSITORY}},
     }
+
+
+def workflow_text(marker: str) -> str:
+    path = ROOT / MODULE.WORKFLOWS[marker]["path"]
+    return path.read_text(encoding="utf-8")
+
+
+def run_payload(marker: str) -> dict[str, object]:
+    config = MODULE.WORKFLOWS[marker]
+    return {
+        "name": config["name"],
+        "path": config["path"],
+        "event": "pull_request",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": SOURCE,
+        "run_attempt": int(RUN_ATTEMPT),
+        "head_repository": {"full_name": REPOSITORY},
+        "pull_requests": [{"number": PR_NUMBER}],
+    }
+
+
+def source_jobs(compile_result: str = "success") -> dict[str, object]:
+    config = MODULE.WORKFLOWS["source"]
+    jobs = []
+    for summary_key, job_name in config["required_jobs"].items():
+        conclusion = compile_result if summary_key == "compileDefault" else "success"
+        jobs.append(
+            {
+                "name": job_name,
+                "conclusion": conclusion,
+                "run_attempt": int(RUN_ATTEMPT),
+            }
+        )
+    qualified = compile_result == "success"
+    jobs.extend(
+        [
+            {
+                "name": config["summary_job"],
+                "conclusion": "success" if qualified else "failure",
+                "run_attempt": int(RUN_ATTEMPT),
+            },
+            {
+                "name": config["attestation_job"],
+                "conclusion": "skipped",
+                "run_attempt": int(RUN_ATTEMPT),
+            },
+        ]
+    )
+    return {"total_count": len(jobs), "jobs": jobs}
+
+
+def exact_jobs(merge_result: str = "success") -> dict[str, object]:
+    config = MODULE.WORKFLOWS["exact"]
+    jobs = [
+        {"name": "exact-head", "conclusion": "success", "run_attempt": 2},
+        {"name": "exact-merge", "conclusion": merge_result, "run_attempt": 2},
+        {
+            "name": config["summary_job"],
+            "conclusion": "success" if merge_result == "success" else "failure",
+            "run_attempt": 2,
+        },
+        {"name": config["attestation_job"], "conclusion": "skipped", "run_attempt": 2},
+    ]
+    return {"total_count": len(jobs), "jobs": jobs}
+
+
+def content_payload(marker: str, text: str | None = None) -> dict[str, object]:
+    raw = workflow_text(marker) if text is None else text
+    return {
+        "type": "file",
+        "encoding": "base64",
+        "content": base64.b64encode(raw.encode()).decode(),
+    }
+
+
+def producer_api(marker: str, *, jobs: dict[str, object] | None = None, text: str | None = None):
+    selected_jobs = jobs or (source_jobs() if marker == "source" else exact_jobs())
+
+    def request(url: str, token: str) -> dict[str, object]:
+        del token
+        if url.endswith(f"/actions/runs/{RUN_ID}"):
+            return run_payload(marker)
+        if "/jobs?" in url:
+            return selected_jobs
+        if "/contents/" in url:
+            return content_payload(marker, text)
+        raise AssertionError(f"unexpected API URL: {url}")
+
+    return request
 
 
 class TrustedReporterTests(unittest.TestCase):
@@ -102,6 +195,63 @@ class TrustedReporterTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 MODULE.find_summary(root, link.name)
 
+    def test_checked_in_candidate_workflows_satisfy_read_only_policy(self):
+        MODULE.validate_candidate_workflow_text(workflow_text("source"), "source")
+        MODULE.validate_candidate_workflow_text(workflow_text("exact"), "exact")
+
+    def test_candidate_workflow_write_permission_is_rejected(self):
+        changed = workflow_text("source").replace(
+            "permissions:\n  contents: read",
+            "permissions:\n  contents: read\n  pull-requests: write",
+            1,
+        )
+        with self.assertRaises(ValueError):
+            MODULE.validate_candidate_workflow_text(changed, "source")
+
+    def test_actual_source_run_and_jobs_are_verified(self):
+        with mock.patch.object(MODULE, "request_json", side_effect=producer_api("source")):
+            MODULE.validate_producer_run(
+                source_summary(),
+                "source",
+                REPOSITORY,
+                RUN_ID,
+                RUN_ATTEMPT,
+                SOURCE,
+                PR_NUMBER,
+                "token",
+            )
+
+    def test_forged_source_success_is_rejected_against_actual_jobs(self):
+        with mock.patch.object(
+            MODULE,
+            "request_json",
+            side_effect=producer_api("source", jobs=source_jobs("failure")),
+        ):
+            with self.assertRaises(ValueError):
+                MODULE.validate_producer_run(
+                    source_summary(),
+                    "source",
+                    REPOSITORY,
+                    RUN_ID,
+                    RUN_ATTEMPT,
+                    SOURCE,
+                    PR_NUMBER,
+                    "token",
+                )
+
+    def test_actual_exact_matrix_is_verified(self):
+        with mock.patch.object(MODULE, "request_json", side_effect=producer_api("exact")):
+            MODULE.validate_producer_run(
+                exact_summary(),
+                "exact",
+                REPOSITORY,
+                RUN_ID,
+                RUN_ATTEMPT,
+                SOURCE,
+                PR_NUMBER,
+                "token",
+            )
+
     def test_stale_workflow_run_cannot_overwrite_newer_pr_head(self):
         with mock.patch.object(
             MODULE.PR_STATUS, "request_json", return_value=pull_request("8" * 40)
@@ -111,7 +261,7 @@ class TrustedReporterTests(unittest.TestCase):
                     source_summary(),
                     "source",
                     REPOSITORY,
-                    1011,
+                    PR_NUMBER,
                     SOURCE,
                     "token",
                 )
@@ -126,7 +276,7 @@ class TrustedReporterTests(unittest.TestCase):
                 source_summary(),
                 "source",
                 REPOSITORY,
-                1011,
+                PR_NUMBER,
                 SOURCE,
                 "token",
             )

@@ -4,12 +4,15 @@
 This script must be executed from the repository default branch. Evidence from a
 candidate workflow is untrusted data: it is never imported or executed. The
 bridge accepts exactly one bounded JSON summary, validates its canonical digest
-and claim scope, binds it to the producer run and current PR head, then updates
-only the machine-owned marker block.
+and claim scope, verifies the actual producer run and job conclusions through
+the GitHub API, inspects the candidate workflow as data for the read-only
+permission contract, binds everything to the current PR head, then updates only
+the machine-owned marker block.
 """
 from __future__ import annotations
 
 import argparse
+import base64
 import importlib.util
 import json
 import os
@@ -20,6 +23,7 @@ import sys
 from types import ModuleType
 from typing import Any
 import urllib.error
+from urllib.parse import quote
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SHA1 = re.compile(r"[0-9a-f]{40}\Z")
@@ -30,6 +34,30 @@ MAX_SUMMARY_BYTES = 1024 * 1024
 SUMMARY_NAMES = {
     "source": "qualification-summary.json",
     "exact": "exact-summary.json",
+}
+WORKFLOWS: dict[str, dict[str, Any]] = {
+    "source": {
+        "name": "Hepta learning.eval convergence",
+        "path": ".github/workflows/hepta-learning-eval-convergence.yml",
+        "required_jobs": {
+            "identityRecorder": "identity-recorder",
+            "compileDefault": "compile-default",
+            "compileCompatibility": "compile-compatibility",
+            "consumerTests": "consumer-tests",
+            "faultRecoveryTests": "fault-recovery-tests",
+            "formatLint": "format-lint",
+            "coverage": "coverage",
+        },
+        "summary_job": "immutable-qualification-summary",
+        "attestation_job": "attest-source-summary",
+    },
+    "exact": {
+        "name": "Hepta learning.eval exact trees",
+        "path": ".github/workflows/hepta-learning-eval-exact.yml",
+        "matrix_jobs": ("exact-head", "exact-merge"),
+        "summary_job": "exact-matrix-summary",
+        "attestation_job": "attest-exact-summary",
+    },
 }
 JOB_RESULTS = {"success", "failure", "cancelled", "skipped"}
 MATRIX_RESULTS = JOB_RESULTS
@@ -119,6 +147,11 @@ def validate_bound_summary(
             for result in jobs.values()
         ):
             raise ValueError("source summary contains an invalid job result")
+        claims = summary.get("claims", {})
+        if claims.get("sourceInventoryVerified") != (
+            jobs.get("identityRecorder") == "success"
+        ):
+            raise ValueError("source inventory claim does not match identity job")
     else:
         EXACT.validate(summary)
         if summary.get("eventName") != "pull_request":
@@ -150,6 +183,198 @@ def validate_bound_summary(
     for key, value in expected.items():
         if workflow.get(key) != value:
             raise ValueError(f"summary workflow {key} does not match producer run")
+
+
+def request_json(url: str, token: str) -> dict[str, Any]:
+    return PR_STATUS.request_json(url, token)
+
+
+def fetch_candidate_workflow(
+    repository: str, path: str, source_sha: str, token: str
+) -> str:
+    encoded_path = quote(path, safe="/")
+    value = request_json(
+        f"https://api.github.com/repos/{repository}/contents/{encoded_path}?ref={source_sha}",
+        token,
+    )
+    if value.get("type") != "file" or value.get("encoding") != "base64":
+        raise ValueError("candidate workflow content response is not a base64 file")
+    encoded = value.get("content")
+    if not isinstance(encoded, str):
+        raise ValueError("candidate workflow content is missing")
+    try:
+        decoded = base64.b64decode(encoded, validate=False).decode("utf-8")
+    except (ValueError, UnicodeDecodeError) as error:
+        raise ValueError("candidate workflow content is not valid UTF-8 base64") from error
+    if not decoded or len(decoded.encode("utf-8")) > MAX_SUMMARY_BYTES:
+        raise ValueError("candidate workflow size is outside the allowed bound")
+    return decoded
+
+
+def validate_candidate_workflow_text(text: str, marker: str) -> None:
+    if marker not in WORKFLOWS:
+        raise ValueError("unapproved producer workflow")
+    if "\njobs:" not in text:
+        raise ValueError("candidate workflow has no jobs mapping")
+    header = text.split("\njobs:", 1)[0]
+    if re.search(r"(?m)^permissions:\s*$", header) is None:
+        raise ValueError("candidate workflow lacks explicit top-level permissions")
+    if re.search(r"(?m)^  contents:\s*read\s*$", header) is None:
+        raise ValueError("candidate workflow is not explicitly contents-read-only")
+    if "pull_request_target:" in text:
+        raise ValueError("candidate workflow must not use pull_request_target")
+    if "needs.identity-recorder.outputs.tested_sha" in text:
+        raise ValueError("candidate workflow checks out a job-output-derived ref")
+    if "hepta-learning-eval-pr-status.py" in text:
+        raise ValueError("candidate workflow performs direct privileged PR reporting")
+    for forbidden in ("secrets.", "secrets[", "secrets:", "GITHUB_TOKEN", "github.token"):
+        if forbidden in text:
+            raise ValueError(f"candidate workflow references forbidden credential surface: {forbidden}")
+
+    yaml_lines = []
+    for raw in text.splitlines():
+        content = raw.split("#", 1)[0].rstrip()
+        if content.strip():
+            yaml_lines.append(content.strip())
+    write_lines = []
+    for line in yaml_lines:
+        if re.fullmatch(r"[A-Za-z0-9_-]+:\s*write(?:-all)?", line):
+            write_lines.append(line)
+        elif line.startswith("permissions:") and re.search(r"\bwrite(?:-all)?\b", line):
+            write_lines.append(line)
+    if sorted(write_lines) != ["attestations: write", "id-token: write"]:
+        raise ValueError(f"candidate workflow has an unapproved write permission: {write_lines}")
+
+    attestation_job = WORKFLOWS[marker]["attestation_job"]
+    marker_text = f"\n  {attestation_job}:"
+    offset = text.find(marker_text)
+    if offset < 0:
+        raise ValueError("candidate workflow lacks its isolated attestation job")
+    prefix, attestation = text[:offset], text[offset:]
+    if "id-token: write" in prefix or "attestations: write" in prefix:
+        raise ValueError("candidate execution receives attestation authority")
+    if "github.event_name == 'push'" not in attestation or "github.ref == 'refs/heads/main'" not in attestation:
+        raise ValueError("attestation job is not restricted to main push")
+    if "actions/checkout@" in attestation or re.search(r"(?m)^\s+-?\s*run:\s*", attestation):
+        raise ValueError("attestation job must not checkout or execute candidate code")
+    allowed_actions = (
+        "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
+        "actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8",
+    )
+    for line in attestation.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("uses:") or stripped.startswith("- uses:"):
+            action = stripped.split("uses:", 1)[1].strip()
+            if action not in allowed_actions:
+                raise ValueError(f"attestation job uses an unapproved action: {action}")
+
+
+def job_conclusions(value: dict[str, Any], run_attempt: str) -> dict[str, str]:
+    jobs = value.get("jobs")
+    total = value.get("total_count")
+    if not isinstance(jobs, list) or not isinstance(total, int) or total != len(jobs):
+        raise ValueError("producer job inventory is incomplete or malformed")
+    conclusions: dict[str, str] = {}
+    for job in jobs:
+        if not isinstance(job, dict):
+            raise ValueError("producer job entry is malformed")
+        name = job.get("name")
+        conclusion = job.get("conclusion")
+        if not isinstance(name, str) or not isinstance(conclusion, str):
+            raise ValueError("producer job lacks a terminal name/conclusion")
+        if name in conclusions:
+            raise ValueError(f"duplicate producer job name: {name}")
+        if str(job.get("run_attempt", run_attempt)) != run_attempt:
+            raise ValueError(f"producer job belongs to another run attempt: {name}")
+        conclusions[name] = conclusion
+    return conclusions
+
+
+def validate_actual_job_results(
+    summary: dict[str, Any], marker: str, conclusions: dict[str, str]
+) -> None:
+    config = WORKFLOWS[marker]
+    allowed = {config["summary_job"], config["attestation_job"]}
+    if marker == "source":
+        required = config["required_jobs"]
+        allowed.update(required.values())
+        unexpected = sorted(set(conclusions) - allowed)
+        if unexpected:
+            raise ValueError(f"producer run contains unapproved jobs: {unexpected}")
+        for summary_key, job_name in required.items():
+            actual = conclusions.get(job_name)
+            expected = summary["jobs"][summary_key]
+            if actual != expected:
+                raise ValueError(
+                    f"summary result for {summary_key} does not match actual job {job_name}: {expected} != {actual}"
+                )
+        qualified = bool(summary["claims"]["sourceQualifiedByThisRun"])
+        if (conclusions.get(config["summary_job"]) == "success") is not qualified:
+            raise ValueError("source summary job conclusion does not match qualification claim")
+    else:
+        matrix_jobs = set(config["matrix_jobs"])
+        allowed.update(matrix_jobs)
+        unexpected = sorted(set(conclusions) - allowed)
+        if unexpected:
+            raise ValueError(f"producer run contains unapproved jobs: {unexpected}")
+        if not matrix_jobs.issubset(conclusions):
+            raise ValueError("exact producer run lacks head or ordered-parent merge job")
+        matrix_success = all(conclusions[name] == "success" for name in matrix_jobs)
+        if (summary.get("matrixResult") == "success") is not matrix_success:
+            raise ValueError("exact matrix summary does not match actual matrix jobs")
+        if (conclusions.get(config["summary_job"]) == "success") is not matrix_success:
+            raise ValueError("exact summary job conclusion does not match matrix result")
+
+
+def validate_producer_run(
+    summary: dict[str, Any],
+    marker: str,
+    repository: str,
+    run_id: str,
+    run_attempt: str,
+    source_sha: str,
+    pull_request: int,
+    token: str,
+) -> None:
+    config = WORKFLOWS[marker]
+    run = request_json(
+        f"https://api.github.com/repos/{repository}/actions/runs/{run_id}", token
+    )
+    expected_scalars = {
+        "name": config["name"],
+        "path": config["path"],
+        "event": "pull_request",
+        "status": "completed",
+        "head_sha": source_sha,
+    }
+    for key, expected in expected_scalars.items():
+        if run.get(key) != expected:
+            raise ValueError(f"producer run {key} mismatch: {run.get(key)!r} != {expected!r}")
+    if str(run.get("run_attempt")) != run_attempt:
+        raise ValueError("producer run attempt mismatch")
+    head_repository = run.get("head_repository")
+    if not isinstance(head_repository, dict) or head_repository.get("full_name") != repository:
+        raise ValueError("producer run head repository mismatch")
+    pulls = run.get("pull_requests")
+    if (
+        not isinstance(pulls, list)
+        or len(pulls) != 1
+        or not isinstance(pulls[0], dict)
+        or pulls[0].get("number") != pull_request
+    ):
+        raise ValueError("producer run is not bound to the expected single pull request")
+
+    jobs = request_json(
+        f"https://api.github.com/repos/{repository}/actions/runs/{run_id}/jobs?filter=latest&per_page=100",
+        token,
+    )
+    conclusions = job_conclusions(jobs, run_attempt)
+    validate_actual_job_results(summary, marker, conclusions)
+
+    workflow_text = fetch_candidate_workflow(
+        repository, config["path"], source_sha, token
+    )
+    validate_candidate_workflow_text(workflow_text, marker)
 
 
 def update_current_pull_request(
@@ -212,6 +437,18 @@ def main(argv: list[str] | None = None) -> int:
             args.source_sha,
         )
         token = os.environ.get(args.token_env, "")
+        if not token:
+            raise ValueError(f"missing token environment variable: {args.token_env}")
+        validate_producer_run(
+            summary,
+            args.marker,
+            args.repository,
+            args.run_id,
+            args.run_attempt,
+            args.source_sha,
+            args.pull_request,
+            token,
+        )
         body = update_current_pull_request(
             summary,
             args.marker,
