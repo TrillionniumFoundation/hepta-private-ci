@@ -25,6 +25,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
           persist-credentials: false
       - name: Run policy, qualification, vector-contract, status, SLO, archive, source-refresh and feature regressions
         run: >-
@@ -78,6 +79,34 @@ jobs:
         run: >-
           python3 scripts/hepta_memory_retrieval_archive.py verify
           qualification/memory-retrieval/BASELINES/808b68350dc4f9d1b542803ac75a8d7e255ee836dd95de2255ad42a57b23b212/receipt.json
+      - name: Generate exact candidate seal without mutating source
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="$RUNNER_TEMP/memory-retrieval-candidate"
+          mkdir -p "$destination"
+          python3 scripts/hepta_memory_retrieval_refresh_map.py \
+            --head "$CANDIDATE_SHA" \
+            --output "$destination/IMPLEMENTATION_MAP.json" \
+            --identity-output "$destination/candidate-identity.json" \
+            --projection-output "$destination/pr-identity.md"
+          (
+            cd "$destination"
+            sha256sum \
+              IMPLEMENTATION_MAP.json \
+              candidate-identity.json \
+              pr-identity.md \
+              > SHA256SUMS
+          )
+      - name: Upload exact candidate seal
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-retrieval-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-retrieval-candidate/
+          retention-days: 90
+          if-no-files-found: error
       - name: Preserve clean source
         run: |
           git diff --check

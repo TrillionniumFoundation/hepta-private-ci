@@ -42,9 +42,10 @@ class MapRefreshTests(unittest.TestCase):
         self.write(refresh.MAP, json.dumps(self.original))
         self.commit()
 
-    def git(self, *args):
+    def git(self, *args, input_text=None):
         return subprocess.run(
             ["git", "-C", str(self.root), *args],
+            input=input_text,
             check=True,
             capture_output=True,
             text=True,
@@ -129,6 +130,66 @@ class MapRefreshTests(unittest.TestCase):
                 self.git("rev-parse", f"{candidate}:{row['path']}"),
                 row["object"],
             )
+
+    def test_stage_source_emits_fail_closed_proposal(self):
+        source = self.head
+        mapping, seal = refresh.stage(self.root, source)
+        self.assertEqual(seal["state"], "proposal")
+        self.assertEqual(seal["source_head_sha"], source)
+        self.assertIsNone(seal["candidate_head_sha"])
+        self.assertEqual(
+            seal["source_tree_sha"],
+            mapping["sourceBase"]["tree"],
+        )
+        self.assertRegex(
+            seal["implementation_map_blob_sha"],
+            r"^[0-9a-f]{40}$",
+        )
+        self.assertRegex(
+            seal["implementation_map_sha256"],
+            r"^[0-9a-f]{64}$",
+        )
+        for name in (
+            "repository_checks_satisfied",
+            "implementation_ready",
+            "production_ready",
+            "merge_ready",
+        ):
+            self.assertFalse(seal[name])
+
+    def test_stage_exact_map_only_child_emits_sealed_identity(self):
+        source = self.head
+        mapping = refresh.refresh(self.root, source)
+        self.write(refresh.MAP, json.dumps(mapping, indent=2) + "\n")
+        self.commit()
+        candidate = self.head
+
+        observed, seal = refresh.stage(self.root, candidate)
+
+        self.assertEqual(observed, mapping)
+        self.assertEqual(seal["state"], "sealed")
+        self.assertEqual(seal["source_head_sha"], source)
+        self.assertEqual(seal["candidate_head_sha"], candidate)
+        self.assertEqual(
+            seal["candidate_tree_sha"],
+            self.git("rev-parse", "HEAD^{tree}"),
+        )
+        self.assertEqual(
+            seal["implementation_map_blob_sha"],
+            self.git("rev-parse", f"HEAD:{refresh.MAP}"),
+        )
+        projection = refresh._projection(seal)
+        self.assertIn(source, projection)
+        self.assertIn(candidate, projection)
+        self.assertIn("implementation_ready = false", projection)
+
+    def test_stage_rejects_tampered_map_only_child(self):
+        mapping = refresh.refresh(self.root, self.head)
+        mapping["sourceBase"]["commit"] = "0" * 40
+        self.write(refresh.MAP, json.dumps(mapping, indent=2) + "\n")
+        self.commit()
+        with self.assertRaises(refresh.RefreshError):
+            refresh.stage(self.root, self.head)
 
     def test_untracked_file_invalidates_clean_source(self):
         self.write("untracked.txt", "work in progress")
