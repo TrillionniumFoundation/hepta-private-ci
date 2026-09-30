@@ -1,3 +1,5 @@
+#![expect(clippy::expect_used, reason = "test fixtures use explicit failure messages")]
+
 use std::fmt::Write as _;
 
 use codex_hepta_contracts::Sha256Digest;
