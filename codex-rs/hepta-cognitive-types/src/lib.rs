@@ -15,6 +15,7 @@ pub mod hnmf;
 pub mod hnmf_learning;
 pub mod lane_c;
 pub mod shared_experience;
+pub mod shared_experience_context;
 mod shared_wire;
 pub mod transitions;
 pub mod wire;
@@ -267,6 +268,9 @@ mod consumer_tests;
 #[cfg(test)]
 #[path = "hardening_tests.rs"]
 mod hardening_tests;
+
+#[cfg(test)]
+mod shared_experience_context_tests;
 
 #[cfg(test)]
 mod shared_experience_tests;
