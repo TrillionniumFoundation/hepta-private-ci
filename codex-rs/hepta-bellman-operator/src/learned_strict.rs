@@ -15,11 +15,28 @@ use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorPredictionV1;
+use crate::WorkControlV1;
 use crate::fit_tabular_operator;
+use crate::fit_tabular_operator_controlled_v3;
 
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,
 ) -> Result<TabularOperatorArtifactV1, StrictLearnedOperatorError> {
+    reject_duplicate_evidence(&plan)?;
+    Ok(fit_tabular_operator(plan)?)
+}
+
+pub fn fit_tabular_operator_strict_controlled_v3(
+    plan: TabularOperatorPlanV1,
+    control: &WorkControlV1,
+) -> Result<TabularOperatorArtifactV1, StrictLearnedOperatorError> {
+    reject_duplicate_evidence(&plan)?;
+    Ok(fit_tabular_operator_controlled_v3(plan, control)?)
+}
+
+fn reject_duplicate_evidence(
+    plan: &TabularOperatorPlanV1,
+) -> Result<(), StrictLearnedOperatorError> {
     let mut evidence = plan
         .samples
         .iter()
@@ -32,7 +49,7 @@ pub fn fit_tabular_operator_strict_v2(
     {
         return Err(StrictLearnedOperatorError::DuplicateEvidence);
     }
-    Ok(fit_tabular_operator(plan)?)
+    Ok(())
 }
 
 pub fn predict_tabular_operator_indexed_v2(
@@ -154,6 +171,18 @@ mod tests {
             fit_tabular_operator_strict_v2(duplicate),
             Err(StrictLearnedOperatorError::DuplicateEvidence)
         );
+    }
+
+    #[test]
+    fn op_05_controlled_fit_honors_cancellation() {
+        let (control, cancellation) = crate::WorkControlV1::new(1_000, 100).unwrap();
+        cancellation.cancel();
+        assert!(matches!(
+            fit_tabular_operator_strict_controlled_v3(plan(), &control),
+            Err(StrictLearnedOperatorError::Learned(
+                LearnedOperatorError::WorkControl(crate::WorkControlError::Cancelled)
+            ))
+        ));
     }
 
     #[test]
