@@ -1,0 +1,64 @@
+name: channel.matrix real transport evidence
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact current main SHA to execute
+        required: true
+      reason:
+        description: Bounded operator reason
+        required: true
+        default: runtime-matrix
+
+permissions:
+  contents: read
+
+concurrency:
+  group: channel-matrix-real-transport
+  cancel-in-progress: false
+
+jobs:
+  real-synapse:
+    name: Real encrypted Synapse evidence
+    runs-on: [self-hosted, macOS, ARM64, macbook]
+    timeout-minutes: 120
+    steps:
+      - name: Require protected exact-main invocation
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          REASON: ${{ inputs.reason }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_SHA" = "$CANDIDATE_SHA"
+          test "$RUNNER_NAME" = macbook-pro
+          test "${#REASON}" -le 128
+          [[ "$REASON" =~ ^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$ ]]
+          [[ ! "/$REASON/" =~ /\.\./ ]]
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Execute pinned Matrix-compatible transport fixture
+        env:
+          ARTIFACTS: ${{ runner.temp }}/channel-matrix-real-transport
+        run: |
+          set -euo pipefail
+          mkdir -p "$ARTIFACTS"
+          bash codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh \
+            --source-root "$GITHUB_WORKSPACE" \
+            --source-mode exact \
+            --artifacts-dir "$ARTIFACTS"
+          test -f "$ARTIFACTS/runner-evidence.json"
+          test -f "$ARTIFACTS/artifact-set.json"
+          test -f "$ARTIFACTS/completion.json"
+      - name: Retain real transport evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-real-transport-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/channel-matrix-real-transport/
+          if-no-files-found: error
+          retention-days: 30

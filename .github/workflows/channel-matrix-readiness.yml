@@ -2,10 +2,11 @@ name: channel.matrix exact readiness manifest
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - codex/channel-matrix-full-closure-20260927
     paths:
-      - '.github/workflows/channel-matrix-readiness.yml'
-      - '.github/workflows/channel-matrix-preserve-unknown.yml'
+      - '.github/workflows/channel-matrix-*.yml'
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/Cargo.toml'
       - 'codex-rs/rust-toolchain.toml'

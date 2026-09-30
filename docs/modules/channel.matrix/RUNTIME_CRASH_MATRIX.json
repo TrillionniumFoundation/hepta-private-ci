@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.channel-matrix-runtime-crash-profile.v1",
+  "schemaVersion": 1,
+  "storage": {
+    "canonicalOwner": "sqlite",
+    "postgresqlRequired": false,
+    "postgresqlSubstitutionForbidden": true,
+    "reason": "MatrixDurableStore is the sole per-Agent SQLite owner; PostgreSQL evidence cannot qualify a different persistence model."
+  },
+  "transport": {
+    "target": "pinned-synapse",
+    "fixture": "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh",
+    "runnerEvidenceSchemaVersion": 3,
+    "requiresExactCandidate": true
+  },
+  "invariants": [
+    "no_duplicate_non_idempotent_effect",
+    "unknown_never_downgraded_to_not_started",
+    "stale_generation_cannot_commit",
+    "durable_and_memory_active_cannot_silently_diverge",
+    "lost_lease_token_cannot_continue",
+    "only_current_recovery_writer_progresses_after_restart",
+    "reconciliation_is_bounded_and_fair",
+    "journal_bounds_retain_required_outcome_evidence"
+  ],
+  "scenarios": [
+    {
+      "id": "pre_entry_cancel_zero_effect",
+      "evidenceClass": "native_process",
+      "oracles": ["no_transport_call", "claim_released_only_before_entry", "stable_transaction_unchanged"]
+    },
+    {
+      "id": "post_effect_pre_local_commit_ack_loss",
+      "evidenceClass": "real_synapse",
+      "oracles": ["one_remote_event", "same_transaction_retried", "fresh_grant_per_attempt", "terminal_from_sync"]
+    },
+    {
+      "id": "network_partition_restart_recovery",
+      "evidenceClass": "real_synapse",
+      "oracles": ["offline_event_admitted_once", "old_fence_rejected", "peer_remained_live"]
+    },
+    {
+      "id": "sidecar_sigkill_restart_recovery",
+      "evidenceClass": "real_synapse",
+      "oracles": ["killed_process_absent", "new_process_identity", "durable_cursor_reused", "event_admitted_once"]
+    },
+    {
+      "id": "agent_sigkill_peer_isolation",
+      "evidenceClass": "real_synapse",
+      "oracles": ["failed_agent_fenced", "peer_continued", "no_cross_agent_effect"]
+    },
+    {
+      "id": "lease_expiry_stale_owner",
+      "evidenceClass": "native_process",
+      "oracles": ["old_capability_rejected", "new_owner_not_mutated", "attempt_monotone"]
+    },
+    {
+      "id": "generation_rollover_stale_commit",
+      "evidenceClass": "real_synapse",
+      "oracles": ["old_generation_rejected", "new_generation_ready", "durable_matrix_identity_preserved"]
+    },
+    {
+      "id": "unknown_outcome_reconciliation",
+      "evidenceClass": "native_process_and_real_synapse",
+      "oracles": ["unknown_retained", "later_rejection_does_not_erase_unknown", "sync_reconciles_same_transaction"]
+    },
+    {
+      "id": "recovery_writer_contention",
+      "evidenceClass": "multi_process_native",
+      "oracles": ["one_current_writer", "stale_writer_rejected", "no_split_brain_progress"]
+    },
+    {
+      "id": "prefix_replay",
+      "evidenceClass": "native_process",
+      "oracles": ["cursor_gap_requires_snapshot", "replay_preserves_identity", "no_duplicate_admission"]
+    },
+    {
+      "id": "journal_bound_evidence_retention",
+      "evidenceClass": "native_process",
+      "oracles": ["bounded_journal", "unknown_evidence_retained", "no_false_failure"]
+    },
+    {
+      "id": "final_archive_tombstone",
+      "evidenceClass": "native_process",
+      "oracles": ["terminal_lineage_retained", "redaction_monotone", "tombstone_cannot_reactivate"]
+    },
+    {
+      "id": "store_transient_failure",
+      "evidenceClass": "process_fault_injection",
+      "oracles": ["writer_stops_or_retries_boundedly", "no_success_fabricated", "identity_retained"]
+    },
+    {
+      "id": "store_persistent_failure",
+      "evidenceClass": "process_fault_injection",
+      "oracles": ["owner_stops", "operator_action_required", "no_manual_evidence_deletion"]
+    },
+    {
+      "id": "post_entry_cancellation_unknown",
+      "evidenceClass": "native_process",
+      "oracles": ["entered_claim_not_released", "outcome_indeterminate", "same_transaction_reconciliation_only"]
+    },
+    {
+      "id": "encrypted_transport_dual_agent_shutdown",
+      "evidenceClass": "real_synapse",
+      "oracles": ["encrypted_rooms", "agent_isolation", "bounded_shutdown", "no_late_effect"]
+    }
+  ]
+}
