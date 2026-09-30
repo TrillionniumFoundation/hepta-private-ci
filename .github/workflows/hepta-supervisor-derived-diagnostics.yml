@@ -10,7 +10,6 @@ on:
       - "scripts/hepta-module-docs.py"
       - "scripts/hepta-lane-b-truth.py"
       - "scripts/hepta-docs.py"
-      - ".github/runtime-supervisor-stage-b-hosted.marker"
       - ".github/workflows/hepta-supervisor-derived-diagnostics.yml"
   workflow_dispatch:
 
@@ -22,8 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  derive:
-    name: Derive exact repair patch
+  verify-derived:
+    name: Verify exact-head derived parity
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -34,8 +33,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Generate candidate-bound derived files and diagnostics
-        id: derive
+      - name: Bind exact immutable candidate
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         shell: bash
@@ -43,79 +41,41 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           mkdir -p .hepta-evidence
-          tar -czf .hepta-evidence/runtime-supervisor-source.tar.gz \
-            codex-rs/hepta-supervisor \
-            docs/modules/runtime.supervisor \
-            docs/modules/MODULE_DOCS.json \
-            qualification/lane-b \
-            scripts/hepta_supervisor_ci.py \
-            scripts/hepta_supervisor_evidence.py \
-            scripts/hepta-lane-b-truth.py \
-            scripts/hepta-module-docs.py \
-            scripts/hepta-docs.py \
-            .github/workflows/hepta-supervisor-qualification.yml \
-            .github/workflows/hepta-lane-b-truth.yml
-          python3 - <<'PY'
-          import json
-          import subprocess
-          from pathlib import Path
+          {
+            printf 'tested_sha=%s\n' "$EXPECTED_SHA"
+            printf 'tested_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'parents=%s\n' "$(git show -s --format=%P HEAD)"
+          } > .hepta-evidence/identity.txt
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
 
-          path = Path("docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json")
-          value = json.loads(path.read_text(encoding="utf-8"))
-          head = subprocess.check_output(
-              ["git", "rev-parse", "HEAD"], text=True
-          ).strip()
-          tree = subprocess.check_output(
-              ["git", "rev-parse", "HEAD^{tree}"], text=True
-          ).strip()
-          observed = value.setdefault("observedAtHead", {})
-          observed["commit"] = head
-          observed["tree"] = tree
-          observed["interpretation"] = (
-              "Ephemeral CI derivation anchor for the exact checked-out candidate. "
-              "It is used only to generate and verify the retained repair patch; "
-              "the tracked implementation map remains unchanged until review."
-          )
-          path.write_text(
-              json.dumps(value, indent=2, ensure_ascii=False) + "\n",
-              encoding="utf-8",
-          )
-          PY
+      - name: Regenerate projections without publishing
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 scripts/hepta-module-docs.py refresh-derived
           python3 scripts/hepta-lane-b-truth.py generate
           python3 scripts/hepta-docs.py generate-status
           git diff --check
-          git diff --binary -- \
-            docs/modules/MODULE_DOCS.json \
-            docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json \
-            docs/STATUS.md \
-            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
-            qualification/lane-b/TEST_TRACEABILITY.json \
-            > .hepta-evidence/runtime-supervisor-derived.patch
+          git diff --binary --             docs/modules/MODULE_DOCS.json             docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json             docs/STATUS.md             qualification/lane-b/LANE_B_NATIVE_CLOSURE.md             qualification/lane-b/TEST_TRACEABILITY.json             > .hepta-evidence/runtime-supervisor-derived.patch
           git status --short > .hepta-evidence/status.txt
-          sha256sum .hepta-evidence/runtime-supervisor-derived.patch \
-            > .hepta-evidence/runtime-supervisor-derived.patch.sha256
-          test -s .hepta-evidence/runtime-supervisor-derived.patch
+          sha256sum .hepta-evidence/runtime-supervisor-derived.patch             > .hepta-evidence/runtime-supervisor-derived.patch.sha256
 
-          set +e
-          python3 scripts/hepta-module-docs.py refresh-derived --check \
-            > .hepta-evidence/module-docs.log 2>&1
-          module_docs_status=$?
-          python3 scripts/hepta-lane-b-truth.py verify \
-            > .hepta-evidence/lane-b.log 2>&1
-          lane_b_status=$?
-          python3 scripts/hepta-docs.py verify \
-            > .hepta-evidence/development-docs.log 2>&1
-          development_status=$?
-          set -e
-          printf 'module_docs=%s\nlane_b=%s\ndevelopment_docs=%s\n' \
-            "$module_docs_status" "$lane_b_status" "$development_status" \
-            > .hepta-evidence/verifier-status.txt
-          test "$module_docs_status" -eq 0
-          test "$lane_b_status" -eq 0
-          test "$development_status" -eq 0
+      - name: Verify generated truth and exact clean parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-module-docs.py refresh-derived --check             > .hepta-evidence/module-docs.log 2>&1
+          python3 scripts/hepta-lane-b-truth.py verify             > .hepta-evidence/lane-b.log 2>&1
+          python3 scripts/hepta-docs.py verify             > .hepta-evidence/development-docs.log 2>&1
+          if ! git diff --quiet --             docs/modules/MODULE_DOCS.json             docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json             docs/STATUS.md             qualification/lane-b/LANE_B_NATIVE_CLOSURE.md             qualification/lane-b/TEST_TRACEABILITY.json; then
+            echo "tracked derived truth is stale for the exact candidate" >&2
+            cat .hepta-evidence/status.txt >&2
+            exit 1
+          fi
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
 
-      - name: Retain exact patch and verifier diagnostics
+      - name: Retain exact parity diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -124,161 +84,3 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
-
-  apply-stage-b:
-    name: Apply and verify registered Stage B repair
-    if: github.event_name == 'pull_request'
-    permissions:
-      contents: write
-    runs-on: ubuntu-24.04
-    timeout-minutes: 180
-    steps:
-      - name: Check out exact PR source
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: Detect one-time repair marker
-        id: gate
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
-          if test -f .github/runtime-supervisor-stage-b-hosted.marker; then
-            echo "apply=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "apply=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Reconstruct and apply registered Stage B transformation
-        if: steps.gate.outputs.apply == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import base64
-          import bz2
-          import hashlib
-          from pathlib import Path
-
-          marker = dict(
-              line.split("=", 1)
-              for line in Path(
-                  ".github/runtime-supervisor-stage-b-hosted.marker"
-              ).read_text(encoding="utf-8").splitlines()
-              if line
-          )
-          encoded = b"".join(
-              Path(path).read_bytes()
-              for path in (
-                  ".github/runtime-supervisor-stage-b.py.bz2.b64.00",
-                  ".github/runtime-supervisor-stage-b.py.bz2.b64.01",
-              )
-          )
-          payload = bz2.decompress(base64.b64decode(encoded))
-          actual = hashlib.sha256(payload).hexdigest()
-          if actual != marker["stage_b_sha256"]:
-              raise SystemExit(f"Stage B payload digest mismatch: {actual}")
-          Path(".github/runtime-supervisor-stage-b.py").write_bytes(payload)
-          PY
-          python3 .github/runtime-supervisor-stage-b.py
-          rm .github/runtime-supervisor-stage-b.py
-          git diff --check
-
-      - name: Reject transformed paths outside runtime.supervisor
-        if: steps.gate.outputs.apply == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import subprocess
-
-          changed = []
-          for line in subprocess.check_output(
-              ["git", "status", "--porcelain=v1"], text=True
-          ).splitlines():
-              path = line[3:]
-              if " -> " in path:
-                  path = path.split(" -> ", 1)[1]
-              changed.append(path)
-          unexpected = [
-              path for path in changed
-              if path != ".github/runtime-supervisor-stage-b.py"
-              and not path.startswith("codex-rs/hepta-supervisor/")
-          ]
-          if unexpected:
-              raise SystemExit(f"unexpected transformed paths: {unexpected}")
-          if not any(path.startswith("codex-rs/hepta-supervisor/") for path in changed):
-              raise SystemExit("Stage B transformation changed no supervisor source")
-          PY
-
-      - name: Install exact repository Rust toolchain
-        if: steps.gate.outputs.apply == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
-          rustup toolchain install "$channel" --profile minimal --component rustfmt,clippy
-          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
-
-      - name: Format and execute focused restart-lineage tests
-        if: steps.gate.outputs.apply == 'true'
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --package codex-hepta-supervisor
-          cargo fmt --package codex-hepta-supervisor -- --check
-          cargo test --locked -p codex-hepta-supervisor --lib restart_lineage::tests
-          cargo test --locked -p codex-hepta-supervisor --lib \
-            main_recovery_fault_contains_owned_companion_before_returning
-
-      - name: Execute complete default and production targets
-        if: steps.gate.outputs.apply == 'true'
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-supervisor --all-targets
-          cargo test --locked -p codex-hepta-supervisor \
-            --features production-authority --all-targets
-
-      - name: Execute strict default and production lint
-        if: steps.gate.outputs.apply == 'true'
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo clippy --locked -p codex-hepta-supervisor --all-targets -- -D warnings
-          cargo clippy --locked -p codex-hepta-supervisor --all-targets \
-            --features production-authority -- -D warnings
-
-      - name: Commit verified source and remove one-time routing
-        if: steps.gate.outputs.apply == 'true'
-        env:
-          BRANCH: fix/runtime-supervisor-remediation-20260927
-          ORIGINAL: a316936ab949d4b4fc2d732e1352a9845ac35348
-        shell: bash
-        run: |
-          set -euo pipefail
-          remote="$(git ls-remote origin "refs/heads/${BRANCH}" | awk '{print $1}')"
-          test "$remote" = "$(git rev-parse HEAD)"
-          git checkout "$ORIGINAL" -- \
-            .github/workflows/hepta-supervisor-derived-diagnostics.yml \
-            .github/workflows/hepta-supervisor-stage-ab-apply.yml
-          rm -f .github/runtime-supervisor-stage-b-hosted.marker
-          rm -f .github/workflows/hepta-supervisor-stage-b-hosted.yml
-          git diff --check
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A \
-            codex-rs/hepta-supervisor \
-            .github/runtime-supervisor-stage-b-hosted.marker \
-            .github/workflows/hepta-supervisor-stage-b-hosted.yml \
-            .github/workflows/hepta-supervisor-derived-diagnostics.yml \
-            .github/workflows/hepta-supervisor-stage-ab-apply.yml
-          git diff --cached --quiet && { echo "no verified changes"; exit 1; }
-          git commit -m "runtime.supervisor: bind durable restart lineage"
-          git push origin "HEAD:${BRANCH}"
