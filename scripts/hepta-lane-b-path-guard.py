@@ -197,9 +197,7 @@ def verify(root: Path = ROOT) -> int:
     need(isinstance(registered, list) and registered, "registered module owners")
     need(
         all(
-            isinstance(entry, dict)
-            and isinstance(entry.get("id"), str)
-            and entry["id"]
+            isinstance(entry, dict) and isinstance(entry.get("id"), str) and entry["id"]
             for entry in registered
         ),
         "registered module owner identity",
@@ -236,7 +234,9 @@ def verify(root: Path = ROOT) -> int:
                             root, owner_modules[delegated_owner]
                         )
                     except (KeyError, TypeError, ValueError) as exc:
-                        raise Invalid(f"{module}: invalid delegated owner roots") from exc
+                        raise Invalid(
+                            f"{module}: invalid delegated owner roots"
+                        ) from exc
                     need(resolved_roots, f"{module}: missing delegated owner roots")
                     for owner_root in resolved_roots:
                         canonical_path(
