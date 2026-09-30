@@ -28,7 +28,7 @@ FAMILIES = (
     "pinned", "closure_v2", "admission_v3", "dataset_revocation",
     "lifecycle_journal", "selection",
 )
-GATES = ("closure", "build", "clippy", "format", "inventory", "tests", "process_crash", "daemon_process", "product_process")
+GATES = ("closure", "build", "clippy", "format", "inventory", "tests", "process_crash", "host_process_crash", "withdrawal_process_crash", "daemon_process", "product_process", "ops_assets")
 MAX_REPORT = 16 * 1024 * 1024
 MAX_OUTPUT = 64 * 1024 * 1024
 RUNNER_KEYS = ("GITHUB_REPOSITORY", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB", "RUNNER_OS")
@@ -36,7 +36,11 @@ SEALED_PATHS = (MAP, "scripts/hepta_artifact_qualification.py",
                 "scripts/test_hepta_artifact_qualification.py",
                 ".github/workflows/hepta-learning-artifacts-qualification.yml",
                 "codex-rs/Cargo.toml", "codex-rs/Cargo.lock",
-                "codex-rs/.config/nextest.toml", "justfile")
+                "codex-rs/.config/nextest.toml", "justfile",
+                "scripts/hepta_learning_artifact_ops_assets.py",
+                "deploy/learning-artifacts/README.md",
+                "deploy/learning-artifacts/grafana-dashboard.json",
+                "deploy/learning-artifacts/prometheus-rules.yml")
 
 
 def canonical(value: object) -> bytes:
@@ -291,6 +295,16 @@ def qualify(root: Path, out: Path, source: str, base: str, lane: str) -> int:
             "sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion",
             "--", "--test-threads=1",
         ],
+        "host_process_crash": [
+            "cargo", "test", *package,
+            "owner_host_process_kill_reopen_matrix",
+            "--", "--test-threads=1",
+        ],
+        "withdrawal_process_crash": [
+            "cargo", "test", *package,
+            "sigkill_each_floor_boundary_reopens_only_exact_complete_records",
+            "--", "--test-threads=1",
+        ],
         "daemon_process": [
             "cargo", "test", *package,
             "--test", "artifactd_process",
@@ -301,6 +315,9 @@ def qualify(root: Path, out: Path, source: str, base: str, lane: str) -> int:
             "-p", "codex-hepta-shadow-qualification",
             "existing_artifact_owner_new_process_predictions_and_revoked_rollback",
             "--", "--test-threads=1",
+        ],
+        "ops_assets": [
+            sys.executable, "scripts/hepta_learning_artifact_ops_assets.py",
         ],
     }
     gates = {}
