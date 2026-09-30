@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bind API compile-fail and transitive source closure into the paired receipt."""
+"""Bind repository regressions and transitive source closure into the paired receipt."""
 from __future__ import annotations
 
 import argparse
@@ -17,6 +17,7 @@ import channel_matrix_evidence_v2 as policy
 import channel_matrix_pair_acceptance as base
 
 API_LABEL = "api-compile-fail"
+FOCUSED_LABEL = "focused-tests"
 REQUIRED_EXACT_PATHS = {
     ".github/workflows/channel-matrix-preserve-unknown.yml",
     ".github/workflows/channel-matrix-materialize.yml",
@@ -46,23 +47,46 @@ def _source_paths(source: dict[str, Any]) -> set[str]:
     missing = REQUIRED_EXACT_PATHS - paths
     if missing:
         raise ValueError(f"source closure misses exact paths: {sorted(missing)}")
-    missing_prefixes = [prefix for prefix in REQUIRED_PREFIXES if not any(path.startswith(prefix) for path in paths)]
+    missing_prefixes = [
+        prefix
+        for prefix in REQUIRED_PREFIXES
+        if not any(path.startswith(prefix) for path in paths)
+    ]
     if missing_prefixes:
         raise ValueError(f"source closure misses owner roots: {sorted(missing_prefixes)}")
     return paths
 
 
-def _api_receipt(directory: Path, source: dict[str, Any], inventory: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    command_name = f"{API_LABEL}.command.json"
-    log_name = f"{API_LABEL}.log"
+def _command_receipt(
+    directory: Path,
+    source: dict[str, Any],
+    inventory: dict[str, dict[str, Any]],
+    label: str,
+    arguments: list[str],
+    *,
+    require_junit: bool,
+) -> dict[str, Any]:
+    command_name = f"{label}.command.json"
+    log_name = f"{label}.log"
     if command_name not in inventory or log_name not in inventory:
-        raise ValueError("paired manifest omits API compile-fail evidence")
+        raise ValueError(f"paired manifest omits {label} evidence")
     row = base.read_object(directory / command_name)
     log = directory / log_name
+    expected_junit: dict[str, Any] | None = None
+    if require_junit:
+        junit_name = "focused-tests.junit.xml"
+        if junit_name not in inventory:
+            raise ValueError("paired manifest omits focused JUnit evidence")
+        junit = directory / junit_name
+        expected_junit = {
+            "path": junit_name,
+            "bytes": junit.stat().st_size,
+            "sha256": base.digest(junit),
+        }
     if (
         row.get("schema") != "hepta.channel-matrix-command.v1"
-        or row.get("label") != API_LABEL
-        or row.get("arguments") != policy.API_COMPILE_FAIL_COMMAND
+        or row.get("label") != label
+        or row.get("arguments") != arguments
         or row.get("workingDirectory") != "codex-rs"
         or row.get("testedSha") != source.get("testedSha")
         or row.get("sourceSnapshotSha256") != base.digest(directory / "source.json")
@@ -71,6 +95,7 @@ def _api_receipt(directory: Path, source: dict[str, Any], inventory: dict[str, d
         or row.get("completed") is not True
         or row.get("launchError") is not None
         or row.get("sourceUnchanged") is not True
+        or row.get("junit") != expected_junit
         or row.get("log")
         != {
             "path": log_name,
@@ -79,37 +104,56 @@ def _api_receipt(directory: Path, source: dict[str, Any], inventory: dict[str, d
             "withinBudget": True,
         }
     ):
-        raise ValueError("API compile-fail receipt is missing, failed or mismatched")
+        raise ValueError(f"{label} receipt is missing, failed or mismatched")
     return row
 
 
 def _extended_lane(directory_value: Path, expected_lane: str) -> dict[str, Any]:
     row = base.lane(directory_value, expected_lane)
     _source_paths(row["source"])
-    _api_receipt(row["directory"], row["source"], row["inventory"])
+    _command_receipt(
+        row["directory"],
+        row["source"],
+        row["inventory"],
+        API_LABEL,
+        policy.API_COMPILE_FAIL_COMMAND,
+        require_junit=False,
+    )
+    _command_receipt(
+        row["directory"],
+        row["source"],
+        row["inventory"],
+        FOCUSED_LABEL,
+        policy.FOCUSED_GATE_COMMAND,
+        require_junit=True,
+    )
     return row
 
 
 def paired(source_head: Path, base_merge: Path) -> dict[str, Any]:
     source = _extended_lane(source_head, "source-head")
     merge = _extended_lane(base_merge, "base-merge")
-    # Reuse the canonical cross-lane semantic checks, then bind the two added
-    # properties explicitly into a versioned receipt.
+    # Reuse the canonical cross-lane semantic checks, then bind the added
+    # source/API/repository properties explicitly into a versioned receipt.
     result = base.paired(source_head, base_merge)
-    result["schema"] = "hepta.channel-matrix-paired-qualification.v2"
+    result["schema"] = "hepta.channel-matrix-paired-qualification.v3"
     result["sourceClosurePassed"] = True
     result["apiCompileFailBoundaryPassed"] = True
+    result["repositoryRegressionSuitePassed"] = True
     result["apiCompileFailArguments"] = policy.API_COMPILE_FAIL_COMMAND
-    result["extendedLaneDigests"] = {
-        "source-head": {
-            "apiCommand": base.digest(source["directory"] / f"{API_LABEL}.command.json"),
-            "apiLog": base.digest(source["directory"] / f"{API_LABEL}.log"),
-        },
-        "base-merge": {
-            "apiCommand": base.digest(merge["directory"] / f"{API_LABEL}.command.json"),
-            "apiLog": base.digest(merge["directory"] / f"{API_LABEL}.log"),
-        },
-    }
+    result["focusedGateArguments"] = policy.FOCUSED_GATE_COMMAND
+    result["extendedLaneDigests"] = {}
+    for lane_name, lane in (("source-head", source), ("base-merge", merge)):
+        directory = lane["directory"]
+        result["extendedLaneDigests"][lane_name] = {
+            "apiCommand": base.digest(directory / f"{API_LABEL}.command.json"),
+            "apiLog": base.digest(directory / f"{API_LABEL}.log"),
+            "focusedCommand": base.digest(
+                directory / f"{FOCUSED_LABEL}.command.json"
+            ),
+            "focusedLog": base.digest(directory / f"{FOCUSED_LABEL}.log"),
+            "focusedJunit": base.digest(directory / "focused-tests.junit.xml"),
+        }
     return result
 
 
@@ -121,8 +165,15 @@ def main() -> int:
     args = parser.parse_args()
     try:
         base.write_exclusive(args.output, paired(args.source_head, args.base_merge))
-    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError, re.error) as exc:
-        parser.exit(1, f"FAIL_CHANNEL_MATRIX_PAIRED_QUALIFICATION_V2: {exc}\n")
+    except (
+        OSError,
+        ValueError,
+        KeyError,
+        TypeError,
+        json.JSONDecodeError,
+        re.error,
+    ) as exc:
+        parser.exit(1, f"FAIL_CHANNEL_MATRIX_PAIRED_QUALIFICATION_V3: {exc}\n")
     return 0
 
 

@@ -40,22 +40,33 @@ class ChannelMatrixSourcePurityTests(unittest.TestCase):
                 self.assertNotIn("push origin", text)
                 self.assertNotIn("--allow-dirty", text)
 
-    def test_exact_candidate_binds_api_compile_fail_receipts_in_both_lanes(self) -> None:
+    def test_exact_candidate_binds_api_and_complete_focused_receipts(self) -> None:
         workflow = ROOT / ".github/workflows/channel-matrix-preserve-unknown.yml"
         text = workflow.read_text(encoding="utf-8")
         labels = "compile api-compile-fail focused-tests clippy format"
+        policy = (
+            ROOT / "scripts/channel_matrix_evidence_v2.py"
+        ).read_text(encoding="utf-8")
+        focused_gate = ROOT / "scripts/channel_matrix_focused_gate.py"
 
-        # API negative proofs are now a first-class canonical command receipt,
-        # not an unstructured side log created by an ad-hoc workflow step.
+        # API negative proofs and the complete native+Python/SQLite/evidence gate
+        # are canonical command receipts in both immutable lanes.
         self.assertEqual(text.count(f"for label in {labels}; do"), 2)
         self.assertIn("scripts/channel_matrix_evidence_v2.py", text)
         self.assertIn("scripts/channel_matrix_pair_acceptance_v2.py", text)
+        self.assertIn('"focused-tests": FOCUSED_GATE_COMMAND', policy)
+        self.assertIn("channel_matrix_focused_gate.py", policy)
+        self.assertTrue(focused_gate.is_file())
         self.assertNotIn(
             "$RUNNER_TEMP/matrix-source-head/api-compile-fail.log",
             text,
         )
         self.assertNotIn(
             "$RUNNER_TEMP/matrix-base-merge/api-compile-fail.log",
+            text,
+        )
+        self.assertNotIn(
+            "python3 -m unittest discover -s scripts/tests",
             text,
         )
         self.assertNotIn(

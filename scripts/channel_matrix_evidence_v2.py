@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Closed source and API-command inventory for channel.matrix qualification.
+"""Closed source and command inventory for channel.matrix qualification.
 
-This is a thin policy overlay over channel_matrix_evidence.  It does not own a
+This is a thin policy overlay over channel_matrix_evidence. It does not own a
 second evidence format: every command and source snapshot is still emitted by
 the canonical evidence implementation and consumed by its manifest verifier.
 """
@@ -33,19 +33,29 @@ API_COMPILE_FAIL_COMMAND = [
     "codex-hepta-matrix-sdk",
     "--doc",
 ]
+FOCUSED_GATE_COMMAND = [
+    "python3",
+    "../scripts/channel_matrix_focused_gate.py",
+]
 
 # Preserve the canonical implementation and extend only its closed inventories.
 # dict.fromkeys retains deterministic order while rejecting accidental duplicate
-# source entries.  Assigning on the imported module makes every canonical helper
+# source entries. Assigning on the imported module makes every canonical helper
 # (snapshot, run, status manifest) use the same policy for this process.
 evidence.SOURCE_ROOTS = tuple(
     dict.fromkeys((*evidence.SOURCE_ROOTS, *EXTRA_SOURCE_ROOTS))
 )
 if "api-compile-fail" in evidence.COMMANDS:
     raise RuntimeError("canonical evidence already defines api-compile-fail")
+if "focused-tests" not in evidence.COMMANDS:
+    raise RuntimeError("canonical evidence lacks focused-tests")
 evidence.COMMANDS = {
     **evidence.COMMANDS,
     "api-compile-fail": API_COMPILE_FAIL_COMMAND,
+    # Keep one focused-tests receipt and one nextest JUnit artifact, but make
+    # that exact command execute both the mapped Rust set and every Matrix
+    # Python/SQLite/evidence regression.
+    "focused-tests": FOCUSED_GATE_COMMAND,
 }
 
 

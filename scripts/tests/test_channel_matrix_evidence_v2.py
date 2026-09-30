@@ -21,6 +21,16 @@ class ExtendedEvidencePolicyTests(unittest.TestCase):
             module.API_COMPILE_FAIL_COMMAND,
         )
 
+    def test_focused_gate_covers_native_and_repository_regressions(self) -> None:
+        self.assertEqual(
+            module.evidence.COMMANDS["focused-tests"],
+            module.FOCUSED_GATE_COMMAND,
+        )
+        self.assertEqual(
+            module.FOCUSED_GATE_COMMAND,
+            ["python3", "../scripts/channel_matrix_focused_gate.py"],
+        )
+
     def test_transitive_product_and_target_inputs_are_closed(self) -> None:
         roots = set(module.evidence.SOURCE_ROOTS)
         self.assertTrue(set(module.EXTRA_SOURCE_ROOTS).issubset(roots))
