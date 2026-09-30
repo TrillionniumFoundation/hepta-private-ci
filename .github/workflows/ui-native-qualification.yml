@@ -434,7 +434,7 @@ jobs:
         env:
           SUBJECT: ${{ needs.subject.result }}
           QUALIFY: ${{ needs.qualify.result }}
-          STORAGE: ${{ needs.storage-scale.result }}
+          STORAGE: ${{ needs['storage-scale'].result }}
         run: |
           set -euo pipefail
           test "$SUBJECT" = success
