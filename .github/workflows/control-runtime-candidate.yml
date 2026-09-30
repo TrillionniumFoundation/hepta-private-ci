@@ -14,6 +14,7 @@ on:
       - 'scripts/control_runtime_*'
       - '.github/workflows/control-runtime-candidate.yml'
       - '.github/workflows/control-runtime-crash-recovery.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
   workflow_dispatch:
 
 permissions:

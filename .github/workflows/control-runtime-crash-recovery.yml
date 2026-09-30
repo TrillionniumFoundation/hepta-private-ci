@@ -9,6 +9,7 @@ on:
       - 'docs/readiness/CONTROL_RUNTIME_*.md'
       - 'scripts/control_runtime_validate_state.py'
       - '.github/workflows/control-runtime-crash-recovery.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
   workflow_dispatch:
 
 permissions:
@@ -19,6 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   CARGO_INCREMENTAL: '0'
   CARGO_BUILD_JOBS: '2'
   CARGO_PROFILE_TEST_DEBUG: '0'
@@ -35,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
       - name: Record immutable candidate identity
@@ -44,6 +46,9 @@ jobs:
           set -euo pipefail
           evidence="$RUNNER_TEMP/control-runtime-recovery-evidence"
           mkdir -p "$evidence"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
           git rev-parse HEAD > "$evidence/commit.txt"
           git rev-parse HEAD^{tree} > "$evidence/tree.txt"
           rustc --version > "$evidence/rustc.txt"
@@ -64,21 +69,21 @@ jobs:
         run: cargo fmt -p codex-hepta-control-plane -- --check
       - name: Full control-plane regression suite
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-control-plane
+        run: cargo test --locked -p codex-hepta-control-plane
       - name: Abnormal process and restore regressions
         working-directory: codex-rs
         run: >-
-          just test --locked -p codex-hepta-control-plane
+          cargo test --locked -p codex-hepta-control-plane
           --test planner_store_process_recovery -- --nocapture
       - name: Durable execution hardening regressions
         working-directory: codex-rs
         run: >-
-          just test --locked -p codex-hepta-control-plane
+          cargo test --locked -p codex-hepta-control-plane
           --test planner_durable_hardening -- --nocapture
       - name: Fanout evidence and continuation regressions
         working-directory: codex-rs
         run: >-
-          just test --locked -p codex-hepta-control-plane
+          cargo test --locked -p codex-hepta-control-plane
           --test organ_fanout_receipts -- --nocapture
       - name: All-target compilation
         working-directory: codex-rs
@@ -102,7 +107,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: control-runtime-recovery-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.os }}
+          name: control-runtime-recovery-${{ env.SOURCE_SHA }}-${{ matrix.os }}
           path: ${{ runner.temp }}/control-runtime-recovery-evidence
           if-no-files-found: error
           retention-days: 30
