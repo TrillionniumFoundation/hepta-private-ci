@@ -155,11 +155,15 @@ def verify_source() -> None:
         "issue_world_model_final_use_capability_v1",
         "fit_tabular_final_use_v1",
         "fit_world_model_final_use_v1",
-        "owner.revalidate_dataset_snapshot",
         "durable owner currentness changed at final use",
         "selection is stale or bound to another candidate/currentness epoch",
     ):
         require(token in final_use, f"final-use source missing {token!r}")
+    require(
+        re.search(r"owner\s*\.\s*revalidate_dataset_snapshot\s*\(", final_use)
+        is not None,
+        "final-use source missing durable owner snapshot revalidation",
+    )
     for capability in (
         "OpaquePinnedTabularArtifactV1",
         "OpaquePinnedWorldModelV1",
