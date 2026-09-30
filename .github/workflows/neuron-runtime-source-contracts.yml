@@ -52,7 +52,10 @@ jobs:
           test ! -e scripts/neuron_runtime_apply_gate_repair.sh
           test ! -e .github/workflows/neuron-runtime-gate-fix-once.yml
           test ! -e .github/workflows/neuron-runtime-product-materialize-once.yml
-          if grep -R --line-number --fixed-strings 'contents: write' \
+          # Construct the forbidden permission spelling at runtime so this
+          # read-only guard does not match its own workflow source.
+          forbidden='contents: w''rite'
+          if grep -R --line-number --fixed-strings "$forbidden" \
             .github/workflows/*neuron*.yml; then
             echo 'mutable Neuron workflow remains' >&2
             exit 1
