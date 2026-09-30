@@ -15,6 +15,7 @@ fn config() -> Config {
         trust_directory: "/var/lib/hepta-model-trust".into(),
         revocations_file: "/var/lib/hepta-model/revocations.json".into(),
         cgroup_root: "/sys/fs/cgroup/hepta-model-test".into(),
+        fleet_database: "/var/lib/hepta-model/fleet/state/fleet-resources.sqlite3".into(),
         allowed_subject_ids: BTreeSet::from(["00000000-0000-4000-8000-000000000001".into()]),
         allowed_executable_sha256: BTreeSet::from(["a".repeat(64)]),
         grant_lifetime_ms: 30_000,
@@ -93,15 +94,11 @@ fn actual_signed_ordinary_grant_is_exact_one_use_and_cannot_change_destination()
         cgroup_inode: 1,
         executable_sha256: "a".repeat(64),
     };
-    let issuer = Issuer {
-        config: config(),
-        signer,
-        clock: Arc::new(SystemAuthorityClock),
-        authority: authority.clone(),
-    };
+    let config = config();
+    let clock = SystemAuthorityClock;
     let binding = FinalUseBinding {
         subject_id: subject,
-        destination_id: "provider:codex-app-server".into(),
+        destination_id: "codex-app-server:42".into(),
         request_sha256: [1; 32],
         scope_sha256: [2; 32],
         payload_sha256: [3; 32],
@@ -111,24 +108,37 @@ fn actual_signed_ordinary_grant_is_exact_one_use_and_cannot_change_destination()
         operation: MODEL_ISSUER_OPERATION.into(),
         binding: binding.clone(),
     };
-    let signed = issuer.sign(request(), &peer, &head)?;
+    let signed = Issuer::sign(&config, &signer, &clock, request(), &peer, &head)?;
     authority.claim(&signed, &binding)?.enter(&binding)?;
     assert!(authority.claim(&signed, &binding).is_err());
     let mut other = request();
     other.binding.destination_id = "self-iteration.acceptance".into();
-    assert!(issuer.sign(other, &peer, &head).is_err());
+    assert!(Issuer::sign(&config, &signer, &clock, other, &peer, &head).is_err());
+    for destination in [
+        "provider:codex-app-server",
+        "codex-app-server:0",
+        "codex-app-server:042",
+        "codex-app-server:+42",
+        "codex-app-server:42/other",
+    ] {
+        let mut other = request();
+        other.binding.destination_id = destination.into();
+        assert!(Issuer::sign(&config, &signer, &clock, other, &peer, &head).is_err());
+    }
     let mut other = request();
     other.binding.subject_id = "different-agent".into();
-    assert!(issuer.sign(other, &peer, &head).is_err());
+    assert!(Issuer::sign(&config, &signer, &clock, other, &peer, &head).is_err());
     let mut other = request();
     other.operation = "self-iteration.acceptance".into();
-    assert!(issuer.sign(other, &peer, &head).is_err());
+    assert!(Issuer::sign(&config, &signer, &clock, other, &peer, &head).is_err());
     let mut other = request();
     other.binding.payload_sha256 = [0; 32];
-    assert!(issuer.sign(other, &peer, &head).is_err());
+    assert!(Issuer::sign(&config, &signer, &clock, other, &peer, &head).is_err());
     assert_ne!(
         signed.grant.nonce,
-        issuer.sign(request(), &peer, &head)?.grant.nonce
+        Issuer::sign(&config, &signer, &clock, request(), &peer, &head)?
+            .grant
+            .nonce
     );
     Ok(())
 }

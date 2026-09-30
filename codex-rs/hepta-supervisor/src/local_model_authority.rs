@@ -25,6 +25,8 @@ use codex_hepta_contracts::MODEL_ISSUER_SCHEMA_VERSION;
 use codex_hepta_contracts::ModelIssuerRequest;
 use codex_hepta_contracts::ModelIssuerResponse;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_fleet::FleetExecutionVerifier;
+use codex_hepta_fleet::FleetProcessBinding;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use serde::Deserialize;
@@ -58,6 +60,7 @@ struct Config {
     trust_directory: PathBuf,
     revocations_file: PathBuf,
     cgroup_root: PathBuf,
+    fleet_database: PathBuf,
     allowed_subject_ids: BTreeSet<String>,
     allowed_executable_sha256: BTreeSet<String>,
     grant_lifetime_ms: u64,
@@ -78,6 +81,7 @@ impl Config {
             &self.trust_directory,
             &self.revocations_file,
             &self.cgroup_root,
+            &self.fleet_database,
         ] {
             anyhow::ensure!(
                 path.is_absolute()
@@ -167,12 +171,20 @@ fn read_proc(pid: u32, name: &str) -> anyhow::Result<String> {
     Ok(value.trim_end().to_string())
 }
 
-fn capture_peer(config: &Config, stream: &UnixStream) -> anyhow::Result<Peer> {
+async fn capture_peer(
+    config: &Config,
+    verifier: &FleetExecutionVerifier,
+    stream: &UnixStream,
+) -> anyhow::Result<Peer> {
     let credentials = stream.peer_cred()?;
     let pid = credentials
         .pid()
         .and_then(|value| u32::try_from(value).ok())
         .context("model caller omitted Linux PID")?;
+    anyhow::ensure!(
+        std::fs::metadata(format!("/proc/{pid}/stat"))?.uid() == 0,
+        "model caller permits same-UID process inspection or injection"
+    );
     let cgroup = read_proc(pid, "cgroup")?;
     let subject = config.admitted_subject(credentials.uid(), &cgroup)?;
     let relative = cgroup
@@ -220,6 +232,31 @@ fn capture_peer(config: &Config, stream: &UnixStream) -> anyhow::Result<Peer> {
             .contains(&executable_sha256),
         "unenrolled model caller executable"
     );
+    let execution = directory
+        .file_name()
+        .and_then(|value| value.to_str())
+        .and_then(|value| value.strip_prefix("main-"))
+        .context("missing Fleet main execution identity")?;
+    loop {
+        match verifier
+            .verify_bound_local_process(execution, &subject, pid)
+            .await?
+        {
+            FleetProcessBinding::Bound(context) => {
+                anyhow::ensure!(
+                    context.containment == relative,
+                    "model caller containment differs from its Fleet hold"
+                );
+                break;
+            }
+            FleetProcessBinding::PendingBinding => {
+                // Spawn initialization may precede the parent's PID commit.
+                // The enclosing request deadline bounds this wait; admission
+                // requires the same existing owner record to become Bound.
+                tokio::time::sleep(Duration::from_millis(20)).await;
+            }
+        }
+    }
     Ok(Peer {
         pid,
         start_ticks,
@@ -236,6 +273,7 @@ struct Issuer {
     signer: SigningKey,
     clock: Arc<dyn AuthorityClock>,
     authority: FinalUseAuthority,
+    verifier: FleetExecutionVerifier,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -357,7 +395,9 @@ impl Issuer {
     }
 
     fn sign(
-        &self,
+        config: &Config,
+        signer: &SigningKey,
+        clock: &dyn AuthorityClock,
         request: ModelIssuerRequest,
         peer: &Peer,
         head: &FinalUseRevocations,
@@ -368,36 +408,42 @@ impl Issuer {
             "unsupported ordinary model operation"
         );
         anyhow::ensure!(
-            request.binding.subject_id == peer.subject
-                && request.binding.destination_id == "provider:codex-app-server",
+            request.binding.subject_id == peer.subject,
             "model binding does not match enrolled peer"
         );
-        let now = self.clock.now_unix_ms()?;
+        let connection = request
+            .binding
+            .destination_id
+            .strip_prefix("codex-app-server:")
+            .context("model destination is not an App Server connection")?
+            .parse::<u64>()?;
+        anyhow::ensure!(
+            connection > 0
+                && request.binding.destination_id == format!("codex-app-server:{connection}"),
+            "model destination does not identify a canonical connection"
+        );
+        let now = clock.now_unix_ms()?;
         let mut nonce = [0_u8; 32];
         nonce[..16].copy_from_slice(uuid::Uuid::new_v4().as_bytes());
         nonce[16..].copy_from_slice(uuid::Uuid::new_v4().as_bytes());
         let grant = FinalUseGrant {
             schema_version: 1,
-            signer_id: self.config.signer_id.clone(),
+            signer_id: config.signer_id.clone(),
             authority_epoch: head.authority_epoch,
             grant_id: format!("model-{}", uuid::Uuid::new_v4()),
             nonce,
             binding: request.binding,
             not_before_unix_ms: now,
             expires_at_unix_ms: now
-                .checked_add(self.config.grant_lifetime_ms)
+                .checked_add(config.grant_lifetime_ms)
                 .context("model grant time overflow")?,
         };
-        let signature = self
-            .signer
-            .sign(&grant.signing_bytes()?)
-            .to_bytes()
-            .to_vec();
+        let signature = signer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
         Ok(SignedFinalUseGrant { grant, signature })
     }
 
     async fn exchange(&self, mut stream: UnixStream) -> anyhow::Result<()> {
-        let peer = capture_peer(&self.config, &stream)?;
+        let peer = capture_peer(&self.config, &self.verifier, &stream).await?;
         let mut length = [0_u8; 4];
         stream.read_exact(&mut length).await?;
         let length = usize::try_from(u32::from_be_bytes(length))?;
@@ -411,7 +457,7 @@ impl Issuer {
         if let Exchange::Trust(request) = request {
             let response = self.client_trust(request, &peer)?;
             anyhow::ensure!(
-                capture_peer(&self.config, &stream)? == peer,
+                capture_peer(&self.config, &self.verifier, &stream).await? == peer,
                 "model caller identity changed during trust mutation"
             );
             let bytes = serde_json::to_vec(&response)?;
@@ -430,9 +476,16 @@ impl Issuer {
             anyhow::bail!("invalid model exchange")
         };
         let head = self.synchronize_head()?;
-        let outcome = self.sign(request, &peer, &head);
+        let outcome = Self::sign(
+            &self.config,
+            &self.signer,
+            self.clock.as_ref(),
+            request,
+            &peer,
+            &head,
+        );
         anyhow::ensure!(
-            capture_peer(&self.config, &stream)? == peer,
+            capture_peer(&self.config, &self.verifier, &stream).await? == peer,
             "model caller identity changed during issuance"
         );
         let (grant, denial_reason) = match outcome {
@@ -471,6 +524,7 @@ pub async fn run_local_model_authority(config_path: &Path) -> anyhow::Result<()>
     protected_directory(&config.state_directory)?;
     protected_directory(&config.trust_directory)?;
     protected_directory(&config.cgroup_root)?;
+    let verifier = FleetExecutionVerifier::open(&config.fleet_database).await?;
     let seed = Zeroizing::new(read_protected(&config.key_file, 32, true)?);
     let seed_bytes: Zeroizing<[u8; 32]> = Zeroizing::new(
         seed.as_slice()
@@ -558,6 +612,7 @@ pub async fn run_local_model_authority(config_path: &Path) -> anyhow::Result<()>
         signer,
         clock,
         authority,
+        verifier,
     };
     loop {
         tokio::select! {

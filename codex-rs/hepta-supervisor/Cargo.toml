@@ -25,7 +25,7 @@ production-verifier = ["production-authority"]
 # requests and receipts are checked with the same canonical contracts.
 offline-authority-tools = ["production-verifier"]
 # Explicit root-owned ordinary model issuer; never independent qualification.
-local-model-authority = []
+local-model-authority = ["codex-hepta-fleet/durable-store"]
 
 [[bin]]
 name = "hepta-supervisord"
@@ -121,6 +121,7 @@ uuid = { workspace = true, features = ["v4"] }
 zeroize = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-fleet = { workspace = true, features = ["durable-store"] }
 codex-utils-cargo-bin = { workspace = true }
 jsonschema = { version = "=0.33.0", default-features = false }
 pretty_assertions = { workspace = true }
