@@ -9,7 +9,7 @@ use crate::ObjectiveFunctionV1Error;
 use crate::ObjectiveSourceEnvelopeV1;
 use crate::ProofBearingObjectiveCompileV1;
 use crate::ValidatedAdmissionProfileV1;
-use crate::validated_admission::source_envelope_proof_digest;
+use crate::admission_proof::source_envelope_proof_digest_v1;
 
 /// Encode only an outcome that the authoritative compiler paired with its proof.
 ///
@@ -24,7 +24,7 @@ pub fn encode_proof_bearing_objective_function_v1(
 ) -> Result<ObjectiveFunctionV1Artifact, ObjectiveFunctionV1Error> {
     let proof = proof_bearing.proof();
     let outcome = proof_bearing.outcome();
-    if source_envelope_proof_digest(source)
+    if source_envelope_proof_digest_v1(source)
         .map_err(|_| ObjectiveFunctionV1Error::ProjectionMismatch("proof source structure"))?
         != proof.source_envelope_digest()
         || source.intent_digest != outcome.receipt.intent_digest
