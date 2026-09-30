@@ -9,14 +9,17 @@
 use std::error::Error as StdError;
 use std::fmt;
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 use codex_hepta_types::StableId;
 
+use super::learned::fit_tabular_operator;
+#[cfg(any(test, feature = "qualification-unverified-input"))]
+use super::learned::validate_tabular_artifact;
 use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 use crate::TabularOperatorPredictionV1;
-use crate::fit_tabular_operator;
-use crate::learned::validate_tabular_artifact;
 
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,
@@ -27,6 +30,7 @@ pub fn fit_tabular_operator_strict_v2(
     })
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 pub fn predict_tabular_operator_indexed_v2(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,

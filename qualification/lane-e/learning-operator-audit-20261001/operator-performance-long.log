@@ -1,0 +1,39 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys: 
+  - profile.learning-operator-performance.inherits
+  - profile.local.inherits
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory
+   Compiling codex-hepta-bellman-operator v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator)
+    Finished `test` profile [unoptimized] target(s) in 3.85s
+────────────
+ Nextest run ID 474bf601-3eb9-4e35-924a-5a18e6066af4 with nextest profile: learning-operator-performance
+    Starting 1 test across 1 binary (105 tests skipped)
+        SLOW [> 30.000s] codex-hepta-bellman-operator authoritative_tests::authoritative_performance_matrix_v1
+        SLOW [> 60.000s] codex-hepta-bellman-operator authoritative_tests::authoritative_performance_matrix_v1
+        SLOW [> 90.000s] codex-hepta-bellman-operator authoritative_tests::authoritative_performance_matrix_v1
+        SLOW [>120.000s] codex-hepta-bellman-operator authoritative_tests::authoritative_performance_matrix_v1
+        SLOW [>150.000s] codex-hepta-bellman-operator authoritative_tests::authoritative_performance_matrix_v1
+        SLOW [>180.000s] codex-hepta-bellman-operator authoritative_tests::authoritative_performance_matrix_v1
+        SLOW [>210.000s] codex-hepta-bellman-operator authoritative_tests::authoritative_performance_matrix_v1
+        PASS [ 210.661s] codex-hepta-bellman-operator authoritative_tests::authoritative_performance_matrix_v1
+  stdout ───
+
+    running 1 test
+    {"schema":"hepta.learning-operator-performance.v2","kind":"sensor-core","candidates":1000,"profile":"github-regression-v2","warmups":2,"observations":7,"targetHostCandidate":false,"shippingCapacityClaim":false,"hostOs":"linux","hostArch":"x86_64","cpuGovernor":"unavailable","coldMicros":34395,"medianMicros":38680,"p90Micros":44224,"maxMicros":44224,"madMicros":3019,"medianResidentBytes":4534272,"maxResidentBytes":4534272,"medianResidentDeltaBytes":0,"maxResidentDeltaBytes":8192,"processPeakResidentBytes":4534272,"cgroupPeakBytes":8598212608,"medianEstimatedBytes":708024,"maxEstimatedBytes":708024}
+    {"schema":"hepta.learning-operator-performance.v2","kind":"sensor-core","candidates":4000,"profile":"github-regression-v2","warmups":2,"observations":7,"targetHostCandidate":false,"shippingCapacityClaim":false,"hostOs":"linux","hostArch":"x86_64","cpuGovernor":"unavailable","coldMicros":160127,"medianMicros":149673,"p90Micros":168835,"maxMicros":168835,"madMicros":13442,"medianResidentBytes":5767168,"maxResidentBytes":5767168,"medianResidentDeltaBytes":434176,"maxResidentDeltaBytes":438272,"processPeakResidentBytes":5767168,"cgroupPeakBytes":8598212608,"medianEstimatedBytes":2829024,"maxEstimatedBytes":2829024}
+    {"schema":"hepta.learning-operator-performance.v2","kind":"sensor-core","candidates":8000,"profile":"github-regression-v2","warmups":2,"observations":7,"targetHostCandidate":false,"shippingCapacityClaim":false,"hostOs":"linux","hostArch":"x86_64","cpuGovernor":"unavailable","coldMicros":210773,"medianMicros":197260,"p90Micros":217949,"maxMicros":217949,"madMicros":20681,"medianResidentBytes":7913472,"maxResidentBytes":7913472,"medianResidentDeltaBytes":0,"maxResidentDeltaBytes":102400,"processPeakResidentBytes":7913472,"cgroupPeakBytes":8598212608,"medianEstimatedBytes":5657024,"maxEstimatedBytes":5657024}
+    {"schema":"hepta.learning-operator-performance.v2","kind":"sensor-core","candidates":16000,"profile":"github-regression-v2","warmups":2,"observations":7,"targetHostCandidate":false,"shippingCapacityClaim":false,"hostOs":"linux","hostArch":"x86_64","cpuGovernor":"unavailable","coldMicros":259570,"medianMicros":258483,"p90Micros":321837,"maxMicros":321837,"madMicros":5616,"medianResidentBytes":11243520,"maxResidentBytes":11247616,"medianResidentDeltaBytes":0,"maxResidentDeltaBytes":2072576,"processPeakResidentBytes":11247616,"cgroupPeakBytes":8598212608,"medianEstimatedBytes":11313024,"maxEstimatedBytes":11313024}
+    {"schema":"hepta.learning-operator-performance.v2","kind":"tabular-fit","samples":100000,"profile":"github-regression-v2","warmups":2,"observations":7,"targetHostCandidate":false,"shippingCapacityClaim":false,"hostOs":"linux","hostArch":"x86_64","cpuGovernor":"unavailable","coldMicros":1123333,"medianMicros":1140782,"p90Micros":1256457,"maxMicros":1256457,"madMicros":32546,"medianResidentBytes":46956544,"maxResidentBytes":46956544,"medianResidentDeltaBytes":4096,"maxResidentDeltaBytes":23302144,"processPeakResidentBytes":46956544,"cgroupPeakBytes":8598212608,"medianEstimatedBytes":57074828,"maxEstimatedBytes":57074828}
+    test authoritative_tests::authoritative_performance_matrix_v1 has been running for over 60 seconds
+    {"schema":"hepta.learning-operator-performance.v2","kind":"tabular-fit","samples":500000,"profile":"github-regression-v2","warmups":2,"observations":7,"targetHostCandidate":false,"shippingCapacityClaim":false,"hostOs":"linux","hostArch":"x86_64","cpuGovernor":"unavailable","coldMicros":5852365,"medianMicros":6200454,"p90Micros":7236394,"maxMicros":7236394,"madMicros":162649,"medianResidentBytes":141549568,"maxResidentBytes":141549568,"medianResidentDeltaBytes":56000512,"maxResidentDeltaBytes":56000512,"processPeakResidentBytes":183808000,"cgroupPeakBytes":8598212608,"medianEstimatedBytes":283474828,"maxEstimatedBytes":283474828}
+    {"schema":"hepta.learning-operator-performance.v2","kind":"tabular-fit","samples":1000000,"profile":"github-regression-v2","warmups":2,"observations":7,"targetHostCandidate":false,"shippingCapacityClaim":false,"hostOs":"linux","hostArch":"x86_64","cpuGovernor":"unavailable","coldMicros":12040659,"medianMicros":13071725,"p90Micros":14472718,"maxMicros":14472718,"madMicros":498373,"medianResidentBytes":250585088,"maxResidentBytes":276217856,"medianResidentDeltaBytes":112001024,"maxResidentDeltaBytes":112111616,"processPeakResidentBytes":362803200,"cgroupPeakBytes":8598212608,"medianEstimatedBytes":566474829,"maxEstimatedBytes":566474829}
+    test authoritative_tests::authoritative_performance_matrix_v1 ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 105 filtered out; finished in 210.66s
+
+
+────────────
+     Summary [ 210.666s] 1 test run: 1 passed (1 slow), 105 skipped

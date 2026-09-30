@@ -303,6 +303,7 @@ pub fn fit_tabular_operator(
     })
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 pub fn predict_tabular_operator(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,

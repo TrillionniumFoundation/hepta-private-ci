@@ -11,6 +11,15 @@ path = "junit.xml"
 [profile.local]
 inherits = "default"
 
+# Explicit opt-in measurement matrix: repeated 100K–1M fits exceed the routine
+# 60-second watchdog. This harness budget is not a product latency allowance.
+[profile.learning-operator-performance]
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0
+
+[profile.learning-operator-performance.junit]
+path = "junit.xml"
+
 [test-groups.app_server_protocol_codegen]
 max-threads = 1
 

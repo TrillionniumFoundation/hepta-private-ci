@@ -5,7 +5,9 @@
 //! Synthetic predictions remain marked as model output and never become factual
 //! outcome evidence or selection authority.
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 use std::collections::BTreeMap;
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -16,9 +18,13 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 pub(crate) const MAX_SAMPLES: usize = 65_536;
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 const MAX_STATE_ACTIONS: usize = 16_384;
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 const MAX_BRANCHES_PER_STATE_ACTION: usize = 1_024;
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 const Q32_SCALE: u64 = 1_u64 << 32;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -96,6 +102,7 @@ impl fmt::Display for WorldModelError {
 
 impl StdError for WorldModelError {}
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 #[derive(Default)]
 struct Group {
     outcome_sum: i128,
@@ -104,6 +111,7 @@ struct Group {
     sample_digests: Vec<Digest32>,
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 pub fn fit_transition_model(
     model_id: StableId,
     dataset_digest: Digest32,
@@ -209,6 +217,7 @@ pub fn fit_transition_model(
     Ok(model)
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 pub fn predict_transition(
     model: &TabularWorldModelV1,
     state_id: &StableId,
@@ -235,6 +244,7 @@ pub fn predict_transition(
     })
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 fn validate_prediction_model(model: &TabularWorldModelV1) -> Result<(), WorldModelError> {
     if model.estimates.is_empty() || model.estimates.len() > MAX_STATE_ACTIONS {
         return Err(WorldModelError::InvalidModel);
@@ -264,6 +274,7 @@ fn validate_prediction_model(model: &TabularWorldModelV1) -> Result<(), WorldMod
     Ok(())
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 fn digest_prediction_surface(model: &TabularWorldModelV1) -> Digest32 {
     let mut bytes = b"hepta.bellman-operator.world-model-inference.v1".to_vec();
     push_id(&mut bytes, &model.model_id);
@@ -286,6 +297,7 @@ fn digest_prediction_surface(model: &TabularWorldModelV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 fn exact_probabilities(
     total: u32,
     counts: BTreeMap<StableId, u32>,
@@ -345,6 +357,7 @@ fn exact_probabilities(
     Ok(branches)
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 fn digest_estimate(
     state_id: &StableId,
     action_id: &StableId,
@@ -379,6 +392,7 @@ fn digest_estimate(
     Ok(Digest32::of_bytes(&bytes))
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 fn digest_sample(sample: &WorldModelSampleV1) -> Digest32 {
     let mut bytes = b"hepta.bellman-operator.world-model-sample.v2".to_vec();
     for id in [
@@ -394,6 +408,7 @@ fn digest_sample(sample: &WorldModelSampleV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 fn round_ratio_i128(numerator: i128, denominator: i128) -> Result<i64, WorldModelError> {
     if denominator <= 0 {
         return Err(WorldModelError::Arithmetic);
@@ -414,6 +429,7 @@ fn round_ratio_i128(numerator: i128, denominator: i128) -> Result<i64, WorldMode
     i64::try_from(rounded).map_err(|_| WorldModelError::Arithmetic)
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 fn require_digest(digest: Digest32, label: &'static str) -> Result<(), WorldModelError> {
     if digest.is_zero() {
         return Err(WorldModelError::EmptyDigest(label));
@@ -421,6 +437,7 @@ fn require_digest(digest: Digest32, label: &'static str) -> Result<(), WorldMode
     Ok(())
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());

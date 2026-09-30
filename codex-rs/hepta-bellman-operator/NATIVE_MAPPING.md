@@ -7,8 +7,8 @@ policy, artifact selector or production writer.
 
 ## Compatibility and naming
 
-The original public `train(TrainingRequest)` function is retained for source
-compatibility, but it delegates to `build_targets`. Its actual behavior is a
+The historical `train(TrainingRequest)` alias is retained under the non-default
+`qualification-unverified-input` feature and delegates to `build_targets`. Its actual behavior is a
 bounded deterministic Bellman-target builder over caller-supplied continuation
 values. It does not fit a neural network or prove a complete Bellman operator.
 
@@ -33,27 +33,48 @@ requiring independent admission; do not reinterpret a V1 commitment as V2.
 The native payload magic remains `HEPTTB01`, and existing correctly pinned
 tabular bytes remain readable under current selection and revocation checks.
 
+## Default public surface
+
+Cargo uses `src/authoritative_lib.rs`, whose explicit allowlist wraps the legacy
+`src/lib.rs` implementation. Raw structural fitters, raw prediction helpers and
+direct V3 owner verification/fitting are exported only under the non-default
+`qualification-unverified-input` feature, in `compatibility`. Internal V3
+primitives support the default single-use final-use capabilities.
+
+Default read-only exports retain V1 pins/loaders for existing owner-bound
+adapters. Those values validate immutable payload identity, not current selection
+or live owner state. The evaluated Agentd ranker uses V2 pins and refreshes its
+configured authority and registry witnesses at each read.
+
 ## Design operation to Rust symbol
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
+| classify admission stage and recovery action | `OperatorAdmissionStageV1` / `ClassifyOperatorAdmissionFailure::disposition` | `src/admission.rs` | implemented; no new authority |
 | build deterministic Bellman targets | `build_targets` (`train` compatibility alias) | `src/lib.rs` | implemented |
 | validate structural smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | compatibility implemented |
 | authenticate applicability for qualification | `validate_applicability_with_signed_evidence_v2` | `src/authenticated.rs` | implemented |
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
-| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented; evidence uniqueness canonical |
-| bind frozen dataset to tabular training | `verify_tabular_operator_plan_v2` / `fit_tabular_operator_verified_v2` | `src/dataset_bound.rs` | implemented |
-| predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
-| predict a validated public tabular artifact by index | `predict_tabular_operator_indexed_v2` | `src/learned_strict.rs` | implemented; validates before lookup |
+| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | compatibility only; evidence uniqueness canonical |
+| bind frozen dataset to tabular training | `verify_tabular_operator_plan_v3` / `fit_tabular_operator_verified_v3` | `src/dataset_bound.rs` | internal final-use primitive; direct export compatibility only |
+| predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | compatibility only |
+| predict a validated public tabular artifact by index | `predict_tabular_operator_indexed_v2` | `src/learned_strict.rs` | compatibility only; validates before lookup |
 | encode and load an independently pinned tabular payload | `encode_tabular_payload_v1` / `LoadedTabularOperatorV1::from_pinned_payload` | `src/loaded.rs` | implemented; native payload only |
 | validate rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | compatibility implemented |
 | authenticate regularity for qualification | `admit_operator_regularity_with_signed_evidence_v2` | `src/authenticated.rs` | implemented |
-| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented; evidence uniqueness canonical |
-| bind frozen dataset to world-model training | `verify_world_model_dataset_v2` / `fit_transition_model_verified_v2` | `src/dataset_bound.rs` | implemented |
-| predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
+| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | compatibility only; evidence uniqueness canonical |
+| bind frozen dataset to world-model training | `verify_world_model_dataset_v3` / `fit_transition_model_verified_v3` | `src/dataset_bound.rs` | internal final-use primitive; direct export compatibility only |
+| predict supported transition distribution | `predict_transition` | `src/world_model.rs` | compatibility only |
 | freeze terminal targets from current ledger-owner facts | `freeze_terminal_cell_from_owner_v1` | `src/owner_terminal.rs` | implemented; constant-state terminal profile |
 | fit the frozen owner-derived terminal table | `fit_terminal_cell_from_owner_v1` | `src/owner_terminal.rs` | implemented; revalidates dataset at fit |
+| derive canonical training/runtime identities | `TrainingProfileV1` / `WorldModelProfileV1` | `src/profiles.rs` | default implemented |
+| issue/consume tabular final-use capability | `issue_tabular_final_use_capability_v1` / `fit_tabular_final_use_v1` | `src/final_use_hardening.rs` | default implemented; opaque single-use |
+| issue/consume world-model final-use capability | `issue_world_model_final_use_capability_v1` / `fit_world_model_final_use_v1` | `src/final_use_hardening.rs` | default implemented; opaque single-use |
+| build exact/reduced semantic sensor receipt | `build_sensor_core_qualified_v1` | `src/sensor_core_qualification.rs` | default implemented; finite-design geometry |
+| load a complete immutable tabular pin | `LoadedTabularOperatorV2::from_pinned_payload_v2` | `src/loaded.rs` | default implemented; one-time identity validation |
+| predict under the retained selection window | `SelectedTabularOperatorV1` / `OpaquePinnedWorldModelV1` | `src/final_use_selected.rs` | default selected wrappers; live owner refresh remains host-owned |
+| sequence shadow stages | `coordinate_learning_operator_shadow_v1` | `../hepta-agentd/src/learning_operator_coordinator.rs` | generic coordinator implemented; actual owner ports/runtime caller absent |
 
 ## Applicability and sensor core
 
@@ -90,7 +111,8 @@ canonical action ID. This reference is the oracle for any later learned model.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile. Duplicate underlying `evidence_digest` values are rejected by the canonical fit itself, so relabelling one observation cannot increase a cell count. `fit_tabular_operator_strict_v2` remains an additive compatibility/error surface rather than a stronger hidden trust boundary.
 
-`verify_tabular_operator_plan_v2` is the qualification ingress: it independently verifies a `DatasetSnapshotReceiptV3`, requires objective/dataset identity equality, and requires the sorted training evidence set to equal the frozen dataset's canonical `source_record_digests` exactly. Only its opaque `VerifiedTabularOperatorPlanV2` can enter `fit_tabular_operator_verified_v2`.
+`verify_tabular_operator_plan_v3` is an internal qualification primitive: it borrows the actual durable `LedgerWriter`, verifies the `DatasetSnapshotReceiptV3`, requires objective/dataset identity equality and the exact frozen source-record set, authenticates canonical row semantics, and returns a single-use opaque value. `fit_tabular_operator_verified_v3` repeats current-owner, expiry, revocation, and signer checks immediately before fitting. Default external callers use final-use capability issue/consumption; direct V3
+exports and V2 structural wrappers are compatibility inputs.
 
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
 requires a configurable positive minimum sample count for every grid cell. The
@@ -126,7 +148,7 @@ profile.
 
 ## World-model baseline
 
-`verify_world_model_dataset_v2` applies the same frozen-receipt and exact evidence-set rule to world-model rows. The compatibility `fit_transition_model` also rejects duplicate evidence globally, so a relabelled observation cannot alter transition counts, probabilities or mean outcome.
+`verify_world_model_dataset_v3` applies the owner-bound frozen-receipt, exact evidence-set, signed-row, and final-use revalidation rules to world-model rows. The compatibility `fit_transition_model` also rejects duplicate evidence globally, so a relabelled observation cannot alter transition counts, probabilities or mean outcome.
 
 `fit_transition_model` builds a deterministic action-conditioned tabular model
 from an immutable dataset. For every supported `(state, action)` it records the
@@ -164,6 +186,12 @@ The V1 applicability and regularity functions are deterministic structural valid
 
 ## Host and external obligations
 
+Repository-controlled work still includes real owner-port adapters and a named
+runtime caller for the generic shadow coordinator, plus canonical protocol wire
+adapters and their bounds/round-trip tests. Fixture-port coordinator tests and
+signed component E2E exercise distinct boundaries; they do not prove one composed
+default loop. The canonical status keeps `defaultLoopWired=false`.
+
 A production integration must still provide:
 
 1. authenticated applicability and regularity evidence;
@@ -185,7 +213,16 @@ Focused tests live in:
 - `src/lib_tests.rs`;
 - `src/reference_tests.rs`;
 - `src/learned_tests.rs`;
-- `src/world_model_tests.rs`.
+- `src/world_model_tests.rs`;
+- `src/world_model_v2_tests.rs` (exact moments, retained support, metadata integrity and input memory);
+- `src/final_use_tests.rs` (selection windows and training trust);
+- `src/final_use_hardening.rs` tests (deadline, elapsed time and final cancellation);
+- `src/owner_dataset_tests.rs` (owner-bound V3 admission and full-path profile);
+- `src/loaded_tests.rs` (immutable load and process rollback).
+
+The generic coordinator's clock, persistence, cleanup and audit scenarios live in
+`../hepta-agentd/src/learning_operator_coordinator_tests.rs`; the coordinator,
+validation, rollback and public types have separate implementation modules.
 
 The current-ledger provenance path is exercised by
 `../hepta-agentd/tests/terminal_cell_owner.rs`, including the shared-source consumer.
@@ -203,8 +240,9 @@ existing `learning.artifacts` create-only storage APIs. It does not open another
 store. The format contains model identity, generation, five digests and canonical
 sensor/action cells with sample counts, Q32 means/minima/maxima and evidence.
 All integers are big-endian; counts are bounded before allocation. The payload
-ceiling is 64 MiB, the grid is at most 262,144 cells and the existing sensor,
-action and sample bounds apply. Unknown versions, trailing/truncated bytes,
+ceiling is 64 MiB, the compatibility grid is at most 262,144 cells and can
+represent up to 1,000,000 samples. Owner-authenticated V3 admission is separately
+bounded to 4,096 signed rows and requires `sensors × actions × minimum_samples_per_cell ≤ 4096`. Unknown versions, trailing/truncated bytes,
 noncanonical or incomplete grids and invalid statistics reject.
 
 A host-selected `TabularPayloadPinV1` binds payload, original training-artifact,
@@ -233,3 +271,32 @@ holds expected payload/manifest/registry pins outside the files being inspected;
 no extra artifact store or production selection is introduced. This is executable
 cross-owner engineering qualification, not an authenticated external operator
 acceptance, future-window efficacy result or live C1 deployment.
+
+## Selection time and owner-currentness boundary
+
+`LoadedTabularOperatorV2` is an immutable once-validated predictor. The opaque
+selected tabular load produces `SelectedTabularOperatorV1`, which checks
+`selection_observed_at <= now < selection_expires_at` on load and prediction.
+The selected world model checks the same window. Tabular selection also binds
+the trust digest retained at training; a later unrelated trust snapshot cannot
+be attached to those bytes as if it had authorized the fit.
+
+These static wrappers cannot discover subsequent source withdrawal, registry
+movement, trust revocation or stop changes. The host refreshes actual owner
+witnesses immediately before every final use, and the evaluated Agentd ranker
+revalidates its currentness providers for every read. A timestamp-valid static
+token alone does not establish current owner permission.
+
+The final-use hardening layer retains one monotonic fit context from issuance.
+It checks the issuance timestamp plus actual elapsed work against the exclusive
+absolute deadline and checks cancellation before returning a completed candidate.
+Stale caller timestamps cannot extend the deadline or hide final cancellation.
+World-model admission also binds the request trust digest to the current owner
+verifier rather than attaching an unrelated trust identity.
+
+The bounded V2 world-model profile computes conditional variance from the exact
+integer moments and retains confidence precision before rounding the variance.
+Input-memory preflight counts owned identifier text and retained input capacity.
+Private fitted statistics, branch storage and full prediction metadata are checked
+against fit-owned integrity commitments before inference. These are bounded
+source correctness properties, not external calibration or efficacy evidence.

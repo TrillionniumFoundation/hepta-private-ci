@@ -183,6 +183,7 @@ def codex_rust_crate(
         crate_name,
         crate_features = [],
         crate_srcs = None,
+        crate_root = None,
         crate_edition = None,
         proc_macro = False,
         build_script_enabled = True,
@@ -225,6 +226,7 @@ def codex_rust_crate(
             with all features in this list enabled. So use sparingly, and prefer to refactor
             optional functionality to a separate crate.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
+        crate_root: Optional library root when Cargo overrides `src/lib.rs`.
         crate_edition: Rust edition override, if not default.
             You probably don't want this, it's only here for a single caller.
         proc_macro: Whether this crate builds a proc-macro library.
@@ -321,6 +323,7 @@ def codex_rust_crate(
         lib_rule(
             name = name,
             crate_name = crate_name,
+            crate_root = crate_root,
             crate_features = crate_features,
             deps = all_crate_deps() + maybe_deps + deps_extra,
             compile_data = compile_data,

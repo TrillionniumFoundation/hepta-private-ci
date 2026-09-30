@@ -6,11 +6,13 @@
 //! statistics: it is retained, not spuriously "recomputed" from the cells.
 use std::error::Error;
 use std::fmt;
+use std::sync::Arc;
 
+use super::learned::validate_tabular_artifact;
+use crate::OperatorAdmissionStageV1;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorCellV1;
 use crate::TabularOperatorPredictionV1;
-use crate::learned::validate_tabular_artifact;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -21,6 +23,9 @@ const MAGIC: &[u8; 8] = b"HEPTTB01";
 const MAX_BYTES: usize = 64 * 1024 * 1024;
 const MAX_CELLS: usize = 262_144;
 
+pub const TABULAR_ARTIFACT_SCHEMA_V1: u32 = 1;
+pub const TABULAR_PAYLOAD_SCHEMA_V1: u32 = 1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TabularPayloadPinV1 {
     pub payload_digest: Digest32,
@@ -29,6 +34,27 @@ pub struct TabularPayloadPinV1 {
     pub dataset_digest: Digest32,
     pub sensor_core_digest: Digest32,
     pub training_profile_digest: Digest32,
+    pub generation: Generation,
+}
+
+/// Complete host-selected identity for a persisted candidate. None of the
+/// runtime/trust/registry fields may be derived from the payload under review.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TabularPayloadPinV2 {
+    pub artifact_id: StableId,
+    pub producer_id: StableId,
+    pub artifact_schema_version: u32,
+    pub payload_schema_version: u32,
+    pub payload_digest: Digest32,
+    pub artifact_digest: Digest32,
+    pub objective_digest: Digest32,
+    pub dataset_digest: Digest32,
+    pub sensor_core_digest: Digest32,
+    pub training_profile_digest: Digest32,
+    pub runtime_profile_digest: Digest32,
+    pub trust_digest: Digest32,
+    pub registry_head_digest: Digest32,
+    pub authority_epoch: u64,
     pub generation: Generation,
 }
 
@@ -54,6 +80,11 @@ pub struct LoadedTabularOperatorV1 {
 }
 
 impl LoadedTabularOperatorV1 {
+    #[must_use]
+    pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        OperatorAdmissionStageV1::StructurallyValidated
+    }
+
     /// Verify a host-selected pin before decoding or permitting predictions.
     /// A pin computed from untrusted payload bytes is not independent admission.
     pub fn from_pinned_payload(
@@ -91,34 +122,168 @@ impl LoadedTabularOperatorV1 {
         Ok(Self { artifact })
     }
 
-    /// The immutable training identity, for binding an existing registry manifest.
     #[must_use]
     pub fn artifact_id(&self) -> &StableId {
         &self.artifact.artifact_id
     }
 
-    /// The immutable loaded value validates O(n log n) once, then looks up in O(log n).
+    #[must_use]
+    pub fn producer_id(&self) -> &StableId {
+        &self.artifact.producer_id
+    }
+
+    /// Validate once in O(n log n), then look up a cell in O(log n).
     pub fn predict(
         &self,
         sensor: &StableId,
         action: &StableId,
     ) -> Result<TabularOperatorPredictionV1, TabularPayloadError> {
-        let index = self
-            .artifact
-            .cells
-            .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor, action)))
-            .map_err(|_| TabularPayloadError::UnsupportedCell)?;
-        let cell = &self.artifact.cells[index];
-        Ok(TabularOperatorPredictionV1 {
-            artifact_id: self.artifact.artifact_id.clone(),
-            sensor_id: cell.sensor_id.clone(),
-            action_id: cell.action_id.clone(),
-            value: cell.mean_target,
-            cell_evidence_digest: cell.evidence_digest,
-            learned: true,
-            synthetic: true,
-            authority: AuthorityPosture::DENY_ALL,
+        predict_validated(&self.artifact, sensor, action)
+    }
+}
+
+/// Structurally validated, immutable artifact. Callers cannot obtain mutable
+/// access after validation; all predictions use the canonical sorted index.
+#[derive(Clone, Debug)]
+pub struct ValidatedTabularOperatorV1 {
+    artifact: Arc<TabularOperatorArtifactV1>,
+}
+
+impl ValidatedTabularOperatorV1 {
+    #[must_use]
+    pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        OperatorAdmissionStageV1::StructurallyValidated
+    }
+
+    #[must_use]
+    pub fn artifact_id(&self) -> &StableId {
+        &self.artifact.artifact_id
+    }
+
+    #[must_use]
+    pub fn producer_id(&self) -> &StableId {
+        &self.artifact.producer_id
+    }
+
+    pub fn predict(
+        &self,
+        sensor: &StableId,
+        action: &StableId,
+    ) -> Result<TabularOperatorPredictionV1, TabularPayloadError> {
+        predict_validated(&self.artifact, sensor, action)
+    }
+}
+
+/// Structural validation for in-memory qualification artifacts. Production
+/// loading additionally requires `LoadedTabularOperatorV2` and a complete pin.
+pub fn validate_tabular_artifact_v1(
+    artifact: TabularOperatorArtifactV1,
+) -> Result<ValidatedTabularOperatorV1, TabularPayloadError> {
+    validate_tabular_artifact(&artifact)?;
+    Ok(ValidatedTabularOperatorV1 {
+        artifact: Arc::new(artifact),
+    })
+}
+
+/// Production-oriented persisted loader retaining the complete immutable
+/// admission context alongside the validated artifact.
+#[derive(Clone, Debug)]
+pub struct LoadedTabularOperatorV2 {
+    validated: ValidatedTabularOperatorV1,
+    runtime_profile_digest: Digest32,
+    trust_digest: Digest32,
+    registry_head_digest: Digest32,
+    authority_epoch: u64,
+}
+
+impl LoadedTabularOperatorV2 {
+    #[must_use]
+    pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
+        OperatorAdmissionStageV1::ImmutableCandidate
+    }
+
+    pub fn from_pinned_payload_v2(
+        bytes: &[u8],
+        pin: &TabularPayloadPinV2,
+    ) -> Result<Self, TabularPayloadError> {
+        if bytes.len() > MAX_BYTES
+            || pin.artifact_schema_version != TABULAR_ARTIFACT_SCHEMA_V1
+            || pin.payload_schema_version != TABULAR_PAYLOAD_SCHEMA_V1
+            || pin.authority_epoch == 0
+            || [
+                pin.payload_digest,
+                pin.artifact_digest,
+                pin.objective_digest,
+                pin.dataset_digest,
+                pin.sensor_core_digest,
+                pin.training_profile_digest,
+                pin.runtime_profile_digest,
+                pin.trust_digest,
+                pin.registry_head_digest,
+            ]
+            .into_iter()
+            .any(Digest32::is_zero)
+            || Digest32::of_bytes(bytes) != pin.payload_digest
+        {
+            return Err(TabularPayloadError::Binding);
+        }
+        let artifact = decode(bytes)?;
+        if artifact.artifact_id != pin.artifact_id
+            || artifact.producer_id != pin.producer_id
+            || artifact.generation != pin.generation
+            || artifact.artifact_digest != pin.artifact_digest
+            || artifact.objective_digest != pin.objective_digest
+            || artifact.dataset_digest != pin.dataset_digest
+            || artifact.sensor_core_digest != pin.sensor_core_digest
+            || artifact.training_profile_digest != pin.training_profile_digest
+        {
+            return Err(TabularPayloadError::Binding);
+        }
+        Ok(Self {
+            validated: validate_tabular_artifact_v1(artifact)?,
+            runtime_profile_digest: pin.runtime_profile_digest,
+            trust_digest: pin.trust_digest,
+            registry_head_digest: pin.registry_head_digest,
+            authority_epoch: pin.authority_epoch,
         })
+    }
+
+    #[must_use]
+    pub fn artifact_id(&self) -> &StableId {
+        self.validated.artifact_id()
+    }
+
+    #[must_use]
+    pub fn producer_id(&self) -> &StableId {
+        self.validated.producer_id()
+    }
+
+    pub fn predict(
+        &self,
+        sensor: &StableId,
+        action: &StableId,
+    ) -> Result<TabularOperatorPredictionV1, TabularPayloadError> {
+        self.validated.predict(sensor, action)
+    }
+
+    #[must_use]
+    pub const fn runtime_profile_digest(&self) -> Digest32 {
+        self.runtime_profile_digest
+    }
+
+    #[must_use]
+    pub const fn trust_digest(&self) -> Digest32 {
+        self.trust_digest
+    }
+
+    #[must_use]
+    pub const fn registry_head_digest(&self) -> Digest32 {
+        self.registry_head_digest
+    }
+
+    #[must_use]
+    pub const fn authority_epoch(&self) -> u64 {
+        self.authority_epoch
     }
 }
 
@@ -178,6 +343,28 @@ pub fn encode_tabular_payload_v1(
     Ok(bytes)
 }
 
+fn predict_validated(
+    artifact: &TabularOperatorArtifactV1,
+    sensor: &StableId,
+    action: &StableId,
+) -> Result<TabularOperatorPredictionV1, TabularPayloadError> {
+    let index = artifact
+        .cells
+        .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor, action)))
+        .map_err(|_| TabularPayloadError::UnsupportedCell)?;
+    let cell = &artifact.cells[index];
+    Ok(TabularOperatorPredictionV1 {
+        artifact_id: artifact.artifact_id.clone(),
+        sensor_id: cell.sensor_id.clone(),
+        action_id: cell.action_id.clone(),
+        value: cell.mean_target,
+        cell_evidence_digest: cell.evidence_digest,
+        learned: true,
+        synthetic: true,
+        authority: AuthorityPosture::DENY_ALL,
+    })
+}
+
 fn put_id(bytes: &mut Vec<u8>, id: &StableId) {
     bytes.extend_from_slice(&(id.as_str().len() as u16).to_be_bytes());
     bytes.extend_from_slice(id.as_str().as_bytes());
@@ -217,7 +404,6 @@ fn decode(mut bytes: &[u8]) -> Result<TabularOperatorArtifactV1, TabularPayloadE
         *digest = Digest32::from_array(word(&mut bytes)?);
     }
     let count = u32::from_be_bytes(word(&mut bytes)?) as usize;
-    // Each cell needs at least two one-byte IDs plus numeric fields and digest.
     if count == 0 || count > MAX_CELLS || count > bytes.len() / 66 {
         return Err(TabularPayloadError::Bounds);
     }

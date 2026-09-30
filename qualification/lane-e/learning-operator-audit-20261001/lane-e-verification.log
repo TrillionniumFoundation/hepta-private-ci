@@ -1,0 +1,23 @@
+{
+  "command": "verify",
+  "findingCount": 1,
+  "findings": [
+    {
+      "code": "learning_eval_signed_surface",
+      "message": "missing required production/compatibility surface token: pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;"
+    }
+  ],
+  "ok": false,
+  "remainingIntegrationWork": {
+    "learning.artifacts": [],
+    "learning.eval": [],
+    "learning.ledger": [],
+    "learning.operator": [
+      "canonical V1 wire adapters and semantic/round-trip parity evidence",
+      "default dataset freeze verified training independent evaluation selection and new-process load shadow composition",
+      "continuous-domain geometry reconstruction and hull-based OOD if a continuous operator profile is proposed"
+    ]
+  },
+  "repositoryIntegrationComplete": false,
+  "schema": "hepta.lane-e-closure-verification.v1"
+}

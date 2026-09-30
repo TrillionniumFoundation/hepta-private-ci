@@ -193,7 +193,7 @@ fn direct_predictions_reject_malformed_and_impossible_statistics() {
             Err(LearnedOperatorError::InvalidArtifact)
         );
         assert_eq!(
-            crate::predict_tabular_operator_indexed_v2(
+            super::super::learned_strict::predict_tabular_operator_indexed_v2(
                 &malformed,
                 &id("sensor-a"),
                 &id("action-a"),
@@ -232,7 +232,11 @@ fn direct_prediction_preserves_full_range_and_ties_even_fits() {
             Ok(expected.clone())
         );
         assert_eq!(
-            crate::predict_tabular_operator_indexed_v2(&artifact, &id("sensor-a"), &id("action-a"),),
+            super::super::learned_strict::predict_tabular_operator_indexed_v2(
+                &artifact,
+                &id("sensor-a"),
+                &id("action-a"),
+            ),
             Ok(expected)
         );
     }

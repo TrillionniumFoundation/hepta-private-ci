@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.learning-operator-status.v1",
+  "title": "learning.operator canonical implementation and acceptance state",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "hepta.learning-operator-status.v1"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "module": {
+      "const": "learning.operator"
+    },
+    "canonicalStatusSource": {
+      "const": true
+    },
+    "sourceIdentityPolicy": {
+      "const": "qualification-generated-exact-source-and-deterministic-merge-readiness"
+    },
+    "defaultLoader": {
+      "const": "LoadedTabularOperatorV2"
+    },
+    "defaultLoop": {
+      "const": "coordinate_learning_operator_shadow_v1"
+    },
+    "defaultLoopWired": {
+      "type": "boolean"
+    },
+    "explicitReadConsumerComposed": {
+      "type": "boolean"
+    },
+    "freshProcessLoadInAuthoritativeGate": {
+      "type": "boolean"
+    },
+    "productShadowProtocolE2EInAuthoritativeGate": {
+      "type": "boolean"
+    },
+    "productExecutionProved": {
+      "type": "boolean"
+    },
+    "productionImplementation": {
+      "type": "boolean"
+    },
+    "productionWriterEstablished": {
+      "type": "boolean"
+    },
+    "independentScientificAcceptance": {
+      "type": "boolean"
+    },
+    "targetHostCapacityAccepted": {
+      "type": "boolean"
+    },
+    "operatorAcceptance": {
+      "type": "boolean"
+    },
+    "canaryAccepted": {
+      "type": "boolean"
+    },
+    "promotionAuthorized": {
+      "type": "boolean"
+    },
+    "activation": {
+      "type": "boolean"
+    },
+    "release": {
+      "type": "boolean"
+    },
+    "shadowCoordinatorImplemented": {
+      "type": "boolean"
+    },
+    "canonicalWireAdaptersImplemented": {
+      "type": "boolean"
+    },
+    "claimBoundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "readinessManifest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "implementationProjection": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "schema",
+    "schemaVersion",
+    "module",
+    "canonicalStatusSource",
+    "sourceIdentityPolicy",
+    "defaultLoader",
+    "defaultLoop",
+    "defaultLoopWired",
+    "explicitReadConsumerComposed",
+    "freshProcessLoadInAuthoritativeGate",
+    "productShadowProtocolE2EInAuthoritativeGate",
+    "productExecutionProved",
+    "productionImplementation",
+    "productionWriterEstablished",
+    "independentScientificAcceptance",
+    "targetHostCapacityAccepted",
+    "operatorAcceptance",
+    "canaryAccepted",
+    "promotionAuthorized",
+    "activation",
+    "release",
+    "claimBoundary",
+    "readinessManifest",
+    "implementationProjection",
+    "shadowCoordinatorImplemented",
+    "canonicalWireAdaptersImplemented"
+  ]
+}

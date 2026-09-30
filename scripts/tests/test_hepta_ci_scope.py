@@ -72,6 +72,22 @@ class ScopeTests(unittest.TestCase):
         for group in GROUPS - {"learning", "lifecycle"}:
             self.assertFalse(scope[group])
 
+    def test_learning_operator_sources_and_contracts_run_learning_only(self):
+        paths = [
+            "codex-rs/hepta-bellman-operator/src/final_use.rs",
+            "docs/modules/learning.operator/TECHNICAL.md",
+            "qualification/lane-e/LEARNING_OPERATOR_STATUS.md",
+            "scripts/hepta-learning-operator-contract.py",
+        ]
+        for path in paths:
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["learning"])
+                self.assertTrue(scope["native"])
+                self.assertFalse(scope["full_repo"])
+                for group in GROUPS - {"learning"}:
+                    self.assertFalse(scope[group])
+
     def test_registry_is_runtime_consumed_lifecycle_input(self):
         scope = select(["docs/modules/MODULES.json"])
         self.assertTrue(scope["derived"])

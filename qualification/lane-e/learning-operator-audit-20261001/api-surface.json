@@ -1,0 +1,93 @@
+{
+  "defaultCompatibilityFeatureEnabled": false,
+  "defaultDirectV3FitAllowed": false,
+  "passed": true,
+  "results": [
+    {
+      "expected": "pass",
+      "name": "default-authoritative-pass",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\n"
+    },
+    {
+      "expected": "pass",
+      "name": "feature-compatibility-pass",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "selected-load-clock",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0061]: this method takes 1 argument but 0 arguments were supplied\n  --> src/main.rs:1:125\n   |\n 1 | ...aquePinnedTabularArtifactV1) { let _ = pin.load(); } fn main() {}\n   |                                               ^^^^-- argument #1 of type `u64` is missing\n   |\nnote: method defined here\n  --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator/src/final_use_selected.rs:22:12\n   |\n22 |     pub fn load(&self, now: u64) -> Result<SelectedTabularOperatorV1, FinalUseErrorV1> {\n   |            ^^^^\nhelp: provide the argument\n   |\n 1 | use codex_hepta_bellman_operator::OpaquePinnedTabularArtifactV1; fn check(pin: OpaquePinnedTabularArtifactV1) { let _ = pin.load(/* u64 */); } fn main() {}\n   |                                                                                                                                  +++++++++\n\nFor more information about this error, try `rustc --explain E0061`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "selected-prediction-clock",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0061]: this method takes 3 arguments but 2 arguments were supplied\n  --> src/main.rs:1:168\n   |\n 1 | ...torV1, id: StableId) { let _ = model.predict(&id, &id); } fn main() {}\n   |                                         ^^^^^^^---------- argument #3 of type `u64` is missing\n   |\nnote: method defined here\n  --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator/src/final_use_selected.rs:57:12\n   |\n57 |     pub fn predict(\n   |            ^^^^^^^\nhelp: provide the argument\n   |\n 1 | use codex_hepta_bellman_operator::SelectedTabularOperatorV1; use codex_hepta_types::StableId; fn check(model: SelectedTabularOperatorV1, id: StableId) { let _ = model.predict(&id, &id, /* u64 */); } fn main() {}\n   |                                                                                                                                                                                        +++++++++++\n\nFor more information about this error, try `rustc --explain E0061`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "selected-loader-escape",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0616]: field `loaded` of struct `SelectedTabularOperatorV1` is private\n --> src/main.rs:1:121\n  |\n1 | ...heck(model: SelectedTabularOperatorV1) { let _ = model.loaded; } fn main() {}\n  |                                                           ^^^^^^ private field\n\nFor more information about this error, try `rustc --explain E0616`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "raw-fitter",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0432]: unresolved import `codex_hepta_bellman_operator::fit_tabular_operator`\n   --> src/main.rs:1:5\n    |\n  1 | use codex_hepta_bellman_operator::fit_tabular_operator; fn main() { let _ = fit_tabular_operator; }\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `fit_tabular_operator` in the root\n    |\nnote: found an item that was configured out\n   --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator/src/authoritative_lib.rs:207:24\n    |\n206 | #[cfg(feature = \"qualification-unverified-input\")]\n    |       ------------------------------------------ the item is gated behind the `qualification-unverified-input` feature\n207 | pub use compatibility::fit_tabular_operator;\n    |                        ^^^^^^^^^^^^^^^^^^^^\n\nFor more information about this error, try `rustc --explain E0432`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "bounded-raw-fitter",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0432]: unresolved import `codex_hepta_bellman_operator::fit_tabular_operator_bounded_v2`\n   --> src/main.rs:1:5\n    |\n  1 | use codex_hepta_bellman_operator::fit_tabular_operator_bounded_v2; fn main() { let _ = fit_tabular_operator_bounded_v2; }\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `fit_tabular_operator_bounded_v2` in the root\n    |\nnote: found an item that was configured out\n   --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator/src/authoritative_lib.rs:137:21\n    |\n136 | #[cfg(feature = \"qualification-unverified-input\")]\n    |       ------------------------------------------ the item is gated behind the `qualification-unverified-input` feature\n137 | pub use tabular_v2::fit_tabular_operator_bounded_v2;\n    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nFor more information about this error, try `rustc --explain E0432`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "direct-v3-tabular-verifier",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0603]: function `verify_tabular_operator_plan_v3` is private\n  --> src/main.rs:1:35\n   |\n 1 | use codex_hepta_bellman_operator::verify_tabular_operator_plan_v3; fn main() { let _ = verify_tabular_operator_plan_v3; }\n   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ private function\n   |\nnote: the function `verify_tabular_operator_plan_v3` is defined here\n  --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator/src/authoritative_lib.rs:95:16\n   |\n95 | pub(crate) use legacy::verify_tabular_operator_plan_v3;\n   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nhelp: import `verify_tabular_operator_plan_v3` directly\n   |\n 1 | use codex_hepta_bellman_operator::legacy::dataset_bound::verify_tabular_operator_plan_v3; fn main() { let _ = verify_tabular_operator_plan_v3; }\n   |                                   +++++++++++++++++++++++\n\nFor more information about this error, try `rustc --explain E0603`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "direct-v3-tabular-fitter",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0432]: unresolved import `codex_hepta_bellman_operator::fit_tabular_operator_verified_v3`\n   --> src/main.rs:1:5\n    |\n  1 | use codex_hepta_bellman_operator::fit_tabular_operator_verified_v3; fn main() { let _ = fit_tabular_operator_verified_v3; }\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `fit_tabular_operator_verified_v3` in the root\n    |\nnote: found an item that was configured out\n   --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator/src/authoritative_lib.rs:213:24\n    |\n212 | #[cfg(feature = \"qualification-unverified-input\")]\n    |       ------------------------------------------ the item is gated behind the `qualification-unverified-input` feature\n213 | pub use compatibility::fit_tabular_operator_verified_v3;\n    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nFor more information about this error, try `rustc --explain E0432`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "direct-v3-world-verifier",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0603]: function `verify_world_model_dataset_v3` is private\n  --> src/main.rs:1:35\n   |\n 1 | use codex_hepta_bellman_operator::verify_world_model_dataset_v3; fn main() { let _ = verify_world_model_dataset_v3; }\n   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ private function\n   |\nnote: the function `verify_world_model_dataset_v3` is defined here\n  --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator/src/authoritative_lib.rs:97:16\n   |\n97 | pub(crate) use legacy::verify_world_model_dataset_v3;\n   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nhelp: import `verify_world_model_dataset_v3` directly\n   |\n 1 | use codex_hepta_bellman_operator::legacy::dataset_bound::verify_world_model_dataset_v3; fn main() { let _ = verify_world_model_dataset_v3; }\n   |                                   +++++++++++++++++++++++\n\nFor more information about this error, try `rustc --explain E0603`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "direct-v3-world-fitter",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0432]: unresolved import `codex_hepta_bellman_operator::fit_transition_model_verified_v3`\n   --> src/main.rs:1:5\n    |\n  1 | use codex_hepta_bellman_operator::fit_transition_model_verified_v3; fn main() { let _ = fit_transition_model_verified_v3; }\n    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `fit_transition_model_verified_v3` in the root\n    |\nnote: found an item that was configured out\n   --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator/src/authoritative_lib.rs:219:24\n    |\n218 | #[cfg(feature = \"qualification-unverified-input\")]\n    |       ------------------------------------------ the item is gated behind the `qualification-unverified-input` feature\n219 | pub use compatibility::fit_transition_model_verified_v3;\n    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\nFor more information about this error, try `rustc --explain E0432`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "compatibility-module",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0432]: unresolved import `codex_hepta_bellman_operator::compatibility`\n   --> src/main.rs:1:35\n    |\n  1 | use codex_hepta_bellman_operator::compatibility::fit_tabular_operator; fn main() { let _ = fit_tabular_operator; }\n    |                                   ^^^^^^^^^^^^^ could not find `compatibility` in `codex_hepta_bellman_operator`\n    |\nnote: found an item that was configured out\n   --> /workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-bellman-operator/src/authoritative_lib.rs:162:9\n    |\n161 | #[cfg(feature = \"qualification-unverified-input\")]\n    |       ------------------------------------------ the item is gated behind the `qualification-unverified-input` feature\n162 | pub mod compatibility {\n    |         ^^^^^^^^^^^^^\n\nFor more information about this error, try `rustc --explain E0432`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "activation-port",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0432]: unresolved import `codex_hepta_bellman_operator::activate_operator`\n --> src/main.rs:1:5\n  |\n1 | use codex_hepta_bellman_operator::activate_operator; fn main() { let _ = activate_operator; }\n  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `activate_operator` in the root\n\nFor more information about this error, try `rustc --explain E0432`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    },
+    {
+      "expected": "compile-fail",
+      "name": "publish-port",
+      "passed": true,
+      "stderr": "/workspace/scratch/99c8d2276f89/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc: error while loading shared libraries: librustc_driver-6108105cd7e839cf.so: cannot open shared object file: No such file or directory\nerror[E0432]: unresolved import `codex_hepta_bellman_operator::publish_operator`\n --> src/main.rs:1:5\n  |\n1 | use codex_hepta_bellman_operator::publish_operator; fn main() { let _ = publish_operator; }\n  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no `publish_operator` in the root\n\nFor more information about this error, try `rustc --explain E0432`.\nerror: could not compile `learning-operator-api-consumer` (bin \"learning-operator-api-consumer\") due to 1 previous error\n"
+    }
+  ],
+  "schema": "hepta.learning-operator-api-surface.v2",
+  "schemaVersion": 2
+}

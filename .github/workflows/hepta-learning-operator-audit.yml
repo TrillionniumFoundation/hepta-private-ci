@@ -4,7 +4,14 @@ on:
   pull_request:
     paths:
       - 'codex-rs/hepta-bellman-operator/**'
+      - 'codex-rs/.config/nextest.toml'
       - 'codex-rs/hepta-agentd/tests/terminal_cell_owner.rs'
+      - 'codex-rs/hepta-agentd/src/learning_operator_coordinator*.rs'
+      - 'docs/modules/learning.operator/**'
+      - 'defs.bzl'
+      - 'scripts/hepta-learning-operator*'
+      - 'scripts/hepta_lane_e_contract.py'
+      - 'scripts/test_hepta_learning_operator_evidence.py'
       - 'scripts/hepta-lane-e-closure.py'
       - 'scripts/test_hepta_lane_e_closure.py'
       - '.github/workflows/hepta-learning-operator-audit.yml'
@@ -21,6 +28,12 @@ concurrency:
 
 jobs:
   native:
+    strategy:
+      fail-fast: false
+      matrix:
+        features: [default, compatibility]
+    env:
+      OPERATOR_FEATURES: ${{ matrix.features }}
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -36,16 +49,37 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Source and integration inventory regressions
-        run: python3 scripts/test_hepta_lane_e_closure.py
+        run: |
+          python3 scripts/test_hepta_lane_e_closure.py
+          python3 scripts/test_hepta_learning_operator_evidence.py
+          python3 scripts/hepta-learning-operator-contract.py verify
       - name: Focused operator regression suite
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-bellman-operator
+        run: |
+          args=()
+          if [[ "$OPERATOR_FEATURES" == compatibility ]]; then
+            args+=(--features qualification-unverified-input)
+          fi
+          just test --locked -p codex-hepta-bellman-operator "${args[@]}"
       - name: All-target compilation
         working-directory: codex-rs
-        run: cargo check --locked -p codex-hepta-bellman-operator --all-targets
+        run: |
+          args=()
+          if [[ "$OPERATOR_FEATURES" == compatibility ]]; then
+            args+=(--features qualification-unverified-input)
+          fi
+          cargo check --locked -p codex-hepta-bellman-operator --all-targets "${args[@]}"
       - name: Strict operator lint
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-bellman-operator --all-targets -- -D warnings
+        run: |
+          args=()
+          if [[ "$OPERATOR_FEATURES" == compatibility ]]; then
+            args+=(--features qualification-unverified-input)
+          fi
+          cargo clippy --locked -p codex-hepta-bellman-operator --all-targets "${args[@]}" -- -D warnings
+      - name: Independent default API consumer
+        if: matrix.features == 'default'
+        run: python3 scripts/hepta-learning-operator-api-surface.py
       - name: Operator Rust formatting
         working-directory: codex-rs
         run: cargo fmt --package codex-hepta-bellman-operator -- --check

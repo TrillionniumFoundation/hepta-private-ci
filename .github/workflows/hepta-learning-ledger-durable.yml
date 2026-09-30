@@ -5,7 +5,15 @@ on:
     paths:
       - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-bellman-operator/**"
+      - "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs"
+      - "codex-rs/hepta-agentd/src/lib.rs"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/learning.operator/**"
+      - "scripts/hepta-learning-operator-*"
       - ".github/workflows/hepta-learning-ledger-durable.yml"
+      - ".github/workflows/learning-operator-authoritative.yml"
 
 permissions:
   contents: read

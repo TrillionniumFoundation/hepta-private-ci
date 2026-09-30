@@ -148,7 +148,7 @@ pub fn decide_with_signed_longitudinal_evidence_v3(
         minimum_window_micros,
         now_unix_micros,
     )?;
-    let mut authenticated = authentication.as_array().to_vec();
+    let mut authenticated = authentication.authentication_digest().as_array().to_vec();
     authenticated.extend_from_slice(&timing.observer.signature);
     Ok(SignedEvaluationDecisionV1 {
         decision: decide_independently_v2(bundle, roles, now_unix_micros)?,

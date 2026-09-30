@@ -1,7 +1,7 @@
+use super::super::fit_tabular_operator_strict_v2;
 use super::*;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorSampleV1;
-use crate::fit_tabular_operator_strict_v2;
 use std::collections::BTreeSet;
 use std::fs::OpenOptions;
 use std::fs::{self};
@@ -226,7 +226,7 @@ fn distinct_process_load_changes_prediction_and_rolls_back_without_retraining() 
         let output = Command::new(std::env::current_exe().expect("executable"))
             .args([
                 "--exact",
-                "loaded::tests::loaded_process_predicts_only_the_host_pinned_candidate",
+                "legacy::loaded::tests::loaded_process_predicts_only_the_host_pinned_candidate",
                 "--nocapture",
             ])
             .env("HEPTA_TEST_TABULAR_PAYLOAD", path)

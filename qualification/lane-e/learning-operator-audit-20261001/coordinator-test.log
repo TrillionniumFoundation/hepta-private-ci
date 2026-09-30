@@ -1,0 +1,35 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling version_check v0.9.5
+   Compiling typenum v1.20.1
+   Compiling cfg-if v1.0.5
+   Compiling cpufeatures v0.2.17
+   Compiling yansi v1.0.1
+   Compiling diff v0.1.13
+   Compiling generic-array v0.14.7
+   Compiling pretty_assertions v1.4.1
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling digest v0.10.7
+   Compiling sha2 v0.10.9
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/99c8d2276f89/hepta-private-ci/codex-rs/hepta-types)
+   Compiling learning-operator-coordinator-source-check v0.0.0 (/workspace/scratch/99c8d2276f89/coordinator-harness)
+    Finished `test` profile [unoptimized] target(s) in 1.99s
+────────────
+ Nextest run ID 817e7ec3-27ed-4b0e-97f0-8b9dcb6aa134 with nextest profile: local
+    Starting 12 tests across 1 binary
+        PASS [   0.003s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::shadow_rejection_rolls_back_and_never_reaches_currentness
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::host_clock_and_receipt_expiry_reject_pre_persistence_work
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::currentness_clock_regression_is_rejected_and_rolled_back
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::fresh_process_payload_mismatch_rolls_back_before_shadow
+        PASS [   0.006s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::fresh_process_load_at_deadline_is_rejected_and_rolled_back
+        PASS [   0.006s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::revoked_candidate_is_observed_and_rolled_back_without_activation
+        PASS [   0.003s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::unverified_cleanup_is_not_a_terminal_outcome_and_retains_the_verified_storage_binding
+        PASS [   0.007s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::realistic_monotonic_shadow_timeline_is_qualified_then_rolled_back
+        PASS [   0.005s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::terminal_audit_commits_to_selection_reason_and_cleanup_evidence
+        PASS [   0.004s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::verified_persistence_is_cleaned_up_when_actual_host_deadline_passes
+        PASS [   0.009s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::terminal_audit_binds_producer_and_generation_identity_despite_equal_opaque_receipt_digests
+        PASS [   0.006s] learning-operator-coordinator-source-check learning_operator_coordinator::tests::unverified_persistence_retains_recovery_identity_and_never_targets_an_unrelated_object
+────────────
+     Summary [   0.010s] 12 tests run: 12 passed, 0 skipped
