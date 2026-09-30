@@ -1,0 +1,131 @@
+name: runtime.codex source-only materialization
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-production-convergence-20260930
+    paths:
+      - .github/workflows/runtime-codex-source-materialize.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-source-materialize-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  LOG_DIR: qualification/runtime-codex-materialize-debug
+  TARGET_BRANCH: codex/runtime-codex-production-convergence-20260930
+
+jobs:
+  materialize-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Materialize ordinary source without build dependencies
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          input_sha="${GITHUB_SHA}"
+          test "$(git rev-parse HEAD)" = "$input_sha"
+          test -z "$(git status --porcelain=v1)"
+
+          rm -rf "$LOG_DIR"
+          mkdir -p "$LOG_DIR"
+          printf 'input_sha=%s\n' "$input_sha" > "$LOG_DIR/status.txt"
+
+          migrations=(
+            scripts/runtime-codex-maintainer.py
+            scripts/runtime-codex-maintainer-followup.py
+            scripts/runtime-codex-durability-migration.py
+            scripts/runtime-codex-durability-fixup.py
+            scripts/runtime-codex-transactional-owner-fixup.py
+            scripts/runtime-codex-quarantine-migration.py
+            scripts/runtime-codex-quarantine-authority-fixup.py
+            scripts/runtime-codex-deadline-migration.py
+            scripts/runtime-codex-cleanup-migration.py
+            scripts/runtime-codex-storage-fixup.py
+            scripts/runtime-codex-terminal-outbox-migration.py
+            scripts/runtime-codex-product-executor-migration.py
+            scripts/runtime-codex-product-executor-hardening.py
+            scripts/runtime-codex-effect-guard-fixup.py
+            scripts/runtime-codex-deadline-ceiling-fixup.py
+            scripts/runtime-codex-structured-sequence-migration.py
+            scripts/runtime-codex-process-crash-migration.py
+            scripts/runtime-codex-process-crash-expansion.py
+            scripts/runtime-codex-qualification-fixup.py
+            scripts/runtime-codex-final-closure.py
+          )
+          support=(
+            scripts/runtime-codex-owner-lineage-fixup.py
+            scripts/runtime-codex-quarantine-authority-v2.py
+            scripts/runtime-codex-process-crash-expansion-v2.py
+          )
+          finalizers=(
+            scripts/runtime-codex-finalize-map.py
+            scripts/runtime-codex-finalize-map-followup.py
+          )
+
+          preserve_failure() {
+            local rc="$1"
+            local failed="$2"
+            set +e
+            printf 'result=failed\nfailed_step=%s\nexit_code=%s\n' "$failed" "$rc" >> "$LOG_DIR/status.txt"
+            git status --short > "$LOG_DIR/worktree-status.txt"
+            git diff --stat > "$LOG_DIR/materialized-diff-stat.txt"
+            git diff --check > "$LOG_DIR/materialized-diff-check.txt" 2>&1
+            git diff > "$LOG_DIR/materialized-partial.patch"
+            cp -a "$LOG_DIR" /tmp/runtime-codex-materialize-debug
+            git reset --hard "$input_sha"
+            git clean -fdx
+            mkdir -p "$(dirname "$LOG_DIR")"
+            cp -a /tmp/runtime-codex-materialize-debug "$LOG_DIR"
+            git config user.name 'runtime.codex source diagnostics'
+            git config user.email 'runtime-codex-source@invalid'
+            git add "$LOG_DIR"
+            git commit -m "test(runtime.codex): retain source migration failure at ${failed}"
+            git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${input_sha}" \
+              origin "HEAD:refs/heads/${TARGET_BRANCH}"
+            exit "$rc"
+          }
+
+          set +e
+          python3 -m py_compile "${migrations[@]}" "${support[@]}" "${finalizers[@]}" \
+            > "$LOG_DIR/py_compile.log" 2>&1
+          rc=$?
+          set -e
+          if test "$rc" -ne 0; then
+            preserve_failure "$rc" py_compile
+          fi
+
+          for script in "${migrations[@]}"; do
+            name="$(basename "$script" .py)"
+            printf 'START %s\n' "$name" | tee -a "$LOG_DIR/status.txt"
+            set +e
+            python3 "$script" > "$LOG_DIR/${name}.log" 2>&1
+            rc=$?
+            set -e
+            printf '%s=%s\n' "$name" "$rc" | tee -a "$LOG_DIR/status.txt"
+            if test "$rc" -ne 0; then
+              tail -n 500 "$LOG_DIR/${name}.log" > "$LOG_DIR/${name}.tail.log"
+              preserve_failure "$rc" "$name"
+            fi
+          done
+
+          git diff --check
+          printf 'result=materialized\n' >> "$LOG_DIR/status.txt"
+          git config user.name 'runtime.codex source materializer'
+          git config user.email 'runtime-codex-source@invalid'
+          git add -A -- . ':!qualification/runtime-codex-materialize-debug'
+          git diff --cached --check
+          git commit -m 'fix(runtime.codex): materialize durable owner convergence source'
+          git push --force-with-lease="refs/heads/${TARGET_BRANCH}:${input_sha}" \
+            origin "HEAD:refs/heads/${TARGET_BRANCH}"
