@@ -1270,16 +1270,15 @@ impl AutomationStore {
                 state_digest: run.state_digest,
             });
         }
-        if let TaskFlowTransition::Cancel { reason } = &command.transition {
-            if self
+        if let TaskFlowTransition::Cancel { reason } = &command.transition
+            && self
                 .has_pending_effect_projection_tx(&mut tx, &command.run_id)
                 .await?
-            {
-                command.transition = TaskFlowTransition::CancelPendingEffect {
-                    reason: reason.clone(),
-                };
-                command_digest = command.digest()?;
-            }
+        {
+            command.transition = TaskFlowTransition::CancelPendingEffect {
+                reason: reason.clone(),
+            };
+            command_digest = command.digest()?;
         }
         let explicit_reconcile = run.state == TaskFlowRunState::Indeterminate
             && matches!(&command.transition, TaskFlowTransition::Reconcile { .. });
