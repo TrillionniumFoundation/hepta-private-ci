@@ -129,6 +129,69 @@ class SourceMappingTests(unittest.TestCase):
         )
         self.assertIn("with_hard_timeout_process_exit", signed_tests)
 
+    def test_production_profile_is_atomic_commit_bound_and_fail_closed(self) -> None:
+        profile = (
+            STATUS.ROOT / "codex-rs/hepta-agentd/src/intelligence_profile.rs"
+        ).read_text(encoding="utf-8")
+        runtime = (STATUS.ROOT / "codex-rs/hepta-agentd/src/runtime.rs").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("AgentdCanonicalIntelligenceProductionProfileV1", profile)
+        self.assertIn("AgentdCanonicalIntelligenceCompositionReceiptV1", profile)
+        self.assertIn("source_commit", profile)
+        self.assertIn("capability_profile_digest", profile)
+        self.assertIn("with_canonical_intelligence_profile", profile)
+        self.assertIn("with_intelligence_learning_runtime", profile)
+        self.assertIn("with_intelligence_execution_host", profile)
+        self.assertIn("validate_runtime_profile_shape", runtime)
+        self.assertIn("runner and invocation provider must be installed atomically", profile)
+        self.assertIn("physical execution and durable learning recovery must be installed together", profile)
+
+    def test_unknown_commit_and_candidate_membership_are_typed(self) -> None:
+        commit = (
+            STATUS.ROOT / "codex-rs/hepta-agentd/src/intelligence_commit_state.rs"
+        ).read_text(encoding="utf-8")
+        membership = (
+            STATUS.ROOT / "codex-rs/hepta-agentd/src/intelligence_membership.rs"
+        ).read_text(encoding="utf-8")
+        integrity = (
+            STATUS.ROOT / "codex-rs/hepta-agentd/src/intelligence_prepared_integrity.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn("UnknownCommittedState", commit)
+        self.assertIn("pub const fn is_terminal", commit)
+        self.assertIn("AgentdLegalCandidateMembershipProofV1", membership)
+        self.assertIn("canonical.sort()", membership)
+        self.assertIn("selected candidate absent", membership)
+        self.assertIn("AgentdLegalCandidateMembershipProofV1::admit", integrity)
+
+    def test_currentness_snapshot_is_fence_scoped(self) -> None:
+        canonical = (
+            STATUS.ROOT / "codex-rs/hepta-intelligence/src/canonical.rs"
+        ).read_text(encoding="utf-8")
+        product = (
+            STATUS.ROOT / "codex-rs/hepta-agentd/src/intelligence_product.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn("fn refresh_snapshot", canonical)
+        self.assertIn("require_current_from_snapshot", canonical)
+        self.assertIn("snapshot: Option<BTreeMap<StableId, CurrentOwnerStateV1>>", product)
+        self.assertIn("self.snapshot = Some(self.load_snapshot(owner_id)?)", product)
+        self.assertIn("validate_current_snapshot(&request.snapshot, oracle)?", canonical)
+
+    def test_product_document_preserves_completion_taxonomy(self) -> None:
+        product = (STATUS.DOCS / "PRODUCT_CLOSURE.md").read_text(encoding="utf-8")
+        for state in (
+            "source_present",
+            "repo_native_composed",
+            "physically_executed",
+            "independently_qualified",
+            "activated",
+            "released",
+        ):
+            self.assertIn(state, product)
+        self.assertIn("ordinary CLI remains uncomposed", product)
+        self.assertIn("UnknownCommittedState", product)
+        self.assertIn("one bounded open/read/parse", product)
+
     def test_current_generation_run_start_recovery_uses_the_product_route(self) -> None:
         objective = (
             STATUS.ROOT / "codex-rs/hepta-agentd/src/objective_runtime.rs"
