@@ -14,12 +14,14 @@ The product admission boundary prevents a partial set of retrieval owners from b
 
 A policy row is not merely an action for a batch that happens to arrive. It is the expected owner inventory for the selected product profile. If a row has no corresponding batch, admission treats that owner as `Unavailable` and executes `on_unavailable`. Omitting an owner can therefore never convert a partial observation into `Complete`.
 
+`Unavailable -> Degrade` is rejected by the source contract. The strict generated-recall receipt requires every enabled owner and cannot bind an absent owner generation. Permitting recall after owner absence would otherwise advertise a degraded result that the underlying recall receipt cannot reproduce or authenticate. Until a separately qualified degraded policy binds the absent-owner evidence and effective channel policy into the result, `on_unavailable` must be `Abstain` or `FailClosed`. `LimitReached -> Degrade` remains supported because the owner, generation, receipt, and bounded candidate batch are present.
+
 ## Completeness outcomes
 
 `RetrievalCompletenessDecisionV1` has four outcomes:
 
 - `Complete`: every expected owner is present and exhausted within its declared bound;
-- `Degraded`: recall is permitted, but every incomplete owner and action is retained in the decision;
+- `Degraded`: recall is permitted when a present owner reaches its declared limit and policy explicitly allows degradation; every incomplete owner and action is retained in the decision;
 - `Abstain`: no recall packet is produced;
 - `FailClosed`: admission returns an error and the caller cannot downgrade it.
 
