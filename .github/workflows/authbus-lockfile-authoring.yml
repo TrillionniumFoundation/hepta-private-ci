@@ -5,6 +5,10 @@ on:
     branches:
       - auth-authbus-boundary-convergence-20260928
     paths:
+      - "codex-rs/hepta-authbus/Cargo.toml"
+      - "codex-rs/hepta-authbus/src/legacy_replay.rs"
+      - "codex-rs/hepta-authbus/src/lib.rs"
+      - "codex-rs/hepta-authbus/src/signed.rs"
       - "codex-rs/hepta-bao-adapter/Cargo.toml"
       - "codex-rs/hepta-bao-adapter/src/durable_authbus.rs"
       - "codex-rs/hepta-operations/src/authbus_handle.rs"
@@ -26,8 +30,9 @@ jobs:
   author-lockfile:
     name: Author and verify Cargo.lock once
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
-      - name: Checkout exact branch head
+      - name: Checkout triggering branch head
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.sha }}
@@ -44,21 +49,25 @@ jobs:
         run: |
           set -euo pipefail
           cd codex-rs
-          cargo check \
-            -p codex-hepta-operations \
-            -p codex-hepta-bao-adapter \
-            --all-targets
+          cargo check -p codex-hepta-authbus --all-targets --all-features
+          cargo check -p codex-hepta-operations --all-targets
+          cargo check -p codex-hepta-bao-adapter --all-targets
           cd ..
           changed="$(git diff --name-only)"
-          test "$changed" = "codex-rs/Cargo.lock"
+          test -z "$changed" || test "$changed" = "codex-rs/Cargo.lock"
 
-      - name: Commit exact generated lockfile
+      - name: Commit only for the still-current branch head
         shell: bash
         env:
           TARGET_BRANCH: auth-authbus-boundary-convergence-20260928
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          if test "$remote_head" != "$GITHUB_SHA"; then
+            echo "A newer candidate exists; its queued run owns lockfile authoring."
+            exit 0
+          fi
+          test "$(git diff --name-only)" = "codex-rs/Cargo.lock"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add codex-rs/Cargo.lock

@@ -1,41 +1,57 @@
-name: AuthBus authoring format
+name: AuthBus formatting check
 
 on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-authbus/**"
+      - "codex-rs/hepta-authbus-p1-3-qualification/**"
+      - "codex-rs/hepta-evidence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-operations/**"
+      - ".github/workflows/authbus-authoring-format.yml"
   push:
-    branches:
-      - auth-authbus-boundary-convergence-20260928
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-authbus/**"
+      - "codex-rs/hepta-authbus-p1-3-qualification/**"
+      - "codex-rs/hepta-evidence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-operations/**"
+      - ".github/workflows/authbus-authoring-format.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: authbus-authoring-format-${{ github.ref }}
+  group: authbus-format-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
+env:
+  CARGO_TERM_COLOR: always
+  RUST_TOOLCHAIN: "1.95.0"
+
 jobs:
-  format:
+  formatting:
+    name: Read-only rustfmt
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout exact workflow candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
-      - uses: dtolnay/rust-toolchain@stable
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87
         with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
           components: rustfmt
-      - name: Format AuthBus source
+
+      - name: Check canonical formatting without mutating source
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --all --manifest-path codex-rs/Cargo.toml
-          git add -- codex-rs/hepta-authbus
-          if git diff --cached --quiet; then
-            echo 'AuthBus source is already formatted.'
-            exit 0
-          fi
-          git diff --cached --check
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -s -m 'style(auth.authbus): apply canonical formatting'
-          git push origin HEAD:${{ github.ref_name }}
+          cargo fmt --all --manifest-path codex-rs/Cargo.toml -- --check
+          test -z "$(git status --porcelain)"

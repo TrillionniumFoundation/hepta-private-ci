@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -11,9 +12,6 @@ use crate::Error;
 use crate::IssuerLifecycleState;
 use crate::IssuerPurpose;
 use crate::IssuerRecord;
-use crate::PreverifiedAuthEnvelope;
-use crate::ReplayWindow;
-use crate::TrustedReplayContext;
 use crate::VerificationReceipt;
 use crate::push_id;
 
@@ -154,27 +152,53 @@ impl SignedMessage {
                 &Signature::from_bytes(&self.signature),
             )
             .map_err(|_| Error::InvalidSignature)?;
-        // Reuse the structural/expiry/scope checks, but do not represent this
-        // temporary single-message model as durable replay protection.
-        let receipt = ReplayWindow::new(/*maximum_replay_keys*/ 1).verify(
-            TrustedReplayContext {
-                issuer_id: issuer.issuer_id.clone(),
-                key_epoch: issuer.key_epoch,
-                now_ms,
-                revoked: issuer.revoked,
-            },
-            PreverifiedAuthEnvelope {
-                message_id: self.claims.message_id.clone(),
-                subject_id: self.claims.subject_id.clone(),
-                scope_digest: self.claims.scope_digest,
-                payload_digest: self.claims.payload_digest,
-                signature_digest: Digest32::of_bytes(&self.signature),
-                sequence: self.claims.sequence,
-                expires_at_ms: self.claims.expires_at_ms,
-            },
-            expected_scope,
-            expected_payload,
-        )?;
+        if self.claims.scope_digest.is_zero() {
+            return Err(Error::EmptyDigest("scope"));
+        }
+        if self.claims.payload_digest.is_zero() {
+            return Err(Error::EmptyDigest("payload"));
+        }
+        if self.claims.sequence == 0 {
+            return Err(Error::ZeroSequence);
+        }
+        if issuer.revoked {
+            return Err(Error::Revoked);
+        }
+        if now_ms >= self.claims.expires_at_ms {
+            return Err(Error::Expired);
+        }
+        if self.claims.scope_digest != expected_scope {
+            return Err(Error::ScopeMismatch);
+        }
+        if self.claims.payload_digest != expected_payload {
+            return Err(Error::PayloadMismatch);
+        }
+
+        let signature_digest = Digest32::of_bytes(&self.signature);
+        if signature_digest.is_zero() {
+            return Err(Error::EmptyDigest("signature"));
+        }
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(b"hepta.authbus.preverified-replay.v1\0");
+        push_id(&mut bytes, &issuer.issuer_id);
+        bytes.extend_from_slice(&issuer.key_epoch.get().to_be_bytes());
+        push_id(&mut bytes, &self.claims.message_id);
+        push_id(&mut bytes, &self.claims.subject_id);
+        bytes.extend_from_slice(self.claims.scope_digest.as_array());
+        bytes.extend_from_slice(self.claims.payload_digest.as_array());
+        bytes.extend_from_slice(signature_digest.as_array());
+        bytes.extend_from_slice(&self.claims.sequence.to_be_bytes());
+        bytes.extend_from_slice(&self.claims.expires_at_ms.to_be_bytes());
+
+        let receipt = VerificationReceipt {
+            message_id: self.claims.message_id.clone(),
+            issuer_id: issuer.issuer_id.clone(),
+            key_epoch: issuer.key_epoch,
+            subject_id: self.claims.subject_id.clone(),
+            sequence: self.claims.sequence,
+            envelope_digest: Digest32::of_bytes(&bytes),
+            authority: AuthorityPosture::DENY_ALL,
+        };
         Ok(AuthenticatedMessage {
             claims: self.claims.clone(),
             receipt,

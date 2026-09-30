@@ -1,37 +1,48 @@
 # AuthBus preverified replay contract V1
 
-This is the retained legacy API. The separate
-[`signed admission API`](../../../codex-rs/hepta-authbus/SIGNED_ADMISSION.md)
-authenticates signatures and supports durable replay through the evidence store;
-it does not change this API's semantics.
+Status: deprecated compatibility contract, disabled in the default build.
+
+The public types `PreverifiedAuthEnvelope`, `TrustedReplayContext` and
+`ReplayWindow` are exported only when the explicit Cargo feature
+`legacy-preverified-replay` is enabled. Production profiles MUST leave that
+feature disabled. The default external API contains only the cryptographic
+`signed admission API`, which verifies a sealed issuer registration with
+Ed25519 `verify_strict`; durable replay is owned by the Evidence store.
 
 ## Trust split
 
 Untrusted message facts reside in `PreverifiedAuthEnvelope`. Trusted host facts
-reside in `TrustedReplayContext`. The latter must be produced only after an
-upstream authentication boundary verifies the issuer, key epoch and revocation
-frontier.
+reside in `TrustedReplayContext`. Constructing either public compatibility type
+is not authentication. The latter must be produced only after an upstream
+boundary verifies issuer identity, key epoch and revocation frontier.
 
-## Admission algorithm
+## Compatibility algorithm
 
-1. Reject zero scope, payload or signature-reference digest.
-2. Reject sequence zero.
-3. Reject trusted revocation.
-4. Reject when `now_ms >= expires_at_ms`.
-5. Require exact expected scope and payload digests.
-6. Form replay key `(issuer_id, key_epoch, subject_id, scope_digest)`.
-7. Require the sequence to exceed the recorded maximum.
-8. Reject a new key when bounded capacity is exhausted.
-9. Update the in-memory maximum and emit a domain-separated deny-all receipt.
+When the non-default feature is intentionally enabled, the deprecated window:
+
+1. rejects zero scope, payload or signature-reference digest;
+2. rejects sequence zero;
+3. rejects trusted revocation;
+4. rejects when `now_ms >= expires_at_ms`;
+5. requires exact expected scope and payload digests;
+6. forms replay key `(issuer_id, key_epoch, subject_id, scope_digest)`;
+7. requires the sequence to exceed the in-process maximum;
+8. rejects a new key when bounded capacity is exhausted; and
+9. emits a domain-separated deny-all receipt.
 
 ## Receipt semantics
 
 The receipt binds issuer, key epoch, message, subject, scope, payload,
 signature-reference, sequence and expiry. It proves only that this in-process
-window accepted the preverified facts. It grants no authentication,
-authorization, quota, execution, selection, promotion or release authority.
+structural window accepted caller-provided facts. It grants no authentication,
+authorization, quota, operation identity, execution, selection, promotion or
+release authority.
 
-## Restart behavior
+## Restart and migration rule
 
-This API's replay state is lost on process exit. Hosts requiring durable replay
-must use `HeptaEvidenceStore::admit_authbus_message` instead of `ReplayWindow`.
+Replay state is lost on process exit. New callers MUST use
+`SignedMessage::authenticate` and
+`HeptaEvidenceStore::admit_authbus_message`/`enqueue_authbus_message`. A build
+that enables `legacy-preverified-replay` is not production-qualified unless a
+separate compatibility exception is named in the exact-candidate readiness
+manifest.
