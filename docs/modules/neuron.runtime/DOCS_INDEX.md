@@ -9,7 +9,9 @@ Generated from `docs/modules/neuron.runtime/MODULE_SPEC.json`. Do not edit this 
 - [`docs/modules/neuron.runtime/V2_STARTUP_RECOVERY.md`](../../modules/neuron.runtime/V2_STARTUP_RECOVERY.md) — startup recovery
 - [`docs/modules/neuron.runtime/V2_DEVELOPMENT.md`](../../modules/neuron.runtime/V2_DEVELOPMENT.md) — development and qualification
 - [`docs/modules/neuron.runtime/V2_RUNBOOK.md`](../../modules/neuron.runtime/V2_RUNBOOK.md) — operator runbook
-- [`docs/modules/neuron.runtime/V2_PERFORMANCE_METRICS.md`](../../modules/neuron.runtime/V2_PERFORMANCE_METRICS.md) — performance measurement
+- [`docs/modules/neuron.runtime/SUPPORT_CALIBRATION.md`](../../modules/neuron.runtime/SUPPORT_CALIBRATION.md) — frozen experiment, independent OOD and prospective acceptance contract
+- [`docs/modules/neuron.runtime/TEACHER_QUALIFICATION.md`](../../modules/neuron.runtime/TEACHER_QUALIFICATION.md) — separate transport, provider and account-specific data-use contract
+- [`codex-rs/hepta-neuron/qualification/README.md`](../../codex-rs/hepta-neuron/qualification/README.md) — existing experiment entry points and receipt boundaries
 
 ## Generated control surfaces
 

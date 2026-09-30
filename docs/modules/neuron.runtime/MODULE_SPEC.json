@@ -120,7 +120,9 @@
     {"path": "docs/modules/neuron.runtime/V2_STARTUP_RECOVERY.md", "role": "startup recovery"},
     {"path": "docs/modules/neuron.runtime/V2_DEVELOPMENT.md", "role": "development and qualification"},
     {"path": "docs/modules/neuron.runtime/V2_RUNBOOK.md", "role": "operator runbook"},
-    {"path": "docs/modules/neuron.runtime/V2_PERFORMANCE_METRICS.md", "role": "performance measurement"}
+    {"path": "docs/modules/neuron.runtime/SUPPORT_CALIBRATION.md", "role": "frozen experiment, independent OOD and prospective acceptance contract"},
+    {"path": "docs/modules/neuron.runtime/TEACHER_QUALIFICATION.md", "role": "separate transport, provider and account-specific data-use contract"},
+    {"path": "codex-rs/hepta-neuron/qualification/README.md", "role": "existing experiment entry points and receipt boundaries"}
   ],
   "errorCodes": [
     {"code": "owner_busy", "action": "retry with bounded backoff; inspect owner lock wait/hold evidence"},
@@ -135,7 +137,9 @@
   ],
   "qualification": {
     "workflow": ".github/workflows/neuron-runtime-readiness.yml",
-    "testSetVersion": "2026-09-30.1",
+    "testSetVersion": "2026-09-30.2",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "workflowName": "Neuron runtime unified readiness",
     "requiredGates": [
       {"id": "linux-stable-source-head", "runner": "ubuntu-24.04", "platform": "linux-x86_64", "toolchain": "stable", "lane": "source-head", "commandSets": ["common", "stablePolicy", "linuxFrozen"]},
       {"id": "linux-stable-synthetic-merge", "runner": "ubuntu-24.04", "platform": "linux-x86_64", "toolchain": "stable", "lane": "synthetic-merge", "commandSets": ["common", "stablePolicy", "linuxFrozen"]},
@@ -153,10 +157,9 @@
         "python3 scripts/verify_cargo_lock.py",
         "cargo metadata --locked --format-version=1",
         "cargo check --locked -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets",
-        "cargo test --locked -p codex-hepta-neuron real_process_recovery_preserves_one_physical_execution_at_each_durable_boundary -- --nocapture",
+        "cargo build --locked -p codex-cli --bin codex",
         "just test --locked --retries 0 -p codex-hepta-neuron -p codex-hepta-infer-core -p codex-hepta-infer-worker-host",
-        "just test --locked --retries 0 -p codex-hepta-agentd -E test(/neuron_runtime_v2/)",
-        "cargo build --locked -p codex-cli --bin codex"
+        "just test --locked --retries 0 -p codex-hepta-agentd -E test(/neuron_runtime_v2/)"
       ],
       "stablePolicy": [
         "cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings",
@@ -172,7 +175,7 @@
   },
   "requirements": [
     {"id": "NR-Q-001", "statement": "Every required gate is bound to one source SHA and one integration base SHA.", "tests": ["scripts/neuron/test_readiness.py::ReadinessTests.test_aggregate_rejects_mixed_source_sha"], "gates": ["all"]},
-    {"id": "NR-Q-002", "statement": "Evidence binds workflow run, target triple, runner fingerprint, test-set hash, Cargo.lock hash, documentation hash and implementation-map hash.", "tests": ["scripts/neuron/test_readiness.py::ReadinessTests.test_capture_contains_required_bindings"], "gates": ["all"]},
+    {"id": "NR-Q-002", "statement": "Evidence validates exact lane Git objects, actual compiler/target, one workflow run/attempt and all required step outcomes; parsing does not authenticate remote execution.", "tests": ["scripts/neuron/test_readiness.py::ReadinessTests.test_capture_contains_required_bindings"], "gates": ["all"]},
     {"id": "NR-C-001", "statement": "A crash at each durable execution boundary never creates a second physical model effect.", "tests": ["runtime_v2_process_closure_tests::real_process_recovery_preserves_one_physical_execution_at_each_durable_boundary"], "gates": ["all"]},
     {"id": "NR-C-002", "statement": "Unknown provider outcome is never converted to NotStarted without durable provider evidence.", "tests": ["runtime_v2_recovery_policy_tests", "runtime_v2_process_closure_tests"], "gates": ["all"]},
     {"id": "NR-C-003", "statement": "Stale generations cannot commit after lifecycle handoff.", "tests": ["neuron_runtime_v2_control_tests", "runtime_v2_lifecycle_tests"], "gates": ["all"]},

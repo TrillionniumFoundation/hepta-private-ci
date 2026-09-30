@@ -17,7 +17,7 @@ Generated from `docs/modules/neuron.runtime/MODULE_SPEC.json`. Runtime evidence 
 
 Every gate emits a provenance record binding the exact source and tested tree to the workflow run, target triple, runner fingerprint, test-set hash, `Cargo.lock`, documentation and generated implementation map.
 
-The aggregate `READINESS_MANIFEST.json` is an immutable workflow artifact. It rejects mixed SHAs, mixed integration bases, stale generated projections, missing target evidence and failed gates.
+The aggregate `READINESS_MANIFEST.json` is an immutable workflow artifact. It rejects mixed SHAs, mixed integration bases, stale generated projections, missing target evidence and failed gates. Provenance v2 checks exact Git objects, actual compiler/target, one workflow run/attempt and every required stage. Metadata consistency is not remote attestation: the workflow must also require all matrix jobs, download and aggregation to succeed.
 
 ## Performance policy
 

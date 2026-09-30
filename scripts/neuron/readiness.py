@@ -14,11 +14,13 @@ import sys
 from pathlib import Path
 from typing import Any, Iterable
 
+import readiness_evidence as provenance
+
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SPEC = ROOT / "docs/modules/neuron.runtime/MODULE_SPEC.json"
-PROVENANCE_SCHEMA = "hepta.neuron.runtime.qualification-provenance.v1"
-MANIFEST_SCHEMA = "hepta.neuron.runtime.readiness-manifest.v1"
+PROVENANCE_SCHEMA = "hepta.neuron.runtime.qualification-provenance.v2"
+MANIFEST_SCHEMA = "hepta.neuron.runtime.readiness-manifest.v2"
 
 
 class ReadinessError(RuntimeError):
@@ -26,7 +28,9 @@ class ReadinessError(RuntimeError):
 
 
 def canonical_bytes(value: Any) -> bytes:
-    return (json.dumps(value, sort_keys=True, separators=(",", ":")) + "\n").encode()
+    return (
+        json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n"
+    ).encode()
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -39,12 +43,9 @@ def file_sha256(path: Path) -> str:
 
 def load_json(path: Path) -> dict[str, Any]:
     try:
-        value = json.loads(path.read_text())
-    except (OSError, json.JSONDecodeError) as error:
+        return provenance.read_json(path)
+    except (OSError, ValueError, RecursionError) as error:
         raise ReadinessError(f"cannot read {path}: {error}") from error
-    if not isinstance(value, dict):
-        raise ReadinessError(f"{path} must contain a JSON object")
-    return value
 
 
 def write_text(path: Path, content: str, check: bool) -> None:
@@ -71,7 +72,9 @@ def relative(path: Path) -> str:
 
 def tree_hash(paths: Iterable[Path]) -> str:
     records: list[dict[str, str]] = []
-    for path in sorted((item.resolve() for item in paths), key=lambda item: relative(item)):
+    for path in sorted(
+        (item.resolve() for item in paths), key=lambda item: relative(item)
+    ):
         if not path.is_file():
             raise ReadinessError(f"bound source is missing: {relative(path)}")
         records.append({"path": relative(path), "sha256": file_sha256(path)})
@@ -80,28 +83,9 @@ def tree_hash(paths: Iterable[Path]) -> str:
 
 def run_git(*args: str) -> str:
     try:
-        return subprocess.check_output(
-            ["git", *args], cwd=ROOT, text=True, stderr=subprocess.STDOUT
-        ).strip()
+        return provenance.git(ROOT, *args)
     except (OSError, subprocess.CalledProcessError) as error:
         raise ReadinessError(f"git {' '.join(args)} failed: {error}") from error
-
-
-def rust_host() -> str:
-    try:
-        output = subprocess.check_output(
-            ["rustc", "-Vv"], cwd=ROOT / "codex-rs", text=True
-        )
-    except (OSError, subprocess.CalledProcessError) as error:
-        raise ReadinessError(f"rustc -Vv failed: {error}") from error
-    for line in output.splitlines():
-        if line.startswith("host: "):
-            return line.removeprefix("host: ").strip()
-    raise ReadinessError("rustc -Vv did not report a host target")
-
-
-def spec_hash(spec_path: Path) -> str:
-    return file_sha256(spec_path)
 
 
 def gate_by_id(spec: dict[str, Any], gate_id: str) -> dict[str, Any]:
@@ -241,7 +225,10 @@ def render_dashboard(spec: dict[str, Any], source: str) -> str:
         "",
         "The aggregate `READINESS_MANIFEST.json` is an immutable workflow artifact. "
         "It rejects mixed SHAs, mixed integration bases, stale generated projections, "
-        "missing target evidence and failed gates.",
+        "missing target evidence and failed gates. Provenance v2 checks exact Git "
+        "objects, actual compiler/target, one workflow run/attempt and every required "
+        "stage. Metadata consistency is not remote attestation: the workflow must "
+        "also require all matrix jobs, download and aggregation to succeed.",
         "",
         "## Performance policy",
         "",
@@ -276,6 +263,7 @@ def render_runbook_errors(spec: dict[str, Any], source: str) -> str:
 
 def render(spec_path: Path, check: bool) -> None:
     spec = load_json(spec_path)
+    tree_hash(ROOT / item["path"] for item in spec["documents"])
     source = relative(spec_path)
     outputs = {
         spec["paths"]["implementationMap"]: render_implementation_map(spec, source),
@@ -289,6 +277,34 @@ def render(spec_path: Path, check: bool) -> None:
     }
     for name, content in outputs.items():
         write_text(ROOT / name, content, check)
+
+
+def required_stages(gate: dict[str, Any]) -> list[str]:
+    return (
+        ["candidate", "tools", "validate"]
+        + (["compiler"] if gate["toolchain"] == "msrv" else [])
+        + (["frozen"] if "linuxFrozen" in gate["commandSets"] else [])
+    )
+
+
+def candidate_bindings(spec, spec_path, tested_sha):
+    def digest(path):
+        # Read exact Git blobs, not another lane's checkout or an edited file.
+        return sha256_bytes(provenance.git_blob(ROOT, tested_sha, path))
+
+    docs = [
+        {"path": item["path"], "sha256": digest(item["path"])}
+        for item in sorted(spec["documents"], key=lambda item: item["path"])
+    ]
+    return {
+        "specSha256": digest(relative(spec_path)),
+        "cargoLockSha256": digest("codex-rs/Cargo.lock"),
+        "documentationSha256": sha256_bytes(canonical_bytes(docs)),
+        "implementationMapSha256": digest(spec["paths"]["implementationMap"]),
+        "workflowSha256": digest(spec["qualification"]["workflow"]),
+        "validatorSha256": digest("scripts/neuron/readiness.py"),
+        "provenanceValidatorSha256": digest("scripts/neuron/readiness_evidence.py"),
+    }
 
 
 def capture(args: argparse.Namespace) -> None:
@@ -306,9 +322,30 @@ def capture(args: argparse.Namespace) -> None:
 
     tested_sha = args.tested_sha or run_git("rev-parse", "HEAD")
     tree_sha = args.tree_sha or run_git("rev-parse", "HEAD^{tree}")
-    target = args.target_triple or rust_host()
-    docs = [ROOT / item["path"] for item in spec["documents"]]
-    implementation_map = ROOT / spec["paths"]["implementationMap"]
+    objects = provenance.candidate(ROOT, args.source_sha, args.base_sha)
+    if (tested_sha, tree_sha) != objects[args.lane]:
+        raise ReadinessError("captured identity differs from the exact candidate lane")
+    provenance.clean_checkout(ROOT, tested_sha, tree_sha)
+    render(spec_path, check=True)
+    observed_rust = provenance.actual_rust(ROOT)
+    target = args.target_triple or observed_rust["host"]
+    expected_target = provenance.PLATFORMS[gate["platform"]][2]
+    if (
+        target != observed_rust["host"]
+        or target != expected_target
+        or observed_rust["release"] != spec["toolchains"][args.toolchain]
+    ):
+        raise ReadinessError("actual compiler/target differs from the requested gate")
+    stages = json.loads(args.stage_outcomes)
+    if not isinstance(stages, dict) or set(stages) != set(required_stages(gate)):
+        raise ReadinessError(
+            "required workflow stage outcomes are missing or unexpected"
+        )
+    if any(
+        value not in ("success", "failure", "cancelled", "skipped")
+        for value in stages.values()
+    ):
+        raise ReadinessError("invalid workflow stage outcome")
     runner = {
         "name": args.runner_name or os.environ.get("RUNNER_NAME", "unknown"),
         "os": args.runner_os or os.environ.get("RUNNER_OS", platform.system()),
@@ -327,8 +364,14 @@ def capture(args: argparse.Namespace) -> None:
     result = args.result.lower()
     if result not in {"success", "failure", "cancelled", "skipped"}:
         raise ReadinessError(f"unsupported result: {args.result}")
+    if result == "success" and any(value != "success" for value in stages.values()):
+        raise ReadinessError(
+            "successful provenance requires every workflow stage to succeed"
+        )
     evidence = {
         "schema": PROVENANCE_SCHEMA,
+        "observedRust": observed_rust,
+        "stageOutcomes": stages,
         "module": spec["module"],
         "gate": args.gate,
         "result": result,
@@ -351,11 +394,8 @@ def capture(args: argparse.Namespace) -> None:
         },
         "runner": runner,
         "bindings": {
-            "specSha256": spec_hash(spec_path),
+            **candidate_bindings(spec, spec_path, tested_sha),
             "testSetSha256": gate_test_set_hash(spec, gate),
-            "cargoLockSha256": file_sha256(ROOT / "codex-rs/Cargo.lock"),
-            "documentationSha256": tree_hash(docs),
-            "implementationMapSha256": file_sha256(implementation_map),
         },
         "claimBoundary": {
             "qualificationGatePassed": result == "success",
@@ -363,74 +403,101 @@ def capture(args: argparse.Namespace) -> None:
             "release": False,
         },
     }
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_bytes(canonical_bytes(evidence))
-
-
-def validate_evidence(
-    spec: dict[str, Any], spec_path: Path, evidence: dict[str, Any]
-) -> list[str]:
-    errors: list[str] = []
-    if evidence.get("schema") != PROVENANCE_SCHEMA:
-        errors.append("invalid provenance schema")
-        return errors
-    gate_id = evidence.get("gate")
-    try:
-        gate = gate_by_id(spec, str(gate_id))
-    except ReadinessError as error:
-        errors.append(str(error))
-        return errors
-    for key in ("lane", "platform"):
-        if evidence.get(key) != gate[key]:
-            errors.append(f"{gate_id}: {key} does not match module spec")
-    toolchain = evidence.get("toolchain", {})
-    if toolchain.get("class") != gate["toolchain"]:
-        errors.append(f"{gate_id}: toolchain class does not match module spec")
-    if toolchain.get("version") != spec["toolchains"][gate["toolchain"]]:
-        errors.append(f"{gate_id}: toolchain version does not match module spec")
-    bindings = evidence.get("bindings", {})
-    expected = {
-        "specSha256": spec_hash(spec_path),
-        "testSetSha256": gate_test_set_hash(spec, gate),
-        "cargoLockSha256": file_sha256(ROOT / "codex-rs/Cargo.lock"),
-        "documentationSha256": tree_hash(
-            ROOT / item["path"] for item in spec["documents"]
-        ),
-        "implementationMapSha256": file_sha256(
-            ROOT / spec["paths"]["implementationMap"]
-        ),
+    context = {
+        "sourceSha": args.source_sha,
+        "baseSha": args.base_sha,
+        "name": args.workflow,
+        "repository": args.repository,
+        "runId": str(args.run_id),
+        "runAttempt": str(args.run_attempt),
     }
-    for name, value in expected.items():
-        if bindings.get(name) != value:
-            errors.append(f"{gate_id}: {name} does not match candidate source")
+    problems = provenance.check_record(spec, evidence, objects, context)
+    if problems:
+        raise ReadinessError("; ".join(problems))
+    provenance.clean_checkout(ROOT, tested_sha, tree_sha)
+    if args.output.resolve().is_relative_to(ROOT.resolve()):
+        raise ReadinessError("evidence output must be outside the checked source")
+    provenance.publish(args.output, evidence)
+
+
+def validate_evidence(spec, spec_path, evidence, objects, context) -> list[str]:
+    if evidence.get("schema") != PROVENANCE_SCHEMA:
+        return ["invalid provenance schema; historical v1 is not current qualification"]
+    errors = provenance.check_record(spec, evidence, objects, context)
+    try:
+        gate = gate_by_id(spec, str(evidence.get("gate")))
+    except ReadinessError as error:
+        return errors + [str(error)]
+    expected = candidate_bindings(spec, spec_path, objects[gate["lane"]][0])
+    expected["testSetSha256"] = gate_test_set_hash(spec, gate)
+    if evidence.get("bindings") != expected:
+        errors.append("source bindings differ from exact tested candidate")
+    if evidence.get("stageOutcomes") != {
+        stage: "success" for stage in required_stages(gate)
+    }:
+        errors.append("required workflow stages did not all succeed")
     if evidence.get("result") != "success":
-        errors.append(f"{gate_id}: result is {evidence.get('result')}")
-    if evidence.get("claimBoundary", {}).get("productionActivation") is not False:
-        errors.append(f"{gate_id}: provenance attempted to activate production")
+        errors.append(f"gate result is {evidence.get('result')}")
     return errors
+
+
+def record_object(records, gate, key):
+    value = records.get(gate, {}).get(key)
+    return value if isinstance(value, dict) else {}
 
 
 def aggregate(args: argparse.Namespace) -> None:
     spec_path = args.spec.resolve()
     spec = load_json(spec_path)
+    provenance.clean_checkout(
+        ROOT, args.source_sha, run_git("rev-parse", args.source_sha + "^{tree}")
+    )
+    render(spec_path, check=True)
+    objects = provenance.candidate(ROOT, args.source_sha, args.base_sha)
+    context = {
+        "sourceSha": args.source_sha,
+        "baseSha": args.base_sha,
+        "name": args.workflow,
+        "repository": args.repository,
+        "runId": str(args.run_id),
+        "runAttempt": str(args.run_attempt),
+    }
     evidence_files = sorted(args.evidence_dir.rglob("*.provenance.json"))
+    if len(evidence_files) > 64:
+        raise ReadinessError("evidence record limit exceeded")
     records: dict[str, dict[str, Any]] = {}
     errors: list[str] = []
+    if args.qualification_outcome != "success":
+        errors.append(f"qualification matrix is {args.qualification_outcome}")
+    if args.download_outcome != "success":
+        errors.append(f"artifact download is {args.download_outcome}")
     for path in evidence_files:
-        record = load_json(path)
+        try:
+            record = load_json(path)
+        except ReadinessError as error:
+            errors.append(str(error))
+            continue
         gate = str(record.get("gate", ""))
         if gate in records:
             errors.append(f"duplicate evidence for gate {gate}")
             continue
         records[gate] = record
-        errors.extend(validate_evidence(spec, spec_path, record))
+        errors.extend(validate_evidence(spec, spec_path, record, objects, context))
 
     expected = [gate["id"] for gate in spec["qualification"]["requiredGates"]]
     missing = [gate for gate in expected if gate not in records]
     errors.extend(f"missing evidence for gate {gate}" for gate in missing)
 
-    source_shas = {record.get("sourceSha") for record in records.values()}
-    base_shas = {record.get("baseSha") for record in records.values()}
+    source_shas = {
+        record["sourceSha"]
+        for record in records.values()
+        if isinstance(record.get("sourceSha"), str)
+    }
+    base_shas = {
+        record["baseSha"]
+        for record in records.values()
+        if isinstance(record.get("baseSha"), str)
+    }
     if len(source_shas) > 1:
         errors.append("mixed source SHAs in readiness evidence")
     if len(base_shas) > 1:
@@ -449,24 +516,36 @@ def aggregate(args: argparse.Namespace) -> None:
         "sourceSha": next(iter(source_shas)) if len(source_shas) == 1 else None,
         "baseSha": next(iter(base_shas)) if len(base_shas) == 1 else None,
         "qualificationReady": ready,
+        "workflowContext": context,
+        "workflowOutcomes": {
+            "qualification": args.qualification_outcome,
+            "download": args.download_outcome,
+        },
+        "evidenceAuthentication": "trusted-workflow-job-results-required",
+        "hostedExecutionIndependentlyVerified": False,
+        "inputEvidence": [
+            {
+                "path": str(path.relative_to(args.evidence_dir)),
+                "sha256": file_sha256(path),
+            }
+            for path in evidence_files
+        ],
         "productionActivation": False,
         "release": False,
         "gates": [
             {
                 "id": gate,
                 "result": records.get(gate, {}).get("result", "missing"),
-                "workflowRunId": records.get(gate, {})
-                .get("workflow", {})
-                .get("runId"),
-                "targetTriple": records.get(gate, {})
-                .get("runner", {})
-                .get("targetTriple"),
-                "runnerFingerprintSha256": records.get(gate, {})
-                .get("runner", {})
-                .get("fingerprintSha256"),
-                "testSetSha256": records.get(gate, {})
-                .get("bindings", {})
-                .get("testSetSha256"),
+                "workflowRunId": record_object(records, gate, "workflow").get("runId"),
+                "targetTriple": record_object(records, gate, "runner").get(
+                    "targetTriple"
+                ),
+                "runnerFingerprintSha256": record_object(records, gate, "runner").get(
+                    "fingerprintSha256"
+                ),
+                "testSetSha256": record_object(records, gate, "bindings").get(
+                    "testSetSha256"
+                ),
             }
             for gate in expected
         ],
@@ -479,8 +558,10 @@ def aggregate(args: argparse.Namespace) -> None:
             "release": False,
         },
     }
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_bytes(canonical_bytes(manifest))
+    provenance.clean_checkout(ROOT, args.source_sha, objects["source-head"][1])
+    if args.output.resolve().is_relative_to(ROOT.resolve()):
+        raise ReadinessError("evidence output must be outside the checked source")
+    provenance.publish(args.output, manifest)
     if not ready and not args.allow_incomplete:
         raise ReadinessError("; ".join(manifest["blockers"]))
 
@@ -501,7 +582,9 @@ def parser() -> argparse.ArgumentParser:
     capture_parser.add_argument("--tested-sha")
     capture_parser.add_argument("--tree-sha")
     capture_parser.add_argument("--lane", required=True)
-    capture_parser.add_argument("--toolchain", choices=("stable", "msrv"), required=True)
+    capture_parser.add_argument(
+        "--toolchain", choices=("stable", "msrv"), required=True
+    )
     capture_parser.add_argument("--target-triple")
     capture_parser.add_argument("--workflow", required=True)
     capture_parser.add_argument("--run-id", required=True)
@@ -512,14 +595,23 @@ def parser() -> argparse.ArgumentParser:
     capture_parser.add_argument("--runner-os")
     capture_parser.add_argument("--runner-arch")
     capture_parser.add_argument("--runner-image")
+    capture_parser.add_argument("--stage-outcomes", required=True)
     capture_parser.add_argument("--result", required=True)
     capture_parser.add_argument("--output", type=Path, required=True)
 
     aggregate_parser = sub.add_parser("aggregate")
     aggregate_parser.add_argument("--spec", type=Path, default=DEFAULT_SPEC)
     aggregate_parser.add_argument("--evidence-dir", type=Path, required=True)
-    aggregate_parser.add_argument("--source-sha")
-    aggregate_parser.add_argument("--base-sha")
+    aggregate_parser.add_argument("--source-sha", required=True)
+    aggregate_parser.add_argument("--base-sha", required=True)
+    for flag in ("workflow", "run-id", "run-attempt", "repository"):
+        aggregate_parser.add_argument("--" + flag, required=True)
+    for flag in ("qualification-outcome", "download-outcome"):
+        aggregate_parser.add_argument(
+            "--" + flag,
+            choices=("success", "failure", "cancelled", "skipped"),
+            required=True,
+        )
     aggregate_parser.add_argument("--output", type=Path, required=True)
     aggregate_parser.add_argument("--allow-incomplete", action="store_true")
     return root
@@ -536,7 +628,13 @@ def main(argv: list[str] | None = None) -> int:
             aggregate(args)
         else:
             raise AssertionError(args.command)
-    except ReadinessError as error:
+    except (
+        ReadinessError,
+        ValueError,
+        OSError,
+        KeyError,
+        subprocess.CalledProcessError,
+    ) as error:
         print(f"neuron readiness: {error}", file=sys.stderr)
         return 1
     return 0

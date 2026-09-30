@@ -15,7 +15,7 @@
     },
     {
       "id": "NR-Q-002",
-      "statement": "Evidence binds workflow run, target triple, runner fingerprint, test-set hash, Cargo.lock hash, documentation hash and implementation-map hash.",
+      "statement": "Evidence validates exact lane Git objects, actual compiler/target, one workflow run/attempt and all required step outcomes; parsing does not authenticate remote execution.",
       "tests": [
         "scripts/neuron/test_readiness.py::ReadinessTests.test_capture_contains_required_bindings"
       ],
