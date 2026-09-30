@@ -9,8 +9,9 @@ use codex_hepta_bellman_operator::SensorCoreDesignV1;
 use codex_hepta_bellman_operator::SensorPointV1;
 use codex_hepta_bellman_operator::TabularOperatorPlanV1;
 use codex_hepta_bellman_operator::TabularOperatorSampleV1;
-use codex_hepta_bellman_operator::build_sensor_core;
-use codex_hepta_bellman_operator::fit_tabular_operator_strict_v2;
+use codex_hepta_bellman_operator::WorkControlV1;
+use codex_hepta_bellman_operator::build_sensor_core_controlled_v2;
+use codex_hepta_bellman_operator::fit_tabular_operator_strict_controlled_v3;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
@@ -62,8 +63,13 @@ fn sensor_design(candidate_count: usize, requested_count: usize) -> SensorCoreDe
 
 fn run_sensor(candidate_count: usize, requested_count: usize) -> Duration {
     let design = sensor_design(candidate_count, requested_count);
+    let max_operations = u64::try_from(candidate_count)
+        .expect("candidate count")
+        .saturating_mul(u64::try_from(requested_count + 2).expect("requested count"));
+    let (control, _) = WorkControlV1::new(120_000, max_operations.max(10_000)).unwrap();
     let started = Instant::now();
-    let manifest = build_sensor_core(design).expect("sensor-core qualification");
+    let manifest = build_sensor_core_controlled_v2(design, &control)
+        .expect("sensor-core qualification");
     assert_eq!(manifest.selected_points.len(), requested_count);
     started.elapsed()
 }
@@ -87,12 +93,13 @@ fn run_tabular(sample_count: usize, iteration: usize) -> Duration {
             }
         })
         .collect();
+    let dataset_label = format!("qualification-dataset-{sample_count}-{iteration}");
     let plan = TabularOperatorPlanV1 {
         artifact_id: id(format!("qualification-artifact-{sample_count}-{iteration}")),
         producer_id: id("qualification-owner"),
         generation: Generation::new(1).expect("generation"),
         objective_digest: digest(b"qualification-objective"),
-        dataset_digest: digest(format!("qualification-dataset-{sample_count}-{iteration}")),
+        dataset_digest: digest(dataset_label.as_bytes()),
         sensor_core_digest: digest(b"qualification-sensor-core"),
         training_profile_digest: digest(b"qualification-training-profile"),
         minimum_samples_per_cell: 1,
@@ -100,7 +107,12 @@ fn run_tabular(sample_count: usize, iteration: usize) -> Duration {
         action_ids: vec![action],
         samples,
     };
-    let artifact = fit_tabular_operator_strict_v2(plan).expect("tabular qualification");
+    let max_operations = u64::try_from(sample_count)
+        .expect("sample count")
+        .saturating_add(4_096);
+    let (control, _) = WorkControlV1::new(300_000, max_operations).unwrap();
+    let artifact = fit_tabular_operator_strict_controlled_v3(plan, &control)
+        .expect("tabular qualification");
     assert_eq!(artifact.cells.len(), 1);
     assert_eq!(artifact.cells[0].sample_count as usize, sample_count);
     started.elapsed()
