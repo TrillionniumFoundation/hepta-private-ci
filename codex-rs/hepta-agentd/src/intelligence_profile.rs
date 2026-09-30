@@ -136,10 +136,8 @@ where
             composition_digest: composition_digest.to_string(),
         };
 
-        let config = config.with_canonical_intelligence_profile(
-            self.runner,
-            self.invocation_factory,
-        )?;
+        let config =
+            config.with_canonical_intelligence_profile(self.runner, self.invocation_factory)?;
         let config = config.with_intelligence_learning_runtime(self.learning_runtime)?;
         let config = config.with_intelligence_execution_host(self.execution_host)?;
         Ok((config, receipt))

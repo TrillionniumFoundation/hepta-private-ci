@@ -5,6 +5,7 @@ use std::collections::BTreeSet;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_context_compiler::ExactTokenizerV2;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
@@ -27,6 +28,18 @@ fn id(value: &str) -> StableId {
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+pub(crate) struct ByteTokenizer(pub(crate) Digest32);
+
+impl ExactTokenizerV2 for ByteTokenizer {
+    fn tokenizer_digest(&self) -> Digest32 {
+        self.0
+    }
+
+    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
+        u64::try_from(bytes.len()).map_err(|_| ContextCompilerV2Error::InvalidSerializedTokenCount)
+    }
 }
 
 pub(crate) fn admitted_registry(
@@ -250,7 +263,7 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
     let (registry, tuple, _authority, _signing_key, _grant_now) = admitted_registry(&root, payload);
     let selected = canonical_selection(&registry, &tuple, 100);
 
-    let output = compile_prompt_registry_v2(
+    let output = compile_prompt_registry_with_tokenizer_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -267,12 +280,13 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
                 serializer_digest: digest("serializer"),
                 template_digest: tuple.template_digest,
                 tool_schema_digest: tuple.tool_schema_digest,
-                maximum_context_tokens: 128,
+                maximum_context_tokens: 512,
             },
             now_unix_ms: 100,
-            token_budget: 128,
+            token_budget: 512,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer(tuple.tokenizer_digest),
     )
     .expect("compile exercised prompt registry context");
 
@@ -314,6 +328,41 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
             .windows(payload.len())
             .any(|window| window == payload)
     );
+
+    let mut substituted = output.clone();
+    let delivery = &mut substituted.selected_deliveries[0];
+    delivery.payload = b"Unadmitted replacement instruction.".to_vec();
+    delivery.binding.payload_digest = Digest32::of_bytes(&delivery.payload);
+    delivery.delivery_digest = delivery.compute_digest();
+    delivery
+        .validate()
+        .expect("self-consistent compatibility DTO");
+    substituted.delivery_set_digest = substituted.compute_delivery_set_digest();
+    assert!(matches!(
+        substituted.validate(),
+        Err(PromptRegistryCompilationErrorV2::Integrity)
+    ));
+
+    let mut substituted = output.clone();
+    substituted.exercise_receipt_digest = digest("foreign-exercise-receipt");
+    substituted.delivery_set_digest = substituted.compute_delivery_set_digest();
+    assert!(matches!(
+        substituted.validate(),
+        Err(PromptRegistryCompilationErrorV2::Integrity)
+    ));
+
+    let mut substituted = output.clone();
+    substituted.compatible.snapshot_digest = digest("foreign-registry-snapshot");
+    substituted.compatible.set_digest = substituted.compatible.compute_set_digest();
+    substituted
+        .compatible
+        .validate()
+        .expect("self-consistent foreign snapshot");
+    substituted.delivery_set_digest = substituted.compute_delivery_set_digest();
+    assert!(matches!(
+        substituted.validate(),
+        Err(PromptRegistryCompilationErrorV2::Integrity)
+    ));
 
     let factor_v1 = registry
         .registry()
@@ -385,7 +434,7 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
         )
         .expect("final-use revocation");
 
-    let error = compile_prompt_registry_v2(
+    let error = compile_prompt_registry_with_tokenizer_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -408,6 +457,7 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
             token_budget: 128,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer(tuple.tokenizer_digest),
     )
     .expect_err("stale exercised selection must not deliver");
     assert!(matches!(
@@ -424,7 +474,7 @@ fn compiler_rejects_registry_and_context_model_drift() {
         admitted_registry(&root, b"Bound instruction");
     let selected = canonical_selection(&registry, &tuple, 100);
 
-    let error = compile_prompt_registry_v2(
+    let error = compile_prompt_registry_with_tokenizer_v2(
         &registry,
         &selected.portfolio,
         &selected.exercise_request,
@@ -447,6 +497,7 @@ fn compiler_rejects_registry_and_context_model_drift() {
             token_budget: 128,
             truncation_policy_digest: digest("truncation"),
         },
+        &ByteTokenizer(tuple.tokenizer_digest),
     )
     .expect_err("model drift must fail");
     assert!(matches!(

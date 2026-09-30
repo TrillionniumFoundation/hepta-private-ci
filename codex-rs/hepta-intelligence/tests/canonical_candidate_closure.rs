@@ -324,7 +324,9 @@ fn independent_context_boundary_rehashes_mutable_advisory_semantics() {
         }
         assert_eq!(
             assemble_context(&changed, &context),
-            Err(CanonicalIntelligenceError::InvalidCandidateSet("decision digest")),
+            Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                "decision digest"
+            )),
             "accepted mutable advisory field {field}"
         );
     }

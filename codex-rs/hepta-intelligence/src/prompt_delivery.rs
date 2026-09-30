@@ -14,6 +14,7 @@ use codex_hepta_context_compiler::ContextAttachmentV2;
 use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextModelProfileV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
+use codex_hepta_context_compiler::ExactTokenizerV2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
 use codex_hepta_context_compiler::SerializedContextV2;
 use codex_hepta_prompt_registry::CompatibleRealizationSetV2;
@@ -30,7 +31,7 @@ use crate::PromptContextCompileRequestV1;
 use crate::PromptDeliveryPrepareRequestV1;
 use crate::PromptPipelineErrorV1;
 use crate::compile_exercised_prompt_context_v1;
-use crate::prepare_prompt_delivery_v1;
+use crate::prepare_prompt_delivery_with_tokenizer_v1;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 
@@ -52,6 +53,8 @@ pub struct PromptRegistryCompilationRequestV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptRegistryCompiledContextV2 {
+    admitted_exercise_receipt_digest: Digest32,
+    admitted_compatible: CompatibleRealizationSetV2,
     pub compatible: CompatibleRealizationSetV2,
     pub exercise_receipt_digest: Digest32,
     pub portfolio_receipt_digest: Digest32,
@@ -76,8 +79,10 @@ impl PromptRegistryCompiledContextV2 {
             .validate()
             .map_err(PromptRegistryCompilationErrorV2::Context)?;
         if self.authority.grants_any()
+            || self.compatible != self.admitted_compatible
             || self.delivery_set_digest.is_zero()
             || self.exercise_receipt_digest.is_zero()
+            || self.exercise_receipt_digest != self.admitted_exercise_receipt_digest
             || self.portfolio_receipt_digest.is_zero()
             || self.compiled.receipt().prompt_portfolio_digest() != self.portfolio_receipt_digest
         {
@@ -100,6 +105,8 @@ impl PromptRegistryCompiledContextV2 {
         }
         if self.serialized_payload.is_empty()
             || Digest32::of_bytes(&self.serialized_payload) != self.serialization.payload_digest()
+            || self.serialized_payload != self.serialized_context.payload()
+            || self.serialized_payload != serialize_selected_deliveries(&self.selected_deliveries)
         {
             return Err(PromptRegistryCompilationErrorV2::Integrity);
         }
@@ -143,13 +150,30 @@ impl PromptRegistryCompiledContextV2 {
     }
 }
 
-/// Compile and serialize the unified optimizer portfolio against the current
-/// durable owner, then return the exact source bundle consumed by Agentd.
+/// Compatibility entrypoint without an exact tokenizer. It cannot create a
+/// registry source serialization receipt from fragment cost claims.
 pub fn compile_prompt_registry_v2(
+    _registry: &DurablePromptRegistry,
+    _portfolio: &SelectedPromptPortfolioV1,
+    _exercise_request: &PromptExerciseRequestV1,
+    _request: PromptRegistryCompilationRequestV2,
+) -> Result<PromptRegistryCompiledContextV2, PromptRegistryCompilationErrorV2> {
+    Err(PromptRegistryCompilationErrorV2::Pipeline(
+        PromptPipelineErrorV1::MissingExactTokenizer,
+    ))
+}
+
+/// Compile and serialize the unified optimizer portfolio against the current
+/// durable owner, counting the complete V3 registry source envelope through a
+/// profile-bound exact tokenizer supplied by the host. Agentd's legacy staging
+/// adapter extracts DeveloperFragments from this envelope; the host's final
+/// serializer must separately count the complete provider request framing.
+pub fn compile_prompt_registry_with_tokenizer_v2(
     registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     exercise_request: &PromptExerciseRequestV1,
     request: PromptRegistryCompilationRequestV2,
+    tokenizer: &impl ExactTokenizerV2,
 ) -> Result<PromptRegistryCompiledContextV2, PromptRegistryCompilationErrorV2> {
     if request.registry_model_tuple != portfolio.model_tuple
         || request.now_unix_ms != exercise_request.now_unix_ms
@@ -199,7 +223,7 @@ pub fn compile_prompt_registry_v2(
         })
         .collect::<Result<Vec<_>, _>>()?;
     let serialized_payload = serialize_selected_deliveries(&selected_deliveries);
-    let delivery = prepare_prompt_delivery_v1(
+    let delivery = prepare_prompt_delivery_with_tokenizer_v1(
         registry,
         portfolio,
         &prepared,
@@ -209,6 +233,7 @@ pub fn compile_prompt_registry_v2(
             serialized_payload: serialized_payload.clone(),
             attachment_id: request.attachment_id,
         },
+        tokenizer,
     )
     .map_err(PromptRegistryCompilationErrorV2::Pipeline)?;
     let snapshot = registry
@@ -226,6 +251,8 @@ pub fn compile_prompt_registry_v2(
         )
         .map_err(PromptRegistryCompilationErrorV2::Registry)?;
     let mut output = PromptRegistryCompiledContextV2 {
+        admitted_exercise_receipt_digest: delivery.exercise.receipt_digest,
+        admitted_compatible: compatible.clone(),
         compatible,
         exercise_receipt_digest: delivery.exercise.receipt_digest,
         portfolio_receipt_digest: portfolio.receipt.receipt_digest,

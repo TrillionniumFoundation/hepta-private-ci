@@ -217,10 +217,7 @@ pub trait CanonicalFreshnessOracleV1 {
     /// manifest may read, parse and verify the complete owner universe once and
     /// serve all `current` calls in this fence from that immutable snapshot.
     /// The default preserves compatibility for per-owner oracles.
-    fn refresh_snapshot(
-        &mut self,
-        _owner_id: &StableId,
-    ) -> Result<(), CanonicalIntelligenceError> {
+    fn refresh_snapshot(&mut self, _owner_id: &StableId) -> Result<(), CanonicalIntelligenceError> {
         Ok(())
     }
 
@@ -737,9 +734,7 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
                 budget_micros: request.budget.for_stage($stage),
                 stage: $stage,
             };
-            let receipt = run_stage(
-                &request.snapshot, &input, &clock, ports, oracle, $call,
-            )?;
+            let receipt = run_stage(&request.snapshot, &input, &clock, ports, oracle, $call)?;
             predecessor = receipt.output_digest;
             output.insert($stage, receipt.output_digest);
             traces.push(CanonicalStageTraceV1 {
@@ -895,10 +890,10 @@ where
     // Check elapsed time before propagating either owner success or failure.
     clock.check_stage(input, started)?;
     let receipt = result.map_err(|failure| CanonicalIntelligenceError::PortFailure {
-            stage,
-            class: failure.class,
-            evidence_digest: failure.evidence_digest,
-        })?;
+        stage,
+        class: failure.class,
+        evidence_digest: failure.evidence_digest,
+    })?;
     validate_port_receipt(input, owner, &receipt)?;
     match stage {
         CanonicalStageV1::IntuitionDecided => {

@@ -260,7 +260,8 @@ fn open_lock(
     directory: &File,
     name: &std::ffi::OsStr,
 ) -> Result<File, IntelligenceAuthorityRollbackErrorV1> {
-    use rustix::fs::{Mode, OFlags};
+    use rustix::fs::Mode;
+    use rustix::fs::OFlags;
     use std::os::unix::fs::MetadataExt;
     let fd = rustix::fs::openat(
         directory,
@@ -294,7 +295,8 @@ fn read_record(
     directory: &File,
     name: &std::ffi::OsStr,
 ) -> Result<Option<RollbackRecordV1>, IntelligenceAuthorityRollbackErrorV1> {
-    use rustix::fs::{Mode, OFlags};
+    use rustix::fs::Mode;
+    use rustix::fs::OFlags;
     let fd = match rustix::fs::openat(
         directory,
         name,
@@ -329,8 +331,11 @@ fn persist_record(
     name: &std::ffi::OsStr,
     record: &RollbackRecordV1,
 ) -> Result<(), IntelligenceAuthorityRollbackErrorV1> {
-    use rustix::fs::{AtFlags, Mode, OFlags};
-    use std::sync::atomic::{AtomicU64, Ordering};
+    use rustix::fs::AtFlags;
+    use rustix::fs::Mode;
+    use rustix::fs::OFlags;
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
     static SERIAL: AtomicU64 = AtomicU64::new(0);
     let bytes = serde_json::to_vec(record)
         .map_err(|error| IntelligenceAuthorityRollbackErrorV1::Json(error.to_string()))?;

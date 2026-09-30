@@ -57,14 +57,10 @@ mod tests {
     #[test]
     fn indeterminate_is_an_explicit_non_terminal_commit_state() {
         assert_eq!(
-            intelligence_commit_state_v1(
-                AgentdIntelligenceLearningDispositionV1::Indeterminate
-            ),
+            intelligence_commit_state_v1(AgentdIntelligenceLearningDispositionV1::Indeterminate),
             AgentdIntelligenceCommitStateV1::UnknownCommittedState
         );
-        assert!(
-            !AgentdIntelligenceCommitStateV1::UnknownCommittedState.is_terminal()
-        );
+        assert!(!AgentdIntelligenceCommitStateV1::UnknownCommittedState.is_terminal());
     }
 
     #[test]

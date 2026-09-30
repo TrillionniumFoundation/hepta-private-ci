@@ -135,10 +135,14 @@ pub(crate) fn publish_immutable(
     bytes: &[u8],
     maximum: usize,
 ) -> io::Result<()> {
-    use rustix::fs::{AtFlags, Mode, OFlags, RenameFlags};
+    use rustix::fs::AtFlags;
+    use rustix::fs::Mode;
+    use rustix::fs::OFlags;
+    use rustix::fs::RenameFlags;
     use std::io::Write;
     use std::os::unix::fs::MetadataExt;
-    use std::sync::atomic::{AtomicU64, Ordering};
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
     static NEXT: AtomicU64 = AtomicU64::new(0);
 
     if name.is_empty()

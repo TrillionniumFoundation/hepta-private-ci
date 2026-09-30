@@ -6,6 +6,7 @@ use std::collections::BTreeSet;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextModelProfileV2;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseGrant;
@@ -32,6 +33,18 @@ fn id(value: &str) -> StableId {
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+struct ByteTokenizer(Digest32);
+
+impl ExactTokenizerV2 for ByteTokenizer {
+    fn tokenizer_digest(&self) -> Digest32 {
+        self.0
+    }
+
+    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
+        u64::try_from(bytes.len()).map_err(|_| ContextCompilerV2Error::InvalidSerializedTokenCount)
+    }
 }
 
 fn attachment() -> PromptRuntimeAttachmentV1 {
@@ -707,7 +720,26 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         policy_digest: digest("exercise-policy"),
     };
 
-    let disposition = pipeline
+    let compilation_request = codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
+        compilation_id: id("compilation:agentd-product"),
+        serialization_id: id("serialization:agentd-product"),
+        attachment_id: id("attachment:agentd-product"),
+        registry_model_tuple: tuple.clone(),
+        context_model_profile: ContextModelProfileV2 {
+            model_digest: tuple.model_digest,
+            provider_id_digest: digest("provider:agentd-product"),
+            provider_model_digest: tuple.model_digest,
+            tokenizer_digest: tuple.tokenizer_digest,
+            serializer_digest: digest("serializer:agentd-product"),
+            template_digest: tuple.template_digest,
+            tool_schema_digest: tuple.tool_schema_digest,
+            maximum_context_tokens: 512,
+        },
+        now_unix_ms: logical_now,
+        token_budget: 512,
+        truncation_policy_digest: digest("truncation:agentd-product"),
+    };
+    let legacy = pipeline
         .compile_and_stage(
             "thread:product",
             "turn:product",
@@ -715,25 +747,33 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             wall_now + 60_000,
             &portfolio,
             &exercise_request,
-            codex_hepta_intelligence::PromptRegistryCompilationRequestV2 {
-                compilation_id: id("compilation:agentd-product"),
-                serialization_id: id("serialization:agentd-product"),
-                attachment_id: id("attachment:agentd-product"),
-                registry_model_tuple: tuple.clone(),
-                context_model_profile: ContextModelProfileV2 {
-                    model_digest: tuple.model_digest,
-                    provider_id_digest: digest("provider:agentd-product"),
-                    provider_model_digest: tuple.model_digest,
-                    tokenizer_digest: tuple.tokenizer_digest,
-                    serializer_digest: digest("serializer:agentd-product"),
-                    template_digest: tuple.template_digest,
-                    tool_schema_digest: tuple.tool_schema_digest,
-                    maximum_context_tokens: 128,
-                },
-                now_unix_ms: logical_now,
-                token_budget: 128,
-                truncation_policy_digest: digest("truncation:agentd-product"),
-            },
+            compilation_request.clone(),
+        )
+        .expect_err("legacy owner cannot stage an uncounted physical payload");
+    assert!(matches!(
+        legacy,
+        AgentdPromptPipelineError::Compilation(ref message)
+            if message.contains("MissingExactTokenizer")
+    ));
+    assert!(
+        pipeline
+            .runtime_owner()
+            .state
+            .lock()
+            .expect("runtime state")
+            .staged
+            .is_empty()
+    );
+    let disposition = pipeline
+        .compile_and_stage_with_tokenizer(
+            "thread:product",
+            "turn:product",
+            "gpt-test",
+            wall_now + 60_000,
+            &portfolio,
+            &exercise_request,
+            compilation_request,
+            &ByteTokenizer(tuple.tokenizer_digest),
         )
         .unwrap_or_else(|error| panic!("compile and stage: {error}"));
     assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);

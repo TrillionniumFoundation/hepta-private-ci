@@ -145,6 +145,7 @@ pub use prompt_pipeline::PromptSerializationProofV1;
 pub use prompt_pipeline::compile_exercised_prompt_context_v1;
 pub use prompt_pipeline::observe_prompt_delivery_v1;
 pub use prompt_pipeline::prepare_prompt_delivery_v1;
+pub use prompt_pipeline::prepare_prompt_delivery_with_tokenizer_v1;
 
 mod pipeline_v2;
 mod prompt_delivery;
@@ -157,6 +158,7 @@ pub use prompt_delivery::PromptRegistryCompilationErrorV2;
 pub use prompt_delivery::PromptRegistryCompilationRequestV2;
 pub use prompt_delivery::PromptRegistryCompiledContextV2;
 pub use prompt_delivery::compile_prompt_registry_v2;
+pub use prompt_delivery::compile_prompt_registry_with_tokenizer_v2;
 
 mod pipeline;
 

@@ -123,10 +123,7 @@ impl Oracle {
 }
 
 impl CanonicalFreshnessOracleV1 for Oracle {
-    fn refresh_snapshot(
-        &mut self,
-        _owner_id: &StableId,
-    ) -> Result<(), CanonicalIntelligenceError> {
+    fn refresh_snapshot(&mut self, _owner_id: &StableId) -> Result<(), CanonicalIntelligenceError> {
         self.refreshes += 1;
         if self.delayed_refresh == Some(self.refreshes) {
             std::thread::sleep(self.refresh_delay);
@@ -471,7 +468,10 @@ fn canonical_total_budget_includes_currentness_before_owner_calls() {
 
 #[test]
 fn terminal_advice_rechecks_earlier_owners_at_the_final_fence() {
-    for decision in [CanonicalPortDecisionV1::Abstained, CanonicalPortDecisionV1::SlowPath] {
+    for decision in [
+        CanonicalPortDecisionV1::Abstained,
+        CanonicalPortDecisionV1::SlowPath,
+    ] {
         let request = request();
         let mut oracle = Oracle::new(&request.snapshot);
         oracle.drift_after_first = Some(id("utility.ndu"));

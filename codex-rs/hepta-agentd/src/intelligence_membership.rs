@@ -36,10 +36,7 @@ impl AgentdLegalCandidateMembershipProofV1 {
         }
         let mut canonical = candidate_ids.to_vec();
         canonical.sort();
-        if canonical
-            .windows(2)
-            .any(|window| window[0] == window[1])
-        {
+        if canonical.windows(2).any(|window| window[0] == window[1]) {
             return Err(CanonicalIntelligenceError::InvalidCandidateSet(
                 "duplicate candidate membership",
             ));
@@ -86,10 +83,7 @@ impl AgentdLegalCandidateMembershipProofV1 {
     }
 }
 
-fn push_id(
-    bytes: &mut Vec<u8>,
-    value: &StableId,
-) -> Result<(), CanonicalIntelligenceError> {
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), CanonicalIntelligenceError> {
     let raw = value.as_str().as_bytes();
     let length = u32::try_from(raw.len()).map_err(|_| CanonicalIntelligenceError::Arithmetic)?;
     bytes.extend_from_slice(&length.to_be_bytes());

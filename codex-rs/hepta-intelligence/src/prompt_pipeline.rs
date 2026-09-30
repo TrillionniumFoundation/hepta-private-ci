@@ -214,6 +214,7 @@ pub enum PromptPipelineErrorV1 {
     PayloadMaterializationDrift,
     SerializedPayloadMissing(String),
     SerializationProofDrift,
+    MissingExactTokenizer,
     ProviderEvidenceRequired,
     Arithmetic,
 }
@@ -457,11 +458,27 @@ pub fn compile_exercised_prompt_context_v1(
     })
 }
 
+/// Compatibility entrypoint retained without a tokenizer owner. It cannot
+/// attest the token count of a physical serialization and therefore fails closed.
 pub fn prepare_prompt_delivery_v1(
+    _registry: &DurablePromptRegistry,
+    _portfolio: &SelectedPromptPortfolioV1,
+    _prepared: &PreparedPromptContextV1,
+    _request: PromptDeliveryPrepareRequestV1,
+) -> Result<PreparedPromptDeliveryV1, PromptPipelineErrorV1> {
+    Err(PromptPipelineErrorV1::MissingExactTokenizer)
+}
+
+/// Count the complete supplied payload with the host's profile-bound tokenizer.
+/// Registry realization costs cover stored fragments, not provider framing or
+/// other bytes in a serialization. The host must supply the actual tokenizer
+/// and apply this gate again if a downstream adapter reframes that payload.
+pub fn prepare_prompt_delivery_with_tokenizer_v1(
     registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     prepared: &PreparedPromptContextV1,
     request: PromptDeliveryPrepareRequestV1,
+    tokenizer: &impl ExactTokenizerV2,
 ) -> Result<PreparedPromptDeliveryV1, PromptPipelineErrorV1> {
     let receipt = prepared.compiled.receipt();
     if receipt.objective_digest() != portfolio.objective_digest
@@ -496,8 +513,6 @@ pub fn prepare_prompt_delivery_v1(
         .map(|payload| (payload.binding.realization_id.clone(), payload))
         .collect::<BTreeMap<_, _>>();
     let mut realizations = Vec::new();
-    let mut counts = BTreeMap::new();
-    let mut serialized_count = 0_u64;
     for item_id in prepared.compiled.receipt().selected_item_ids() {
         let payload = by_id.get(item_id).ok_or_else(|| {
             PromptPipelineErrorV1::SelectedRealizationMissing(item_id.to_string())
@@ -508,27 +523,12 @@ pub fn prepare_prompt_delivery_v1(
             | PromptRoleV2::DeveloperInstruction
             | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
         };
-        counts.insert(
-            payload.binding.payload_digest,
-            u64::from(payload.binding.token_cost),
-        );
-        serialized_count = serialized_count
-            .checked_add(u64::from(payload.binding.token_cost))
-            .ok_or(PromptPipelineErrorV1::Arithmetic)?;
         realizations.push(ContextRealizedItemV2 {
             item_id: item_id.clone(),
             role,
             content: payload.payload.clone(),
         });
     }
-    counts.insert(
-        Digest32::of_bytes(&serialized_payload),
-        serialized_count.max(1),
-    );
-    let tokenizer = RegistryBoundTokenizer {
-        tokenizer_digest: prepared.model_profile.tokenizer_digest,
-        exact_counts: counts,
-    };
     let serializer = ExactPreparedSerializer {
         serializer_digest: prepared.model_profile.serializer_digest,
         template_digest: prepared.model_profile.template_digest,
@@ -541,7 +541,7 @@ pub fn prepare_prompt_delivery_v1(
         serialization_id,
         realizations,
         &serializer,
-        &tokenizer,
+        tokenizer,
     )
     .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     let serialization = serialized_context.receipt().clone();
