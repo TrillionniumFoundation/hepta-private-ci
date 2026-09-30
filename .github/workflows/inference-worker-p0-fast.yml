@@ -1,0 +1,122 @@
+name: Inference worker P0 fast compile
+
+on:
+  push:
+    branches:
+      - automation/inference-worker-materialize-final-20260930
+    paths:
+      - .github/workflows/inference-worker-p0-fast.yml
+      - .github/materialization/inference-worker-p05.patch.gz.b64
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inference-worker-p0-fast-compile
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: 7626ccb14444403a3a27cca7200c5f29b2b392ab
+  TARGET_BRANCH: codex/inference-worker-authoritative-20260929
+  STAGING_BRANCH: automation/inference-worker-materialize-final-20260930
+  PATCH_SHA256: 25adaeb7fe20d16bebc5a6b841d45a5fd3578172cef12953f8e2575ecce67390
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  compile:
+    name: Fast Rust compile and focused tests
+    runs-on: ubuntu-slim
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+          clean: true
+
+      - name: Bind source and apply reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$SOURCE_SHA"
+          git fetch origin "refs/heads/$STAGING_BRANCH:refs/remotes/origin/$STAGING_BRANCH"
+          git show "origin/$STAGING_BRANCH:.github/materialization/inference-worker-p05.patch.gz.b64" \
+            | base64 --decode | gzip --decompress > "$RUNNER_TEMP/inference-worker-p05.patch"
+          printf '%s  %s\n' "$PATCH_SHA256" "$RUNNER_TEMP/inference-worker-p05.patch" | sha256sum --check --strict
+          git apply --check "$RUNNER_TEMP/inference-worker-p05.patch"
+          git apply "$RUNNER_TEMP/inference-worker-p05.patch"
+          git diff --check
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Format exact Rust surfaces
+        shell: bash
+        run: |
+          rustfmt --edition 2024 \
+            codex-rs/hepta-infer-worker-host/src/experimental_local.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local/authority.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local/driver.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs \
+            codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs
+          git diff --check
+
+      - name: Install native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Compile and test focused crates
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-infer-core
+          cargo test --locked -p codex-hepta-infer-worker-host
+          cargo test --locked -p codex-hepta-infer-worker-host --features experimental-local-model
+
+      - name: Strict local-profile lint
+        working-directory: codex-rs
+        run: |
+          cargo check --locked -p codex-hepta-infer-worker-host --features experimental-local-model --all-targets
+          cargo clippy --locked -p codex-hepta-infer-worker-host --features experimental-local-model --all-targets --no-deps -- -D warnings
+
+      - name: Preserve diagnostics and formatted patch
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/inference-worker-p0-fast"
+          git diff --binary --full-index > "$RUNNER_TEMP/inference-worker-p0-fast/formatted.patch"
+          git diff --name-status > "$RUNNER_TEMP/inference-worker-p0-fast/manifest.tsv"
+          printf '%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/inference-worker-p0-fast/source-head.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/inference-worker-p0-fast/workflow-head.txt"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: inference-worker-p0-fast-${{ github.sha }}
+          path: ${{ runner.temp }}/inference-worker-p0-fast
+          if-no-files-found: error
+          retention-days: 3
