@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   export:
-    runs-on: ubuntu-24.04-arm
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 15
     steps:
       - name: Check out exact source
