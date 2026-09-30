@@ -11,8 +11,8 @@ use crate::HeptaEvidenceStore;
 use crate::authbus_outbox_record::*;
 use crate::authbus_recovery::replay_checkpoint_pending;
 use crate::authbus_store::advance_replay;
+use crate::authbus_time::authbus_now;
 use crate::schema_validation::classify_sqlx_error;
-use crate::store::now_millis;
 
 impl HeptaEvidenceStore {
     /// Atomically authenticate, consume replay sequence and enqueue a message.
@@ -38,7 +38,7 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
-        let now = now_millis()?;
+        let now = authbus_now(&mut tx).await?;
         let authenticated = message
             .authenticate(
                 issuer,
@@ -179,7 +179,7 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
-        let now = now_millis()?;
+        let now = authbus_now(&mut tx).await?;
         let affected = sqlx::query(
             "UPDATE authbus_outbox SET state = 'quarantined', fence = fence + 1,
             worker_id = NULL, lease_until_ms = NULL, updated_at_ms = MAX(updated_at_ms, ?),
@@ -220,7 +220,7 @@ async fn pending(
     if replay_checkpoint_pending(&mut tx).await? {
         return Err(AuthBusOutboxError::Unavailable);
     }
-    let now = now_millis()?;
+    let now = authbus_now(&mut tx).await?;
     maintain(&mut tx, now).await?;
     let issuer_id = issuer.map(|issuer| issuer.issuer_id.as_str());
     let key_epoch = issuer.map(|issuer| issuer.key_epoch.get().to_be_bytes());
