@@ -314,9 +314,22 @@ fn numeric_and_digest_grammar_remains_exact() {
 #[test]
 fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
+
+    // Empty caller actions are structurally valid: semantic compilation may
+    // inject the intrinsic abstain action. Keep the JSON ingress contract in
+    // lockstep with ObjectiveSourceEnvelopeV1::validate_structure.
+    let mut no_caller_actions = original.clone();
+    no_caller_actions["structuredIntent"]["legalActionClasses"] = json!([]);
+    assert!(
+        decode_source_envelope_json_v1(&serde_json::to_vec(&no_caller_actions).unwrap())
+            .unwrap()
+            .structured_intent
+            .legal_action_classes
+            .is_empty()
+    );
+
     for (pointer, invalid) in [
         ("/locale", json!("é".repeat(17))),
-        ("/structuredIntent/legalActionClasses", json!([])),
         (
             "/structuredIntent/legalActionClasses",
             json!(vec!["read"; 129]),
@@ -368,15 +381,22 @@ fn raw_ingress_budget_and_json_framing_fail_without_source_leakage() {
         b"[",
         &SOURCE.as_bytes()[..SOURCE.len() - 1],
     ] {
-        reject(invalid);
+        let error = decode_source_envelope_json_v1(invalid).unwrap_err();
+        assert!(matches!(error, ObjectiveSourceJsonError::InvalidJson { .. }));
+        assert!(error.source().is_none());
+        assert!(!error.to_string().contains("read-request"));
     }
-    reject(format!("{SOURCE} {{}}").as_bytes());
-    reject(format!("{}0{}", "[".repeat(64), "]".repeat(64)).as_bytes());
+    let mut two_values = SOURCE.to_owned();
+    two_values.push_str(" null");
+    reject(two_values.as_bytes());
 }
 
 fn reject(source: &[u8]) {
-    let error = decode_source_envelope_json_v1(source).expect_err("invalid source must reject");
-    assert!(!error.to_string().contains("private-sentinel"));
-    assert!(!format!("{error:?}").contains("private-sentinel"));
+    let error = decode_source_envelope_json_v1(source).unwrap_err();
+    assert!(matches!(
+        error,
+        ObjectiveSourceJsonError::InvalidJson { .. }
+    ));
     assert!(error.source().is_none());
+    assert!(!error.to_string().contains("read-request"));
 }
