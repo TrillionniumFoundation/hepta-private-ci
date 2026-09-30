@@ -1,0 +1,196 @@
+name: runtime.codex candidate qualification
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-final-candidate-*
+    paths:
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-codex-adapter/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-infer-worker-host/**
+      - codex-rs/core/src/tools/spec_plan.rs
+      - docs/modules/runtime.codex/**
+      - qualification/runtime-codex/**
+      - scripts/runtime-codex-qualification.py
+      - .github/workflows/runtime-codex-candidate-qualification.yml
+      - .github/workflows/runtime-codex-qualification.yml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - rust-toolchain.toml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: runtime-codex-candidate-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  RESULTS: qualification/runtime-codex/results.jsonl
+  LOG_DIR: qualification/runtime-codex/logs
+  RECEIPT_DIR: qualification/runtime-codex/receipt
+
+jobs:
+  exact-head:
+    name: runtime.codex candidate exact-head
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: clippy
+      - uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Bind immutable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          head="$(git rev-parse HEAD)"
+          tree="$(git rev-parse 'HEAD^{tree}')"
+          base="$(git rev-parse refs/remotes/origin/main)"
+          target="$(rustc -vV | sed -n 's/^host: //p')"
+          echo "RUNTIME_CODEX_EXPECTED_HEAD=$head" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_EXPECTED_TREE=$tree" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_BASE_REF=main" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_BASE_HEAD=$base" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_CURRENT_BASE_HEAD=$base" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_TARGET_TRIPLE=$target" >> "$GITHUB_ENV"
+      - name: Verify Lane B source truth
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name lane-b-truth -- python3 scripts/hepta-lane-b-truth.py verify
+      - name: Validate receipt helper
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name receipt-helper -- python3 -m py_compile scripts/runtime-codex-qualification.py
+      - name: Format
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name format --cwd codex-rs -- cargo fmt --all -- --check
+      - name: Agent protocol
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name agent-protocol --cwd codex-rs -- cargo test --locked -p codex-hepta-agent-protocol
+      - name: Durable native journal
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name infer-core --cwd codex-rs -- cargo test --locked -p codex-hepta-infer-core
+      - name: Adapter contract
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name codex-adapter --cwd codex-rs -- cargo test --locked -p codex-hepta-codex-adapter
+      - name: Agentd owner and restart store
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name agentd-owner --cwd codex-rs -- cargo test --locked -p codex-hepta-agentd --lib lane_b_runtime
+      - name: Native worker host
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name worker-host --cwd codex-rs -- cargo test --locked -p codex-hepta-infer-worker-host
+      - name: Crash matrix
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name crash-matrix --cwd codex-rs -- cargo test --locked -p codex-hepta-infer-worker-host --test runtime_codex_crash_matrix
+      - name: Product caller E2E
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name product-e2e --cwd codex-rs -- cargo test --locked -p codex-hepta-agentd runtime_codex_product_caller_commits_one_authorized_terminal_turn
+      - name: Strict lint
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name strict-lint --cwd codex-rs -- cargo clippy --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-codex-adapter -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
+      - name: Emit exact-head receipt
+        if: always()
+        run: python3 scripts/runtime-codex-qualification.py receipt --results "$RESULTS" --output-dir "$RECEIPT_DIR" --mode exact-head
+      - name: Upload exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-candidate-exact-head-${{ github.run_id }}
+          path: qualification/runtime-codex/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Attest exact-head receipt
+        if: always()
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: qualification/runtime-codex/receipt/runtime-codex-qualification-receipt.json
+      - name: Enforce exact-head gate
+        if: always()
+        run: python3 scripts/runtime-codex-qualification.py gate --results "$RESULTS" --receipt "$RECEIPT_DIR/runtime-codex-qualification-receipt.json" --require lane-b-truth --require receipt-helper --require format --require agent-protocol --require infer-core --require codex-adapter --require agentd-owner --require worker-host --require crash-matrix --require product-e2e --require strict-lint
+
+  synthetic-merge:
+    name: runtime.codex candidate synthetic-merge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Construct deterministic current-main merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'runtime.codex qualification'
+          git config user.email 'runtime-codex-qualification@invalid'
+          source_head="$(git rev-parse HEAD)"
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          base="$(git rev-parse refs/remotes/origin/main)"
+          git merge --no-ff --no-edit "$base"
+          merge_head="$(git rev-parse HEAD)"
+          merge_tree="$(git rev-parse 'HEAD^{tree}')"
+          echo "RUNTIME_CODEX_SOURCE_HEAD=$source_head" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_BASE_REF=main" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_BASE_HEAD=$base" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_CURRENT_BASE_HEAD=$base" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_MERGE_HEAD=$merge_head" >> "$GITHUB_ENV"
+          echo "RUNTIME_CODEX_MERGE_TREE=$merge_tree" >> "$GITHUB_ENV"
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: clippy
+      - uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Bind merge target
+        run: echo "RUNTIME_CODEX_TARGET_TRIPLE=$(rustc -vV | sed -n 's/^host: //p')" >> "$GITHUB_ENV"
+      - name: Verify Lane B source truth
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name lane-b-truth -- python3 scripts/hepta-lane-b-truth.py verify
+      - name: Validate receipt helper
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name receipt-helper -- python3 -m py_compile scripts/runtime-codex-qualification.py
+      - name: Format
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name format --cwd codex-rs -- cargo fmt --all -- --check
+      - name: Compile
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name compile --cwd codex-rs -- cargo check --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-codex-adapter -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets
+      - name: Owner and journal tests
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name owner-journal --cwd codex-rs -- cargo test --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-agentd --lib lane_b_runtime
+      - name: Crash matrix
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name crash-matrix --cwd codex-rs -- cargo test --locked -p codex-hepta-infer-worker-host --test runtime_codex_crash_matrix
+      - name: Product E2E
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name product-e2e --cwd codex-rs -- cargo test --locked -p codex-hepta-agentd runtime_codex_product_caller_commits_one_authorized_terminal_turn
+      - name: Strict lint
+        run: python3 scripts/runtime-codex-qualification.py run --results "$RESULTS" --log-dir "$LOG_DIR" --name strict-lint --cwd codex-rs -- cargo clippy --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-codex-adapter -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
+      - name: Emit synthetic-merge receipt
+        if: always()
+        run: python3 scripts/runtime-codex-qualification.py receipt --results "$RESULTS" --output-dir "$RECEIPT_DIR" --mode synthetic-merge
+      - name: Upload synthetic-merge evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-candidate-synthetic-merge-${{ github.run_id }}
+          path: qualification/runtime-codex/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Attest synthetic-merge receipt
+        if: always()
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: qualification/runtime-codex/receipt/runtime-codex-qualification-receipt.json
+      - name: Enforce synthetic-merge gate
+        if: always()
+        run: python3 scripts/runtime-codex-qualification.py gate --results "$RESULTS" --receipt "$RECEIPT_DIR/runtime-codex-qualification-receipt.json" --require lane-b-truth --require receipt-helper --require format --require compile --require owner-journal --require crash-matrix --require product-e2e --require strict-lint
+
+  required:
+    name: runtime.codex candidate required
+    if: always()
+    needs: [exact-head, synthetic-merge]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Verify candidate jobs
+        run: |
+          test "${{ needs.exact-head.result }}" = success
+          test "${{ needs.synthetic-merge.result }}" = success
