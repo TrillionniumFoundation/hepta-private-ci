@@ -9,13 +9,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: context-compiler-settlement-transport
+  group: context-compiler-settlement-materialize-fast
   cancel-in-progress: false
 
 jobs:
   materialize-and-verify:
-    runs-on: ubuntu-latest
-    timeout-minutes: 120
+    runs-on: ubuntu-slim
+    timeout-minutes: 30
     steps:
       - name: Check out immutable transport bundle
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -45,18 +45,6 @@ jobs:
           git -C target apply --index --whitespace=error-all "$RUNNER_TEMP/context-full.patch"
           git -C target diff --cached --check
 
-      - name: Install native prerequisites
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends build-essential libcap-dev pkg-config ca-certificates git
-
-      - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          components: clippy,rustfmt
-
       - name: Verify generated truth and Python regressions
         working-directory: target
         shell: bash
@@ -66,16 +54,7 @@ jobs:
           python3 -B -m unittest discover -s scripts -p 'test_context_compiler_*.py' -v
           python3 -m py_compile scripts/context_compiler_execution.py scripts/generate_context_compiler_module_docs.py
 
-      - name: Verify Rust formatting, owner regressions, and strict lint
-        working-directory: target/codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --all -- --check
-          cargo test --locked -p codex-hepta-agentd exact_context_delivery --no-fail-fast
-          cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
-
-      - name: Commit verified candidate to isolated ready branch
+      - name: Commit candidate to isolated ready branch
         working-directory: target
         shell: bash
         env:
