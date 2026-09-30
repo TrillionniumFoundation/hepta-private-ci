@@ -1,8 +1,12 @@
-name: ui.native exact-source qualification
+name: ui.native immutable exact-source qualification
 
 on:
+  push:
+    branches:
+      - work/ui-native-exact-convergence-20260930
   pull_request:
-    branches: [work/ui-native-qualified-integration-20260928]
+    branches:
+      - work/ui-native-qualified-integration-20260928
     paths:
       - apps/hepta-native/**
       - codex-rs/hepta-native-gateway/**
@@ -18,70 +22,79 @@ on:
       - scripts/qualify_hepta_ui_native_storage.py
       - scripts/test_hepta_ui_native_*.py
       - .github/workflows/ui-native-qualification.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ui-native-exact-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  group: ui-native-exact-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: false
 
 env:
   CARGO_INCREMENTAL: "0"
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: "1"
-  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  BASE_SHA: 6f145464d9d58233c59aafe262a1250a5ea873a8
 
 jobs:
   subject:
-    name: ui.native / source identity
+    name: ui.native / immutable source identity
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     outputs:
       candidate: ${{ steps.identity.outputs.candidate }}
       base: ${{ steps.identity.outputs.base }}
       implementation: ${{ steps.identity.outputs.implementation }}
-      matrix: ${{ steps.identity.outputs.matrix }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ env.HEAD_SHA }}
           fetch-depth: 0
           persist-credentials: false
       - id: identity
-        name: Bind candidate, base, implementation and seven qualification subjects
+        name: Bind exact head, fixed ordered-parent merge and implementation
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
-          test -n "$BASE_SHA"
+          candidate="$(python3 - <<'PYTHON'
+          import json
+          import os
+          from pathlib import Path
+          event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
+          print(event.get("pull_request", {}).get("head", {}).get("sha") or os.environ["GITHUB_SHA"])
+          PYTHON
+          )"
+          git checkout --detach "$candidate"
+          test "$(git rev-parse HEAD)" = "$candidate"
           git cat-file -e "$BASE_SHA^{commit}"
           implementation="$(python3 - <<'PYTHON'
           import json
           from pathlib import Path
-          print(json.loads(Path('apps/hepta-native/CANDIDATE.json').read_text(encoding='utf-8'))['implementationSourceSha'])
+          value = json.loads(Path("apps/hepta-native/CANDIDATE.json").read_text(encoding="utf-8"))
+          print(value["implementationSourceSha"])
           PYTHON
           )"
           git cat-file -e "$implementation^{commit}"
-          echo "candidate=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
           echo "base=$BASE_SHA" >> "$GITHUB_OUTPUT"
           echo "implementation=$implementation" >> "$GITHUB_OUTPUT"
-          echo "matrix=$(python3 scripts/hepta_ui_native_qualification_evidence.py matrix)" >> "$GITHUB_OUTPUT"
           python3 scripts/check_hepta_ui_native_convergence.py \
             --emit "$RUNNER_TEMP/ui-native-source-evidence.json"
           test -z "$(git status --porcelain)"
       - name: Retain exact source and review-friendly ordinary diff
         shell: bash
+        env:
+          CANDIDATE: ${{ steps.identity.outputs.candidate }}
         run: |
           set -euo pipefail
           mkdir -p source-snapshot
-          git archive --format=tar "$HEAD_SHA" | gzip -n > source-snapshot/source.tar.gz
-          git rev-parse "$HEAD_SHA" "$HEAD_SHA^{tree}" "$BASE_SHA" "$BASE_SHA^{tree}" \
+          cp "$RUNNER_TEMP/ui-native-source-evidence.json" source-snapshot/
+          git archive --format=tar "$CANDIDATE" | gzip -n > source-snapshot/source.tar.gz
+          git rev-parse "$CANDIDATE" "$CANDIDATE^{tree}" "$BASE_SHA" "$BASE_SHA^{tree}" \
             > source-snapshot/identity.txt
-          git diff --binary --full-index "$BASE_SHA" "$HEAD_SHA" \
+          git diff --binary --full-index "$BASE_SHA" "$CANDIDATE" \
             > source-snapshot/review.diff
-          git diff --stat "$BASE_SHA" "$HEAD_SHA" \
+          git diff --stat "$BASE_SHA" "$CANDIDATE" \
             > source-snapshot/review.stat
           sha256sum source-snapshot/source.tar.gz source-snapshot/review.diff \
             > source-snapshot/sha256.txt
@@ -97,7 +110,26 @@ jobs:
     needs: subject
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.subject.outputs.matrix) }}
+      matrix:
+        include:
+          - os: Linux
+            runner: ubuntu-24.04
+            kind: head
+          - os: Linux
+            runner: ubuntu-24.04
+            kind: merge
+          - os: macOS
+            runner: macos-15
+            kind: head
+          - os: macOS
+            runner: macos-15
+            kind: merge
+          - os: Windows
+            runner: windows-2025
+            kind: head
+          - os: Windows
+            runner: windows-2025
+            kind: merge
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 180
     defaults:
@@ -108,18 +140,17 @@ jobs:
       CANDIDATE: ${{ needs.subject.outputs.candidate }}
       BASE: ${{ needs.subject.outputs.base }}
       KIND: ${{ matrix.kind }}
-      WORKFLOW_SHA: ${{ github.workflow_sha }}
+      WORKFLOW_SHA: ${{ needs.subject.outputs.candidate }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ github.workflow_sha }}
+          ref: ${{ needs.subject.outputs.candidate }}
           fetch-depth: 0
           persist-credentials: false
       - name: Construct exact head or fixed ordered-parent merge
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$WORKFLOW_SHA"
           git checkout --detach "$CANDIDATE"
           test "$(git rev-parse HEAD)" = "$CANDIDATE"
           if test "$KIND" = merge; then
@@ -129,19 +160,19 @@ jobs:
           import subprocess
           commit = subprocess.check_output(
               [
-                  'git', 'commit-tree', os.environ['TREE'],
-                  '-p', os.environ['BASE'], '-p', os.environ['CANDIDATE'],
+                  "git", "commit-tree", os.environ["TREE"],
+                  "-p", os.environ["BASE"], "-p", os.environ["CANDIDATE"],
               ],
-              input='deterministic ui.native qualification merge\n',
+              input="deterministic ui.native qualification merge\n",
               text=True,
               env={
                   **os.environ,
-                  'GIT_AUTHOR_NAME': 'native-qualification',
-                  'GIT_AUTHOR_EMAIL': 'native-qualification@users.noreply.github.com',
-                  'GIT_COMMITTER_NAME': 'native-qualification',
-                  'GIT_COMMITTER_EMAIL': 'native-qualification@users.noreply.github.com',
-                  'GIT_AUTHOR_DATE': '2000-01-01T00:00:00Z',
-                  'GIT_COMMITTER_DATE': '2000-01-01T00:00:00Z',
+                  "GIT_AUTHOR_NAME": "native-qualification",
+                  "GIT_AUTHOR_EMAIL": "native-qualification@users.noreply.github.com",
+                  "GIT_COMMITTER_NAME": "native-qualification",
+                  "GIT_COMMITTER_EMAIL": "native-qualification@users.noreply.github.com",
+                  "GIT_AUTHOR_DATE": "2000-01-01T00:00:00Z",
+                  "GIT_COMMITTER_DATE": "2000-01-01T00:00:00Z",
               },
           ).strip()
           print(commit)
@@ -366,20 +397,21 @@ jobs:
           VALIDATE: ${{ steps.validate.outcome }}
         run: |
           python3 - <<'PYTHON'
-          import json, os
+          import json
+          import os
           from pathlib import Path
-          path = Path(os.environ['RUNNER_TEMP']) / 'ui-native-storage-evidence' / 'job-outcomes.json'
+          path = Path(os.environ["RUNNER_TEMP"]) / "ui-native-storage-evidence" / "job-outcomes.json"
           path.parent.mkdir(parents=True, exist_ok=True)
           path.write_text(json.dumps({
-              'schema': 'hepta.ui-native-storage-job-outcomes.v1',
-              'sourceSha': os.environ.get('IMPLEMENTATION_SHA'),
-              'compile': os.environ['COMPILE'],
-              'active': os.environ['ACTIVE'],
-              'retired': os.environ['RETIRED'],
-              'validate': os.environ['VALIDATE'],
-              'runId': os.environ.get('GITHUB_RUN_ID'),
-              'runAttempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
-          }, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+              "schema": "hepta.ui-native-storage-job-outcomes.v1",
+              "sourceSha": os.environ.get("IMPLEMENTATION_SHA"),
+              "compile": os.environ["COMPILE"],
+              "active": os.environ["ACTIVE"],
+              "retired": os.environ["RETIRED"],
+              "validate": os.environ["VALIDATE"],
+              "runId": os.environ.get("GITHUB_RUN_ID"),
+              "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+          }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
           PYTHON
       - name: Retain complete or partial storage evidence
         if: always()
@@ -410,7 +442,7 @@ jobs:
           test "$STORAGE" = success
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ github.workflow_sha }}
+          ref: ${{ needs.subject.outputs.candidate }}
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v4.3.0
@@ -426,7 +458,7 @@ jobs:
         env:
           CANDIDATE: ${{ needs.subject.outputs.candidate }}
           BASE: ${{ needs.subject.outputs.base }}
-          WORKFLOW_SHA: ${{ github.workflow_sha }}
+          WORKFLOW_SHA: ${{ needs.subject.outputs.candidate }}
         run: |
           set -euo pipefail
           python3 scripts/hepta_ui_native_qualification_aggregate.py \
@@ -438,7 +470,7 @@ jobs:
           CANDIDATE: ${{ needs.subject.outputs.candidate }}
           BASE: ${{ needs.subject.outputs.base }}
           IMPLEMENTATION: ${{ needs.subject.outputs.implementation }}
-          WORKFLOW_SHA: ${{ github.workflow_sha }}
+          WORKFLOW_SHA: ${{ needs.subject.outputs.candidate }}
         shell: bash
         run: |
           set -euo pipefail
@@ -449,52 +481,53 @@ jobs:
           from pathlib import Path
 
           def load(path):
-              value = json.loads(path.read_text(encoding='utf-8'))
+              value = json.loads(path.read_text(encoding="utf-8"))
               if not isinstance(value, dict):
-                  raise SystemExit(f'non-object evidence: {path}')
+                  raise SystemExit(f"non-object evidence: {path}")
               return value
 
           def digest(path):
               return hashlib.sha256(path.read_bytes()).hexdigest()
 
-          platform_path = Path('native-aggregate/platform-qualification.json')
+          platform_path = Path("native-aggregate/platform-qualification.json")
           platform = load(platform_path)
-          storage_paths = list(Path('storage-bundle').rglob('qualification.json'))
+          storage_paths = list(Path("storage-bundle").rglob("qualification.json"))
           if len(storage_paths) != 1:
-              raise SystemExit(f'exactly one storage qualification required, got {storage_paths}')
+              raise SystemExit(f"exactly one storage qualification required, got {storage_paths}")
           storage_path = storage_paths[0]
           storage = load(storage_path)
-          if platform.get('qualificationPassed') is not True:
-              raise SystemExit('platform aggregate did not pass')
-          if storage.get('schema') != 'hepta.ui-native-storage-qualification.v1':
-              raise SystemExit('storage schema mismatch')
-          if storage.get('status') != 'pass' or storage.get('storageQualified') is not True:
-              raise SystemExit('storage qualification did not pass')
-          if storage.get('sourceSha') != os.environ['IMPLEMENTATION']:
-              raise SystemExit('storage evidence is not bound to the implementation source')
-          for key in ('productionQualified', 'deploymentQualified', 'releaseAuthorized'):
+          if platform.get("qualificationPassed") is not True:
+              raise SystemExit("platform aggregate did not pass")
+          if storage.get("schema") != "hepta.ui-native-storage-qualification.v1":
+              raise SystemExit("storage schema mismatch")
+          if storage.get("status") != "pass" or storage.get("storageQualified") is not True:
+              raise SystemExit("storage qualification did not pass")
+          if storage.get("sourceSha") != os.environ["IMPLEMENTATION"]:
+              raise SystemExit("storage evidence is not bound to the implementation source")
+          for key in ("productionQualified", "deploymentQualified", "releaseAuthorized"):
               if storage.get(key) is not False:
-                  raise SystemExit(f'storage evidence attempted unsupported promotion: {key}')
+                  raise SystemExit(f"storage evidence attempted unsupported promotion: {key}")
           final = {
-              'schema': 'hepta.ui-native-repository-qualification.v1',
-              'candidateSha': os.environ['CANDIDATE'],
-              'baseSha': os.environ['BASE'],
-              'implementationSourceSha': os.environ['IMPLEMENTATION'],
-              'workflowSha': os.environ['WORKFLOW_SHA'],
-              'runId': os.environ['GITHUB_RUN_ID'],
-              'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
-              'platformAggregateSha256': digest(platform_path),
-              'storageQualificationSha256': digest(storage_path),
-              'repositoryControlledQualificationPassed': True,
-              'physicalHostAcceptance': False,
-              'accessibilityAcceptance': False,
-              'productionSigningObserved': False,
-              'productionQualified': False,
-              'deploymentQualified': False,
-              'releaseAuthorized': False,
+              "schema": "hepta.ui-native-repository-qualification.v1",
+              "candidateSha": os.environ["CANDIDATE"],
+              "baseSha": os.environ["BASE"],
+              "implementationSourceSha": os.environ["IMPLEMENTATION"],
+              "workflowSha": os.environ["WORKFLOW_SHA"],
+              "runId": os.environ["GITHUB_RUN_ID"],
+              "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "platformAggregateSha256": digest(platform_path),
+              "storageQualificationSha256": digest(storage_path),
+              "repositoryControlledQualificationPassed": True,
+              "physicalHostAcceptance": False,
+              "accessibilityAcceptance": False,
+              "productionSigningObserved": False,
+              "productionQualified": False,
+              "deploymentQualified": False,
+              "releaseAuthorized": False,
           }
-          output = Path('native-aggregate/qualification-result.json')
-          output.write_text(json.dumps(final, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          output = Path("native-aggregate/qualification-result.json")
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text(json.dumps(final, indent=2, sort_keys=True) + "\n", encoding="utf-8")
           print(json.dumps(final, indent=2, sort_keys=True))
           PYTHON
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
