@@ -3799,6 +3799,7 @@ dependencies = [
  "anyhow",
  "codex-app-server-client",
  "codex-app-server-protocol",
+ "codex-hepta-agent-components",
  "codex-hepta-agentd",
  "codex-hepta-codex-adapter",
  "codex-hepta-contracts",
@@ -3860,6 +3861,8 @@ dependencies = [
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
