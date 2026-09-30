@@ -77,7 +77,10 @@ jobs:
           persist-credentials: false
 
       - name: Self-test trusted reporting control plane
-        run: python3 scripts/test_hepta_learning_eval_trusted_report.py -v
+        run: |
+          python3 scripts/test_hepta_learning_eval_trusted_report.py -v
+          python3 scripts/test_hepta_learning_eval_trusted_entry.py -v
+          python3 scripts/test_hepta_learning_eval_control_plane_identity.py -v
 
       - name: Download untrusted evidence as data only
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
@@ -92,6 +95,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
+          python3 scripts/hepta-learning-eval-control-plane-identity.py \
+            --repository '${{ github.repository }}' \
+            --source-sha '${{ github.event.workflow_run.head_sha }}' \
+            --output .hepta-trusted-report/auxiliary-control-plane.json
           python3 scripts/hepta-learning-eval-trusted-entry.py \
             --artifact-root .hepta-trusted-report/artifact \
             --summary-name '${{ steps.context.outputs.summary }}' \

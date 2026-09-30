@@ -53,6 +53,7 @@ jobs:
           tests=(
             scripts/test_hepta_learning_eval_trusted_report.py
             scripts/test_hepta_learning_eval_trusted_entry.py
+            scripts/test_hepta_learning_eval_control_plane_identity.py
             scripts/test_hepta_learning_eval_exact.py
             scripts/test_hepta_learning_eval_exact_entry.py
             scripts/test_hepta_learning_eval_evidence.py
@@ -64,6 +65,7 @@ jobs:
           python_files=(
             scripts/hepta-learning-eval-aggregate.py
             scripts/hepta-learning-eval-compat-fixture.py
+            scripts/hepta-learning-eval-control-plane-identity.py
             scripts/hepta-learning-eval-exact-entry.py
             scripts/hepta-learning-eval-exact-summary.py
             scripts/hepta-learning-eval-exact.py
@@ -126,6 +128,7 @@ jobs:
           assert 'github.event.repository.default_branch' in reporter
           forbidden_candidate_checkout = 'ref: $' + '{{ github.event.workflow_run.head_sha }}'
           assert forbidden_candidate_checkout not in reporter
+          assert 'hepta-learning-eval-control-plane-identity.py' in reporter
           assert 'hepta-learning-eval-trusted-entry.py' in reporter
 
           result = {
@@ -136,6 +139,7 @@ jobs:
               'trustedReporterFromDefaultBranch': True,
               'completeLearningEvalWorkflowPathTrigger': True,
               'markdownSymlinkComponentRejection': True,
+              'auxiliaryControlPlaneByteIdentity': True,
               'authority': 'DENY_ALL',
               'releasePosture': 'NO_GO',
           }
