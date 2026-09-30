@@ -61,6 +61,51 @@ MUTANTS = (
         "test": "mutation_cancelled_work_is_rejected_before_fit",
     },
     {
+        "name": "reset-matching-final-use-fit-context",
+        "path": "codex-rs/hepta-bellman-operator/src/budget.rs",
+        "old": (
+            "        .is_some_and(|context| "
+            "context.control.shares_cancellation_domain(control))\n"
+        ),
+        "new": "        .is_some_and(|_| false)\n",
+        "test": "matching_work_control_preserves_capability_issue_time",
+    },
+    {
+        "name": "collapse-full-input-candidate-digest",
+        "path": "codex-rs/hepta-bellman-operator/src/sensor_core_qualification.rs",
+        "old": (
+            "fn digest_candidate_set(\n"
+            "    candidates: &[SensorPointV1],\n"
+            ") -> Result<Digest32, SensorCoreBuildErrorV2> {\n"
+            "    let mut bytes = b\"hepta.learning.operator.sensor-candidate-set.v1\".to_vec();\n"
+        ),
+        "new": (
+            "fn digest_candidate_set(\n"
+            "    candidates: &[SensorPointV1],\n"
+            ") -> Result<Digest32, SensorCoreBuildErrorV2> {\n"
+            "    let _ = candidates;\n"
+            "    return Ok(Digest32::ZERO);\n"
+            "    #[allow(unreachable_code)]\n"
+            "    let mut bytes = b\"hepta.learning.operator.sensor-candidate-set.v1\".to_vec();\n"
+        ),
+        "test": "full_input_digest_is_order_independent_and_content_sensitive",
+    },
+    {
+        "name": "validate-only-selected-sensor-geometry",
+        "path": "codex-rs/hepta-bellman-operator/src/sensor_core_qualification.rs",
+        "old": (
+            "        validate_full_input_geometry(\n"
+            "            &all_candidates,\n"
+            "            &build.manifest.selected_points,\n"
+        ),
+        "new": (
+            "        validate_full_input_geometry(\n"
+            "            &build.manifest.selected_points,\n"
+            "            &build.manifest.selected_points,\n"
+        ),
+        "test": "semantic_receipt_reports_exact_and_reduced_modes",
+    },
+    {
         "name": "relax-exclusive-final-use-deadline",
         "path": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
         "replacements": (
@@ -89,7 +134,9 @@ MUTANTS = (
 )
 
 
-def run(command: list[str], *, cwd: Path, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+def run(
+    command: list[str], *, cwd: Path, env: dict[str, str]
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         command,
         cwd=cwd,
@@ -170,9 +217,7 @@ def main() -> None:
                         f"{mutant['name']}: mutant was invalid because compilation failed\n{output}"
                     )
                 if completed.returncode == 0:
-                    raise RuntimeError(
-                        f"{mutant['name']}: mutant survived\n{output}"
-                    )
+                    raise RuntimeError(f"{mutant['name']}: mutant survived\n{output}")
                 results.append(
                     {
                         "name": mutant["name"],
@@ -194,7 +239,8 @@ def main() -> None:
             shutil.rmtree(worktree, ignore_errors=True)
 
     report = {
-        "schema": "hepta.learning-operator.mutation.v1",
+        "schema": "hepta.learning-operator.mutation.v2",
+        "schemaVersion": 2,
         "module": "learning.operator",
         "sourceSha": source_sha,
         "status": "pass",
