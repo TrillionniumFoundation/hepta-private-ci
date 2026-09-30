@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   apply:
-    runs-on: [self-hosted, linux, x64, rog]
+    runs-on: [self-hosted, linux, x64, pocket4]
     steps:
       - name: Check out exact staging branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
