@@ -29,7 +29,7 @@
         "blob": "1b2eb7be051c269b40d3e6a6a29c9292774419f2"
       }
     ],
-    "semantics": "last source/test-changing candidate; later metadata-only commits do not change the bound runtime objects"
+    "semantics": "historical exact source/test observation of the listed runtime objects; retained unchanged as provenance. Subsequent audit changes require fresh exact-candidate checks and are not covered by this observation."
   },
   "sourceComposition": {
     "namedProductHost": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
@@ -93,8 +93,23 @@
     "deploymentQualified": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "sourceCompleteScope": [
+      "durable legacy/Calendar V2 schedule and occurrence ownership",
+      "Agentd/App Server stable queue and persisted terminal reconciliation",
+      "reference attestation-gated HTTP effect host and async final-use source composition",
+      "Neural Circuit candidate compiler and caller-supplied activation/choice metadata storage only"
+    ],
+    "neuralCircuitExecutionComplete": false,
+    "verifiedDecisionCellOrganProductCompositionComplete": false,
+    "fleetResourceAuthorityProductIntegrationComplete": false
   },
   "authorityGranted": false,
-  "note": "This file separates repository source composition from external target-host qualification. Null target-host fields are required evidence slots and must never be inferred from unit tests or source presence."
+  "note": "This file separates repository source composition from external target-host qualification. Null target-host fields are required evidence slots and must never be inferred from unit tests or source presence.",
+  "subsequentAudit": {
+    "status": "source_reviewed_exact_candidate_validation_pending",
+    "historicalSourceObservationRetained": true,
+    "executedChecksRecorded": false,
+    "semantics": "The scope corrections and operating contract are source-reviewed documentation. This file records no test pass for subsequent audit optimizations and does not extend the historical source observation to their changed objects."
+  }
 }

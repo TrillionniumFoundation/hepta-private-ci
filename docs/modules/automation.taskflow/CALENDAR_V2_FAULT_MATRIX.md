@@ -30,7 +30,8 @@ Each target-host run records:
 - host/OS/architecture identity;
 - IANA tzdb source, release/version and content digest;
 - schedule ID and immutable schedule revision;
-- timezone ID, gap policy, overlap policy, missed-run policy and overlap policy;
+- timezone ID, DST gap policy (`skip`/`next_valid`), DST overlap policy
+  (`first`/`second`), missed-run policy and execution overlap policy (`allow`/`forbid`);
 - scheduler Agent/generation/fencing identity;
 - deterministic occurrence ID and canonical UTC instant;
 - backup/restore source digest when applicable;
@@ -41,8 +42,8 @@ Each target-host run records:
 | ID | Scenario | Fault / transition | Required observation | Forbidden outcome |
 | --- | --- | --- | --- | --- |
 | CAL-TZ-01 | ordinary future occurrence | no fault | exact local→UTC projection and deterministic occurrence ID | implicit system timezone |
-| CAL-TZ-02 | spring-forward gap | nonexistent local wall time | declared gap policy produces skip/shift/reject exactly as registered | silently choosing an arbitrary instant |
-| CAL-TZ-03 | fall-back overlap | duplicated local wall time | declared overlap policy selects the registered occurrence(s) with stable IDs | merging two admitted occurrences or inventing one |
+| CAL-TZ-02 | spring-forward gap | nonexistent local wall time | `skip` omits the nonexistent instant; `next_valid` selects the next valid instant from the admitted transition profile | silently choosing an arbitrary instant |
+| CAL-TZ-03 | fall-back overlap | duplicated local wall time | `first` or `second` selects exactly the registered UTC occurrence with its stable ID | merging two admitted occurrences or inventing one |
 | CAL-TZ-04 | tzdb refresh before future materialization | old→new IANA profile | future occurrence uses newly admitted profile/revision only | mutating already-materialized history |
 | CAL-TZ-05 | tzdb refresh after claim | profile changes while occurrence is claimed | claimed occurrence retains frozen revision/profile/UTC identity | re-resolving the claimed local time |
 | CAL-RACE-01 | two schedulers see same due row | simultaneous claim | exactly one current fenced claim; loser observes contention/no work | duplicate occurrence |

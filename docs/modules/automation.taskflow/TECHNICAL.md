@@ -112,12 +112,15 @@ compatibility rule. `neural_circuit.rs` admits a versioned
 OrganCall/WaitJoin/Effect/Exit roles onto the existing bounded V1 TaskFlow owner.
 `neural_circuit_runtime.rs` then persists the durable activation ID, activation
 round, causal event, circuit and compiled-definition identities, route/parameter
-pins, an externally owned Fleet lease reference, and an exact DecisionCell/organ
-receipt plus selected port. Replaying the same command returns the committed
-choice instead of rerunning a newer decision policy. This is the minimum durable
-choice-before-effect runtime substrate; arbitrary feedback loops, quorum joins,
-nested child execution and general recursive circuit interpretation remain target
-work and are not smuggled into `TaskFlowNodeKind`.
+pins, an externally owned Fleet lease reference, and caller-supplied DecisionCell/organ
+receipt digests plus a selected-port reference. Replaying an identical command
+returns the matching durable receipt; it does not rerun a decision policy. This
+is a metadata ledger, not an executing choice-before-effect product path. A
+trusted composition caller still has to verify the actual legal candidates,
+receipt provenance and current Fleet lease, then bind the committed choice to
+its downstream operation. Arbitrary feedback loops, quorum joins, nested child
+execution and general recursive circuit interpretation remain target work and
+are not smuggled into `TaskFlowNodeKind`.
 
 ### 4.2 Typed control program and admissible feedback
 
@@ -315,7 +318,7 @@ The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is ex
 
 ## 6. Data authority, persistence and migrations
 
-Schema v16 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
+The current schema v20 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables, including the durable lifecycle and effect additions introduced through v16:
 
 - `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
 - `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, bounded terminal-observer continuation cursor, recovery phase and terminal receipt.
@@ -393,6 +396,50 @@ its uniform protocol does not imply a common latency class or one global queue.
 Operate the existing Agentd `AutomationScheduler` and `AutomationStore`. Treat the compatibility task state as schedule-control state, not execution terminality. The authoritative execution status is the durable occurrence/TaskFlow chain.
 
 Important operator classes include aged `indeterminate`, queue-reconcile mismatch, terminal-scan cursor rejection/repetition, authoritative pagination exhaustion without the bound turn, schedule parked by `overlap=forbid`, catch-up saturation and run-recovery re-fencing. An unknown effect is not safely rerunnable by default.
+
+### 11.1 Reference HTTP effect host enrollment
+
+The existing Agentd binary accepts
+`--automation-effect-host-file /absolute/canonical/private-host.json`;
+`AgentdConfig::with_automation_effect_host_file` is the corresponding embedded
+composition hook. Omitting the file leaves the effect host unattached and does
+not advertise `automation.external_effect@1.0`. The runtime does not generate
+signing keys, provider contracts or an independent trust decision.
+
+The file is the strict, snake_case `AutomationEffectHostFileV1` JSON contract in
+`codex-rs/hepta-agentd/src/automation_effect_host.rs`; unknown fields reject.
+Provision these fields through the existing host/provider/authority owners:
+
+| Fields | Meaning and enforced bounds |
+| --- | --- |
+| `schema_version` | exactly `1` |
+| `provider_scope`, `destination_id`, `final_use_scope_sha256` | host-selected provider scope, destination and signed final-use scope; a control request cannot replace them |
+| `dispatch_url`, `lookup_url_template` | registered provider dispatch and lookup addresses admitted by the HTTP adapter |
+| `headers`, `timeout_ms` | optional header map, at most 64 entries; timeout in 1..=30000 milliseconds |
+| `contract_id`, `contract_sha256`, `contract_authority_epoch` | exact provider-contract identity consumed by the signed attestation verifier |
+| `contract_signature_hex`, `contract_verifying_key_hex` | 64-byte signature and 32-byte verification key encoded as hex; provision the trusted key independently of a request |
+| `final_use_signer_id`, `final_use_verifying_key_hex` | independent FinalUse signer identity and 32-byte verification key encoded as hex |
+| `final_use_revocations_file` | absolute path to the independently provisioned current `FinalUseRevocations` JSON head |
+
+The host file must contain 1..=65536 bytes; the revocations file must contain
+1..=4194304 bytes. Both paths must be absolute and canonical and identify regular,
+non-symlink files. On Unix neither file may be group/world accessible. Header
+values can contain credentials, so retain the private configuration through its
+owner and publish only safe identities/digests in qualification receipts.
+
+Consumed-nonce and revocation state is durably opened under
+`AgentLayout::automation_root()/final-use-authority`; the host creates that
+directory with Unix mode 0700. Each execute/reconcile call refreshes the external
+revocation head and rejects a rolled-back epoch/revision. Preserve this directory
+when restarting or restoring the owner; deleting it is not a supported retry.
+Exact wire bytes must fit the exported protocol payload bound and match the
+durable payload digest. Restart recovery uses the original attempt and provider
+logical-effect key through lookup; it cannot authorize redispatch.
+
+A selected host still needs authentic trust/provider configuration and retained
+dispatch/restart evidence from [TASKFLOW_PRODUCT_QUALIFICATION.json](TASKFLOW_PRODUCT_QUALIFICATION.json).
+Configuration loading and a locally verified signature prove only the configured
+trust boundary, not the independent authenticity or acceptance of that host.
 
 ## 12. Verification and qualification
 
@@ -504,7 +551,7 @@ policy adoption is not permission to rewrite old run histories or widen authorit
 
 ## 15. Definition of module completion
 
-For this source candidate, the Agentd/Codex causal state chain, Calendar V2 owner plus capability-negotiated Agentd creation surface, durable TaskFlow step/outcome chain, producer-owned `kernel.operations::OperationIntentV1` composition and the reference final-use external-effect product host are present and bounded. Repository-controlled Calendar V2 control and the reference external-effect source composition are closed. V20 additionally persists Neural Circuit activation/round and choice evidence while referencing, rather than owning, Fleet resource leases. Product execution is **not** thereby proved: selected-host provider execution/restart evidence, authentic/current timezone-profile provenance, real Fleet capacity/pressure authority, deployment qualification, independent acceptance and activation are separate gates. Promotion/release remain externally governed states.
+For this source candidate, the Agentd/Codex causal state chain, Calendar V2 owner plus capability-negotiated Agentd creation surface, durable TaskFlow step/outcome chain, producer-owned `kernel.operations::OperationIntentV1` composition and the reference final-use external-effect product host are present and bounded. Repository-controlled Calendar V2 control and the reference external-effect source composition are closed. V20 additionally persists caller-supplied Neural Circuit activation/round and choice references while referencing, rather than owning, Fleet resource leases. This closes only the metadata ledger, not actual DecisionCell/organ invocation, legal-choice verification, feedback/join execution, or choice-bound downstream dispatch. Product execution is **not** thereby proved: selected-host provider execution/restart evidence, authentic/current timezone-profile provenance, real Fleet capacity/pressure authority, deployment qualification, independent acceptance and activation are separate gates. Promotion/release remain externally governed states.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
