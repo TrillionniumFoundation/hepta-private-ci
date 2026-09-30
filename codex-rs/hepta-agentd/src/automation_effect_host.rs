@@ -11,31 +11,20 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::thread;
 use std::time::Duration;
 
-use codex_hepta_automation::AuthorizedEffectDriver;
-use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectIntent;
-use codex_hepta_automation::AuthorizedEffectOutcome;
 use codex_hepta_automation::AuthorizedEffectPending;
-use codex_hepta_automation::AuthorizedEffectProviderReceipt;
 use codex_hepta_automation::AuthorizedEffectRecovery;
 use codex_hepta_automation::AuthorizedEffectRecoveryResult;
-use codex_hepta_automation::AuthorizedEffectRequest;
+use codex_hepta_automation::AuthorizedProviderEffectLookup;
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_automation::ProviderEffectTaskFlowDriver;
 use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_automation::TaskFlowStepReceipt;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseRevocations;
-use codex_hepta_contracts::ProviderEffectAck;
-use codex_hepta_contracts::ProviderEffectAckStatus;
-use codex_hepta_contracts::ProviderEffectAdapter;
-use codex_hepta_contracts::ProviderEffectDispatch;
-use codex_hepta_contracts::ProviderEffectIntent;
-use codex_hepta_contracts::ProviderEffectKey;
-use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_model_provider::HttpProviderEffectAdapter;
@@ -118,6 +107,11 @@ impl AgentdAutomationEffectHost {
         }
         validate_host_identifier("provider_scope", &config.provider_scope)?;
         validate_host_identifier("destination_id", &config.destination_id)?;
+        if config.provider_scope != config.destination_id {
+            return Err(AgentdError::Invalid(
+                "automation effect provider_scope must equal destination_id so the provider idempotency key is bound to the exact final-use destination".to_string(),
+            ));
+        }
         if config.timeout_ms == 0 || config.timeout_ms > 30_000 {
             return Err(AgentdError::Invalid(
                 "automation effect timeout_ms must be 1..=30000".to_string(),
@@ -250,13 +244,17 @@ impl AgentdAutomationEffectHost {
         let binding = intent
             .final_use_binding()
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-        let mut driver = HttpAuthorizedEffectDriver {
-            adapter: self.adapter.clone(),
-            provider_scope: self.provider_scope.clone(),
-            destination_id: self.destination_id.clone(),
-        };
+        let mut driver = ProviderEffectTaskFlowDriver::new(
+            self.destination_id.clone(),
+            self.adapter.clone(),
+        )
+        .map_err(|error| {
+            AgentdError::Invalid(format!(
+                "automation provider-effect bridge configuration: {error}"
+            ))
+        })?;
         store
-            .execute_authorized_taskflow_effect(
+            .execute_authorized_taskflow_effect_async(
                 &self.authority,
                 &mut driver,
                 intent,
@@ -324,39 +322,61 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(_) => {}
             }
         }
-        let provider_intent = self.provider_intent(&pending)?;
-        match self.adapter.lookup_for_intent(&provider_intent).await {
-            ProviderEffectLookup::Ack(ack) => {
-                let Some(receipt) = terminal_receipt_from_ack(&ack) else {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
-                };
-                match store
-                    .recover_authorized_taskflow_effect(
-                        run_id,
-                        step_id,
-                        attempt,
-                        &fence,
-                        AuthorizedEffectRecovery::Observed(receipt),
-                        now_ms,
-                    )
-                    .await
-                    .map_err(|error| {
-                        AgentdError::Protocol(format!(
-                            "reconcile authorized effect terminal observation: {error}"
-                        ))
-                    })? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
-                    }
-                    AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
-                        "status lookup cannot manufacture provider absence".to_string(),
-                    )),
+        let driver = ProviderEffectTaskFlowDriver::new(
+            self.destination_id.clone(),
+            self.adapter.clone(),
+        )
+        .map_err(|error| {
+            AgentdError::Invalid(format!(
+                "automation provider-effect bridge configuration: {error}"
+            ))
+        })?;
+        match driver.lookup(&pending).await {
+            AuthorizedProviderEffectLookup::Observed(receipt) => match store
+                .recover_authorized_taskflow_effect(
+                    run_id,
+                    step_id,
+                    attempt,
+                    &fence,
+                    AuthorizedEffectRecovery::Observed(receipt),
+                    now_ms,
+                )
+                .await
+                .map_err(|error| {
+                    AgentdError::Protocol(format!(
+                        "reconcile authorized effect terminal observation: {error}"
+                    ))
+                })? {
+                AuthorizedEffectRecoveryResult::Observed(receipt) => {
+                    Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
                 }
-            }
-            ProviderEffectLookup::Conflict { .. } => Err(AgentdError::Protocol(
-                "provider reports a same-key payload conflict".to_string(),
-            )),
-            ProviderEffectLookup::NotFound | ProviderEffectLookup::Unknown => {
+                AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
+                    "terminal provider observation cannot become absence".to_string(),
+                )),
+            },
+            AuthorizedProviderEffectLookup::ProvenAbsent { proof_digest } => match store
+                .recover_authorized_taskflow_effect(
+                    run_id,
+                    step_id,
+                    attempt,
+                    &fence,
+                    AuthorizedEffectRecovery::ProvenAbsent { proof_digest },
+                    now_ms,
+                )
+                .await
+                .map_err(|error| {
+                    AgentdError::Protocol(format!(
+                        "reconcile authorized effect provider absence: {error}"
+                    ))
+                })? {
+                AuthorizedEffectRecoveryResult::ProvenAbsent => {
+                    Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent)
+                }
+                AuthorizedEffectRecoveryResult::Observed(_) => Err(AgentdError::Protocol(
+                    "provider absence cannot manufacture a terminal observation".to_string(),
+                )),
+            },
+            AuthorizedProviderEffectLookup::Unresolved => {
                 Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate)
             }
         }
@@ -450,128 +470,6 @@ impl AgentdAutomationEffectHost {
         .map_err(|error| AgentdError::Protocol(format!("rebuild TaskFlow fence: {error}")))
     }
 
-    fn provider_intent(
-        &self,
-        pending: &AuthorizedEffectPending,
-    ) -> Result<ProviderEffectIntent, AgentdError> {
-        let key = ProviderEffectKey::for_operation(
-            &self.provider_scope,
-            &pending.run_id,
-            &pending.step_id,
-        )
-        .map_err(|error| AgentdError::Invalid(format!("derive provider effect key: {error:?}")))?;
-        Ok(ProviderEffectIntent::new(
-            key,
-            pending.payload_digest.clone(),
-        ))
-    }
-}
-
-struct HttpAuthorizedEffectDriver {
-    adapter: HttpProviderEffectAdapter,
-    provider_scope: String,
-    destination_id: String,
-}
-
-impl AuthorizedEffectDriver for HttpAuthorizedEffectDriver {
-    fn dispatch(
-        &mut self,
-        request: &AuthorizedEffectRequest<'_>,
-    ) -> Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError> {
-        if request.intent.destination_id != self.destination_id {
-            return Err(AuthorizedEffectDriverError::BeforeProviderContact);
-        }
-        let key = ProviderEffectKey::for_operation(
-            &self.provider_scope,
-            &request.intent.run_id,
-            &request.intent.step_id,
-        )
-        .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
-        let provider_intent = ProviderEffectIntent::new(key, request.intent.payload_digest.clone());
-        let adapter = self.adapter.clone();
-        let wire_payload = request.wire_payload.to_vec();
-        let spawn = thread::Builder::new()
-            .name("hepta-automation-provider-effect".to_string())
-            .spawn(move || {
-                let runtime = match tokio::runtime::Builder::new_current_thread()
-                    .enable_all()
-                    .build()
-                {
-                    Ok(runtime) => runtime,
-                    Err(_) => return ProviderThreadOutcome::BeforeContact,
-                };
-                ProviderThreadOutcome::Dispatch(
-                    runtime
-                        .block_on(adapter.dispatch_with_payload(&provider_intent, &wire_payload)),
-                )
-            })
-            .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
-        match spawn.join() {
-            Ok(ProviderThreadOutcome::BeforeContact) => {
-                Err(AuthorizedEffectDriverError::BeforeProviderContact)
-            }
-            Ok(ProviderThreadOutcome::Dispatch(ProviderEffectDispatch::NotDispatched {
-                ..
-            })) => Err(AuthorizedEffectDriverError::BeforeProviderContact),
-            Ok(ProviderThreadOutcome::Dispatch(dispatch)) => Ok(receipt_from_dispatch(&dispatch)),
-            Err(_) => Ok(AuthorizedEffectProviderReceipt {
-                outcome: AuthorizedEffectOutcome::Indeterminate,
-                receipt_digest: Sha256Digest::for_bytes(
-                    b"hepta.agentd.provider-effect.worker-panic.v1",
-                ),
-            }),
-        }
-    }
-}
-
-enum ProviderThreadOutcome {
-    BeforeContact,
-    Dispatch(ProviderEffectDispatch),
-}
-
-fn receipt_from_dispatch(dispatch: &ProviderEffectDispatch) -> AuthorizedEffectProviderReceipt {
-    let outcome = match dispatch {
-        ProviderEffectDispatch::Ack(ack) => match ack.status {
-            ProviderEffectAckStatus::Completed => AuthorizedEffectOutcome::Succeeded,
-            ProviderEffectAckStatus::Rejected => AuthorizedEffectOutcome::Failed,
-            ProviderEffectAckStatus::Accepted => AuthorizedEffectOutcome::Indeterminate,
-        },
-        ProviderEffectDispatch::Rejected { .. } => AuthorizedEffectOutcome::Failed,
-        ProviderEffectDispatch::Unknown => AuthorizedEffectOutcome::Indeterminate,
-        ProviderEffectDispatch::NotDispatched { .. } => AuthorizedEffectOutcome::Indeterminate,
-    };
-    AuthorizedEffectProviderReceipt {
-        outcome,
-        receipt_digest: serialized_observation_digest(
-            b"hepta.agentd.provider-effect.dispatch.v1\0",
-            dispatch,
-        ),
-    }
-}
-
-fn terminal_receipt_from_ack(ack: &ProviderEffectAck) -> Option<AuthorizedEffectProviderReceipt> {
-    let outcome = match ack.status {
-        ProviderEffectAckStatus::Completed => AuthorizedEffectOutcome::Succeeded,
-        ProviderEffectAckStatus::Rejected => AuthorizedEffectOutcome::Failed,
-        ProviderEffectAckStatus::Accepted => return None,
-    };
-    Some(AuthorizedEffectProviderReceipt {
-        outcome,
-        receipt_digest: serialized_observation_digest(
-            b"hepta.agentd.provider-effect.lookup.v1\0",
-            ack,
-        ),
-    })
-}
-
-fn serialized_observation_digest(domain: &[u8], value: &impl serde::Serialize) -> Sha256Digest {
-    let mut bytes = domain.to_vec();
-    if let Ok(encoded) = serde_json::to_vec(value) {
-        bytes.extend_from_slice(&encoded);
-    } else {
-        bytes.extend_from_slice(b"serialization-unavailable");
-    }
-    Sha256Digest::for_bytes(&bytes)
 }
 
 fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV1, AgentdError> {
@@ -699,6 +597,7 @@ mod tests {
     use wiremock::matchers::header;
     use wiremock::matchers::method;
     use wiremock::matchers::path;
+    use wiremock::matchers::path_regex;
 
     use super::*;
 
@@ -910,51 +809,17 @@ mod tests {
         output
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn host_dispatches_exact_wire_payload_once() {
-        let fixture = Fixture::new().await;
-        let now_ms = u64::try_from(
-            SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .expect("wall clock")
-                .as_millis(),
-        )
-        .expect("millis");
-        let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
-        let intent = effect_intent(&scope);
-        prepare_effect(&fixture, now_ms, &intent).await;
 
-        let server = MockServer::start().await;
-        let provider_key = ProviderEffectKey::for_operation(
-            "provider/fixture-v1",
-            &intent.run_id,
-            &intent.step_id,
-        )
-        .expect("provider key");
-        let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
-        let ack = serde_json::json!({
-            "effect_key": provider_key.as_str(),
-            "payload_sha256": intent.payload_digest.as_str(),
-            "provider_operation_id_sha256": provider_operation.as_str(),
-            "status": "completed"
-        });
-        Mock::given(method("POST"))
-            .and(path("/dispatch"))
-            .and(header(
-                PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
-                provider_key.as_str(),
-            ))
-            .and(body_bytes(WIRE.to_vec()))
-            .respond_with(ResponseTemplate::new(200).set_body_json(ack))
-            .expect(1)
-            .mount(&server)
-            .await;
-
-        let contract_signer = SigningKey::from_bytes(&[23_u8; 32]);
-        let final_use_signer = SigningKey::from_bytes(&[29_u8; 32]);
+    fn write_effect_host_file(
+        fixture: &Fixture,
+        server_uri: &str,
+        scope: &Sha256Digest,
+        contract_signer: &SigningKey,
+        final_use_signer: &SigningKey,
+    ) -> PathBuf {
         let unsigned_provider_config = HttpProviderEffectConfig {
-            dispatch_url: format!("{}/dispatch", server.uri()),
-            lookup_url_template: format!("{}/status/{{key}}", server.uri()),
+            dispatch_url: format!("{server_uri}/dispatch"),
+            lookup_url_template: format!("{server_uri}/status/{{key}}"),
             headers: HeaderMap::new(),
             timeout: Duration::from_secs(2),
             contract_id: "agentd-product-effect-contract".to_string(),
@@ -994,11 +859,11 @@ mod tests {
             .join("effect-host.json");
         let host_json = serde_json::json!({
             "schema_version": 1,
-            "provider_scope": "provider/fixture-v1",
+            "provider_scope": "provider:fixture",
             "destination_id": "provider:fixture",
             "final_use_scope_sha256": scope.as_str(),
-            "dispatch_url": format!("{}/dispatch", server.uri()),
-            "lookup_url_template": format!("{}/status/{{key}}", server.uri()),
+            "dispatch_url": format!("{server_uri}/dispatch"),
+            "lookup_url_template": format!("{server_uri}/status/{{key}}"),
             "headers": {},
             "timeout_ms": 2000,
             "contract_id": "agentd-product-effect-contract",
@@ -1017,6 +882,56 @@ mod tests {
         .expect("write host file");
         fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
             .expect("host file permissions");
+        host_file
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn host_dispatches_exact_wire_payload_once() {
+        let fixture = Fixture::new().await;
+        let now_ms = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("wall clock")
+                .as_millis(),
+        )
+        .expect("millis");
+        let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
+        let intent = effect_intent(&scope);
+        prepare_effect(&fixture, now_ms, &intent).await;
+
+        let server = MockServer::start().await;
+        let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
+        let provider_key =
+            ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
+                .expect("provider key");
+        let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
+        let ack = serde_json::json!({
+            "effect_key": provider_key.as_str(),
+            "payload_sha256": intent.payload_digest.as_str(),
+            "provider_operation_id_sha256": provider_operation.as_str(),
+            "status": "completed"
+        });
+        Mock::given(method("POST"))
+            .and(path("/dispatch"))
+            .and(header(
+                PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
+                provider_key.as_str(),
+            ))
+            .and(body_bytes(WIRE.to_vec()))
+            .respond_with(ResponseTemplate::new(200).set_body_json(ack))
+            .expect(1)
+            .mount(&server)
+            .await;
+
+        let contract_signer = SigningKey::from_bytes(&[23_u8; 32]);
+        let final_use_signer = SigningKey::from_bytes(&[29_u8; 32]);
+        let host_file = write_effect_host_file(
+            &fixture,
+            &server.uri(),
+            &scope,
+            &contract_signer,
+            &final_use_signer,
+        );
 
         let host =
             AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
@@ -1088,6 +1003,195 @@ mod tests {
             )
             .await
             .is_err()
+        );
+        server.verify().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn host_reopens_indeterminate_effect_and_reconciles_without_redispatch() {
+        let fixture = Fixture::new().await;
+        let now_ms = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("wall clock")
+                .as_millis(),
+        )
+        .expect("millis");
+        let scope = Sha256Digest::for_bytes(b"provider-restart-scope");
+        let intent = effect_intent(&scope);
+        prepare_effect(&fixture, now_ms, &intent).await;
+
+        let server = MockServer::start().await;
+        let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
+        let provider_key =
+            ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
+                .expect("provider key");
+        Mock::given(method("POST"))
+            .and(path("/dispatch"))
+            .and(header(
+                PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
+                provider_key.as_str(),
+            ))
+            .and(body_bytes(WIRE.to_vec()))
+            .respond_with(ResponseTemplate::new(200).set_body_string("ack-lost-or-malformed"))
+            .expect(1)
+            .mount(&server)
+            .await;
+        let terminal_ack = serde_json::json!({
+            "effect_key": provider_key.as_str(),
+            "payload_sha256": intent.payload_digest.as_str(),
+            "provider_operation_id_sha256": Sha256Digest::for_bytes(b"restart-provider-operation").as_str(),
+            "status": "completed"
+        });
+        Mock::given(method("GET"))
+            .and(path_regex(r"^/status/.*$"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(terminal_ack))
+            .expect(1)
+            .mount(&server)
+            .await;
+
+        let contract_signer = SigningKey::from_bytes(&[31_u8; 32]);
+        let final_use_signer = SigningKey::from_bytes(&[37_u8; 32]);
+        let host_file = write_effect_host_file(
+            &fixture,
+            &server.uri(),
+            &scope,
+            &contract_signer,
+            &final_use_signer,
+        );
+        let host =
+            AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
+        let grant = signed_final_use(&intent, now_ms, &final_use_signer);
+        let first = host
+            .execute(
+                &fixture.store,
+                &intent,
+                WIRE,
+                &grant,
+                "agentd-product-effect-restart",
+                now_ms + 5,
+            )
+            .await
+            .expect("ambiguous dispatch is durably quarantined");
+        assert_eq!(
+            first.observation,
+            Some(TaskFlowStepObservation::Indeterminate)
+        );
+        drop(host);
+        fixture.store.close().await;
+
+        let reopened_store = AutomationStore::open(&fixture.identity.layout)
+            .await
+            .expect("reopen automation store");
+        let reopened_host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+            .expect("reopen effect host with persisted final-use state");
+        let outcome = reopened_host
+            .reconcile(
+                &reopened_store,
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                now_ms + 6,
+            )
+            .await
+            .expect("provider status reconciliation");
+        let AgentdAutomationEffectReconcileOutcome::Observed(receipt) = outcome else {
+            panic!("terminal provider lookup must reconcile the original effect");
+        };
+        assert_eq!(
+            receipt.observation,
+            Some(TaskFlowStepObservation::Indeterminate),
+            "historical first observation remains visible"
+        );
+        assert_eq!(
+            receipt.final_outcome,
+            Some(codex_hepta_automation::TaskFlowReconcileOutcome::Succeeded)
+        );
+        server.verify().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn host_provider_not_found_requeues_without_blind_redispatch() {
+        let fixture = Fixture::new().await;
+        let now_ms = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .expect("wall clock")
+                .as_millis(),
+        )
+        .expect("millis");
+        let scope = Sha256Digest::for_bytes(b"provider-absence-scope");
+        let intent = effect_intent(&scope);
+        prepare_effect(&fixture, now_ms, &intent).await;
+
+        let server = MockServer::start().await;
+        let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
+        let provider_key =
+            ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
+                .expect("provider key");
+        Mock::given(method("POST"))
+            .and(path("/dispatch"))
+            .and(header(
+                PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
+                provider_key.as_str(),
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_string("ambiguous"))
+            .expect(1)
+            .mount(&server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path_regex(r"^/status/.*$"))
+            .respond_with(ResponseTemplate::new(404))
+            .expect(1)
+            .mount(&server)
+            .await;
+
+        let contract_signer = SigningKey::from_bytes(&[41_u8; 32]);
+        let final_use_signer = SigningKey::from_bytes(&[43_u8; 32]);
+        let host_file = write_effect_host_file(
+            &fixture,
+            &server.uri(),
+            &scope,
+            &contract_signer,
+            &final_use_signer,
+        );
+        let host =
+            AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
+        let grant = signed_final_use(&intent, now_ms, &final_use_signer);
+        host.execute(
+            &fixture.store,
+            &intent,
+            WIRE,
+            &grant,
+            "agentd-product-effect-absence",
+            now_ms + 5,
+        )
+        .await
+        .expect("ambiguous dispatch is durable");
+
+        let outcome = host
+            .reconcile(
+                &fixture.store,
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                now_ms + 6,
+            )
+            .await
+            .expect("provider absence reconciliation");
+        assert!(matches!(
+            outcome,
+            AgentdAutomationEffectReconcileOutcome::ProvenAbsent
+        ));
+        assert_eq!(
+            fixture
+                .store
+                .taskflow_run(&intent.run_id)
+                .await
+                .expect("read run")
+                .expect("run")
+                .state,
+            codex_hepta_automation::TaskFlowRunState::Queued
         );
         server.verify().await;
     }

@@ -715,10 +715,139 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
         .await
         .expect("pending provider effect");
     assert_eq!(pending.len(), 1);
+    let AuthorizedProviderEffectLookup::ProvenAbsent { proof_digest } =
+        driver.lookup(&pending[0]).await
+    else {
+        panic!("provider-owned not-found must produce an explicit absence proof");
+    };
+    let recovered = store
+        .recover_authorized_taskflow_effect(
+            &effect.run_id,
+            &effect.step_id,
+            effect.attempt,
+            &owner,
+            AuthorizedEffectRecovery::ProvenAbsent { proof_digest },
+            31,
+        )
+        .await
+        .expect("durably reconcile provider absence");
     assert!(matches!(
-        driver.lookup(&pending[0]).await,
-        AuthorizedProviderEffectLookup::ProvenAbsent { .. }
+        recovered,
+        AuthorizedEffectRecoveryResult::ProvenAbsent
     ));
+    assert_eq!(
+        store
+            .taskflow_run(&effect.run_id)
+            .await
+            .expect("read requeued run")
+            .expect("run")
+            .state,
+        TaskFlowRunState::Queued
+    );
+
+    // A safe retry is a *new local attempt* under a newer run fence, but it
+    // reuses the provider-stable logical key because the key excludes attempt.
+    let retry_fence = TaskFlowFence::new(
+        AgentId::parse(AGENT_ID).expect("agent id"),
+        "authorized-effect-owner",
+        1,
+        2,
+        "authorized-effect-fence-retry",
+    )
+    .expect("retry fence");
+    let claimed = store
+        .claim_taskflow_run(&effect.run_id, &retry_fence, 32, 1_000)
+        .await
+        .expect("claim requeued run under newer fence");
+    store
+        .apply_taskflow_command(
+            &TaskFlowCommand::new(
+                &effect.run_id,
+                "authorized-effect-retry-start",
+                retry_fence.clone(),
+                claimed.revision,
+                TaskFlowTransition::Start,
+                33,
+            )
+            .expect("retry start command"),
+        )
+        .await
+        .expect("restart requeued run");
+
+    let mut retry_effect = effect.clone();
+    retry_effect.attempt = 2;
+    let retry_digest = retry_effect.digest().expect("retry intent digest");
+    store
+        .prepare_taskflow_step(
+            &retry_effect.run_id,
+            &retry_effect.step_id,
+            retry_effect.attempt,
+            &retry_fence,
+            &retry_digest,
+            &retry_effect.payload_digest,
+            "authorized-effect-retry-prepare",
+            34,
+        )
+        .await
+        .expect("prepare retry step");
+    store
+        .claim_taskflow_step(
+            &retry_effect.run_id,
+            &retry_effect.step_id,
+            retry_effect.attempt,
+            &retry_fence,
+            &retry_digest,
+            &retry_effect.payload_digest,
+            "authorized-effect-retry-claim",
+            35,
+        )
+        .await
+        .expect("claim retry step");
+
+    let retry_binding = binding(&retry_effect);
+    let (retry_authority, retry_grant, _retry_authority_dir) =
+        final_use(retry_binding.clone(), "async-unknown-retry");
+    let retry_ack = ProviderEffectAck::new(
+        key.clone(),
+        retry_effect.payload_digest.clone(),
+        Sha256Digest::for_bytes(b"provider-operation-after-absence"),
+        ProviderEffectAckStatus::Completed,
+    );
+    let retry_adapter = RecordingProviderEffectAdapter::new(
+        ProviderEffectDispatch::Ack(retry_ack),
+        ProviderEffectLookup::Unknown,
+    );
+    let mut retry_driver =
+        ProviderEffectTaskFlowDriver::new(retry_effect.destination_id.clone(), retry_adapter)
+            .expect("retry driver");
+    let retry_receipt = store
+        .execute_authorized_taskflow_effect_async(
+            &retry_authority,
+            &mut retry_driver,
+            &retry_effect,
+            EFFECT_PAYLOAD,
+            &retry_fence,
+            &retry_grant,
+            &retry_binding,
+            "authorized-effect-async-retry",
+            36,
+        )
+        .await
+        .expect("safe new attempt after provider-owned absence");
+    assert_eq!(
+        retry_receipt.observation,
+        Some(TaskFlowStepObservation::Succeeded)
+    );
+    assert_eq!(
+        retry_driver
+            .adapter()
+            .seen_key
+            .lock()
+            .expect("retry seen key")
+            .as_deref(),
+        Some(key.as_str()),
+        "new local attempt must preserve the logical provider identity"
+    );
 }
 
 #[tokio::test]
