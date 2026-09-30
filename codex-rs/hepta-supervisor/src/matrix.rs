@@ -63,8 +63,41 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot.matrix.configured = false;
             slot.matrix.degraded = false;
             slot.matrix.last_error = None;
+            let durable_reset_needed = slot.matrix.restart_attempt != 0
+                || slot.matrix.restart_window_started_unix_millis.is_some();
+            let previous = (
+                slot.matrix.restart_attempt,
+                slot.matrix.restart_window_started_at,
+                slot.matrix.restart_window_started_unix_millis,
+                slot.matrix.retry_at,
+                slot.matrix.restart_after_exit,
+                slot.matrix.restart_exhausted,
+            );
             reset_matrix_restart_budget(slot);
-            let _ = self.persist_restart_budget(agent_id, slot);
+            if durable_reset_needed && let Err(error) = self.persist_restart_budget(agent_id, slot)
+            {
+                // Keep the outstanding clear dirty until its publication is
+                // acknowledged. The next tick retries the same Matrix domain
+                // without touching the independently owned main restart claim.
+                (
+                    slot.matrix.restart_attempt,
+                    slot.matrix.restart_window_started_at,
+                    slot.matrix.restart_window_started_unix_millis,
+                    slot.matrix.retry_at,
+                    slot.matrix.restart_after_exit,
+                    slot.matrix.restart_exhausted,
+                ) = previous;
+                let generation = slot
+                    .runtime
+                    .as_ref()
+                    .map_or(0, |runtime| runtime.generation);
+                slot.event(
+                    generation,
+                    SupervisorEventKind::DriverFault(bounded_message(format!(
+                        "Matrix restart budget reset could not be persisted: {error}"
+                    ))),
+                );
+            }
             return;
         };
         slot.matrix.configured = true;

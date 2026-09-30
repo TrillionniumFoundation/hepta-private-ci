@@ -966,14 +966,9 @@ fn failed_restart_dispatch_retries_cancellation_without_redispatch() -> Result<(
             dispatch_claim.attempt,
         );
         let now = now + config().restart_backoff_base;
-        // Before dispatch, the companion poll writes its empty companion
-        // domain to the shared journal. Pass that known write so a budget
-        // injection lands on failed-dispatch cancellation, not that poll.
-        let successful_occurrences = u32::from(point.starts_with("restart_journal."));
-        let failed =
-            with_qualification_fault_after(point, ErrorKind::Other, successful_occurrences, || {
-                supervisor.tick(now)
-            });
+        // This release has no companion budget to reset. The first matching
+        // journal publication therefore belongs to dispatch cancellation.
+        let failed = with_qualification_fault(point, ErrorKind::Other, || supervisor.tick(now));
         assert_eq!(failed.faults.len(), 1);
         assert_eq!(control.spawn_count(&fleet.first), 1);
         let snapshot = supervisor.snapshot(&fleet.first).expect("failed dispatch");

@@ -265,6 +265,11 @@ immediately after it executes. This removes the unconditional 40-Hz full Fleet
 reload/projection loop without changing lifecycle authority or read freshness.
 Projection refreshes and skips are exposed in scheduler diagnostics.
 
+For releases without a Matrix command, an already empty companion restart
+budget causes no journal publication on idle ticks. A nonempty budget is cleared
+independently of the old companion's backoff or exhaustion state; publication
+failure retains its fields for retry and records a bounded fault.
+
 This is not yet a dirty-Agent incremental projection. A true incremental
 projection and any collect-effect-apply or per-Agent actor refactor are gated by
 the frozen target-host SLOs rather than assumed necessary from synthetic source

@@ -2341,3 +2341,6 @@ fn finish_release_drain(
 
 #[path = "release_retry_tests.rs"]
 mod release_retry_tests;
+
+#[path = "matrix_budget_tests.rs"]
+mod matrix_budget_tests;

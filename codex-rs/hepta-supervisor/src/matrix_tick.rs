@@ -259,7 +259,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             let retry_due = !slot.matrix.restart_exhausted
                 && slot.matrix.retry_at.is_none_or(|retry_at| now >= retry_at);
-            if retry_due {
+            // Removing the companion clears its old budget independently of
+            // that companion's exhausted/backoff schedule. Failed durable
+            // clears therefore remain retryable even after an exhausted run.
+            let without_companion = slot
+                .active_release
+                .as_ref()
+                .is_some_and(|release| release.matrixd_command().is_none());
+            if without_companion || retry_due {
                 self.start_matrix_companion(agent_id, slot, now);
             }
         }
