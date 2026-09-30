@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a5c11868492ad2e5c39affc5a424255cda44a871",
-    "tree": "7b365da856aa33fda6a41d462556b91d4592e58e"
+    "commit": "e58f4c20720bc197dd4087c3688584b62ece1ceb",
+    "tree": "c47d38d4826be7309ebce05b953f7f9661593a4b"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -62,14 +62,42 @@
       "designOperation": "prove_compaction",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "compaction_qualification_payload_v1",
+      "nativeSymbol": "compaction_qualification_payload_v1",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/authenticated.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/authenticated_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compaction_qualification_payload_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prove_compaction_with_signed_evidence_v1",
+      "nativeSymbol": "prove_compaction_with_signed_evidence_v1",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/authenticated.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/authenticated_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prove_compaction_with_signed_evidence_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Compose a named consumer with authenticated, complete and current cognitive.read inputs; revalidate the frozen policy/input using QualifiedCompactionCandidateV2::validate_against_inputs.",
-    "Establish compact_checkpoint owner publication, fenced generation selection, durable reload and non-resurrection recovery; hepta-memory local compact qualification types are not this engine.",
-    "Bind authenticated independent observations to the exact candidate and retain evaluator provenance beside the V1 structural proof.",
+    "Compose a named product consumer of the existing SQLite owner lane_c_lineage observation with frozen external context and policy/input validation; test composition is not product execution.",
+    "Establish compact-owned fenced atomic publication, selected-generation CAS, restart-resolvable payloads and revocation-aware reload/recovery. Revalidate source eligibility in the publication transaction.",
+    "Provision host trust and scope/objective/epoch mappings, execute the signed candidate-specific evaluation obligations independently, and revalidate sealed proof/source bindings at every use.",
     "Implement target replay planning and skill proposal separately; neither is implied by checkpoint construction.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge checks and named COMPACT-01..04 product acceptance before changing the claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

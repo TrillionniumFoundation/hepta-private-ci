@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "e58f4c20720bc197dd4087c3688584b62ece1ceb",
+    "tree": "c47d38d4826be7309ebce05b953f7f9661593a4b"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -225,6 +225,23 @@
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
       "sourcePathExists": true
+    },
+    {
+      "operation": "lane_c_lineage",
+      "nativeSymbol": "lane_c_lineage",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_lineage.rs",
+      "state": "durable_snapshot_source_implemented",
+      "authority": "deny_all_read",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_lineage_tests.rs",
+        "codex-rs/hepta-memory/src/lane_c_lineage_guard_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/lane_c_metadata.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
@@ -305,11 +322,11 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-store",
-      "object": "b321d1157ea310845ed7642e2692ef829ee3e0f8"
+      "object": "cb5864bf5be19e88e8335a722ac5933d97dfe5cb"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/durable.rs",
-      "object": "6ace80385bed98c5306a00b63898214887e435bb"
+      "object": "2887e7dd1d46642263c08282f43898dcbfef6249"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2.rs",
@@ -333,11 +350,27 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "b5462745d335c2115144ddc161d242b3205fdc06"
+      "object": "4373abad74b9ee121d01b4cc606c1d390997fcc1"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_lineage.rs",
+      "object": "3d6ed1d334b2c66edfb27d2425a2e6f40d70b0cd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_lineage_guard_tests.rs",
+      "object": "4c1c104f7a96aba084bb2803234ab201a07823bd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_lineage_tests.rs",
+      "object": "a1baa210616d66bf75ca7e7c508aae91240f1f83"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_metadata.rs",
+      "object": "2e0b10fcfcbb7c648a3ad8922aa11f4a7692e393"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "object": "af66a5195f8a65635abe6c2abaf7b8e265bb6e9d"
+      "object": "adb7e2c41c1b13992c651e4c5e4b35b21f0ac426"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
@@ -361,7 +394,7 @@
     },
     {
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
-      "object": "df2b85789980b950511d8d7ac3ff56403095fe79"
+      "object": "e5b129a1f827937a722436c96c4cecf6c8ad649e"
     }
   ]
 }
