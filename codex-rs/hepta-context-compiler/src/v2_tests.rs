@@ -1470,6 +1470,80 @@ fn empty_context_attachment_still_requires_request_snapshot_domains() {
 }
 
 #[test]
+fn attachment_preserves_each_candidates_authenticated_revocation_frontier() {
+    let initial = verified_snapshot(
+        "snapshot:initial-frontier",
+        10,
+        2,
+        vec![id("admission:other")],
+    );
+    let (trusted, realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &initial,
+    );
+    let compiled = compile_v2(request(vec![trusted], 100)).expect("compilation");
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:admission-frontier"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .expect("serialization");
+    for (epoch, revoked, expected) in [
+        (
+            2,
+            Vec::new(),
+            ContextCompilerV2Error::RevocationFrontierMismatch,
+        ),
+        (
+            2,
+            vec![id("admission:other"), id("admission:new")],
+            ContextCompilerV2Error::RevocationFrontierMismatch,
+        ),
+        (
+            3,
+            Vec::new(),
+            ContextCompilerV2Error::RevocationResurrection("admission:other".to_string()),
+        ),
+    ] {
+        let current = verified_snapshot("snapshot:attachment-fork", 20, epoch, revoked);
+        assert_eq!(
+            build_attachment(
+                &compiled,
+                &serialization,
+                &profile(),
+                &current,
+                id("attachment:fork")
+            ),
+            Err(expected)
+        );
+    }
+    let current = verified_successor_snapshot(
+        "snapshot:attachment-successor",
+        20,
+        3,
+        vec![id("admission:other"), id("admission:new")],
+        &initial,
+    )
+    .expect("cumulative successor");
+    assert!(
+        build_attachment(
+            &compiled,
+            &serialization,
+            &profile(),
+            &current,
+            id("attachment:successor")
+        )
+        .is_ok()
+    );
+}
+
+#[test]
 fn delivery_preparation_preserves_attachment_cumulative_revocation_frontier() {
     let initial = verified_snapshot("snapshot:initial", 10, 1, Vec::new());
     let (trusted, realized) = candidate(

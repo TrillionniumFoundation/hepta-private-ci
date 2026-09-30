@@ -34,6 +34,20 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+struct ByteTokenizer;
+
+impl codex_hepta_context_compiler::ExactTokenizerV2 for ByteTokenizer {
+    fn tokenizer_digest(&self) -> Digest32 {
+        digest("tokenizer:agentd-product")
+    }
+    fn count_tokens(
+        &self,
+        bytes: &[u8],
+    ) -> Result<u64, codex_hepta_context_compiler::ContextCompilerV2Error> {
+        Ok(bytes.len() as u64)
+    }
+}
+
 fn attachment() -> PromptRuntimeAttachmentV1 {
     PromptRuntimeAttachmentV1::new(
         id("compilation:agentd-prompt"),
@@ -588,7 +602,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         locale_id: tuple.locale_id.clone(),
         role: PromptRoleV2::DeveloperInstruction,
         payload_digest: Digest32::of_bytes(payload),
-        token_cost: 4,
+        token_cost: u32::try_from(payload.len()).expect("bounded test payload"),
         expires_unix_ms: None,
     };
     let publisher = id("publisher:agentd-prompt");
@@ -681,7 +695,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             factor_ids: vec![factor.factor_id],
             interaction_digest: digest("interaction"),
             expected_utility_q32: FixedQ32::ONE,
-            total_token_upper_bound: 4,
+            total_token_upper_bound: realization.token_cost,
             valid_until_unix_ms: logical_now + 10_000,
             receipt_digest: digest("portfolio-receipt"),
             authority: AuthorityPosture::DENY_ALL,
@@ -728,12 +742,13 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
                     serializer_digest: digest("serializer:agentd-product"),
                     template_digest: tuple.template_digest,
                     tool_schema_digest: tuple.tool_schema_digest,
-                    maximum_context_tokens: 128,
+                    maximum_context_tokens: 4096,
                 },
                 now_unix_ms: logical_now,
-                token_budget: 128,
+                token_budget: 4096,
                 truncation_policy_digest: digest("truncation:agentd-product"),
             },
+            &ByteTokenizer,
         )
         .unwrap_or_else(|error| panic!("compile and stage: {error}"));
     assert_eq!(disposition, PromptRuntimeStageDisposition::Inserted);

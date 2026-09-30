@@ -19,6 +19,7 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
+use std::sync::Arc;
 
 use codex_hepta_contracts::ProviderInvocationReceipt;
 use codex_hepta_contracts::ProviderTerminal;
@@ -387,7 +388,12 @@ impl ContextAdmissionSnapshotV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedAdmissionSnapshotV2 {
-    snapshot: ContextAdmissionSnapshotV2,
+    snapshot_digest: Digest32,
+    scope_digest: Digest32,
+    authority_domain_digest: Digest32,
+    observed_unix_ms: u64,
+    revocation_epoch: u64,
+    revoked_admission_ids: Arc<[StableId]>,
     verifier_digest: Digest32,
     verification_digest: Digest32,
 }
@@ -395,7 +401,7 @@ pub struct VerifiedAdmissionSnapshotV2 {
 impl VerifiedAdmissionSnapshotV2 {
     #[must_use]
     pub fn snapshot_digest(&self) -> Digest32 {
-        self.snapshot.snapshot_digest
+        self.snapshot_digest
     }
 
     #[must_use]
@@ -410,22 +416,22 @@ impl VerifiedAdmissionSnapshotV2 {
 
     #[must_use]
     pub const fn scope_digest(&self) -> Digest32 {
-        self.snapshot.scope_digest
+        self.scope_digest
     }
 
     #[must_use]
     pub const fn authority_domain_digest(&self) -> Digest32 {
-        self.snapshot.authority_domain_digest
+        self.authority_domain_digest
     }
 
     #[must_use]
     pub const fn observed_unix_ms(&self) -> u64 {
-        self.snapshot.observed_unix_ms
+        self.observed_unix_ms
     }
 
     #[must_use]
     pub const fn revocation_epoch(&self) -> u64 {
-        self.snapshot.revocation_epoch
+        self.revocation_epoch
     }
 
     fn validate_frontier_from(
@@ -443,13 +449,12 @@ impl VerifiedAdmissionSnapshotV2 {
             return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
         }
         if self.revocation_epoch() == predecessor.revocation_epoch()
-            && self.snapshot.revoked_admission_ids != predecessor.snapshot.revoked_admission_ids
+            && self.revoked_admission_ids != predecessor.revoked_admission_ids
         {
             return Err(ContextCompilerV2Error::RevocationFrontierMismatch);
         }
-        for admission_id in &predecessor.snapshot.revoked_admission_ids {
+        for admission_id in predecessor.revoked_admission_ids.iter() {
             if self
-                .snapshot
                 .revoked_admission_ids
                 .binary_search(admission_id)
                 .is_err()
@@ -463,8 +468,7 @@ impl VerifiedAdmissionSnapshotV2 {
     }
 
     fn contains_revocation(&self, admission_id: &StableId) -> bool {
-        self.snapshot
-            .revoked_admission_ids
+        self.revoked_admission_ids
             .binary_search(admission_id)
             .is_ok()
     }
@@ -479,7 +483,12 @@ fn finish_verified_snapshot(
     push_digest(&mut bytes, snapshot.snapshot_digest);
     push_digest(&mut bytes, verifier_digest);
     VerifiedAdmissionSnapshotV2 {
-        snapshot,
+        snapshot_digest: snapshot.snapshot_digest,
+        scope_digest: snapshot.scope_digest,
+        authority_domain_digest: snapshot.authority_domain_digest,
+        observed_unix_ms: snapshot.observed_unix_ms,
+        revocation_epoch: snapshot.revocation_epoch,
+        revoked_admission_ids: snapshot.revoked_admission_ids.into(),
         verifier_digest,
         verification_digest: Digest32::of_bytes(&bytes),
     }
@@ -544,6 +553,7 @@ pub struct VerifiedAdmissionV2 {
     verified_at_unix_ms: u64,
     record_digest: Digest32,
     verification_digest: Digest32,
+    verified_snapshot: VerifiedAdmissionSnapshotV2,
 }
 
 impl VerifiedAdmissionV2 {
@@ -612,11 +622,6 @@ impl VerifiedAdmissionV2 {
             return Err(ContextCompilerV2Error::AdmissionVerifierMismatch(
                 self.item_id.to_string(),
             ));
-        }
-        if current_snapshot.revocation_epoch() < self.verified_revocation_epoch
-            || current_snapshot.observed_unix_ms() < self.verified_at_unix_ms
-        {
-            return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
         }
         if current_snapshot.observed_unix_ms() >= self.expires_unix_ms {
             return Err(ContextCompilerV2Error::AdmissionExpired(
@@ -717,6 +722,7 @@ pub fn verify_admission_v2(
         verified_at_unix_ms: snapshot.observed_unix_ms(),
         record_digest: record.record_digest,
         verification_digest: Digest32::ZERO,
+        verified_snapshot: snapshot.clone(),
     };
     verified.verification_digest = verified.compute_verification_digest();
     Ok(verified)
@@ -2194,7 +2200,12 @@ fn revalidate_selected_admissions(
     {
         return Err(ContextCompilerV2Error::SnapshotDomainMismatch);
     }
+    let mut checked_frontiers = BTreeSet::new();
     for candidate in &compiled.selected_candidates {
+        let frontier = &candidate.admission.verified_snapshot;
+        if checked_frontiers.insert(frontier.verification_digest()) {
+            current_snapshot.validate_frontier_from(frontier)?;
+        }
         candidate.admission.revalidate(current_snapshot)?;
     }
     Ok(())

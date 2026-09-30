@@ -58,15 +58,28 @@ calls V2 admission, compilation, serialization and attachment through
 composes these in `compile_prompt_registry_v2`. These are partial source
 composition, not an authenticated end-to-end provider proof path.
 
-`RegistryBoundTokenizer` looks up registry-declared `token_cost` by payload digest.
-For the final payload it uses the sum of selected costs, excluding framing;
-this is not a measured invocation of the provider tokenizer. The registry
-admission adapter creates locally checked snapshots with an empty revocation
-set and the preparation path reuses the compilation snapshot. Those adapters
-must not establish exact token accounting or current final-use admission.
-A qualified integration must supply the real profile-bound tokenizer over
-candidate and final bytes, authoritative current admission snapshots, and the
-runtime/provider handoff through `prepare_delivery_v2` and `observe_delivery`.
+The prompt pipeline and registry bridge require an explicit `ExactTokenizerV2`
+from their caller. Candidate receipts measure stored bytes and reject a registry
+`token_cost` that differs from that measurement. Serialization measures the
+entire final source bundle, including its framing, instead of summing item
+costs. `AgentdPromptPipelineOwner::compile_and_stage` forwards the same tokenizer.
+These Rust entrypoints now take a final `tokenizer` argument; callers must supply
+the concrete profile adapter. No app-server protocol, configuration or persisted
+prompt-runtime schema changes with that source API migration.
+
+The registry admission adapter still creates locally checked snapshots with an
+empty revocation set. Attachment preparation re-reads the registry and produces
+a successor at the current exercise time, rejecting time rollback, rather than
+reusing the compilation time. This is a registry consistency check, not an
+independently issued final-use admission frontier.
+
+The bridge serializes a source bundle; Agentd stages developer fragments from
+that bundle. The actual App Server/provider request has its own framing and
+role placement. Qualification must measure those actual request bytes and prove
+that the serializer puts selected content in the intended model-visible roles;
+substring occurrence alone cannot establish that. A qualified integration must
+supply authoritative current admission snapshots and the runtime/provider
+handoff through `prepare_delivery_v2` and `observe_delivery`.
 There is no call to those last two entrypoints in the current prompt pipeline.
 Do not promote `productionImplementation` or `productExecutionProved` on the
 strength of compilation/attachment fixtures alone.
@@ -125,7 +138,7 @@ The V2 source path is deliberately stronger than a digest-only receipt chain:
 3. `TokenizationReceiptV2::from_exact_bytes` invokes an `ExactTokenizerV2` over actual candidate bytes and binds the tokenizer identity from the exact model profile.
 4. `compile_v2` requires one scope, authority-domain and admission-verifier identity for the request, preserves non-tradable trusted/schema floors, canonicalizes mandatory groups and includes `mandatory_groups_digest` in the compilation receipt. Mandatory-group references are bounded to 4096 in aggregate.
 5. `record_serialization` consumes the actual selected item bytes, verifies every byte sequence against the selected content digest, invokes the profile-bound serializer, hashes the resulting final payload and then invokes the exact tokenizer over those final payload bytes. Final framing/tool/template overhead therefore counts against the real token budget.
-6. `build_attachment` checks the request scope and authority domain even when no candidates were selected, requires a freshly verified admission snapshot and rechecks every selected admission for verifier identity, monotonic snapshot/epoch, expiry and revocation before attachment. Admission expiry is exclusive: a snapshot observed exactly at `expires_unix_ms` is already expired.
+6. `build_attachment` preserves each selected candidate’s authenticated cumulative revocation frontier, rejects same-epoch set changes and removal of earlier revocations even for unrelated admissions, checks the request scope and authority domain even when no candidates were selected, requires a freshly verified admission snapshot and rechecks every selected admission for verifier identity, monotonic snapshot/epoch, expiry and revocation before attachment. Admission expiry is exclusive: a snapshot observed exactly at `expires_unix_ms` is already expired.
 7. `prepare_delivery_v2` revalidates again at the pre-dispatch boundary, rejects snapshot epoch or observation-time rollback relative to attachment, changes to the revoked set within one epoch, and removal of any previously revoked admission even across higher epochs, and emits a construction-closed `ContextDeliveryPreparationV2` binding the exact payload, provider/model profile and current admission snapshot. The runtime/provider owner performs the physical request and must bind the exact payload SHA-256 into `ProviderRequestBinding.ephemeral_input_sha256`. The existing `ephemeral_input_witness_sha256` remains a provider-owned exact-attempt witness; it is not redefined as `SHA256(ContextDeliveryPreparationV2)`. `observe_delivery` requires that witness to be present and passes the canonical `ProviderInvocationReceipt` together with the current preparation to an independent `ContextProviderDeliveryVerifierV2`, which must authenticate the provider-owned witness/preparation linkage. The compiler directly checks exact payload, provider/model, attempt/terminal and evidence lineage before emitting `ContextDeliveryReceiptV2`. The compiler itself never opens a provider/network/model effect boundary. `ContextCompilationReceiptV2`, `CompiledContextV2`, `SerializedContextV2`, `ContextSerializationReceiptV2`, `ContextAttachmentV2`, `ContextDeliveryPreparationV2` and `ContextDeliveryReceiptV2` are construction-closed outside this module; callers cannot bypass `compile_v2`, exact serialization/tokenization or current-revocation checks by synthesizing proof structs.
 
 The admission verifier, serializer, tokenizer and provider-evidence verifier are explicit trusted adapter seams. Their digest identities are evidence inputs, not authority grants. A malicious or incorrectly configured adapter is outside the compiler's pure-algorithm proof and must be qualified by the owning integration. The actual runtime/provider adapter must independently satisfy the repository's final-use authority contract; this module never mints or consumes provider authority. V1 APIs remain compatibility source surfaces and do not satisfy this V2 proof chain.
@@ -219,8 +232,11 @@ meaning and requalify any changed V2 adapter/profile combination.
 
 Compilation and serialization are synchronous operations over immutable
 request inputs; concurrent requests share no compiler-owned writable state.
-Attachment retains its authenticated snapshot so pre-dispatch can compare the
-complete cumulative revocation frontier. This in-memory check is not atomic
+Candidates and attachment retain their authenticated snapshot frontiers so
+attachment and pre-dispatch can compare complete cumulative revocation sets.
+An immutable `Arc<[StableId]>` shares each revoked set across candidate clones;
+each distinct verified frontier is checked once per attachment/preparation,
+avoiding repeated full-set checks for candidates admitted together. This in-memory check is not atomic
 with physical dispatch: the effect owner must consume current final-use
 authority at its own dispatch boundary. Persisting an attachment or preparation
 alone cannot establish that the model received the payload.
@@ -272,11 +288,13 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-context-compiler/src/v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/v2_tests.rs); cases cover verifier rejection of otherwise well-formed admission records, scope/authority-domain binding, cumulative revocation no-resurrection, revocation/mandatory/raw-byte ceiling rejection, role-binding confusion, compile-to-attach revocation TOCTOU, actual realization-byte mismatch, exact final-payload tokenization including framing overhead, mandatory-group provenance binding, transport payload mismatch, and revocation after attachment but before delivery.
+- [codex-rs/hepta-context-compiler/src/v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/v2_tests.rs); cases cover verifier rejection of otherwise well-formed admission records, scope/authority-domain binding, cumulative revocation no-resurrection, revocation/mandatory/raw-byte ceiling rejection, role-binding confusion, compile-to-attach revocation TOCTOU, candidate-to-attachment frontier drift, actual realization-byte mismatch, exact final-payload tokenization including framing overhead, mandatory-group provenance binding, transport payload mismatch, and revocation after attachment but before delivery.
 - [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs); compatibility case: `omitted_content_is_bound_without_changing_legacy_compilation`.
 - [codex-rs/hepta-context-compiler/src/lib_tests.rs](../../../codex-rs/hepta-context-compiler/src/lib_tests.rs); compatibility case: `evidence_never_becomes_instruction`.
 
-In `codex-rs`, run `just test -p codex-hepta-context-compiler`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) separately labels target acceptance designs.
+The intelligence integration tests also cover final source-bundle framing budgets, registry-cost/tokenizer drift and attachment-time rollback in [prompt_pipeline_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs). The Agentd [prompt_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/prompt_runtime_tests.rs) exercises the explicit-tokenizer staging caller.
+
+In `codex-rs`, run `just test -p codex-hepta-context-compiler` and `just test -p codex-hepta-intelligence`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

@@ -68,7 +68,11 @@ receipt and must not be interpreted as the verified V2 proof chain:
   template and tool-schema overhead;
 - `build_attachment` binds request scope and authority domain even for an empty
   selected set, then revalidates every selected admission against the current
-  verified admission/revocation snapshot; expiry is exclusive, so an admission
+  verified admission/revocation snapshot, preserving every selected candidate’s
+  authenticated cumulative frontier even when only unrelated ids were revoked.
+  Same-epoch set changes and later removal of revoked ids fail closed. Immutable
+  revoked sets are shared across proof clones, and each distinct frontier is
+  checked once per revalidation. Expiry is exclusive, so an admission
   is already invalid when the snapshot time equals `expires_unix_ms`;
 - `prepare_delivery_v2` rejects revocation-epoch or snapshot-time rollback
   from the attachment boundary, rejects same-epoch revoked-set changes and

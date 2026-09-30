@@ -574,14 +574,21 @@ impl AgentdPromptPipelineOwner {
         portfolio: &SelectedPromptPortfolioV1,
         exercise_request: &PromptExerciseRequestV1,
         compilation_request: PromptRegistryCompilationRequestV2,
+        tokenizer: &impl codex_hepta_context_compiler::ExactTokenizerV2,
     ) -> Result<PromptRuntimeStageDisposition, AgentdPromptPipelineError> {
         let compiled = {
             let registry = self
                 .registry
                 .lock()
                 .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?;
-            compile_prompt_registry_v2(&registry, portfolio, exercise_request, compilation_request)
-                .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
+            compile_prompt_registry_v2(
+                &registry,
+                portfolio,
+                exercise_request,
+                compilation_request,
+                tokenizer,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
         };
         self.runtime
             .stage_compiled_prompt_context(

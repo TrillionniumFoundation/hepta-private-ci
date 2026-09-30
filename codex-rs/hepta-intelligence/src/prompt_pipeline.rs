@@ -27,6 +27,7 @@ use codex_hepta_context_compiler::ContextRoleV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
 use codex_hepta_context_compiler::ContextSerializerV2;
 use codex_hepta_context_compiler::ExactTokenizerV2;
+use codex_hepta_context_compiler::MAX_SERIALIZED_PAYLOAD_BYTES_V2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
 use codex_hepta_context_compiler::SerializedContextV2;
 use codex_hepta_context_compiler::TokenizationReceiptV2;
@@ -34,6 +35,7 @@ use codex_hepta_context_compiler::VerifiedAdmissionSnapshotV2;
 use codex_hepta_context_compiler::build_attachment;
 use codex_hepta_context_compiler::compile_v2;
 use codex_hepta_context_compiler::record_serialization;
+use codex_hepta_context_compiler::verify_admission_snapshot_successor_v2;
 use codex_hepta_context_compiler::verify_admission_snapshot_v2;
 use codex_hepta_context_compiler::verify_admission_v2;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseActionV1;
@@ -170,6 +172,7 @@ pub enum PromptPipelineErrorV1 {
     SerializedPayloadMissing(String),
     SerializationProofDrift,
     ProviderEvidenceRequired,
+    TokenCostMismatch(String),
     Arithmetic,
 }
 
@@ -205,25 +208,6 @@ impl ContextAdmissionVerifierV2 for RegistryAdmissionVerifier {
             && snapshot.authority_domain_digest == self.authority_domain_digest
             && snapshot.revocation_set_complete
             && snapshot.validate_shape().is_ok()
-    }
-}
-
-#[derive(Clone, Debug)]
-struct RegistryBoundTokenizer {
-    tokenizer_digest: Digest32,
-    exact_counts: BTreeMap<Digest32, u64>,
-}
-
-impl ExactTokenizerV2 for RegistryBoundTokenizer {
-    fn tokenizer_digest(&self) -> Digest32 {
-        self.tokenizer_digest
-    }
-
-    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
-        self.exact_counts
-            .get(&Digest32::of_bytes(bytes))
-            .copied()
-            .ok_or(ContextCompilerV2Error::InvalidSerializedTokenCount)
     }
 }
 
@@ -274,12 +258,21 @@ fn admission_domains(
     )
 }
 
+/// Revalidate the portfolio and measure its stored bytes with the supplied
+/// profile tokenizer. Registry pricing must match the measured candidate cost.
 pub fn compile_exercised_prompt_context_v1(
     registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     request: PromptContextCompileRequestV1,
+    tokenizer: &impl ExactTokenizerV2,
 ) -> Result<PreparedPromptContextV1, PromptPipelineErrorV1> {
     ensure_model_tuple_matches(portfolio, &request.model_profile)?;
+    if tokenizer.tokenizer_digest() != request.model_profile.tokenizer_digest {
+        return Err(PromptPipelineErrorV1::ContextCompiler(format!(
+            "{:?}",
+            ContextCompilerV2Error::TokenizerProfileMismatch
+        )));
+    }
     if !request.base_candidates.is_empty() {
         return Err(PromptPipelineErrorV1::PortfolioContextBindingMismatch);
     }
@@ -314,7 +307,6 @@ pub fn compile_exercised_prompt_context_v1(
 
     let mut candidates = Vec::with_capacity(portfolio.selected.len());
     let mut seen = BTreeSet::new();
-    let mut counts = BTreeMap::new();
     for (selected, payload) in portfolio.selected.iter().zip(&materialization.payloads) {
         let realization = &payload.binding;
         if !seen.insert(realization.realization_id.clone()) {
@@ -328,20 +320,17 @@ pub fn compile_exercised_prompt_context_v1(
             | PromptRoleV2::DeveloperInstruction
             | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
         };
-        counts.insert(
-            realization.payload_digest,
-            u64::from(realization.token_cost),
-        );
-        let tokenizer = RegistryBoundTokenizer {
-            tokenizer_digest: realization.tokenizer_digest,
-            exact_counts: counts.clone(),
-        };
         let tokenization = TokenizationReceiptV2::from_exact_bytes(
             realization.realization_id.clone(),
             &payload.payload,
-            &tokenizer,
+            tokenizer,
         )
         .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
+        if tokenization.token_count() != u64::from(realization.token_cost) {
+            return Err(PromptPipelineErrorV1::TokenCostMismatch(
+                realization.realization_id.to_string(),
+            ));
+        }
         let expires_unix_ms = realization
             .expires_unix_ms
             .unwrap_or(portfolio.receipt.valid_until_unix_ms)
@@ -412,11 +401,14 @@ pub fn compile_exercised_prompt_context_v1(
     })
 }
 
+/// Revalidate the registry and count the entire final payload, including framing.
+/// The tokenizer implementation must be qualified by the product owner.
 pub fn prepare_prompt_delivery_v1(
     registry: &DurablePromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     prepared: &PreparedPromptContextV1,
     request: PromptDeliveryPrepareRequestV1,
+    tokenizer: &impl ExactTokenizerV2,
 ) -> Result<PreparedPromptDeliveryV1, PromptPipelineErrorV1> {
     let receipt = prepared.compiled.receipt();
     if receipt.objective_digest() != portfolio.objective_digest
@@ -431,6 +423,12 @@ pub fn prepare_prompt_delivery_v1(
         serialized_payload,
         attachment_id,
     } = request;
+    if serialized_payload.len() > MAX_SERIALIZED_PAYLOAD_BYTES_V2 {
+        return Err(PromptPipelineErrorV1::ContextCompiler(format!(
+            "{:?}",
+            ContextCompilerV2Error::SerializedPayloadTooLarge
+        )));
+    }
     let now_unix_ms = exercise_request.now_unix_ms;
     let current_registry = registry
         .registry()
@@ -451,8 +449,6 @@ pub fn prepare_prompt_delivery_v1(
         .map(|payload| (payload.binding.realization_id.clone(), payload))
         .collect::<BTreeMap<_, _>>();
     let mut realizations = Vec::new();
-    let mut counts = BTreeMap::new();
-    let mut serialized_count = 0_u64;
     for item_id in prepared.compiled.receipt().selected_item_ids() {
         let payload = by_id.get(item_id).ok_or_else(|| {
             PromptPipelineErrorV1::SelectedRealizationMissing(item_id.to_string())
@@ -463,27 +459,12 @@ pub fn prepare_prompt_delivery_v1(
             | PromptRoleV2::DeveloperInstruction
             | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
         };
-        counts.insert(
-            payload.binding.payload_digest,
-            u64::from(payload.binding.token_cost),
-        );
-        serialized_count = serialized_count
-            .checked_add(u64::from(payload.binding.token_cost))
-            .ok_or(PromptPipelineErrorV1::Arithmetic)?;
         realizations.push(ContextRealizedItemV2 {
             item_id: item_id.clone(),
             role,
             content: payload.payload.clone(),
         });
     }
-    counts.insert(
-        Digest32::of_bytes(&serialized_payload),
-        serialized_count.max(1),
-    );
-    let tokenizer = RegistryBoundTokenizer {
-        tokenizer_digest: prepared.model_profile.tokenizer_digest,
-        exact_counts: counts,
-    };
     let serializer = ExactPreparedSerializer {
         serializer_digest: prepared.model_profile.serializer_digest,
         template_digest: prepared.model_profile.template_digest,
@@ -496,15 +477,37 @@ pub fn prepare_prompt_delivery_v1(
         serialization_id,
         realizations,
         &serializer,
-        &tokenizer,
+        tokenizer,
     )
     .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     let serialization = serialized_context.receipt().clone();
+    let current_snapshot = ContextAdmissionSnapshotV2::new(
+        attachment_id.clone(),
+        prepared.admission_snapshot.scope_digest(),
+        prepared.admission_snapshot.authority_domain_digest(),
+        now_unix_ms.max(1),
+        prepared.admission_snapshot.revocation_epoch(),
+        Vec::new(),
+        true,
+        Some(prepared.admission_snapshot.snapshot_digest()),
+    )
+    .and_then(|snapshot| {
+        verify_admission_snapshot_successor_v2(
+            snapshot,
+            &prepared.admission_snapshot,
+            &RegistryAdmissionVerifier {
+                digest: prepared.admission_snapshot.verifier_digest(),
+                scope_digest: prepared.admission_snapshot.scope_digest(),
+                authority_domain_digest: prepared.admission_snapshot.authority_domain_digest(),
+            },
+        )
+    })
+    .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     let attachment = build_attachment(
         &prepared.compiled,
         &serialized_context,
         &prepared.model_profile,
-        &prepared.admission_snapshot,
+        &current_snapshot,
         attachment_id,
     )
     .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
