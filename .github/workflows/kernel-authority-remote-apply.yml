@@ -11,12 +11,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: kernel-authority-exact-full-minus-workflow-ubuntu24
+  group: kernel-authority-exact-full-minus-workflow-slim
   cancel-in-progress: false
 
 jobs:
   apply:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     timeout-minutes: 30
     steps:
       - name: Checkout immutable staging payload
@@ -54,9 +54,6 @@ jobs:
           git apply --index --check ../patch.diff
           git apply --index ../patch.diff
 
-          # The full immutable payload was already qualified, but its workflow
-          # update requires a distinct permission. Keep that change out of the
-          # source commit rather than weakening GitHub's workflow protection.
           git restore --source=HEAD --staged --worktree -- \
             .github/workflows/kernel-authority-production-closure.yml
           git diff --cached --check
