@@ -8,6 +8,7 @@ ordered acceptance objectives requested for product closure and admits a
 module status projector. It never upgrades source/package evidence into
 real-provider, target-host, independent-acceptance, activation or release facts.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -98,7 +99,10 @@ OBJECTIVES: tuple[dict[str, Any], ...] = (
         "sourceBindings": [
             {
                 "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-                "symbols": ["start_canonical_intelligence", "complete_canonical_intelligence"],
+                "symbols": [
+                    "start_canonical_intelligence",
+                    "complete_canonical_intelligence",
+                ],
             },
             {
                 "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_product.rs",
@@ -249,9 +253,7 @@ def validate_direct_test(row: dict[str, str]) -> None:
         raise ValueError(f"unknown direct-test package: {row['package']}")
     text = source_text(row["path"])
     matches = [
-        match
-        for match in TEST_PATTERN.finditer(text)
-        if match["name"] == row["name"]
+        match for match in TEST_PATTERN.finditer(text) if match["name"] == row["name"]
     ]
     if (
         len(matches) != 1
@@ -407,7 +409,9 @@ def emit_receipt(
     }
     resolved = output.resolve()
     if resolved.is_relative_to(ROOT):
-        raise ValueError("acceptance receipts must be emitted outside the source checkout")
+        raise ValueError(
+            "acceptance receipts must be emitted outside the source checkout"
+        )
     resolved.parent.mkdir(parents=True, exist_ok=True)
     resolved.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
 

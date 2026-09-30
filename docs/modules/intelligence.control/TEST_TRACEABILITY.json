@@ -103,17 +103,24 @@
       "tests": [
         "completion_disarms_and_joins_watchdog",
         "independent_watchdog_observes_detached_work",
-        "explicit_hard_timeout_terminates_a_real_child_process"
+        "explicit_hard_timeout_terminates_a_real_child_process",
+        "request_timeout_before_watchdog_is_counted_once",
+        "delayed_observer_uses_completion_time_instead_of_wakeup_time"
       ],
       "supportScope": "real OS thread and child-process supervision; production Supervisor replacement-generation proof remains open"
     },
     {
       "id": "bounded_telemetry",
       "tests": [
-        "worker_timeout_is_visible_after_late_completion",
+        "worker_timeout_is_visible_while_active_and_after_late_completion",
         "stage_failure_classes_remain_separate",
         "run_phase_dwell_accumulates_exact_transitions",
-        "same_phase_idempotent_replay_does_not_reset_dwell"
+        "same_phase_idempotent_replay_does_not_reset_dwell",
+        "timeout_then_completion_balances_the_shared_gauge_once",
+        "completion_then_request_timeout_never_creates_an_active_timeout",
+        "concurrent_request_and_watchdog_timeouts_are_counted_once",
+        "racing_timeout_and_completion_leave_only_valid_terminal_accounting",
+        "completing_one_worker_preserves_another_workers_timeout_gauge"
       ],
       "supportScope": "counter/state invariants; no target-host latency, RSS or quality claim"
     },
@@ -371,7 +378,7 @@
       "executionStatus": "pending"
     },
     {
-      "name": "worker_timeout_is_visible_after_late_completion",
+      "name": "worker_timeout_is_visible_while_active_and_after_late_completion",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_observability.rs",
       "package": "codex-hepta-agentd",
       "executionStatus": "pending"
@@ -452,6 +459,48 @@
       "name": "writer_samples_clock_after_immediate_transaction_admission",
       "sourcePath": "codex-rs/hepta-operations/src/durable_store_tests.rs",
       "package": "codex-hepta-operations",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "timeout_then_completion_balances_the_shared_gauge_once",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "completion_then_request_timeout_never_creates_an_active_timeout",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "concurrent_request_and_watchdog_timeouts_are_counted_once",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "racing_timeout_and_completion_leave_only_valid_terminal_accounting",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "completing_one_worker_preserves_another_workers_timeout_gauge",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_state_tests.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "request_timeout_before_watchdog_is_counted_once",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs",
+      "package": "codex-hepta-agentd",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "delayed_observer_uses_completion_time_instead_of_wakeup_time",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs",
+      "package": "codex-hepta-agentd",
       "executionStatus": "pending"
     }
   ],

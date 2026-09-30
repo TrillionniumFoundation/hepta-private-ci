@@ -297,7 +297,8 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
       "symbols": [
         "pub fn validate(&self)",
-        "admitted_exercise"
+        "admitted_exercise",
+        "prepare_prompt_delivery_with_tokenizer_v1"
       ]
     },
     {
@@ -314,6 +315,43 @@
         "pub enum DurableFailureClass",
         "pub enum RecoveryDisposition",
         "pub const fn recovery_disposition"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_budget.rs",
+      "symbols": [
+        "CanonicalBudgetClock",
+        "check_stage",
+        "check_total"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_state.rs",
+      "symbols": [
+        "AgentdIntelligenceWorkerStateV1",
+        "mark_timed_out",
+        "finish"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery.rs",
+      "symbols": [
+        "reconcile_intelligence_terminal",
+        "project_intelligence_terminal"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "symbols": [
+        "compile_prompt_registry_with_tokenizer_v2",
+        "admitted_compatible",
+        "admitted_exercise_receipt_digest"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "symbols": [
+        "compile_and_stage_with_tokenizer"
       ]
     }
   ],
