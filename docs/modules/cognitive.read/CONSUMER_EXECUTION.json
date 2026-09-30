@@ -7,24 +7,26 @@
   "consumers": [
     {
       "module": "compact.engine",
-      "migration_class": "registered_only_not_composed",
+      "migration_class": "exact_owner_read_compaction_candidate_composed_qualification_pending",
       "required_gates": [
-        "consumer-compact-tests"
+        "consumer-compact-tests",
+        "compact-product-e2e"
       ],
       "normal_product_path_exercised": false,
-      "final_use_owner": "not_applicable_until_composed",
-      "evidence_interpretation": "Package execution proves the registered implementation compiles and tests; it does not prove a cognitive.read product migration."
+      "final_use_owner": "existing SQLite owner before candidate publication; existing compact checkpoint owner before persistence",
+      "evidence_interpretation": "Source composition uses the normal SQLite owner, exact all-or-error read, complete lineage and a final selected-cut reacquisition. The exact product gate must pass on source and merge candidates before execution is claimed; the candidate remains deny-all."
     },
     {
       "module": "context.compiler",
-      "migration_class": "legacy_v1_source_composed_v2_pending",
+      "migration_class": "legacy_v1_composed_revision_bound_v2_ingress_source_implemented_product_use_pending",
       "required_gates": [
         "consumer-context-tests",
+        "context-v2-ingress-tests",
         "consumer-intelligence-product-e2e"
       ],
       "normal_product_path_exercised": true,
-      "final_use_owner": "provider_or_model_use_owner_after_compiler_admission",
-      "evidence_interpretation": "The authenticated Agentd intelligence product path exercises context compilation and currentness failure; it does not establish verified V2 cognitive.read ingress."
+      "final_use_owner": "existing compiler admission plus provider/model-use owner after revision-bound ingress",
+      "evidence_interpretation": "The dedicated V2 ingress gate proves complete revision-bound source verification and compilation through existing admission. The authenticated intelligence path remains the legacy product caller; named provider-bound V2 use and final-use execution are still required before migration is complete."
     },
     {
       "module": "memory.federation",
@@ -85,5 +87,5 @@
       "evidence_interpretation": "The intelligence product path exercises request-local utility evaluation and current-owner failure while preserving deny-all semantics; authenticated production owner composition remains pending."
     }
   ],
-  "claim_boundary": "A package or product gate proves only the exact command recorded in the same source-head or merge-candidate receipt. No row converts contract registration into V2 migration, independent acceptance, activation, production implementation, promotion, or release."
+  "claim_boundary": "A package or product gate proves only the exact command recorded in the same source-head or merge-candidate receipt. No row converts contract registration into completed V2 migration, independent acceptance, activation, production implementation, promotion, or release."
 }
