@@ -138,48 +138,78 @@ impl Fixture {
         )?)?;
         let config = SupervisorConfig::local_default();
         let now = Instant::now();
-        let (supervisor, report) = Supervisor::recover(registry.clone(), Driver, config.clone(), now)?;
+        let (supervisor, report) =
+            Supervisor::recover(registry.clone(), Driver, config.clone(), now)?;
         assert!(report.faults.is_empty());
         let record = registry.load()?.agents[&agent].clone();
         let starting = registry.compare_and_transition(
-            &agent, record.lifecycle.generation, AgentLifecycle::Starting,
+            &agent,
+            record.lifecycle.generation,
+            AgentLifecycle::Starting,
         )?;
         let (generation, phase) = if running {
             let next = registry.compare_and_transition(
-                &agent, starting.generation, AgentLifecycle::Running,
+                &agent,
+                starting.generation,
+                AgentLifecycle::Running,
             )?;
             (next.generation, RuntimePhase::Running)
         } else {
-            (starting.generation, RuntimePhase::AwaitingHealth { deadline: now })
+            (
+                starting.generation,
+                RuntimePhase::AwaitingHealth { deadline: now },
+            )
         };
         let root = record.layout.run_root().to_path_buf();
         let process = Arc::new(Mutex::new(State {
-            root: root.clone(), signals: Vec::new(), fail: None, exited: false,
+            root: root.clone(),
+            signals: Vec::new(),
+            fail: None,
+            exited: false,
         }));
         let identity = ProcessIdentity::new(42, "durable-cancellation-fixture")?;
         let release_id = ReleaseId::parse("control-test")?;
-        write_lease(&root, &ProcessLease {
-            schema_version: PROCESS_LEASE_SCHEMA_VERSION,
-            agent_id: agent.clone(),
-            spawn_generation: starting.generation,
-            release_id: release_id.clone(),
-            identity: identity.clone(),
-        })?;
+        write_lease(
+            &root,
+            &ProcessLease {
+                schema_version: PROCESS_LEASE_SCHEMA_VERSION,
+                agent_id: agent.clone(),
+                spawn_generation: starting.generation,
+                release_id: release_id.clone(),
+                identity: identity.clone(),
+            },
+        )?;
         let mut slot = AgentSlot::new(&config);
         slot.runtime = Some(AgentRuntime {
-            process: Process(Arc::clone(&process)), identity,
-            spawn_generation: starting.generation, release_id, generation,
-            phase, healthy: running, fenced: false,
+            process: Process(Arc::clone(&process)),
+            identity,
+            spawn_generation: starting.generation,
+            release_id,
+            generation,
+            phase,
+            healthy: running,
+            fenced: false,
         });
         slot.last_command = Some(AgentCommand::new("/unused-test-child", Vec::new())?);
-        Ok(Self { _temp: temp, registry, agent, root, supervisor, slot, process, now })
+        Ok(Self {
+            _temp: temp,
+            registry,
+            agent,
+            root,
+            supervisor,
+            slot,
+            process,
+            now,
+        })
     }
 
     fn queue_restart(&mut self) -> Result<()> {
         let config = &self.supervisor.config;
         let claim = crate::restart_budget::claim_restart(
-            &self.root, config.restart_max_attempts,
-            config.restart_window, config.restart_backoff_base,
+            &self.root,
+            config.restart_max_attempts,
+            config.restart_window,
+            config.restart_backoff_base,
         )?;
         self.slot.restart_pending = true;
         self.slot.restart_attempt = claim.attempt;
@@ -188,7 +218,9 @@ impl Fixture {
     }
 
     fn pending(&self) -> Result<bool> {
-        Ok(read_main_restart_budget(&self.root)?.expect("restart state").pending)
+        Ok(read_main_restart_budget(&self.root)?
+            .expect("restart state")
+            .pending)
     }
 }
 
@@ -203,7 +235,10 @@ fn cancellation_survives_reopen(kill: bool) -> Result<()> {
         f.supervisor.stop_slot(&f.agent, &mut f.slot, f.now)?;
         Signal::Stop
     };
-    assert_eq!(f.process.lock().expect("state").signals, vec![(signal, Some(false))]);
+    assert_eq!(
+        f.process.lock().expect("state").signals,
+        vec![(signal, Some(false))]
+    );
     let after = read_main_restart_budget(&f.root)?.expect("after");
     assert!(!after.pending);
     assert_eq!(after.attempts, before.attempts);
@@ -218,7 +253,10 @@ fn cancellation_survives_reopen(kill: bool) -> Result<()> {
     drop(f.supervisor);
     let (recovered, report) = Supervisor::recover(f.registry.clone(), Driver, config, f.now)?;
     assert!(report.faults.is_empty());
-    assert!(!recovered.snapshot(&f.agent).expect("snapshot").restart_pending);
+    assert!(!recovered
+        .snapshot(&f.agent)
+        .expect("snapshot")
+        .restart_pending);
     assert!(crate::restart_budget::pending_restart(&f.root, 3)?.is_none());
     Ok(())
 }
@@ -238,7 +276,11 @@ fn failed_stop_signal_does_not_restore_the_cancelled_restart() -> Result<()> {
     let mut f = Fixture::new(true)?;
     f.queue_restart()?;
     f.process.lock().expect("state").fail = Some(Signal::Stop);
-    assert!(f.supervisor.stop_slot(&f.agent, &mut f.slot, f.now).is_err());
+    assert!(
+        f.supervisor
+            .stop_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
     assert!(!f.pending()?);
     assert!(f.slot.runtime.is_some());
     assert!(f.slot.pending_control.is_some());
@@ -264,10 +306,17 @@ fn unreadable_cancellation_state_prevents_stop_acknowledgement_and_signal() -> R
     f.queue_restart()?;
     let path = f.root.join(RESTART_JOURNAL_FILE);
     std::fs::write(&path, b"corrupt restart record")?;
-    assert!(f.supervisor.stop_slot(&f.agent, &mut f.slot, f.now).is_err());
+    assert!(
+        f.supervisor
+            .stop_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
     assert!(f.process.lock().expect("state").signals.is_empty());
     assert_eq!(std::fs::read(path)?, b"corrupt restart record");
-    assert_eq!(f.registry.load()?.agents[&f.agent].lifecycle.lifecycle, AgentLifecycle::Running);
+    assert_eq!(
+        f.registry.load()?.agents[&f.agent].lifecycle.lifecycle,
+        AgentLifecycle::Running
+    );
     Ok(())
 }
 
@@ -278,7 +327,10 @@ fn unreadable_cancellation_state_does_not_suppress_emergency_kill() -> Result<()
     let path = f.root.join(RESTART_JOURNAL_FILE);
     std::fs::write(&path, b"corrupt restart record")?;
     assert!(f.supervisor.kill_slot(&f.agent, &mut f.slot).is_err());
-    assert_eq!(f.process.lock().expect("state").signals, vec![(Signal::Kill, None)]);
+    assert_eq!(
+        f.process.lock().expect("state").signals,
+        vec![(Signal::Kill, None)]
+    );
     assert!(f.slot.runtime.as_ref().expect("owned process").fenced);
     assert_eq!(std::fs::read(path)?, b"corrupt restart record");
     Ok(())
@@ -288,10 +340,17 @@ fn unreadable_cancellation_state_does_not_suppress_emergency_kill() -> Result<()
 fn restart_of_a_starting_process_preserves_its_claim_through_internal_stop() -> Result<()> {
     let mut f = Fixture::new(false)?;
     f.process.lock().expect("state").fail = Some(Signal::Stop);
-    assert!(f.supervisor.restart_slot(&f.agent, &mut f.slot, f.now).is_err());
+    assert!(
+        f.supervisor
+            .restart_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
     assert!(f.pending()?);
     assert!(f.slot.restart_pending);
-    assert_eq!(f.process.lock().expect("state").signals, vec![(Signal::Stop, Some(true))]);
+    assert_eq!(
+        f.process.lock().expect("state").signals,
+        vec![(Signal::Stop, Some(true))]
+    );
     Ok(())
 }
 
@@ -301,11 +360,21 @@ fn deferred_companion_stop_continuation_does_not_cancel_the_restart_claim() -> R
     f.queue_restart()?;
     f.slot.deferred_agent_action = Some(DeferredAgentAction {
         kind: DeferredAgentActionKind::Stop,
-        spawn_generation: f.slot.runtime.as_ref().expect("runtime").spawn_generation,
+        spawn_generation: f
+            .slot
+            .runtime
+            .as_ref()
+            .expect("runtime")
+            .spawn_generation,
     });
-    f.supervisor.tick_matrix_companion(&f.agent, &mut f.slot, f.now)?;
+    f.supervisor
+        .tick_matrix_companion(&f.agent, &mut f.slot, f.now)?;
     assert!(f.pending()?);
     assert!(f.slot.restart_pending);
     assert!(f.slot.deferred_agent_action.is_none());
-    assert_eq!(f.process.lock().expect("state").signals, vec![(Signal::Stop, Some(true))]);
+    assert_eq!(
+        f.process.lock().expect("state").signals,
+        vec![(Signal::Stop, Some(true))]
+    );
     Ok(())
+}
