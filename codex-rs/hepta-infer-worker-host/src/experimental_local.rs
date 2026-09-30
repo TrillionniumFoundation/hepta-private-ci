@@ -1,10 +1,10 @@
 //! Experimental local-model execution boundary.
 //!
 //! This module is compiled only with `experimental-local-model`. It provides a
-//! signed-grant verifier, verified model/input types, aggregate resource
-//! accounting and a durable run adapter over the existing inference.control
-//! native journal. It does not establish a real hardware driver or production
-//! qualification by itself.
+//! signed-grant verifier, a live monotonic authority port, verified model/input
+//! types, aggregate resource accounting and a durable run adapter over the
+//! existing inference.control native journal. It does not establish a real
+//! hardware driver or production qualification by itself.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -17,6 +17,10 @@ mod authority;
 mod driver;
 #[path = "experimental_local/durable.rs"]
 mod durable;
+#[path = "experimental_local/hardened.rs"]
+mod hardened;
+#[path = "experimental_local/live_authority.rs"]
+mod live_authority;
 #[path = "experimental_local/resources.rs"]
 mod resources;
 
@@ -42,10 +46,14 @@ pub use driver::LocalModelDriver;
 pub use driver::TrustedReleaseObservation;
 pub use driver::TrustedResourceObservation;
 pub use driver::TrustedResourceObserver;
-pub use durable::DurableLocalModelWorker;
 pub use durable::LocalRunAdmission;
 pub use durable::LocalRunResult;
 pub use durable::LocalRunStatus;
+pub use hardened::DurableLocalModelWorker;
+pub use live_authority::AUTHORITY_SNAPSHOT_SCHEMA_VERSION;
+pub use live_authority::DEFAULT_AUTHORITY_MAX_AGE_MS;
+pub use live_authority::TrustedAuthorityProvider;
+pub use live_authority::TrustedAuthoritySnapshot;
 pub use resources::ModelLifecycle;
 pub use resources::ResourceManager;
 pub use resources::ResourceSnapshot;
@@ -74,6 +82,7 @@ pub enum LocalWorkerError {
     ArithmeticOverflow,
     Driver(String),
     Observer(String),
+    Authority(String),
     Control(String),
 }
 
@@ -124,3 +133,7 @@ pub(super) fn digest(bytes: &[u8]) -> String {
 #[cfg(test)]
 #[path = "experimental_local_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "experimental_local_hardening_tests.rs"]
+mod hardening_tests;
