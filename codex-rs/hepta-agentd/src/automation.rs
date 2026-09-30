@@ -289,6 +289,13 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         if cancellation.is_cancelled() {
             return Ok(());
         }
+        // Recovery can wait for remote turn history. Issue the next lease
+        // against the current clock rather than the timestamp from before
+        // that wait.
+        let now_ms = match unix_time_ms() {
+            Ok(now_ms) => now_ms,
+            Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
+        };
         // Once admitted, the tick must record the queue outcome. Dropping this
         // future on cancellation could lose an acknowledgement after dispatch.
         match scheduler.tick(now_ms).await {
@@ -387,7 +394,7 @@ fn automation_input(admission: &AutomationAdmission) -> Vec<UserInput> {
     }]
 }
 
-fn unix_time_ms() -> Result<u64, AutomationError> {
+pub(crate) fn unix_time_ms() -> Result<u64, AutomationError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|_| AutomationError::Unavailable)?

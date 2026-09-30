@@ -199,9 +199,151 @@ fn run_fence(state: &AgentdState, current_generation: u64) -> String {
         .to_string()
 }
 
+async fn fixture_with_owner_ready() -> anyhow::Result<(tempfile::TempDir, AgentdState)> {
+    let (temp, registry, previous) = fixture()?;
+    let identity = previous.identity.clone();
+    drop(previous);
+    let state = AgentdState::new(identity, registry, 16)?;
+    state.refresh_generation()?;
+    let store =
+        codex_hepta_cognitive_store::DurableCognitiveStore::open(&state.identity.layout).await?;
+    state.attach_cognitive_store(Arc::new(store))?;
+    state.mark_runtime_prerequisites_ready()?;
+    state.mark_app_server_ready()?;
+    Ok((temp, state))
+}
+
+#[tokio::test]
+async fn run_and_plasticity_admission_require_every_live_owner_prerequisite() {
+    let (_unready_temp, _registry, unready) = fixture().expect("unready fixture");
+    assert!(
+        !unready
+            .plasticity_admission_ready()
+            .expect("plasticity gate")
+    );
+    let unready_request = crate::AgentRunSnapshot {
+        run_id: "run.not-ready".to_string(),
+        request_digest: digest('1'),
+        objective_digest: digest('2'),
+        body_digest: digest('3'),
+        artifact_set_digest: digest('4'),
+        authority_epoch: 7,
+        generation: 2,
+        fence_digest: run_fence(&unready, 2),
+        deadline_ms: u64::MAX - 1,
+    };
+    assert!(matches!(
+        unready.response(1, 1, crate::AgentdMethod::RunStart { snapshot: unready_request }).await,
+        Err(AgentdError::Protocol(message)) if message.contains("not ready") || message.contains("until")
+    ));
+    assert_eq!(unready.active_run_count().expect("active count"), 0);
+
+    let (_temp, state) = fixture_with_owner_ready().await.expect("ready owner");
+    assert!(state.plasticity_admission_ready().expect("plasticity gate"));
+    let snapshot = crate::AgentRunSnapshot {
+        run_id: "run.readiness".to_string(),
+        request_digest: digest('1'),
+        objective_digest: digest('2'),
+        body_digest: digest('3'),
+        artifact_set_digest: digest('4'),
+        authority_epoch: 7,
+        generation: 2,
+        fence_digest: run_fence(&state, 2),
+        deadline_ms: u64::MAX - 1,
+    };
+    state
+        .response(
+            2,
+            1,
+            crate::AgentdMethod::RunStart {
+                snapshot: snapshot.clone(),
+            },
+        )
+        .await
+        .expect("admit ready run");
+    let attachment = crate::AgentContextAttachment {
+        run_id: snapshot.run_id.clone(),
+        request_digest: snapshot.request_digest.clone(),
+        objective_digest: snapshot.objective_digest.clone(),
+        body_digest: snapshot.body_digest.clone(),
+        artifact_set_digest: snapshot.artifact_set_digest.clone(),
+        authority_epoch: snapshot.authority_epoch,
+        generation: snapshot.generation,
+        fence_digest: snapshot.fence_digest.clone(),
+        deadline_ms: snapshot.deadline_ms,
+        context_digest: digest('5'),
+        compilation_receipt_digest: digest('6'),
+    };
+    state
+        .response(
+            3,
+            1,
+            crate::AgentdMethod::RunAttachContext {
+                expected_revision: 1,
+                attachment: attachment.clone(),
+            },
+        )
+        .await
+        .expect("attach ready run");
+
+    for missing in 0..4 {
+        {
+            let mut runtime = state.runtime.lock().expect("runtime");
+            runtime.critical_stores_ready = missing != 0;
+            runtime.revocation_ready = missing != 1;
+            runtime.required_ports_ready = missing != 2;
+            runtime.admission_open = missing != 3;
+        }
+        assert!(!state.plasticity_admission_ready().expect("plasticity gate"));
+        assert!(!state.automation_admission_ready().expect("automation gate"));
+        for method in [
+            crate::AgentdMethod::RunStart {
+                snapshot: crate::AgentRunSnapshot {
+                    run_id: format!("run.blocked.{missing}"),
+                    ..snapshot.clone()
+                },
+            },
+            crate::AgentdMethod::RunAttachContext {
+                expected_revision: 1,
+                attachment: attachment.clone(),
+            },
+            crate::AgentdMethod::RunMarkDispatched {
+                run_id: snapshot.run_id.clone(),
+                expected_revision: 2,
+            },
+        ] {
+            assert!(
+                matches!(
+                    state.response(4, 1, method).await,
+                    Err(AgentdError::Protocol(message)) if message.contains("until")
+                ),
+                "readiness gate {missing} must block run mutation"
+            );
+        }
+        let status = state
+            .response(
+                5,
+                1,
+                crate::AgentdMethod::RunStatus {
+                    run_id: snapshot.run_id.clone(),
+                },
+            )
+            .await
+            .expect("reconciliation remains available");
+        let AgentdPayload::RunStatus { run: Some(receipt) } = status.payload else {
+            panic!("retained run");
+        };
+        assert_eq!(
+            (receipt.phase, receipt.revision),
+            (crate::AgentRunPhase::ContextAttached, 2)
+        );
+        assert_eq!(state.active_run_count().expect("active count"), 1);
+    }
+}
+
 #[tokio::test]
 async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
-    let (_temp, _registry, state) = fixture().expect("runtime fixture");
+    let (_temp, state) = fixture_with_owner_ready().await.expect("runtime fixture");
 
     let capabilities = state
         .response(

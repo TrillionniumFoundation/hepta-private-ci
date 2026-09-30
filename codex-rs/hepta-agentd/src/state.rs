@@ -4,7 +4,6 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_app_server::AppServerDrainHandle;
-use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_automation::AutomationStore;
@@ -29,6 +28,8 @@ use crate::RuntimeComposition;
 
 #[path = "state_control.rs"]
 mod control;
+#[path = "state_drain.rs"]
+mod drain;
 
 pub(crate) struct AgentdState {
     pub(crate) intelligence_product:
@@ -475,52 +476,6 @@ impl AgentdState {
         self.app_server_drain.clone()
     }
 
-    pub(crate) async fn request_drain(
-        &self,
-        automation: Option<&AutomationStore>,
-    ) -> Result<DrainSnapshot, AgentdError> {
-        self.refresh_generation()?;
-        {
-            let runtime = self.runtime.lock().map_err(poisoned_state)?;
-            if runtime.lifecycle != AgentLifecycle::Draining || runtime.fenced {
-                return Err(AgentdError::GenerationFenced(
-                    "Agentd drain requires the current supervisor generation to be Draining"
-                        .to_string(),
-                ));
-            }
-        }
-        self.mark_draining()?;
-        let automation_blockers = match automation {
-            Some(store) => store.drain_blockers().await?,
-            None => 1,
-        };
-        self.drain_snapshot(automation_blockers)
-    }
-
-    pub(crate) fn drain_snapshot(
-        &self,
-        automation_blockers: u32,
-    ) -> Result<DrainSnapshot, AgentdError> {
-        self.refresh_generation()?;
-        let runtime = self.runtime.lock().map_err(poisoned_state)?;
-        let running_turns = u32::try_from(self.app_server_drain.running_turns()).map_err(|_| {
-            AgentdError::Protocol("running assistant turn count exceeds u32".to_string())
-        })?;
-        Ok(DrainSnapshot {
-            admission_closed: runtime.lifecycle == AgentLifecycle::Draining
-                && !runtime.app_server_ready
-                && !runtime.fenced,
-            running_turns,
-            drained: runtime.lifecycle == AgentLifecycle::Draining
-                && !runtime.fenced
-                && self.app_server_drain.drained()
-                && running_turns == 0
-                && automation_blockers == 0,
-            lifecycle: runtime.lifecycle,
-            fenced: runtime.fenced,
-        })
-    }
-
     pub(crate) fn mark_fenced(&self) {
         if let Ok(mut runtime) = self.runtime.lock() {
             runtime.app_server_ready = false;
@@ -560,11 +515,7 @@ impl AgentdState {
     /// generation after App Server readiness. This fences the long-lived
     /// proposal owner with the same lifecycle boundary as other Agentd work.
     pub(crate) fn plasticity_admission_ready(&self) -> Result<bool, AgentdError> {
-        self.refresh_generation()?;
-        let runtime = self.runtime.lock().map_err(poisoned_state)?;
-        Ok(runtime.lifecycle == AgentLifecycle::Running
-            && runtime.app_server_ready
-            && !runtime.fenced)
+        self.automation_admission_ready()
     }
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
         self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
@@ -586,6 +537,7 @@ impl AgentdState {
             return Ok(None);
         };
 
+        self.require_current_run_start(record)?;
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
 
@@ -599,7 +551,7 @@ impl AgentdState {
             .composition()
             .clone();
         let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+            .prepare_for_run_start(&composition, record, invocation.request, invocation.inputs)
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!(
@@ -617,25 +569,34 @@ impl AgentdState {
                 let now_ms = first_now.max(second_now);
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
-                let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let admitted = runs
-                    .start_run(
-                        now_ms,
-                        crate::RunSnapshot {
-                            run_id: snapshot.run_id,
-                            request_digest: snapshot.request_digest,
-                            objective_digest: snapshot.objective_digest,
-                            body_digest: snapshot.body_digest,
-                            artifact_set_digest: snapshot.artifact_set_digest,
-                            authority_epoch: snapshot.authority_epoch,
-                            generation: snapshot.generation,
-                            fence_digest: snapshot.fence_digest,
-                            deadline_ms: snapshot.deadline_ms,
-                        },
-                    )
-                    .map_err(run_error)?;
-                let run_receipt = runs
-                    .attach_context(
+                let run_receipt = self.with_live_run_admission(|runs, current_generation| {
+                    if record.snapshot.generation != current_generation
+                        || record.snapshot.fence_digest.to_string()
+                            != objective_run_fence(&self.identity, current_generation)
+                    {
+                        return Err(AgentdError::GenerationFenced(
+                            "durable run-start generation or fence changed before admission"
+                                .to_string(),
+                        ));
+                    }
+                    let now_ms = now_ms.max(unix_now_ms()?);
+                    let admitted = runs
+                        .start_run(
+                            now_ms,
+                            crate::RunSnapshot {
+                                run_id: snapshot.run_id,
+                                request_digest: snapshot.request_digest,
+                                objective_digest: snapshot.objective_digest,
+                                body_digest: snapshot.body_digest,
+                                artifact_set_digest: snapshot.artifact_set_digest,
+                                authority_epoch: snapshot.authority_epoch,
+                                generation: snapshot.generation,
+                                fence_digest: snapshot.fence_digest,
+                                deadline_ms: snapshot.deadline_ms,
+                            },
+                        )
+                        .map_err(run_error)?;
+                    runs.attach_context(
                         now_ms,
                         admitted.revision,
                         crate::ContextAttachment {
@@ -652,7 +613,8 @@ impl AgentdState {
                             compilation_receipt_digest: attachment.compilation_receipt_digest,
                         },
                     )
-                    .map_err(run_error)?;
+                    .map_err(run_error)
+                })?;
                 Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
                     prepared,
                     run_receipt,
@@ -696,11 +658,18 @@ impl AgentdState {
         // first validation must not survive into runtime admission.
         let final_now_ms = self.require_current_run_start(record)?;
         let now_ms = now_ms.max(final_now_ms);
-        self.runs
-            .lock()
-            .map_err(poisoned_state)?
-            .start_revalidated_run_start(now_ms, record)
-            .map_err(run_error)
+        self.with_live_run_admission(|runs, current_generation| {
+            if record.snapshot.generation != current_generation
+                || record.snapshot.fence_digest.to_string()
+                    != objective_run_fence(&self.identity, current_generation)
+            {
+                return Err(AgentdError::GenerationFenced(
+                    "durable run-start generation or fence changed before admission".to_string(),
+                ));
+            }
+            runs.start_revalidated_run_start(now_ms.max(unix_now_ms()?), record)
+                .map_err(run_error)
+        })
     }
 
     fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
