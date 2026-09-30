@@ -180,36 +180,19 @@ fn omitted_expected_owner_is_typed_as_unavailable() {
 }
 
 #[test]
-fn omitted_optional_owner_is_explicit_degradation() {
-    let input = GeneratedCandidateInputV1::new(vec![batch(
-        RetrievalGeneratorOwnerV1::CognitiveLexical,
-        RetrievalSourceCompletenessV1::Exhausted,
-    )])
-    .expect("input");
-    let policy = RetrievalCompletenessPolicyV1::new(vec![
-        row(
-            RetrievalGeneratorOwnerV1::CognitiveLexical,
-            IncompleteSourceActionV1::Degrade,
-            IncompleteSourceActionV1::Abstain,
-        ),
-        row(
+fn unavailable_degradation_requires_a_bound_degraded_policy() {
+    assert_eq!(
+        RetrievalCompletenessPolicyV1::new(vec![row(
             RetrievalGeneratorOwnerV1::CognitiveTemporal,
             IncompleteSourceActionV1::Degrade,
             IncompleteSourceActionV1::Degrade,
-        ),
-    ])
-    .expect("policy");
-    let validated = ValidatedCandidateSetV1::new(input, &policy).expect("validated");
-
-    assert!(matches!(
-        validated.completeness(),
-        RetrievalCompletenessDecisionV1::Degraded { incomplete_sources }
-            if incomplete_sources.len() == 1
-                && incomplete_sources[0].generator
-                    == RetrievalGeneratorOwnerV1::CognitiveTemporal
-                && incomplete_sources[0].completeness
-                    == RetrievalSourceCompletenessV1::Unavailable
-    ));
+        )]),
+        Err(
+            ProductRecallErrorV1::UnavailableDegradationRequiresBoundPolicy(
+                RetrievalGeneratorOwnerV1::CognitiveTemporal
+            )
+        )
+    );
 }
 
 #[test]
