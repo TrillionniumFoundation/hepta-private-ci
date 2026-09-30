@@ -45,10 +45,16 @@ impl LockTelemetrySnapshot {
                 .contended_acquisitions
                 .saturating_sub(earlier.contended_acquisitions),
             wait_us: self.wait_us.saturating_sub(earlier.wait_us),
-            wait_max_us: self.wait_max_us,
+            // Maxima are cumulative counters. Do not attribute an older
+            // scenario's record to the current measurement window.
+            wait_max_us: (self.wait_max_us > earlier.wait_max_us)
+                .then_some(self.wait_max_us)
+                .unwrap_or(0),
             slow_waits: self.slow_waits.saturating_sub(earlier.slow_waits),
             hold_us: self.hold_us.saturating_sub(earlier.hold_us),
-            hold_max_us: self.hold_max_us,
+            hold_max_us: (self.hold_max_us > earlier.hold_max_us)
+                .then_some(self.hold_max_us)
+                .unwrap_or(0),
             slow_holds: self.slow_holds.saturating_sub(earlier.slow_holds),
         }
     }
@@ -211,5 +217,10 @@ mod tests {
         assert_eq!(snapshot.acquisitions, 3);
         assert!(snapshot.contended_acquisitions >= 1);
         assert!(snapshot.wait_max_us >= 1_000);
+
+        let unchanged = lock.snapshot();
+        let empty_window = unchanged.delta(snapshot);
+        assert_eq!(empty_window.wait_max_us, 0);
+        assert_eq!(empty_window.hold_max_us, 0);
     }
 }
