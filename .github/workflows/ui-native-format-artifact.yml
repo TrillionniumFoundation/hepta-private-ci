@@ -1,0 +1,64 @@
+name: ui.native formatter artifact
+
+on:
+  push:
+    branches:
+      - work/ui-native-exact-convergence-20260930
+    paths:
+      - .github/workflows/ui-native-format-artifact.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-native-format-artifact-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  format-artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install pinned formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v rustup >/dev/null 2>&1; then
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
+          fi
+          if [[ -f "$HOME/.cargo/env" ]]; then
+            source "$HOME/.cargo/env"
+          fi
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+
+      - name: Materialize formatter-only result
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml
+          mkdir -p "$RUNNER_TEMP/ui-native-rustfmt"
+          git diff --name-only -- apps/hepta-native > "$RUNNER_TEMP/ui-native-rustfmt/changed-files.txt"
+          git diff --binary -- apps/hepta-native > "$RUNNER_TEMP/ui-native-rustfmt/rustfmt.patch"
+          tar -czf "$RUNNER_TEMP/ui-native-rustfmt/formatted-source.tar.gz" apps/hepta-native/src
+          git rev-parse HEAD > "$RUNNER_TEMP/ui-native-rustfmt/source-sha.txt"
+          sha256sum \
+            "$RUNNER_TEMP/ui-native-rustfmt/rustfmt.patch" \
+            "$RUNNER_TEMP/ui-native-rustfmt/formatted-source.tar.gz" \
+            > "$RUNNER_TEMP/ui-native-rustfmt/SHA256SUMS"
+          printf 'formatted paths:\n'
+          cat "$RUNNER_TEMP/ui-native-rustfmt/changed-files.txt"
+
+      - name: Retain formatter result
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-native-rustfmt-${{ github.sha }}
+          path: ${{ runner.temp }}/ui-native-rustfmt
+          if-no-files-found: error
+          retention-days: 1
