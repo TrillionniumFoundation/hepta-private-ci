@@ -1,58 +1,50 @@
-# learning.eval audit index
+# learning.eval trusted control-plane bootstrap audit index
 
-This index separates the short human development path from generated and machine-audited
-material. No document in this directory grants runtime, acceptance, activation, promotion,
-or release authority.
+This is the scoped audit index for the independently reviewable trusted-control-plane
+bootstrap. It inventories only files actually present on this branch. Nothing here grants
+module source qualification, target-host qualification, independent acceptance,
+activation, promotion, or release authority.
 
-## Human development path
+## Human control-plane path
 
-1. [`DEVELOPER_GUIDE.md`](DEVELOPER_GUIDE.md) — mission, authority, product path,
-   state machine, recovery, statistical contract, failure taxonomy, deployment and gaps.
-2. [`LOCAL_DETERMINISTIC_VERIFICATION.md`](LOCAL_DETERMINISTIC_VERIFICATION.md) —
-   canonical offline control-plane command, strict artifact/marker rules, the 60-case
-   trusted-reporter regression inventory, control-plane byte identity, and the
-   authority-free evidence schema.
-3. [`TECHNICAL.md`](TECHNICAL.md) — full technical development guide and detailed design
-   lineage.
-4. [`TARGET_HOST_QUALIFICATION.md`](TARGET_HOST_QUALIFICATION.md) — external host and
-   topology evidence requirements.
-5. [`RECOVERY_AMENDMENT_20260928.md`](RECOVERY_AMENDMENT_20260928.md) — persistence,
-   active-trust, lifecycle-capacity and recovery evidence amendments.
+1. [`LOCAL_DETERMINISTIC_VERIFICATION.md`](LOCAL_DETERMINISTIC_VERIFICATION.md) — the
+   authority-free offline control-plane contract and evidence semantics.
+2. [`TECHNICAL.md`](TECHNICAL.md) — the pre-existing stable module guide retained from the
+   fixed `main` base. Its presence is not a claim that the bootstrap carries the module
+   implementation.
 
-## Machine-readable source and status projections
+## Machine-readable bootstrap projections
 
-- [`CURRENT_STATUS.json`](CURRENT_STATUS.json) — conservative current claims and external
-  gates. Runtime-generated `CURRENT_STATUS.run.json` is an artifact, not a committed
-  replacement.
-- [`IMPLEMENTATION_MAP.json`](IMPLEMENTATION_MAP.json) — exact source observation,
-  operations, callers and test mapping.
-- [`QUALIFICATION_MATRIX.json`](QUALIFICATION_MATRIX.json) — scoped source facts and
-  unbound deployment capabilities; it contains no bare `verified` claim.
+- [`QUALIFICATION_MATRIX.json`](QUALIFICATION_MATRIX.json) — bootstrap-scoped source facts,
+  false external claims, `DENY_ALL`, and `NO_GO`.
+- [`IMPLEMENTATION_MAP.json`](IMPLEMENTATION_MAP.json) — the pre-existing historical map
+  retained from the fixed base. It is not regenerated or upgraded by this bootstrap.
 
-## Closeout and historical audit material
+## Trusted source inventory
 
-- [`SOURCE_CLOSEOUT_20260928.md`](SOURCE_CLOSEOUT_20260928.md)
-- [`SOURCE_CLOSEOUT_20260928.json`](SOURCE_CLOSEOUT_20260928.json)
-- [`EXECUTION_CLOSEOUT.md`](EXECUTION_CLOSEOUT.md)
+The reviewed bootstrap additionally contains:
 
-These records explain prior observations. The current immutable workflow artifacts and
-PR machine markers are the source of truth for whether a particular SHA actually ran.
+- every `.github/workflows/hepta-learning-eval-*.yml` producer/reporter workflow;
+- the `scripts/hepta-learning-eval-*` evidence and reporting control plane;
+- exact-test discovery and Rust-identifier helpers;
+- the isolated `codex-rs/hepta-intelligence-eval/fixtures/trusted-inprocess` fixture.
 
-## Generated execution evidence
+The default-branch reporter performs closed-world workflow discovery and byte identity for
+the registered auxiliary control-plane files before updating a current Draft PR marker.
+Downloaded candidate artifacts and candidate file responses remain untrusted data.
 
-The source workflow retains:
+## Deliberately absent from bootstrap scope
 
-- `qualification-summary.json`;
-- `CURRENT_STATUS.run.json`;
-- per-filter nextest discovery evidence;
-- compatibility-fixture evidence;
-- separate default-production and compatibility coverage reports;
-- logs and normalized job conclusions.
+This branch does not carry the current `learning.eval` Rust product implementation,
+Agentd/intelligence consumer changes, target-host evidence, current implementation map,
+module closeout dossier, real provider/publication adapters, or external acceptance.
+Those belong to the separately restacked module candidate after this bootstrap is reviewed
+and merged through a verified protected path.
 
-The exact-tree workflow retains one `convergence.json` per head/merge row plus
-`exact-summary.json`. The local deterministic entrypoint retains one
-`local-deterministic-summary.json` plus command logs and generated fixture evidence.
-Every summary has a canonical SHA-256, `authority: DENY_ALL`, and
-`releasePosture: NO_GO`. Target-host, independent-acceptance, activation and release facts
-must come from separately administered evidence and are never upgraded by repository CI
-or by a local deterministic run.
+## Generated evidence
+
+The dedicated bootstrap workflow retains immutable source identity, deterministic
+regression logs, Markdown verifier regressions, target-host-verifier self-test output, and
+a scoped `hepta.learning-eval.control-plane-bootstrap.v1` record. Every such record remains
+`DENY_ALL` and `NO_GO`; queued, skipped, cancelled, neutral, stale, timed-out, startup
+failure, or infrastructure-invalid work is not PASS.
