@@ -1,0 +1,131 @@
+name: Runtime Agentd verified carrier push apply
+
+on:
+  push:
+    branches:
+      - work/runtime-agentd-owned-execute-20260930
+    paths:
+      - '.github/runtime-agentd-owned-apply/push-execute-20260930.txt'
+      - '.github/workflows/runtime-agentd-owned-push-apply.yml'
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: runtime-agentd-owned-carrier-push-apply
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: work/runtime-agentd-production-closure-20260928
+  EXPECTED_TARGET_HEAD: 2f1705384e1ea5d1dbf1e76e1dcf4bf0e2882515
+  MAIN_PATCH_SHA256: ca3d6b6550ec64fcfb9e1b376952edd6eae275cd11126a27ab5e5aa6c6011785
+  AMENDMENT_SHA256: 08b5fc4cb970c609c97afa2e9255084bc5404e489ad7404243c8ccf62c608172
+  CARGO_INCREMENTAL: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+
+jobs:
+  validate:
+    name: validate exact carrier / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Establish bounded build workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/runtime-agentd-owned-target" >> "$GITHUB_ENV"
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            df -h /
+            sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL
+            sudo docker system prune --all --force --volumes || true
+            df -h /
+          fi
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Reconstruct exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .github/runtime-agentd-owned-apply/apply-verified-20260930.sh "$RUNNER_TEMP/apply-verified.sh"
+          bash "$RUNNER_TEMP/apply-verified.sh"
+      - name: Run qualification and boundary contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s scripts/qualification -p 'test_agentd_exact_head.py' -v
+          python3 -B -m unittest scripts.qualification.test_runtime_agentd_scope -v
+          python3 -B -m unittest scripts.qualification.test_runtime_agentd_current_status -v
+          python3 -B -m unittest scripts.qualification.test_runtime_agentd_dependency_boundary -v
+          python3 -B -m unittest scripts.test_hepta_agentd_trust_boundary -v
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta_agentd_trust_boundary.py
+          python3 scripts/qualification/runtime_agentd_dependency_boundary.py --repository .
+          git diff --check
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt --component clippy
+          rustup override set "$toolchain"
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
+        with:
+          workspaces: codex-rs
+          cache-targets: false
+          cache-on-failure: false
+          shared-key: runtime-agentd-owned-carrier-push-v1-${{ matrix.os }}
+      - name: Verify formatting, isolated policy compilation, tests and strict lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd --package codex-hepta-infer-worker-host -- --check
+          cargo test --locked --manifest-path qualification/runtime-agentd-core/Cargo.toml
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --test native_host_process_e2e --no-run
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd -p codex-hepta-supervisor -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
+          git diff --check
+          df -h /
+
+  publish:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Reconstruct validated candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .github/runtime-agentd-owned-apply/apply-verified-20260930.sh "$RUNNER_TEMP/apply-verified.sh"
+          bash "$RUNNER_TEMP/apply-verified.sh"
+          git add -A
+          git diff --cached --check
+      - name: Publish clean source commit with exact lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'runtime.agentd: isolate qualification and bound maintenance'
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_TARGET_HEAD"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH" --force-with-lease="refs/heads/$TARGET_BRANCH:$EXPECTED_TARGET_HEAD"
