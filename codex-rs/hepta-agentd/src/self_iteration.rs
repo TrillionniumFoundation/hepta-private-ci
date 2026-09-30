@@ -10,6 +10,9 @@ pub use payload::self_iteration_canary_payload_v1;
 pub use payload::self_iteration_candidate_payload_v1;
 pub use payload::self_iteration_stage_payload_v1;
 
+#[path = "self_iteration_journal.rs"]
+mod journal;
+
 fn invalid(message: impl Into<String>) -> AgentdError {
     AgentdError::Invalid(message.into())
 }
