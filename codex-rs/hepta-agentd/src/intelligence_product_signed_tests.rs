@@ -53,6 +53,7 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
         .expect("runner")
         .with_evaluation_trust(trust)
         .expect("host-root trust");
+    let inherited = value.inputs.run_identity.clone().expect("durable identity");
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, value.request, value.inputs)
@@ -65,6 +66,20 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
     else {
         panic!("expected the signed existing path to reach ready");
     };
+    assert_eq!(
+        prepared.run_snapshot(),
+        crate::AgentRunSnapshot {
+            run_id: inherited.run_id.to_string(),
+            request_digest: inherited.request_digest.to_string(),
+            objective_digest: inherited.objective_digest.to_string(),
+            body_digest: inherited.body_digest.to_string(),
+            artifact_set_digest: inherited.artifact_set_digest.to_string(),
+            authority_epoch: inherited.authority_epoch,
+            generation: inherited.generation,
+            fence_digest: inherited.fence_digest.to_string(),
+            deadline_ms: inherited.deadline_ms,
+        }
+    );
     assert!(!prepared.envelope.evaluation_receipt_digest.is_zero());
     assert!(!prepared.envelope.authority.grants_any());
     assert_eq!(run_receipt.run_id, prepared.run_snapshot().run_id);

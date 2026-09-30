@@ -257,3 +257,36 @@ fn canonical_provider_profile_parsing_is_closed() {
             .is_err()
     );
 }
+
+#[test]
+fn durable_identity_binds_body_authentication_and_original_deadline() {
+    let value = fixture();
+    let record = durable_record(&value);
+    let directory = tempfile::tempdir().expect("directory");
+    let identity = identity(directory.path(), record.snapshot.generation - 1);
+    let inherited = crate::AgentdIntelligenceRunIdentityV1::from_run_start(&identity, &record)
+        .expect("Running identity");
+    assert_eq!(inherited.body_digest, record.runtime_body_digest);
+    assert_eq!(
+        inherited.deadline_ms,
+        record.admission.deadline_unix_micros / 1_000
+    );
+    let mut changed = record.clone();
+    changed.runtime_body_digest = digest("different-durable-body");
+    let changed_identity =
+        crate::AgentdIntelligenceRunIdentityV1::from_run_start(&identity, &changed)
+            .expect("changed body");
+    assert_ne!(inherited.request_digest, changed_identity.request_digest);
+    changed = record.clone();
+    changed.authentication.sequence += 1;
+    let changed_identity =
+        crate::AgentdIntelligenceRunIdentityV1::from_run_start(&identity, &changed)
+            .expect("changed authenticated replay identity");
+    assert_ne!(inherited.request_digest, changed_identity.request_digest);
+    changed = record.clone();
+    changed.snapshot.generation = identity.spawn_generation;
+    assert!(crate::AgentdIntelligenceRunIdentityV1::from_run_start(&identity, &changed).is_err());
+    changed = record;
+    changed.snapshot.fence_digest = digest("foreign-process-fence");
+    assert!(crate::AgentdIntelligenceRunIdentityV1::from_run_start(&identity, &changed).is_err());
+}

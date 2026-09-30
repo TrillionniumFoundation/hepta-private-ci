@@ -1,8 +1,8 @@
 pub(crate) fn product_test_coordinator() -> AgentRunCoordinator {
     AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.product".to_string(),
-        supervisor_generation: 1,
-        agentd_generation: 1,
+        supervisor_generation: 6,
+        agentd_generation: 6,
         configuration_digest: digest("runtime-config").to_string(),
         ports_digest: digest("runtime-ports").to_string(),
         max_active_runs: 8,
@@ -633,7 +633,7 @@ pub(crate) fn fixture() -> Fixture {
     Fixture {
         request: CanonicalIntelligenceRunRequestV1 {
             run_id: id("run:agentd-intelligence"),
-            snapshot,
+            snapshot: snapshot.clone(),
             legal_candidates: LegalActionCandidateSetRequestV1 {
                 candidate_set_id: id("candidate-set.agentd"),
                 state_digest: objective_digest,
@@ -663,6 +663,17 @@ pub(crate) fn fixture() -> Fixture {
             },
         },
         inputs: AgentdIntelligenceOwnerInputsV1 {
+            run_identity: Some(crate::AgentdIntelligenceRunIdentityV1 {
+                run_id: id("run:agentd-intelligence"),
+                request_digest: digest("durable-run-start"),
+                objective_digest,
+                body_digest: digest("durable-runtime-body"),
+                artifact_set_digest: digest("durable-artifact-set"),
+                authority_epoch: snapshot.authority_epoch(),
+                generation: 7,
+                fence_digest: crate::objective_run_fence_digest_v1("agent.product", 6, 7),
+                deadline_ms: wall_clock_ms().expect("clock") + 300_000,
+            }),
             objective: AgentdObjectiveOwnerInputV1::Admission {
                 envelope,
                 profile,
@@ -1028,3 +1039,49 @@ mod self_evolution;
 
 #[path = "intelligence_product_signed_tests.rs"]
 mod signed;
+
+#[tokio::test]
+async fn missing_foreign_or_expired_run_identity_is_rejected_before_owner_io() {
+    let directory = tempfile::tempdir().expect("directory");
+    // An absent authority file is deliberate: identity validation must run first.
+    let runner = AgentdIntelligenceProductRunnerV1::new(
+        directory.path().join("authority.json"),
+        authority_verifier(),
+    )
+    .expect("runner");
+    let coordinator = product_test_coordinator();
+    let mut value = fixture();
+    value.inputs.run_identity = None;
+    assert!(matches!(
+        runner
+            .prepare(&coordinator, value.request, value.inputs)
+            .await,
+        Err(AgentdIntelligenceProductError::MissingRunIdentity)
+    ));
+    let mut value = fixture();
+    value
+        .inputs
+        .run_identity
+        .as_mut()
+        .expect("identity")
+        .fence_digest = digest("foreign-fence");
+    assert!(matches!(
+        runner
+            .prepare(&coordinator, value.request, value.inputs)
+            .await,
+        Err(AgentdIntelligenceProductError::RunIdentityMismatch)
+    ));
+    let mut value = fixture();
+    value
+        .inputs
+        .run_identity
+        .as_mut()
+        .expect("identity")
+        .deadline_ms = 1;
+    assert!(matches!(
+        runner
+            .prepare(&coordinator, value.request, value.inputs)
+            .await,
+        Err(AgentdIntelligenceProductError::TimedOut)
+    ));
+}

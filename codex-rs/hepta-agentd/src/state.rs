@@ -562,7 +562,10 @@ impl AgentdState {
         // provider is allowed to derive seven-owner inputs. This applies to
         // abstain and slow-path outcomes as well as a Ready continuation.
         let first_now = self.require_current_run_start(record)?;
-        let invocation = provider.build(&self.identity, record)?;
+        let mut invocation = provider.build(&self.identity, record)?;
+        invocation.inputs.run_identity = Some(
+            crate::AgentdIntelligenceRunIdentityV1::from_run_start(&self.identity, record)?,
+        );
         invocation.validate(&self.identity, record)?;
 
         // Freeze only the small immutable composition while holding the run
@@ -773,11 +776,12 @@ fn objective_run_scope(identity: &AgentdIdentity) -> Digest32 {
 }
 
 pub(crate) fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {
-    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&current_generation.to_be_bytes());
-    Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    crate::objective_run_fence_digest_v1(
+        identity.agent_id.as_str(),
+        identity.spawn_generation,
+        current_generation,
+    )
+    .to_string()
 }
 
 fn unix_now_ms() -> Result<u64, AgentdError> {

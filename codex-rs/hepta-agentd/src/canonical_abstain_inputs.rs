@@ -300,6 +300,7 @@ pub(super) fn owner_inputs(
     };
 
     Ok(AgentdIntelligenceOwnerInputsV1 {
+        run_identity: None,
         objective: AgentdObjectiveOwnerInputV1::DurableRunStart(Box::new(record.clone())),
         utility_contributions,
         utility_profile,

@@ -53,6 +53,8 @@ mod intelligence_ingress;
 #[cfg(feature = "server")]
 mod intelligence_product;
 #[cfg(feature = "server")]
+mod intelligence_run_identity;
+#[cfg(feature = "server")]
 mod intuition_policy;
 #[cfg(feature = "server")]
 mod lane_b_runtime;
@@ -271,6 +273,8 @@ pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 #[cfg(feature = "server")]
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 #[cfg(feature = "server")]
+pub use intelligence_ingress::AgentdIntelligenceRunIdentityV1;
+#[cfg(feature = "server")]
 pub use intelligence_product::AgentdEvaluationBindingV1;
 #[cfg(feature = "server")]
 pub use intelligence_product::AgentdIntelligenceAdmittedOutcomeV1;
@@ -302,6 +306,8 @@ pub use intelligence_product::PendingIntelligenceLedgerAppendV1;
 pub use intelligence_product::PreparedAgentdIntelligenceRunV1;
 #[cfg(feature = "server")]
 pub use intelligence_product::intelligence_evaluation_binding_payload_v1;
+#[cfg(feature = "server")]
+pub use intelligence_run_identity::objective_run_fence_digest_v1;
 #[cfg(feature = "server")]
 pub use intuition_policy::AgentdIntuitionDecisionReceiptV1;
 #[cfg(feature = "server")]

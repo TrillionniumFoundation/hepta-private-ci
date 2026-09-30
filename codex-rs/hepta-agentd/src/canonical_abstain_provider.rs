@@ -202,13 +202,16 @@ fn build_invocation(
         legal_candidates,
         budget,
     };
-    let inputs = owner_inputs(
+    let mut inputs = owner_inputs(
         record,
         &snapshot,
         candidate_id,
         candidate_support,
         now_micros,
     )?;
+    inputs.run_identity = Some(crate::AgentdIntelligenceRunIdentityV1::from_run_start(
+        identity, record,
+    )?);
     Ok(AgentdIntelligenceInvocationV1 { request, inputs })
 }
 

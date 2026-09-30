@@ -254,6 +254,7 @@ pub enum AgentdObjectiveOwnerInputV1 {
 }
 
 pub struct AgentdIntelligenceOwnerInputsV1 {
+    pub run_identity: Option<crate::AgentdIntelligenceRunIdentityV1>,
     pub objective: AgentdObjectiveOwnerInputV1,
     pub utility_contributions: ContributionSet,
     pub utility_profile: UtilityProfile,
@@ -656,6 +657,8 @@ pub enum AgentdIntelligenceProductError {
     Busy,
     TimedOut,
     CandidateSetMismatch,
+    MissingRunIdentity,
+    RunIdentityMismatch,
     Clock,
     InvalidAuthorityVerifier,
     Run(crate::AgentRunError),

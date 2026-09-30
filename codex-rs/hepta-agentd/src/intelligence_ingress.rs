@@ -7,11 +7,11 @@
 
 use codex_hepta_agent_components::intelligence::CanonicalIntelligenceRunRequestV1;
 use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
-use codex_hepta_agent_components::types::Digest32;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdIntelligenceOwnerInputsV1;
+pub use crate::intelligence_run_identity::AgentdIntelligenceRunIdentityV1;
 
 pub struct AgentdIntelligenceInvocationV1 {
     pub request: CanonicalIntelligenceRunRequestV1,
@@ -24,51 +24,29 @@ impl AgentdIntelligenceInvocationV1 {
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
     ) -> Result<(), AgentdError> {
-        let snapshot = &record.snapshot;
-        let running_generation = running_generation(identity.spawn_generation)?;
-        if self.request.run_id != snapshot.run_id
-            || self.request.snapshot.objective_digest() != snapshot.objective_digest
-            || self.request.snapshot.authority_epoch() != snapshot.authority_epoch
-            || self.request.snapshot.body_generation().get() != snapshot.generation
-            || self.request.legal_candidates.state_digest != snapshot.objective_digest
-            || snapshot.generation != running_generation
-            || snapshot.fence_digest
-                != objective_run_fence_digest_v1(
-                    identity.agent_id.as_str(),
-                    identity.spawn_generation,
-                    running_generation,
-                )
-        {
+        let expected = AgentdIntelligenceRunIdentityV1::from_run_start(identity, record)?;
+        let Some(actual) = self.inputs.run_identity.as_ref() else {
             return Err(AgentdError::Invalid(
-                "canonical intelligence invocation does not match the durable RunStart identity"
+                "canonical intelligence invocation omitted durable RunStart identity".to_string(),
+            ));
+        };
+        if actual != &expected {
+            return Err(AgentdError::Invalid(
+                "canonical intelligence invocation substituted durable RunStart identity"
                     .to_string(),
             ));
         }
-        Ok(())
+        actual.validate_request(&self.request)
     }
 }
 
-fn running_generation(spawn_generation: u64) -> Result<u64, AgentdError> {
+pub(crate) fn running_generation(spawn_generation: u64) -> Result<u64, AgentdError> {
     spawn_generation
         .checked_add(1)
         .ok_or_else(|| AgentdError::Invalid("agent generation overflow".to_string()))
 }
 
-/// One fence algorithm for ObjectiveStart publication and canonical preparation.
-///
-/// `spawn_generation` identifies the process launch. `current_generation` is
-/// the Running Fleet lifecycle generation inherited by the durable RunStart.
-pub(crate) fn objective_run_fence_digest_v1(
-    agent_id: &str,
-    spawn_generation: u64,
-    current_generation: u64,
-) -> Digest32 {
-    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    bytes.extend_from_slice(agent_id.as_bytes());
-    bytes.extend_from_slice(&spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&current_generation.to_be_bytes());
-    Digest32::of_bytes(&bytes)
-}
+pub(crate) use crate::intelligence_run_identity::objective_run_fence_digest_v1;
 
 /// Composition seam for the seven canonical intelligence owners.
 ///
