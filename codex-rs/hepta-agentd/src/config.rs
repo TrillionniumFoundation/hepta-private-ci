@@ -78,8 +78,7 @@ pub struct AgentdConfig {
     authbus_trust_file: Option<PathBuf>,
     evidence_trust_file: Option<PathBuf>,
     automation_effect_host_file: Option<PathBuf>,
-    automation_effect_production_authority:
-        Option<crate::AgentdProductionAuthorityBootstrap>,
+    automation_effect_production_authority: Option<crate::AgentdProductionAuthorityBootstrap>,
     evidence_recovery_frontier_file: Option<PathBuf>,
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
     objective_profile_file: Option<PathBuf>,

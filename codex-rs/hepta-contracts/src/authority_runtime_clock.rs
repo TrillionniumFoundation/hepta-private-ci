@@ -104,14 +104,16 @@ where
         let floor = self.custody.revoked_before_generation()?;
         let exportable = self.custody.private_key_exportable()?;
         let generation_after = self.custody.active_generation()?;
-        Ok(self.custody.production_trust_domain() == expected.trust_domain
-            && self.custody.provider_id() == expected.provider_id
-            && self.custody.key_role() == expected.key_role
-            && generation_before == expected.active_generation
-            && generation_after == generation_before
-            && keys == expected.active_key_set_sha256
-            && floor == expected.revoked_before_generation
-            && !exportable)
+        Ok(
+            self.custody.production_trust_domain() == expected.trust_domain
+                && self.custody.provider_id() == expected.provider_id
+                && self.custody.key_role() == expected.key_role
+                && generation_before == expected.active_generation
+                && generation_after == generation_before
+                && keys == expected.active_key_set_sha256
+                && floor == expected.revoked_before_generation
+                && !exportable,
+        )
     }
 }
 
@@ -262,9 +264,15 @@ mod tests {
         let (clock, custody) = fixture();
         assert_eq!(clock.now_with_uncertainty(), Ok((2_000, 10)));
         custody.generation.store(3, Ordering::SeqCst);
-        assert_eq!(clock.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            clock.now_with_uncertainty(),
+            Err(AuthorityTrustError::Invalid)
+        );
         custody.generation.store(2, Ordering::SeqCst);
-        assert_eq!(clock.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            clock.now_with_uncertainty(),
+            Err(AuthorityTrustError::Invalid)
+        );
     }
 
     #[test]
@@ -286,13 +294,19 @@ mod tests {
             .clock
             .rotate_during_sample
             .store(true, Ordering::SeqCst);
-        assert_eq!(clock.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            clock.now_with_uncertainty(),
+            Err(AuthorityTrustError::Invalid)
+        );
         clock
             .clock
             .rotate_during_sample
             .store(false, Ordering::SeqCst);
         custody.generation.store(2, Ordering::SeqCst);
-        assert_eq!(clock.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            clock.now_with_uncertainty(),
+            Err(AuthorityTrustError::Invalid)
+        );
     }
 
     #[test]
@@ -300,9 +314,15 @@ mod tests {
         let (clock, _) = fixture();
         assert_eq!(clock.now_with_uncertainty(), Ok((2_000, 10)));
         clock.clock.now.store(1_999, Ordering::SeqCst);
-        assert_eq!(clock.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            clock.now_with_uncertainty(),
+            Err(AuthorityTrustError::Invalid)
+        );
         clock.clock.now.store(2_001, Ordering::SeqCst);
-        assert_eq!(clock.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            clock.now_with_uncertainty(),
+            Err(AuthorityTrustError::Invalid)
+        );
     }
 
     #[test]
@@ -310,9 +330,15 @@ mod tests {
         for now in [0, 9, u64::MAX] {
             let (clock, _) = fixture();
             clock.clock.now.store(now, Ordering::SeqCst);
-            assert_eq!(clock.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+            assert_eq!(
+                clock.now_with_uncertainty(),
+                Err(AuthorityTrustError::Invalid)
+            );
             clock.clock.now.store(2_000, Ordering::SeqCst);
-            assert_eq!(clock.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+            assert_eq!(
+                clock.now_with_uncertainty(),
+                Err(AuthorityTrustError::Invalid)
+            );
         }
     }
 
@@ -323,9 +349,15 @@ mod tests {
         clock.clock.now.store(2_001, Ordering::SeqCst);
         assert_eq!(clock.now_with_uncertainty(), Ok((2_001, 10)));
         clock.clock.uncertainty.store(51, Ordering::SeqCst);
-        assert_eq!(clock.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            clock.now_with_uncertainty(),
+            Err(AuthorityTrustError::Invalid)
+        );
         clock.clock.uncertainty.store(10, Ordering::SeqCst);
-        assert_eq!(clock.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            clock.now_with_uncertainty(),
+            Err(AuthorityTrustError::Invalid)
+        );
     }
 
     #[test]
@@ -336,8 +368,14 @@ mod tests {
         drop(owner);
         assert_eq!(reader.now_with_uncertainty(), Ok((2_000, 10)));
         custody.generation.store(3, Ordering::SeqCst);
-        assert_eq!(reader.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            reader.now_with_uncertainty(),
+            Err(AuthorityTrustError::Invalid)
+        );
         custody.generation.store(2, Ordering::SeqCst);
-        assert_eq!(reader.now_with_uncertainty(), Err(AuthorityTrustError::Invalid));
+        assert_eq!(
+            reader.now_with_uncertainty(),
+            Err(AuthorityTrustError::Invalid)
+        );
     }
 }

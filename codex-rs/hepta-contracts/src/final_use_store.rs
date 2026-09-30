@@ -262,10 +262,9 @@ impl Store {
             };
             if !valid_head(&state.head)
                 || state.used_nonces.len() > MAX_CLAIMS
-                || state
-                    .pending_revocations
-                    .as_ref()
-                    .is_some_and(|pending| !valid_head(pending) || !head_advances(&state.head, pending))
+                || state.pending_revocations.as_ref().is_some_and(|pending| {
+                    !valid_head(pending) || !head_advances(&state.head, pending)
+                })
             {
                 return Err(FinalUseError::InvalidTrust);
             }
@@ -492,6 +491,8 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
         Access::Write => OFlags::RDWR,
         Access::Create => OFlags::RDWR | OFlags::CREATE,
     } | OFlags::NOFOLLOW
+        // Reject FIFOs at the descriptor check instead of blocking on open.
+        | OFlags::NONBLOCK
         | OFlags::CLOEXEC;
     let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)
         .map_err(|_| FinalUseError::Unavailable)?

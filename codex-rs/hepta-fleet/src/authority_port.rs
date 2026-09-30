@@ -50,12 +50,9 @@ impl FleetAuthorityPort {
         S: ProductionAuthorityFrontierStore<AuthorityLeaseFrontier> + 'static,
         K: ProductionAuthorityKeyCustody + 'static,
     {
-        let registry = AuthorityLeaseRegistry::open_production_state_dir(
-            directory,
-            owner_id,
-            bundle,
-        )
-        .map_err(FleetAuthorityError::Authority)?;
+        let registry =
+            AuthorityLeaseRegistry::open_production_state_dir(directory, owner_id, bundle)
+                .map_err(FleetAuthorityError::Authority)?;
         let port = Self::new(registry.verifier());
         Ok((registry, port))
     }

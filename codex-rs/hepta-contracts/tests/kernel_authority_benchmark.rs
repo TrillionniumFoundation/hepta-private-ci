@@ -45,7 +45,7 @@ impl AuthorityClock for BenchClock {
 }
 
 fn binding(index: usize) -> AuthorityLeaseBinding {
-    let marker = u8::try_from(index % 250 + 1).expect("bounded marker");
+    let marker = (index % 250) as u8 + 1;
     AuthorityLeaseBinding {
         principal_id: format!("benchmark-principal-{index}"),
         operation_class: "benchmark.dispatch".into(),

@@ -305,7 +305,11 @@ impl VerifiedUseToken {
         if &self.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
-        let state = self.owner.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let state = self
+            .owner
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
@@ -334,7 +338,13 @@ impl FinalUseAuthority {
         verifying_key: [u8; 32],
         head: FinalUseRevocations,
     ) -> Result<Self, FinalUseError> {
-        Self::open_state_dir_with_clock(directory, signer_id, verifying_key, head, Arc::new(SystemAuthorityClock))
+        Self::open_state_dir_with_clock(
+            directory,
+            signer_id,
+            verifying_key,
+            head,
+            Arc::new(SystemAuthorityClock),
+        )
     }
 
     /// Clock-injected qualification/compatibility construction, without a frontier.
@@ -345,7 +355,8 @@ impl FinalUseAuthority {
         head: FinalUseRevocations,
         clock: Arc<dyn AuthorityClock>,
     ) -> Result<Self, FinalUseError> {
-        let key = VerifyingKey::from_bytes(&verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;
+        let key =
+            VerifyingKey::from_bytes(&verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;
         if !identifier(&signer_id) || key.is_weak() || !valid_head(&head) {
             return Err(FinalUseError::InvalidTrust);
         }
@@ -376,7 +387,8 @@ impl FinalUseAuthority {
         clock: Arc<dyn AuthorityClock>,
         frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
     ) -> Result<Self, FinalUseError> {
-        let key = VerifyingKey::from_bytes(&verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;
+        let key =
+            VerifyingKey::from_bytes(&verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;
         if !identifier(&signer_id) || key.is_weak() || !valid_head(&head) {
             return Err(FinalUseError::InvalidTrust);
         }
@@ -413,7 +425,15 @@ impl FinalUseAuthority {
         clock: Arc<dyn AuthorityClock>,
         frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
     ) -> Result<Self, FinalUseError> {
-        Self::open_key_ring_with_trust(directory, signer_id, issuer_keys, head, clock, frontier_store, false)
+        Self::open_key_ring_with_trust(
+            directory,
+            signer_id,
+            issuer_keys,
+            head,
+            clock,
+            frontier_store,
+            false,
+        )
     }
 
     /// An authenticated head may finish a frontier-first transition but cannot
@@ -426,7 +446,15 @@ impl FinalUseAuthority {
         clock: Arc<dyn AuthorityClock>,
         frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
     ) -> Result<Self, FinalUseError> {
-        Self::open_key_ring_with_trust(directory, signer_id, issuer_keys, head, clock, frontier_store, true)
+        Self::open_key_ring_with_trust(
+            directory,
+            signer_id,
+            issuer_keys,
+            head,
+            clock,
+            frontier_store,
+            true,
+        )
     }
 
     fn open_key_ring_with_trust(
@@ -444,9 +472,19 @@ impl FinalUseAuthority {
         clock.now_unix_ms().map_err(map_trust_error)?;
         let (issuer_keys, issuer_trust_sha256) = pin_issuer_keys(issuer_keys)?;
         let (store, mut state) = if recover_persisted_head {
-            store::Store::open_key_ring_recovered(directory, &signer_id, issuer_trust_sha256, head.clone())?
+            store::Store::open_key_ring_recovered(
+                directory,
+                &signer_id,
+                issuer_trust_sha256,
+                head.clone(),
+            )?
         } else {
-            store::Store::open_key_ring_exact(directory, &signer_id, issuer_trust_sha256, head.clone())?
+            store::Store::open_key_ring_exact(
+                directory,
+                &signer_id,
+                issuer_trust_sha256,
+                head.clone(),
+            )?
         };
         let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;
         if trusted != frontier_for_state(&state) {
@@ -467,11 +505,19 @@ impl FinalUseAuthority {
     }
 
     pub fn issuer_key_ids(&self) -> Vec<&str> {
-        self.0.issuer_keys.iter().map(|candidate| candidate.key_id.as_str()).collect()
+        self.0
+            .issuer_keys
+            .iter()
+            .map(|candidate| candidate.key_id.as_str())
+            .collect()
     }
 
     pub fn frontier(&self) -> Result<FinalUseFrontier, FinalUseError> {
-        let state = self.0.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
@@ -480,7 +526,11 @@ impl FinalUseAuthority {
 
     /// Coherent observability only; it does not create rollover authority.
     pub fn capacity(&self) -> Result<FinalUseCapacity, FinalUseError> {
-        let state = self.0.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
@@ -496,7 +546,11 @@ impl FinalUseAuthority {
 
     /// The durable head is not a fresh feed or independent rollback oracle.
     pub fn revocation_head(&self) -> Result<FinalUseRevocations, FinalUseError> {
-        let state = self.0.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
@@ -505,7 +559,11 @@ impl FinalUseAuthority {
 
     /// Trusted-host only. Pending and committed heads never weaken in an epoch.
     pub fn update_revocations(&self, head: FinalUseRevocations) -> Result<(), FinalUseError> {
-        let mut state = self.0.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let mut state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
@@ -545,7 +603,8 @@ impl FinalUseAuthority {
         if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
-        let signature = Signature::from_slice(&signed.signature).map_err(|_| FinalUseError::InvalidSignature)?;
+        let signature = Signature::from_slice(&signed.signature)
+            .map_err(|_| FinalUseError::InvalidSignature)?;
         let verified = self.0.issuer_keys.iter().any(|candidate| {
             signed.grant.authority_epoch >= candidate.not_before_authority_epoch
                 && signed.grant.authority_epoch <= candidate.not_after_authority_epoch
@@ -554,7 +613,11 @@ impl FinalUseAuthority {
         if !verified {
             return Err(FinalUseError::InvalidSignature);
         }
-        let mut state = self.0.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let mut state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
@@ -569,15 +632,29 @@ impl FinalUseAuthority {
             return Err(FinalUseError::CapacityExceeded);
         }
         // Preserve external-frontier-first ordering and fence every uncertain write.
-        let expected_frontier = self.0.frontier_store.as_ref().map(|_| frontier_for_state(&state));
+        let expected_frontier = self
+            .0
+            .frontier_store
+            .as_ref()
+            .map(|_| frontier_for_state(&state));
         state.used_nonces.insert(signed.grant.nonce);
-        if let (Some(frontier_store), Some(expected_frontier)) = (&self.0.frontier_store, expected_frontier)
-            && let Err(error) = frontier_store.compare_and_set(&self.0.signer_id, &expected_frontier, &frontier_for_state(&state))
+        if let (Some(frontier_store), Some(expected_frontier)) =
+            (&self.0.frontier_store, expected_frontier)
+            && let Err(error) = frontier_store.compare_and_set(
+                &self.0.signer_id,
+                &expected_frontier,
+                &frontier_for_state(&state),
+            )
         {
             state.failed = true;
             return Err(map_trust_error(error));
         }
-        if self.0.store.append_claim(state.head.authority_epoch, signed.grant.nonce).is_err() {
+        if self
+            .0
+            .store
+            .append_claim(state.head.authority_epoch, signed.grant.nonce)
+            .is_err()
+        {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
@@ -585,7 +662,8 @@ impl FinalUseAuthority {
         // expiry or trust loss leaves this nonce durably consumed.
         validate_live_clock(&signed.grant, &state.head, self.0.clock.as_ref())?;
         let claimed_head = state.head.clone();
-        let claimed_head_bytes = serde_json::to_vec(&claimed_head).map_err(|_| FinalUseError::InvalidTrust)?;
+        let claimed_head_bytes =
+            serde_json::to_vec(&claimed_head).map_err(|_| FinalUseError::InvalidTrust)?;
         let mut head_witness = b"hepta.kernel.authority.revocation-head.v1\0".to_vec();
         head_witness.extend_from_slice(&claimed_head_bytes);
         let claimed_head_sha256 = Sha256::digest(&head_witness).into();
@@ -622,7 +700,11 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         consumer: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
-        let _witness = self.validate_token_live_witness(&token, expected, VerifiedUseBoundaryV1::ConsumerEntry)?;
+        let _witness = self.validate_token_live_witness(
+            &token,
+            expected,
+            VerifiedUseBoundaryV1::ConsumerEntry,
+        )?;
         Ok(consumer())
     }
 
@@ -679,7 +761,11 @@ impl FinalUseAuthority {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
-        let state = self.0.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
@@ -688,13 +774,22 @@ impl FinalUseAuthority {
         }
         let now_unix_ms = validate_live_clock(&token.grant, &state.head, self.0.clock.as_ref())?;
         let witness = VerifiedUseTokenWitnessV1::final_use(
-            self.0.signer_id.clone(), token.grant.grant_id, state.head.authority_epoch,
-            state.head.revision, now_unix_ms, VerifiedUseBoundaryV1::DispatchEntry,
+            self.0.signer_id.clone(),
+            token.grant.grant_id,
+            state.head.authority_epoch,
+            state.head.revision,
+            now_unix_ms,
+            VerifiedUseBoundaryV1::DispatchEntry,
             final_use_binding_witness_sha256(expected)?,
         );
         self.0.active_dispatches.fetch_add(1, Ordering::AcqRel);
         drop(state);
-        Ok((ActiveDispatchGuard { owner: Arc::clone(&self.0) }, witness))
+        Ok((
+            ActiveDispatchGuard {
+                owner: Arc::clone(&self.0),
+            },
+            witness,
+        ))
     }
 
     /// Hold the mutex only across a bounded local irreversible transition.
@@ -705,7 +800,8 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         dispatch_boundary: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
-        let (result, _witness) = self.with_dispatch_boundary_witness(token, expected, |_| dispatch_boundary())?;
+        let (result, _witness) =
+            self.with_dispatch_boundary_witness(token, expected, |_| dispatch_boundary())?;
         Ok(result)
     }
 
@@ -718,7 +814,11 @@ impl FinalUseAuthority {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
-        let state = self.0.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
@@ -727,8 +827,13 @@ impl FinalUseAuthority {
         }
         let now_unix_ms = validate_live_clock(&token.grant, &state.head, self.0.clock.as_ref())?;
         Ok(VerifiedUseTokenWitnessV1::final_use(
-            self.0.signer_id.clone(), token.grant.grant_id.clone(), state.head.authority_epoch,
-            state.head.revision, now_unix_ms, boundary, final_use_binding_witness_sha256(expected)?,
+            self.0.signer_id.clone(),
+            token.grant.grant_id.clone(),
+            state.head.authority_epoch,
+            state.head.revision,
+            now_unix_ms,
+            boundary,
+            final_use_binding_witness_sha256(expected)?,
         ))
     }
 
@@ -741,7 +846,11 @@ impl FinalUseAuthority {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
-        let state = self.0.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
@@ -750,8 +859,12 @@ impl FinalUseAuthority {
         }
         let now_unix_ms = validate_live_clock(&token.grant, &state.head, self.0.clock.as_ref())?;
         let witness = VerifiedUseTokenWitnessV1::final_use(
-            self.0.signer_id.clone(), token.grant.grant_id, state.head.authority_epoch,
-            state.head.revision, now_unix_ms, VerifiedUseBoundaryV1::DispatchEntry,
+            self.0.signer_id.clone(),
+            token.grant.grant_id,
+            state.head.authority_epoch,
+            state.head.revision,
+            now_unix_ms,
+            VerifiedUseBoundaryV1::DispatchEntry,
             final_use_binding_witness_sha256(expected)?,
         );
         let result = dispatch_boundary(&witness);
@@ -767,7 +880,9 @@ impl FinalUseAuthority {
         if let Some(frontier_store) = &self.0.frontier_store {
             let expected = frontier_for_state(state);
             let advanced = frontier_for_state(&next);
-            if let Err(error) = frontier_store.compare_and_set(&self.0.signer_id, &expected, &advanced) {
+            if let Err(error) =
+                frontier_store.compare_and_set(&self.0.signer_id, &expected, &advanced)
+            {
                 state.failed = true;
                 return Err(map_trust_error(error));
             }
@@ -821,7 +936,11 @@ pub fn deliver_final_use_with_witness<T>(
     consumer: impl FnOnce() -> T,
 ) -> Result<(T, VerifiedUseTokenWitnessV1), FinalUseError> {
     let _boundary = HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DELIVERY_WITNESS;
-    let witness = authority.validate_token_live_witness(&token, expected, VerifiedUseBoundaryV1::ConsumerEntry)?;
+    let witness = authority.validate_token_live_witness(
+        &token,
+        expected,
+        VerifiedUseBoundaryV1::ConsumerEntry,
+    )?;
     Ok((consumer(), witness))
 }
 
@@ -866,13 +985,18 @@ fn head_advances(current: &FinalUseRevocations, next: &FinalUseRevocations) -> b
     valid_head(next)
         && next.authority_epoch >= current.authority_epoch
         && next.revision > current.revision
-        && (next.authority_epoch > current.authority_epoch || next.revoked_grant_ids.is_superset(&current.revoked_grant_ids))
+        && (next.authority_epoch > current.authority_epoch
+            || next
+                .revoked_grant_ids
+                .is_superset(&current.revoked_grant_ids))
 }
 
 fn identifier(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 128
-        && value.bytes().all(|b| b.is_ascii_alphanumeric() || b"_-.:/".contains(&b))
+        && value
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b"_-.:/".contains(&b))
 }
 
 fn validate_live(
@@ -907,7 +1031,9 @@ fn validate_live_clock(
         return Err(FinalUseError::InvalidTrust);
     }
     validate_live(grant, head, now)?;
-    let earliest = now.checked_sub(uncertainty).ok_or(FinalUseError::NotYetValid)?;
+    let earliest = now
+        .checked_sub(uncertainty)
+        .ok_or(FinalUseError::NotYetValid)?;
     let latest = now.checked_add(uncertainty).ok_or(FinalUseError::Expired)?;
     validate_live(grant, head, earliest)?;
     validate_live(grant, head, latest)?;

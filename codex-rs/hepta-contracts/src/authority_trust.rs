@@ -154,7 +154,7 @@ impl ProductionAuthorityTrustEvidence {
         ];
         if self.schema_version != Self::SCHEMA_VERSION
             || !identifiers_valid
-            || digests.iter().any(|digest| *digest == [0; 32])
+            || digests.contains(&[0; 32])
             || !self.boot_rollback_detection_enabled
             || !self.verifier_only_topology
             || !self.state_directory_validated
@@ -201,7 +201,7 @@ impl ProductionAuthorityKeyCustodyEvidence {
             || !identifier(&self.provider_id)
             || !identifier(&self.key_role)
             || !identifier(&self.trust_domain)
-            || digests.iter().any(|digest| *digest == [0; 32])
+            || digests.contains(&[0; 32])
             || self.active_generation == 0
             || self.revoked_before_generation > self.active_generation
             || !self.private_key_export_prohibited
@@ -277,7 +277,9 @@ impl VerifiedFinalUseRevocationHead {
         now_unix_ms: u64,
         maximum_uncertainty_ms: u64,
     ) -> Result<FinalUseRevocations, FinalUseError> {
-        let definitely_live_after = self.issued_at_unix_ms.saturating_add(maximum_uncertainty_ms);
+        let definitely_live_after = self
+            .issued_at_unix_ms
+            .saturating_add(maximum_uncertainty_ms);
         let possibly_expired_at = now_unix_ms.saturating_add(maximum_uncertainty_ms);
         if now_unix_ms < definitely_live_after || possibly_expired_at >= self.expires_at_unix_ms {
             return Err(FinalUseError::InvalidTrust);
@@ -331,10 +333,7 @@ impl FinalUseFeedClock {
         // cannot leave a formerly live interval behind.
         *current = None;
         let sample = self.clock.now_with_uncertainty()?;
-        let window = (
-            verified.issued_at_unix_ms(),
-            verified.expires_at_unix_ms(),
-        );
+        let window = (verified.issued_at_unix_ms(), verified.expires_at_unix_ms());
         if !feed_interval_is_live(sample, window) {
             return Err(AuthorityTrustError::Unavailable);
         }
@@ -375,10 +374,7 @@ impl AuthorityClock for FinalUseFeedClock {
     }
 }
 
-fn feed_interval_is_live(
-    (now, uncertainty): (u64, u64),
-    (issued, expires): (u64, u64),
-) -> bool {
+fn feed_interval_is_live((now, uncertainty): (u64, u64), (issued, expires): (u64, u64)) -> bool {
     uncertainty <= MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS
         && now
             .checked_sub(uncertainty)
@@ -437,13 +433,15 @@ where
             || self.clock.production_trust_domain() != self.evidence.trust_domain
             || self.frontier_store.production_trust_domain() != self.evidence.trust_domain
             || self.key_custody.production_trust_domain() != self.evidence.trust_domain
-            || self.key_custody_evidence.trust_domain.as_str() != self.evidence.trust_domain.as_str()
+            || self.key_custody_evidence.trust_domain.as_str()
+                != self.evidence.trust_domain.as_str()
             || self.key_custody.provider_id() != self.key_custody_evidence.provider_id.as_str()
             || self.key_custody.key_role() != self.key_custody_evidence.key_role.as_str()
             || self.clock.maximum_uncertainty_ms() == 0
             || self.clock.maximum_uncertainty_ms() > MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS
             || self.clock.maximum_uncertainty_ms() > self.evidence.maximum_clock_uncertainty_ms
-            || self.evidence.key_custody_attestation_sha256 != self.key_custody_evidence.custody_receipt_sha256
+            || self.evidence.key_custody_attestation_sha256
+                != self.key_custody_evidence.custody_receipt_sha256
         {
             return Err(AuthorityTrustError::Invalid);
         }
@@ -619,7 +617,12 @@ impl AuthorityDispatchBinding {
         self,
         dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
     ) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
-        dispatch_authority_lease_with_witness(&self.verifier, self.token, &self.expected, dispatch_boundary)
+        dispatch_authority_lease_with_witness(
+            &self.verifier,
+            self.token,
+            &self.expected,
+            dispatch_boundary,
+        )
     }
 }
 
@@ -652,12 +655,15 @@ impl AuthorityLeaseRegistry {
         S: ProductionAuthorityFrontierStore<AuthorityLeaseFrontier> + 'static,
         K: ProductionAuthorityKeyCustody + 'static,
     {
-        bundle.validate().map_err(|_| AuthorityLeaseError::InvalidTrust)?;
+        bundle
+            .validate()
+            .map_err(|_| AuthorityLeaseError::InvalidTrust)?;
         if bundle.key_custody_evidence.key_role.as_str() != AUTHORITY_LEASE_KEY_ROLE {
             return Err(AuthorityLeaseError::InvalidTrust);
         }
         let clock = runtime_clock::bind(bundle);
-        let frontier_store: Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>> = bundle.frontier_store.clone();
+        let frontier_store: Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>> =
+            bundle.frontier_store.clone();
         Self::open_state_dir_with_trust(directory, owner_id, clock, frontier_store)
     }
 }
@@ -715,14 +721,17 @@ where
 {
     bundle.validate().map_err(|_| FinalUseError::InvalidTrust)?;
     if bundle.key_custody_evidence.key_role.as_str() != FINAL_USE_ISSUER_KEY_ROLE
-        || final_use_issuer_trust_sha256(issuer_keys)? != bundle.key_custody_evidence.active_key_set_sha256
+        || final_use_issuer_trust_sha256(issuer_keys)?
+            != bundle.key_custody_evidence.active_key_set_sha256
     {
         return Err(FinalUseError::InvalidTrust);
     }
     Ok(())
 }
 
-fn final_use_issuer_trust_sha256(issuer_keys: &[FinalUseIssuerTrustKey]) -> Result<[u8; 32], FinalUseError> {
+fn final_use_issuer_trust_sha256(
+    issuer_keys: &[FinalUseIssuerTrustKey],
+) -> Result<[u8; 32], FinalUseError> {
     if issuer_keys.is_empty() || issuer_keys.len() > 8 {
         return Err(FinalUseError::InvalidTrust);
     }
@@ -733,7 +742,8 @@ fn final_use_issuer_trust_sha256(issuer_keys: &[FinalUseIssuerTrustKey]) -> Resu
     let mut digest = Sha256::new();
     digest.update(b"hepta.kernel.authority.final-use-issuer-trust.v1\0");
     for candidate in keys {
-        let key = VerifyingKey::from_bytes(&candidate.verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;
+        let key = VerifyingKey::from_bytes(&candidate.verifying_key)
+            .map_err(|_| FinalUseError::InvalidTrust)?;
         if !identifier(&candidate.key_id)
             || key.is_weak()
             || candidate.not_before_authority_epoch == 0
@@ -755,7 +765,9 @@ fn final_use_issuer_trust_sha256(issuer_keys: &[FinalUseIssuerTrustKey]) -> Resu
 fn identifier(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 128
-        && value.bytes().all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':'))
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':'))
 }
 
 #[cfg(test)]

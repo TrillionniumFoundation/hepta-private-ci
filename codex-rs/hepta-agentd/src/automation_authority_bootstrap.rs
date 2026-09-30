@@ -18,9 +18,7 @@ use codex_hepta_contracts::authority_trust::ProductionAuthorityFrontierStore;
 use codex_hepta_contracts::authority_trust::ProductionAuthorityKeyCustody;
 use codex_hepta_contracts::authority_trust::ProductionAuthorityTrustBundle;
 
-type BindProductionFinalUse = dyn Fn(
-        &[FinalUseIssuerTrustKey],
-    ) -> Result<ProductionFinalUseTrustContext, FinalUseError>
+type BindProductionFinalUse = dyn Fn(&[FinalUseIssuerTrustKey]) -> Result<ProductionFinalUseTrustContext, FinalUseError>
     + Send
     + Sync;
 

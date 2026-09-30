@@ -27,13 +27,13 @@ V1 general leases are registry-authoritative online references. Serialized lease
 
 `src/final_use.rs` implements a separately signed, short-lived final operation grant with exact subject/destination/request/scope/payload binding, strict Ed25519 verification, durable single-use nonce burn, monotonic revocation and opaque `VerifiedUseToken`.
 
-`FinalUseAuthority::open_state_dir_with_issuer_keys` binds a bounded issuer key ring with authority-epoch activation/retirement windows. The complete ring configuration is digest-pinned in durable store schema V3. Explicit V1/V2 storage layouts migrate with nonce history intact within their original trust family; single-key trust is not converted to key-ring trust.
+`FinalUseAuthority::open_state_dir_with_issuer_keys` binds a bounded issuer key ring with authority-epoch activation/retirement windows. The complete ring configuration is digest-pinned in durable store schema V4, including pending revocation state. Explicit V1/V2/V3 storage layouts migrate with nonce history intact within their original trust family; single-key trust is not converted to key-ring trust.
 
 `FinalUseAuthority::open_state_dir_with_trust` binds a host clock and an external `FinalUseFrontier` CAS store for the single-key compatibility path. The frontier digest includes both the complete revocation head and claimed nonce set. Every mutation advances the external frontier before the local fsync/rename. A local snapshot restored behind that frontier fails closed.
 
 Compatibility constructors without an external frontier remain available for tests/source compatibility and are not an external anti-rollback claim.
 
-Guarded synchronous and asynchronous effects maintain an active-effect fence. If a trusted revocation update arrives while such an effect is active, the update returns `DispatchInProgress` and sets `revocation_pending`; new claims and all new consumer/dispatch entries then fail with `RevocationPending` until the exact monotonic update is retried after the active effect drains. The pending flag is process-local. A named host must durably retain or re-read the independently signed update across restart rather than treating process loss as cancellation of the revocation.
+Guarded synchronous and asynchronous effects maintain an active-effect fence. If a trusted revocation update arrives while such an effect is active, the update returns `DispatchInProgress` and durably records `pending_revocations`; new claims and all new consumer/dispatch entries then fail with `RevocationPending` until the exact monotonic update is retried after the active effect drains. The pending head is stored in schema V4 and included in the external frontier digest. It survives restart and fences admission until exact recovery commits it; a named host must also authenticate the current signed feed before provider entry.
 
 ## Public symbols and source bindings
 

@@ -62,7 +62,10 @@ impl EffectTasks {
         F: Future<Output = T> + Send + 'static,
     {
         let runtime = Handle::try_current().map_err(|_| "effect runtime is unavailable")?;
-        let mut state = self.state.lock().map_err(|_| "effect task owner is poisoned")?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| "effect task owner is poisoned")?;
         state.reap();
         if state.closed {
             return Err("effect task admission is closed for shutdown");
@@ -86,7 +89,10 @@ impl EffectTasks {
     // This synchronous cut closes all clones before a caller begins awaiting.
     // Closing does not revoke authority, reset history, or imply provider absence.
     pub(super) fn close(&self) -> Result<EffectTaskSnapshot, &'static str> {
-        let mut state = self.state.lock().map_err(|_| "effect task owner is poisoned")?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| "effect task owner is poisoned")?;
         state.closed = true;
         state.reap();
         Ok(EffectTaskSnapshot {
@@ -122,9 +128,13 @@ impl super::AgentdAutomationEffectHost {
         &self,
         deadline: Instant,
     ) -> Result<(), crate::AgentdError> {
-        let snapshot = self.effect_tasks.drain_until(deadline).await.map_err(|error| {
-            crate::AgentdError::Protocol(format!("drain effect task owner: {error}"))
-        })?;
+        let snapshot = self
+            .effect_tasks
+            .drain_until(deadline)
+            .await
+            .map_err(|error| {
+                crate::AgentdError::Protocol(format!("drain effect task owner: {error}"))
+            })?;
         if snapshot.remaining != 0 || snapshot.failed_joins != 0 {
             return Err(crate::AgentdError::Protocol(format!(
                 "effect shutdown: {} unjoined task(s), {} failed join(s); durable attempt recovery is required; no absence or retry authority granted",
@@ -170,7 +180,10 @@ mod tests {
                 break;
             }
         }
-        assert!(reused, "finished task was not joined within the bounded probe");
+        assert!(
+            reused,
+            "finished task was not joined within the bounded probe"
+        );
     }
 
     #[tokio::test]
@@ -193,7 +206,9 @@ mod tests {
     #[tokio::test]
     async fn worker_panic_is_joined_before_capacity_reuse() {
         let tasks = EffectTasks::new(1);
-        let result = tasks.submit::<(), _>(|| async { panic!("qualification panic") }).unwrap();
+        let result = tasks
+            .submit::<(), _>(|| async { panic!("qualification panic") })
+            .unwrap();
         assert!(result.await.is_err());
         let mut reused = false;
         for _ in 0..1_000 {
@@ -204,8 +219,14 @@ mod tests {
                 break;
             }
         }
-        assert!(reused, "finished task was not joined within the bounded probe");
-        let snapshot = tasks.drain_until(Instant::now() + Duration::from_secs(2)).await.unwrap();
+        assert!(
+            reused,
+            "finished task was not joined within the bounded probe"
+        );
+        let snapshot = tasks
+            .drain_until(Instant::now() + Duration::from_secs(2))
+            .await
+            .unwrap();
         assert_eq!(snapshot.failed_joins, 1);
         assert_eq!(snapshot.remaining, 0);
     }
@@ -215,10 +236,14 @@ mod tests {
         let tasks = EffectTasks::new(1);
         assert_eq!(tasks.close().unwrap().remaining, 0);
         let calls = AtomicUsize::new(0);
-        assert!(tasks.submit(|| {
-            calls.fetch_add(1, Ordering::SeqCst);
-            async { 1 }
-        }).is_err());
+        assert!(
+            tasks
+                .submit(|| {
+                    calls.fetch_add(1, Ordering::SeqCst);
+                    async { 1 }
+                })
+                .is_err()
+        );
         assert_eq!(calls.load(Ordering::SeqCst), 0);
     }
 
@@ -228,19 +253,30 @@ mod tests {
         let finish = Arc::new(Notify::new());
         let worker_finish = Arc::clone(&finish);
         let (entered, started) = oneshot::channel();
-        let result = tasks.submit(move || async move {
-            entered.send(()).unwrap();
-            worker_finish.notified().await;
-            73
-        }).unwrap();
+        let result = tasks
+            .submit(move || async move {
+                entered.send(()).unwrap();
+                worker_finish.notified().await;
+                73
+            })
+            .unwrap();
         started.await.unwrap();
         let snapshot = tasks.drain_until(Instant::now()).await.unwrap();
         assert_eq!(snapshot.remaining, 1);
         assert!(tasks.submit(|| async { 8 }).is_err());
         finish.notify_one();
         assert_eq!(result.await.unwrap(), 73);
-        let snapshot = tasks.drain_until(Instant::now() + Duration::from_secs(2)).await.unwrap();
-        assert_eq!(snapshot, EffectTaskSnapshot { remaining: 0, failed_joins: 0 });
+        let snapshot = tasks
+            .drain_until(Instant::now() + Duration::from_secs(2))
+            .await
+            .unwrap();
+        assert_eq!(
+            snapshot,
+            EffectTaskSnapshot {
+                remaining: 0,
+                failed_joins: 0
+            }
+        );
         assert!(tasks.submit(|| async { 8 }).is_err());
     }
 
@@ -249,18 +285,31 @@ mod tests {
         let tasks = EffectTasks::new(1);
         let finish = Arc::new(Notify::new());
         let worker_finish = Arc::clone(&finish);
-        let result = tasks.submit(move || async move {
-            worker_finish.notified().await;
-            91
-        }).unwrap();
-        assert!(tokio::time::timeout(
-            Duration::from_millis(1),
-            tasks.drain_until(Instant::now() + Duration::from_secs(60)),
-        ).await.is_err());
+        let result = tasks
+            .submit(move || async move {
+                worker_finish.notified().await;
+                91
+            })
+            .unwrap();
+        assert!(
+            tokio::time::timeout(
+                Duration::from_millis(1),
+                tasks.drain_until(Instant::now() + Duration::from_secs(60)),
+            )
+            .await
+            .is_err()
+        );
         assert_eq!(tasks.close().unwrap().remaining, 1);
         finish.notify_one();
         assert_eq!(result.await.unwrap(), 91);
-        assert_eq!(tasks.drain_until(Instant::now() + Duration::from_secs(2)).await.unwrap().remaining, 0);
+        assert_eq!(
+            tasks
+                .drain_until(Instant::now() + Duration::from_secs(2))
+                .await
+                .unwrap()
+                .remaining,
+            0
+        );
     }
 
     #[tokio::test]

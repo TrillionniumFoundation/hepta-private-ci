@@ -57,11 +57,26 @@ fn grant() -> FinalUseGrant {
 fn entire_clock_interval_must_fit_the_half_open_grant_window() {
     let grant = grant();
     let head = head();
-    assert_eq!(validate_live_clock(&grant, &head, &Clock::new(2_000, 999)), Ok(2_000));
-    assert_eq!(validate_live_clock(&grant, &head, &Clock::new(1_000, 1)), Err(FinalUseError::NotYetValid));
-    assert_eq!(validate_live_clock(&grant, &head, &Clock::new(2_999, 1)), Err(FinalUseError::Expired));
-    assert_eq!(validate_live_clock(&grant, &head, &Clock::new(3_000, 0)), Err(FinalUseError::Expired));
-    assert_eq!(validate_live_clock(&grant, &head, &Clock::new(1_000, 0)), Ok(1_000));
+    assert_eq!(
+        validate_live_clock(&grant, &head, &Clock::new(2_000, 999)),
+        Ok(2_000)
+    );
+    assert_eq!(
+        validate_live_clock(&grant, &head, &Clock::new(1_000, 1)),
+        Err(FinalUseError::NotYetValid)
+    );
+    assert_eq!(
+        validate_live_clock(&grant, &head, &Clock::new(2_999, 1)),
+        Err(FinalUseError::Expired)
+    );
+    assert_eq!(
+        validate_live_clock(&grant, &head, &Clock::new(3_000, 0)),
+        Err(FinalUseError::Expired)
+    );
+    assert_eq!(
+        validate_live_clock(&grant, &head, &Clock::new(1_000, 0)),
+        Ok(1_000)
+    );
 }
 
 #[test]
@@ -69,9 +84,18 @@ fn invalid_clock_uncertainty_is_not_saturated_into_validity() {
     let mut grant = grant();
     grant.not_before_unix_ms = 0;
     grant.expires_at_unix_ms = u64::MAX;
-    assert_eq!(validate_live_clock(&grant, &head(), &Clock::new(1, 2)), Err(FinalUseError::NotYetValid));
-    assert_eq!(validate_live_clock(&grant, &head(), &Clock::new(u64::MAX - 1, 2)), Err(FinalUseError::Expired));
-    assert_eq!(validate_live_clock(&grant, &head(), &Clock::new(100_000, 60_001)), Err(FinalUseError::InvalidTrust));
+    assert_eq!(
+        validate_live_clock(&grant, &head(), &Clock::new(1, 2)),
+        Err(FinalUseError::NotYetValid)
+    );
+    assert_eq!(
+        validate_live_clock(&grant, &head(), &Clock::new(u64::MAX - 1, 2)),
+        Err(FinalUseError::Expired)
+    );
+    assert_eq!(
+        validate_live_clock(&grant, &head(), &Clock::new(100_000, 60_001)),
+        Err(FinalUseError::InvalidTrust)
+    );
 }
 
 #[cfg(unix)]
@@ -88,25 +112,41 @@ fn tokens_recheck_changed_uncertainty_and_do_not_refund_claims() {
         let key = SigningKey::from_bytes(&Sha256::digest(b"clock-test-issuer").into());
         let grant = grant();
         let signed = SignedFinalUseGrant {
-            signature: key.sign(&grant.signing_bytes().unwrap()).to_bytes().to_vec(),
+            signature: key
+                .sign(&grant.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
             grant,
         };
         let authority = FinalUseAuthority::open_state_dir_with_clock(
-            directory.path(), "clock-test-owner".into(), key.verifying_key().to_bytes(),
-            head(), clock.clone(),
-        ).unwrap();
+            directory.path(),
+            "clock-test-owner".into(),
+            key.verifying_key().to_bytes(),
+            head(),
+            clock.clone(),
+        )
+        .unwrap();
         let token = authority.claim(&signed, &signed.grant.binding).unwrap();
         clock.radius.store(1_000, Ordering::SeqCst);
         let called = std::sync::atomic::AtomicBool::new(false);
         let result = match boundary {
             0 => token.enter(&signed.grant.binding).map(|_| ()),
-            1 => authority.with_verified_use(token, &signed.grant.binding, || { called.store(true, Ordering::SeqCst); }),
-            2 => authority.with_dispatch_boundary(token, &signed.grant.binding, || { called.store(true, Ordering::SeqCst); }),
-            _ => authority.with_verified_effect(token, &signed.grant.binding, || { called.store(true, Ordering::SeqCst); }),
+            1 => authority.with_verified_use(token, &signed.grant.binding, || {
+                called.store(true, Ordering::SeqCst);
+            }),
+            2 => authority.with_dispatch_boundary(token, &signed.grant.binding, || {
+                called.store(true, Ordering::SeqCst);
+            }),
+            _ => authority.with_verified_effect(token, &signed.grant.binding, || {
+                called.store(true, Ordering::SeqCst);
+            }),
         };
         assert_eq!(result, Err(FinalUseError::Expired));
         assert!(!called.load(Ordering::SeqCst));
         clock.radius.store(10, Ordering::SeqCst);
-        assert_eq!(authority.claim(&signed, &signed.grant.binding).unwrap_err(), FinalUseError::AlreadyClaimed);
+        assert_eq!(
+            authority.claim(&signed, &signed.grant.binding).unwrap_err(),
+            FinalUseError::AlreadyClaimed
+        );
     }
 }

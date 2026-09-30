@@ -94,7 +94,10 @@ mod unix {
         digest.finalize().into()
     }
 
-    fn signed_grant(issuer: &SigningKey, grant_id: &str) -> SignedFinalUseGrant {
+    fn signed_grant(
+        issuer: &SigningKey,
+        grant_id: &str,
+    ) -> Result<SignedFinalUseGrant, FinalUseError> {
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "security-owner".into(),
@@ -105,11 +108,8 @@ mod unix {
             not_before_unix_ms: 1_000,
             expires_at_unix_ms: 8_000,
         };
-        let signature = issuer
-            .sign(&grant.signing_bytes().unwrap())
-            .to_bytes()
-            .to_vec();
-        SignedFinalUseGrant { grant, signature }
+        let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
+        Ok(SignedFinalUseGrant { grant, signature })
     }
 
     fn issuer_keys(issuer: &SigningKey) -> Vec<FinalUseIssuerTrustKey> {
@@ -125,7 +125,7 @@ mod unix {
         directory: &std::path::Path,
         issuer: &SigningKey,
         frontier: Arc<MemoryFrontier>,
-    ) -> FinalUseAuthority {
+    ) -> Result<FinalUseAuthority, FinalUseError> {
         FinalUseAuthority::open_state_dir_with_issuer_keys(
             directory,
             "security-owner".into(),
@@ -134,7 +134,6 @@ mod unix {
             Arc::new(FixedClock(2_000)),
             frontier,
         )
-        .unwrap()
     }
 
     fn recover(
@@ -142,7 +141,7 @@ mod unix {
         issuer: &SigningKey,
         authenticated_head: FinalUseRevocations,
         frontier: Arc<MemoryFrontier>,
-    ) -> FinalUseAuthority {
+    ) -> Result<FinalUseAuthority, FinalUseError> {
         FinalUseAuthority::recover_state_dir_with_issuer_keys(
             directory,
             "security-owner".into(),
@@ -151,29 +150,36 @@ mod unix {
             Arc::new(FixedClock(2_000)),
             frontier,
         )
-        .unwrap()
     }
+
+    type ActiveDispatch = (
+        mpsc::Sender<()>,
+        thread::JoinHandle<Result<(), FinalUseError>>,
+    );
 
     fn begin_active_dispatch(
         authority: &FinalUseAuthority,
         grant: &SignedFinalUseGrant,
-    ) -> (
-        mpsc::Sender<()>,
-        thread::JoinHandle<Result<(), FinalUseError>>,
-    ) {
-        let token = authority.claim(grant, &grant.grant.binding).unwrap();
+    ) -> Result<ActiveDispatch, FinalUseError> {
+        let token = authority.claim(grant, &grant.grant.binding)?;
         let worker_authority = authority.clone();
         let worker_binding = grant.grant.binding.clone();
         let (entered_tx, entered_rx) = mpsc::channel();
         let (release_tx, release_rx) = mpsc::channel();
         let worker = thread::spawn(move || {
-            worker_authority.with_verified_effect(token, &worker_binding, || {
-                entered_tx.send(()).unwrap();
-                release_rx.recv().unwrap();
-            })
+            worker_authority
+                .with_verified_effect(token, &worker_binding, || {
+                    entered_tx
+                        .send(())
+                        .map_err(|_| FinalUseError::Unavailable)?;
+                    release_rx.recv().map_err(|_| FinalUseError::Unavailable)
+                })
+                .and_then(std::convert::identity)
         });
-        entered_rx.recv().unwrap();
-        (release_tx, worker)
+        entered_rx
+            .recv_timeout(std::time::Duration::from_secs(2))
+            .map_err(|_| FinalUseError::Unavailable)?;
+        Ok((release_tx, worker))
     }
 
     #[test]
@@ -185,12 +191,12 @@ mod unix {
         let frontier = Arc::new(MemoryFrontier(Mutex::new(
             FinalUseFrontier::for_initial_head(&initial).unwrap(),
         )));
-        let authority = open(directory.path(), &issuer, frontier.clone());
-        let grant = signed_grant(&issuer, "durable-pending");
-        let later = signed_grant(&issuer, "blocked-while-pending");
+        let authority = open(directory.path(), &issuer, frontier.clone()).unwrap();
+        let grant = signed_grant(&issuer, "durable-pending").unwrap();
+        let later = signed_grant(&issuer, "blocked-while-pending").unwrap();
         let revoked = revoked_head(&grant.grant.grant_id);
 
-        let (release, worker) = begin_active_dispatch(&authority, &grant);
+        let (release, worker) = begin_active_dispatch(&authority, &grant).unwrap();
         assert_eq!(
             authority.update_revocations(revoked.clone()),
             Err(FinalUseError::DispatchInProgress)
@@ -203,7 +209,7 @@ mod unix {
         worker.join().unwrap().unwrap();
         drop(authority);
 
-        let recovered = recover(directory.path(), &issuer, revoked.clone(), frontier.clone());
+        let recovered = recover(directory.path(), &issuer, revoked.clone(), frontier).unwrap();
         assert_eq!(
             recovered.claim(&later, &later.grant.binding).unwrap_err(),
             FinalUseError::RevocationPending
@@ -225,12 +231,12 @@ mod unix {
         let frontier = Arc::new(MemoryFrontier(Mutex::new(
             FinalUseFrontier::for_initial_head(&initial).unwrap(),
         )));
-        let authority = open(directory.path(), &issuer, frontier.clone());
-        let grant = signed_grant(&issuer, "frontier-first-crash");
-        let later = signed_grant(&issuer, "blocked-after-repair");
+        let authority = open(directory.path(), &issuer, frontier.clone()).unwrap();
+        let grant = signed_grant(&issuer, "frontier-first-crash").unwrap();
+        let later = signed_grant(&issuer, "blocked-after-repair").unwrap();
         let revoked = revoked_head(&grant.grant.grant_id);
 
-        let (release, worker) = begin_active_dispatch(&authority, &grant);
+        let (release, worker) = begin_active_dispatch(&authority, &grant).unwrap();
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o500)).unwrap();
         assert_eq!(
             authority.update_revocations(revoked.clone()),
@@ -243,7 +249,7 @@ mod unix {
         drop(authority);
 
         let repaired_pending =
-            recover(directory.path(), &issuer, revoked.clone(), frontier.clone());
+            recover(directory.path(), &issuer, revoked.clone(), frontier.clone()).unwrap();
         assert_eq!(
             repaired_pending
                 .claim(&later, &later.grant.binding)
@@ -260,7 +266,8 @@ mod unix {
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         drop(repaired_pending);
 
-        let repaired_commit = recover(directory.path(), &issuer, revoked.clone(), frontier);
+        let repaired_commit =
+            recover(directory.path(), &issuer, revoked.clone(), frontier).unwrap();
         assert_eq!(repaired_commit.revocation_head().unwrap(), revoked);
         assert_eq!(
             repaired_commit

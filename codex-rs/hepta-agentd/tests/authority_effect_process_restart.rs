@@ -304,9 +304,7 @@ fn signed_revocation_update(
         "automation-revocation-distributor".to_string(),
         head,
         issued_at_unix_ms,
-        issued_at_unix_ms.saturating_add(
-            codex_hepta_contracts::MAX_REVOCATION_FEED_LIFETIME_MS,
-        ),
+        issued_at_unix_ms.saturating_add(codex_hepta_contracts::MAX_REVOCATION_FEED_LIFETIME_MS),
     );
     SignedFinalUseRevocationUpdate {
         signature: signer
@@ -326,8 +324,8 @@ fn spawn_agentd(
     host_file: &Path,
     log_path: PathBuf,
 ) -> Result<AgentProcess> {
-    let stdout = File::create(&log_path)
-        .with_context(|| format!("create {}", log_path.display()))?;
+    let stdout =
+        File::create(&log_path).with_context(|| format!("create {}", log_path.display()))?;
     let stderr = stdout.try_clone()?;
     let child = Command::new(env!("CARGO_BIN_EXE_codex-hepta-agentd"))
         .current_dir(workspace)
@@ -403,7 +401,10 @@ async fn wait_for_pending_snapshot(path: &Path) -> Result<Value> {
             return Ok(value);
         }
         if Instant::now() >= deadline {
-            bail!("durable pending revocation was not observed at {}", path.display());
+            bail!(
+                "durable pending revocation was not observed at {}",
+                path.display()
+            );
         }
         sleep(Duration::from_millis(25)).await;
     }
@@ -426,7 +427,8 @@ fn assert_single_nonce_frame(path: &Path, grant: &SignedFinalUseGrant) -> Result
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_terminal_receipt() -> Result<()> {
+async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_terminal_receipt()
+-> Result<()> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -453,12 +455,9 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     store.close().await;
 
     let provider = MockServer::start().await;
-    let provider_key = ProviderEffectKey::for_operation(
-        PROVIDER_SCOPE,
-        &intent.run_id,
-        &intent.step_id,
-    )
-    .map_err(|error| anyhow!("derive provider effect key: {error:?}"))?;
+    let provider_key =
+        ProviderEffectKey::for_operation(PROVIDER_SCOPE, &intent.run_id, &intent.step_id)
+            .map_err(|error| anyhow!("derive provider effect key: {error:?}"))?;
     let provider_receipt = Sha256Digest::for_bytes(b"provider-process-operation");
     let ack = serde_json::json!({
         "effect_key": provider_key.as_str(),
@@ -557,8 +556,7 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     write_private_json(&host_file, &host_config)?;
     let grant = signed_final_use(&intent, now, &final_use_signer);
 
-    let starting_one =
-        registry.compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)?;
+    let starting_one = registry.compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)?;
     ensure!(starting_one.generation == 1);
     let mut first = spawn_agentd(
         &fleet_root,
@@ -590,12 +588,7 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     .await?;
 
     let first_result = first_client
-        .automation_execute_effect(
-            intent.clone(),
-            WIRE,
-            grant.clone(),
-            COMMAND_ID.to_string(),
-        )
+        .automation_execute_effect(intent.clone(), WIRE, grant.clone(), COMMAND_ID.to_string())
         .await;
     ensure!(
         first_result.is_err(),
@@ -616,12 +609,7 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     );
     write_private_json(&feed_file, &newer_update)?;
     let pending_result = first_client
-        .automation_execute_effect(
-            intent.clone(),
-            WIRE,
-            grant.clone(),
-            COMMAND_ID.to_string(),
-        )
+        .automation_execute_effect(intent.clone(), WIRE, grant.clone(), COMMAND_ID.to_string())
         .await;
     ensure!(
         pending_result.is_err(),
@@ -632,9 +620,7 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     let authority_snapshot = authority_root.join("authority.json");
     let pending_snapshot = wait_for_pending_snapshot(&authority_snapshot).await?;
     ensure!(pending_snapshot["head"]["revision"].as_u64() == Some(1));
-    ensure!(
-        pending_snapshot["pending_revocations"]["revision"].as_u64() == Some(2)
-    );
+    ensure!(pending_snapshot["pending_revocations"]["revision"].as_u64() == Some(2));
     let claims_path = authority_root.join("authority.claims");
     let first_claims = assert_single_nonce_frame(&claims_path, &grant)?;
 
@@ -657,11 +643,8 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
         running_one.generation,
         AgentLifecycle::Failed,
     )?;
-    let starting_two = registry.compare_and_transition(
-        &agent_id,
-        failed.generation,
-        AgentLifecycle::Starting,
-    )?;
+    let starting_two =
+        registry.compare_and_transition(&agent_id, failed.generation, AgentLifecycle::Starting)?;
     ensure!(starting_two.generation == 4);
     let mut second = spawn_agentd(
         &fleet_root,
@@ -677,9 +660,12 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
         agent_id.clone(),
         starting_two.generation,
     )?;
-    wait_for_health(&mut second, &second_client, "second promotion readiness", |health| {
-        health.promotion_ready
-    })
+    wait_for_health(
+        &mut second,
+        &second_client,
+        "second promotion readiness",
+        |health| health.promotion_ready,
+    )
     .await?;
     let running_two = registry.compare_and_transition(
         &agent_id,
@@ -687,9 +673,12 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
         AgentLifecycle::Running,
     )?;
     ensure!(running_two.generation == 5);
-    wait_for_health(&mut second, &second_client, "second running readiness", |health| {
-        health.ready
-    })
+    wait_for_health(
+        &mut second,
+        &second_client,
+        "second running readiness",
+        |health| health.ready,
+    )
     .await?;
 
     let reconciled = second_client
@@ -704,12 +693,7 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     wait_for_provider_method(&provider, "GET").await?;
 
     let terminal_replay = second_client
-        .automation_execute_effect(
-            intent.clone(),
-            WIRE,
-            grant.clone(),
-            COMMAND_ID.to_string(),
-        )
+        .automation_execute_effect(intent.clone(), WIRE, grant.clone(), COMMAND_ID.to_string())
         .await?;
     ensure!(
         terminal_replay.receipt_digest == recovered_effect.receipt_digest,
@@ -727,9 +711,9 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
     ensure!(
         committed_snapshot["head"]["revoked_grant_ids"]
             .as_array()
-            .is_some_and(|ids| ids.iter().any(|id| {
-                id.as_str() == Some(grant.grant.grant_id.as_str())
-            }))
+            .is_some_and(|ids| ids
+                .iter()
+                .any(|id| { id.as_str() == Some(grant.grant.grant_id.as_str()) }))
     );
     let second_claims = assert_single_nonce_frame(&claims_path, &grant)?;
     ensure!(
@@ -764,7 +748,10 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
         .filter(|request| request.method.as_str() == "GET")
         .count();
     ensure!(posts == 1, "cold recovery redispatched the provider effect");
-    ensure!(gets == 1, "cold recovery did not reconcile by exact provider lookup");
+    ensure!(
+        gets == 1,
+        "cold recovery did not reconcile by exact provider lookup"
+    );
     provider.verify().await;
     Ok(())
 }

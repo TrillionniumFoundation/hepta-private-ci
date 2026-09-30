@@ -474,7 +474,7 @@ impl AuthorityLeaseRegistry {
         }
         let mut state = self.lock_state()?;
         if let Some(existing) = state.revocations.get(lease_id) {
-            if existing.lease_revision == expected_revision.saturating_add(1)
+            if expected_revision.checked_add(1) == Some(existing.lease_revision)
                 && existing.reason_sha256 == reason_sha256
             {
                 return Ok(receipt(existing, expected_revision));
@@ -1161,6 +1161,8 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Au
         Access::Read => OFlags::RDONLY,
         Access::Create => OFlags::RDWR | OFlags::CREATE,
     } | OFlags::NOFOLLOW
+        // Reject FIFOs at the descriptor check instead of blocking on open.
+        | OFlags::NONBLOCK
         | OFlags::CLOEXEC;
     let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)
         .map_err(|_| AuthorityLeaseError::Unavailable)?
@@ -1898,3 +1900,7 @@ mod tests {
 #[cfg(all(test, unix))]
 #[path = "authority_lease_interval_tests.rs"]
 mod interval_tests;
+
+#[cfg(all(test, unix))]
+#[path = "authority_lease_storage_tests.rs"]
+mod storage_tests;

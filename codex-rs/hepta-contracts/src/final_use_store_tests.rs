@@ -117,3 +117,31 @@ fn legacy_journal_keeps_trust_binding_and_exact_head_checks() {
         Err(FinalUseError::InvalidTrust)
     ));
 }
+
+#[test]
+fn fifo_snapshot_and_claim_journal_are_rejected_without_waiting_for_a_writer() {
+    for name in ["authority.json", "authority.claims"] {
+        let directory = private_tempdir().unwrap();
+        let root = prepare_directory(directory.path()).unwrap();
+        rustix::fs::mknodat(
+            &root,
+            name,
+            rustix::fs::FileType::Fifo,
+            rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
+            0,
+        )
+        .unwrap();
+        let (tx, rx) = std::sync::mpsc::channel();
+        let worker = std::thread::spawn(move || {
+            let result = open_private(&root, name, Access::Read).map(|_| ());
+            tx.send(result).unwrap();
+            drop(directory);
+        });
+        assert_eq!(
+            rx.recv_timeout(std::time::Duration::from_secs(2))
+                .expect("FIFO authority input open waited for a writer"),
+            Err(FinalUseError::UnsafeStateDirectory)
+        );
+        worker.join().unwrap();
+    }
+}

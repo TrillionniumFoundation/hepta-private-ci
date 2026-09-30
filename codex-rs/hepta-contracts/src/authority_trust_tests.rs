@@ -450,7 +450,7 @@ fn final_use_production_open_binds_exact_custodied_key_ring_and_verified_head() 
     let authority = open_production_final_use_authority(
         directory.path(),
         "security-owner".into(),
-        issuer_keys.clone(),
+        issuer_keys,
         &verified_head,
         &bundle,
     )
@@ -460,9 +460,7 @@ fn final_use_production_open_binds_exact_custodied_key_ring_and_verified_head() 
 
     let wrong_keys = vec![FinalUseIssuerTrustKey {
         key_id: "issuer-b".into(),
-        verifying_key: SigningKey::from_bytes(&[42; 32])
-            .verifying_key()
-            .to_bytes(),
+        verifying_key: SigningKey::from_bytes(&[42; 32]).verifying_key().to_bytes(),
         not_before_authority_epoch: 1,
         not_after_authority_epoch: 20,
     }];
@@ -637,7 +635,10 @@ fn production_final_use_context_retains_one_clock_and_exact_issuer_identity() {
     let first_clock = context.clock();
     let second_clock = context.clock();
     assert!(Arc::ptr_eq(&first_clock, &second_clock));
-    assert_eq!(context.verified_revocations(&verified_head), Ok(head.clone()));
+    assert_eq!(
+        context.verified_revocations(&verified_head),
+        Ok(head.clone())
+    );
 
     let feed_clock = context.feed_clock();
     assert_eq!(
@@ -664,14 +665,13 @@ fn production_final_use_context_retains_one_clock_and_exact_issuer_identity() {
         custody_evidence("final-use-issuer", key_set_sha256),
     )
     .unwrap();
-    let other_context =
-        ProductionFinalUseTrustContext::bind(&issuer_keys, &other_bundle).unwrap();
+    let other_context = ProductionFinalUseTrustContext::bind(&issuer_keys, &other_bundle).unwrap();
     let directory = tempfile::tempdir().unwrap();
     assert!(matches!(
         context.recover_state_dir_with_feed_clock(
             directory.path(),
             "security-owner".into(),
-            issuer_keys.clone(),
+            issuer_keys,
             &verified_head,
             other_context.feed_clock(),
         ),
@@ -680,9 +680,7 @@ fn production_final_use_context_retains_one_clock_and_exact_issuer_identity() {
 
     let wrong_keys = vec![FinalUseIssuerTrustKey {
         key_id: "issuer-other".into(),
-        verifying_key: SigningKey::from_bytes(&[72; 32])
-            .verifying_key()
-            .to_bytes(),
+        verifying_key: SigningKey::from_bytes(&[72; 32]).verifying_key().to_bytes(),
         not_before_authority_epoch: 1,
         not_after_authority_epoch: 20,
     }];

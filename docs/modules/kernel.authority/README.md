@@ -28,3 +28,7 @@ Do not infer completion from a source callsite, a parser unit test, a queued
 workflow, a synthetic fixture, or a compatibility trust profile. The relevant
 raw execution and external evidence must be reopened under the same immutable
 candidate identity.
+
+The [2026-10-01 adversarial audit](AUDIT_20261001.md) records concrete storage,
+revision-exhaustion, documentation and candidate-evidence repairs. It separates
+local development checks from hosted and production qualification.

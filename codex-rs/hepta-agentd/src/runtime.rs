@@ -61,9 +61,7 @@ pub async fn run(
     let objective_profile_file = config
         .objective_profile_file()
         .map(std::path::Path::to_path_buf);
-    if automation_effect_production_authority.is_some()
-        && automation_effect_host_file.is_none()
-    {
+    if automation_effect_production_authority.is_some() && automation_effect_host_file.is_none() {
         return Err(AgentdError::Invalid(
             "automation effect production authority requires a protected host file".to_string(),
         ));
@@ -249,9 +247,7 @@ pub async fn run(
         (Some(path), Some(authority)) => {
             state.refresh_generation()?;
             let host = crate::automation_effect_host::AgentdAutomationEffectHost::open_production(
-                &identity,
-                &path,
-                &authority,
+                &identity, &path, &authority,
             )?;
             state.refresh_generation()?;
             state.attach_automation_effect_host(Arc::new(host))?;
@@ -340,10 +336,7 @@ pub async fn run(
         let admission = close_effect_admission(&state);
         tasks.shutdown().await;
         let effects = drain_effect_owner(&state).await;
-        return combine_shutdown_results(
-            combine_shutdown_results(Err(error), admission),
-            effects,
-        );
+        return combine_shutdown_results(combine_shutdown_results(Err(error), admission), effects);
     }
     // Keep the existing effect owner alive even when a required service exits
     // or run_until cancels its signal/drain future. Effect handles are not part

@@ -46,7 +46,7 @@ holding the authority mutex across `await`.
 
 A trusted `update_revocations` call may commit before that fence is entered or
 after it leaves. While any active dispatch owns the fence, the update returns
-`FinalUseError::DispatchInProgress` and marks `revocation_pending`. From that
+`FinalUseError::DispatchInProgress` and durably records `pending_revocations`. From that
 point, new claims and every consumer/dispatch/effect entry return
 `FinalUseError::RevocationPending`; callers must retry the same monotonic head
 after the bounded provider call completes or is cancelled. A cancelled future
@@ -55,7 +55,8 @@ This avoids a check-before-await revocation race without blocking a runtime
 thread on a mutex held by a suspended future, and it prevents a stream of new
 work from starving an already observed revocation.
 
-The active fence and pending bit are intentionally not durable. If the process
+The active-dispatch counter is process-local; the pending revocation head is
+durable in schema V4 and included in the external frontier digest. If the process
 dies after provider contact, the provider effect remains indeterminate and must
 be reconciled by the durable operation/effect owner; revocation is not a
 rollback of an effect that already crossed the provider boundary. A named host
@@ -109,20 +110,24 @@ does not redirect an already opened authority's writes.
 | Entry | Contents and invariant |
 | --- | --- |
 | `authority.lock` | Owner-only regular file; `File::try_lock` held by the shared authority owner |
-| `authority.json` | JSON schema 3 `{schema:3, signer_id, trust, head}`; maximum read 8 MiB. Explicit single-key and key-ring legacy layouts migrate with their nonce history preserved; trust families are never silently converted. |
+| `authority.json` | JSON schema 4 `{schema:4, signer_id, trust, head, pending_revocations}`; maximum read 8 MiB. Explicit single-key and key-ring legacy layouts migrate with their nonce history preserved; trust families are never silently converted. |
 | `authority.claims` | Fixed-width append-only replay frames `(authority_epoch:u64, nonce:[u8;32])`; synced before dispatch admission. |
 | `authority.next` | Temporary revocation/trust snapshot replacement written with owner-only permissions before rename |
 | `authority.claims.next` | Temporary compacted replay journal used on trusted head/epoch transitions |
 
 Files must be regular, singly linked, owned by the effective user and have no
-group/world permissions; opens reject symlinks. The lock is held until the
+group/world permissions; opens reject symlinks. Opens use nonblocking mode so
+a FIFO substituted for a snapshot or journal is rejected at the descriptor
+check without waiting for a peer. The lock is held until the
 last authority/token reference disappears. It also releases automatically on
 process death. Concurrent opens fail with `StateLocked`.
 
 Every successful claim appends one fixed 40-byte epoch/nonce frame to
-`authority.claims` and fsyncs it before dispatch admission. Claim cost is thus
-constant in the number of prior claims instead of rewriting the full replay
-set. Trusted revocation/head updates atomically replace `authority.json` and
+`authority.claims` and fsyncs it before dispatch admission. The journal append writes a constant number of bytes per claim instead of
+rewriting the full replay set. This is not a constant-time claim guarantee:
+production external-frontier digest construction still hashes the accumulated
+nonce set, and its time grows with retained history. Target measurements must
+include that work rather than report only the journal append. Trusted revocation/head updates atomically replace `authority.json` and
 compact the journal for the current epoch; this path is not the per-dispatch
 hot path. On a storage error, the live authority becomes unavailable and stays
 fenced; callers cannot remove a bad temporary file and silently retry through
@@ -253,7 +258,7 @@ fetch newer data or replace protected time and the external rollback frontier.
 | `open_state_dir` | Compatibility/test open using the system clock and local durability only |
 | `open_state_dir_with_clock` | Bind an explicit host clock; still has no external rollback oracle |
 | `open_state_dir_with_trust` | Single-issuer compatibility open binding explicit clock plus external CAS frontier |
-| `open_state_dir_with_issuer_keys` | Production-oriented open binding epoch-window issuer key ring, explicit clock and external CAS frontier; durable schema V3 pins the complete trust-set digest with an explicit trust-family tag |
+| `open_state_dir_with_issuer_keys` | Production-oriented open binding epoch-window issuer key ring, explicit clock and external CAS frontier; durable schema V4 pins the complete trust-set digest with an explicit trust-family tag |
 | `issuer_key_ids` | Read configured issuer key identifiers for audit/operations; grants no authority |
 | `frontier` | Read the current rollback-protection digest/epoch/revision projection |
 | `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed. An active guarded effect returns `DispatchInProgress`, marks pending and requires exact retry after drain |
@@ -387,5 +392,7 @@ Neither path repairs a missing or rolled-back local state by resetting history.
 A blocked revocation records the pending head as well as an admission fence.
 An exact retry or a stronger monotonic update may commit after active effects
 drain; a same-revision substitution, older head or same-epoch removal is
-rejected. Pending state is process-local, so restart must re-read the signed
-feed; it is not a durable revocation acknowledgement.
+rejected. Pending state survives restart and fences all new admissions. Recovery may
+finish only the exact frontier-bound pending transition; the host still
+authenticates the current signed feed before effects. Recording pending state
+is not a durable acknowledgement that the committed revocation head advanced.
