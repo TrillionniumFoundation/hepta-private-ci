@@ -2,6 +2,7 @@
 
 #![forbid(unsafe_code)]
 
+mod authenticated;
 mod qualified;
 mod resources;
 
@@ -16,6 +17,12 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use authenticated::AuthenticatedCompactionError;
+pub use authenticated::AuthenticatedCompactionProofV1;
+pub use authenticated::CompactionSourceAuthorityBindingV1;
+pub use authenticated::SignedCompactionEvidenceV1;
+pub use authenticated::compaction_qualification_payload_v1;
+pub use authenticated::prove_compaction_with_signed_evidence_v1;
 pub use qualified::CompactionInputRecordV2;
 pub use qualified::CompactionLossReportV2;
 pub use qualified::CompactionPolicyV2;

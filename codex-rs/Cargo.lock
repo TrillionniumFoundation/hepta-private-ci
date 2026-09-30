@@ -3651,7 +3651,10 @@ name = "codex-hepta-compact-engine"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
+ "codex-hepta-learning-ledger",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "pretty_assertions",
 ]
 
 [[package]]
