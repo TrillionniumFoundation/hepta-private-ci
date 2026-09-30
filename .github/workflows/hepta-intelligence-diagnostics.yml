@@ -12,7 +12,7 @@ on:
       - '.github/workflows/hepta-intelligence-*.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: intelligence-diagnostics-${{ github.event.pull_request.number }}
@@ -140,57 +140,3 @@ jobs:
           path: ${{ runner.temp }}/intelligence-diagnostic-records/*
           if-no-files-found: error
           retention-days: 14
-
-  materialize-ordinary-source:
-    name: Materialize ordinary source once (macOS)
-    if: github.event.pull_request.head.ref == 'codex/intelligence-control-production-closure-20260929'
-    runs-on: macos-15
-    timeout-minutes: 30
-    steps:
-      - name: Check out delivery head
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-          persist-credentials: true
-      - name: Rebuild and publish validated ordinary source
-        env:
-          ORIGINAL_HEAD: 11588c5b1fc7d9a6a93a457e59513f4a39c32384
-          PATCH_SHA256: bb0858c91872e4406b2e383c6a6ac362df853b76fb03dc96580bb8f1d0c9e244
-          BRANCH: codex/intelligence-control-production-closure-20260929
-        shell: bash
-        run: |
-          set -euo pipefail
-          bootstrap_sha="$(git rev-parse HEAD)"
-          remote_sha="$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)"
-          test "$remote_sha" = "$bootstrap_sha"
-          python3 - <<'PY'
-          import base64, gzip, hashlib, os, pathlib
-          root=pathlib.Path('.github/intelligence-control-bootstrap')
-          encoded=b''.join(p.read_bytes() for p in sorted(root.glob('patch.part-*')))
-          patch=gzip.decompress(base64.b64decode(encoded))
-          assert hashlib.sha256(patch).hexdigest()==os.environ['PATCH_SHA256']
-          pathlib.Path(os.environ['RUNNER_TEMP'],'intelligence-control.patch').write_bytes(patch)
-          PY
-          git cat-file -e "$ORIGINAL_HEAD^{commit}"
-          git reset --hard "$ORIGINAL_HEAD"
-          git apply --index --check "$RUNNER_TEMP/intelligence-control.patch"
-          git apply --index "$RUNNER_TEMP/intelligence-control.patch"
-          test ! -e .github/workflows/intelligence-control-bootstrap.yml
-          test ! -e .github/intelligence-control-bootstrap
-          version="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml","rb"))["toolchain"]["channel"])')"
-          rustup toolchain install "$version" --profile minimal --component rustfmt
-          (cd codex-rs && cargo fmt --all && cargo fmt --all -- --check)
-          git add --all
-          python3 -m py_compile scripts/hepta-intelligence-*.py
-          python3 scripts/hepta-intelligence-control-status.py --check-tracked
-          python3 scripts/hepta-intelligence-control-status-tests.py
-          python3 scripts/hepta-intelligence-readiness-tests.py
-          python3 scripts/hepta-intelligence-fault-matrix.py --check-tracked
-          python3 scripts/hepta-intelligence-fault-matrix-tests.py
-          python3 scripts/hepta-intelligence-acceptance.py --check
-          python3 scripts/hepta-intelligence-review-partitions.py --check-tracked
-          git diff --cached --check
-          tree="$(git write-tree)"
-          commit="$(printf '%s\n' 'fix(intelligence.control): linearize timeout and qualify crash boundaries' | git commit-tree "$tree" -p "$bootstrap_sha")"
-          git push origin "$commit:refs/heads/$BRANCH"
