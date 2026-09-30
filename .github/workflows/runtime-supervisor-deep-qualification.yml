@@ -90,10 +90,10 @@ jobs:
         run: >-
           cargo test --manifest-path codex-rs/Cargo.toml --locked
           -p codex-hepta-supervisor --features qualification --lib
-      - name: Production authority build and distribution tests
+      - name: Offline authority build and distribution tests
         run: >-
           cargo test --manifest-path codex-rs/Cargo.toml --locked
-          -p codex-hepta-supervisor --features production-authority
+          -p codex-hepta-supervisor --features offline-authority-tools
           --test authority_distribution -- --nocapture
       - name: 256-Agent HOL and fault qualification
         run: |
@@ -112,7 +112,7 @@ jobs:
       - name: Strict supervisor lint
         run: |
           cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-supervisor --all-targets --features qualification,production-authority \
+            -p codex-hepta-supervisor --all-targets --features qualification,offline-authority-tools \
             -- -D warnings
       - name: Assert exact candidate stayed clean
         run: |
