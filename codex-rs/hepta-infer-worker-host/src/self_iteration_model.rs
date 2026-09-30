@@ -7,6 +7,7 @@ use codex_hepta_infer_core::SelfIterationModelErrorV1;
 use codex_hepta_infer_core::SelfIterationModelPortV1;
 use codex_hepta_infer_core::SelfIterationModelRequestV1;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::NativeHistoryMaintenanceReceipt;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
@@ -27,6 +28,7 @@ pub struct AppServerSelfIterationModelPortV1 {
     control: DurableInferenceControl,
     maximum_in_flight: usize,
     cancellation: CancellationToken,
+    cleanup_maintenance_at: Option<std::time::Instant>,
 }
 
 impl AppServerSelfIterationModelPortV1 {
@@ -44,7 +46,20 @@ impl AppServerSelfIterationModelPortV1 {
             control,
             maximum_in_flight,
             cancellation,
+            cleanup_maintenance_at: None,
         })
+    }
+
+    /// Host hook for startup or periodic bounded retirement of exact settled
+    /// native records. Unknown executions and pending owner outboxes remain.
+    pub fn maintain_history(
+        &mut self,
+        maximum_records: usize,
+        budget: std::time::Duration,
+    ) -> Result<NativeHistoryMaintenanceReceipt, SelfIterationModelErrorV1> {
+        self.control
+            .maintain_native_history(maximum_records, budget)
+            .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))
     }
 }
 
@@ -55,6 +70,28 @@ impl SelfIterationModelPortV1 for AppServerSelfIterationModelPortV1 {
     ) -> Result<SelfIterationModelAssessmentV1, SelfIterationModelErrorV1> {
         request.validate(now_ms()?)?;
         let prompt = bound_prompt(&request)?;
+        let remaining_ms = request.deadline_ms.saturating_sub(now_ms()?);
+        if remaining_ms == 0 {
+            return Err(SelfIterationModelErrorV1::TimedOut);
+        }
+        self.maintain_history(1, std::time::Duration::from_millis(remaining_ms.min(1_000)))?;
+        if self
+            .cleanup_maintenance_at
+            .is_none_or(|at| at.elapsed() >= std::time::Duration::from_secs(60))
+        {
+            let remaining_ms = request.deadline_ms.saturating_sub(now_ms()?);
+            if remaining_ms == 0 {
+                return Err(SelfIterationModelErrorV1::TimedOut);
+            }
+            self.driver
+                .maintain_native_cleanup(std::time::Duration::from_millis(remaining_ms.min(5_000)))
+                .await
+                .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))?;
+            self.cleanup_maintenance_at = Some(std::time::Instant::now());
+        }
+        if now_ms()? >= request.deadline_ms {
+            return Err(SelfIterationModelErrorV1::TimedOut);
+        }
         let native_request_id = request.request_id.to_string();
         // The native driver's clock owns timeout, interruption and quarantine.
         // Dropping an outer timeout future after possible effect would lose the
@@ -79,9 +116,10 @@ impl SelfIterationModelPortV1 for AppServerSelfIterationModelPortV1 {
             result.map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))?;
         let record = self
             .control
-            .native_record(&native_request_id)
+            .native_record_resolved(&native_request_id)
+            .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))?
             .ok_or(SelfIterationModelErrorV1::InvalidResponse)?;
-        assessment_from_record(&request, record, output)
+        assessment_from_record(&request, &record, output)
     }
 }
 

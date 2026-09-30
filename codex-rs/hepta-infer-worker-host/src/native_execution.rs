@@ -142,21 +142,11 @@ impl AppServerModelDriver {
             }),
         )
         .await?;
-        let cleanup_root = self
-            .config
-            .agentd_socket
-            .parent()
-            .ok_or("Agentd socket omitted its exact-generation run root")?;
-        let cleanup_store_path = cleanup_root.join("runtime-codex-cleanup-v1.sqlite3");
         let cleanup_store = await_before_effect(
             &execution_clock,
             RPC_TIMEOUT,
             "durable cleanup store open",
-            crate::native_cleanup_store::NativeCleanupStore::open(
-                &cleanup_store_path,
-                self.config.agent_id.to_string(),
-                self.config.generation,
-            ),
+            self.cleanup_owner.get(),
         )
         .await?;
         let recovery_budget = execution_clock

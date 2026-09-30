@@ -12,6 +12,7 @@ pub mod model_worker;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;
+mod native_cleanup_owner;
 mod native_cleanup_store;
 mod native_deadline;
 mod native_thread_lifecycle;

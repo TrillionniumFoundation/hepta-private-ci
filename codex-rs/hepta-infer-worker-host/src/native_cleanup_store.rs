@@ -22,6 +22,39 @@ use sqlx::sqlite::SqliteJournalMode;
 use sqlx::sqlite::SqlitePoolOptions;
 use sqlx::sqlite::SqliteSynchronous;
 
+#[path = "native_cleanup_integrity.rs"]
+mod integrity;
+
+const CLEANUP_SCHEMA_STATEMENTS: [&str; 4] = [
+    r#"CREATE TABLE IF NOT EXISTS runtime_codex_cleanup_meta (
+                singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+                schema_version INTEGER NOT NULL,
+                owner_id TEXT NOT NULL,
+                owner_generation INTEGER NOT NULL,
+                store_revision INTEGER NOT NULL CHECK (store_revision > 0)
+            ) STRICT"#,
+    r#"CREATE TABLE IF NOT EXISTS runtime_codex_cleanup_obligations (
+                operation_id TEXT PRIMARY KEY,
+                thread_id TEXT NOT NULL,
+                session_id TEXT NOT NULL,
+                state TEXT NOT NULL CHECK (state IN ('prepared', 'effect_possible', 'terminal_durable', 'cleaning')),
+                resume_state TEXT CHECK (resume_state IN ('prepared', 'terminal_durable')),
+                revision INTEGER NOT NULL CHECK (revision > 0),
+                fence INTEGER NOT NULL CHECK (fence >= 0),
+                attempts INTEGER NOT NULL CHECK (attempts >= 0),
+                worker_id TEXT,
+                lease_until_ms INTEGER,
+                last_error TEXT,
+                created_at_ms INTEGER NOT NULL CHECK (created_at_ms > 0),
+                updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= created_at_ms),
+                CHECK ((state = 'cleaning') = (resume_state IS NOT NULL)),
+                CHECK ((state = 'cleaning') = (worker_id IS NOT NULL)),
+                CHECK ((state = 'cleaning') = (lease_until_ms IS NOT NULL))
+            ) STRICT"#,
+    "CREATE INDEX IF NOT EXISTS runtime_codex_cleanup_ready_idx ON runtime_codex_cleanup_obligations(state, updated_at_ms, operation_id)",
+    "CREATE INDEX IF NOT EXISTS runtime_codex_cleanup_lease_idx ON runtime_codex_cleanup_obligations(state, lease_until_ms)",
+];
+
 const CLEANUP_STORE_SCHEMA_VERSION: i64 = 1;
 const MAX_CLEANUP_OBLIGATIONS: i64 = 65_536;
 const MAX_CLEANUP_BATCH: usize = 32;
@@ -165,44 +198,16 @@ impl NativeCleanupStore {
     }
 
     async fn initialize(&self) -> Result<(), NativeCleanupStoreError> {
-        let quick: String = sqlx::query_scalar("PRAGMA quick_check")
+        let quick: String = sqlx::query_scalar("PRAGMA integrity_check")
             .fetch_one(&self.pool)
             .await
             .map_err(cleanup_sqlx)?;
         if quick != "ok" {
             return Err(NativeCleanupStoreError::Corrupt(format!(
-                "cleanup quick_check: {quick}"
+                "cleanup integrity_check: {quick}"
             )));
         }
-        for statement in [
-            r#"CREATE TABLE IF NOT EXISTS runtime_codex_cleanup_meta (
-                singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
-                schema_version INTEGER NOT NULL,
-                owner_id TEXT NOT NULL,
-                owner_generation INTEGER NOT NULL,
-                store_revision INTEGER NOT NULL CHECK (store_revision > 0)
-            ) STRICT"#,
-            r#"CREATE TABLE IF NOT EXISTS runtime_codex_cleanup_obligations (
-                operation_id TEXT PRIMARY KEY,
-                thread_id TEXT NOT NULL,
-                session_id TEXT NOT NULL,
-                state TEXT NOT NULL CHECK (state IN ('prepared', 'effect_possible', 'terminal_durable', 'cleaning')),
-                resume_state TEXT CHECK (resume_state IN ('prepared', 'terminal_durable')),
-                revision INTEGER NOT NULL CHECK (revision > 0),
-                fence INTEGER NOT NULL CHECK (fence >= 0),
-                attempts INTEGER NOT NULL CHECK (attempts >= 0),
-                worker_id TEXT,
-                lease_until_ms INTEGER,
-                last_error TEXT,
-                created_at_ms INTEGER NOT NULL CHECK (created_at_ms > 0),
-                updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= created_at_ms),
-                CHECK ((state = 'cleaning') = (resume_state IS NOT NULL)),
-                CHECK ((state = 'cleaning') = (worker_id IS NOT NULL)),
-                CHECK ((state = 'cleaning') = (lease_until_ms IS NOT NULL))
-            ) STRICT"#,
-            "CREATE INDEX IF NOT EXISTS runtime_codex_cleanup_ready_idx ON runtime_codex_cleanup_obligations(state, updated_at_ms, operation_id)",
-            "CREATE INDEX IF NOT EXISTS runtime_codex_cleanup_lease_idx ON runtime_codex_cleanup_obligations(state, lease_until_ms)",
-        ] {
+        for statement in CLEANUP_SCHEMA_STATEMENTS {
             sqlx::query(statement)
                 .execute(&self.pool)
                 .await
@@ -239,6 +244,7 @@ impl NativeCleanupStore {
                 "cleanup store identity mismatch".to_string(),
             ));
         }
+        self.verify_integrity().await?;
         self.recover_expired(cleanup_now_ms()?).await?;
         Ok(())
     }
@@ -636,7 +642,7 @@ impl NativeCleanupStore {
         })
     }
 
-    async fn recover_expired(&self, now: u64) -> Result<(), NativeCleanupStoreError> {
+    pub(crate) async fn recover_expired(&self, now: u64) -> Result<(), NativeCleanupStoreError> {
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")

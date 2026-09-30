@@ -157,6 +157,7 @@ pub struct NativeWorkerConfig {
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
     turn_start_authorizer: Option<Arc<dyn TurnStartAuthorizer>>,
+    cleanup_owner: crate::native_cleanup_owner::NativeCleanupOwner,
 }
 
 #[derive(Clone)]
@@ -176,9 +177,20 @@ impl AppServerModelDriver {
         {
             return Err("invalid native worker configuration".into());
         }
+        let cleanup_path = config
+            .agentd_socket
+            .parent()
+            .ok_or("Agentd socket omitted its exact-generation run root")?
+            .join("runtime-codex-cleanup-v1.sqlite3");
+        let cleanup_owner = crate::native_cleanup_owner::NativeCleanupOwner::new(
+            cleanup_path,
+            config.agent_id.to_string(),
+            config.generation,
+        );
         Ok(Self {
             config,
             turn_start_authorizer: None,
+            cleanup_owner,
         })
     }
 
@@ -187,6 +199,16 @@ impl AppServerModelDriver {
     pub fn with_turn_start_authorizer(mut self, authorizer: Arc<dyn TurnStartAuthorizer>) -> Self {
         self.turn_start_authorizer = Some(authorizer);
         self
+    }
+
+    /// Startup and periodic host maintenance for this exact generation's
+    /// bounded cleanup pool. Complete integrity failures quarantine admission;
+    /// a physical file replacement requires a freshly constructed owner.
+    pub async fn maintain_native_cleanup(
+        &self,
+        budget: Duration,
+    ) -> Result<crate::NativeCleanupBacklogMetrics> {
+        self.cleanup_owner.maintain(budget).await
     }
 
     /// Reconcile a previously prepared/dispatched operation without issuing a
@@ -849,8 +871,8 @@ impl AppServerModelDriver {
         request_id: &str,
     ) -> Result<()> {
         let Some(publication) = control
-            .native_record(request_id)
-            .and_then(|record| record.terminal_publication.clone())
+            .native_record_resolved(request_id)?
+            .and_then(|record| record.terminal_publication)
         else {
             return Ok(());
         };
