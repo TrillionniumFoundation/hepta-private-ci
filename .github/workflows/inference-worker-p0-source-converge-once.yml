@@ -1,4 +1,4 @@
-name: Inference worker P0 source convergence (one shot)
+name: Inference worker P0 ordinary-source convergence (one shot)
 
 on:
   push:
@@ -9,13 +9,15 @@ on:
 
 permissions:
   contents: write
+  statuses: write
 
 concurrency:
-  group: inference-worker-p0-source-converge-once
+  group: inference-worker-p0-ordinary-source-convergence
   cancel-in-progress: false
 
 env:
   BRANCH_NAME: codex/inference-worker-authoritative-20260929
+  REVIEWED_TRANSFORM_COMMIT: 1c73f14c2bc0688b53eb3bb0c5fdaf29f491a20c
   CARGO_INCREMENTAL: "0"
   CARGO_BUILD_JOBS: "2"
   CARGO_PROFILE_TEST_DEBUG: "0"
@@ -27,7 +29,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 240
     steps:
-      - name: Check out exact one-shot source
+      - name: Check out exact trigger head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
@@ -45,775 +47,47 @@ jobs:
           git diff --cached --quiet
           test -z "$(git status --porcelain --untracked-files=normal)"
 
-      - name: Materialize reviewed P0 fixes as ordinary source
+      - name: Execute reviewed source transform from immutable Git history
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
+          import subprocess
 
-          ROOT = Path.cwd()
-
-          def replace_once(relative: str, old: str, new: str) -> None:
-              path = ROOT / relative
-              text = path.read_text(encoding="utf-8")
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f"{relative}: expected one match, found {count}")
-              path.write_text(text.replace(old, new, 1), encoding="utf-8")
-
-          def replace_count(relative: str, old: str, new: str, expected: int) -> None:
-              path = ROOT / relative
-              text = path.read_text(encoding="utf-8")
-              count = text.count(old)
-              if count != expected:
-                  raise SystemExit(
-                      f"{relative}: expected {expected} matches for {old!r}, found {count}"
-                  )
-              path.write_text(text.replace(old, new), encoding="utf-8")
-
-          # Legacy settlement without explicit metadata remains semantically
-          # idempotent. Explicit timestamp/usage APIs continue to reject rollback.
-          replace_once(
-              "codex-rs/hepta-infer-core/src/native_control/control_impl.rs",
-              '''    pub fn settle_native(
-                  &mut self,
-                  request_id: &str,
-                  output: NativeRunOutput,
-              ) -> Result<NativeRunRecord, Error> {
-                  self.settle_native_with_usage_at(request_id, output, None, host_unix_time_ms()?)
-              }
-          ''',
-              '''    pub fn settle_native(
-                  &mut self,
-                  request_id: &str,
-                  output: NativeRunOutput,
-              ) -> Result<NativeRunRecord, Error> {
-                  let record = self
-                      .native
-                      .records
-                      .get(request_id)
-                      .ok_or(Error::RequestNotFound)?;
-                  if record.observation.as_ref() == Some(&output) {
-                      return Ok(record.clone());
-                  }
-                  self.settle_native_with_usage_at(request_id, output, None, host_unix_time_ms()?)
-              }
-          ''',
+          commit = "1c73f14c2bc0688b53eb3bb0c5fdaf29f491a20c"
+          path = ".github/workflows/inference-worker-p0-source-converge-once.yml"
+          source = subprocess.check_output(
+              ["git", "show", f"{commit}:{path}"],
+              text=True,
           )
-
-          # Terminal local observations consume the driver result exactly once.
-          replace_once(
-              "codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs",
-              '''        let boundary = self.terminal_boundary(grant, handle, &observed).await;
-              let output = terminal_output(
-                  &admission.request_id,
-                  manifest.model_id(),
-                  handle.handle_id(),
-                  observed,
-                  boundary,
-                  None,
-              )?;
-              let release_resources =
-                  output.boundary_status != NativeBoundaryStatus::Quarantined;
-              let settled = self.settle_local(
-                  control,
-                  &admission.request_id,
-                  output,
-                  observed.usage_units,
-              )?;
-          ''',
-              '''        let usage_units = observed.usage_units;
-              let boundary = self.terminal_boundary(grant, handle, &observed).await;
-              let output = terminal_output(
-                  &admission.request_id,
-                  manifest.model_id(),
-                  handle.handle_id(),
-                  observed,
-                  boundary,
-                  None,
-              )?;
-              let release_resources =
-                  output.boundary_status != NativeBoundaryStatus::Quarantined;
-              let settled = self.settle_local(
-                  control,
-                  &admission.request_id,
-                  output,
-                  usage_units,
-              )?;
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs",
-              '''                let boundary = self.terminal_boundary(grant, handle, &observed).await;
-                  let output = terminal_output(
-                      &record.request.request_id,
-                      manifest.model_id(),
-                      handle.handle_id(),
-                      observed,
-                      boundary,
-                      None,
-                  )?;
-                  let release_resources =
-                      output.boundary_status != NativeBoundaryStatus::Quarantined;
-                  let settled = self.settle_local(
-                      control,
-                      &record.request.request_id,
-                      output,
-                      observed.usage_units,
-                  )?;
-          ''',
-              '''                let usage_units = observed.usage_units;
-                  let boundary = self.terminal_boundary(grant, handle, &observed).await;
-                  let output = terminal_output(
-                      &record.request.request_id,
-                      manifest.model_id(),
-                      handle.handle_id(),
-                      observed,
-                      boundary,
-                      None,
-                  )?;
-                  let release_resources =
-                      output.boundary_status != NativeBoundaryStatus::Quarantined;
-                  let settled = self.settle_local(
-                      control,
-                      &record.request.request_id,
-                      output,
-                      usage_units,
-                  )?;
-          ''',
-          )
-
-          # A trusted provider receipt must match the already durable turn, not
-          # merely the thread/model tuple.
-          replace_count(
-              "codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs",
-              'turn_id: "turn.final.1".to_string(),',
-              'turn_id: "turn.provisional.1".to_string(),',
-              2,
-          )
-          replace_once(
-              "codex-rs/hepta-infer-worker-host/src/native_recovery.rs",
-              '''        || receipt.model != record.request.model
-                  || receipt.model_provider != dispatch.model_provider
-                  || receipt.turn_id.is_empty()
-          ''',
-              '''        || receipt.model != record.request.model
-                  || receipt.model_provider != dispatch.model_provider
-                  || record
-                      .turn_id
-                      .as_ref()
-                      .is_some_and(|turn| turn != &receipt.turn_id)
-                  || receipt.turn_id.is_empty()
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs",
-              '''    assert_eq!(error, NativeRecoveryError::BindingMismatch);
-              assert_eq!(counters.snapshot().provider_receipt_successes, 0);
-          }
-          ''',
-              '''    assert_eq!(error, NativeRecoveryError::BindingMismatch);
-              assert_eq!(counters.snapshot().provider_receipt_successes, 0);
-          }
-
-          #[tokio::test]
-          async fn provider_receipt_must_match_exact_durable_turn() {
-              let (_directory, mut control) = open_dispatched_control();
-              let counters = NativeRecoveryCounters::default();
-              let error = reconcile_provider_terminal(
-                  &mut control,
-                  "request.recovery.1",
-                  ProviderTerminalReceipt {
-                      request_id: "request.recovery.1".to_string(),
-                      thread_id: "thread.recovery.1".to_string(),
-                      turn_id: "turn.other".to_string(),
-                      model: "model.recovery.1".to_string(),
-                      model_provider: "provider.recovery.1".to_string(),
-                      status: NativeRunStatus::Failed,
-                      output: String::new(),
-                      observed_output_tokens: Some(0),
-                      stop_reason: Some("provider failure".to_string()),
-                      verifier_witness_digest: digest("trusted-provider-receipt"),
-                  },
-                  &PassVerifier,
-                  &counters,
-              )
-              .await
-              .expect_err("turn drift must fail");
-              assert_eq!(error, NativeRecoveryError::BindingMismatch);
-              assert_eq!(counters.snapshot().provider_receipt_successes, 0);
-          }
-          ''',
-          )
-
-          # Keep strict Clippy without broad allowances.
-          replace_once(
-              "codex-rs/hepta-infer-worker-host/src/native_recovery.rs",
-              '''            if let Some(output) = &record.observation {
-                  if output.observed_output_tokens.is_none() {
-                      missing_usage_count += 1;
-                      if output.terminal_observed {
-                          terminal_without_usage_count += 1;
-                      }
-                  }
-              }
-          ''',
-              '''            if let Some(output) = &record.observation
-                  && output.observed_output_tokens.is_none()
-              {
-                  missing_usage_count += 1;
-                  if output.terminal_observed {
-                      terminal_without_usage_count += 1;
-                  }
-              }
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-              '''            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                  if let Ok(cancelled) = owner
-                      .run_cancel(
-                          binding.run_id.clone(),
-                          revision,
-                          reason.chars().take(512).collect(),
-                      )
-                      .await
-                  {
-                      intelligence_revision = Some(cancelled.receipt.revision);
-                  }
-              }
-          ''',
-              '''            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
-                  && let Ok(cancelled) = owner
-                      .run_cancel(
-                          binding.run_id.clone(),
-                          revision,
-                          reason.chars().take(512).collect(),
-                      )
-                      .await
-              {
-                  intelligence_revision = Some(cancelled.receipt.revision);
-              }
-          ''',
-          )
-
-          replace_once(
-              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-              '''        verify_persisted_dispatch_binding(
-                  control,
-                  request_id,
-                  payload_digest,
-                  request_receipt.request_digest,
-                  source_admission_digest,
-                  codex_home_digest,
-                  connection_id,
-                  &started.thread.session_id,
-                  adapter_intent.deadline_ms,
-                  authority_epoch,
-                  revocation_revision,
-                  &revocation_head_digest,
-                  &authority_witness,
-                  &app_server_version,
-              )?;
-          ''',
-              '''        verify_persisted_dispatch_binding(
-                  control,
-                  PersistedDispatchBinding {
-                      request_id,
-                      payload_digest: &payload_digest,
-                      request_digest: &request_receipt.request_digest,
-                      source_admission_digest: &source_admission_digest,
-                      codex_home_digest: &codex_home_digest,
-                      connection_id,
-                      session_id: &started.thread.session_id,
-                      deadline_ms: adapter_intent.deadline_ms,
-                      authority_epoch,
-                      revocation_revision,
-                      revocation_head_digest: &revocation_head_digest,
-                      authority_witness: &authority_witness,
-                      app_server_version: &app_server_version,
-                  },
-              )?;
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-              '''fn verify_persisted_dispatch_binding(
-              control: &DurableInferenceControl,
-              request_id: &str,
-              payload_digest: Digest32,
-              request_digest: Digest32,
-              source_admission_digest: Digest32,
-              codex_home_digest: Digest32,
-              connection_id: u64,
-              session_id: &str,
-              deadline_ms: u64,
-              authority_epoch: u64,
-              revocation_revision: u64,
-              revocation_head_digest: &str,
-              authority_witness: &str,
-              app_server_version: &str,
-          ) -> Result<()> {
-              let dispatch = control
-                  .native_record(request_id)
-                  .and_then(|record| record.dispatch.as_ref())
-                  .ok_or("runtime.codex dispatch binding was not durably published")?;
-              let payload_digest = payload_digest.to_string();
-              let request_digest = request_digest.to_string();
-              let source_admission_digest = source_admission_digest.to_string();
-              let codex_home_digest = codex_home_digest.to_string();
-              let exact = dispatch.codex_payload_digest.as_deref() == Some(payload_digest.as_str())
-                  && dispatch.codex_request_digest.as_deref() == Some(request_digest.as_str())
-                  && dispatch.codex_source_admission_digest.as_deref()
-                      == Some(source_admission_digest.as_str())
-                  && dispatch.codex_home_digest.as_deref() == Some(codex_home_digest.as_str())
-                  && dispatch.codex_connection_id == Some(connection_id)
-                  && dispatch.codex_session_id.as_deref() == Some(session_id)
-                  && dispatch.codex_deadline_ms == Some(deadline_ms)
-                  && dispatch.codex_authority_epoch == Some(authority_epoch)
-                  && dispatch.codex_revocation_revision == Some(revocation_revision)
-                  && dispatch.codex_revocation_head_sha256.as_deref() == Some(revocation_head_digest)
-                  && dispatch.codex_authority_witness_sha256.as_deref() == Some(authority_witness)
-                  && dispatch.app_server_version.as_deref() == Some(app_server_version)
-                  && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
-              if !exact {
-                  return Err("durable runtime.codex dispatch binding changed before physical send".into());
-              }
-              Ok(())
-          }
-          ''',
-              '''struct PersistedDispatchBinding<'a> {
-              request_id: &'a str,
-              payload_digest: &'a Digest32,
-              request_digest: &'a Digest32,
-              source_admission_digest: &'a Digest32,
-              codex_home_digest: &'a Digest32,
-              connection_id: u64,
-              session_id: &'a str,
-              deadline_ms: u64,
-              authority_epoch: u64,
-              revocation_revision: u64,
-              revocation_head_digest: &'a str,
-              authority_witness: &'a str,
-              app_server_version: &'a str,
-          }
-
-          fn verify_persisted_dispatch_binding(
-              control: &DurableInferenceControl,
-              expected: PersistedDispatchBinding<'_>,
-          ) -> Result<()> {
-              let dispatch = control
-                  .native_record(expected.request_id)
-                  .and_then(|record| record.dispatch.as_ref())
-                  .ok_or("runtime.codex dispatch binding was not durably published")?;
-              let payload_digest = expected.payload_digest.to_string();
-              let request_digest = expected.request_digest.to_string();
-              let source_admission_digest = expected.source_admission_digest.to_string();
-              let codex_home_digest = expected.codex_home_digest.to_string();
-              let exact = dispatch.codex_payload_digest.as_deref() == Some(payload_digest.as_str())
-                  && dispatch.codex_request_digest.as_deref() == Some(request_digest.as_str())
-                  && dispatch.codex_source_admission_digest.as_deref()
-                      == Some(source_admission_digest.as_str())
-                  && dispatch.codex_home_digest.as_deref() == Some(codex_home_digest.as_str())
-                  && dispatch.codex_connection_id == Some(expected.connection_id)
-                  && dispatch.codex_session_id.as_deref() == Some(expected.session_id)
-                  && dispatch.codex_deadline_ms == Some(expected.deadline_ms)
-                  && dispatch.codex_authority_epoch == Some(expected.authority_epoch)
-                  && dispatch.codex_revocation_revision == Some(expected.revocation_revision)
-                  && dispatch.codex_revocation_head_sha256.as_deref()
-                      == Some(expected.revocation_head_digest)
-                  && dispatch.codex_authority_witness_sha256.as_deref()
-                      == Some(expected.authority_witness)
-                  && dispatch.app_server_version.as_deref() == Some(expected.app_server_version)
-                  && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
-              if !exact {
-                  return Err("durable runtime.codex dispatch binding changed before physical send".into());
-              }
-              Ok(())
-          }
-          ''',
-          )
-
-          # The real product E2E is deliberately isolated from ordinary unit
-          # tests and requires an explicitly built Codex CLI path.
-          replace_once(
-              "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-              '''#[cfg(unix)]
-          #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-          async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
-          ''',
-              '''#[cfg(unix)]
-          #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-          #[ignore = "requires the qualification lane's built Codex CLI"]
-          async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/test_support.rs",
-              '''        let app_server_task = tokio::spawn(run_app_server(
-                  identity.clone(),
-                  Arg0DispatchPaths::default(),
-                  CognitiveRuntime::Available(Arc::clone(&store)),
-                  Arc::clone(&state),
-                  /*production_writer_host*/ None,
-              ));
-          ''',
-              '''        let codex_self_exe = std::env::var_os("HEPTA_TEST_CODEX_SELF_EXE")
-                  .map(PathBuf::from)
-                  .ok_or("HEPTA_TEST_CODEX_SELF_EXE must name the qualification-built Codex CLI")?;
-              if !codex_self_exe.is_absolute() || !codex_self_exe.is_file() {
-                  return Err(
-                      "HEPTA_TEST_CODEX_SELF_EXE must be an absolute regular file".into(),
-                  );
-              }
-              let arg0_paths = Arg0DispatchPaths {
-                  codex_self_exe: Some(codex_self_exe.canonicalize()?),
-                  ..Arg0DispatchPaths::default()
-              };
-              let app_server_task = tokio::spawn(run_app_server(
-                  identity.clone(),
-                  arg0_paths,
-                  CognitiveRuntime::Available(Arc::clone(&store)),
-                  Arc::clone(&state),
-                  /*production_writer_host*/ None,
-              ));
-          ''',
-          )
-
-          # Scope implementation-map verification without weakening the global
-          # repository verifier used by repository-wide lanes.
-          replace_once(
-              "scripts/hepta-implementation-maps.py",
-              '''def verify(
-              *,
-              require_current_source: bool = True,
-              expected_sha: str | None = None,
-              expected_tree: str | None = None,
-          ):
-          ''',
-              '''def verify(
-              *,
-              require_current_source: bool = True,
-              expected_sha: str | None = None,
-              expected_tree: str | None = None,
-              selected_modules: list[str] | None = None,
-          ):
-          ''',
-          )
-          replace_once(
-              "scripts/hepta-implementation-maps.py",
-              '''        ids = [module["id"] for module in modules]
-              if len(set(ids)) != len(ids):
-                  raise ValueError("duplicate module identity")
-              lanes = lane_by_module()
-          ''',
-              '''        ids = [module["id"] for module in modules]
-              if len(set(ids)) != len(ids):
-                  raise ValueError("duplicate module identity")
-              if selected_modules == []:
-                  raise ValueError("empty module selection")
-              if selected_modules is not None:
-                  selected = list(dict.fromkeys(selected_modules))
-                  if len(selected) != len(selected_modules):
-                      raise ValueError("duplicate module selection")
-                  by_id = {module["id"]: module for module in modules}
-                  unknown = set(selected).difference(by_id)
-                  if unknown:
-                      raise ValueError(
-                          "unknown modules: " + ", ".join(sorted(unknown))
-                      )
-                  modules = [by_id[module_id] for module_id in selected]
-              lanes = lane_by_module()
-          ''',
-          )
-          replace_once(
-              "scripts/hepta-implementation-maps.py",
-              '''        help="rebind only this module (repeatable; migrate only)",
-          ''',
-              '''        help="limit migrate or verify to this module (repeatable)",
-          ''',
-          )
-          replace_once(
-              "scripts/hepta-implementation-maps.py",
-              '''    if args.modules is not None and args.command != "migrate":
-                  parser.error("--module applies only to migrate")
-          ''',
-              '''    if args.modules is not None and args.command not in {"migrate", "verify"}:
-                  parser.error("--module applies only to migrate or verify")
-          ''',
-          )
-          replace_once(
-              "scripts/hepta-implementation-maps.py",
-              '''            "verify": lambda: verify(
-                  expected_sha=args.expected_sha,
-                  expected_tree=args.expected_tree,
-              ),
-          ''',
-              '''            "verify": lambda: verify(
-                  expected_sha=args.expected_sha,
-                  expected_tree=args.expected_tree,
-                  selected_modules=args.modules,
-              ),
-          ''',
-          )
-          replace_once(
-              "scripts/run_inference_worker_qualification_lane.sh",
-              '''  run_record product-e2e 1 cargo test --locked --package "$package" \\
-              --features experimental-local-model \\
-              real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone \\
-              -- --nocapture --test-threads=1
-          ''',
-              '''  run_record product-codex-build 0 cargo build --locked --package codex-cli --bin codex
-              export HEPTA_TEST_CODEX_SELF_EXE="$CARGO_TARGET_DIR/debug/codex"
-              test -x "$HEPTA_TEST_CODEX_SELF_EXE"
-              run_record product-e2e 1 cargo test --locked --package "$package" \\
-              --features experimental-local-model \\
-              real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone \\
-              -- --ignored --nocapture --test-threads=1
-          ''',
-          )
-          replace_once(
-              "scripts/run_inference_worker_qualification_lane.sh",
-              '''run_record docs-implementation-map 0 python3 scripts/hepta-implementation-maps.py verify
-          ''',
-              '''run_record docs-implementation-map 0 python3 scripts/hepta-implementation-maps.py verify \\
-              --module inference.control --module inference.worker
-          ''',
-          )
-
-          # Preserve strict Agentd lint while documenting intentionally dormant
-          # product surfaces precisely at the declarations that trigger lints.
-          replace_once(
-              "codex-rs/hepta-agentd/src/browser_servo.rs",
-              '''struct DecodedFrame {
-              sequence: u64,
-          ''',
-              '''struct DecodedFrame {
-              #[expect(
-                  dead_code,
-                  reason = "retained for monotonic Browser protocol diagnostics"
-              )]
-              sequence: u64,
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
-              '''    pub(crate) fn append(
-          ''',
-              '''    #[cfg_attr(
-                  not(test),
-                  expect(
-                      dead_code,
-                      reason = "compatibility entrypoint retained for retrieval producers without delivery evidence"
-                  )
-              )]
-              pub(crate) fn append(
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
-              '''    pub(crate) fn append_with_delivery(
-          ''',
-              '''    #[cfg_attr(
-                  not(test),
-                  expect(
-                      dead_code,
-                      reason = "typed compatibility entrypoint awaits a non-test delivery producer"
-                  )
-              )]
-              #[expect(
-                  clippy::too_many_arguments,
-                  reason = "typed compatibility entrypoint mirrors the registered delivery contract"
-              )]
-              pub(crate) fn append_with_delivery(
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-              '''pub(crate) struct AgentdLearningPlasticityProducerV1 {
-              handle: PlasticityRuntimeHandleV1,
-          ''',
-              '''pub(crate) struct AgentdLearningPlasticityProducerV1 {
-              #[cfg_attr(
-                  not(test),
-                  expect(
-                      dead_code,
-                      reason = "activated only when the governed plasticity product caller is composed"
-                  )
-              )]
-              handle: PlasticityRuntimeHandleV1,
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-              '''    pub(crate) async fn submit_parameter(
-          ''',
-              '''    #[cfg_attr(
-                  not(test),
-                  expect(
-                      dead_code,
-                      reason = "activated only when the governed parameter-plasticity caller is composed"
-                  )
-              )]
-              pub(crate) async fn submit_parameter(
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-              '''    pub(crate) async fn submit_topology(
-          ''',
-              '''    #[cfg_attr(
-                  not(test),
-                  expect(
-                      dead_code,
-                      reason = "activated only when the governed topology-plasticity caller is composed"
-                  )
-              )]
-              pub(crate) async fn submit_topology(
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/state.rs",
-              '''    pub(crate) async fn submit_parameter_plasticity_v1(
-          ''',
-              '''    #[cfg_attr(
-                  not(test),
-                  expect(
-                      dead_code,
-                      reason = "registered Agentd producer boundary awaiting product composition"
-                  )
-              )]
-              pub(crate) async fn submit_parameter_plasticity_v1(
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/state.rs",
-              '''    pub(crate) async fn submit_topology_plasticity_v1(
-          ''',
-              '''    #[cfg_attr(
-                  not(test),
-                  expect(
-                      dead_code,
-                      reason = "registered Agentd producer boundary awaiting product composition"
-                  )
-              )]
-              pub(crate) async fn submit_topology_plasticity_v1(
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-              '''#[derive(Clone, Debug)]
-          pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-          ''',
-              '''#[derive(Clone, Debug)]
-          #[expect(
-              clippy::large_enum_variant,
-              reason = "the observed receipt remains inline at this internal one-shot reconciliation boundary"
-          )]
-          pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/cognitive_context.rs",
-              '''pub(crate) async fn read_with_retrieval_context_and_learning(
-          ''',
-              '''#[expect(
-              clippy::too_many_arguments,
-              reason = "arguments mirror the registered retrieval, learning and generation boundary"
-          )]
-          pub(crate) async fn read_with_retrieval_context_and_learning(
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/cognitive_context.rs",
-              '''pub(crate) async fn revalidate_with_retrieval_context(
-          ''',
-              '''#[expect(
-              clippy::too_many_arguments,
-              reason = "final-use revalidation binds every persisted context identity explicitly"
-          )]
-          pub(crate) async fn revalidate_with_retrieval_context(
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/intelligence_product.rs",
-              '''#[derive(Clone, Debug, Eq, PartialEq)]
-          pub enum AgentdIntelligenceProductOutcomeV1 {
-          ''',
-              '''#[derive(Clone, Debug, Eq, PartialEq)]
-          #[expect(
-              clippy::large_enum_variant,
-              reason = "the prepared run is an owned boundary value and abstention remains allocation-free"
-          )]
-          pub enum AgentdIntelligenceProductOutcomeV1 {
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/intelligence_product.rs",
-              '''#[derive(Clone, Debug, Eq, PartialEq)]
-          pub enum AgentdIntelligenceAdmittedOutcomeV1 {
-          ''',
-              '''#[derive(Clone, Debug, Eq, PartialEq)]
-          #[expect(
-              clippy::large_enum_variant,
-              reason = "the admitted result atomically carries its prepared run and durable receipt"
-          )]
-          pub enum AgentdIntelligenceAdmittedOutcomeV1 {
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/intelligence_product.rs",
-              '''#[derive(Debug)]
-          pub enum AgentdIntelligenceLedgerError {
-          ''',
-              '''#[derive(Debug)]
-          #[expect(
-              clippy::large_enum_variant,
-              reason = "indeterminate ledger recovery must retain the complete pending append"
-          )]
-          pub enum AgentdIntelligenceLedgerError {
-          ''',
-          )
-          replace_once(
-              "codex-rs/hepta-agentd/src/plasticity_host.rs",
-              '''pub fn propose_agentd_plasticity_v1(
-          ''',
-              '''#[expect(
-              clippy::too_many_arguments,
-              reason = "the host callsite keeps every independent owner and verifier dependency explicit"
-          )]
-          pub fn propose_agentd_plasticity_v1(
-          ''',
-          )
+          step = "      - name: Materialize reviewed P0 fixes as ordinary source\n"
+          next_step = "\n      - name: Commit ordinary source fixes locally\n"
+          step_start = source.index(step)
+          run_start = source.index("        run: |\n", step_start) + len("        run: |\n")
+          run_end = source.index(next_step, run_start)
+          lines = source[run_start:run_end].splitlines()
+          decoded = []
+          for line in lines:
+              if line.startswith("          "):
+                  decoded.append(line[10:])
+              elif line:
+                  raise SystemExit(f"unexpected reviewed transform indentation: {line!r}")
+              else:
+                  decoded.append("")
+          target = Path("/tmp/inference-worker-reviewed-transform.sh")
+          target.write_text("\n".join(decoded) + "\n", encoding="utf-8")
           PY
-
-          rustfmt --edition 2024 \
-            codex-rs/hepta-infer-core/src/native_control/control_impl.rs \
-            codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs \
-            codex-rs/hepta-infer-worker-host/src/native_recovery.rs \
-            codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs \
-            codex-rs/hepta-infer-worker-host/src/native_app_server.rs \
-            codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs \
-            codex-rs/hepta-agentd/src/test_support.rs \
-            codex-rs/hepta-agentd/src/browser_servo.rs \
-            codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs \
-            codex-rs/hepta-agentd/src/plasticity_learning_producer.rs \
-            codex-rs/hepta-agentd/src/state.rs \
-            codex-rs/hepta-agentd/src/automation_effect_host.rs \
-            codex-rs/hepta-agentd/src/cognitive_context.rs \
-            codex-rs/hepta-agentd/src/intelligence_product.rs \
-            codex-rs/hepta-agentd/src/plasticity_host.rs
-          python3 -m py_compile scripts/hepta-implementation-maps.py
-          bash -n scripts/run_inference_worker_qualification_lane.sh
+          bash -euo pipefail /tmp/inference-worker-reviewed-transform.sh
           git diff --check
 
-      - name: Commit ordinary source fixes locally
+      - name: Commit ordinary source and documentation projections
         shell: bash
         run: |
           set -euo pipefail
           git config user.name hepta-inference-p0-convergence
           git config user.email hepta-inference-p0-convergence@users.noreply.github.com
+          test -n "$(git status --porcelain --untracked-files=normal)"
           git add \
             codex-rs/hepta-infer-core \
             codex-rs/hepta-infer-worker-host \
@@ -821,11 +95,6 @@ jobs:
             scripts/hepta-implementation-maps.py \
             scripts/run_inference_worker_qualification_lane.sh
           git commit -m 'inference.worker: close P0 runtime and qualification regressions'
-
-      - name: Rebind only inference implementation maps
-        shell: bash
-        run: |
-          set -euo pipefail
           python3 scripts/hepta-implementation-maps.py migrate \
             --module inference.control \
             --module inference.worker
@@ -835,6 +104,35 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m 'docs(inference): bind implementation maps to ordinary source'
           fi
+
+      - name: Retire every inference.worker source writer before qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/inference-worker-p0-source-converge-once.yml
+          rm -f .github/workflows/inference-worker-authoritative-materialize.yml
+          rm -f .github/workflows/inference-worker-runtime-closure-materialize.yml
+          rm -f .github/workflows/inference-worker-qualification.yml
+          rm -rf .github/materialization/inference-worker-runtime-closure
+          rm -rf .github/materialization/inference-worker-stage1
+          rm -rf .github/materialization/inference-worker-stage2
+          rm -f .github/materialization/inference-worker-p05.patch.gz.b64
+          python3 - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/inference-worker-authoritative-qualification.yml')
+          text = workflow.read_text(encoding='utf-8')
+          if 'contents: write' in text:
+              raise SystemExit('authoritative qualification still has write permission')
+          forbidden = ('git push', 'git commit', 'git apply', 'apply.py', '.github/materialization/')
+          found = [token for token in forbidden if token in text]
+          if found:
+              raise SystemExit(f'authoritative qualification mutates source: {found}')
+          PY
+          git add -A
+          git commit -m 'ci(inference.worker): make ordinary source the only qualification input'
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'FINAL_CANDIDATE_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - name: Prepare native build prerequisites
         shell: bash
@@ -850,7 +148,7 @@ jobs:
       - name: Install DotSlash
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
 
-      - name: Expose DotSlash and resolve V8
+      - name: Resolve verified V8 artifacts
         shell: bash
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
@@ -860,10 +158,11 @@ jobs:
           sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
           python3 scripts/hepta_ci_v8.py
 
-      - name: Verify P0 source and runtime closure
+      - name: Verify exact final ordinary-source candidate
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$FINAL_CANDIDATE_SHA"
           export CARGO_TARGET_DIR="$RUNNER_TEMP/inference-worker-p0"
           pushd codex-rs >/dev/null
           cargo test --locked -p codex-hepta-infer-core --lib
@@ -889,17 +188,47 @@ jobs:
             --module inference.control \
             --module inference.worker
           python3 -m unittest discover -v -s scripts/tests -p 'test_inference_worker_*.py'
+          python3 -m unittest -v scripts/test_inference_worker_command_receipt.py
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=normal)"
+          test "$(git rev-parse HEAD)" = "$FINAL_CANDIDATE_SHA"
 
-      - name: Remove one-shot writer and publish exact ordinary source
+      - name: Publish only the verified final candidate
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          rm .github/workflows/inference-worker-p0-source-converge-once.yml
-          git add -A
-          git commit -m 'ci(inference.worker): retire one-shot source convergence writer'
           remote_head="$(git ls-remote origin "refs/heads/$BRANCH_NAME" | awk '{print $1}')"
           test "$remote_head" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$FINAL_CANDIDATE_SHA"
           git push origin "HEAD:$BRANCH_NAME"
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          sha = os.environ['FINAL_CANDIDATE_SHA']
+          token = os.environ['GH_TOKEN']
+          url = f"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/statuses/{sha}"
+          payload = json.dumps({
+              "state": "success",
+              "context": "inference.worker/p0-exact-head",
+              "description": "P0 ordinary-source exact-head verification passed",
+          }).encode()
+          request = urllib.request.Request(
+              url,
+              data=payload,
+              method="POST",
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {token}",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "Content-Type": "application/json",
+              },
+          )
+          with urllib.request.urlopen(request) as response:
+              if response.status not in (200, 201):
+                  raise SystemExit(f"status publication failed: {response.status}")
+          PY
