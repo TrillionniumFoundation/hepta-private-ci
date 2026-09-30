@@ -39,6 +39,39 @@ fn absolute_path(name: &str) -> PathBuf {
     }
 }
 
+#[cfg(unix)]
+#[test]
+fn drop_rejects_lossy_path_conversion_without_consuming_the_exact_intent() {
+    use std::ffi::OsString;
+    use std::os::unix::ffi::OsStringExt as _;
+
+    let mut intent = FileInputIntent::default();
+    let ticket = intent.arm(FileInputTarget::OperationGrant).unwrap();
+    let non_utf8 = PathBuf::from(OsString::from_vec(b"/tmp/grant.\xff.json".to_vec()));
+    assert_eq!(
+        intent.accept(ticket, FileInputTarget::OperationGrant, &[Some(non_utf8)]),
+        Err(FileInputError::NonUtf8Path)
+    );
+    assert_eq!(intent.active(), Some(ticket));
+    let exact = absolute_path(" grant.json ");
+    assert_eq!(
+        intent.accept(ticket, FileInputTarget::OperationGrant, &[Some(exact.clone())]),
+        Ok(exact)
+    );
+}
+
+#[test]
+fn dropped_path_bound_is_checked_before_consuming_the_target() {
+    let mut intent = FileInputIntent::default();
+    let ticket = intent.arm(FileInputTarget::UpdateManifest).unwrap();
+    let excessive = absolute_path(&"a".repeat(crate::model::MAX_NATIVE_PATH_BYTES + 1));
+    assert_eq!(
+        intent.accept(ticket, FileInputTarget::UpdateManifest, &[Some(excessive)]),
+        Err(FileInputError::PathTooLong)
+    );
+    assert_eq!(intent.active(), Some(ticket));
+}
+
 #[test]
 fn cancelled_waiting_task_never_enters_the_runtime() {
     let (release, wait) = mpsc::channel();

@@ -15,7 +15,9 @@ use std::time::Instant;
 use crate::error::ShellError;
 
 const MAX_SELECTION_BYTES: usize = 16 * 1024;
-const PICKER_TIMEOUT: Duration = Duration::from_secs(125);
+// Portal observation owns up to 120 seconds plus a five-second Close RPC;
+// allow a further reap margin instead of killing it at that exact boundary.
+const PICKER_TIMEOUT: Duration = Duration::from_secs(130);
 
 #[cfg(target_os = "linux")]
 const PORTAL_PICKER_PROGRAM: &str = include_str!("../../portal/file_chooser.py");

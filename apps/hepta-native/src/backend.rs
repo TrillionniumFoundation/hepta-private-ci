@@ -24,6 +24,7 @@ pub struct LoopbackGatewayBackend {
     address: SocketAddr,
     bearer_token: zeroize::Zeroizing<String>,
     server_incarnation: [u8; 32],
+    session: Option<SessionIncarnation>,
 }
 
 impl LoopbackGatewayBackend {
@@ -38,6 +39,7 @@ impl LoopbackGatewayBackend {
             address,
             bearer_token: zeroize::Zeroizing::new(bearer_token),
             server_incarnation: [0; 32],
+            session: None,
         })
     }
 
@@ -68,6 +70,11 @@ fn validate_bearer_token(value: &str) -> Result<(), ShellError> {
 
 impl BackendAdapter for LoopbackGatewayBackend {
     fn connect(&mut self, manifest: &EndpointManifest) -> Result<SessionIncarnation, ShellError> {
+        if self.session.is_some() {
+            return Err(ShellError::State(
+                "close the current native gateway session before reconnecting".into(),
+            ));
+        }
         self.server_incarnation = [0; 32];
         manifest.validate()?;
         if manifest.protocol_version
@@ -109,7 +116,7 @@ impl BackendAdapter for LoopbackGatewayBackend {
             )));
         }
 
-        self.server_incarnation =
+        let server_incarnation =
             codex_hepta_contracts::native_gateway::parse_native_gateway_incarnation(
                 health
                     .value
@@ -131,6 +138,9 @@ impl BackendAdapter for LoopbackGatewayBackend {
             generation: now,
         };
         session.validate()?;
+        // Publish transport authority only after the complete session is valid.
+        self.server_incarnation = server_incarnation;
+        self.session = Some(session.clone());
         Ok(session)
     }
 
@@ -143,8 +153,15 @@ impl BackendAdapter for LoopbackGatewayBackend {
         self.get_json("/api/hepta/runtime")
     }
 
-    fn close(&mut self, _session: &SessionIncarnation) -> Result<(), ShellError> {
+    fn close(&mut self, session: &SessionIncarnation) -> Result<(), ShellError> {
+        session.validate()?;
+        if self.session.as_ref().is_some_and(|current| current != session) {
+            return Err(ShellError::State(
+                "cannot close a different native gateway session incarnation".into(),
+            ));
+        }
         self.server_incarnation = [0; 32];
+        self.session = None;
         Ok(())
     }
 }

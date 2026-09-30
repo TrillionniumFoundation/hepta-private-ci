@@ -1,13 +1,16 @@
 mod history_page;
 mod native_picker;
 mod operations_view;
+mod path_input;
 mod readiness;
+mod runtime_status;
 mod shutdown;
 mod task_supervisor;
 mod update_views;
 
 use self::history_page::HISTORY_PAGE_SIZE;
 use self::readiness::ReadinessFrames;
+use self::runtime_status::render_runtime_status;
 use self::shutdown::Shutdown;
 use self::task_supervisor::FileInputTarget;
 use self::task_supervisor::FileInputTicket;
@@ -123,7 +126,7 @@ impl UiTaskKind {
 enum UiTaskOutput {
     Shutdown,
     Refresh {
-        status: serde_json::Value,
+        status_rendered: String,
         view_revision: u64,
         ready_view: RuntimeView,
         history: OperationHistoryPage,
@@ -165,11 +168,6 @@ fn lock_runtime_for_task<'a>(
     admission
         .wait_lock(runtime.as_ref(), RUNTIME_LOCK_WAIT)
         .map_err(|message| ShellError::State(message.to_owned()))
-}
-
-fn render_runtime_status(status: &serde_json::Value) -> String {
-    serde_json::to_string_pretty(status)
-        .unwrap_or_else(|error| format!("status serialization failed: {error}"))
 }
 
 fn spawn_ui_task<F>(
@@ -486,12 +484,12 @@ impl HeptaNativeApp {
                 self.connected = false;
             }
             Ok(UiTaskOutput::Refresh {
-                status,
+                status_rendered,
                 view_revision,
                 ready_view,
                 history,
             }) => {
-                self.status_rendered = Some(render_runtime_status(&status));
+                self.status_rendered = Some(status_rendered);
                 self.view_revision = Some(view_revision);
                 self.ready_view = Some(ready_view);
                 self.readiness_frames.reset();
@@ -617,12 +615,15 @@ impl HeptaNativeApp {
                 .begin()
                 .map_err(|message| ShellError::State(message.to_owned()))?;
             let (presentation, status) = runtime.refresh_runtime_view()?;
+            // Pretty JSON may expand well beyond the bounded wire payload.
+            // Serialize once on the worker, never during the GUI callback.
+            let status_rendered = render_runtime_status(&status)?;
             let ready_view = runtime.view().cloned().ok_or_else(|| {
                 ShellError::State("authenticated refresh did not retain its view".into())
             })?;
             let history = runtime.operation_history_page(0, HISTORY_PAGE_SIZE)?;
             Ok(UiTaskOutput::Refresh {
-                status,
+                status_rendered,
                 view_revision: presentation.revision,
                 ready_view,
                 history,
@@ -771,6 +772,9 @@ impl eframe::App for HeptaNativeApp {
         if self.shutdown_view(ui) {
             return;
         }
+        // Input cancellation belongs to the app callback, regardless of the
+        // screen selected while a worker is waiting for runtime admission.
+        self.file_input_focus = self.handle_file_input_intent(ui);
         if self.any_task_active() || self.shutdown.requested() {
             ui.ctx().request_repaint_after(Duration::from_millis(250));
         }
@@ -805,3 +809,7 @@ impl eframe::App for HeptaNativeApp {
 #[cfg(test)]
 #[path = "ui_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "ui/input_event_tests.rs"]
+mod input_event_tests;

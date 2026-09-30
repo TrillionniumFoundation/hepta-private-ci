@@ -138,3 +138,33 @@ fn each_authenticated_connection_gets_a_fresh_session_identity() {
     assert!(first.starts_with("native."));
     assert_eq!(first.len(), "native.".len() + 64);
 }
+
+#[test]
+fn stale_close_cannot_invalidate_a_reconnected_gateway() {
+    const HEALTH: &str = r#"{"product":"hepta","status":"ok","native_auth":"keyring_mac_v2","native_protocol_version":2,"native_incarnation":"2222222222222222222222222222222222222222222222222222222222222222"}"#;
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let address = listener.local_addr().unwrap();
+    let mut backend = LoopbackGatewayBackend::new(address, TOKEN.to_owned()).unwrap();
+    let server = serve_health(listener.try_clone().unwrap(), HEALTH);
+    let first = backend.connect(&manifest(address)).unwrap();
+    server.join().unwrap();
+    assert!(backend.connect(&manifest(address)).is_err());
+    backend.close(&first).unwrap();
+    backend.close(&first).unwrap();
+
+    let server = serve_health(listener.try_clone().unwrap(), HEALTH);
+    let current = backend.connect(&manifest(address)).unwrap();
+    server.join().unwrap();
+    assert!(backend.close(&first).is_err());
+    let server = serve_health(
+        listener,
+        r#"{"state":{"runtime_snapshot_generation":1}}"#,
+    );
+    assert_eq!(
+        backend.runtime_status().unwrap().value,
+        serde_json::json!({"state": {"runtime_snapshot_generation": 1}})
+    );
+    server.join().unwrap();
+    backend.close(&current).unwrap();
+    assert!(backend.runtime_status().is_err());
+}

@@ -61,7 +61,7 @@ fn runtime_status_rendering_is_stable_pretty_json() {
         "generation": 7,
         "state": {"connected": true, "pending": 0}
     });
-    let rendered = render_runtime_status(&value);
+    let rendered = render_runtime_status(&value).unwrap();
     assert_eq!(rendered, serde_json::to_string_pretty(&value).unwrap());
     assert!(rendered.contains('\n'));
 }

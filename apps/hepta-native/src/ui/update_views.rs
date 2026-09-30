@@ -92,7 +92,13 @@ impl HeptaNativeApp {
     }
 
     fn install_file_input_path(&mut self, target: FileInputTarget, path: PathBuf) {
-        let path = path.display().to_string();
+        // Both picker and drop acceptance validate representability before
+        // consuming the intent. Never turn an OS path into a different name.
+        let Some(path) = path.to_str() else {
+            self.last_error = Some("file input path is not representable as UTF-8".into());
+            return;
+        };
+        let path = path.to_owned();
         match target {
             FileInputTarget::OperationGrant => self.operation_grant_path = path,
             FileInputTarget::UpdateManifest => self.update_manifest_path = path,
@@ -217,7 +223,7 @@ impl HeptaNativeApp {
     }
 
     pub(super) fn updates_view(&mut self, ui: &mut egui::Ui) {
-        let focus_target = self.handle_file_input_intent(ui);
+        let focus_target = self.file_input_focus.take();
         ui.heading(self.locale.text("Signed updates", "签名更新"));
         ui.label(self.locale.text(
             "Only a signed stable-channel manifest can be staged. Activation closes this GUI first; the independent helper re-verifies the manifest, predecessor and staged package.",
@@ -227,7 +233,11 @@ impl HeptaNativeApp {
         ui.label(self.locale.text("Signed manifest path", "签名清单路径"));
         let response = ui
             .horizontal(|ui| {
-                let response = ui.text_edit_singleline(&mut self.update_manifest_path);
+                let response = ui.add(
+                    egui::TextEdit::singleline(&mut self.update_manifest_path)
+                        .id(egui::Id::new("native-update-manifest"))
+                        .char_limit(crate::model::MAX_NATIVE_PATH_BYTES),
+                );
                 if ui
                     .add_enabled(
                         !self.picker_busy(),
@@ -258,7 +268,11 @@ impl HeptaNativeApp {
         ui.label(self.locale.text("Package path", "更新包路径"));
         let response = ui
             .horizontal(|ui| {
-                let response = ui.text_edit_singleline(&mut self.update_package_path);
+                let response = ui.add(
+                    egui::TextEdit::singleline(&mut self.update_package_path)
+                        .id(egui::Id::new("native-update-package"))
+                        .char_limit(crate::model::MAX_NATIVE_PATH_BYTES),
+                );
                 if ui
                     .add_enabled(
                         !self.picker_busy(),
@@ -349,13 +363,8 @@ impl HeptaNativeApp {
 
     fn stage_update(&mut self) {
         let outcome = (|| -> Result<(PathBuf, PathBuf), ShellError> {
-            let manifest_path = PathBuf::from(self.update_manifest_path.trim());
-            let package_path = PathBuf::from(self.update_package_path.trim());
-            if !manifest_path.is_absolute() || !package_path.is_absolute() {
-                return Err(ShellError::InvalidInput(
-                    "update manifest and package paths must be absolute".into(),
-                ));
-            }
+            let manifest_path = super::path_input::absolute_path(&self.update_manifest_path)?;
+            let package_path = super::path_input::absolute_path(&self.update_package_path)?;
             Ok((manifest_path, package_path))
         })();
         match outcome {
