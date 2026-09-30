@@ -168,7 +168,7 @@ pub use intelligence_product::IntelligenceAuthorityOwnerFileV1;
 pub use intelligence_product::IntelligenceAuthorityVerifierV1;
 pub use intelligence_product::PendingIntelligenceLedgerAppendV1;
 pub use intelligence_product::PreparedAgentdIntelligenceRunV1;
-pub use intelligence_product::intelligence_evaluation_binding_payload_v1;
+pub use intelligence_product::intelligence_evaluation_binding_payload_v2;
 pub use intuition_policy::AgentdIntuitionDecisionReceiptV1;
 pub use intuition_policy::AgentdIntuitionPolicyError;
 pub use intuition_policy::AgentdIntuitionPolicyHostV1;

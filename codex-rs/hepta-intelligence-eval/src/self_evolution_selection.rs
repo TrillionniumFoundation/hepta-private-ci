@@ -12,13 +12,16 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_learning_ledger::DatasetReceiptError;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use codex_hepta_learning_ledger::LedgerSnapshot;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_against_ledger_v3;
 use codex_hepta_learning_ledger::verify_verified_role_separation;
 use codex_hepta_types::AuthorityPosture;
@@ -26,14 +29,22 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::IndependentEvaluationBundleV1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::IndependentEvaluationDispositionV1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::LongitudinalTimeEvidenceV1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::MetricRoleContractV2;
 use crate::SignedEvaluationError;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::SignedEvaluationEvidenceV1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::decide_with_signed_longitudinal_evidence_v3;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::future_window_signing_payload_v1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use crate::longitudinal_evaluation_signing_payload_v3;
 
 const MAX_DATASET_RECORDS: u32 = 1_000_000;
@@ -165,7 +176,8 @@ impl VerifiedSelfEvolutionRollbackV1 {
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn prepare_self_evolution_selection_v1(
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
+pub(crate) fn prepare_self_evolution_selection_v1(
     policy: &SelfEvolutionSelectionPolicyV1,
     request: SelfEvolutionSelectionRequestV1,
     evaluation_bundle: IndependentEvaluationBundleV1,
@@ -389,6 +401,7 @@ pub fn admit_self_evolution_rollback_v1(
     })
 }
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 fn validate_policy(
     policy: &SelfEvolutionSelectionPolicyV1,
 ) -> Result<(), SelfEvolutionSelectionError> {
@@ -401,6 +414,7 @@ fn validate_policy(
     require_digest(policy.no_change_baseline_digest)
 }
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 fn validate_request(
     policy: &SelfEvolutionSelectionPolicyV1,
     request: &SelfEvolutionSelectionRequestV1,

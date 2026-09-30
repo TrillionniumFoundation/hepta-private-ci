@@ -70,6 +70,9 @@ pub use closure::freeze_cross_fold_plan_v2;
 #[cfg(feature = "trusted-inprocess-eval")]
 pub mod trusted_inprocess {
     use super::*;
+    use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+    use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+    use codex_hepta_learning_ledger::LedgerSnapshot;
 
     /// Legacy threshold comparator retained only for bounded compatibility tests.
     #[deprecated(
@@ -96,6 +99,36 @@ pub mod trusted_inprocess {
         now: u64,
     ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
         super::decide_independently_v2(bundle, metric_roles, now)
+    }
+
+    /// Raw-metric selection preparation for trusted compatibility callers only.
+    /// Valid signatures do not replace canonical estimator execution, fenced
+    /// holdout consumption or durable product qualification publication.
+    #[allow(clippy::too_many_arguments)]
+    pub fn prepare_self_evolution_selection_v1(
+        policy: &SelfEvolutionSelectionPolicyV1,
+        request: SelfEvolutionSelectionRequestV1,
+        evaluation_bundle: IndependentEvaluationBundleV1,
+        metric_roles: Vec<MetricRoleContractV2>,
+        evaluation_evidence: &SignedEvaluationEvidenceV1,
+        longitudinal_time: &LongitudinalTimeEvidenceV1,
+        dataset_receipt: &DatasetSnapshotReceiptV3,
+        ledger_snapshot: &LedgerSnapshot,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<PreparedSelfEvolutionSelectionV1, SelfEvolutionSelectionError> {
+        super::self_evolution_selection::prepare_self_evolution_selection_v1(
+            policy,
+            request,
+            evaluation_bundle,
+            metric_roles,
+            evaluation_evidence,
+            longitudinal_time,
+            dataset_receipt,
+            ledger_snapshot,
+            verifier,
+            now,
+        )
     }
 }
 pub use holdout_journal::FinalHoldoutJournalError;
@@ -158,7 +191,6 @@ pub use self_evolution_selection::VerifiedSelfEvolutionRollbackV1;
 pub use self_evolution_selection::VerifiedSelfEvolutionSelectionV1;
 pub use self_evolution_selection::admit_self_evolution_rollback_v1;
 pub use self_evolution_selection::admit_self_evolution_selection_v1;
-pub use self_evolution_selection::prepare_self_evolution_selection_v1;
 pub use self_evolution_selection::rollback_signing_payload_v1;
 pub use self_evolution_selection::selection_signing_payload_v1;
 pub use sequential::DepthSupport;
@@ -178,9 +210,9 @@ pub use sequential::estimate_sequential;
 pub use signed_evaluation::SignedEvaluationDecisionV1;
 pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
-#[cfg(any(test, feature = "trusted-inprocess-eval"))]
+#[cfg(test)]
 pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
-pub use signed_evaluation::decide_with_signed_evidence_v2;
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
