@@ -1,5 +1,5 @@
 name: cognitive-types-source-export-self-hosted
-run-name: cognitive-types-source-export-${{ matrix.runner }} @ ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+run-name: cognitive-types-source-export-self-hosted @ ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 on:
   pull_request:
