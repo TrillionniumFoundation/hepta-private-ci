@@ -3,7 +3,8 @@ use std::fs;
 use std::time::Instant;
 
 use codex_hepta_cognitive_types::{
-    CognitiveSnapshot, MemoryKind, MemoryRecord, RecordState, build_snapshot,
+    CognitiveSnapshot, MAX_COGNITIVE_SNAPSHOT_RECORDS, MemoryKind, MemoryRecord,
+    RecordState, build_snapshot,
 };
 use codex_hepta_cognitive_types::lane_c::{
     CognitiveSnapshotKeyV1, LaneCGenerationVectorV1,
@@ -19,7 +20,7 @@ use codex_hepta_compact_engine::{
 use codex_hepta_types::{Digest32, Generation, Revision, StableId};
 use ed25519_dalek::{Signer, SigningKey};
 
-const SOURCE_RECORDS: usize = 65_536;
+const SOURCE_RECORDS: usize = MAX_COGNITIVE_SNAPSHOT_RECORDS;
 const PAYLOAD_BYTES: usize = 64 * 1024 * 1024;
 const PAYLOAD_TOKENS: u64 = 8_000_000;
 const RETAINED_RECORDS: u32 = 1_024;

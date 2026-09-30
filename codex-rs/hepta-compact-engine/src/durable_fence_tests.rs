@@ -1,18 +1,46 @@
-use super::*;
+use std::str::FromStr;
+
+use crate::coordinator::CompactionCoordinatorErrorV2;
+use crate::durable::DurableCompactionError;
+use crate::mutation_guard::MutationGuardStoreV1;
+use codex_hepta_types::{Digest32, StableId};
+use sqlx::sqlite::{
+    SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous,
+};
+use sqlx::{Connection, SqliteConnection, SqlitePool};
 use tempfile::TempDir;
 
-async fn fenced_store(
-    owner_id: &str,
+struct FenceFixture {
+    _temp: TempDir,
+    pool: SqlitePool,
+    guard: MutationGuardStoreV1,
+    owner: StableId,
     root: Digest32,
-    token: Digest32,
     manifest: Digest32,
-) -> (TempDir, DurableCompactionStoreV1) {
+}
+
+async fn fenced_store() -> FenceFixture {
     let temp = TempDir::new().expect("temp dir");
-    let database_url =
-        format!("sqlite://{}", temp.path().join("fence.db").display());
-    let seed = DurableCompactionStoreV1::open(&database_url, owner_id)
+    let database_url = format!("sqlite://{}", temp.path().join("fence.db").display());
+    let owner = StableId::new("compact-owner").expect("owner");
+    let root = Digest32::of_bytes(b"root");
+    let token = Digest32::of_bytes(b"lease-one");
+    let manifest = Digest32::of_bytes(b"manifest-one");
+    let options = SqliteConnectOptions::from_str(&database_url)
+        .expect("database options")
+        .create_if_missing(true)
+        .foreign_keys(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .synchronous(SqliteSynchronous::Full);
+    let pool = SqlitePoolOptions::new()
+        .max_connections(4)
+        .connect_with(options)
         .await
-        .expect("seed store");
+        .expect("fixture pool");
+    sqlx::raw_sql(include_str!("compaction_schema.sql"))
+        .execute(&pool)
+        .await
+        .expect("durable schema");
     sqlx::raw_sql(
         "CREATE TABLE compaction_owner_fence_v2 (
             owner_id TEXT PRIMARY KEY NOT NULL,
@@ -37,123 +65,145 @@ async fn fenced_store(
             manifest_digest TEXT NOT NULL,
             sequence INTEGER NOT NULL,
             updated_at_unix_seconds INTEGER NOT NULL
+         ) WITHOUT ROWID;
+         CREATE TABLE compaction_publication_admissions_v2 (
+            owner_id TEXT NOT NULL,
+            idempotency_key TEXT NOT NULL,
+            request_digest TEXT NOT NULL,
+            archive_digest TEXT NOT NULL,
+            checkpoint_digest TEXT NOT NULL,
+            root_key_digest TEXT NOT NULL,
+            manifest_digest TEXT NOT NULL,
+            publication_digest TEXT,
+            state TEXT NOT NULL,
+            retain_source_until_unix_seconds INTEGER NOT NULL,
+            reserved_at_unix_seconds INTEGER NOT NULL,
+            committed_at_unix_seconds INTEGER,
+            released_at_unix_seconds INTEGER,
+            PRIMARY KEY (owner_id, idempotency_key)
          ) WITHOUT ROWID;",
     )
-    .execute(&seed.inner.pool)
+    .execute(&pool)
     .await
-    .expect("metadata schema");
+    .expect("fence metadata schema");
     sqlx::query(
         "INSERT INTO compaction_owner_fence_v2
          VALUES (?, ?, ?, 1, 1000, 1)",
     )
-    .bind(owner_id)
+    .bind(owner.as_str())
     .bind(root.to_string())
     .bind(token.to_string())
-    .execute(&seed.inner.pool)
+    .execute(&pool)
     .await
     .expect("owner fence");
     sqlx::query(
         "INSERT INTO compaction_manifest_log_v2
          VALUES (?, ?, 1, NULL, ?, X'01', 1)",
     )
-    .bind(owner_id)
+    .bind(owner.as_str())
     .bind(manifest.to_string())
     .bind(root.to_string())
-    .execute(&seed.inner.pool)
+    .execute(&pool)
     .await
     .expect("manifest");
     sqlx::query(
         "INSERT INTO active_compaction_manifest_v2
          VALUES (?, ?, 1, 1)",
     )
-    .bind(owner_id)
+    .bind(owner.as_str())
     .bind(manifest.to_string())
-    .execute(&seed.inner.pool)
+    .execute(&pool)
     .await
     .expect("active manifest");
-    drop(seed);
-    let store = DurableCompactionStoreV1::open(&database_url, owner_id)
-        .await
-        .expect("fenced store");
-    (temp, store)
+    let guard = MutationGuardStoreV1::open(
+        &database_url,
+        owner.as_str(),
+        root,
+        manifest,
+        token,
+        1,
+    )
+    .await
+    .expect("mutation guard");
+    FenceFixture {
+        _temp: temp,
+        pool,
+        guard,
+        owner,
+        root,
+        manifest,
+    }
+}
+
+fn assert_fence_conflict(error: CompactionCoordinatorErrorV2) {
+    assert!(matches!(
+        error,
+        CompactionCoordinatorErrorV2::Durable(DurableCompactionError::Conflict(_))
+    ));
 }
 
 #[tokio::test]
-async fn replaced_owner_is_rejected_inside_artifact_transaction() {
-    let owner = StableId::new("compact-owner").expect("owner");
-    let root = Digest32::of_bytes(b"root");
-    let token = Digest32::of_bytes(b"lease-one");
-    let manifest = Digest32::of_bytes(b"manifest-one");
-    let (_temp, store) =
-        fenced_store(owner.as_str(), root, token, manifest).await;
-
+async fn replaced_owner_is_rejected_inside_mutation_transaction() {
+    let fixture = fenced_store().await;
     sqlx::query(
         "UPDATE compaction_owner_fence_v2
          SET lease_token_digest = ?, lease_epoch = 2,
-             lease_expires_at_unix_seconds = 2000
+             lease_expires_at_unix_seconds = 2000,
+             updated_at_unix_seconds = 2
          WHERE owner_id = ?",
     )
     .bind(Digest32::of_bytes(b"lease-two").to_string())
-    .bind(owner.as_str())
-    .execute(&store.inner.pool)
+    .bind(fixture.owner.as_str())
+    .execute(&fixture.pool)
     .await
     .expect("replace lease");
 
-    let mut connection = store.inner.pool.acquire().await.expect("connection");
-    sqlx::query("BEGIN IMMEDIATE")
-        .execute(&mut *connection)
-        .await
-        .expect("begin");
-    let error = store
-        .verify_publication_fence_identity_tx(
-            &mut connection,
-            &owner,
-            root,
-            manifest,
-        )
+    let error = fixture
+        .guard
+        .prepare_retention_release(Digest32::of_bytes(b"checkpoint"), 10)
         .await
         .expect_err("stale owner must fail");
-    assert!(matches!(error, DurableCompactionError::Conflict(_)));
-    sqlx::query("ROLLBACK")
-        .execute(&mut *connection)
-        .await
-        .expect("rollback");
+    assert_fence_conflict(error);
 }
 
 #[tokio::test]
-async fn stale_manifest_is_rejected_inside_artifact_transaction() {
-    let owner = StableId::new("compact-owner").expect("owner");
-    let root = Digest32::of_bytes(b"root");
-    let token = Digest32::of_bytes(b"lease-one");
-    let manifest = Digest32::of_bytes(b"manifest-one");
-    let (_temp, store) =
-        fenced_store(owner.as_str(), root, token, manifest).await;
-    let mut connection = store.inner.pool.acquire().await.expect("connection");
-    sqlx::query("BEGIN IMMEDIATE")
-        .execute(&mut *connection)
-        .await
-        .expect("begin");
-    let error = store
-        .verify_publication_fence_identity_tx(
-            &mut connection,
-            &owner,
-            root,
-            Digest32::of_bytes(b"stale-manifest"),
-        )
+async fn stale_manifest_is_rejected_inside_mutation_transaction() {
+    let fixture = fenced_store().await;
+    let successor = Digest32::of_bytes(b"manifest-two");
+    sqlx::query(
+        "INSERT INTO compaction_manifest_log_v2
+         VALUES (?, ?, 2, ?, ?, X'02', 2)",
+    )
+    .bind(fixture.owner.as_str())
+    .bind(successor.to_string())
+    .bind(fixture.manifest.to_string())
+    .bind(fixture.root.to_string())
+    .execute(&fixture.pool)
+    .await
+    .expect("successor manifest");
+    sqlx::query(
+        "UPDATE active_compaction_manifest_v2
+         SET manifest_digest = ?, sequence = 2, updated_at_unix_seconds = 2
+         WHERE owner_id = ?",
+    )
+    .bind(successor.to_string())
+    .bind(fixture.owner.as_str())
+    .execute(&fixture.pool)
+    .await
+    .expect("rotate active manifest");
+
+    let error = fixture
+        .guard
+        .prepare_retention_release(Digest32::of_bytes(b"checkpoint"), 10)
         .await
         .expect_err("stale manifest must fail");
-    assert!(matches!(error, DurableCompactionError::Conflict(_)));
-    sqlx::query("ROLLBACK")
-        .execute(&mut *connection)
-        .await
-        .expect("rollback");
+    assert_fence_conflict(error);
 }
 
 #[tokio::test]
 async fn null_predecessor_cannot_bypass_monotonic_trigger() {
-    assert!(include_str!("compaction_schema_hardening.sql").contains(
-        "NEW.predecessor_checkpoint_digest IS NOT OLD.checkpoint_digest"
-    ));
+    assert!(include_str!("compaction_schema_hardening.sql")
+        .contains("NEW.predecessor_checkpoint_digest IS NOT OLD.checkpoint_digest"));
     let mut connection = SqliteConnection::connect("sqlite::memory:")
         .await
         .expect("memory database");

@@ -218,6 +218,66 @@ class CompactEngineReadinessManifestTests(unittest.TestCase):
                 manifest["generation_errors"],
             )
 
+    def test_final_main_sha_requires_same_run_postmerge_success(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            source_sha = self.create_repository(root)
+            base_sha = "b" * 40
+            deterministic_merge_sha = "d" * 40
+            artifacts = self.create_artifacts(
+                root,
+                source_sha=source_sha,
+                workflow_sha=source_sha,
+                base_sha=base_sha,
+                deterministic_merge_sha=deterministic_merge_sha,
+            )
+            for identity_path in artifacts.glob("*/identity.json"):
+                identity = json.loads(identity_path.read_text(encoding="utf-8"))
+                identity["event_name"] = "push"
+                identity["github_merge_sha"] = ""
+                identity_path.write_text(json.dumps(identity), encoding="utf-8")
+
+            output = root / "readiness.json"
+            manifest = QUALIFICATION.build_readiness_manifest(
+                root,
+                artifacts,
+                output,
+                source_head_sha=source_sha,
+                frozen_source_sha=source_sha,
+                workflow_sha=source_sha,
+                github_merge_sha="",
+                final_merge_sha=source_sha,
+                workflow_run_id="42",
+                attempt_id="7",
+                event_name="push",
+                source_result="success",
+                qualify_result="success",
+                capacity_result="success",
+                postmerge_result="success",
+            )
+            self.assertTrue(manifest["requiredLanesPassed"])
+            self.assertFalse(manifest["mergeReady"])
+            self.assertTrue(manifest["productionQualified"])
+
+            manifest = QUALIFICATION.build_readiness_manifest(
+                root,
+                artifacts,
+                output,
+                source_head_sha=source_sha,
+                frozen_source_sha=source_sha,
+                workflow_sha=source_sha,
+                github_merge_sha="",
+                final_merge_sha=source_sha,
+                workflow_run_id="42",
+                attempt_id="7",
+                event_name="push",
+                source_result="success",
+                qualify_result="success",
+                capacity_result="success",
+                postmerge_result="not-run",
+            )
+            self.assertFalse(manifest["productionQualified"])
+
 
 if __name__ == "__main__":
     unittest.main()

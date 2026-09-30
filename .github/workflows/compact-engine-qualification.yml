@@ -2,7 +2,7 @@ name: compact.engine focused qualification
 
 on:
   push:
-    branches: [fix/compact-engine-current-main-convergence-20260925]
+    branches: [fix/compact-engine-current-main-convergence-20260925, main]
     paths:
       - "codex-rs/hepta-compact-engine/**"
       - "codex-rs/hepta-cognitive-types/**"
@@ -44,7 +44,7 @@ env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   FROZEN_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   REQUESTED_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-  GITHUB_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha || '' }}
+  GITHUB_MERGE_SHA: ${{ github.event_name == 'pull_request' && github.sha || '' }}
   WORKFLOW_SHA: ${{ github.sha }}
 
 jobs:
@@ -63,7 +63,9 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          if [ -n "$REQUESTED_BASE_SHA" ]; then
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ "$GITHUB_REF" = refs/heads/main ]; then
+            BASE_SHA="$(git rev-parse "${SOURCE_SHA}^")"
+          elif [ -n "$REQUESTED_BASE_SHA" ]; then
             BASE_SHA="$REQUESTED_BASE_SHA"
             git fetch --no-tags --depth=1 origin "$BASE_SHA"
           else
@@ -140,7 +142,9 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git cat-file -e "${SOURCE_SHA}^{commit}"
-          if [ -n "$REQUESTED_BASE_SHA" ]; then
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ "$GITHUB_REF" = refs/heads/main ]; then
+            BASE_SHA="$(git rev-parse "${SOURCE_SHA}^")"
+          elif [ -n "$REQUESTED_BASE_SHA" ]; then
             BASE_SHA="$REQUESTED_BASE_SHA"
             git fetch --no-tags --depth=1 origin "$BASE_SHA"
           else
@@ -318,7 +322,9 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          if [ -n "$REQUESTED_BASE_SHA" ]; then
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ "$GITHUB_REF" = refs/heads/main ]; then
+            BASE_SHA="$(git rev-parse "${SOURCE_SHA}^")"
+          elif [ -n "$REQUESTED_BASE_SHA" ]; then
             BASE_SHA="$REQUESTED_BASE_SHA"
             git fetch --no-tags --depth=1 origin "$BASE_SHA"
           else
@@ -460,6 +466,12 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/compact-readiness"
+          final_merge_sha=""
+          postmerge_result=not-run
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ "$GITHUB_REF" = refs/heads/main ]; then
+            final_merge_sha="$SOURCE_SHA"
+            postmerge_result=success
+          fi
           python3 scripts/compact_engine_qualification.py build-manifest \
             --artifacts "$RUNNER_TEMP/compact-readiness-input" \
             --output "$RUNNER_TEMP/compact-readiness/readiness-manifest.json" \
@@ -467,14 +479,14 @@ jobs:
             --frozen-source-sha "$FROZEN_SOURCE_SHA" \
             --workflow-sha "$WORKFLOW_SHA" \
             --github-merge-sha "$GITHUB_MERGE_SHA" \
-            --final-merge-sha "" \
+            --final-merge-sha "$final_merge_sha" \
             --workflow-run-id "$GITHUB_RUN_ID" \
             --attempt-id "$GITHUB_RUN_ATTEMPT" \
             --event-name "$GITHUB_EVENT_NAME" \
             --source-result "$SOURCE_RESULT" \
             --qualify-result "$QUALIFY_RESULT" \
             --capacity-result "$CAPACITY_RESULT" \
-            --postmerge-result not-run
+            --postmerge-result "$postmerge_result"
       - name: Retain one-candidate readiness manifest
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -490,6 +502,8 @@ jobs:
           field=requiredLanesPassed
           if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
             field=mergeReady
+          elif [ "$GITHUB_EVENT_NAME" = push ] && [ "$GITHUB_REF" = refs/heads/main ]; then
+            field=productionQualified
           fi
           python3 scripts/compact_engine_qualification.py require \
             --manifest "$RUNNER_TEMP/compact-readiness/readiness-manifest.json" \
