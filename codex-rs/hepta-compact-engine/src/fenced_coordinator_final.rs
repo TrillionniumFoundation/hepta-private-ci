@@ -22,6 +22,7 @@ use crate::coordinator::{
     VerifiedCompactionSelectionV2,
 };
 use crate::durable::{DurableCompactionError, DurableCompactionOutboxEventV1};
+use crate::mutation_guard::MutationGuardStoreV1;
 use crate::recovery::{
     CompactionAdmissionReconciliationSummaryV1,
     CompactionClaimReconciliationSummaryV1, CompactionOperationStatusV1,
@@ -116,6 +117,7 @@ impl CurrentSourceValidatedSelectionV1 {
 pub struct MemoryCheckpointCoordinatorV2 {
     inner: guarded::MemoryCheckpointCoordinatorV2,
     recovery: RecoveryStoreV1,
+    mutation_guard: MutationGuardStoreV1,
     lease_epoch: u64,
 }
 
@@ -189,12 +191,22 @@ impl MemoryCheckpointCoordinatorV2 {
             ));
         }
 
+        let lease_token_digest = Digest32::of_bytes(lease_token.as_bytes());
+        let mutation_guard = MutationGuardStoreV1::open(
+            database_url,
+            owner_id,
+            expected_root,
+            expected_manifest,
+            lease_token_digest,
+            lease_epoch,
+        )
+        .await?;
         let recovery = RecoveryStoreV1::open(
             database_url,
             owner_id,
             expected_root,
             expected_manifest,
-            Digest32::of_bytes(lease_token.as_bytes()),
+            lease_token_digest,
             lease_epoch,
         )
         .await?;
@@ -207,6 +219,7 @@ impl MemoryCheckpointCoordinatorV2 {
         Ok(Self {
             inner,
             recovery,
+            mutation_guard,
             lease_epoch,
         })
     }
@@ -247,6 +260,7 @@ impl MemoryCheckpointCoordinatorV2 {
             .install_successor_manifest(manifest_bytes, now_unix_seconds)
             .await?;
         self.recovery.set_manifest_digest(digest);
+        self.mutation_guard.set_manifest_digest(digest);
         self.recovery.verify_local_state(now_unix_seconds).await?;
         Ok(digest)
     }
@@ -258,6 +272,15 @@ impl MemoryCheckpointCoordinatorV2 {
         retain_source_until_unix_seconds: u64,
         now_unix_seconds: u64,
     ) -> Result<CompactionPublicationReceiptV2, CompactionCoordinatorErrorV2> {
+        let intent = self
+            .mutation_guard
+            .prepare_publication(
+                idempotency_key,
+                publication,
+                retain_source_until_unix_seconds,
+                now_unix_seconds,
+            )
+            .await?;
         let receipt = self
             .inner
             .publish_verified_checkpoint(
@@ -272,6 +295,9 @@ impl MemoryCheckpointCoordinatorV2 {
             .reconcile_admissions(now_unix_seconds, DEFAULT_RECOVERY_BATCH)
             .await?;
         require_safe_admissions(admissions)?;
+        self.mutation_guard
+            .commit_intent(&intent, now_unix_seconds)
+            .await?;
         Ok(receipt)
     }
 
@@ -350,13 +376,26 @@ impl MemoryCheckpointCoordinatorV2 {
         reason_digest: Digest32,
         revoked_at_unix_seconds: u64,
     ) -> Result<Digest32, CompactionCoordinatorErrorV2> {
-        self.inner
+        let intent = self
+            .mutation_guard
+            .prepare_revocation(
+                checkpoint_digest,
+                reason_digest,
+                revoked_at_unix_seconds,
+            )
+            .await?;
+        let revocation = self
+            .inner
             .revoke_checkpoint(
                 checkpoint_digest,
                 reason_digest,
                 revoked_at_unix_seconds,
             )
-            .await
+            .await?;
+        self.mutation_guard
+            .commit_intent(&intent, revoked_at_unix_seconds)
+            .await?;
+        Ok(revocation)
     }
 
     pub async fn release_source_retention(
@@ -364,8 +403,15 @@ impl MemoryCheckpointCoordinatorV2 {
         checkpoint_digest: Digest32,
         now_unix_seconds: u64,
     ) -> Result<(), CompactionCoordinatorErrorV2> {
+        let intent = self
+            .mutation_guard
+            .prepare_retention_release(checkpoint_digest, now_unix_seconds)
+            .await?;
         self.inner
             .release_source_retention(checkpoint_digest, now_unix_seconds)
+            .await?;
+        self.mutation_guard
+            .commit_intent(&intent, now_unix_seconds)
             .await
     }
 
