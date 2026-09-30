@@ -1,0 +1,91 @@
+name: Neuron runtime source contracts
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact source commit to validate
+        required: true
+        type: string
+  pull_request:
+    paths:
+      - "codex-rs/hepta-agentd/src/neuron_runtime_v2*.rs"
+      - "codex-rs/hepta-agentd/src/config.rs"
+      - "codex-rs/hepta-agentd/src/runtime.rs"
+      - "codex-rs/hepta-agentd/src/state.rs"
+      - "scripts/neuron/**"
+      - "docs/modules/neuron.runtime/**"
+      - ".github/workflows/neuron-runtime-*.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-runtime-source-contracts-${{ github.event.pull_request.number || inputs.source_sha }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || inputs.source_sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: never
+
+jobs:
+  validate:
+    name: Validate immutable source contracts
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind immutable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test ! -e .github/neuron-agentd-integration.patch
+          test ! -e scripts/neuron_runtime_apply_gate_repair.sh
+          test ! -e .github/workflows/neuron-runtime-gate-fix-once.yml
+          test ! -e .github/workflows/neuron-runtime-product-materialize-once.yml
+          if grep -R --line-number --fixed-strings 'contents: write' \
+            .github/workflows/*neuron*.yml; then
+            echo 'mutable Neuron workflow remains' >&2
+            exit 1
+          fi
+
+      - name: Validate generated projections and Python contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/neuron/readiness.py render --check
+          python3 -m unittest discover -v -s scripts/neuron -p 'test_*.py'
+          python3 scripts/verify_cargo_lock.py
+
+      - name: Validate Rust formatting and Agentd contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo +stable fmt \
+            --package codex-hepta-neuron \
+            --package codex-hepta-agentd \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host \
+            -- --check
+          cargo +stable check --locked -p codex-hepta-agentd --lib
+          cargo +stable test --locked -p codex-hepta-agentd \
+            neuron_runtime_v2::error_action_tests --lib -- --nocapture
+
+      - name: Verify source remained immutable
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
