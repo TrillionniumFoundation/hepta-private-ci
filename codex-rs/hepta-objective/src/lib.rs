@@ -107,6 +107,7 @@ pub use objective_function_v1::decode_objective_function_v1;
 pub(crate) use objective_function_v1::encode_authenticated_objective_function_v1;
 #[cfg(feature = "objective-compatibility-api")]
 pub use objective_function_v1::encode_authenticated_objective_function_v1;
+pub use proof_projection::ObjectiveProjectionInputV1;
 pub use proof_projection::encode_proof_bearing_objective_function_v1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
