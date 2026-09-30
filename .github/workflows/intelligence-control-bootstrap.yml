@@ -81,6 +81,61 @@ jobs:
           PY
           git diff --cached --check
 
+      - name: Retain exact validated source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/intelligence-control-validated-source"
+          mkdir -p "$output"
+          tree="$(git write-tree)"
+          git archive --format=tar.gz \
+            --output="$output/source-tree.tar.gz" \
+            "$tree"
+          git diff --cached --binary --full-index "$ORIGINAL_HEAD" \
+            > "$output/final-source.patch"
+          git diff --cached --name-status -z "$ORIGINAL_HEAD" \
+            > "$output/changed-files.zlist"
+          python3 - "$output/manifest.json" "$tree" <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import sys
+
+          output = pathlib.Path(sys.argv[1])
+          tree = sys.argv[2]
+          root = output.parent
+          artifacts = {}
+          for name in ("source-tree.tar.gz", "final-source.patch", "changed-files.zlist"):
+              path = root / name
+              artifacts[name] = {
+                  "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                  "size": path.stat().st_size,
+              }
+          output.write_text(
+              json.dumps(
+                  {
+                      "schema": "hepta.intelligence-control-validated-source.v1",
+                      "bootstrap_sha": os.environ["BOOTSTRAP_SHA"],
+                      "parent_sha": os.environ["ORIGINAL_HEAD"],
+                      "tree_sha": tree,
+                      "artifacts": artifacts,
+                  },
+                  indent=2,
+                  sort_keys=True,
+              ) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload exact validated source tree
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-validated-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/intelligence-control-validated-source/*
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Publish one commit over the frozen parent
         shell: bash
         env:
