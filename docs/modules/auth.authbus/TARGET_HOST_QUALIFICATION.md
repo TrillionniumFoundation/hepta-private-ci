@@ -78,3 +78,13 @@ gate wait, SQLite transaction, frontier update, checkpoint publication,
 reconciliation, product acknowledgement and the full caller-visible operation.
 `authbus-performance-evidence.py` binds that receipt to the same target identity
 as the fault matrix. Production thresholds remain an activation-owner decision.
+
+## Production security and operations evidence
+
+The protected target additionally supplies root-owned harnesses for
+`kms-hsm`, `key-rotation-revocation`, `backup-restore`, `owner-mount`,
+`activation-plan` and `rollback-plan`. Their outputs are retained in the same
+candidate- and target-bound artifact as the fault and performance receipts.
+They do not grant activation by themselves; the separately protected production
+acceptance workflow requires independent security and operator Ed25519
+signatures over their exact digests.
