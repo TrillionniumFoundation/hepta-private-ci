@@ -103,6 +103,13 @@ class SourceBindingTests(unittest.TestCase):
         )
         write_json(self.root, q.RECOVERY_MATRIX, recovery_matrix_fixture())
         write_json(self.root, q.PRODUCT_COMPOSITION, product_composition_fixture())
+        for relative in q.OBJECT_INPUTS:
+            if relative == q.ROOT:
+                continue
+            path = self.root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            if not path.exists():
+                path.write_text(f"fixture object for {relative}\n")
         self.commit()
         observed = execute(self.root, "rev-parse", "HEAD")
         self.mapping = {
@@ -115,9 +122,10 @@ class SourceBindingTests(unittest.TestCase):
             "observedSourcePaths": list(q.INPUTS),
             "sourceObjects": [
                 {
-                    "path": q.ROOT,
-                    "object": execute(self.root, "rev-parse", f"HEAD:{q.ROOT}"),
+                    "path": relative,
+                    "object": execute(self.root, "rev-parse", f"HEAD:{relative}"),
                 }
+                for relative in q.OBJECT_INPUTS
             ],
             "productionImplementation": False,
             "claimBoundary": {claim: False for claim in q.CLAIMS},
