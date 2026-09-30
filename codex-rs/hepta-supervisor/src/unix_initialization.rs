@@ -87,6 +87,8 @@ pub(super) fn finish_child(
             drain_requested: false,
             next_drain_request_id: 1,
             initialization_failure: failure,
+            #[cfg(all(target_os = "linux", feature = "local-host"))]
+            resource_execution: None,
         },
     }
 }
@@ -106,6 +108,8 @@ pub(super) fn finish_adoption(
         drain_requested: false,
         next_drain_request_id: 1,
         initialization_failure: failure,
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        resource_execution: None,
     }
 }
 

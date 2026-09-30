@@ -217,7 +217,7 @@ pub async fn run_supervisord(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
 ) -> Result<(), SupervisorError> {
-    run_supervisord_inner(fleet_root, cancellation, None).await
+    run_supervisord_inner(fleet_root, cancellation, None, None).await
 }
 
 /// Production entry point for a daemon whose trust root was pinned by an
@@ -234,7 +234,21 @@ pub async fn run_supervisord_with_grant_verifier(
     if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
         return Err(SupervisorError::ProductionAuthorityFeatureDisabled);
     }
-    run_supervisord_inner(fleet_root, cancellation, Some(verifier)).await
+    run_supervisord_inner(fleet_root, cancellation, Some(verifier), None).await
+}
+
+/// Explicit Linux installation entry point using the concrete local resource owner.
+#[cfg(all(target_os = "linux", feature = "local-host"))]
+pub async fn run_supervisord_with_local_host(
+    fleet_root: HeptaFleetRoot,
+    cancellation: CancellationToken,
+    policy: PathBuf,
+    verifier: Option<H7H89ProductionGrantVerifier>,
+) -> Result<(), SupervisorError> {
+    if verifier.is_some() && !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
+        return Err(SupervisorError::ProductionAuthorityFeatureDisabled);
+    }
+    run_supervisord_inner(fleet_root, cancellation, verifier, Some(policy)).await
 }
 
 #[cfg(unix)]
@@ -242,6 +256,7 @@ async fn run_supervisord_inner(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
+    local_host_policy: Option<PathBuf>,
 ) -> Result<(), SupervisorError> {
     // Cancelling/dropping the outer future must also stop the ticker and server.
     let _shutdown = cancellation.clone().drop_guard();
@@ -264,14 +279,42 @@ async fn run_supervisord_inner(
     .map_err(|error| {
         SupervisorError::Invalid(format!("open durable runtime-module supervisor: {error}"))
     })?;
-    let driver =
+    let mut driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let (supervisor, recovery) = Supervisor::recover(
-        registry.clone(),
-        driver,
-        SupervisorConfig::local_default(),
-        Instant::now(),
-    )?;
+    let mut selection_uid = unsafe { libc::geteuid() };
+    let mut selection_gid = unsafe { libc::getegid() };
+    let mut local_maintenance: Option<tokio::task::JoinHandle<Result<(), SupervisorError>>> = None;
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    let mut installed_host = None;
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    if let Some(policy_path) = local_host_policy {
+        let host = crate::LocalFleetHost::open(&policy_path, registry.clone())
+            .await
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        selection_uid = host.policy.workload_uid;
+        selection_gid = host.policy.workload_gid;
+        driver = driver.with_local_host(Arc::clone(&host));
+        installed_host = Some(host);
+    }
+    #[cfg(not(all(target_os = "linux", feature = "local-host")))]
+    if local_host_policy.is_some() {
+        return Err(SupervisorError::Invalid(
+            "local host requires the Linux local-host feature".into(),
+        ));
+    }
+    let recovery_registry = registry.clone();
+    let (supervisor, recovery) = tokio::task::spawn_blocking(move || {
+        Supervisor::recover(
+            recovery_registry,
+            driver,
+            SupervisorConfig::local_default(),
+            Instant::now(),
+        )
+    })
+    .await
+    .map_err(|error| {
+        SupervisorError::Invalid(format!("process recovery worker failed: {error}"))
+    })??;
     let state = Arc::new(DaemonState {
         registry,
         supervisor: Mutex::new(supervisor),
@@ -283,6 +326,19 @@ async fn run_supervisord_inner(
         execution: execution::Execution::new(cancellation.clone()),
         _instance: instance,
     });
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    if let Some(host) = installed_host {
+        let host_cancellation = cancellation.clone();
+        let owner = Arc::clone(&state);
+        local_maintenance = Some(tokio::spawn(async move {
+            // Keep the same single-instance kernel lock through admitted upkeep,
+            // including when the outer daemon future is dropped or cancelled.
+            let _owner = owner;
+            host.run_maintenance(host_cancellation)
+                .await
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))
+        }));
+    }
     {
         let supervisor = state.supervisor.lock().await;
         publish_recovery_observations(&state, &supervisor)?;
@@ -298,8 +354,8 @@ async fn run_supervisord_inner(
         layout.runtime_selection_socket(),
         Arc::clone(&state),
         cancellation.clone(),
-        unsafe { libc::geteuid() },
-        unsafe { libc::getegid() },
+        selection_uid,
+        selection_gid,
     )
     .await?;
     let mut selection_task = tokio::spawn(selection_server.run());
@@ -318,8 +374,15 @@ async fn run_supervisord_inner(
         }
     });
     let mut selection_finished = false;
+    let mut maintenance_finished = false;
     let result = tokio::select! {
         result = server.run() => result,
+        result = async {
+            match &mut local_maintenance { Some(task) => task.await, None => std::future::pending().await }
+        } => {
+            maintenance_finished = true;
+            result.map_err(|error| SupervisorError::Invalid(format!("local resource owner failed: {error}")))?
+        },
         result = &mut selection_task => {
             selection_finished = true;
             result.map_err(|error| SupervisorError::Invalid(format!("selection server failed: {error}")))?
@@ -330,6 +393,13 @@ async fn run_supervisord_inner(
         selection_task.await.map_err(|error| {
             SupervisorError::Invalid(format!("selection server failed: {error}"))
         })??;
+    }
+    if !maintenance_finished {
+        if let Some(task) = local_maintenance {
+            task.await.map_err(|error| {
+                SupervisorError::Invalid(format!("local resource owner failed: {error}"))
+            })??;
+        }
     }
     let ticker_result = ticker.await;
     if ticker_result.is_err() || state.execution.failed() {
@@ -345,6 +415,7 @@ async fn run_supervisord_inner(
     _fleet_root: HeptaFleetRoot,
     _cancellation: CancellationToken,
     _production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
+    _local_host_policy: Option<PathBuf>,
 ) -> Result<(), SupervisorError> {
     Err(std::io::Error::new(
         ErrorKind::Unsupported,
@@ -1782,7 +1853,8 @@ mod tests {
         let daemon = tokio::spawn(run_supervisord_inner(
             fleet_root.clone(),
             cancellation.clone(),
-            None,
+            /*production_grant_verifier*/ None,
+            /*local_host_policy*/ None,
         ));
         let client =
             crate::SupervisordClient::new(registry.layout().supervisor_socket().to_path_buf())

@@ -110,8 +110,12 @@ pub use driver::SpawnSpec;
 pub use driver::SpawnedProcess;
 pub use error::ProcessDriverError;
 pub use error::SupervisorError;
+#[cfg(all(target_os = "linux", feature = "local-host"))]
+mod local_fleet_host;
 #[cfg(unix)]
 pub use fleet_setup::with_offline_fleet_registry;
+#[cfg(all(target_os = "linux", feature = "local-host"))]
+pub use local_fleet_host::LocalFleetHost;
 pub use model::AgentCommand;
 pub use model::AgentFault;
 pub use model::AgentRelease;
@@ -267,7 +271,6 @@ pub use unix::UnixManagedProcess;
 #[cfg(unix)]
 pub use unix::UnixProcessDriver;
 
-#[cfg(all(target_os = "linux", any(test, feature = "local-model-authority")))]
-mod local_model_authority;
-#[cfg(all(target_os = "linux", feature = "local-model-authority"))]
-pub use local_model_authority::run_local_model_authority;
+
+#[cfg(all(target_os = "linux", feature = "local-host"))]
+pub use daemon::run_supervisord_with_local_host;

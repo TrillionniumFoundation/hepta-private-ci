@@ -15,6 +15,18 @@ use crate::durable_rows::validate_identity;
 use crate::durable_schema::sqlx_error;
 
 impl DurableFleetStore {
+    /// Read the current durable allocation for owner maintenance. This DTO is
+    /// not an authority token and cannot authorize a new launch by itself.
+    pub async fn allocation_grant(
+        &self,
+        allocation_id: &str,
+    ) -> Result<Option<crate::AllocationGrant>, DurableFleetError> {
+        validate_identity(allocation_id, "allocation")?;
+        let mut tx = self.pool.begin().await.map_err(sqlx_error)?;
+        let grant = crate::durable_grant_tx::select_grant_tx(&mut tx, allocation_id).await?;
+        tx.commit().await.map_err(sqlx_error)?;
+        Ok(grant)
+    }
     /// Return the one non-terminal execution owned by a principal.
     ///
     /// A principal is intentionally restricted to one live execution at this

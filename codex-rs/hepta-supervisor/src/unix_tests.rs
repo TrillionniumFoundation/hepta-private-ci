@@ -239,26 +239,28 @@ fn health_probe_requires_exact_agent_generation_pid_and_roots() {
     let identity = AgentHealthProbeIdentity {
         agent_id: expected_agent.clone(),
         spawn_generation: 7,
-        process_id: 41,
+        process_id: std::process::id(),
+        peer_uid: unsafe { libc::geteuid() },
         workspace: temp.path().join("workspace"),
         home_root: temp.path().join("home"),
         run_root: temp.path().join("run"),
         control_socket: temp.path().join("probe.sock"),
     };
 
-    let exact = health_response(&identity, expected_agent.clone(), 7, 7, 41);
+    let exact = health_response(&identity, expected_agent.clone(), 7, 7, identity.process_id);
     assert!(serve_and_probe(&identity, 1, exact));
 
-    let wrong_agent = health_response(&identity, other_agent, 7, 7, 41);
+    let wrong_agent = health_response(&identity, other_agent, 7, 7, identity.process_id);
     assert!(!serve_and_probe(&identity, 2, wrong_agent));
 
-    let wrong_generation = health_response(&identity, expected_agent.clone(), 7, 8, 41);
+    let wrong_generation =
+        health_response(&identity, expected_agent.clone(), 7, 8, identity.process_id);
     assert!(!serve_and_probe(&identity, 3, wrong_generation));
 
-    let wrong_pid = health_response(&identity, expected_agent, 7, 7, 42);
+    let wrong_pid = health_response(&identity, expected_agent, 7, 7, identity.process_id + 1);
     assert!(!serve_and_probe(&identity, 4, wrong_pid));
 
-    let running = running_health_response(&identity, 7, 8, 41);
+    let running = running_health_response(&identity, 7, 8, identity.process_id);
     assert!(serve_and_probe(&identity, 5, running.clone()));
     assert!(serve_and_probe(&identity, 6, running));
 }
@@ -275,7 +277,8 @@ fn matrix_health_transport_rejects_response_larger_than_one_mib() {
         release_id: "matrixd-v1".to_string(),
         process_incarnation: "matrixd-incarnation-1".to_string(),
         plane_epoch: 13,
-        process_id: 41,
+        process_id: std::process::id(),
+        peer_uid: unsafe { libc::geteuid() },
         control_socket: socket.clone(),
     };
     let listener = UnixListener::bind(&socket).expect("bind Matrix probe socket");

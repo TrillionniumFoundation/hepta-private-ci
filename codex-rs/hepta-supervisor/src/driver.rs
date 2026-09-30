@@ -116,35 +116,14 @@ pub enum Adoption<P> {
 pub trait ProcessDriver {
     type Process: ManagedProcess;
 
-    /// Reject retirement while host-owned durable resource claims remain live.
-    /// The Supervisor separately proves exact process and journal absence; an
-    /// external resource owner must not manufacture a terminal receipt here.
-    fn validate_agent_retirement(&mut self, _agent_id: &AgentId) -> Result<(), ProcessDriverError> {
+    /// Prepare a newly registered agent's installed workload boundary before
+    /// publishing it into the live owner. Existing drivers need no extra setup.
+    fn prepare_agent_registration(
+        &mut self,
+        _record: &codex_hepta_fleet::AgentRecord,
+    ) -> Result<(), ProcessDriverError> {
         Ok(())
     }
 
-    fn spawn(
-        &mut self,
-        spec: &SpawnSpec,
-    ) -> Result<SpawnedProcess<Self::Process>, ProcessDriverError>;
-
-    fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError>;
-
-    fn spawn_matrixd(
-        &mut self,
-        _spec: &MatrixSpawnSpec,
-    ) -> Result<SpawnedProcess<Self::Process>, ProcessDriverError> {
-        Err(ProcessDriverError::new(
-            "process driver does not support matrixd companions",
-        ))
-    }
-
-    fn adopt_matrixd(
-        &mut self,
-        _spec: &MatrixAdoptSpec,
-    ) -> Result<Adoption<Self::Process>, ProcessDriverError> {
-        Err(ProcessDriverError::new(
-            "process driver does not support matrixd companion adoption",
-        ))
-    }
-}
+    /// Refuse retirement while the concrete host still owns resource occupancy.
+    fn validate_agent_retirement(&mut self, _agent: &AgentId) -> Result<(), ProcessDriverError> {

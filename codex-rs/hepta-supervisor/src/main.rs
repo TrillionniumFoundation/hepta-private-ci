@@ -10,6 +10,21 @@ async fn main() -> anyhow::Result<()> {
     let options = parse_options_from(std::env::args_os().skip(1))?;
     let cancellation = CancellationToken::new();
     spawn_shutdown_signal(cancellation.clone());
+    if let Some(policy) = options.local_host_policy {
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        {
+            codex_hepta_supervisor::run_supervisord_with_local_host(
+                options.fleet_root,
+                cancellation,
+                policy,
+                options.grant_verifier,
+            )
+            .await?;
+            return Ok(());
+        }
+        #[cfg(not(all(target_os = "linux", feature = "local-host")))]
+        anyhow::bail!("--local-host-policy requires the Linux local-host feature: {policy:?}");
+    }
     match options.grant_verifier {
         Some(verifier) => {
             codex_hepta_supervisor::run_supervisord_with_grant_verifier(
@@ -26,12 +41,14 @@ async fn main() -> anyhow::Result<()> {
 
 struct Options {
     fleet_root: HeptaFleetRoot,
+    local_host_policy: Option<PathBuf>,
     grant_verifier: Option<codex_hepta_supervisor::H7H89ProductionGrantVerifier>,
 }
 
 fn parse_options_from(arguments: impl IntoIterator<Item = OsString>) -> anyhow::Result<Options> {
     let mut arguments = arguments.into_iter();
     let mut fleet_root = None;
+    let mut local_host_policy = None;
     let mut authority_bundle = None;
     let mut authority_bundle_sha256 = None;
     while let Some(flag) = arguments.next() {
@@ -40,6 +57,9 @@ fn parse_options_from(arguments: impl IntoIterator<Item = OsString>) -> anyhow::
             .ok_or_else(|| anyhow::anyhow!("missing value for {flag:?}; {}", usage()))?;
         match flag.to_str() {
             Some("--fleet-root") if fleet_root.is_none() => fleet_root = Some(value),
+            Some("--local-host-policy") if local_host_policy.is_none() => {
+                local_host_policy = Some(PathBuf::from(value))
+            }
             Some("--authority-bundle") if authority_bundle.is_none() => {
                 authority_bundle = Some(value)
             }
@@ -74,11 +94,12 @@ fn parse_options_from(arguments: impl IntoIterator<Item = OsString>) -> anyhow::
     Ok(Options {
         fleet_root,
         grant_verifier,
+        local_host_policy,
     })
 }
 
 fn usage() -> &'static str {
-    "usage: hepta-supervisord --fleet-root ABSOLUTE_PATH [--authority-bundle ABSOLUTE_PATH --authority-bundle-sha256 SHA256]"
+    "usage: hepta-supervisord --fleet-root ABSOLUTE_PATH [--local-host-policy ABSOLUTE_PATH] [--authority-bundle ABSOLUTE_PATH --authority-bundle-sha256 SHA256]"
 }
 
 fn spawn_shutdown_signal(cancellation: CancellationToken) {

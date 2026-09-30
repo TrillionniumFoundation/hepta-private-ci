@@ -12,6 +12,7 @@ doctest = false
 
 [features]
 default = []
+local-host = ["codex-hepta-fleet/durable-store"]
 # Offline/shadow harness API and deterministic durability fault points; never
 # enabled by a product dependency.
 qualification = []
