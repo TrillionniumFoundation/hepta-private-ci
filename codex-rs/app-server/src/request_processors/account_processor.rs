@@ -1069,31 +1069,31 @@ impl AccountRequestProcessor {
                     let permanent_refresh_failure =
                         self.auth_manager.refresh_failure_for_auth(&auth).is_some();
                     let auth_mode = auth_mode_to_api(auth.api_auth_mode());
-                    let (reported_auth_method, token_opt) =
-                        if self.auth_manager.is_workload_identity_selected()
-                            || matches!(
-                                auth,
-                                CodexAuth::Headers(_)
-                                    | CodexAuth::AgentIdentity(_)
-                                    | CodexAuth::PersonalAccessToken(_)
-                            )
-                            || include_token && permanent_refresh_failure
-                        {
-                            // Host-owned and metadata-bearing credentials are never exported.
-                            (Some(auth_mode), None)
-                        } else {
-                            match auth.get_token() {
-                                Ok(token) if !token.is_empty() => {
-                                    let tok = if include_token { Some(token) } else { None };
-                                    (Some(auth_mode), tok)
-                                }
-                                Ok(_) => (None, None),
-                                Err(err) => {
-                                    tracing::warn!("failed to get token for auth status: {err}");
-                                    (None, None)
-                                }
+                    let (reported_auth_method, token_opt) = if self.auth_profile_owned_by_host
+                        || self.auth_manager.is_workload_identity_selected()
+                        || matches!(
+                            auth,
+                            CodexAuth::Headers(_)
+                                | CodexAuth::AgentIdentity(_)
+                                | CodexAuth::PersonalAccessToken(_)
+                        )
+                        || include_token && permanent_refresh_failure
+                    {
+                        // Host-owned and metadata-bearing credentials are never exported.
+                        (Some(auth_mode), None)
+                    } else {
+                        match auth.get_token() {
+                            Ok(token) if !token.is_empty() => {
+                                let tok = if include_token { Some(token) } else { None };
+                                (Some(auth_mode), tok)
                             }
-                        };
+                            Ok(_) => (None, None),
+                            Err(err) => {
+                                tracing::warn!("failed to get token for auth status: {err}");
+                                (None, None)
+                            }
+                        }
+                    };
                     GetAuthStatusResponse {
                         auth_method: reported_auth_method,
                         auth_token: token_opt,

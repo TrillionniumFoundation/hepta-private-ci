@@ -1,7 +1,10 @@
 use super::*;
 use codex_app_server_protocol::Account;
+use codex_app_server_protocol::AuthMode;
 use codex_app_server_protocol::GetAccountParams;
 use codex_app_server_protocol::GetAccountResponse;
+use codex_app_server_protocol::GetAuthStatusParams;
+use codex_app_server_protocol::GetAuthStatusResponse;
 use codex_app_server_protocol::LoginAccountParams;
 use codex_login::AuthCredentialsStoreMode;
 use codex_login::AuthKeyringBackendKind;
@@ -21,7 +24,19 @@ async fn host_owned_profile_survives_account_rpc_override_and_logout() -> Result
         AuthKeyringBackendKind::default(),
     )?;
     let original_profile = std::fs::read(profile.path().join("auth.json"))?;
-    let mut config = build_test_config(agent_home.path(), &server.uri()).await?;
+    write_mock_responses_config_toml(
+        agent_home.path(),
+        &server.uri(),
+        &BTreeMap::new(),
+        /*auto_compact_limit*/ 8_192,
+        Some(true),
+        "mock_provider",
+        "compact",
+    )?;
+    let mut config = ConfigBuilder::default()
+        .codex_home(agent_home.path().to_path_buf())
+        .build()
+        .await?;
     config.cli_auth_credentials_store_mode = AuthCredentialsStoreMode::File;
     let (processor, mut outgoing) = build_test_processor_with_credential_profile(
         Arc::new(config),
@@ -101,7 +116,37 @@ async fn host_owned_profile_survives_account_rpc_override_and_logout() -> Result
         )
         .await;
     let account: GetAccountResponse = read_response(&mut outgoing, 4).await;
-    assert_eq!(Some(Account::ApiKey {}), account.account);
+    assert_eq!(
+        GetAccountResponse {
+            account: Some(Account::ApiKey {}),
+            requires_openai_auth: true,
+        },
+        account
+    );
+    let status = ClientRequest::GetAuthStatus {
+        request_id: RequestId::Integer(5),
+        params: GetAuthStatusParams {
+            include_token: Some(true),
+            refresh_token: Some(false),
+        },
+    };
+    processor
+        .process_request(
+            TEST_CONNECTION_ID,
+            request_from_client_request(status),
+            &AppServerTransport::Stdio,
+            Arc::clone(&session),
+        )
+        .await;
+    let status: GetAuthStatusResponse = read_response(&mut outgoing, 5).await;
+    assert_eq!(
+        GetAuthStatusResponse {
+            auth_method: Some(AuthMode::ApiKey),
+            auth_token: None,
+            requires_openai_auth: Some(true),
+        },
+        status
+    );
     assert_eq!(
         original_profile,
         std::fs::read(profile.path().join("auth.json"))?
