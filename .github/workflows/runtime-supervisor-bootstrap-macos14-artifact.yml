@@ -1,0 +1,158 @@
+name: Runtime supervisor bootstrap artifact (macOS 14)
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-six-phase-closure-20260930-r4
+    paths:
+      - .github/workflows/runtime-supervisor-bootstrap-macos14-artifact.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-supervisor-bootstrap-artifact-macos14-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  materialize:
+    runs-on: macos-14
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: false
+          clean: true
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component clippy,rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$channel" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/hepta-supervisor-bootstrap14-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/runtime-supervisor-bootstrap14"
+
+      - name: Materialize and format
+        id: materialize
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 -m py_compile scripts/runtime_supervisor_six_phase_materialize.py scripts/runtime_supervisor_six_phase_followup.py
+          python3 scripts/runtime_supervisor_six_phase_materialize.py
+          python3 scripts/runtime_supervisor_six_phase_followup.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor -- --check
+          git diff --check
+          lib=codex-rs/hepta-supervisor/src/lib.rs
+          grep -Fxq 'mod mutation_journal;' "$lib"
+          grep -Fxq 'mod process_exit_witness;' "$lib"
+          grep -Fxq 'mod recovery_observation;' "$lib"
+          grep -Fq 'process_exit_witness::record_process_exit' codex-rs/hepta-supervisor/src/tick.rs
+          grep -Fq 'process_exit_witness::read_process_exit_witness' codex-rs/hepta-supervisor/src/recovery.rs
+          grep -Fq 'publish_production_recovery_observation' codex-rs/hepta-supervisor/src/daemon_execution.rs
+          git status --short | tee "$RUNNER_TEMP/runtime-supervisor-bootstrap14/materialized-status.txt"
+
+      - name: Package exact materialized files
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/runtime-supervisor-bootstrap14"
+          git diff --binary > "$out/materialized.patch"
+          python3 - <<'PY'
+          import hashlib
+          import os
+          import pathlib
+          import subprocess
+          import tarfile
+          root = pathlib.Path.cwd()
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'runtime-supervisor-bootstrap14'
+          tracked = subprocess.check_output(['git', 'diff', '--name-only', '-z']).split(b'\0')
+          untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '-z']).split(b'\0')
+          paths = sorted({p.decode() for p in tracked + untracked if p})
+          with tarfile.open(out / 'materialized-files.tar.gz', 'w:gz') as archive:
+              for rel in paths:
+                  path = root / rel
+                  if path.is_file():
+                      archive.add(path, arcname=rel, recursive=False)
+          (out / 'materialized-files.txt').write_text('\n'.join(paths) + '\n', encoding='utf-8')
+          (out / 'identity.txt').write_text(
+              f'input_sha={os.environ["GITHUB_SHA"]}\ninput_tree=' +
+              subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True),
+              encoding='utf-8',
+          )
+          for name in ('materialized.patch', 'materialized-files.tar.gz', 'materialized-files.txt', 'identity.txt'):
+              path = out / name
+              with (out / 'SHA256SUMS').open('a', encoding='utf-8') as sums:
+                  sums.write(f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {name}\n')
+          PY
+
+      - name: Default tests
+        id: default_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --lib 2>&1 | tee "$RUNNER_TEMP/runtime-supervisor-bootstrap14/cargo-test-default.log"
+
+      - name: Qualification tests
+        id: qualification_tests
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --features qualification,offline-authority-tools 2>&1 | tee "$RUNNER_TEMP/runtime-supervisor-bootstrap14/cargo-test-all-targets.log"
+
+      - name: Strict Clippy
+        id: clippy
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets --features qualification,offline-authority-tools -- -D warnings 2>&1 | tee "$RUNNER_TEMP/runtime-supervisor-bootstrap14/cargo-clippy.log"
+
+      - name: Record outcomes
+        if: always()
+        shell: bash
+        run: |
+          out="$RUNNER_TEMP/runtime-supervisor-bootstrap14/outcomes.txt"
+          {
+            printf 'materialize=%s\n' '${{ steps.materialize.outcome }}'
+            printf 'default_tests=%s\n' '${{ steps.default_tests.outcome }}'
+            printf 'qualification_tests=%s\n' '${{ steps.qualification_tests.outcome }}'
+            printf 'clippy=%s\n' '${{ steps.clippy.outcome }}'
+          } > "$out"
+
+      - name: Upload materialized candidate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-bootstrap14-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/runtime-supervisor-bootstrap14/*
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Fail closed after evidence upload
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.materialize.outcome }}' = success
+          test '${{ steps.default_tests.outcome }}' = success
+          test '${{ steps.qualification_tests.outcome }}' = success
+          test '${{ steps.clippy.outcome }}' = success
