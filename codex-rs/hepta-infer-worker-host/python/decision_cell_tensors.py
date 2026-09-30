@@ -12,7 +12,7 @@ import math
 import os
 import stat
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 import torch
 from torch import nn
@@ -131,6 +131,62 @@ def validate_runtime_profile(profile: dict[str, Any]) -> None:
         raise ValueError("unsupported runtime profile semantics")
 
 
+class HeadSupportRuleV2(NamedTuple):
+    """Immutable bound calibration, shared by the tensor and IPC consumers.
+
+    Recomputing from logits establishes arithmetic consistency only. It cannot
+    prove encoder execution, statistical calibration trust or effect authority.
+    """
+    temperatures: tuple[tuple[str, float], ...]
+    minimum_confidence: float
+    maximum_ood: float
+
+    @classmethod
+    def from_calibration(cls, calibration):
+        if not isinstance(calibration, dict):
+            raise ValueError("missing calibration")
+        temperatures = calibration.get("temperatures")
+        if not isinstance(temperatures, dict) or set(temperatures) != {"action", "target", "disposition", "postcondition", "ood"}:
+            raise ValueError("invalid calibration temperatures")
+        values = list(temperatures.values())
+        if any(type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in values):
+            raise ValueError("invalid calibration temperatures")
+        for name in ("minimum_confidence", "maximum_ood_probability"):
+            v = calibration.get(name)
+            if type(v) not in (int, float) or not math.isfinite(v) or not 0 <= v <= 1:
+                raise ValueError("invalid calibration threshold")
+        return cls(tuple(sorted(temperatures.items())), calibration["minimum_confidence"],
+                   calibration["maximum_ood_probability"])
+
+    def apply(self, outputs: dict[str, torch.Tensor]) -> dict[str, torch.Tensor]:
+        result = {name: torch.softmax(outputs[name] / temperature, dim=-1)
+                  for name, temperature in self.temperatures}
+        if any(not torch.isfinite(value).all() for value in result.values()):
+            raise ValueError("non-finite calibrated probabilities")
+        confidence = result["action"].max(dim=-1).values
+        result["supported"] = (confidence >= self.minimum_confidence) & (
+            result["ood"][:, 1] < self.maximum_ood)
+        return result
+
+
+def bound_support_rule(manifest_path: Path, expected: dict[str, Any]) -> HeadSupportRuleV2:
+    """Read the host-bound manifest before process creation, never a worker path."""
+    raw = checked_bytes(manifest_path, expected["head_manifest_sha256"], 256 * 1024)
+    manifest = strict_json(raw)
+    if (manifest.get("schema") != "hepta.decision-cell-head-artifact.v2" or
+            manifest.get("base_model", {}).get("snapshot_digest") != expected["base_snapshot_digest"]):
+        raise ValueError("calibration manifest identity mismatch")
+    profile = manifest.get("runtime_profile")
+    if not isinstance(profile, dict):
+        raise ValueError("missing runtime profile")
+    validate_runtime_profile(profile)
+    profile_bytes = (json.dumps(profile, sort_keys=True, separators=(",", ":"),
+                              ensure_ascii=False, allow_nan=False) + "\n").encode()
+    if hashlib.sha256(profile_bytes).hexdigest() != expected["runtime_profile_sha256"]:
+        raise ValueError("calibration runtime profile mismatch")
+    return HeadSupportRuleV2.from_calibration(manifest.get("calibration"))
+
+
 class HeadTensorBundleV2:
     """Load a caller-bound artifact into the same tensor graph used for training.
 
@@ -170,26 +226,12 @@ class HeadTensorBundleV2:
             raise ValueError("head parameter count mismatch")
         if parameter_group_digests(model) != manifest.get("parameter_group_sha256"):
             raise ValueError("organ/cell/head parameter binding mismatch")
-        calibration = manifest.get("calibration")
-        if not isinstance(calibration, dict):
-            raise ValueError("missing calibration")
-        temperatures = calibration.get("temperatures")
-        if not isinstance(temperatures, dict) or set(temperatures) != {"action", "target", "disposition", "postcondition", "ood"}:
-            raise ValueError("invalid calibration temperatures")
-        values = list(temperatures.values())
-        if any(type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in values):
-            raise ValueError("invalid calibration temperatures")
-        for name in ("minimum_confidence", "maximum_ood_probability"):
-            v = calibration.get(name)
-            if type(v) not in (int, float) or not math.isfinite(v) or not 0 <= v <= 1:
-                raise ValueError("invalid calibration threshold")
+        support_rule = HeadSupportRuleV2.from_calibration(manifest.get("calibration"))
         model.requires_grad_(False)
         self._model = model
         self._hidden_size = first.shape[1]
         self._manifest_bytes = raw
-        self._temperatures = dict(temperatures)
-        self._minimum_confidence = calibration["minimum_confidence"]
-        self._maximum_ood = calibration["maximum_ood_probability"]
+        self._support_rule = support_rule
         self.manifest_sha256 = manifest_sha256
 
     def observe(self, state: torch.Tensor, candidates: torch.Tensor) -> dict[str, torch.Tensor]:
@@ -221,11 +263,4 @@ class HeadTensorBundleV2:
     def observe_with_probabilities(self, state: torch.Tensor, candidates: torch.Tensor):
         """Consume adapters/heads once and calibrate that exact tensor result."""
         outputs = self.observe(state, candidates)
-        result = {name: torch.softmax(outputs[name] / temperature, dim=-1)
-                  for name, temperature in self._temperatures.items()}
-        if any(not torch.isfinite(value).all() for value in result.values()):
-            raise ValueError("non-finite calibrated probabilities")
-        confidence = result["action"].max(dim=-1).values
-        result["supported"] = (confidence >= self._minimum_confidence) & (
-            result["ood"][:, 1] < self._maximum_ood)
-        return outputs, result
+        return outputs, self._support_rule.apply(outputs)

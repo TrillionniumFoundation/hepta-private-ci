@@ -564,3 +564,32 @@ Exit zero reports successful replay; inspect `all_count_bounds_met` separately.
 Trust, runtime selection, prospective efficacy and activation remain false.
 See the existing [support experiment contract](../../../docs/modules/neuron.runtime/SUPPORT_CALIBRATION.md)
 for the required independent-population and prospective-window design boundaries.
+
+## Host-bound calibration at the resident reply boundary
+
+`FrozenEncoderProcess` now requires `manifest_path` from the host-selected artifact
+alongside the existing exact manifest/base/profile digests. It reads and snapshots
+that bounded manifest before creating a child or private snapshot directory. The
+same immutable `HeadSupportRuleV2` computes temperatures and support in both
+`HeadTensorBundleV2` and the receiving process. The receiver recomputes the complete
+probability object from the returned canonical float32 logits and requires exact
+agreement, including the boolean support decision. A normalized simplex alone is
+not sufficient. No epsilon, new fitted threshold or alternate softmax is added.
+
+The process and native probes both use this path. Invalid manifest bindings fail
+before dispatch. Contradictory observed replies close and reap only the owned
+model child; dispatch may already have occurred, so the original invocation stays
+indeterminate until the durable owner reconciles it. No retry or fallback occurs.
+Changing the manifest file after launch cannot change the captured rule. A newer
+validator is a new observation, not retroactive qualification of old receipts.
+
+This establishes arithmetic/artifact consistency, not proof that the reported
+logits came from that encoder. A compromised worker could fabricate consistent
+logits and probabilities. Executable integrity, OS isolation, authenticated
+provider ownership, calibration trust and effect authorization remain separate.
+The stateless V2 profile still has no temporal or parameter-value head. The
+ordinary Rust owner therefore cannot invent those fields to accept this profile.
+
+```sh
+python3 -m unittest -v test_frozen_calibration_binding test_frozen_process test_tensor_bundle
+```

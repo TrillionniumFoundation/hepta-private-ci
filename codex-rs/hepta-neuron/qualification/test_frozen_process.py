@@ -62,6 +62,19 @@ class FrozenProcessTests(unittest.TestCase):
         self.ready = {"schema": "hepta.frozen-encoder-ready.v1", "session_id": "session.test",
             "head_manifest_sha256": "1" * 64, "base_snapshot_digest": "2" * 64,
             "runtime_profile_sha256": "3" * 64, "device": "cpu", "advisory_only": True, "external_effect": False}
+        from test_tensor_bundle import fixture_manifest, shared
+        self._manifest_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(self._manifest_dir.cleanup)
+        self.manifest_path = Path(self._manifest_dir.name) / "manifest.json"
+        self.calibration = {"temperatures": {key: 1.0 for key in
+            ("action", "target", "disposition", "postcondition", "ood")},
+            "minimum_confidence": 0.5, "maximum_ood_probability": 0.5}
+        self.manifest = fixture_manifest(shared.TypedHeads(8, 4), self.calibration, b"fixture")
+        raw = canonical(self.manifest)
+        self.manifest_path.write_bytes(raw)
+        self.ready.update(head_manifest_sha256=hashlib.sha256(raw).hexdigest(),
+            base_snapshot_digest=self.manifest["base_model"]["snapshot_digest"],
+            runtime_profile_sha256=hashlib.sha256(canonical(self.manifest["runtime_profile"])).hexdigest())
         self.children = []
 
     def tearDown(self):
@@ -70,7 +83,7 @@ class FrozenProcessTests(unittest.TestCase):
 
     def launch(self, mode="normal", seconds=3):
         child = FrozenEncoderProcess([sys.executable, "-u", "-c", HELPER, json.dumps(self.ready), mode],
-            self.ready, environment={"PATH": os.defpath}, startup_seconds=seconds)
+            self.ready, environment={"PATH": os.defpath}, manifest_path=self.manifest_path, startup_seconds=seconds)
         self.children.append(child)
         return child
 
@@ -155,7 +168,7 @@ class FrozenProcessTests(unittest.TestCase):
 
     def test_unsupported_launch_and_oversized_input_reject(self):
         with self.assertRaises(ValueError):
-            FrozenEncoderProcess(["python"], self.ready, environment={})
+            FrozenEncoderProcess(["python"], self.ready, environment={}, manifest_path=self.manifest_path)
         child = self.launch()
         value = self.request(); value["text"] = "x" * MAX_FRAME
         with self.assertRaisesRegex(ValueError, "frame bound"):
@@ -173,7 +186,7 @@ class FrozenProcessTests(unittest.TestCase):
             executable = str(Path(missing_root) / "missing-executable")
             with mock.patch("decision_cell_process.tempfile.TemporaryDirectory", side_effect=tracked):
                 with self.assertRaises(FileNotFoundError):
-                    FrozenEncoderProcess([executable], self.ready, environment={})
+                    FrozenEncoderProcess([executable], self.ready, environment={}, manifest_path=self.manifest_path)
         self.assertEqual(len(created), 1)
         self.assertFalse(created[0].exists())
 

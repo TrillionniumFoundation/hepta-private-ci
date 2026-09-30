@@ -39,7 +39,7 @@ def probe(receipt_path: Path, model_path: Path) -> dict:
     # Explicit CPU dependency environment; no credentials or provider variables.
     environment = {name: os.environ[name] for name in ("PATH", "PYTHONPATH", "OMP_NUM_THREADS",
         "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "TOKENIZERS_PARALLELISM") if name in os.environ}
-    environment.update({"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1", "PYTHONNOUSERSITE": "1"})
+    environment.update({"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1", "PYTHONNOUSERSITE": "1", "PYTHONDONTWRITEBYTECODE": "1"})
     def launch():
         command = [sys.executable, "-u", str(WORKER / "frozen_decision_cell_worker.py"),
             "--session-id", expected["session_id"], "--model-path", str(model_path),
@@ -47,7 +47,8 @@ def probe(receipt_path: Path, model_path: Path) -> dict:
             "--weights", artifact["weights_path"], "--weights-sha256", artifact["weights_sha256"],
             "--base-snapshot-sha256", expected["base_snapshot_digest"],
             "--runtime-profile-sha256", expected["runtime_profile_sha256"]]
-        return FrozenEncoderProcess(command, expected, environment=environment)
+        return FrozenEncoderProcess(command, expected, environment=environment,
+                manifest_path=Path(artifact["manifest_path"]))
     examples = [row for row in panel.build_dataset() if row.split == "test"][:2]
     recorded = []
     startup = time.monotonic_ns()

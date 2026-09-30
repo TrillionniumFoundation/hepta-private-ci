@@ -20,6 +20,25 @@ Historical v1 artifacts retain their fitted thresholds and interpretation; do no
 rewrite their receipts or identify them as v2 executions. Recalibration is a new
 artifact with the original source/data/features retained as explicit inputs.
 
+## Same-artifact calibration during real process consumption
+
+The resident parent now reads the exact host-selected head manifest before
+launch. Its SHA-256, base snapshot and runtime-profile digest must match the
+already expected readiness identity. `HeadSupportRuleV2` is one immutable rule
+used by the shared tensor consumer and by the parent receiving the IPC result.
+The parent verifies canonical finite float32 scores, recomputes every calibrated
+probability and the support bit, and rejects any mismatch. Float32 temperature
+and threshold interpretation is unchanged, including confidence saturation and
+strict OOD rejection at zero. No acceptance epsilon or threshold refit is used.
+
+A late/contradictory result is not proof of remote non-execution. The process is
+closed and reaped while the original operation remains available for exact-owner
+reconciliation; neither a retry nor a model switch follows this error. Snapshotting
+the rule prevents a later filesystem edit from changing a running invocation.
+This check proves internal arithmetic consistency, not honest model execution,
+independent calibration, provider authenticity or action authority. It does not
+complete the missing learned transition/parameter heads of the Rust provider.
+
 ## Joint frontier rather than sequential local optima
 
 The v1 algorithm first optimized the marginal OOD rule, then optimized confidence
@@ -146,3 +165,35 @@ insufficient evidence without silently changing the artifact or acceptance budge
 Signed selection, current artifact admission, ordinary product authority, independent
 acceptance and activation remain separate decisions. PR/run evidence records which
 exact sources and artifacts actually executed; this contract grants none of them.
+
+## Concrete provider completion experiment: defined outputs before training
+
+The next full-provider artifact needs an explicit, separately versioned graph;
+existing `none-v1` parameter/stateless artifacts are not rewritten as complete.
+Before training, freeze the following semantics and the exact consuming owner:
+
+| Boundary | Required experiment input and acceptance observation |
+| --- | --- |
+| Text/target to Rust request | One host-owned projection binds raw text, ordered candidate IDs, target generations and observation frontier to both the private-process request and the typed Rust operation digest. Do not equate the two different digest domains. A trained reduction must define the admitted bounded feature vector; truncating encoder dimensions is not a learned projection. |
+| Parameter head | Define units, coordinate frame, ranges, applicability and target-generation binding for every parameter. Derive labels from retained environment actions/outcomes, not a hash or constant placeholder. Parameterless examples cannot prove this head exists. |
+| Temporal/transition head | Define the previous-state bytes and version, reset/episode boundary, next-state target and the meaning of drive/prediction Q24 tensors. Bind actual state bytes to their digest. An arbitrary nonzero digest or unrelated sparse checkpoint is not a learned recurrent state. |
+| Numerical bridge | Fix float32-to-Q24 rounding, overflow rejection, score ordering, action masking and abstention before evaluation. Reject nonfinite or out-of-range values rather than clipping them into a plausible action. |
+| Time and resources | Bind monotonic clock domain and unit conversion, dispatch deadline, queue age, complete latency and measured memory. Do not label fixture constants or Python process startup time as observed per-inference resource usage. |
+| Recovery and migration | Use the existing Agentd owner/provider dispatch fence and witness. Reopen with the exact original request after each crash cut; unknown never redispatches. Old state stays read-only; migration has separate namespace/version and verified rollback compatibility. |
+
+Collect environment-labelled episodes before fitting these new heads. Split by
+source task/episode and relevant environment identity, not by neighbouring frames;
+retain all failures and abstentions. Training, tuning, calibration, independent
+acceptance and prospective windows have disjoint roles. The existing synthetic
+command corpus remains a bounded regression/training experiment and does not
+provide missing temporal or parameter labels. A new dataset requires its own
+input admission and complete provenance; teacher output remains excluded until
+provider and account-specific use rights are independently established.
+
+First verify saved tensors and the actual encoder in an offline read-only
+shadow experiment. Then run those same artifacts through the existing Rust
+canonical owner on disposable state with no motor authority. Inject lost reply,
+pre/post-dispatch cancellation, witness outage, process death and request
+substitution before any isolated motor experiment. Only a distinct currently
+authorized motor stage may perform effects. This order is an experimental design,
+not an executed result, new runtime, production selection or migration receipt.

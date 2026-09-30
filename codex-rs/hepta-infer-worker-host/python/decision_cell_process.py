@@ -114,7 +114,8 @@ class FrozenEncoderProcess:
     POSIX only: Windows is deliberately not claimed by this transport.
     """
     def __init__(self, command: Sequence[str], expected_ready: Mapping[str, Any], *,
-                 environment: Mapping[str, str], startup_seconds: float = 120):
+                 environment: Mapping[str, str], manifest_path: Path,
+                 startup_seconds: float = 120):
         if os.name != "posix":
             raise ValueError("POSIX process profile required")
         if not 0 < startup_seconds <= MAX_SECONDS or not command or any(type(v) is not str for v in command):
@@ -132,6 +133,11 @@ class FrozenEncoderProcess:
             raise ValueError("invalid session")
         if any(not _digest(expected[k]) for k in ("head_manifest_sha256", "base_snapshot_digest", "runtime_profile_sha256")):
             raise ValueError("invalid artifact identity")
+        # Load only the bounded, host-selected calibration manifest. No model
+        # code/weights are run here; the admitted tensor graph still lives in the
+        # child. The parent snapshots the rule before any process is created.
+        from decision_cell_tensors import bound_support_rule
+        self._support_rule = bound_support_rule(manifest_path, expected)
         self._expected = MappingProxyType(expected)
         self._lock = threading.Lock()
         self._closed = False
@@ -297,6 +303,22 @@ class FrozenEncoderProcess:
                     raise WorkerTransportError("nonfinite tensor")
                 if group == "probabilities" and (any(v < 0 or v > 1 for v in array[0]) or abs(sum(array[0]) - 1) > 1e-5):
                     raise WorkerTransportError("invalid probability simplex")
+
+        # A normalized simplex and a boolean are not proof of the recorded rule.
+        # Reuse its exact CPU float32 arithmetic, including threshold rounding;
+        # do not introduce an epsilon that can turn a reject into an acceptance.
+        import torch
+        scores = {name: torch.tensor(rows, dtype=torch.float32)
+                  for name, rows in value["scores"].items()}
+        if any(not torch.isfinite(tensor).all() or tensor.tolist() != value["scores"][name]
+               for name, tensor in scores.items()):
+            raise WorkerTransportError("scores are not canonical finite float32 values")
+        try:
+            computed = {name: tensor.tolist() for name, tensor in self._support_rule.apply(scores).items()}
+        except (ValueError, RuntimeError) as error:
+            raise WorkerTransportError("invalid bound calibration computation") from error
+        if computed != value["probabilities"]:
+            raise WorkerTransportError("probabilities/support contradict bound calibration")
 
     def close(self) -> None:
         if self._reaped:

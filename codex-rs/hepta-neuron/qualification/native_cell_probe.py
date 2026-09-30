@@ -76,7 +76,8 @@ def probe(receipt_path: Path, model_path: Path, output: Path, count: int) -> dic
         "device": "cpu", "advisory_only": True, "external_effect": False}
     environment = {key: os.environ[key] for key in ("PATH", "PYTHONPATH", "OMP_NUM_THREADS",
         "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "TOKENIZERS_PARALLELISM") if key in os.environ}
-    environment.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", PYTHONNOUSERSITE="1")
+    environment.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", PYTHONNOUSERSITE="1",
+                       PYTHONDONTWRITEBYTECODE="1")
     command = [sys.executable, "-u", str(WORKER / "frozen_decision_cell_worker.py"),
         "--session-id", expected["session_id"], "--model-path", str(model_path),
         "--manifest", artifact["manifest_path"], "--manifest-sha256", artifact["manifest_sha256"],
@@ -109,7 +110,8 @@ def probe(receipt_path: Path, model_path: Path, output: Path, count: int) -> dic
 
         try:
             append_event({"event": "model_start_attempt", "plan_sha256": plan_digest})
-            child = FrozenEncoderProcess(command, expected, environment=environment)
+            child = FrozenEncoderProcess(command, expected, environment=environment,
+                manifest_path=Path(artifact["manifest_path"]))
             with child:
                 for index, example in enumerate(selected):
                     active_index = index

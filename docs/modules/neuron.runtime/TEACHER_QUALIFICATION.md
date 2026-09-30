@@ -129,7 +129,18 @@ agreement is an advisory label, not ground truth: retain independently observed
 environment outcomes, human review where required, student-state coverage and an
 untouched prospective holdout. Hashes establish integrity, not permission or truth.
 
-Official references checked 2026-09-29; resolve current applicable versions at use:
+Official references rechecked 2026-09-30. The current Services Agreement and
+ROW consumer Terms both state an effective date of 2026-01-01; their scopes are
+not interchangeable. The Services Agreement applies to specified business/API
+products and its section 3.3(e) preserves a defined Permitted Exception. Consumer
+Terms separately prohibit use of output to develop competing models. Neither
+successful CLI authentication nor a Pro plan establishes which agreement or
+exception covers the proposed teacher-training/distribution use. Record the
+applicable account/product and controlling written terms rather than inferring
+permission from repository ownership. This remains unresolved until reviewed by
+the responsible rights owner; this document grants no rights.
+
+Resolve current applicable versions at use:
 
 - [OpenAI Services Agreement](https://openai.com/policies/services-agreement/),
   scope, sections 3.3, 4.1 and the definitions of exceptions.
