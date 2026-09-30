@@ -476,6 +476,14 @@ with retained Automation state is rejected for explicit owner recovery/retiremen
 This bounded profile does not silently convert an existing compiled owner into
 a removed module. A non-serving selected writer reservation also rejects, rather
 than being flattened into absence.
+An explicitly selected owner that is unavailable or corrupt rejects startup with
+an owner-recovery diagnostic; it is not converted into an absent optional module.
+The default compiled profile retains its existing optional-degradation policy.
+The ordinary-binary tests separately exercise selected restart, absent restart,
+wrong executable, retained-but-unselected state, selected corruption and permanent
+timer retirement. They do not certify automatic topology adoption or cross-schema
+writer migration; the selected dependency records are structural fixtures.
+
 The factory reobserves the same selection after bounded owner startup and before
 publishing its attachment or scheduling work. Failed publication leaves no live
 attachment. The local task generation is the selected module generation, not the

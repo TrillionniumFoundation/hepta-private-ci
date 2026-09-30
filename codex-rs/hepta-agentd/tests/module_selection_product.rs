@@ -5,10 +5,13 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::ensure;
 use codex_hepta_agent_components::automation::AutomationSchedule;
+use codex_hepta_agent_components::automation::AutomationStore;
 use codex_hepta_agent_components::automation::AutomationTaskDraft;
+use codex_hepta_agent_components::automation::TimerPhase;
 use codex_hepta_agent_components::contracts::AgentId;
 use codex_hepta_agent_components::control_plane::RuntimeModuleAbiV1;
 use codex_hepta_agent_components::control_plane::RuntimeModuleStateClassV1;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
 use codex_hepta_agent_components::fleet::AgentManifest;
 use codex_hepta_agent_components::fleet::FleetRegistry;
 use codex_hepta_agent_components::fleet::ReleaseId;
@@ -184,9 +187,17 @@ async fn exercise(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn normal_agentd_binary_consumes_selected_topology_and_recovers_one_durable_task()
--> Result<()> {
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ProfileCase {
+    Selected,
+    Absent,
+    WrongImage,
+    RetainedUnselected,
+    CorruptSelected,
+    RetiredSelected,
+}
+
+async fn run_product_case(case: ProfileCase) -> Result<()> {
     let temp = tempfile::Builder::new()
         .prefix("hsel-product-")
         .tempdir_in("/tmp")?;
@@ -215,11 +226,34 @@ async fn normal_agentd_binary_consumes_selected_topology_and_recovers_one_durabl
     // Explicit administrator allowance in this isolated fixture; installation
     // alone must not authorize an Agent to execute an otherwise valid release.
     registry.allow_release(&agent, &release_id)?;
-    {
+    let layout = registry.load_agent(&agent)?.layout;
+    let mut preserved_database = None;
+    if matches!(
+        case,
+        ProfileCase::RetainedUnselected | ProfileCase::RetiredSelected
+    ) {
+        let store = AutomationStore::open(&layout).await?;
+        if case == ProfileCase::RetiredSelected {
+            ensure!(store.quiesce_timer().await?.can_handoff());
+            ensure!(store.retire_timer().await?.phase == TimerPhase::Retired);
+        }
+        let path = store.path().to_path_buf();
+        store.close().await;
+        preserved_database = Some((path.clone(), std::fs::read(path)?));
+    } else if case == ProfileCase::CorruptSelected {
+        let path = layout.automation_root().join("automation_1.sqlite3");
+        let bytes = b"deliberately invalid SQLite product fixture".to_vec();
+        std::fs::write(&path, &bytes)?;
+        preserved_database = Some((path, bytes));
+    }
+    if !matches!(case, ProfileCase::Absent | ProfileCase::RetainedUnselected) {
         let mut owner = DurableRuntimeModuleSupervisorV1::open(
             registry.layout().runtime_module_supervisor_state(),
         )?;
-        let abi = selected_binary(&installed.program)?;
+        let mut abi = selected_binary(&installed.program)?;
+        if case == ProfileCase::WrongImage {
+            abi.implementation_digest = Digest32::of_bytes(b"different installed image");
+        }
         for dependency in &abi.dependencies {
             let mut prerequisite = abi.clone();
             prerequisite.module_id = dependency.clone();
@@ -241,7 +275,63 @@ async fn normal_agentd_binary_consumes_selected_topology_and_recovers_one_durabl
             }
         })
         .await?;
-        exercise(&client, &registry, &agent, release_id).await
+        if case == ProfileCase::Selected {
+            return exercise(&client, &registry, &agent, release_id).await;
+        }
+        let before = client.snapshot(agent.clone()).await?;
+        client.start(before.control_fence, release_id).await?;
+        if matches!(
+            case,
+            ProfileCase::WrongImage
+                | ProfileCase::RetainedUnselected
+                | ProfileCase::CorruptSelected
+        ) {
+            // Pair these rejection cases with the successful identical installed
+            // binary above. The separate owner tests assert the exact error class.
+            timeout(Duration::from_secs(15), async {
+                loop {
+                    let status = client.snapshot(agent.clone()).await?;
+                    ensure!(
+                        !status.healthy,
+                        "rejected {case:?} became a healthy product"
+                    );
+                    if status.lifecycle == AgentLifecycle::Failed && !status.active {
+                        return Ok::<_, anyhow::Error>(());
+                    }
+                    sleep(Duration::from_millis(25)).await;
+                }
+            })
+            .await
+            .context("selected product rejection deadline")??;
+        } else {
+            let (product, first) = ready(&client, &registry, &agent, 0).await?;
+            ensure!(
+                product.health().await?.ready,
+                "unrelated core must remain live"
+            );
+            ensure!(
+                product.automation_list(10).await.is_err(),
+                "absent/retired Automation must not advertise an idle owner"
+            );
+            let current = client.snapshot(agent.clone()).await?;
+            client.restart(current.control_fence).await?;
+            let (reopened, second) = ready(
+                &client,
+                &registry,
+                &agent,
+                first.spawn_generation.context("first process generation")?,
+            )
+            .await?;
+            ensure!(
+                first.process_id != second.process_id,
+                "real process restart required"
+            );
+            ensure!(
+                reopened.automation_list(10).await.is_err(),
+                "restart resurrected optional owner"
+            );
+        }
+        Ok(())
     }
     .await;
     // Explicitly settle owned processes even after an assertion/operation error.
@@ -260,5 +350,67 @@ async fn normal_agentd_binary_consumes_selected_topology_and_recovers_one_durabl
     }
     stop.cancel();
     daemon.await??;
-    result
+    result?;
+    if matches!(case, ProfileCase::Absent | ProfileCase::WrongImage) {
+        ensure!(
+            std::fs::read_dir(layout.automation_root())?
+                .next()
+                .is_none(),
+            "absent/rejected module opened storage"
+        );
+    }
+    if matches!(
+        case,
+        ProfileCase::RetainedUnselected | ProfileCase::CorruptSelected
+    ) {
+        let (path, bytes) = preserved_database.context("preserved owner input")?;
+        ensure!(
+            std::fs::read(path)? == bytes,
+            "rejected startup changed retained owner input"
+        );
+    }
+    if case == ProfileCase::RetiredSelected {
+        let owner = AutomationStore::open(&layout).await?;
+        let status = owner.timer_status().await?;
+        owner.close().await;
+        ensure!(
+            status.phase == TimerPhase::Retired,
+            "restart cleared permanent retirement"
+        );
+    }
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn normal_agentd_binary_consumes_selected_topology_and_recovers_one_durable_task()
+-> Result<()> {
+    run_product_case(ProfileCase::Selected).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn normal_agentd_absent_module_preserves_core_and_never_opens_storage_after_restart()
+-> Result<()> {
+    run_product_case(ProfileCase::Absent).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn normal_agentd_wrong_selected_image_rejects_before_owner_open() -> Result<()> {
+    run_product_case(ProfileCase::WrongImage).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn normal_agentd_unselection_cannot_abandon_retained_owner_state() -> Result<()> {
+    run_product_case(ProfileCase::RetainedUnselected).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn normal_agentd_selected_corrupt_owner_requires_recovery_not_false_readiness() -> Result<()>
+{
+    run_product_case(ProfileCase::CorruptSelected).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn normal_agentd_retired_timer_is_not_resurrected_by_selected_profile_or_restart()
+-> Result<()> {
+    run_product_case(ProfileCase::RetiredSelected).await
 }

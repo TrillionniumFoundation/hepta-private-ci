@@ -63,6 +63,18 @@ impl AutomationService {
             AutomationStore::open(&layout).await
         })
         .await?;
+        // An explicitly selected module is a required startup binding. Preserve
+        // the legacy compiled profile's optional degradation, but never convert
+        // selected corrupt/unavailable state into absence and false readiness.
+        if selection
+            .as_ref()
+            .is_some_and(|value| value.selected.is_some())
+            && store.is_none()
+        {
+            return Err(AgentdError::Protocol(
+                "selected Automation owner is unavailable or corrupt; explicit owner recovery is required".to_string(),
+            ));
+        }
         if selection.is_none()
             && let Some(store) = store.as_ref()
         {

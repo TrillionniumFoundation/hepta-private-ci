@@ -322,3 +322,65 @@ async fn absent_route_cannot_silently_abandon_existing_owner_state() {
     owner.close().await;
     finish(fixture).await;
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn selected_unavailable_owner_cannot_masquerade_as_an_absent_optional_module() {
+    for corrupt_file in [false, true] {
+        let fixture = fixture(Some(compiled_abi())).await;
+        let database = fixture
+            .state
+            .identity()
+            .layout
+            .automation_root()
+            .join("automation_1.sqlite3");
+        if corrupt_file {
+            std::fs::write(&database, b"not a SQLite database").expect("corrupt owner fixture");
+        } else {
+            std::fs::create_dir(&database).expect("unavailable database fixture");
+        }
+        let result = AutomationService::open(
+            Arc::clone(&fixture.state),
+            RuntimeModuleProfileV1::SupervisorSelected,
+        )
+        .await;
+        let rejected = matches!(&result, Err(AgentdError::Protocol(message))
+            if message.contains("selected Automation owner") && message.contains("recovery"));
+        let unpublished = !fixture
+            .state
+            .automation_is_available()
+            .expect("attachment state");
+        drop(result);
+        finish(fixture).await;
+        assert!(
+            rejected,
+            "selected unavailable/corrupt owner must reject startup, corrupt_file={corrupt_file}"
+        );
+        assert!(unpublished, "failed selected owner must not be published");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn compiled_optional_owner_retains_its_existing_degraded_startup_policy() {
+    let fixture = fixture(None).await;
+    let database = fixture
+        .state
+        .identity()
+        .layout
+        .automation_root()
+        .join("automation_1.sqlite3");
+    std::fs::create_dir(&database).expect("unavailable database fixture");
+    let result =
+        AutomationService::open(Arc::clone(&fixture.state), RuntimeModuleProfileV1::Compiled).await;
+    let degraded = result.is_ok();
+    let unpublished = !fixture
+        .state
+        .automation_is_available()
+        .expect("attachment state");
+    drop(result);
+    finish(fixture).await;
+    assert!(
+        degraded,
+        "do not silently strengthen the legacy optional profile"
+    );
+    assert!(unpublished, "degraded does not mean attached");
+}
