@@ -81,15 +81,17 @@ install:
 # Run nextest with --no-fail-fast so all tests are run.
 #
 # Run `cargo install --locked cargo-nextest` if you don't have it installed.
-# Prefer this for routine local runs. Test the requested product profile;
-# use `--all-features` only for an explicit feature-matrix qualification.
+# Scoped workspace packages use fresh manifest metadata; Cargo still compiles
+# all requested targets/features. Graph filters and full runs use full metadata.
+# Set HEPTA_NEXTTEST_FULL_METADATA=1 to force the normal nextest metadata path.
+# Use --all-features only for an explicit feature-matrix qualification.
 [unix]
 test *args:
-    RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+    RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local {{ python }} ../scripts/run-nextest.py "$@"
 
 [windows]
 test *args:
-    $env:RUST_MIN_STACK = "{{ rust_min_stack }}"; $env:NEXTEST_PROFILE = "local"; cargo nextest run --no-fail-fast @($args | Select-Object -Skip 1)
+    $env:RUST_MIN_STACK = "{{ rust_min_stack }}"; $env:NEXTEST_PROFILE = "local"; {{ python }} ../scripts/run-nextest.py @($args | Select-Object -Skip 1)
 
 # Run from the repository root so scripts that resolve paths from `cwd` see
 # the same layout they use in GitHub Actions.
