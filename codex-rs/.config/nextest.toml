@@ -121,3 +121,18 @@ test-group = 'hepta_product_lifecycle'
 [[profile.default.overrides]]
 filter = 'package(codex-hepta-agentd) & test(normal_product_bounded_evolution_under_concurrent_load)'
 slow-timeout = { period = "60s", terminate-after = 4 }
+
+# These exhaustive disk experiments cover every byte boundary and independent
+# subprocess crash cuts. Their total harness budget is separate from the existing
+# per-operation and per-child deadlines. Preserve all cuts and serialize fsync
+# contention between the experiments on shared CI disks.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-neuron) & (test(every_partial_frame_boundary_recovers_only_the_predecessor) | test(durable_process_crash_matrix_v2))'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-infer-core) & test(small_capacity_survives_many_rounds_reload_and_never_replays_history)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 6 }
