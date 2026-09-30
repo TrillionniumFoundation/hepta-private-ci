@@ -12,6 +12,7 @@ on:
       - codex-rs/Cargo.lock
       - docs/modules/objective.compiler/**
       - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
+      - docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md
       - scripts/hepta-objective-*.py
       - scripts/test_hepta_objective_*.py
       - scripts/hepta-implementation-maps.py
@@ -47,6 +48,36 @@ jobs:
           test -z "$(git status --porcelain)"
           mkdir -p "$RUNNER_TEMP/objective-authoring"
           git rev-parse HEAD HEAD^{tree} | tee "$RUNNER_TEMP/objective-authoring/source.txt"
+          git archive --format=tar.gz \
+            --output="$RUNNER_TEMP/objective-authoring/repository.tgz" \
+            HEAD \
+            codex-rs/hepta-objective \
+            codex-rs/hepta-intelligence/src/objective_run.rs \
+            codex-rs/hepta-intelligence/src/objective_run_tests.rs \
+            codex-rs/hepta-agentd/src/objective_runtime.rs \
+            codex-rs/hepta-agentd/src/objective_runtime_replay.rs \
+            codex-rs/hepta-agentd/src/objective_run_start_checkpoint.rs \
+            codex-rs/hepta-agentd/src/lane_b_runtime.rs \
+            codex-rs/hepta-agentd/tests/objective_product_e2e \
+            codex-rs/hepta-learning-ledger/src/run_start.rs \
+            codex-rs/hepta-learning-ledger/src/run_start_proof.rs \
+            docs/modules/objective.compiler \
+            docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md \
+            docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md \
+            scripts/hepta-implementation-maps.py \
+            scripts/hepta-objective-current-state.py \
+            scripts/hepta-objective-evidence-project.py \
+            scripts/hepta-objective-qualify-exact.py \
+            scripts/hepta-objective-release-gate.py \
+            scripts/hepta-objective-target-measure.py \
+            .github/workflows/hepta-objective-admission.yml \
+            .github/workflows/hepta-objective-authoring-validation.yml \
+            .github/workflows/hepta-objective-exact-execution.yml \
+            .github/workflows/hepta-objective-release-gate.yml \
+            .github/workflows/hepta-objective-target-host.yml \
+            .github/workflows/hepta-objective-target-measurement.yml
+          sha256sum "$RUNNER_TEMP/objective-authoring/repository.tgz" \
+            > "$RUNNER_TEMP/objective-authoring/repository.tgz.sha256"
 
       - name: Regenerate objective implementation map without repository credentials
         shell: bash
