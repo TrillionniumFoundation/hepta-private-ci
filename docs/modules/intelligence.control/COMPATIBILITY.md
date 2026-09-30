@@ -15,6 +15,26 @@ New public APIs must preserve the existing operation identity and effect-boundar
 semantics. Renames require a deprecation window or an atomic update of every
 tracked caller. Consumer compilation is part of the exact-head qualification.
 
+### Exact tokenizer admission
+
+Physical prompt preparation now requires a host-owned `ExactTokenizerV2`.
+Callers migrate to `prepare_prompt_delivery_with_tokenizer_v1`,
+`compile_prompt_registry_with_tokenizer_v2` or
+`AgentdPromptPipelineOwner::compile_and_stage_with_tokenizer` and pass the exact
+tokenizer for the admitted model profile. Its digest must match that profile;
+serialization counts the complete delivered bytes, including envelope overhead,
+against both the compiled budget and maximum context size. A sum of source
+fragment token costs cannot replace this complete-payload count.
+
+The previous no-tokenizer entrypoints retain their signatures for source
+migration but reject preparation with `PromptPipelineErrorV1::MissingExactTokenizer`.
+The registry and Agentd owner entrypoints preserve their existing `Pipeline` and
+`Compilation` error wrappers. Callers must supply the tokenizer rather than
+reinterpret this error as a fallback authorization. Historical receipts and
+counts are not upgraded into current serialization proof by changing their
+declared token count. Exact-head consumer compilation and prompt-budget tests
+must run after migration; source presence alone grants no product acceptance.
+
 ## Durable compatibility
 
 SQLite migrations are append-only and versioned. Existing semantic digests,
@@ -44,3 +64,10 @@ tests and a compatibility note here. Evidence and status schemas may advance
 independently, but a verifier must reject an unknown schema rather than treating
 it as a pass. Acceptance receipts bind their verifier and workflow SHA, so a
 verifier change invalidates previous candidate acceptance.
+
+The registry compilation/staging path counts its binary source envelope.
+Agentd then extracts developer fragments, and the host serializer must validate
+the final provider framing and complete physical request budget separately.
+The direct canonical prepared-delivery path retains the exact payload it
+validates. Neither path creates a model-specific live tokenizer implementation
+or independently provisions an authorized production embedding.

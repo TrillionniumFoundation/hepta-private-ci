@@ -122,9 +122,14 @@ operations still obey their Decision predecessor; fairness cannot bypass it.
 Cancellation is checked between calls and while waiting for the cadence.
 Synchronous learning file/grant/writer operations run behind four actual-worker
 slots and a bounded receiver deadline; an in-process blocked call still cannot
-be killed safely, so no hard-interruption guarantee is made for them. The current
-service waits for the existing Running readiness gate, so drain-time/historical
-recovery availability remains a separate lifecycle acceptance question.
+be killed safely as an individual thread. Each actual worker owns an independent
+process watchdog. If it survives the caller budget and bounded hard-timeout grace,
+the watchdog exits the fenced Agentd process with code 70 while preserving the
+unsettled operation identity. Supervisor replacement and successor-generation
+destination-first adoption require their own exact target-host evidence; process
+exit is not proof of completed recovery. The service waits for the existing
+Running readiness gate, so drain-time/historical recovery availability remains a
+separate lifecycle acceptance question.
 
 ## Files and resource policy
 

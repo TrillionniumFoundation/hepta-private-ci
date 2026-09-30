@@ -55,8 +55,10 @@ The authenticated `ObjectiveStart` route invokes the runner only for an
 atomically configured runner/provider profile. That profile also requires the
 independent authority rollback witness and process hard-timeout fence. Ordinary
 CLI bootstrap neither constructs an authorized seven-owner factory nor accepts
-a runner-only pseudo-profile; product embeddings use
-`AgentdConfig::with_canonical_intelligence_profile`. `ContextAttached` is not
+a runner-only pseudo-profile. `AgentdConfig::with_canonical_intelligence_profile`
+installs the prepare-only runner/provider pair. Physical product embeddings use
+`AgentdCanonicalIntelligenceProductionProfileV1` to atomically install that pair,
+the execution host and the durable learning reconciler. `ContextAttached` is not
 proof that Decision publication, physical App Server execution and Outcome
 recovery formed one observed product episode. Those live edges remain acceptance
 work.
@@ -111,6 +113,18 @@ jointly condition intuition; conflicting precomputed state fails. Physical send
 uses only `PreparedAgentdIntelligenceRunV1::physical_prompt`, not arbitrary prompt
 text. Compatibility preparation without this delivery cannot execute the physical
 product path. Live selected-action semantics and quality remain acceptance gates.
+
+Prompt delivery requires an actual host-owned `ExactTokenizerV2` through
+`prepare_prompt_delivery_with_tokenizer_v1`,
+`compile_prompt_registry_with_tokenizer_v2` or
+`AgentdPromptPipelineOwner::compile_and_stage_with_tokenizer`. Serialization
+checks the tokenizer identity against the selected model profile and counts the
+complete serialized byte payload, including its envelope overhead. It enforces
+both the compiled token budget and the model's maximum context size. Summed
+source-fragment token costs are not an exact count of this payload. Legacy
+entrypoints without a tokenizer preserve their signatures but fail closed with
+`MissingExactTokenizer` or its existing error wrapper; see the
+[source migration contract](COMPATIBILITY.md#exact-tokenizer-admission).
 
 ### Multiscale DecisionCell integration target
 
@@ -210,10 +224,12 @@ unknown physical result into safe replay.
 
 Learning file/grant/writer operations use bounded blocking slots and retain real
 capacity until completion after request detachment. Arbitrary synchronous storage
-I/O is not claimed to be safely interruptible in-process; its unknown outcomes
-remain durable reconcile-only work. Supervisor replacement for cognition exit 70
-and learning-I/O crash cuts remain target-host qualification, not missing source
-interfaces.
+I/O cannot be safely interrupted as an individual in-process thread. The existing
+learning-I/O watchdog instead exits the fenced Agentd process with code 70 if the
+worker survives its caller budget and bounded hard-timeout grace. Unknown outcomes
+remain durable reconcile-only work. Supervisor replacement, successor-generation
+adoption and complete cognition/learning-I/O crash cuts require exact target-host
+qualification; the process fence alone does not prove those recovery steps.
 
 [Shared concurrency requirements](../README.md#shared-concurrency-and-transactions)
 remain mandatory at every owner boundary.
@@ -294,10 +310,13 @@ hour and each iteration visits at most 256 scheduled operations. Work is not
 unbounded merely because a request detached. These are code bounds, not RSS,
 latency or throughput measurements.
 
-Further optimization should reuse one authenticated manifest per validation
-boundary and owner-local exact ledger indexes without weakening between-stage
-freshness or exact authenticated event equality. Current historical observation
-still clones/scans ledger history; no index-speedup claim is made.
+Currentness already verifies one authenticated manifest per fence and shares its
+immutable seven-owner snapshot across that fence's owner reads. Pre-call,
+post-call and final-handoff fences remain separate; no run-long cache can replace
+them. Exact historical learning observation already uses the ledger owner's
+`record_by_id` index, then checks complete event/predecessor equality and the
+independent witness frontier. These source optimizations do not establish measured
+latency, signature cost, memory use or recovery throughput on the selected host.
 
 [Shared performance requirements](../README.md#shared-performance-and-capacity)
 and selected-host measurements remain applicable.
@@ -502,8 +521,10 @@ tracked files. Exact workflow projections may certify only their executed lane.
 
 The source now includes normal authenticated ObjectiveStart completion through
 `AgentdIntelligenceExecutionHostV1` and the existing-driver
-`NativeIntelligenceProductEmbeddingV1`. An authorized embedding installs it after
-the guarded runner/provider profile. Decision plus witness acknowledgement
+`NativeIntelligenceProductEmbeddingV1`. An authorized embedding installs it with
+the guarded runner, host-owned invocation factory and durable learning reconciler
+through the atomic `AgentdCanonicalIntelligenceProductionProfileV1`. Decision
+plus witness acknowledgement
 precedes model send; terminal Outcome support is checked against the observed run
 and physical output. Errors after a terminal observation preserve it for recovery.
 The default binary still supplies no owner factory, execution host or evidence.
@@ -539,5 +560,35 @@ remain owned until actual completion, even when the awaiting request disappears.
 Unix authority/sidecar reads walk no-follow parent handles and use a nonblocking
 leaf open plus same-handle regular-file, permissions, hard-link and byte checks.
 Non-Unix hosts require their own qualified handle implementation. Arbitrary
-learning I/O is not claimed to be forcibly terminable; host-root write-side
-replacement and complete crash/backup matrices remain explicit acceptance work.
+learning I/O cannot be forcibly terminated as an individual thread. A still-live
+worker instead triggers the independent process watchdog's exit-70 boundary after
+its caller budget and hard-timeout grace. The durable identity remains unsettled
+for destination-first reconciliation. Supervisor replacement and successor
+adoption, host-root write-side replacement and complete crash/backup matrices
+remain explicit acceptance work.
+
+## 19. Review allocation and pending fault obligations
+
+[REVIEW_PARTITIONS.json](REVIEW_PARTITIONS.json) assigns each implementation-map
+source path to exactly one of six source-review allocations and names the
+required command records for its mapped tests. The profile, candidate-membership
+and unknown-commit boundaries are explicitly allocated. The verifier rejects
+missing owners, duplicated sources, nonexistent paths, unknown requirements and
+omitted test-command records. An allocation remains `pending`; it is not an
+independent review, execution receipt or acceptance decision.
+
+[FAULT_MATRIX.json](FAULT_MATRIX.json) retains the sixteen required process-loss
+and acknowledgement cuts. Every cut remains `pending` with no bound execution
+evidence. Its validator checks the complete cut universe, phase, required
+disposition, invariants and evidence boundary; a structurally valid matrix does
+not prove any process cut. In particular, a pre-provider-entry observation alone
+cannot establish `NotDispatched` after a durable dispatch or unknown
+acknowledgement. That boundary remains reconcile-only unless the owning dispatch
+protocol separately proves that the exact claim was unused.
+
+The registry compilation/staging path counts its binary source envelope.
+Agentd then extracts developer fragments, and the host serializer must validate
+the final provider framing and complete physical request budget separately.
+The direct canonical prepared-delivery path retains the exact payload it
+validates. Neither path creates a model-specific live tokenizer implementation
+or independently provisions an authorized production embedding.
