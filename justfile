@@ -44,7 +44,7 @@ assemble-codex-package *args:
 # Build the CLI and run the app-server test client
 app-server-test-client *args:
     cargo build -p codex-cli
-    cargo run -p codex-app-server-test-client -- --codex-bin ./target/debug/codex {args}
+    cargo run -p codex-app-server-test-client --bin codex-app-server-test-client -- {args}
 
 # Format the justfile, Rust, Bazel/Starlark, Python SDK code, and Python scripts.
 fmt:
@@ -78,18 +78,19 @@ install:
     cargo fetch
     exit $LASTEXITCODE
 
-# Run nextest with --no-fail-fast so all tests are run.
+# Run nextest with --no-fail-fast so all tests are run. Callers may also pass
+# the flag explicitly; normalize it here so qualification commands stay valid.
 #
 # Run `cargo install --locked cargo-nextest` if you don't have it installed.
 # Prefer this for routine local runs. Workspace crate features are banned, so
 # there should be no need to add `--all-features`.
 [unix]
 test *args:
-    RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+    case " $* " in *" --no-fail-fast "*) extra=;; *) extra=--no-fail-fast;; esac; RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local cargo nextest run ${extra:+$extra} "$@"
 
 [windows]
 test *args:
-    $env:RUST_MIN_STACK = "{{ rust_min_stack }}"; $env:NEXTEST_PROFILE = "local"; cargo nextest run --no-fail-fast @($args | Select-Object -Skip 1)
+    $forwarded = @($args | Select-Object -Skip 1); if ($forwarded -notcontains "--no-fail-fast") { $forwarded = @("--no-fail-fast") + $forwarded }; $env:RUST_MIN_STACK = "{{ rust_min_stack }}"; $env:NEXTEST_PROFILE = "local"; cargo nextest run @forwarded
 
 # Run from the repository root so scripts that resolve paths from `cwd` see
 # the same layout they use in GitHub Actions.
@@ -123,8 +124,6 @@ bench-e2e-smoke:
     bazel test --compilation_mode=fastbuild --@rules_rust//rust/settings:extra_rustc_flag=-Cdebug-assertions=no --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebug-assertions=no --cache_test_results=no --test_output=streamed --test_arg=--test //codex-rs:e2e-benchmarks
 
 # Build and run Codex from source using Bazel.
-# On Unix, use `[no-cd]` and `--run_under="cd $PWD &&"` to ensure Bazel runs
-# the command in the current working directory.
 [no-cd]
 [unix]
 bazel-codex *args:
@@ -183,25 +182,11 @@ write-config-schema:
 
 # Regenerate vendored app-server protocol schema artifacts.
 write-app-server-schema *args:
-    {{ python }} app-server-protocol/scripts/write_schema_fixtures.py {{ args }}
+    cargo run -p codex-app-server-protocol --bin export -- {args}
 
 [no-cd]
 write-hooks-schema:
     cargo run --manifest-path {{ justfile_directory() }}/codex-rs/Cargo.toml -p codex-hooks --bin write_hooks_schema_fixtures
-
-# Run the argument-comment Dylint checks across codex-rs.
-[no-cd]
-[unix]
-argument-comment-lint *args:
-    if [ "$#" -eq 0 ]; then \
-      bazel build --config=argument-comment-lint -- $({{ justfile_directory() }}/tools/argument-comment-lint/list-bazel-targets.sh); \
-    else \
-      {{ justfile_directory() }}/tools/argument-comment-lint/run-prebuilt-linter.py "$@"; \
-    fi
-
-[no-cd]
-argument-comment-lint-from-source *args:
-    {{ python }} {{ justfile_directory() }}/tools/argument-comment-lint/run.py {args}
 
 # Tail logs from the state SQLite database
 [unix]
