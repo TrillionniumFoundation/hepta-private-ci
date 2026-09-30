@@ -47,7 +47,10 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/recorded_runner.rs",
       "tests": [
         "codex-rs/hepta-intelligence-eval/src/recorded_runner_tests.rs",
-        "codex-rs/hepta-intelligence-eval/src/recorded_runner_process_tests.rs"
+        "codex-rs/hepta-intelligence-eval/src/recorded_runner_process_tests.rs",
+        "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs",
+        "codex-rs/hepta-shadow-qualification/src/lane_e_eval_journal_fixture_tests.rs",
+        "codex-rs/hepta-shadow-qualification/tests/lane_e_api_contract.rs"
       ]
     },
     {
@@ -55,7 +58,10 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/recorded_runner.rs",
       "tests": [
         "codex-rs/hepta-intelligence-eval/src/signed_qualification_e2e_tests.rs",
-        "scripts/hepta-learning-eval-api-surface.sh"
+        "scripts/hepta-learning-eval-api-surface.sh",
+        "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs",
+        "codex-rs/hepta-shadow-qualification/src/lane_e_eval_journal_fixture_tests.rs",
+        "codex-rs/hepta-shadow-qualification/tests/lane_e_api_contract.rs"
       ]
     },
     {
@@ -380,10 +386,10 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f51883c5ca1e2d83d50689ae0af6aebe4abd7fde",
-    "tree": "f355133465a1dd39b05556a61f4305ca1c69d241"
+    "commit": "172dd1934d762443fcc76e1e5161cf88f806bde3",
+    "tree": "5786ef870c2cb38e6296381a83c41ad2c2e7ac00"
   },
-  "sourceBaseSemantics": "Exact immutable source/test/documentation observation at the parent of this map-only rebind. This observation includes current-root activation at Agentd consumption, post-write-ahead selected-host archive/time revalidation, global sequential confidence envelopes and conservative numerical weight ceilings, cross-fit resource preflight and final-holdout isolation, canonical CAS admission and full-snapshot-checked native recovery caches with normalized capacity policy, original framed checkpoint-prefix binding and recovered-journal synchronization, nonempty holdout compaction/retry profiling, strict fixture lint, corrected developer documentation and current trusted-entry/reporter source contracts. The map records source presence and traceability only. Local scoped execution is reported separately in the adversarial audit; it does not establish complete three-package lint, measured coverage, exact-head or ordered-parent-merge CI, target-host qualification, independent acceptance, activation, promotion or release. All external authority claims remain false.",
+  "sourceBaseSemantics": "Exact immutable source/test/documentation observation at the parent of this map-only rebind. This observation includes current-root activation at Agentd consumption, post-write-ahead selected-host archive/time revalidation, global sequential confidence envelopes and conservative numerical weight ceilings, cross-fit resource preflight and final-holdout isolation, canonical CAS admission and full-snapshot-checked native recovery caches with normalized capacity policy, original framed checkpoint-prefix binding and recovered-journal synchronization, nonempty holdout compaction/retry profiling, strict fixture lint, default Recorded ingress with durable journal/separate file anchor/typed archive in Shadow fixtures and compatibility feature isolation, corrected developer documentation and current trusted-entry/reporter source contracts. The map records source presence and traceability only. Local scoped execution is reported separately in the adversarial audit; it does not establish complete three-package lint, measured coverage, exact-head or ordered-parent-merge CI, target-host qualification, independent acceptance, activation, promotion or release. All external authority claims remain false.",
   "sourceIdentityPolicy": "exact_observation_plus_candidate_unchanged_v2",
   "sourceRootPresent": true,
   "technicalGuide": "docs/modules/learning.eval/TECHNICAL.md"
