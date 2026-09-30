@@ -1,0 +1,154 @@
+name: Kernel evidence runtime wire once
+
+on:
+  push:
+    branches:
+      - codex/kernel-evidence-final-closure-20260930
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kernel-evidence-runtime-wire-once
+  cancel-in-progress: false
+
+jobs:
+  wire:
+    if: contains(github.event.head_commit.message, '[kernel-evidence-runtime-wire-once]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      EXPECTED_PARENT: 74af77c69542921f7787309a9b197e1845f4aec2
+      TARGET_BRANCH: codex/kernel-evidence-final-closure-20260930
+      WORKFLOW_PATH: .github/workflows/kernel-evidence-runtime-wire-once.yml
+      DRIVER_PATH: codex-rs/hepta-agentd/src/evidence_publication_driver.rs
+    steps:
+      - name: Check out exact one-shot request
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Admit only the exact parent and marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          git log -1 --format=%B | grep -Fq '[kernel-evidence-runtime-wire-once]'
+          test -f "$WORKFLOW_PATH"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Wire the frontier state machine before external CAS
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('codex-rs/hepta-agentd/src/evidence_publication_driver.rs')
+          text = path.read_text(encoding='utf-8')
+          old_call = '''            validate_publication_continuation(&batch, predecessor, &proposed)?;
+            signer_trust.verify(&proposed)?;
+'''
+          new_call = '''            validate_publication_continuation(&batch, predecessor, &proposed)?;
+            validate_publication_frontier_transition(predecessor, &proposed)?;
+            signer_trust.verify(&proposed)?;
+'''
+          if text.count(old_call) != 1:
+              raise SystemExit('publication continuation call shape changed')
+          text = text.replace(old_call, new_call, 1)
+          marker = '''fn validate_publication_freshness(
+'''
+          helper = '''fn validate_publication_frontier_transition(
+    predecessor: &EvidenceRecoveryFrontierV2,
+    proposed: &EvidenceRecoveryFrontierV2,
+) -> Result<(), AgentdError> {
+    use codex_hepta_evidence::FrontierMergeDecision;
+
+    match codex_hepta_evidence::classify_frontier_merge(predecessor, proposed) {
+        FrontierMergeDecision::IncomingWins => Ok(()),
+        FrontierMergeDecision::ExactDuplicate => Err(recovery_required(
+            "publication frontier is an exact duplicate, not a new generation",
+        )),
+        FrontierMergeDecision::IncomingStale => Err(recovery_required(
+            "publication frontier is stale",
+        )),
+        FrontierMergeDecision::ConflictSameOrderDifferentIdentity => Err(recovery_required(
+            "publication frontier has a same-generation identity conflict",
+        )),
+        FrontierMergeDecision::InvalidIncoming => Err(recovery_required(
+            "publication frontier is structurally invalid",
+        )),
+        FrontierMergeDecision::InvalidCurrent => Err(recovery_required(
+            "accepted publication predecessor is structurally invalid",
+        )),
+        FrontierMergeDecision::RepairRequired => Err(recovery_required(
+            "publication frontier requires an exact signed repair transition",
+        )),
+    }
+}
+
+'''
+          if text.count(marker) != 1 or helper in text:
+              raise SystemExit('publication transition helper insertion point changed')
+          path.write_text(text.replace(marker, helper + marker, 1), encoding='utf-8')
+          PY
+          git diff --check
+          test "$(git diff --name-only)" = "$DRIVER_PATH"
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Verify state-machine and publication paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test --locked -p codex-hepta-evidence frontier_merge
+          cargo test --locked -p codex-hepta-agentd --lib evidence_publication
+
+      - name: Commit runtime wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DRIVER_PATH"
+          git commit -s -m 'kernel.evidence: enforce frontier decisions before publication CAS'
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Rebind the implementation map and self-delete
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module kernel.evidence
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          path = Path('docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json')
+          value = json.loads(path.read_text(encoding='utf-8'))
+          expected = {
+              'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+          }
+          if value.get('module') != 'kernel.evidence' or value.get('sourceBase') != expected:
+              raise SystemExit('implementation map is not bound to the runtime-wired source')
+          PY
+          changed="$(git diff --name-only)"
+          test "$changed" = 'docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json'
+          rm "$WORKFLOW_PATH"
+          git add docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json "$WORKFLOW_PATH"
+          git commit -s -m 'docs(kernel.evidence): bind runtime-wired implementation map'
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Publish the two exact commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "refs/heads/$TARGET_BRANCH"
+          test "$(git rev-parse HEAD^^)" = "$(git rev-parse FETCH_HEAD)"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
