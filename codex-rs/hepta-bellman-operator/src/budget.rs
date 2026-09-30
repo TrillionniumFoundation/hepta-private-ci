@@ -4,8 +4,8 @@
 //! `FitContextV1` is the explicit cloneable propagation object for worker
 //! threads and blocking pools. Installing the same context in each worker shares
 //! one monotonic cancellation token and one elapsed-time origin. The legacy
-//! `with_work_control_v1` helper remains for synchronous callers and creates a
-//! fresh context for that one call; it is not cross-thread propagation.
+//! `with_work_control_v1` helper preserves an already installed context when it
+//! belongs to the same cancellation domain.
 
 use std::cell::RefCell;
 use std::error::Error as StdError;
@@ -58,6 +58,10 @@ impl WorkControlV1 {
     #[must_use]
     pub fn fit_context(&self) -> FitContextV1 {
         FitContextV1::new(self.clone())
+    }
+
+    fn shares_cancellation_domain(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.cancelled, &other.cancelled)
     }
 }
 
@@ -139,15 +143,24 @@ pub(crate) fn with_inherited_fit_context_v1<T>(operation: impl FnOnce() -> T) ->
 
 /// Compatibility helper for existing synchronous fitters.
 ///
-/// This creates a new elapsed-time origin at the call boundary. Parallel or
-/// deferred callers must instead construct one `FitContextV1` before dispatch
-/// and explicitly install a clone in every worker.
+/// When a caller has already installed a context backed by this exact
+/// cancellation token, the operation preserves that context's issuance-time
+/// origin. A different token creates a nested context and restores the parent on
+/// exit. Parallel callers still must install a cloned `FitContextV1` explicitly.
 pub fn with_work_control_v1<T>(
     control: &WorkControlV1,
     operation: impl FnOnce() -> T,
 ) -> T {
-    let context = control.fit_context();
-    with_fit_context_v1(&context, operation)
+    let inherited = ACTIVE_FIT_CONTEXT.with(|slot| slot.borrow().clone());
+    if inherited
+        .as_ref()
+        .is_some_and(|context| context.control.shares_cancellation_domain(control))
+    {
+        operation()
+    } else {
+        let context = control.fit_context();
+        with_fit_context_v1(&context, operation)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -387,6 +400,20 @@ mod tests {
     }
 
     #[test]
+    fn matching_work_control_preserves_capability_issue_time() {
+        let control = WorkControlV1::new();
+        let context = control.fit_context();
+        context.run(|| {
+            let first = OperatorWorkMeter::new(budget(1_000_000)).unwrap();
+            thread::sleep(Duration::from_millis(2));
+            let second = with_work_control_v1(&control, || {
+                OperatorWorkMeter::new(budget(1_000_000)).unwrap()
+            });
+            assert_eq!(second.started, first.started);
+        });
+    }
+
+    #[test]
     fn inherited_context_spans_composite_suboperations() {
         let context = WorkControlV1::new().fit_context();
         context.run(|| {
@@ -395,7 +422,6 @@ mod tests {
             let second = with_inherited_fit_context_v1(|| {
                 OperatorWorkMeter::new(budget(1_000_000)).unwrap()
             });
-            assert!(second.started >= first.started);
             assert_eq!(second.started, first.started);
         });
     }
