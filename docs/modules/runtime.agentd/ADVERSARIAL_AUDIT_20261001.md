@@ -31,6 +31,8 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 
 本次检查同时发现历史映射与当前 source 不一致：部分已接线的 final-use AuthBus/Fleet 校验仍被标成缺失；组件 API 恢复曾被描述得接近 daemon 产品恢复；canonical capability 与 CLI runner 选项之间的区别不够清楚。对应技术指南、映射和 dossier 已更新。
 
+严格源码绑定检查另发现七份基线映射引用真实但非当前 main 祖先的旁支提交。已在 [历史来源快照](../../../qualification/module-source-origins/20261001/README.md) 完整保留原 map、commit/tree/blob、角色和观察；以实际集成基线重新建立 sourceBase，再用原严格迁移器刷新当前路径对象。没有添加 Git 父关系、放松 ancestry 校验或提升 boolean 资格。全部 40 份实施映射和技术文档校验随后通过；历史导航证据不成为执行凭证。
+
 当前映射明确限定自身范围：它不是整个 crate 的闭世界函数清单。`nativeSourceMappingComplete` 与 `closedWorldPublicFunctions` 不应因登记了若干组件而被改成 `true`。文档增加了实际 caller、测试入口、版本兼容和尚未接通的物理执行 / 恢复边界。
 
 ## 4. 完成度矩阵
@@ -42,8 +44,8 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | Readiness 与 run 生命周期 | 已实现 admission、attach、dispatch marker、取消、观察、release | 完整 gate；最终检查与 mutation 共享 `runtime → runs` 锁；转换原子性修复 | run 记录不等于物理 turn 执行凭证 |
 | AuthBus / Objective | 已有 signed ingress、durable journal、checkpoint 与 final-use 信任检查 | checkpoint、journal、路径边界及 helper dispatch 修复；durable / canonical admission 复用最终 gate | admission journal 不等于 dispatch ledger；跨重启产品 handoff 未闭环 |
 | Cognitive read / writer 接口 | 已有实际 owner store、context、revalidation 和显式 writer seam | readiness 回归使用真实 Cognitive owner fixture | 受治理写入、HNMF、ranker 等依赖显式外部 owner 组成和当前权威 |
-| Canonical intelligence | 具备 runner、七 owner invocation provider 和 Objective ingress 的显式组成 | 最终生命周期 gate；`prepare_for_run_start` 已实现精确域投影，真实 Config/Fleet/writer lock、signed Objective 与七 owner 回归已落盘 | 最后 generation 变更待验证；物理 start / interrupt 与可信 terminal observer 未组成完整产品闭环 |
-| Automation / effect | 已有可选 scheduler、显式受保护 effect host、durable recovery 组成 | 信任 head、文件 currentness、恢复时间界限；有限 blocking worker、runtime 锁内 typed reservation 与 drain 计数调整 | 最后 worker 变更待验证；正常 drain 后的 App Server 终态观察 RPC 通路仍有缺口 |
+| Canonical intelligence | 具备 runner、七 owner invocation provider 和 Objective ingress 的显式组成 | 最终生命周期 gate；`prepare_for_run_start` 已实现精确域投影，真实 Config/Fleet/writer lock、signed Objective 与七 owner 回归已落盘 | 最后 generation 变更已通过编译 / Clippy，行为执行待 CI；物理 start / interrupt 与可信 terminal observer 未组成完整产品闭环 |
+| Automation / effect | 已有可选 scheduler、显式受保护 effect host、durable recovery 组成 | 信任 head、文件 currentness、恢复时间界限；有限 blocking worker、runtime 锁内 typed reservation 与 drain 计数调整 | 最后 worker 变更已通过编译 / Clippy，行为执行待 CI；正常 drain 后的 App Server 终态观察 RPC 通路仍有缺口 |
 | Plasticity / Neuron | 显式 bootstrap / producer / owner 接口存在 | plasticity 使用完整 admission gate | 不是默认自动制造的 owner；`AgentdNeuronOwner` 未由默认路径完成全部产品组成 |
 | 监督与 shutdown | 已有 RuntimeTasks、required / optional 策略和 bounded reconciliation | required 任务过早成功退出不再被认证为成功 shutdown；连接与 effect worker 分别管理 | 活跃任务退出、外部终态、目标平台资源与 drain 资格仍需实际验证 |
 | 重启恢复 | checkpoint、frontier 与若干 owner recovery 已实现 | 恢复观察的 timeout、fence 与正常 drain 语义加强 | `recover_indeterminate` 仍为 coordinator 组件 API，无 daemon wire/client 和认证 durable-owner 产品 caller |
@@ -95,7 +97,11 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | 最后 Plasticity RW 补丁 | 局部 rustfmt、`git diff --check` 通过；上述最终源候选 Clippy 已包含其两项新回归 | Agentd 行为回归执行仍待结果；编译不能代替执行 |
 | 原生测试构建前几次尝试 | 初次多依赖 SIGKILL；两次低资源构建遇到磁盘不足；一次 Clippy 依赖 core 因内存被终止 | 资源失败记录保留，不能据此声称测试通过或推断测试逻辑失败 |
 | 较早 scoped nextest 尝试 | Protocol 构建在最终链接失败（退出 101），当时共享磁盘 100% 满；该次没有进入测试运行 | 历史资源失败；后续成功执行另列，不能把失败当作已运行 |
-| 最终 Protocol scoped nextest | 清理本任务不用的旧 debug cache 释放资源后，`just test` 成功执行 13/13，无 skip，退出 0；日志 `agentd-protocol-final-tests.log` | 仅协议 package 原生测试通过；Agentd lib 原生测试仍在运行，全模块及目标平台验收未由此成立 |
+| 最终 Protocol scoped nextest | 清理本任务不用的旧 debug cache 释放资源后，`just test` 成功执行 13/13，无 skip，退出 0；日志 `agentd-protocol-final-tests.log` | 仅协议 package 原生测试通过；Agentd 库及进程回归结果另列，全模块及目标平台验收未由此成立 |
+| 最终 Agentd scoped nextest：`just test --locked --cargo-profile dev-small -p codex-hepta-agentd --lib --test-threads=2` | 构建依赖 `codex-core` 在 codegen 阶段被 signal 9 / SIGKILL 终止，退出 101；当时共享磁盘也已满 | 未进入 Agentd 测试运行；没有 Agentd 行为通过证据；进程回归由已补齐的 CI 入口继续执行 |
+| 进程回归 CI 入口 | 已加入 `helper_dispatch`、`supervised_two_agents`；保留 shutdown / retirement 原 suite | 最终 source / merge candidate 原生 CI 尚在等待；Linux / macOS 未取得候选通过结果 |
+| `python3 -m unittest discover -v -s scripts -p test_hepta_implementation*.py` | 通过：130 tests | 原 provenance / 精确身份 / 迁移保护回归；ancestry 拒绝规则保留 |
+| 严格源码、文档与派生校验 | 全部 40 maps、40 technical documents、40 bindings 通过；registry aligned；派生投影 / index 检查通过 | 仅 ownership、当前源码对象及文档导航；productExecutionProved / authorityGranted 未提升 |
 | `git diff --check` | 通过 | 补丁 whitespace 检查 |
 | 初审 / 整改 / 独立再审 | 源码检查已实际完成，多轮局部缺陷修复后收口 | 在明示的 trusted operator-UID/root 边界内，不能证明不存在所有未来问题 |
 | ingress 独立 baseline / fixed 小实验 | 0666 checkpoint 从允许读取转为拒绝；外部 symlink target mode 从被改写转为保留 | 局部边界观察，不能代替正式 crate 测试或产品资格 |
@@ -118,7 +124,7 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 
 ## 9. 收口标准
 
-本次已完成多个独立领域的初审、整改与再审。包含最后 Plasticity RW mode/link 补丁的最终源候选已重新通过 production / tests 编译与 Clippy；格式及结构检查通过。Protocol 原生测试已成功执行 13/13，无 skip；Agentd lib 原生测试仍待运行结果，全模块执行和部署资格尚未完成。此前资源失败记录保留。在本轮已审阅的本地边界内，再审未发现新的可独立修补缺陷；第 8 节跨 owner 与部署资格项仍开放，不能由此声称整个模块已完成或永无新问题。
+本次已完成多个独立领域的初审、整改与再审。包含最后 Plasticity RW mode/link 补丁的最终源候选已重新通过 production / tests 编译与 Clippy；格式及结构检查通过。Protocol 原生测试已成功执行 13/13，无 skip；Agentd lib 原生构建因依赖 codegen SIGKILL 失败，没有进入运行；进程 suite 与目标 CI 仍待实际通过，全模块执行和部署资格尚未完成。此前资源失败记录保留。在本轮已审阅的本地边界内，再审未发现新的可独立修补缺陷；第 8 节跨 owner 与部署资格项仍开放，不能由此声称整个模块已完成或永无新问题。
 
 审阅阶段按依赖拆分为：控制与监督、共享文件 namespace 与启动边界、canonical 身份、effect / admission / drain 组成、Browser / Prompt 可选 profile、文档及派生绑定。最先可独立落地的是接收目标绑定与监督修复；组成层必须连同实际调用方和回归一起审阅。
 
