@@ -12,6 +12,7 @@ import subprocess
 import tokenize
 from pathlib import Path
 from typing import Any
+from native_entrypoints import rust_methods, rust_tokens
 
 
 class BindingError(ValueError):
@@ -33,6 +34,11 @@ def git_blob(data: bytes) -> str:
 
 def identifiers(path: Path, data: bytes) -> set[str]:
     source = data.decode("utf-8")
+    if path.suffix == ".rs":
+        try:
+            return {token for token in rust_tokens(source) if token.isidentifier()}
+        except ValueError as error:
+            raise BindingError('invalid Rust source navigation: ' + str(error)) from error
     if path.suffix == ".py":
         return {
             token.string
@@ -49,6 +55,17 @@ def identifiers(path: Path, data: bytes) -> set[str]:
         source,
     )
     return set(re.findall(r"\b[A-Za-z_]\w*\b", source))
+
+
+def entrypoint_identifiers(path: Path, data: bytes) -> set[str]:
+    """Bare source identifiers plus precisely owned Rust method declarations."""
+    names = identifiers(path, data)
+    if path.suffix == ".rs":
+        try:
+            names |= rust_methods(rust_tokens(data.decode("utf-8")))
+        except ValueError as error:
+            raise BindingError('invalid Rust source navigation: ' + str(error)) from error
+    return names
 
 
 def observe_native_bindings(

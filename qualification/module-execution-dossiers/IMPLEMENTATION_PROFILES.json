@@ -1287,7 +1287,7 @@
           },
           {
             "path": "codex-rs/hepta-agentd/src/runtime.rs",
-            "symbol": "build_cognitive_runtime"
+            "symbol": "attach_federation_after_generation_fence"
           }
         ],
         "stateAndRecovery": "Canonical V2 verifies exact query-bound remote response digests, observes live capability authority before and after one interruptible transport attempt, clamps evidence lifetime to response/lease/query/live-authority horizons, and preserves explicit product coverage. Agentd composes AvailableFederatedV2 over existing read-only CognitiveStore capability/reader surfaces; Memory-extension product registration requires the V2-only product APIs, which reject the legacy AvailableFederated variant. The module owns no peer registry, remote writer, retry queue or alternate memory store.",
@@ -1974,7 +1974,11 @@
           },
           {
             "path": "codex-rs/hepta-neuron/src/protocol.rs",
-            "symbol": "canonical_runtime_config_v1 / canonical_checkpoint_v1"
+            "symbol": "canonical_runtime_config_v1"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/protocol.rs",
+            "symbol": "canonical_checkpoint_v1"
           },
           {
             "path": "codex-rs/hepta-neuron/src/population_v2.rs",
