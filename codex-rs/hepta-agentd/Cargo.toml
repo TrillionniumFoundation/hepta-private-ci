@@ -11,13 +11,13 @@ path = "src/lib.rs"
 doctest = false
 
 [features]
-# Agentd is the named Hepta product host for scoped cognitive mutations. This
-# default is local to the Agentd crate; ordinary Codex/App Server binaries do
-# not enable HeptaCognitiveWrite by default.
-default = ["production-cognitive-write"]
+# Product mutation authority is recovered and injected at runtime. The
+# compatibility feature remains opt-in only while qualification targets are
+# extracted; ordinary Cargo and Bazel builds must never enable it implicitly.
+default = []
 production-cognitive-write = []
-# Adds the qualification-only turn-lifecycle witness seam on top of the real
-# product mutation profile. It never substitutes for production authority.
+# Adds the qualification-only turn-lifecycle witness seam. It never substitutes
+# for a recovered production mutation capability.
 qualification-cognitive-write = ["production-cognitive-write"]
 qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualification-legacy-write"]
 

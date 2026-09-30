@@ -6,6 +6,7 @@ codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
+    integration_compile_data_extra = ["//:scripts/hepta_ndu_observer.py"],
 )
 
 # Compile the local writer qualification separately from the default product

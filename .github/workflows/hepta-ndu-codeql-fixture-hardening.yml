@@ -1,0 +1,89 @@
+name: NDU cryptographic fixture gate
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-agentd/src/ndu_owner_tests.rs
+      - codex-rs/hepta-agentd/tests/ndu_process_e2e.rs
+      - codex-rs/hepta-contracts/src/final_use_control.rs
+      - .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
+  push:
+    branches:
+      - work/utility-ndu-abcd-convergence-20260928
+    paths:
+      - codex-rs/hepta-agentd/src/ndu_owner_tests.rs
+      - codex-rs/hepta-agentd/tests/ndu_process_e2e.rs
+      - codex-rs/hepta-contracts/src/final_use_control.rs
+      - .github/workflows/hepta-ndu-codeql-fixture-hardening.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-cryptographic-fixture-gate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runtime-derived-fixtures:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Reject fixed cryptographic test material
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          files = {
+              "owner": Path("codex-rs/hepta-agentd/src/ndu_owner_tests.rs").read_text(),
+              "process": Path("codex-rs/hepta-agentd/tests/ndu_process_e2e.rs").read_text(),
+              "control": Path("codex-rs/hepta-contracts/src/final_use_control.rs").read_text(),
+          }
+          required = {
+              "owner": ("let signing_seed = format!", "let nonce_material = format!"),
+              "process": ("let fixture_seed = format!", "nonce: digest(&nonce_material)"),
+              "control": ("let fixture_bytes = |label: &str|", "nonce: fixture_bytes(\"approved-use-nonce\")"),
+          }
+          forbidden = (
+              "SigningKey::from_bytes(&[93; 32])",
+              "SigningKey::from_bytes(&[94; 32])",
+              "SigningKey::from_bytes(&[41; 32])",
+              "SigningKey::from_bytes(&[42; 32])",
+              "SigningKey::from_bytes(&[43; 32])",
+              "nonce: [7; 32]",
+              "nonce: [nonce; 32]",
+          )
+          for name, markers in required.items():
+              for marker in markers:
+                  if marker not in files[name]:
+                      raise SystemExit(f"{name}: missing runtime-derived marker {marker!r}")
+          joined = "\n".join(files.values())
+          for marker in forbidden:
+              if marker in joined:
+                  raise SystemExit(f"fixed cryptographic fixture remains: {marker}")
+          PY
+      - name: Re-run affected contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --check --package codex-hepta-contracts --package codex-hepta-agentd
+          cargo test --locked -p codex-hepta-contracts --lib final_use_control::tests
+          cargo test --locked -p codex-hepta-agentd --lib ndu_owner_tests
+          cargo test --locked -p codex-hepta-agentd --test ndu_process_e2e --no-run
+      - name: Revalidate NDU source map
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/test_hepta_ndu_map_integrity.py
+          python3 scripts/test_hepta_ndu_source_policy.py
+          python3 scripts/hepta-ndu-implementation-map-closed-world.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain --untracked-files=all)"

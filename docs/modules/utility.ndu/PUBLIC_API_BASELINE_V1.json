@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.ndu.public-api-baseline.v1",
+  "module": "utility.ndu",
+  "v1Structs": [
+    {
+      "name": "NduIterationReceiptV1",
+      "path": "codex-rs/hepta-ndu/src/protocol.rs",
+      "fields": [
+        "subject_id",
+        "subject_class",
+        "objective_digest",
+        "generation",
+        "event_digest",
+        "coefficient_digest",
+        "iteration",
+        "predecessor_revision",
+        "next_revision",
+        "residual_raw",
+        "projection_count",
+        "state_digest",
+        "solve_input_digest",
+        "receipt_digest",
+        "authority"
+      ]
+    },
+    {
+      "name": "ZQ24ConversionReceiptV1",
+      "path": "codex-rs/hepta-ndu/src/z_conversion.rs",
+      "fields": [
+        "original_z",
+        "q24_raw",
+        "maximum_absolute_quantization_error",
+        "profile_digest",
+        "source_digest",
+        "receipt_digest",
+        "authority"
+      ]
+    }
+  ],
+  "requiredSymbols": [
+    {
+      "name": "NduIterationReceiptV2",
+      "path": "codex-rs/hepta-ndu/src/evidence_v2/iteration.rs"
+    },
+    {
+      "name": "migrate_iteration_receipt_v1",
+      "path": "codex-rs/hepta-ndu/src/evidence_v2/iteration.rs"
+    },
+    {
+      "name": "ZQ24ConversionReceiptV2",
+      "path": "codex-rs/hepta-ndu/src/evidence_v2/z.rs"
+    },
+    {
+      "name": "migrate_z_q24_receipt_v1",
+      "path": "codex-rs/hepta-ndu/src/evidence_v2/z.rs"
+    },
+    {
+      "name": "NduHistoricalReplayReceiptV2",
+      "path": "codex-rs/hepta-ndu/src/current_use.rs"
+    },
+    {
+      "name": "NduCurrentUseReceiptV2",
+      "path": "codex-rs/hepta-ndu/src/current_use.rs"
+    }
+  ],
+  "externalCompileTest": {
+    "path": "codex-rs/hepta-ndu/tests/public_api_compat.rs",
+    "symbol": "v1_public_source_surface_remains_compatible"
+  },
+  "claimBoundary": "This baseline preserves source compatibility only. It does not assert wire compatibility, production activation, external acceptance, or release authority."
+}

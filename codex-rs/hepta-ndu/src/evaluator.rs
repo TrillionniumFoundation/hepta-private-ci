@@ -82,11 +82,31 @@ pub fn evaluate_candidates(
 /// remains advisory and carries no selection or effect authority.
 pub fn evaluate_candidates_with_policy(
     set: ContributionSet,
+    profile: UtilityProfile,
+    scalarization: Option<ScalarizationProfile>,
+    policy: EvaluationPolicyV1,
+) -> Result<NduEvaluationReceiptV2, NduError> {
+    let started = std::time::Instant::now();
+    let result = evaluate_candidates_inner(set, profile, scalarization, policy);
+    let metrics = crate::operational_metrics::process_metrics();
+    metrics.record_evaluation(started.elapsed());
+    metrics.record_evaluation_outcome(result.as_ref().ok().map(|receipt| &receipt.base));
+    if let Ok(receipt) = &result {
+        metrics.record_candidate_rejections(receipt.base.rejected_candidates.len());
+    }
+    result
+}
+
+pub(crate) fn evaluate_candidates_inner(
+    set: ContributionSet,
     mut profile: UtilityProfile,
     scalarization: Option<ScalarizationProfile>,
     mut policy: EvaluationPolicyV1,
 ) -> Result<NduEvaluationReceiptV2, NduError> {
     validate_profile(&mut profile)?;
+    if let Some(scalarization) = &scalarization {
+        crate::ValidatedScalarizationProfileV1::try_new(&profile, scalarization.clone())?;
+    }
     validate_contribution_envelope(&set)?;
     let validated_policy = validate_evaluation_policy(&profile, &mut policy)?;
     let evaluation_policy_digest = digest_evaluation_policy(&policy);

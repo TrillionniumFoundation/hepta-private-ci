@@ -1,0 +1,93 @@
+name: Hepta NDU public API compatibility
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-ndu/**"
+      - "docs/modules/utility.ndu/PUBLIC_API_BASELINE_V1.json"
+      - "scripts/hepta-ndu-public-api-compat.py"
+      - "scripts/test_hepta_ndu_public_api_compat.py"
+      - ".github/workflows/hepta-ndu-public-api.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-ndu/**"
+      - "docs/modules/utility.ndu/PUBLIC_API_BASELINE_V1.json"
+      - "scripts/hepta-ndu-public-api-compat.py"
+      - "scripts/test_hepta_ndu_public_api_compat.py"
+      - ".github/workflows/hepta-ndu-public-api.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-public-api-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compatibility:
+    name: compatibility (${{ matrix.lane }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Materialize exact candidate
+        shell: bash
+        env:
+          LANE: ${{ matrix.lane }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          EVENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          head_sha="${PR_HEAD:-$EVENT_SHA}"
+          if [[ "$LANE" == "source-head" || -z "${PR_BASE:-}" ]]; then
+            git checkout --detach "$head_sha"
+          else
+            tree="$(git merge-tree --write-tree "$PR_BASE" "$head_sha")"
+            merge_sha="$({
+              printf '%s\n' 'utility.ndu deterministic public API merge candidate'
+            } | env \
+              GIT_AUTHOR_NAME='Hepta Qualification' \
+              GIT_AUTHOR_EMAIL='qualification@invalid' \
+              GIT_AUTHOR_DATE='2000-01-01T00:00:00Z' \
+              GIT_COMMITTER_NAME='Hepta Qualification' \
+              GIT_COMMITTER_EMAIL='qualification@invalid' \
+              GIT_COMMITTER_DATE='2000-01-01T00:00:00Z' \
+              git commit-tree "$tree" -p "$PR_BASE" -p "$head_sha")"
+            git checkout --detach "$merge_sha"
+          fi
+          test -z "$(git status --porcelain --untracked-files=all)"
+          printf 'candidate_sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          printf 'candidate_tree=%s\n' "$(git rev-parse 'HEAD^{tree}')" >> "$GITHUB_ENV"
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.93.1
+
+      - name: Validate frozen API baseline
+        run: python3 scripts/hepta-ndu-public-api-compat.py
+
+      - name: Run compatibility gate tests
+        run: python3 scripts/test_hepta_ndu_public_api_compat.py
+
+      - name: Compile external V1 compatibility fixture
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-ndu --test public_api_compat
+
+      - name: Preserve exact candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$candidate_sha"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$candidate_tree"
+          test -z "$(git status --porcelain --untracked-files=all)"

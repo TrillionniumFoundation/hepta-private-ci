@@ -37,6 +37,9 @@ pub enum NduProjectionStoreError {
     NotDirectory,
     NotRegular,
     Symlink,
+    UnsafeOwnerPath,
+    OwnershipChanged,
+    UnsupportedFilesystem,
     BackupTooLarge,
     BackupRegression,
     Journal(NduProjectionJournalError),
@@ -76,6 +79,15 @@ trait ProjectionPersistenceV1: Send + Sync {
     fn sync_temp(&self, path: &Path) -> io::Result<()>;
     fn rename(&self, from: &Path, to: &Path) -> io::Result<()>;
     fn sync_parent(&self, root: &Path) -> io::Result<()>;
+
+    /// A visible image may be a rename whose directory sync was interrupted.
+    /// Reopen must establish durability before authorizing no-write replay.
+    /// This separate seam lets recovery faults be injected without conflating
+    /// them with a later mutation's file-sync or directory-sync cut.
+    fn confirm_recovered(&self, journal: &File, root: &Path) -> io::Result<()> {
+        journal.sync_all()?;
+        FsProjectionPersistenceV1.sync_parent(root)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -83,16 +95,12 @@ struct FsProjectionPersistenceV1;
 
 impl ProjectionPersistenceV1 for FsProjectionPersistenceV1 {
     fn write_temp(&self, path: &Path, bytes: &[u8]) -> io::Result<()> {
-        let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
+        let mut file = open_regular(path, true, true)?;
         file.write_all(bytes)
     }
 
     fn sync_temp(&self, path: &Path) -> io::Result<()> {
-        OpenOptions::new()
-            .read(true)
-            .write(true)
-            .open(path)?
-            .sync_all()
+        open_regular(path, false, false)?.sync_all()
     }
 
     fn rename(&self, from: &Path, to: &Path) -> io::Result<()> {
@@ -124,6 +132,8 @@ impl ProjectionPersistenceV1 for FsProjectionPersistenceV1 {
 pub struct NduProjectionStoreV1 {
     root: PathBuf,
     lock: File,
+    directory: File,
+    filesystem_profile: &'static str,
     journal: NduProjectionJournalV1,
     persistence: Arc<dyn ProjectionPersistenceV1>,
     indeterminate: bool,
@@ -135,10 +145,38 @@ impl NduProjectionStoreV1 {
     /// deliberately unavailable on non-Unix targets rather than silently using
     /// weaker replacement or directory-durability semantics.
     pub fn open(root: impl AsRef<Path>) -> Result<Self, NduProjectionStoreError> {
+        Self::open_durable(root)
+    }
+
+    /// Explicit durable constructor. Errors never select an ephemeral journal.
+    /// Linux admission excludes network/unknown filesystems. tmpfs and overlay
+    /// are local test profiles, not proof of power-loss durability.
+    pub fn open_durable(root: impl AsRef<Path>) -> Result<Self, NduProjectionStoreError> {
         Self::open_with_persistence(root, Arc::new(FsProjectionPersistenceV1))
     }
 
     fn open_with_persistence(
+        root: impl AsRef<Path>,
+        persistence: Arc<dyn ProjectionPersistenceV1>,
+    ) -> Result<Self, NduProjectionStoreError> {
+        let result = Self::open_unobserved(root, persistence);
+        let metrics = crate::operational_metrics::process_metrics();
+        match &result {
+            Ok(store) => {
+                metrics.set_journal_bytes(store.journal.encoded_len() as u64);
+                metrics.record_store_open(!store.journal.entries().is_empty());
+            }
+            Err(NduProjectionStoreError::Journal(_)) => {
+                metrics.record_corruption();
+                metrics.record_reopen_failure();
+            }
+            Err(NduProjectionStoreError::Busy) => metrics.record_store_busy(),
+            Err(_) => metrics.record_reopen_failure(),
+        }
+        result
+    }
+
+    fn open_unobserved(
         root: impl AsRef<Path>,
         persistence: Arc<dyn ProjectionPersistenceV1>,
     ) -> Result<Self, NduProjectionStoreError> {
@@ -154,17 +192,13 @@ impl NduProjectionStoreV1 {
             return Err(NduProjectionStoreError::NotDirectory);
         }
 
+        let directory = open_directory(&root)?;
+        let filesystem_profile = local_filesystem_profile(&directory)?;
         let lock_path = root.join(LOCK_FILE);
         reject_existing_symlink(&lock_path)?;
-        let lock = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .truncate(false)
-            .open(&lock_path)?;
-        if !lock.metadata()?.is_file() {
-            return Err(NduProjectionStoreError::NotRegular);
-        }
+        // Linux flock does not need write access. Keeping a writable lock FD
+        // would pin the mount writable and prevent a real EROFS transition.
+        let lock = open_lock(&lock_path)?;
         match File::try_lock(&lock) {
             Ok(()) => {}
             Err(TryLockError::WouldBlock) => return Err(NduProjectionStoreError::Busy),
@@ -180,17 +214,35 @@ impl NduProjectionStoreV1 {
 
         let journal_path = root.join(JOURNAL_FILE);
         reject_existing_symlink(&journal_path)?;
-        let journal = match File::open(&journal_path) {
-            Ok(mut file) => {
-                if !file.metadata()?.is_file() {
+        let journal = match open_regular(&journal_path, false, false) {
+            Ok(file) => {
+                let metadata = file.metadata()?;
+                if !metadata.is_file() {
                     return Err(NduProjectionStoreError::NotRegular);
                 }
-                let mut bytes = Vec::new();
-                file.read_to_end(&mut bytes)?;
+                let max_bytes = u64::try_from(MAX_BACKUP_BYTES)
+                    .map_err(|_| NduProjectionStoreError::BackupTooLarge)?;
+                if metadata.len() > max_bytes {
+                    return Err(NduProjectionStoreError::BackupTooLarge);
+                }
+                let capacity = usize::try_from(metadata.len())
+                    .map_err(|_| NduProjectionStoreError::BackupTooLarge)?;
+                let mut bytes = Vec::with_capacity(capacity);
+                let mut bounded = (&file).take(max_bytes.saturating_add(1));
+                bounded.read_to_end(&mut bytes)?;
                 if bytes.len() > MAX_BACKUP_BYTES {
                     return Err(NduProjectionStoreError::BackupTooLarge);
                 }
-                NduProjectionJournalV1::reopen(&bytes)?
+                let journal = NduProjectionJournalV1::reopen(&bytes)?;
+                // Reading a correctly hashed image proves visibility, not
+                // durability. In particular, an exact replay performs no I/O.
+                // Do not let a lost rename acknowledgement become a durable
+                // acknowledgement merely by closing and reopening the store.
+                if persistence.confirm_recovered(&file, &root).is_err() {
+                    crate::operational_metrics::process_metrics().record_store_indeterminate();
+                    return Err(NduProjectionStoreError::Indeterminate);
+                }
+                journal
             }
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
                 let journal = NduProjectionJournalV1::new();
@@ -203,10 +255,23 @@ impl NduProjectionStoreV1 {
         Ok(Self {
             root,
             lock,
+            directory,
+            filesystem_profile,
             journal,
             persistence,
             indeterminate: false,
         })
+    }
+
+    #[must_use]
+    pub const fn filesystem_profile(&self) -> &'static str {
+        self.filesystem_profile
+    }
+
+    /// Storage readiness only; not current authorization or release readiness.
+    #[must_use]
+    pub fn storage_ready(&self) -> bool {
+        self.ensure_authoritative().is_ok()
     }
 
     #[must_use]
@@ -256,6 +321,8 @@ impl NduProjectionStoreV1 {
         })
     }
 
+    /// Compatibility entry for first selection. Replacement callers must use
+    /// `select_projection_if_current` with the exact current predecessor.
     pub fn select_projection(
         &mut self,
         operation_identity_digest: Digest32,
@@ -263,11 +330,29 @@ impl NduProjectionStoreV1 {
         subject_digest: Digest32,
         projection_digest: Digest32,
     ) -> Result<NduProjectionEntryV1, NduProjectionStoreError> {
+        self.select_projection_if_current(
+            operation_identity_digest,
+            objective_digest,
+            subject_digest,
+            None,
+            projection_digest,
+        )
+    }
+
+    pub fn select_projection_if_current(
+        &mut self,
+        operation_identity_digest: Digest32,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        expected_predecessor: Option<Digest32>,
+        projection_digest: Digest32,
+    ) -> Result<NduProjectionEntryV1, NduProjectionStoreError> {
         self.commit(|journal| {
-            journal.select_projection(
+            journal.select_projection_if_current(
                 operation_identity_digest,
                 objective_digest,
                 subject_digest,
+                expected_predecessor,
                 projection_digest,
             )
         })
@@ -296,6 +381,14 @@ impl NduProjectionStoreV1 {
     /// backup. This prevents an older valid backup from deleting a later
     /// revocation or otherwise resurrecting stale selected state.
     pub fn restore_backup(&mut self, bytes: &[u8]) -> Result<(), NduProjectionStoreError> {
+        let result = self.restore_unobserved(bytes);
+        if result.is_err() {
+            crate::operational_metrics::process_metrics().record_restore_failure();
+        }
+        result
+    }
+
+    fn restore_unobserved(&mut self, bytes: &[u8]) -> Result<(), NduProjectionStoreError> {
         self.ensure_authoritative()?;
         if bytes.len() > MAX_BACKUP_BYTES {
             return Err(NduProjectionStoreError::BackupTooLarge);
@@ -307,6 +400,10 @@ impl NduProjectionStoreV1 {
         {
             return Err(NduProjectionStoreError::BackupRegression);
         }
+        if restored == self.journal {
+            return Ok(());
+        }
+        self.ensure_authoritative()?;
         match persist_image(&self.root, &restored, self.persistence.as_ref()) {
             Ok(()) => {
                 self.journal = restored;
@@ -324,7 +421,7 @@ impl NduProjectionStoreV1 {
         if self.indeterminate {
             Err(NduProjectionStoreError::Indeterminate)
         } else {
-            Ok(())
+            verify_owner_identity(&self.root, &self.directory, &self.lock)
         }
     }
 
@@ -337,6 +434,12 @@ impl NduProjectionStoreV1 {
         self.ensure_authoritative()?;
         let mut candidate = self.journal.clone();
         let entry = mutation(&mut candidate)?;
+        // Exact replay is already durable. Do not rewrite the complete image or
+        // turn a historical acknowledgement into a new ambiguous disk commit.
+        if candidate == self.journal {
+            return Ok(entry);
+        }
+        self.ensure_authoritative()?;
         match persist_image(&self.root, &candidate, self.persistence.as_ref()) {
             Ok(()) => {
                 self.journal = candidate;
@@ -359,6 +462,157 @@ impl Drop for NduProjectionStoreV1 {
     }
 }
 
+// O_NONBLOCK avoids hanging on an attacker-supplied FIFO before fstat rejects it.
+// Existing images may be owner-readable by others, but never writable by them.
+// Product bootstrap separately requires a private 0700 owner directory.
+fn open_lock(path: &Path) -> io::Result<File> {
+    #[cfg(target_os = "linux")]
+    {
+        use rustix::fs::Mode;
+        use rustix::fs::OFlags;
+        let lock: File = rustix::fs::open(
+            path,
+            OFlags::RDONLY | OFlags::CREATE | OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC,
+            Mode::RUSR | Mode::WUSR,
+        )
+        .map_err(io::Error::from)?
+        .into();
+        validate_regular(&lock)?;
+        Ok(lock)
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        open_regular(path, true, false)
+    }
+}
+
+pub(crate) fn open_regular(path: &Path, create: bool, exclusive: bool) -> io::Result<File> {
+    let mut options = OpenOptions::new();
+    options.read(true).write(create);
+    if exclusive {
+        options.create_new(true);
+    } else if create {
+        options.create(true).truncate(false);
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600).custom_flags(
+            (rustix::fs::OFlags::NOFOLLOW
+                | rustix::fs::OFlags::NONBLOCK
+                | rustix::fs::OFlags::CLOEXEC)
+                .bits() as i32,
+        );
+    }
+    let file = options.open(path)?;
+    validate_regular(&file)?;
+    Ok(file)
+}
+
+fn validate_regular(file: &File) -> io::Result<()> {
+    let metadata = file.metadata()?;
+    if !metadata.is_file() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "NDU state is not a regular file",
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if metadata.mode() & 0o022 != 0
+            || metadata.nlink() != 1
+            || metadata.uid() != rustix::process::geteuid().as_raw()
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "unsafe NDU file owner, permissions or hard links",
+            ));
+        }
+    }
+    Ok(())
+}
+
+pub(crate) fn open_directory(root: &Path) -> Result<File, NduProjectionStoreError> {
+    #[cfg(unix)]
+    {
+        use rustix::fs::Mode;
+        use rustix::fs::OFlags;
+        use std::os::unix::fs::MetadataExt;
+        let directory: File = rustix::fs::open(
+            root,
+            OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+            Mode::empty(),
+        )
+        .map_err(io::Error::from)?
+        .into();
+        let metadata = directory.metadata()?;
+        if metadata.mode() & 0o022 != 0 || metadata.uid() != rustix::process::geteuid().as_raw() {
+            return Err(NduProjectionStoreError::UnsafeOwnerPath);
+        }
+        Ok(directory)
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = root;
+        Err(NduProjectionStoreError::UnsupportedPlatform)
+    }
+}
+
+fn verify_owner_identity(
+    root: &Path,
+    directory: &File,
+    lock: &File,
+) -> Result<(), NduProjectionStoreError> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let current = open_directory(root)?;
+        let current_lock = open_regular(&root.join(LOCK_FILE), false, false)?;
+        let expected = directory.metadata()?;
+        let actual = current.metadata()?;
+        let expected_lock = lock.metadata()?;
+        let actual_lock = current_lock.metadata()?;
+        if (expected.dev(), expected.ino()) != (actual.dev(), actual.ino())
+            || (expected_lock.dev(), expected_lock.ino()) != (actual_lock.dev(), actual_lock.ino())
+        {
+            return Err(NduProjectionStoreError::OwnershipChanged);
+        }
+        Ok(())
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = (root, directory, lock);
+        Err(NduProjectionStoreError::UnsupportedPlatform)
+    }
+}
+
+fn local_filesystem_profile(directory: &File) -> Result<&'static str, NduProjectionStoreError> {
+    #[cfg(target_os = "linux")]
+    {
+        let metadata = rustix::fs::fstatfs(directory).map_err(io::Error::from)?;
+        // Linux UAPI magic values. Unknown, NFS, CIFS, 9P, Ceph and FUSE are
+        // deliberately excluded, rather than assuming local lock/fsync behavior.
+        match i128::from(metadata.f_type) {
+            0xef53 => Ok("linux-ext"),
+            0x5846_5342 => Ok("linux-xfs"),
+            0x9123_683e => Ok("linux-btrfs"),
+            0x2fc1_2fc1 => Ok("linux-zfs"),
+            0xf2f5_2010 => Ok("linux-f2fs"),
+            0x0102_1994 => Ok("linux-tmpfs-volatile"),
+            0x794c_7630 => Ok("linux-overlay-unqualified-backing"),
+            _ => Err(NduProjectionStoreError::UnsupportedFilesystem),
+        }
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        let _ = directory;
+        // Unix directory-sync support is retained. This label explicitly does
+        // not establish the stronger Linux local-filesystem admission profile.
+        Ok("unix-requires-target-filesystem-qualification")
+    }
+}
+
 fn reject_existing_symlink(path: &Path) -> Result<(), NduProjectionStoreError> {
     match fs::symlink_metadata(path) {
         Ok(metadata) if metadata.file_type().is_symlink() => Err(NduProjectionStoreError::Symlink),
@@ -369,6 +623,18 @@ fn reject_existing_symlink(path: &Path) -> Result<(), NduProjectionStoreError> {
 }
 
 fn persist_image(
+    root: &Path,
+    journal: &NduProjectionJournalV1,
+    persistence: &dyn ProjectionPersistenceV1,
+) -> Result<(), NduProjectionStoreError> {
+    let started = std::time::Instant::now();
+    let result = persist_image_inner(root, journal, persistence);
+    crate::operational_metrics::process_metrics()
+        .record_persistence(started.elapsed(), result.is_err());
+    result
+}
+
+fn persist_image_inner(
     root: &Path,
     journal: &NduProjectionJournalV1,
     persistence: &dyn ProjectionPersistenceV1,
@@ -396,16 +662,28 @@ fn persist_image(
         return Err(error.into());
     }
 
-    if let Err(error) = persistence.rename(&temp_path, &journal_path) {
-        let _ = fs::remove_file(&temp_path);
-        return Err(error.into());
+    // A failed acknowledgement does not prove that replacement did not occur.
+    // Preserve the candidate and fence this handle until reopen reconciles disk.
+    if persistence.rename(&temp_path, &journal_path).is_err() {
+        crate::operational_metrics::process_metrics().record_store_indeterminate();
+        return Err(NduProjectionStoreError::Indeterminate);
     }
-
-    persistence
-        .sync_parent(root)
-        .map_err(|_| NduProjectionStoreError::Indeterminate)
+    if persistence.sync_parent(root).is_err() {
+        crate::operational_metrics::process_metrics().record_store_indeterminate();
+        return Err(NduProjectionStoreError::Indeterminate);
+    }
+    crate::operational_metrics::process_metrics().set_journal_bytes(bytes.len() as u64);
+    Ok(())
 }
 
 #[cfg(test)]
 #[path = "projection_store_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "projection_store_process_kill_tests.rs"]
+mod process_kill_tests;
+
+#[cfg(all(test, unix))]
+#[path = "projection_store_recovery_tests.rs"]
+mod recovery_tests;

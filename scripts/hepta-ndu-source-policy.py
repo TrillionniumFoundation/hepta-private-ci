@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import re
+
+from hepta_ndu_map_integrity import code_only
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,7 +22,7 @@ def main() -> None:
         rel = path.relative_to(ROOT)
         if rel in ALLOWED:
             continue
-        text = path.read_text(encoding="utf-8")
+        text = code_only(path.read_text(encoding="utf-8"))
         for match in LEGACY_CALL.finditer(text):
             line = text.count("\n", 0, match.start()) + 1
             violations.append(f"{rel}:{line}")

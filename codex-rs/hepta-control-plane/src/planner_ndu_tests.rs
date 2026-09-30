@@ -210,3 +210,92 @@ fn expired_snapshot_cannot_become_a_plan_despite_valid_ndu_scores() {
         Err(NduPlanningError::Planner(PlannerError::SnapshotExpired)),
     );
 }
+
+#[test]
+fn evidence_v2_composes_into_planner_and_blocks_policy_downgrade() {
+    use codex_hepta_ndu::{NduFeatureKindV1, NduFeatureOriginV1};
+    let (snapshot, previous, base) = fixture();
+    let mut input = NduPlanningInputV2 {
+        features: base
+            .contributions
+            .contributions
+            .iter()
+            .flat_map(|row| {
+                row.utility.iter().map(|axis| NduFeatureEvidenceV1 {
+                    candidate_id: row.candidate_id.clone(),
+                    organ_id: row.organ_id.clone(),
+                    kind: NduFeatureKindV1::Utility,
+                    axis: axis.axis.clone(),
+                    value: axis.value,
+                    origin: NduFeatureOriginV1::Measured,
+                    source_digest: row.support_digest,
+                })
+            })
+            .collect(),
+        base,
+        evidence_policy: NduEvidencePolicyV1 {
+            policy_id: id("risk-policy"),
+            high_risk: true,
+            required_actors: vec![id("user"), id("affected")],
+            proxy_uncertainty_floor: FixedQ32::ONE,
+            actor_risk_ceiling: FixedQ32::ONE,
+            actor_uncertainty_ceiling: FixedQ32::ZERO,
+        },
+        actor_scenarios: ["user", "affected"]
+            .iter()
+            .map(|actor| NduActorScenarioV1 {
+                candidate_id: id("read-context"),
+                actor_id: id(actor),
+                risk: FixedQ32::ZERO,
+                uncertainty: FixedQ32::ZERO,
+                source_digest: digest("actor-observation"),
+            })
+            .collect(),
+    };
+    let mut candidates = previous.feasible_candidates().to_vec();
+    for candidate in &mut candidates {
+        if candidate.candidate_id.as_str() != "abstain" {
+            candidate
+                .final_payload_digests
+                .push(digest("effect-payload"));
+        }
+    }
+    let prepared = prepare_plan(
+        &snapshot,
+        PlanningRequestV1 {
+            plan_id: id("guarded-plan"),
+            now_micros: 100,
+            deadline_micros: 190,
+            evaluation_policy_digest: canonical_ndu_planning_policy_digest_v2(&input)
+                .expect("frozen evidence policy"),
+            resource_profile_digest: digest("bounded-context-read"),
+            candidates,
+            resource_reservations: vec![ResourceReservationV1 {
+                axis: id("context-read"),
+                endowment: FixedQ32::ONE,
+                essential_floor: FixedQ32::ZERO,
+            }],
+        },
+    )
+    .expect("prepare with evidence policy");
+    let result = evaluate_prepared_plan_with_ndu_v2(&snapshot, &prepared, input.clone(), 110)
+        .expect("observed features and actors");
+    assert!(!result.plan.authority().grants_any());
+    assert_eq!(
+        evaluate_prepared_plan_with_ndu(&snapshot, &prepared, input.base.clone(), 110),
+        Err(NduPlanningError::EvidenceRequired)
+    );
+    input.evidence_policy.high_risk = false;
+    assert_eq!(
+        evaluate_prepared_plan_with_ndu_v2(&snapshot, &prepared, input.clone(), 110),
+        Err(NduPlanningError::EvidenceRequired)
+    );
+    input.evidence_policy.high_risk = true;
+    input.actor_scenarios.pop();
+    assert_eq!(
+        evaluate_prepared_plan_with_ndu_v2(&snapshot, &prepared, input, 110),
+        Err(NduPlanningError::Evidence(
+            NduEvidenceErrorV1::ActorCoverage
+        ))
+    );
+}
