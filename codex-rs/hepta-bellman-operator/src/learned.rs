@@ -17,9 +17,13 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+use crate::WorkControlError;
+use crate::WorkControlV1;
+
 const MAX_ACTIONS: usize = 128;
 const MAX_CELLS: usize = 262_144;
-const MAX_SAMPLES: usize = 1_000_000;
+const MAX_COMPATIBILITY_SAMPLES: usize = 100_000;
+const MAX_QUALIFIED_SAMPLES: usize = 1_000_000;
 const MAX_SENSORS: usize = 4_096;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -95,6 +99,7 @@ pub enum LearnedOperatorError {
     MissingCell { sensor: String, action: String },
     InsufficientCellSamples { sensor: String, action: String },
     UnsupportedCell,
+    WorkControl(WorkControlError),
     Arithmetic,
 }
 
@@ -104,7 +109,20 @@ impl fmt::Display for LearnedOperatorError {
     }
 }
 
-impl StdError for LearnedOperatorError {}
+impl StdError for LearnedOperatorError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::WorkControl(error) => Some(error),
+            _ => None,
+        }
+    }
+}
+
+impl From<WorkControlError> for LearnedOperatorError {
+    fn from(value: WorkControlError) -> Self {
+        Self::WorkControl(value)
+    }
+}
 
 #[derive(Default)]
 struct CellAccumulator {
@@ -115,9 +133,29 @@ struct CellAccumulator {
     evidence: Vec<Digest32>,
 }
 
+/// Compatibility fit with a deliberately reduced default sample ceiling.
 pub fn fit_tabular_operator(
-    mut plan: TabularOperatorPlanV1,
+    plan: TabularOperatorPlanV1,
 ) -> Result<TabularOperatorArtifactV1, LearnedOperatorError> {
+    fit_tabular_operator_inner(plan, None, MAX_COMPATIBILITY_SAMPLES)
+}
+
+/// Qualification fit for larger datasets. The caller must supply a live work
+/// control; cancellation, deadline and operation budget are checked throughout
+/// the sample and cell loops rather than only before entering the operation.
+pub fn fit_tabular_operator_controlled_v3(
+    plan: TabularOperatorPlanV1,
+    control: &WorkControlV1,
+) -> Result<TabularOperatorArtifactV1, LearnedOperatorError> {
+    fit_tabular_operator_inner(plan, Some(control), MAX_QUALIFIED_SAMPLES)
+}
+
+fn fit_tabular_operator_inner(
+    mut plan: TabularOperatorPlanV1,
+    control: Option<&WorkControlV1>,
+    sample_limit: usize,
+) -> Result<TabularOperatorArtifactV1, LearnedOperatorError> {
+    checkpoint(control, 0)?;
     for (label, digest) in [
         ("operator objective", plan.objective_digest),
         ("operator dataset", plan.dataset_digest),
@@ -131,7 +169,7 @@ pub fn fit_tabular_operator(
         || plan.action_ids.is_empty()
         || plan.action_ids.len() > MAX_ACTIONS
         || plan.minimum_samples_per_cell == 0
-        || plan.minimum_samples_per_cell > MAX_SAMPLES
+        || plan.minimum_samples_per_cell > sample_limit
     {
         return Err(LearnedOperatorError::InvalidGrid);
     }
@@ -141,7 +179,7 @@ pub fn fit_tabular_operator(
         .checked_mul(plan.action_ids.len())
         .filter(|count| *count <= MAX_CELLS)
         .ok_or(LearnedOperatorError::InvalidGrid)?;
-    if plan.samples.is_empty() || plan.samples.len() > MAX_SAMPLES {
+    if plan.samples.is_empty() || plan.samples.len() > sample_limit {
         return Err(LearnedOperatorError::SampleLimit);
     }
     normalize_ids(&mut plan.sensor_ids)?;
@@ -162,7 +200,10 @@ pub fn fit_tabular_operator(
     let mut seen_evidence = BTreeSet::new();
     let mut groups: BTreeMap<(StableId, StableId), CellAccumulator> = BTreeMap::new();
     let mut sample_binding = b"hepta.bellman-operator.tabular-samples.v1".to_vec();
-    for sample in &plan.samples {
+    for (sample_index, sample) in plan.samples.iter().enumerate() {
+        if sample_index % 1_024 == 0 {
+            checkpoint(control, sample_index)?;
+        }
         require_digest(sample.evidence_digest, "operator training sample")?;
         if !seen_evidence.insert(sample.evidence_digest) {
             return Err(LearnedOperatorError::DuplicateEvidence);
@@ -211,8 +252,18 @@ pub fn fit_tabular_operator(
     }
 
     let mut cells = Vec::with_capacity(expected_cells);
+    let mut completed_cells = 0_usize;
     for sensor_id in &plan.sensor_ids {
         for action_id in &plan.action_ids {
+            if completed_cells % 256 == 0 {
+                checkpoint(
+                    control,
+                    plan.samples
+                        .len()
+                        .checked_add(completed_cells)
+                        .ok_or(LearnedOperatorError::Arithmetic)?,
+                )?;
+            }
             let key = (sensor_id.clone(), action_id.clone());
             let Some(mut group) = groups.remove(&key) else {
                 return Err(LearnedOperatorError::MissingCell {
@@ -255,11 +306,19 @@ pub fn fit_tabular_operator(
                 maximum_target,
                 evidence_digest,
             });
+            completed_cells += 1;
         }
     }
     if !groups.is_empty() {
         return Err(LearnedOperatorError::InvalidGrid);
     }
+    checkpoint(
+        control,
+        plan.samples
+            .len()
+            .checked_add(completed_cells)
+            .ok_or(LearnedOperatorError::Arithmetic)?,
+    )?;
 
     let sample_digest = Digest32::of_bytes(&sample_binding);
     let mut artifact_bytes = b"hepta.bellman-operator.tabular-artifact.v1".to_vec();
@@ -317,6 +376,18 @@ pub fn predict_tabular_operator(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+fn checkpoint(
+    control: Option<&WorkControlV1>,
+    completed_operations: usize,
+) -> Result<(), LearnedOperatorError> {
+    if let Some(control) = control {
+        control.checkpoint(
+            u64::try_from(completed_operations).map_err(|_| LearnedOperatorError::Arithmetic)?,
+        )?;
+    }
+    Ok(())
 }
 
 fn digest_cell(
