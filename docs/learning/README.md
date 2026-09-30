@@ -23,7 +23,7 @@ weights never imply shared working context or permission to widen training scope
 
 ## Read order
 
-1. [`ALGORITHM_SPECS.json`](ALGORITHM_SPECS.json) — closed-world coverage, exact Git blob identities and mandatory closure gates.
+1. [`ALGORITHM_SPECS.json`](ALGORITHM_SPECS.json) — module coverage, source observations and mandatory closure gates.
 2. [`PAPER_TRACEABILITY.json`](PAPER_TRACEABILITY.json) — semantic claim scope, exact locators, non-claims and Hepta-extension boundaries.
 3. [`PAPER_EVIDENCE_BINDINGS.json`](PAPER_EVIDENCE_BINDINGS.json) — pinned independent evidence commit, manifest/tree/blob identities and byte-replay policy. This file, not verifier constants, establishes external source-byte identity.
 4. [`ALGORITHM_STATUS.md`](ALGORITHM_STATUS.md) — generated coverage and truthful capability posture.
@@ -36,6 +36,13 @@ weights never imply shared working context or permission to widen training scope
 11. Existing machine sources: [`LEARNING_SYSTEM.json`](LEARNING_SYSTEM.json), [`EXPERIMENTS.json`](EXPERIMENTS.json) and [`ARTIFACTS.json`](ARTIFACTS.json).
 
 ## Validation
+
+Ordinary specification edits verify module ownership, canonical protocol references,
+paper citations and machine-readable capability boundaries. Headings, prose keywords
+and retained `blobSha` observations are not editorial merge gates. Registry sizes
+come from the registered entries rather than a second set of verifier constants.
+Execution receipts compute each specification's actual committed Git blob and reject
+uncommitted or substituted document bytes; paper source locks remain mandatory.
 
 ```bash
 python3 scripts/hepta-paper-evidence.py self-test
