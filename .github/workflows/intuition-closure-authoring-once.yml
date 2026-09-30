@@ -1,63 +1,56 @@
-name: intuition.policy Closure Patch Inspection
+name: intuition.policy Workspace Export (read-only)
 
 on:
-  pull_request:
+  push:
+    branches: [codex/intuition-policy-production-closure-20260927]
     paths:
       - ".github/workflows/intuition-closure-authoring-once.yml"
-      - "scripts/intuition_closure_author_once.b85.part*"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: intuition-closure-patch-inspection-${{ github.event.pull_request.number || github.ref }}
+  group: intuition-workspace-export-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  inspect-encoded-closure:
-    name: Inspect encoded closure source (read-only)
-    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'codex/intuition-policy-production-closure-20260927' }}
+  export-exact-workspace:
+    name: Export exact candidate workspace without credentials
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - name: Check out exact pull request head without persisted credentials
+      - name: Check out immutable candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 1
           persist-credentials: false
-      - name: Decode for inspection only
+          clean: true
+      - name: Build reproducible source archive
         env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          EXPECTED_SHA: ${{ github.sha }}
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          python3 - <<'PY'
-          import ast
-          import base64
-          import bz2
-          import hashlib
-          from pathlib import Path
-
-          parts = sorted(Path("scripts").glob("intuition_closure_author_once.b85.part*"))
-          if [path.name for path in parts] != [
-              "intuition_closure_author_once.b85.part00",
-              "intuition_closure_author_once.b85.part01",
-              "intuition_closure_author_once.b85.part02",
-              "intuition_closure_author_once.b85.part03",
-          ]:
-              raise SystemExit("unexpected encoded closure part set")
-          encoded = b"".join(path.read_bytes() for path in parts)
-          source = bz2.decompress(base64.b85decode(encoded))
-          ast.parse(source, filename="intuition_closure_author_once.py")
-          print(f"decoded_bytes={len(source)}")
-          print(f"decoded_sha256={hashlib.sha256(source).hexdigest()}")
-          print("----- BEGIN DECODED CLOSURE SOURCE -----")
-          print(source.decode("utf-8"), end="")
-          print("\n----- END DECODED CLOSURE SOURCE -----")
-          PY
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain=v1)"
+          output="$RUNNER_TEMP/intuition-workspace"
+          mkdir -p "$output"
+          git archive --format=tar.gz --prefix=hepta-private-ci/ \
+            -o "$output/hepta-private-ci-$EXPECTED_SHA.tar.gz" "$EXPECTED_SHA"
+          sha256sum "$output/hepta-private-ci-$EXPECTED_SHA.tar.gz" \
+            > "$output/hepta-private-ci-$EXPECTED_SHA.tar.gz.sha256"
+          printf 'source_commit=%s\nsource_tree=%s\n' \
+            "$EXPECTED_SHA" "$(git rev-parse "$EXPECTED_SHA^{tree}")" \
+            > "$output/IDENTITY.txt"
+      - name: Upload exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intuition-workspace-${{ github.sha }}
+          path: ${{ runner.temp }}/intuition-workspace/
+          if-no-files-found: error
+          retention-days: 3
       - name: Assert checkout stayed clean
         shell: bash
         run: |
