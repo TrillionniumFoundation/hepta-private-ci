@@ -39,6 +39,40 @@ class CrashMatrixTests(unittest.TestCase):
         self.assertFalse(passed)
         self.assertIn("kernel_evidence_multiprocess_contention=", missing)
 
+    def test_nested_process_harness_uses_exact_exit_without_brittle_line_join(self) -> None:
+        spec = crash.evidence_lib(
+            "authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id",
+            require_harness_marker=False,
+        )
+        nested_output = (
+            b"test authbus_outbox_tests::actual_process_crash_after_send_before_ack_"
+            b"redelivers_same_id ... \nrunning 1 test\nok\n"
+            b"test result: ok. 1 passed; 0 failed; 0 ignored\n"
+        )
+        passed, missing, skipped = crash.assess_command(
+            spec, exit_code=0, output=nested_output, timed_out=False
+        )
+        self.assertTrue(passed)
+        self.assertEqual(missing, [])
+        self.assertFalse(skipped)
+
+        passed, _, _ = crash.assess_command(
+            spec, exit_code=101, output=nested_output, timed_out=False
+        )
+        self.assertFalse(passed)
+
+    def test_required_marker_remains_mandatory_without_harness_marker(self) -> None:
+        spec = crash.evidence_lib(
+            "tests::nested_process",
+            "kernel_evidence_nested_process=",
+            require_harness_marker=False,
+        )
+        passed, missing, _ = crash.assess_command(
+            spec, exit_code=0, output=b"child completed\n", timed_out=False
+        )
+        self.assertFalse(passed)
+        self.assertEqual(missing, ["kernel_evidence_nested_process="])
+
     def test_self_reported_skip_is_failure_even_when_rust_test_returns_ok(self) -> None:
         spec = crash.evidence_integration(
             "frontier_backend_multiprocess",

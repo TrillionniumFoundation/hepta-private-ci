@@ -18,6 +18,7 @@ use codex_hepta_evidence::EVIDENCE_RECOVERY_FRONTIER_V2_SCHEMA_VERSION;
 use codex_hepta_evidence::EvidenceFrontierBackend;
 use codex_hepta_evidence::EvidenceFrontierBackendError;
 use codex_hepta_evidence::EvidenceFrontierBackendIdentityV1;
+use codex_hepta_evidence::EvidenceFrontierHistoryRangeV1;
 use codex_hepta_evidence::EvidenceRecoveryFrontierSignatureV2;
 use codex_hepta_evidence::EvidenceRecoveryFrontierV2;
 use codex_hepta_evidence::EvidenceRecoverySnapshotV1;
@@ -105,11 +106,16 @@ fn multiprocess_child() {
         None,
         &frontier(1, identity_sha256),
     ) {
-        Ok(_) => "success",
+        Ok(ack) => format!(
+            "ack:{}:{}:{}",
+            ack.frontier_generation,
+            ack.audit_sequence,
+            ack.frontier_sha256.as_str()
+        ),
         Err(EvidenceFrontierBackendError::Conflict {
             expected: None,
             actual: Some(1),
-        }) => "conflict",
+        }) => "conflict".to_string(),
         Err(error) => panic!("unexpected multiprocess CAS result: {error}"),
     };
     fs::write(result_path, outcome.as_bytes()).expect("publish child outcome");
@@ -210,19 +216,45 @@ fn eight_process_first_generation_contention_has_one_durable_winner() {
         assert!(status.success(), "publisher process failed: {status}");
     }
 
-    let mut successes = 0_usize;
+    let mut acknowledgements = Vec::with_capacity(WORKERS);
     let mut conflicts = 0_usize;
     for worker in 0..WORKERS {
-        match fs::read_to_string(result_root.join(worker.to_string()))
-            .expect("read publisher outcome")
-            .as_str()
-        {
-            "success" => successes += 1,
-            "conflict" => conflicts += 1,
-            outcome => panic!("unexpected publisher outcome: {outcome}"),
+        let outcome = fs::read_to_string(result_root.join(worker.to_string()))
+            .expect("read publisher outcome");
+        if let Some(encoded) = outcome.strip_prefix("ack:") {
+            let mut fields = encoded.split(':');
+            let generation = fields
+                .next()
+                .expect("ack generation")
+                .parse::<u64>()
+                .expect("numeric ack generation");
+            let audit_sequence = fields
+                .next()
+                .expect("ack audit sequence")
+                .parse::<u64>()
+                .expect("numeric ack audit sequence");
+            let digest = fields.next().expect("ack frontier digest").to_string();
+            assert!(fields.next().is_none(), "unexpected ack fields");
+            acknowledgements.push((generation, audit_sequence, digest));
+        } else if outcome == "conflict" {
+            conflicts += 1;
+        } else {
+            panic!("unexpected publisher outcome: {outcome}");
         }
     }
-    assert_eq!((successes, conflicts), (1, WORKERS - 1));
+
+    // All workers submit the exact same canonical request. One process appends
+    // the only durable record; the others receive the same idempotent durable
+    // acknowledgement. API-level success is therefore not eight winners.
+    assert_eq!(acknowledgements.len(), WORKERS);
+    assert_eq!(conflicts, 0);
+    let first_ack = acknowledgements.first().expect("one durable acknowledgement");
+    assert_eq!(first_ack.0, 1);
+    assert_eq!(first_ack.1, 1);
+    assert!(
+        acknowledgements.iter().all(|ack| ack == first_ack),
+        "all exact retries must observe one canonical acknowledgement"
+    );
 
     let identity_sha256 = Sha256Digest::for_bytes(&identity_bytes);
     let mut backend = LockedFileEvidenceFrontierBackend::open_external(
@@ -236,9 +268,18 @@ fn eight_process_first_generation_contention_has_one_durable_winner() {
         .expect("read durable winner")
         .expect("one frontier was published");
     assert_eq!(latest.frontier_generation, 1);
+    let history = backend
+        .get_history(
+            "store:kernel-evidence-multiprocess",
+            EvidenceFrontierHistoryRangeV1::new(1, 1).expect("one-generation range"),
+        )
+        .expect("read durable contention history");
+    assert_eq!(history.len(), 1, "contention must append exactly one record");
+    assert_eq!(history[0], latest);
 
     println!(
-        "kernel_evidence_multiprocess_contention={{\"workers\":{WORKERS},\"successes\":{successes},\"conflicts\":{conflicts},\"elapsedMs\":{}}}",
+        "kernel_evidence_multiprocess_contention={{\"workers\":{WORKERS},\"acknowledgements\":{},\"conflicts\":{conflicts},\"durableWinners\":1,\"elapsedMs\":{}}}",
+        acknowledgements.len(),
         started.elapsed().as_millis()
     );
 }

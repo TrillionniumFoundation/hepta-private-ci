@@ -43,13 +43,22 @@ fn parse_active_records(
     match parse_records(bytes, store_id, identity, identity_sha256, cursor.clone()) {
         Ok(records) => Ok(records),
         Err(primary_error) if cursor.next_audit_sequence > 1 => {
-            let complete = parse_records(
+            // A crash after publishing an archive index but before truncating the
+            // active file can leave an exact duplicate prefix. Retry from the
+            // initial cursor only to recognize that complete-prefix shape. If
+            // the bytes are not a complete chain from generation one, preserve
+            // the primary semantic failure (for example RepairRequired) rather
+            // than replacing it with a generic boundary error.
+            let complete = match parse_records(
                 bytes,
                 store_id,
                 identity,
                 identity_sha256,
                 ChainCursor::initial(),
-            )?;
+            ) {
+                Ok(records) => records,
+                Err(_) => return Err(primary_error),
+            };
             let boundary_sequence = cursor.next_audit_sequence - 1;
             let Some(boundary) = complete
                 .iter()

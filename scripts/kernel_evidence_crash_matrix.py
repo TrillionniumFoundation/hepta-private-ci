@@ -26,6 +26,7 @@ class TestCommand:
     target_args: tuple[str, ...]
     test_name: str
     required_markers: tuple[str, ...] = ()
+    require_harness_marker: bool = True
 
     def argv(self) -> list[str]:
         return [
@@ -46,28 +47,60 @@ class TestCommand:
     def success_marker(self) -> str:
         return f"test {self.test_name} ... ok"
 
-
-def evidence_lib(test_name: str, *markers: str) -> TestCommand:
-    return TestCommand("codex-hepta-evidence", ("--lib",), test_name, tuple(markers))
-
-
-def agentd_lib(test_name: str, *markers: str) -> TestCommand:
-    return TestCommand("codex-hepta-agentd", ("--lib",), test_name, tuple(markers))
+    @property
+    def expected_markers(self) -> tuple[str, ...]:
+        harness = (self.success_marker,) if self.require_harness_marker else ()
+        return (*harness, *self.required_markers)
 
 
-def evidence_integration(target: str, test_name: str, *markers: str) -> TestCommand:
+def evidence_lib(
+    test_name: str,
+    *markers: str,
+    require_harness_marker: bool = True,
+) -> TestCommand:
+    return TestCommand(
+        "codex-hepta-evidence",
+        ("--lib",),
+        test_name,
+        tuple(markers),
+        require_harness_marker,
+    )
+
+
+def agentd_lib(
+    test_name: str,
+    *markers: str,
+    require_harness_marker: bool = True,
+) -> TestCommand:
+    return TestCommand(
+        "codex-hepta-agentd",
+        ("--lib",),
+        test_name,
+        tuple(markers),
+        require_harness_marker,
+    )
+
+
+def evidence_integration(
+    target: str,
+    test_name: str,
+    *markers: str,
+    require_harness_marker: bool = True,
+) -> TestCommand:
     return TestCommand(
         "codex-hepta-evidence",
         ("--test", target),
         test_name,
         tuple(markers),
+        require_harness_marker,
     )
 
 
 SCENARIOS: dict[str, tuple[TestCommand, ...]] = {
     "sqlite_process_kill": (
         evidence_lib(
-            "authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id"
+            "authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id",
+            require_harness_marker=False,
         ),
         evidence_lib(
             (
@@ -262,7 +295,7 @@ def assess_command(
     timed_out: bool,
 ) -> tuple[bool, list[str], bool]:
     text = output.decode("utf-8", errors="replace")
-    markers = (spec.success_marker, *spec.required_markers)
+    markers = spec.expected_markers
     missing = [marker for marker in markers if marker not in text]
     skipped = "skipping:" in text.lower()
     passed = exit_code == 0 and not timed_out and not missing and not skipped
@@ -319,7 +352,7 @@ def run_command(
         "logPath": str(log_path),
         "logSha256": sha256_bytes(output),
         "logBytes": len(output),
-        "requiredMarkers": [spec.success_marker, *spec.required_markers],
+        "requiredMarkers": list(spec.expected_markers),
         "missingMarkers": missing,
         "skippedDetected": skipped,
     }
