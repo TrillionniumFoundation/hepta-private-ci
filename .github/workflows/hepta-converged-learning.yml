@@ -207,14 +207,21 @@ jobs:
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/hepta-long-horizon-measurement"
+          data="$RUNNER_TEMP/hepta-long-horizon-data"
           mkdir -p "$out"
           { git rev-parse HEAD HEAD^{tree}; rustc --version; uname -sm; } > "$out/environment.txt"
-          cargo build --locked --release -p codex-hepta-learning-ledger --example long_horizon_scale
-          sha256sum target/release/examples/long_horizon_scale > "$out/binary.sha256"
-          # The existing executable records 100/1k/10k/100k milestones,
-          # real checkpoint recovery and historical dedupe at each milestone.
-          # Timings remain observations, not invented target-host thresholds.
-          timeout 600s target/release/examples/long_horizon_scale 100000 "$RUNNER_TEMP/hepta-long-horizon-data" | tee "$out/measurements.jsonl"
+          cargo build --locked --release -p codex-hepta-learning-ledger --example target_host_qualification
+          sha256sum target/release/examples/target_host_qualification > "$out/binary.sha256"
+          HEPTA_LEDGER_QUAL_ROOT="$data" \
+          HEPTA_LEDGER_RECORDS=100000 \
+          HEPTA_LEDGER_SEGMENT_LIMIT=1000 \
+          HEPTA_TARGET_HOST_ID="github-ubuntu-24.04-arm-${{ matrix.lane }}" \
+          HEPTA_KEEP_ARTIFACTS=1 \
+            timeout 600s target/release/examples/target_host_qualification \
+              | tee "$out/qualification-summary.json"
+          python3 -m json.tool "$out/qualification-summary.json" >/dev/null
+          find "$data" -type f -print0 | sort -z | xargs -0 sha256sum > "$out/ledger-files.sha256"
+          du -sk "$data" > "$out/ledger-size-kib.txt"
       - name: Retain real-file measurements
         if: always() && steps.ledger_measure.outcome != 'skipped'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
