@@ -12,6 +12,7 @@ use codex_hepta_learning_artifacts::owner::ArtifactOwnerBootstrapConfigV1;
 use codex_hepta_learning_artifacts::owner::ArtifactOwnerBootstrapV1;
 use codex_hepta_learning_artifacts::owner::ArtifactOwnerCommandError;
 use codex_hepta_learning_artifacts::owner::DurableInstrumentedLearningArtifactReferenceHostV1;
+use codex_hepta_learning_artifacts::durable_replace_control_file_v1;
 use codex_hepta_learning_artifacts::owner::SignedArtifactOwnerRequestV1;
 
 const MAX_ERROR_DETAIL: usize = 512;
@@ -32,18 +33,31 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     })?;
     let address = bootstrap.runtime.listen_address;
     let maximum_request_bytes = bootstrap.runtime.maximum_request_bytes;
+    let metrics_path = bootstrap.runtime.service.root.join("host/status/metrics.prom");
     let host = DurableInstrumentedLearningArtifactReferenceHostV1::open(bootstrap)?;
+    persist_metrics(&host, &metrics_path, startup_now)?;
     let listener = TcpListener::bind(address)?;
 
     for incoming in listener.incoming() {
         let mut stream = incoming?;
         let should_shutdown = handle_connection(&host, &mut stream, maximum_request_bytes)?;
+        persist_metrics(&host, &metrics_path, unix_seconds()?)?;
         if should_shutdown {
             host.mark_stopped(unix_seconds()?)?;
             return Ok(());
         }
     }
     Err(io::Error::new(io::ErrorKind::BrokenPipe, "listener terminated").into())
+}
+
+fn persist_metrics(
+    host: &DurableInstrumentedLearningArtifactReferenceHostV1,
+    path: &std::path::Path,
+    now: u64,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let metrics = host.operational_metrics(now)?.prometheus_text();
+    durable_replace_control_file_v1(path, metrics.as_bytes())?;
+    Ok(())
 }
 
 fn config_argument() -> Result<PathBuf, io::Error> {
