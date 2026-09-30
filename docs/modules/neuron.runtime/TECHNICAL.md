@@ -486,3 +486,18 @@ I/O, capacity warning API and exact-source verification procedure. The mechanism
 above remain applicable, but are not a substitute for that end-to-end V2 guide.
 V2 segment compaction, complete generation reload and target-host acceptance are
 not implied by the new lifecycle or diagnostic implementation.
+
+## Canonical Agentd V2 product ownership
+
+The ordinary Agentd source path owns V2 through `AgentdNeuronRuntimeV2Config`.
+`runtime::run` recovers and starts exactly one controller, attaches the resulting
+host to `AgentdState`, routes canonical intelligence through a prepared V2
+invocation, begins quiesce before daemon drain, and seals/stops the controller
+before process exit. Request input cannot select the runtime, generation,
+control-state path, or tick provider. Compatibility mode is explicit absence of
+the V2 config; a configured V2 runtime never silently falls back to V1.
+
+`MODULE_SPEC.json` is the sole handwritten module specification and
+`IMPLEMENTATION_MAP.generated.json` is its generated implementation projection.
+The legacy `IMPLEMENTATION_MAP.json` is only a compatibility pointer and carries
+no independent readiness or source facts.

@@ -432,6 +432,25 @@ impl AgentdNeuronGenerationControllerV2 {
         handle.query_operation_control(tick_id, input_digest)
     }
 
+    /// Reopen a generation after a graceful daemon shutdown. The
+    /// transition is durably published as `Starting` before ordinary
+    /// reconciliation; execution remains closed until the full startup
+    /// postcondition succeeds.
+    pub fn restart_stopped(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+        {
+            let mut state = self.lock_state()?;
+            if state.lifecycle != AgentdNeuronLifecycleStateV2::Stopped {
+                return Err(AgentdNeuronControlErrorV2::InvalidTransition);
+            }
+            state
+                .persist_transition(AgentdNeuronLifecycleStateV2::Starting, None)
+                .map_err(poison_control_state)?;
+            state.lifecycle = AgentdNeuronLifecycleStateV2::Starting;
+            state.reload_target_generation = None;
+        }
+        self.start()
+    }
+
     pub fn shutdown(&self) -> Result<(), AgentdNeuronControlErrorV2> {
         match self.state()? {
             AgentdNeuronLifecycleStateV2::Serving => self.begin_quiesce()?,

@@ -391,3 +391,68 @@ fn control_state_rejects_symlinks_hardlinks_and_non_private_permissions() {
         };
     assert_eq!(controller_error.stable_code(), "control_state_invalid");
 }
+
+struct UnusedProductTickProvider;
+
+impl AgentdNeuronTickProviderV2 for UnusedProductTickProvider {
+    fn build_tick(
+        &self,
+        _identity: &crate::AgentdIdentity,
+        _record: &codex_hepta_learning_ledger::RunStartRecordV1,
+        _invocation: &crate::AgentdIntelligenceInvocationV1,
+    ) -> Result<NeuronTickInputV1, crate::AgentdError> {
+        Err(crate::AgentdError::Invalid(
+            "test tick provider must not be invoked".to_string(),
+        ))
+    }
+}
+
+#[test]
+fn product_config_restarts_gracefully_stopped_generation() {
+    let directory = private_state_directory();
+    let path = directory.path().join("neuron-generation-state.json");
+    let (active, first_owner) = handle(1);
+    let first = checked(AgentdNeuronRuntimeV2Config::new(
+        active,
+        path.clone(),
+        Arc::new(UnusedProductTickProvider),
+    ));
+    let first_host = checked(first.start());
+    assert_eq!(
+        checked(read_agentd_neuron_generation_state_v2(&path)).lifecycle,
+        AgentdNeuronLifecycleStateV2::Serving
+    );
+    checked(first_host.shutdown());
+    assert!(first_owner.reconciles.load(Ordering::SeqCst) >= 2);
+    assert_eq!(
+        checked(read_agentd_neuron_generation_state_v2(&path)).lifecycle,
+        AgentdNeuronLifecycleStateV2::Stopped
+    );
+    drop(first_host);
+
+    let (recovered, recovered_owner) = handle(1);
+    let recovered_clone = recovered.clone();
+    let restarted = checked(AgentdNeuronRuntimeV2Config::new(
+        recovered,
+        path.clone(),
+        Arc::new(UnusedProductTickProvider),
+    ));
+    let restarted_host = checked(restarted.start());
+    assert_eq!(recovered_owner.reconciles.load(Ordering::SeqCst), 1);
+    assert_eq!(
+        checked(read_agentd_neuron_generation_state_v2(&path)).lifecycle,
+        AgentdNeuronLifecycleStateV2::Serving
+    );
+
+    let input = test_input(1);
+    checked(recovered_clone.prepare(
+        input.tick_id.clone(),
+        recovered_clone.body_bundle_digest().expect("body digest"),
+        input,
+    ));
+    checked(restarted_host.shutdown());
+    assert_eq!(
+        checked(read_agentd_neuron_generation_state_v2(&path)).lifecycle,
+        AgentdNeuronLifecycleStateV2::Stopped
+    );
+}

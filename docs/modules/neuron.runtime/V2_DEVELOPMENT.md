@@ -393,3 +393,12 @@ Synthetic-corpus backend runs and actual adapter/head optimization remain bounde
 experiments, not independently accepted OOD calibration or prospective efficacy.
 The developer/operator's permission to run experiments is not a third-party
 provider's contractual training/distribution permission or an independent review.
+
+## Daemon product-path closure
+
+V2 is installed only by the embedding that constructs `AgentdConfig`. Startup
+fails closed unless the canonical product runner and host-owned invocation
+provider are also present. The daemon, not a request handler, performs control
+state recovery, lifecycle activation, quiesce, seal and shutdown. All
+qualification after this migration runs against immutable source and has
+read-only repository permissions.

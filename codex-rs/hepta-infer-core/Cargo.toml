@@ -15,5 +15,6 @@ workspace = true
 
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
+fs2 = "0.4.3"
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

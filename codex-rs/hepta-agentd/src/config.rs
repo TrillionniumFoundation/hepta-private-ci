@@ -93,6 +93,7 @@ pub struct AgentdConfig {
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
         Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    neuron_runtime_v2: Option<crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Config>,
 }
 
 impl AgentdConfig {
@@ -215,6 +216,7 @@ impl AgentdConfig {
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
+            neuron_runtime_v2: None,
         })
     }
 
@@ -532,6 +534,27 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>> {
         self.intelligence_invocation_provider.clone()
+    }
+
+    /// Attach the single daemon-owned V2 Neuron runtime. The ordinary process
+    /// environment path never manufactures model, storage or tick authority.
+    pub fn with_neuron_runtime_v2(
+        mut self,
+        runtime: crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Config,
+    ) -> Result<Self, AgentdError> {
+        if self.neuron_runtime_v2.is_some() {
+            return Err(AgentdError::Invalid(
+                "Neuron V2 runtime already configured".to_string(),
+            ));
+        }
+        self.neuron_runtime_v2 = Some(runtime);
+        Ok(self)
+    }
+
+    pub(crate) fn take_neuron_runtime_v2(
+        &mut self,
+    ) -> Option<crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Config> {
+        self.neuron_runtime_v2.take()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

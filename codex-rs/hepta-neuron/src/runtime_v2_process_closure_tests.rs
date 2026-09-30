@@ -67,12 +67,7 @@ impl DurableNeuronModelPort for FileModel {
     }
 }
 
-fn child_with_style(
-    mode: &str,
-    root: &Path,
-    cut: &str,
-    crash_style: &str,
-) -> std::process::Output {
+fn child_with_style(mode: &str, root: &Path, cut: &str, crash_style: &str) -> std::process::Output {
     let module = checked(module_path!().split_once("::").ok_or("test module path")).1;
     checked(
         Command::new(checked(std::env::current_exe()))

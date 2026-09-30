@@ -87,6 +87,16 @@
       "gates": [
         "stable"
       ]
+    },
+    {
+      "id": "NR-C-005",
+      "statement": "The ordinary Agentd lifecycle owns V2 startup, explicit stopped restart, quiesce and shutdown without opening a gate before reconciliation.",
+      "tests": [
+        "neuron_runtime_v2_durable_state_tests::product_config_restarts_gracefully_stopped_generation"
+      ],
+      "gates": [
+        "all"
+      ]
     }
   ]
 }

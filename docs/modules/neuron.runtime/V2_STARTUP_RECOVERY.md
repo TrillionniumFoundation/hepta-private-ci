@@ -120,3 +120,16 @@ Every architecture lane must:
 
 The committed workflow defines the intended checks. Only a completed run for the
 exact commit establishes an executed pass.
+
+## Graceful daemon restart from `Stopped`
+
+`Stopped` records completion of the owning Agentd process lifecycle; it is
+not a generation-retirement grant. A trusted `AgentdNeuronRuntimeV2Config`
+may invoke the explicit `restart_stopped` transition for the same proven
+topology. The transition first persists `Starting`, then performs normal
+retained-generation, active-generation, pending-operation and witness
+reconciliation, opening execution only after the startup postcondition.
+
+`Quiescing`, `Sealed`, `Reloading` and `Failed` are never silently resumed;
+they retain interrupted drain, handoff or failure intent and require the
+documented operator recovery action.

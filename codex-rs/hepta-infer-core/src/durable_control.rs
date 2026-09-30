@@ -13,6 +13,8 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+use fs2::FileExt;
+
 #[path = "native_control.rs"]
 pub mod native;
 
@@ -196,7 +198,8 @@ impl DurableInferenceControl {
         }
         let file = options.open(&path)?;
         // Lock before replay: two owners must never admit from the same stale cut.
-        file.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        file.try_lock_exclusive()
+            .map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);

@@ -61,5 +61,6 @@ include!("neuron_runtime_v2_controller.rs");
 include!("neuron_runtime_v2_startup_recovery.rs");
 include!("neuron_runtime_v2_failed_recovery.rs");
 include!("neuron_runtime_v2_modules.rs");
+include!("neuron_runtime_v2_product.rs");
 #[path = "neuron_runtime_v2_decision_cell.rs"]
 mod decision_cell;

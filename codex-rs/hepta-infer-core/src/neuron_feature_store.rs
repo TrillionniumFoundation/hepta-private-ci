@@ -9,7 +9,6 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
 use std::fs::OpenOptions;
-use std::fs::TryLockError;
 use std::io;
 use std::io::Read;
 use std::io::Seek;
@@ -19,6 +18,8 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::path::Path;
 use std::str::FromStr;
+
+use fs2::FileExt;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -143,10 +144,12 @@ impl LockedFeatureFile {
         if !file.metadata()?.is_file() {
             return Err(NeuronFeatureStoreError::NotRegular);
         }
-        match file.try_lock() {
+        match file.try_lock_exclusive() {
             Ok(()) => Ok(Self(file)),
-            Err(TryLockError::WouldBlock) => Err(NeuronFeatureStoreError::Busy),
-            Err(TryLockError::Error(error)) => Err(error.into()),
+            Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                Err(NeuronFeatureStoreError::Busy)
+            }
+            Err(error) => Err(error.into()),
         }
     }
 }
@@ -167,7 +170,7 @@ impl DerefMut for LockedFeatureFile {
 
 impl Drop for LockedFeatureFile {
     fn drop(&mut self) {
-        let _ = self.0.unlock();
+        let _ = FileExt::unlock(&self.0);
     }
 }
 
