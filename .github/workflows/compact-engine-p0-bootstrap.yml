@@ -109,9 +109,6 @@ jobs:
           row["resolvedRoots"] = canonical_roots
           row["sourceRoot"] = canonical_roots
 
-          # The repository-wide implementation-map schema treats
-          # delegatedCallees as source paths. Preserve symbol-level navigation
-          # in a dedicated field without presenting symbols as paths.
           for operation in row.get("operations", []):
               delegates = operation.get("delegatedCallees", [])
               source_delegates = [
@@ -183,9 +180,49 @@ jobs:
           C2_SHA="$(git rev-parse HEAD)"
           C2_TREE="$(git rev-parse HEAD^{tree})"
           test -z "$(git status --porcelain)"
-          python3 scripts/hepta-implementation-maps.py verify \
-            --expected-sha "$C2_SHA" \
-            --expected-tree "$C2_TREE"
+          test "$(git diff --name-only "$C1_SHA..$C2_SHA")" = \
+            "docs/modules/compact.engine/IMPLEMENTATION_MAP.json"
+          C1_SHA="$C1_SHA" C1_TREE="$C1_TREE" python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          row = json.loads(
+              Path("docs/modules/compact.engine/IMPLEMENTATION_MAP.json")
+              .read_text(encoding="utf-8")
+          )
+          expected_identity = {
+              "commit": os.environ["C1_SHA"],
+              "tree": os.environ["C1_TREE"],
+          }
+          assert row.get("sourceBase") == expected_identity
+          assert row.get("observedAtHead") == expected_identity
+          assert row.get("mappingSourceIdentityMode") == "exact_blob"
+          assert row.get("declaredRoots") == ["codex-rs/hepta-compact-engine"]
+          assert row.get("resolvedRoots") == ["codex-rs/hepta-compact-engine"]
+          for operation in row.get("operations", []):
+              path = operation["sourcePath"]
+              expected = subprocess.check_output(
+                  ["git", "rev-parse", f"{os.environ['C1_SHA']}:{path}"],
+                  text=True,
+              ).strip()
+              current = subprocess.check_output(
+                  ["git", "rev-parse", f"HEAD:{path}"],
+                  text=True,
+              ).strip()
+              assert operation.get("sourceBlob") == expected == current
+          evidence = row.get("exactSourceEvidence", {})
+          assert evidence.get("kind") == "path_blob_manifest_v1"
+          entries = evidence.get("entries", [])
+          assert entries and len(entries) == len({entry["path"] for entry in entries})
+          for entry in entries:
+              current = subprocess.check_output(
+                  ["git", "rev-parse", f"HEAD:{entry['path']}"],
+                  text=True,
+              ).strip()
+              assert entry["blobSha"] == current
+          PY
           python3 scripts/compact_engine_qualification.py verify-map --root .
           git diff "$EXPECTED_HEAD..$C2_SHA" --check
 
