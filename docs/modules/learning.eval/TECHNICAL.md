@@ -221,7 +221,7 @@ generation from that anchor. Cross-host deployment of this backend additionally
 requires a shared filesystem with qualified linearizable lock and fsync
 semantics.
 
-The evaluated-shadow caller now consumes only the sealed `ProductQualificationReceiptV1`, rechecks current trust/dataset/candidate bindings and never re-runs low-level signed admission. This leaves one repository-controlled product qualification spine.
+The evaluated-shadow, Agentd signed-evaluation and governed parameter-plasticity consumers accept only a sealed `ProductQualificationReceiptV1`, recheck current trust and exact objective/candidate/baseline/dataset/generator bindings as applicable, and never re-run low-level signed admission. Agentd and plasticity require a current independent evaluator to sign a V2 use payload binding the terminal qualification and complete runtime or proposal lineage. The qualification seal covers the full decision, including disposition and failed metrics. This preserves one repository-controlled product qualification spine; it grants no activation or external acceptance.
 
 ## 7. Runtime, concurrency and transaction model
 
