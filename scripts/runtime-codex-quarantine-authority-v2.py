@@ -1,28 +1,24 @@
 #!/usr/bin/env python3
-"""Corrected wrapper for independent quarantine-resolution authority epochs.
-
-The reviewed predecessor migration is loaded from its immutable Git blob. This
-keeps the wrapper independent of the compatibility entrypoint that invokes it.
-"""
+"""Corrected current-tree wrapper for independent quarantine-resolution authority epochs."""
 
 from __future__ import annotations
 
-import subprocess
-import types
+import importlib.util
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-HISTORICAL_BLOB = "6e1fceb408a30cedeabe626532884ca08d60be2f"
+SOURCE = Path(__file__).with_name("runtime-codex-quarantine-authority-source.py")
 
 
 def load_original():
-    source = subprocess.check_output(
-        ["git", "cat-file", "blob", HISTORICAL_BLOB],
-        cwd=ROOT,
-    ).decode("utf-8")
-    module = types.ModuleType("runtime_codex_quarantine_authority_historical")
-    module.__file__ = f"<git-blob:{HISTORICAL_BLOB}>"
-    exec(compile(source, module.__file__, "exec"), module.__dict__)
+    spec = importlib.util.spec_from_file_location(
+        "runtime_codex_quarantine_authority_source",
+        SOURCE,
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load current-tree migration source: {SOURCE}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
     return module
 
 
@@ -92,6 +88,7 @@ def main() -> None:
     text = original.durable_store(text)
     path.write_text(text, encoding="utf-8")
     Path(__file__).unlink()
+    SOURCE.unlink()
 
 
 if __name__ == "__main__":

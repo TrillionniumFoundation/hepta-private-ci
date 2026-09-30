@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-"""Corrected wrapper for pre-fsync runtime.codex SIGKILL scenarios."""
+"""Corrected current-tree wrapper for pre-fsync runtime.codex SIGKILL scenarios."""
 
 from __future__ import annotations
 
-import subprocess
-import types
+import importlib.util
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-HISTORICAL_BLOB = "98ab9f31cf9d0ec716210b24154ddc4c3aeacdd1"
+SOURCE = Path(__file__).with_name("runtime-codex-process-crash-expansion-source.py")
 
 
 def load_original():
-    source = subprocess.check_output(
-        ["git", "cat-file", "blob", HISTORICAL_BLOB],
-        cwd=ROOT,
-    ).decode("utf-8")
-    module = types.ModuleType("runtime_codex_process_crash_historical")
-    module.__file__ = f"<git-blob:{HISTORICAL_BLOB}>"
-    exec(compile(source, module.__file__, "exec"), module.__dict__)
+    spec = importlib.util.spec_from_file_location(
+        "runtime_codex_process_crash_source",
+        SOURCE,
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load current-tree migration source: {SOURCE}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
     return module
 
 
@@ -81,6 +81,7 @@ def main() -> None:
         encoding="utf-8",
     )
     Path(__file__).unlink()
+    SOURCE.unlink()
 
 
 if __name__ == "__main__":
