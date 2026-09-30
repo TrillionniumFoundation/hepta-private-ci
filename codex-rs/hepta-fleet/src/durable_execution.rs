@@ -109,10 +109,16 @@ impl DurableFleetStore {
         .fetch_optional(&mut *tx)
         .await
         .map_err(sqlx_error)?;
+        let observed: Option<i64> =
+            sqlx::query_scalar("SELECT generation FROM fleet_hosts WHERE host_id = ?")
+                .bind(host_id)
+                .fetch_optional(&mut *tx)
+                .await
+                .map_err(sqlx_error)?;
         let generation = if let Some(row) = current {
             let accepted_boot: String = row.try_get("boot_identity").map_err(sqlx_error)?;
             let generation: i64 = row.try_get("generation").map_err(sqlx_error)?;
-            if accepted_boot == boot_identity {
+            if accepted_boot == boot_identity && observed.unwrap_or(0) <= generation {
                 tx.commit().await.map_err(sqlx_error)?;
                 return to_u64(generation);
             }
@@ -125,26 +131,25 @@ impl DurableFleetStore {
             .fetch_one(&mut *tx)
             .await
             .map_err(sqlx_error)?;
-            if seen {
+            if seen && accepted_boot != boot_identity {
                 return Err(DurableFleetError::Stale);
             }
+            // Upgrade recovery for predecessor capacity writers which advanced
+            // a snapshot generation independently of the boot fence. Never
+            // adopt their grants as current authority: advance and retire them.
             generation
+                .max(observed.unwrap_or(0))
                 .checked_add(1)
                 .ok_or_else(|| DurableFleetError::Invalid("host incarnation exhausted".into()))?
         } else {
-            let previous: Option<i64> =
-                sqlx::query_scalar("SELECT generation FROM fleet_hosts WHERE host_id = ?")
-                    .bind(host_id)
-                    .fetch_optional(&mut *tx)
-                    .await
-                    .map_err(sqlx_error)?;
-            previous
+            observed
                 .unwrap_or(0)
                 .checked_add(1)
                 .ok_or_else(|| DurableFleetError::Invalid("host incarnation exhausted".into()))?
         };
         sqlx::query(
-            "INSERT INTO fleet_seen_boots(host_id, boot_identity, generation) VALUES(?, ?, ?)",
+            "INSERT INTO fleet_seen_boots(host_id, boot_identity, generation) VALUES(?, ?, ?)
+             ON CONFLICT(host_id, boot_identity) DO UPDATE SET generation = excluded.generation",
         )
         .bind(host_id)
         .bind(boot_identity)
@@ -165,6 +170,11 @@ impl DurableFleetStore {
         .execute(&mut *tx)
         .await
         .map_err(sqlx_error)?;
+        // A real boot change immediately invalidates old admissions. Prepared
+        // or running execution holds retain occupancy and require native stop
+        // reconciliation; boot identity is not process-exit evidence.
+        self.retire_host_generation_tx(&mut tx, host_id, to_u64(generation)?, now_ms)
+            .await?;
         tx.commit().await.map_err(|_| {
             self.indeterminate(
                 format!("incarnation:{host_id}:{generation}"),
@@ -549,7 +559,7 @@ fn native_io(error: std::io::Error) -> DurableFleetError {
     DurableFleetError::Unavailable(error.to_string())
 }
 
-fn native_boot_identity() -> Result<String, DurableFleetError> {
+pub(crate) fn native_boot_identity() -> Result<String, DurableFleetError> {
     if !cfg!(target_os = "linux") {
         return Err(DurableFleetError::Unavailable(
             "native execution proof requires Linux procfs".into(),

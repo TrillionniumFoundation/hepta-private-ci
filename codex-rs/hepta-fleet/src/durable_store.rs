@@ -181,8 +181,8 @@ impl DurableFleetStore {
         }
         let operation_id = operation_id(
             FleetMutationKindV1::HostObservation.as_str(),
-            &observation.host_id,
-            observation.generation,
+            &content_digest(&(observation.host_id.as_str(), observation.generation))?,
+            observation.observed_at_ms,
         );
         let mut tx = self
             .pool
@@ -190,6 +190,27 @@ impl DurableFleetStore {
             .await
             .map_err(sqlx_error)?;
         Self::advance_clock_tx(&mut tx, now_ms).await?;
+        let incarnation = sqlx::query(
+            "SELECT boot_identity, generation FROM fleet_host_incarnations WHERE host_id = ?",
+        )
+        .bind(&observation.host_id)
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(sqlx_error)?;
+        if let Some(row) = incarnation {
+            let generation = to_u64(row.try_get("generation").map_err(sqlx_error)?)?;
+            if generation != observation.generation {
+                return Err(DurableFleetError::Stale);
+            }
+            if source_id == crate::LOCAL_CAPACITY_SOURCE_ID {
+                let boot: String = row.try_get("boot_identity").map_err(sqlx_error)?;
+                if boot != crate::durable_execution::native_boot_identity()? {
+                    return Err(DurableFleetError::Stale);
+                }
+            }
+        } else if source_id == crate::LOCAL_CAPACITY_SOURCE_ID {
+            return Err(DurableFleetError::Stale);
+        }
         if let Some(row) = sqlx::query(
             "SELECT failure_domain_id, generation, observed_at_ms, valid_until_ms,
                     cpu_millis, memory_bytes, accelerator_millis,
@@ -202,7 +223,10 @@ impl DurableFleetStore {
         .map_err(sqlx_error)?
         {
             let current_generation = to_u64(row.try_get("generation").map_err(sqlx_error)?)?;
-            if observation.generation < current_generation {
+            if observation.generation < current_generation
+                || observation.observed_at_ms
+                    < to_u64(row.try_get("observed_at_ms").map_err(sqlx_error)?)?
+            {
                 return Err(DurableFleetError::Stale);
             }
             let current = HostObservation {
@@ -213,8 +237,50 @@ impl DurableFleetStore {
                 valid_until_ms: to_u64(row.try_get("valid_until_ms").map_err(sqlx_error)?)?,
                 capacity: decode_vector(&row, "")?,
             };
-            if observation.generation == current_generation && observation != &current {
-                return Err(DurableFleetError::Conflict(observation.host_id.clone()));
+            if observation.generation == current_generation {
+                if observation == &current {
+                    let digest = content_digest(observation)?;
+                    let mut retained = None;
+                    // Both predecessor writers used generation or timestamp IDs.
+                    // Preserve their exact committed receipt across this upgrade.
+                    for id in [
+                        operation_id.clone(),
+                        crate::durable_rows::operation_id(
+                            FleetMutationKindV1::HostObservation.as_str(),
+                            &observation.host_id,
+                            observation.generation,
+                        ),
+                        crate::durable_rows::operation_id(
+                            FleetMutationKindV1::HostObservation.as_str(),
+                            &observation.host_id,
+                            observation.observed_at_ms,
+                        ),
+                    ] {
+                        if let Some(receipt) =
+                            crate::durable_receipt::load_receipt_tx(&mut tx, &id).await?
+                            && receipt.semantic_digest == digest
+                            && receipt.subject_id == observation.host_id
+                            && receipt.kind == FleetMutationKindV1::HostObservation
+                            && receipt.authority_witness.is_none()
+                        {
+                            retained = Some(receipt);
+                            break;
+                        }
+                    }
+                    let receipt = retained.ok_or_else(|| {
+                        DurableFleetError::Corrupt("missing exact capacity receipt".into())
+                    })?;
+                    tx.commit().await.map_err(sqlx_error)?;
+                    return Ok(receipt);
+                }
+                if observation.failure_domain_id != current.failure_domain_id
+                    || observation.observed_at_ms == current.observed_at_ms
+                {
+                    return Err(DurableFleetError::Conflict(observation.host_id.clone()));
+                }
+                if observation.observed_at_ms < current.observed_at_ms {
+                    return Err(DurableFleetError::Stale);
+                }
             }
             if observation.generation > current_generation {
                 self.retire_host_generation_tx(
@@ -241,6 +307,8 @@ impl DurableFleetStore {
             committed_at_ms: now_ms,
         };
         insert_receipt_tx(&mut tx, &receipt).await?;
+        crate::capacity_refresh::retain_capacity_snapshots_tx(&mut tx, &observation.host_id)
+            .await?;
         match tx.commit().await {
             Ok(()) => Ok(receipt),
             Err(_) => Err(self.indeterminate(receipt.operation_id, receipt.subject_id)),

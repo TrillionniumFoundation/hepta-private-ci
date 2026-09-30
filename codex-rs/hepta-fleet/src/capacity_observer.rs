@@ -166,26 +166,14 @@ impl LocalCapacityObserver {
 }
 
 impl crate::DurableFleetStore {
+    /// Compatibility name for registering the actual native boot incarnation.
+    /// Capacity renewal never allocates a new host generation.
+    #[deprecated(note = "use register_local_boot; reuse its generation for capacity refresh")]
     pub async fn next_host_generation(
         &self,
         host_id: &str,
     ) -> Result<u64, crate::DurableFleetError> {
-        validate_identity(host_id, "host")
-            .map_err(|error| crate::DurableFleetError::Invalid(error.to_string()))?;
-        let current: Option<i64> =
-            sqlx::query_scalar("SELECT generation FROM fleet_hosts WHERE host_id = ?")
-                .bind(host_id)
-                .fetch_optional(&self.pool)
-                .await
-                .map_err(crate::durable_schema::sqlx_error)?;
-        current
-            .map(crate::durable_rows::to_u64)
-            .transpose()?
-            .unwrap_or(0)
-            .checked_add(1)
-            .ok_or_else(|| {
-                crate::DurableFleetError::Invalid("host generation overflow".to_string())
-            })
+        self.register_local_boot(host_id).await
     }
 
     pub async fn observe_local_capacity(
@@ -195,13 +183,7 @@ impl crate::DurableFleetStore {
         (LocalCapacityObservationV1, crate::FleetOperationReceiptV1),
         crate::DurableFleetError,
     > {
-        let observed = observer
-            .observe(self.owner_now_ms()?)
-            .map_err(|error| crate::DurableFleetError::Unavailable(error.to_string()))?;
-        let receipt = self
-            .observe_host(&observed.host, observed.source_id)
-            .await?;
-        Ok((observed, receipt))
+        self.refresh_local_capacity(observer).await
     }
 }
 

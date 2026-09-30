@@ -286,3 +286,7 @@ async fn workspace_overlap_and_clock_rollback_fail_closed() {
         DurableFleetError::ClockRollback
     );
 }
+
+#[cfg(target_os = "linux")]
+#[path = "capacity_refresh_tests.rs"]
+mod capacity_refresh_tests;
