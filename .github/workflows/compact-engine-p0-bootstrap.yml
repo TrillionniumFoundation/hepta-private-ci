@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: compact-engine-p0-remediation-bootstrap
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   apply:
@@ -95,6 +95,7 @@ jobs:
           import json
           import os
           import subprocess
+          import sys
           from pathlib import Path
 
           map_path = Path("docs/modules/compact.engine/IMPLEMENTATION_MAP.json")
@@ -103,7 +104,32 @@ jobs:
           row["sourceBase"] = identity
           row["observedAtHead"] = identity
           row["mappingSourceIdentityMode"] = "exact_blob"
+          canonical_roots = ["codex-rs/hepta-compact-engine"]
+          row["declaredRoots"] = canonical_roots
+          row["resolvedRoots"] = canonical_roots
+          row["sourceRoot"] = canonical_roots
 
+          # The repository-wide implementation-map schema treats
+          # delegatedCallees as source paths. Preserve symbol-level navigation
+          # in a dedicated field without presenting symbols as paths.
+          for operation in row.get("operations", []):
+              delegates = operation.get("delegatedCallees", [])
+              source_delegates = [
+                  delegate
+                  for delegate in delegates
+                  if isinstance(delegate, str)
+                  and ("/" in delegate or delegate.endswith(".rs"))
+              ]
+              symbol_delegates = [
+                  delegate
+                  for delegate in delegates
+                  if isinstance(delegate, str) and delegate not in source_delegates
+              ]
+              operation["delegatedCallees"] = source_delegates
+              if symbol_delegates:
+                  operation["delegatedNativeSymbols"] = symbol_delegates
+
+          sys.path.insert(0, str(Path("scripts").resolve()))
           spec = importlib.util.spec_from_file_location(
               "hepta_implementation_maps", "scripts/hepta-implementation-maps.py"
           )
