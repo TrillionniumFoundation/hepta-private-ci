@@ -52,35 +52,34 @@ fn admission() -> NativeAdmission {
     }
 }
 
+fn dispatch() -> NativeDispatch {
+    NativeDispatch {
+        thread_id: "thread-1".to_string(),
+        model_provider: "provider".to_string(),
+        context_digest: "a".repeat(64),
+        owner_context_digest: None,
+        codex_payload_digest: None,
+        codex_request_digest: None,
+        app_server_version: None,
+        protocol_id: None,
+        codex_source_admission_digest: None,
+        codex_home_digest: None,
+        codex_connection_id: None,
+        codex_session_id: None,
+        codex_deadline_ms: None,
+        codex_authority_epoch: None,
+        codex_revocation_revision: None,
+        codex_revocation_head_sha256: None,
+        codex_authority_witness_sha256: None,
+    }
+}
+
 #[tokio::test]
 async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
     let (driver, path) = fixture("reopen");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request(&driver), 1).unwrap();
-    control
-        .dispatch_native(
-            "r1",
-            NativeDispatch {
-                thread_id: "thread-1".to_string(),
-                model_provider: "provider".to_string(),
-                context_digest: "a".repeat(64),
-                owner_context_digest: None,
-                codex_payload_digest: None,
-                codex_request_digest: None,
-                app_server_version: None,
-                protocol_id: None,
-                codex_source_admission_digest: None,
-                codex_home_digest: None,
-                codex_connection_id: None,
-                codex_session_id: None,
-                codex_deadline_ms: None,
-                codex_authority_epoch: None,
-                codex_revocation_revision: None,
-                codex_revocation_head_sha256: None,
-                codex_authority_witness_sha256: None,
-            },
-        )
-        .unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
     drop(control);
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     let cancellation = CancellationToken::new();
@@ -468,5 +467,51 @@ fn agentd_admitted_binding_rejects_caller_minted_or_terminal_state() {
             incomplete_dispatch,
         )
         .is_err()
+    );
+}
+
+#[tokio::test]
+async fn duplicate_pending_abort_never_falls_through_to_ordinary_observation() {
+    let (driver, path) = fixture("abort-reopen");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request(&driver), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let pending = control
+        .prepare_native_abort_before_effect(
+            token,
+            "owner-r1".to_string(),
+            4,
+            "7".repeat(64),
+            "not sent".to_string(),
+        )
+        .unwrap();
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let cancellation = CancellationToken::new();
+    assert!(
+        driver
+            .run(
+                &mut control,
+                admission(),
+                "prompt".to_string(),
+                None,
+                &cancellation
+            )
+            .await
+            .is_err()
+    );
+    assert_eq!(control.native_record("r1"), Some(&pending));
+    assert!(control.native_record("r1").unwrap().observation.is_none());
+    assert_eq!(
+        control.reserve_native(
+            NativeRequest {
+                request_id: "next".to_string(),
+                ..request(&driver)
+            },
+            1
+        ),
+        Err(codex_hepta_infer_core::durable_control::Error::CapacityExceeded)
     );
 }

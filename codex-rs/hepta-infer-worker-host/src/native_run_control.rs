@@ -249,6 +249,13 @@ impl AppServerModelDriver {
             )?,
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
+        if record.state == NativeReservationState::AbortPending {
+            self.reconcile_pending_pre_effect_abort(control, &record)
+                .await?;
+            return Err(
+                "request was acknowledged aborted before effect; no provider replay".into(),
+            );
+        }
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }

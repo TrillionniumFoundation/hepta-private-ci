@@ -84,8 +84,11 @@ use execution_recovery::persist_unknown_turn_start;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_control_maintenance.rs"]
+mod maintenance;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+pub use maintenance::NativeControlMaintenanceReceipt;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -158,6 +161,7 @@ pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
     turn_start_authorizer: Option<Arc<dyn TurnStartAuthorizer>>,
     cleanup_owner: crate::native_cleanup_owner::NativeCleanupOwner,
+    owner_reconciliation_cursor: String,
 }
 
 #[derive(Clone)]
@@ -191,6 +195,7 @@ impl AppServerModelDriver {
             config,
             turn_start_authorizer: None,
             cleanup_owner,
+            owner_reconciliation_cursor: String::new(),
         })
     }
 
@@ -537,6 +542,8 @@ async fn abort_pre_effect_consistently(
         )
         .await?;
     if aborted.phase != AgentRunPhase::AbortedBeforeEffect
+        || aborted.run_id != abort.owner_run_id
+        || aborted.generation != prepared.request.worker_generation
         || aborted.revision
             != abort
                 .owner_dispatch_revision
@@ -563,8 +570,22 @@ impl AppServerModelDriver {
         record: &NativeRunRecord,
     ) -> Result<()> {
         let Some(abort) = record.pre_effect_abort.clone() else {
-            return Ok(());
+            return Err("pending native abort omitted its durable proof".into());
         };
+        if record.state
+            != codex_hepta_infer_core::durable_control::native::NativeReservationState::AbortPending
+            || record.request.principal_id != self.config.agent_id.to_string()
+            || record.request.worker_generation != self.config.generation
+            || record.request.model != self.config.model
+            || record.turn_id.is_some()
+            || record.observation.is_some()
+            || record.terminal_owner.as_ref().is_some_and(|owner| {
+                owner.run_id != abort.owner_run_id
+                    || owner.owner_dispatch_revision != abort.owner_dispatch_revision
+            })
+        {
+            return Err("pending native abort no longer matches its exact owner".into());
+        }
         let owner = AgentdClient::new(
             self.config.agentd_socket.clone(),
             self.config.agent_id.clone(),
@@ -581,6 +602,13 @@ impl AppServerModelDriver {
             )
             .await?;
         if aborted.phase != AgentRunPhase::AbortedBeforeEffect
+            || aborted.run_id != abort.owner_run_id
+            || aborted.generation != record.request.worker_generation
+            || aborted.revision
+                != abort
+                    .owner_dispatch_revision
+                    .checked_add(1)
+                    .ok_or("Agentd abort revision overflow")?
             || aborted.dispatch_binding_digest.as_deref()
                 != Some(abort.dispatch_binding_digest.as_str())
             || aborted.pre_effect_abort_commitment_digest.as_deref()
@@ -870,10 +898,16 @@ impl AppServerModelDriver {
         control: &mut DurableInferenceControl,
         request_id: &str,
     ) -> Result<()> {
-        let Some(publication) = control
-            .native_record_resolved(request_id)?
-            .and_then(|record| record.terminal_publication)
-        else {
+        let Some(record) = control.native_record_resolved(request_id)? else {
+            return Ok(());
+        };
+        if record.request.principal_id != self.config.agent_id.to_string()
+            || record.request.worker_generation != self.config.generation
+            || record.request.model != self.config.model
+        {
+            return Err("pending native terminal no longer matches its exact owner".into());
+        }
+        let Some(publication) = record.terminal_publication else {
             return Ok(());
         };
         if !publication.pending() {
@@ -884,7 +918,7 @@ impl AppServerModelDriver {
             self.config.agent_id.clone(),
             self.config.generation,
         )?;
-        match publish_terminal_outbox_once(&owner, &publication).await {
+        match publish_terminal_outbox_once(&owner, self.config.generation, &publication).await {
             Ok(owner_revision) => {
                 control.acknowledge_native_terminal_publication(
                     request_id,
@@ -908,6 +942,7 @@ impl AppServerModelDriver {
 
 async fn publish_terminal_outbox_once(
     owner: &AgentdClient,
+    generation: u64,
     publication: &NativeTerminalPublication,
 ) -> Result<u64> {
     let desired_phase = agentd_terminal_phase(publication.phase);
@@ -916,7 +951,7 @@ async fn publish_terminal_outbox_once(
         .await?
         .ok_or("Agentd terminal owner disappeared")?;
     if current.run_id != publication.owner.run_id
-        || current.generation == 0
+        || current.generation != generation
         || current.context_digest.as_deref() != Some(publication.owner.context_digest.as_str())
         || current.compilation_receipt_digest.as_deref()
             != Some(publication.owner.envelope_digest.as_str())
@@ -926,7 +961,7 @@ async fn publish_terminal_outbox_once(
     }
     let exact_current = current.phase == desired_phase
         && current.terminal_observed == publication.terminal_observed;
-    if exact_current {
+    if exact_current && current.revision > publication.owner.owner_dispatch_revision {
         return Ok(current.revision);
     }
     if !matches!(
@@ -944,6 +979,12 @@ async fn publish_terminal_outbox_once(
         )
         .await?;
     if receipt.run_id != publication.owner.run_id
+        || receipt.generation != generation
+        || receipt.revision
+            != current
+                .revision
+                .checked_add(1)
+                .ok_or("Agentd terminal revision overflow")?
         || receipt.phase != desired_phase
         || receipt.terminal_observed != publication.terminal_observed
         || receipt.context_digest.as_deref() != Some(publication.owner.context_digest.as_str())

@@ -61,6 +61,19 @@ impl AppServerSelfIterationModelPortV1 {
             .maintain_native_history(maximum_records, budget)
             .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))
     }
+
+    /// Startup and idle maintenance uses this same concrete, serial owner.
+    /// Model assessment traffic is not required for pending aborts to recover.
+    pub async fn maintain_native_control(
+        &mut self,
+        budget: std::time::Duration,
+    ) -> Result<crate::native_app_server::NativeControlMaintenanceReceipt, SelfIterationModelErrorV1>
+    {
+        self.driver
+            .maintain_native_control(&mut self.control, budget)
+            .await
+            .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))
+    }
 }
 
 impl SelfIterationModelPortV1 for AppServerSelfIterationModelPortV1 {
@@ -83,10 +96,8 @@ impl SelfIterationModelPortV1 for AppServerSelfIterationModelPortV1 {
             if remaining_ms == 0 {
                 return Err(SelfIterationModelErrorV1::TimedOut);
             }
-            self.driver
-                .maintain_native_cleanup(std::time::Duration::from_millis(remaining_ms.min(5_000)))
-                .await
-                .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))?;
+            self.maintain_native_control(std::time::Duration::from_millis(remaining_ms.min(5_000)))
+                .await?;
             self.cleanup_maintenance_at = Some(std::time::Instant::now());
         }
         if now_ms()? >= request.deadline_ms {
