@@ -74,19 +74,14 @@ MUTANTS = (
         "name": "collapse-full-input-candidate-digest",
         "path": "codex-rs/hepta-bellman-operator/src/sensor_core_qualification.rs",
         "old": (
-            "fn digest_candidate_set(\n"
-            "    candidates: &[SensorPointV1],\n"
-            ") -> Result<Digest32, SensorCoreBuildErrorV2> {\n"
-            "    let mut bytes = b\"hepta.learning.operator.sensor-candidate-set.v1\".to_vec();\n"
+            "    Ok(Digest32::of_bytes(&bytes))\n"
+            "}\n\n"
+            "fn validate_full_input_geometry(\n"
         ),
         "new": (
-            "fn digest_candidate_set(\n"
-            "    candidates: &[SensorPointV1],\n"
-            ") -> Result<Digest32, SensorCoreBuildErrorV2> {\n"
-            "    let _ = candidates;\n"
-            "    return Ok(Digest32::ZERO);\n"
-            "    #[allow(unreachable_code)]\n"
-            "    let mut bytes = b\"hepta.learning.operator.sensor-candidate-set.v1\".to_vec();\n"
+            "    Ok(Digest32::ZERO)\n"
+            "}\n\n"
+            "fn validate_full_input_geometry(\n"
         ),
         "test": "full_input_digest_is_order_independent_and_content_sensitive",
     },
