@@ -615,6 +615,8 @@ impl LearningArtifactReferenceHostV1 {
             .ok_or(ArtifactOwnerCommandError::InvalidState)?
             .generation();
         drop(keyrings);
+        #[cfg(all(test, unix))]
+        test_process_crash_barrier("authz-after-install-before-ack");
         self.metrics.authz_reloads.fetch_add(1, Ordering::Relaxed);
         self.persist_status(now, "new authenticated transport keyring generation loaded")?;
         Ok(ExecutionResultV1::json(
@@ -632,6 +634,35 @@ impl LearningArtifactReferenceHostV1 {
     ) -> Result<(), ArtifactOwnerCommandError> {
         self.status(now, detail)?.persist(self.store.as_ref())?;
         Ok(())
+    }
+}
+
+#[cfg(all(test, unix))]
+fn test_process_crash_barrier(stage: &str) {
+    use std::io::Write as _;
+    use std::time::Duration;
+
+    if std::env::var("HEPTA_ARTIFACT_HOST_CRASH_CUT").ok().as_deref() != Some(stage) {
+        return;
+    }
+    let marker = std::env::var_os("HEPTA_ARTIFACT_HOST_CRASH_MARKER")
+        .map(PathBuf::from)
+        .expect("test host crash marker");
+    let mut file = std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&marker)
+        .expect("create test host crash marker");
+    file.write_all(stage.as_bytes())
+        .and_then(|()| file.sync_all())
+        .expect("sync test host crash marker");
+    if let Some(parent) = marker.parent() {
+        File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .expect("sync test host crash marker directory");
+    }
+    loop {
+        std::thread::sleep(Duration::from_secs(1));
     }
 }
 
