@@ -1,0 +1,211 @@
+name: Cognitive store exact remediation authoring
+
+on:
+  push:
+    branches:
+      - automation/cognitive-store-exact-remediation-20260930
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-exact-remediation-20260930
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: codex/cognitive-store-full-closure-20260927
+  EXPECTED_SHA: a7cfdefa6643855d6a3735bf36a37cd7193a633d
+
+jobs:
+  author:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind exact target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${TARGET_BRANCH})" = "$EXPECTED_SHA"
+
+      - name: Apply reviewed fail-closed remediation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/cognitive-fixes.patch.gz.b64" <<'PATCH_B64'
+          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
+          PATCH_B64
+          base64 --decode "$RUNNER_TEMP/cognitive-fixes.patch.gz.b64" \
+            | gzip --decompress > "$RUNNER_TEMP/cognitive-fixes.patch"
+          git apply -p3 --check "$RUNNER_TEMP/cognitive-fixes.patch"
+          git apply -p3 "$RUNNER_TEMP/cognitive-fixes.patch"
+          (
+            cd codex-rs
+            cargo fmt \
+              --package codex-hepta-cognitive-store \
+              --package codex-hepta-memory \
+              --package codex-hepta-agentd
+          )
+          git diff --check
+
+      - name: Verify bounded source change set
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+          expected = {
+              "codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs",
+              "codex-rs/hepta-agentd/tests/cognitive_store_host_read_pages.rs",
+              "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+              "codex-rs/hepta-memory/examples/cognitive_store_recovery_perf.rs",
+              "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+              "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+              "codex-rs/hepta-memory/src/lib.rs",
+              "codex-rs/hepta-memory/tests/cognitive_recovery_publication_fault.rs",
+              "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+          }
+          observed = set(
+              subprocess.check_output(["git", "diff", "--name-only", "HEAD"], text=True)
+              .splitlines()
+          )
+          if observed != expected:
+              raise SystemExit(
+                  "unexpected remediation change set: "
+                  f"missing={sorted(expected - observed)} extra={sorted(observed - expected)}"
+              )
+          PY
+
+      - name: Run targeted native regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_store_product_writer \
+            --features qualification-cognitive-write
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_store_host_read_pages
+          cargo test --locked -p codex-hepta-agentd \
+            --test cognitive_recovery_boundary \
+            --features qualification-cognitive-write
+          cargo test --locked -p codex-hepta-memory \
+            --test cognitive_recovery_publication_fault
+          cargo test --locked -p codex-hepta-memory \
+            cognitive_schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected \
+            -- --exact
+          cargo test --locked -p codex-hepta-memory final_use_tests
+
+      - name: Run real release recovery smoke
+        shell: bash
+        env:
+          HEPTA_COGNITIVE_RECOVERY_RECORDS: "256"
+          HEPTA_COGNITIVE_RECOVERY_REPETITIONS: "1"
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo run --locked --release -p codex-hepta-memory \
+            --example cognitive_store_recovery_perf \
+            > "$RUNNER_TEMP/cognitive-recovery-smoke.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          report = json.loads(Path(os.environ["RUNNER_TEMP"]).joinpath(
+              "cognitive-recovery-smoke.json"
+          ).read_text())
+          assert report["records"] == 256
+          assert report["repetitions"] == 1
+          assert len(report["runs"]) == 1
+          assert report["runs"][0]["exactCutPreserved"] is True
+          assert report["claimBoundary"]["targetHostQualified"] is False
+          PY
+
+      - name: Run strict package Clippy and formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt \
+            --package codex-hepta-cognitive-store \
+            --package codex-hepta-memory \
+            --package codex-hepta-agentd \
+            -- --check
+          cargo clippy --locked \
+            -p codex-hepta-cognitive-store \
+            -p codex-hepta-memory \
+            -p codex-hepta-agentd \
+            --all-targets --all-features --no-deps -- -D warnings
+
+      - name: Commit reviewed source snapshot
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs \
+            codex-rs/hepta-agentd/tests/cognitive_store_host_read_pages.rs \
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs \
+            codex-rs/hepta-memory/examples/cognitive_store_recovery_perf.rs \
+            codex-rs/hepta-memory/src/cognitive_schema_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_store_recovery.rs \
+            codex-rs/hepta-memory/src/lib.rs \
+            codex-rs/hepta-memory/tests/cognitive_recovery_publication_fault.rs \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git commit -m "fix(cognitive-store): close exact-candidate recovery blockers" \
+            -m "Terminalize raw qualification occurrences before lease release, distinguish the exact recovered witness from the writer-admitted opened cut, and close SQLite pools before descriptor recovery so WAL/SHM teardown cannot race immutable identity binding." \
+            -m "Keep redirected or unauthenticated roots indeterminate, use SQLite-safe fixture authority, route schema tests through the state shim, and preserve strict production lint while allowing expect only in test code." \
+            -m "Signed-off-by: OpenAI <noreply@openai.com>"
+          printf 'sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Generate and commit exact source bindings
+        id: mapped
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/cognitive_store_map_generate.py \
+            --source-commit "${{ steps.source.outputs.sha }}" \
+            > "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json"
+          cp "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json" \
+            docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          test "$(git diff --name-only HEAD)" = \
+            "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json"
+          git diff --check
+          git add docs/modules/cognitive.store/IMPLEMENTATION_MAP.json
+          git commit -m "docs(cognitive-store): bind exact recovery-fix source snapshot" \
+            -m "Refresh only the exact Git-object implementation map after the reviewed source commit. Execution, target-host, erasure, acceptance, activation and release claims remain false." \
+            -m "Signed-off-by: OpenAI <noreply@openai.com>"
+          python3 scripts/cognitive_store_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+          python3 scripts/cognitive_store_status.py --check
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Publish fast-forward source and map commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${TARGET_BRANCH})" = "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD~2)" = "$EXPECTED_SHA"
+          git push origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          {
+            echo "Published exact cognitive.store remediation"
+            echo "source=${{ steps.source.outputs.sha }}"
+            echo "source_tree=${{ steps.source.outputs.tree }}"
+            echo "mapped=${{ steps.mapped.outputs.sha }}"
+            echo "mapped_tree=${{ steps.mapped.outputs.tree }}"
+          } >> "$GITHUB_STEP_SUMMARY"
