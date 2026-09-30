@@ -15,14 +15,10 @@ use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
 
 fn owner(suffix: u8) -> AgentId {
-    AgentId::parse(format!("00000000-0000-4000-8000-{suffix:012x}"))
-        .expect("valid owner")
+    AgentId::parse(format!("00000000-0000-4000-8000-{suffix:012x}")).expect("valid owner")
 }
 
-fn layout(
-    temporary: &TempDir,
-    owner: &AgentId,
-) -> codex_hepta_paths::HeptaAgentLayout {
+fn layout(temporary: &TempDir, owner: &AgentId) -> codex_hepta_paths::HeptaAgentLayout {
     let fleet = temporary.path().join("fleet");
     std::fs::create_dir_all(&fleet).expect("create fleet root");
     HeptaFleetRoot::parse(fleet)
@@ -145,7 +141,9 @@ async fn competing_head_reopen_selects_one_complete_receipt() {
     let owner = owner(222);
     let owner_layout = layout(&temporary, &owner);
     let access = CognitiveAccess::agent_private(owner);
-    let seed = CognitiveStore::open(&owner_layout).await.expect("seed writer");
+    let seed = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("seed writer");
     let initial_content = "The predecessor remains fully recoverable.";
     let remembered = seed
         .remember_with_kg(
@@ -158,12 +156,18 @@ async fn competing_head_reopen_selects_one_complete_receipt() {
         .expect("seed publication");
     drop(seed);
 
-    let first = CognitiveStore::open(&owner_layout).await.expect("first writer");
-    let second = CognitiveStore::open(&owner_layout).await.expect("second writer");
+    let first = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("first writer");
+    let second = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("second writer");
     let first_source = source("head-first", "The first correction wins or rolls back.");
     let second_source = source("head-second", "The second correction wins or rolls back.");
     let first_draft = correction("The first correction wins or rolls back.");
     let second_draft = correction("The second correction wins or rolls back.");
+    let first_facts = KgFactSetDraft::default();
+    let second_facts = KgFactSetDraft::default();
 
     let (first_result, second_result) = tokio::join!(
         first.correct_with_kg(
@@ -172,7 +176,7 @@ async fn competing_head_reopen_selects_one_complete_receipt() {
             1,
             &first_source,
             &first_draft,
-            &KgFactSetDraft::default(),
+            &first_facts,
         ),
         second.correct_with_kg(
             &access,
@@ -180,7 +184,7 @@ async fn competing_head_reopen_selects_one_complete_receipt() {
             1,
             &second_source,
             &second_draft,
-            &KgFactSetDraft::default(),
+            &second_facts,
         ),
     );
     let winner = match (first_result, second_result) {

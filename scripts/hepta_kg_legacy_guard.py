@@ -124,8 +124,11 @@ def verify_source_gate(root: Path) -> None:
         text=True,
         stderr=subprocess.DEVNULL,
     )
+    cfg_pattern = re.compile(r"\bcfg(?:_attr)?\s*\([^)]*legacy-v1")
     for line in output.splitlines():
-        path = line.split(":", 1)[0]
+        path, _, source_line = line.partition(":")
+        if not cfg_pattern.search(source_line):
+            continue
         if not path.startswith("codex-rs/hepta-kg/"):
             raise LegacyGuardError(f"legacy-v1 Rust cfg escaped codex-hepta-kg: {line}")
 

@@ -6,7 +6,7 @@ use codex_hepta_prompt_registry::Lifecycle;
 use codex_hepta_prompt_registry::PromptFactor;
 use codex_hepta_prompt_registry::PromptFactorRelation;
 use codex_hepta_prompt_registry::PromptFactorRelationKind;
-use codex_hepta_prompt_registry::PromptRegistry;
+use codex_hepta_prompt_registry::fixture::PromptRegistryFixture;
 use codex_hepta_types::Revision;
 
 fn id(value: &str) -> StableId {
@@ -17,14 +17,17 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn registry_with_conflict() -> PromptRegistry {
-    let mut registry = PromptRegistry::new(64).expect("registry");
+fn registry_with_conflict() -> PromptRegistryFixture {
+    let mut registry = PromptRegistryFixture::new(64).expect("registry");
     for (factor_id, proposer) in [("factor:a", "proposer:a"), ("factor:b", "proposer:b")] {
         registry
             .register_factor(PromptFactor {
                 factor_id: id(factor_id),
                 proposer_id: id(proposer),
                 semantic_version: id("v1"),
+                semantic_purpose: "verify before mutating".to_owned(),
+                authority_class: "registered_prompt_factor".to_owned(),
+                eligible_objective_dimensions: vec![id("dimension:truth")],
                 content_digest: digest(factor_id),
                 source: FactorSource::GovernedInternal,
                 lifecycle: Lifecycle::Draft,

@@ -62,17 +62,11 @@ impl KnowledgePublicationErrorV2 {
     }
 
     pub fn storage_unavailable(detail: impl Into<String>) -> Self {
-        Self::new(
-            KnowledgePublicationErrorCodeV2::StorageUnavailable,
-            detail,
-        )
+        Self::new(KnowledgePublicationErrorCodeV2::StorageUnavailable, detail)
     }
 
     pub fn capacity_exhausted(detail: impl Into<String>) -> Self {
-        Self::new(
-            KnowledgePublicationErrorCodeV2::CapacityExhausted,
-            detail,
-        )
+        Self::new(KnowledgePublicationErrorCodeV2::CapacityExhausted, detail)
     }
 
     fn rollback_failed(primary: Self, rollback: Self) -> Self {
@@ -89,12 +83,7 @@ impl fmt::Display for KnowledgePublicationErrorV2 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(formatter, "{}: {}", self.code.as_str(), self.detail)?;
         if let (Some(code), Some(detail)) = (self.primary_code, self.primary_detail.as_deref()) {
-            write!(
-                formatter,
-                "; primary failure {}: {}",
-                code.as_str(),
-                detail
-            )?;
+            write!(formatter, "; primary failure {}: {}", code.as_str(), detail)?;
         }
         Ok(())
     }
@@ -137,10 +126,7 @@ pub trait KnowledgeTransactionalStorageV2 {
         receipt: &KnowledgePublicationReceiptV2,
     ) -> Result<(), KnowledgePublicationErrorV2>;
 
-    fn commit_publication(
-        &mut self,
-        transaction: Self::Transaction,
-    ) -> KnowledgeCommitOutcomeV2;
+    fn commit_publication(&mut self, transaction: Self::Transaction) -> KnowledgeCommitOutcomeV2;
 
     fn rollback_publication(
         &mut self,
@@ -188,12 +174,10 @@ pub fn publish_transactionally<S: KnowledgeTransactionalStorageV2>(
             receipt,
             reconciled_after_unknown_commit: false,
         }),
-        KnowledgeCommitOutcomeV2::KnownAborted { detail } => {
-            Err(KnowledgePublicationErrorV2::new(
-                KnowledgePublicationErrorCodeV2::KnownAborted,
-                detail,
-            ))
-        }
+        KnowledgeCommitOutcomeV2::KnownAborted { detail } => Err(KnowledgePublicationErrorV2::new(
+            KnowledgePublicationErrorCodeV2::KnownAborted,
+            detail,
+        )),
         KnowledgeCommitOutcomeV2::Unknown { detail } => match storage
             .reconcile_publication(candidate.generation, candidate.generation_digest)
         {
@@ -203,18 +187,14 @@ pub fn publish_transactionally<S: KnowledgeTransactionalStorageV2>(
                     reconciled_after_unknown_commit: true,
                 })
             }
-            Ok(KnowledgeReconciliationStateV2::Aborted) => {
-                Err(KnowledgePublicationErrorV2::new(
-                    KnowledgePublicationErrorCodeV2::KnownAborted,
-                    format!("commit outcome was unknown and reconciliation proved abort: {detail}"),
-                ))
-            }
-            Ok(KnowledgeReconciliationStateV2::Unknown) => {
-                Err(KnowledgePublicationErrorV2::new(
-                    KnowledgePublicationErrorCodeV2::CommitOutcomeUnknown,
-                    detail,
-                ))
-            }
+            Ok(KnowledgeReconciliationStateV2::Aborted) => Err(KnowledgePublicationErrorV2::new(
+                KnowledgePublicationErrorCodeV2::KnownAborted,
+                format!("commit outcome was unknown and reconciliation proved abort: {detail}"),
+            )),
+            Ok(KnowledgeReconciliationStateV2::Unknown) => Err(KnowledgePublicationErrorV2::new(
+                KnowledgePublicationErrorCodeV2::CommitOutcomeUnknown,
+                detail,
+            )),
             Err(error) => Err(KnowledgePublicationErrorV2 {
                 code: KnowledgePublicationErrorCodeV2::ReconciliationFailed,
                 detail: error.detail,

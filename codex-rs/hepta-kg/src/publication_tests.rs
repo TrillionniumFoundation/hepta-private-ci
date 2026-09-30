@@ -48,10 +48,7 @@ impl KnowledgeTransactionalStorageV2 for MockStorage {
         }
     }
 
-    fn commit_publication(
-        &mut self,
-        _transaction: Self::Transaction,
-    ) -> KnowledgeCommitOutcomeV2 {
+    fn commit_publication(&mut self, _transaction: Self::Transaction) -> KnowledgeCommitOutcomeV2 {
         self.committed = true;
         self.commit
             .take()
@@ -252,10 +249,7 @@ fn rollback_failure_preserves_both_failures() {
     let Err(error) = result else {
         panic!("rollback failure must be explicit");
     };
-    assert_eq!(
-        error.code,
-        KnowledgePublicationErrorCodeV2::RollbackFailed
-    );
+    assert_eq!(error.code, KnowledgePublicationErrorCodeV2::RollbackFailed);
     assert_eq!(
         error.primary_code,
         Some(KnowledgePublicationErrorCodeV2::CapacityExhausted)

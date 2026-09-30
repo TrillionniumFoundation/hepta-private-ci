@@ -32,7 +32,9 @@ async fn qualification_kg_history_reopen_no_resurrection() {
     let owner = agent_id(186);
     let owner_layout = layout(&temp, &owner);
     let access = CognitiveAccess::agent_private(owner);
-    let mut store = CognitiveStore::open(&owner_layout).await.expect("history store");
+    let mut store = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("history store");
     let initial = "Benchmark history initial";
     let mut receipt = store
         .remember_with_kg(
@@ -107,7 +109,9 @@ async fn qualification_kg_history_reopen_no_resurrection() {
         if index.is_power_of_two() || index == corrections {
             store.pool.close().await;
             let started = Instant::now();
-            store = CognitiveStore::open(&owner_layout).await.expect("history reopen");
+            store = CognitiveStore::open(&owner_layout)
+                .await
+                .expect("history reopen");
             reopen_ns.push(elapsed_ns(started));
             let started = Instant::now();
             let batch = store
@@ -123,7 +127,10 @@ async fn qualification_kg_history_reopen_no_resurrection() {
             .fetch_one(&store.pool)
             .await
             .expect("current generation");
-            assert_eq!(generation, i64::try_from(index + 1).expect("bounded history"));
+            assert_eq!(
+                generation,
+                i64::try_from(index + 1).expect("bounded history")
+            );
             eprintln!("KG_HISTORY_CHECKPOINT corrections={index} generation={generation}");
         }
     }
@@ -131,7 +138,10 @@ async fn qualification_kg_history_reopen_no_resurrection() {
         .fetch_one(&store.pool)
         .await
         .expect("historical semantics");
-    assert_eq!(rows, i64::try_from(corrections + 1).expect("bounded history"));
+    assert_eq!(
+        rows,
+        i64::try_from(corrections + 1).expect("bounded history")
+    );
     let reason = "withdraw bounded history fixture";
     receipt = store
         .forget_with_kg(
@@ -142,6 +152,7 @@ async fn qualification_kg_history_reopen_no_resurrection() {
             &ForgetMemoryDraft {
                 scope: CognitiveScope::AgentPrivate,
                 reason: reason.to_string(),
+                citations: Vec::new(),
                 valid_from_unix_seconds: 100,
             },
         )
@@ -149,12 +160,17 @@ async fn qualification_kg_history_reopen_no_resurrection() {
         .expect("history tombstone");
     for _ in 0..3 {
         store.pool.close().await;
-        store = CognitiveStore::open(&owner_layout).await.expect("post-deletion reopen");
+        store = CognitiveStore::open(&owner_layout)
+            .await
+            .expect("post-deletion reopen");
         let batch = store
             .retrieve_memory_candidates(&access, &RetrievalRequest::new("Benchmark Graph", 10_000))
             .await
             .expect("post-deletion query");
-        assert!(batch.candidates.is_empty(), "historical facts must not resurrect");
+        assert!(
+            batch.candidates.is_empty(),
+            "historical facts must not resurrect"
+        );
     }
     let attempt = "must not resurrect";
     assert!(
@@ -176,7 +192,10 @@ async fn qualification_kg_history_reopen_no_resurrection() {
     .fetch_one(&store.pool)
     .await
     .expect("final generation");
-    assert_eq!(final_generation, i64::try_from(corrections + 2).expect("bounded history"));
+    assert_eq!(
+        final_generation,
+        i64::try_from(corrections + 2).expect("bounded history")
+    );
     let relation_rows: (i64, i64) = sqlx::query_as(
         "SELECT node_count, edge_count FROM kg_projection_generation_receipts
          WHERE generation = ? AND projection_scope = 'agent_private'",

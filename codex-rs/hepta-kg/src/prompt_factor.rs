@@ -239,11 +239,9 @@ pub fn build_prompt_factor_projection_v1(
         },
     )
     .map_err(|error| PromptFactorProjectionErrorV1::Kernel(error.to_string()))?;
-    let physical_query_view = KnowledgePhysicalQueryViewV2::new(
-        projected,
-        KnowledgePhysicalLimitsV2::default(),
-    )
-    .map_err(|error| PromptFactorProjectionErrorV1::Kernel(error.to_string()))?;
+    let physical_query_view =
+        KnowledgePhysicalQueryViewV2::new(projected, KnowledgePhysicalLimitsV2::default())
+            .map_err(|error| PromptFactorProjectionErrorV1::Kernel(error.to_string()))?;
 
     let result = PromptFactorProjectionV1 {
         registry_revision: source.registry_revision().get(),

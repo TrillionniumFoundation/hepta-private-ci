@@ -41,8 +41,7 @@ impl DeterministicRng {
 
     fn bounded(&mut self, upper: usize) -> usize {
         assert!(upper > 0);
-        usize::try_from(self.next() % u64::try_from(upper).unwrap_or(u64::MAX))
-            .unwrap_or(0)
+        usize::try_from(self.next() % u64::try_from(upper).unwrap_or(u64::MAX)).unwrap_or(0)
     }
 
     fn shuffle<T>(&mut self, values: &mut [T]) {
@@ -91,8 +90,8 @@ fn fixture(seed: u64) -> (Vec<KnowledgeNodeV2>, Vec<KnowledgeEdgeV2>) {
         })
         .collect::<Vec<_>>();
 
-    let confidence = ProbabilityQ32::from_raw(1_u64 << 31)
-        .unwrap_or_else(|error| panic!("confidence: {error}"));
+    let confidence =
+        ProbabilityQ32::from_raw(1_u64 << 31).unwrap_or_else(|error| panic!("confidence: {error}"));
     let mut edges = Vec::new();
     for index in 0..node_count.saturating_sub(1) {
         edges.push(KnowledgeEdgeV2 {
@@ -162,9 +161,11 @@ fn deterministic_fuzz_permutations_preserve_generation_and_query_receipts() {
         let query = KnowledgeRelationQueryV2 {
             query_id: id(&format!("query:{seed}")),
             generation_digest: canonical.generation_digest,
-            seed_node_ids: vec![canonical.nodes[rng.bounded(canonical.nodes.len())]
-                .node_id
-                .clone()],
+            seed_node_ids: vec![
+                canonical.nodes[rng.bounded(canonical.nodes.len())]
+                    .node_id
+                    .clone(),
+            ],
             relation_kinds: Vec::new(),
             valid_at_unix_seconds: Some(100),
             maximum_edges: 64,
@@ -228,13 +229,9 @@ fn deterministic_fuzz_incremental_delta_matches_full_rebuild() {
             remove_edge_identities: removed.into_iter().collect(),
             upsert_edges: vec![added],
         };
-        let incremental = verify_incremental_equivalence_v2(
-            &predecessor,
-            generation(2),
-            delta,
-            full_input,
-        )
-        .unwrap_or_else(|error| panic!("seed {seed} incremental parity: {error}"));
+        let incremental =
+            verify_incremental_equivalence_v2(&predecessor, generation(2), delta, full_input)
+                .unwrap_or_else(|error| panic!("seed {seed} incremental parity: {error}"));
         incremental
             .validate()
             .unwrap_or_else(|error| panic!("seed {seed} candidate validation: {error}"));

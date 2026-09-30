@@ -35,26 +35,18 @@ pub struct KnowledgeSupportIdentityV2 {
 pub struct KnowledgeDependencyIndexV2 {
     generation_digest: Digest32,
     support_to_nodes: BTreeMap<KnowledgeSupportIdentityV2, BTreeSet<StableId>>,
-    support_to_edges:
-        BTreeMap<KnowledgeSupportIdentityV2, BTreeSet<KnowledgeEdgeIdentityV2>>,
+    support_to_edges: BTreeMap<KnowledgeSupportIdentityV2, BTreeSet<KnowledgeEdgeIdentityV2>>,
     node_to_edges: BTreeMap<StableId, BTreeSet<KnowledgeEdgeIdentityV2>>,
 }
 
 impl KnowledgeDependencyIndexV2 {
-    pub fn build(
-        generation: &KnowledgeGenerationV2,
-    ) -> Result<Self, KnowledgeGenerationErrorV2> {
+    pub fn build(generation: &KnowledgeGenerationV2) -> Result<Self, KnowledgeGenerationErrorV2> {
         generation.validate()?;
-        let mut support_to_nodes = BTreeMap::<
-            KnowledgeSupportIdentityV2,
-            BTreeSet<StableId>,
-        >::new();
-        let mut support_to_edges = BTreeMap::<
-            KnowledgeSupportIdentityV2,
-            BTreeSet<KnowledgeEdgeIdentityV2>,
-        >::new();
-        let mut node_to_edges =
-            BTreeMap::<StableId, BTreeSet<KnowledgeEdgeIdentityV2>>::new();
+        let mut support_to_nodes =
+            BTreeMap::<KnowledgeSupportIdentityV2, BTreeSet<StableId>>::new();
+        let mut support_to_edges =
+            BTreeMap::<KnowledgeSupportIdentityV2, BTreeSet<KnowledgeEdgeIdentityV2>>::new();
+        let mut node_to_edges = BTreeMap::<StableId, BTreeSet<KnowledgeEdgeIdentityV2>>::new();
         for node in &generation.nodes {
             for support in &node.supports {
                 support_to_nodes
@@ -311,7 +303,7 @@ pub fn should_run_full_rebuild_audit_v2(
     if every_generations == 0 {
         return Err(KnowledgeIncrementalErrorV2::InvalidAuditInterval);
     }
-    Ok(generation.get() % every_generations == 0)
+    Ok(generation.get().is_multiple_of(every_generations))
 }
 
 fn derive_storage_delta_v2(
@@ -348,7 +340,10 @@ fn derive_storage_delta_v2(
     }
     let mut upsert_nodes = Vec::new();
     for (node_id, node) in &candidate_nodes {
-        if predecessor_nodes.get(node_id).is_none_or(|old| *old != *node) {
+        if predecessor_nodes
+            .get(node_id)
+            .is_none_or(|old| *old != *node)
+        {
             upsert_nodes.push((*node).clone());
         }
     }

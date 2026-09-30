@@ -8,7 +8,11 @@ use crate::DEFAULT_QUERY_SUPPORT_WORK_V2;
 use crate::KnowledgeCancellationV2;
 use crate::KnowledgeOperationGuardV2;
 use crate::KnowledgeQueryAdmissionErrorV2;
+use crate::KnowledgeResourceErrorCodeV2;
+use crate::KnowledgeResourceErrorV2;
 use crate::MAX_QUERY_SUPPORT_WORK_V2;
+use crate::measure_query_edge_bytes_v2;
+use crate::measure_query_result_base_bytes_v2;
 
 const SUPPORT_CHECKPOINT_INTERVAL: u64 = 64;
 
@@ -27,6 +31,25 @@ fn charge_support_work(
             maximum_support_work: maximum,
             attempted_support_work: attempted,
         });
+    }
+    *used = attempted;
+    Ok(())
+}
+
+fn charge_output_bytes(
+    used: &mut u64,
+    maximum: Option<u64>,
+    amount: u64,
+) -> Result<(), KnowledgeQueryAdmissionErrorV2> {
+    let attempted = used.checked_add(amount).unwrap_or(u64::MAX);
+    if maximum.is_some_and(|limit| attempted > limit) {
+        return Err(KnowledgeResourceErrorV2::exceeded(
+            KnowledgeResourceErrorCodeV2::QueryOutputBytesExceeded,
+            attempted,
+            maximum.unwrap_or(0),
+            "query result bytes before payload clone",
+        )
+        .into());
     }
     *used = attempted;
     Ok(())
@@ -180,13 +203,40 @@ impl VerifiedKnowledgeGenerationV2 {
                 maximum_support_work: MAX_QUERY_SUPPORT_WORK_V2,
             });
         }
-        self.query_relations_with_admitted_budget(query, maximum_support_work, guard)
+        self.query_relations_with_admitted_budget(query, maximum_support_work, None, guard)
+    }
+
+    pub(crate) fn query_relations_external_guarded_with_output_limit(
+        &self,
+        query: KnowledgeRelationQueryV2,
+        maximum_support_work: Option<u64>,
+        maximum_output_bytes: u64,
+        guard: &KnowledgeOperationGuardV2,
+    ) -> Result<
+        (KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2),
+        KnowledgeQueryAdmissionErrorV2,
+    > {
+        guard.checkpoint()?;
+        let maximum_support_work = maximum_support_work.unwrap_or(DEFAULT_QUERY_SUPPORT_WORK_V2);
+        if maximum_support_work == 0 || maximum_support_work > MAX_QUERY_SUPPORT_WORK_V2 {
+            return Err(KnowledgeQueryAdmissionErrorV2::InvalidBudget {
+                requested_support_work: maximum_support_work,
+                maximum_support_work: MAX_QUERY_SUPPORT_WORK_V2,
+            });
+        }
+        self.query_relations_with_admitted_budget(
+            query,
+            maximum_support_work,
+            Some(maximum_output_bytes),
+            guard,
+        )
     }
 
     fn query_relations_with_admitted_budget(
         &self,
         query: KnowledgeRelationQueryV2,
         maximum_support_work: u64,
+        maximum_output_bytes: Option<u64>,
         guard: &KnowledgeOperationGuardV2,
     ) -> Result<
         (KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2),
@@ -214,6 +264,12 @@ impl VerifiedKnowledgeGenerationV2 {
             return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit.into());
         }
         let request_digest = compute_query_request_digest(&query, &seeds, &kinds);
+        let mut output_bytes = 0_u64;
+        charge_output_bytes(
+            &mut output_bytes,
+            maximum_output_bytes,
+            measure_query_result_base_bytes_v2(&query.query_id),
+        )?;
         // A validated generation bounds this set by MAX_KNOWLEDGE_EDGES_V2;
         // undirected adjacency visits each edge at most twice. Sorted original
         // positions preserve reference ordering and deduplicate self-loops and
@@ -278,11 +334,7 @@ impl VerifiedKnowledgeGenerationV2 {
                 if let Some(at) = query.valid_at_unix_seconds {
                     for support in &edge.supports {
                         charge_support_work(&mut support_work, maximum_support_work, 1)?;
-                        checkpoint_support_work(
-                            guard,
-                            support_work,
-                            &mut next_support_checkpoint,
-                        )?;
+                        checkpoint_support_work(guard, support_work, &mut next_support_checkpoint)?;
                         work.relation_supports_inspected += 1;
                         if support.visible_at(at) {
                             visible = true;
@@ -297,16 +349,12 @@ impl VerifiedKnowledgeGenerationV2 {
                 }
                 continue;
             }
-            let supports = match query.valid_at_unix_seconds {
+            let selected_supports = match query.valid_at_unix_seconds {
                 Some(at) => {
                     let mut selected = Vec::new();
                     for support in &edge.supports {
                         charge_support_work(&mut support_work, maximum_support_work, 1)?;
-                        checkpoint_support_work(
-                            guard,
-                            support_work,
-                            &mut next_support_checkpoint,
-                        )?;
+                        checkpoint_support_work(guard, support_work, &mut next_support_checkpoint)?;
                         work.relation_supports_inspected += 1;
                         if support.visible_at(at) {
                             charge_support_work(&mut support_work, maximum_support_work, 1)?;
@@ -315,7 +363,7 @@ impl VerifiedKnowledgeGenerationV2 {
                                 support_work,
                                 &mut next_support_checkpoint,
                             )?;
-                            selected.push(support.clone());
+                            selected.push(support);
                         }
                     }
                     selected
@@ -326,18 +374,20 @@ impl VerifiedKnowledgeGenerationV2 {
                         maximum_support_work,
                         edge.supports.len(),
                     )?;
-                    checkpoint_support_work(
-                        guard,
-                        support_work,
-                        &mut next_support_checkpoint,
-                    )?;
-                    guard.checkpoint()?;
-                    edge.supports.clone()
+                    checkpoint_support_work(guard, support_work, &mut next_support_checkpoint)?;
+                    edge.supports.iter().collect::<Vec<_>>()
                 }
             };
-            if supports.is_empty() {
+            if selected_supports.is_empty() {
                 continue;
             }
+            charge_output_bytes(
+                &mut output_bytes,
+                maximum_output_bytes,
+                measure_query_edge_bytes_v2(edge, &selected_supports),
+            )?;
+            guard.checkpoint()?;
+            let supports = selected_supports.into_iter().cloned().collect::<Vec<_>>();
             work.matching_edges += 1;
             work.selected_edges_cloned += 1;
             work.selected_supports_cloned += saturating_u64(supports.len());

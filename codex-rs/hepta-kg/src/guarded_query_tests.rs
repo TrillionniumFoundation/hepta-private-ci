@@ -138,8 +138,7 @@ fn query_output_byte_overflow_is_distinct() {
     };
     let view = KnowledgePhysicalQueryViewV2::new(generation(), limits)
         .expect("generation itself remains within limits");
-    let guard =
-        KnowledgeOperationGuardV2::unbounded(crate::KnowledgeCancellationV2::default());
+    let guard = KnowledgeOperationGuardV2::unbounded(crate::KnowledgeCancellationV2::default());
 
     let result = view.query_relations_external(query(&view), None, &guard);
     let Err(KnowledgePhysicalQueryErrorV2::Resource(error)) = result else {
@@ -156,8 +155,7 @@ fn accepted_query_reports_generation_and_output_usage() {
     let view =
         KnowledgePhysicalQueryViewV2::new(generation(), KnowledgePhysicalLimitsV2::default())
             .expect("physical query view");
-    let guard =
-        KnowledgeOperationGuardV2::unbounded(crate::KnowledgeCancellationV2::default());
+    let guard = KnowledgeOperationGuardV2::unbounded(crate::KnowledgeCancellationV2::default());
 
     let result = view.query_relations_external(query(&view), None, &guard);
     let Ok((relations, observation)) = result else {

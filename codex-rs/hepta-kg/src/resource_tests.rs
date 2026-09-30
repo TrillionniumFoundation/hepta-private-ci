@@ -65,17 +65,12 @@ fn cancellation_and_deadline_have_distinct_codes() {
     };
     assert_eq!(cancelled.code, KnowledgeResourceErrorCodeV2::Cancelled);
 
-    let deadline = KnowledgeOperationGuardV2::with_timeout(
-        Duration::ZERO,
-        KnowledgeCancellationV2::default(),
-    );
+    let deadline =
+        KnowledgeOperationGuardV2::with_timeout(Duration::ZERO, KnowledgeCancellationV2::default());
     let Err(expired) = deadline.checkpoint() else {
         panic!("expired operation must fail");
     };
-    assert_eq!(
-        expired.code,
-        KnowledgeResourceErrorCodeV2::DeadlineExceeded
-    );
+    assert_eq!(expired.code, KnowledgeResourceErrorCodeV2::DeadlineExceeded);
 }
 
 #[test]

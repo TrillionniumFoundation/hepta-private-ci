@@ -5,6 +5,7 @@
 //! operation guard inside index/support traversal and before returning, and
 //! validates the physical output byte bound.
 
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -14,6 +15,7 @@ use crate::KnowledgeOperationGuardV2;
 use crate::KnowledgePhysicalLimitsV2;
 use crate::KnowledgePhysicalUsageV2;
 use crate::KnowledgeQueryAdmissionErrorV2;
+use crate::KnowledgeRelationKindV2;
 use crate::KnowledgeRelationQueryV2;
 use crate::KnowledgeRelationQueryWorkV2;
 use crate::KnowledgeRelationResultV2;
@@ -57,6 +59,11 @@ impl KnowledgePhysicalQueryViewV2 {
     }
 
     #[must_use]
+    pub fn relation_kinds(&self) -> &BTreeSet<KnowledgeRelationKindV2> {
+        self.verified.relation_kinds()
+    }
+
+    #[must_use]
     pub const fn limits(&self) -> KnowledgePhysicalLimitsV2 {
         self.limits
     }
@@ -80,7 +87,12 @@ impl KnowledgePhysicalQueryViewV2 {
     > {
         let (result, work) = self
             .verified
-            .query_relations_external_guarded(query, maximum_support_work, guard)
+            .query_relations_external_guarded_with_output_limit(
+                query,
+                maximum_support_work,
+                self.limits.maximum_query_output_bytes,
+                guard,
+            )
             .map_err(KnowledgePhysicalQueryErrorV2::from)?;
         let output_bytes = validate_query_output_physical_limits_v2(&result, self.limits)?;
         guard.checkpoint()?;

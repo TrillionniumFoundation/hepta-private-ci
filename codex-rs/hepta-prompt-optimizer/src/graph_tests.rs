@@ -8,7 +8,7 @@ use codex_hepta_prompt_registry::Lifecycle;
 use codex_hepta_prompt_registry::PromptFactor;
 use codex_hepta_prompt_registry::PromptFactorRelation;
 use codex_hepta_prompt_registry::PromptFactorRelationKind;
-use codex_hepta_prompt_registry::PromptRegistry;
+use codex_hepta_prompt_registry::fixture::PromptRegistryFixture;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 
@@ -23,13 +23,16 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn register_admitted_factor(registry: &mut PromptRegistry, factor_id: &str) {
+fn register_admitted_factor(registry: &mut PromptRegistryFixture, factor_id: &str) {
     let factor_id = id(factor_id);
     registry
         .register_factor(PromptFactor {
             factor_id: factor_id.clone(),
             proposer_id: id("proposer:graph-tests"),
             semantic_version: id("semantic:v1"),
+            semantic_purpose: "verify before mutating".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
             content_digest: digest(&format!("factor-content:{factor_id}")),
             source: FactorSource::GovernedInternal,
             lifecycle: Lifecycle::Draft,
@@ -45,7 +48,7 @@ fn register_admitted_factor(registry: &mut PromptRegistry, factor_id: &str) {
 }
 
 fn graph() -> PromptFactorProjectionV1 {
-    let mut registry = PromptRegistry::new(32).expect("registry");
+    let mut registry = PromptRegistryFixture::new(32).expect("registry");
     for factor_id in ["factor:a", "factor:b", "factor:c"] {
         register_admitted_factor(&mut registry, factor_id);
     }
@@ -193,12 +196,10 @@ fn factor_projection_bounded_query_distinguishes_exhaustion_from_empty() {
         .expect_err("one support-work unit cannot copy all factor relations");
     assert!(matches!(
         exhausted,
-        KnowledgePhysicalQueryErrorV2::Admission(
-            KnowledgeQueryAdmissionErrorV2::BudgetExceeded {
-                maximum_support_work: 1,
-                ..
-            }
-        )
+        KnowledgePhysicalQueryErrorV2::Admission(KnowledgeQueryAdmissionErrorV2::BudgetExceeded {
+            maximum_support_work: 1,
+            ..
+        })
     ));
 
     let (empty, observation) = factor_graph

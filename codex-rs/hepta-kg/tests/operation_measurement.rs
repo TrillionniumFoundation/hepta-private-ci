@@ -35,8 +35,7 @@ fn digest(value: &str) -> Digest32 {
 fn support(value: &str) -> KnowledgeSupportV2 {
     KnowledgeSupportV2 {
         source_id: id(value),
-        source_revision: Revision::new(1)
-            .unwrap_or_else(|error| panic!("revision: {error}")),
+        source_revision: Revision::new(1).unwrap_or_else(|error| panic!("revision: {error}")),
         source_fact_digest: digest(value),
         validity_digest: digest(&format!("validity:{value}")),
         valid_from_unix_seconds: Some(0),

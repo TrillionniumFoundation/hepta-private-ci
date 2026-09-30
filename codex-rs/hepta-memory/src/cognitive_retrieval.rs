@@ -1,10 +1,16 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::future::Future;
+use std::time::Duration;
 
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_kg::KnowledgeCancellationV2;
+use codex_hepta_kg::KnowledgeOperationGuardV2;
+use codex_hepta_kg::KnowledgePhysicalLimitsV2;
+use codex_hepta_kg::KnowledgePhysicalQueryErrorV2;
+use codex_hepta_kg::KnowledgePhysicalQueryViewV2;
+use codex_hepta_kg::KnowledgeQueryAdmissionErrorV2;
 use codex_hepta_kg::KnowledgeRelationQueryV2;
-use codex_hepta_kg::VerifiedKnowledgeGenerationV2;
 use codex_hepta_types::StableId;
 use serde::Serialize;
 use sqlx::Row;
@@ -46,7 +52,7 @@ pub(crate) const MAX_RETRIEVAL_OWNER_CHANNELS: usize = 7;
 // Scratch space for one SQLite read transaction, never shared across requests.
 // Each selected scope/generation is materialized once across relation channels.
 struct RetrievalGeneration {
-    verified: VerifiedKnowledgeGenerationV2,
+    physical: KnowledgePhysicalQueryViewV2,
     compact_supports: Option<BTreeMap<String, (String, i64)>>,
 }
 
@@ -54,9 +60,43 @@ struct RetrievalGeneration {
 // cannot alias a different owner/store, and no cache survives correction/reopen.
 type RetrievalGenerations = BTreeMap<(String, i64), RetrievalGeneration>;
 
+const KG_RELATION_QUERY_TIMEOUT: Duration = Duration::from_secs(5);
 const RRF_K: u64 = 60;
 const RRF_SCALE: u64 = 1_000_000;
 const MAX_FTS_TERMS: usize = 64;
+
+fn map_kg_physical_query_error(error: KnowledgePhysicalQueryErrorV2) -> CognitiveStoreError {
+    match error {
+        KnowledgePhysicalQueryErrorV2::Generation(error)
+        | KnowledgePhysicalQueryErrorV2::Admission(KnowledgeQueryAdmissionErrorV2::Query(error)) => {
+            CognitiveStoreError::Corrupt(format!(
+                "persisted KG generation failed canonical V2 query: {error}"
+            ))
+        }
+        KnowledgePhysicalQueryErrorV2::Admission(
+            KnowledgeQueryAdmissionErrorV2::InvalidBudget {
+                requested_support_work,
+                maximum_support_work,
+            },
+        ) => CognitiveStoreError::Invalid(format!(
+            "invalid KG query support-work budget {requested_support_work}; maximum is {maximum_support_work}"
+        )),
+        KnowledgePhysicalQueryErrorV2::Admission(
+            KnowledgeQueryAdmissionErrorV2::BudgetExceeded {
+                maximum_support_work,
+                attempted_support_work,
+            },
+        ) => CognitiveStoreError::Unavailable(format!(
+            "KG query support-work budget {maximum_support_work} exhausted at {attempted_support_work}"
+        )),
+        KnowledgePhysicalQueryErrorV2::Admission(KnowledgeQueryAdmissionErrorV2::Resource(
+            error,
+        ))
+        | KnowledgePhysicalQueryErrorV2::Resource(error) => {
+            CognitiveStoreError::Unavailable(format!("KG query resource boundary: {error}"))
+        }
+    }
+}
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SourceCitationRecord {
@@ -803,36 +843,35 @@ impl CognitiveStore {
                 continue;
             };
 
-            let generation = match generations
-                .entry((seed.projection_scope.clone(), seed.generation))
-            {
-                std::collections::btree_map::Entry::Vacant(entry) => {
-                    let loaded = load_canonical_generation_tx(
-                        transaction,
-                        &seed.projection_scope,
-                        seed.generation,
-                    )
-                    .await?;
-                    let verified = VerifiedKnowledgeGenerationV2::new(loaded).map_err(|error| {
-                        CognitiveStoreError::Corrupt(format!(
-                            "KG query view rejected generation: {error}"
-                        ))
-                    })?;
-                    let compact_supports = load_compact_edge_support_index_tx(
-                        transaction,
-                        &seed.projection_scope,
-                        seed.generation,
-                    )
-                    .await?;
-                    entry.insert(RetrievalGeneration {
-                        verified,
-                        compact_supports,
-                    })
-                }
-                std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
-            };
+            let generation =
+                match generations.entry((seed.projection_scope.clone(), seed.generation)) {
+                    std::collections::btree_map::Entry::Vacant(entry) => {
+                        let loaded = load_canonical_generation_tx(
+                            transaction,
+                            &seed.projection_scope,
+                            seed.generation,
+                        )
+                        .await?;
+                        let physical = KnowledgePhysicalQueryViewV2::new(
+                            loaded,
+                            KnowledgePhysicalLimitsV2::default(),
+                        )
+                        .map_err(map_kg_physical_query_error)?;
+                        let compact_supports = load_compact_edge_support_index_tx(
+                            transaction,
+                            &seed.projection_scope,
+                            seed.generation,
+                        )
+                        .await?;
+                        entry.insert(RetrievalGeneration {
+                            physical,
+                            compact_supports,
+                        })
+                    }
+                    std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
+                };
             if generation
-                .verified
+                .physical
                 .generation()
                 .generation_digest
                 .to_string()
@@ -863,7 +902,7 @@ impl CognitiveStore {
                     kind.relation(),
                 )?],
                 None => generation
-                    .verified
+                    .physical
                     .relation_kinds()
                     .iter()
                     .cloned()
@@ -877,31 +916,35 @@ impl CognitiveStore {
             if relation_kinds.is_empty() {
                 continue;
             }
-            let query_result = generation
-                .verified
-                .query_relations(KnowledgeRelationQueryV2 {
-                    query_id: StableId::new("query:cognitive-retrieval-graph-v2").map_err(
-                        |error| {
-                            CognitiveStoreError::Corrupt(format!(
-                                "invalid canonical KG retrieval query identity: {error}"
-                            ))
-                        },
-                    )?,
-                    generation_digest: generation.verified.generation().generation_digest,
-                    seed_node_ids: vec![seed_node_id],
-                    relation_kinds,
-                    valid_at_unix_seconds: Some(now),
-                    maximum_edges: u32::try_from(remaining).map_err(|_| {
-                        CognitiveStoreError::Invalid(
-                            "graph retrieval limit exceeds u32".to_string(),
-                        )
-                    })?,
-                })
-                .map_err(|error| {
-                    CognitiveStoreError::Corrupt(format!(
-                        "persisted KG generation failed canonical V2 query: {error}"
-                    ))
-                })?;
+            let guard = KnowledgeOperationGuardV2::with_timeout(
+                KG_RELATION_QUERY_TIMEOUT,
+                KnowledgeCancellationV2::default(),
+            );
+            let (query_result, _observation) = generation
+                .physical
+                .query_relations_external(
+                    KnowledgeRelationQueryV2 {
+                        query_id: StableId::new("query:cognitive-retrieval-graph-v2").map_err(
+                            |error| {
+                                CognitiveStoreError::Corrupt(format!(
+                                    "invalid canonical KG retrieval query identity: {error}"
+                                ))
+                            },
+                        )?,
+                        generation_digest: generation.physical.generation().generation_digest,
+                        seed_node_ids: vec![seed_node_id],
+                        relation_kinds,
+                        valid_at_unix_seconds: Some(now),
+                        maximum_edges: u32::try_from(remaining).map_err(|_| {
+                            CognitiveStoreError::Invalid(
+                                "graph retrieval limit exceeds u32".to_string(),
+                            )
+                        })?,
+                    },
+                    None,
+                    &guard,
+                )
+                .map_err(map_kg_physical_query_error)?;
             if query_result.omitted_count != 0 {
                 limit = RetrievalLimitObservation::LimitReached;
             }

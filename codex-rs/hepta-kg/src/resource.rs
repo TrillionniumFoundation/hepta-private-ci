@@ -81,7 +81,7 @@ pub struct KnowledgeResourceErrorV2 {
 }
 
 impl KnowledgeResourceErrorV2 {
-    fn exceeded(
+    pub(crate) fn exceeded(
         code: KnowledgeResourceErrorCodeV2,
         observed: u64,
         limit: u64,
@@ -147,9 +147,7 @@ pub struct KnowledgeJsonShapeV2 {
     pub maximum_string_bytes: u64,
 }
 
-pub fn validate_json_shape_v2(
-    shape: KnowledgeJsonShapeV2,
-) -> Result<(), KnowledgeResourceErrorV2> {
+pub fn validate_json_shape_v2(shape: KnowledgeJsonShapeV2) -> Result<(), KnowledgeResourceErrorV2> {
     check_limit(
         KnowledgeResourceErrorCodeV2::InputBytesExceeded,
         shape.encoded_bytes,
@@ -214,8 +212,26 @@ pub fn validate_generation_physical_limits_v2(
     Ok(usage)
 }
 
+pub(crate) fn measure_query_result_base_bytes_v2(query_id: &StableId) -> u64 {
+    128_u64.saturating_add(id_bytes(query_id))
+}
+
+pub(crate) fn measure_query_edge_bytes_v2(
+    edge: &KnowledgeEdgeV2,
+    supports: &[&KnowledgeSupportV2],
+) -> u64 {
+    let support_bytes = supports.iter().fold(0_u64, |total, support| {
+        total
+            .saturating_add(id_bytes(&support.source_id))
+            .saturating_add(96)
+    });
+    edge_identity_bytes(edge)
+        .saturating_add(48)
+        .saturating_add(support_bytes)
+}
+
 pub fn measure_query_result_bytes_v2(result: &KnowledgeRelationResultV2) -> u64 {
-    let mut bytes = 128_u64.saturating_add(id_bytes(&result.query_id));
+    let mut bytes = measure_query_result_base_bytes_v2(&result.query_id);
     for edge in &result.edges {
         bytes = bytes.saturating_add(edge_bytes(edge));
     }
@@ -407,7 +423,10 @@ impl KnowledgeOperationGuardV2 {
                 "operation cancellation",
             ));
         }
-        if self.deadline.is_some_and(|deadline| Instant::now() >= deadline) {
+        if self
+            .deadline
+            .is_some_and(|deadline| Instant::now() >= deadline)
+        {
             return Err(KnowledgeResourceErrorV2::exceeded(
                 KnowledgeResourceErrorCodeV2::DeadlineExceeded,
                 1,
@@ -604,12 +623,14 @@ impl KnowledgeGenerationCacheV2 {
         let usage = validate_generation_physical_limits_v2(&generation, self.limits)
             .map_err(KnowledgeCacheErrorV2::Resource)?;
         if usage.canonical_bytes > self.maximum_bytes || self.maximum_entries == 0 {
-            return Err(KnowledgeCacheErrorV2::Resource(KnowledgeResourceErrorV2::exceeded(
-                KnowledgeResourceErrorCodeV2::CacheCapacityExceeded,
-                usage.canonical_bytes,
-                self.maximum_bytes,
-                "single cached generation bytes",
-            )));
+            return Err(KnowledgeCacheErrorV2::Resource(
+                KnowledgeResourceErrorV2::exceeded(
+                    KnowledgeResourceErrorCodeV2::CacheCapacityExceeded,
+                    usage.canonical_bytes,
+                    self.maximum_bytes,
+                    "single cached generation bytes",
+                ),
+            ));
         }
         let mut state = self.state.lock().map_err(|_| {
             KnowledgeCacheErrorV2::Resource(KnowledgeResourceErrorV2::exceeded(

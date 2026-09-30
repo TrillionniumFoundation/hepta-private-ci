@@ -423,7 +423,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
-    #[cfg(test)]
+    #[cfg(any(test, feature = "fixture"))]
     pub(crate) fn admit_factor(
         &mut self,
         factor_id: &StableId,
@@ -676,7 +676,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
-    #[cfg(test)]
+    #[cfg(any(test, feature = "fixture"))]
     pub(crate) fn revoke_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
         let Some(factor) = self.factors.get(factor_id) else {
             return Err(Error::FactorNotFound(factor_id.to_string()));
@@ -1056,6 +1056,59 @@ fn push_text(bytes: &mut Vec<u8>, value: &str) {
     let raw = value.as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
+}
+
+/// Deterministic test-only owner fixture. The feature exposes no production
+/// mutation authority and is enabled only by dependent-crate test targets.
+#[cfg(feature = "fixture")]
+pub mod fixture {
+    use super::*;
+
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub struct PromptRegistryFixture {
+        registry: PromptRegistry,
+    }
+
+    impl PromptRegistryFixture {
+        pub fn new(maximum_records: usize) -> Result<Self, Error> {
+            PromptRegistry::new(maximum_records).map(|registry| Self { registry })
+        }
+
+        pub fn register_factor(&mut self, factor: PromptFactor) -> Result<RegistryReceipt, Error> {
+            self.registry.register_factor(factor)
+        }
+
+        pub fn admit_factor(
+            &mut self,
+            factor_id: &StableId,
+            reviewer_id: &StableId,
+            evidence_digest: Digest32,
+        ) -> Result<RegistryReceipt, Error> {
+            self.registry
+                .admit_factor(factor_id, reviewer_id, evidence_digest)
+        }
+
+        pub fn register_factor_relation(
+            &mut self,
+            relation: PromptFactorRelation,
+        ) -> Result<RegistryReceipt, Error> {
+            self.registry.register_factor_relation(relation)
+        }
+
+        pub fn revoke_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
+            self.registry.revoke_factor(factor_id)
+        }
+
+        #[must_use]
+        pub fn factor_graph_source_v1(&self) -> PromptFactorGraphSourceV1 {
+            self.registry.factor_graph_source_v1()
+        }
+
+        #[must_use]
+        pub const fn revision(&self) -> Revision {
+            self.registry.revision()
+        }
+    }
 }
 
 #[cfg(test)]

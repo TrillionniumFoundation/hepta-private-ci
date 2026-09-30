@@ -220,7 +220,10 @@ fn node_removal_storage_delta_includes_implicit_incident_edge_removals() {
         panic!("node-removal plan must build");
     };
 
-    assert_eq!(plan.storage_delta.remove_node_ids, vec![removed_node.clone()]);
+    assert_eq!(
+        plan.storage_delta.remove_node_ids,
+        vec![removed_node.clone()]
+    );
     assert_eq!(plan.storage_delta.remove_edge_identities.len(), 2);
     assert!(plan.storage_delta.upsert_nodes.is_empty());
     assert!(plan.storage_delta.upsert_edges.is_empty());
@@ -286,8 +289,7 @@ fn storage_delta_digest_tampering_fails_closed() {
         Vec::new(),
         Vec::new(),
     );
-    let Ok(plan) =
-        plan_incremental_publication_v2(&predecessor, &index, generation(2), delta)
+    let Ok(plan) = plan_incremental_publication_v2(&predecessor, &index, generation(2), delta)
     else {
         panic!("incremental plan must build");
     };
@@ -302,6 +304,12 @@ fn storage_delta_digest_tampering_fails_closed() {
 
 #[test]
 fn periodic_full_rebuild_audit_is_deterministic() {
-    assert_eq!(should_run_full_rebuild_audit_v2(generation(20), 10), Ok(true));
-    assert_eq!(should_run_full_rebuild_audit_v2(generation(21), 10), Ok(false));
+    assert_eq!(
+        should_run_full_rebuild_audit_v2(generation(20), 10),
+        Ok(true)
+    );
+    assert_eq!(
+        should_run_full_rebuild_audit_v2(generation(21), 10),
+        Ok(false)
+    );
 }
