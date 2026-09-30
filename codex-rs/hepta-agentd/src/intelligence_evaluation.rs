@@ -97,6 +97,11 @@ impl AgentdEvaluationSessionV1 {
         {
             return Err(AgentdIntelligenceEvaluationError::Binding);
         }
+        // Signer attestations can outlive the root-authorized distribution
+        // that granted them authority. Validate that lease at consumption time.
+        self.trust.validate_current(now).map_err(|_| {
+            AgentdIntelligenceEvaluationError::Evidence(SignedEvidenceError::ValidityWindow)
+        })?;
         let binding = AgentdEvaluationBindingV1 {
             run_id: self.run_id,
             objective_digest: input.objective_digest,

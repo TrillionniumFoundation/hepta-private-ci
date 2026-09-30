@@ -65,7 +65,10 @@ use codex_hepta_intelligence::validate_current_snapshot;
 use codex_hepta_intelligence_eval::EvaluationRequest;
 use codex_hepta_intuition::CalibratedDecisionRequestV1;
 use codex_hepta_intuition::CalibratedDispositionV1;
+use codex_hepta_intuition::CanonicalPolicyProfileV1;
+use codex_hepta_intuition::ProductionDispositionV1;
 use codex_hepta_intuition::decide_calibrated_v2;
+use codex_hepta_intuition::decide_calibrated_v4;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::DurableLearningJournal;
 #[cfg(feature = "qualification-legacy-learning-write")]
@@ -230,6 +233,11 @@ pub struct AgentdIntelligenceOwnerInputsV1 {
     pub signed_evaluation: Option<AgentdSignedEvaluationV1>,
 }
 
+enum AgentdIntuitionComputationV1 {
+    Compatibility,
+    Product(Box<CanonicalPolicyProfileV1>),
+}
+
 struct AgentdOwnerPortsV1 {
     objective_envelope: Option<ObjectiveSourceEnvelopeV1>,
     objective_profile: Option<ObjectiveAdmissionProfileV1>,
@@ -243,6 +251,7 @@ struct AgentdOwnerPortsV1 {
     neural_previous: Option<Option<SparseCheckpoint>>,
     prompt_request: Option<OptimizationRequest>,
     intuition_request: Option<CalibratedDecisionRequestV1>,
+    intuition_computation: AgentdIntuitionComputationV1,
     context_request: Option<CompilationRequest>,
     evaluation_request: Option<EvaluationRequest>,
     evaluation_session: Option<AgentdEvaluationSessionV1>,
@@ -253,6 +262,7 @@ impl AgentdOwnerPortsV1 {
     fn new(
         value: AgentdIntelligenceOwnerInputsV1,
         evaluation_session: Option<AgentdEvaluationSessionV1>,
+        intuition_computation: AgentdIntuitionComputationV1,
     ) -> Self {
         Self {
             objective_envelope: Some(value.objective_envelope),
@@ -267,6 +277,7 @@ impl AgentdOwnerPortsV1 {
             neural_previous: Some(value.neural_previous),
             prompt_request: Some(value.prompt_request),
             intuition_request: Some(value.intuition_request),
+            intuition_computation,
             context_request: Some(value.context_request),
             evaluation_request: Some(value.evaluation_request),
             evaluation_session,
@@ -301,6 +312,23 @@ impl AgentdOwnerPortsV1 {
             output_digest,
             decision,
             authority: AuthorityPosture::DENY_ALL,
+        })
+    }
+
+    fn selected_intuition(
+        input: &CanonicalPortInputV1,
+        candidate_id: &StableId,
+        propensities: &[codex_hepta_intuition::CalibratedCandidatePropensityV1],
+    ) -> Result<CanonicalPortDecisionV1, CanonicalPortFailureV1> {
+        let propensity = propensities
+            .iter()
+            .find(|row| &row.candidate_id == candidate_id)
+            .map(|row| row.probability)
+            .filter(|value| value.raw() > 0)
+            .ok_or_else(|| Self::reject(input.stage, "selected propensity"))?;
+        Ok(CanonicalPortDecisionV1::Selected {
+            candidate_id: candidate_id.clone(),
+            propensity,
         })
     }
 
@@ -473,31 +501,43 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
             return Err(Self::reject(input.stage, "intuition objective"));
         }
         let started = Instant::now();
-        let receipt = decide_calibrated_v2(request)
-            .map_err(|_| Self::reject(input.stage, "intuition decision"))?;
+        // Product routing uses the exact immutable invocation profile. This
+        // worker remains pure: serving authenticates that same profile and
+        // commits the Decision only after canonical preparation completes.
+        let (decision, receipt_digest, authority) = match &self.intuition_computation {
+            AgentdIntuitionComputationV1::Compatibility => {
+                let receipt = decide_calibrated_v2(request)
+                    .map_err(|_| Self::reject(input.stage, "intuition decision"))?;
+                let decision = match &receipt.disposition {
+                    CalibratedDispositionV1::Selected(candidate_id) => {
+                        Self::selected_intuition(input, candidate_id, &receipt.propensities)?
+                    }
+                    CalibratedDispositionV1::Abstained(_) => CanonicalPortDecisionV1::Abstained,
+                    CalibratedDispositionV1::SlowPath(_) => CanonicalPortDecisionV1::SlowPath,
+                };
+                (decision, receipt.receipt_digest, receipt.authority)
+            }
+            AgentdIntuitionComputationV1::Product(profile) => {
+                let receipt = decide_calibrated_v4(request, profile)
+                    .map_err(|_| Self::reject(input.stage, "intuition decision"))?;
+                let decision = match &receipt.disposition {
+                    ProductionDispositionV1::Selected(candidate_id) => {
+                        Self::selected_intuition(input, candidate_id, &receipt.propensities)?
+                    }
+                    ProductionDispositionV1::Abstained(_) => CanonicalPortDecisionV1::Abstained,
+                    ProductionDispositionV1::SlowPath(_) => CanonicalPortDecisionV1::SlowPath,
+                };
+                (decision, receipt.receipt_digest, receipt.authority)
+            }
+        };
         Self::within_budget(input, started)?;
-        if receipt.authority.grants_any() {
+        if authority.grants_any() {
             return Err(Self::reject(input.stage, "intuition authority"));
         }
-        let decision = match &receipt.disposition {
-            CalibratedDispositionV1::Selected(candidate_id) => {
-                let probability = receipt
-                    .propensities
-                    .iter()
-                    .find(|row| &row.candidate_id == candidate_id)
-                    .map(|row| row.probability)
-                    .filter(|value| value.raw() > 0)
-                    .ok_or_else(|| Self::reject(input.stage, "selected propensity"))?;
-                self.selected_candidate = Some(candidate_id.clone());
-                CanonicalPortDecisionV1::Selected {
-                    candidate_id: candidate_id.clone(),
-                    propensity: probability,
-                }
-            }
-            CalibratedDispositionV1::Abstained(_) => CanonicalPortDecisionV1::Abstained,
-            CalibratedDispositionV1::SlowPath(_) => CanonicalPortDecisionV1::SlowPath,
-        };
-        Self::receipt(input, "intuition.policy", receipt.receipt_digest, decision)
+        if let CanonicalPortDecisionV1::Selected { candidate_id, .. } = &decision {
+            self.selected_candidate = Some(candidate_id.clone());
+        }
+        Self::receipt(input, "intuition.policy", receipt_digest, decision)
     }
 
     fn compile_context(

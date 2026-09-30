@@ -71,11 +71,48 @@ impl AgentdIntelligenceProductRunnerV1 {
 
     /// Run the seven-owner preparation against one frozen Agentd composition
     /// without retaining the run-coordinator mutex across owner execution.
+    /// This entrypoint retains historical compatibility computation. Agentd's
+    /// authenticated serving path uses the product invocation profile instead.
     pub async fn prepare_for_composition(
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_for_composition_with_intuition(
+            composition,
+            request,
+            inputs,
+            AgentdIntuitionComputationV1::Compatibility,
+        )
+        .await
+    }
+
+    /// The product invocation supplies the same immutable profile that serving
+    /// authenticates at final use. It grants no ledger or effect capabilities
+    /// to the worker and does not create a second policy owner.
+    pub(crate) async fn prepare_for_product_composition(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+        intuition_product: &crate::intelligence_ingress::AgentdIntuitionProductInvocationV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_for_composition_with_intuition(
+            composition,
+            request,
+            inputs,
+            AgentdIntuitionComputationV1::Product(Box::new(intuition_product.profile.clone())),
+        )
+        .await
+    }
+
+    pub(super) async fn prepare_for_composition_with_intuition(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
+        intuition_computation: AgentdIntuitionComputationV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let candidate_ids = request
             .legal_candidates
@@ -136,7 +173,8 @@ impl AgentdIntelligenceProductRunnerV1 {
             }
         };
         let mut worker = self.spawn_owner_work(move || {
-            let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
+            let mut ports =
+                AgentdOwnerPortsV1::new(inputs, evaluation_session, intuition_computation);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         })?;

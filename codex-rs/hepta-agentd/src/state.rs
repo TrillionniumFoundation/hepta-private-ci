@@ -642,14 +642,23 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .composition()
             .clone();
-        let outcome = runner
-            .prepare_for_composition(&composition, request, inputs)
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "canonical intelligence preparation failed: {error}"
-                ))
-            })?;
+        let outcome = match &intuition_product {
+            Some(product) => {
+                runner
+                    .prepare_for_product_composition(&composition, request, inputs, product)
+                    .await
+            }
+            None => {
+                runner
+                    .prepare_for_composition(&composition, request, inputs)
+                    .await
+            }
+        }
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "canonical intelligence preparation failed: {error}"
+            ))
+        })?;
 
         let policy_now = self.require_current_run_start(record)?;
         let authenticated_intuition =
