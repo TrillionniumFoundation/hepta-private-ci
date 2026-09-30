@@ -264,8 +264,8 @@ fn compute_registry_digest(
     entries: &[RegistryDefinitionV1],
     numeric_profiles: &[NumericProfileDefinitionV1],
 ) -> Result<Digest32, RegistryError> {
-    let type_id = StableId::new("platform.types:contract-registry-v1")
-        .map_err(RegistryError::Identity)?;
+    let type_id =
+        StableId::new("platform.types:contract-registry-v1").map_err(RegistryError::Identity)?;
     let definition_values: Vec<CanonicalValueV1<'_>> = entries
         .iter()
         .map(|entry| CanonicalValueV1::Digest(entry.digest))

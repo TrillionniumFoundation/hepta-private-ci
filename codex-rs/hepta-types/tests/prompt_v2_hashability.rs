@@ -49,8 +49,8 @@ fn admitted_position_boundaries_are_hashable_without_truncation() -> Result<(), 
 }
 
 #[test]
-fn v1_migration_preserves_old_identity_or_rejects_without_truncation(
-) -> Result<(), Box<dyn Error>> {
+fn v1_migration_preserves_old_identity_or_rejects_without_truncation() -> Result<(), Box<dyn Error>>
+{
     for count in [1_u32, 4_096, 4_097, 8_192] {
         let original = legacy(count)?;
         let old_digest = original.semantic_digest()?;

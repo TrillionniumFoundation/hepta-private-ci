@@ -6,10 +6,11 @@ use std::io;
 use std::path::PathBuf;
 use std::time::Instant;
 
-use codex_hepta_types::{
-    ContractRegistryV1, MAX_REGISTRY_ENTRIES_V1, RegistryDefinitionV1, RegistryKindV1,
-    StableId,
-};
+use codex_hepta_types::ContractRegistryV1;
+use codex_hepta_types::MAX_REGISTRY_ENTRIES_V1;
+use codex_hepta_types::RegistryDefinitionV1;
+use codex_hepta_types::RegistryKindV1;
+use codex_hepta_types::StableId;
 
 #[derive(Clone, Copy)]
 struct BenchmarkResult {
@@ -43,10 +44,7 @@ fn parse_arguments() -> Result<(u64, PathBuf), Box<dyn Error>> {
     Ok((iterations, output))
 }
 
-fn benchmark_case(
-    entry_count: usize,
-    iterations: u64,
-) -> Result<BenchmarkResult, Box<dyn Error>> {
+fn benchmark_case(entry_count: usize, iterations: u64) -> Result<BenchmarkResult, Box<dyn Error>> {
     let mut entries = Vec::with_capacity(entry_count);
     for index in 0..entry_count {
         let id = StableId::new(format!("schema:benchmark-{index}"))?;

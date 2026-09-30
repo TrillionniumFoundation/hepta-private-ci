@@ -1,10 +1,12 @@
 use std::error::Error;
 use std::io;
 
-use codex_hepta_types::{
-    ContractRegistryV1, Digest32, MAX_REGISTRY_ENTRIES_V1, RegistryDefinitionV1,
-    RegistryKindV1, StableId,
-};
+use codex_hepta_types::ContractRegistryV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::MAX_REGISTRY_ENTRIES_V1;
+use codex_hepta_types::RegistryDefinitionV1;
+use codex_hepta_types::RegistryKindV1;
+use codex_hepta_types::StableId;
 
 fn definition(index: usize) -> Result<RegistryDefinitionV1, Box<dyn Error>> {
     let (kind, identifier) = if index.is_multiple_of(2) {

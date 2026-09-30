@@ -417,13 +417,19 @@ fn append_u32(output: &mut impl CanonicalSink, value: u32) -> Result<(), Canonic
     append(output, &value.to_be_bytes())
 }
 
-fn append_len_u16(output: &mut impl CanonicalSink, value: &[u8]) -> Result<(), CanonicalDigestError> {
+fn append_len_u16(
+    output: &mut impl CanonicalSink,
+    value: &[u8],
+) -> Result<(), CanonicalDigestError> {
     let length = u16::try_from(value.len()).map_err(|_| CanonicalDigestError::TooLarge)?;
     append_u16(output, length)?;
     append(output, value)
 }
 
-fn append_len_u32(output: &mut impl CanonicalSink, value: &[u8]) -> Result<(), CanonicalDigestError> {
+fn append_len_u32(
+    output: &mut impl CanonicalSink,
+    value: &[u8],
+) -> Result<(), CanonicalDigestError> {
     let length = u32::try_from(value.len()).map_err(|_| CanonicalDigestError::TooLarge)?;
     append_u32(output, length)?;
     append(output, value)

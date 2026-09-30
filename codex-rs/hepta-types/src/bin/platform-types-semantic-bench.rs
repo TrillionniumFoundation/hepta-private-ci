@@ -71,9 +71,15 @@ fn hash_cases(rows: &mut Vec<String>) -> Result<(), Failure> {
             name: "payload",
             value: CanonicalValueV1::Bytes(&payload),
         }];
-        let expected = Digest32::of_bytes(&canonical_encode_v1(&id, /*schema_version*/ 1, &fields)?);
+        let expected = Digest32::of_bytes(&canonical_encode_v1(
+            &id, /*schema_version*/ 1, &fields,
+        )?);
         let mut buffered = || -> Result<_, Failure> {
-            let encoded = canonical_encode_v1(black_box(&id), /*schema_version*/ 1, black_box(&fields))?;
+            let encoded = canonical_encode_v1(
+                black_box(&id),
+                /*schema_version*/ 1,
+                black_box(&fields),
+            )?;
             let digest = Digest32::of_bytes(&encoded);
             if digest != expected {
                 return Err("buffered digest changed".into());
@@ -81,7 +87,11 @@ fn hash_cases(rows: &mut Vec<String>) -> Result<(), Failure> {
             Ok(digest)
         };
         let mut streaming = || -> Result<_, Failure> {
-            let digest = canonical_digest_v1(black_box(&id), /*schema_version*/ 1, black_box(&fields))?;
+            let digest = canonical_digest_v1(
+                black_box(&id),
+                /*schema_version*/ 1,
+                black_box(&fields),
+            )?;
             if digest != expected {
                 return Err("streaming digest changed".into());
             }
@@ -128,7 +138,11 @@ fn registry_cases(rows: &mut Vec<String>) -> Result<(), Failure> {
         let target = &registry.entries()[count / 2];
         repeat(rows, &format!("registry-identity-{count}"), || {
             registry
-                .resolve(RegistryKindV1::Schema, black_box(target.id()), /*version*/ 1)
+                .resolve(
+                    RegistryKindV1::Schema,
+                    black_box(target.id()),
+                    /*version*/ 1,
+                )
                 .map(RegistryDefinitionV1::digest)
                 .ok_or_else(|| "identity lookup failed".into())
         })?;
@@ -180,13 +194,14 @@ fn numeric_cases(rows: &mut Vec<String>) -> Result<(), Failure> {
         let snapshot = receipt.registry_snapshot();
         repeat(rows, &format!("numeric-convert-{count}"), || {
             Ok(rescale_signal_registered_v2(
-                black_box(&source), &target, &registry, generation,
+                black_box(&source),
+                &target,
+                &registry,
+                generation,
             )?)
         })?;
         repeat(rows, &format!("numeric-verify-{count}"), || {
-            Ok(receipt.verify_for_snapshot(
-                black_box(&source), &target, &registry, snapshot,
-            )?)
+            Ok(receipt.verify_for_snapshot(black_box(&source), &target, &registry, snapshot)?)
         })?;
     }
     Ok(())
