@@ -52,7 +52,11 @@ const HEAD_MAGIC: &str = "HEPTAH01";
 /// extract/clone its handle. Creation fails when the final path component already
 /// exists, including when it is empty, truncated, or a symbolic link. Trusted
 /// parent traversal and containing-directory durability remain host obligations.
-pub struct CreateOnlyArtifactFile(pub(crate) File);
+pub struct CreateOnlyArtifactFile {
+    file: File,
+    #[cfg(unix)]
+    parent_directory: Option<File>,
+}
 
 impl fmt::Debug for CreateOnlyArtifactFile {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -67,7 +71,11 @@ impl CreateOnlyArtifactFile {
         #[cfg(unix)]
         options.mode(0o600);
         match options.open(path) {
-            Ok(file) => Ok(Self(file)),
+            Ok(file) => Ok(Self {
+                file,
+                #[cfg(unix)]
+                parent_directory: None,
+            }),
             Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
                 Err(ArtifactStorageError::AlreadyExists)
             }
@@ -89,8 +97,12 @@ impl CreateOnlyArtifactFile {
     ) -> Result<Self, ArtifactStorageError> {
         #[cfg(unix)]
         {
-            return create_beneath_directory_capability(root.as_ref(), relative.as_ref())
-                .map(Self);
+            let (file, parent_directory) =
+                create_beneath_directory_capability(root.as_ref(), relative.as_ref())?;
+            return Ok(Self {
+                file,
+                parent_directory: Some(parent_directory),
+            });
         }
         #[cfg(not(unix))]
         {
@@ -103,7 +115,7 @@ impl CreateOnlyArtifactFile {
 fn create_beneath_directory_capability(
     root: &Path,
     relative: &Path,
-) -> Result<File, ArtifactStorageError> {
+) -> Result<(File, File), ArtifactStorageError> {
     validate_relative_artifact_path(relative)?;
     let mut directory = open(
         root,
@@ -138,7 +150,7 @@ fn create_beneath_directory_capability(
             Mode::RUSR | Mode::WUSR,
         );
         return match opened {
-            Ok(file) => Ok(File::from(file)),
+            Ok(file) => Ok((File::from(file), File::from(directory))),
             Err(error) => {
                 let error = io::Error::from(error);
                 if error.kind() == io::ErrorKind::AlreadyExists {
@@ -552,7 +564,12 @@ pub(crate) fn write_new(
     file: CreateOnlyArtifactFile,
     bytes: &[u8],
 ) -> Result<(), ArtifactStorageError> {
-    let mut guard = lock(file.0, LockKind::Exclusive)?;
+    let CreateOnlyArtifactFile {
+        file,
+        #[cfg(unix)]
+        parent_directory,
+    } = file;
+    let mut guard = lock(file, LockKind::Exclusive)?;
     if guard.0.metadata()?.len() != 0 {
         // Atomic creation already proved the target did not exist. Bytes appearing
         // before the guarded write are interference, so completion is unknown.
@@ -563,7 +580,14 @@ pub(crate) fn write_new(
         .0
         .write_all(bytes)
         .and_then(|()| guard.0.sync_all())
-        .map_err(|_| ArtifactStorageError::Indeterminate)
+        .map_err(|_| ArtifactStorageError::Indeterminate)?;
+    #[cfg(unix)]
+    if let Some(parent_directory) = parent_directory {
+        parent_directory
+            .sync_all()
+            .map_err(|_| ArtifactStorageError::Indeterminate)?;
+    }
+    Ok(())
 }
 
 pub(crate) fn read_bounded(
