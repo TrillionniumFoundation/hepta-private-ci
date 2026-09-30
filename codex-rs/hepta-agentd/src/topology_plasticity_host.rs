@@ -206,8 +206,8 @@ pub fn resolve_agentd_topology_admission_v1(
     {
         return Err(AgentdTopologyHostErrorV1::ArtifactBinding);
     }
-    let artifact_registry_head_digest = artifacts.snapshot().head_digest;
-    let ledger_head_digest = ledger.snapshot()?.head_digest;
+    let artifact_registry_head_digest = artifacts.head_digest();
+    let ledger_head_digest = ledger.head_digest()?;
     if artifact_registry_head_digest.is_zero()
         || ledger_head_digest.is_zero()
         || input.generation_digest.is_zero()

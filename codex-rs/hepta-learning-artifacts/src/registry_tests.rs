@@ -298,3 +298,6 @@ fn registry_growth_curve_compares_head_read_with_snapshot_and_historical_retry()
         count = records;
     }
 }
+
+#[path = "registry_lineage_tests.rs"]
+mod lineage;

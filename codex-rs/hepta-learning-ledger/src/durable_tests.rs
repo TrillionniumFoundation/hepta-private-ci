@@ -694,3 +694,25 @@ fn retrieval_assignment_tag_four_replays_exactly_after_reopen() {
     let receipt = must(core.append(event));
     assert_eq!(receipt.event_digest, snapshot.records()[0].event_digest);
 }
+
+#[test]
+fn current_head_matches_history_after_retry_recovery_and_poison() {
+    let fixture = Fixture::new();
+    let mut owner = fixture.create();
+    assert_eq!(must(owner.head_digest()), Digest32::ZERO);
+    let first = must(owner.append(Digest32::ZERO, decision()));
+    must(owner.append(first.chain_digest, outcome()));
+    let snapshot = must(owner.snapshot());
+    assert_eq!(must(owner.head_digest()), snapshot.head_digest);
+    must(owner.append(Digest32::ZERO, decision()));
+    assert_eq!(must(owner.head_digest()), snapshot.head_digest);
+    drop(owner);
+    let mut recovered = must(fixture.recover(anchored(&snapshot)));
+    assert_eq!(must(recovered.head_digest()), snapshot.head_digest);
+    // A poisoned owner must never export a formerly valid head as current.
+    recovered.poisoned = true;
+    assert!(matches!(
+        recovered.head_digest(),
+        Err(DurableLedgerError::Poisoned)
+    ));
+}

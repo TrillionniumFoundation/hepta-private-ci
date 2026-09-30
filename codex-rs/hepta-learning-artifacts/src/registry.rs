@@ -34,6 +34,9 @@ pub struct ArtifactRegistry {
     records: Vec<ArtifactRecord>,
     event_digests: BTreeMap<StableId, (Digest32, usize)>,
     artifacts: BTreeMap<StableId, ArtifactEntry>,
+    // Rebuildable owner-local indexes. No independent authority or disk schema.
+    children: BTreeMap<StableId, BTreeSet<StableId>>,
+    ineligible: BTreeSet<StableId>,
 }
 
 impl ArtifactRegistry {
@@ -259,21 +262,21 @@ impl ArtifactRegistry {
     }
 
     fn lineage_is_eligible(&self, artifact_id: &StableId) -> bool {
-        let mut current = Some(artifact_id);
-        let mut visited = BTreeSet::new();
-        while let Some(id) = current {
-            if !visited.insert(id.clone()) {
-                return false;
+        self.artifacts.contains_key(artifact_id) && !self.ineligible.contains(artifact_id)
+    }
+
+    // Eligibility only decreases: quarantined/revoked ancestors never resume,
+    // and registration rejects an ineligible parent. Visit each descendant at
+    // most once across invalidations; keep its own state and audit record intact.
+    fn invalidate_lineage(&mut self, artifact_id: &StableId) {
+        let mut pending = vec![artifact_id.clone()];
+        while let Some(id) = pending.pop() {
+            if self.ineligible.insert(id.clone())
+                && let Some(children) = self.children.get(&id)
+            {
+                pending.extend(children.iter().cloned());
             }
-            let Some(entry) = self.artifacts.get(id) else {
-                return false;
-            };
-            if entry.state != ArtifactState::Candidate {
-                return false;
-            }
-            current = entry.manifest.predecessor_id.as_ref();
         }
-        true
     }
 
     fn index_record(&mut self, record: &ArtifactRecord) -> Result<(), ArtifactRegistryError> {
@@ -283,6 +286,12 @@ impl ArtifactRegistry {
         );
         match &record.event {
             ArtifactEvent::Register { manifest, .. } => {
+                if let Some(parent) = &manifest.predecessor_id {
+                    self.children
+                        .entry(parent.clone())
+                        .or_default()
+                        .insert(manifest.artifact_id.clone());
+                }
                 self.artifacts.insert(
                     manifest.artifact_id.clone(),
                     ArtifactEntry {
@@ -297,6 +306,7 @@ impl ArtifactRegistry {
                     .get_mut(&change.artifact_id)
                     .ok_or(ArtifactRegistryError::InternalInvariant)?;
                 entry.state = ArtifactState::Quarantined;
+                self.invalidate_lineage(&change.artifact_id);
             }
             ArtifactEvent::Revoke(change) => {
                 let entry = self
@@ -304,6 +314,7 @@ impl ArtifactRegistry {
                     .get_mut(&change.artifact_id)
                     .ok_or(ArtifactRegistryError::InternalInvariant)?;
                 entry.state = ArtifactState::Revoked;
+                self.invalidate_lineage(&change.artifact_id);
             }
         }
         Ok(())
