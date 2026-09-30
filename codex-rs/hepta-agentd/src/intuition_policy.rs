@@ -10,11 +10,13 @@ mod binding;
 #[path = "intuition_policy_final_use.rs"]
 mod final_use;
 
+pub use binding::intuition_policy_record_id_v1;
+pub use binding::intuition_risk_rule_digest_v1;
 use binding::*;
-use final_use::validate_prepared_time;
 pub use final_use::IntuitionPolicyClock;
 pub use final_use::IntuitionPolicyLearningSink;
 pub use final_use::SystemIntuitionPolicyClock;
+use final_use::validate_prepared_time;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -49,6 +51,10 @@ use codex_hepta_learning_ledger::candidate_order_digest_v2;
 use codex_hepta_learning_ledger::decision_signing_payload_v2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+
+/// The pure kernel accepts 128 actions. Product learning reserves one of the
+/// ledger's 128 candidate slots for its explicit abstain option.
+pub const MAX_PRODUCT_INTUITION_CANDIDATES: usize = 127;
 
 /// Immutable owner identities admitted by the historical Agentd composition.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -202,6 +208,7 @@ pub enum AgentdIntuitionPolicyError {
     OodPinMismatch,
     RiskRulePinMismatch,
     ProductHostRequired,
+    ProductCandidateLimit,
     EmptyRunSnapshot,
     InvalidEpisode,
     SelectedPropensityMissing,
@@ -238,6 +245,7 @@ impl AgentdIntuitionPolicyError {
             Self::OodPinMismatch => "agentd.intuition.pin.ood_mismatch",
             Self::RiskRulePinMismatch => "agentd.intuition.pin.risk_rule_mismatch",
             Self::ProductHostRequired => "agentd.intuition.product_host_required",
+            Self::ProductCandidateLimit => "agentd.intuition.product_candidate_limit",
             Self::EmptyRunSnapshot => "agentd.intuition.empty_run_snapshot",
             Self::InvalidEpisode => "agentd.intuition.invalid_episode",
             Self::SelectedPropensityMissing => "agentd.intuition.selected_propensity_missing",
@@ -432,6 +440,9 @@ impl AgentdIntuitionPolicyHostV1 {
         now: u64,
     ) -> Result<PreparedAgentdIntuitionDecisionV3, AgentdIntuitionPolicyError> {
         self.require_identity(agent_id, spawn_generation)?;
+        if request.candidates.len() > MAX_PRODUCT_INTUITION_CANDIDATES {
+            return Err(AgentdIntuitionPolicyError::ProductCandidateLimit);
+        }
         if run_snapshot_digest.is_zero() {
             return Err(AgentdIntuitionPolicyError::EmptyRunSnapshot);
         }
@@ -540,7 +551,7 @@ impl AgentdIntuitionPolicyHostV1 {
         )
     }
 
-    /// Compatibility name retained without the unsafe caller-supplied time.
+    /// Historical call signature retained; final-use time is always writer-owned.
     #[deprecated(note = "use commit_v4; final-use time is writer-owned")]
     pub fn commit_v3(
         &self,
@@ -549,6 +560,7 @@ impl AgentdIntuitionPolicyHostV1 {
         prepared: PreparedAgentdIntuitionDecisionV3,
         expected_ledger_head: Digest32,
         decision_evidence: Option<SignedLearningEvidenceV1>,
+        _now: u64,
     ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionPolicyError> {
         self.commit_v4(
             agent_id,
@@ -558,7 +570,6 @@ impl AgentdIntuitionPolicyHostV1 {
             decision_evidence,
         )
     }
-
 }
 
 #[cfg(test)]

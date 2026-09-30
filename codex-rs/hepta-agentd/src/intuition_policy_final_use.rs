@@ -1,12 +1,12 @@
 //! Final-use clock, trust, qualification and durable writer serialization.
 
 use super::*;
+use codex_hepta_learning_ledger::LedgerWriter;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
-use codex_hepta_learning_ledger::LedgerWriter;
 
 /// Agentd-owned clock sampled only after the sole LedgerWriter lock is held.
 ///
@@ -63,19 +63,14 @@ impl IntuitionPolicyLearningSink {
     }
 
     #[must_use]
-    pub fn new_with_clock(
-        writer: LedgerWriter,
-        clock: Arc<dyn IntuitionPolicyClock>,
-    ) -> Self {
+    pub fn new_with_clock(writer: LedgerWriter, clock: Arc<dyn IntuitionPolicyClock>) -> Self {
         Self {
             writer: Mutex::new(writer),
             clock,
         }
     }
 
-    pub fn trust_identity(
-        &self,
-    ) -> Result<(Digest32, u64, Digest32), AgentdIntuitionPolicyError> {
+    pub fn trust_identity(&self) -> Result<(Digest32, u64, Digest32), AgentdIntuitionPolicyError> {
         let writer = self
             .writer
             .lock()
@@ -98,12 +93,12 @@ impl IntuitionPolicyLearningSink {
         &self,
         root: &codex_hepta_learning_ledger::LearningTrustRootV1,
         signed: codex_hepta_learning_ledger::SignedLearningTrustDistributionV1,
-        now: u64,
     ) -> Result<Digest32, AgentdIntuitionPolicyError> {
         let mut writer = self
             .writer
             .lock()
             .map_err(|_| AgentdIntuitionPolicyError::LearningLockPoisoned)?;
+        let now = self.clock.now()?;
         writer
             .rotate_trust(root, signed, now)
             .map_err(AgentdIntuitionPolicyError::TrustRotation)

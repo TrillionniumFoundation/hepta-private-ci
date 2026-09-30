@@ -302,4 +302,3 @@ pub(super) fn product_host_binding_digest(
     bytes.extend_from_slice(authentication_digest.as_array());
     Digest32::of_bytes(&bytes)
 }
-

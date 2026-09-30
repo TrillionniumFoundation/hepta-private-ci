@@ -68,6 +68,67 @@ impl IntuitionPolicyClock for SequencedBlockingClock {
     }
 }
 
+fn successor_trust_distribution(
+    keys: &[SigningKey; 3],
+    principals: &[AuthenticatedPrincipalV1; 3],
+    generation: u64,
+    generator_revoked_at: Option<u64>,
+) -> (LearningTrustRootV1, SignedLearningTrustDistributionV1) {
+    let scope_digest = digest("scope:intuition-product-v3");
+    let mut generator = trusted(
+        principals[0].clone(),
+        "controller:generator",
+        &keys[0],
+        LearningEvidenceRoleV1::Generator,
+    );
+    generator.revoked_at = generator_revoked_at;
+    let trust = LearningEvidenceTrustV1 {
+        scope_digest,
+        objective_digest: digest("objective:intuition-product-v3"),
+        authority_epoch: 9,
+        signers: vec![
+            generator,
+            trusted(
+                principals[1].clone(),
+                "controller:evaluator",
+                &keys[1],
+                LearningEvidenceRoleV1::Evaluator,
+            ),
+            trusted(
+                principals[2].clone(),
+                "controller:observer",
+                &keys[2],
+                LearningEvidenceRoleV1::Observer,
+            ),
+        ],
+    };
+    let root_key = SigningKey::from_bytes(&[97; 32]);
+    let root = LearningTrustRootV1 {
+        root_id: id("root:intuition-product-v3"),
+        scope_digest,
+        verifying_key: root_key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 1_000,
+        revoked_at: None,
+    };
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id(&format!("distribution:intuition-product-v3:{generation}")),
+            generation,
+            effective_at: 151,
+            trust,
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 151,
+        expires_at: 900,
+        signature: [0; 64],
+    };
+    signed.signature = root_key
+        .sign(&signed.signing_bytes().expect("successor trust payload"))
+        .to_bytes();
+    (root, signed)
+}
+
 #[test]
 fn prepared_decision_rejects_every_changed_host_pin_before_writing() {
     let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent");
@@ -316,10 +377,9 @@ fn prepared_decision_rejects_every_changed_host_pin_before_writing() {
     assert_eq!(replay.event_digest, first.event_digest);
     assert_eq!(replay.chain_digest, first.chain_digest);
 
-    let (root, successor) =
-        successor_trust_distribution(&keys, &principals, 2, Some(175));
+    let (root, successor) = successor_trust_distribution(&keys, &principals, 2, Some(175));
     learning
-        .rotate_trust(&root, successor, 199)
+        .rotate_trust(&root, successor)
         .expect("rotate to revoked-generator trust generation");
     assert!(matches!(
         host.commit_v4(
@@ -464,7 +524,11 @@ fn writer_wait_samples_fresh_clock_and_expires_before_any_ledger_mutation() {
         )
     });
     attempted_rx.recv().expect("second attempt started");
-    assert_eq!(clock.entered(), 1, "second commit must wait for writer lock");
+    assert_eq!(
+        clock.entered(),
+        1,
+        "second commit must wait for writer lock"
+    );
 
     clock.set_now(200);
     clock.release_through(1);
@@ -491,4 +555,145 @@ fn writer_wait_samples_fresh_clock_and_expires_before_any_ledger_mutation() {
         )
         .expect("fresh final-use time commits once");
     assert_eq!(committed.learning.expect("receipt").sequence.get(), 1);
+}
+
+#[test]
+fn final_use_revalidates_scheduled_signer_revocation_and_distribution_expiry() {
+    for (generator_revoked_at, distribution_expires_at) in [(Some(175), 900), (None, 175)] {
+        let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent");
+        let (request, profile) = request_and_profile();
+        let (scoring, assignment) = commitments(&request, &profile);
+        let (activated, verifier, keys, principals) = trust_material_with_options(
+            "controller:observer",
+            generator_revoked_at,
+            distribution_expires_at,
+        );
+        let directory = tempdir().expect("directory");
+        let ledger_path = directory.path().join("ledger");
+        let witness_path = directory.path().join("witness");
+        File::create(&ledger_path).expect("ledger file");
+        File::create(&witness_path).expect("witness file");
+        let binding = digest("binding:final-use-lease");
+        let ledger = DurableLedger::create(open_rw(&ledger_path), binding, 64).expect("ledger");
+        let witness = LedgerWitnessStore::create(open_rw(&witness_path), binding).expect("witness");
+        let parent = File::open(directory.path()).expect("parent");
+        let writer = LedgerWriter::from_durable(ledger, witness, activated, &parent, &parent)
+            .expect("writer");
+        let clock = Arc::new(TestIntuitionClock::new(NOW));
+        let learning = Arc::new(IntuitionPolicyLearningSink::new_with_clock(
+            writer,
+            clock.clone(),
+        ));
+        let host = AgentdIntuitionPolicyHostV1::new_product(
+            agent_id.clone(),
+            SPAWN_GENERATION,
+            verifier.clone(),
+            AgentdIntuitionPolicyPinsV2 {
+                policy_profile_digest: canonical_policy_profile_digest_v1(&profile)
+                    .expect("profile"),
+                policy_digest: profile.policy_digest,
+                policy_generation: PolicyGeneration::new(GENERATION).expect("generation"),
+                objective_class_digest: profile.objective_class_digest,
+                model_artifact_digest: profile.scorer.model_digest,
+                scorer_contract_digest: profile.scorer.scorer_contract_digest,
+                calibration_artifact_digest: profile.calibration_artifact_digest,
+                ood_artifact_digest: profile.ood_artifact_digest,
+                risk_rule_digest: intuition_risk_rule_digest_v1(profile.risk_rule),
+                rng_owner_digest: None,
+            },
+            learning.clone(),
+        )
+        .expect("host");
+        let completeness = sign_evidence(
+            &verifier,
+            &principals[0],
+            &keys[0],
+            LearningEvidenceRoleV1::Generator,
+            "evidence:lease:completeness",
+            &canonical_completeness_evidence_payload_v1(&request).expect("completeness"),
+        );
+        let profile_evidence = sign_evidence(
+            &verifier,
+            &principals[1],
+            &keys[1],
+            LearningEvidenceRoleV1::Evaluator,
+            "evidence:lease:profile",
+            &canonical_profile_qualification_payload_v1(&profile).expect("profile"),
+        );
+        let runtime = sign_evidence(
+            &verifier,
+            &principals[2],
+            &keys[2],
+            LearningEvidenceRoleV1::Observer,
+            "evidence:lease:runtime",
+            &canonical_runtime_commitment_payload_v2(&request, &profile, &scoring, &assignment)
+                .expect("runtime"),
+        );
+        let prepared = host
+            .prepare_v3(
+                &agent_id,
+                SPAWN_GENERATION,
+                request,
+                profile,
+                scoring,
+                assignment,
+                IntuitionQualificationEvidenceV2 {
+                    completeness: &completeness,
+                    profile_qualification: &profile_evidence,
+                    runtime: &runtime,
+                },
+                id("episode:lease"),
+                digest("snapshot:lease"),
+                NOW,
+            )
+            .expect("qualification is valid before scheduled expiry/revocation");
+        let evidence = sign_evidence(
+            &verifier,
+            &principals[0],
+            &keys[0],
+            LearningEvidenceRoleV1::Generator,
+            "evidence:lease:decision",
+            &prepared
+                .decision_signing_payload()
+                .expect("payload")
+                .expect("selected"),
+        );
+        clock.set(176);
+        let rejected = host.commit_v4(
+            &agent_id,
+            SPAWN_GENERATION,
+            prepared,
+            Digest32::ZERO,
+            Some(evidence),
+        );
+        if generator_revoked_at.is_some() {
+            assert!(matches!(
+                rejected,
+                Err(AgentdIntuitionPolicyError::QualificationV3(
+                    codex_hepta_intelligence::IntuitionQualificationErrorV3::Evidence(
+                        codex_hepta_learning_ledger::SignedEvidenceError::Revoked
+                    )
+                ))
+            ));
+        } else {
+            assert!(matches!(rejected, Err(AgentdIntuitionPolicyError::Learning(
+                codex_hepta_learning_ledger::ProductionLedgerError::Trust(
+                    codex_hepta_learning_ledger::LearningTrustDistributionError::DistributionWindow
+                )
+            ))));
+        }
+        drop(host);
+        drop(learning);
+        let recovered = DurableLedger::recover(
+            open_rw(&ledger_path),
+            binding,
+            64,
+            LedgerRecovery::Acknowledged(LedgerAnchor {
+                sequence: 0,
+                chain_digest: Digest32::ZERO,
+            }),
+        )
+        .expect("unchanged durable ledger");
+        assert!(recovered.records().expect("records").is_empty());
+    }
 }

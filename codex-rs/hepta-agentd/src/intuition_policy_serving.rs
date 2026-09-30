@@ -147,11 +147,7 @@ pub(crate) fn authenticate_canonical_intuition(
         // Final-use time and current trust are sampled inside the sole
         // LedgerWriter lock; the serving caller cannot extend a prepared lease.
         let committed = state
-            .commit_intuition_policy_v4(
-                policy_prepared,
-                expected_ledger_head,
-                decision_evidence,
-            )
+            .commit_intuition_policy_v4(policy_prepared, expected_ledger_head, decision_evidence)
             .map_err(AgentdError::from)?;
         let final_check = (|| {
             require_outcome_parity(

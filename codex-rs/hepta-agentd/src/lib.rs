@@ -180,6 +180,7 @@ pub use intuition_policy::AgentdIntuitionPolicyPinsV1;
 pub use intuition_policy::AgentdIntuitionPolicyPinsV2;
 pub use intuition_policy::IntuitionPolicyClock;
 pub use intuition_policy::IntuitionPolicyLearningSink;
+pub use intuition_policy::MAX_PRODUCT_INTUITION_CANDIDATES;
 pub use intuition_policy::PreparedAgentdIntuitionDecisionV3;
 pub use intuition_policy::SystemIntuitionPolicyClock;
 pub use intuition_policy::intuition_policy_record_id_v1;

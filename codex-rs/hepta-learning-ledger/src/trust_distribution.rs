@@ -63,6 +63,8 @@ pub struct ActivatedLearningTrustV1 {
     distribution_id: StableId,
     generation: u64,
     effective_at: u64,
+    expires_at: u64,
+    root_revoked_at: Option<u64>,
     distribution_digest: Digest32,
     verifier: LearningEvidenceVerifierV1,
 }
@@ -91,6 +93,18 @@ impl ActivatedLearningTrustV1 {
     #[must_use]
     pub const fn effective_at(&self) -> u64 {
         self.effective_at
+    }
+
+    /// Recheck the root-authorized lease at each production admission. Individual
+    /// signer credentials cannot extend the distribution that authorized them.
+    pub fn validate_current(&self, now: u64) -> Result<(), LearningTrustDistributionError> {
+        if now < self.effective_at
+            || now > self.expires_at
+            || self.root_revoked_at.is_some_and(|at| now >= at)
+        {
+            return Err(LearningTrustDistributionError::DistributionWindow);
+        }
+        Ok(())
     }
 
     #[must_use]
@@ -175,6 +189,8 @@ pub fn activate_learning_trust(
         distribution_id: distribution.distribution_id.clone(),
         generation: distribution.generation,
         effective_at: distribution.effective_at,
+        expires_at: signed.expires_at,
+        root_revoked_at: root.revoked_at,
         distribution_digest,
         verifier,
     })
