@@ -84,6 +84,11 @@ fn encode_fields(
     if fields.len() > MAX_CANONICAL_CONTAINER_ITEMS_V1 {
         return Err(CanonicalDigestError::TooManyItems);
     }
+    // Bound borrowed labels before sorting: common-prefix comparisons of
+    // otherwise rejected labels must stay within the declared label budget.
+    for field in fields {
+        validate_label(field.name)?;
+    }
     append(output, &MAGIC)?;
     append_u16(output, ENCODING_VERSION)?;
     append_len_u16(output, DOMAIN)?;
@@ -98,7 +103,6 @@ fn encode_fields(
     ordered.sort_unstable_by(|left, right| left.name.as_bytes().cmp(right.name.as_bytes()));
     let mut previous: Option<&[u8]> = None;
     for field in ordered {
-        validate_label(field.name)?;
         if previous == Some(field.name.as_bytes()) {
             return Err(CanonicalDigestError::DuplicateField);
         }
@@ -316,6 +320,17 @@ fn encode_value(
             append_len_u32(output, value)
         }
         CanonicalValueV1::Text(value) => {
+            // Check the complete text frame against the remaining envelope
+            // budget before inspecting its contents. Rejected borrowed text
+            // must not force an arbitrarily long NUL scan.
+            let framed_length = output
+                .len()
+                .checked_add(1 + 4)
+                .and_then(|length| length.checked_add(value.len()))
+                .ok_or(CanonicalDigestError::TooLarge)?;
+            if framed_length > MAX_CANONICAL_BYTES_V1 {
+                return Err(CanonicalDigestError::TooLarge);
+            }
             if value.contains('\0') {
                 return Err(CanonicalDigestError::InvalidText);
             }
@@ -354,6 +369,9 @@ fn encode_value(
             if entries.len() > MAX_CANONICAL_CONTAINER_ITEMS_V1 {
                 return Err(CanonicalDigestError::TooManyItems);
             }
+            for entry in entries {
+                validate_label(entry.key)?;
+            }
             append_u8(output, /*value*/ 0x0a)?;
             append_u32(
                 output,
@@ -363,7 +381,6 @@ fn encode_value(
             ordered.sort_unstable_by(|left, right| left.key.as_bytes().cmp(right.key.as_bytes()));
             let mut previous: Option<&[u8]> = None;
             for entry in ordered {
-                validate_label(entry.key)?;
                 if previous == Some(entry.key.as_bytes()) {
                     return Err(CanonicalDigestError::DuplicateMapKey);
                 }

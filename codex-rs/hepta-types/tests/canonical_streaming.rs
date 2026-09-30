@@ -92,6 +92,107 @@ fn streaming_and_buffered_paths_share_the_exact_byte_ceiling() {
     }
 }
 
+#[test]
+fn text_budget_precedes_content_validation_and_preserves_the_exact_ceiling() {
+    let id = StableId::new("platform.types:text-boundary").expect("id");
+    let empty = [CanonicalFieldV1 {
+        name: "text",
+        value: CanonicalValueV1::Text(""),
+    }];
+    let overhead = canonical_encode_v1(&id, /*schema_version*/ 1, &empty)
+        .expect("encode")
+        .len();
+    let maximum_payload = MAX_CANONICAL_BYTES_V1 - overhead;
+    let accepted = "x".repeat(maximum_payload);
+    let accepted_fields = [CanonicalFieldV1 {
+        name: "text",
+        value: CanonicalValueV1::Text(&accepted),
+    }];
+    let encoded = canonical_encode_v1(&id, /*schema_version*/ 1, &accepted_fields)
+        .expect("text at the byte ceiling");
+    assert_eq!(encoded.len(), MAX_CANONICAL_BYTES_V1);
+    compare(&id, /*schema*/ 1, &accepted_fields);
+
+    for text in [format!("{accepted}x"), format!("{accepted}\0")] {
+        let fields = [CanonicalFieldV1 {
+            name: "text",
+            value: CanonicalValueV1::Text(&text),
+        }];
+        assert_eq!(
+            canonical_encode_v1(&id, /*schema_version*/ 1, &fields),
+            Err(CanonicalDigestError::TooLarge)
+        );
+        assert_eq!(
+            canonical_digest_v1(&id, /*schema_version*/ 1, &fields),
+            Err(CanonicalDigestError::TooLarge)
+        );
+    }
+    let fields = [CanonicalFieldV1 {
+        name: "text",
+        value: CanonicalValueV1::Text("x\0"),
+    }];
+    assert_eq!(
+        canonical_encode_v1(&id, /*schema_version*/ 1, &fields),
+        Err(CanonicalDigestError::InvalidText)
+    );
+    compare(&id, /*schema*/ 1, &fields);
+}
+
+#[test]
+fn oversized_labels_reject_before_sorting_or_duplicate_checks() {
+    let id = StableId::new("platform.types:label-budget").expect("id");
+    let common_prefix = "x".repeat(MAX_CANONICAL_BYTES_V1);
+    let left = format!("{common_prefix}a");
+    let right = format!("{common_prefix}b");
+    let duplicate = CanonicalFieldV1 {
+        name: "a",
+        value: CanonicalValueV1::Bool(false),
+    };
+    let fields = [
+        duplicate,
+        duplicate,
+        CanonicalFieldV1 {
+            name: &left,
+            value: CanonicalValueV1::Bool(false),
+        },
+        CanonicalFieldV1 {
+            name: &right,
+            value: CanonicalValueV1::Bool(false),
+        },
+    ];
+    assert_eq!(
+        canonical_encode_v1(&id, /*schema_version*/ 1, &fields),
+        Err(CanonicalDigestError::InvalidLabel)
+    );
+    compare(&id, /*schema*/ 1, &fields);
+
+    let duplicate = CanonicalMapEntryV1 {
+        key: "a",
+        value: CanonicalValueV1::Bool(false),
+    };
+    let entries = [
+        duplicate,
+        duplicate,
+        CanonicalMapEntryV1 {
+            key: &left,
+            value: CanonicalValueV1::Bool(false),
+        },
+        CanonicalMapEntryV1 {
+            key: &right,
+            value: CanonicalValueV1::Bool(false),
+        },
+    ];
+    let fields = [CanonicalFieldV1 {
+        name: "map",
+        value: CanonicalValueV1::Map(&entries),
+    }];
+    assert_eq!(
+        canonical_encode_v1(&id, /*schema_version*/ 1, &fields),
+        Err(CanonicalDigestError::InvalidLabel)
+    );
+    compare(&id, /*schema*/ 1, &fields);
+}
+
 fn nested(depth: usize, value: CanonicalValueV1<'_>, id: &StableId) {
     if depth == 0 {
         compare(

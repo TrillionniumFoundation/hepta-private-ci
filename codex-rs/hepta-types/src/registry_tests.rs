@@ -192,3 +192,60 @@ fn registry_rejects_duplicate_identity_profile_version_capacity_and_aggregate_by
         Err(RegistryError::TooMuchDefinitionData)
     );
 }
+
+#[test]
+fn registry_does_not_retain_oversized_caller_capacity() {
+    let entry = definition(RegistryKindV1::Schema, "schema:a", 1, "field=a:u64");
+    let profile = NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
+        .unwrap_or_else(|error| panic!("profile fixture: {error}"));
+    let expected =
+        ContractRegistryV1::new_with_numeric_profiles(vec![entry.clone()], vec![profile.clone()])
+            .unwrap_or_else(|error| panic!("registry fixture: {error}"));
+    let mut entries = Vec::with_capacity(MAX_REGISTRY_ENTRIES_V1 * 16);
+    entries.push(entry);
+    let mut profiles = Vec::with_capacity(MAX_REGISTRY_ENTRIES_V1 * 16);
+    profiles.push(profile);
+    let registry = ContractRegistryV1::new_with_numeric_profiles(entries, profiles)
+        .unwrap_or_else(|error| panic!("registry fixture: {error}"));
+
+    assert_eq!(registry, expected);
+    assert!(registry.entries.capacity() <= MAX_REGISTRY_ENTRIES_V1);
+    assert!(registry.numeric_profiles.capacity() <= MAX_REGISTRY_ENTRIES_V1);
+    assert!(registry.definition_digest_index.capacity() <= MAX_REGISTRY_ENTRIES_V1);
+
+    let empty = ContractRegistryV1::new_with_numeric_profiles(
+        Vec::with_capacity(MAX_REGISTRY_ENTRIES_V1 * 16),
+        Vec::with_capacity(MAX_REGISTRY_ENTRIES_V1 * 16),
+    )
+    .unwrap_or_else(|error| panic!("empty registry fixture: {error}"));
+    assert_eq!(
+        empty,
+        ContractRegistryV1::new(Vec::new())
+            .unwrap_or_else(|error| panic!("empty registry fixture: {error}"))
+    );
+    assert!(empty.entries.capacity() <= MAX_REGISTRY_ENTRIES_V1);
+    assert!(empty.numeric_profiles.capacity() <= MAX_REGISTRY_ENTRIES_V1);
+}
+
+#[test]
+fn registry_reuses_within_bound_caller_allocations() {
+    let mut entries = Vec::with_capacity(MAX_REGISTRY_ENTRIES_V1);
+    entries.push(definition(
+        RegistryKindV1::Schema,
+        "schema:a",
+        1,
+        "field=a:u64",
+    ));
+    let entries_pointer = entries.as_ptr();
+    let mut profiles = Vec::with_capacity(MAX_REGISTRY_ENTRIES_V1);
+    profiles.push(
+        NumericProfileDefinitionV1::canonical(NumericProfileV1::HnmfPpmTowardZero)
+            .unwrap_or_else(|error| panic!("profile fixture: {error}")),
+    );
+    let profiles_pointer = profiles.as_ptr();
+    let registry = ContractRegistryV1::new_with_numeric_profiles(entries, profiles)
+        .unwrap_or_else(|error| panic!("registry fixture: {error}"));
+
+    assert_eq!(registry.entries().as_ptr(), entries_pointer);
+    assert_eq!(registry.numeric_profiles().as_ptr(), profiles_pointer);
+}

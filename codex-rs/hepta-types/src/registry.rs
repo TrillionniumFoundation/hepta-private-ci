@@ -13,7 +13,7 @@ use crate::NumericProfileDefinitionV1;
 use crate::NumericProfileV1;
 use crate::StableId;
 use crate::canonical_digest_v1;
-use crate::validate_id;
+use crate::identity::validate_id_profile_raw;
 
 pub const MAX_REGISTRY_ENTRIES_V1: usize = 256;
 pub const MAX_REGISTRY_DEFINITION_BYTES_V1: usize = 4_096;
@@ -61,7 +61,7 @@ impl RegistryDefinitionV1 {
         if version == 0 {
             return Err(RegistryError::InvalidVersion);
         }
-        validate_id(id.as_str(), kind.id_profile()).map_err(RegistryError::Identity)?;
+        validate_id_profile_raw(id.as_str(), kind.id_profile()).map_err(RegistryError::Identity)?;
         let definition = BoundedText::try_from_str(definition).map_err(RegistryError::Bounded)?;
         let type_id = StableId::new("platform.types:registry-definition-v1")
             .map_err(RegistryError::Identity)?;
@@ -177,6 +177,19 @@ impl ContractRegistryV1 {
             }
         }
         let registry_digest = compute_registry_digest(&entries, &numeric_profiles)?;
+        // Length limits alone do not bound retained caller allocations: a
+        // one-entry or empty input can still reserve an arbitrarily large Vec.
+        // Preserve within-bound allocations and normalize only excess capacity.
+        let entries = if entries.capacity() > MAX_REGISTRY_ENTRIES_V1 {
+            entries.into_boxed_slice().into_vec()
+        } else {
+            entries
+        };
+        let numeric_profiles = if numeric_profiles.capacity() > MAX_REGISTRY_ENTRIES_V1 {
+            numeric_profiles.into_boxed_slice().into_vec()
+        } else {
+            numeric_profiles
+        };
         Ok(Self {
             entries,
             definition_digest_index,
