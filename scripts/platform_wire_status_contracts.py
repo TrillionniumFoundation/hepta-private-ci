@@ -34,6 +34,7 @@ IMPL = tuple(
         "authentication.rs",
         "managed_session.rs",
         "codec_binding.rs",
+        "hardened_session.rs",
         "feed.rs",
     )
 )
