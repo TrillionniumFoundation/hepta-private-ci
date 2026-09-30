@@ -11,6 +11,7 @@ on:
       - "codex-rs/hepta-agent-protocol/src/lib.rs"
       - "docs/modules/control.runtime/**"
       - "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+      - "scripts/generate_control_runtime_status.py"
       - ".github/workflows/control-runtime-qualification.yml"
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - "codex-rs/hepta-agent-protocol/src/lib.rs"
       - "docs/modules/control.runtime/**"
       - "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+      - "scripts/generate_control_runtime_status.py"
       - ".github/workflows/control-runtime-qualification.yml"
   workflow_dispatch:
 
@@ -76,6 +78,19 @@ jobs:
           python3 scripts/hepta-ndu-source-policy.py
           python3 -m json.tool docs/modules/control.runtime/IMPLEMENTATION_MAP.json >/dev/null
           python3 -m json.tool docs/modules/control.runtime/MATURITY.json >/dev/null
+          python3 -m json.tool docs/modules/control.runtime/STATUS.json >/dev/null
+          python3 scripts/generate_control_runtime_status.py --check-template
+
+      - name: Generate exact-head status evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/generate_control_runtime_status.py \
+            --source-sha "$(git rev-parse HEAD)" \
+            --output "${RUNNER_TEMP}/control-runtime-STATUS.json" \
+            --matrix-output "${RUNNER_TEMP}/control-runtime-TEST_MATRIX.json"
+          python3 -m json.tool "${RUNNER_TEMP}/control-runtime-STATUS.json" >/dev/null
+          python3 -m json.tool "${RUNNER_TEMP}/control-runtime-TEST_MATRIX.json" >/dev/null
 
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -156,6 +171,8 @@ jobs:
           name: control-runtime-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
           path: |
             ${{ runner.temp }}/candidate.txt
+            ${{ runner.temp }}/control-runtime-STATUS.json
+            ${{ runner.temp }}/control-runtime-TEST_MATRIX.json
             ${{ runner.temp }}/*.log
             ${{ runner.temp }}/ndu-named-host-${{ matrix.lane }}.json
           if-no-files-found: warn
