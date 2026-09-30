@@ -10,6 +10,8 @@
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+pub mod local_cpu_model;
+
 pub mod final_use_authorizer;
 mod final_use_trust_port;
 pub mod native_app_server;

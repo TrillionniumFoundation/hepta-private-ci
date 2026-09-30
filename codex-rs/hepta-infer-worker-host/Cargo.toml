@@ -49,6 +49,11 @@ tempfile = { workspace = true }
 codex-app-server-client = { workspace = true, features = ["test-support"] }
 
 [[bin]]
+name = "hepta-cpu-neuron-score"
+path = "src/bin/hepta-cpu-neuron-score.rs"
+test = false
+
+[[bin]]
 name = "hepta-evolving-agentd"
 path = "src/bin/hepta-evolving-agentd.rs"
 required-features = ["agentd-host"]
