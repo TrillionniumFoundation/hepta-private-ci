@@ -53,11 +53,13 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn unique_test_nonce(label: &str) -> TestResult<[u8; 32]> {
-    static SEQUENCE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    static SEQUENCE: std::sync::atomic::AtomicU64 =
+        std::sync::atomic::AtomicU64::new(0);
     let elapsed = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)?
         .as_nanos();
-    let sequence = SEQUENCE.fetch_add(/*value*/ 1, std::sync::atomic::Ordering::Relaxed);
+    let sequence =
+        SEQUENCE.fetch_add(/*value*/ 1, std::sync::atomic::Ordering::Relaxed);
     let material = format!("{label}:{}:{elapsed}:{sequence}", std::process::id());
     Ok(*Digest32::of_bytes(material.as_bytes()).as_bytes())
 }
@@ -135,10 +137,8 @@ fn fixture(generation: u64) -> TestResult<Fixture> {
             revoked_grant_ids: BTreeSet::new(),
         },
     )?;
-    let snapshot = RegistrySnapshotIdentityV1::new(
-        Generation::new(generation)?,
-        registry.registry_digest(),
-    )?;
+    let snapshot =
+        RegistrySnapshotIdentityV1::new(Generation::new(generation)?, registry.registry_digest())?;
     let owner = NduAuthenticatedOwnerV1::open_with_numeric_registry_snapshot(
         root.path(),
         authority.clone(),
@@ -294,10 +294,8 @@ fn owner_v2_rejects_same_generation_wrong_registry_and_changed_signal() -> TestR
 fn invalid_snapshot_fails_before_opening_store() -> TestResult {
     let fixture = fixture(/*generation*/ 7)?;
     let root = fixture.root.path().join("must-not-open");
-    let wrong = RegistrySnapshotIdentityV1::new(
-        Generation::new(/*value*/ 7)?,
-        digest("wrong registry"),
-    )?;
+    let wrong =
+        RegistrySnapshotIdentityV1::new(Generation::new(/*value*/ 7)?, digest("wrong registry"))?;
     let opened = NduAuthenticatedOwnerV1::open_with_numeric_registry_snapshot(
         &root,
         fixture.authority.clone(),
@@ -319,7 +317,9 @@ fn explicit_v2_owner_cannot_silently_downgrade_and_legacy_stays_v1() -> TestResu
     let fixture = fixture(/*generation*/ 7)?;
     assert!(matches!(
         fixture.owner.admit_utility_signal(&fixture.source),
-        Err(NduOwnerError::InvalidContext("V2 snapshot requires V2 admission"))
+        Err(NduOwnerError::InvalidContext(
+            "V2 snapshot requires V2 admission"
+        ))
     ));
     let root = tempfile::tempdir()?;
     std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(/*mode*/ 0o700))?;
@@ -374,7 +374,9 @@ fn snapshot_evaluation_keeps_missing_proof_and_axis_rejections() -> TestResult {
     input.contributions[0].support_digest = Digest32::ZERO;
     assert!(matches!(
         fixture.owner.evaluate(input),
-        Err(NduOwnerError::Ndu(crate::NduError::EmptySupportDigest { .. }))
+        Err(NduOwnerError::Ndu(
+            crate::NduError::EmptySupportDigest { .. }
+        ))
     ));
     let mut input = contributions()?;
     input.contributions[0].utility[0].axis = id("unknown-axis")?;
