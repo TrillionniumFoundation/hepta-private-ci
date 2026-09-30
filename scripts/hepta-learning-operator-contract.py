@@ -5,11 +5,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+MAP_PATH = "docs/modules/learning.operator/IMPLEMENTATION_MAP.json"
 
 
 def read(path: str) -> str:
@@ -28,6 +30,69 @@ def require_tokens(path: str, tokens: list[str]) -> None:
     text = read(path)
     for token in tokens:
         require(token in text, f"{path} missing {token!r}")
+
+
+def git(*args: str) -> str:
+    return subprocess.run(
+        ["git", "--no-replace-objects", *args],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    ).stdout.strip()
+
+
+def exact_sha(value: object) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{40}", value) is not None
+
+
+def source_candidate_sha() -> str:
+    requested = os.environ.get("SOURCE_SHA", "")
+    if exact_sha(requested):
+        return requested
+    parents = git("show", "-s", "--format=%P", "HEAD").split()
+    if len(parents) >= 2 and exact_sha(parents[1]):
+        return parents[1]
+    return git("rev-parse", "HEAD")
+
+
+def verify_observation_freshness(implementation: dict[str, object]) -> None:
+    observed = implementation.get("observedAtHead")
+    require(isinstance(observed, dict), "observedAtHead identity absent")
+    observed_sha = observed.get("commit") if isinstance(observed, dict) else None
+    observed_tree = observed.get("tree") if isinstance(observed, dict) else None
+    require(exact_sha(observed_sha), "observedAtHead.commit must be an exact SHA")
+    require(exact_sha(observed_tree), "observedAtHead.tree must be an exact tree identity")
+    assert isinstance(observed_sha, str)
+    assert isinstance(observed_tree, str)
+    require(
+        git("rev-parse", f"{observed_sha}^{{tree}}") == observed_tree,
+        "observedAtHead commit/tree mismatch",
+    )
+    candidate = source_candidate_sha()
+    ancestry = subprocess.run(
+        ["git", "--no-replace-objects", "merge-base", "--is-ancestor", observed_sha, candidate],
+        cwd=ROOT,
+        check=False,
+    )
+    require(ancestry.returncode == 0, "observedAtHead is not an ancestor of the source candidate")
+    changed = set(
+        line
+        for line in git(
+            "diff",
+            "--name-only",
+            "--no-renames",
+            observed_sha,
+            candidate,
+            "--",
+        ).splitlines()
+        if line
+    )
+    require(
+        changed.issubset({MAP_PATH}),
+        "implementation map observation is stale for source/workflow/test changes: "
+        + ", ".join(sorted(changed - {MAP_PATH})),
+    )
 
 
 def verify_source() -> None:
@@ -177,8 +242,9 @@ def verify_source() -> None:
     )
     require(path.get("activationAllowed") is False, "default path must not activate")
 
-    implementation = json.loads(read("docs/modules/learning.operator/IMPLEMENTATION_MAP.json"))
+    implementation = json.loads(read(MAP_PATH))
     require(implementation.get("module") == "learning.operator", "implementation map identity")
+    verify_observation_freshness(implementation)
     operations = {
         row.get("operation")
         for row in implementation.get("operations", [])
