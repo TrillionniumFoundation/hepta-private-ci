@@ -80,6 +80,10 @@ jobs:
               )
           Path('/tmp/learning-plasticity-p1.patch').write_bytes(patch)
           PY
+          git cat-file -e "$REVIEWED_PARENT^{commit}"
+          git reset --hard "$REVIEWED_PARENT"
+          git clean -ffd
+          test "$(git rev-parse HEAD)" = "$REVIEWED_PARENT"
           git apply --binary --check /tmp/learning-plasticity-p1.patch
           git apply --binary /tmp/learning-plasticity-p1.patch
 
