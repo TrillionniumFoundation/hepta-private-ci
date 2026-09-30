@@ -249,5 +249,53 @@
       "mustContain": "prompt_pipeline_owner()",
       "callerPath": "codex-rs/hepta-agentd/src/app_runtime.rs"
     }
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
+      "nativeSymbol": "AgentdPromptPipelineOwner::open_state_dirs",
+      "role": "durable_registry_owner_bootstrap",
+      "state": "owner_bootstrap_only_turn_staging_and_authenticated_writer_ingress_pending"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "nativeSymbol": "prompt_pipeline_owner",
+      "role": "embedded_app_server_runtime_host_attachment",
+      "state": "runtime_host_attachment_only_turn_staging_and_authenticated_writer_ingress_pending"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "object": "b25375be9219be18baba2ab4d3488658d0040897"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry",
+      "object": "a0545527d82256ce3b823cbe2f9c6b741c6a6437"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "object": "78a330600bdd760e069ace7482a5941b414922af"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
+      "object": "051feb32a20cb9a40257f9545c08f6d7f6259209"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/protocol.rs",
+      "object": "fd961aee93f67b4309e1592909c7613f34dfdfb3"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/v2_tests.rs",
+      "object": "d9de3e0ee47e664647613d38ce78872d90170530"
+    },
+    {
+      "path": "docs/modules/prompt.registry/TECHNICAL.md",
+      "object": "c0eb9335c9fec7454e014c4de3c9c2df073fbc8e"
+    }
   ]
 }
