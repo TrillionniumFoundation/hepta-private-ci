@@ -77,9 +77,19 @@ impl CognitiveTestHost {
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
+        codex_self_exe: PathBuf,
+        codex_linux_sandbox_exe: Option<PathBuf>,
     ) -> TestResult<Self> {
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
+        // The caller must provide the executable configured to handle Codex
+        // helper modes. A test harness path is valid only when its startup
+        // hooks install the same arg0 dispatch used by the core fixtures.
+        let arg0_paths = Arg0DispatchPaths {
+            codex_self_exe: Some(codex_self_exe),
+            codex_linux_sandbox_exe,
+            ..Arg0DispatchPaths::default()
+        };
         std::fs::create_dir_all(&root)?;
         let root = root.canonicalize()?;
         let fleet_path = root.join("fleet");
@@ -116,6 +126,9 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // Use the production startup prerequisite reducer after the real
+        // owner store is attached. App Server readiness alone cannot admit.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
@@ -133,7 +146,7 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            arg0_paths,
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
@@ -159,8 +172,11 @@ impl CognitiveTestHost {
         loop {
             match client.health().await {
                 Ok(health) if health.ready => break,
-                _ if Instant::now() >= deadline => {
-                    return Err("timed out waiting for Agentd test control readiness".into());
+                observed if Instant::now() >= deadline => {
+                    return Err(format!(
+                        "timed out waiting for Agentd test control readiness: {observed:?}"
+                    )
+                    .into());
                 }
                 _ => tokio::time::sleep(Duration::from_millis(10)).await,
             }
