@@ -91,6 +91,9 @@ fn prepare(root: &TestRoot, address: std::net::SocketAddr) -> (PathBuf, PathBuf,
     let store = root.0.join("store");
     let backup = root.0.join("backup");
     fs::create_dir(&backup).expect("backup root");
+    let mut backup_permissions = fs::metadata(&backup).expect("backup metadata").permissions();
+    backup_permissions.set_mode(0o700);
+    fs::set_permissions(&backup, backup_permissions).expect("private backup root");
     let authz = root.0.join("authz.conf");
     let config = root.0.join("owner.conf");
     let owner_key = SigningKey::from_bytes(&[31; 32]);
