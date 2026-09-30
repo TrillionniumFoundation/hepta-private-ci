@@ -281,6 +281,28 @@ where
         config.binding.revision,
         config.matrix_generation,
     ) {
+        let mut quarantined = false;
+        for room_thread in snapshot.room_threads.iter().filter(|room_thread| {
+            room_thread.thread_id.as_deref() == Some(thread_id.as_str())
+                && room_thread.binding_revision == config.binding.revision
+                && room_thread.generation == config.matrix_generation
+        }) {
+            if runtime
+                .store()
+                .is_scope_quarantined(
+                    &room_thread.room_id,
+                    room_thread.binding_revision,
+                    room_thread.generation,
+                )
+                .await?
+            {
+                quarantined = true;
+                break;
+            }
+        }
+        if quarantined {
+            continue;
+        }
         let resumed_id = resume_thread(thread_id.clone()).await?;
         if resumed_id != thread_id {
             return Err(MatrixdRunError::Invalid(format!(
