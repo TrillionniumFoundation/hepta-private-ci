@@ -19,10 +19,11 @@ python3 -m unittest \
 python3 scripts/kernel_evidence_status.py verify
 python3 scripts/hepta-docs.py verify
 
-worktree="$(mktemp -d "$RUNNER_TEMP/kernel-evidence-map.XXXXXX")"
+worktree_root="$(mktemp -d "$RUNNER_TEMP/kernel-evidence-map.XXXXXX")"
+worktree="$worktree_root/worktree"
 cleanup() {
   git -C "$GITHUB_WORKSPACE" worktree remove --force "$worktree" >/dev/null 2>&1 || true
-  rm -rf "$worktree"
+  rm -rf "$worktree_root"
 }
 trap cleanup EXIT
 
