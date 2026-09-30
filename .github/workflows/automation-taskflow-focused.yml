@@ -10,21 +10,16 @@ on:
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
       - codex-rs/hepta-types/**
-      - codex-rs/app-server-client/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
-      - codex-rs/rust-toolchain.toml
       - docs/modules/automation.taskflow/**
       - docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json
-      - docs/readiness/LANE_B_*.md
       - qualification/module-execution-dossiers/detail/automation.taskflow.md
       - qualification/lane-b/**
       - scripts/*automation*taskflow*.py
       - scripts/hepta-lane-b-path-guard.py
-      - scripts/test_automation_recovery_sweeps.py
       - scripts/hepta_ci_exec.py
       - scripts/hepta_ci_v8.py
-      - justfile
       - .github/workflows/automation-taskflow-*.yml
       - .github/workflows/blocking-ci.yml
   push:
@@ -37,21 +32,16 @@ on:
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
       - codex-rs/hepta-types/**
-      - codex-rs/app-server-client/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
-      - codex-rs/rust-toolchain.toml
       - docs/modules/automation.taskflow/**
       - docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json
-      - docs/readiness/LANE_B_*.md
       - qualification/module-execution-dossiers/detail/automation.taskflow.md
       - qualification/lane-b/**
       - scripts/*automation*taskflow*.py
       - scripts/hepta-lane-b-path-guard.py
-      - scripts/test_automation_recovery_sweeps.py
       - scripts/hepta_ci_exec.py
       - scripts/hepta_ci_v8.py
-      - justfile
       - .github/workflows/automation-taskflow-*.yml
       - .github/workflows/blocking-ci.yml
   workflow_call:
@@ -80,21 +70,47 @@ concurrency:
   group: automation-taskflow-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-env:
-  SOURCE_SHA: ${{ inputs.candidate_sha || github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.before || github.sha }}
-  PYTHONDONTWRITEBYTECODE: "1"
-
 jobs:
+  resolve:
+    name: Resolve immutable TaskFlow candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      candidate_sha: ${{ steps.identity.outputs.candidate_sha }}
+      base_sha: ${{ steps.identity.outputs.base_sha }}
+    steps:
+      - name: Resolve and validate exact identities
+        id: identity
+        env:
+          REQUESTED_CANDIDATE: ${{ inputs.candidate_sha }}
+          REQUESTED_BASE: ${{ inputs.base_sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          EVENT_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate="${REQUESTED_CANDIDATE:-${PR_HEAD:-$EVENT_SHA}}"
+          base="${REQUESTED_BASE:-${PR_BASE:-${PUSH_BEFORE:-$EVENT_SHA}}}"
+          [[ "$candidate" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$base" =~ ^[0-9a-f]{40}$ ]]
+          test "$base" != "0000000000000000000000000000000000000000"
+          printf 'candidate_sha=%s\n' "$candidate" >> "$GITHUB_OUTPUT"
+          printf 'base_sha=%s\n' "$base" >> "$GITHUB_OUTPUT"
+
   source-export:
     name: Export immutable TaskFlow source
+    needs: resolve
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ needs.resolve.outputs.candidate_sha }}
     steps:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.SOURCE_SHA }}
+          ref: ${{ needs.resolve.outputs.candidate_sha }}
           fetch-depth: 1
           persist-credentials: false
       - name: Package reviewed source inputs
@@ -112,6 +128,7 @@ jobs:
             codex-rs/Cargo.lock \
             codex-rs/hepta-automation \
             codex-rs/hepta-agentd/src/automation.rs \
+            codex-rs/hepta-agentd/src/automation_circuit_host.rs \
             codex-rs/hepta-agentd/src/automation_effect_host.rs \
             codex-rs/hepta-agentd/src/automation_recovery.rs \
             docs/modules/automation.taskflow \
@@ -125,23 +142,26 @@ jobs:
       - name: Retain exact source bundle
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: automation-taskflow-source-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          name: automation-taskflow-source-${{ needs.resolve.outputs.candidate_sha }}-${{ github.run_id }}
           path: ${{ runner.temp }}/automation-taskflow-source/
           if-no-files-found: error
           retention-days: 30
 
   linux-exact:
     name: TaskFlow Linux exact head
+    needs: resolve
     runs-on: ubuntu-24.04
     timeout-minutes: 150
     env:
-      TESTED_SHA: ${{ env.SOURCE_SHA }}
+      SOURCE_SHA: ${{ needs.resolve.outputs.candidate_sha }}
+      TESTED_SHA: ${{ needs.resolve.outputs.candidate_sha }}
       HEPTA_CI_LANE: source-head-linux
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.SOURCE_SHA }}
+          ref: ${{ needs.resolve.outputs.candidate_sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Prepare CI environment
@@ -192,16 +212,19 @@ jobs:
 
   macos-exact:
     name: TaskFlow macOS exact head
+    needs: resolve
     runs-on: macos-15
     timeout-minutes: 150
     env:
-      TESTED_SHA: ${{ env.SOURCE_SHA }}
+      SOURCE_SHA: ${{ needs.resolve.outputs.candidate_sha }}
+      TESTED_SHA: ${{ needs.resolve.outputs.candidate_sha }}
       HEPTA_CI_LANE: source-head-macos
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.SOURCE_SHA }}
+          ref: ${{ needs.resolve.outputs.candidate_sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Prepare CI environment
@@ -262,24 +285,26 @@ jobs:
 
   deterministic-merge:
     name: TaskFlow deterministic merge
+    needs: resolve
     runs-on: ubuntu-24.04
     timeout-minutes: 150
     env:
+      SOURCE_SHA: ${{ needs.resolve.outputs.candidate_sha }}
+      BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
       HEPTA_CI_LANE: deterministic-merge
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out candidate history
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.SOURCE_SHA }}
+          ref: ${{ needs.resolve.outputs.candidate_sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Materialize deterministic local merge commit
         shell: bash
         run: |
           set -euo pipefail
-          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
-          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
-          test "$BASE_SHA" != "0000000000000000000000000000000000000000"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git cat-file -e "$SOURCE_SHA^{commit}"
           git cat-file -e "$BASE_SHA^{commit}"
           git config user.name "automation-taskflow-qualification"
