@@ -46,16 +46,27 @@ async fn reject_foreign_rows(
     tx: &mut Transaction<'_, Sqlite>,
     expected_owner: &AgentId,
 ) -> Result<(), TaskFlowError> {
-    for table in ["taskflow_definitions", "taskflow_runs", "taskflow_events"] {
-        let query = format!("SELECT COUNT(*) FROM {table} WHERE owner_agent_id != ?");
-        let count: i64 = sqlx::query_scalar(&query)
+    let foreign_definitions: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM taskflow_definitions WHERE owner_agent_id != ?",
+    )
+    .bind(expected_owner.as_str())
+    .fetch_one(&mut **tx)
+    .await
+    .map_err(|_| TaskFlowError::Unavailable)?;
+    let foreign_runs: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM taskflow_runs WHERE owner_agent_id != ?")
             .bind(expected_owner.as_str())
             .fetch_one(&mut **tx)
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
-        if count != 0 {
-            return Err(TaskFlowError::StaleFence);
-        }
+    let foreign_events: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM taskflow_events WHERE owner_agent_id != ?")
+            .bind(expected_owner.as_str())
+            .fetch_one(&mut **tx)
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+    if foreign_definitions != 0 || foreign_runs != 0 || foreign_events != 0 {
+        return Err(TaskFlowError::StaleFence);
     }
     Ok(())
 }

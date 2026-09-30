@@ -15,10 +15,12 @@ on:
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
       - docs/modules/automation.taskflow/**
+      - docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json
       - docs/readiness/LANE_B_*.md
       - qualification/module-execution-dossiers/detail/automation.taskflow.md
-      - qualification/lane-b/LANE_B_NATIVE_CLOSURE.md
+      - qualification/lane-b/**
       - scripts/*automation*taskflow*.py
+      - scripts/hepta-lane-b-path-guard.py
       - scripts/test_automation_recovery_sweeps.py
       - scripts/hepta_ci_exec.py
       - scripts/hepta_ci_v8.py
@@ -40,10 +42,12 @@ on:
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
       - docs/modules/automation.taskflow/**
+      - docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json
       - docs/readiness/LANE_B_*.md
       - qualification/module-execution-dossiers/detail/automation.taskflow.md
-      - qualification/lane-b/LANE_B_NATIVE_CLOSURE.md
+      - qualification/lane-b/**
       - scripts/*automation*taskflow*.py
+      - scripts/hepta-lane-b-path-guard.py
       - scripts/test_automation_recovery_sweeps.py
       - scripts/hepta_ci_exec.py
       - scripts/hepta_ci_v8.py
@@ -51,30 +55,43 @@ on:
       - .github/workflows/automation-taskflow-*.yml
       - .github/workflows/blocking-ci.yml
   workflow_call:
+    inputs:
+      candidate_sha:
+        required: false
+        type: string
+      base_sha:
+        required: false
+        type: string
   workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact candidate SHA; defaults to the dispatch SHA
+        required: false
+        type: string
+      base_sha:
+        description: Exact base SHA for deterministic merge qualification
+        required: false
+        type: string
 
 permissions:
   contents: read
 
-# A reusable invocation must not cancel the standalone or blocking caller.
 concurrency:
   group: automation-taskflow-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-  HEPTA_CI_LANE: source-head
+  SOURCE_SHA: ${{ inputs.candidate_sha || github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.before || github.sha }}
   PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
-  source_export:
-    name: Export exact TaskFlow source
+  source-export:
+    name: Export immutable TaskFlow source
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Checkout exact candidate
+      - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
@@ -84,130 +101,246 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          export_dir="$RUNNER_TEMP/automation-taskflow-source"
-          mkdir -p "$export_dir"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          out="$RUNNER_TEMP/automation-taskflow-source"
+          mkdir -p "$out"
           git archive --format=tar.gz \
-            --output="$export_dir/exact-taskflow-source.tar.gz" \
+            --output="$out/exact-taskflow-source.tar.gz" \
             "$SOURCE_SHA" -- \
-            codex-rs/hepta-automation/src/durable_neural_circuit.rs \
-            codex-rs/hepta-automation/src/durable_neural_circuit_recovery.rs \
-            codex-rs/hepta-automation/src/taskflow.rs \
-            codex-rs/hepta-automation/src/taskflow_bounded.rs \
-            codex-rs/hepta-automation/tests/durable_neural_circuit.rs \
-            codex-rs/hepta-automation/tests/durable_neural_circuit_recovery.rs \
-            codex-rs/hepta-automation/tests/taskflow.rs \
-            codex-rs/hepta-automation/migrations/0022_durable_neural_circuit.sql \
+            CALLERS.toml \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-automation \
+            codex-rs/hepta-agentd/src/automation.rs \
+            codex-rs/hepta-agentd/src/automation_effect_host.rs \
+            codex-rs/hepta-agentd/src/automation_recovery.rs \
             docs/modules/automation.taskflow \
+            scripts/automation_taskflow_commands.py \
             scripts/automation_taskflow_contract.py \
-            scripts/automation_taskflow_truthful_finalize_20260929.py \
-            scripts/automation_taskflow_layered_contract_20260929.py \
-            scripts/automation_taskflow_source_last_mile_20260929.py.gz.b64 \
+            scripts/hepta-lane-b-path-guard.py \
             .github/workflows/automation-taskflow-focused.yml \
             .github/workflows/automation-taskflow-selected-host.yml
-          sha256sum "$export_dir/exact-taskflow-source.tar.gz" > "$export_dir/SHA256SUMS"
-          printf '%s\n' "$SOURCE_SHA" > "$export_dir/COMMIT"
+          sha256sum "$out/exact-taskflow-source.tar.gz" > "$out/SHA256SUMS"
+          printf '%s\n' "$SOURCE_SHA" > "$out/COMMIT"
       - name: Retain exact source bundle
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: automation-taskflow-source-${{ env.SOURCE_SHA }}-${{ github.run_id }}
           path: ${{ runner.temp }}/automation-taskflow-source/
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 30
 
-  focused:
-    name: TaskFlow exact-source qualification
+  linux-exact:
+    name: TaskFlow Linux exact head
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 150
+    env:
+      TESTED_SHA: ${{ env.SOURCE_SHA }}
+      HEPTA_CI_LANE: source-head-linux
     steps:
-      - name: Checkout exact candidate
+      - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-
       - name: Prepare CI environment
         uses: ./.github/actions/setup-ci
-
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: "1.95.0"
           components: clippy,rustfmt
-
       - name: Install repository test runner
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-
       - name: Prepare native prerequisites
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-
-      - name: Resolve verified V8 prerequisites
-        env:
-          CODEX_REPO_ROOT: ${{ github.workspace }}
-          PYTHONPATH: scripts
-        run: python3 scripts/hepta_ci_v8.py
-
-      # Executes schema/document verification, test_verify_automation_taskflow_acceptance.py,
-      # cargo fmt --check, locked compile, cargo clippy -D warnings, default and
-      # structural tests, native recovery regressions, product and Bazel gates.
-      # The contract remains required; its failure no longer hides native diagnostics.
-      - name: Run real commands and retain their individual outcomes
-        run: python3 scripts/automation_taskflow_commands.py --output-dir "$RUNNER_TEMP/automation-taskflow-records"
-
-      - name: Produce read-only failure diagnostics
-        if: failure()
         shell: bash
         run: |
           set -euo pipefail
-          records="$RUNNER_TEMP/automation-taskflow-records"
-          mkdir -p "$records"
-          git archive --format=tar.gz --output="$records/exact-taskflow-source.tar.gz" "$TESTED_SHA" -- \
-            .github/workflows/automation-taskflow-focused.yml \
-            codex-rs/Cargo.toml \
-            codex-rs/Cargo.lock \
-            codex-rs/rust-toolchain.toml \
-            codex-rs/hepta-automation \
-            codex-rs/hepta-agentd/src/automation.rs \
-            codex-rs/hepta-agentd/src/automation_effect_host.rs \
-            codex-rs/hepta-agentd/src/automation_recovery.rs \
-            codex-rs/hepta-agentd/src/automation_recovery_review_tests.rs \
-            codex-rs/hepta-agentd/src/state_control.rs \
-            docs/modules/automation.taskflow \
-            scripts/automation_taskflow_commands.py \
-            scripts/automation_taskflow_contract.py
-
-          format_root="$RUNNER_TEMP/automation-taskflow-format-worktree"
-          cleanup() {
-            git worktree remove --force "$format_root" >/dev/null 2>&1 || true
-          }
-          trap cleanup EXIT
-          rm -rf "$format_root"
-          git worktree add --detach "$format_root" "$TESTED_SHA"
-          (
-            cd "$format_root/codex-rs"
-            cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
-          )
-          git -C "$format_root" diff --binary > "$records/rustfmt.patch"
-          cleanup
-          trap - EXIT
-
-      - name: Verify qualification did not mutate source
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          CODEX_REPO_ROOT="$GITHUB_WORKSPACE" PYTHONPATH=scripts python3 scripts/hepta_ci_v8.py
+      - name: Verify exact identity and Lane B owner paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          python3 scripts/hepta-lane-b-path-guard.py self-test
+          python3 scripts/hepta-lane-b-path-guard.py verify
+      - name: Run exact native and product qualification
+        shell: bash
+        run: python3 scripts/automation_taskflow_commands.py --output-dir "$RUNNER_TEMP/automation-taskflow-records"
+      - name: Verify qualification was read-only
         if: always()
+        shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --exit-code
           git diff --cached --exit-code
-
-      - name: Retain exact command records and logs
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain Linux command records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: automation-taskflow-receipt-${{ github.run_id }}-${{ github.run_attempt }}
+          name: automation-taskflow-linux-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/automation-taskflow-records/
+          if-no-files-found: error
+          retention-days: 30
+
+  macos-exact:
+    name: TaskFlow macOS exact head
+    runs-on: macos-15
+    timeout-minutes: 150
+    env:
+      TESTED_SHA: ${{ env.SOURCE_SHA }}
+      HEPTA_CI_LANE: source-head-macos
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare CI environment
+        uses: ./.github/actions/setup-ci
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run macOS exact source qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          mkdir -p "$RUNNER_TEMP/automation-taskflow-macos"
+          exec > >(tee "$RUNNER_TEMP/automation-taskflow-macos/qualification.log") 2>&1
+          python3 scripts/automation_taskflow_contract.py self-test
+          python3 scripts/hepta-lane-b-path-guard.py self-test
+          python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 -m unittest -v \
+            scripts.test_automation_taskflow_contract \
+            scripts.test_verify_automation_taskflow_acceptance \
+            scripts.test_automation_recovery_sweeps \
+            scripts.test_automation_taskflow_commands \
+            scripts.test_automation_taskflow_checkpoint
+          cd codex-rs
+          cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+          cargo check --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd --all-targets
+          cargo clippy --locked -p codex-hepta-automation -p codex-hepta-agentd --all-targets --all-features --no-deps -- -D warnings
+          cargo test --locked -p codex-hepta-automation
+          cargo test --locked -p codex-hepta-automation --features taskflow-structural-qualification
+          cargo test --locked -p codex-hepta-agentd --lib
+      - name: Record macOS immutable identity
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/automation-taskflow-macos"
+          printf '{"commit":"%s","tree":"%s","runnerOs":"%s","runnerArch":"%s"}\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" "$RUNNER_OS" "$RUNNER_ARCH" \
+            > "$RUNNER_TEMP/automation-taskflow-macos/identity.json"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain macOS records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-macos-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/automation-taskflow-macos/
+          if-no-files-found: error
+          retention-days: 30
+
+  deterministic-merge:
+    name: TaskFlow deterministic merge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      HEPTA_CI_LANE: deterministic-merge
+    steps:
+      - name: Check out candidate history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Materialize deterministic local merge commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$BASE_SHA" != "0000000000000000000000000000000000000000"
+          git cat-file -e "$SOURCE_SHA^{commit}"
+          git cat-file -e "$BASE_SHA^{commit}"
+          git config user.name "automation-taskflow-qualification"
+          git config user.email "automation-taskflow-qualification@users.noreply.github.com"
+          git checkout --detach "$BASE_SHA"
+          git merge --no-ff --no-commit "$SOURCE_SHA"
+          GIT_AUTHOR_DATE=2000-01-01T00:00:00Z \
+          GIT_COMMITTER_DATE=2000-01-01T00:00:00Z \
+            git commit --no-gpg-sign -m "automation.taskflow deterministic qualification merge"
+          merge_sha="$(git rev-parse HEAD)"
+          merge_tree="$(git rev-parse HEAD^{tree})"
+          printf 'TESTED_SHA=%s\n' "$merge_sha" >> "$GITHUB_ENV"
+          printf '%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/source-sha"
+          printf '%s\n' "$BASE_SHA" > "$RUNNER_TEMP/base-sha"
+          printf '%s\n' "$merge_sha" > "$RUNNER_TEMP/merge-sha"
+          printf '%s\n' "$merge_tree" > "$RUNNER_TEMP/merge-tree"
+      - name: Prepare CI environment
+        uses: ./.github/actions/setup-ci
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Prepare native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          CODEX_REPO_ROOT="$GITHUB_WORKSPACE" PYTHONPATH=scripts python3 scripts/hepta_ci_v8.py
+      - name: Run deterministic-merge qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          python3 scripts/hepta-lane-b-path-guard.py self-test
+          python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 scripts/automation_taskflow_commands.py --output-dir "$RUNNER_TEMP/automation-taskflow-merge-records"
+      - name: Verify merge qualification was read-only
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain deterministic-merge records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: automation-taskflow-merge-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/automation-taskflow-merge-records/
+            ${{ runner.temp }}/source-sha
+            ${{ runner.temp }}/base-sha
+            ${{ runner.temp }}/merge-sha
+            ${{ runner.temp }}/merge-tree
           if-no-files-found: error
           retention-days: 30
