@@ -14,7 +14,7 @@ env:
 
 jobs:
   materialize:
-    runs-on: ubuntu-24.04-arm
+    runs-on: macos-15
     timeout-minutes: 120
     steps:
       - name: Checkout exact R6 source candidate
@@ -52,107 +52,135 @@ jobs:
           coordination = root / "owner/publication_coordination.rs"
           source = coordination.read_text(encoding="utf-8")
           source = source.replace("use codex_hepta_types::StableId;\n", "")
+          if "use codex_hepta_types::StableId;" in source:
+              raise SystemExit("unused StableId import remains")
           coordination.write_text(source, encoding="utf-8")
 
           operational = root / "owner/operational.rs"
           source = operational.read_text(encoding="utf-8")
           if "use crate::CurrentArtifactUseErrorV1;" not in source:
+              import_anchor = "use crate::ArtifactOwnerHostError;\n"
+              if import_anchor not in source:
+                  raise SystemExit("operational import anchor missing")
               source = source.replace(
-                  "use crate::ArtifactOwnerHostError;\n",
-                  "use crate::ArtifactOwnerHostError;\nuse crate::CurrentArtifactUseErrorV1;\n",
+                  import_anchor,
+                  import_anchor + "use crate::CurrentArtifactUseErrorV1;\n",
+                  1,
               )
-          old = '''        match self {
-              Self::Host(error) => classify_host_error(error),
-              Self::Publication(_) => ArtifactOwnerFailureClassV1::IdentityConflict,
-              Self::ControlIo(_) | Self::WithdrawalDurabilityUnknown => {
-                  ArtifactOwnerFailureClassV1::PersistenceOutcomeUnknown
-              }
-              Self::InvalidConfiguration => ArtifactOwnerFailureClassV1::InvalidConfiguration,
-              Self::WithdrawalFrontierConflict => {
-                  ArtifactOwnerFailureClassV1::WithdrawalFrontierInsufficient
-              }
-              Self::RecoveryConflict | Self::CheckpointShape | Self::UnexpectedPhase => {
-                  ArtifactOwnerFailureClassV1::CorruptState
-              }
-              Self::RecoveryRequired(_) => ArtifactOwnerFailureClassV1::RecoveryRequired,
-              Self::RequestMismatch | Self::CheckpointMismatch => {
+
+          publication_arm = (
+              "            Self::Publication(_) => "
+              "ArtifactOwnerFailureClassV1::IdentityConflict,\n"
+          )
+          current_use_arm = (
+              "            Self::CurrentUse(error) => "
+              "classify_current_use_error(error),\n"
+          )
+          if current_use_arm not in source:
+              if publication_arm not in source:
+                  raise SystemExit("publication error arm missing")
+              source = source.replace(
+                  publication_arm,
+                  publication_arm + current_use_arm,
+                  1,
+              )
+
+          old_identity_arm = '''            Self::RequestMismatch | Self::CheckpointMismatch => {
                   ArtifactOwnerFailureClassV1::IdentityConflict
               }
-              Self::Draining => ArtifactOwnerFailureClassV1::Draining,
-          }
           '''
-          new = '''        match self {
-              Self::Host(error) => classify_host_error(error),
-              Self::Publication(_) => ArtifactOwnerFailureClassV1::IdentityConflict,
-              Self::CurrentUse(error) => classify_current_use_error(error),
-              Self::ControlIo(_) | Self::WithdrawalDurabilityUnknown => {
-                  ArtifactOwnerFailureClassV1::PersistenceOutcomeUnknown
-              }
-              Self::InvalidConfiguration => ArtifactOwnerFailureClassV1::InvalidConfiguration,
-              Self::StoreIdentityMismatch
+          new_identity_arm = '''            Self::StoreIdentityMismatch
               | Self::RequestMismatch
               | Self::CheckpointMismatch => ArtifactOwnerFailureClassV1::IdentityConflict,
-              Self::CurrentHeadUnavailable => ArtifactOwnerFailureClassV1::Unavailable,
-              Self::WithdrawalFrontierConflict => {
-                  ArtifactOwnerFailureClassV1::WithdrawalFrontierInsufficient
-              }
-              Self::RecoveryConflict | Self::CheckpointShape | Self::UnexpectedPhase => {
-                  ArtifactOwnerFailureClassV1::CorruptState
-              }
-              Self::RecoveryRequired(_) => ArtifactOwnerFailureClassV1::RecoveryRequired,
-              Self::Draining => ArtifactOwnerFailureClassV1::Draining,
-          }
           '''
-          if old in source:
-              source = source.replace(old, new)
-          elif "Self::CurrentUse(error) => classify_current_use_error(error)," not in source:
-              raise SystemExit("unexpected operational failure-class source")
-          helper = '''fn classify_current_use_error(error: &CurrentArtifactUseErrorV1) -> ArtifactOwnerFailureClassV1 {
+          if "Self::StoreIdentityMismatch" not in source.split("pub fn stable_code", 1)[0]:
+              if old_identity_arm not in source:
+                  raise SystemExit("identity error arm missing")
+              source = source.replace(old_identity_arm, new_identity_arm, 1)
+
+          current_head_arm = (
+              "            Self::CurrentHeadUnavailable => "
+              "ArtifactOwnerFailureClassV1::Unavailable,\n"
+          )
+          if current_head_arm not in source:
+              withdrawal_anchor = "            Self::WithdrawalFrontierConflict => {\n"
+              if withdrawal_anchor not in source:
+                  raise SystemExit("withdrawal error arm missing")
+              source = source.replace(
+                  withdrawal_anchor,
+                  current_head_arm + withdrawal_anchor,
+                  1,
+              )
+
+          helper = '''fn classify_current_use_error(
+              error: &CurrentArtifactUseErrorV1,
+          ) -> ArtifactOwnerFailureClassV1 {
               match error {
                   CurrentArtifactUseErrorV1::CurrentHeadMismatch
                   | CurrentArtifactUseErrorV1::CurrentHeadRollbackOrFork
                   | CurrentArtifactUseErrorV1::AuthorityExpired
-                  | CurrentArtifactUseErrorV1::TimeRegression => ArtifactOwnerFailureClassV1::StaleOwner,
+                  | CurrentArtifactUseErrorV1::TimeRegression => {
+                      ArtifactOwnerFailureClassV1::StaleOwner
+                  }
                   CurrentArtifactUseErrorV1::WithdrawalScopeMismatch
                   | CurrentArtifactUseErrorV1::WithdrawalFrontierChanged => {
                       ArtifactOwnerFailureClassV1::WithdrawalFrontierInsufficient
                   }
-                  CurrentArtifactUseErrorV1::Capacity => ArtifactOwnerFailureClassV1::CapacityExhausted,
+                  CurrentArtifactUseErrorV1::Capacity => {
+                      ArtifactOwnerFailureClassV1::CapacityExhausted
+                  }
                   CurrentArtifactUseErrorV1::Unavailable
-                  | CurrentArtifactUseErrorV1::Candidate(_) => ArtifactOwnerFailureClassV1::Unavailable,
+                  | CurrentArtifactUseErrorV1::Candidate(_) => {
+                      ArtifactOwnerFailureClassV1::Unavailable
+                  }
               }
           }
 
           '''
-          marker = "fn classify_host_error(error: &ArtifactOwnerHostError) -> ArtifactOwnerFailureClassV1 {\n"
           if "fn classify_current_use_error(" not in source:
+              marker = (
+                  "fn classify_host_error(error: &ArtifactOwnerHostError) "
+                  "-> ArtifactOwnerFailureClassV1 {\n"
+              )
               if marker not in source:
                   raise SystemExit("host classifier marker missing")
-              source = source.replace(marker, helper + marker)
+              source = source.replace(marker, helper + marker, 1)
+
+          required = (
+              "Self::CurrentUse(error) => classify_current_use_error(error),",
+              "Self::StoreIdentityMismatch",
+              "Self::CurrentHeadUnavailable => ArtifactOwnerFailureClassV1::Unavailable,",
+              "fn classify_current_use_error(",
+          )
+          missing = [token for token in required if token not in source]
+          if missing:
+              raise SystemExit(f"operational classification incomplete: {missing}")
           operational.write_text(source, encoding="utf-8")
 
           tests = root / "owner_operational_tests.rs"
           source = tests.read_text(encoding="utf-8")
           if "use crate::CurrentArtifactUseErrorV1;" not in source:
+              import_anchor = "use crate::LearningArtifactOwnerServiceError;\n"
+              if import_anchor not in source:
+                  raise SystemExit("operational test import anchor missing")
               source = source.replace(
-                  "use crate::LearningArtifactOwnerServiceError;\n",
-                  "use crate::CurrentArtifactUseErrorV1;\nuse crate::LearningArtifactOwnerServiceError;\n",
+                  import_anchor,
+                  "use crate::CurrentArtifactUseErrorV1;\n" + import_anchor,
+                  1,
               )
-          anchor = '''    let identity = LearningArtifactOwnerServiceError::RequestMismatch;
-              assert_eq!(
-                  identity.failure_class(),
-                  ArtifactOwnerFailureClassV1::IdentityConflict
-              );
-              assert_eq!(
-                  identity.retry_disposition(),
-                  ArtifactOwnerRetryDispositionV1::OperatorIntervention
-              );
-          '''
-          cases = anchor + '''
+          test_name = "current_use_failures_have_actionable_operator_contracts"
+          if test_name not in source:
+              source = source.rstrip() + '''
+
+          #[test]
+          fn current_use_failures_have_actionable_operator_contracts() {
               let expired = LearningArtifactOwnerServiceError::CurrentUse(
                   CurrentArtifactUseErrorV1::AuthorityExpired,
               );
-              assert_eq!(expired.failure_class(), ArtifactOwnerFailureClassV1::StaleOwner);
+              assert_eq!(
+                  expired.failure_class(),
+                  ArtifactOwnerFailureClassV1::StaleOwner
+              );
               assert_eq!(
                   expired.retry_disposition(),
                   ArtifactOwnerRetryDispositionV1::RefreshAuthority
@@ -165,17 +193,28 @@ jobs:
                   stale_withdrawal.failure_class(),
                   ArtifactOwnerFailureClassV1::WithdrawalFrontierInsufficient
               );
+              assert_eq!(
+                  stale_withdrawal.retry_disposition(),
+                  ArtifactOwnerRetryDispositionV1::RefreshWithdrawalFrontier
+              );
 
               let missing_head = LearningArtifactOwnerServiceError::CurrentHeadUnavailable;
               assert_eq!(
                   missing_head.failure_class(),
                   ArtifactOwnerFailureClassV1::Unavailable
               );
-          '''
-          if anchor in source and "let stale_withdrawal" not in source:
-              source = source.replace(anchor, cases)
-          elif "let stale_withdrawal" not in source:
-              raise SystemExit("operational test anchor missing")
+              assert_eq!(
+                  missing_head.retry_disposition(),
+                  ArtifactOwnerRetryDispositionV1::BoundedBackoff
+              );
+
+              let wrong_store = LearningArtifactOwnerServiceError::StoreIdentityMismatch;
+              assert_eq!(
+                  wrong_store.failure_class(),
+                  ArtifactOwnerFailureClassV1::IdentityConflict
+              );
+          }
+          '''.lstrip()
           tests.write_text(source, encoding="utf-8")
           PY
 
