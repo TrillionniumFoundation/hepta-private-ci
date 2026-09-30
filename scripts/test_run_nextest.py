@@ -97,6 +97,19 @@ class ScopedNextestTests(unittest.TestCase):
         )
         self.assertNotIn("--cargo-metadata", self.commands[-1])
 
+    def test_explicit_manifest_preserves_nextest_workspace_selection(self):
+        for manifest_option in (
+            ["--manifest-path", str(self.root / "Cargo.toml")],
+            [f"--manifest-path={self.root / 'Cargo.toml'}"],
+        ):
+            self.assertEqual(
+                RUNNER.run(
+                    ["-p", "hepta-nextest-fixture", "--offline", *manifest_option]
+                ),
+                0,
+            )
+            self.assertNotIn("--cargo-metadata", self.commands[-1])
+
     def test_reused_metadata_is_forwarded_and_full_path_can_be_forced(self):
         metadata = self.root / "provided.json"
         with metadata.open("wb") as output:

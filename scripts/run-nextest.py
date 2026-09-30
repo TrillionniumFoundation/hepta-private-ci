@@ -46,6 +46,7 @@ def use_scoped_metadata(args, cwd):
         "--binaries-metadata",
         "--archive-file",
         "--workspace-remap",
+        "--manifest-path",
         "--config-file",
         "--tool-config-file",
         "--user-config-file",
