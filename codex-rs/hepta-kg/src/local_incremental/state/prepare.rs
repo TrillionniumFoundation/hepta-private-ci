@@ -77,13 +77,7 @@ impl KnowledgeLocalIncrementalStateV3 {
 
         let mut remove_edge_identities = collect_unique(delta.remove_edge_identities)?;
         for node_id in &remove_node_ids {
-            if self.nodes.contains_key(node_id) {
-                work.predecessor_nodes_read = work.predecessor_nodes_read.saturating_add(1);
-            }
             if let Some(incident) = self.node_to_edges.get(node_id) {
-                work.predecessor_edges_read = work
-                    .predecessor_edges_read
-                    .saturating_add(usize_to_u64(incident.len()));
                 remove_edge_identities.extend(incident.iter().cloned());
             }
         }
@@ -121,12 +115,35 @@ impl KnowledgeLocalIncrementalStateV3 {
             }
         }
 
+        // Count unique predecessor entries consulted by the exact local plan.
+        // An edge incident to two removed nodes is charged once, and replacement
+        // plus endpoint checks cannot disappear from the work receipt.
+        let mut predecessor_node_ids = remove_node_ids.clone();
+        predecessor_node_ids.extend(upsert_nodes.keys().cloned());
+        for edge in upsert_edges.values() {
+            predecessor_node_ids.insert(edge.identity.source_node_id.clone());
+            predecessor_node_ids.insert(edge.identity.target_node_id.clone());
+        }
+        work.predecessor_nodes_read = usize_to_u64(
+            predecessor_node_ids
+                .iter()
+                .filter(|node_id| self.nodes.contains_key(*node_id))
+                .count(),
+        );
+        let mut predecessor_edge_identities = remove_edge_identities.clone();
+        predecessor_edge_identities.extend(upsert_edges.keys().cloned());
+        work.predecessor_edges_read = usize_to_u64(
+            predecessor_edge_identities
+                .iter()
+                .filter(|identity| self.edges.contains_key(*identity))
+                .count(),
+        );
+
         let remove_node_ids = remove_node_ids.into_iter().collect::<Vec<_>>();
         let remove_edge_identities = remove_edge_identities.into_iter().collect::<Vec<_>>();
         let upsert_nodes = upsert_nodes.into_values().collect::<Vec<_>>();
         let upsert_edges = upsert_edges.into_values().collect::<Vec<_>>();
-        let resulting_node_count =
-            resulting_node_count(self, &remove_node_ids, &upsert_nodes);
+        let resulting_node_count = resulting_node_count(self, &remove_node_ids, &upsert_nodes);
         let resulting_edge_count =
             resulting_edge_count(self, &remove_edge_identities, &upsert_edges);
         if resulting_node_count > usize_to_u64(MAX_KNOWLEDGE_NODES_V2) {
