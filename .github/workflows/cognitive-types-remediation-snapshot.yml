@@ -1,10 +1,22 @@
 name: cognitive-types-remediation-snapshot
-run-name: cognitive-types-remediation-snapshot @ ${{ github.sha }}
+run-name: cognitive-types-remediation-snapshot @ ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 on:
-  push:
-    branches: ['codex/cognitive-types-full-closure-20260927']
+  pull_request:
+    branches: [main]
     paths:
+      - 'codex-rs/hepta-cognitive-types/**'
+      - 'codex-rs/hepta-cognitive-read/**'
+      - 'codex-rs/hepta-cognitive-store/**'
+      - 'codex-rs/hepta-memory-retrieval/**'
+      - 'codex-rs/hepta-compact-engine/**'
+      - 'codex-rs/hepta-intelligence/**'
+      - 'codex-rs/hepta-memory/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-objective/**'
+      - 'docs/modules/cognitive.types/**'
+      - 'qualification/cognitive-types-*/**'
+      - 'scripts/hepta-hnmf.py'
       - '.github/workflows/cognitive-types-remediation-snapshot.yml'
   workflow_dispatch:
 
@@ -12,18 +24,21 @@ permissions:
   contents: read
 
 concurrency:
-  group: cognitive-types-remediation-snapshot-${{ github.ref }}
+  group: cognitive-types-remediation-snapshot-${{ github.event.pull_request.head.ref || github.ref }}
   cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   snapshot:
     runs-on: [self-hosted, linux, x64, rog]
-    timeout-minutes: 120
+    timeout-minutes: 30
     steps:
-      - name: Check out immutable candidate
+      - name: Check out immutable exact-head candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -31,17 +46,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$RUNNER_NAME" = 'rog'
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$RUNNER_NAME" = rog
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --exit-code
           git diff --cached --exit-code
 
-      - name: Install repository Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          components: rustfmt, clippy
-
-      - name: Export exact source and derive rustfmt patch
+      - name: Export immutable source snapshot
         shell: bash
         run: |
           set -euo pipefail
@@ -49,92 +59,19 @@ jobs:
           mkdir -p "$evidence"
           git rev-parse HEAD > "$evidence/source-sha.txt"
           git rev-parse HEAD^{tree} > "$evidence/source-tree.txt"
-          git archive --format=tar HEAD codex-rs .github docs qualification scripts > "$evidence/source.tar"
-          packages=(
-            codex-hepta-cognitive-types
-            codex-hepta-cognitive-read
-            codex-hepta-cognitive-store
-            codex-hepta-context-compiler
-            codex-hepta-intelligence
-            codex-hepta-memory-retrieval
-            codex-hepta-compact-engine
-            codex-hepta-memory
-            codex-hepta-authbus
-            codex-hepta-agentd
-          )
-          for package in "${packages[@]}"; do
-            cargo fmt --manifest-path codex-rs/Cargo.toml --package "$package"
-          done
-          git diff --binary --no-ext-diff > "$evidence/rustfmt.patch"
-          git diff --check > "$evidence/rustfmt-diff-check.log" 2>&1
-          printf '%s\n' "${packages[@]}" > "$evidence/formatted-packages.txt"
-
-      - name: Run qualification diagnostics without rewriting outcomes
-        shell: bash
-        run: |
-          set +e
-          evidence="$RUNNER_TEMP/cognitive-types-remediation"
-          packages=(
-            codex-hepta-cognitive-types
-            codex-hepta-cognitive-read
-            codex-hepta-cognitive-store
-            codex-hepta-context-compiler
-            codex-hepta-intelligence
-            codex-hepta-memory-retrieval
-            codex-hepta-compact-engine
-            codex-hepta-memory
-            codex-hepta-authbus
-            codex-hepta-agentd
-          )
-          python3 scripts/hepta-hnmf.py self-test > "$evidence/hnmf-self-test.log" 2>&1
-          hnmf_self=$?
-          python3 scripts/hepta-hnmf.py verify > "$evidence/hnmf-verify.log" 2>&1
-          hnmf_verify=$?
-          python3 -m unittest discover -s qualification/cognitive-types-v1 -p 'test_*.py' > "$evidence/python-tests.log" 2>&1
-          python_tests=$?
-          python3 qualification/cognitive-types-v1/verify_vectors.py > "$evidence/v1-vectors.log" 2>&1
-          v1_vectors=$?
-          python3 qualification/cognitive-types-v2/verify_vectors.py > "$evidence/v2-vectors.log" 2>&1
-          v2_vectors=$?
-          cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets \
-            $(printf -- '-p %s ' "${packages[@]}") > "$evidence/cargo-check.log" 2>&1
-          cargo_check=$?
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
-            $(printf -- '-p %s ' "${packages[@]}") > "$evidence/cargo-test.log" 2>&1
-          cargo_test=$?
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets \
-            $(printf -- '-p %s ' "${packages[@]}") -- -D warnings > "$evidence/cargo-clippy.log" 2>&1
-          cargo_clippy=$?
-          cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets > "$evidence/fuzz-check.log" 2>&1
-          fuzz_check=$?
-          python3 - "$evidence/diagnostics.json" \
-            "$hnmf_self" "$hnmf_verify" "$python_tests" "$v1_vectors" "$v2_vectors" \
-            "$cargo_check" "$cargo_test" "$cargo_clippy" "$fuzz_check" <<'PY'
-          import json
-          import pathlib
-          import sys
-
-          names = [
-              "hnmfSelfTest", "hnmfVerify", "pythonTests", "v1Vectors", "v2Vectors",
-              "cargoCheck", "cargoTest", "cargoClippy", "fuzzCheck",
-          ]
-          values = [int(value) for value in sys.argv[2:]]
-          pathlib.Path(sys.argv[1]).write_text(
-              json.dumps(dict(zip(names, values, strict=True)), indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          PY
-          git status --short > "$evidence/worktree-status.txt"
+          git archive --format=tar HEAD > "$evidence/source.tar"
+          git bundle create "$evidence/source.bundle" HEAD
+          git status --porcelain=v1 > "$evidence/worktree-status.txt"
+          test ! -s "$evidence/worktree-status.txt"
           (
             cd "$evidence"
-            sha256sum source.tar rustfmt.patch diagnostics.json *.log *.txt > SHA256SUMS
+            sha256sum source.tar source.bundle source-sha.txt source-tree.txt worktree-status.txt > SHA256SUMS
           )
-          exit 0
 
       - name: Upload immutable remediation evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-types-remediation-${{ github.sha }}
+          name: cognitive-types-remediation-${{ env.SOURCE_SHA }}
           path: ${{ runner.temp }}/cognitive-types-remediation
           if-no-files-found: error
           retention-days: 14
