@@ -19,3 +19,7 @@ The [execution dossier](../../../qualification/module-execution-dossiers/detail/
 The [checked decoder and complete evidence inventory supplement](CHECKED_DECODE_EVIDENCE_20260929.md) covers registered handoff profiles, same-decode digest reuse, payload-free JSON violations, bounded auxiliary-file integrity, and mutation-build separation under check-plan version 2. Its local Python evidence is explicitly not Rust or product-cutover qualification.
 
 The [strict probe and output-parity supplement](PROBE_PARITY_HARDENING_20260929.md) records typed report comparison, bounded probe execution, exact performance-observation validation and the handoff's actual output-digest check. Its scoped local execution results do not promote native qualification or authenticated consumer cutover.
+
+The [2026-09-30 performance, fuzz and identity closure supplement](PERFORMANCE_FUZZ_IDENTITY_CLOSURE_20260930.md) documents request-scoped canonical-byte reuse, typed digest identities, prepared consumer bindings, five attributable fuzz campaigns, explicit owner semantic-ID policy and the corrected Windows test-contract drift. [CURRENT_STATE.json](CURRENT_STATE.json) is the concise current-source projection; immutable CI receipts, not that file, remain the authority for candidate execution.
+
+The [immutable candidate policy](IMMUTABLE_CANDIDATE_POLICY.md) forbids qualification workflows from committing, moving refs or pushing source changes. Exact-head and deterministic synthetic-merge evidence remain separate and neither substitutes for authenticated product final use.

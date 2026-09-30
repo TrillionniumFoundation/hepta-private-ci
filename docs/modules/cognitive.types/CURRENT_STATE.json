@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.cognitive-types.current-state.v1",
+  "schemaVersion": 1,
+  "module": "cognitive.types",
+  "observedDate": "2026-09-30",
+  "candidateIdentity": {
+    "authority": "exact_head_and_deterministic_synthetic_merge_ci_receipts",
+    "selfReportedCommitIsQualificationEvidence": false,
+    "sourceMutationWorkflowsPresent": false,
+    "ordinaryReviewableCommitsRequired": true
+  },
+  "source": {
+    "requestScopedCanonicalPayload": "implemented_qualification_pending",
+    "typedDigestProfiles": "implemented_qualification_pending",
+    "preparedConsumerBindings": "implemented_qualification_pending",
+    "semanticIdentityOwnerRegistry": "implemented_qualification_pending",
+    "splitFuzzTargets": [
+      "hnmf_base",
+      "hnmf_learning",
+      "shared_experience_v2",
+      "consumer_handoff",
+      "canonical_json_grammar"
+    ],
+    "deterministicFuzzCorpus": "implemented_python_tests_passed",
+    "fuzzReceiptSealing": "implemented_python_tests_passed",
+    "windowsObjectiveTestDrift": "source_corrected_ci_pending"
+  },
+  "qualification": {
+    "exactHead": "pending_current_candidate",
+    "syntheticMerge": "pending_current_candidate",
+    "linux": "pending_current_candidate",
+    "windows": "pending_current_candidate",
+    "macos": "pending_current_candidate",
+    "strictClippy": "pending_current_candidate",
+    "fuzzSmoke": "pending_current_candidate",
+    "fuzzSustained": "pending_future_receipts",
+    "selectedHostResourceEvidence": "pending"
+  },
+  "consumers": {
+    "registeredCount": 5,
+    "sourceBindingsImplemented": true,
+    "preparedBindingOptimizationImplemented": true,
+    "authenticatedOwnerFinalUseProved": false,
+    "canonicalConsumerConvergenceProved": false,
+    "compatibilityRetired": false
+  },
+  "sharedExperienceV2": {
+    "localSourceImplemented": true,
+    "crossHostTransportProved": false,
+    "longitudinalTransferProved": false,
+    "fullInfluenceRemovalProved": false,
+    "ownerEpochAuthenticationProved": false
+  },
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "canary": false,
+    "activation": false,
+    "release": false
+  }
+}
