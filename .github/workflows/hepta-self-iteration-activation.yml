@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Observe exact main, protection and explicit write-transport denial
+      - name: Observe exact main protection and advisory transport evidence
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -29,8 +29,9 @@ jobs:
           set -euo pipefail
           test "$GITHUB_REF" = "refs/heads/main"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          # Observation failures (including 403) are fatal. Do not provide an
-          # administration token or release credentials to checked-out code.
+          # Live branch/protection observation failures (including 403) are fatal.
+          # The optional transport probe retains network ambiguity as unknown.
+          # Never provide administration or release credentials to candidate code.
           python3 scripts/hepta_repository_controls.py \
             --repo "$REPO" --expected-sha "$GITHUB_SHA" --probe-write-denial
 
