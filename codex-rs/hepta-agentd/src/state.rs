@@ -35,6 +35,8 @@ pub(crate) struct AgentdState {
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
         std::sync::OnceLock<Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    pub(crate) neuron_runtime_v2:
+        std::sync::OnceLock<Arc<crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Host>>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
@@ -130,6 +132,7 @@ impl AgentdState {
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
+            neuron_runtime_v2: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
@@ -588,6 +591,11 @@ impl AgentdState {
 
         let invocation = provider.build(&self.identity, record)?;
         invocation.validate(&self.identity, record)?;
+        let durable_neuron_v2 = self
+            .neuron_runtime_v2
+            .get()
+            .map(|host| host.prepare(&self.identity, record, &invocation))
+            .transpose()?;
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
@@ -598,14 +606,28 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .composition()
             .clone();
-        let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "canonical intelligence preparation failed: {error}"
-                ))
-            })?;
+        let outcome = match durable_neuron_v2 {
+            Some(neuron) => {
+                runner
+                    .prepare_for_composition_with_durable_neuron_v2(
+                        &composition,
+                        invocation.request,
+                        invocation.inputs,
+                        neuron,
+                    )
+                    .await
+            }
+            None => {
+                runner
+                    .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+                    .await
+            }
+        }
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "canonical intelligence preparation failed: {error}"
+            ))
+        })?;
 
         match outcome {
             crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {

@@ -1,0 +1,168 @@
+name: Neuron runtime macOS exact qualification
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/neuron-runtime-durable-closure-v1
+    paths:
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain*"
+      - "scripts/neuron/**"
+      - "docs/modules/neuron.runtime/**"
+      - ".github/scripts/check_ci_results.py"
+      - ".github/workflows/neuron-runtime-closure*.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-runtime-closure-macos-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  qualification:
+    name: Neuron macOS closure (${{ matrix.lane }})
+    runs-on: macos-15
+    timeout-minutes: 70
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, synthetic-merge]
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source and fixed integration tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
+            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
+            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            MERGE=$(printf '%s\n' 'Qualification only; no selection or release' | \
+              git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            test "$(git show -s --format=%P "$MERGE")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$MERGE"
+            test "$(git rev-parse HEAD^{tree})" = "$TREE"
+          fi
+          printf 'tested_commit=%s\ntested_tree=%s\nsource=%s\nbase=%s\nlane=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" \
+            "$SOURCE_SHA" "$BASE_SHA" '${{ matrix.lane }}'
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Read-only build and test
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/neuron-runtime-macos-closure.log"
+          exec > >(tee "$log") 2>&1
+          printf 'tested_commit=%s\ntested_tree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+          rustc --version
+          cargo --version
+          python3 --version
+          python3 scripts/verify_cargo_lock.py
+          python3 -m unittest discover -v -s scripts/neuron -p 'test_*.py'
+
+          cd codex-rs
+          cargo metadata --locked --format-version=1 >/dev/null
+          cargo check --locked \
+            -p codex-hepta-neuron \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets
+          cargo build --locked -p codex-cli --bin codex
+          export CARGO_BIN_EXE_codex="$(
+            cargo metadata --locked --format-version=1 --no-deps |
+              python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"] + "/debug/codex")'
+          )"
+          test -x "$CARGO_BIN_EXE_codex"
+
+          # Keep the architecture lane owned by Neuron. Agentd is still fully
+          # compiled/linted; only Neuron V2 tests execute here.
+          just test --locked --retries 0 \
+            -p codex-hepta-neuron \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host
+          just test --locked --retries 0 -p codex-hepta-agentd \
+            -E 'test(/neuron_runtime_v2/)'
+
+          cargo clippy --locked \
+            -p codex-hepta-neuron \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets -- -D warnings
+          cargo fmt \
+            --package codex-hepta-neuron \
+            --package codex-hepta-agentd \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host \
+            -- --check
+          cd ..
+
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Retain exact macOS evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-runtime-macos-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/neuron-runtime-macos-closure.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Verify source remained unmodified
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+  qualification-result:
+    name: Neuron macOS closure result
+    if: ${{ always() }}
+    needs: [qualification]
+    runs-on: macos-15
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Require every exact-tree lane
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          EXPECTED_NEEDS: '["qualification"]'
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/check_ci_results.py

@@ -17,7 +17,20 @@ function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError(`${name} must be an object`);
   }
-  return value;
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError(`${name} must be a plain data record`);
+  }
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  const snapshot = Object.create(null);
+  for (const key of Reflect.ownKeys(descriptors)) {
+    const field = descriptors[key];
+    if (typeof key !== "string" || !Object.hasOwn(field, "value") || !field.enumerable) {
+      throw new TypeError(`${name} requires enumerable own data fields`);
+    }
+    snapshot[key] = field.value;
+  }
+  return Object.freeze(snapshot);
 }
 
 function exactKeys(value, expected, name) {
@@ -31,6 +44,9 @@ function exactKeys(value, expected, name) {
 function boundedString(value, name, maxBytes, { allowEmpty = false } = {}) {
   if (typeof value !== "string" || (!allowEmpty && value.length === 0)) {
     throw new TypeError(`${name} must be a string`);
+  }
+  if (containsLoneUtf16Surrogate(value)) {
+    throw new TypeError(`${name} must contain well-formed Unicode`);
   }
   if (UTF8.encode(value).byteLength > maxBytes) {
     throw new TypeError(`${name} exceeds the byte limit`);

@@ -11,6 +11,13 @@ on:
       - "codex-rs/hepta-learning-artifacts/**"
       - "codex-rs/hepta-intelligence-eval/**"
       - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/.config/nextest.toml"
+      - "apps/hepta-browser/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "scripts/neuron/**"
       - "codex-rs/hepta-ndu/**"
       - "codex-rs/hepta-shadow-qualification/**"
       - "codex-rs/hepta-types/**"
@@ -28,6 +35,13 @@ on:
       - "codex-rs/hepta-learning-artifacts/**"
       - "codex-rs/hepta-intelligence-eval/**"
       - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/.config/nextest.toml"
+      - "apps/hepta-browser/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "scripts/neuron/**"
       - "codex-rs/hepta-ndu/**"
       - "codex-rs/hepta-shadow-qualification/**"
       - "codex-rs/hepta-types/**"
@@ -85,7 +99,7 @@ jobs:
         run: |
           set -uo pipefail
           status=0
-          cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-learning-artifacts --package codex-hepta-intelligence-eval --package codex-hepta-neuron --package codex-hepta-ndu --package codex-hepta-shadow-qualification -- --check >"$RUNNER_TEMP/hepta-learning-rustfmt.txt" 2>&1 || status=$?
+          cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-learning-artifacts --package codex-hepta-intelligence-eval --package codex-hepta-neuron --package codex-hepta-infer-core --package codex-hepta-wire --package codex-hepta-ndu --package codex-hepta-shadow-qualification -- --check >"$RUNNER_TEMP/hepta-learning-rustfmt.txt" 2>&1 || status=$?
           cat "$RUNNER_TEMP/hepta-learning-rustfmt.txt"
           exit "$status"
       - name: Retain actionable formatting diagnostics
@@ -160,6 +174,16 @@ jobs:
       - name: Source candidate and evidence-binding regressions without activation
         if: steps.execution.outputs.run_native == 'true'
         run: python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
+      - name: Neuron measurement parser regressions
+        if: steps.execution.outputs.run_native == 'true'
+        run: python3 -m unittest discover -v -s scripts/neuron -p 'test_*.py'
+      - name: Registered binary codec and browser-owner regressions
+        if: steps.execution.outputs.run_native == 'true'
+        run: >-
+          node --test
+          codex-rs/hepta-wire/js/computer-action-ir.test.mjs
+          codex-rs/hepta-wire/js/computer-action-registry.test.mjs
+          apps/hepta-browser/test/*.test.js
       - name: Verify Cargo lockfile integrity
         run: python3 scripts/verify_cargo_lock.py
       - name: Install pinned repository test tools
@@ -194,7 +218,34 @@ jobs:
       - name: Original and added component regressions
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu
+        run: just test --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-infer-core -p codex-hepta-wire -p codex-hepta-ndu
+      - name: Measure Neuron V2 crash-durable runtime
+        id: neuron_measure
+        if: steps.execution.outputs.run_native == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          export HEPTA_NEURON_DIAGNOSTIC_SOURCE_SHA="$actual_sha"
+          cd codex-rs
+          just test --locked -p codex-hepta-neuron --run-ignored only \
+            -E 'test(runtime_v2_diagnostic_measurements)' --success-output immediate \
+            2>&1 | tee "$RUNNER_TEMP/neuron-v2-diagnostic.log"
+          cd ..
+          python3 scripts/neuron/summarize_measurements.py \
+            "$RUNNER_TEMP/neuron-v2-diagnostic.log" \
+            --source-sha "$actual_sha" \
+            --output "$RUNNER_TEMP/neuron-v2-diagnostic-summary.json"
+      - name: Retain Neuron V2 diagnostic evidence
+        if: always() && steps.neuron_measure.outcome != 'skipped'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-v2-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: |
+            ${{ runner.temp }}/neuron-v2-diagnostic.log
+            ${{ runner.temp }}/neuron-v2-diagnostic-summary.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Real-file cross-crate qualification
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
@@ -226,7 +277,7 @@ jobs:
       - name: Strict selected-package Clippy
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-infer-core -p codex-hepta-wire -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets -- -D warnings
       - name: Unmodified source
         if: always()
         shell: bash

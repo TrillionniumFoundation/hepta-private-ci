@@ -1,0 +1,190 @@
+name: Neuron runtime closure qualification
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/neuron-runtime-durable-closure-v1
+    paths:
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain*"
+      - "scripts/neuron/**"
+      - "docs/modules/neuron.runtime/**"
+      - ".github/scripts/check_ci_results.py"
+      - ".github/workflows/neuron-runtime-closure.yml"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain*"
+      - "scripts/neuron/**"
+      - "docs/modules/neuron.runtime/**"
+      - ".github/scripts/check_ci_results.py"
+      - ".github/workflows/neuron-runtime-closure.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-runtime-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  qualification:
+    name: Neuron closure (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","synthetic-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.lane == 'source-head' && env.SOURCE_SHA || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source and integration tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ '${{ matrix.lane }}' = source-head ]; then
+            test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          else
+            test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+            test "$(git rev-parse HEAD^{tree})" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          fi
+          git rev-parse HEAD HEAD^{tree}
+          printf 'source=%s\nbase=%s\nlane=%s\n' "$SOURCE_SHA" "$BASE_SHA" '${{ matrix.lane }}'
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Execute frozen-encoder and tensor regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/decision-cell-tests"
+          py="$RUNNER_TEMP/decision-cell-tests/bin/python"
+          "$py" -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.0
+          "$py" -m pip install numpy==1.26.4 safetensors==0.8.0
+          "$py" -m pip freeze > "$RUNNER_TEMP/decision-cell-environment.txt"
+          "$py" -m unittest discover -v -s codex-rs/hepta-neuron/qualification -p 'test_*.py' \
+            2>&1 | tee "$RUNNER_TEMP/decision-cell-tests.log"
+
+      - name: Read-only validation and diagnostics
+        id: validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/neuron-runtime-closure.log"
+          exec > >(tee "$log") 2>&1
+          printf 'tested_commit=%s\ntested_tree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"
+          rustc --version
+          cargo --version
+          python3 --version
+
+          python3 scripts/verify_cargo_lock.py
+          python3 -m unittest discover -v -s scripts/neuron -p 'test_*.py'
+
+          cd codex-rs
+          cargo metadata --locked --format-version=1 >/dev/null
+          cargo check --locked -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets
+          # The real embedded App Server requires an actual same-candidate Codex
+          # executable for its child helpers. A test harness is not that binary.
+          cargo build --locked -p codex-cli --bin codex
+          export CARGO_BIN_EXE_codex="$(cargo metadata --locked --format-version=1 --no-deps | python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"] + "/debug/codex")')"
+          test -x "$CARGO_BIN_EXE_codex"
+
+          # Agentd is a shared package. Compile and lint all of it, but execute
+          # only tests owned by the Neuron V2 module in this qualification lane.
+          # Repository-wide CI remains responsible for unrelated Agentd owners.
+          just test --locked --retries 0 \
+            -p codex-hepta-neuron \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host
+          just test --locked --retries 0 -p codex-hepta-agentd \
+            -E 'test(/neuron_runtime_v2/)'
+
+          cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+          cargo fmt --package codex-hepta-neuron --package codex-hepta-agentd --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
+
+          export HEPTA_NEURON_DIAGNOSTIC_SOURCE_SHA="$(git rev-parse HEAD)"
+          just test --locked -p codex-hepta-neuron --run-ignored only \
+            -E 'test(runtime_v2_diagnostic_measurements)' --success-output immediate \
+            2>&1 | tee "$RUNNER_TEMP/neuron-v2-diagnostic.log"
+          cd ..
+          python3 scripts/neuron/summarize_measurements.py \
+            "$RUNNER_TEMP/neuron-v2-diagnostic.log" \
+            --source-sha "$(git rev-parse HEAD)" \
+            --output "$RUNNER_TEMP/neuron-v2-diagnostic-summary.json"
+
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Retain exact validation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-runtime-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: |
+            ${{ runner.temp }}/neuron-runtime-closure.log
+            ${{ runner.temp }}/decision-cell-tests.log
+            ${{ runner.temp }}/decision-cell-environment.txt
+            ${{ runner.temp }}/neuron-v2-diagnostic.log
+            ${{ runner.temp }}/neuron-v2-diagnostic-summary.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Verify source remained unmodified
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+  qualification-result:
+    name: Neuron runtime closure result
+    if: ${{ always() }}
+    needs: [qualification]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Require every exact-tree lane
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          EXPECTED_NEEDS: '["qualification"]'
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/check_ci_results.py

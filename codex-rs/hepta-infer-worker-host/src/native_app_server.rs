@@ -1434,6 +1434,18 @@ fn observe_event(
             }
             output.output.push_str(&delta.delta);
         }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { text, .. } = &completed.item
+                && output.output.is_empty()
+            {
+                if text.len() > MAX_OUTPUT_BYTES {
+                    return Err("output byte limit exceeded".to_string());
+                }
+                output.output.push_str(text);
+            }
+        }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {

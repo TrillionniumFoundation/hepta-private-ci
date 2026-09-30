@@ -160,3 +160,41 @@ async fn trusted_time_floor_survives_reopen_and_failed_authorization() {
         Err(AuthBusAuthorityError::ClockRollback)
     ));
 }
+
+#[tokio::test]
+async fn canonical_sqlite_shim_preserves_authority_durability_on_every_connection() {
+    let directory = tempfile::tempdir().expect("authority fixture directory");
+    let store = super::AuthBusAuthorityStore::open(&directory.path().join("authority.sqlite"))
+        .await
+        .expect("canonical authority store");
+    let mut held = Vec::new();
+    for _ in 0..5 {
+        let mut connection = store.pool.acquire().await.expect("bounded authority pool");
+        let mode: String = sqlx::query_scalar("PRAGMA journal_mode")
+            .fetch_one(&mut *connection)
+            .await
+            .expect("journal mode");
+        let synchronous: i64 = sqlx::query_scalar("PRAGMA synchronous")
+            .fetch_one(&mut *connection)
+            .await
+            .expect("synchronous mode");
+        let foreign_keys: i64 = sqlx::query_scalar("PRAGMA foreign_keys")
+            .fetch_one(&mut *connection)
+            .await
+            .expect("foreign keys");
+        let busy_timeout: i64 = sqlx::query_scalar("PRAGMA busy_timeout")
+            .fetch_one(&mut *connection)
+            .await
+            .expect("busy timeout");
+        assert_eq!(mode, "wal");
+        assert_eq!(
+            synchronous, 2,
+            "authority records require FULL, never NORMAL"
+        );
+        assert_eq!(foreign_keys, 1);
+        assert_eq!(busy_timeout, 5000);
+        held.push(connection);
+    }
+    drop(held);
+    store.pool.close().await;
+}

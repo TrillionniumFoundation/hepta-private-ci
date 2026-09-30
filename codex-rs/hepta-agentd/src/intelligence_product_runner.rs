@@ -2,6 +2,9 @@
 
 use super::*;
 
+#[path = "intelligence_durable_neuron.rs"]
+mod durable_neuron;
+
 impl AgentdIntelligenceProductRunnerV1 {
     pub fn new(
         authority_file: PathBuf,

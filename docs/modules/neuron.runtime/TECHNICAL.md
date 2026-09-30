@@ -477,3 +477,27 @@ The bootstrap source-location obligation for `neuron.runtime` is implemented by 
 - `codex-rs/hepta-neuron`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## Current V2 product developer entry
+
+See [V2_DEVELOPMENT.md](V2_DEVELOPMENT.md) for the current operation state machine,
+query-only recovery contract, failure tombstones, file identity checks, measured
+I/O, capacity warning API and exact-source verification procedure. The mechanisms
+above remain applicable, but are not a substitute for that end-to-end V2 guide.
+V2 segment compaction, complete generation reload and target-host acceptance are
+not implied by the new lifecycle or diagnostic implementation.
+
+## Canonical Agentd V2 product ownership
+
+The ordinary Agentd source path owns V2 through `AgentdNeuronRuntimeV2Config`.
+`runtime::run` recovers and starts exactly one controller, attaches the resulting
+host to `AgentdState`, routes canonical intelligence through a prepared V2
+invocation, begins quiesce before daemon drain, and seals/stops the controller
+before process exit. Request input cannot select the runtime, generation,
+control-state path, or tick provider. Compatibility mode is explicit absence of
+the V2 config; a configured V2 runtime never silently falls back to V1.
+
+`MODULE_SPEC.json` is the sole handwritten module specification and
+`IMPLEMENTATION_MAP.generated.json` is its generated implementation projection.
+The legacy `IMPLEMENTATION_MAP.json` is only a compatibility pointer and carries
+no independent readiness or source facts.

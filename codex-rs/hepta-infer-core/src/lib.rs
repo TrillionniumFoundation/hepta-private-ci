@@ -4,10 +4,31 @@
 
 #![forbid(unsafe_code)]
 
+mod decision_cell;
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 mod neuron_feature;
+mod neuron_feature_store;
 
+pub use decision_cell::DecisionCellActionCandidateV1;
+pub use decision_cell::DecisionCellContractError;
+pub use decision_cell::DecisionCellDispositionV1;
+pub use decision_cell::DecisionCellObservationV1;
+pub use decision_cell::DecisionCellParameterBundleV1;
+pub use decision_cell::DecisionCellReceiptV1;
+pub use decision_cell::DecisionCellRequestV1;
+pub use decision_cell::DecisionCellRuntimeTupleV1;
+pub use decision_cell::DecisionCellTargetCandidateV1;
+pub use decision_cell::DecisionCellTerminalStatusV1;
+pub use decision_cell::build_decision_cell_receipt_v1;
+pub use decision_cell::decision_cell_action_set_digest_v1;
+pub use decision_cell::decision_cell_head_set_digest_v1;
+pub use decision_cell::decision_cell_request_digest_v1;
+pub use decision_cell::decision_cell_runtime_tuple_digest_v1;
+pub use decision_cell::decision_cell_target_set_digest_v1;
+pub use decision_cell::decode_decision_cell_receipt_v1;
+pub use decision_cell::encode_decision_cell_receipt_v1;
+pub use decision_cell::verify_decision_cell_receipt_v1;
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;
 pub use neuron_feature::NeuronFeatureReceiptV1;
@@ -17,6 +38,12 @@ pub use neuron_feature::NeuronModelRuntimeTupleV1;
 pub use neuron_feature::build_neuron_feature_receipt_v1;
 pub use neuron_feature::neuron_feature_request_digest_v1;
 pub use neuron_feature::verify_neuron_feature_receipt_v1;
+pub use neuron_feature_store::FileNeuronFeatureExecutionStoreV1;
+pub use neuron_feature_store::NeuronFeatureAdmissionV1;
+pub use neuron_feature_store::NeuronFeatureExecutionRecordV1;
+pub use neuron_feature_store::NeuronFeatureExecutionStateV1;
+pub use neuron_feature_store::NeuronFeatureStoreContextV1;
+pub use neuron_feature_store::NeuronFeatureStoreError;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;

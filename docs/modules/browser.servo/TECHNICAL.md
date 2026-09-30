@@ -61,6 +61,7 @@ The exact current Servo source pin remains `third_party/servo-patches/MANIFEST.j
 Direct dependencies:
 
 - `kernel.authority`
+- `platform.wire`
 - `runtime.agentd`
 
 Authoritative write domains:
@@ -95,6 +96,21 @@ A browser effect cannot reach `driver.dispatch` until its page generation, typed
 
 Remote/browser/business completion is intentionally outside that authority fence. Dispatch acknowledgement and terminal outcome are separate facts; unknown outcomes remain indeterminate and are reconciled using the original operation identity.
 
+### Binary computer-action consumer
+
+`navigateOrActBinary` consumes the registered `ComputerActionIRV1` HAC1 profile
+through the existing `BrowserProfileHost`, never a second operation owner.
+`binaryResolver` is injected by the host; request-authored resolver replacement
+rejects before resolution or dispatch. Codes 1, 2, 3, 5 and 10 map to existing
+focus/click/type/navigate/wait actions. Other codec-valid opcodes remain unsupported
+by this browser profile. The resolved payload and original frame digest are both
+retained and checked. See [the codec contract](../../../codex-rs/hepta-wire/COMPUTER_ACTION_IR.md).
+
+The library boundary is implemented; fixture results are not a selected real-worker
+or desktop deployment. A product caller must supply authenticated same-clock-domain
+admission, current document/subject identity, final-use authority and an actual
+terminal observer. Caller timestamp fields alone are not a trusted clock profile.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
@@ -103,6 +119,7 @@ Produced contracts:
 
 Consumed contracts:
 
+- `ComputerActionIRV1`
 - `DomainRead::authority_leaseV1`
 - `DomainRead::capability_revocationV1`
 - `DomainRead::runtime_health_observationV1`

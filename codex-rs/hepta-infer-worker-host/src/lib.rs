@@ -7,11 +7,17 @@
 
 #![forbid(unsafe_code)]
 
+/// Crash-durable Neuron feature execution and reconciliation boundary.
+pub mod durable_neuron_feature;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;
+
+pub use durable_neuron_feature::DurableNeuronFeatureBackend;
+pub use durable_neuron_feature::DurableNeuronFeatureBackendError;
+pub use durable_neuron_feature::DurableNeuronFeaturePortV1;
 
 use std::error::Error as StdError;
 use std::fmt;

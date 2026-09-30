@@ -1,0 +1,160 @@
+{
+  "schema": "hepta.module-implementation-map.v4",
+  "schemaVersion": 4,
+  "generatedFrom": "docs/modules/neuron.runtime/MODULE_SPEC.json",
+  "module": "neuron.runtime",
+  "owner": "learning-platform",
+  "deputy": "inference-platform",
+  "sourceRoots": [
+    "codex-rs/hepta-neuron",
+    "codex-rs/hepta-agentd/src/neuron_runtime_v2.rs",
+    "codex-rs/hepta-agentd/src/neuron_runtime_v2_base.rs",
+    "codex-rs/hepta-agentd/src/neuron_runtime_v2_controller.rs",
+    "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state.rs",
+    "codex-rs/hepta-agentd/src/neuron_runtime_v2_owner_handle.rs",
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-infer-worker-host",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
+    "codex-rs/hepta-agentd/src/intelligence_durable_neuron.rs",
+    "codex-rs/hepta-agentd/src/neuron_runtime_v2_product.rs",
+    "scripts/neuron/target_host_acceptance.py",
+    "scripts/neuron/segment_manifest_v3.py"
+  ],
+  "operations": [
+    {
+      "operation": "neuron_runtime_tick",
+      "nativeSymbol": "NeuronRuntimeV2::tick_guarded",
+      "sourcePath": "codex-rs/hepta-neuron/src/runtime_v2_lifecycle_facade.rs",
+      "state": "source_implemented_guarded_v2_execution_and_recovery_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/runtime_v2_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_v2_closure_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_v2_process_closure_tests.rs"
+      ]
+    },
+    {
+      "operation": "durable_model_port",
+      "nativeSymbol": "DurableNeuronModelPort",
+      "sourcePath": "codex-rs/hepta-neuron/src/runtime_v2.rs",
+      "state": "source_implemented_exact_operation_execute_and_reconcile_contract",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/runtime_v2_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_v2_process_closure_tests.rs"
+      ]
+    },
+    {
+      "operation": "durable_generation_and_index",
+      "nativeSymbol": "NeuronGenerationStoreV2 / NeuronRuntimeIndexV2",
+      "sourcePath": "codex-rs/hepta-neuron/src/generation_store_v2.rs",
+      "state": "source_implemented_bounded_durable_generation_and_discovery_index",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/generation_store_v2_process_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_index_v2_tests.rs"
+      ]
+    },
+    {
+      "operation": "durable_witness",
+      "nativeSymbol": "FileNeuronWitnessStoreV2",
+      "sourcePath": "codex-rs/hepta-neuron/src/witness_v2.rs",
+      "state": "source_implemented_durable_external_witness_with_recovery_outbox",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/witness_v2_tests.rs",
+        "codex-rs/hepta-neuron/src/runtime_v2_witness_isolation_tests.rs"
+      ]
+    },
+    {
+      "operation": "agentd_generation_control",
+      "nativeSymbol": "AgentdNeuronGenerationControllerV2",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_controller.rs",
+      "state": "source_implemented_generation_epoch_fenced_lifecycle_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_control_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs"
+      ]
+    },
+    {
+      "operation": "agentd_durable_control_state",
+      "nativeSymbol": "AgentdNeuronGenerationStateV2",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state.rs",
+      "state": "source_implemented_checksummed_atomic_fail_closed_restart_state_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs"
+      ]
+    },
+    {
+      "operation": "qualification_and_observation",
+      "nativeSymbol": "NeuronRuntimeMeasurementV2 / readiness.py",
+      "sourcePath": "codex-rs/hepta-neuron/src/runtime_observation_v2.rs",
+      "state": "source_implemented_exact_candidate_provenance_and_phase_measurement_not_empirical_acceptance",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/runtime_v2_closure_tests.rs",
+        "scripts/neuron/test_measurements.py",
+        "scripts/neuron/test_readiness.py"
+      ]
+    },
+    {
+      "operation": "agentd_product_lifecycle",
+      "nativeSymbol": "AgentdNeuronRuntimeV2Config / AgentdNeuronRuntimeV2Host",
+      "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime_v2_product.rs",
+      "state": "source_implemented_daemon_owned_start_restart_quiesce_shutdown_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_durable_state_tests.rs::product_config_restarts_gracefully_stopped_generation",
+        "codex-rs/hepta-agentd/src/neuron_runtime_v2_control_tests.rs"
+      ]
+    },
+    {
+      "operation": "target_host_product_evidence",
+      "nativeSymbol": "target_host_acceptance.validate_receipt",
+      "sourcePath": "scripts/neuron/target_host_acceptance.py",
+      "state": "source_implemented_external_receipt_validator_no_target_host_receipt_and_no_activation",
+      "authority": "none",
+      "tests": [
+        "scripts/neuron/test_target_host_acceptance.py",
+        "scripts/neuron/test_docs_contracts.py"
+      ]
+    },
+    {
+      "operation": "v3_segment_manifest_contract",
+      "nativeSymbol": "segment_manifest_v3.validate_manifest",
+      "sourcePath": "scripts/neuron/segment_manifest_v3.py",
+      "state": "design_and_validator_implemented_not_runtime_selected_not_migrated",
+      "authority": "none",
+      "tests": [
+        "scripts/neuron/test_segment_manifest_v3.py",
+        "scripts/neuron/test_docs_contracts.py"
+      ]
+    }
+  ],
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "productionActivation": false,
+    "release": false
+  },
+  "qualification": {
+    "workflow": ".github/workflows/neuron-runtime-readiness.yml",
+    "requiredGates": [
+      "linux-stable-source-head",
+      "linux-stable-synthetic-merge",
+      "linux-msrv-source-head",
+      "linux-msrv-synthetic-merge",
+      "linux-arm64-source-head",
+      "linux-arm64-synthetic-merge",
+      "macos-arm64-source-head",
+      "macos-arm64-synthetic-merge"
+    ],
+    "productionActivation": false
+  }
+}

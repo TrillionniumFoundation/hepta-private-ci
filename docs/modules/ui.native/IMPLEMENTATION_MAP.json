@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "1fe1c98f190a09f0bd6568f0b611719a75c4c917",
+    "tree": "e1a7f9651ca110914bb5683516f9c8f9f125ea3b"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.native",
@@ -106,6 +106,52 @@
       "sourceSemantics": "Requires independent selection, signature/compatibility verification, explicit restart, and predecessor rollback on uncertain update.",
       "operation": "apply_shell_update",
       "nativeSymbol": "async applyShellUpdate(",
+      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "request_platform_capability_binary",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "async requestPlatformCapabilityBinary(",
+        "buildTarget": "hepta-native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-native/test/computer-action.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-native/test/computer-action.test.js"
+        }
+      ],
+      "sourceSemantics": "Consumes HAC1 using a host-installed principal/body generation, immutable frame and view, bounded resolver and monotonic deadline; dispatches only through the existing platform owner and retains post-invoke uncertainty.",
+      "operation": "request_platform_capability_binary",
+      "nativeSymbol": "async requestPlatformCapabilityBinary(",
+      "sourcePath": "apps/hepta-native/src/shell-runtime.js",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "observe_platform_operation_binary",
+      "mappingClass": "owner_boundary",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "apps/hepta-native/src/shell-runtime.js",
+        "symbol": "observePlatformOperationBinary(",
+        "buildTarget": "hepta-native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "apps/hepta-native/test/computer-action.test.js",
+          "kind": "node_product_boundary",
+          "command": "node --test apps/hepta-native/test/computer-action.test.js"
+        }
+      ],
+      "sourceSemantics": "Reads the exact process-local binary operation by operation ID and full action digest after deadline or session close without resolver, permission or invocation; not_recorded is not proof of nonapplication or durable cross-process recovery.",
+      "operation": "observe_platform_operation_binary",
+      "nativeSymbol": "observePlatformOperationBinary(",
       "sourcePath": "apps/hepta-native/src/shell-runtime.js",
       "sourcePathExists": true
     }

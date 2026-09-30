@@ -1,0 +1,188 @@
+name: Neuron runtime HOL diagnostics
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact source commit to measure
+        required: true
+        type: string
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/neuron-runtime-hol-diagnostics.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-runtime-hol-${{ github.event.pull_request.number || inputs.source_sha }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || inputs.source_sha }}
+  CARGO_TERM_COLOR: never
+
+jobs:
+  measure:
+    name: Neuron HOL matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Run retained concurrency and recovery matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo test --locked -p codex-hepta-agentd \
+            neuron_runtime_v2_hol_diagnostic_matrix -- --ignored --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/neuron-runtime-hol.log"
+          grep '^HEPTA_NEURON_HOL ' "$RUNNER_TEMP/neuron-runtime-hol.log" \
+            | sed 's/^HEPTA_NEURON_HOL //' \
+            > "$RUNNER_TEMP/neuron-runtime-hol.jsonl"
+
+      - name: Validate and bind measurements
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' \
+            "$RUNNER_TEMP/neuron-runtime-hol.jsonl" \
+            "$RUNNER_TEMP/neuron-runtime-hol-summary.json"
+          import hashlib
+          import json
+          import os
+          import platform
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          source = os.environ["SOURCE_SHA"]
+          rows_path = Path(sys.argv[1])
+          output = Path(sys.argv[2])
+          rows = [
+              json.loads(line)
+              for line in rows_path.read_text(encoding="utf-8").splitlines()
+              if line.strip()
+          ]
+          expected_concurrency = [1, 8, 32, 128, 256]
+          expected_scenarios = [
+              "healthy_provider",
+              "slow_provider",
+              "slow_filesystem",
+              "recovery_wave_10_percent",
+              "recovery_wave_50_percent",
+              "recovery_wave_100_percent",
+              "reload_query_concurrency",
+              "status_drain_mutation_concurrency",
+              "historical_reference_retention",
+          ]
+          expected = {
+              (scenario, concurrency)
+              for scenario in expected_scenarios
+              for concurrency in expected_concurrency
+          }
+          observed = {
+              (row.get("scenario"), row.get("concurrency"))
+              for row in rows
+          }
+          if len(rows) != len(expected) or observed != expected:
+              raise SystemExit(
+                  f"incomplete HOL matrix: rows={len(rows)} "
+                  f"missing={sorted(expected - observed)} "
+                  f"unexpected={sorted(observed - expected)}"
+              )
+          if any(row.get("productionActivation") is not False for row in rows):
+              raise SystemExit("measurement attempted production activation")
+          for row in rows:
+              latency = row.get("latencyMicros")
+              if (
+                  row.get("schema") != "hepta.neuron.runtime.hol-measurement.v1"
+                  or not isinstance(latency, dict)
+                  or any(
+                      not isinstance(latency.get(name), int)
+                      for name in ("p50", "p95", "p99", "max")
+                  )
+              ):
+                  raise SystemExit("invalid HOL measurement row")
+
+          rust = subprocess.check_output(["rustc", "-Vv"], text=True)
+          host = next(
+              line.split(":", 1)[1].strip()
+              for line in rust.splitlines()
+              if line.startswith("host:")
+          )
+          lock_bytes = Path("codex-rs/Cargo.lock").read_bytes()
+          workflow_bytes = Path(
+              ".github/workflows/neuron-runtime-hol-diagnostics.yml"
+          ).read_bytes()
+          runner = {
+              "name": os.environ.get("RUNNER_NAME", "unknown"),
+              "os": os.environ.get("RUNNER_OS", platform.system()),
+              "arch": os.environ.get("RUNNER_ARCH", platform.machine()),
+              "image": os.environ.get("ImageOS")
+              or os.environ.get("ImageVersion")
+              or "unknown",
+              "kernel": platform.platform(),
+              "targetTriple": host,
+          }
+          runner_hash = hashlib.sha256(
+              (
+                  json.dumps(runner, sort_keys=True, separators=(",", ":"))
+                  + "\n"
+              ).encode()
+          ).hexdigest()
+          summary = {
+              "schema": "hepta.neuron.runtime.hol-summary.v1",
+              "sourceSha": source,
+              "workflowRunId": os.environ.get("GITHUB_RUN_ID"),
+              "workflowRunAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "targetTriple": host,
+              "runner": runner,
+              "runnerFingerprintSha256": runner_hash,
+              "cargoLockSha256": hashlib.sha256(lock_bytes).hexdigest(),
+              "workflowSha256": hashlib.sha256(workflow_bytes).hexdigest(),
+              "rowCount": len(rows),
+              "concurrency": expected_concurrency,
+              "scenarios": expected_scenarios,
+              "productionActivation": False,
+              "release": False,
+          }
+          output.write_text(
+              json.dumps(summary, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Retain exact diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-runtime-hol-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/neuron-runtime-hol.log
+            ${{ runner.temp }}/neuron-runtime-hol.jsonl
+            ${{ runner.temp }}/neuron-runtime-hol-summary.json
+          if-no-files-found: warn
+          retention-days: 30

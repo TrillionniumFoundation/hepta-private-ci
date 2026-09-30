@@ -77,7 +77,11 @@ impl CognitiveTestHost {
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
+        codex_self_exe: PathBuf,
     ) -> TestResult<Self> {
+        if !codex_self_exe.is_absolute() || !std::fs::metadata(&codex_self_exe)?.is_file() {
+            return Err("test host requires a built absolute Codex executable".into());
+        }
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
         std::fs::create_dir_all(&root)?;
@@ -116,6 +120,11 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // Match the production startup boundary: attaching the durable owner is
+        // not sufficient by itself. Freeze the owner-local stores and current
+        // revocation baseline before Running/App Server readiness can open
+        // admission. Without this step health remains correctly fail-closed.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
@@ -133,7 +142,10 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            Arg0DispatchPaths {
+                codex_self_exe: Some(codex_self_exe),
+                ..Arg0DispatchPaths::default()
+            },
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
@@ -147,6 +159,13 @@ impl CognitiveTestHost {
                     format!("Agentd test App Server exited before readiness: {outcome:?}").into(),
                 );
             }
+            if control_task.is_finished() {
+                let outcome = control_task.await?;
+                return Err(format!(
+                    "Agentd test control server exited before readiness: {outcome:?}"
+                )
+                .into());
+            }
             if Instant::now() >= deadline {
                 return Err("timed out waiting for Agentd test App Server socket".into());
             }
@@ -156,14 +175,41 @@ impl CognitiveTestHost {
 
         let client = AgentdClient::new(identity.control_socket.clone(), agent_id.clone(), 1)?;
         let deadline = Instant::now() + READY_TIMEOUT;
+        let mut last_control_observation = "no control health response was observed".to_string();
         loop {
+            if app_server_task.is_finished() {
+                let outcome = app_server_task.await?;
+                return Err(format!(
+                    "Agentd test App Server exited while control readiness was pending: {outcome:?}"
+                )
+                .into());
+            }
+            if control_task.is_finished() {
+                let outcome = control_task.await?;
+                return Err(format!(
+                    "Agentd test control server exited while readiness was pending: {outcome:?}"
+                )
+                .into());
+            }
             match client.health().await {
                 Ok(health) if health.ready => break,
-                _ if Instant::now() >= deadline => {
-                    return Err("timed out waiting for Agentd test control readiness".into());
+                Ok(health) => {
+                    last_control_observation = format!(
+                        "health not ready: promotion_ready={}, fenced={}, lifecycle={:?}",
+                        health.promotion_ready, health.fenced, health.lifecycle
+                    );
                 }
-                _ => tokio::time::sleep(Duration::from_millis(10)).await,
+                Err(error) => {
+                    last_control_observation = format!("health request failed: {error}");
+                }
             }
+            if Instant::now() >= deadline {
+                return Err(format!(
+                    "timed out waiting for Agentd test control readiness; {last_control_observation}"
+                )
+                .into());
+            }
+            tokio::time::sleep(Duration::from_millis(10)).await;
         }
 
         Ok(Self {
