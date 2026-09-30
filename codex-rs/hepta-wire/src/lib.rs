@@ -29,6 +29,16 @@ mod hardened_managed_session;
 mod hardened_record_stream;
 mod hardened_session;
 mod managed_session;
+#[cfg(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+))]
+mod record_stream;
+#[cfg(not(any(
+    test,
+    all(feature = "protocol-tooling", not(feature = "production"))
+)))]
+#[path = "record_stream_production.rs"]
 mod record_stream;
 mod registry;
 mod schema;

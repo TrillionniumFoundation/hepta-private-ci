@@ -78,12 +78,22 @@ impl fmt::Debug for SessionMacKey {
 /// derived from the master key plus the immutable session identifier. Any
 /// terminal record error poisons both directions. Establish a fresh transport
 /// channel and negotiate a new session instead of resetting this object.
-#[derive(Debug)]
 pub struct AuthenticatedWireSession {
     endpoint: SessionEndpoint,
     outbound: OrderedMacChannel,
     inbound: OrderedMacChannel,
     poisoned: bool,
+}
+
+impl fmt::Debug for AuthenticatedWireSession {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("AuthenticatedWireSession")
+            .field("session_id", &self.outbound.session().session_id())
+            .field("endpoint", &self.endpoint)
+            .field("poisoned", &self.is_poisoned())
+            .finish_non_exhaustive()
+    }
 }
 
 impl AuthenticatedWireSession {
