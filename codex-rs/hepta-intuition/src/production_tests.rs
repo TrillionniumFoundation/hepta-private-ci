@@ -4,8 +4,8 @@ use crate::calibrated::CandidateSetCompletenessBindingV1;
 use crate::calibrated::OodArtifactV1;
 use crate::calibrated::canonical_candidate_order_digest_v1;
 use crate::calibrated::canonical_candidate_set_digest_v1;
-use crate::qualified::canonical_completeness_evidence_payload_v1;
 use crate::qualified::LearnedScorerContractV1;
+use crate::qualified::canonical_completeness_evidence_payload_v1;
 use codex_hepta_types::FixedQ32;
 
 fn d(value: &str) -> Digest32 {
@@ -372,7 +372,10 @@ fn commitment_encoders_reject_empty_and_oversized_sets_before_other_validation()
             canonical_candidate_order_digest_v1(&request.candidates).map(|_| ()),
             canonical_calibrated_request_digest_v1(&request).map(|_| ()),
         ] {
-            assert_eq!(result, Err(crate::CalibratedError::CandidateCountOutOfRange));
+            assert_eq!(
+                result,
+                Err(crate::CalibratedError::CandidateCountOutOfRange)
+            );
         }
         assert_eq!(
             canonical_completeness_evidence_payload_v1(&request),
@@ -475,7 +478,7 @@ fn native_v4_preserves_historical_receipts_across_risk_mask_and_assignment_matri
                     let before = canonical_calibrated_request_digest_v1(&request).expect("request");
                     let old = crate::qualified::decide_calibrated_v3(request.clone(), &profile)
                         .expect("historical oracle");
-                    let native = native::native_profile_decision(request.clone(), &profile)
+                    let native = native::native_profile_decision(&request, &profile)
                         .expect("native routing");
                     assert_eq!(
                         native, old,

@@ -22,10 +22,10 @@ use crate::qualified::canonical_policy_profile_digest_v1;
 use crate::qualified::validate_profile_for_request;
 
 pub(super) fn native_profile_decision(
-    request: CalibratedDecisionRequestV1,
+    request: &CalibratedDecisionRequestV1,
     profile: &CanonicalPolicyProfileV1,
 ) -> Result<CalibratedIntuitionReceiptV1, QualifiedCalibratedError> {
-    validate_profile_for_request(&request, profile)?;
+    validate_profile_for_request(request, profile)?;
     if request.completeness.omitted_count_bound != 0 {
         return Err(CalibratedError::IncompleteCandidateSet.into());
     }
@@ -35,7 +35,7 @@ pub(super) fn native_profile_decision(
     } else {
         KernelRiskRouting::RequestRisk
     };
-    let mut receipt = decide_calibrated_with_routing(request.clone(), routing)?;
+    let mut receipt = decide_calibrated_with_routing(request, routing)?;
 
     // Encoding compatibility is not routing. In particular, this field cannot
     // change the actual request, masks, sampled action or output distribution.
@@ -45,7 +45,7 @@ pub(super) fn native_profile_decision(
         request.risk_class
     };
     let historical_v1 = digest_receipt_with_risk(
-        &request,
+        request,
         &receipt.disposition,
         &receipt.propensities,
         receipt.abstain_probability,
@@ -53,10 +53,10 @@ pub(super) fn native_profile_decision(
         historical_risk,
     )?;
     let mut v2 = b"hepta.intuition.calibrated-decision.v2".to_vec();
-    v2.extend_from_slice(canonical_request_digest_with_risk(&request, historical_risk)?.as_array());
+    v2.extend_from_slice(canonical_request_digest_with_risk(request, historical_risk)?.as_array());
     v2.extend_from_slice(historical_v1.as_array());
     let mut v3 = b"hepta.intuition.calibrated-decision.v3\0".to_vec();
-    v3.extend_from_slice(canonical_calibrated_request_digest_v1(&request)?.as_array());
+    v3.extend_from_slice(canonical_calibrated_request_digest_v1(request)?.as_array());
     v3.extend_from_slice(canonical_policy_profile_digest_v1(profile)?.as_array());
     v3.extend_from_slice(Digest32::of_bytes(&v2).as_array());
     v3.push(u8::from(force));

@@ -187,7 +187,7 @@ impl StdError for CalibratedError {}
 pub fn decide_calibrated(
     request: CalibratedDecisionRequestV1,
 ) -> Result<CalibratedIntuitionReceiptV1, CalibratedError> {
-    decide_calibrated_with_routing(request, KernelRiskRouting::RequestRisk)
+    decide_calibrated_with_routing(&request, KernelRiskRouting::RequestRisk)
 }
 
 /// Internal routing input, not a wire risk classification or authority grant.
@@ -198,10 +198,10 @@ pub(crate) enum KernelRiskRouting {
 }
 
 pub(crate) fn decide_calibrated_with_routing(
-    request: CalibratedDecisionRequestV1,
+    request: &CalibratedDecisionRequestV1,
     routing: KernelRiskRouting,
 ) -> Result<CalibratedIntuitionReceiptV1, CalibratedError> {
-    validate_request(&request)?;
+    validate_request(request)?;
 
     let mut legal_count = 0usize;
     let mut ood_count = 0usize;
@@ -224,7 +224,7 @@ pub(crate) fn decide_calibrated_with_routing(
         eligible.push(candidate);
     }
 
-    validate_assignment(&request, &eligible)?;
+    validate_assignment(request, &eligible)?;
 
     let disposition =
         if request.risk_class == RiskClass::High || routing == KernelRiskRouting::ProfileSlowPath {
@@ -238,13 +238,13 @@ pub(crate) fn decide_calibrated_with_routing(
         } else if eligible.is_empty() {
             CalibratedDispositionV1::SlowPath(SlowPathReasonV1::Unsupported)
         } else {
-            select(&request, &eligible)?
+            select(request, &eligible)?
         };
 
     let (propensities, abstain_probability, slow_path_probability) =
-        output_distribution(&request, &disposition)?;
+        output_distribution(request, &disposition)?;
     let receipt_digest = digest_receipt(
-        &request,
+        request,
         &disposition,
         &propensities,
         abstain_probability,
@@ -252,7 +252,7 @@ pub(crate) fn decide_calibrated_with_routing(
     )?;
 
     Ok(CalibratedIntuitionReceiptV1 {
-        decision_id: request.decision_id,
+        decision_id: request.decision_id.clone(),
         disposition,
         propensities,
         abstain_probability,
@@ -342,7 +342,6 @@ fn validate_request(request: &CalibratedDecisionRequestV1) -> Result<(), Calibra
     }
 
     let mut previous: Option<&StableId> = None;
-    let mut seen = BTreeSet::new();
     for candidate in &request.candidates {
         if let Some(prior) = previous
             && prior >= &candidate.candidate_id
@@ -350,11 +349,6 @@ fn validate_request(request: &CalibratedDecisionRequestV1) -> Result<(), Calibra
             return Err(CalibratedError::NonCanonicalCandidateOrder);
         }
         previous = Some(&candidate.candidate_id);
-        if !seen.insert(candidate.candidate_id.clone()) {
-            return Err(CalibratedError::DuplicateCandidate(
-                candidate.candidate_id.to_string(),
-            ));
-        }
         if candidate.support_digest.is_zero() {
             return Err(CalibratedError::EmptyDigest("candidate support"));
         }

@@ -18,7 +18,7 @@ use codex_hepta_intuition::OodArtifactV1;
 use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
-use codex_hepta_intuition::decide_calibrated_v3;
+use codex_hepta_intuition::decide_calibrated_v4;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
@@ -117,7 +117,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 fn run_gate(gate: Gate) -> Result<(), Box<dyn std::error::Error>> {
     let (template, profile) = fixture(gate.candidates)?;
     for _ in 0..100 {
-        let receipt = decide_calibrated_v3(template.clone(), &profile)?;
+        let receipt = decide_calibrated_v4(template.clone(), &profile)?;
         black_box(receipt.receipt_digest);
     }
 
@@ -129,7 +129,7 @@ fn run_gate(gate: Gate) -> Result<(), Box<dyn std::error::Error>> {
         let count_before = ALLOCATION_COUNT.load(Ordering::Relaxed);
         let bytes_before = ALLOCATION_BYTES.load(Ordering::Relaxed);
         let started = Instant::now();
-        let receipt = decide_calibrated_v3(black_box(request), &profile)?;
+        let receipt = decide_calibrated_v4(black_box(request), &profile)?;
         let elapsed = started.elapsed();
         let count_after = ALLOCATION_COUNT.load(Ordering::Relaxed);
         let bytes_after = ALLOCATION_BYTES.load(Ordering::Relaxed);

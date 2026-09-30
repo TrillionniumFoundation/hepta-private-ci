@@ -255,7 +255,7 @@ pub fn decide_calibrated_v4(
         .map_err(QualifiedCalibratedError::Policy)?;
     let profile_digest = canonical_policy_profile_digest_v1(profile)?;
     let forced_by_profile = risk_requires_slow_path(profile.risk_rule, request.risk_class);
-    let legacy = native_profile_decision(request, profile)?;
+    let legacy = native_profile_decision(&request, profile)?;
 
     let disposition = if forced_by_profile && original_risk_class != RiskClass::High {
         ProductionDispositionV1::SlowPath(ProductionSlowPathReasonV1::ProfileRiskRule)
