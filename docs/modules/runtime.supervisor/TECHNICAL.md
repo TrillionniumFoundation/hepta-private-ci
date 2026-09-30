@@ -203,6 +203,10 @@ revocation. Signed transitions require a catalog-admitted source whose main and
 Matrix commands match the canonical release. A local fixture cannot gain
 production authority through a release identifier alone.
 
+Ordinary Start cannot take over a pending release transition or charged restart
+operation. The internal continuation retains dispatch ownership until its
+durable completion or cancellation is acknowledged.
+
 ## 8. Production verifier and offline signer build boundary
 
 Cargo composition is intentionally split:
@@ -288,11 +292,20 @@ Do not edit or delete journals to make readiness pass; restoration of independen
 validated durable evidence requires operational recovery, followed by a fresh
 Supervisor recovery. No ordinary API clears this denial.
 
+A transient driver failure retrying an exact durable control is distinct from
+damaged evidence: recovery retains its control kind, process binding and original
+deadline. Independent signed-intent recovery still runs when a release Drain
+retry fails. Recovery containment does not issue the same initial signal twice.
+
 Healthy restart and release completion retains its continuation until the
 lineage, budget, release CAS and terminal signed receipt are durable. Recovery
 retries from the exact replacement generation, preserves historical predecessor
 identities even when executable admission is revoked, and rejects external CAS
 drift. Absence alone does not substitute for an exact process-exit witness.
+Replacement dispatch waits for exact Matrix exit and lease cleanup while
+continuing to poll that companion. A known spawn rejection before acquiring any
+process cancels its charged claim; cancellation write failures retry that
+acknowledgement rather than dispatching again under the same attempt.
 
 Recovery diagnostics classify process ambiguity, release-state ambiguity,
 intent mismatch, admission-frontier drift, authority-epoch change and durability
