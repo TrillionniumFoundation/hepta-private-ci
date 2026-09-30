@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - name: Check out exact staging commit
+      - name: Check out exact authored source commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
@@ -27,7 +27,7 @@ jobs:
           persist-credentials: true
           clean: true
 
-      - name: Rebind the machine map to ordinary committed source
+      - name: Bind machine metadata to ordinary committed source
         shell: bash
         env:
           SOURCE_SHA: ${{ github.sha }}
@@ -36,51 +36,80 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
           python3 - <<'PY'
-          import json, pathlib, re, subprocess
+          import json
+          import pathlib
+          import re
+          import subprocess
 
           root = pathlib.Path('.').resolve()
           path = root / 'docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json'
           row = json.loads(path.read_text())
           head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
           tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
-          row['sourceBase'] = {'commit': head, 'tree': tree}
-          row['sourceIdentityPolicy'] = 'candidate_or_exact_observation_v1'
-          row['observedAtHead'] = {'commit': head, 'tree': tree}
+          anchor = {'commit': head, 'tree': tree}
+          row['sourceBase'] = anchor
+          row['sourceIdentityPolicy'] = 'authored_source_base_plus_runtime_exact_candidate_v1'
+          row['observedAtHead'] = anchor
           row['productCallerState'] = (
               'control_engineering_parameter_and_topology_self_iteration_coordinators_'
               'source_composed_through_state_held_agentd_producer_not_target_host_qualified'
           )
           row['productionImplementation'] = False
           boundary = row.setdefault('claimBoundary', {})
-          for name in ('productionImplementation', 'productExecutionProved',
-                       'independentAcceptance', 'activation', 'release'):
+          for name in (
+              'productionImplementation',
+              'productExecutionProved',
+              'independentAcceptance',
+              'activation',
+              'release',
+          ):
               boundary[name] = False
           boundary['sourceRootPresent'] = True
           boundary['nativeSourceMappingComplete'] = True
           boundary['implementedOperationMappingComplete'] = True
 
+          test_attribute = re.compile(
+              r'#\s*\[(?:(?:[A-Za-z_][A-Za-z0-9_]*::)*)test(?:\([^]]*\))?\]'
+              r'\s*(?:#\s*\[[^]]+\]\s*)*'
+              r'(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\('
+          )
+
           def focused_tests(source):
               text = (root / source).read_text()
-              names = re.findall(r'#\s*\[test\]\s*(?:#\s*\[[^]]+\]\s*)*fn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(', text)
+              names = sorted(dict.fromkeys(test_attribute.findall(text)))
               if not names:
                   raise SystemExit(f'no focused tests in {source}')
               return [f'{source}::tests::{name}' for name in names[:2]]
 
-          def first_public_function(source, preferred):
+          def symbol_exists(text, symbol):
+              leaf = symbol.rsplit('::', 1)[-1]
+              patterns = (
+                  rf'\b(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?fn\s+{re.escape(leaf)}\s*\(',
+                  rf'\b(?:pub(?:\([^)]*\))?\s+)?(?:struct|enum|trait|type|const|static|mod)\s+{re.escape(leaf)}\b',
+              )
+              return any(re.search(pattern, text) for pattern in patterns)
+
+          def first_public_symbol(source, preferred):
               text = (root / source).read_text()
-              if re.search(rf'\bpub\s+fn\s+{re.escape(preferred)}\s*\(', text):
+              if symbol_exists(text, preferred):
                   return preferred
-              names = re.findall(r'\bpub\s+fn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(', text)
-              if not names:
-                  raise SystemExit(f'no public function in {source}')
-              return names[0]
+              patterns = (
+                  r'\bpub(?:\([^)]*\))?\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(',
+                  r'\bpub(?:\([^)]*\))?\s+(?:struct|enum|trait|type)\s+([A-Za-z_][A-Za-z0-9_]*)\b',
+              )
+              for pattern in patterns:
+                  names = re.findall(pattern, text)
+                  if names:
+                      return names[0]
+              raise SystemExit(f'no public symbol in {source}')
 
           additions = [
               {
                   'operation': 'parameter_generator_coverage',
-                  'nativeSymbol': first_public_function(
+                  'nativeSymbol': first_public_symbol(
                       'codex-rs/hepta-plasticity/src/generator_coverage_v1.rs',
-                      'build_generator_coverage_draft_v1'),
+                      'build_generator_coverage_draft_v1',
+                  ),
                   'sourcePath': 'codex-rs/hepta-plasticity/src/generator_coverage_v1.rs',
                   'state': 'source_implemented_expected_actual_gap_scale_frontier_and_observer_bound_coverage',
                   'authority': 'none',
@@ -92,9 +121,10 @@ jobs:
               },
               {
                   'operation': 'topology_generator_coverage',
-                  'nativeSymbol': first_public_function(
+                  'nativeSymbol': first_public_symbol(
                       'codex-rs/hepta-plasticity/src/topology_coverage_v1.rs',
-                      'build_topology_coverage_draft_v1'),
+                      'build_topology_coverage_draft_v1',
+                  ),
                   'sourcePath': 'codex-rs/hepta-plasticity/src/topology_coverage_v1.rs',
                   'state': 'source_implemented_frozen_topology_search_space_and_observer_bound_coverage',
                   'authority': 'none',
@@ -106,7 +136,10 @@ jobs:
               },
               {
                   'operation': 'control_engineering_parameter_iteration_coordinator',
-                  'nativeSymbol': 'ControlEngineeringPlasticityCoordinatorV1',
+                  'nativeSymbol': first_public_symbol(
+                      'codex-rs/hepta-agentd/src/plasticity_iteration_coordinator.rs',
+                      'ControlEngineeringPlasticityCoordinatorV1',
+                  ),
                   'sourcePath': 'codex-rs/hepta-agentd/src/plasticity_iteration_coordinator.rs',
                   'state': 'named_non_test_frozen_iteration_envelope_coverage_observer_state_held_producer_and_create_only_terminal_receipt_source_composed_not_target_host_qualified',
                   'authority': 'proposal_submission_only_no_selection_activation_or_release',
@@ -114,11 +147,20 @@ jobs:
                   'sourcePathExists': True,
                   'designOperation': 'control_engineering_parameter_iteration_coordinator',
                   'mappingClass': 'delegated_composition',
-                  'delegatedCallees': [{'path': 'codex-rs/hepta-plasticity', 'module': 'learning.plasticity', 'role': 'proposal_only'}],
+                  'delegatedCallees': [
+                      {
+                          'path': 'codex-rs/hepta-plasticity',
+                          'module': 'learning.plasticity',
+                          'role': 'proposal_only',
+                      }
+                  ],
               },
               {
                   'operation': 'control_engineering_topology_iteration_coordinator',
-                  'nativeSymbol': 'ControlEngineeringTopologyCoordinatorV1',
+                  'nativeSymbol': first_public_symbol(
+                      'codex-rs/hepta-agentd/src/plasticity_topology_iteration_coordinator.rs',
+                      'ControlEngineeringTopologyCoordinatorV1',
+                  ),
                   'sourcePath': 'codex-rs/hepta-agentd/src/plasticity_topology_iteration_coordinator.rs',
                   'state': 'named_non_test_frozen_iteration_envelope_grammar_observer_state_held_producer_and_create_only_terminal_receipt_source_composed_not_target_host_qualified',
                   'authority': 'proposal_submission_only_no_topology_apply_selection_activation_or_release',
@@ -126,7 +168,13 @@ jobs:
                   'sourcePathExists': True,
                   'designOperation': 'control_engineering_topology_iteration_coordinator',
                   'mappingClass': 'delegated_composition',
-                  'delegatedCallees': [{'path': 'codex-rs/hepta-plasticity', 'module': 'learning.plasticity', 'role': 'proposal_only'}],
+                  'delegatedCallees': [
+                      {
+                          'path': 'codex-rs/hepta-plasticity',
+                          'module': 'learning.plasticity',
+                          'role': 'proposal_only',
+                      }
+                  ],
               },
           ]
           by_name = {op['operation']: op for op in row['operations']}
@@ -134,20 +182,47 @@ jobs:
               by_name[op['operation']] = op
           row['operations'] = list(by_name.values())
           row['repositoryControlledGaps'] = [
-              'Run exact source-head and deterministic synthetic-merge qualification for the final ordinary-source candidate and retain the single-run readiness manifest.',
-              'Execute exact unified-candidate descriptor recovery, proposal lifetime, process crash and independent live-topology canary qualifications for the same candidate.',
-              'Add target-host crash-consistency and capacity receipts without converting source evidence into deployment authority.',
+              'Retain one same-run readiness manifest for exact source-head, deterministic merge and GitHub synthetic merge qualification.',
+              'Rerun complete read-only qualification on the final main merge SHA and retain its independent final-merge receipt.',
+              'Add target-host crash-consistency, physical rollback-domain and capacity receipts without converting source evidence into deployment authority.',
           ]
           row['productCallers'] = [
-              {'sourcePath': 'codex-rs/hepta-agentd/src/plasticity_runtime.rs', 'nativeSymbol': 'compose_plasticity_runtime_v1', 'state': 'explicit_process_bootstrap'},
-              {'sourcePath': 'codex-rs/hepta-agentd/src/plasticity_learning_producer.rs', 'nativeSymbol': 'AgentdLearningPlasticityProducerV1', 'state': 'state_held_named_producer'},
-              {'sourcePath': 'codex-rs/hepta-agentd/src/plasticity_iteration_coordinator.rs', 'nativeSymbol': 'ControlEngineeringPlasticityCoordinatorV1', 'state': 'non_test_parameter_self_iteration_trigger_proposal_only'},
-              {'sourcePath': 'codex-rs/hepta-agentd/src/plasticity_topology_iteration_coordinator.rs', 'nativeSymbol': 'ControlEngineeringTopologyCoordinatorV1', 'state': 'non_test_topology_self_iteration_trigger_proposal_only'},
+              {
+                  'sourcePath': 'codex-rs/hepta-agentd/src/plasticity_runtime.rs',
+                  'nativeSymbol': 'compose_plasticity_runtime_v1',
+                  'state': 'explicit_process_bootstrap',
+              },
+              {
+                  'sourcePath': 'codex-rs/hepta-agentd/src/plasticity_learning_producer.rs',
+                  'nativeSymbol': 'AgentdLearningPlasticityProducerV1',
+                  'state': 'state_held_named_producer',
+              },
+              {
+                  'sourcePath': 'codex-rs/hepta-agentd/src/plasticity_iteration_coordinator.rs',
+                  'nativeSymbol': 'ControlEngineeringPlasticityCoordinatorV1',
+                  'state': 'non_test_parameter_self_iteration_trigger_proposal_only',
+              },
+              {
+                  'sourcePath': 'codex-rs/hepta-agentd/src/plasticity_topology_iteration_coordinator.rs',
+                  'nativeSymbol': 'ControlEngineeringTopologyCoordinatorV1',
+                  'state': 'non_test_topology_self_iteration_trigger_proposal_only',
+              },
           ]
 
           evidence_paths = set(row.get('resolvedRoots', []))
           evidence_paths.add(row['technicalGuide'])
           evidence_paths.update({'codex-rs/Cargo.toml', 'codex-rs/Cargo.lock'})
+          for candidate in (
+              '.github/workflows/learning-plasticity-exact-qualification.yml',
+              '.github/workflows/learning-plasticity-exact-status.yml',
+              'scripts/qualify_learning_plasticity.py',
+              'scripts/verify_learning_plasticity_map.py',
+              'scripts/hepta-implementation-maps.py',
+              'scripts/hepta-docs.py',
+              'scripts/hepta-module-docs.py',
+          ):
+              if (root / candidate).exists():
+                  evidence_paths.add(candidate)
           for caller in row['productCallers']:
               evidence_paths.add(caller['sourcePath'])
           for op in row['operations']:
@@ -157,52 +232,99 @@ jobs:
                   evidence_paths.add(source)
               for callee in op.get('delegatedCallees', []):
                   evidence_paths.add(callee['path'])
+
           for item in evidence_paths:
               if not (root / item).exists():
                   raise SystemExit(f'missing evidence path: {item}')
           row['observedSourcePaths'] = sorted(evidence_paths)
-          row['sourceObjects'] = [
-              {
-                  'path': item,
-                  'object': subprocess.check_output(
-                      ['git', 'rev-parse', f'HEAD:{item}'], text=True).strip(),
-              }
+          object_map = {
+              item: subprocess.check_output(
+                  ['git', 'rev-parse', f'HEAD:{item}'], text=True
+              ).strip()
               for item in sorted(evidence_paths)
+          }
+          row['sourceObjects'] = [
+              {'path': item, 'object': object_map[item]}
+              for item in sorted(object_map)
           ]
+
+          for op in row['operations']:
+              name = op['operation']
+              source = op['sourcePath']
+              symbol = op['nativeSymbol']
+              source_text = (root / source).read_text()
+              if not symbol_exists(source_text, symbol):
+                  raise SystemExit(f'unresolved operation symbol: {name} -> {symbol}')
+              op['module'] = 'learning.plasticity'
+              op['operationId'] = name
+              op['sourceSymbol'] = symbol
+              op['candidateCommitSha'] = head
+              op['sourceBlobSha'] = object_map[source]
+              bindings = []
+              for identity in op.get('tests', []):
+                  if '.rs::' not in identity:
+                      raise SystemExit(f'invalid test identity: {identity}')
+                  prefix, qualified = identity.split('.rs::', 1)
+                  target = prefix + '.rs'
+                  test_symbol = qualified.rsplit('::', 1)[-1]
+                  test_text = (root / target).read_text()
+                  if re.search(rf'\bfn\s+{re.escape(test_symbol)}\s*\(', test_text) is None:
+                      raise SystemExit(f'unresolved test identity: {identity}')
+                  bindings.append(
+                      {
+                          'target': target,
+                          'symbol': test_symbol,
+                          'blobSha': object_map[target],
+                      }
+                  )
+              if not bindings:
+                  raise SystemExit(f'operation has no exact test bindings: {name}')
+              op['testBindings'] = bindings
+
           path.write_text(json.dumps(row, indent=2, ensure_ascii=False) + '\n')
           PY
 
           python3 scripts/hepta-implementation-maps.py sync-plasticity-status
 
-      - name: Correct hand-written current-state prose
+      - name: Correct current implementation narrative
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          for name in ('CURRENT_IMPLEMENTATION.md', 'TECHNICAL.md'):
-              path = Path('docs/modules/learning.plasticity') / name
-              text = path.read_text()
-              text = text.replace(
-                  'IterationEnvelopeV1 still has no production caller.',
-                  'IterationEnvelopeV1 now has non-test parameter and topology coordinators that submit only through the state-held Agentd named producer; target-host execution remains unproved.'
-              )
-              text = text.replace(
-                  '**Not product-composed yet.** A future non-test `control.engineering`/self-iteration caller must submit already frozen and independently evaluated next-generation requests through `AgentdLearningPlasticityProducerV1`; turn/automation paths must not synthesize this trigger',
-                  '**Source-composed, not target-host qualified.** The non-test `control.engineering` parameter/topology coordinators submit frozen, independently attested requests through `AgentdLearningPlasticityProducerV1`; turn/automation paths still must not synthesize this trigger'
-              )
-              path.write_text(text)
+
+          path = Path('docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md')
+          text = path.read_text()
+          text = text.replace(
+              'IterationEnvelopeV1 still has no production caller.',
+              'IterationEnvelopeV1 now has non-test parameter and topology coordinators that submit only through the state-held Agentd named producer; target-host execution remains unproved.',
+          )
+          text = text.replace(
+              '**Not product-composed yet.** A future non-test `control.engineering`/self-iteration caller must submit already frozen and independently evaluated next-generation requests through `AgentdLearningPlasticityProducerV1`; turn/automation paths must not synthesize this trigger',
+              '**Source-composed, not target-host qualified.** The non-test `control.engineering` parameter/topology coordinators submit frozen, independently attested requests through `AgentdLearningPlasticityProducerV1`; turn/automation paths still must not synthesize this trigger',
+          )
+          path.write_text(text)
           PY
 
-      - name: Remove the final write-capable workflow and verify metadata
+      - name: Remove final writer and validate closure metadata
         shell: bash
         run: |
           set -euo pipefail
           rm -f .github/workflows/learning-plasticity-p1-apply.yml
           git diff --check
           python3 - <<'PY'
-          import json, pathlib, re
-          row = json.loads(pathlib.Path('docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json').read_text())
+          import json
+          import pathlib
+          import subprocess
+
+          path = pathlib.Path('docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json')
+          row = json.loads(path.read_text())
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          if row.get('sourceBase') != {'commit': head, 'tree': tree}:
+              raise SystemExit('source base is not the exact authored commit')
+          if row.get('sourceIdentityPolicy') != 'authored_source_base_plus_runtime_exact_candidate_v1':
+              raise SystemExit('source identity policy drift')
           required = {
               'parameter_generator_coverage',
               'topology_generator_coverage',
@@ -212,20 +334,42 @@ jobs:
           names = {op['operation'] for op in row['operations']}
           if not required <= names:
               raise SystemExit(f'missing operations: {sorted(required - names)}')
+          object_map = {item['path']: item['object'] for item in row['sourceObjects']}
+          if set(object_map) != set(row['observedSourcePaths']):
+              raise SystemExit('source object inventory drift')
+          for item, expected in object_map.items():
+              actual = subprocess.check_output(
+                  ['git', 'rev-parse', f'HEAD:{item}'], text=True
+              ).strip()
+              if actual != expected:
+                  raise SystemExit(f'object drift: {item}')
           for op in row['operations']:
-              source = pathlib.Path(op['sourcePath'])
-              if not source.is_file():
-                  raise SystemExit(f'missing source: {source}')
-              text = source.read_text()
-              for test in op.get('tests', []):
-                  test_source, identity = test.split('.rs::', 1)
-                  test_path = pathlib.Path(test_source + '.rs')
-                  leaf = identity.rsplit('::', 1)[-1]
-                  if not test_path.is_file() or re.search(rf'\bfn\s+{re.escape(leaf)}\s*\(', test_path.read_text()) is None:
-                      raise SystemExit(f'unresolved test: {test}')
-          for claim in ('productionImplementation', 'productExecutionProved', 'independentAcceptance', 'activation', 'release'):
+              if op.get('module') != 'learning.plasticity':
+                  raise SystemExit(f'module binding drift: {op.get("operation")}')
+              if op.get('operationId') != op.get('operation'):
+                  raise SystemExit(f'operation binding drift: {op.get("operation")}')
+              if op.get('sourceSymbol') != op.get('nativeSymbol'):
+                  raise SystemExit(f'source symbol drift: {op.get("operation")}')
+              if op.get('candidateCommitSha') != head:
+                  raise SystemExit(f'candidate commit drift: {op.get("operation")}')
+              if op.get('sourceBlobSha') != object_map.get(op.get('sourcePath')):
+                  raise SystemExit(f'source blob drift: {op.get("operation")}')
+              if len(op.get('testBindings', [])) != len(op.get('tests', [])):
+                  raise SystemExit(f'test binding drift: {op.get("operation")}')
+          for claim in (
+              'productionImplementation',
+              'productExecutionProved',
+              'independentAcceptance',
+              'activation',
+              'release',
+          ):
               if row['claimBoundary'].get(claim) is not False:
                   raise SystemExit(f'overclaim: {claim}')
+          state = json.loads(
+              pathlib.Path('docs/modules/learning.plasticity/CURRENT_STATE.json').read_text()
+          )
+          if state.get('sourceBase') != row.get('sourceBase'):
+              raise SystemExit('current state source base drift')
           PY
 
       - name: Publish metadata-only closure commit
@@ -244,7 +388,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
           git diff --cached --check
-          git commit -m 'fix(plasticity): bind exact candidate metadata'
+          git commit -m 'fix(plasticity): bind exact authored source metadata'
           git fetch origin "$TARGET_BRANCH"
           test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
           git push origin "HEAD:refs/heads/$TARGET_BRANCH"

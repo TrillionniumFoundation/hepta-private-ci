@@ -13,14 +13,18 @@ on:
       - "docs/modules/learning.plasticity/**"
       - "qualification/lane-f-shadow/**"
       - "scripts/qualify_learning_plasticity.py"
+      - "scripts/verify_learning_plasticity_map.py"
       - ".github/workflows/learning-plasticity-exact-qualification.yml"
   push:
-    branches: [feat/learning-plasticity-product-closure-20260928]
+    branches:
+      - main
+      - feat/learning-plasticity-product-closure-20260928
     paths:
       - "codex-rs/**"
       - "docs/modules/learning.plasticity/**"
       - "qualification/lane-f-shadow/**"
       - "scripts/qualify_learning_plasticity.py"
+      - "scripts/verify_learning_plasticity_map.py"
       - ".github/workflows/learning-plasticity-exact-qualification.yml"
       - ".github/workflows/learning-plasticity-p1-apply.yml"
   workflow_dispatch:
@@ -36,64 +40,143 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  qualify:
-    name: exact-${{ matrix.lane }}
+  plan:
+    name: freeze-candidate-identity
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
-    strategy:
-      fail-fast: false
-      matrix:
-        lane: [source-head, synthetic-merge]
+    timeout-minutes: 5
+    outputs:
+      lanes: ${{ steps.identity.outputs.lanes }}
+      source_sha: ${{ steps.identity.outputs.source_sha }}
+      base_sha: ${{ steps.identity.outputs.base_sha }}
+      github_merge_sha: ${{ steps.identity.outputs.github_merge_sha }}
+      candidate_kind: ${{ steps.identity.outputs.candidate_kind }}
     steps:
-      - name: Resolve immutable candidate identity
+      - name: Resolve immutable event identity
         id: identity
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
           EVENT_SHA: ${{ github.sha }}
+          EVENT_BEFORE: ${{ github.event.before }}
+          EVENT_REF: ${{ github.ref }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
+          github_merge_sha=""
           if [[ "$EVENT_NAME" == pull_request ]]; then
             source_sha="$PR_HEAD_SHA"
             base_sha="$PR_BASE_SHA"
+            github_merge_sha="$EVENT_SHA"
+            lanes='["source-head","deterministic-merge","github-merge"]'
+            candidate_kind="pull-request"
+          elif [[ "$EVENT_NAME" == push && "$EVENT_REF" == refs/heads/main ]]; then
+            source_sha="$EVENT_SHA"
+            base_sha="$EVENT_BEFORE"
+            lanes='["final-merge"]'
+            candidate_kind="final-merge"
           else
             source_sha="$EVENT_SHA"
             base_sha="$(git ls-remote https://github.com/${{ github.repository }}.git refs/heads/main | cut -f1)"
+            lanes='["source-head","deterministic-merge"]'
+            candidate_kind="source-branch"
           fi
           [[ "$source_sha" =~ ^[0-9a-f]{40}$ ]]
           [[ "$base_sha" =~ ^[0-9a-f]{40}$ ]]
-          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
-          echo "base_sha=$base_sha" >> "$GITHUB_OUTPUT"
+          if [[ -n "$github_merge_sha" ]]; then
+            [[ "$github_merge_sha" =~ ^[0-9a-f]{40}$ ]]
+          fi
+          {
+            echo "lanes=$lanes"
+            echo "source_sha=$source_sha"
+            echo "base_sha=$base_sha"
+            echo "github_merge_sha=$github_merge_sha"
+            echo "candidate_kind=$candidate_kind"
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Check out exact source candidate
+  qualify:
+    name: exact-${{ matrix.lane }}
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(needs.plan.outputs.lanes) }}
+    steps:
+      - name: Resolve lane checkout
+        id: lane
+        shell: bash
+        env:
+          LANE: ${{ matrix.lane }}
+          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+          GITHUB_MERGE_SHA: ${{ needs.plan.outputs.github_merge_sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$LANE" == github-merge ]]; then
+            test -n "$GITHUB_MERGE_SHA"
+            checkout_sha="$GITHUB_MERGE_SHA"
+          else
+            checkout_sha="$SOURCE_SHA"
+          fi
+          [[ "$checkout_sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "checkout_sha=$checkout_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out immutable lane candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ steps.identity.outputs.source_sha }}
+          ref: ${{ steps.lane.outputs.checkout_sha }}
           fetch-depth: 0
           persist-credentials: false
           clean: true
 
-      - name: Materialize deterministic tested commit without changing source
+      - name: Materialize exact tested commit
         id: tested
         shell: bash
         env:
-          SOURCE_SHA: ${{ steps.identity.outputs.source_sha }}
-          BASE_SHA: ${{ steps.identity.outputs.base_sha }}
+          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+          BASE_SHA: ${{ needs.plan.outputs.base_sha }}
+          GITHUB_MERGE_SHA: ${{ needs.plan.outputs.github_merge_sha }}
           LANE: ${{ matrix.lane }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$SOURCE_SHA^{commit}"
           git cat-file -e "$BASE_SHA^{commit}"
-          if [[ "$LANE" == source-head ]]; then
-            tested_sha="$SOURCE_SHA"
-          else
-            tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-            test -n "$tree"
-            tested_sha="$(printf '%s\n' 'learning.plasticity deterministic qualification merge' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
-            git checkout --detach "$tested_sha"
-          fi
+          case "$LANE" in
+            source-head)
+              test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+              tested_sha="$SOURCE_SHA"
+              ;;
+            deterministic-merge)
+              test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+              tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+              test -n "$tree"
+              stamp="$(git show -s --format=%cI "$SOURCE_SHA")"
+              export GIT_AUTHOR_NAME='hepta qualification'
+              export GIT_AUTHOR_EMAIL='qualification@hepta.invalid'
+              export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+              export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+              export GIT_AUTHOR_DATE="$stamp"
+              export GIT_COMMITTER_DATE="$stamp"
+              tested_sha="$(printf '%s\n' 'learning.plasticity deterministic qualification merge' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+              git checkout --detach "$tested_sha"
+              ;;
+            github-merge)
+              test "$(git rev-parse HEAD)" = "$GITHUB_MERGE_SHA"
+              test "$(git rev-parse HEAD^1)" = "$BASE_SHA"
+              test "$(git rev-parse HEAD^2)" = "$SOURCE_SHA"
+              tested_sha="$GITHUB_MERGE_SHA"
+              ;;
+            final-merge)
+              test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+              git merge-base --is-ancestor "$BASE_SHA" "$SOURCE_SHA"
+              tested_sha="$SOURCE_SHA"
+              ;;
+            *)
+              echo "unsupported lane: $LANE" >&2
+              exit 2
+              ;;
+          esac
           test "$(git rev-parse HEAD)" = "$tested_sha"
           test -z "$(git status --porcelain)"
           echo "tested_sha=$tested_sha" >> "$GITHUB_OUTPUT"
@@ -102,8 +185,8 @@ jobs:
       - name: Run read-only qualification
         shell: bash
         env:
-          SOURCE_SHA: ${{ steps.identity.outputs.source_sha }}
-          BASE_SHA: ${{ steps.identity.outputs.base_sha }}
+          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+          BASE_SHA: ${{ needs.plan.outputs.base_sha }}
           TESTED_SHA: ${{ steps.tested.outputs.tested_sha }}
           LANE: ${{ matrix.lane }}
           GITHUB_WORKFLOW_SHA: ${{ github.workflow_sha }}
@@ -124,7 +207,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: learning-plasticity-${{ matrix.lane }}-${{ steps.identity.outputs.source_sha }}
+          name: learning-plasticity-${{ matrix.lane }}-${{ needs.plan.outputs.source_sha }}
           path: ${{ runner.temp }}/learning-plasticity-${{ matrix.lane }}/
           if-no-files-found: error
           retention-days: 14
@@ -143,57 +226,102 @@ jobs:
 
   readiness:
     name: exact-candidate-readiness
-    needs: qualify
+    needs: [plan, qualify]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Download both lane receipts
+      - name: Download same-run lane receipts
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          pattern: learning-plasticity-*-${{ github.event.pull_request.head.sha || github.sha }}
+          pattern: learning-plasticity-*-${{ needs.plan.outputs.source_sha }}
           path: ${{ runner.temp }}/receipts
           merge-multiple: false
 
       - name: Build one non-stitchable readiness manifest
         shell: bash
         env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+          BASE_SHA: ${{ needs.plan.outputs.base_sha }}
+          GITHUB_MERGE_SHA: ${{ needs.plan.outputs.github_merge_sha }}
+          CANDIDATE_KIND: ${{ needs.plan.outputs.candidate_kind }}
+          REQUIRED_LANES: ${{ needs.plan.outputs.lanes }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import hashlib, json, os, pathlib
+
           root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "receipts"
-          receipts = [json.loads(p.read_text()) for p in root.rglob("execution.json")]
-          by_lane = {r["lane"]: r for r in receipts}
-          required = {"source-head", "synthetic-merge"}
+          receipts = [json.loads(path.read_text()) for path in root.rglob("execution.json")]
+          by_lane = {row["lane"]: row for row in receipts}
+          required = set(json.loads(os.environ["REQUIRED_LANES"]))
           if set(by_lane) != required:
-              raise SystemExit(f"required lane set mismatch: {sorted(by_lane)}")
+              raise SystemExit(
+                  f"required lane set mismatch: expected={sorted(required)} actual={sorted(by_lane)}"
+              )
+
           source = os.environ["SOURCE_SHA"]
+          base = os.environ["BASE_SHA"]
           run = os.environ.get("GITHUB_RUN_ID")
           attempt = os.environ.get("GITHUB_RUN_ATTEMPT")
+          workflow_sha = None
           for lane, row in by_lane.items():
               if not row.get("passed") or row.get("sourceCommit") != source:
                   raise SystemExit(f"invalid {lane} receipt")
+              if row.get("baseCommit") != base:
+                  raise SystemExit(f"base drift in {lane}")
               if str(row.get("workflowRun")) != str(run) or str(row.get("runAttempt")) != str(attempt):
                   raise SystemExit(f"cross-run receipt stitching rejected for {lane}")
+              if workflow_sha is None:
+                  workflow_sha = row.get("workflowSha")
+              elif row.get("workflowSha") != workflow_sha:
+                  raise SystemExit(f"workflow SHA drift in {lane}")
+
+          if "source-head" in by_lane and by_lane["source-head"]["testedCommit"] != source:
+              raise SystemExit("source-head receipt tested a different commit")
+          if "github-merge" in by_lane:
+              expected = os.environ["GITHUB_MERGE_SHA"]
+              if not expected or by_lane["github-merge"]["testedCommit"] != expected:
+                  raise SystemExit("GitHub synthetic merge identity drift")
+          if "final-merge" in by_lane and by_lane["final-merge"]["testedCommit"] != source:
+              raise SystemExit("final merge receipt tested a different commit")
+
+          primary = by_lane.get("source-head") or by_lane.get("final-merge")
+          deterministic = by_lane.get("deterministic-merge")
+          github_merge = by_lane.get("github-merge")
+          final_merge = by_lane.get("final-merge")
           manifest = {
-              "schema": "hepta.learning-plasticity-readiness.v1",
+              "schema": "hepta.learning-plasticity-readiness.v2",
+              "candidateKind": os.environ["CANDIDATE_KIND"],
               "sourceHeadSha": source,
-              "baseSha": by_lane["source-head"]["baseCommit"],
-              "sourceTree": by_lane["source-head"]["sourceTree"],
-              "deterministicMergeSha": by_lane["synthetic-merge"]["testedCommit"],
-              "deterministicMergeTree": by_lane["synthetic-merge"]["testedTree"],
-              "workflowSha": by_lane["source-head"].get("workflowSha"),
+              "baseSha": base,
+              "sourceTree": primary["sourceTree"],
+              "deterministicMergeSha": deterministic["testedCommit"] if deterministic else None,
+              "deterministicMergeTree": deterministic["testedTree"] if deterministic else None,
+              "githubMergeSha": github_merge["testedCommit"] if github_merge else None,
+              "githubMergeTree": github_merge["testedTree"] if github_merge else None,
+              "finalMergeSha": final_merge["testedCommit"] if final_merge else None,
+              "finalMergeTree": final_merge["testedTree"] if final_merge else None,
+              "workflowSha": workflow_sha,
               "workflowRunId": run,
               "attemptId": attempt,
+              "runnerImage": primary.get("runnerImage"),
+              "runnerImageVersion": primary.get("runnerImageVersion"),
+              "targetTriple": primary.get("targetTriple"),
+              "cargoLockSha256": primary.get("cargoLockSha256"),
+              "implementationMapSha256": primary.get("implementationMapSha256"),
+              "documentationSha256": primary.get("documentationSha256"),
+              "testInventorySha256": primary.get("testInventorySha256"),
+              "qualificationProfileSha256": primary.get("qualificationProfileSha256"),
               "requiredLanes": sorted(required),
               "laneReceiptSha256": {
-                  lane: hashlib.sha256(json.dumps(row, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+                  lane: hashlib.sha256(
+                      json.dumps(row, sort_keys=True, separators=(",", ":")).encode()
+                  ).hexdigest()
                   for lane, row in sorted(by_lane.items())
               },
               "repositorySourceQualified": True,
-              "mergeReady": True,
+              "mergeReady": "github-merge" in required or "final-merge" in required,
+              "finalMergeQualified": "final-merge" in required,
               "productionQualified": False,
               "targetHostEvidence": False,
               "independentAcceptance": False,
@@ -208,7 +336,7 @@ jobs:
       - name: Upload single readiness manifest
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: learning-plasticity-readiness-${{ github.event.pull_request.head.sha || github.sha }}
+          name: learning-plasticity-readiness-${{ needs.plan.outputs.source_sha }}
           path: ${{ runner.temp }}/learning-plasticity-readiness.json
           if-no-files-found: error
           retention-days: 14
