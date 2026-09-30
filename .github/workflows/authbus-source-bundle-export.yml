@@ -1,0 +1,57 @@
+name: AuthBus source bundle export
+
+on:
+  push:
+    branches:
+      - auth-authbus-boundary-convergence-20260928
+    paths:
+      - .github/workflows/authbus-source-bundle-export.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: authbus-source-bundle-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    name: Export exact AuthBus candidate sources
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact pushed candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Record immutable source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          printf '%s\n' "${GITHUB_SHA}" > AUTHBUS_EXPORT_SOURCE_SHA
+          git status --porcelain=v1 --untracked-files=all > AUTHBUS_EXPORT_DIRTY_STATE
+          test ! -s AUTHBUS_EXPORT_DIRTY_STATE
+
+      - name: Export only the AuthBus convergence surface
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: authbus-source-bundle-${{ github.sha }}
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          include-hidden-files: true
+          path: |
+            AUTHBUS_EXPORT_SOURCE_SHA
+            codex-rs/Cargo.toml
+            codex-rs/Cargo.lock
+            codex-rs/rust-toolchain.toml
+            codex-rs/.cargo/**
+            codex-rs/hepta-authbus/**
+            codex-rs/hepta-types/**
+            docs/modules/auth.authbus/**
+            docs/lane-a-foundation/auth.authbus/**
+            qualification/module-execution-dossiers/**
+            .github/scripts/generate-authbus-status.py
+            .github/workflows/authbus-authority-qualification.yml
