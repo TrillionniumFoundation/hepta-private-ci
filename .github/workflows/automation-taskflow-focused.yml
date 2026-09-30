@@ -10,6 +10,8 @@ on:
       - codex-rs/hepta-types/**
       - codex-rs/Cargo.lock
       - CALLERS.toml
+      - scripts/verify_hepta_callers.py
+      - scripts/test_hepta_caller_receiver_scope.py
       - docs/modules/automation.taskflow/**
       - qualification/module-execution-dossiers/detail/automation.taskflow.md
       - .github/workflows/automation-taskflow-focused.yml
@@ -25,6 +27,8 @@ on:
       - codex-rs/hepta-types/**
       - codex-rs/Cargo.lock
       - CALLERS.toml
+      - scripts/verify_hepta_callers.py
+      - scripts/test_hepta_caller_receiver_scope.py
       - docs/modules/automation.taskflow/**
       - qualification/module-execution-dossiers/detail/automation.taskflow.md
       - .github/workflows/automation-taskflow-focused.yml
