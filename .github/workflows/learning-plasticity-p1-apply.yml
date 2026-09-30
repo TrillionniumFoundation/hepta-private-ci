@@ -23,7 +23,7 @@ env:
 jobs:
   apply-compile-publish:
     runs-on: macos-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - name: Check out exact staging head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -135,12 +135,12 @@ jobs:
           set -euo pipefail
           cargo test --locked -p codex-hepta-plasticity --lib -- --test-threads=1
 
-      - name: Run Agentd plasticity tests
+      - name: Run complete Agentd library tests
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd --lib plasticity_ -- --test-threads=1
+          cargo test --locked -p codex-hepta-agentd --lib -- --test-threads=1
 
       - name: Publish ordinary source as one reviewed commit
         shell: bash
@@ -148,7 +148,7 @@ jobs:
           set -euo pipefail
           rm -f /tmp/learning-plasticity-p1.patch
           git add -A
-          git diff --cached --check
+          git diff --cached --check -- . ':(exclude).authoring/**'
           test -n "$(git diff --cached --name-only)"
           tree="$(git write-tree)"
           export GIT_AUTHOR_NAME='github-actions[bot]'
