@@ -68,7 +68,7 @@ fn local_read_observes_a_new_generation_without_cached_authority() {
 #[test]
 fn local_read_still_rejects_its_own_corrupt_lifecycle_and_missing_manifest() {
     let (_temp, registry, record) = fixture();
-    let path = lifecycle_path(record.layout.run_root(), /*generation*/ 0);
+    let path = lifecycle_path(record.layout.owner_run_root(), /*generation*/ 0);
     let original = fs::read(&path).expect("original lifecycle");
     fs::write(&path, b"not-json").expect("corrupt local lifecycle");
     assert!(registry.load_agent(&record.manifest.agent_id).is_err());

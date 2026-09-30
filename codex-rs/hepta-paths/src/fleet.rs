@@ -88,7 +88,7 @@ impl HeptaFleetLayout {
             fleet_config: fleet_root.as_path().join("fleet.toml"),
             supervisor_database: state_root.join("supervisor.sqlite3"),
             runtime_module_supervisor_state: state_root.join("runtime-modules.json"),
-            supervisor_socket: run_root.join("supervisor.sock"),
+            supervisor_socket: run_root.join("owner/ctl"),
             supervisor_lock: run_root.join("supervisor.lock"),
             releases_root: fleet_root.as_path().join("releases"),
             agents_root: fleet_root.as_path().join("agents"),
@@ -127,6 +127,11 @@ impl HeptaFleetLayout {
         &self.supervisor_socket
     }
 
+    /// Query-only module selection, separated from the administrator socket.
+    pub fn runtime_selection_socket(&self) -> PathBuf {
+        self.run_root.join("selection/ctl")
+    }
+
     pub fn supervisor_lock(&self) -> &Path {
         &self.supervisor_lock
     }
@@ -158,6 +163,7 @@ pub struct HeptaAgentLayout {
     agent_config: PathBuf,
     home_root: PathBuf,
     run_root: PathBuf,
+    owner_run_root: PathBuf,
     agentd_control_socket: PathBuf,
     matrixd_control_socket: PathBuf,
     app_server_socket: PathBuf,
@@ -182,12 +188,12 @@ impl HeptaAgentLayout {
         Self {
             agent_config: agent_root.join("agent.toml"),
             home_root: agent_root.join("home"),
-            agentd_control_socket: fleet_run_root.join(format!("a{socket_key}.ctl")),
-            matrixd_control_socket: fleet_run_root.join(format!("a{socket_key}.mx")),
-            app_server_socket: fleet_run_root.join(format!("a{socket_key}.app")),
+            agentd_control_socket: fleet_run_root.join(format!("a{socket_key}/ctl")),
+            matrixd_control_socket: fleet_run_root.join(format!("a{socket_key}/mx")),
+            app_server_socket: fleet_run_root.join(format!("a{socket_key}/app")),
             writer_lock: run_root.join("writer.lock"),
             generation_cursor: run_root.join("generation.json"),
-            matrixd_process_lease: run_root.join("supervisor-matrix-process.json"),
+            matrixd_process_lease: agent_root.join("owner/supervisor-matrix-process.json"),
             logs_root: agent_root.join("logs"),
             active_release: releases_root.join("active"),
             cognitive_root: agent_root.join("cognitive"),
@@ -196,6 +202,7 @@ impl HeptaAgentLayout {
             matrix_secrets_root: agent_root.join("matrix/secrets"),
             automation_root: agent_root.join("automation"),
             agent_id,
+            owner_run_root: agent_root.join("owner"),
             agent_root,
             run_root,
             releases_root,
@@ -220,6 +227,11 @@ impl HeptaAgentLayout {
 
     pub fn run_root(&self) -> &Path {
         &self.run_root
+    }
+
+    /// Lifecycle and process journals owned by Supervisor, never by Agentd.
+    pub fn owner_run_root(&self) -> &Path {
+        &self.owner_run_root
     }
 
     pub fn app_server_socket(&self) -> &Path {

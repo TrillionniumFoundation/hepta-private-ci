@@ -23,6 +23,9 @@ use crate::FleetRegistryError;
 use crate::release::initialize_release_state;
 use crate::release::load_release_state;
 
+#[path = "registry_owner.rs"]
+mod owner;
+
 const LIFECYCLE_FILE_PREFIX: &str = "lifecycle-";
 const LIFECYCLE_FILE_SUFFIX: &str = ".json";
 static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);
@@ -68,6 +71,7 @@ impl FleetRegistry {
             std::fs::create_dir_all(directory)?;
             validate_physical_directory(directory)?;
         }
+        create_owner_socket_directory(&layout)?;
         sync_directory(layout.fleet_root().as_path())?;
         Ok(Self { layout })
     }
@@ -202,7 +206,7 @@ impl FleetRegistry {
         }
         let next = current.successor(requested)?;
         let layout = self.layout.agent(agent_id);
-        match publish_lifecycle(layout.run_root(), &next)? {
+        match publish_lifecycle(layout.owner_run_root(), &next)? {
             PublishOutcome::Published => Ok(next),
             PublishOutcome::AlreadyExists => {
                 let actual = self.load_agent(agent_id)?.lifecycle.generation;
@@ -223,6 +227,7 @@ impl FleetRegistry {
         for name in [
             "home",
             "run",
+            "owner",
             "logs",
             "releases",
             "cognitive",
@@ -239,10 +244,10 @@ impl FleetRegistry {
         )?;
         let initial = AgentLifecycleState::initial(manifest.agent_id.clone());
         write_new_file(
-            &lifecycle_path(&staging_root.join("run"), initial.generation),
+            &lifecycle_path(&staging_root.join("owner"), initial.generation),
             &lifecycle_json(&initial)?,
         )?;
-        sync_directory(&staging_root.join("run"))?;
+        sync_directory(&staging_root.join("owner"))?;
         initialize_release_state(&staging_root.join("releases"), &manifest.agent_id)?;
         sync_directory(&staging_root.join("releases"))?;
         sync_directory(staging_root)
@@ -265,6 +270,7 @@ impl FleetRegistry {
             layout.agent_root(),
             layout.home_root(),
             layout.run_root(),
+            layout.owner_run_root(),
             layout.logs_root(),
             layout.releases_root(),
             layout.cognitive_root(),
@@ -287,7 +293,7 @@ impl FleetRegistry {
                 manifest.agent_id
             )));
         }
-        let lifecycle = load_lifecycle(layout.run_root(), agent_id)?;
+        let lifecycle = load_lifecycle(layout.owner_run_root(), agent_id)?;
         let release_state = load_release_state(layout.releases_root(), agent_id)?;
         Ok(AgentRecord {
             manifest,
@@ -296,6 +302,19 @@ impl FleetRegistry {
             layout,
         })
     }
+}
+
+fn create_owner_socket_directory(layout: &HeptaFleetLayout) -> Result<(), FleetRegistryError> {
+    let directory = layout.run_root().join("owner");
+    match create_private_directory(&directory) {
+        Ok(()) => sync_directory(layout.run_root())?,
+        Err(error) if error.kind() == ErrorKind::AlreadyExists => {
+            validate_physical_directory(&directory)?;
+            validate_private_directory(&directory)?;
+        }
+        Err(error) => return Err(error.into()),
+    }
+    Ok(())
 }
 
 enum PublishOutcome {
