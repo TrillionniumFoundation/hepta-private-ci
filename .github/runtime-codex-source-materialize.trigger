@@ -1,0 +1,2 @@
+source_sha=3ca69624045a1672cfdd412779110ae3185bb2a2
+purpose=materialize reviewed runtime.codex ordinary source without build dependencies
