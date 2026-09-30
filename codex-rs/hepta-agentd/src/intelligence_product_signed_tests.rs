@@ -6,7 +6,16 @@ fn signed_fixture() -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
 ) {
-    let mut value = fixture();
+    signed_fixture_with_body(fixture(), generation(7))
+}
+
+fn signed_fixture_with_body(
+    mut value: Fixture,
+    body_generation: Generation,
+) -> (
+    Fixture,
+    codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+) {
     let key = SigningKey::from_bytes(&[47; 32]);
     for owner in &mut value.owners {
         if owner.owner_id.as_str() == "learning.eval" {
@@ -17,7 +26,7 @@ fn signed_fixture() -> (
     value.request.snapshot = CanonicalIntelligenceSnapshotV1::admit(CanonicalSnapshotRequestV1 {
         objective_digest: snapshot.objective_digest(),
         authority_epoch: snapshot.authority_epoch(),
-        body_generation: snapshot.body_generation(),
+        body_generation,
         configuration_digest: snapshot.configuration_digest(),
         revocation_frontier_digest: snapshot.revocation_frontier_digest(),
         owner_bindings: value.owners.clone(),
@@ -38,6 +47,10 @@ fn signed_fixture() -> (
     value.inputs.signed_evaluation = Some(signed);
     (value, trust)
 }
+
+#[cfg(unix)]
+#[path = "intelligence_objective_ingress_tests.rs"]
+mod objective_ingress_tests;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn signed_evaluation_completes_existing_owner_preparation_and_run_admission() {
