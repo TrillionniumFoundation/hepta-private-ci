@@ -475,6 +475,26 @@ path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 required = ["pub struct RegisteredBaoConsumer", "pub struct BaoFinalUseHost", "pub fn apply_revocation_update", "pub async fn consume_kv_v2", "StaleRevocationFeed", "AuthorityClock", "UnregisteredConsumer", "approval_verifier", "revocation_verifier"]
 forbidden = ["impl Default for BaoFinalUseHost", "permit_all"]
 
+[[protected_file]]
+path = "codex-rs/hepta-automation/src/lib.rs"
+required = ["#[cfg(test)]\nmod effect_executor;", "mod neural_circuit_runtime;", "ProviderEffectTaskFlowDriver"]
+forbidden = ["pub mod effect_executor", "mod effect_executor;\nmod authorized_effect;"]
+
+[[protected_file]]
+path = "codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs"
+required = ["This component has no independent production host", "Use the agentd-owned AutomationScheduler", "std::process::exit(64)"]
+forbidden = ["AutomationStore::open", "AutomationScheduler::new", "ProviderEffectTaskFlowDriver::new"]
+
+[[protected_file]]
+path = "codex-rs/hepta-automation/src/taskflow.rs"
+required = ["pub enum TaskFlowNodeKind", "Activity,", "Wait,", "Effect,", "TerminalSuccess,", "TerminalFailure,"]
+forbidden = ["TaskFlowNodeKind::Observe", "TaskFlowNodeKind::Decide", "TaskFlowNodeKind::Join", "TaskFlowNodeKind::Subcircuit"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+required = ["ProviderEffectTaskFlowDriver::new", "execute_authorized_taskflow_effect_async", "HttpProviderEffectAdapter::new", "HttpProviderEffectContractAttestation::verify_signed", "FinalUseAuthority::open_state_dir", "AuthorizedProviderEffectLookup::ProvenAbsent"]
+forbidden = ["struct HttpAuthorizedEffectDriver", "std::thread", "ProviderEffectKey::for_operation"]
+
 [authority]
 runtime_authority = false
 production_caller = false
