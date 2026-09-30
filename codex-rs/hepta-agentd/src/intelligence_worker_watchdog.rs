@@ -79,11 +79,12 @@ impl WorkerCompletionV1 {
                     return;
                 }
                 if let Some(observation) = observation.as_ref()
-                    && !observation.timed_out.swap(true, Ordering::AcqRel)
+                    && observation.telemetry.mark_worker_timed_out(
+                        &observation.timed_out,
+                        &observation.timeout_counted,
+                        &AtomicBool::new(false),
+                    )
                 {
-                    observation
-                        .telemetry
-                        .record_external_timeout_started(&observation.timeout_counted);
                     observation.telemetry.record_request_timeout();
                 }
                 let Some(grace) = hard_grace else {
@@ -127,8 +128,15 @@ impl Drop for WorkerCompletionV1 {
         }
         if let (Some(telemetry), Some(timeout_counted)) =
             (self.telemetry.as_ref(), self.timeout_counted.as_ref())
+            && timeout_counted.load(Ordering::Acquire)
         {
-            telemetry.record_external_timeout_finished(timeout_counted);
+            let synthetic_timeout = AtomicBool::new(false);
+            let finished = AtomicBool::new(true);
+            let _ = telemetry.mark_worker_timed_out(
+                &synthetic_timeout,
+                timeout_counted,
+                &finished,
+            );
         }
     }
 }
