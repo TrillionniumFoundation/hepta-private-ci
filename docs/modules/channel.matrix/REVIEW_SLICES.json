@@ -139,7 +139,8 @@
         "candidate_lanes_share_one_run_attempt",
         "production_evidence_is_external_and_exact",
         "readiness_manifest_is_non_mixable",
-        "source_closure_is_tracked_only"
+        "source_closure_is_tracked_only",
+        "workflow_source_authoring_is_closed"
       ],
       "owner": "channels-platform",
       "paths": [
@@ -148,12 +149,14 @@
         "docs/modules/channel.matrix/PROCESS_QUALIFICATION.md",
         "docs/modules/channel.matrix/PRODUCTION_QUALIFICATION_PROFILE.json",
         "docs/modules/channel.matrix/QUALIFICATION_SCENARIOS.json",
+        "docs/modules/channel.matrix/SOURCE_PURITY_AND_CANDIDATE_FREEZE.md",
         "scripts/channel_matrix_evidence_v2.py",
         "scripts/channel_matrix_pair_acceptance_v2.py",
         "scripts/channel_matrix_process_qualification.py",
         "scripts/channel_matrix_production_qualification.py",
         "scripts/channel_matrix_readiness.py",
-        "scripts/channel_matrix_source_provenance.py"
+        "scripts/channel_matrix_source_provenance.py",
+        "scripts/tests/test_channel_matrix_closure_workflow.py"
       ]
     },
     {

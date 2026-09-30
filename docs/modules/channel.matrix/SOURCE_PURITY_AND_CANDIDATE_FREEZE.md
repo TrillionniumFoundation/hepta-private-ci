@@ -36,6 +36,13 @@ top-level `contents: read`, and any checkout they perform must set
 `persist-credentials: false`. Qualification and Matrix-source-touching workflows
 are rejected if they contain source-authoring machinery.
 
+The repository also maintains a closed writable-workflow allowlist. Only the
+existing CLA, Rust release, and isolated single-main integration workflows may
+hold `contents: write`. A new or renamed write-capable workflow fails by default
+until an ordinary reviewed commit adds it to that closed inventory. Every
+allowlisted workflow remains disjoint from Matrix candidate branches, Matrix
+source roots, Matrix qualification scripts, and Matrix staging or patch payloads.
+
 ## 3. Read-only qualification invariant
 
 The allowed repository qualification path is read-only:
@@ -159,10 +166,11 @@ objects and retained receipts:
 
 1. No workflow can reconstruct or push a different Matrix source tree.
 2. Every Matrix qualification workflow is read-only regardless of filename.
-3. The candidate commit/tree, base, deterministic merge, GitHub merge, workflow,
+3. The repository write-capable workflow inventory is closed and Matrix-disjoint.
+4. The candidate commit/tree, base, deterministic merge, GitHub merge, workflow,
    run, attempt, toolchain, target, source inventory, and artifacts are explicit.
-4. Both exact lanes ran the same canonical command set and Q01-Q29 ledger.
-5. No result was borrowed from a superseded candidate or another attempt.
-6. The real merge SHA is scheduled for a fresh post-integration execution.
-7. External production and independent-acceptance gates remain false unless
+5. Both exact lanes ran the same canonical command set and Q01-Q29 ledger.
+6. No result was borrowed from a superseded candidate or another attempt.
+7. The real merge SHA is scheduled for a fresh post-integration execution.
+8. External production and independent-acceptance gates remain false unless
    their protected receipts are present and valid.

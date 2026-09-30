@@ -103,7 +103,7 @@ Paths:
 
 Invariants:
 
-- `dynamic_physical_send_is_forbidden`
+- `dynamic_physical_send_is_forbidden 
 - `raw_sdk_client_does_not_escape`
 - `sealed_adapter_is_non_overridable`
 - `transport_identity_is_bound_to_external_artifacts`
@@ -153,12 +153,14 @@ Paths:
 - `docs/modules/channel.matrix/PROCESS_QUALIFICATION.md`
 - `docs/modules/channel.matrix/PRODUCTION_QUALIFICATION_PROFILE.json`
 - `docs/modules/channel.matrix/QUALIFICATION_SCENARIOS.json`
+- `docs/modules/channel.matrix/SOURCE_PURITY_AND_CANDIDATE_FREEZE.md`
 - `scripts/channel_matrix_evidence_v2.py`
 - `scripts/channel_matrix_pair_acceptance_v2.py`
 - `scripts/channel_matrix_process_qualification.py`
 - `scripts/channel_matrix_production_qualification.py`
 - `scripts/channel_matrix_readiness.py`
 - `scripts/channel_matrix_source_provenance.py`
+- `scripts/tests/test_channel_matrix_closure_workflow.py`
 
 Invariants:
 
@@ -166,6 +168,7 @@ Invariants:
 - `production_evidence_is_external_and_exact`
 - `readiness_manifest_is_non_mixable`
 - `source_closure_is_tracked_only`
+- `workflow_source_authoring_is_closed`
 
 Verification:
 
