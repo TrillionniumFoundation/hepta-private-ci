@@ -1,44 +1,161 @@
 name: AuthBus target-host qualification
 
 on:
-  push:
-    branches:
-      - auth-authbus-boundary-convergence-20260928
-    paths:
-      - .github/workflows/authbus-target-host-qualification.yml
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact immutable candidate SHA to qualify
+        required: true
+        type: string
+      target_profile:
+        description: Registered target profile name
+        required: true
+        type: string
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: authbus-target-host-authoring-${{ github.ref }}
-  cancel-in-progress: true
+  group: authbus-target-host-${{ inputs.target_profile }}
+  cancel-in-progress: false
 
 jobs:
-  materialize-format:
-    name: Materialize AuthBus canonical format
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+  target-host:
+    name: AuthBus protected target-host fault matrix
+    environment: authbus-target-host-qualification
+    runs-on: [self-hosted, linux, authbus-target]
+    timeout-minutes: 360
+    env:
+      CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+      TARGET_PROFILE: ${{ inputs.target_profile }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
           fetch-depth: 0
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt
-      - name: Format, verify, and commit
+          persist-credentials: false
+          ref: ${{ env.CANDIDATE_SHA }}
+
+      - name: Verify exact immutable candidate
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --all --manifest-path codex-rs/Cargo.toml
-          git add -- codex-rs/hepta-authbus
-          if git diff --cached --quiet; then
-            echo 'AuthBus source is already formatted.'
-            exit 0
-          fi
-          git diff --cached --check
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -s -m 'style(auth.authbus): apply canonical formatting'
-          git push origin HEAD:${{ github.ref_name }}
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Verify root-owned target harnesses
+        shell: bash
+        run: |
+          set -euo pipefail
+          scenarios=(
+            enospc
+            power-loss
+            permission-loss
+            restore-old-snapshot
+            owner-collision
+            wal-corruption
+            backup-race
+            trust-generation-mismatch
+            fsync-failure
+            rename-failure
+            checkpoint-corruption
+          )
+          for scenario in "${scenarios[@]}"; do
+            harness="/opt/hepta/authbus-qualification/$scenario"
+            test -f "$harness"
+            test -x "$harness"
+            test "$(stat -c %u "$harness")" = 0
+            mode="$(stat -c %a "$harness")"
+            (( (8#$mode & 8#022) == 0 ))
+          done
+
+      - name: Capture immutable target identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/authbus-target-evidence"
+          mkdir -p "$evidence/receipts"
+          python3 - "$evidence/target-fingerprint.json" <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import platform
+          import subprocess
+          import sys
+
+          def command(*args):
+              return subprocess.check_output(args, text=True).strip()
+
+          os_release = pathlib.Path("/etc/os-release")
+          boot_id = pathlib.Path("/proc/sys/kernel/random/boot_id")
+          payload = {
+              "schema": "hepta.authbus.target-fingerprint.v1",
+              "runnerName": os.environ.get("RUNNER_NAME"),
+              "targetProfile": os.environ["TARGET_PROFILE"],
+              "kernelRelease": platform.release(),
+              "machine": platform.machine(),
+              "bootId": boot_id.read_text().strip(),
+              "osReleaseSha256": hashlib.sha256(os_release.read_bytes()).hexdigest(),
+              "rootFilesystem": command("findmnt", "-n", "-o", "FSTYPE,SOURCE,OPTIONS", "/"),
+              "candidateSha": os.environ["CANDIDATE_SHA"],
+          }
+          pathlib.Path(sys.argv[1]).write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Execute real fault matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/authbus-target-evidence"
+          scenarios=(
+            enospc
+            power-loss
+            permission-loss
+            restore-old-snapshot
+            owner-collision
+            wal-corruption
+            backup-race
+            trust-generation-mismatch
+            fsync-failure
+            rename-failure
+            checkpoint-corruption
+          )
+          for scenario in "${scenarios[@]}"; do
+            sudo --non-interactive "/opt/hepta/authbus-qualification/$scenario" \
+              --candidate-sha "$CANDIDATE_SHA" \
+              --target-profile "$TARGET_PROFILE" \
+              --output-dir "$evidence/receipts"
+            test -s "$evidence/receipts/$scenario.json"
+          done
+
+      - name: Validate and bind target-host receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/authbus-target-evidence"
+          python3 scripts/authbus-target-host-evidence.py \
+            --candidate-sha "$CANDIDATE_SHA" \
+            --target-profile "$TARGET_PROFILE" \
+            --receipt-dir "$evidence/receipts" \
+            --output "$evidence/qualification-manifest.json"
+
+      - name: Verify qualification did not mutate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+
+      - name: Upload immutable target-host evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: authbus-target-${{ inputs.target_profile }}-${{ inputs.candidate_sha }}
+          path: ${{ runner.temp }}/authbus-target-evidence
+          if-no-files-found: error
+          retention-days: 90
