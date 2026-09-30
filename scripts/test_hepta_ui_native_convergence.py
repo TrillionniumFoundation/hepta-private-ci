@@ -33,6 +33,60 @@ class UiNativeConvergenceTests(unittest.TestCase):
             evidence["limitations"],
         )
 
+    def test_job_environment_rejects_runner_in_each_actual_job(self) -> None:
+        workflow = (ROOT / ".github/workflows/ui-native-qualification.yml").read_text()
+        MODULE.check_job_environment_contexts(workflow)
+        for job in ("qualify", "storage_scale"):
+            offset = workflow.index("    env:\n", workflow.index(f"  {job}:\n"))
+            offset += len("    env:\n")
+            for expression in (
+                "runner.temp",
+                "runner['temp']",
+                "toJSON(runner)",
+                "format('}}', runner.temp)",
+            ):
+                with self.subTest(job=job, expression=expression):
+                    changed = (
+                        workflow[:offset]
+                        + f"      FIXTURE: ${{{{ {expression} }}}}\n"
+                        + workflow[offset:]
+                    )
+                    with self.assertRaisesRegex(
+                        RuntimeError, f"job {job} env uses unavailable context 'runner'"
+                    ):
+                        MODULE.check_job_environment_contexts(changed)
+
+    def test_context_guard_preserves_step_contexts_and_literal_names(self) -> None:
+        workflow = """name: context scope fixture
+on: workflow_dispatch
+jobs:
+  qualified:
+    env:
+      SOURCE: ${{ github.sha }}
+      OUTPUT: >-
+        ${{ format('literal runner.temp with ''quotes''', needs.subject.outputs.candidate) }}
+      SUBJECT: ${{ matrix.kind || inputs.kind || vars.kind }}
+      TOKEN: ${{ secrets.fixture }}
+      MATRIX: ${{ toJSON(strategy) }}
+    steps:
+      - env:
+          OUTPUT: ${{ runner.temp }}
+          PRIOR: ${{ steps.fixture.outputs.result }}
+        if: runner.os == 'Linux'
+        run: echo '${{ env.OUTPUT }}'
+"""
+        MODULE.check_job_environment_contexts(workflow)
+        MODULE.check_job_environment_contexts(
+            workflow.replace(
+                "literal runner.temp with ''quotes''", "literal runner.temp }} {0}"
+            )
+        )
+        changed = workflow.replace("github.sha", "env.SOURCE", 1)
+        with self.assertRaisesRegex(
+            RuntimeError, "job qualified env uses unavailable context 'env'"
+        ):
+            MODULE.check_job_environment_contexts(changed)
+
 
 class FrozenImplementationTests(unittest.TestCase):
     def setUp(self) -> None:

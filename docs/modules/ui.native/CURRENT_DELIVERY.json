@@ -249,8 +249,8 @@
     },
     "pythonTests": {
       "status": "passed",
-      "planned": 223,
-      "passed": 223,
+      "planned": 226,
+      "passed": 226,
       "failed": 0,
       "command": "python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v"
     },
@@ -389,6 +389,16 @@
       "nativeAdapterPassed": true,
       "globalVerificationPassed": false,
       "logSha256": "6f4f050b1d68b23ec2c3d7769029ac307618bf7fad8e9b75afeab179d119f778"
+    },
+    "workflowEntryValidation": {
+      "initialRejectedRunId": 36791294111,
+      "initialRejectedHeadSha": "37bdcc3d929d24fb44155dd8cf05a3fa93becc2f",
+      "observedFailure": "Unrecognized named-value runner in jobs.qualify.env and jobs.storage_scale.env; zero jobs created",
+      "fix": "initialize temporary paths on the runner and persist through GITHUB_ENV",
+      "localJobContextGuardPassed": true,
+      "runScriptsBashSyntaxPassed": 20,
+      "realShellPathPropagationPassed": true,
+      "remoteSevenSubjectQualificationPassed": false
     }
   },
   "historicalLocalAuditVerification": [

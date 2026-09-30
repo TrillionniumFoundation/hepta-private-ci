@@ -56,6 +56,7 @@
 | P2 | portal 超时从同步 RPC 结束后计算，父进程可能先终止导致取消失效 | 从请求前计算总期限，保留关闭 RPC/回收余量 |
 | P2 | 更新备份持续累积，清理 staged 文件没有绑定实际摘要 | 每目标最多保留 4 个、共 2 GiB 前驱；新增更新在写入前拒绝超额，恢复不受限；只清理摘要相符的所属文件 |
 | P2 | 旧 dossier/投影 receipt 引用退役分支、schema 和已删除工作流 | 同步当前架构和唯一验收链；保留历史和独立授权边界 |
+| P2 | 远端工作流在 job.env 使用 runner.temp，GitHub 在创建 job 前拒绝语义验证 | 将临时路径放到 runner 执行的初始化 step，并写入 GITHUB_ENV；保留 step 级合法 runner 上下文 |
 | P2 | 外部 compile-negative 夹具缺少锁文件，离线浮动解析先失败，未执行隐私验证 | 从精确应用锁 seed 归一化，逐项拒绝版本/摘要/依赖边漂移，再执行 locked 负向编译；保留失败诊断 |
 | P2 | 全局实现映射检查器只接受 v3，拒绝当前 ui.native v6 映射 | 仅对该模块提供只读严格适配，复用完整冻结检查；其他模块规则和所有权保持严格 |
 
@@ -82,7 +83,7 @@ UI 改进保持 picker/read/mutation 分工：对话框可以独立工作，读�
 
 本轮常规应用回归 212/212、相关 owner 回归 210/210 通过；应用的三项
 ignored 项是两个完整规模主体及其子进程 worker，规模主体单独运行。
-最终 Python 验证 223/223、36 项打包/portal 测试、7 项投影测试、4 项 registry
+最终 Python 验证 226/226、36 项打包/portal 测试、7 项投影测试、4 项 registry
 测试和源码冻结检查通过；严格 Clippy 两组通过。项目图遍历 195 个本地
 manifest、0 错误，53 项分层回归通过；实际 Bazel 9.0.0 lock-update 与
 lock-check 通过，锁无需改变。新增回归覆盖实际
@@ -171,6 +172,11 @@ tombstones；百万完整归档 receipt 的容量仍未测量。
 实际重跑全局验证：ui.native 适配通过；其余 39 模块仍因历史源锚点非祖先失败。
 同一干净 head 的三项编译负向检查实际观察到 E0603；测试夹具按真实 host
 归一化精确应用锁，核对依赖身份、checksum 及边后执行 offline/locked 编译。
+
+PR #1308 的首次远端入口观测还发现 job.env 的 runner 上下文非法：run
+36791294111 的 annotations 精确指向第154和322行，未创建任何 job。修订改在
+runner 初始化步骤使用 RUNNER_TEMP 并写入 GITHUB_ENV；不能将修复或队列状态
+表述为七主体 CI 已通过。
 
 所有 productionQualified/deploymentQualified/releaseAuthorized 保持 false。
 本轮停止条件是复现问题均有对应修复与回归，复审未发现新的同范围可执行

@@ -31,7 +31,8 @@ class PlatformConstructionTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name) / "repo"
         self.root.mkdir()
-        self.output = Path(self.temp.name) / "evidence"
+        self.runner_temp = Path(self.temp.name) / "runner"
+        self.output = self.runner_temp / "ui-native-platform"
         self.git("init", "--quiet")
         self.git("config", "user.name", "fixture")
         self.git("config", "user.email", "fixture@example.invalid")
@@ -60,7 +61,7 @@ class PlatformConstructionTests(unittest.TestCase):
                 "CANDIDATE": self.candidate,
                 "BASE": self.base,
                 "KIND": kind,
-                "NATIVE_OUTPUT_ROOT": str(self.output),
+                "RUNNER_TEMP": str(self.runner_temp),
                 "GITHUB_ENV": str(Path(self.temp.name) / "github-env"),
             },
             text=True,
@@ -78,6 +79,55 @@ class PlatformConstructionTests(unittest.TestCase):
             f"commit={self.candidate}",
             (self.output / "native-evidence/source.txt").read_text(),
         )
+        exported = (Path(self.temp.name) / "github-env").read_text()
+        self.assertIn(f"NATIVE_OUTPUT_ROOT={self.output}\n", exported)
+
+    def test_storage_preparation_exports_target_for_later_steps(self):
+        implementation = "a" * 40
+        state = self.root / "apps/hepta-native/CANDIDATE.json"
+        state.parent.mkdir(parents=True)
+        state.write_text(json.dumps({"implementationSourceSha": implementation}))
+        self.git("add", ".")
+        self.git("commit", "--quiet", "-m", "storage subject")
+        candidate = self.git("rev-parse", "HEAD").strip()
+        script = shell_step("Prepare exact implementation evidence paths")
+        script = script.replace("${{ needs.subject.outputs.candidate }}", candidate)
+        script = script.replace(
+            "${{ needs.subject.outputs.implementation }}", implementation
+        )
+        exported = Path(self.temp.name) / "storage-github-env"
+        result = subprocess.run(
+            ["bash", "-c", script],
+            cwd=self.root,
+            text=True,
+            capture_output=True,
+            env={
+                **os.environ,
+                "RUNNER_TEMP": str(self.runner_temp),
+                "GITHUB_ENV": str(exported),
+            },
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        later_env = dict(
+            line.split("=", 1) for line in exported.read_text().splitlines()
+        )
+        later = subprocess.run(
+            [
+                "bash",
+                "-c",
+                'printf "%s\\n%s\\n" "$CARGO_TARGET_DIR" "$IMPLEMENTATION_SHA"',
+            ],
+            cwd=self.root,
+            text=True,
+            capture_output=True,
+            env={**os.environ, **later_env},
+        )
+        self.assertEqual(later.returncode, 0, later.stderr)
+        self.assertEqual(
+            later.stdout.splitlines(),
+            [str(self.runner_temp / "ui-native-storage-target"), implementation],
+        )
+        self.assertEqual(self.git("status", "--porcelain"), "")
 
     def test_merge_preserves_ordered_parents_and_clean_checkout(self):
         result = self.construct("merge")
@@ -119,14 +169,23 @@ class StorageReleaseProfileTests(unittest.TestCase):
             strace.chmod(0o755)
             workflow = WORKFLOW.read_text(encoding="utf-8")
             for identifier in ("compile", "active", "retired"):
-                section = workflow.split(f"      - id: {identifier}\n", 1)[1].split("      - ", 1)[0]
+                section = workflow.split(f"      - id: {identifier}\n", 1)[1].split(
+                    "      - ", 1
+                )[0]
                 run = section.split("        run: ", 1)[1]
-                script = textwrap.dedent(run[2:]) if run.startswith("|\n") else run.strip()
+                script = (
+                    textwrap.dedent(run[2:]) if run.startswith("|\n") else run.strip()
+                )
                 result = subprocess.run(
-                    ["bash", "-c", script], cwd=root, capture_output=True, text=True,
+                    ["bash", "-c", script],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
                     env={
-                        **os.environ, "PATH": f"{binary}{os.pathsep}{os.environ['PATH']}",
-                        "CAPTURED_COMMANDS": str(commands), "RUNNER_TEMP": str(root),
+                        **os.environ,
+                        "PATH": f"{binary}{os.pathsep}{os.environ['PATH']}",
+                        "CAPTURED_COMMANDS": str(commands),
+                        "RUNNER_TEMP": str(root),
                         "IMPLEMENTATION_SHA": "a" * 40,
                     },
                 )
@@ -134,12 +193,20 @@ class StorageReleaseProfileTests(unittest.TestCase):
             captured = [json.loads(line) for line in commands.read_text().splitlines()]
             self.assertEqual(len(captured), 3)
             for command in captured:
-                cargo_arguments = command[:command.index("--")] if "--" in command else command
+                cargo_arguments = (
+                    command[: command.index("--")] if "--" in command else command
+                )
                 for argument in ("test", "--release", "--locked", "--lib"):
                     self.assertIn(argument, cargo_arguments)
             self.assertIn("--no-run", captured[0])
-            self.assertIn("storage_qualification_tests::storage_active_scale_qualification", captured[1])
-            self.assertIn("storage_qualification_tests::storage_retirement_scale_qualification", captured[2])
+            self.assertIn(
+                "storage_qualification_tests::storage_active_scale_qualification",
+                captured[1],
+            )
+            self.assertIn(
+                "storage_qualification_tests::storage_retirement_scale_qualification",
+                captured[2],
+            )
 
 
 class RepositoryAggregateTests(unittest.TestCase):

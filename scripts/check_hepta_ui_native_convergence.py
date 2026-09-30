@@ -304,6 +304,67 @@ def check_frozen_implementation(implementation: str) -> None:
     check_frozen_storage_budgets(implementation)
 
 
+def check_job_environment_contexts(workflow: str) -> None:
+    """Check job env expressions before GitHub schedules a runner.
+
+    This workflow uses two-space mapping indentation. Runner, step and env
+    contexts are available inside steps, but not in job-level env values.
+    """
+    allowed = {"github", "needs", "strategy", "matrix", "vars", "secrets", "inputs"}
+    in_jobs = False
+    job = None
+    environment: list[str] = []
+    in_environment = False
+
+    def validate() -> None:
+        pattern = r"\$\{\{((?:'(?:[^']|'')*'|[^'}]|\}(?!\}))*?)\}\}"
+        for match in re.finditer(pattern, "\n".join(environment), re.DOTALL):
+            # Expressions use single-quoted string literals, with doubled
+            # quotes for escaping. Text in a literal names no context.
+            expression = re.sub(r"'(?:[^']|'')*'", "", match.group(1))
+            for token in re.finditer(r"[A-Za-z_][A-Za-z0-9_-]*", expression):
+                before = expression[: token.start()].rstrip()
+                after = expression[token.end() :].lstrip()
+                name = token.group().lower()
+                if (
+                    before.endswith(".")
+                    or after.startswith("(")
+                    or name in {"true", "false", "null"}
+                ):
+                    continue
+                _require(
+                    name in allowed,
+                    f"job {job} env uses unavailable context {token.group()!r}",
+                )
+
+    for line in workflow.splitlines():
+        stripped = line.lstrip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        indentation = len(line) - len(stripped)
+        if in_environment and indentation <= 4:
+            validate()
+            environment = []
+            in_environment = False
+        if indentation == 0:
+            in_jobs = stripped == "jobs:"
+            job = None
+        elif in_jobs and indentation == 2:
+            job = stripped.split(":", 1)[0]
+        elif (
+            in_jobs
+            and job is not None
+            and indentation == 4
+            and stripped.startswith("env:")
+        ):
+            in_environment = True
+            environment.append(stripped[4:])
+        elif in_environment:
+            environment.append(stripped)
+    if in_environment:
+        validate()
+
+
 def check_frozen_storage_budgets(implementation: str) -> None:
     # This JSON is embedded by include_str! in the qualification executable.
     # Only the two source-navigation anchors may continue after its source freeze.
@@ -344,6 +405,7 @@ def check_repository() -> dict[str, Any]:
         f"unexpected ui.native workflow set: {ui_native_workflows}",
     )
     workflow = _read(f".github/workflows/{ALLOWED_WORKFLOW}")
+    check_job_environment_contexts(workflow)
     check_dependency_workflow_filters(workflow)
     for forbidden in ("contents: write", "git push", "git commit", "git apply"):
         _require(
