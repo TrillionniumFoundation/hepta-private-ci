@@ -24,6 +24,8 @@ production-verifier = ["production-authority"]
 # Offline key-custody and signer tools. This implies the verifier types because
 # requests and receipts are checked with the same canonical contracts.
 offline-authority-tools = ["production-verifier"]
+# Explicit root-owned ordinary model issuer; never independent qualification.
+local-model-authority = []
 
 [[bin]]
 name = "hepta-supervisord"
@@ -74,6 +76,12 @@ name = "hepta-final-use-revocation-signer"
 path = "src/bin/hepta-final-use-revocation-signer.rs"
 test = false
 required-features = ["offline-authority-tools"]
+
+[[bin]]
+name = "hepta-model-authority"
+path = "src/bin/hepta-model-authority.rs"
+test = false
+required-features = ["local-model-authority"]
 
 [lints]
 workspace = true

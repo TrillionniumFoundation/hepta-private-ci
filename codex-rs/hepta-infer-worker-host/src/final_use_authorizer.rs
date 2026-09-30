@@ -16,7 +16,6 @@ use std::time::Duration;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseRevocations;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::VerifiedUseToken;
 use serde::Deserialize;
 use serde::Serialize;
@@ -31,11 +30,11 @@ use tokio::time::timeout;
 use crate::native_app_server::TurnStartAuthorityFuture;
 use crate::native_app_server::TurnStartAuthorizer;
 
-const AUTHORITY_PORT_SCHEMA_VERSION: u32 = 1;
-const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+use codex_hepta_contracts::MODEL_ISSUER_OPERATION as AUTHORITY_PORT_OPERATION;
+use codex_hepta_contracts::MODEL_ISSUER_SCHEMA_VERSION as AUTHORITY_PORT_SCHEMA_VERSION;
 const MAX_CONFIG_BYTES: usize = 64 * 1024;
-const MAX_REQUEST_BYTES: usize = 16 * 1024;
-const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+use codex_hepta_contracts::MODEL_ISSUER_MAX_REQUEST_BYTES as MAX_REQUEST_BYTES;
+use codex_hepta_contracts::MODEL_ISSUER_MAX_RESPONSE_BYTES as MAX_RESPONSE_BYTES;
 const MAX_DENIAL_REASON_BYTES: usize = 1024;
 const MAX_ISSUER_TIMEOUT: Duration = Duration::from_secs(30);
 #[cfg(target_os = "linux")]
@@ -76,6 +75,9 @@ pub struct FinalUseAuthorizerConfig {
     pub issuer_timeout_ms: u64,
     #[serde(default)]
     pub issuer_process_identity: Option<IssuerProcessIdentityConfig>,
+    /// Root-published identity for peers whose /proc/PID/exe is not readable by the workload.
+    #[serde(default)]
+    pub issuer_process_attestation: Option<PathBuf>,
 }
 
 /// Production runtime.codex authorizer. The independent endpoint decides
@@ -85,6 +87,7 @@ pub struct UnixFinalUseAuthorizer {
     issuer_uid: u32,
     issuer_timeout: Duration,
     issuer_process_identity: Option<IssuerProcessIdentityConfig>,
+    issuer_process_attestation: Option<PathBuf>,
     authority: FinalUseAuthority,
 }
 
@@ -125,15 +128,22 @@ impl UnixFinalUseAuthorizer {
         if issuer_timeout.is_zero() || issuer_timeout > MAX_ISSUER_TIMEOUT {
             return Err("final-use issuer timeout must be 1..=30000 ms".into());
         }
+        if let Some(path) = &config.issuer_process_attestation
+            && (!path.is_absolute() || config.issuer_uid != 0)
+        {
+            return Err(
+                "root process attestation requires an absolute path and root issuer UID".into(),
+            );
+        }
         if let Some(expected) = config.issuer_process_identity.as_ref() {
             validate_process_identity_config(expected)?;
-        } else if require_process_identity {
+        } else if require_process_identity && config.issuer_process_attestation.is_none() {
             return Err(
                 "Linux production final-use authority requires issuer process identity".into(),
             );
         }
         #[cfg(not(target_os = "linux"))]
-        if config.issuer_process_identity.is_some() {
+        if config.issuer_process_identity.is_some() || config.issuer_process_attestation.is_some() {
             return Err("issuer process identity is currently supported only on Linux".into());
         }
         let authority = FinalUseAuthority::open_state_dir(
@@ -151,6 +161,7 @@ impl UnixFinalUseAuthorizer {
             issuer_uid: config.issuer_uid,
             issuer_timeout,
             issuer_process_identity: config.issuer_process_identity,
+            issuer_process_attestation: config.issuer_process_attestation,
             authority,
         })
     }
@@ -193,9 +204,10 @@ impl UnixFinalUseAuthorizer {
             let peer = stream.peer_cred()?;
             validate_issuer_peer_uid(peer.uid(), self.issuer_uid)?;
             #[cfg(target_os = "linux")]
-            let process_guard = validate_connected_issuer_process(
+            let process_guard = validate_connected_issuer_with_attestation(
                 peer.pid().and_then(|pid| u32::try_from(pid).ok()),
                 self.issuer_process_identity.as_ref(),
+                self.issuer_process_attestation.as_deref(),
             )?;
 
             stream.write_all(&request_len.to_be_bytes()).await?;
@@ -236,22 +248,8 @@ impl TurnStartAuthorizer for UnixFinalUseAuthorizer {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct IssuerRequest {
-    schema_version: u32,
-    operation: String,
-    binding: FinalUseBinding,
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct IssuerResponse {
-    schema_version: u32,
-    revocations: FinalUseRevocations,
-    grant: Option<SignedFinalUseGrant>,
-    denial_reason: Option<String>,
-}
+use codex_hepta_contracts::ModelIssuerRequest as IssuerRequest;
+use codex_hepta_contracts::ModelIssuerResponse as IssuerResponse;
 
 fn sync_revocations(authority: &FinalUseAuthority, candidate: FinalUseRevocations) -> Result<()> {
     let current = authority.revocation_head()?;
@@ -297,17 +295,111 @@ struct IssuerProcessSnapshot {
 struct IssuerProcessGuard {
     initial: IssuerProcessSnapshot,
     expected: IssuerProcessIdentityConfig,
+    attestation_path: Option<PathBuf>,
 }
 
 #[cfg(target_os = "linux")]
 impl IssuerProcessGuard {
     fn revalidate(&self) -> Result<()> {
-        let current = capture_issuer_process_identity(self.initial.pid)?;
+        let current = if let Some(path) = &self.attestation_path {
+            capture_attested_issuer(self.initial.pid, path)?
+        } else {
+            capture_issuer_process_identity(self.initial.pid)?
+        };
         if current != self.initial {
             return Err("final-use authority process identity changed during exchange".into());
         }
         validate_issuer_process_snapshot(&current, &self.expected)
     }
+}
+
+#[cfg(target_os = "linux")]
+fn validate_connected_issuer_with_attestation(
+    pid: Option<u32>,
+    expected: Option<&IssuerProcessIdentityConfig>,
+    attestation: Option<&Path>,
+) -> Result<Option<IssuerProcessGuard>> {
+    let Some(path) = attestation else {
+        return validate_connected_issuer_process(pid, expected);
+    };
+    let pid = pid.ok_or("issuer omitted Linux PID")?;
+    let initial = capture_attested_issuer(pid, path)?;
+    let pinned = IssuerProcessIdentityConfig {
+        executable_sha256: initial.executable_sha256.clone(),
+        cgroup_sha256: initial.cgroup_sha256.clone(),
+        boot_id_sha256: initial.boot_id_sha256.clone(),
+    };
+    validate_issuer_process_snapshot(&initial, expected.unwrap_or(&pinned))?;
+    Ok(Some(IssuerProcessGuard {
+        initial,
+        expected: expected.cloned().unwrap_or(pinned),
+        attestation_path: Some(path.to_path_buf()),
+    }))
+}
+
+#[cfg(target_os = "linux")]
+fn capture_attested_issuer(pid: u32, path: &Path) -> Result<IssuerProcessSnapshot> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
+    validate_protected_directory_chain(path.parent().ok_or("issuer attestation has no parent")?)?;
+    for ancestor in path
+        .parent()
+        .ok_or("issuer attestation has no parent")?
+        .ancestors()
+    {
+        let metadata = std::fs::symlink_metadata(ancestor)?;
+        if metadata.uid() != 0 || metadata.mode() & 0o022 != 0 {
+            return Err("issuer attestation directory must remain root protected".into());
+        }
+    }
+    let file = std::fs::OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_NOFOLLOW)
+        .open(path)?;
+    let metadata = file.metadata()?;
+    if !path.is_absolute()
+        || !metadata.is_file()
+        || metadata.uid() != 0
+        || metadata.nlink() != 1
+        || metadata.mode() & 0o022 != 0
+    {
+        return Err("issuer attestation must be a root-protected regular file".into());
+    }
+    let mut bytes = Vec::new();
+    file.take(4097).read_to_end(&mut bytes)?;
+    if bytes.len() > 4096 {
+        return Err("issuer attestation exceeds its bound".into());
+    }
+    let record: codex_hepta_contracts::ModelIssuerProcessIdentity = serde_json::from_slice(&bytes)?;
+    if record.schema_version != 1 || record.pid != pid || pid == 0 {
+        return Err("issuer attestation does not match connected Linux peer".into());
+    }
+    let proc_root = PathBuf::from(format!("/proc/{pid}"));
+    let start_time_ticks = parse_proc_start_time_ticks(std::str::from_utf8(&read_bounded(
+        &proc_root.join("stat"),
+        MAX_PROC_TEXT_BYTES,
+    )?)?)?;
+    let cgroup_sha256 = sha256_bytes(&canonical_proc_text(read_bounded(
+        &proc_root.join("cgroup"),
+        MAX_PROC_TEXT_BYTES,
+    )?));
+    let boot_id_sha256 = sha256_bytes(&canonical_proc_text(read_bounded(
+        Path::new("/proc/sys/kernel/random/boot_id"),
+        256,
+    )?));
+    if record.start_time_ticks != start_time_ticks
+        || record.cgroup_sha256 != cgroup_sha256
+        || record.boot_id_sha256 != boot_id_sha256
+    {
+        return Err("issuer attestation is stale or disagrees with its live process".into());
+    }
+    Ok(IssuerProcessSnapshot {
+        pid,
+        start_time_ticks,
+        executable_sha256: record.executable_sha256,
+        cgroup_sha256,
+        boot_id_sha256,
+    })
 }
 
 #[cfg(target_os = "linux")]
@@ -324,6 +416,7 @@ fn validate_connected_issuer_process(
     Ok(Some(IssuerProcessGuard {
         initial,
         expected: expected.clone(),
+        attestation_path: None,
     }))
 }
 

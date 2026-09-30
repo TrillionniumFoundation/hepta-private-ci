@@ -30,6 +30,11 @@ const MAX_REVOKED_GRANTS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
 const MAX_ISSUER_TRUST_KEYS: usize = 8;
 
+enum TrustHeadOpen {
+    Exact,
+    Recovered,
+}
+
 /// Source-visible markers consumed by the closed-world B4 caller proof.
 pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_CLAIM: &str = "claim_final_use";
 pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DELIVERY: &str = "deliver_final_use";
@@ -402,19 +407,67 @@ impl FinalUseAuthority {
         clock: Arc<dyn AuthorityClock>,
         frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
     ) -> Result<Self, FinalUseError> {
+        Self::open_single_key_trust(
+            directory,
+            signer_id,
+            verifying_key,
+            head,
+            clock,
+            frontier_store,
+            TrustHeadOpen::Exact,
+        )
+    }
+
+    /// Reopen the persisted revocation head only after matching the complete
+    /// nonce frontier against external trust, then apply the supplied live
+    /// revocations through the normal monotonic CAS path. This allows a
+    /// protected issuer's revocation policy to advance while it is stopped
+    /// without permitting a restored local snapshot to reset replay state.
+    pub fn open_state_dir_with_recovered_trust(
+        directory: &std::path::Path,
+        signer_id: String,
+        verifying_key: [u8; 32],
+        head: FinalUseRevocations,
+        clock: Arc<dyn AuthorityClock>,
+        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+    ) -> Result<Self, FinalUseError> {
+        Self::open_single_key_trust(
+            directory,
+            signer_id,
+            verifying_key,
+            head,
+            clock,
+            frontier_store,
+            TrustHeadOpen::Recovered,
+        )
+    }
+
+    fn open_single_key_trust(
+        directory: &std::path::Path,
+        signer_id: String,
+        verifying_key: [u8; 32],
+        head: FinalUseRevocations,
+        clock: Arc<dyn AuthorityClock>,
+        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+        startup_head: TrustHeadOpen,
+    ) -> Result<Self, FinalUseError> {
         let key =
             VerifyingKey::from_bytes(&verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;
         if !identifier(&signer_id) || key.is_weak() || !valid_head(&head) {
             return Err(FinalUseError::InvalidTrust);
         }
         clock.now_unix_ms().map_err(map_trust_error)?;
-        let (store, state) = store::Store::open_exact(directory, &signer_id, verifying_key, head)?;
+        let (store, state) = if matches!(startup_head, TrustHeadOpen::Recovered) {
+            store::Store::open_recovered(directory, &signer_id, verifying_key, head.clone())?
+        } else {
+            store::Store::open_exact(directory, &signer_id, verifying_key, head.clone())?
+        };
         let observed = frontier_for_state(&state);
         let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;
         if trusted != observed {
             return Err(FinalUseError::AntiRollbackViolation);
         }
-        Ok(Self(Arc::new(Inner {
+        let authority = Self(Arc::new(Inner {
             signer_id,
             issuer_keys: vec![PinnedIssuerKey {
                 key_id: "single-key".into(),
@@ -427,7 +480,11 @@ impl FinalUseAuthority {
             store,
             clock,
             frontier_store: Some(frontier_store),
-        })))
+        }));
+        if authority.revocation_head()? != head {
+            authority.update_revocations(head)?;
+        }
+        Ok(authority)
     }
 
     /// Production-oriented constructor with a bounded issuer key ring,

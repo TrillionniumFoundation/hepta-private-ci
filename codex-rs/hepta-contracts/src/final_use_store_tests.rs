@@ -27,8 +27,14 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
             used_nonces: BTreeSet::from([[5; 32], [6; 32]]),
             failed: false,
         };
-        let (owner, _) =
-            Store::open_inner(directory.path(), "owner", trust, head.clone(), false).unwrap();
+        let (owner, _) = Store::open_inner(
+            directory.path(),
+            "owner",
+            trust,
+            head.clone(),
+            StartupHead::Exact,
+        )
+        .unwrap();
         drop(owner);
         let legacy = match trust {
             StoreTrust::SingleKey(key) => serde_json::json!({
@@ -44,14 +50,20 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
         )
         .unwrap();
         std::fs::remove_file(directory.path().join("authority.claims")).unwrap();
-        let (owner, migrated) =
-            Store::open_inner(directory.path(), "owner", trust, head.clone(), false).unwrap();
+        let (owner, migrated) = Store::open_inner(
+            directory.path(),
+            "owner",
+            trust,
+            head.clone(),
+            StartupHead::Exact,
+        )
+        .unwrap();
         assert_eq!(migrated.head, state.head);
         assert_eq!(migrated.used_nonces, state.used_nonces);
         owner.append_claim(9, [7; 32]).unwrap();
         drop(owner);
         let (_, reopened) =
-            Store::open_inner(directory.path(), "owner", trust, head, false).unwrap();
+            Store::open_inner(directory.path(), "owner", trust, head, StartupHead::Exact).unwrap();
         assert_eq!(
             reopened.used_nonces,
             BTreeSet::from([[5; 32], [6; 32], [7; 32]])

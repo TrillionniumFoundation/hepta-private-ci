@@ -143,7 +143,7 @@ fn async_effect_entry_rechecks_revocation_and_consumes_the_token() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     assert!(entered.matches(&binding));
@@ -158,7 +158,7 @@ fn async_effect_entry_is_denied_if_revoked_after_claim_before_entry() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     assert_eq!(
@@ -433,6 +433,57 @@ fn external_final_use_frontier_detects_restored_claim_snapshot() {
         .unwrap_err(),
         FinalUseError::AntiRollbackViolation
     );
+}
+
+#[test]
+fn recovered_external_trust_checks_replay_state_before_offline_policy_advance() {
+    let (old, signed, directory) = fixture().unwrap();
+    let head = old.revocation_head().unwrap();
+    drop(old);
+    let frontier = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_initial_head(&head).unwrap(),
+    )));
+    let open = |next: FinalUseRevocations| {
+        FinalUseAuthority::open_state_dir_with_recovered_trust(
+            directory.path(),
+            "security-owner".into(),
+            SigningKey::from_bytes(&[47; 32]).verifying_key().to_bytes(),
+            next,
+            Arc::new(SystemAuthorityClock),
+            frontier.clone(),
+        )
+    };
+    let authority = open(head.clone()).unwrap();
+    let initial_claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
+    drop(authority.claim(&signed, &signed.grant.binding).unwrap());
+    let consumed_claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
+    drop(authority);
+    let mut next = head.clone();
+    next.revision += 1;
+    std::fs::write(directory.path().join("authority.claims"), initial_claims).unwrap();
+    assert_eq!(
+        open(next.clone()).unwrap_err(),
+        FinalUseError::AntiRollbackViolation
+    );
+    std::fs::write(directory.path().join("authority.claims"), consumed_claims).unwrap();
+    let recovered = open(next.clone()).unwrap();
+    assert_eq!(recovered.revocation_head().unwrap(), next);
+    assert_eq!(
+        recovered.claim(&signed, &signed.grant.binding).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+    assert_eq!(
+        recovered.frontier().unwrap(),
+        frontier.load("security-owner").unwrap()
+    );
+    drop(recovered);
+    let advanced = std::fs::read(directory.path().join("authority.json")).unwrap();
+    assert!(open(head).is_err());
+    assert_eq!(
+        std::fs::read(directory.path().join("authority.json")).unwrap(),
+        advanced
+    );
+    assert_eq!(open(next.clone()).unwrap().revocation_head().unwrap(), next);
 }
 
 #[test]
@@ -847,7 +898,7 @@ fn replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small() {
     let claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
     assert_eq!(claims.len(), 40);
 
-    let mut second = signed.clone();
+    let mut second = signed;
     second.grant.grant_id = "read-two".into();
     second.grant.nonce = [6; 32];
     second.signature = SigningKey::from_bytes(&[47; 32])

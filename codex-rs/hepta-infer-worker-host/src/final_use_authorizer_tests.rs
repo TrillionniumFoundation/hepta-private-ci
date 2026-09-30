@@ -5,6 +5,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use tokio::net::UnixListener;
@@ -43,6 +44,7 @@ fn config(root: &Path, socket: PathBuf, verifying_key: [u8; 32]) -> FinalUseAuth
         revoked_grant_ids: BTreeSet::new(),
         issuer_timeout_ms: 2_000,
         issuer_process_identity: None,
+        issuer_process_attestation: None,
     }
 }
 
@@ -331,4 +333,45 @@ pub(crate) async fn independent_test_authorizer(
         Ok(())
     });
     Ok((authorizer, issuer))
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn workload_owned_process_attestation_cannot_replace_root_issuer_identity() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("identity.json");
+    let snapshot = capture_issuer_process_identity(std::process::id())?;
+    let record = codex_hepta_contracts::ModelIssuerProcessIdentity {
+        schema_version: 1,
+        pid: snapshot.pid,
+        start_time_ticks: snapshot.start_time_ticks,
+        executable_sha256: snapshot.executable_sha256,
+        cgroup_sha256: snapshot.cgroup_sha256,
+        boot_id_sha256: snapshot.boot_id_sha256,
+    };
+    std::fs::write(&path, serde_json::to_vec(&record)?)?;
+    assert!(capture_attested_issuer(std::process::id(), &path).is_err());
+    assert!(
+        validate_connected_issuer_with_attestation(Some(std::process::id()), None, Some(&path))
+            .is_err()
+    );
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn root_attestation_configuration_cannot_select_a_workload_issuer() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let mut candidate = config(
+        directory.path(),
+        directory.path().join("issuer.sock"),
+        random_signing_key().verifying_key().to_bytes(),
+    );
+    candidate.issuer_process_attestation = Some(directory.path().join("identity.json"));
+    candidate.issuer_uid = 1000;
+    assert!(UnixFinalUseAuthorizer::from_config(candidate.clone()).is_err());
+    candidate.issuer_uid = 0;
+    candidate.issuer_process_attestation = Some(PathBuf::from("relative.json"));
+    assert!(UnixFinalUseAuthorizer::from_config(candidate).is_err());
+    Ok(())
 }

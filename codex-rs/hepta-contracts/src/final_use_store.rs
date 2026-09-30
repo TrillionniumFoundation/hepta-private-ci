@@ -73,6 +73,12 @@ enum StoreTrust {
     IssuerKeyRing([u8; 32]),
 }
 
+enum StartupHead {
+    Advance,
+    Exact,
+    Recover,
+}
+
 pub(super) struct Store {
     root: File,
     signer_id: String,
@@ -92,7 +98,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            true,
+            StartupHead::Advance,
         )
     }
 
@@ -107,7 +113,22 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            false,
+            StartupHead::Exact,
+        )
+    }
+
+    pub(super) fn open_recovered(
+        root: &Path,
+        signer_id: &str,
+        verifying_key: [u8; 32],
+        initial: FinalUseRevocations,
+    ) -> Result<(Self, State), FinalUseError> {
+        Self::open_inner(
+            root,
+            signer_id,
+            StoreTrust::SingleKey(verifying_key),
+            initial,
+            StartupHead::Recover,
         )
     }
 
@@ -122,7 +143,7 @@ impl Store {
             signer_id,
             StoreTrust::IssuerKeyRing(issuer_trust_sha256),
             initial,
-            false,
+            StartupHead::Exact,
         )
     }
 
@@ -131,7 +152,7 @@ impl Store {
         signer_id: &str,
         trust: StoreTrust,
         initial: FinalUseRevocations,
-        allow_startup_head_advance: bool,
+        startup_head: StartupHead,
     ) -> Result<(Self, State), FinalUseError> {
         let root = prepare_directory(root)?;
         let initialized = entry_exists(&root, "authority.lock")?;
@@ -233,7 +254,7 @@ impl Store {
             state
         };
 
-        if allow_startup_head_advance {
+        if matches!(startup_head, StartupHead::Advance) {
             if initial.authority_epoch >= state.head.authority_epoch
                 && initial.revision > state.head.revision
                 && (initial.authority_epoch > state.head.authority_epoch
@@ -256,7 +277,7 @@ impl Store {
             {
                 return Err(FinalUseError::InvalidTrust);
             }
-        } else if state.head != initial {
+        } else if matches!(startup_head, StartupHead::Exact) && state.head != initial {
             return Err(FinalUseError::InvalidTrust);
         }
 
