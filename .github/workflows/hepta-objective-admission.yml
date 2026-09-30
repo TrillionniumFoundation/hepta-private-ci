@@ -1,27 +1,10 @@
 name: Hepta objective admission qualification
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    paths:
-      - codex-rs/hepta-objective/**
-      - codex-rs/hepta-types/**
-      - codex-rs/hepta-agent-protocol/**
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-intelligence/**
-      - codex-rs/hepta-learning-ledger/**
-      - codex-rs/Cargo.lock
-      - docs/contracts/OBJECTIVE_ERRORS.json
-      - docs/readiness/PROTOCOLS.json
-      - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
-      - docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md
-      - docs/modules/objective.compiler/**
-      - qualification/module-execution-dossiers/detail/objective.compiler.md
-      - scripts/hepta-objective-target-measure.py
-      - scripts/hepta-implementation-maps.py
-      - .github/workflows/hepta-objective-admission.yml
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

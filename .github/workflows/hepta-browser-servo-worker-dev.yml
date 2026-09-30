@@ -1,17 +1,9 @@
 name: Hepta Browser Servo worker dev
 
 on:
-  push:
-    branches: [codex/browser-servo-effect-correctness-20260917]
-    paths:
-      - 'apps/hepta-browser/servo-worker/**'
-      - 'apps/hepta-browser/src/**'
-      - 'apps/hepta-browser/test/**'
-      - 'apps/hepta-browser/scripts/**'
-      - 'third_party/servo-patches/**'
-      - 'docs/modules/browser.servo/**'
-      - '.github/workflows/hepta-browser-servo-worker-dev.yml'
-      - '.github/workflows/hepta-browser-servo-deployment-qualification.yml'
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
   workflow_dispatch:
 
 permissions:

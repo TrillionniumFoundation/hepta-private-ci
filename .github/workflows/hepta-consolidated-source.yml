@@ -1,37 +1,19 @@
 name: Hepta consolidated source qualification (read-only)
 
 on:
-  push:
-    branches: [main]
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+    inputs:
+      full_qualification:
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       full_qualification:
         description: Execute all workspace owners and revalidate historical qualification gates.
         type: boolean
         default: true
-  pull_request:
-    paths:
-      - "codex-rs/**"
-      - "apps/**"
-      - "tools/hepta-engineering-control/**"
-      - "tools/hepta-os-evidence/**"
-      - ".cargo/**"
-      - "codex-rs/.cargo/**"
-      - "rust-toolchain"
-      - "rust-toolchain.toml"
-      - "codex-rs/rust-toolchain"
-      - "codex-rs/rust-toolchain.toml"
-      - "scripts/hepta_workspace.py"
-      - "scripts/test_hepta_native_feedback.py"
-      - "scripts/hepta_ci_v8.py"
-      - "scripts/hepta_ci_exec.py"
-      - "scripts/hepta_ci_dependencies.py"
-      - "scripts/hepta-gap-closure.py"
-      - "scripts/verify_cargo_lock.py"
-      - "justfile"
-      - "codex-rs/justfile"
-      - ".github/workflows/hepta-consolidated-source.yml"
-      - ".github/actions/hepta-synthetic-merge/**"
 
 permissions:
   contents: read

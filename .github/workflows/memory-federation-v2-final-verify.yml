@@ -1,38 +1,10 @@
 name: memory federation v2 final verify
 
 on:
-  push:
-    branches:
-      - fix/memory-federation-v2-closure-20260920
-    paths:
-      - ".github/workflows/memory-federation-v2-final-verify.yml"
-      - ".github/actions/hepta-synthetic-merge/**"
-      - "codex-rs/hepta-memory-federation/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/ext/hepta-memory/**"
-      - "codex-rs/app-server/**"
-      - "docs/modules/memory.federation/**"
-      - "qualification/memory-federation/**"
-      - "qualification/module-execution-dossiers/detail/memory.federation.md"
-      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
-      - "scripts/hepta-implementation-maps.py"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/memory-federation-v2-final-verify.yml"
-      - ".github/actions/hepta-synthetic-merge/**"
-      - "codex-rs/hepta-memory-federation/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/ext/hepta-memory/**"
-      - "codex-rs/app-server/**"
-      - "docs/modules/memory.federation/**"
-      - "qualification/memory-federation/**"
-      - "qualification/module-execution-dossiers/detail/memory.federation.md"
-      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
-      - "scripts/hepta-implementation-maps.py"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
