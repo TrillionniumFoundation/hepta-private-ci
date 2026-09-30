@@ -565,6 +565,8 @@ pub use self_iteration::self_iteration_canary_payload_v1;
 #[cfg(feature = "server")]
 pub use self_iteration::self_iteration_candidate_payload_v1;
 #[cfg(feature = "server")]
+pub use self_iteration::self_iteration_envelope_digest_v1;
+#[cfg(feature = "server")]
 pub use self_iteration::self_iteration_stage_payload_v1;
 
 #[cfg(feature = "server")]

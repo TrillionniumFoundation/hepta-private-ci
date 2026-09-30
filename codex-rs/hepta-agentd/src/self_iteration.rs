@@ -52,6 +52,7 @@ mod cycle;
 pub use cycle::AgentdSelfIterationCandidateAssemblerV1;
 pub use cycle::AgentdSelfIterationIndependentOwnersV1;
 pub use cycle::AgentdSelfIterationModelCycleV1;
+pub use cycle::envelope_digest as self_iteration_envelope_digest_v1;
 
 #[path = "self_iteration_parameter_factory.rs"]
 mod parameter_factory;

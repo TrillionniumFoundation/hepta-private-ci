@@ -16,6 +16,8 @@ mod local_cpu_control;
 mod local_cpu_generation;
 pub mod local_cpu_model;
 #[cfg(feature = "agentd-host")]
+mod local_cpu_parameter_compiler;
+#[cfg(feature = "agentd-host")]
 pub use local_cpu_control::CpuNeuronControlConfigV1;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_control::CpuNeuronInferenceControlV1;
@@ -27,6 +29,14 @@ pub use local_cpu_generation::CpuNeuronGenerationPlanV1;
 pub use local_cpu_generation::bootstrap_installed_cpu_neuron_v1;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_generation::open_installed_cpu_neuron_generation_v1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronGovernedParameterCompilerV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCandidatePlanV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerOwnersV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerPlanV1;
 
 pub mod final_use_authorizer;
 mod final_use_trust_port;

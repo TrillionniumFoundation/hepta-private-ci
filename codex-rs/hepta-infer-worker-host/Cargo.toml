@@ -7,7 +7,7 @@ publish = false
 
 [features]
 default = []
-agentd-host = ["codex-hepta-agentd/server", "codex-hepta-agentd/production-cognitive-write", "dep:anyhow", "dep:codex-hepta-neuron"]
+agentd-host = ["codex-hepta-agentd/server", "codex-hepta-agentd/production-cognitive-write", "dep:anyhow", "dep:codex-hepta-neuron", "dep:codex-hepta-agent-components"]
 test-support = []
 
 [lib]
@@ -20,6 +20,7 @@ workspace = true
 
 [dependencies]
 anyhow = { workspace = true, optional = true }
+codex-hepta-agent-components = { workspace = true, optional = true }
 codex-hepta-neuron = { path = "../hepta-neuron", optional = true }
 codex-hepta-types = { path = "../hepta-types" }
 codex-app-server-client = { workspace = true }

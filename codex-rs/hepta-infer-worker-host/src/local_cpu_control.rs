@@ -27,6 +27,7 @@ use crate::model_worker::ResourceGrant;
 use crate::model_worker::WorkerRequest;
 use crate::model_worker::canonical_neuron_feature_payload_digest;
 
+#[derive(Clone)]
 pub struct CpuNeuronControlConfigV1 {
     pub worker_id: String,
     pub generation: u64,

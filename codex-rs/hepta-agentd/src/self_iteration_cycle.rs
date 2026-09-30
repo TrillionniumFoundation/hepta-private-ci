@@ -212,7 +212,7 @@ where
     }
 }
 
-pub(super) fn envelope_digest(envelope: &IterationEnvelopeV1) -> Digest32 {
+pub fn envelope_digest(envelope: &IterationEnvelopeV1) -> Digest32 {
     let mut bytes = b"hepta.self-iteration.envelope.v1\0".to_vec();
     bytes.extend_from_slice(envelope.envelope_id.as_str().as_bytes());
     for digest in [
