@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 
-# Developer inputs only. This job never repairs source or grants qualification.
+# Developer inputs only. This read-only job exports pinned tooling for the exact candidate; it never repairs source or grants qualification.
 jobs:
   source:
     runs-on: ubuntu-24.04
