@@ -23,7 +23,7 @@ The default scope capacity remains 1,024 records, with a hard configurable maxim
 |---|---|---|
 | `reserving` | The directory transition was durable, but `prepare()` has not yet completed. No caller may dispatch from this state. | Under the scope lock, an absent record removes the entry; an exact present record is removed because the admission handoff did not complete. |
 | `ready` | The exact record and directory entry were durably written before `prepare()` returned. The operation may or may not have crossed the network boundary. | Restore the exact record and query the backend by operation ID. Never infer success and never submit a replacement. |
-| `removing` | Exact terminal or authenticated non-admission evidence authorized local cleanup, but cleanup may have been interrupted. | Under the scope lock, an absent record removes the entry; an exact present record returns to `ready` so later cleanup can retry. |
+| `removing` | Exact backend terminal evidence authorized local cleanup, but cleanup may have been interrupted. | Under the scope lock, an absent record removes the entry; an exact present record returns to `ready` so later cleanup can retry. |
 
 A crash after the final `ready` write but before the caller observes `prepare()` is intentionally conservative: the record survives and is resolved by authoritative lookup. A crash before `ready` cannot create dispatch authority and is repaired as an uncompleted local reservation.
 
@@ -47,7 +47,7 @@ If an exact record already exists but directory repair fails, the result remains
 
 ## Cleanup sequence
 
-Terminal cleanup verifies the exact stored record against the independently observed terminal projection. For indexed records it then writes `removing`, deletes and verifies the record, and finally deletes and verifies the directory entry. Failed removal retains enough state for a later retry. An unindexed legacy record may be deleted only after the same exact terminal-identity verification; this compatibility path does not grant admission or discover other legacy records.
+An absent V1 lookup is never cleanup evidence: a delayed admission may still arrive, so the exact ready record remains pending for bounded lookup. Terminal cleanup verifies the exact stored record against the independently observed terminal projection. For indexed records it then writes `removing`, deletes and verifies the record, and finally deletes and verifies the directory entry. Failed removal retains enough state for a later retry. An unindexed legacy record may be deleted only after the same exact terminal-identity verification; this compatibility path does not grant admission or discover other legacy records.
 
 The browser cleanup queue remains a bounded, single-flight maintenance helper. Its memoization never certifies terminality and never authorizes replay.
 

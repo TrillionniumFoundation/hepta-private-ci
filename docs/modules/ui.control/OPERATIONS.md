@@ -36,7 +36,7 @@ Each deployed release must have an immutable deployment ID. The external qualifi
 - stable authenticated identity across refresh;
 - coherent snapshot endpoint;
 - durable operation admission with unique ID/digest semantics;
-- operation lookup that returns `found: false` only for authoritative durable non-admission;
+- authenticated operation lookup; `found: false` reports current absence and cannot finalize non-admission;
 - terminal observation;
 - server-issued audit trace;
 - generation fencing at execution;
@@ -84,7 +84,7 @@ At minimum collect:
 - unique conflict count and identical replay count;
 - accepted-to-terminal latency by action and target;
 - indeterminate submission count and lookup recovery outcome;
-- authenticated `not_accepted` disposition count and accepted-acknowledgement/`found:false` contradiction count;
+- absent-but-indeterminate lookup count and accepted-acknowledgement/`found:false` contradiction count;
 - pending ledger age, maximum lookup wait, lookup latency, recovery-backoff deferrals, active backoff entries, and next eligible lookup time;
 - outbox backlog and generation-fence rejection count;
 - frontend error code count, including local recovery-storage degradation, without tokens or unrestricted reason text;
@@ -162,3 +162,13 @@ The retained exercise must demonstrate, rather than merely describe:
 - independent security review has no open critical or high finding;
 - deployment, security, and release authorities are three distinct identities, cryptographically verify the retained Sigstore bundle outside the candidate, and explicitly approve the exact evidence-digest set for no more than 90 days;
 - the final `hepta.ui-control.external-evidence-bundle.v1` status is `accepted`, main ancestry is accepted, and `releaseAuthorized` is true.
+
+## Client recovery and freshness contract
+
+A failed runtime-view refresh clears that view for mutation; a later valid snapshot restores it. The last coherent snapshot retains its generation/revision fence until session invalidation, so clearing freshness cannot admit a regressed replacement. Read-only view inspection also removes expired session metadata and permissions, without discarding pending operations. Session refresh retries transient failures at 1, 2, 4, 8, 16, 32 and at most 60 seconds, bounded by expiry and the current provider lifecycle. Successful refresh resets backoff; unchanged near-expiry responses have a minimum one-second refresh interval. Stop and revocation fence future retries.
+
+Recovery import joins compatible identities rather than replacing the live ledger. It preserves in-flight promises and completed observations, rejects semantic conflicts atomically, and enforces capacity on the union. Never use an empty import as a reset or use an old image to reopen terminal history. Authenticated lookup must retain the exact audit trace established by admission; a missing or changed trace leaves work unresolved.
+
+The runtime projection and snapshot use a structural budget that admits all 1,000 documented module rows while retaining the 1 MiB byte ceiling. Accessors, sparse arrays and malformed canonical data are rejected before projection; optional backend fields are captured before asynchronous hashing.
+
+V1 absent lookup does not prove final non-admission. Retain local records and investigate backend admission/outbox progress; do not clear storage, generate replacement requests or declare failure from absence. A future final-non-admission contract must include a durable fence against delayed admission and independent backend evidence.

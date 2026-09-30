@@ -69,6 +69,10 @@ The transition validator enforces:
 1. Local recovery storage failure is visible but cannot wedge or authorize a control request.
 1. Session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers are rendered only in deterministic redacted form; full values remain outside DOM text and attributes.
 1. Control actions are disabled while the displayed view is stale or the session lacks the required permission.
+1. Snapshot refresh failure marks the view stale; view inspection removes expired session permissions without erasing pending operations.
+1. Backend observations preserve the admission audit identity; missing or changed traces never authorize terminal cleanup.
+1. An absent V1 lookup remains indeterminate because delayed admission is still possible; final non-admission requires a separately versioned durable backend fence.
+1. Recovery import preserves live dispatch promises and terminal history, rejects conflicts atomically, and bounds the combined pending inventory.
 1. Independent accessibility and security reviewers are distinct from one another and from deployment, release, and security approval authorities.
 1. Production approval cannot predate deployment, real-backend, independent review, or operational evidence; accepted bundles expose only domain-separated principal digests.
 

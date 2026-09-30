@@ -83,7 +83,9 @@ A client seeing timeout, abort after dispatch, connection reset, malformed ackno
 
 Once any accepted response or authenticated lookup has established an `auditTraceId`, every later observation for the same operation and semantic digest must preserve it. A missing or changed trace is an operation-ledger identity contradiction, not a new operation and not a harmless logging change. The client keeps the operation unresolved, emits an acknowledgement-mismatch/durability failure, and does not erase, retry, or replace the admitted identity.
 
-An authenticated `found: false` response is a final **non-admission disposition** for an unacknowledged local attempt. The client records `terminalStatus: not_accepted`, removes the pending identity from recovery storage under the same scoped cross-tab lock, and never reports runtime success or failure from that disposition. A later operator action requires a fresh confirmation and a fresh operation ID; the client must not silently resubmit the predecessor. If the same client already received an accepted acknowledgement and audit trace, `found: false` contradicts the durability contract; the client keeps the operation unresolved, emits an acknowledgement-mismatch failure, and retries lookup under bounded backoff rather than erasing the accepted identity.
+An authenticated `found: false` response is a point-in-time absence observation, not final non-admission. A request already dispatched by this or another tab can commit after lookup. The client therefore retains the exact identity and scoped recovery record as `indeterminate`, continues bounded lookup, and neither reports a terminal result nor silently submits a replacement. If an accepted acknowledgement has already established an audit trace, absence contradicts backend durability and raises `UI_CONTROL_ACK_MISMATCH` without clearing the operation.
+
+Final non-admission needs a separately versioned backend-owned transaction that binds the exact operation and permanently fences all delayed admission attempts, including in-flight workers, outboxes and session switches. A plain SELECT, browser lock, elapsed timeout or client process restart cannot supply that guarantee. The current V1 lookup has no such receipt and the client does not invent one. An operator must preserve unresolved records until backend-owned reconciliation establishes a supported terminal observation. This can retain genuinely unsent crash records; closing them safely is an explicit backend integration requirement.
 
 Pending and transiently failed lookups use bounded round-robin scheduling with per-operation exponential backoff. Backoff must not allow early permanent-pending records to starve later identities, and one poison lookup must not prevent unrelated operations from being queried.
 
@@ -93,7 +95,7 @@ Before execution, the runtime owner revalidates the generation/revision contract
 
 ## Terminality
 
-Only the runtime owner or its durable terminal observer may transition an **accepted** operation to a runtime terminal state. Browser close, process restart, local pending eviction, request acknowledgement, or audit-log delivery is not terminal evidence. The client-only `not_accepted` disposition records the authenticated absence of a durable admission record; it is not a runtime-owner outcome.
+Only the runtime owner or its durable terminal observer may transition an **accepted** operation to a runtime terminal state. Browser close, process restart, local pending eviction, request acknowledgement, or audit-log delivery is not terminal evidence. An absence observation remains indeterminate and cannot authorize terminal cleanup.
 
 ## Retention and replay
 
@@ -110,7 +112,8 @@ Production evidence must demonstrate:
 - crash between admission and dispatch is recovered from the outbox;
 - accepted response loss is recovered by lookup;
 - pending, terminal, restart-reconciled, and same-principal post-session-switch lookups retain the admission audit trace;
-- a client crash after local persistence but before dispatch resolves through authenticated `found: false` without replay;
+- an absent lookup before delayed admission retains the exact recovery identity; subsequent admission is observed without mutation replay;
+- final non-admission, when supported by a versioned backend contract, durably prevents every delayed admission path;
 - generation rollover fences delayed work;
 - backup/restore does not reopen operation IDs or replace their audit traces;
 - metrics and audit traces correlate one-to-one with ledger records.
