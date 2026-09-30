@@ -2,6 +2,7 @@
 '''Validate exact-source closure, the single Cargo surface and CI role split.'''
 from __future__ import annotations
 
+import json
 import re
 import tomllib
 from pathlib import Path
@@ -24,6 +25,13 @@ QUALIFIERS = (
 NATIVE_QUALIFIER = ROOT / "codex-rs/hepta-bao-adapter/qa/qualify.py"
 MATERIALIZER = (
     ROOT / ".github/workflows/secrets-heptabao-development-materialize.yml"
+)
+CANONICAL_MANIFEST = (
+    ROOT / "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json"
+)
+CALLERS = ROOT / "CALLERS.toml"
+RUNTIME_DEFINITION = (
+    ROOT / "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs"
 )
 
 
@@ -49,9 +57,7 @@ def validate_materialized_source() -> None:
     host = (
         ROOT / "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
     ).read_text(encoding="utf-8")
-    runtime = (
-        ROOT / "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs"
-    ).read_text(encoding="utf-8")
+    runtime = RUNTIME_DEFINITION.read_text(encoding="utf-8")
     combined = host + "\n" + runtime
     for declaration in (
         "OutcomePending(Box<BaoConsumptionOperationV1>)",
@@ -75,6 +81,62 @@ def validate_materialized_source() -> None:
         combined,
     )
     require(unboxed is None, "unboxed product-error constructor remains")
+
+
+def rust_product_callers() -> list[str]:
+    callers: list[str] = []
+    for path in ROOT.rglob("*.rs"):
+        if path == RUNTIME_DEFINITION:
+            continue
+        relative = path.relative_to(ROOT)
+        parts = set(relative.parts)
+        lower_name = path.name.lower()
+        if parts.intersection(
+            {".git", "target", "tests", "test", "examples", "example", "qa", "fixtures"}
+        ):
+            continue
+        if "test" in lower_name or lower_name.endswith("_fixture.rs"):
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+        if "SqliteBaoProductRuntimeV1::new(" in text:
+            callers.append(relative.as_posix())
+    return sorted(callers)
+
+
+def validate_product_composition_truth() -> None:
+    manifest = json.loads(CANONICAL_MANIFEST.read_text(encoding="utf-8"))
+    readiness = manifest.get("readinessDimensions", {})
+    callers = rust_product_callers()
+    require(
+        not callers,
+        "non-test SQLite Bao product caller source exists without canonical "
+        f"composition evidence: {callers}",
+    )
+    require(
+        readiness.get("productComposed") is False,
+        "canonical manifest must keep productComposed=false while no caller exists",
+    )
+
+    inventory = tomllib.loads(CALLERS.read_text(encoding="utf-8"))
+    boundaries = inventory.get("boundary", [])
+    bao_boundaries = [
+        boundary
+        for boundary in boundaries
+        if boundary.get("id") == "bao_final_use_host_new"
+        or boundary.get("symbol") == "SqliteBaoProductRuntimeV1::new"
+    ]
+    require(
+        bao_boundaries,
+        "CALLERS.toml is missing the Bao construction boundary",
+    )
+    for boundary in bao_boundaries:
+        require(
+            boundary.get("product_callers", []) == [],
+            "CALLERS.toml must not claim a product caller while source scan is empty",
+        )
 
 
 def validate_qualifiers() -> None:
@@ -172,11 +234,12 @@ def validate_materializer_role() -> None:
 def main() -> int:
     validate_cargo_surface()
     validate_materialized_source()
+    validate_product_composition_truth()
     validate_qualifiers()
     validate_materializer_role()
     print(
         "validated materialized exact source, single complete Cargo surface, "
-        "and independent read-only qualification"
+        "closed product-caller truth and independent read-only qualification"
     )
     return 0
 
