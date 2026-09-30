@@ -81,6 +81,12 @@ pub async fn run(
     let intelligence_execution = config.intelligence_execution_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    crate::intelligence_profile::validate_runtime_profile_shape(
+        intelligence_product.is_some(),
+        intelligence_invocation.is_some(),
+        intelligence_learning.is_some(),
+        intelligence_execution.is_some(),
+    )?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
