@@ -1,52 +1,6 @@
-name: Cognitive read source preparation
+name: Cognitive read local source proposal
 
 on:
-  push:
-    branches:
-      - work/cognitive-read-production-convergence-20260927
-    paths:
-      - .github/workflows/cognitive-read-lock-refresh.yml
-      - scripts/repair-cognitive-read-qualification.py
-      - scripts/run-cognitive-read-convergence-repair.py
-      - scripts/prepare-cognitive-read-source.py
-      - scripts/prepare-cognitive-read-durable-handoff.py
-      - scripts/apply-cognitive-read-selected-cut.py
-      - scripts/apply-cognitive-read-durable-handoff.py
-      - scripts/cognitive_read_delivery_gates.py
-      - codex-rs/hepta-memory/src/lane_c_snapshot.rs
-      - codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs
-      - codex-rs/hepta-agentd/src/client.rs
-      - codex-rs/hepta-agentd/src/lib.rs
-      - codex-rs/hepta-agentd/src/cognitive_context.rs
-      - codex-rs/hepta-agentd/src/cognitive_context_final_use.rs
-      - codex-rs/hepta-agentd/src/cognitive_retrieval_delivery_tests.rs
-      - codex-rs/hepta-infer-core/src/native_control.rs
-      - codex-rs/hepta-infer-core/src/cognitive_delivery.rs
-      - codex-rs/hepta-infer-worker-host/src/native_app_server.rs
-      - codex-rs/hepta-infer-worker-host/src/native_run_control.rs
-  pull_request:
-    branches:
-      - main
-    paths:
-      - .github/workflows/cognitive-read-lock-refresh.yml
-      - scripts/repair-cognitive-read-qualification.py
-      - scripts/run-cognitive-read-convergence-repair.py
-      - scripts/prepare-cognitive-read-source.py
-      - scripts/prepare-cognitive-read-durable-handoff.py
-      - scripts/apply-cognitive-read-selected-cut.py
-      - scripts/apply-cognitive-read-durable-handoff.py
-      - scripts/cognitive_read_delivery_gates.py
-      - codex-rs/hepta-memory/src/lane_c_snapshot.rs
-      - codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs
-      - codex-rs/hepta-agentd/src/client.rs
-      - codex-rs/hepta-agentd/src/lib.rs
-      - codex-rs/hepta-agentd/src/cognitive_context.rs
-      - codex-rs/hepta-agentd/src/cognitive_context_final_use.rs
-      - codex-rs/hepta-agentd/src/cognitive_retrieval_delivery_tests.rs
-      - codex-rs/hepta-infer-core/src/native_control.rs
-      - codex-rs/hepta-infer-core/src/cognitive_delivery.rs
-      - codex-rs/hepta-infer-worker-host/src/native_app_server.rs
-      - codex-rs/hepta-infer-worker-host/src/native_run_control.rs
   workflow_dispatch:
 
 # Mutable repair is deliberately separated from immutable qualification. This
@@ -56,22 +10,20 @@ permissions:
   contents: read
 
 concurrency:
-  group: cognitive-read-source-preparation-${{ github.event.pull_request.head.ref || github.ref }}
+  group: cognitive-read-source-proposal-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   prepare:
     if: >-
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
-      ((github.event_name == 'push' && github.ref == 'refs/heads/work/cognitive-read-production-convergence-20260927') ||
-       (github.event_name == 'pull_request' && github.head_ref == 'work/cognitive-read-production-convergence-20260927'))
+      github.event_name == 'workflow_dispatch'
     runs-on: macos-14
     timeout-minutes: 60
     permissions:
       contents: read
     env:
-      SOURCE_BRANCH: work/cognitive-read-production-convergence-20260927
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      SOURCE_SHA: ${{ github.sha }}
       PROPOSAL_DIR: ${{ runner.temp }}/cognitive-read-preparation
     steps:
       - name: Check out exact authored source without persistent credentials
@@ -173,15 +125,15 @@ jobs:
           )
           PY
 
-          # Credential-free and clean after local authoring. Qualification will
-          # run only after a normal reviewed commit applies this artifact.
+          # Credential-free after local authoring. Qualification will run only
+          # after an ordinary reviewed commit applies this artifact.
           test -z "$(git config --local --get-regexp 'http\..*extraheader|credential\.|includeif\..*credentials' || true)"
           echo "prepared_head=$prepared_head" >> "$GITHUB_OUTPUT"
           {
             echo '## Local-only cognitive.read source proposal'
             echo "Input SHA: $SOURCE_SHA"
             echo "Prepared local SHA: $prepared_head"
-            echo 'The job had contents:read, persisted no checkout credential, and did not commit or push to any remote branch.'
+            echo 'The job had contents:read, persisted no checkout credential, and did not push to any remote branch.'
             echo 'This artifact is a mutable repair proposal, not qualification, acceptance, activation, promotion or release evidence.'
           } >> "$GITHUB_STEP_SUMMARY"
 
