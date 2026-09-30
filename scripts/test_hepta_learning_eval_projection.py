@@ -1,15 +1,32 @@
 import unittest
 
-from hepta_learning_eval_projection import BEGIN, END, canonical, projection, replace_projection
+from hepta_learning_eval_projection import (
+    BEGIN,
+    END,
+    canonical,
+    projection,
+    replace_projection,
+)
 
 
 def status():
-    return {"module": "learning.eval", "claims": {"productionImplementation": False},
-            "sourceFacts": {"recoverySource": {"processKillFixtureCutCount": 7},
-                            "outcomeSource": {"maximumChannels": 32, "maximumBatchRows": 100000},
-                            "capacitySource": {"configuredAttempts": 4096,
-                                               "expectedLifecycleEvents": 24576,
-                                               "anchoredRestartInterval": 128}}}
+    return {
+        "module": "learning.eval",
+        "claims": {"productionImplementation": False},
+        "sourceFacts": {
+            "recoverySource": {"processKillFixtureCutCount": 7},
+            "outcomeSource": {
+                "hostSealedArtifactRecovery": "single_and_multi_outcome_typed_archive_source_present",
+                "maximumChannels": 32,
+                "maximumBatchRows": 100000,
+            },
+            "capacitySource": {
+                "configuredAttempts": 4096,
+                "expectedLifecycleEvents": 28672,
+                "anchoredRestartInterval": 128,
+            },
+        },
+    }
 
 
 class ProjectionTests(unittest.TestCase):
@@ -43,8 +60,34 @@ class ProjectionTests(unittest.TestCase):
     def test_capacity_inventory_changes_projection(self):
         value = status()
         before = projection(value)
-        value["sourceFacts"]["capacitySource"]["configuredAttempts"] = 8192
-        self.assertNotEqual(before, projection(value))
+        value["sourceFacts"]["capacitySource"].update(
+            configuredAttempts=8192,
+            expectedLifecycleEvents=57344,
+            anchoredRestartInterval=256,
+        )
+        result = projection(value)
+        self.assertNotEqual(before, result)
+        self.assertIn("`8192` attempts,\n`57344` lifecycle events", result)
+        self.assertIn("restart every `256` attempts", result)
+
+    def test_typed_archive_inventory_preserves_execution_boundary(self):
+        result = projection(status())
+        self.assertIn(
+            "Selected-host single- and multi-outcome artifact recovery and publication resume\n"
+            "are present in source, with signatures reverified before final use.",
+            result,
+        )
+        self.assertIn(
+            "deployed execution, authenticated target-host qualification and measurement\n"
+            "provenance are not established by this source inventory.",
+            result,
+        )
+
+    def test_unknown_artifact_recovery_inventory_fails_closed(self):
+        value = status()
+        value["sourceFacts"]["outcomeSource"]["hostSealedArtifactRecovery"] = "unknown"
+        with self.assertRaises(ValueError):
+            projection(value)
 
     def test_source_cannot_issue_acceptance(self):
         value = status()
