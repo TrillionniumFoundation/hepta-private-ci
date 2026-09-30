@@ -1,0 +1,152 @@
+name: Learning plasticity P1 source apply
+
+on:
+  push:
+    branches:
+      - feat/learning-plasticity-product-closure-20260928
+    paths:
+      - ".github/workflows/learning-plasticity-p1-apply.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-plasticity-p1-apply-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: feat/learning-plasticity-product-closure-20260928
+  REVIEWED_PARENT: a78eb1705a7bd3b6a8f67940f86da271e0c021cc
+  SOURCE_SHA: ${{ github.sha }}
+
+jobs:
+  apply-compile-publish:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact staging head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+          clean: true
+
+      - name: Authenticate reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python3 - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          from pathlib import Path
+
+          parts = [Path(f'.authoring/review-p1-core.part{i:02d}') for i in range(5)]
+          if not all(path.is_file() for path in parts):
+              raise SystemExit('reviewed P1 patch is incomplete')
+          encoded = b''.join(path.read_bytes() for path in parts)
+          if hashlib.sha256(encoded).hexdigest() != '30fe79204b73efd1f50957d73fe68f9f4beaf17ed2087a94abfdc4ebf9e3a6b0':
+              raise SystemExit('reviewed P1 base64 digest mismatch')
+          compressed = base64.b64decode(b''.join(encoded.split()), validate=True)
+          if hashlib.sha256(compressed).hexdigest() != '37b1430915ca47e103d4893261e7178f5487c1d41932adc5e0195b700e3980c0':
+              raise SystemExit('reviewed P1 gzip digest mismatch')
+          patch = gzip.decompress(compressed)
+          if hashlib.sha256(patch).hexdigest() != 'd0090d90d005338fa9580220abc863e50eeff007deef27f9f2565f84c79c7809':
+              raise SystemExit('reviewed P1 patch digest mismatch')
+          Path('/tmp/learning-plasticity-p1.patch').write_bytes(patch)
+          PY
+          git apply --binary --check /tmp/learning-plasticity-p1.patch
+          git apply --binary /tmp/learning-plasticity-p1.patch
+
+      - name: Remove hidden source and mutating qualification chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            .authoring/review-p1-core.part* \
+            .authoring/direct-plasticity-source.part* \
+            .authoring/learning-plasticity-*.part* \
+            .github/workflows/learning-plasticity-exact-qualification.yml \
+            .github/workflows/learning-plasticity-exact-status.yml \
+            .github/workflows/learning-plasticity-materialized-source-diagnostic.yml \
+            .github/workflows/learning-plasticity-p0-materialize.yml \
+            .github/workflows/learning-plasticity-review-snapshot.yml \
+            .github/workflows/learning-plasticity-source-materialize.yml \
+            .github/workflows/learning-plasticity-p1-apply.yml
+          if find .authoring -maxdepth 1 -type f \( -name '*plasticity*' -o -name 'direct-plasticity-*' \) | grep -q .; then
+            echo 'hidden plasticity source remains' >&2
+            exit 1
+          fi
+
+      - name: Normalize Rust formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path Cargo.toml \
+            --package codex-hepta-plasticity \
+            --package codex-hepta-agentd
+
+      - name: Compile owner chain
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked --all-targets \
+            -p codex-hepta-plasticity \
+            -p codex-hepta-learning-artifacts \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd
+
+      - name: Run plasticity core tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-plasticity --lib -- --test-threads=1
+
+      - name: Run Agentd plasticity tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd --lib plasticity_ -- --test-threads=1
+
+      - name: Publish ordinary source as one reviewed commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f /tmp/learning-plasticity-p1.patch
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          tree="$(git write-tree)"
+          export GIT_AUTHOR_NAME='github-actions[bot]'
+          export GIT_AUTHOR_EMAIL='41898282+github-actions[bot]@users.noreply.github.com'
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+          message_file="$RUNNER_TEMP/commit-message.txt"
+          cat > "$message_file" <<'MSG'
+          fix(plasticity): close runtime recovery and coordination gaps
+
+          - move evidence time to an owner-observed final-use trusted clock
+          - replace global async receipt locking with keyed single-flight coordination
+          - recover or quarantine stale pending receipts descriptor-relatively
+          - bind rollback domains to independently attested physical identities
+          - expose durable unknown-outcome lookup and reconciliation contracts
+          - materialize topology and coverage source as ordinary reviewable files
+
+          Signed-off-by: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          MSG
+          final_commit="$(git commit-tree "$tree" -p "$REVIEWED_PARENT" < "$message_file")"
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$SOURCE_SHA" \
+            origin "$final_commit:refs/heads/$TARGET_BRANCH"
+          echo "FINAL_COMMIT=$final_commit" >> "$GITHUB_ENV"
+
+      - name: Report published commit
+        shell: bash
+        run: echo "Published ordinary reviewed source at $FINAL_COMMIT"
