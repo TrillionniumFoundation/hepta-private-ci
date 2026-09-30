@@ -48,6 +48,7 @@ use crate::read_registry_head_witness;
 use crate::read_registry_snapshot;
 use crate::storage::encode_head_witness;
 use crate::storage::encode_snapshot;
+use crate::storage::open_existing_beneath_trusted_root;
 use crate::validate_registry_head_witness;
 use crate::write_candidate_payload_beneath;
 use crate::write_registry_head_witness_beneath;
@@ -566,7 +567,7 @@ impl LearningArtifactOwnerHost {
             }
             Err(crate::ArtifactStorageError::AlreadyExists) => {
                 let loaded = read_candidate_payload(
-                    File::open(self.root.join(&relative))?,
+                    open_existing_beneath_trusted_root(&self.root, &relative)?,
                     staged_registry,
                     &manifest.artifact_id,
                 )?;
@@ -605,7 +606,7 @@ impl LearningArtifactOwnerHost {
                 Ok(receipt) => receipt,
                 Err(crate::ArtifactStorageError::AlreadyExists) => {
                     let reopened =
-                        read_registry_snapshot(File::open(self.root.join(&relative))?, expected)?;
+                        read_registry_snapshot(open_existing_beneath_trusted_root(&self.root, &relative)?, expected)?;
                     if reopened.snapshot().head_digest != expected.head_digest {
                         return Err(ArtifactOwnerHostError::CheckpointMismatch);
                     }
@@ -691,7 +692,7 @@ impl LearningArtifactOwnerHost {
             Ok(receipt) => receipt,
             Err(crate::ArtifactStorageError::AlreadyExists) => {
                 let reopened = read_registry_head_witness(
-                    File::open(self.root.join(&relative))?,
+                    open_existing_beneath_trusted_root(&self.root, &relative)?,
                     expected_receipt,
                     &requirement,
                 )?;
@@ -785,11 +786,14 @@ impl LearningArtifactOwnerHost {
             }
         }
         let receipt = matched.ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
-        let path = self.root.join("registries").join(format!(
+        let relative = PathBuf::from("registries").join(format!(
             "{}-{}.snapshot",
             receipt.head_digest, receipt.file_digest
         ));
-        Ok(read_registry_snapshot(File::open(path)?, receipt)?)
+        Ok(read_registry_snapshot(
+            open_existing_beneath_trusted_root(&self.root, relative)?,
+            receipt,
+        )?)
     }
 
     /// Recover the artifact registry that exactly backs the authenticated
@@ -842,8 +846,8 @@ impl LearningArtifactOwnerHost {
         matched.ok_or(ArtifactOwnerHostError::CheckpointMissing)
     }
 
-    fn registry_snapshot_path(&self, receipt: RegistrySnapshotReceipt) -> PathBuf {
-        self.root.join("registries").join(format!(
+    fn registry_snapshot_relative(&self, receipt: RegistrySnapshotReceipt) -> PathBuf {
+        PathBuf::from("registries").join(format!(
             "{}-{}.snapshot",
             receipt.head_digest, receipt.file_digest
         ))
@@ -861,7 +865,13 @@ impl LearningArtifactOwnerHost {
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         let receipt = self.current_registry_receipt(&current)?;
         let registry =
-            read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+            read_registry_snapshot(
+                open_existing_beneath_trusted_root(
+                    &self.root,
+                    self.registry_snapshot_relative(receipt),
+                )?,
+                receipt,
+            )?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
@@ -882,7 +892,13 @@ impl LearningArtifactOwnerHost {
         };
         let receipt = self.current_registry_receipt(&current)?;
         let registry =
-            read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+            read_registry_snapshot(
+                open_existing_beneath_trusted_root(
+                    &self.root,
+                    self.registry_snapshot_relative(receipt),
+                )?,
+                receipt,
+            )?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
