@@ -6,6 +6,8 @@ import copy
 import importlib.util
 import json
 import os
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
 import unittest
@@ -98,9 +100,7 @@ class MeasurementTests(unittest.TestCase):
             measure.parse_product_measurement(self.product_output(self.product)),
             self.product,
         )
-        self.assertEqual(
-            measure.process_resource_observation(resources()), resources()
-        )
+        self.assertEqual(measure.process_resource_observation(resources()), resources())
 
     def test_rejects_non_object_json_and_duplicate_records(self) -> None:
         for value in ([], None, True, 7):
@@ -198,7 +198,11 @@ class MeasurementTests(unittest.TestCase):
         with patch.object(
             measure,
             "run_native_fixture",
-            return_value=(self.ordinary_output(self.ordinary), resources(), {"test": "ordinary"}),
+            return_value=(
+                self.ordinary_output(self.ordinary),
+                resources(),
+                {"test": "ordinary"},
+            ),
         ):
             with self.assertRaises(SystemExit):
                 measure.run_fixture("test", self.ordinary["path"], 4)
@@ -208,7 +212,11 @@ class MeasurementTests(unittest.TestCase):
         with patch.object(
             measure,
             "run_native_fixture",
-            return_value=(self.product_output(self.product), resources(), {"test": "product"}),
+            return_value=(
+                self.product_output(self.product),
+                resources(),
+                {"test": "product"},
+            ),
         ):
             with self.assertRaises(SystemExit):
                 measure.run_product_fixture(4, 2)
@@ -236,8 +244,15 @@ class MeasurementTests(unittest.TestCase):
             measure.process_resource_observation(value)
 
     def test_native_test_selection_is_exact_and_unambiguous(self) -> None:
-        self.assertEqual(measure.select_exact_test("mod::work: test\nother: test", "work"), "mod::work")
-        for listing in ("other: test", "a::work: test\nb::work: test", "work: benchmark"):
+        self.assertEqual(
+            measure.select_exact_test("mod::work: test\nother: test", "work"),
+            "mod::work",
+        )
+        for listing in (
+            "other: test",
+            "a::work: test\nb::work: test",
+            "work: benchmark",
+        ):
             with self.subTest(listing=listing), self.assertRaises(SystemExit):
                 measure.select_exact_test(listing, "work")
 
@@ -268,27 +283,55 @@ class MeasurementTests(unittest.TestCase):
             executable = root / "test-executable"
             executable.write_bytes(b"test-only artifact fixture")
             executable.chmod(0o700)
-            row = {"reason": "compiler-artifact", "executable": str(executable),
-                   "target": {"name": "codex_hepta_objective", "kind": ["lib"], "src_path": str(source)},
-                   "profile": {"test": True}}
+            row = {
+                "reason": "compiler-artifact",
+                "executable": str(executable),
+                "target": {
+                    "name": "codex_hepta_objective",
+                    "kind": ["lib"],
+                    "src_path": str(source),
+                },
+                "profile": {"test": True},
+            }
             with patch.object(measure, "CARGO_ROOT", root):
-                selected, artifacts = measure.select_native_artifacts(json.dumps(row), "codex-hepta-objective", "codex_hepta_objective", "lib")
+                selected, artifacts = measure.select_native_artifacts(
+                    json.dumps(row),
+                    "codex-hepta-objective",
+                    "codex_hepta_objective",
+                    "lib",
+                )
                 self.assertEqual(selected["path"], str(executable))
                 self.assertEqual(artifacts, [selected])
                 for changed in ([], [row, row], [{**row, "profile": {"test": False}}]):
                     with self.subTest(changed=changed), self.assertRaises(SystemExit):
-                        measure.select_native_artifacts("\n".join(map(json.dumps, changed)), "codex-hepta-objective", "codex_hepta_objective", "lib")
+                        measure.select_native_artifacts(
+                            "\n".join(map(json.dumps, changed)),
+                            "codex-hepta-objective",
+                            "codex_hepta_objective",
+                            "lib",
+                        )
                 row["target"]["src_path"] = str(root / "wrong-crate/lib.rs")
                 with self.assertRaises(SystemExit):
-                    measure.select_native_artifacts(json.dumps(row), "codex-hepta-objective", "codex_hepta_objective", "lib")
+                    measure.select_native_artifacts(
+                        json.dumps(row),
+                        "codex-hepta-objective",
+                        "codex_hepta_objective",
+                        "lib",
+                    )
 
     def test_resource_sampler_executes_prebuilt_binary_not_cargo(self) -> None:
         native = {"executable": "/fixture/test", "artifacts": []}
-        with patch.object(measure, "build_native_fixture", return_value=native), \
-             patch.object(measure, "verify_native_artifacts") as verify, \
-             patch.object(measure, "command", return_value="module::test: test\n"), \
-             patch.object(measure, "run_isolated_command", return_value=("result", resources())) as run:
-            output, observed, binding = measure.run_native_fixture("package", None, "test", {})
+        with (
+            patch.object(measure, "build_native_fixture", return_value=native),
+            patch.object(measure, "verify_native_artifacts") as verify,
+            patch.object(measure, "command", return_value="module::test: test\n"),
+            patch.object(
+                measure, "run_isolated_command", return_value=("result", resources())
+            ) as run,
+        ):
+            output, observed, binding = measure.run_native_fixture(
+                "package", None, "test", {}
+            )
             self.assertEqual(run.call_args.args[:2], ("/fixture/test", "module::test"))
             self.assertNotIn("cargo", run.call_args.args)
             self.assertIn("--exact", run.call_args.args)
@@ -297,7 +340,47 @@ class MeasurementTests(unittest.TestCase):
             self.assertTrue(binding["artifactsUnchangedAfterExecution"])
             self.assertEqual(binding["exitCode"], 0)
 
-    def test_filesystem_identity_uses_longest_mount_and_marks_memory_storage(self) -> None:
+    def test_resource_helper_retains_actual_success_and_failed_process_output(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            log = root / "process.log"
+            output, observed = measure.run_isolated_command(
+                sys.executable,
+                "-c",
+                "print('native fixture output')",
+                cwd=root,
+                transcript_path=log,
+            )
+            self.assertEqual(output, "native fixture output\n")
+            lines = log.read_text().splitlines()
+            self.assertEqual(lines[0], "native fixture output")
+            self.assertEqual(
+                json.loads(lines[1].removeprefix(measure.RESOURCE_PREFIX)), observed
+            )
+            with self.assertRaises(subprocess.CalledProcessError):
+                measure.run_isolated_command(
+                    sys.executable,
+                    "-c",
+                    "print('failed fixture output'); raise SystemExit(3)",
+                    cwd=root,
+                    transcript_path=log,
+                )
+            self.assertTrue(log.read_text().startswith("failed fixture output\n"))
+            with self.assertRaises(subprocess.CalledProcessError):
+                measure.command(
+                    sys.executable,
+                    "-c",
+                    "print('failed build output'); raise SystemExit(3)",
+                    cwd=root,
+                    transcript_path=log,
+                )
+            self.assertEqual(log.read_text(), "failed build output\n")
+
+    def test_filesystem_identity_uses_longest_mount_and_marks_memory_storage(
+        self,
+    ) -> None:
         # Keep this synthetic mount namespace independent of host aliases such as
         # macOS /tmp -> /private/tmp while still exercising Path.resolve().
         mount_root = "/__hepta_objective_fixture__/tmp"

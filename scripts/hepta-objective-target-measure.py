@@ -2,10 +2,9 @@
 """Record objective.compiler target-host latency and resource evidence.
 
 Every workload fixture runs below a fresh helper process. Resource counters are
-therefore scoped to that fixture's command process tree instead of being the
-cumulative maximum of every previously executed child. Internal Rust phase
-latencies remain separately reported; the helper does not pretend that a
-process-tree RSS peak is an allocation measurement for an individual phase.
+therefore isolated from previously executed children. RSS is the OS-reported
+waited-child high-water value, not a simultaneous process-tree sum. Internal
+Rust phase latencies remain separately reported.
 """
 
 from __future__ import annotations
@@ -38,16 +37,23 @@ def fail(message: str) -> None:
     raise SystemExit("FAIL_HEPTA_OBJECTIVE_TARGET_MEASUREMENT: " + message)
 
 
-def command(*args: str, cwd: Path = ROOT, env: dict[str, str] | None = None) -> str:
+def command(
+    *args: str,
+    cwd: Path = ROOT,
+    env: dict[str, str] | None = None,
+    transcript_path: Path | None = None,
+) -> str:
     result = subprocess.run(
         args,
         cwd=cwd,
         env=env,
-        check=True,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
+    if transcript_path is not None:
+        transcript_path.write_bytes(result.stdout.encode())
+    result.check_returncode()
     return result.stdout
 
 
@@ -148,7 +154,10 @@ def resource_helper(cwd: Path, argv: list[str]) -> int:
 
 
 def run_isolated_command(
-    *args: str, cwd: Path, env: dict[str, str] | None = None
+    *args: str,
+    cwd: Path,
+    env: dict[str, str] | None = None,
+    transcript_path: Path | None = None,
 ) -> tuple[str, dict[str, Any]]:
     result = subprocess.run(
         [
@@ -166,13 +175,17 @@ def run_isolated_command(
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
+    if transcript_path is not None:
+        transcript_path.write_bytes(result.stdout.encode())
     resource_rows = [
         line.split(RESOURCE_PREFIX, 1)[1]
         for line in result.stdout.splitlines()
         if line.startswith(RESOURCE_PREFIX)
     ]
     child_lines = [
-        line for line in result.stdout.splitlines() if not line.startswith(RESOURCE_PREFIX)
+        line
+        for line in result.stdout.splitlines()
+        if not line.startswith(RESOURCE_PREFIX)
     ]
     child_output = "\n".join(child_lines)
     if child_output:
@@ -241,13 +254,18 @@ def parse_measurement(output: str, expected_path: str) -> dict[str, Any]:
             "compilerContractDigest",
         }:
             fail("ordinary measurement lacks the exact static-profile reuse key")
-        if type(reuse.get("profileRevision")) is not int or reuse["profileRevision"] <= 0:
+        if (
+            type(reuse.get("profileRevision")) is not int
+            or reuse["profileRevision"] <= 0
+        ):
             fail("ordinary measurement has an invalid profile revision")
         for field in ("profileDigest", "compilerContractDigest"):
             if not isinstance(reuse.get(field), str) or not reuse[field]:
                 fail(f"ordinary measurement has an invalid {field}")
         if value.get("dynamicAuthorizationCached") is not False:
-            fail("ordinary measurement must state that dynamic authorization is not cached")
+            fail(
+                "ordinary measurement must state that dynamic authorization is not cached"
+            )
     return value
 
 
@@ -353,7 +371,11 @@ def select_native_artifacts(
         target = row.get("target", {})
         source = target.get("src_path") if isinstance(target, dict) else None
         executable = row.get("executable")
-        if not source or not executable or not Path(source).resolve().is_relative_to(crate_root):
+        if (
+            not source
+            or not executable
+            or not Path(source).resolve().is_relative_to(crate_root)
+        ):
             continue
         item = file_identity(Path(executable))
         item["targetName"] = target.get("name")
@@ -366,25 +388,40 @@ def select_native_artifacts(
         ):
             selected.append(item)
     if len(selected) != 1:
-        fail(f"expected one Cargo test executable for {package}/{target_name}, found {len(selected)}")
+        fail(
+            f"expected one Cargo test executable for {package}/{target_name}, found {len(selected)}"
+        )
     return selected[0], sorted(artifacts.values(), key=lambda item: item["path"])
 
 
 def verify_native_artifacts(artifacts: list[dict[str, Any]]) -> None:
     for expected in artifacts:
         current = file_identity(Path(expected["path"]))
-        if any(current[key] != expected[key] for key in ("path", "sha256", "sizeBytes")):
+        if any(
+            current[key] != expected[key] for key in ("path", "sha256", "sizeBytes")
+        ):
             fail("native artifact changed between build and measurement")
 
 
-def build_native_fixture(package: str, target: str | None) -> dict[str, Any]:
+def build_native_fixture(
+    package: str, target: str | None, transcript_directory: Path | None = None
+) -> dict[str, Any]:
     """Build before resource sampling and bind every emitted package executable."""
     argv = ["cargo", "test", "--locked", "--release", "-p", package]
     argv.extend(["--test", target] if target else ["--lib"])
     argv.extend(["--no-run", "--message-format=json"])
-    output = command(*argv, cwd=CARGO_ROOT)
+    output = command(
+        *argv,
+        cwd=CARGO_ROOT,
+        transcript_path=transcript_directory / "cargo-artifacts.log"
+        if transcript_directory is not None
+        else None,
+    )
     selected, artifacts = select_native_artifacts(
-        output, package, target or package.replace("-", "_"), "test" if target else "lib"
+        output,
+        package,
+        target or package.replace("-", "_"),
+        "test" if target else "lib",
     )
     return {
         "schema": "hepta.objective-native-fixture.v1",
@@ -400,42 +437,110 @@ def build_native_fixture(package: str, target: str | None) -> dict[str, Any]:
 
 
 def select_exact_test(output: str, requested: str) -> str:
-    tests = [line.removesuffix(": test") for line in output.splitlines() if line.endswith(": test")]
-    matches = [name for name in tests if name == requested or name.endswith("::" + requested)]
+    tests = [
+        line.removesuffix(": test")
+        for line in output.splitlines()
+        if line.endswith(": test")
+    ]
+    matches = [
+        name for name in tests if name == requested or name.endswith("::" + requested)
+    ]
     if len(matches) != 1:
         fail(f"expected one exact native test for {requested}, found {len(matches)}")
     return matches[0]
 
 
 def run_native_fixture(
-    package: str, target: str | None, test_name: str, env: dict[str, str]
+    package: str,
+    target: str | None,
+    test_name: str,
+    env: dict[str, str],
+    evidence_directory: Path | None = None,
 ) -> tuple[str, dict[str, Any], dict[str, Any]]:
-    native = build_native_fixture(package, target)
+    transcript_directory = None
+    if evidence_directory is not None:
+        transcript_directory = evidence_directory / "native-fixtures" / test_name
+        transcript_directory.mkdir(parents=True, exist_ok=False)
+    native = build_native_fixture(package, target, transcript_directory)
     verify_native_artifacts(native["artifacts"])
-    listed = command(native["executable"], "--list", "--format", "terse", cwd=CARGO_ROOT, env=env)
+    listed = command(
+        native["executable"],
+        "--list",
+        "--format",
+        "terse",
+        cwd=CARGO_ROOT,
+        env=env,
+        transcript_path=transcript_directory / "test-list.log"
+        if transcript_directory is not None
+        else None,
+    )
     exact = select_exact_test(listed, test_name)
     verify_native_artifacts(native["artifacts"])
-    argv = [native["executable"], exact, "--ignored", "--exact", "--nocapture", "--test-threads=1"]
-    output, observation = run_isolated_command(*argv, cwd=CARGO_ROOT, env=env)
+    argv = [
+        native["executable"],
+        exact,
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+    ]
+    if transcript_directory is None:
+        output, observation = run_isolated_command(*argv, cwd=CARGO_ROOT, env=env)
+    else:
+        output, observation = run_isolated_command(
+            *argv,
+            cwd=CARGO_ROOT,
+            env=env,
+            transcript_path=transcript_directory / "process.log",
+        )
+    if transcript_directory is not None:
+        (transcript_directory / "execution.log").write_bytes(output.encode())
     verify_native_artifacts(native["artifacts"])
-    native.update({
-        "testName": exact,
-        "testListSha256": hashlib.sha256(listed.encode()).hexdigest(),
-        "executionCommand": argv,
-        "executionOutputSha256": hashlib.sha256(output.encode()).hexdigest(),
-        "exitCode": 0,
-        "artifactsUnchangedAfterExecution": True,
-    })
+    native.update(
+        {
+            "testName": exact,
+            "testListSha256": hashlib.sha256(listed.encode()).hexdigest(),
+            "executionCommand": argv,
+            "executionOutputSha256": hashlib.sha256(output.encode()).hexdigest(),
+            "exitCode": 0,
+            "artifactsUnchangedAfterExecution": True,
+        }
+    )
+    if transcript_directory is not None:
+        native["retainedLogs"] = {
+            "cargoArtifactMessages": str(
+                (transcript_directory / "cargo-artifacts.log").relative_to(
+                    evidence_directory
+                )
+            ),
+            "testList": str(
+                (transcript_directory / "test-list.log").relative_to(evidence_directory)
+            ),
+            "executionOutput": str(
+                (transcript_directory / "execution.log").relative_to(evidence_directory)
+            ),
+            "processOutput": str(
+                (transcript_directory / "process.log").relative_to(evidence_directory)
+            ),
+        }
+        native["processOutputSha256"] = hashlib.sha256(
+            (transcript_directory / "process.log").read_bytes()
+        ).hexdigest()
     return output, observation, native
 
 
-def run_product_fixture(samples: int, execution_samples: int) -> dict[str, Any]:
+def run_product_fixture(
+    samples: int, execution_samples: int, evidence_directory: Path | None = None
+) -> dict[str, Any]:
     env = os.environ.copy()
     env["HEPTA_OBJECTIVE_PRODUCT_MEASUREMENT_SAMPLES"] = str(samples)
     env["HEPTA_OBJECTIVE_PRODUCT_EXECUTION_SAMPLES"] = str(execution_samples)
     output, observation, native = run_native_fixture(
-        "codex-hepta-agentd", "objective_product_e2e",
-        "measurement_signed_objective_daemon_round_trip", env,
+        "codex-hepta-agentd",
+        "objective_product_e2e",
+        "measurement_signed_objective_daemon_round_trip",
+        env,
+        evidence_directory,
     )
     measurement = parse_product_measurement(output)
     if (
@@ -447,11 +552,20 @@ def run_product_fixture(samples: int, execution_samples: int) -> dict[str, Any]:
     return attach_resources(measurement, observation)
 
 
-def run_fixture(test_name: str, expected_path: str, samples: int) -> dict[str, Any]:
+def run_fixture(
+    test_name: str,
+    expected_path: str,
+    samples: int,
+    evidence_directory: Path | None = None,
+) -> dict[str, Any]:
     env = os.environ.copy()
     env["HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES"] = str(samples)
     output, observation, native = run_native_fixture(
-        "codex-hepta-objective", None, test_name, env,
+        "codex-hepta-objective",
+        None,
+        test_name,
+        env,
+        evidence_directory,
     )
     measurement = parse_measurement(output, expected_path)
     if measurement["samples"] != samples:
@@ -570,6 +684,9 @@ def current_filesystem_context() -> dict[str, Any]:
 
 
 def measure(args: argparse.Namespace) -> int:
+    output = Path(args.output).resolve()
+    if output == ROOT or ROOT in output.parents:
+        fail("measurement output and retained logs must be outside the source checkout")
     source_sha = git("rev-parse", "HEAD")
     source_tree = git("rev-parse", "HEAD^{tree}")
     if source_sha != args.expected_sha:
@@ -585,13 +702,17 @@ def measure(args: argparse.Namespace) -> int:
         "measurement_ordinary_admission_compile_v1",
         "ordinary_authenticated_admission_compile",
         args.ordinary_samples,
+        output.parent,
     )
     conflict = run_fixture(
         "measurement_conflict_extraction_v1",
         "maximum_conflict_extraction",
         args.conflict_samples,
+        output.parent,
     )
-    product = run_product_fixture(args.product_samples, args.execution_samples)
+    product = run_product_fixture(
+        args.product_samples, args.execution_samples, output.parent
+    )
 
     for measurement in (ordinary, conflict, product):
         native = measurement["nativeFixture"]
@@ -612,7 +733,9 @@ def measure(args: argparse.Namespace) -> int:
         "sourceTree": source_tree,
         "workflowRunId": os.environ.get("GITHUB_RUN_ID"),
         "workflowRunAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
-        "workflowCommit": os.environ.get("GITHUB_WORKFLOW_SHA", os.environ.get("GITHUB_SHA")),
+        "workflowCommit": os.environ.get(
+            "GITHUB_WORKFLOW_SHA", os.environ.get("GITHUB_SHA")
+        ),
         "workflowRef": os.environ.get("GITHUB_WORKFLOW_REF"),
         "hostProfileId": args.host_profile_id,
         "host": {
@@ -647,7 +770,6 @@ def measure(args: argparse.Namespace) -> int:
         },
     }
 
-    output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(output.suffix + ".tmp")
     temporary.write_text(
@@ -661,7 +783,9 @@ def measure(args: argparse.Namespace) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--resource-helper", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--resource-helper", action="store_true", help=argparse.SUPPRESS
+    )
     parser.add_argument("--resource-cwd", help=argparse.SUPPRESS)
     parser.add_argument("--self-test", action="store_true")
     parser.add_argument("--expected-sha")
@@ -671,13 +795,19 @@ def main() -> int:
     parser.add_argument("--product-samples", type=int, default=32)
     parser.add_argument("--execution-samples", type=int, default=4)
     parser.add_argument("--output")
-    parser.add_argument("resource_command", nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
+    parser.add_argument(
+        "resource_command", nargs=argparse.REMAINDER, help=argparse.SUPPRESS
+    )
     args = parser.parse_args()
 
     if args.resource_helper:
         if not args.resource_cwd:
             parser.error("--resource-cwd is required for the resource helper")
-        helper_command = args.resource_command[1:] if args.resource_command[:1] == ["--"] else args.resource_command
+        helper_command = (
+            args.resource_command[1:]
+            if args.resource_command[:1] == ["--"]
+            else args.resource_command
+        )
         return resource_helper(Path(args.resource_cwd), helper_command)
     if args.resource_command:
         parser.error("unexpected trailing command")
