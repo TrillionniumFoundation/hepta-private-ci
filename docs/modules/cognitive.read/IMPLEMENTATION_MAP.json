@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "de6bfea76ab71d17b29ad45f24693224ab14b388",
-    "tree": "71bafea3b6f02b28eaa0eb35309ec04e1f2aeaa0"
+    "commit": "edbe4efe6bd8b2af8e5a9926b505415dfa4a06eb",
+    "tree": "363aee015d378222250538116503e3b2ea71ab55"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -20,7 +20,8 @@
     "docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md",
     "docs/modules/cognitive.read/FINAL_USE_CLOSURE.md",
     "docs/modules/cognitive.read/SELECTED_OWNER_CUT.md",
-    "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md"
+    "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md",
+    "docs/modules/cognitive.read/ADVERSARIAL_AUDIT_20261001.md"
   ],
   "declaredRoots": [
     "codex-rs/hepta-cognitive-read"
@@ -58,7 +59,7 @@
           "symbol": "OwnerCutReadView"
         }
       ],
-      "sourceBlob": "31f30f9b097a6bc51206030fae7588617941056f"
+      "sourceBlob": "f54aee2a3441b6f3ecee0d69ca6a0de1d2ab97d4"
     },
     {
       "operation": "read_v2",
@@ -73,7 +74,7 @@
       "designOperation": "bounded_compatibility_projection",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "67135f3f56c4779fbd27568ee69c389a38522e5c"
+      "sourceBlob": "58178a748790db073866319a305eaa6abe1e5b46"
     },
     {
       "operation": "read_authoritative_compatibility",
@@ -205,7 +206,7 @@
       "delegatedCallees": [
         "codex-rs/hepta-memory/src/lane_c_snapshot.rs"
       ],
-      "sourceBlob": "54d32506061ab56c2df9a906a18efd8de82196c4"
+      "sourceBlob": "3666778a33d289dceba808117a88e699d9b8fa8a"
     }
   ],
   "repositoryControlledGaps": [
@@ -250,11 +251,11 @@
     },
     {
       "path": ".github/workflows/cognitive-read-qualification.yml",
-      "object": "50f5128d8b5a1710a01faae07a9cde1c6dfefe5b"
+      "object": "d8e4ff5cf0b43435dbf438c788e79380c0f96a0e"
     },
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "b51747fef6708ec8572ab06adfdf4710fd972506"
+      "object": "9cf57acf921097270e194af89052198eefb8a475"
     },
     {
       "path": "codex-rs/Cargo.toml",
@@ -274,7 +275,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
-      "object": "c445ad65c5d69414935e2156c72f014a894c8b89"
+      "object": "1c53be94705a060be9e015c52cc6a80ca8f3a98e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
@@ -330,7 +331,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
-      "object": "8e59db97860259ebce5984328b740b9c3519637e"
+      "object": "063b6e388df92e78d780104566622cf93f1ef303"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "object": "0805186a42bc8998420e5fccec22bbde265ca336"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
@@ -354,7 +359,7 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-read",
-      "object": "ce3d0bc5be4b6b725e477f36815f3c5ae1e1f4e0"
+      "object": "736491ce8d0d1fad389d5c017b4eec49a38c0376"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/examples/cognitive_read_prepared_bench.rs",
@@ -370,7 +375,7 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/ids.rs",
-      "object": "31f30f9b097a6bc51206030fae7588617941056f"
+      "object": "f54aee2a3441b6f3ecee0d69ca6a0de1d2ab97d4"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/ids_tests.rs",
@@ -378,7 +383,7 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/lib.rs",
-      "object": "311a4534dd6ee0f5c2446381b71323a42cb018e5"
+      "object": "d4c98e2522e08e25ef27d3e64a4d5eddbb5a61de"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/prepared.rs",
@@ -398,11 +403,23 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "object": "67135f3f56c4779fbd27568ee69c389a38522e5c"
+      "object": "58178a748790db073866319a305eaa6abe1e5b46"
     },
     {
       "path": "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
-      "object": "ef0e9b6837e591c1047065be5e6e87a180cc92ad"
+      "object": "5e1b088f9446bc9520e76dc4373821b723f6abe8"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress.rs",
+      "object": "a2d33db17df6484bce5d40abfbb7e341498c944a"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/cognitive_read_ingress_tests.rs",
+      "object": "743150d00314efbcd21cc9638ae649c9c7722065"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "object": "4cdfefe9c84369962444354ec9613bac9d882bfb"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/cognitive_delivery.rs",
@@ -442,15 +459,31 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/retrieval_preparation.rs",
-      "object": "3ec51287de3605a2f34f2a4ce74da856761dc88c"
+      "object": "bb69a3272ff354c6d653b64d08dba9f72c5e4d70"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/retrieval_preparation_tests.rs",
-      "object": "e3948a251ebe78a3425bdddbe17fce79a978b34c"
+      "object": "f588145f720fef2eccc50b592aab38fd7bba8fe2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0018_lane_c_witness_monotonic.sql",
+      "object": "f79ad54012708ed84bf257b2ff11cbb5c5c3484d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0019_lane_c_scope_audit_indexes.sql",
+      "object": "ced9a3024eb4e04be55ee0c9ae2bb8fa92f22511"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "object": "185a08151115a43d7adbf0a0137885b8fadd862c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_lane_c_integrity.rs",
+      "object": "4f4f3165f931bda30dfa3935a253bc36aff1abea"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
-      "object": "54d32506061ab56c2df9a906a18efd8de82196c4"
+      "object": "3666778a33d289dceba808117a88e699d9b8fa8a"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_selected_snapshot_tests.rs",
@@ -473,8 +506,16 @@
       "object": "4a042030cf670ec9c0cd5384ecf7fbc6a733f715"
     },
     {
+      "path": "codex-rs/hepta-memory/tests/lane_c_witness_integrity.rs",
+      "object": "d8bbea504df1f10ed134413a9b69f113eac5f2ff"
+    },
+    {
       "path": "docs/contracts/CONTRACTS.json",
       "object": "a779872578ebce3dc61205b43519854133812ac2"
+    },
+    {
+      "path": "docs/modules/cognitive.read/ADVERSARIAL_AUDIT_20261001.md",
+      "object": "205632e3763e6e138634fc5278ec197020869d75"
     },
     {
       "path": "docs/modules/cognitive.read/COMPATIBILITY.md",
@@ -482,15 +523,15 @@
     },
     {
       "path": "docs/modules/cognitive.read/CONSUMERS.md",
-      "object": "fa03628756f16d2b5d20a2ee0f6fdd044863f01b"
+      "object": "f8e5e4b8328d1dd8777017a9b086f4b34d427972"
     },
     {
       "path": "docs/modules/cognitive.read/CONSUMER_EXECUTION.json",
-      "object": "0ef269e090fb8a45271d7df2198dbe278ce5942a"
+      "object": "6fd61084456d08924b84b08d6c7a5f17d15dd0ed"
     },
     {
       "path": "docs/modules/cognitive.read/CONSUMER_POLICY.json",
-      "object": "250016237cbd4c56871a21a8b22adf01fdded11f"
+      "object": "bce75169d927c2a7c929bb477c87d23d11978a01"
     },
     {
       "path": "docs/modules/cognitive.read/CONTRACT_LIMITS.md",
@@ -498,7 +539,7 @@
     },
     {
       "path": "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md",
-      "object": "622f6082295b35a706ba29df6219c63e99da2008"
+      "object": "9a2dd63cebc0744bf2cbf05be807c7b939255768"
     },
     {
       "path": "docs/modules/cognitive.read/FINAL_USE_CLOSURE.md",
@@ -506,11 +547,15 @@
     },
     {
       "path": "docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md",
-      "object": "ec2c49cdb7e45b1436ac330a0c28e09d54f483c7"
+      "object": "bff65ba1a079426fd0e57c04a4dd8dbcc242deab"
+    },
+    {
+      "path": "docs/modules/cognitive.read/README.md",
+      "object": "c950a91b5dd3ff69637049a179ce6470e86d76ec"
     },
     {
       "path": "docs/modules/cognitive.read/SELECTED_OWNER_CUT.md",
-      "object": "822f86726022774ac7dae977d7538ea83f2ae3a4"
+      "object": "d398efe4d662db355069d8c1b81badcdcf9e268a"
     },
     {
       "path": "docs/modules/cognitive.read/STRUCTURAL_REUSE.md",
@@ -521,28 +566,52 @@
       "object": "20db7fccd7f41e3513f67dbfc8fe6a695689be81"
     },
     {
+      "path": "docs/modules/compact.engine/IMPLEMENTATION_MAP.json",
+      "object": "546affb021d8fd94aacc7726adf8d6b04ce844cc"
+    },
+    {
+      "path": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+      "object": "d371a032ee198269180ac4926a490715d48d8b3a"
+    },
+    {
+      "path": "qualification/cognitive-read/audit-20261001/LOCAL_REGRESSION.json",
+      "object": "c62cb8cbcd03edc6e1efb6421ab2ffb51239fadd"
+    },
+    {
+      "path": "qualification/cognitive-read/audit-20261001/SQLITE_SCOPE_INDEX_OBSERVATION.json",
+      "object": "149eb5a6d3264cb5ca21f9007c0f37f74803f0ff"
+    },
+    {
+      "path": "qualification/cognitive-read/audit-20261001/focused-nextest.txt",
+      "object": "fe047a51c7c20bd4fec1856d92cdbdb9a818ac0a"
+    },
+    {
       "path": "scripts/apply-cognitive-read-selected-cut.py",
       "object": "d77cecd82cb8c0b2d8781d2174d06c622abc20ae"
     },
     {
       "path": "scripts/cognitive_read_consumers.py",
-      "object": "a8092491ea5628ca8ba146e1577e5f9fde834233"
+      "object": "91c8c83ce3df2a69753ed128287997865bec2c89"
     },
     {
       "path": "scripts/cognitive_read_delivery_gates.py",
-      "object": "77e1ff982a1a12fc7aae2d19cba40cc5d4315d57"
+      "object": "824c507d7d3cc044d2bbbd0145c5fc08a029ecb7"
     },
     {
       "path": "scripts/cognitive_read_evidence.py",
-      "object": "38126ebb3328481214e194f0b8eb694a97664ac0"
+      "object": "5b33c68c017a834d03d642710fd8461d12514d0a"
     },
     {
       "path": "scripts/cognitive_read_full_evidence.py",
-      "object": "d67fcf98a5e9b373d6168ad74afd8b87c34cfea7"
+      "object": "368d87c95276e08665061615afe5e37ea9c68ab6"
+    },
+    {
+      "path": "scripts/cognitive_read_release_evidence.py",
+      "object": "7140a358b2e0dd11e2facd84a1035a5c87794790"
     },
     {
       "path": "scripts/cognitive_read_sqlite_capacity.py",
-      "object": "95db80f47620676f4683dc38983b42f436d4a26a"
+      "object": "1152b5e89d9a19a019eb6d6fb225275963abb456"
     },
     {
       "path": "scripts/emit-cognitive-read-qualification.py",
@@ -558,7 +627,7 @@
     },
     {
       "path": "scripts/run-cognitive-read-qualification.sh",
-      "object": "d4fee01e2de2853dd439ac4e11723261af5327fa"
+      "object": "ef87e7e1d207eb456bb06aa76b278b09d4c336eb"
     },
     {
       "path": "scripts/test_cognitive_read_consumers.py",
@@ -566,23 +635,31 @@
     },
     {
       "path": "scripts/test_cognitive_read_delivery_gates.py",
-      "object": "d93a1feadd7fbf4f412816b551d04123b81cec9a"
+      "object": "0b2cf4ca26c78b6ed8d5a3241077440e6f0b18d4"
     },
     {
       "path": "scripts/test_cognitive_read_evidence.py",
-      "object": "a90b5397f257baf6742f57999aded6befba861c8"
+      "object": "c0590af5234afe0bb04917033c37c3e2c8bb4166"
     },
     {
       "path": "scripts/test_cognitive_read_full_evidence.py",
       "object": "63d2f93061434fad87138920e0e54ef59dac2dae"
     },
     {
+      "path": "scripts/test_cognitive_read_full_gate_integrity.py",
+      "object": "0bd3cbc33fb923b0b7e593237d3c93e318f7e91c"
+    },
+    {
       "path": "scripts/test_cognitive_read_native_gate.py",
-      "object": "645ba6d730f0ba3771174aff696e49b336fc78ac"
+      "object": "2fb5e9d0c065be6cbe2801c4472233f5554535d1"
+    },
+    {
+      "path": "scripts/test_cognitive_read_sqlite_integrity.py",
+      "object": "00eac499fcc1d3f9ceb7feab00ae0f537a7a4c4a"
     },
     {
       "path": "scripts/verify-cognitive-read-constants.py",
-      "object": "e4040b66b2af713ee25a4fd840b97839794760a7"
+      "object": "5afff7e5501dcde1a86783007abbfcb7c33429fe"
     },
     {
       "path": "scripts/verify-cognitive-read-map.py",
@@ -592,7 +669,7 @@
   "productCallers": [
     {
       "role": "owner_read_adapter",
-      "blobSha": "c445ad65c5d69414935e2156c72f014a894c8b89",
+      "blobSha": "1c53be94705a060be9e015c52cc6a80ca8f3a98e",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "nativeSymbol": "pub(crate) async fn read_with_retrieval_context_and_learning("
     },
@@ -639,8 +716,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "de6bfea76ab71d17b29ad45f24693224ab14b388",
-    "tree": "71bafea3b6f02b28eaa0eb35309ec04e1f2aeaa0"
+    "commit": "edbe4efe6bd8b2af8e5a9926b505415dfa4a06eb",
+    "tree": "363aee015d378222250538116503e3b2ea71ab55"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "revision_bound_shadow_v2_source_candidate",
