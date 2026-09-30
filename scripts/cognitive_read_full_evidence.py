@@ -22,6 +22,15 @@ OWNER_CURRENTNESS_TESTS = (
     "scope_provisional_and_time_filters_do_not_leak_unadmitted_facts",
     "retained_cut_detects_old_valid_backup_after_ordinary_reopen",
 )
+COMPACT_PRODUCT_TESTS = (
+    "normal_owner_path_binds_full_lineage_exact_read_and_final_cut",
+    "concurrent_correction_is_rejected_before_candidate_publication",
+)
+CONTEXT_INGRESS_TESTS = (
+    "complete_revision_bound_shadow_compiles_through_existing_v2_admission",
+    "omission_and_source_substitution_fail_closed",
+    "cognitive_rows_cannot_be_promoted_to_trusted_instructions",
+)
 STALE_GENERATION_TESTS = (
     "final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
 )
@@ -45,6 +54,8 @@ CONSUMER_PACKAGES = {
 EXACT_CASES = {
     "revision-shadow-tests": REVISION_SHADOW_TESTS,
     "owner-currentness-e2e": OWNER_CURRENTNESS_TESTS,
+    "compact-product-e2e": COMPACT_PRODUCT_TESTS,
+    "context-v2-ingress-tests": CONTEXT_INGRESS_TESTS,
     "stale-generation-e2e": STALE_GENERATION_TESTS,
     "consumer-intelligence-product-e2e": INTELLIGENCE_PRODUCT_TESTS,
 }
@@ -101,6 +112,32 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         "-E",
         exact_filter(STALE_GENERATION_TESTS),
     ]
+    result["compact-product-e2e"] = [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "--no-tests=fail",
+        "--status-level",
+        "pass",
+        "-E",
+        exact_filter(COMPACT_PRODUCT_TESTS),
+    ]
+    result["context-v2-ingress-tests"] = [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-context-compiler",
+        "--lib",
+        "--no-tests=fail",
+        "--status-level",
+        "pass",
+        "-E",
+        exact_filter(CONTEXT_INGRESS_TESTS),
+    ]
     for label, package in CONSUMER_PACKAGES.items():
         result[label] = [
             "just",
@@ -126,19 +163,47 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
         exact_filter(INTELLIGENCE_PRODUCT_TESTS),
     ]
     result.update(delivery_commands())
+
     # Include every touched production package in format and all-target lint,
     # including the existing learning owner rather than just its dependency lib.
-    format_packages = (*base.PACKAGES, "codex-hepta-learning-ledger")
+    format_packages = (
+        *base.PACKAGES,
+        "codex-hepta-learning-ledger",
+        "codex-hepta-compact-engine",
+        "codex-hepta-context-compiler",
+    )
     result["rust-format"] = [
-        "cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml",
-        *[arg for package in format_packages for arg in ("-p", package)],
-        "--", "--check",
+        "cargo",
+        "fmt",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        *[
+            argument
+            for package in format_packages
+            for argument in ("-p", package)
+        ],
+        "--",
+        "--check",
     ]
+    additional_packages = (
+        "codex-hepta-learning-ledger",
+        "codex-hepta-compact-engine",
+        "codex-hepta-context-compiler",
+    )
     for label in ("all-target-check", "strict-clippy"):
         argv = result[label]
         position = argv.index("--") if "--" in argv else len(argv)
-        result[label] = [*argv[:position], "-p", "codex-hepta-learning-ledger", *argv[position:]]
-    result["sqlite-capacity"] = ["python3", "scripts/cognitive_read_sqlite_capacity.py"]
+        package_args = [
+            argument
+            for package in additional_packages
+            for argument in ("-p", package)
+        ]
+        result[label] = [*argv[:position], *package_args, *argv[position:]]
+
+    result["sqlite-capacity"] = [
+        "python3",
+        "scripts/cognitive_read_sqlite_capacity.py",
+    ]
     result["tracked-clean"] = tracked_clean
     return result
 
@@ -149,7 +214,11 @@ def validate_measurement(label: str, value: object) -> list[str]:
     if not isinstance(value, dict) or value.get("schema") != SQLITE_CAPACITY_SCHEMA:
         return ["sqlite-capacity: wrong measurement schema"]
     problems: list[str] = []
-    for field, expected in (("records", 512), ("requested_ids", 512), ("iterations", 32)):
+    for field, expected in (
+        ("records", 512),
+        ("requested_ids", 512),
+        ("iterations", 32),
+    ):
         if value.get(field) != expected:
             problems.append(f"sqlite-capacity: unexpected {field}")
     if value.get("authority") != "deny_all":
@@ -164,7 +233,12 @@ def validate_measurement(label: str, value: object) -> list[str]:
     ):
         if type(value.get(field)) is not int or value[field] <= 0:
             problems.append(f"sqlite-capacity: missing positive {field}")
-    for field in ("acquire_snapshot", "prepare_index", "read_ids", "revalidate"):
+    for field in (
+        "acquire_snapshot",
+        "prepare_index",
+        "read_ids",
+        "revalidate",
+    ):
         row = value.get(field)
         points = (
             [row.get(f"p{percent}_us") for percent in (50, 95, 99)]
@@ -190,7 +264,10 @@ def validate_measurement(label: str, value: object) -> list[str]:
         ):
             if type(process.get(field)) is not int or process[field] < 0:
                 problems.append(f"sqlite-capacity: invalid process field {field}")
-        if type(process.get("maximum_rss_kib")) is int and process["maximum_rss_kib"] == 0:
+        if (
+            type(process.get("maximum_rss_kib")) is int
+            and process["maximum_rss_kib"] == 0
+        ):
             problems.append("sqlite-capacity: zero maximum RSS")
     candidate = value.get("candidate")
     if not isinstance(candidate, dict) or not all(
@@ -201,22 +278,37 @@ def validate_measurement(label: str, value: object) -> list[str]:
     return problems
 
 
-def validate_evidence(evidence: Path, expected: dict[str, list[str]]) -> list[str]:
+def validate_evidence(
+    evidence: Path,
+    expected: dict[str, list[str]],
+) -> list[str]:
     problems = _original_validate_evidence(evidence, expected)
     for label, cases in EXACT_CASES.items():
         log = evidence / f"{label}.log"
         if not log.is_file():
             continue
-        body = re.sub(r"\x1b\[[0-9;]*m", "", log.read_text(errors="replace"))
+        body = re.sub(
+            r"\x1b\[[0-9;]*m",
+            "",
+            log.read_text(errors="replace"),
+        )
         for case in cases:
-            if re.search(rf"(?m)^\s*PASS\s+.*\b{re.escape(case)}\s*$", body) is None:
+            if re.search(
+                rf"(?m)^\s*PASS\s+.*\b{re.escape(case)}\s*$",
+                body,
+            ) is None:
                 problems.append(f"{label}: exact case not proved: {case}")
     for label in DELIVERY_GATES:
         log = evidence / f"{label}.log"
         if log.is_symlink() or not log.is_file():
             problems.append(f"{label}: missing regular execution log")
         else:
-            problems.extend(delivery_log_problems(label, log.read_text(errors="replace")))
+            problems.extend(
+                delivery_log_problems(
+                    label,
+                    log.read_text(errors="replace"),
+                )
+            )
     return problems
 
 
@@ -225,7 +317,13 @@ def gate_status(evidence: Path, label: str) -> bool:
     return path.is_file() and path.read_text().strip() == "0"
 
 
-def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) -> bool:
+def emit(
+    root: Path,
+    evidence: Path,
+    candidate: str,
+    kind: str,
+    output: Path,
+) -> bool:
     passed = _original_emit(root, evidence, candidate, kind, output)
     receipt = json.loads(output.read_text())
     receipt["source_inputs"] = {
@@ -234,7 +332,9 @@ def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) ->
             "sha256": base.digest(root / "codex-rs/Cargo.lock"),
         },
         "toolchain": (evidence / "toolchain.txt").read_text().splitlines(),
-        "nextest": (evidence / "test-runner.log").read_text(errors="replace").splitlines(),
+        "nextest": (evidence / "test-runner.log")
+        .read_text(errors="replace")
+        .splitlines(),
     }
     policy_path = root / "docs/modules/cognitive.read/CONSUMER_EXECUTION.json"
     policy = json.loads(policy_path.read_text())
@@ -242,8 +342,12 @@ def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) ->
     for row in policy["consumers"]:
         row = dict(row)
         gates = row["required_gates"]
-        row["gate_status"] = {label: gate_status(evidence, label) for label in gates}
-        row["all_required_gates_passed"] = bool(gates) and all(row["gate_status"].values())
+        row["gate_status"] = {
+            label: gate_status(evidence, label) for label in gates
+        }
+        row["all_required_gates_passed"] = bool(gates) and all(
+            row["gate_status"].values()
+        )
         row["v2_migration_proved"] = False
         consumers.append(row)
     receipt["consumer_execution"] = {
@@ -267,7 +371,10 @@ def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) ->
         )
     }
     receipt["cognitive_delivery_execution"] = {
-        "gates": {label: delivery_gate_passed(evidence, label) for label in DELIVERY_GATES},
+        "gates": {
+            label: delivery_gate_passed(evidence, label)
+            for label in DELIVERY_GATES
+        },
         "automatic_learning_ingestion": False,
         "authority": "deny_all",
     }
@@ -281,16 +388,32 @@ def emit(root: Path, evidence: Path, candidate: str, kind: str, output: Path) ->
     return passed
 
 
-base.commands = commands
-base.validate_measurement = validate_measurement
-base.validate_evidence = validate_evidence
-base.emit = emit
-base.TEST_GATES = set(base.TEST_GATES) | set(EXACT_CASES) | set(CONSUMER_PACKAGES) | set(DELIVERY_GATES) | {
-    "consumer-intelligence-product-e2e"
-}
-base.BENCHMARK_SCHEMAS = dict(base.BENCHMARK_SCHEMAS)
-base.BENCHMARK_SCHEMAS["sqlite-capacity"] = SQLITE_CAPACITY_SCHEMA
+def install_base_overrides() -> None:
+    """Install full-suite hooks only for the full qualification entry point.
+
+    Importing this module from unit tests must not mutate the base validator.
+    Otherwise a focused base-gate fixture silently acquires unrelated delivery
+    gates and becomes dependent on unittest discovery order.
+    """
+    base.commands = commands
+    base.validate_measurement = validate_measurement
+    base.validate_evidence = validate_evidence
+    base.emit = emit
+    base.TEST_GATES = (
+        set(base.TEST_GATES)
+        | set(EXACT_CASES)
+        | set(CONSUMER_PACKAGES)
+        | set(DELIVERY_GATES)
+        | {"consumer-intelligence-product-e2e"}
+    )
+    base.BENCHMARK_SCHEMAS = dict(base.BENCHMARK_SCHEMAS)
+    base.BENCHMARK_SCHEMAS["sqlite-capacity"] = SQLITE_CAPACITY_SCHEMA
+
+
+def main() -> None:
+    install_base_overrides()
+    base.main()
 
 
 if __name__ == "__main__":
-    base.main()
+    main()
