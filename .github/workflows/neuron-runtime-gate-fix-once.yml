@@ -6,6 +6,7 @@ on:
       - codex/neuron-runtime-five-phase-closure-v2
     paths:
       - .github/workflows/neuron-runtime-gate-fix-once.yml
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,15 +18,22 @@ concurrency:
 jobs:
   repair:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
-      - name: Checkout exact branch
+      - name: Checkout exact triggering commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: codex/neuron-runtime-five-phase-closure-v2
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
-      - name: Apply source repairs
+      - name: Verify immutable repair input
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test -z "$(git status --porcelain)"
+
+      - name: Apply exact source repairs
         shell: bash
         run: |
           set -euo pipefail
@@ -119,36 +127,94 @@ jobs:
 ''',
           )
 
-          # The final tree must contain only ordinary source. This workflow is a
-          # one-shot transport for the exact patch and deletes itself before the
-          # repair commit is created.
+          # Final-use semantics must already be ordinary source inherited from
+          # the durable line; do not silently manufacture or duplicate them.
+          tests = Path("codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs").read_text()
+          required = [
+              'assert!(messages.iter().any(|message| message.contains("result")));',
+              'assert!(messages.iter().all(|message| !message.contains("delta")));',
+          ]
+          missing = [needle for needle in required if needle not in tests]
+          if missing:
+              raise SystemExit(f"missing durable final-use assertions: {missing}")
+
+          # This transport is intentionally one-shot. The resulting candidate
+          # contains only ordinary source plus read-only qualification workflows.
           Path(".github/workflows/neuron-runtime-gate-fix-once.yml").unlink()
           PY
 
-      - name: Refresh the locked graph and format
+      - name: Refresh locked graph and canonical formatting
         shell: bash
         run: |
           set -euo pipefail
+          rustup toolchain install stable --profile minimal --component rustfmt
+          rustup toolchain install 1.88.0 --profile minimal
           cd codex-rs
-          cargo check -p codex-hepta-infer-core
-          cargo fmt \
-            --package codex-hepta-infer-core \
-            --package codex-hepta-infer-worker-host
+          cargo +stable check -p codex-hepta-infer-core
+          cargo +stable fmt --all
           cd ..
           git diff --check
 
-      - name: Commit exact repairs
+      - name: Enforce repair change boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+
+          allowed = {
+              ".github/workflows/neuron-runtime-gate-fix-once.yml",
+              "codex-rs/Cargo.lock",
+              "codex-rs/hepta-agentd/tests/fixtures/neuron_runtime_process_fault_harness.rs",
+              "codex-rs/hepta-infer-core/Cargo.toml",
+              "codex-rs/hepta-infer-core/src/durable_control.rs",
+              "codex-rs/hepta-infer-core/src/neuron_feature_store.rs",
+              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+              "codex-rs/hepta-neuron/src/lib.rs",
+          }
+          changed = set(
+              subprocess.check_output(
+                  ["git", "status", "--porcelain=v1"], text=True
+              ).splitlines()
+          )
+          paths = {line[3:] for line in changed if len(line) >= 4}
+          unexpected = sorted(paths - allowed)
+          if unexpected:
+              raise SystemExit(f"unexpected repair changes: {unexpected}")
+          missing = sorted(
+              {
+                  ".github/workflows/neuron-runtime-gate-fix-once.yml",
+                  "codex-rs/hepta-infer-core/Cargo.toml",
+                  "codex-rs/hepta-infer-core/src/durable_control.rs",
+                  "codex-rs/hepta-infer-core/src/neuron_feature_store.rs",
+                  "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+              }
+              - paths
+          )
+          if missing:
+              raise SystemExit(f"expected repair changes absent: {missing}")
+          print("bounded repair paths:")
+          for path in sorted(paths):
+              print(path)
+          PY
+
+      - name: Verify stable and MSRV source gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/neuron_runtime_source_gate_test.py
+          cd codex-rs
+          cargo +stable fmt --all -- --check
+          cargo +stable check -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+          cargo +1.88.0 check -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+          cargo +stable test -p codex-hepta-infer-worker-host native_app_server -- --nocapture
+
+      - name: Commit ordinary source repairs
         shell: bash
         run: |
           set -euo pipefail
           git config user.name hepta-qualification
           git config user.email qualification@invalid
-          git add \
-            .github/workflows/neuron-runtime-gate-fix-once.yml \
-            codex-rs/Cargo.lock \
-            codex-rs/hepta-infer-core/Cargo.toml \
-            codex-rs/hepta-infer-core/src/durable_control.rs \
-            codex-rs/hepta-infer-core/src/neuron_feature_store.rs \
-            codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+          git add -A
           git commit -m "fix(neuron): restore MSRV locking and final output observation"
           git push origin HEAD:codex/neuron-runtime-five-phase-closure-v2
