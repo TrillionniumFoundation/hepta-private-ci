@@ -306,4 +306,131 @@ mod tests {
                     == RecoveryOperatorAction::PreserveBytesAndRepairDurableStorage
         }));
     }
+
+
+    #[test]
+    fn contextual_blockers_are_actionable_and_distinct() {
+        use codex_hepta_fleet::ReleaseBinding;
+        use codex_hepta_fleet::ReleaseId;
+
+        let dir = tempfile::tempdir().expect("temporary directory");
+        let grant = Sha256Digest::for_bytes(b"recovery-diagnostic-grant");
+        let frontier = Sha256Digest::for_bytes(b"transaction-frontier");
+        let source_release = ReleaseId::parse("release-v1").expect("source release");
+        let target_release = ReleaseId::parse("release-v2").expect("target release");
+        let binding = |release_id: ReleaseId| ReleaseBinding {
+            release_id,
+            manifest_sha256: Sha256Digest::for_bytes(b"manifest").as_str().to_string(),
+            agentd_program_sha256: Sha256Digest::for_bytes(b"agentd").as_str().to_string(),
+            matrixd_program_sha256: None,
+            admission_frontier_sha256: frontier.as_str().to_string(),
+        };
+
+        let intent = crate::SignedSupervisorIntent::new(
+            grant.clone(),
+            "agent-a",
+            crate::H7H89ProductionTransition::Upgrade,
+            "release-v1",
+            "release-v2",
+            5,
+            7,
+            3,
+            SignedIntentStatus::RecoveryRequired,
+        )
+        .expect("intent");
+        crate::signed_intent::write_intent(dir.path(), &intent).expect("write intent");
+
+        let transaction = crate::DurableReleaseTransaction::new(
+            "agent-a",
+            crate::ReleaseTransactionKind::Upgrade,
+            "release-v1",
+            "release-v2",
+            Some("release-v1".to_string()),
+            Some(binding(source_release)),
+            Some(binding(target_release)),
+            11,
+            7,
+        )
+        .expect("transaction")
+        .with_authority(grant, 3)
+        .expect("authority")
+        .with_phase(ReleaseTransactionPhase::RecoveryRequired)
+        .expect("recovery phase");
+        crate::release_transaction::write_release_transaction(dir.path(), &transaction)
+            .expect("write transaction");
+
+        let diagnostic = diagnose_recovery(
+            dir.path(),
+            &RecoveryDiagnosticContext {
+                live_process_present: true,
+                observed_release: Some("release-v3".to_string()),
+                current_authority_epoch: Some(4),
+                current_admission_frontier_sha256: Some(Sha256Digest::for_bytes(
+                    b"current-frontier",
+                )),
+            },
+        );
+        let pairs = diagnostic
+            .blockers
+            .iter()
+            .map(|blocker| (blocker.kind, blocker.operator_action))
+            .collect::<Vec<_>>();
+        assert!(pairs.contains(&(
+            RecoveryBlockerKind::ProcessAmbiguity,
+            RecoveryOperatorAction::FenceExactProcessAndObserveExit,
+        )));
+        assert!(pairs.contains(&(
+            RecoveryBlockerKind::ReleaseStateAmbiguity,
+            RecoveryOperatorAction::ReconcileFleetReleaseCas,
+        )));
+        assert!(pairs.contains(&(
+            RecoveryBlockerKind::FrontierDrift,
+            RecoveryOperatorAction::RefreshAdmissionFrontierAndRejectStaleGrant,
+        )));
+        assert!(pairs.contains(&(
+            RecoveryBlockerKind::AuthorityEpochChange,
+            RecoveryOperatorAction::ReissueDecisionFromCurrentAuthorityEpoch,
+        )));
+    }
+
+    #[test]
+    fn mismatched_intent_and_transaction_require_digest_inspection() {
+        let dir = tempfile::tempdir().expect("temporary directory");
+        let intent = crate::SignedSupervisorIntent::new(
+            Sha256Digest::for_bytes(b"intent-grant"),
+            "agent-a",
+            crate::H7H89ProductionTransition::Upgrade,
+            "release-v1",
+            "release-v2",
+            5,
+            7,
+            3,
+            SignedIntentStatus::Prepared,
+        )
+        .expect("intent");
+        crate::signed_intent::write_intent(dir.path(), &intent).expect("write intent");
+        let transaction = crate::DurableReleaseTransaction::new(
+            "agent-a",
+            crate::ReleaseTransactionKind::Upgrade,
+            "release-v1",
+            "release-v2",
+            Some("release-v1".to_string()),
+            None,
+            None,
+            11,
+            7,
+        )
+        .expect("transaction")
+        .with_authority(Sha256Digest::for_bytes(b"different-grant"), 3)
+        .expect("authority");
+        crate::release_transaction::write_release_transaction(dir.path(), &transaction)
+            .expect("write transaction");
+
+        let diagnostic = diagnose_recovery(dir.path(), &RecoveryDiagnosticContext::default());
+        assert!(diagnostic.blockers.iter().any(|blocker| {
+            blocker.kind == RecoveryBlockerKind::IntentMismatch
+                && blocker.operator_action
+                    == RecoveryOperatorAction::InspectExactIntentAndTransactionDigests
+        }));
+    }
 }
