@@ -133,6 +133,7 @@ impl ProductionOrganHostV1 {
         budget
             .validate()
             .map_err(ProductionOrganHostErrorV1::Admission)?;
+        graph.validate().map_err(OrganRuntimeError::Graph)?;
         if !graph.feedback.is_empty() {
             return Err(ProductionOrganHostErrorV1::Admission(
                 ProductionOrganAdmissionErrorV1::FeedbackSchedulerUnavailable,
@@ -157,7 +158,10 @@ impl ProductionOrganHostV1 {
                 .or_default()
                 .push((target, link.input.port));
         }
-        if routes.values().any(|targets| targets.len() > budget.max_targets) {
+        if routes
+            .values()
+            .any(|targets| targets.len() > budget.max_targets)
+        {
             return Err(ProductionOrganHostErrorV1::Admission(
                 ProductionOrganAdmissionErrorV1::FanoutExceedsBudget,
             ));
@@ -337,9 +341,7 @@ fn targets_for_runtime_error(
         .collect()
 }
 
-fn not_attempted_targets(
-    route_template: &[(StableId, usize)],
-) -> Vec<OrganTargetReceiptV1> {
+fn not_attempted_targets(route_template: &[(StableId, usize)]) -> Vec<OrganTargetReceiptV1> {
     route_template
         .iter()
         .map(|(target, input_port)| OrganTargetReceiptV1 {
