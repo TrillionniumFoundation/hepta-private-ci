@@ -1,32 +1,65 @@
 # auth.authbus activation decision
 
-Status: **BLOCKED pending terminal exact-head and synthetic-merge qualification**.
+Status: **BLOCKED pending terminal exact-head, target-host and signed production acceptance evidence**.
 
-This decision is intentionally fail-closed. Source implementation is not equivalent to production activation evidence.
+This decision is intentionally fail-closed. Source implementation, queued jobs,
+static documentation and a successful run for another commit are not production
+activation evidence.
 
-## Implemented security controls
+## Implemented repository controls
 
-- issuer registrations are opaque handles whose trust-bearing fields are resolved from owner-controlled persisted registries;
-- settlement reloads the exact issuer identity, purpose and epoch from the durable authority registry;
-- the raw authority writer is crate-private and product callers use `AuthBusAuthorityHost`;
-- owner lifetime is fenced across processes and all checkpoint publication occurs while the host owns that fence;
-- startup and periodic owner maintenance perform bounded restart reconciliation and expired-reservation sweeping;
-- operational snapshots expose checkpoint, recovery, reservation, quota and issuer signals;
-- exact-source and synthetic-merge qualification lanes execute product callers, workspace regression and strict lint before producing evidence receipts.
+- the raw authority writer is crate-private and product callers use
+  `AuthBusAuthorityHost` capability-scoped ports;
+- mutation outcomes distinguish not committed, committed-needs-reconciliation
+  and unknown durable outcome;
+- the owner lifetime is fenced across processes and stale handles are rejected;
+- the incremental authority frontier, dirty marker and checkpoint publication
+  are bound to the same owner/generation;
+- Agentd and Bao source callers are checked against a machine-readable
+  no-bypass and ambiguity contract;
+- exact-head and deterministic synthetic-merge qualification are read-only and
+  a final gate rejects failed, cancelled or skipped required lanes;
+- target-host crash, performance and production-drill evidence is generated only
+  by protected root-owned harnesses;
+- production acceptance requires distinct independent-security and operator
+  Ed25519 signatures over the same immutable evidence digest set.
 
-## Mandatory evidence before activation
+## Mandatory evidence before canary approval
 
-Activation requires all of the following on one exact candidate SHA and tree:
+One unchanged candidate SHA and tree must have all of the following:
 
-1. closed-world API inventory succeeds without product-caller exceptions;
-2. forged key, revoked key, epoch substitution, purpose substitution and fake-quarantine negative tests execute and pass;
-3. same-process, dual-process and process-death owner-fence tests execute and pass;
-4. checkpoint failpoints, rollback recovery and bounded reservation lifecycle tests execute and pass;
-5. AuthBus, qualification, evidence, Agentd and Bao product tests execute and pass;
-6. full workspace all-target regression and strict Clippy execute and pass;
-7. the synthetic merge candidate executes the same gates successfully;
-8. the evidence receipt binds source SHA, tree SHA, schema digest, Cargo lock digest, test-log digests, build-artifact digests and workflow run identity;
-9. production trusted-time, settlement signer, key custody, metrics export and alert routing are named and independently reviewed;
-10. target-host ENOSPC, rename/fsync failure and power-loss recovery rehearsals are recorded.
+1. closed-world API inventory, formatting, focused AuthBus tests, Evidence,
+   Agentd and Bao product tests, full workspace all-target regression and strict
+   all-feature Clippy;
+2. terminal-success exact-head and deterministic synthetic-merge receipts whose
+   parent, tree, Cargo lock, source, documentation, migration, test-log and
+   artifact digests agree;
+3. protected target-host receipts for ENOSPC, real power loss, permission loss,
+   restored-old-snapshot rejection, owner collision, WAL corruption,
+   backup/mutation overlap, trust-generation mismatch, fsync/rename failure and
+   checkpoint corruption;
+4. the full caller-visible performance matrix at concurrency 1, 8, 32 and 128,
+   including slow storage, checkpoint failure and recovery/backup overlap;
+5. real KMS/HSM composition, key rotation/revocation/recovery,
+   backup/restore and dual-owner/wrong-mount drill receipts;
+6. a candidate- and target-bound canary plan and a tested rollback plan;
+7. an independent security reviewer signature over the canonical qualification
+   payload;
+8. a distinct activation operator signature over the security-signed payload,
+   activation plan and rollback plan.
 
-A queued, skipped, cancelled, deferred, prior-head or static-only check is not evidence of success. This file may be changed to `APPROVED` only by naming immutable successful workflow run IDs and artifact digests. Until then, `productionActivation` remains `blocked` and no completion claim is permitted.
+The protected production-acceptance workflow may then emit
+`approved_for_canary`. It deliberately leaves `productionActivated`,
+`canaryPromotion` and `release` false.
+
+## Mandatory evidence before promotion
+
+Promotion requires a later signed canary observation receipt proving that the
+named SLO thresholds held for the full observation window, no unresolved
+critical AuthBus alert existed, and the tested rollback command remained
+available. Rollback must restore a matched database/checkpoint/trust generation.
+
+A queued, skipped, cancelled, deferred, prior-head, copied-status or static-only
+check is not evidence of success. This file may be changed to `APPROVED` only by
+naming immutable successful workflow run IDs, artifact digests, target identity
+and verified signature digests.
