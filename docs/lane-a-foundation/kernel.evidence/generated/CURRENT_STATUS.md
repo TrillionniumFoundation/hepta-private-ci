@@ -12,8 +12,8 @@ self-issue independent acceptance, production activation, or release.
 The readiness manifest, rather than this projection, retains the complete
 SHA-256 inventory for source, tests, migrations, documentation, and artifacts.
 
-- Source anchor commit: `a2bf84025de685fcadd943dc2813a32071f488e2`
-- Source anchor tree: `1e30c9aedd5ebb3fc976104a3c57ab4e2a4aaa8f`
+- Source anchor commit: `b69a49e85295f7bd55e8f826802c2e7bb998accd`
+- Source anchor tree: `6e47c7ef46231f1d5d3bc86385cee39ba7c4658a`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 
