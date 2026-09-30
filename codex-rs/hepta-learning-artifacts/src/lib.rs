@@ -2,8 +2,19 @@
 //!
 //! Registry eligibility is not selection, activation, promotion or release.
 //! This crate deliberately exposes no API capable of granting those powers.
+//!
+//! New callers should use [`product_api`], [`host_adapter`] or [`operator_api`]
+//! rather than adding dependencies on the crate-root compatibility exports.
 
 #![forbid(unsafe_code)]
+
+#[cfg(all(
+    feature = "production",
+    any(feature = "test-fixtures", feature = "fault-injection")
+))]
+compile_error!(
+    "the learning.artifacts production feature cannot be combined with test-fixtures or fault-injection"
+);
 
 mod admin;
 mod admission_v3;
@@ -27,6 +38,12 @@ mod selection;
 mod sensor_core_registry;
 mod storage;
 mod storage_hygiene;
+#[cfg(feature = "product-api")]
+pub mod product_api;
+#[cfg(feature = "native-host")]
+pub mod host_adapter;
+#[cfg(feature = "operator-api")]
+pub mod operator_api;
 #[cfg(test)]
 mod test_support;
 #[cfg(test)]
