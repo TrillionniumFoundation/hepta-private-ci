@@ -1,0 +1,205 @@
+name: Cognitive read reviewed proposal apply once
+
+on:
+  push:
+    branches:
+      - work/cognitive-read-production-convergence-20260927
+    paths:
+      - .github/workflows/cognitive-read-apply-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-read-reviewed-proposal-apply-once
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: macos-14
+    timeout-minutes: 180
+    env:
+      EXPECTED_PARENT: 04086c75a48130421196391b6b3e4cc9932b2ed9
+      SOURCE_BRANCH: work/cognitive-read-production-convergence-20260927
+    steps:
+      - name: Check out the exact one-time authoring trigger
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Verify the immutable authoring parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test "$(git diff --name-only HEAD^ HEAD)" = '.github/workflows/cognitive-read-apply-once.yml'
+          test -z "$(git status --porcelain)"
+
+      - name: Prepare repository tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Apply reviewed proposal and separate immutable qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'cognitive.read reviewed authoring'
+          git config user.email 'cognitive-read-authoring@users.noreply.github.com'
+
+          trigger_sha="$(git rev-parse HEAD)"
+          python3 scripts/run-cognitive-read-convergence-repair.py \
+            --expected-sha "$trigger_sha"
+          repaired_sha="$(git rev-parse HEAD)"
+          python3 scripts/prepare-cognitive-read-durable-handoff.py \
+            --expected-sha "$repaired_sha"
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/cognitive-read-qualification.yml')
+          body = workflow.read_text()
+          marker = '\n  source-proposal:\n'
+          if body.count(marker) != 1:
+              raise SystemExit('qualification source-proposal job shape drift')
+          workflow.write_text(body.split(marker, 1)[0].rstrip() + '\n')
+
+          runner = Path('scripts/run-cognitive-read-qualification.sh')
+          runner.write_text(
+              '#!/usr/bin/env bash\n'
+              'set -euo pipefail\n'
+              'exec python3 scripts/cognitive_read_full_evidence.py "$@"\n'
+          )
+
+          proposal_workflow = Path('.github/workflows/cognitive-read-lock-refresh.yml')
+          proposal = proposal_workflow.read_text()
+          boundary = proposal.find('\n# Mutable repair is deliberately separated')
+          if boundary < 0:
+              raise SystemExit('local proposal workflow boundary drift')
+          proposal_workflow.write_text(
+              'name: Cognitive read local source proposal\n\n'
+              'on:\n'
+              '  workflow_dispatch:\n'
+              + proposal[boundary:]
+          )
+
+          evidence = Path('scripts/cognitive_read_evidence.py')
+          source = evidence.read_text()
+          old = '''        "implementation_map": {"source_base": mapping.get("sourceBase"), "observed_at_head": mapping.get("observedAtHead")},
+        "workflow": {key: os.environ.get(key) for key in (
+'''
+          new = '''        "implementation_map": {"source_base": mapping.get("sourceBase"), "observed_at_head": mapping.get("observedAtHead")},
+        "source_inputs": {
+            "cargo_lock": {
+                "path": "codex-rs/Cargo.lock",
+                "sha256": digest(root / "codex-rs/Cargo.lock"),
+            },
+            "toolchain": (evidence / "toolchain.txt").read_text().splitlines(),
+            "nextest": (evidence / "test-runner.log").read_text(errors="replace").splitlines(),
+        },
+        "workflow": {key: os.environ.get(key) for key in (
+'''
+          if source.count(old) != 1:
+              raise SystemExit('qualification receipt source-input insertion drift')
+          evidence.write_text(source.replace(old, new, 1))
+
+          test = Path('scripts/test_cognitive_read_qualification_read_only.py')
+          test.write_text('''#!/usr/bin/env python3
+          from pathlib import Path
+          import unittest
+
+
+          ROOT = Path(__file__).resolve().parents[1]
+
+
+          class CognitiveReadQualificationReadOnlyTests(unittest.TestCase):
+              def test_qualification_workflow_is_read_only(self) -> None:
+                  body = (ROOT / ".github/workflows/cognitive-read-qualification.yml").read_text()
+                  self.assertIn("permissions:\\n  contents: read", body)
+                  self.assertNotIn("source-proposal:", body)
+                  self.assertNotIn("contents: write", body)
+                  self.assertNotIn("pull-requests: write", body)
+                  self.assertNotIn("git commit", body)
+                  self.assertNotIn("git push", body)
+                  self.assertNotIn("gh pr", body)
+
+              def test_qualification_entry_point_has_no_repair_sidecar(self) -> None:
+                  body = (ROOT / "scripts/run-cognitive-read-qualification.sh").read_text()
+                  self.assertIn("cognitive_read_full_evidence.py", body)
+                  self.assertNotIn("qualification_with_proposal", body)
+                  self.assertNotIn("source_proposal", body)
+
+              def test_local_proposal_is_manual_and_credential_free(self) -> None:
+                  body = (ROOT / ".github/workflows/cognitive-read-lock-refresh.yml").read_text()
+                  self.assertIn("workflow_dispatch:", body)
+                  self.assertNotIn("pull_request:", body)
+                  self.assertNotIn("push:\\n", body)
+                  self.assertIn("contents: read", body)
+                  self.assertIn("persist-credentials: false", body)
+                  self.assertNotIn("git push", body)
+
+              def test_receipt_binds_lockfile_and_toolchain(self) -> None:
+                  body = (ROOT / "scripts/cognitive_read_evidence.py").read_text()
+                  self.assertIn('"cargo_lock"', body)
+                  self.assertIn('digest(root / "codex-rs/Cargo.lock")', body)
+                  self.assertIn('"toolchain"', body)
+                  self.assertIn('"nextest"', body)
+
+
+          if __name__ == "__main__":
+              unittest.main()
+          '''.replace('          ', ''))
+
+          closure = Path('docs/modules/cognitive.read/QUALIFICATION_CLOSURE.md')
+          closure_body = closure.read_text()
+          heading = '## Immutable qualification boundary'
+          if heading not in closure_body:
+              closure.write_text(
+                  closure_body.rstrip()
+                  + '\n\n'
+                  + heading
+                  + '\n\n'
+                  + 'Exact-head and synthetic-merge qualification are read-only over one checked-out commit. '
+                    'They do not create commits, push refs, edit the pull request, or generate a mutable repair tree. '
+                    'The optional source-proposal workflow is manual, credential-free, and produces only a non-qualification artifact. '
+                    'Each qualification receipt binds the exact commit and tree, Cargo.lock SHA-256, Rust/Cargo/just versions, '
+                    'the pinned nextest identity, and the immutable evidence inventory.\n'
+              )
+          PY
+
+          git rm .github/workflows/cognitive-read-apply-once.yml
+          git add --all
+          git diff --cached --check
+          git commit -m 'ci(cognitive.read): separate immutable qualification from repair'
+
+          PYTHONPATH=scripts python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          path = Path('scripts/prepare-cognitive-read-source.py')
+          spec = importlib.util.spec_from_file_location('cognitive_read_source_preparer', path)
+          if spec is None or spec.loader is None:
+              raise SystemExit('unable to load cognitive.read map refresher')
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          module.refresh_map()
+          PY
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          python3 -m unittest discover -s scripts -p 'test_cognitive_read_*.py'
+          python3 scripts/verify-cognitive-read-map.py --expected-sha "$(git rev-parse HEAD)"
+          test -z "$(git status --porcelain)"
+
+      - name: Push the reviewed ordinary commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
+          git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
+          {
+            echo '## cognitive.read reviewed proposal applied'
+            echo "Parent: $EXPECTED_PARENT"
+            echo "Final source SHA: $(git rev-parse HEAD)"
+            echo 'The one-time authoring workflow deleted itself before the final source commit.'
+            echo 'Qualification remains read-only and has no repository write credential.'
+          } >> "$GITHUB_STEP_SUMMARY"
