@@ -140,6 +140,7 @@ jobs:
           mkdir -p "$output"
           common=(
             --candidate-sha "$CANDIDATE_SHA"
+            --control-sha "$CONTROL_SHA"
             --exact-receipt "$root/source/receipt.json"
             --merge-receipt "$root/merge/receipt.json"
             --target-manifest "$root/target/qualification-manifest.json"
