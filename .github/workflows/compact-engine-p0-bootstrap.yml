@@ -128,6 +128,12 @@ jobs:
               operation["delegatedCallees"] = source_delegates
               if symbol_delegates:
                   operation["delegatedNativeSymbols"] = symbol_delegates
+              source_path = operation.get("sourcePath")
+              if isinstance(source_path, str) and source_path:
+                  operation["sourceBlob"] = subprocess.check_output(
+                      ["git", "rev-parse", f"HEAD:{source_path}"],
+                      text=True,
+                  ).strip()
 
           sys.path.insert(0, str(Path("scripts").resolve()))
           spec = importlib.util.spec_from_file_location(
