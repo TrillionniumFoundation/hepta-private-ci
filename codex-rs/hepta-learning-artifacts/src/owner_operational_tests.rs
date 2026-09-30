@@ -120,3 +120,31 @@ fn stage_measurement_preserves_failed_outcomes() {
     assert_eq!(summary.samples, 2);
     assert_eq!(summary.failures, 1);
 }
+
+#[test]
+fn prometheus_export_preserves_unknown_and_actionable_metrics() {
+    let metrics = ArtifactOwnerOperationalMetricsV1 {
+        base: ArtifactOwnerMetricsV1 {
+            requests_received: 11,
+            publications_failed: 2,
+            ..ArtifactOwnerMetricsV1::default()
+        },
+        oldest_pending_attempt_age_seconds: Some(23),
+        drain_age_seconds: None,
+        recovery_reconciliation_failures: 3,
+        withdrawal_blocks: 5,
+        identity_conflicts: 7,
+        stale_owner_rejections: 11,
+        persistence_unknown: 13,
+        capacity_rejections: 17,
+        observability_failures: 0,
+        retention: None,
+        stage_summaries: BTreeMap::new(),
+    };
+    let encoded = metrics.prometheus_text();
+    assert!(encoded.contains("hepta_learning_artifact_requests_received_total 11\n"));
+    assert!(encoded.contains("hepta_learning_artifact_persistence_unknown_total 13\n"));
+    assert!(encoded.contains("hepta_learning_artifact_oldest_pending_attempt_age_seconds 23\n"));
+    assert!(!encoded.contains("hepta_learning_artifact_drain_age_seconds"));
+    assert!(!encoded.contains("hepta_learning_artifact_pinned_bytes"));
+}
