@@ -9,7 +9,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-pub const MAX_SELF_ITERATION_MODEL_PROMPT_BYTES: usize = 128 * 1024;
+pub const MAX_SELF_ITERATION_MODEL_PROMPT_BYTES: usize = 8 * 1024;
 pub const MAX_SELF_ITERATION_MODEL_RESPONSE_BYTES: u32 = 64 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

@@ -101,6 +101,8 @@ mod runtime;
 #[cfg(feature = "server")]
 mod runtime_executable;
 #[cfg(feature = "server")]
+mod self_iteration;
+#[cfg(feature = "server")]
 pub use module_selection::RuntimeModuleProfileV1;
 #[cfg(feature = "server")]
 mod runtime_module_state;
@@ -511,14 +513,12 @@ pub use self_iteration::AgentdSelfIterationCanaryVerdictV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationCandidateV1;
 #[cfg(feature = "server")]
-pub use self_iteration::AgentdSelfIterationHandleV1;
-#[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationPhaseV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationRecordV1;
 #[cfg(feature = "server")]
-pub use self_iteration::AgentdSelfIterationRuntimeConfigV1;
-#[cfg(feature = "server")]
 pub use self_iteration::self_iteration_canary_payload_v1;
 #[cfg(feature = "server")]
 pub use self_iteration::self_iteration_candidate_payload_v1;
+#[cfg(feature = "server")]
+pub use self_iteration::self_iteration_stage_payload_v1;
