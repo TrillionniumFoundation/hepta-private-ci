@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Record knowledge.graph target-host performance evidence for one exact source."""
 
-from __future__ import annotations
-
 import argparse
 import json
 import os
@@ -10,6 +8,7 @@ import platform
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -37,11 +36,14 @@ def command(
         args,
         cwd=cwd,
         env=env,
-        check=True,
+        check=False,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
+    if result.returncode:
+        print(result.stdout, file=sys.stderr)
+        result.check_returncode()
     return result.stdout
 
 
@@ -51,7 +53,7 @@ def git(*args: str) -> str:
 
 def positive_int(value: Any, field: str, *, allow_zero: bool = False) -> int:
     lower = 0 if allow_zero else 1
-    if not isinstance(value, int) or value < lower:
+    if type(value) is not int or value < lower:
         fail(f"{field} must be an integer >= {lower}")
     return value
 
@@ -59,20 +61,42 @@ def positive_int(value: Any, field: str, *, allow_zero: bool = False) -> int:
 def latency_distribution(value: Any, field: str) -> dict[str, int]:
     if not isinstance(value, dict):
         fail(f"{field} must be an object")
-    ordered = [positive_int(value.get(key), f"{field}.{key}", allow_zero=True) for key in ("p50", "p95", "p99")]
+    ordered = [
+        positive_int(value.get(key), f"{field}.{key}", allow_zero=True)
+        for key in ("p50", "p95", "p99")
+    ]
     if ordered != sorted(ordered):
         fail(f"{field} percentiles are not monotone")
     return {"p50": ordered[0], "p95": ordered[1], "p99": ordered[2]}
 
 
-def parse_receipt(output: str, expected_profile_id: str) -> dict[str, Any]:
+def no_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def parse_receipt(
+    output: str, expected_profile_id: str, parameters: dict[str, int] | None = None
+) -> dict[str, Any]:
     rows = [line.split(PREFIX, 1)[1] for line in output.splitlines() if PREFIX in line]
     if len(rows) != 1:
         fail(f"expected exactly one benchmark receipt, received {len(rows)}")
     try:
-        receipt = json.loads(rows[0])
+        receipt = json.loads(
+            rows[0],
+            object_pairs_hook=no_duplicates,
+            parse_constant=lambda value: (_ for _ in ()).throw(
+                ValueError(f"nonfinite JSON: {value}")
+            ),
+        )
     except ValueError as error:
         fail(f"invalid benchmark receipt JSON: {error}")
+    if not isinstance(receipt, dict):
+        fail("benchmark receipt must be an object")
     if receipt.get("schema") != BENCHMARK_SCHEMA:
         fail(f"unexpected benchmark schema: {receipt.get('schema')!r}")
     if receipt.get("hostProfileId") != expected_profile_id:
@@ -85,18 +109,53 @@ def parse_receipt(output: str, expected_profile_id: str) -> dict[str, Any]:
         fail("missing contention measurements")
     for field in ("writerNs", "readerNs", "roundNs"):
         latency_distribution(contention.get(field), f"contention.{field}")
+    observed_parameters = {
+        "writes": positive_int(receipt.get("writes"), "writes"),
+        "querySamples": positive_int(receipt.get("querySamples"), "querySamples"),
+        "reopenSamples": positive_int(receipt.get("reopenSamples"), "reopenSamples"),
+        "contentionReaders": positive_int(
+            contention.get("readersPerRound"), "contention.readersPerRound"
+        ),
+        "contentionRounds": positive_int(contention.get("rounds"), "contention.rounds"),
+    }
+    if parameters is not None and observed_parameters != parameters:
+        fail("observed benchmark workload differs from the requested fixture")
+    counts = {
+        key: positive_int(receipt.get(key), key)
+        for key in ("canonicalNodeCount", "canonicalEdgeCount", "canonicalSupportCount")
+    }
+    if counts != {
+        "canonicalNodeCount": 16,
+        "canonicalEdgeCount": 128,
+        "canonicalSupportCount": 144 * observed_parameters["writes"],
+    }:
+        fail("canonical graph counts differ from the fixed shared-key fixture")
+    if receipt.get("queryTiming") != "owner_product_retrieval_including_prepared_index":
+        fail("product query timing must include preparation")
 
     work = receipt.get("boundedQueryWork")
     if not isinstance(work, dict):
         fail("missing bounded-query work receipt")
+    if work.get("implementation") != "full_scan_reference_v2":
+        fail("bounded-query work must identify its reference implementation")
     returned = positive_int(work.get("returnedEdges"), "boundedQueryWork.returnedEdges")
     omitted = positive_int(work.get("omittedEdges"), "boundedQueryWork.omittedEdges")
-    cloned = positive_int(work.get("selectedEdgesCloned"), "boundedQueryWork.selectedEdgesCloned")
+    cloned = positive_int(
+        work.get("selectedEdgesCloned"), "boundedQueryWork.selectedEdgesCloned"
+    )
     if returned != 1 or cloned != 1:
         fail("bounded query must return and clone exactly one edge")
-    if positive_int(work.get("matchingEdges"), "boundedQueryWork.matchingEdges") != returned + omitted:
+    if (
+        positive_int(work.get("matchingEdges"), "boundedQueryWork.matchingEdges")
+        != returned + omitted
+    ):
         fail("bounded query matching-edge accounting is inconsistent")
-    if positive_int(work.get("relationEdgesScanned"), "boundedQueryWork.relationEdgesScanned") < returned + omitted:
+    if (
+        positive_int(
+            work.get("relationEdgesScanned"), "boundedQueryWork.relationEdgesScanned"
+        )
+        < returned + omitted
+    ):
         fail("bounded query edge scan count is smaller than its match count")
 
     storage = receipt.get("storage")
@@ -150,40 +209,67 @@ def run_benchmark(args: argparse.Namespace) -> tuple[dict[str, Any], int, str]:
         env["CARGO_TARGET_DIR"] = str(Path(args.target_dir).expanduser().resolve())
 
     started = time.monotonic_ns()
-    output = command(
-        "cargo",
-        "test",
-        "--locked",
-        "--release",
-        "-p",
-        "codex-hepta-memory",
-        "--lib",
-        TEST_NAME,
-        "--",
-        "--ignored",
-        "--exact",
-        "--nocapture",
-        "--test-threads=1",
-        cwd=CARGO_ROOT,
-        env=env,
-    )
+    # The repository test recipe uses nextest. Keep the long fsync workload's
+    # watchdog separate from product latency acceptance and fail on zero tests.
+    with tempfile.TemporaryDirectory(prefix="hepta-kg-nextest-") as directory:
+        config = Path(directory) / "nextest.toml"
+        config.write_text(
+            '[profile.default]\nretries = 0\nslow-timeout = { period = "60s", terminate-after = 180 }\n[profile.local]\ninherits = "default"\n'
+        )
+        output = command(
+            "just",
+            "test",
+            "--locked",
+            "--release",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            f"test(={TEST_NAME})",
+            "--run-ignored",
+            "only",
+            "--no-tests=fail",
+            "--no-capture",
+            "--test-threads=1",
+            "--config-file",
+            str(config),
+            cwd=CARGO_ROOT,
+            env=env,
+        )
     elapsed = time.monotonic_ns() - started
-    return parse_receipt(output, args.host_profile_id), elapsed, output
+    parameters = {
+        "writes": args.writes,
+        "querySamples": args.query_samples,
+        "reopenSamples": args.reopen_samples,
+        "contentionReaders": args.contention_readers,
+        "contentionRounds": args.contention_rounds,
+    }
+    return parse_receipt(output, args.host_profile_id, parameters), elapsed, output
 
 
 def self_test() -> int:
     fixture = {
         "schema": BENCHMARK_SCHEMA,
         "hostProfileId": "self-test",
+        "writes": 1,
+        "canonicalNodeCount": 16,
+        "canonicalEdgeCount": 128,
+        "canonicalSupportCount": 144,
+        "queryTiming": "owner_product_retrieval_including_prepared_index",
+        "querySamples": 1,
+        "reopenSamples": 1,
         "mutationNs": {"p50": 1, "p95": 2, "p99": 3},
         "queryNs": {"p50": 1, "p95": 2, "p99": 3},
         "reopenNs": {"p50": 1, "p95": 2, "p99": 3},
         "contention": {
+            "readersPerRound": 1,
+            "rounds": 1,
             "writerNs": {"p50": 1, "p95": 2, "p99": 3},
             "readerNs": {"p50": 1, "p95": 2, "p99": 3},
             "roundNs": {"p50": 1, "p95": 2, "p99": 3},
         },
         "boundedQueryWork": {
+            "implementation": "full_scan_reference_v2",
             "returnedEdges": 1,
             "omittedEdges": 2,
             "matchingEdges": 3,
@@ -204,7 +290,9 @@ def measure(args: argparse.Namespace) -> int:
     source_sha = git("rev-parse", "HEAD")
     source_tree = git("rev-parse", "HEAD^{tree}")
     if source_sha != args.expected_sha:
-        fail(f"source identity mismatch: expected {args.expected_sha}, observed {source_sha}")
+        fail(
+            f"source identity mismatch: expected {args.expected_sha}, observed {source_sha}"
+        )
     if git("status", "--porcelain"):
         fail("working tree is not clean")
 
@@ -216,11 +304,20 @@ def measure(args: argparse.Namespace) -> int:
         "python": platform.python_version(),
         "rustc": command("rustc", "--version").strip(),
         "cargo": command("cargo", "--version").strip(),
+        "storageIdentity": args.storage_identity,
+        "benchmarkTemporaryDirectory": tempfile.gettempdir(),
+        "benchmarkStorageDevice": os.stat(tempfile.gettempdir()).st_dev,
     }
     if platform.system() == "Linux":
         host.update(read_linux_host_details())
 
     receipt, harness_ns, raw_output = run_benchmark(args)
+    if (
+        git("rev-parse", "HEAD") != source_sha
+        or git("rev-parse", "HEAD^{tree}") != source_tree
+        or git("status", "--porcelain")
+    ):
+        fail("source changed during measurement")
     evidence = {
         "schema": EVIDENCE_SCHEMA,
         "sourceCommit": source_sha,
@@ -249,7 +346,9 @@ def measure(args: argparse.Namespace) -> int:
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(output.suffix + ".tmp")
-    temporary.write_text(json.dumps(evidence, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    temporary.write_text(
+        json.dumps(evidence, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+    )
     os.replace(temporary, output)
     if args.raw_output:
         raw = Path(args.raw_output)
@@ -259,7 +358,9 @@ def measure(args: argparse.Namespace) -> int:
     return 0
 
 
-def bounded(parser: argparse.ArgumentParser, name: str, value: int, lower: int, upper: int) -> None:
+def bounded(
+    parser: argparse.ArgumentParser, name: str, value: int, lower: int, upper: int
+) -> None:
     if not lower <= value <= upper:
         parser.error(f"--{name.replace('_', '-')} must be in {lower}..={upper}")
 
@@ -269,6 +370,7 @@ def main() -> int:
     parser.add_argument("--self-test", action="store_true")
     parser.add_argument("--expected-sha")
     parser.add_argument("--host-profile-id")
+    parser.add_argument("--storage-identity")
     parser.add_argument("--writes", type=int, default=256)
     parser.add_argument("--query-samples", type=int, default=20)
     parser.add_argument("--reopen-samples", type=int, default=5)
@@ -285,6 +387,8 @@ def main() -> int:
         parser.error("--expected-sha must be the exact 40-character candidate SHA")
     if not args.host_profile_id:
         parser.error("--host-profile-id is required")
+    if not args.storage_identity:
+        parser.error("--storage-identity is required")
     if not args.output:
         parser.error("--output is required")
     bounded(parser, "writes", args.writes, 1, 256)

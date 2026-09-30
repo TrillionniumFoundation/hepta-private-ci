@@ -16,6 +16,8 @@ on:
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
       - "scripts/hepta-knowledge-graph-target-measure.py"
+      - "scripts/hepta-knowledge-graph-budget-check.py"
+      - "scripts/test_hepta_knowledge_graph_budget.py"
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
   push:
@@ -34,6 +36,8 @@ on:
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
       - "scripts/hepta-knowledge-graph-target-measure.py"
+      - "scripts/hepta-knowledge-graph-budget-check.py"
+      - "scripts/test_hepta_knowledge_graph_budget.py"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
 
 permissions:
@@ -62,6 +66,7 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
+      KG_EVIDENCE_DIR: ${{ runner.temp }}/kg-qualification-${{ matrix.lane }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -99,7 +104,16 @@ jobs:
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           git diff --quiet
           git diff --cached --quiet
-          git rev-parse HEAD HEAD^{tree}
+          mkdir -p "$KG_EVIDENCE_DIR"
+          git rev-parse HEAD HEAD^{tree} > "$KG_EVIDENCE_DIR/source-identity.txt"
+          # Qualification watchdogs are not product latency acceptance budgets.
+          cat > "$KG_EVIDENCE_DIR/nextest.toml" <<'TOML'
+          [profile.default]
+          retries = 0
+          slow-timeout = { period = "60s", terminate-after = 30 }
+          [profile.local]
+          inherits = "default"
+          TOML
 
       - name: Verify knowledge.graph closed-world truth
         shell: bash
@@ -109,7 +123,10 @@ jobs:
 
       - name: Self-test target-host evidence harness
         shell: bash
-        run: python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
+        run: |
+          set -euo pipefail
+          python3 scripts/test_hepta_knowledge_graph_budget.py -v
+          python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
 
       - name: Observe repository-wide detailed-design health
         continue-on-error: true
@@ -147,52 +164,80 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Test canonical KG kernel
         working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-kg -- --nocapture
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-kg --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/kernel.log"
 
       - name: Test prompt-factor owner, projection and real consumer
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture
-          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
+          just test --locked -p codex-hepta-prompt-registry --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/prompt-registry.log"
+          just test --locked -p codex-hepta-prompt-optimizer --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/prompt-optimizer.log"
 
       - name: Test durable cognitive KG owner and recovery
         working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-memory --lib --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/memory.log"
 
       - name: Crash/reopen KG transaction windows
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-memory --lib \
-            cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor \
-            -- --ignored --exact --nocapture --test-threads=1
+          just test --locked -p codex-hepta-memory --lib \
+            -E 'test(=cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor)' \
+            --run-ignored only --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/crash.log"
 
       - name: Measure PERF-LIBRARY pilot capacity
         if: matrix.lane == 'source-head'
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-memory --lib \
-            cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt \
-            -- --ignored --exact --nocapture --test-threads=1
+          just test --locked -p codex-hepta-memory --lib \
+            -E 'test(=cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt)' \
+            --run-ignored only --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/capacity.log"
+          test "$(grep -c '^HEPTA_KNOWLEDGE_GRAPH_PERF_RECEIPT=' "$KG_EVIDENCE_DIR/capacity.log")" = 1
 
       - name: Test default Agentd production cognitive-writer profile
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd \
-            --test cognitive_product_e2e -- --nocapture --test-threads=1
+          just test --locked -p codex-hepta-agentd \
+            --test cognitive_product_e2e --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/product.log"
 
       - name: Test qualification witness on top of product writer
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd \
+          just test --locked -p codex-hepta-agentd \
             --features qualification-cognitive-write \
-            --test cognitive_product_e2e -- --nocapture --test-threads=1
+            --test cognitive_product_e2e --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/product-witness.log"
+
+      - name: Exercise history growth and deletion across reopen
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-memory --lib \
+            -E 'test(=cognitive_kg_benchmark_tests::history::qualification_kg_history_reopen_no_resurrection)' \
+            --run-ignored only --no-tests=fail --no-capture \
+            --config-file "$KG_EVIDENCE_DIR/nextest.toml" 2>&1 | tee "$KG_EVIDENCE_DIR/history.log"
+          test "$(grep -c '^HEPTA_KNOWLEDGE_GRAPH_HISTORY_RECEIPT=' "$KG_EVIDENCE_DIR/history.log")" = 1
 
       - name: Strict KG lint
         working-directory: codex-rs
@@ -203,6 +248,15 @@ jobs:
             -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd \
             --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write \
             -- -D warnings
+
+      - name: Preserve exact-candidate receipts and test counts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-qualification-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ env.KG_EVIDENCE_DIR }}
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Preserve exact tracked source
         if: always()

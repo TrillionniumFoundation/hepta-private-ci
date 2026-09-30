@@ -64,6 +64,11 @@ jobs:
           cargo --version > target-evidence/cargo-version.txt
           cp "$BUDGET_PROFILE_PATH" target-evidence/budget-profile.json
 
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Measure exact product workload on target host
         shell: bash
         run: |
@@ -74,7 +79,8 @@ jobs:
             --storage-identity "$STORAGE_IDENTITY" \
             --target-dir "/tmp/hepta-knowledge-graph-target-$GITHUB_RUN_ID" \
             --output target-evidence/target-host-evidence.json \
-            --raw-output target-evidence/target-host-raw.log
+            --raw-output target-evidence/target-host-raw.log \
+            2>&1 | tee target-evidence/measurement.log
 
       - name: Enforce committed target-host budget
         shell: bash
@@ -90,6 +96,7 @@ jobs:
           from pathlib import Path
           value = json.loads(Path('target-evidence/budget-evaluation.json').read_text())
           assert value['budgetPassed'] is True
+          assert value['purpose'] == 'target-host-measurement'
           assert value['sourceCommit'] == __import__('os').environ['SOURCE_SHA']
           assert value['independentAcceptance'] is False
           assert value['activation'] is False
