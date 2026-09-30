@@ -7,8 +7,8 @@
   },
   "sourceBaseSemantics": "historical_provenance_not_current_execution",
   "sourceBindingSnapshot": {
-    "commit": "ddd906e4b02f78016a85907d4c9217c254c70bc4",
-    "tree": "0cc7eda34de7495b6ab9699b19adc90b338cde3c"
+    "commit": "632c934a3dbc4889a971b55fc528a7903ab4473d",
+    "tree": "c851a135b2fac811c86537722d94ac7302cb3472"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -42,6 +42,9 @@
     },
     {
       "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs"
     }
   ],
   "qualificationInputs": [
@@ -50,7 +53,9 @@
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/error.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
     "codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs",
+    "codex-rs/hepta-cognitive-store/tests/production_writer_admission_fence.rs",
     "codex-rs/hepta-memory/Cargo.toml",
     "codex-rs/hepta-memory/examples/cognitive_store_history_perf.rs",
     "codex-rs/hepta-memory/examples/cognitive_store_perf.rs",
@@ -59,17 +64,23 @@
     "codex-rs/hepta-memory/tests/cognitive_archive_owner.rs",
     "codex-rs/hepta-memory/tests/cognitive_recovery_publication_fault.rs",
     "codex-rs/rust-toolchain.toml",
+    "docs/modules/cognitive.store/ACCEPTANCE_GOVERNANCE.md",
+    "docs/modules/cognitive.store/ARCHITECTURE_CURRENT.md",
     "docs/modules/cognitive.store/ARCHIVE_OBSERVATION.md",
     "docs/modules/cognitive.store/ARCHIVE_RUNBOOK.md",
     "docs/modules/cognitive.store/BOOTSTRAP_RUNBOOK.md",
     "docs/modules/cognitive.store/DATA_LIFECYCLE.md",
     "docs/modules/cognitive.store/ERROR_CATALOG.md",
+    "docs/modules/cognitive.store/HOST_QUALIFICATION.md",
     "docs/modules/cognitive.store/IMPLEMENTATION_UPDATE_20260928.md",
+    "docs/modules/cognitive.store/OPERATION_STATUS.json",
     "docs/modules/cognitive.store/PRODUCTION_CLOSURE.md",
     "docs/modules/cognitive.store/PUBLICATION_HARDENING.md",
     "docs/modules/cognitive.store/QUALIFICATION_AND_OBSERVATION_BINDING.md",
     "docs/modules/cognitive.store/QUALIFICATION_PLAN.json",
+    "docs/modules/cognitive.store/READINESS.json",
     "docs/modules/cognitive.store/README.md",
+    "docs/modules/cognitive.store/RETENTION_READINESS.md",
     "docs/modules/cognitive.store/SLO.md",
     "docs/modules/cognitive.store/THREAT_MODEL.md",
     "scripts/cognitive_store_api_probe.py",
@@ -85,30 +96,27 @@
     "scripts/test_hepta_ci_exec.py",
     "scripts/test_hepta_ci_exec_deadline.py",
     "scripts/test_hepta_ci_exec_output.py",
+    "tools/cognitive-store-host-bootstrap/acceptance_governance.py",
     "tools/cognitive-store-host-bootstrap/archive-requirements.txt",
     "tools/cognitive-store-host-bootstrap/archive.py",
     "tools/cognitive-store-host-bootstrap/archive_observation.py",
     "tools/cognitive-store-host-bootstrap/archive_publication.py",
     "tools/cognitive-store-host-bootstrap/bootstrap.py",
+    "tools/cognitive-store-host-bootstrap/host_qualification.py",
     "tools/cognitive-store-host-bootstrap/lifecycle.py",
     "tools/cognitive-store-host-bootstrap/prepare_archive_env.py",
+    "tools/cognitive-store-host-bootstrap/retention_readiness.py",
+    "tools/cognitive-store-host-bootstrap/test_acceptance_governance.py",
     "tools/cognitive-store-host-bootstrap/test_archive.py",
     "tools/cognitive-store-host-bootstrap/test_archive_publication.py",
     "tools/cognitive-store-host-bootstrap/test_bootstrap.py",
     "tools/cognitive-store-host-bootstrap/test_expired_cli.py",
+    "tools/cognitive-store-host-bootstrap/test_host_qualification.py",
     "tools/cognitive-store-host-bootstrap/test_lifecycle.py",
     "tools/cognitive-store-host-bootstrap/test_lifecycle_final_use.py",
     "tools/cognitive-store-host-bootstrap/test_observation_boundary.py",
     "tools/cognitive-store-host-bootstrap/test_publication_observation.py",
-    "docs/modules/cognitive.store/HOST_QUALIFICATION.md",
-    "docs/modules/cognitive.store/RETENTION_READINESS.md",
-    "docs/modules/cognitive.store/ACCEPTANCE_GOVERNANCE.md",
-    "tools/cognitive-store-host-bootstrap/host_qualification.py",
-    "tools/cognitive-store-host-bootstrap/test_host_qualification.py",
-    "tools/cognitive-store-host-bootstrap/retention_readiness.py",
-    "tools/cognitive-store-host-bootstrap/test_retention_readiness.py",
-    "tools/cognitive-store-host-bootstrap/acceptance_governance.py",
-    "tools/cognitive-store-host-bootstrap/test_acceptance_governance.py"
+    "tools/cognitive-store-host-bootstrap/test_retention_readiness.py"
   ],
   "operations": [
     {
@@ -123,7 +131,7 @@
     },
     {
       "operation": "durable_owner_and_snapshot",
-      "nativeSymbol": "DurableCognitiveReadStore",
+      "nativeSymbol": "DurableCognitiveReadCapability",
       "sourcePath": "codex-rs/hepta-cognitive-store/src/durable.rs",
       "state": "source_implemented_qualification_pending",
       "delegatedCallees": [
@@ -137,6 +145,21 @@
       "tests": [
         "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
         "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ]
+    },
+    {
+      "operation": "capability_partitioning",
+      "nativeSymbol": "FederationPolicyCapability",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/durable.rs",
+      "state": "source_implemented_execution_pending",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-agentd/src/state.rs"
+        }
+      ],
+      "tests": [
+        "scripts/cognitive_store_api_probe.py",
+        "scripts/test_cognitive_store_api_probe.py"
       ]
     },
     {
@@ -155,7 +178,8 @@
         "codex-rs/hepta-memory/tests/cognitive_recovery_publication_fault.rs::post_rename_directory_fsync_failure_is_indeterminate_and_retains_candidate",
         "codex-rs/state/src/sqlite_recovery_tests.rs",
         "codex-rs/hepta-agentd/tests/cognitive_recovery_boundary.rs",
-        "codex-rs/hepta-memory/src/cognitive_store_recovery_final_use_tests.rs"
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_final_use_tests.rs",
+        "codex-rs/hepta-cognitive-store/tests/production_writer_admission_fence.rs"
       ]
     },
     {
@@ -229,6 +253,12 @@
         },
         {
           "path": "docs/modules/cognitive.store/CURRENT_STATE.json"
+        },
+        {
+          "path": "docs/modules/cognitive.store/OPERATION_STATUS.json"
+        },
+        {
+          "path": "docs/modules/cognitive.store/READINESS.json"
         },
         {
           "path": "docs/modules/cognitive.store/QUALIFICATION_PLAN.json"
@@ -450,7 +480,8 @@
     "selected-host directory-fsync, canary, restart and rollback qualification pending",
     "coherent exact source-head and deterministic base-merge terminal-success evidence pending",
     "checkpoint-aware native hot-generation rebuild/publication and physical erasure pending",
-    "selected-host execution and independent external approval receipts pending"
+    "selected-host execution and independent external approval receipts pending",
+    "physical SQLite owner private-crate isolation pending"
   ],
   "externalEvidenceGates": [
     "independent signer and witness governance",
@@ -509,6 +540,10 @@
       "object": "55f6a1f2445332d4742415713f06c52d6f847ff9"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "object": "a00bef63c7e1238b3241bb456586e9f999385ae6"
+    },
+    {
       "path": "codex-rs/hepta-agentd/tests/cognitive_bootstrap.rs",
       "object": "569d78034124073c177b16c8e6be6e965e6db96d"
     },
@@ -530,7 +565,7 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-store",
-      "object": "a3c45b1e0b664ab629f88720d1afa02dce709c82"
+      "object": "024d9777e07842741bd3a670c6df290574893f32"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/bootstrap.rs",
@@ -538,7 +573,7 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/durable.rs",
-      "object": "5d4208aee711e1e9a51661251ea6556070df3d64"
+      "object": "f8643aa91e7a40a8a428c8c2c6475d065dec1877"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2.rs",
@@ -547,6 +582,10 @@
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
       "object": "d5c8aa47d3c9dfb86b9022ba786ae7b09cdea5c8"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-store/tests/production_writer_admission_fence.rs",
+      "object": "5d22137c84026af0d1581bb2cf2043dc1413638d"
     },
     {
       "path": "codex-rs/hepta-memory/Cargo.toml",
@@ -637,6 +676,10 @@
       "object": "cdf16b47df48676e540b7e6237bd2817c4ac9b6b"
     },
     {
+      "path": "docs/modules/cognitive.store/ARCHITECTURE_CURRENT.md",
+      "object": "6ef5a15aa665746b42e7314f651207178d6fc28b"
+    },
+    {
       "path": "docs/modules/cognitive.store/ARCHIVE_OBSERVATION.md",
       "object": "72130ad5eae99b63a10e63ea318c6f91d3c48b6a"
     },
@@ -677,6 +720,10 @@
       "object": "0f506deedfd15556c7445df6d2c65ba61ba46977"
     },
     {
+      "path": "docs/modules/cognitive.store/OPERATION_STATUS.json",
+      "object": "7a4cbf87ec13a78b812352b846b5bbef27868832"
+    },
+    {
       "path": "docs/modules/cognitive.store/PRODUCTION_CLOSURE.md",
       "object": "629dfbc9a63e6ec13d6653aea492a32b5bca9a92"
     },
@@ -693,8 +740,12 @@
       "object": "d076358a0bf15df89ed78818f7db6fa354017ae2"
     },
     {
+      "path": "docs/modules/cognitive.store/READINESS.json",
+      "object": "463299b1e459f099561d145f2c9d366e4dc0a283"
+    },
+    {
       "path": "docs/modules/cognitive.store/README.md",
-      "object": "fd39a962fd6d3d59bc300b9c25513aea43ddadd5"
+      "object": "71d160ea2b3c75f7b16a6ae2d054e1fe53a8fbec"
     },
     {
       "path": "docs/modules/cognitive.store/RETENTION_READINESS.md",
@@ -722,7 +773,7 @@
     },
     {
       "path": "scripts/cognitive_store_api_probe.py",
-      "object": "851c38b5e20329e4083117a089d5a6670231df2a"
+      "object": "78238ccf0516cf9c388c8fd455aef6473df85f9c"
     },
     {
       "path": "scripts/cognitive_store_map_generate.py",
@@ -746,7 +797,7 @@
     },
     {
       "path": "scripts/cognitive_store_status.py",
-      "object": "2abd302b80433e457c3727457f8fe57ffc46935b"
+      "object": "adbbf4f81338e60182c47946e61fe84c5ca81fa5"
     },
     {
       "path": "scripts/hepta_ci_exec.py",
