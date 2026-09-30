@@ -10,6 +10,7 @@ on:
       - "docs/modules/platform.types/**"
       - "scripts/check_platform_types_documentation_contract.py"
       - "scripts/check_platform_types_legacy_api_usage.py"
+      - "scripts/platform_types_implementation_status.py"
       - "scripts/test_platform_types_convergence_gates.py"
   merge_group:
   workflow_dispatch:
@@ -46,11 +47,28 @@ jobs:
         run: python3 scripts/test_platform_types_convergence_gates.py
       - name: Verify documentation authority contract
         run: python3 scripts/check_platform_types_documentation_contract.py
+      - name: Generate fail-closed exact-head status
+        env:
+          PLATFORM_TYPES_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PLATFORM_TYPES_MAIN_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+        run: |
+          python3 scripts/platform_types_implementation_status.py \
+            --check \
+            --emit-json .hepta-evidence/platform-types-status/status.json
       - name: Reject removed platform.types APIs
         run: python3 scripts/check_platform_types_legacy_api_usage.py
       - name: Preserve read-only worktree
         shell: bash
         run: git diff --exit-code && test -z "$(git status --porcelain)"
+      - name: Upload exact-head status evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-status-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/platform-types-status/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
 
   cross-platform-smoke:
     name: Cross-platform smoke (${{ matrix.os }})
