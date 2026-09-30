@@ -119,3 +119,5 @@ jobs:
           git fetch origin "$TARGET_BRANCH"
           test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
           git push origin "HEAD:${TARGET_BRANCH}"
+
+# Triggered after the workflow existed in the parent commit.
