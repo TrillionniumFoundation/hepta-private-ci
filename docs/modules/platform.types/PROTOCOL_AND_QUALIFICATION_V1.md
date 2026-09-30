@@ -6,9 +6,13 @@ specifies current protocol boundaries, not a successful qualification receipt.
 
 ## 1. Sources of truth and precedence
 
-Use frozen versioned native contracts and the Rust catalog, executable schemas
-and strict codecs, same-candidate Git/rustdoc/execution evidence, and then module
-prose, in that order. The legacy exact top-level `pub use` inventory is a narrow
+Current interpretation starts with `SPEC_V2.md`, `IMPLEMENTATION_STATUS.md`, and
+`MIGRATION_V1_TO_V2.md` as declared in `README.md`. This supporting document
+describes frozen versioned native contracts and the Rust catalog, executable
+schemas and strict codecs, and same-candidate Git/rustdoc/execution evidence.
+A conflict between current specification, source and evidence fails closed
+until reconciled; historical reports cannot override those entry points.
+The legacy exact top-level `pub use` inventory is a narrow
 ownership projection; rustdoc supplies complete API comparison. Implementation
 maps provide ownership/source/test navigation. Exact Git blob/tree provenance
 binds current source rather than a self-referential committed head identifier.
@@ -43,6 +47,10 @@ compiled catalog, Python/Node oracles and actual Rust codec share this bound.
 Previously computable V2 commitments are unchanged.
 
 `from_v1` computes the exact historical V1 digest and carries it as a witness.
+Direct construction and JSON decoding only bind a supplied nonzero
+`legacy_v1_digest`; they do not verify its correspondence to the V1 fields.
+The migration owner must compare a transported reference with the retained V1
+observation before accepting lineage.
 V1 retains its 8192-position bound. A V1 observation larger than V2 capacity
 remains readable V1 and V2 migration rejects without truncation or mutation.
 A larger HPTC representation requires its own versioned protocol.
@@ -110,9 +118,12 @@ that pin. The owner authenticates and advances the pin separately.
 
 V2 construction now reuses already-resolved immutable definitions and the same
 checked converter without creating an unused V1 admission hash. Verification is
-not cached. The ordinary NDU numeric owner currently consumes V1 registered
-receipts with its configured content digest; availability of the V2 library API
-must not be described as completed V2 product-owner integration.
+not cached. An NDU owner opened with `open_with_numeric_registry_snapshot`
+consumes V2 admission in its ordinary `evaluate` entrypoint and rejects V1
+admission. The legacy `open_with_numeric_registry` owner retains explicit V1
+compatibility. These source callsites establish configured owner composition;
+they do not prove that every daemon bootstrap supplies an authenticated snapshot
+or that product execution has passed target-host qualification.
 
 ## 6. Strict transport and resource limits
 
@@ -160,8 +171,10 @@ allocation bytes without increasing calls; immutable lookups must remain
 allocation-free. Raw data/report hashes are retained through the committed truth
 log. Time distributions are diagnostic by default. Optional latency regression
 comparison requires matched environment/harness and an explicit finite ratio.
-The precise allocation and sample-average timing definitions are in
-`OPTIMIZATION_CLOSURE_20260929.md`; neither mode grants target-host acceptance.
+Current allocation and sample-average timing definitions are implemented in
+`codex-rs/hepta-types/src/bin/platform-types-semantic-bench.rs`;
+`OPTIMIZATION_CLOSURE_20260929.md` retains historical measurement context.
+Neither mode grants target-host acceptance.
 
 Merge acceptance separately requires an eligible formal `APPROVED` review bound
 to the final current head, excluding candidate authors/committers, bots, stale or

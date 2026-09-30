@@ -68,6 +68,22 @@ def git_output(*args: str) -> str:
     return completed.stdout.strip()
 
 
+def validate_technical_authority(text: str, errors: list[str]) -> None:
+    introduction = text.split("\n## ", 1)[0]
+    current_links = re.findall(r"\]\(\./([^)]+)\)", introduction)
+    require(
+        tuple(current_links) == AUTHORITATIVE,
+        "TECHNICAL introduction must direct readers to exactly the three current entries",
+        errors,
+    )
+    for name in HISTORICAL:
+        require(
+            name not in introduction,
+            f"TECHNICAL introduction must not direct current interpretation to archived {name}",
+            errors,
+        )
+
+
 def validate_archive_manifest(readme: str, errors: list[str]) -> None:
     require(
         "archive/MANIFEST.json" in readme,
@@ -91,8 +107,12 @@ def validate_archive_manifest(readme: str, errors: list[str]) -> None:
         "archive manifest schema mismatch",
         errors,
     )
-    require(manifest.get("schemaVersion") == 1, "archive schemaVersion mismatch", errors)
-    require(manifest.get("module") == "platform.types", "archive module mismatch", errors)
+    require(
+        manifest.get("schemaVersion") == 1, "archive schemaVersion mismatch", errors
+    )
+    require(
+        manifest.get("module") == "platform.types", "archive module mismatch", errors
+    )
     require(
         manifest.get("authoritativeEntries") == list(AUTHORITATIVE_PATHS),
         "archive authoritativeEntries must name exactly the three current entries",
@@ -106,7 +126,11 @@ def validate_archive_manifest(readme: str, errors: list[str]) -> None:
     )
 
     relocation = manifest.get("relocationPolicy")
-    require(isinstance(relocation, dict), "archive relocationPolicy must be an object", errors)
+    require(
+        isinstance(relocation, dict),
+        "archive relocationPolicy must be an object",
+        errors,
+    )
     if isinstance(relocation, dict):
         require(
             relocation.get("status") == "retained_in_place",
@@ -125,9 +149,7 @@ def validate_archive_manifest(readme: str, errors: list[str]) -> None:
     if not isinstance(records, list):
         return
 
-    expected_paths = {
-        f"docs/modules/platform.types/{name}" for name in HISTORICAL
-    }
+    expected_paths = {f"docs/modules/platform.types/{name}" for name in HISTORICAL}
     observed_paths = {
         row.get("path")
         for row in records
@@ -154,7 +176,11 @@ def validate_archive_manifest(readme: str, errors: list[str]) -> None:
             continue
         path = REPO_ROOT / relative
         require(path.is_file(), f"missing archived-in-place record: {relative}", errors)
-        require(row.get("status") == "superseded", f"{relative}: status must be superseded", errors)
+        require(
+            row.get("status") == "superseded",
+            f"{relative}: status must be superseded",
+            errors,
+        )
 
         superseded_by = row.get("supersededBy")
         require(
@@ -203,7 +229,9 @@ def validate_archive_manifest(readme: str, errors: list[str]) -> None:
                 observed_source_blob = parts[2] if len(parts) >= 3 else ""
                 current_blob = git_output("hash-object", "--", relative)
             except (OSError, subprocess.CalledProcessError) as error:
-                errors.append(f"{relative}: cannot verify immutable archive identity: {error}")
+                errors.append(
+                    f"{relative}: cannot verify immutable archive identity: {error}"
+                )
             else:
                 require(
                     observed_source_blob == source_blob,
@@ -220,7 +248,9 @@ def validate_archive_manifest(readme: str, errors: list[str]) -> None:
 def main() -> int:
     errors: list[str] = []
     readme_path = DOC_ROOT / "README.md"
-    require(readme_path.is_file(), f"missing {readme_path.relative_to(REPO_ROOT)}", errors)
+    require(
+        readme_path.is_file(), f"missing {readme_path.relative_to(REPO_ROOT)}", errors
+    )
     if errors:
         for error in errors:
             print(f"platform.types documentation contract: {error}", file=sys.stderr)
@@ -238,9 +268,15 @@ def main() -> int:
         readme,
         flags=re.DOTALL,
     )
-    require(current_section_match is not None, "README current-authority section is missing", errors)
+    require(
+        current_section_match is not None,
+        "README current-authority section is missing",
+        errors,
+    )
     if current_section_match is not None:
-        current_links = re.findall(r"\]\(\./([^)]+)\)", current_section_match.group("body"))
+        current_links = re.findall(
+            r"\]\(\./([^)]+)\)", current_section_match.group("body")
+        )
         require(
             tuple(current_links) == AUTHORITATIVE,
             "README current-authority section must link exactly the three authoritative entries",
@@ -254,11 +290,19 @@ def main() -> int:
 
     for name in DERIVED:
         require((DOC_ROOT / name).is_file(), f"missing derived artifact {name}", errors)
-        require(name in readme, f"README does not classify derived artifact {name}", errors)
+        require(
+            name in readme, f"README does not classify derived artifact {name}", errors
+        )
 
     for name in HISTORICAL:
-        require((DOC_ROOT / name).is_file(), f"missing retained historical record {name}", errors)
-        require(name in readme, f"README does not classify historical record {name}", errors)
+        require(
+            (DOC_ROOT / name).is_file(),
+            f"missing retained historical record {name}",
+            errors,
+        )
+        require(
+            name in readme, f"README does not classify historical record {name}", errors
+        )
 
     spec = (DOC_ROOT / "SPEC_V2.md").read_text(encoding="utf-8")
     require(
@@ -285,7 +329,11 @@ def main() -> int:
         "activation: false",
         "source_sha: generated-by-ci",
     ):
-        require(marker in status, f"IMPLEMENTATION_STATUS.md missing fail-closed marker: {marker}", errors)
+        require(
+            marker in status,
+            f"IMPLEMENTATION_STATUS.md missing fail-closed marker: {marker}",
+            errors,
+        )
 
     migration = (DOC_ROOT / "MIGRATION_V1_TO_V2.md").read_text(encoding="utf-8")
     for marker in (
@@ -295,13 +343,21 @@ def main() -> int:
         "Mandatory consumer ledger",
         "Wire compatibility scope",
     ):
-        require(marker in migration, f"MIGRATION_V1_TO_V2.md missing migration marker: {marker}", errors)
+        require(
+            marker in migration,
+            f"MIGRATION_V1_TO_V2.md missing migration marker: {marker}",
+            errors,
+        )
 
     require(
         "check_platform_types_generated_artifacts.py" in readme,
         "README must name the generated-artifact verification entrypoint",
         errors,
     )
+    technical_path = DOC_ROOT / "TECHNICAL.md"
+    require(technical_path.is_file(), "missing supporting TECHNICAL.md", errors)
+    if technical_path.is_file():
+        validate_technical_authority(technical_path.read_text(encoding="utf-8"), errors)
     validate_archive_manifest(readme, errors)
 
     if errors:

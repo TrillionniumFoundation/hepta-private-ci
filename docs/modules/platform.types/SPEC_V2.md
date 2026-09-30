@@ -12,7 +12,7 @@ Detailed source material remains in the repository for review and provenance. Wh
 
 `platform.types` defines data, validation, canonical encoding, stable identities, registries, and protocol descriptors. A valid value is not an authorization token and does not grant network, execution, persistence, publication, or provider access. Final-use authority remains with the owning runtime boundary.
 
-All public constructors and decoders are fail-closed: values that exceed a declared bound, violate a profile, contain an unknown field, use an unsupported protocol item, or fail canonical reconstruction are rejected before use.
+Validated constructors and trust-boundary decoders are fail-closed: values that exceed a declared bound, violate a profile, contain an unknown field, use an unsupported protocol item, or fail canonical reconstruction are rejected before use. Legacy public-field DTOs remain constructible for source compatibility; their fields are unvalidated data until explicit validation or a validated wrapper succeeds. A public Rust value alone is not evidence of admission.
 
 ## 2. Type invariants
 
@@ -26,11 +26,11 @@ The implementation must preserve these invariants:
 - constructors do not silently normalize an invalid value into a different valid value;
 - public types do not carry ambient authority.
 
-The detailed Rust API description remains in [`TECHNICAL.md`](./TECHNICAL.md). The machine-readable public surface is generated as [`PUBLIC_API_INVENTORY_V1.json`](./PUBLIC_API_INVENTORY_V1.json).
+The implementation guide remains in [`TECHNICAL.md`](./TECHNICAL.md). [`PUBLIC_API_INVENTORY_V1.json`](./PUBLIC_API_INVENTORY_V1.json) is a narrow ownership projection of top-level re-exports, not the complete Rust API. Exact-source qualification derives the complete public API compatibility evidence from rustdoc JSON.
 
 ## 3. Canonical bytes
 
-Canonical bytes are deterministic across supported hosts and languages. Encoders must:
+Canonical bytes are deterministic across supported hosts and languages. Canonical byte codecs must:
 
 1. emit one representation for each semantic value;
 2. sort map/object members by the specified canonical key order;
@@ -39,13 +39,13 @@ Canonical bytes are deterministic across supported hosts and languages. Encoders
 5. enforce bounds before unbounded allocation;
 6. decode and canonically re-encode to bytes identical to the accepted canonical input.
 
-A decoder accepting a non-canonical representation is a contract failure even when the representation has the same apparent semantic value.
+A canonical-byte decoder accepting a non-canonical representation is a contract failure even when the representation has the same apparent semantic value. Strict JSON transport validates semantic fields and emits their canonical commitment bytes; its accepted whitespace and textual member order need not equal one canonical JSON rendering.
 
 The detailed canonical model and protocol vocabulary are maintained in [`NORMATIVE_PROTOCOL_SOURCE_V2.md`](./NORMATIVE_PROTOCOL_SOURCE_V2.md).
 
 ## 4. Digest domains
 
-Every digest is domain-separated. A digest input must bind, as applicable:
+Every semantic contract commitment is domain-separated. Its digest input must bind, as applicable:
 
 - specification/schema version;
 - message or value kind;
@@ -55,7 +55,7 @@ Every digest is domain-separated. A digest input must bind, as applicable:
 - all semantically relevant fields and collection members;
 - canonical payload bytes.
 
-Digests with different meanings must not share an untagged byte domain. Digest equality is semantic only for values governed by the same domain definition.
+Semantic commitments with different meanings must not share an untagged byte domain. Digest equality is semantic only for values governed by the same domain definition. `Digest32::of_bytes`, `Digest32::of_reader`, and `Digest32::of_parts` are raw SHA-256 content-hash primitives; they add no domain tag or framing. A caller using them for a semantic commitment must supply the complete versioned domain and unambiguous encoding. A raw content hash alone proves neither semantic identity nor authority.
 
 ## 5. Wire schema
 

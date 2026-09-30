@@ -18,9 +18,9 @@ REMOVED_DIGEST_BYTES = re.compile(
     # Direct receiver chain only. Constructor-argument calls such as
     # Digest32::of_bytes(material.as_bytes()) are valid and must not be
     # mistaken for Digest32::as_bytes().
-    r"Digest32::(?:of_bytes|new|from_array)\\s*"
-    r"\\((?:[^()]|\\([^()]*\\))*\\)\\s*"
-    r"\\.as_bytes\\s*\\(\\s*\\)",
+    r"Digest32::(?:of_bytes|new|from_array)\s*"
+    r"\((?:[^()]|\([^()]*\))*\)\s*"
+    r"\.as_bytes\s*\(\s*\)",
     flags=re.DOTALL,
 )
 
@@ -36,7 +36,10 @@ def tracked_rust_files() -> list[Path]:
             text=True,
         )
     except (OSError, subprocess.CalledProcessError) as error:
-        print(f"platform.types legacy API scan: cannot enumerate tracked files: {error}", file=sys.stderr)
+        print(
+            f"platform.types legacy API scan: cannot enumerate tracked files: {error}",
+            file=sys.stderr,
+        )
         raise SystemExit(2) from error
     return [REPO_ROOT / line for line in result.stdout.splitlines() if line]
 
@@ -53,7 +56,10 @@ def main() -> int:
     findings: list[str] = []
     files = tracked_rust_files()
     if not files:
-        print("platform.types legacy API scan: no tracked Rust files found", file=sys.stderr)
+        print(
+            "platform.types legacy API scan: no tracked Rust files found",
+            file=sys.stderr,
+        )
         return 2
 
     for path in files:

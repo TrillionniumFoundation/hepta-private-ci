@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DEEP = ROOT / ".github/workflows/platform-types-deep-qualification.yml"
 LEGACY = ROOT / ".github/workflows/platform-types-convergence-repair.yml"
+RAMA_LEGACY = ROOT / ".github/workflows/platform-types-rama-lock-repair-once.yml"
 
 
 class PlatformTypesWorkflowSecurityTests(unittest.TestCase):
@@ -53,7 +54,9 @@ class PlatformTypesWorkflowSecurityTests(unittest.TestCase):
             "workflow_dispatch",
         ):
             self.assertNotIn(forbidden, text)
-        self.assertIn("ref: ${{ github.event.pull_request.head.sha || github.sha }}", text)
+        self.assertIn(
+            "ref: ${{ github.event.pull_request.head.sha || github.sha }}", text
+        )
         self.assertIn('test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"', text)
         self.assertIn(
             '--expected-sha "${{ github.event.pull_request.head.sha || github.sha }}"',
@@ -61,6 +64,26 @@ class PlatformTypesWorkflowSecurityTests(unittest.TestCase):
         )
         self.assertIn("persist-credentials: false", text)
         self.assertIn("permissions:\n  contents: read", text)
+
+    def test_retired_rama_entrypoint_cannot_write_candidate_sources(self) -> None:
+        text = RAMA_LEGACY.read_text(encoding="utf-8")
+        for forbidden in (
+            "contents: write",
+            "persist-credentials: true",
+            "git push",
+            "git commit",
+            "cargo update",
+            "workflow_dispatch",
+            "codex/platform-types-production-convergence-20260925",
+        ):
+            self.assertNotIn(forbidden, text)
+        self.assertIn("permissions:\n  contents: read", text)
+        self.assertIn("persist-credentials: false", text)
+        self.assertIn(
+            "ref: ${{ github.event.pull_request.head.sha || github.sha }}", text
+        )
+        self.assertIn('test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"', text)
+        self.assertIn("python3 scripts/platform_types_rama_lock_guard.py", text)
 
 
 if __name__ == "__main__":

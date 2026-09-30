@@ -14,7 +14,7 @@
 
 **Bootstrap work package:** `PLATFORM-0-TYPE-BOUNDARY`
 
-This stable guide retains implementation architecture and work-package history. Start with `CURRENT_IMPLEMENTATION.md` for current executable state and `OPTIMIZATION_CLOSURE_20260929.md` for the latest protocol/resource corrections. Native Rust contracts and the compiled typed catalog govern protocol semantics; central JSON registries govern architectural inventory and ownership. Historical/generated projections cannot override current native protocol bytes. Documentation readiness is not source qualification, activation, operator acceptance, promotion or release.
+This supporting guide retains implementation architecture and work-package history. Start with [`SPEC_V2.md`](./SPEC_V2.md) for the normative contract, [`IMPLEMENTATION_STATUS.md`](./IMPLEMENTATION_STATUS.md) for current source and qualification posture, and [`MIGRATION_V1_TO_V2.md`](./MIGRATION_V1_TO_V2.md) for consumer migration. Native Rust contracts and the compiled typed catalog implement protocol semantics; central JSON registries govern architectural inventory and ownership. Historical records are provenance only. A conflict between the current specification, source and generated evidence remains unresolved and fails closed. Documentation readiness is not source qualification, activation, operator acceptance, promotion or release.
 
 ## 1. Identity, mission and ownership
 
@@ -117,6 +117,8 @@ HPTC V1 field/map order, type tags, integer widths, lengths, bounds and no-Unico
 
 Prompt V2 now rejects more than 4096 positions because it commits them as one frozen HPTC array. The former 4097..=8192 acceptance interval could not produce a native digest. Prompt V1 still supports 8192 positions; migration above the V2 bound fails without truncating or changing V1. Previously computable V2 digests remain unchanged. The schema, compiled catalog, oracles and native wire test share this capacity correction.
 
+`PromptDeliveryObservationV2::from_v1` computes the matching historical V1 digest. A `legacy_v1_digest` supplied directly to `new` or JSON decoding is only a committed reference: validation checks that it is nonzero, not that it identifies the same V1 fields. A migration owner must compare that reference with its independently retained V1 observation before treating it as verified lineage.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
@@ -131,7 +133,7 @@ This module owns no authoritative mutable domain and therefore has no writer, st
 
 The three canonically owned protocols `RandomStreamManifestV1`, `ExternalSystemManifestV1` and `SensorCalibrationManifestV1` have native bounded source, validation and semantic-digest tests. They remain stateless values: random-stream execution, host inventory collection and sensor operation belong to their existing runtime owners.
 
-V2 numeric receipt integrity is not current-generation evidence by itself. `verify_for_snapshot` additionally compares the exact independently pinned generation/digest. Authentication, publication and advancement of that pin remain owner responsibilities. The ordinary NDU numeric owner currently consumes V1 registered receipts with a frozen registry digest; library V2 availability does not establish V2 product composition.
+V2 numeric receipt integrity is not current-generation evidence by itself. `verify_for_snapshot` additionally compares the exact independently pinned generation/digest. Authentication, publication and advancement of that pin remain owner responsibilities. NDU owners opened with `open_with_numeric_registry_snapshot` consume V2 registered admission through the ordinary `evaluate` entrypoint and reject V1 admission. Owners opened with `open_with_numeric_registry` retain explicit V1 compatibility. This source composition does not prove daemon provisioning, external snapshot authentication or target-host qualification.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -140,6 +142,8 @@ The native library is stateless. There are no locks, owner transactions, retry l
 ## 8. Failure semantics, recovery and rollback
 
 Failure is input rejection: invalid bounds/IDs, malformed canonical bytes, arithmetic overflow, unresolved definition/profile or attempted authority widening. There is no partial durable commit and no recovery/reconciler. Rollback restores code plus the compatible frozen contract version; V1 bytes/profile identities must never be silently reinterpreted.
+
+Rejected-input checks prioritize bounded work. HPTC text whose tag, length and payload exceed the remaining encoded-byte budget returns `TooLarge` before scanning for NUL. Field/map labels are checked against their 128-byte grammar bound before sorting, so an invalid label rejects before duplicate/order checks. These priorities affect only inputs violating multiple conditions; accepted canonical bytes and digests remain frozen.
 
 The Prompt admission correction is explicitly behavior-narrowing for previously uncommittable V2 inputs. It does not destroy larger V1 observations. A larger HPTC-backed representation needs a new version, not an increase to the frozen global HPTC limit.
 
@@ -159,9 +163,9 @@ Manifest admission checks identity/policy bindings, not actual current-time vali
 
 Source-enforced ceilings include StableId 128 encoded bytes; HPTC V1 256 KiB, 4096 container items and depth 16; registry 256 total ordinary/profile definitions; ordinary definition 4096 UTF-8 bytes and 256 KiB aggregate bytes; numeric signals 4096 elements; Prompt V1 8192 positions and Prompt V2 4096 positions. Manifest text is bounded per field and sensor confidence is `1..=1_000_000` ppm. Counter/time windows must be strictly ordered; uncertainty and operating ranges permit equal endpoints. Checked arithmetic rejects overflow rather than saturating.
 
-Owned bounded String/Vec inputs normalize retained capacity only when it exceeds the declared maximum; within-bound allocations are reused. Borrowed constructors validate before copying. The legacy owned constructor cannot prevent prior caller/Into allocation, and logical capacity is not physical RSS.
+Owned bounded String/Vec inputs normalize retained capacity only when it exceeds the declared maximum; within-bound allocations are reused. Immutable registries likewise cap retained caller entry and numeric-profile vector capacity at 256 entries while reusing within-bound allocations. Borrowed constructors validate before copying. The legacy owned constructor cannot prevent prior caller/Into allocation, and logical capacity is not physical RSS. Canonical encoding preflights the full text framing budget before content scanning and bounds field/map labels before sorting; a short collection cannot force comparison of arbitrarily long caller labels.
 
-`platform-types-semantic-bench` measures real canonical, registry and numeric APIs with 17 samples of 64 operations per case. Paired buffered/streaming hashing alternates order. Allocation/reallocation call counts and requested bytes are measured by a standalone diagnostic allocator, never a production-library hook. Mandatory gates require per-sample allocation-byte reduction without call-count regression and allocation-free immutable lookups. Sample-average timing distributions remain diagnostic unless an explicit same-environment, same-harness baseline comparison is requested. Neither mode supplies target-host acceptance. See `OPTIMIZATION_CLOSURE_20260929.md` for metric definitions and reproduction.
+`platform-types-semantic-bench` measures real canonical, registry and numeric APIs with 17 samples of 64 operations per case. Paired buffered/streaming hashing alternates order. Allocation/reallocation call counts and requested bytes are measured by a standalone diagnostic allocator, never a production-library hook. Mandatory gates require per-sample allocation-byte reduction without call-count regression and allocation-free immutable lookups. Sample-average timing distributions remain diagnostic unless an explicit same-environment, same-harness baseline comparison is requested. Neither mode supplies target-host acceptance. Current metric definitions are implemented in `codex-rs/hepta-types/src/bin/platform-types-semantic-bench.rs`; `OPTIMIZATION_CLOSURE_20260929.md` retains historical reproduction context.
 
 ## 11. Observability and operations
 
@@ -588,7 +592,7 @@ composition, deployment or external effect authority.
 | HPTC prompt delivery | `PromptDeliveryObservationV2` | `codex-rs/hepta-types/src/prompt_delivery_v2.rs` | migration/hashability/wire capacity regressions |
 | runtime topology | `RuntimeTopologyCandidateV1` | `codex-rs/hepta-types/src/topology.rs` | delta/candidate substitution tests plus Supervisor callsite |
 | owned manifests | `RandomStreamManifestV1` / `ExternalSystemManifestV1` / `SensorCalibrationManifestV1` | `codex-rs/hepta-types/src/manifests.rs` | constructor/validation/digest negative matrix |
-| registered NDU consumer | `NduNumericRegistryV1` / `NduAuthenticatedOwnerV1::admit_utility_signal` | `codex-rs/hepta-ndu/src/numeric_admission.rs`, `owner.rs` | V1 registry freeze and missing-registry tests |
+| registered NDU consumer | `NduNumericRegistryV1` / `NduAuthenticatedOwnerV1::open_with_numeric_registry_snapshot` / `evaluate` | `codex-rs/hepta-ndu/src/numeric_admission.rs`, `owner.rs`, `owner_numeric_snapshot.rs` | V1 compatibility, V2 snapshot binding and downgrade-rejection tests |
 | generated bindings | `generate_bindings.py` | `codex-rs/hepta-types/bindings/` | generator drift + Python/JavaScript own-property consumer gates |
 | resource diagnostics | `platform-types-semantic-bench` | `codex-rs/hepta-types/src/bin/` | same-candidate allocation/timing gate |
 
@@ -596,8 +600,8 @@ composition, deployment or external effect authority.
   blob/tree provenance, not an older observation alone, binds later edits.
 - `implementedOperationMappingComplete` applies only to explicitly mapped rows.
 - The three owned manifests have native source, validation and tests.
-- Capability-specific consumers exist for Prompt V1, topology and NDU V1 numeric
-  admission; product execution and target-host qualification remain false.
+- Capability-specific consumers exist for Prompt V1, topology and configured NDU
+  V1/V2 numeric admission; product execution and target-host qualification remain false.
 - Production implementation, independent acceptance, activation and release
   remain false until their separate evidence gates pass.
 
@@ -623,10 +627,13 @@ on the ordinary owner entrypoint, not only through a separately called helper.
 Each bounded utility-axis vector is admitted in its existing signed-Q32
 representation, with exact axis identity and normalization. This is representation
 admission, not a reinterpretation of FixedQ32 multiplication or division rounding.
-A canonical support envelope binds the original support and V1 registered admission
-before the existing V2 evaluator runs. The evaluator version is not the numeric
-receipt version. Missing normalization, missing profile, wrong axes and absent
-original support reject. Registry-less legacy owners remain explicit advisory
-compatibility; their receipts are not registered admission. Daemon provisioning,
-external authentication and any generation-sensitive V2 owner migration remain
-separate obligations, not facts established by the type-library verifier.
+A canonical support envelope binds the original support and the configured
+registered admission before the existing V2 evaluator runs. Snapshot-configured
+owners use the V2 envelope and receipt with the pinned generation/digest; V1
+registry-configured owners use the frozen V1 envelope and receipt. The evaluator
+version is not the numeric receipt version. Missing normalization, missing profile,
+wrong axes and absent original support reject. Registry-less legacy owners remain
+explicit advisory compatibility; their receipts are not registered admission.
+Daemon provisioning, external authentication and migration of every product
+bootstrap remain separate obligations, not facts established by the type-library
+verifier.
