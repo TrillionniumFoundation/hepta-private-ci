@@ -1,0 +1,83 @@
+name: Hepta objective convergence smoke
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-final-convergence-20260930
+    paths:
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-intelligence/src/objective_run.rs
+      - codex-rs/hepta-intelligence/src/objective_run_tests.rs
+      - codex-rs/Cargo.lock
+      - .github/workflows/hepta-objective-convergence-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: objective-convergence-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact development source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Check default objective and intelligence caller
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-objective --all-targets
+          cargo check --locked -p codex-hepta-intelligence --lib
+
+      - name: Check compatibility feature
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-objective \
+            --all-targets --features qualification-legacy-compile
+
+      - name: Compile focused test targets
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --no-run -p codex-hepta-objective
+          cargo test --locked --no-run -p codex-hepta-intelligence --lib objective_run
+
+      - name: Strict focused lint and format
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-objective --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-objective \
+            --all-targets --features qualification-legacy-compile \
+            --no-deps -- -D warnings
+          cargo fmt --package codex-hepta-objective \
+            --package codex-hepta-intelligence -- --check
+
+      - name: Verify checkout stayed clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
