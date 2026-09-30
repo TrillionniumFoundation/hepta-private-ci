@@ -74,7 +74,8 @@ fn small_capacity_survives_many_rounds_reload_and_never_replays_history() {
     control.reserve_native(request("unknown"), 2).unwrap();
     control.dispatch_native("unknown", dispatch()).unwrap();
     let unknown = control.native_record("unknown").unwrap().clone();
-    for round in 0..40 {
+    let rounds = control.capacity * 4;
+    for round in 0..rounds {
         let id = format!("round-{round}");
         control.reserve_native(request(&id), 2).unwrap();
         let released = control
@@ -85,8 +86,8 @@ fn small_capacity_survives_many_rounds_reload_and_never_replays_history() {
             .unwrap();
         assert_eq!(receipt.archived_records, 1);
         assert_eq!(receipt.resident_native_records, 1);
-        assert!(receipt.journal_compacted);
-        assert!(receipt.journal_bytes < 4096);
+        // Retirement is durable even when its budget expires before journal
+        // compaction. Reopening below must retain receipt and replay fences.
         assert!(control.native_record(&id).is_none());
         assert_eq!(
             control.native_record_resolved(&id).unwrap(),
@@ -107,6 +108,29 @@ fn small_capacity_survives_many_rounds_reload_and_never_replays_history() {
             Err(Error::Conflict)
         );
         assert!(DurableInferenceControl::open(&path, 3).is_err());
+    }
+    // A later maintenance call must actually compact any pending retirement;
+    // merely loosening the timing assertion would not prove bounded history.
+    let mut compacted = !control.native.compaction_pending;
+    for _ in 0..3 {
+        if compacted {
+            break;
+        }
+        let receipt = control
+            .maintain_native_history(1, Duration::from_secs(5))
+            .unwrap();
+        assert_eq!(receipt.archived_records, 0);
+        compacted = receipt.journal_compacted;
+    }
+    assert!(compacted);
+    assert!(control.journal_bytes < 4096);
+    drop(control);
+    let control = DurableInferenceControl::open(&path, 3).unwrap();
+    assert_eq!(control.native_record("unknown"), Some(&unknown));
+    assert_eq!(control.get("generic"), Some(&generic_before));
+    for round in 0..rounds {
+        let id = format!("round-{round}");
+        assert!(control.native_record_resolved(&id).unwrap().is_some());
     }
     drop(control);
     std::fs::remove_dir_all(directory).unwrap();
@@ -182,6 +206,16 @@ fn retirement_before_compaction_reloads_and_journal_names_keep_history_isolated(
             .unwrap();
         let digest = archive_store::persist(&path, &released).unwrap();
         control.commit_native_archive("same-id", digest).unwrap();
+        assert!(
+            !control
+                .compact_native_history(
+                    Instant::now() - Duration::from_secs(1),
+                    Duration::from_millis(10)
+                )
+                .unwrap()
+        );
+        assert!(control.native.compaction_pending);
+
         drop(control); // Durable retirement exists but no compaction happened.
         histories.push((path, released));
     }
