@@ -42,7 +42,7 @@ on:
     - cron: '23 18 * * *'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: context-compiler-${{ github.event_name }}-${{ github.event.pull_request.head.sha || github.sha }}
@@ -64,7 +64,7 @@ jobs:
         shell: bash
         env:
           SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
-          PR_BASE: ${{ github.event.pul_request.base.sha }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
           INPUT_BASE: ${{ inputs.base_sha }}
           GIT_NO_REPLACE_OBJECTS: '1'
           GIT_CONFIG_NOSYSTEM: '1'
@@ -109,8 +109,8 @@ jobs:
           for path in sorted(Path('.github/workflows').glob('context-compiler*.yml')):
               text = path.read_text(encoding='utf-8')
               for token in forbidden:
-                if token in text:
-                  offenders.append(f'{path}: forbidden source-writing token {token!r}')
+                  if token in text:
+                      offenders.append(f'{path}: forbidden source-writing token {token!r}')
           if offenders:
               raise SystemExit('source-writing context workflow detected:\n' + '\n'.join(offenders))
           PY
@@ -144,7 +144,7 @@ jobs:
           git archive --format=tar.gz --output="$RUNNER_TEMP/context-source/source.tar.gz" "$SOURCE"
           printf '%s\n' "$SOURCE" > "$RUNNER_TEMP/context-source/source-sha.txt"
           printf '%s\n' "$BASE" > "$RUNNER_TEMP/context-source/base-sha.txt"
-          printf '%s\n' "$(git rev-parse HEAT_^{tree})" > "$RUNNER_TEMP/context-source/source-tree.txt"
+          printf '%s\n' "$(git rev-parse HEAD^{tree})" > "$RUNNER_TEMP/context-source/source-tree.txt"
           printf '%s\n' "$WORKFLOW_REF" > "$RUNNER_TEMP/context-source/workflow-ref.txt"
           printf '%s\n' "$WORKFLOW_SHA" > "$RUNNER_TEMP/context-source/workflow-sha.txt"
           printf '%s\n' "$RUN_ID" > "$RUNNER_TEMP/context-source/run-id.txt"
@@ -275,88 +275,3 @@ jobs:
           set -euo pipefail
           test "$IDENTITY_RESULT" = success
           test "$QUALIFICATION_RESULT" = success
-
-  finalize-generated-truth:
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'codex/context-compiler-v3-closure-20260928'
-    runs-on: ubuntu-slim
-    timeout-minutes: 15
-    env:
-      SOURCE_SHA: bedf77652f74b62c1e5d6bb3b2119893e581cecc
-      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-      HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-      - name: Generate exact truth and restore read-only workflows
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
-          python3 - <<'PY'
-          import json
-          import os
-          import subprocess
-          from pathlib import Path
-
-          source_sha = os.environ["SOURCE_SHA"]
-          state_path = Path("docs/modules/context.compiler/CURRENT_STATE.json")
-          state = json.loads(state_path.read_text())
-          state["runtimeSourceAnchor"] = source_sha
-          state["runtimeSourceTree"] = subprocess.check_output(
-              ["git", "rev-parse", f"{source_sha}^{{tree}}"], text=True
-          ).strip()
-          for item in state["runtimeSourceFiles"]:
-              source_blob = subprocess.check_output(
-                  ["git", "rev-parse", f"{source_sha}:{item['path']}"], text=True
-              ).strip()
-              head_blob = subprocess.check_output(
-                  ["git", "rev-parse", f"HEAD:{item['path']}"], text=True
-              ).strip()
-              if head_blob != source_blob:
-                  raise SystemExit(f"runtime source changed after anchor: {item['path']}")
-              item["blobSha"] = source_blob
-          state_path.write_text(json.dumps(state, indent=2) + "\\n")
-          PY
-          python3 -B scripts/generate_context_compiler_module_docs.py --write
-          python3 -B scripts/generate_context_compiler_module_docs.py --check
-          python3 -B -m unittest discover -s scripts -p 'test_context_compiler_*.py' -q
-          git checkout "$SOURCE_SHA" -- .github/workflows/context-compiler-qualification.yml
-          git rm -f \
-            .github/workflows/context-compiler-finalize-generated-truth.yml \
-            .github/workflows/context-compiler-finalize-generated-truth-arm.yml
-          git add \
-            .github/workflows/context-compiler-qualification.yml \
-            docs/modules/context.compiler/CURRENT_STATE.json \
-            docs/modules/context.compiler/CURRENT_PRODUCT_PATH.md \
-            docs/modules/context.compiler/IMPLEMENTATION_MAP.json \
-            docs/modules/context.compiler/MODULE_MANIFEST.json \
-            docs/modules/context.compiler/TECHNICAL.md \
-            qualification/module-execution-dossiers/detail/context.compiler.md
-          git diff --cached --check
-          python3 - <<'PY'
-          import subprocess
-          expected = {
-              '.github/workflows/context-compiler-finalize-generated-truth-arm.yml',
-              '.github/workflows/context-compiler-finalize-generated-truth.yml',
-              '.github/workflows/context-compiler-qualification.yml',
-              'docs/modules/context.compiler/CURRENT_PRODUCT_PATH.md',
-              'docs/modules/context.compiler/CURRENT_STATE.json',
-              'docs/modules/context.compiler/IMPLEMENTATION_MAP.json',
-              'docs/modules/context.compiler/MODULE_MANIFEST.json',
-              'docs/modules/context.compiler/TECHNICAL.md',
-              'qualification/module-execution-dossiers/detail/context.compiler.md',
-          }
-          actual = set(subprocess.check_output(
-              ['git', 'diff', '--cached', '--name-only'], text=True
-          ).splitlines())
-          if actual != expected:
-              raise SystemExit(f'unexpected finalization paths: {sorted(actual ^ expected)}')
-          PY
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git commit -m "docs(context.compiler): bind lifecycle closure truth" \
-            -m "Bind all six generated projections to bedf77652f74b62c1e5d6bb3b2119893e581cecc / 0cf89e840cf882a350376bbab06c8c34e4ea2520 after lifecycle, capacity, metrics, consumer-trace and regression closure. Generator check and all 61 Python regressions pass. Restore the qualification workflow to read-only and remove transient finalizers. This grants no authenticated App Server ingress, external security consumption, independent provider evidence, selected-host acceptance, activation or release."
-          git push origin "HEAD:${HEAD_BRANCH}"
-
