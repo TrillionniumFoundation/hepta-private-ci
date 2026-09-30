@@ -29,7 +29,19 @@ jobs:
           persist-credentials: true
 
       - name: Apply product semantic fixes
-        run: python3 scripts/apply_memory_federation_product_semantics.py
+        run: |
+          python3 scripts/apply_memory_federation_product_semantics.py
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('codex-rs/hepta-memory/src/cognitive_retrieval_tests.rs')
+          text = path.read_text(encoding='utf-8')
+          marker = 'use crate::MAX_RETRIEVAL_CHANNEL_CANDIDATES;\n'
+          addition = marker + 'use crate::MAX_RETRIEVAL_RESULTS;\n'
+          if 'use crate::MAX_RETRIEVAL_RESULTS;\n' not in text:
+              if text.count(marker) != 1:
+                  raise SystemExit('retrieval test import marker changed')
+              path.write_text(text.replace(marker, addition, 1), encoding='utf-8')
+          PY
 
       - name: Format changed Rust
         working-directory: codex-rs
