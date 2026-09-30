@@ -1,4 +1,4 @@
-name: knowledge.graph read-only source snapshot
+name: knowledge.graph read-only development verification
 
 on:
   push:
@@ -6,19 +6,25 @@ on:
       - work/kg-abc-evidence-hardening-20260928
     paths:
       - ".github/workflows/hepta-kg-source-snapshot-readonly.yml"
+      - "codex-rs/hepta-kg/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: kg-readonly-source-snapshot-${{ github.sha }}
-  cancel-in-progress: false
+  group: kg-readonly-development-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  snapshot:
+  verify:
     runs-on: ubuntu-22.04
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -26,7 +32,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Pack exact tracked source
+      - name: Bind immutable source identity
         shell: bash
         run: |
           set -euo pipefail
@@ -34,21 +40,43 @@ jobs:
           git diff --exit-code
           git diff --cached --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
-          archive="$RUNNER_TEMP/hepta-private-ci-$GITHUB_SHA.tar.gz"
-          git archive --format=tar HEAD | gzip -n > "$archive"
-          sha256sum "$archive" > "$archive.sha256"
           printf 'source_sha=%s\nsource_tree=%s\n' \
             "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" \
-            > "$RUNNER_TEMP/source-identity.txt"
+            | tee "$RUNNER_TEMP/source-identity.txt"
 
-      - name: Upload immutable source snapshot
+      - name: Check KG-owned Rust formatting
+        working-directory: codex-rs
+        shell: bash
+        run: cargo fmt --all -- --check
+
+      - name: Check KG package and all targets
+        working-directory: codex-rs
+        shell: bash
+        run: cargo check --locked -p codex-hepta-kg --all-targets
+
+      - name: Run strict KG Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: cargo clippy --locked -p codex-hepta-kg --all-targets -- -D warnings
+
+      - name: Run KG package tests
+        working-directory: codex-rs
+        shell: bash
+        run: cargo test --locked -p codex-hepta-kg
+
+      - name: Prove clean tracked state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Upload immutable development identity
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: kg-source-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz
-            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz.sha256
-            ${{ runner.temp }}/source-identity.txt
+          name: kg-development-identity-${{ github.sha }}
+          path: ${{ runner.temp }}/source-identity.txt
           if-no-files-found: error
           retention-days: 1
-          compression-level: 0
