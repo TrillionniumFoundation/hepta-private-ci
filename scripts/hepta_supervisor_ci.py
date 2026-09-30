@@ -34,6 +34,13 @@ PLANS = {
                              "--test", "default_authority_denied",
                              "--test", "daemon_product", *SERIAL]),
     "production": (29, [*TEST, "--lib", "--features", "production-authority", *SERIAL]),
+    "qualification-lib": (5, [*TEST, "--features", "qualification", "--lib", *SERIAL]),
+    "hol-256": (1, [*TEST, "--features", "qualification",
+                    "--test", "supervisor_hol_qualification", *SERIAL]),
+    "sigkill": (1, [*TEST, "--features", "qualification",
+                    "--test", "sigkill_crash_matrix", *SERIAL]),
+    "authority-distribution": (4, [*TEST, "--features", "production-authority",
+                                   "--test", "authority_distribution", *SERIAL]),
     "products": (19, [*TEST, "--features", "production-authority",
                        "--bin", "hepta-supervisord", "--test", "authority_recovery",
                        "--test", "daemon_product", "--test", "paired_process_product",
@@ -110,6 +117,33 @@ REQUIRED_BINARY_TESTS = {
         f"{PACKAGE}::default_authority_denied": (
             "default_library_refuses_runtime_verifier_before_opening_fleet",
             "default_daemon_refuses_valid_verifier_configuration_before_fleet_mutation",
+        ),
+    },
+    "qualification-lib": {
+        PACKAGE: (
+            "durability_qualification_tests::disk_full_and_fsync_fail_before_signed_intent_publication",
+            "durability_qualification_tests::rename_failure_preserves_predecessor_and_directory_sync_is_ambiguous_but_valid",
+            "durability_qualification_tests::release_transaction_and_restart_record_never_report_success_without_durability",
+            "durability_qualification_tests::lease_write_hard_link_and_directory_sync_faults_are_fail_closed",
+            "durability_qualification_tests::truncated_lease_restart_intent_and_transaction_are_rejected",
+        ),
+    },
+    "hol-256": {
+        f"{PACKAGE}::supervisor_hol_qualification": (
+            "qualifies_256_instances_fault_waves_and_owner_lock_hol",
+        ),
+    },
+    "sigkill": {
+        f"{PACKAGE}::sigkill_crash_matrix": (
+            "actual_sigkill_preserves_lease_restart_intent_and_transaction",
+        ),
+    },
+    "authority-distribution": {
+        f"{PACKAGE}::authority_distribution": (
+            "pinned_bundle_rotation_rejects_predecessor_and_accepts_current_signer",
+            "wrong_signer_stale_grant_and_authority_epoch_rollover_fail_closed",
+            "fleet_revocation_is_observed_from_the_current_policy_owner",
+            "product_caller_rejects_wrong_authority_bundle_pin",
         ),
     },
     "products": {
