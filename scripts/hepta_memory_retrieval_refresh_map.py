@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Prepare a map-only source-observation commit without rewriting provenance.
+"""Prepare a map-only source observation commit for an exact source snapshot.
 
-Commit code first, run this at that exact clean HEAD, then commit only the map.
-The qualification guard binds the resulting map-only head at execution time.
-This command never changes a production, activation or release claim.
+Commit code and documentation first, run this at that exact clean HEAD, then
+commit only the implementation map. The map binds the preceding source commit
+through the repository-wide ``candidate_or_exact_observation_v1`` policy. This
+command never changes a production, activation or release claim.
 """
 from __future__ import annotations
 
@@ -37,13 +38,21 @@ except ModuleNotFoundError:  # direct script execution from scripts/
     )
 
 
+SOURCE_IDENTITY_POLICY = "candidate_or_exact_observation_v1"
+
+
 class RefreshError(ValueError):
     pass
 
 
 def git(root, *args):
-    result = subprocess.run(["git", "-C", str(root), *args], capture_output=True,
-                            text=True, timeout=60, check=False)
+    result = subprocess.run(
+        ["git", "-C", str(root), *args],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
     if result.returncode:
         raise RefreshError(f"git {args[0]} failed: {result.stderr.strip()}")
     return result.stdout.strip()
@@ -93,6 +102,15 @@ def _git_object(root: Path, head: str, path: str) -> str | None:
     return identity
 
 
+def _reject_map_self_reference(paths: tuple[str, ...]) -> None:
+    for path in paths:
+        if path == MAP or MAP.startswith(path.rstrip("/") + "/"):
+            raise RefreshError(
+                "sourceInputs must enumerate map-adjacent evidence without "
+                f"including the implementation map or an ancestor of it: {path}"
+            )
+
+
 def refresh(root, head):
     root = Path(root)
     if not isinstance(head, str) or not re.fullmatch(r"[0-9a-f]{40}", head):
@@ -111,6 +129,7 @@ def refresh(root, head):
     object_inputs = tuple(policy["sourceObjectInputs"])
     if canonical_inputs != INPUTS or object_inputs != OBJECT_INPUTS:
         raise RefreshError("loaded policy differs from the policy used by this process")
+    _reject_map_self_reference(canonical_inputs)
 
     mapping = json.loads((root / MAP).read_text(), object_pairs_hook=unique_object)
     if mapping.get("module") != "memory.retrieval":
@@ -127,11 +146,13 @@ def refresh(root, head):
         except PolicyError as error:
             raise RefreshError(str(error)) from error
 
-    paths = list(canonical_inputs)
+    source_identity = {
+        "commit": head,
+        "tree": git(root, "rev-parse", f"{head}^{{tree}}"),
+    }
     objects, missing = [], []
-    for path in paths:
-        identity = _git_object(root, head, path)
-        if identity is None:
+    for path in canonical_inputs:
+        if _git_object(root, head, path) is None:
             missing.append(path)
 
     for path in object_inputs:
@@ -142,14 +163,13 @@ def refresh(root, head):
 
     if ROOT not in {row["path"] for row in objects}:
         raise RefreshError("retrieval source root is missing")
-    mapping["observedAtHead"] = {
-        "commit": head,
-        "tree": git(root, "rev-parse", f"{head}^{{tree}}"),
-    }
-    mapping["observedSourcePaths"] = paths
+    mapping["sourceBase"] = dict(source_identity)
+    mapping["observedAtHead"] = dict(source_identity)
+    mapping["sourceIdentityPolicy"] = SOURCE_IDENTITY_POLICY
+    mapping["observedSourcePaths"] = list(canonical_inputs)
     mapping["sourceObjects"] = objects
     mapping["observedMissingPaths"] = missing
-    # Ownership, operations, provenance and all false claim fields are preserved.
+    # Ownership, operations and all false claim fields are preserved.
     return mapping
 
 
@@ -162,9 +182,18 @@ def main():
         mapping = refresh(args.root, args.head)
         path = args.root / MAP
         path.write_text(json.dumps(mapping, indent=2) + "\n")
-        print(f"refreshed {MAP}; commit this file separately; no execution claim promoted")
-    except (RefreshError, OSError, ValueError, KeyError, TypeError,
-            subprocess.TimeoutExpired) as error:
+        print(
+            f"refreshed {MAP}; commit this file separately; "
+            "no execution claim promoted"
+        )
+    except (
+        RefreshError,
+        OSError,
+        ValueError,
+        KeyError,
+        TypeError,
+        subprocess.TimeoutExpired,
+    ) as error:
         print(f"memory.retrieval map refresh refused: {error}", file=sys.stderr)
         return 1
     return 0

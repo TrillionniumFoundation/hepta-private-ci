@@ -76,6 +76,24 @@ immutable-retention gate.
 Every artifact name contains the producer run ID and run attempt. Consumers
 must verify those fields against the manifest before accepting any receipt.
 
+## Implementation-map observation
+
+The implementation map uses the repository-wide
+`candidate_or_exact_observation_v1` contract. Development changes are committed
+first. The map refresh then sets both `sourceBase` and `observedAtHead` to that
+exact source commit and records every mapped source/evidence Git object.
+
+`observedSourcePaths` must not contain the implementation map or an ancestor
+directory that contains it. Otherwise the second commit would attempt to attest
+to its own future bytes. The canonical policy therefore enumerates map-adjacent
+documentation explicitly and excludes `IMPLEMENTATION_MAP.json`.
+
+The next commit must change only `IMPLEMENTATION_MAP.json`. Verification rejects
+any drift in the enumerated source paths, any stale or incomplete source-object
+inventory, an unknown identity policy, or a candidate whose map observation is
+not its exact source parent. This two-commit representation resolves the
+cryptographic self-reference without weakening source closure.
+
 ## Integration rule
 
 Pull-request evidence belongs only to the pull-request head and its recorded
@@ -83,8 +101,6 @@ GitHub merge. It is not reused after integration. A push to protected `main`
 runs the qualification workflow again and emits a new manifest whose
 `final_merge_sha` is the actual merged commit.
 
-The implementation map uses the repository's two-commit observation pattern:
-first commit source changes, then commit only the refreshed observation map.
-The runtime manifest binds the map hash and the exact executing candidate,
-which removes the self-reference ambiguity without promoting any product or
+The runtime manifest binds the map hash and the exact executing candidate.
+Neither the map observation nor the manifest promotes a product, activation or
 release claim.
