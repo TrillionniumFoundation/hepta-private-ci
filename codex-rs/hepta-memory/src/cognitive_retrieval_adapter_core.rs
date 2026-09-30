@@ -26,7 +26,12 @@ use codex_hepta_memory_retrieval::RetrievalPolicyV1;
 use codex_hepta_memory_retrieval::RetrievalSourceCompletenessV1;
 use codex_hepta_memory_retrieval::compile_cue;
 use codex_hepta_memory_retrieval::observe_retrieval_assignment;
-use codex_hepta_memory_retrieval::recall_generated_with_engram_controlled;
+use codex_hepta_memory_retrieval::product::IncompleteSourceActionV1;
+use codex_hepta_memory_retrieval::product::RetrievalCompletenessDecisionV1;
+use codex_hepta_memory_retrieval::product::RetrievalCompletenessPolicyRowV1;
+use codex_hepta_memory_retrieval::product::RetrievalCompletenessPolicyV1;
+use codex_hepta_memory_retrieval::product::ValidatedCandidateSetV1;
+use codex_hepta_memory_retrieval::product::recall_product_with_engram_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
@@ -61,6 +66,7 @@ pub struct RetrievalExecutionContextV1 {
 pub struct OwnerRetrievalExecutionV1 {
     pub recall: GeneratedRecallV1,
     pub assignment: RetrievalAssignmentObservationV1,
+    pub completeness: RetrievalCompletenessDecisionV1,
 }
 
 impl RetrievalExecutionContextV1 {
@@ -139,6 +145,8 @@ pub fn execute_owner_observation(
 }
 
 /// Execute against the same owner cut with cancellation and a host deadline.
+/// The generated owner batches cross the product admission facade before recall;
+/// a missing expected owner is therefore unavailable, never silently complete.
 pub fn execute_owner_observation_controlled(
     observation: &RetrievalObservation,
     cut: &DurableCognitiveSnapshot,
@@ -168,6 +176,9 @@ pub fn execute_owner_observation_controlled(
         authoritative.snapshot_key(),
         authoritative.snapshot(),
     )?;
+    let completeness_policy = sqlite_owner_completeness_policy_v1()?;
+    let candidates = ValidatedCandidateSetV1::new(generated, &completeness_policy)
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     let mut cue_bytes = b"hepta.owner-retrieval-cue.v1".to_vec();
     cue_bytes.extend_from_slice(request_digest.as_array());
     cue_bytes.extend_from_slice(authoritative.snapshot_key().vector_digest.as_array());
@@ -182,21 +193,34 @@ pub fn execute_owner_observation_controlled(
         context.cue_profile_digest,
     )
     .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let recall = recall_generated_with_engram_controlled(
+    let product = recall_product_with_engram_v1(
         &cue,
         &context.retrieval_policy,
-        &generated,
+        &candidates,
         &context.engram_snapshot,
         &context.dynamics_policy,
         work,
     )
+    .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+    let recall = product.recall.ok_or_else(|| {
+        CognitiveStoreError::Unavailable(
+            "retrieval product abstained because required owner evidence was incomplete".to_string(),
+        )
+    })?;
+    let assignment = observe_retrieval_assignment(
+        &cue,
+        &context.retrieval_policy,
+        candidates.input(),
+        &recall,
+    )
     .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
-    let assignment =
-        observe_retrieval_assignment(&cue, &context.retrieval_policy, &generated, &recall)
-            .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
     work.checkpoint()
         .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
-    Ok(OwnerRetrievalExecutionV1 { recall, assignment })
+    Ok(OwnerRetrievalExecutionV1 {
+        recall,
+        assignment,
+        completeness: product.completeness,
+    })
 }
 
 pub(crate) fn generated_input_from_owner_observation(
@@ -355,6 +379,40 @@ pub fn sqlite_owner_retrieval_policy_v1() -> Result<RetrievalPolicyV1, Cognitive
         .validate()
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
     Ok(policy)
+}
+
+/// Completeness policy for the seven-channel SQLite owner profile.
+///
+/// Ordinary ranking channels may return a typed degraded result when they hit
+/// their declared capacity. Knowledge-graph contradiction evidence is
+/// authority-critical and therefore fails closed when truncated. Any source
+/// that is omitted or explicitly unavailable fails closed.
+pub fn sqlite_owner_completeness_policy_v1(
+) -> Result<RetrievalCompletenessPolicyV1, CognitiveStoreError> {
+    use IncompleteSourceActionV1::Degrade;
+    use IncompleteSourceActionV1::FailClosed;
+
+    let rows = [
+        (RetrievalGeneratorOwnerV1::CognitiveLexical, Degrade),
+        (RetrievalGeneratorOwnerV1::CognitiveEntity, Degrade),
+        (RetrievalGeneratorOwnerV1::CognitiveAssociative, Degrade),
+        (RetrievalGeneratorOwnerV1::CognitiveTemporal, Degrade),
+        (RetrievalGeneratorOwnerV1::KnowledgeGraphCausal, Degrade),
+        (RetrievalGeneratorOwnerV1::KnowledgeGraphProcedural, Degrade),
+        (
+            RetrievalGeneratorOwnerV1::KnowledgeGraphContradiction,
+            FailClosed,
+        ),
+    ]
+    .into_iter()
+    .map(|(generator, on_limit_reached)| RetrievalCompletenessPolicyRowV1 {
+        generator,
+        on_limit_reached,
+        on_unavailable: FailClosed,
+    })
+    .collect();
+    RetrievalCompletenessPolicyV1::new(rows)
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))
 }
 
 pub fn sqlite_owner_cue_profile_digest() -> Digest32 {
