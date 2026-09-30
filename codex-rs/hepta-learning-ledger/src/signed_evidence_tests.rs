@@ -82,6 +82,62 @@ fn sign(
 }
 
 #[test]
+fn authenticated_time_recheck_rejects_expiry_and_scheduled_revocation() {
+    let mut host_trust = trust();
+    host_trust.signers[0].revoked_at = Some(51);
+    let verifier = LearningEvidenceVerifierV1::new(host_trust).expect("host trust");
+    let signed = sign(
+        &verifier,
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        /*seed*/ 1,
+        b"generator payload",
+    );
+    verifier
+        .verify(
+            LearningEvidenceRoleV1::Generator,
+            &signed,
+            b"generator payload",
+            /*now*/ 50,
+        )
+        .expect("initial authentication");
+    assert_eq!(
+        verifier.revalidate_authenticated_evidence_time(&signed, /*now*/ 50),
+        Ok(())
+    );
+    assert_eq!(
+        verifier.revalidate_authenticated_evidence_time(&signed, /*now*/ 51),
+        Err(SignedEvidenceError::Revoked)
+    );
+
+    let verifier = LearningEvidenceVerifierV1::new(trust()).expect("host trust");
+    let signed = sign(
+        &verifier,
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        /*seed*/ 1,
+        b"generator payload",
+    );
+    verifier
+        .verify(
+            LearningEvidenceRoleV1::Generator,
+            &signed,
+            b"generator payload",
+            /*now*/ 50,
+        )
+        .expect("initial authentication");
+    assert_eq!(
+        verifier.revalidate_authenticated_evidence_time(&signed, /*now*/ 91),
+        Err(SignedEvidenceError::ValidityWindow)
+    );
+    assert!(
+        verifier
+            .revalidate_authenticated_evidence_time(&signed, /*now*/ 101)
+            .is_err()
+    );
+}
+
+#[test]
 fn signed_evidence_binds_actual_bytes_and_credential_not_digest_claims() {
     let verifier = LearningEvidenceVerifierV1::new(trust()).expect("host trust");
     let signed = sign(

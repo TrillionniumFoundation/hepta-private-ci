@@ -12,7 +12,7 @@ use codex_hepta_intelligence::TopologyAdmissionEvidenceV1;
 use codex_hepta_intelligence::TopologyPlasticityProductErrorV1;
 use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
 use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
-use codex_hepta_intelligence::propose_authenticated_topology_plasticity_v1;
+use codex_hepta_intelligence::propose_authenticated_topology_plasticity_with_final_time_v1;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_ledger::DurableLedger;
@@ -92,6 +92,7 @@ impl From<AdaptiveAnchorJournalErrorV1> for AgentdTopologyHostErrorV1 {
             AdaptiveAnchorJournalErrorV1::ScopeMismatch => Self::AnchorScopeMismatch,
             AdaptiveAnchorJournalErrorV1::FenceOverflow => Self::AnchorFenceOverflow,
             AdaptiveAnchorJournalErrorV1::Io(kind) => Self::AnchorIo(kind),
+            AdaptiveAnchorJournalErrorV1::Poisoned => Self::Poisoned,
             AdaptiveAnchorJournalErrorV1::InvalidScope
             | AdaptiveAnchorJournalErrorV1::Corrupt
             | AdaptiveAnchorJournalErrorV1::GenerationPending
@@ -230,6 +231,27 @@ pub fn resolve_agentd_topology_admission_v1(
 }
 
 pub fn propose_agentd_topology_plasticity_v1(
+    request: TopologyPlasticityProductRequestV1,
+    artifacts: &ArtifactRegistry,
+    ledger: &DurableLedger,
+    verifier: &LearningEvidenceVerifierV1,
+    writer: &mut AgentdTopologyWriterV1,
+    anchor_store: &mut AgentdTopologyAnchorStoreV1,
+    now: u64,
+) -> Result<TopologyPlasticityProductReceiptV1, AgentdTopologyHostErrorV1> {
+    propose_agentd_topology_plasticity_with_clock_v1(
+        request,
+        artifacts,
+        ledger,
+        verifier,
+        writer,
+        anchor_store,
+        now,
+        &mut || Ok(now),
+    )
+}
+
+pub(crate) fn propose_agentd_topology_plasticity_with_clock_v1(
     mut request: TopologyPlasticityProductRequestV1,
     artifacts: &ArtifactRegistry,
     ledger: &DurableLedger,
@@ -237,6 +259,7 @@ pub fn propose_agentd_topology_plasticity_v1(
     writer: &mut AgentdTopologyWriterV1,
     anchor_store: &mut AgentdTopologyAnchorStoreV1,
     now: u64,
+    clock: &mut dyn FnMut() -> Result<u64, crate::AgentdError>,
 ) -> Result<TopologyPlasticityProductReceiptV1, AgentdTopologyHostErrorV1> {
     if writer.state != AgentdTopologyWriterStateV1::Healthy {
         return Err(AgentdTopologyHostErrorV1::Poisoned);
@@ -260,12 +283,12 @@ pub fn propose_agentd_topology_plasticity_v1(
     }
     request.admission = resolved;
 
-    writer.state = AgentdTopologyWriterStateV1::AppendPendingAnchor;
-    let receipt = match propose_authenticated_topology_plasticity_v1(
+    let receipt = match propose_authenticated_topology_plasticity_with_final_time_v1(
         request,
         verifier,
         &mut writer.registry,
         now,
+        || clock().map_err(|_| TopologyPlasticityProductErrorV1::Binding("host clock unavailable")),
     ) {
         Ok(receipt) => receipt,
         Err(error) => {
@@ -285,6 +308,7 @@ pub fn propose_agentd_topology_plasticity_v1(
             return Err(AgentdTopologyHostErrorV1::Product(error));
         }
     };
+    writer.state = AgentdTopologyWriterStateV1::AppendPendingAnchor;
     if anchor_store
         .persist_anchor(writer.scope, writer.fence, receipt.next_registry_anchor)
         .is_err()

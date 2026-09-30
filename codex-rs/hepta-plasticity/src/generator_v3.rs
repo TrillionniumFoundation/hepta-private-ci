@@ -21,8 +21,7 @@ use crate::ParameterDeltaV2;
 use crate::ParameterMutationPolicyErrorV1;
 use crate::ParameterMutationPolicyV1;
 use crate::ProposalWindowV2;
-use crate::authorize_parameter_mutation_v1;
-use crate::verify_parameter_mutation_policy_v1;
+use crate::parameter_mutation_policy_v1::VerifiedParameterMutationPolicyV1;
 
 const MAX_V3_CANDIDATES: usize = 32;
 const MAX_V3_UPDATE_SCALES: usize = MAX_V3_CANDIDATES - 1;
@@ -230,7 +229,7 @@ fn validate_header(profile: &ParameterGeneratorProfileV3) -> Result<(), Paramete
 fn canonicalize_profile(
     profile: &mut ParameterGeneratorProfileV3,
 ) -> Result<(), ParameterGeneratorErrorV3> {
-    verify_parameter_mutation_policy_v1(&profile.mutation_policy)?;
+    let mutation_policy = VerifiedParameterMutationPolicyV1::new(&profile.mutation_policy)?;
     profile
         .norm_layers
         .sort_by(|left, right| left.layer_id.cmp(&right.layer_id));
@@ -291,8 +290,7 @@ fn canonicalize_profile(
                 signal.parameter_id.to_string(),
             ));
         }
-        authorize_parameter_mutation_v1(
-            &profile.mutation_policy,
+        mutation_policy.authorize(
             profile.selected_artifact_digest,
             &profile.window,
             &signal.layer_id,
@@ -634,5 +632,55 @@ mod tests {
             generated.candidates[0].kind,
             ParameterCandidateKindV2::NoChange
         ));
+    }
+
+    #[test]
+    fn generator_authorizes_the_maximum_bounded_signal_set() {
+        let mut value = profile();
+        let template = value.signals[0].clone();
+        value.update_scales = vec![FixedQ32::ONE];
+        value.signals = (0..MAX_V3_PARAMETER_DELTAS)
+            .map(|index| ParameterPlasticitySignalV3 {
+                parameter_id: id(&format!("parameter:{index:04}")),
+                learning_rate: FixedQ32::from_raw(1),
+                ..template.clone()
+            })
+            .collect();
+        let rules = value
+            .signals
+            .iter()
+            .map(|signal| ParameterMutationRuleV1 {
+                parameter_id: signal.parameter_id.clone(),
+                layer_id: signal.layer_id.clone(),
+                surface: ParameterMutationSurfaceV1::LearnableParameter,
+                minimum_delta: signal.lower_bound,
+                maximum_delta: signal.upper_bound,
+            })
+            .collect();
+        value.mutation_policy = build_parameter_mutation_policy_v1(
+            id("policy:maximum-signals"),
+            digest(b"mutation-grammar"),
+            value.selected_artifact_digest,
+            value.window.clone(),
+            rules,
+        )
+        .expect("maximum policy");
+
+        let generated =
+            generate_parameter_candidates_v3(value.clone()).expect("maximum generation");
+        assert_eq!(generated.candidates.len(), 2);
+        let update = generated
+            .candidates
+            .iter()
+            .find(|candidate| candidate.kind == ParameterCandidateKindV2::Update)
+            .expect("maximum update");
+        assert_eq!(update.parameter_deltas.len(), MAX_V3_PARAMETER_DELTAS);
+        assert!(
+            update
+                .parameter_deltas
+                .iter()
+                .all(|delta| delta.delta == FixedQ32::from_raw(1))
+        );
+        verify_generated_parameter_candidates_v3(value, &generated).expect("maximum verification");
     }
 }

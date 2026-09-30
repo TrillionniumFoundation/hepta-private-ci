@@ -21,6 +21,7 @@ use codex_hepta_plasticity::TopologyGovernanceErrorV1;
 use codex_hepta_plasticity::WriterHandoffPlanV1;
 use codex_hepta_plasticity::admit_governed_topology_v1;
 use codex_hepta_plasticity::validate_writer_handoff_plan_v1;
+use codex_hepta_plasticity::verify_topology_proposal_v2;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -193,6 +194,13 @@ fn validate_runtime_topology_transition_for_destination_v1(
     request: &RuntimeTopologyApplyRequestV1,
     destination_id: &str,
 ) -> Result<ValidatedRuntimeTopologyTransitionV1, RuntimeTopologyExecutionError> {
+    verify_topology_proposal_v2(&request.governed.proposal)
+        .map_err(TopologyGovernanceErrorV1::from)?;
+    if request.governed.handoffs.len()
+        > request.governed.proposal.candidates.len().saturating_sub(1)
+    {
+        return Err(RuntimeTopologyExecutionError::Binding);
+    }
     let rebuilt = admit_governed_topology_v1(
         request.governed.proposal.clone(),
         request.governed.handoffs.clone(),
@@ -240,7 +248,10 @@ fn validate_runtime_topology_transition_for_destination_v1(
         .governed
         .handoffs
         .iter()
-        .find(|handoff| handoff.module_id == change.module_id)
+        .find(|handoff| {
+            handoff.module_id == change.module_id
+                && handoff.plan_digest == change.writer_handoff_digest
+        })
         .ok_or(RuntimeTopologyExecutionError::Binding)?
         .clone();
     validate_writer_handoff_plan_v1(&handoff, Some(change.writer_handoff_digest))?;

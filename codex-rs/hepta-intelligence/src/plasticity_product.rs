@@ -349,6 +349,27 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     anchor_committer: &mut impl PlasticityAnchorCommitterV1,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, ParameterPlasticityProductErrorV1> {
+    propose_authenticated_parameter_plasticity_with_final_time_v1(
+        request,
+        verifier,
+        writer,
+        anchor_committer,
+        now,
+        || Ok(now),
+    )
+}
+
+/// Authenticate and prepare the proposal, then obtain host-controlled final
+/// verification time immediately before changing writer state or appending.
+/// The callback must fail closed if host admission is no longer valid.
+pub fn propose_authenticated_parameter_plasticity_with_final_time_v1(
+    request: ParameterPlasticityProductRequestV1,
+    verifier: &LearningEvidenceVerifierV1,
+    writer: &mut AnchoredPlasticityWriterV1,
+    anchor_committer: &mut impl PlasticityAnchorCommitterV1,
+    now: u64,
+    final_time: impl FnOnce() -> Result<u64, ParameterPlasticityProductErrorV1>,
+) -> Result<ParameterPlasticityProductReceiptV1, ParameterPlasticityProductErrorV1> {
     use ParameterPlasticityProductErrorV1 as E;
 
     if writer.state != PlasticityWriterStateV1::Healthy {
@@ -359,6 +380,20 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         &request.generated,
     )?;
     validate_admission_binding(&request)?;
+    if request.evaluations.len() > request.generated.candidates.len() {
+        return Err(E::Binding("candidate evaluation limit"));
+    }
+    let mut temporal_evidence = vec![
+        request.generator_attestation.clone(),
+        request.admission_attestation.clone(),
+    ];
+    temporal_evidence.extend(request.no_change_attestation.iter().cloned());
+    for evaluation in &request.evaluations {
+        temporal_evidence.extend([
+            evaluation.evidence.generator_plan.clone(),
+            evaluation.evidence.evaluator_bundle.clone(),
+        ]);
+    }
 
     let generator_payload = parameter_generator_signing_payload_v3(&request.generated);
     let generator = verifier
@@ -540,6 +575,15 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         candidates: request.generated.candidates.clone(),
     })?;
 
+    let final_now = final_time()?;
+    if final_now < now {
+        return Err(E::Binding("final verification clock regressed"));
+    }
+    for evidence in &temporal_evidence {
+        verifier
+            .revalidate_authenticated_evidence_time(evidence, final_now)
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+    }
     writer.state = PlasticityWriterStateV1::AppendPendingAnchor;
     let registry = match writer
         .registry

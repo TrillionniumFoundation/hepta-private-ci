@@ -933,17 +933,20 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     )
     .expect("runtime bootstrap");
     let state = daemon.state();
-    let owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, Some(bootstrap))
-        .expect("compose daemon plasticity owner");
+    let mut owner =
+        crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, Some(bootstrap))
+            .expect("compose daemon plasticity owner")
+            .expect("plasticity owner");
+    owner.clock = Box::new(|| Ok(50));
     let cancellation = CancellationToken::new();
     let owner_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
         Arc::clone(&state),
-        owner,
+        Some(owner),
         cancellation.clone(),
     );
 
     let first = state
-        .submit_parameter_plasticity_v1(request.clone(), 50)
+        .submit_parameter_plasticity_v1(request.clone(), 0)
         .await
         .expect("first product proposal");
     assert_eq!(
@@ -954,7 +957,7 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     assert_eq!(first.registry.disposition, AppendDisposition::Inserted);
 
     let first_topology = state
-        .submit_topology_plasticity_v1(topology_request.clone(), 50)
+        .submit_topology_plasticity_v1(topology_request.clone(), u64::MAX)
         .await
         .expect("first topology product proposal");
     assert_eq!(first_topology.durable.sequence, 1);
@@ -1006,15 +1009,17 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         topology_anchor_store,
     )
     .expect("restart bootstrap");
-    let restarted_owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(
+    let mut restarted_owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(
         &restarted_state,
         Some(restarted_bootstrap),
     )
-    .expect("compose restarted daemon plasticity owner");
+    .expect("compose restarted daemon plasticity owner")
+    .expect("restarted plasticity owner");
+    restarted_owner.clock = Box::new(|| Ok(50));
     let restarted_cancellation = CancellationToken::new();
     let restarted_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
         Arc::clone(&restarted_state),
-        restarted_owner,
+        Some(restarted_owner),
         restarted_cancellation.clone(),
     );
 
@@ -1066,3 +1071,6 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         Some(first.committed_registry_anchor)
     );
 }
+
+#[path = "plasticity_runtime_clock_tests.rs"]
+mod clock_tests;

@@ -24,6 +24,10 @@ pub enum StructuralCanaryStateV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StructuralCanaryPlanV1 {
     topology_admission_digest: Digest32,
+    /// Enrollment context prevents reusing observations across registry domains
+    /// or a later writer generation with otherwise identical proposal bytes.
+    durable_registry_scope_digest: Digest32,
+    durable_registry_writer_fence: u64,
     /// Exact durable frame that admitted the governed proposal being canaried.
     durable_registry_sequence: u64,
     durable_registry_frame_digest: Digest32,
@@ -42,6 +46,8 @@ pub struct StructuralCanaryObservationV1 {
     pub sequence: u32,
     pub health_digest: Digest32,
     pub evidence_digest: Digest32,
+    /// Cumulative regressions observed since this canary started. The count
+    /// cannot decrease between admitted observations.
     pub regression_count: u32,
     pub safety_violation: bool,
     pub lineage_mismatch: bool,
@@ -82,6 +88,7 @@ pub struct StructuralCanaryControllerV1 {
     state: StructuralCanaryStateV1,
     observed_steps: u32,
     successful_steps: u32,
+    regression_count: u32,
     last_observation_digest: Digest32,
     observation_chain_digest: Digest32,
 }
@@ -128,7 +135,10 @@ pub fn build_structural_canary_plan_v1(
     let handoff = governed
         .handoffs
         .iter()
-        .find(|handoff| handoff.module_id == change.module_id)
+        .find(|handoff| {
+            handoff.module_id == change.module_id
+                && handoff.plan_digest == change.writer_handoff_digest
+        })
         .ok_or(StructuralCanaryErrorV1::Binding)?;
     if handoff.plan_digest != change.writer_handoff_digest
         || handoff.rollback_digest != change.rollback_digest
@@ -138,6 +148,8 @@ pub fn build_structural_canary_plan_v1(
 
     let plan = StructuralCanaryPlanV1 {
         topology_admission_digest: governed.admission_digest,
+        durable_registry_scope_digest: registry.scope_digest(),
+        durable_registry_writer_fence: registry.writer_fence(),
         durable_registry_sequence: durable.sequence,
         durable_registry_frame_digest: durable.frame_digest,
         candidate_id,
@@ -154,6 +166,8 @@ pub fn build_structural_canary_plan_v1(
 
 fn validate_plan(plan: &StructuralCanaryPlanV1) -> Result<(), StructuralCanaryErrorV1> {
     if plan.topology_admission_digest.is_zero()
+        || plan.durable_registry_scope_digest.is_zero()
+        || plan.durable_registry_writer_fence == 0
         || plan.durable_registry_sequence == 0
         || plan.durable_registry_frame_digest.is_zero()
         || plan.rollback_plan_digest.is_zero()
@@ -180,6 +194,7 @@ impl StructuralCanaryControllerV1 {
             state: StructuralCanaryStateV1::Prepared,
             observed_steps: 0,
             successful_steps: 0,
+            regression_count: 0,
             last_observation_digest: Digest32::ZERO,
             observation_chain_digest: Digest32::ZERO,
         })
@@ -214,7 +229,10 @@ impl StructuralCanaryControllerV1 {
         {
             return Err(StructuralCanaryErrorV1::Sequence);
         }
-        if observation.health_digest.is_zero() || observation.evidence_digest.is_zero() {
+        if observation.health_digest.is_zero()
+            || observation.evidence_digest.is_zero()
+            || observation.regression_count < self.regression_count
+        {
             return Err(StructuralCanaryErrorV1::Observation);
         }
 
@@ -237,6 +255,7 @@ impl StructuralCanaryControllerV1 {
         chain.extend_from_slice(self.last_observation_digest.as_array());
         self.observation_chain_digest = Digest32::of_bytes(&chain);
         self.observed_steps = observation.sequence;
+        self.regression_count = observation.regression_count;
 
         if observation.safety_violation
             || observation.lineage_mismatch
@@ -297,9 +316,15 @@ impl StructuralCanaryControllerV1 {
     }
 }
 
+#[cfg(test)]
+#[path = "topology_alternative_tests.rs"]
+mod alternative_tests;
+
 fn digest_plan(plan: &StructuralCanaryPlanV1) -> Digest32 {
-    let mut bytes = b"hepta.plasticity.structural-canary-plan.v2\0".to_vec();
+    let mut bytes = b"hepta.plasticity.structural-canary-plan.v3\0".to_vec();
     bytes.extend_from_slice(plan.topology_admission_digest.as_array());
+    bytes.extend_from_slice(plan.durable_registry_scope_digest.as_array());
+    bytes.extend_from_slice(&plan.durable_registry_writer_fence.to_be_bytes());
     bytes.extend_from_slice(&plan.durable_registry_sequence.to_be_bytes());
     bytes.extend_from_slice(plan.durable_registry_frame_digest.as_array());
     let candidate = plan.candidate_id.as_str().as_bytes();
@@ -327,6 +352,8 @@ mod tests {
     fn plan() -> StructuralCanaryPlanV1 {
         StructuralCanaryPlanV1 {
             topology_admission_digest: digest(b"admission"),
+            durable_registry_scope_digest: digest(b"registry-scope"),
+            durable_registry_writer_fence: 1,
             durable_registry_sequence: 1,
             durable_registry_frame_digest: digest(b"durable-frame"),
             candidate_id: id("topology:candidate:1"),

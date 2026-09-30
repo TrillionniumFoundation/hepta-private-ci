@@ -170,6 +170,17 @@ pub fn propose_topology_v2(
 pub fn verify_topology_proposal_v2(
     proposal: &TopologyProposalV2,
 ) -> Result<(), TopologyProposalErrorV2> {
+    // Check only collection lengths until the public typed record is bounded.
+    if proposal.candidates.is_empty() || proposal.candidates.len() > MAX_TOPOLOGY_CANDIDATES_V2 {
+        return Err(TopologyProposalErrorV2::ChangeLimitExceeded);
+    }
+    let mut total_changes = 0_usize;
+    for candidate in &proposal.candidates {
+        total_changes = total_changes
+            .checked_add(candidate.changes.len())
+            .filter(|count| *count <= MAX_TOPOLOGY_CHANGES_V2)
+            .ok_or(TopologyProposalErrorV2::ChangeLimitExceeded)?;
+    }
     let request = TopologyProposalRequestV2 {
         proposal_id: proposal.proposal_id.clone(),
         proposer_id: proposal.proposer_id.clone(),
@@ -180,22 +191,17 @@ pub fn verify_topology_proposal_v2(
         candidate_generation: proposal.candidate_generation,
         evaluation_digest: proposal.evaluation_digest,
         rollback_predecessor_digest: proposal.rollback_predecessor_digest,
-        changes: proposal
-            .candidates
-            .iter()
-            .flat_map(|candidate| candidate.changes.clone())
-            .collect(),
+        // Changes are verified directly below; no flattened copy is needed.
+        changes: Vec::new(),
     };
     validate_header(&request)?;
     if proposal.authority.grants_any() {
         return Err(TopologyProposalErrorV2::AuthorityGranted);
     }
-    if proposal.candidates.is_empty()
-        || proposal.candidates.len() > MAX_TOPOLOGY_CANDIDATES_V2
-        || proposal
-            .candidates
-            .windows(2)
-            .any(|pair| pair[0].candidate_id >= pair[1].candidate_id)
+    if proposal
+        .candidates
+        .windows(2)
+        .any(|pair| pair[0].candidate_id >= pair[1].candidate_id)
     {
         return Err(TopologyProposalErrorV2::ChangeLimitExceeded);
     }
@@ -523,6 +529,35 @@ mod tests {
         assert_eq!(first.candidates.len(), 2);
         assert!(!first.authority.grants_any());
         verify_topology_proposal_v2(&first).expect("verify");
+    }
+
+    #[test]
+    fn topology_verifier_rejects_candidate_capacity_before_header_or_payload_validation() {
+        let mut proposal = propose_topology_v2(request()).expect("proposal");
+        proposal.candidates = vec![proposal.candidates[0].clone(); MAX_TOPOLOGY_CANDIDATES_V2 + 1];
+        proposal.evaluation_digest = Digest32::ZERO;
+        assert_eq!(
+            verify_topology_proposal_v2(&proposal),
+            Err(TopologyProposalErrorV2::ChangeLimitExceeded),
+        );
+    }
+
+    #[test]
+    fn topology_verifier_rejects_aggregate_change_capacity_before_shape_validation() {
+        let mut proposal = propose_topology_v2(request()).expect("proposal");
+        let change = proposal
+            .candidates
+            .iter()
+            .find(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
+            .expect("update")
+            .changes[0]
+            .clone();
+        proposal.candidates[0].changes = vec![change.clone(); MAX_TOPOLOGY_CHANGES_V2];
+        proposal.candidates[1].changes = vec![change];
+        assert_eq!(
+            verify_topology_proposal_v2(&proposal),
+            Err(TopologyProposalErrorV2::ChangeLimitExceeded),
+        );
     }
 
     #[test]

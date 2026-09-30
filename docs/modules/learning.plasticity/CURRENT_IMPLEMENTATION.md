@@ -1,5 +1,8 @@
 # learning.plasticity current implementation boundary
 
+The [2026-09-30 adversarial audit](ADVERSARIAL_AUDIT_20260930.md) records
+confirmed defects, remediation, validation scope and the remaining product gates.
+
 This document is the current-state companion to `TECHNICAL.md`. `TECHNICAL.md`
 contains both target architecture and stable requirements; this file states what is
 implemented now. A claim listed as **Implemented** is a source capability, not an
@@ -24,17 +27,17 @@ override these machine status facts.
 | Operation | State | Source | Tests |
 | --- | --- | --- | ---: |
 | `propose_v2` | `source_implemented_product_and_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/parameter_v2.rs` | 1 |
-| `verify_parameter_proposal_v2` | `source_implemented_product_and_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/parameter_v2.rs` | 1 |
-| `generate_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 1 |
+| `verify_parameter_proposal_v2` | `source_implemented_product_and_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/parameter_v2.rs` | 2 |
+| `generate_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 2 |
 | `verify_generated_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 1 |
 | `propose_topology_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
 | `verify_topology_proposal_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
-| `durableproposalregistry` | `source_implemented_anchored_plus_explicit_zero_complete_frame_unacknowledged_bootstrap_recovery` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 2 |
+| `durableproposalregistry` | `source_implemented_anchored_plus_explicit_zero_complete_frame_unacknowledged_bootstrap_recovery` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 3 |
 | `authenticated_product_composition` | `adapter_implemented_called_by_long_lived_agentd_owner_pairwise_roles_and_durable_no_change_terminal_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 6 |
 | `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
-| `parameter_mutation_policy` | `source_implemented_typed_parameter_projection_bound_to_control_engineering_mutation_grammar` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 2 |
+| `parameter_mutation_policy` | `source_implemented_typed_parameter_projection_bound_to_control_engineering_mutation_grammar` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 3 |
 | `agentd_process_bootstrap` | `source_implemented_child_process_reconstructs_owner_native_stores_from_independent_receipts_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs` | 3 |
-| `agentd_plasticity_runtime_owner` | `named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_runtime.rs` | 2 |
+| `agentd_plasticity_runtime_owner` | `named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_runtime.rs` | 5 |
 | `agentd_named_parameter_submission` | `named_non_test_agentd_learning_producer_source_implemented_calls_state_submission_final_owner_revalidation_not_target_host_executed_or_qualified` | `codex-rs/hepta-agentd/src/plasticity_learning_producer.rs` | 1 |
 | `agentd_named_topology_submission` | `named_non_test_agentd_learning_topology_producer_source_implemented_calls_state_submission_final_owner_revalidation_not_target_host_executed_or_qualified` | `codex-rs/hepta-agentd/src/plasticity_learning_producer.rs` | 1 |
 | `agentd_parameter_host` | `host_entrypoint_called_by_long_lived_agentd_owner_with_real_append_ack_crash_registry_only_rollback_rejection_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 4 |
@@ -45,10 +48,10 @@ override these machine status facts.
 | `authenticated_topology_product_composition` | `adapter_implemented_called_by_agentd_host_entrypoint_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/topology_product.rs` | 2 |
 | `agentd_topology_host` | `host_entrypoint_called_by_long_lived_agentd_owner_external_anchor_not_target_host_qualified` | `codex-rs/hepta-agentd/src/topology_plasticity_host.rs` | 3 |
 | `agentd_anchor_fence_journal` | `source_implemented_append_only_checksum_journal_crash_tail_repair_monotonic_generation_fences_and_safe_bootstrap_resume` | `codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs` | 3 |
-| `structural_canary_controller` | `source_implemented_durable_candidate_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 6 |
+| `structural_canary_controller` | `source_implemented_durable_candidate_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 8 |
 | `authenticated_structural_canary_observation` | `source_implemented_observer_signature_binds_exact_plan_and_observation_no_topology_apply_authority` | `codex-rs/hepta-intelligence/src/topology_canary_product.rs` | 1 |
 | `runtime_topology_execution` | `source_implemented_external_final_use_exact_handoff_migration_owner_and_live_cns_replacement_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 3 |
-| `runtime_topology_recovery` | `source_implemented_external_recovery_final_use_exact_handoff_migration_owner_and_stopped_quarantined_forward_recovery_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
+| `runtime_topology_recovery` | `source_implemented_external_recovery_final_use_exact_handoff_migration_owner_and_stopped_quarantined_forward_recovery_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 2 |
 | `runtime_structural_canary_fault_rollback` | `qualification_composed_live_apply_with_migration_forced_stopped_host_fault_distinct_recovery_final_use_with_migration_rollforward_and_authenticated_observer_receipt_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
 
 ### Repository-controlled gaps
@@ -224,8 +227,10 @@ exactly once; repeated advancement while that generation is still unacknowledged
 closed.
 
 The registry side has a separate unacknowledged-bootstrap recovery mode. It accepts
-only a physically empty file, the exact expected header with zero complete frames, or
-an incomplete first-frame crash tail. An incomplete first frame is truncated only
+only a physically empty file, an exact expected partial-header prefix, the exact
+expected header with zero complete frames, or an incomplete first-frame crash tail.
+Only explicit bootstrap resume may finish a matching partial header, and any
+mismatching prefix leaves bytes untouched. An incomplete first frame is truncated only
 after the exact scope/fence/capacity header validates. Any complete unacknowledged
 proposal frame returns `UnacknowledgedHistoryPresent` and leaves the bytes untouched
 for explicit reconciliation. Agentd rollover/resume uses this restricted mode rather

@@ -44,6 +44,48 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.plasticity`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
+### Source composition and position in the learning loop
+
+Plasticity is the slow proposal stage after immutable experience, selected-artifact
+lineage and independent evaluation exist. It produces a possible next snapshot;
+the currently serving artifact and topology remain owned by their existing
+selectors and execution owners. `learning.operator` supplies slow value-learning
+artifacts, `utility.ndu` supplies modulation, and `neuron.runtime` supplies local
+eligibility. None of those inputs is permission to install a generated update.
+
+| Boundary | Current source responsibility | Evidence ceiling |
+| --- | --- | --- |
+| `hepta-plasticity` | Deterministic bounded parameter/topology proposals, mutation-policy checks, durable proposal registries and canary observations | Integrity and proposal mechanics; no owner authentication or application |
+| `hepta-intelligence` | Authenticate Generator/Observer/Evaluator evidence, compose independent evaluation and append through the anchored adapter | Authenticated source composition; no selection or activation |
+| `hepta-agentd` | Reconstruct explicit owner stores, retain the sole long-lived writer, revalidate current frontiers and serialize bounded submissions | Host composition and repository process/lifetime qualification |
+| `control.engineering` / self-iteration coordinator | Target caller that consumes a frozen envelope and independently evaluated requests | Upstream production trigger remains uncomposed; a forwarding façade is insufficient |
+| `hepta-runtime` | Separately authorized topology migration, live replacement and stopped/quarantined recovery | External execution owner; its source tests are not deployment acceptance |
+
+The implemented submission route is `AgentdState` →
+`AgentdLearningPlasticityProducerV1` → bounded `PlasticityRuntimeHandleV1` →
+`PlasticityRuntimeOwnerV1` → parameter/topology host adapter → authenticated
+product adapter → durable registry and external anchor commit. The producer holds
+only the channel handle. It cannot access writers, owner stores or trust roots.
+The state submission methods are currently exercised by lifetime qualification;
+the presence of those methods does not prove an upstream product caller invokes
+them. `CURRENT_IMPLEMENTATION.md` and `IMPLEMENTATION_MAP.json` retain that gap.
+
+The process bootstrap recovers an ArtifactRegistry snapshot, anchored ledger and
+neuron state, NDU projection journal and learning-evidence trust configuration for
+one Agentd generation. Recomputing their current in-process heads is not evidence
+of a subscription to changes made by an external owner. No hot-refresh or
+revocation subscription is implied by this bootstrap. A selected host must keep
+the admitted generation synchronized through an explicit owner integration or
+reconstruct it from fresh independent witnesses before admitting changed source,
+selected-artifact, trust/revocation, objective or dynamic-owner state.
+
+Before composing the target coordinator, bind the exact envelope/base, objective,
+mutation grammar, candidate budget and frozen request to independently verified
+evidence. A native `IterationEnvelopeV1` record or caller-provided digest alone is
+not an authenticated source observation or evaluation. The coordinator must not
+create the evidence it consumes, reopen a second writer, turn a turn/automation
+request into an implicit learning trigger, or authorize selection.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -54,7 +96,15 @@ Direct dependencies:
 
 Authoritative write domains:
 
+- `iteration_candidate_v1`
 - `plasticity_proposal_registry`
+- `plasticity_proposal_v1`
+- `topology_proposal_v1`
+
+These are canonical logical ownership declarations. Current native durable writes
+are parameter/topology proposal registry records; the declaration of
+`iteration_candidate_v1` does not imply the upstream iteration coordinator is
+implemented.
 
 Explicitly denied capabilities:
 
@@ -117,6 +167,7 @@ retain current source, wire and capability states.
 Produced contracts:
 
 - `DomainRead::plasticity_proposal_registryV1`
+- `IterationCandidateV1`
 - `PlasticityProposalV1`
 - `TopologyProposalV1`
 
@@ -125,13 +176,26 @@ Consumed contracts:
 - `DomainRead::learning_artifact_registryV1`
 - `DomainRead::operator_sensor_core_registryV1`
 - `DomainRead::qualification_evidenceV1`
+- `IterationEnvelopeV1`
 - `ModulePort::kernel.evidence::learning.plasticity`
 - `ModulePort::learning.artifacts::learning.plasticity`
 - `ModulePort::learning.eval::learning.plasticity`
+- `NeuronCheckpointV1`
+- `RandomStreamManifestV1`
 
 Critical protocol schemas:
 
+- `IterationCandidateV1`
+- `IterationEnvelopeV1`
+- `NeuronCheckpointV1`
+- `PlasticityProposalV1`
+- `RandomStreamManifestV1`
 - `TopologyProposalV1`
+
+These lists match the generated exact registry projection below. They describe
+registered target contracts, not a claim that every native Rust type implements
+the canonical wire schema. Source APIs and operation-level state are separately
+mapped in `IMPLEMENTATION_MAP.json`.
 
 ### Internal proposal version boundary
 
@@ -149,17 +213,76 @@ Every producer validates output before publication and binds semantic fields int
 
 Native Rust proposal types use deterministic canonical byte encodings and tests cover maximum bounds, canonical ordering, trust-region arithmetic, digest stability, durable recovery and fail-closed authority behavior. Canonical JSON protocol semantics remain defined by the registered contract/readiness schemas; a module-local native type is not claimed to be a JSON round-trip implementation unless a registered adapter explicitly provides that mapping. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+### Implemented API and admission sequence
+
+| API | Required input / validation | Result |
+| --- | --- | --- |
+| `generate_parameter_candidates_v3` / `verify_generated_parameter_candidates_v3` | Artifact/window-bound profile, exact signal identities/values, protected-surface policy, declared scales, trust regions and checked arithmetic | Deterministically regenerated set including no-change; generator-relative completeness only |
+| `propose_v2` / `verify_parameter_proposal_v2` | Canonical bounded envelope, exact successor generation, artifact norm profile and every candidate metric | Integrity-checked authority-free parameter proposal |
+| `propose_authenticated_parameter_plasticity_v1` | Verified Generator/Observer signatures, current admission context and independent signed evaluation of every update, or exact Evaluator-signed no-update terminal payload | Durable parameter receipt only after external anchor commit |
+| `propose_topology_v2` / `admit_governed_topology_v1` | Typed changes, exact predecessor, migration/rollback/evidence bindings and one exact advancing writer-handoff plan per update | Authority-free governed topology proposal |
+| `propose_authenticated_topology_plasticity_v1` | Current Generator/Observer/Evaluator signatures over the exact generation/admission/evaluation context | Governed topology registry append; no application |
+| `build_structural_canary_plan_v1` / `observe_authenticated_structural_canary_v1` | Stored durable proposal/append receipt, exact candidate/plan and Observer-signed observation facts | Bounded observation state and terminal receipt; no topology authority |
+
+At the host boundary, validate the live Agentd generation/readiness, re-read the
+ArtifactRegistry and DurableLedger heads, resolve typed evidence from its
+allowlisted owner, verify signed admission and all evaluation roles, regenerate
+and validate the candidate, append with the exact registry predecessor, and commit
+the current anchor before returning success. A changed head or stale owner value
+requires newly frozen evidence rather than digest-only fallback. Missing update
+evaluation, signed-role collision and protected-surface mutation are semantic
+rejections. Only deterministic generation with no admissible update enters the
+independently attested no-change terminal path.
+
+The runtime owner samples its Unix-millisecond clock after dequeue, before the
+host adapter validates evidence. The submission API's historical `now` argument
+is retained for compatibility and cannot control verification time. Clock failure
+rejects admission. Queue capacity is configured within `1..64`; waiting in that
+queue does not extend a signature's validity period.
+
+After generation, evaluation and proposal preparation, the composed host path
+samples that clock again immediately before the registry append. The final guard
+rechecks signed evidence and principal validity, scheduled revocation and trust
+context at that time. Parameter admission additionally requires that time to lie
+within the intersection of every initially authenticated owner receipt's validity
+interval. Guard failure leaves the writer and durable registry unchanged. This
+closes time-of-use expiry during proposal preparation; it does not imply hot
+refresh of the generation's externally selected owner/trust snapshots. Native
+fixed-time proposal APIs remain compatibility surfaces, not the live host clock.
+
+Topology updates are alternatives, each containing one typed operation; several
+alternatives may target the same module. Admission and canary construction match
+the selected change by both module identity and exact writer-handoff plan digest,
+so another alternative for that module cannot supply its handoff or rollback.
+Canary regression counts are cumulative, cannot decrease and cannot exceed the
+observation sequence. The Observer signs these counts with the exact plan and
+other observation facts; `finish()` remains a separate terminal transition.
+
+The plan uses the `hepta.plasticity.structural-canary-plan.v3` digest domain and
+binds the durable registry scope and writer fence as well as the original
+sequence/frame, exact candidate, handoff set, rollback, health and thresholds.
+Identical proposal bytes in another scope or writer generation therefore produce
+a different plan. Observer evidence signed against an older plan digest must be
+regenerated and independently signed; no legacy plan signature is relabeled as a
+V3 observation.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
 
+- `iteration_candidate_v1`
 - `plasticity_proposal_registry`
+- `plasticity_proposal_v1`
+- `topology_proposal_v1`
 
 Read-only data dependencies:
 
+- `iteration_envelope_v1`
 - `learning_artifact_registry`
+- `neuron_checkpoint_v1`
 - `operator_sensor_core_registry`
 - `qualification_evidence`
+- `random_stream_manifest_v1`
 
 For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
@@ -178,6 +301,26 @@ The [current native implementation](../../../qualification/module-execution-doss
 ## 8. Failure semantics, recovery and rollback
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.plasticity.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.plasticity.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+
+The adapter writer transitions `Healthy → AppendPendingAnchor → Healthy` only
+after a durable external anchor acknowledgement. Anchor failure transitions to
+`Poisoned` even if registry bytes were written; subsequent operations on that
+handle reject. Anchored reopen validates the independently retained acknowledged
+prefix before repair. Identical semantic replay returns the original record;
+reuse of an occupied artifact/window slot with changed semantics conflicts.
+
+Generation rollover is explicit and monotonic. An interrupted bootstrap may
+resume only with zero complete proposal frames; an incomplete first frame can be
+repaired, but a complete unacknowledged proposal is preserved for reconciliation.
+The append-only anchor journal repairs only an incomplete final crash tail after
+all complete predecessors validate. Complete corrupt frames, missing acknowledged
+history and fence/anchor mismatches require recovery and never trigger a fresh
+unanchored bootstrap. Any journal append I/O failure poisons that journal handle:
+the frame may already be durable, so neither anchor acknowledgement nor another
+writer fence may be issued until explicit reopen/reconciliation. Initializing a
+zero-length journal resets the file cursor before writing its header. Physical
+independence of journal and registry rollback
+domains remains target-host evidence. The concrete steps are in `OPERATIONS.md`.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 

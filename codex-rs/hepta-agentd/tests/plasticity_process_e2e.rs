@@ -5,6 +5,8 @@ mod support;
 use std::fs::OpenOptions;
 use std::fs::{self};
 use std::path::Path;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use anyhow::Result;
 use codex_hepta_learning_artifacts::ArtifactEvent;
@@ -108,6 +110,10 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     let root = temp.path().canonicalize()?;
     let objective_digest = digest("plasticity-process-objective");
     let selected_artifact_digest = digest("plasticity-process-selected-artifact");
+    // Process owners use the daemon's real Unix-millisecond clock. Keep all
+    // independent owner/trust fixtures in that same validity window.
+    let observed_at = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
+    let expires_at = observed_at.checked_add(300_000).expect("fixture expiry");
 
     let ledger_path = root.join("learning-ledger");
     let ledger_binding = digest("plasticity-process-ledger-binding");
@@ -136,8 +142,8 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         signing_key_digest: digest("dataset:key"),
         scope_digest: digest("dataset:scope"),
         authority_epoch: 1,
-        authenticated_at: 10,
-        expires_at: 100,
+        authenticated_at: observed_at,
+        expires_at,
     };
     let dataset = freeze_dataset_receipt_v3(
         DatasetFreezeRequestV1 {
@@ -154,7 +160,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             pending_outcomes: 0,
             censored_outcomes: 0,
         },
-        50,
+        observed_at,
     )?;
 
     let signal_binding = PlasticityDynamicSignalBindingV1 {
@@ -306,8 +312,8 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
                 scope_digest: trust_scope,
                 authority_epoch: 7,
-                authenticated_at: 10,
-                expires_at: 100,
+                authenticated_at: observed_at,
+                expires_at,
             };
             let role = match index {
                 0 => "generator",
@@ -345,8 +351,8 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 "records": artifact_receipt.records,
                 "encoded_bytes": artifact_receipt.encoded_bytes,
             },
-            "observed_at": 40,
-            "expires_at": 60,
+            "observed_at": observed_at,
+            "expires_at": expires_at,
             "update_rule_artifact_id": "policy:update-rule",
             "mutation_policy_artifact_id": "policy:mutation",
             "broadcast_artifact_id": "policy:broadcast",

@@ -9,6 +9,88 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+#[test]
+fn resume_repairs_every_exact_partial_enrollment_header() {
+    let scope = digest(b"partial-header-scope");
+    let header = encode_header(scope, 41, 8).expect("header");
+    for prefix_len in 1..HEADER_SIZE {
+        let fixture = TestFile::new(&format!("header-cut-{prefix_len}"));
+        let mut file = fixture.create();
+        file.write_all(&header[..prefix_len]).expect("crash prefix");
+        file.sync_all().expect("sync prefix");
+        drop(file);
+
+        assert_eq!(
+            DurableProposalRegistry::open_anchored(
+                fixture.open(),
+                scope,
+                41,
+                8,
+                DurableRegistryAnchorV1 {
+                    sequence: 1,
+                    frame_digest: digest(b"acknowledged")
+                },
+            )
+            .err(),
+            Some(DurableProposalRegistryError::Corrupt)
+        );
+        assert_eq!(
+            std::fs::read(&fixture.path).expect("preserved prefix"),
+            header[..prefix_len]
+        );
+        assert_eq!(
+            DurableProposalRegistry::open(fixture.open(), scope, 41, 8).err(),
+            Some(DurableProposalRegistryError::Corrupt)
+        );
+        let store =
+            DurableProposalRegistry::resume_unacknowledged_bootstrap(fixture.open(), scope, 41, 8)
+                .expect("resume enrollment");
+        assert_eq!(store.current_anchor(), Ok(None));
+        assert_eq!(store.record_count(), Ok(0));
+        drop(store);
+        assert_eq!(
+            std::fs::read(&fixture.path).expect("repaired header"),
+            header
+        );
+    }
+}
+
+#[test]
+fn resume_rejects_partial_enrollment_context_drift_without_modifying_bytes() {
+    let scope = digest(b"partial-header-scope");
+    let header = encode_header(scope, 41, 8).expect("header");
+    for (label, requested_scope, requested_fence, requested_limit) in [
+        ("wrong-scope", digest(b"other-scope"), 41, 8),
+        ("wrong-fence", scope, 42, 8),
+        ("wrong-limit", scope, 41, 9),
+        ("corrupt-prefix", scope, 41, 8),
+    ] {
+        let fixture = TestFile::new(label);
+        let mut prefix = header[..HEADER_SIZE - 1].to_vec();
+        if label == "corrupt-prefix" {
+            prefix[0] ^= 1;
+        }
+        let mut file = fixture.create();
+        file.write_all(&prefix).expect("prefix");
+        file.sync_all().expect("sync prefix");
+        drop(file);
+        assert_eq!(
+            DurableProposalRegistry::resume_unacknowledged_bootstrap(
+                fixture.open(),
+                requested_scope,
+                requested_fence,
+                requested_limit,
+            )
+            .err(),
+            Some(DurableProposalRegistryError::ContextMismatch)
+        );
+        assert_eq!(
+            std::fs::read(&fixture.path).expect("preserved prefix"),
+            prefix
+        );
+    }
+}
+
 struct TestFile {
     path: PathBuf,
 }
@@ -63,6 +145,14 @@ fn generation(value: u64) -> Generation {
 }
 
 fn proposal(proposal_id: &str, window_digest: &[u8]) -> ParameterProposalV2 {
+    proposal_in_window(proposal_id, "window:durable", window_digest)
+}
+
+fn proposal_in_window(
+    proposal_id: &str,
+    window_id: &str,
+    window_digest: &[u8],
+) -> ParameterProposalV2 {
     let selected = digest(b"selected-artifact");
     crate::propose_v2(ParameterProposalRequestV2 {
         proposal_id: id(proposal_id),
@@ -70,7 +160,7 @@ fn proposal(proposal_id: &str, window_digest: &[u8]) -> ParameterProposalV2 {
         evaluator_id: id("evaluator:durable"),
         selected_artifact_digest: selected,
         window: ProposalWindowV2 {
-            window_id: id("window:durable"),
+            window_id: id(window_id),
             window_digest: digest(window_digest),
         },
         baseline_generation: generation(1),
@@ -201,6 +291,81 @@ fn identical_retry_is_unchanged_and_does_not_consume_capacity() {
     assert_eq!(replay.disposition, AppendDisposition::Unchanged);
     assert_eq!(replay.frame_digest, first.frame_digest);
     assert_eq!(store.record_count(), Ok(1));
+}
+
+#[test]
+fn multiple_records_preserve_all_bytes_on_retries_conflicts_and_capacity() {
+    let fixture = TestFile::new("multi-record-preflight");
+    let mut store = DurableProposalRegistry::open_bootstrap_empty(
+        fixture.create(),
+        digest(b"registry-scope"),
+        17,
+        3,
+    )
+    .expect("registry");
+    let first = proposal_in_window("proposal:first", "window:first", b"first");
+    let first_receipt = store
+        .append_v2(Digest32::ZERO, first.clone())
+        .expect("first");
+    let second = proposal_in_window("proposal:second", "window:second", b"second");
+    let second_receipt = store
+        .append_v2(first_receipt.frame_digest, second.clone())
+        .expect("second");
+    let before = std::fs::read(&fixture.path).expect("history");
+    let mut observed = first_receipt.clone();
+    observed.disposition = AppendDisposition::Unchanged;
+    assert_eq!(
+        store.append_v2(second_receipt.frame_digest, first),
+        Ok(observed)
+    );
+    for (predecessor, candidate, expected) in [
+        (
+            Digest32::ZERO,
+            proposal_in_window("proposal:third", "window:third", b"third"),
+            DurableProposalRegistryError::Conflict,
+        ),
+        (
+            second_receipt.frame_digest,
+            proposal_in_window("proposal:first", "window:third", b"third"),
+            DurableProposalRegistryError::Proposal(Error::ProposalConflict(
+                "proposal:first".to_string(),
+            )),
+        ),
+        (
+            second_receipt.frame_digest,
+            proposal_in_window("proposal:third", "window:second", b"slot-drift"),
+            DurableProposalRegistryError::Proposal(Error::RegistrySlotConflict(format!(
+                "{}:{}",
+                second.selected_artifact_digest, second.window.window_id
+            ))),
+        ),
+    ] {
+        assert_eq!(store.append_v2(predecessor, candidate), Err(expected));
+        assert_eq!(
+            std::fs::read(&fixture.path).expect("unchanged history"),
+            before
+        );
+        assert_eq!(store.record_count(), Ok(2));
+    }
+    let third_receipt = store
+        .append_v2(
+            second_receipt.frame_digest,
+            proposal_in_window("proposal:third", "window:third", b"third"),
+        )
+        .expect("third");
+    let full = std::fs::read(&fixture.path).expect("full history");
+    assert_eq!(
+        store.append_v2(
+            third_receipt.frame_digest,
+            proposal_in_window("proposal:fourth", "window:fourth", b"fourth"),
+        ),
+        Err(DurableProposalRegistryError::Capacity)
+    );
+    assert_eq!(
+        std::fs::read(&fixture.path).expect("unchanged full history"),
+        full
+    );
+    assert_eq!(store.record_count(), Ok(3));
 }
 
 #[test]

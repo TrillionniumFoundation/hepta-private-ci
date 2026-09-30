@@ -201,9 +201,10 @@ impl DurableProposalRegistry {
 
     /// Resume a production enrollment only when no complete proposal frame exists.
     ///
-    /// This accepts a physically empty file, an exact header-only file, or an
-    /// incomplete first-frame crash tail. Any complete unacknowledged frame is
-    /// preserved and rejected for explicit reconciliation.
+    /// This accepts a physically empty file, an exact header prefix interrupted
+    /// during enrollment, a header-only file, or an incomplete first-frame crash
+    /// tail. Any complete unacknowledged frame is preserved and rejected for
+    /// explicit reconciliation.
     pub fn resume_unacknowledged_bootstrap(
         file: File,
         registry_scope_digest: Digest32,
@@ -278,14 +279,27 @@ impl DurableProposalRegistry {
             file.sync_all()
                 .map_err(|_| DurableProposalRegistryError::Indeterminate)?;
         } else {
-            if file_len < HEADER_SIZE as u64 {
+            if file_len < HEADER_SIZE as u64
+                && !matches!(policy, RecoveryPolicy::ResumeUnacknowledgedBootstrap)
+            {
                 return Err(DurableProposalRegistryError::Corrupt);
             }
-            let mut actual = vec![0_u8; HEADER_SIZE];
+            let header_bytes = usize::try_from(file_len.min(HEADER_SIZE as u64))
+                .map_err(|_| DurableProposalRegistryError::Corrupt)?;
+            let mut actual = vec![0_u8; header_bytes];
             file.read_exact(&mut actual)?;
-            validate_header(&actual)?;
-            if actual != expected_header {
-                return Err(DurableProposalRegistryError::ContextMismatch);
+            if actual.len() < HEADER_SIZE {
+                if actual != expected_header[..header_bytes] {
+                    return Err(DurableProposalRegistryError::ContextMismatch);
+                }
+                file.write_all(&expected_header[header_bytes..])
+                    .and_then(|_| file.sync_all())
+                    .map_err(|_| DurableProposalRegistryError::Indeterminate)?;
+            } else {
+                validate_header(&actual)?;
+                if actual != expected_header {
+                    return Err(DurableProposalRegistryError::ContextMismatch);
+                }
             }
         }
 
@@ -435,8 +449,7 @@ impl DurableProposalRegistry {
             return Err(DurableProposalRegistryError::Capacity);
         }
 
-        let mut candidate_registry = self.registry.clone();
-        let disposition = candidate_registry.append_v2(proposal.clone())?;
+        let disposition = self.registry.preflight_v2_append(&proposal)?;
         if disposition != AppendDisposition::Inserted {
             return Err(DurableProposalRegistryError::Corrupt);
         }
@@ -480,9 +493,17 @@ impl DurableProposalRegistry {
             disposition: AppendDisposition::Inserted,
             authority: AuthorityPosture::DENY_ALL,
         };
-        self.registry = candidate_registry;
+        if self
+            .registry
+            .append_v2(proposal)
+            .map_err(|_| DurableProposalRegistryError::Corrupt)?
+            != AppendDisposition::Inserted
+        {
+            return Err(DurableProposalRegistryError::Corrupt);
+        }
         self.frame_digests.push(frame_digest);
-        self.receipts.insert(proposal.proposal_id, receipt.clone());
+        self.receipts
+            .insert(receipt.proposal_id.clone(), receipt.clone());
         self.poisoned = false;
         Ok(receipt)
     }

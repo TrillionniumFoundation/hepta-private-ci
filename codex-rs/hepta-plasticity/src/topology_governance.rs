@@ -5,6 +5,7 @@
 //! every structural update before a proposal can enter the governed registry.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -12,7 +13,6 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::TopologyCandidateKindV2;
-use crate::TopologyOperationV2;
 use crate::TopologyProposalV2;
 use crate::verify_topology_proposal_v2;
 
@@ -152,11 +152,22 @@ pub fn admit_governed_topology_v1(
         ));
     }
 
-    handoffs.sort_by(|left, right| left.module_id.cmp(&right.module_id));
-    let mut by_module = BTreeMap::new();
+    // Alternatives may target the same module with different operations and
+    // handoff plans. The exact content-addressed plan is the binding identity;
+    // a shared plan may also support several mutually exclusive candidates.
+    if handoffs.len() > proposal.candidates.len().saturating_sub(1) {
+        return Err(TopologyGovernanceErrorV1::UnexpectedHandoff(
+            "handoff count exceeds update candidate count".to_string(),
+        ));
+    }
+    handoffs.sort_by(|left, right| {
+        (&left.module_id, left.plan_digest).cmp(&(&right.module_id, right.plan_digest))
+    });
+    let mut by_plan = BTreeMap::new();
     for handoff in &handoffs {
-        if by_module
-            .insert(handoff.module_id.clone(), handoff)
+        validate_writer_handoff_plan_v1(handoff, Some(handoff.plan_digest))?;
+        if by_plan
+            .insert((handoff.module_id.clone(), handoff.plan_digest), handoff)
             .is_some()
         {
             return Err(TopologyGovernanceErrorV1::UnexpectedHandoff(
@@ -165,6 +176,7 @@ pub fn admit_governed_topology_v1(
         }
     }
 
+    let mut used_plans = BTreeSet::new();
     for candidate in proposal
         .candidates
         .iter()
@@ -173,10 +185,10 @@ pub fn admit_governed_topology_v1(
         let change = candidate.changes.first().ok_or_else(|| {
             TopologyGovernanceErrorV1::MissingHandoff(candidate.candidate_id.to_string())
         })?;
-        let handoff = by_module.remove(&change.module_id).ok_or_else(|| {
+        let key = (change.module_id.clone(), change.writer_handoff_digest);
+        let handoff = by_plan.get(&key).ok_or_else(|| {
             TopologyGovernanceErrorV1::MissingHandoff(change.module_id.to_string())
         })?;
-        validate_writer_handoff_plan_v1(handoff, Some(change.writer_handoff_digest))?;
         if handoff.migration_digest != change.migration_digest
             || handoff.rollback_digest != change.rollback_digest
         {
@@ -184,17 +196,12 @@ pub fn admit_governed_topology_v1(
                 change.module_id.to_string(),
             ));
         }
-        match change.operation {
-            TopologyOperationV2::Add
-            | TopologyOperationV2::Remove
-            | TopologyOperationV2::Replace
-            | TopologyOperationV2::Split
-            | TopologyOperationV2::Merge
-            | TopologyOperationV2::Rewire
-            | TopologyOperationV2::Retire => {}
-        }
+        used_plans.insert(key);
     }
-    if let Some((module_id, _)) = by_module.into_iter().next() {
+    if let Some(((module_id, _), _)) = by_plan
+        .into_iter()
+        .find(|(key, _)| !used_plans.contains(key))
+    {
         return Err(TopologyGovernanceErrorV1::UnexpectedHandoff(
             module_id.to_string(),
         ));

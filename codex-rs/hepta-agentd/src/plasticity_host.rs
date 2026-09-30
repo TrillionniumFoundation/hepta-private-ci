@@ -5,6 +5,7 @@
 //! service without creating a second execution spine. It still grants no model
 //! installation, selection, topology mutation, promotion or release authority.
 
+use std::cell::Cell;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -18,7 +19,7 @@ use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
 use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
 use codex_hepta_intelligence::PlasticityAdmissionEvidenceV1;
 use codex_hepta_intelligence::PlasticityAnchorCommitterV1;
-use codex_hepta_intelligence::propose_authenticated_parameter_plasticity_v1;
+use codex_hepta_intelligence::propose_authenticated_parameter_plasticity_with_final_time_v1;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_ledger::DurableLedger;
@@ -442,6 +443,7 @@ impl From<AdaptiveAnchorJournalErrorV1> for AgentdPlasticityHostErrorV1 {
             AdaptiveAnchorJournalErrorV1::InvalidScope
             | AdaptiveAnchorJournalErrorV1::Corrupt
             | AdaptiveAnchorJournalErrorV1::GenerationPending
+            | AdaptiveAnchorJournalErrorV1::Poisoned
             | AdaptiveAnchorJournalErrorV1::Capacity => Self::AnchorCorrupt,
         }
     }
@@ -702,7 +704,7 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
 pub fn propose_agentd_plasticity_v1(
-    mut request: ParameterPlasticityProductRequestV1,
+    request: ParameterPlasticityProductRequestV1,
     artifacts: &ArtifactRegistry,
     ledger: &DurableLedger,
     owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
@@ -712,6 +714,37 @@ pub fn propose_agentd_plasticity_v1(
     anchor_store: &mut AgentdPlasticityAnchorStoreV1,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
+    propose_agentd_plasticity_with_clock_v1(
+        request,
+        artifacts,
+        ledger,
+        owner_evidence_resolver,
+        owner_evidence_policy,
+        verifier,
+        writer,
+        anchor_store,
+        now,
+        &mut || Ok(now),
+    )
+}
+
+pub(crate) fn propose_agentd_plasticity_with_clock_v1(
+    mut request: ParameterPlasticityProductRequestV1,
+    artifacts: &ArtifactRegistry,
+    ledger: &DurableLedger,
+    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
+    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
+    verifier: &LearningEvidenceVerifierV1,
+    writer: &mut AnchoredPlasticityWriterV1,
+    anchor_store: &mut AgentdPlasticityAnchorStoreV1,
+    now: u64,
+    clock: &mut dyn FnMut() -> Result<u64, crate::AgentdError>,
+) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
+    let receipt_windows = ReceiptWindowResolverV1 {
+        inner: owner_evidence_resolver,
+        observed_at: Cell::new(0),
+        expires_at: Cell::new(u64::MAX),
+    };
     let resolved = resolve_agentd_plasticity_admission_v1(
         &AgentdPlasticityAdmissionInputV1 {
             baseline_id: request.admission.baseline_id.clone(),
@@ -728,7 +761,7 @@ pub fn propose_agentd_plasticity_v1(
         },
         artifacts,
         ledger,
-        owner_evidence_resolver,
+        &receipt_windows,
         owner_evidence_policy,
         now,
     )?;
@@ -736,8 +769,49 @@ pub fn propose_agentd_plasticity_v1(
         return Err(AgentdPlasticityHostErrorV1::AdmissionDrift);
     }
     request.admission = resolved;
-    propose_authenticated_parameter_plasticity_v1(request, verifier, writer, anchor_store, now)
-        .map_err(Into::into)
+    propose_authenticated_parameter_plasticity_with_final_time_v1(
+        request,
+        verifier,
+        writer,
+        anchor_store,
+        now,
+        || {
+            let final_now = clock().map_err(|_| {
+                ParameterPlasticityProductErrorV1::Binding("host clock unavailable")
+            })?;
+            if final_now < receipt_windows.observed_at.get()
+                || final_now > receipt_windows.expires_at.get()
+            {
+                return Err(ParameterPlasticityProductErrorV1::Binding(
+                    "owner evidence expired before append",
+                ));
+            }
+            Ok(final_now)
+        },
+    )
+    .map_err(Into::into)
+}
+
+// Admission validates each returned receipt before the aggregated window can
+// reach the append guard. This wrapper retains no new evidence or authority.
+struct ReceiptWindowResolverV1<'a> {
+    inner: &'a dyn PlasticityOwnerEvidenceResolverV1,
+    observed_at: Cell<u64>,
+    expires_at: Cell<u64>,
+}
+
+impl PlasticityOwnerEvidenceResolverV1 for ReceiptWindowResolverV1<'_> {
+    fn resolve(
+        &self,
+        query: &PlasticityOwnerEvidenceQueryV1,
+    ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+        let receipt = self.inner.resolve(query)?;
+        self.observed_at
+            .set(self.observed_at.get().max(receipt.observed_at));
+        self.expires_at
+            .set(self.expires_at.get().min(receipt.expires_at));
+        Ok(receipt)
+    }
 }
 
 pub fn bootstrap_agentd_plasticity_writer_v1(

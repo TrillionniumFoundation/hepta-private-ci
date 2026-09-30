@@ -4,6 +4,65 @@ This is the concrete host profile for the authenticated plasticity proposal adap
 The numbers below are operational stop/alert thresholds, not measured performance
 claims. A deployment may be stricter but must not silently relax them.
 
+## Explicit bootstrap and admission prerequisites
+
+The Agentd binary accepts the pair `--plasticity-bootstrap-descriptor` and
+`--plasticity-bootstrap-descriptor-digest`. Supplying only one is rejected.
+The descriptor is a bounded JSON record with schema
+`hepta.agentd.plasticity-bootstrap.v1`, exact Agentd ID/spawn generation, absolute
+owner-store paths, expected independent recovery witnesses, selected signer/owner
+policy and bounded queue/registry configuration. Its digest must come from the
+host-selected configuration; hashing an untrusted descriptor and accepting its
+own trust keys does not establish an independent trust root. Absence of the
+explicit descriptor leaves plasticity disabled.
+
+`load_plasticity_process_bootstrap_v1` checks descriptor bytes and identity, checks
+path separation, reconstructs each store through its native recovery API and
+rejects unknown fields. Native registry opens use one of `bootstrap_new`,
+`resume_unacknowledged` or `reopen_anchored`; a failed reopen/resume must not be
+retried as fresh bootstrap. File/path separation checks prevent aliases, but do
+not prove physically independent rollback domains. Deployment supplies that
+separate evidence.
+
+The recovered ArtifactRegistry, learning ledger, NDU/neuron state and verifier are
+the owner handles selected for this generation. Re-reading their current heads
+does not prove synchronization with an external owner's later updates. The
+bootstrap is not a hot-refresh or revocation-subscription implementation. Before
+admitting changed selected-artifact, source, objective, trust/revocation or owner
+state, the selected host must provide explicit current-owner integration or
+reconstruct a generation from fresh independent witnesses. Expired/unavailable
+evidence disables new proposals; it never permits retaining opaque digests as
+substitute evidence.
+
+The source runtime owner samples its Unix-millisecond clock after dequeue and
+before host admission. The historical `now` argument on the submission handle is
+retained for API compatibility and ignored for verification time. Failure of this
+initial clock sample returns `ClockUnavailable`; a receipt's `observed_at` remains evidence provenance,
+not the current clock. The queue capacity is configured within `1..64`. A bounded
+queue is a memory limit, not an expiry or timeout guarantee, and queue delay never
+extends a signature's validity window.
+
+The composed host path samples the same clock again immediately before durable
+append, after candidate generation, independent evaluation and proposal
+preparation. The final guard rechecks signatures, principal validity, scheduled
+revocation and trust context; parameter admission also checks the intersection of
+the initially authenticated owner receipts' validity intervals. An expired,
+revoked or unavailable final-time check rejects without changing the writer or
+durable registry. This temporal revalidation does not refresh external owner or
+trust snapshots for the generation.
+
+Failure of the second clock sample is a parameter/topology product binding error
+with `host clock unavailable`. Both clock-failure paths reject admission; the
+`ClockUnavailable` runtime variant specifically describes the initial sample.
+
+The remaining upstream product trigger is a separately composed self-iteration
+coordinator. It must consume a frozen envelope and independently signed
+parameter/topology request with exact source, objective, grammar, budget and
+next-generation bindings, and submit through the existing producer. The current
+internal state methods and producer façade do not by themselves prove that such
+a coordinator exists or runs. It must not construct its own evaluation,
+acceptance, writer or execution grant.
+
 ## Authority and ownership
 
 The product-workspace adapter entrypoint is
@@ -34,12 +93,29 @@ be truncated after all complete predecessors validate. The proposal registry fil
 MUST NOT be the only copy of its acknowledged anchor. Writer-fence issuance, registry
 generation rollover and anchor persistence are serialized by the journal.
 
+Any journal append I/O failure poisons the journal handle, including a sync error
+after frame bytes may have reached durable storage. That handle rejects both
+anchor commits and writer-fence issuance until explicit reopen/reconciliation;
+the caller cannot retry to overwrite or acknowledge an uncertain frame. New
+zero-length journal initialization resets its file cursor before the header write.
+
 An adapter append is acknowledged only after `PlasticityAnchorCommitterV1` durably
 persists the resulting current registry anchor in that independent rollback domain.
 The repository fault fixture also holds the external acknowledgement while presenting a rolled-back header-only registry and requires reopen to fail with `AcknowledgedHistoryMissing`; this proves the reconciliation rule, not physical storage-domain independence.
 If the anchor commit fails after the registry append, the adapter writer is poisoned,
 returns `AnchorPersistenceFailed`, and MUST NOT perform another operation until an
 anchored reopen reconciles the durable file with previously acknowledged history.
+
+## Outcome handling
+
+| Outcome | Host action | Success claim |
+| --- | --- | --- |
+| Missing/stale/wrong-owner evidence, bad signature, role collision or semantic drift | Reject the request; obtain newly frozen independent evidence for a changed context | No proposal success |
+| Independently attested `NoAdmissibleUpdate` | Persist the exact no-change terminal proposal and its anchor | Durable terminal diagnosis; no installed update |
+| Identical acknowledged retry | Return the original durable record after current admission checks | Idempotent proposal receipt |
+| Queue closure or caller timeout/cancellation | Treat the proposal outcome as unresolved until the owner/anchored registry is reconciled; use the original identity | No inference from missing response |
+| Indeterminate append or failed anchor commit | Stop that writer, retain bytes/witnesses and follow the recovery runbook | No acknowledgement based only on written bytes |
+| Governed topology/canary receipt | Preserve candidate, handoff, plan, observation and exact durable-history bindings for the external runtime owner | Proposal/observation only; separate FinalUse execution remains required |
 
 ## Topology proposal operations
 
@@ -53,16 +129,29 @@ migration, rollback and acknowledgement-contract digests. The complete governed
 proposal is persisted in `DurableTopologyProposalRegistryV1`, with the same
 lock-before-bootstrap and external-anchor posture as parameter proposals.
 
+Several candidate alternatives may target the same module. Each change must
+match its exact `WriterHandoffPlanV1` by module ID and plan digest; a handoff for a
+different alternative cannot satisfy it. Canary construction resolves that same
+exact plan and rollback from the stored governed proposal.
+
 `StructuralCanaryControllerV1` remains an observation-only bounded state machine and cannot apply topology. The external `codex-hepta-runtime` owner now provides separate execution boundaries. Healthy replacement revalidates the governed proposal and exact writer handoff, requires every predecessor organ Ready, claims a single-use FinalUse grant immediately before live CNS replacement, and returns a deny-all execution receipt. Fault recovery accepts only a Stopped/Quarantined predecessor, requires the exact next generation, and claims a second grant bound to the distinct `runtime.hepta-live-shell.topology-recovery` destination. `build_structural_canary_plan_v1` accepts the durable topology
 registry plus proposal/candidate IDs and reads the stored governed proposal and original
 append receipt internally; `StructuralCanaryPlanV1` fields are not externally
 constructible. It rejects proposal/admission/frame/candidate/handoff/rollback drift.
+The plan digest uses the `hepta.plasticity.structural-canary-plan.v3` domain and
+includes the durable registry scope and writer fence. A plan or Observer signature
+from another scope, writer generation or older plan digest cannot be reused; the
+Observer must sign the newly constructed exact plan before observations resume.
 The plan binds that durable sequence/frame and candidate identity in addition to the
 rollback, writer-handoff set, baseline health and thresholds. Safety violation,
 lineage mismatch, excess regression or an unverified rollback causes terminal abort.
 The receipt binds the complete plan and a rolling chain over every observation;
 reaching the minimum successful-step threshold remains `Running` until an explicit
 `finish()` transition.
+`regression_count` is cumulative over the canary: it must never decrease and must
+not exceed the current observation sequence. A decreasing/substituted count is
+rejected before mutating the observation history; exceeding the plan's regression
+budget aborts terminally. Per-observation zeroes cannot reset prior regressions.
 `observe_authenticated_structural_canary_v1` is the product-facing observation boundary. A current trusted `Observer` must sign the plan digest and every observation field (health/evidence, regression count, safety violation, lineage mismatch and rollback verification) before the state machine is called. Direct caller assertions are therefore not accepted by the composed canary path. An Accepted source receipt is still not activation authority and is not evidence of a
 real host canary run.
 
@@ -119,8 +208,9 @@ until a target-host telemetry stream and exact execution receipts exist.
 2. Retain the suspect registry bytes, last externally acknowledged anchor, writer
    fence, trust snapshot and artifact/evidence frontier receipts.
 3. On `Indeterminate`, `Poisoned` or `AnchorPersistenceFailed`, discard the in-process
-   writer handle. Do not convert a failed anchor commit into success based only on the
-   registry file.
+   writer handle and any journal handle poisoned by append I/O. Do not convert a
+   failed anchor commit into success based only on the registry file, or issue
+   another fence through an uncertain journal handle.
 4. Reopen parameter state only with `AnchoredPlasticityWriterV1::reopen_anchored`
    and the independently retained last acknowledged anchor. The Agentd anchor journal
    must also replay cleanly. It may trim only an incomplete last journal frame; a

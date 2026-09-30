@@ -31,8 +31,8 @@ use crate::AgentdTopologyHostErrorV1;
 use crate::AgentdTopologyWriterV1;
 use crate::PlasticityOwnerEvidencePolicyV1;
 use crate::PlasticityOwnerEvidenceResolverV1;
-use crate::propose_agentd_plasticity_v1;
-use crate::propose_agentd_topology_plasticity_v1;
+use crate::plasticity_host::propose_agentd_plasticity_with_clock_v1;
+use crate::topology_plasticity_host::propose_agentd_topology_plasticity_with_clock_v1;
 
 const MAX_PLASTICITY_RUNTIME_QUEUE: usize = 64;
 
@@ -40,6 +40,7 @@ const MAX_PLASTICITY_RUNTIME_QUEUE: usize = 64;
 pub enum PlasticityRuntimeCallErrorV1 {
     Unavailable,
     Closed,
+    ClockUnavailable,
     Parameter(AgentdPlasticityHostErrorV1),
     Topology(AgentdTopologyHostErrorV1),
 }
@@ -54,14 +55,12 @@ impl StdError for PlasticityRuntimeCallErrorV1 {}
 enum PlasticityRuntimeCommandV1 {
     Parameter {
         request: Box<ParameterPlasticityProductRequestV1>,
-        now: u64,
         response: oneshot::Sender<
             Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1>,
         >,
     },
     Topology {
         request: Box<TopologyPlasticityProductRequestV1>,
-        now: u64,
         response: oneshot::Sender<
             Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1>,
         >,
@@ -76,16 +75,19 @@ pub struct PlasticityRuntimeHandleV1 {
 }
 
 impl PlasticityRuntimeHandleV1 {
+    /// Queue a proposal for validation against the owner's Unix-millisecond
+    /// clock when it is processed. `now` is retained for API compatibility and
+    /// cannot set the verification time or extend the evidence validity window.
     pub async fn propose_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
         now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        let _ = now;
         let (response, receive) = oneshot::channel();
         self.sender
             .send(PlasticityRuntimeCommandV1::Parameter {
                 request: Box::new(request),
-                now,
                 response,
             })
             .await
@@ -95,16 +97,18 @@ impl PlasticityRuntimeHandleV1 {
             .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?
     }
 
+    /// Queue a topology proposal. The compatibility `now` argument is ignored;
+    /// the owner checks evidence against its current Unix-millisecond clock.
     pub async fn propose_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
         now: u64,
     ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
+        let _ = now;
         let (response, receive) = oneshot::channel();
         self.sender
             .send(PlasticityRuntimeCommandV1::Topology {
                 request: Box::new(request),
-                now,
                 response,
             })
             .await
@@ -182,6 +186,9 @@ impl PlasticityRuntimeBootstrapV1 {
 /// Exact mutable owner retained for the lifetime of the Agentd generation.
 pub struct PlasticityRuntimeOwnerV1 {
     receiver: mpsc::Receiver<PlasticityRuntimeCommandV1>,
+    // The daemon chooses this clock at composition; producers cannot supply or
+    // override it. Private injection keeps lifetime/queue tests deterministic.
+    clock: Box<dyn FnMut() -> Result<u64, AgentdError> + Send>,
     artifacts: ArtifactRegistry,
     ledger: DurableLedger,
     owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
@@ -212,6 +219,7 @@ pub fn plasticity_runtime_channel_v1(
         PlasticityRuntimeHandleV1 { sender },
         PlasticityRuntimeOwnerV1 {
             receiver,
+            clock: Box::new(crate::authbus_ingress::now_ms),
             artifacts,
             ledger,
             owner_evidence_resolver,
@@ -287,16 +295,16 @@ impl PlasticityRuntimeOwnerV1 {
 
             let ready = state.plasticity_admission_ready()?;
             match command {
-                PlasticityRuntimeCommandV1::Parameter {
-                    request,
-                    now,
-                    response,
-                } => {
+                PlasticityRuntimeCommandV1::Parameter { request, response } => {
                     if !ready {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
                         continue;
                     }
-                    let result = propose_agentd_plasticity_v1(
+                    let Ok(now) = (self.clock)() else {
+                        let _ = response.send(Err(PlasticityRuntimeCallErrorV1::ClockUnavailable));
+                        continue;
+                    };
+                    let result = propose_agentd_plasticity_with_clock_v1(
                         *request,
                         &self.artifacts,
                         &self.ledger,
@@ -306,20 +314,21 @@ impl PlasticityRuntimeOwnerV1 {
                         &mut self.parameter_writer,
                         &mut self.parameter_anchor_store,
                         now,
+                        self.clock.as_mut(),
                     )
                     .map_err(PlasticityRuntimeCallErrorV1::Parameter);
                     let _ = response.send(result);
                 }
-                PlasticityRuntimeCommandV1::Topology {
-                    request,
-                    now,
-                    response,
-                } => {
+                PlasticityRuntimeCommandV1::Topology { request, response } => {
                     if !ready {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
                         continue;
                     }
-                    let result = propose_agentd_topology_plasticity_v1(
+                    let Ok(now) = (self.clock)() else {
+                        let _ = response.send(Err(PlasticityRuntimeCallErrorV1::ClockUnavailable));
+                        continue;
+                    };
+                    let result = propose_agentd_topology_plasticity_with_clock_v1(
                         *request,
                         &self.artifacts,
                         &self.ledger,
@@ -327,6 +336,7 @@ impl PlasticityRuntimeOwnerV1 {
                         &mut self.topology_writer,
                         &mut self.topology_anchor_store,
                         now,
+                        self.clock.as_mut(),
                     )
                     .map_err(PlasticityRuntimeCallErrorV1::Topology);
                     let _ = response.send(result);

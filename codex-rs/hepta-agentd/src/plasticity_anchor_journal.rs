@@ -4,6 +4,9 @@
 //! A host must place it in an independent rollback domain. Complete frames are never
 //! rewritten; an incomplete crash tail may be truncated only after every complete
 //! predecessor frame has validated.
+//! Any append I/O failure poisons the handle because the frame may already have
+//! reached storage. Drop and reopen the journal to reconcile it before retrying;
+//! the in-memory store must never be reused after an indeterminate append.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -47,6 +50,7 @@ pub(crate) enum AdaptiveAnchorJournalErrorV1 {
     FenceOverflow,
     GenerationPending,
     Capacity,
+    Poisoned,
     Io(std::io::ErrorKind),
 }
 impl fmt::Display for AdaptiveAnchorJournalErrorV1 {
@@ -84,6 +88,7 @@ pub(crate) struct AdaptiveAnchorJournalV1 {
     file: LockedFile,
     scope: Digest32,
     state: AdaptiveAnchorJournalStateV1,
+    poisoned: bool,
 }
 
 impl AdaptiveAnchorJournalV1 {
@@ -101,6 +106,7 @@ impl AdaptiveAnchorJournalV1 {
         if length > MAX_FILE_BYTES {
             return Err(AdaptiveAnchorJournalErrorV1::Capacity);
         }
+        file.0.seek(SeekFrom::Start(0))?;
         if length == 0 {
             file.0.write_all(&expected_header)?;
             file.0.sync_all()?;
@@ -108,7 +114,6 @@ impl AdaptiveAnchorJournalV1 {
             if length < HEADER_BYTES as u64 {
                 return Err(AdaptiveAnchorJournalErrorV1::Corrupt);
             }
-            file.0.seek(SeekFrom::Start(0))?;
             let mut actual = vec![0_u8; HEADER_BYTES];
             file.0.read_exact(&mut actual)?;
             if actual[..8] != magic {
@@ -148,7 +153,12 @@ impl AdaptiveAnchorJournalV1 {
             file.0.sync_all()?;
         }
         file.0.sync_data()?;
-        Ok(Self { file, scope, state })
+        Ok(Self {
+            file,
+            scope,
+            state,
+            poisoned: false,
+        })
     }
 
     pub(crate) const fn state(&self) -> AdaptiveAnchorJournalStateV1 {
@@ -158,6 +168,9 @@ impl AdaptiveAnchorJournalV1 {
     /// Start a new registry generation. Repeated fence issuance while a generation
     /// is still unacknowledged fails closed instead of skipping fence numbers.
     pub(crate) fn issue_new_registry_fence(&mut self) -> Result<u64, AdaptiveAnchorJournalErrorV1> {
+        if self.poisoned {
+            return Err(AdaptiveAnchorJournalErrorV1::Poisoned);
+        }
         if self.state.writer_fence != 0 && self.state.anchor.is_none() {
             return Err(AdaptiveAnchorJournalErrorV1::GenerationPending);
         }
@@ -168,7 +181,7 @@ impl AdaptiveAnchorJournalV1 {
             .filter(|value| *value != 0)
             .ok_or(AdaptiveAnchorJournalErrorV1::FenceOverflow)?;
         let frame = encode_frame(TAG_FENCE, next, None);
-        append_frame(&mut self.file.0, &frame)?;
+        self.append_frame(&frame)?;
         self.state.previous_anchor = self.state.anchor.or(self.state.previous_anchor);
         self.state.writer_fence = next;
         self.state.anchor = None;
@@ -181,6 +194,9 @@ impl AdaptiveAnchorJournalV1 {
         writer_fence: u64,
         anchor: AdaptiveAnchorV1,
     ) -> Result<(), AdaptiveAnchorJournalErrorV1> {
+        if self.poisoned {
+            return Err(AdaptiveAnchorJournalErrorV1::Poisoned);
+        }
         if scope != self.scope
             || writer_fence == 0
             || writer_fence != self.state.writer_fence
@@ -200,8 +216,29 @@ impl AdaptiveAnchorJournalV1 {
             }
         }
         let frame = encode_frame(TAG_ANCHOR, writer_fence, Some(anchor));
-        append_frame(&mut self.file.0, &frame)?;
+        self.append_frame(&frame)?;
         self.state.anchor = Some(anchor);
+        Ok(())
+    }
+
+    fn append_frame(
+        &mut self,
+        frame: &[u8; FRAME_BYTES],
+    ) -> Result<(), AdaptiveAnchorJournalErrorV1> {
+        self.poisoned = true;
+        let length = self.file.0.metadata()?.len();
+        if length
+            .checked_add(FRAME_BYTES as u64)
+            .is_none_or(|next| next > MAX_FILE_BYTES)
+        {
+            self.poisoned = false;
+            return Err(AdaptiveAnchorJournalErrorV1::Capacity);
+        }
+
+        self.file.0.seek(SeekFrom::End(0))?;
+        self.file.0.write_all(frame)?;
+        self.file.0.sync_all()?;
+        self.poisoned = false;
         Ok(())
     }
 }
@@ -252,6 +289,9 @@ fn apply_frame(
     );
     match frame[0] {
         TAG_FENCE => {
+            if state.writer_fence != 0 && state.anchor.is_none() {
+                return Err(AdaptiveAnchorJournalErrorV1::Corrupt);
+            }
             let expected = state
                 .writer_fence
                 .checked_add(1)
@@ -285,30 +325,152 @@ fn apply_frame(
     Ok(())
 }
 
-fn append_frame(
-    file: &mut File,
-    frame: &[u8; FRAME_BYTES],
-) -> Result<(), AdaptiveAnchorJournalErrorV1> {
-    let length = file.metadata()?.len();
-    if length
-        .checked_add(FRAME_BYTES as u64)
-        .is_none_or(|next| next > MAX_FILE_BYTES)
-    {
-        return Err(AdaptiveAnchorJournalErrorV1::Capacity);
-    }
-    file.seek(SeekFrom::End(0))?;
-    file.write_all(frame)?;
-    file.sync_all()?;
-    Ok(())
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[cfg(target_os = "linux")]
+    use tempfile::NamedTempFile;
     use tempfile::tempfile;
 
     fn digest(value: &[u8]) -> Digest32 {
         Digest32::of_bytes(value)
+    }
+
+    #[test]
+    fn journal_initialization_resets_the_empty_file_cursor() {
+        let mut file = tempfile().expect("journal");
+        file.seek(SeekFrom::Start(128)).expect("nonzero cursor");
+        let scope = digest(b"cursor-scope");
+        let magic = *b"HPAJ0004";
+        let mut journal =
+            AdaptiveAnchorJournalV1::open(file.try_clone().expect("clone"), scope, magic)
+                .expect("open");
+        assert_eq!(journal.issue_new_registry_fence().expect("fence"), 1);
+        drop(journal);
+        assert_eq!(
+            file.metadata().expect("metadata").len(),
+            (HEADER_BYTES + FRAME_BYTES) as u64,
+        );
+        let reopened = AdaptiveAnchorJournalV1::open(file, scope, magic).expect("reopen");
+        assert_eq!(
+            reopened.state(),
+            AdaptiveAnchorJournalStateV1 {
+                writer_fence: 1,
+                anchor: None,
+                previous_anchor: None,
+            },
+        );
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn journal_failed_fence_append_requires_reopen_before_any_retry() {
+        let file = NamedTempFile::new().expect("journal");
+        let scope = digest(b"failed-fence-scope");
+        let magic = *b"HPAJ0005";
+        drop(
+            AdaptiveAnchorJournalV1::open(file.reopen().expect("file"), scope, magic)
+                .expect("open"),
+        );
+        let before = std::fs::read(file.path()).expect("before");
+        let mut readonly =
+            AdaptiveAnchorJournalV1::open(File::open(file.path()).expect("readonly"), scope, magic)
+                .expect("readonly journal");
+        assert!(matches!(
+            readonly.issue_new_registry_fence(),
+            Err(AdaptiveAnchorJournalErrorV1::Io(_)),
+        ));
+        assert_eq!(
+            readonly.issue_new_registry_fence(),
+            Err(AdaptiveAnchorJournalErrorV1::Poisoned),
+        );
+        assert_eq!(
+            readonly.persist_anchor(
+                scope,
+                1,
+                AdaptiveAnchorV1 {
+                    sequence: 1,
+                    frame_digest: digest(b"frame"),
+                },
+            ),
+            Err(AdaptiveAnchorJournalErrorV1::Poisoned),
+        );
+        drop(readonly);
+        assert_eq!(std::fs::read(file.path()).expect("after"), before);
+        let mut recovered =
+            AdaptiveAnchorJournalV1::open(file.reopen().expect("file"), scope, magic)
+                .expect("reopen");
+        assert_eq!(
+            recovered
+                .issue_new_registry_fence()
+                .expect("reconciled fence"),
+            1
+        );
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn journal_failed_anchor_append_requires_reopen_before_any_retry() {
+        let file = NamedTempFile::new().expect("journal");
+        let scope = digest(b"failed-anchor-scope");
+        let magic = *b"HPAJ0006";
+        let mut journal = AdaptiveAnchorJournalV1::open(file.reopen().expect("file"), scope, magic)
+            .expect("open");
+        journal.issue_new_registry_fence().expect("fence");
+        drop(journal);
+        let before = std::fs::read(file.path()).expect("before");
+        let anchor = AdaptiveAnchorV1 {
+            sequence: 1,
+            frame_digest: digest(b"frame"),
+        };
+        let mut readonly =
+            AdaptiveAnchorJournalV1::open(File::open(file.path()).expect("readonly"), scope, magic)
+                .expect("readonly journal");
+        assert!(matches!(
+            readonly.persist_anchor(scope, 1, anchor),
+            Err(AdaptiveAnchorJournalErrorV1::Io(_)),
+        ));
+        assert_eq!(
+            readonly.persist_anchor(scope, 1, anchor),
+            Err(AdaptiveAnchorJournalErrorV1::Poisoned),
+        );
+        assert_eq!(
+            readonly.issue_new_registry_fence(),
+            Err(AdaptiveAnchorJournalErrorV1::Poisoned),
+        );
+        drop(readonly);
+        assert_eq!(std::fs::read(file.path()).expect("after"), before);
+        let mut recovered =
+            AdaptiveAnchorJournalV1::open(file.reopen().expect("file"), scope, magic)
+                .expect("reopen");
+        recovered
+            .persist_anchor(scope, 1, anchor)
+            .expect("reconciled anchor");
+        assert_eq!(recovered.state().anchor, Some(anchor));
+    }
+
+    #[test]
+    fn journal_replay_rejects_skipping_an_unacknowledged_generation() {
+        let file = tempfile().expect("journal");
+        let scope = digest(b"skipped-fence-scope");
+        let magic = *b"HPAJ0007";
+        let mut journal =
+            AdaptiveAnchorJournalV1::open(file.try_clone().expect("clone"), scope, magic)
+                .expect("open");
+        journal.issue_new_registry_fence().expect("first fence");
+        drop(journal);
+        let mut append = file.try_clone().expect("append");
+        append.seek(SeekFrom::End(0)).expect("seek");
+        append
+            .write_all(&encode_frame(TAG_FENCE, 2, None))
+            .expect("skipped fence");
+        append.sync_all().expect("sync");
+        let length = file.metadata().expect("metadata").len();
+        assert_eq!(
+            AdaptiveAnchorJournalV1::open(file.try_clone().expect("clone"), scope, magic).err(),
+            Some(AdaptiveAnchorJournalErrorV1::Corrupt),
+        );
+        assert_eq!(file.metadata().expect("metadata").len(), length);
     }
 
     #[test]
