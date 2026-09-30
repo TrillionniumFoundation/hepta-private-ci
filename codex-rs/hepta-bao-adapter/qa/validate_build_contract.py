@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-'''Validate the single complete build surface and read-only qualification split.'''
+'''Validate exact-source closure, the single Cargo surface and CI role split.'''
 from __future__ import annotations
 
+import re
 import tomllib
 from pathlib import Path
 
@@ -16,6 +17,13 @@ FAKE_FEATURES = {
     "sqlite-owner",
     "sqlite-product-runtime",
 }
+QUALIFIERS = (
+    ROOT / ".github/workflows/secrets-heptabao-five-closure-qualified.yml",
+    ROOT / ".github/workflows/secrets-heptabao-candidate-attestation.yml",
+)
+MATERIALIZER = (
+    ROOT / ".github/workflows/secrets-heptabao-development-materialize.yml"
+)
 
 
 def require(condition: bool, message: str) -> None:
@@ -23,11 +31,11 @@ def require(condition: bool, message: str) -> None:
         raise SystemExit(message)
 
 
-def main() -> int:
+def validate_cargo_surface() -> None:
     manifest = tomllib.loads(
-        (
-            ROOT / "codex-rs/hepta-bao-adapter/Cargo.toml"
-        ).read_text(encoding="utf-8")
+        (ROOT / "codex-rs/hepta-bao-adapter/Cargo.toml").read_text(
+            encoding="utf-8"
+        )
     )
     features = manifest.get("features", {})
     require(
@@ -35,13 +43,38 @@ def main() -> int:
         "hepta-bao-adapter must remain one complete build surface",
     )
 
-    qualifiers = [
-        ROOT
-        / ".github/workflows/secrets-heptabao-five-closure-qualified.yml",
-        ROOT
-        / ".github/workflows/secrets-heptabao-candidate-attestation.yml",
-    ]
-    for path in qualifiers:
+
+def validate_materialized_source() -> None:
+    host = (
+        ROOT / "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+    ).read_text(encoding="utf-8")
+    runtime = (
+        ROOT / "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs"
+    ).read_text(encoding="utf-8")
+    combined = host + "\n" + runtime
+    for declaration in (
+        "OutcomePending(Box<BaoConsumptionOperationV1>)",
+        "TerminalFailure(Box<BaoConsumptionOperationV1>)",
+    ):
+        require(declaration in host, f"materialized error declaration missing: {declaration}")
+    require(
+        "OutcomePending(BaoConsumptionOperationV1)" not in host,
+        "unboxed OutcomePending declaration remains",
+    )
+    require(
+        "TerminalFailure(BaoConsumptionOperationV1)" not in host,
+        "unboxed TerminalFailure declaration remains",
+    )
+    unboxed = re.search(
+        r"BaoProductHostError::(?:OutcomePending|TerminalFailure)"
+        r"\((?!Box::new\()",
+        combined,
+    )
+    require(unboxed is None, "unboxed product-error constructor remains")
+
+
+def validate_qualifiers() -> None:
+    for path in QUALIFIERS:
         text = path.read_text(encoding="utf-8")
         require(
             "permissions:\n  contents: read" in text,
@@ -55,8 +88,10 @@ def main() -> int:
             "git push",
             "git commit",
             "close_secrets_heptabao_candidate.py",
+            "close_secrets_heptabao_clippy.py",
             "--features",
             "FEATURES:",
+            "contents: write",
         ):
             require(
                 forbidden not in text,
@@ -68,32 +103,56 @@ def main() -> int:
                 f"{path.name}: undeclared feature {feature!r}",
             )
 
-    materializer_path = (
-        ROOT
-        / ".github/workflows/secrets-heptabao-development-materialize.yml"
-    )
-    materializer = materializer_path.read_text(encoding="utf-8")
+    qualification = QUALIFIERS[0].read_text(encoding="utf-8")
+    for required in (
+        "cargo metadata --locked --no-deps",
+        "git diff --exit-code",
+        "git status --porcelain=v1 --untracked-files=all",
+        "build_readiness_manifest.py",
+    ):
+        require(
+            required in qualification,
+            f"read-only qualifier is missing {required!r}",
+        )
+
+
+def validate_materializer_role() -> None:
+    text = MATERIALIZER.read_text(encoding="utf-8")
     require(
-        "permissions:\n  contents: write" in materializer,
-        "materializer needs bounded write permission",
+        "permissions:\n  contents: write" in text,
+        "development materializer needs bounded write permission",
     )
     require(
-        "close_secrets_heptabao_candidate.py" in materializer,
-        "materializer must invoke the development script",
+        ".hepta-staging/secrets-heptabao-review-materialize.trigger" in text,
+        "materializer must use an explicit isolated trigger",
     )
+    for required in (
+        "close_secrets_heptabao_candidate.py",
+        "close_secrets_heptabao_clippy.py",
+        "generate_secrets_heptabao_module.py --write",
+        "git push origin HEAD:codex/secrets-heptabao-production-qualified-20260930",
+    ):
+        require(required in text, f"materializer is missing {required!r}")
     for forbidden in (
         "cargo test",
         "cargo clippy",
         "build_readiness_manifest.py",
+        "productionQualified=true",
     ):
         require(
-            forbidden not in materializer,
+            forbidden not in text,
             f"materializer must not qualify: {forbidden!r}",
         )
 
+
+def main() -> int:
+    validate_cargo_surface()
+    validate_materialized_source()
+    validate_qualifiers()
+    validate_materializer_role()
     print(
-        "validated single complete Cargo surface and read-only "
-        "qualification split"
+        "validated materialized exact source, single complete Cargo surface, "
+        "and independent read-only qualification"
     )
     return 0
 
