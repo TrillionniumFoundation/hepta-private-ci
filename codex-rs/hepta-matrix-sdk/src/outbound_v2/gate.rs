@@ -41,6 +41,68 @@ impl<'claim> EnteredSend<'claim> {
     }
 }
 
+/// Detailed diagnostics for faults after kernel entry. Every variant remains an
+/// unknown external effect and therefore maps conservatively to an indeterminate
+/// transport result. These labels may improve operations; they never authorize a
+/// retry, release a claim or weaken stable-transaction reconciliation.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum EnteredFaultClass {
+    ProofMismatch,
+    ProofPersistenceUnknown,
+    AuthorityChanged,
+    TransportIdentityChanged,
+    Canceled,
+    DeadlineExpired,
+    ClockUnavailable,
+    StoreUnavailable,
+    PermitBoundaryRejected,
+    InternalInvariant,
+}
+
+impl EnteredFaultClass {
+    fn from_live_error(error: OutboxDispatchError) -> Self {
+        match error {
+            OutboxDispatchError::Invalid => Self::ClockUnavailable,
+            OutboxDispatchError::Store => Self::StoreUnavailable,
+            OutboxDispatchError::Authority => Self::AuthorityChanged,
+            OutboxDispatchError::TransportIdentity => Self::TransportIdentityChanged,
+            OutboxDispatchError::LeaseExpired => Self::DeadlineExpired,
+            OutboxDispatchError::Canceled => Self::Canceled,
+        }
+    }
+
+    fn from_permit_error(error: OutboxDispatchError) -> Self {
+        match error {
+            OutboxDispatchError::Authority => Self::PermitBoundaryRejected,
+            other => Self::from_live_error(other),
+        }
+    }
+
+    fn transport_error(self) -> MatrixTransportError {
+        if self == Self::DeadlineExpired {
+            MatrixTransportError::ReadTimeout
+        } else {
+            MatrixTransportError::ResponseLost
+        }
+    }
+
+    fn observe(self, stats: &mut OutboxDispatchStats) {
+        let counter = match self {
+            Self::ProofMismatch => &mut stats.entered_proof_faults,
+            Self::ProofPersistenceUnknown => &mut stats.entered_persistence_faults,
+            Self::AuthorityChanged => &mut stats.entered_authority_faults,
+            Self::TransportIdentityChanged => &mut stats.entered_identity_faults,
+            Self::Canceled => &mut stats.entered_cancellation_faults,
+            Self::DeadlineExpired => &mut stats.entered_deadline_faults,
+            Self::ClockUnavailable => &mut stats.entered_clock_faults,
+            Self::StoreUnavailable => &mut stats.entered_store_faults,
+            Self::PermitBoundaryRejected => &mut stats.entered_permit_faults,
+            Self::InternalInvariant => &mut stats.entered_invariant_faults,
+        };
+        *counter = counter.saturating_add(1);
+    }
+}
+
 #[derive(Clone, Copy)]
 struct LiveGrant {
     epoch: u64,
@@ -117,31 +179,37 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
         // All uses of ? below are confined to this inner result. In particular,
         // a clock failure or mismatched kernel proof can NEVER escape as an
         // ordinary admission error, even before the first network poll.
-        let observed: Result<Result<MatrixEventId, MatrixTransportError>, OutboxDispatchError> =
+        let observed: Result<Result<MatrixEventId, MatrixTransportError>, EnteredFaultClass> =
             async {
                 if !entered.proof.matches(binding) {
-                    return Err(OutboxDispatchError::Authority);
+                    return Err(EnteredFaultClass::ProofMismatch);
                 }
+                let recorded_at_ms = self
+                    .clock
+                    .now_ms()
+                    .map_err(EnteredFaultClass::from_live_error)?;
                 tokio::time::timeout_at(
                     self.deadline,
                     self.store.record_outbox_entered_use(
                         entered.claim,
                         entered.proof.as_ref(),
                         binding,
-                        self.clock.now_ms()?,
+                        recorded_at_ms,
                     ),
                 )
                 .await
-                .map_err(|_| OutboxDispatchError::Store)?
-                .map_err(store_error)?;
-                self.preflight(grant, stats)?;
+                .map_err(|_| EnteredFaultClass::ProofPersistenceUnknown)?
+                .map_err(|_| EnteredFaultClass::ProofPersistenceUnknown)?;
+                self.preflight(grant, stats)
+                    .map_err(EnteredFaultClass::from_live_error)?;
                 let permit = MatrixSendPermit::new(
                     Arc::clone(&entered.proof),
                     binding,
                     self.expected_identity,
                     self.record,
                 );
-                self.preflight(grant, stats)?;
+                self.preflight(grant, stats)
+                    .map_err(EnteredFaultClass::from_live_error)?;
 
                 // Keep permit validation and transport-future construction
                 // inside the first live-gated poll. The public transport trait
@@ -152,27 +220,33 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                 let mut first_poll = true;
                 let gated = poll_fn(|context| {
                     if let Err(error) = self.preflight(grant, stats) {
-                        return Poll::Ready(Err(error));
+                        return Poll::Ready(Err(EnteredFaultClass::from_live_error(error)));
                     }
                     if send.is_none() {
                         let Some(permit) = permit.take() else {
-                            return Poll::Ready(Err(OutboxDispatchError::Store));
+                            return Poll::Ready(Err(EnteredFaultClass::InternalInvariant));
                         };
                         let future = match self.transport.send_authorized(self.record, permit) {
                             Ok(future) => future,
-                            Err(error) => return Poll::Ready(Err(error)),
+                            Err(error) => {
+                                return Poll::Ready(Err(EnteredFaultClass::from_permit_error(
+                                    error,
+                                )));
+                            }
                         };
                         send = Some(future);
                         // Identity/permit validation and future construction are
                         // synchronous and may consume the remaining live window.
                         if let Err(error) = self.preflight(grant, stats) {
-                            return Poll::Ready(Err(error));
+                            return Poll::Ready(Err(EnteredFaultClass::from_live_error(error)));
                         }
                     }
                     if first_poll {
                         let now_ms = match self.clock.now_ms() {
                             Ok(now_ms) => now_ms,
-                            Err(error) => return Poll::Ready(Err(error)),
+                            Err(_) => {
+                                return Poll::Ready(Err(EnteredFaultClass::ClockUnavailable));
+                            }
                         };
                         let wait_ms = now_ms.saturating_sub(self.claim.claimed_at_ms());
                         stats.claim_to_first_poll_samples =
@@ -184,24 +258,26 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                         first_poll = false;
                     }
                     let Some(send) = send.as_mut() else {
-                        return Poll::Ready(Err(OutboxDispatchError::Store));
+                        return Poll::Ready(Err(EnteredFaultClass::InternalInvariant));
                     };
                     stats.transport_polls = stats.transport_polls.saturating_add(1);
                     send.as_mut().poll(context).map(Ok)
                 });
                 tokio::select! {
                     biased;
-                    _ = self.cancel.cancelled() => Err(OutboxDispatchError::Canceled),
+                    _ = self.cancel.cancelled() => Err(EnteredFaultClass::Canceled),
                     result = tokio::time::timeout_at(self.deadline, gated) => {
-                        result.unwrap_or(Err(OutboxDispatchError::LeaseExpired))
+                        result.unwrap_or(Err(EnteredFaultClass::DeadlineExpired))
                     }
                 }
             }
             .await;
         entered.result = match observed {
             Ok(result) => result,
-            Err(OutboxDispatchError::LeaseExpired) => Err(MatrixTransportError::ReadTimeout),
-            Err(_) => Err(MatrixTransportError::ResponseLost),
+            Err(fault) => {
+                fault.observe(stats);
+                Err(fault.transport_error())
+            }
         };
         entered
     }
@@ -268,8 +344,11 @@ fn grant_is_live(now_ms: u64, expires_at_ms: u64) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use super::EnteredFaultClass;
     use super::effective_grant_now;
     use super::grant_is_live;
+    use crate::MatrixTransportError;
+    use crate::OutboxDispatchStats;
 
     #[test]
     fn grant_expiry_is_a_closed_entry_boundary() {
@@ -282,5 +361,41 @@ mod tests {
     fn stale_caller_epoch_cannot_extend_a_grant() {
         assert_eq!(effective_grant_now(10, 50), 50);
         assert_eq!(effective_grant_now(50, 10), 50);
+    }
+
+    #[test]
+    fn entered_faults_remain_indeterminate_but_keep_diagnostic_class() {
+        let mut stats = OutboxDispatchStats::default();
+        let faults = [
+            EnteredFaultClass::ProofMismatch,
+            EnteredFaultClass::ProofPersistenceUnknown,
+            EnteredFaultClass::AuthorityChanged,
+            EnteredFaultClass::TransportIdentityChanged,
+            EnteredFaultClass::Canceled,
+            EnteredFaultClass::DeadlineExpired,
+            EnteredFaultClass::ClockUnavailable,
+            EnteredFaultClass::StoreUnavailable,
+            EnteredFaultClass::PermitBoundaryRejected,
+            EnteredFaultClass::InternalInvariant,
+        ];
+        for fault in faults {
+            fault.observe(&mut stats);
+            let expected = if fault == EnteredFaultClass::DeadlineExpired {
+                MatrixTransportError::ReadTimeout
+            } else {
+                MatrixTransportError::ResponseLost
+            };
+            assert_eq!(fault.transport_error(), expected);
+        }
+        assert_eq!(stats.entered_proof_faults, 1);
+        assert_eq!(stats.entered_persistence_faults, 1);
+        assert_eq!(stats.entered_authority_faults, 1);
+        assert_eq!(stats.entered_identity_faults, 1);
+        assert_eq!(stats.entered_cancellation_faults, 1);
+        assert_eq!(stats.entered_deadline_faults, 1);
+        assert_eq!(stats.entered_clock_faults, 1);
+        assert_eq!(stats.entered_store_faults, 1);
+        assert_eq!(stats.entered_permit_faults, 1);
+        assert_eq!(stats.entered_invariant_faults, 1);
     }
 }
