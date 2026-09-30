@@ -36,6 +36,15 @@ A write-ahead dispatch is deliberately not publication evidence. It is also not
 a process that crashes after committing dispatch cannot restart and issue a
 second physical effect merely because no response was observed locally.
 
+For one exact execution identity, ordinary lifecycle phases advance strictly
+forward. A stronger durable observation may skip an unmaterialized intermediate
+phase, for example `QualifiedDecision -> ConsumedRetrieval` when an exact native
+turn already exists. `AcknowledgedRetrieval` is terminal. A quarantined unknown
+outcome cannot regress to `QualifiedDecision` or another pre-effect state and
+cannot be appended repeatedly as a substitute for reconciliation. Exact
+operation reconciliation may advance quarantine only to `PublishedRetrieval`,
+`ConsumedRetrieval`, or `AcknowledgedRetrieval`.
+
 ## Transactional append rule
 
 `project_retrieval_delivery_lifecycle_v1` binds the verified receipt to the
@@ -47,16 +56,37 @@ canonical execution identity:
 - writer fence and expected frontier are caller-owned durable values; and
 - payload identity is the immutable retrieval-delivery receipt digest.
 
-`append_retrieval_lifecycle_projection_v1` performs exactly one existing-port
-operation:
+Product code appends through
+`append_retrieval_lifecycle_projection_checked_v1`, which delegates to
+`append_durable_decision_checked_v1`. Before touching storage, the checked
+boundary:
+
+- loads the latest fact for the exact execution identity;
+- requires the proposed record frontier to equal the caller's global expected
+  frontier plus one;
+- rejects a latest per-identity frontier that is ahead of the caller's global
+  frontier;
+- requires exact identity equality and a nondecreasing writer fence;
+- enforces the monotonic phase and quarantine rules above;
+- requires quarantine evidence exactly when the phase is
+  `QuarantinedUnknownOutcome`; and
+- verifies that the port reports the exact committed frontier.
+
+The raw `append_retrieval_lifecycle_projection_v1` helper remains a low-level
+compatibility surface for existing storage implementations. It is not the
+product-qualified append boundary and must not be used by new product callers.
+
+The checked helper performs exactly one existing-port operation after validation:
 
 - ordinary phases use `compare_and_append`; and
 - unknown outcomes use `quarantine_unknown_outcome`.
 
 The helper never renews a fence or frontier. A stale process therefore cannot
-recover ownership by retrying the append. Idempotency, compare-and-swap,
-retention, replay verification, and physical persistence remain obligations of
-the already selected `DurableDecisionPortV1` implementation.
+recover ownership by retrying the append. A port error is an uncertain commit
+result: recovery must reload the exact identity and reconcile the immutable
+payload before another append. Idempotency, compare-and-swap, retention, replay
+verification, and physical persistence remain obligations of the already
+selected `DurableDecisionPortV1` implementation.
 
 ## Crash and late-result matrix
 
@@ -98,7 +128,10 @@ exit; cancellation of the waiting future is not proof that owner work stopped.
 Repository qualification must bind the exact source SHA and tree, deterministic
 base merge, current-main comparison, Cargo lock, workflow definitions, native
 package tests, all-target strict Clippy, formatting, clean source, Agentd process
-qualification, source integrity, and the generated qualification manifest.
+qualification, source integrity, and the generated qualification manifest. The
+canonical source-object inventory explicitly binds lifecycle module wiring,
+transition validation, external API tests, deadline forwarding, worker capacity,
+product admission, vector publication, and qualification-policy source.
 After integration, the merge SHA must run independently; branch-head artifacts
 cannot be relabelled as merge evidence.
 

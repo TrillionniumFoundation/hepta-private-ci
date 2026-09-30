@@ -49,6 +49,43 @@ MANDATORY_REQUIRED_CHECKS = {
     ),
 }
 MANDATORY_SECURITY_CHECKS = {"CodeQL": "success"}
+MANDATORY_SOURCE_OBJECTS = frozenset(
+    {
+        "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+        "codex-rs/hepta-agentd/src/lib.rs",
+        "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
+        "codex-rs/hepta-agentd/src/retrieval_delivery_append.rs",
+        "codex-rs/hepta-agentd/src/retrieval_executor.rs",
+        "codex-rs/hepta-agentd/src/retrieval_product_mode.rs",
+        "codex-rs/hepta-memory-retrieval",
+        "codex-rs/hepta-memory-retrieval/Cargo.toml",
+        "codex-rs/hepta-memory-retrieval/src/lib.rs",
+        "codex-rs/hepta-memory-retrieval/src/lifecycle.rs",
+        "codex-rs/hepta-memory-retrieval/src/lifecycle_append.rs",
+        "codex-rs/hepta-memory-retrieval/src/product.rs",
+        "codex-rs/hepta-memory-retrieval/src/semantics.rs",
+        "codex-rs/hepta-memory-retrieval/src/vector_publication.rs",
+        "codex-rs/hepta-memory-retrieval/src/work.rs",
+        "codex-rs/hepta-memory-retrieval/tests/lifecycle_api.rs",
+        "codex-rs/hepta-memory-retrieval/tests/lifecycle_append_api.rs",
+        "docs/modules/memory.retrieval/CONTROLLED_API.md",
+        "docs/modules/memory.retrieval/PRODUCT_ADMISSION.md",
+        "docs/modules/memory.retrieval/QUALIFICATION_IDENTITY.md",
+        "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
+        "qualification/memory-retrieval/product-composition.json",
+        "qualification/memory-retrieval/production-qualification.json",
+        "qualification/memory-retrieval/qualification-policy.json",
+        "qualification/memory-retrieval/recovery-matrix.json",
+        "scripts/hepta_memory_retrieval_policy.py",
+        "scripts/hepta_memory_retrieval_qualification.py",
+        "scripts/hepta_memory_retrieval_refresh_map.py",
+        "scripts/hepta_memory_retrieval_status.py",
+        "scripts/tests/test_hepta_memory_retrieval_policy.py",
+        "scripts/tests/test_hepta_memory_retrieval_qualification.py",
+        "scripts/tests/test_hepta_memory_retrieval_refresh_map.py",
+        "scripts/tests/test_hepta_memory_retrieval_status.py",
+    }
+)
 MANDATORY_EXTERNAL_GATES = frozenset(
     {
         "Memory retrieval target-host full-chain E2E",
@@ -181,6 +218,11 @@ def load_policy(root: Path | str = REPOSITORY_ROOT) -> dict[str, Any]:
         raise PolicyError("sourceInputs must be unique and sorted")
     if len(objects) != len(set(objects)) or objects != sorted(objects):
         raise PolicyError("sourceObjectInputs must be unique and sorted")
+    missing_objects = sorted(MANDATORY_SOURCE_OBJECTS - set(objects))
+    if missing_objects:
+        raise PolicyError(
+            "mandatory source objects are absent: " + ", ".join(missing_objects)
+        )
     if root_path not in objects:
         raise PolicyError("sourceRoot must be explicitly object-bound")
     for item in objects:

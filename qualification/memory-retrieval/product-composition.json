@@ -20,7 +20,12 @@
     "expectedOwnerInventoryRequired": true,
     "missingOwnerState": "Unavailable",
     "missingOwnerCanBeComplete": false,
-    "typedOutcomes": ["Complete", "Degraded", "Abstain", "FailClosed"],
+    "typedOutcomes": [
+      "Complete",
+      "Degraded",
+      "Abstain",
+      "FailClosed"
+    ],
     "sqliteOwnerProfile": {
       "ordinaryLimitAction": "Degrade",
       "contradictionLimitAction": "FailClosed",
@@ -52,7 +57,10 @@
   "quantization": {
     "state": "source-capability-only",
     "schema": "hepta.vector.quantized.v1",
-    "allowedBits": [8, 16],
+    "allowedBits": [
+      8,
+      16
+    ],
     "productionSelection": null
   },
   "index": {
@@ -88,20 +96,66 @@
     "preparationOwner": "codex-hepta-learning-ledger:RetrievalPrepared/tag-10",
     "nativeOperationOwner": "codex-hepta-infer-core:NativeRunRecord",
     "lifecyclePort": "codex-hepta-memory-retrieval:DurableDecisionPortV1",
+    "checkedAppend": "codex-hepta-agentd:append_retrieval_lifecycle_projection_checked_v1",
+    "transitionValidator": "codex-hepta-memory-retrieval:validate_durable_decision_append_v1",
+    "rawAppendProductAllowed": false,
+    "globalFrontierMustAdvanceExactlyOne": true,
+    "writerFenceMayNotRegress": true,
+    "quarantineMayRegressToPrepared": false,
     "dispatchUnknownStage": "DispatchOutcomeUnknown",
     "unknownOutcomePolicy": "exact-operation-reconciliation-only",
     "blindReplayAllowed": false,
     "secondDurableOwnerIntroduced": false
   },
   "stages": [
-    {"ordinal": 1, "name": "prepare", "identityField": "execution_identity_v1", "durabilityRequired": false},
-    {"ordinal": 2, "name": "durable_publish", "identityField": "execution_identity_v1", "durabilityRequired": true},
-    {"ordinal": 3, "name": "restart_recover", "identityField": "execution_identity_v1", "durabilityRequired": true},
-    {"ordinal": 4, "name": "query", "identityField": "execution_identity_v1", "durabilityRequired": false},
-    {"ordinal": 5, "name": "decision", "identityField": "execution_identity_v1", "durabilityRequired": true},
-    {"ordinal": 6, "name": "native_consume", "identityField": "execution_identity_v1", "durabilityRequired": true},
-    {"ordinal": 7, "name": "downstream_effect", "identityField": "execution_identity_v1", "durabilityRequired": true},
-    {"ordinal": 8, "name": "acknowledgement", "identityField": "execution_identity_v1", "durabilityRequired": true}
+    {
+      "ordinal": 1,
+      "name": "prepare",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": false
+    },
+    {
+      "ordinal": 2,
+      "name": "durable_publish",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    },
+    {
+      "ordinal": 3,
+      "name": "restart_recover",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    },
+    {
+      "ordinal": 4,
+      "name": "query",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": false
+    },
+    {
+      "ordinal": 5,
+      "name": "decision",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    },
+    {
+      "ordinal": 6,
+      "name": "native_consume",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    },
+    {
+      "ordinal": 7,
+      "name": "downstream_effect",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    },
+    {
+      "ordinal": 8,
+      "name": "acknowledgement",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    }
   ],
   "promotionBlockers": [
     "qualified text encoder identity is absent",

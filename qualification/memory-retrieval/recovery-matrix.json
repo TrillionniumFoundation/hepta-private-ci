@@ -8,6 +8,22 @@
     "lifecycleAppend": "codex-hepta-memory-retrieval:DurableDecisionPortV1",
     "secondOwnerIntroduced": false
   },
+  "appendPolicy": {
+    "productEntryPoint": "codex-hepta-agentd:append_retrieval_lifecycle_projection_checked_v1",
+    "transitionValidator": "codex-hepta-memory-retrieval:validate_durable_decision_append_v1",
+    "globalFrontierAdvance": "exactly_one",
+    "latestIdentityFrontierMayLagGlobal": true,
+    "latestIdentityFrontierMayLeadGlobal": false,
+    "writerFenceMayRegress": false,
+    "terminalPhase": "AcknowledgedRetrieval",
+    "quarantineRequiresTypedEvidence": true,
+    "quarantineMayRegressToPrepared": false,
+    "quarantineResolutionTargets": [
+      "PublishedRetrieval",
+      "ConsumedRetrieval",
+      "AcknowledgedRetrieval"
+    ]
+  },
   "states": [
     {
       "deliveryStage": "AssignmentPrepared",

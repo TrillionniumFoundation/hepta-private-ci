@@ -7,6 +7,29 @@ import unittest
 from scripts import hepta_memory_retrieval_policy as policy
 
 
+CRITICAL_SOURCE_OBJECTS = {
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/retrieval_delivery_append.rs",
+    "codex-rs/hepta-agentd/src/retrieval_executor.rs",
+    "codex-rs/hepta-agentd/src/retrieval_product_mode.rs",
+    "codex-rs/hepta-memory-retrieval/Cargo.toml",
+    "codex-rs/hepta-memory-retrieval/src/lib.rs",
+    "codex-rs/hepta-memory-retrieval/src/lifecycle.rs",
+    "codex-rs/hepta-memory-retrieval/src/lifecycle_append.rs",
+    "codex-rs/hepta-memory-retrieval/src/semantics.rs",
+    "codex-rs/hepta-memory-retrieval/src/vector_publication.rs",
+    "codex-rs/hepta-memory-retrieval/src/work.rs",
+    "codex-rs/hepta-memory-retrieval/tests/lifecycle_append_api.rs",
+    "qualification/memory-retrieval/product-composition.json",
+    "qualification/memory-retrieval/qualification-policy.json",
+    "qualification/memory-retrieval/recovery-matrix.json",
+    "scripts/hepta_memory_retrieval_policy.py",
+    "scripts/hepta_memory_retrieval_qualification.py",
+    "scripts/hepta_memory_retrieval_status.py",
+}
+
+
 class QualificationPolicyTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -115,6 +138,24 @@ class QualificationPolicyTests(unittest.TestCase):
         with self.assertRaisesRegex(
             policy.PolicyError,
             "must not carry evidence",
+        ):
+            policy.load_policy(self.root)
+
+    def test_critical_source_objects_are_explicitly_bound(self):
+        self.assertTrue(
+            CRITICAL_SOURCE_OBJECTS.issubset(
+                set(self.policy["sourceObjectInputs"])
+            )
+        )
+
+    def test_critical_source_object_cannot_be_removed(self):
+        self.policy["sourceObjectInputs"].remove(
+            "codex-rs/hepta-memory-retrieval/src/lifecycle_append.rs"
+        )
+        self.write_policy()
+        with self.assertRaisesRegex(
+            policy.PolicyError,
+            "mandatory source objects are absent",
         ):
             policy.load_policy(self.root)
 
