@@ -19,6 +19,7 @@ use crate::TabularPayloadError;
 use crate::TabularPayloadPinV1;
 use crate::TabularWorldModelV1;
 use crate::TrainingProfileV1;
+use crate::WorkCancellationV1;
 use crate::WorkControlError;
 use crate::WorkControlV1;
 use crate::WorldModelError;
@@ -102,14 +103,16 @@ impl PreparedTabularPayloadV3 {
     }
 }
 
+/// Freeze a one-shot tabular training capability whose deadline, cancellation
+/// state and operation budget are created from the canonical profile itself.
 pub fn verify_tabular_operator_plan_v3(
     owner: &LedgerWriter,
     input: UnboundTabularOperatorPlanV3,
     profile: &TrainingProfileV1,
     dataset: DatasetSnapshotReceiptV3,
-    control: WorkControlV1,
     now: u64,
-) -> Result<VerifiedTabularOperatorPlanV3, FinalUseError> {
+) -> Result<(VerifiedTabularOperatorPlanV3, WorkCancellationV1), FinalUseError> {
+    let (control, cancellation) = profile.start_work()?;
     control.checkpoint(0)?;
     owner.revalidate_dataset_snapshot(&dataset, now)?;
     if dataset.snapshot.objective_digest != profile.objective_digest() {
@@ -140,12 +143,15 @@ pub fn verify_tabular_operator_plan_v3(
         action_ids: input.action_ids,
         samples: input.samples,
     };
-    Ok(VerifiedTabularOperatorPlanV3 {
-        plan,
-        dataset,
-        maximum_absolute_error: profile.maximum_absolute_error(),
-        control,
-    })
+    Ok((
+        VerifiedTabularOperatorPlanV3 {
+            plan,
+            dataset,
+            maximum_absolute_error: profile.maximum_absolute_error(),
+            control,
+        },
+        cancellation,
+    ))
 }
 
 pub fn fit_tabular_operator_verified_v3(
@@ -264,14 +270,16 @@ impl PublicationReadyWorldModelCandidateV3 {
     }
 }
 
+/// Freeze a one-shot world-model capability whose runtime controls are derived
+/// from the canonical world-model profile rather than supplied separately.
 pub fn verify_world_model_dataset_v3(
     owner: &LedgerWriter,
     input: UnboundWorldModelDatasetV3,
-    profile: WorldModelProfileV1,
+    profile: &WorldModelProfileV1,
     dataset: DatasetSnapshotReceiptV3,
-    control: WorkControlV1,
     now: u64,
-) -> Result<VerifiedWorldModelDatasetV3, FinalUseError> {
+) -> Result<(VerifiedWorldModelDatasetV3, WorkCancellationV1), FinalUseError> {
+    let (control, cancellation) = profile.start_work()?;
     control.checkpoint(0)?;
     owner.revalidate_dataset_snapshot(&dataset, now)?;
     if dataset.snapshot.objective_digest != profile.objective_digest() {
@@ -289,12 +297,15 @@ pub fn verify_world_model_dataset_v3(
     if supplied_evidence != dataset.snapshot.source_record_digests {
         return Err(FinalUseError::Binding("world dataset evidence membership"));
     }
-    Ok(VerifiedWorldModelDatasetV3 {
-        input,
-        dataset,
-        profile,
-        control,
-    })
+    Ok((
+        VerifiedWorldModelDatasetV3 {
+            input,
+            dataset,
+            profile: profile.clone(),
+            control,
+        },
+        cancellation,
+    ))
 }
 
 pub fn fit_transition_model_verified_v3(
