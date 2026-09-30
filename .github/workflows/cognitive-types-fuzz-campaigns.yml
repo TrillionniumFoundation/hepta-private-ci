@@ -14,6 +14,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   verifier:
@@ -115,5 +116,60 @@ jobs:
         with:
           name: cognitive-types-fuzz-${{ matrix.target }}-${{ github.sha }}
           path: ${{ runner.temp }}/cognitive-types-fuzz-${{ matrix.target }}
+          if-no-files-found: error
+          retention-days: 30
+
+  aggregate:
+    if: always()
+    needs: [verifier, campaign]
+    name: aggregate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out immutable exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prepare aggregate directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz-matrix"
+          mkdir -p "$RUNNER_TEMP/cognitive-types-fuzz-verified"
+
+      - name: Download all five target receipts
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: cognitive-types-fuzz-*-${{ github.sha }}
+          path: ${{ runner.temp }}/cognitive-types-fuzz-matrix
+          merge-multiple: false
+
+      - name: Verify and seal complete target matrix
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=0
+          python3 qualification/cognitive-types-v1/verify_fuzz_campaign_receipts.py \
+            --evidence "$RUNNER_TEMP/cognitive-types-fuzz-matrix" \
+            --source "$GITHUB_SHA" \
+            --campaign-class smoke \
+            --expected-seconds 60 \
+            --expected-rss-mb 2048 \
+            --output "$RUNNER_TEMP/cognitive-types-fuzz-verified/report.json" || status=$?
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          exit "$status"
+
+      - name: Upload verified fuzz matrix
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-fuzz-verified-${{ github.sha }}
+          path: ${{ runner.temp }}/cognitive-types-fuzz-verified
           if-no-files-found: error
           retention-days: 30
