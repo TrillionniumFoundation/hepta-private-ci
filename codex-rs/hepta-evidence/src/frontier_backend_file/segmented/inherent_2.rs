@@ -4,29 +4,12 @@ impl SegmentedFileEvidenceFrontierBackend {
         paths: &StorePaths,
         store_id: &str,
     ) -> Result<Option<EvidenceRecoveryFrontierV2>, EvidenceFrontierBackendError> {
-        let Some(index) = self.read_index(paths, store_id)? else {
-            return Ok(None);
-        };
-        if self.current_active_length(paths)? != index.active_journal_bytes {
-            return Ok(None);
+        let mut active = self.open_active_existing(paths)?;
+        if let Some(file) = active.as_ref() {
+            file.lock_shared().map_err(unavailable)?;
         }
-        if let Some(pointer) = index.latest_segment.as_ref() {
-            self.read_segment_metadata(pointer, store_id)?;
-        }
-        let active_digest = match self.open_active_existing(paths)? {
-            Some(mut file) => {
-                file.lock_shared().map_err(unavailable)?;
-                Sha256Digest::for_bytes(&read_locked_bytes(
-                    &mut file,
-                    EVIDENCE_FRONTIER_MAX_JOURNAL_BYTES,
-                )?)
-            }
-            None => Sha256Digest::for_bytes(&[]),
-        };
-        if active_digest == index.active_journal_sha256 {
-            return Ok(Some(index.frontier));
-        }
-        Ok(None)
+        let state = self.load_state_from_active(paths, store_id, active.as_mut())?;
+        Ok(state.latest_frontier())
     }
 
     fn archive_active(
@@ -157,13 +140,14 @@ impl SegmentedFileEvidenceFrontierBackend {
         )?;
         // Publish the immutable segment pointer before truncating the duplicate
         // active prefix. A crash here leaves two exact copies; reopening removes
-        // the prefix only after validating its boundary digest.
+        // the prefix only after validating its boundary digest and frontier.
         self.write_index_atomic(paths, &archive_index)?;
         active.set_len(0).map_err(|error| self.poison(error))?;
-        active.seek(SeekFrom::Start(0)).map_err(|error| self.poison(error))?;
+        active
+            .seek(SeekFrom::Start(0))
+            .map_err(|error| self.poison(error))?;
         active.sync_all().map_err(|error| self.poison(error))?;
         directory.sync_all().map_err(|error| self.poison(error))?;
         Ok(archive_index)
     }
-
 }
