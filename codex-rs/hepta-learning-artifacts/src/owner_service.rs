@@ -280,6 +280,8 @@ impl LearningArtifactOwnerService {
         self.durable_withdrawals
             .persist(&self.withdrawal_registry)
             .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
+        #[cfg(all(test, unix))]
+        test_process_crash_barrier("withdrawal-after-durable-before-ack");
         self.withdrawal_persistence_uncertain = false;
         Ok(())
     }
@@ -413,6 +415,8 @@ impl LearningArtifactOwnerService {
         }
         if let Some(recovery) = checkpoint.as_ref() {
             verify_durable_inputs(&self.root, &staged, request, &recovery.checkpoint)?;
+            #[cfg(all(test, unix))]
+            test_process_crash_barrier("recovery-after-durable-revalidation");
         }
         let mut transaction = self.host.begin_publication(
             request.operation_id.clone(),
@@ -467,6 +471,35 @@ impl LearningArtifactOwnerService {
         };
         self.registry = staged;
         Ok(receipt)
+    }
+}
+
+#[cfg(all(test, unix))]
+fn test_process_crash_barrier(stage: &str) {
+    use std::io::Write as _;
+    use std::time::Duration;
+
+    if std::env::var("HEPTA_ARTIFACT_SERVICE_CRASH_CUT").ok().as_deref() != Some(stage) {
+        return;
+    }
+    let marker = std::env::var_os("HEPTA_ARTIFACT_SERVICE_CRASH_MARKER")
+        .map(PathBuf::from)
+        .expect("test crash marker path");
+    let mut file = std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&marker)
+        .expect("create test crash marker");
+    file.write_all(stage.as_bytes())
+        .and_then(|()| file.sync_all())
+        .expect("sync test crash marker");
+    if let Some(parent) = marker.parent() {
+        std::fs::File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .expect("sync test crash marker directory");
+    }
+    loop {
+        std::thread::sleep(Duration::from_secs(1));
     }
 }
 
