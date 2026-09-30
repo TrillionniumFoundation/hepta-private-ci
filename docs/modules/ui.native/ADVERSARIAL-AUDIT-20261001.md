@@ -167,8 +167,10 @@ tombstones；百万完整归档 receipt 的容量仍未测量。
 规范 ui.native 分支的祖先。新只读 v6 适配复用严格原生冻结门槛，只解决本
 模块映射格式冲突；未重锚其他模块，也未放松其继承规则。新增 18 项真实
 临时 Git 适配回归及相关联合 182 项通过，不能将其表述成全局 docs verify
-成功。编译负向检查必须实际观察三个 E0603，测试夹具先按真实 host 归一化
-精确应用锁，并核对依赖身份、checksum 及边后执行 locked 编译。
+成功。在干净 review head `9005dcee92537ad77e5d115bf367d10a0cfef756`
+实际重跑全局验证：ui.native 适配通过；其余 39 模块仍因历史源锚点非祖先失败。
+同一干净 head 的三项编译负向检查实际观察到 E0603；测试夹具按真实 host
+归一化精确应用锁，核对依赖身份、checksum 及边后执行 offline/locked 编译。
 
 所有 productionQualified/deploymentQualified/releaseAuthorized 保持 false。
 本轮停止条件是复现问题均有对应修复与回归，复审未发现新的同范围可执行

@@ -338,6 +338,57 @@
       "testsPassed": 7,
       "registeredTestFiles": 74,
       "lintPassed": true
+    },
+    "compileNegativeVerification": {
+      "applicationCargoLockSha256": "7cf79dce9a54b100799bffe8343524fe60a67601ca3c10b48eb9446494bec886",
+      "cases": [
+        {
+          "dependencyResolutionPinned": true,
+          "diagnosticSha256": "7180ff969e736ef8e168a5914b34c1964bc7b73e6572c39061c63c06e3428f21",
+          "exitCode": 101,
+          "fixtureCargoLockSha256": "c30fdc5107f1197af862d0e90ccedb8c3c1124e3ffcc9af864fd7f8a0912bef7",
+          "lockedCompilerCheck": true,
+          "module": "journal_storage",
+          "privacyDiagnosticObserved": true,
+          "seedCargoLockSha256": "7cf79dce9a54b100799bffe8343524fe60a67601ca3c10b48eb9446494bec886"
+        },
+        {
+          "dependencyResolutionPinned": true,
+          "diagnosticSha256": "358e83aad31e462705381be34e5348ee5e9f2fcc81ab9a4aa844f027768c9b9c",
+          "exitCode": 101,
+          "fixtureCargoLockSha256": "af1a80574db791fc14da690746b894e1ab4fb4a613fbe1b182c7324d87f42ce2",
+          "lockedCompilerCheck": true,
+          "module": "retirement",
+          "privacyDiagnosticObserved": true,
+          "seedCargoLockSha256": "7cf79dce9a54b100799bffe8343524fe60a67601ca3c10b48eb9446494bec886"
+        },
+        {
+          "dependencyResolutionPinned": true,
+          "diagnosticSha256": "e80bd27cd7d4d6f5e6c67e70db34ee9074c1e8db8f10a79a2631a65ad7b2cd24",
+          "exitCode": 101,
+          "fixtureCargoLockSha256": "d0a5c7ed4cff017362f53b0fa4b4b3fd5e00eeb8bb88c9d582b532cf5b9ce6b9",
+          "lockedCompilerCheck": true,
+          "module": "task_supervisor",
+          "privacyDiagnosticObserved": true,
+          "seedCargoLockSha256": "7cf79dce9a54b100799bffe8343524fe60a67601ca3c10b48eb9446494bec886"
+        }
+      ],
+      "compilerNegativePassed": true,
+      "effectAuthorityGranted": false,
+      "releaseAuthorized": false,
+      "schema": "hepta.ui-native-compile-negative.v1",
+      "sourceSha": "9005dcee92537ad77e5d115bf367d10a0cfef756",
+      "scope": "actual offline locked external-crate checks; each required E0603 was observed",
+      "acceptedQualification": false
+    },
+    "globalModuleDocsVerification": {
+      "status": "failed-existing-other-module-provenance",
+      "executedHeadSha": "9005dcee92537ad77e5d115bf367d10a0cfef756",
+      "command": "python3 scripts/hepta-module-docs.py verify",
+      "otherModuleProvenanceFailures": 39,
+      "nativeAdapterPassed": true,
+      "globalVerificationPassed": false,
+      "logSha256": "6f4f050b1d68b23ec2c3d7769029ac307618bf7fad8e9b75afeab179d119f778"
     }
   },
   "historicalLocalAuditVerification": [
