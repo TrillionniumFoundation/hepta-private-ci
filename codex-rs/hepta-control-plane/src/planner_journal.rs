@@ -51,10 +51,57 @@ pub struct PlannerJournalEntryV1 {
     pub entry_digest: Digest32,
 }
 
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+struct PlannerJournalSemanticStateV1 {
+    decisions: BTreeSet<Digest32>,
+    revoked: BTreeSet<Digest32>,
+    selected: Option<Digest32>,
+}
+
+impl PlannerJournalSemanticStateV1 {
+    fn apply(
+        &mut self,
+        kind: PlannerJournalKindV1,
+        payload_digest: Digest32,
+    ) -> Result<(), PlannerJournalError> {
+        match kind {
+            PlannerJournalKindV1::Snapshot => {}
+            PlannerJournalKindV1::Decision => {
+                self.decisions.insert(payload_digest);
+            }
+            PlannerJournalKindV1::SelectedPlan => {
+                if !self.decisions.contains(&payload_digest) {
+                    return Err(PlannerJournalError::DecisionNotRecorded);
+                }
+                if self.revoked.contains(&payload_digest) {
+                    return Err(PlannerJournalError::RevokedPlan);
+                }
+                if self.selected.is_some() {
+                    return Err(PlannerJournalError::PlanAlreadySelected);
+                }
+                self.selected = Some(payload_digest);
+            }
+            PlannerJournalKindV1::Revocation => {
+                if !self.decisions.contains(&payload_digest) {
+                    return Err(PlannerJournalError::DecisionNotRecorded);
+                }
+                if !self.revoked.insert(payload_digest) {
+                    return Err(PlannerJournalError::RevokedPlan);
+                }
+                if self.selected == Some(payload_digest) {
+                    self.selected = None;
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlannerJournalV1 {
     entries: Vec<PlannerJournalEntryV1>,
     identities: BTreeMap<Digest32, (PlannerJournalKindV1, Digest32)>,
+    semantic_state: PlannerJournalSemanticStateV1,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -70,6 +117,7 @@ pub enum PlannerJournalError {
     CorruptEntryDigest,
     UnknownKind(u8),
     DecisionNotRecorded,
+    PlanAlreadySelected,
     RevokedPlan,
 }
 
@@ -93,6 +141,7 @@ impl PlannerJournalV1 {
         Self {
             entries: Vec::new(),
             identities: BTreeMap::new(),
+            semantic_state: PlannerJournalSemanticStateV1::default(),
         }
     }
 
@@ -105,7 +154,7 @@ impl PlannerJournalV1 {
         &mut self,
         snapshot: &GlobalStateSnapshotV1,
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        self.append(
+        self.append_record(
             PlannerJournalKindV1::Snapshot,
             snapshot.snapshot_digest(),
             snapshot.snapshot_digest(),
@@ -116,7 +165,7 @@ impl PlannerJournalV1 {
         &mut self,
         receipt: &FeasiblePlanReceiptV1,
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        self.append(
+        self.append_record(
             PlannerJournalKindV1::Decision,
             receipt.receipt_digest(),
             receipt.receipt_digest(),
@@ -128,16 +177,7 @@ impl PlannerJournalV1 {
         operation_identity_digest: Digest32,
         receipt: &FeasiblePlanReceiptV1,
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        if !self.entries.iter().any(|entry| {
-            entry.kind == PlannerJournalKindV1::Decision
-                && entry.payload_digest == receipt.receipt_digest()
-        }) {
-            return Err(PlannerJournalError::DecisionNotRecorded);
-        }
-        if self.revoked_digests().contains(&receipt.receipt_digest()) {
-            return Err(PlannerJournalError::RevokedPlan);
-        }
-        self.append(
+        self.append_record(
             PlannerJournalKindV1::SelectedPlan,
             operation_identity_digest,
             receipt.receipt_digest(),
@@ -149,7 +189,7 @@ impl PlannerJournalV1 {
         revocation_identity_digest: Digest32,
         target_digest: Digest32,
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
-        self.append(
+        self.append_record(
             PlannerJournalKindV1::Revocation,
             revocation_identity_digest,
             target_digest,
@@ -158,24 +198,10 @@ impl PlannerJournalV1 {
 
     #[must_use]
     pub fn selected_plan_digest(&self) -> Option<Digest32> {
-        let revoked = self.revoked_digests();
-        let mut selected = None;
-        for entry in &self.entries {
-            match entry.kind {
-                PlannerJournalKindV1::SelectedPlan => {
-                    selected =
-                        (!revoked.contains(&entry.payload_digest)).then_some(entry.payload_digest);
-                }
-                PlannerJournalKindV1::Revocation if selected == Some(entry.payload_digest) => {
-                    selected = None;
-                }
-                _ => {}
-            }
-        }
-        selected.filter(|digest| !revoked.contains(digest))
+        self.semantic_state.selected
     }
 
-    pub fn append(
+    fn append_record(
         &mut self,
         kind: PlannerJournalKindV1,
         identity_digest: Digest32,
@@ -198,6 +224,10 @@ impl PlannerJournalV1 {
         if self.entries.len() >= MAX_RECORDS {
             return Err(PlannerJournalError::RecordLimitExceeded);
         }
+
+        let mut next_semantic_state = self.semantic_state.clone();
+        next_semantic_state.apply(kind, payload_digest)?;
+
         let sequence = u64::try_from(self.entries.len())
             .ok()
             .and_then(|value| value.checked_add(1))
@@ -224,6 +254,7 @@ impl PlannerJournalV1 {
         self.identities
             .insert(identity_digest, (kind, payload_digest));
         self.entries.push(entry.clone());
+        self.semantic_state = next_semantic_state;
         Ok(entry)
     }
 
@@ -314,6 +345,10 @@ impl PlannerJournalV1 {
             if journal.identities.contains_key(&identity_digest) {
                 return Err(PlannerJournalError::DuplicateSerializedIdentity);
             }
+
+            let mut next_semantic_state = journal.semantic_state.clone();
+            next_semantic_state.apply(kind, payload_digest)?;
+
             journal
                 .identities
                 .insert(identity_digest, (kind, payload_digest));
@@ -325,16 +360,9 @@ impl PlannerJournalV1 {
                 predecessor_entry_digest,
                 entry_digest,
             });
+            journal.semantic_state = next_semantic_state;
         }
         Ok(journal)
-    }
-
-    fn revoked_digests(&self) -> BTreeSet<Digest32> {
-        self.entries
-            .iter()
-            .filter(|entry| entry.kind == PlannerJournalKindV1::Revocation)
-            .map(|entry| entry.payload_digest)
-            .collect()
     }
 }
 
