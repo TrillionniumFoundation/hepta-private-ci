@@ -1,0 +1,199 @@
+name: runtime.codex finalize immutable ordinary source
+
+on:
+  push:
+    branches:
+      - automation/runtime-codex-finalize-slim-20260930
+    paths:
+      - .github/workflows/runtime-codex-finalize-slim-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-finalize-immutable-source-20260930
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: 842a839736c3d35922ac9c6e5b0030753ef4af16
+  TARGET_BRANCH: codex/runtime-codex-production-convergence-20260930
+
+jobs:
+  finalize:
+    runs-on: ubuntu-slim
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact reviewed convergence input
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: true
+
+      - name: Materialize ordinary source and provenance map
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          out="$RUNNER_TEMP/runtime-codex-finalize"
+          mkdir -p "$out/logs"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain=v1)"
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          test "$(git rev-parse refs/remotes/origin/${TARGET_BRANCH})" = "$SOURCE_SHA"
+          printf 'input_sha=%s\ninput_tree=%s\n' \
+            "$SOURCE_SHA" "$(git rev-parse 'HEAD^{tree}')" > "$out/status.txt"
+
+          run_logged() {
+            local name="$1"
+            shift
+            printf 'START %s\n' "$name" | tee -a "$out/status.txt"
+            set +e
+            "$@" > "$out/logs/$name.log" 2>&1
+            local rc=$?
+            set -e
+            printf '%s=%s\n' "$name" "$rc" | tee -a "$out/status.txt"
+            if test "$rc" -ne 0; then
+              tail -n 1000 "$out/logs/$name.log" >&2
+              return "$rc"
+            fi
+          }
+
+          migrations=(
+            scripts/runtime-codex-maintainer.py
+            scripts/runtime-codex-maintainer-followup.py
+            scripts/runtime-codex-durability-migration.py
+            scripts/runtime-codex-durability-fixup.py
+            scripts/runtime-codex-transactional-owner-fixup.py
+            scripts/runtime-codex-quarantine-migration.py
+            scripts/runtime-codex-quarantine-authority-fixup.py
+            scripts/runtime-codex-deadline-migration.py
+            scripts/runtime-codex-cleanup-migration.py
+            scripts/runtime-codex-storage-fixup.py
+            scripts/runtime-codex-terminal-outbox-anchor-fix.py
+            scripts/runtime-codex-terminal-outbox-migration.py
+            scripts/runtime-codex-product-executor-migration.py
+            scripts/runtime-codex-product-executor-hardening.py
+            scripts/runtime-codex-effect-guard-anchor-fix.py
+            scripts/runtime-codex-effect-guard-fixup.py
+            scripts/runtime-codex-deadline-ceiling-fixup.py
+            scripts/runtime-codex-structured-sequence-migration.py
+            scripts/runtime-codex-process-crash-migration.py
+            scripts/runtime-codex-process-crash-expansion.py
+            scripts/runtime-codex-qualification-fixup.py
+            scripts/runtime-codex-qualification-ui-fix.py
+            scripts/runtime-codex-qualification-merge-fix.py
+            scripts/runtime-codex-v8-qualification-fix.py
+            scripts/runtime-codex-final-closure.py
+            scripts/runtime-codex-whitespace-fix.py
+          )
+          support=(
+            scripts/runtime-codex-owner-lineage-fixup.py
+            scripts/runtime-codex-quarantine-authority-v2.py
+            scripts/runtime-codex-process-crash-expansion-v2.py
+          )
+          finalizers=(
+            scripts/runtime-codex-finalize-map.py
+            scripts/runtime-codex-finalize-map-followup.py
+          )
+
+          if grep -R -n -E 'git[[:space:]]+cat-file|98ab9f31cf9d0ec716210b24154ddc4c3aeacdd1' \
+              "${migrations[@]}" "${support[@]}" "${finalizers[@]}"; then
+            echo 'historical Git-blob execution remains in the construction input' >&2
+            exit 1
+          fi
+
+          run_logged py_compile python3 -m py_compile \
+            "${migrations[@]}" "${support[@]}" "${finalizers[@]}"
+          for script in "${migrations[@]}"; do
+            run_logged "$(basename "$script" .py)" python3 "$script"
+          done
+          run_logged migrated_diff_check git diff --check
+          run_logged qualification_helper_compile \
+            python3 -m py_compile scripts/runtime-codex-qualification.py
+          run_logged fault_matrix_static \
+            python3 scripts/check-runtime-codex-fault-matrix.py
+
+          rm -rf qualification/runtime-codex-materialize-debug
+          construction_workflows=(
+            .github/runtime-codex-source-materialize.trigger
+            .github/workflows/runtime-codex-p0-materialize.yml
+            .github/workflows/runtime-codex-materialize-once.yml
+            .github/workflows/runtime-codex-maintainer.yml
+            .github/workflows/runtime-codex-fast-feedback.yml
+            .github/workflows/runtime-codex-candidate-qualification.yml
+            .github/workflows/runtime-codex-terminal-outbox-diagnostic.yml
+            .github/workflows/runtime-codex-source-materialize.yml
+            .github/workflows/runtime-codex-source-materialize-arm.yml
+          )
+          rm -f "${construction_workflows[@]}"
+          rm -f "${migrations[@]}" "${support[@]}"
+
+          cat > docs/modules/runtime.codex/MIGRATION_HISTORY.md <<'EOF'
+          # runtime.codex migration history
+
+          The durable Agentd owner, stale-writer fencing, owner-derived linear
+          send permit, terminal outbox, transactional quarantine, cleanup store
+          and real process-crash qualification source were materialized into
+          ordinary repository files on 2026-09-30.
+
+          The immutable candidate does not run source-writing workflows, fetch
+          executable source from historical Git objects, or patch production
+          code during qualification. The immediately following provenance-map
+          commit removes the two temporary map finalizers. Qualification after
+          that point is read-only against an exact commit and tree.
+          EOF
+
+          run_logged source_cleanup_diff_check git diff --check
+          git config user.name 'runtime.codex source finalizer'
+          git config user.email 'runtime-codex-source@invalid'
+          git add -A
+          git diff --cached --check
+          git commit -m 'fix(runtime.codex): materialize immutable durable execution source'
+          source_commit="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          printf 'source_commit=%s\nsource_tree=%s\n' "$source_commit" "$source_tree" \
+            >> "$out/status.txt"
+
+          run_logged finalize_map env \
+            RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
+            RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
+            python3 scripts/runtime-codex-finalize-map.py
+          run_logged finalize_map_followup env \
+            RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
+            RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
+            python3 scripts/runtime-codex-finalize-map-followup.py
+          run_logged lane_b_generate python3 scripts/hepta-lane-b-truth.py generate
+          rm -f "${finalizers[@]}"
+          run_logged final_diff_check git diff --check
+
+          git add -A
+          git diff --cached --check
+          git commit -m 'docs(runtime.codex): bind immutable source and remove finalizers'
+          final_commit="$(git rev-parse HEAD)"
+          final_tree="$(git rev-parse 'HEAD^{tree}')"
+          run_logged lane_b_verify python3 scripts/hepta-lane-b-truth.py verify
+          run_logged final_helper_compile \
+            python3 -m py_compile scripts/runtime-codex-qualification.py
+          run_logged final_fault_matrix_static \
+            python3 scripts/check-runtime-codex-fault-matrix.py
+          test -z "$(git status --porcelain=v1)"
+
+          printf 'final_commit=%s\nfinal_tree=%s\nresult=ready-to-push\n' \
+            "$final_commit" "$final_tree" >> "$out/status.txt"
+          git format-patch --stdout --binary "$SOURCE_SHA..$final_commit" \
+            > "$out/final-series.patch"
+          git diff --stat "$SOURCE_SHA..$final_commit" > "$out/final-diff-stat.txt"
+
+          git push \
+            --force-with-lease="refs/heads/${TARGET_BRANCH}:${SOURCE_SHA}" \
+            origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          printf 'result=pushed\n' >> "$out/status.txt"
+
+      - name: Upload finalization evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-finalized-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/runtime-codex-finalize/
+          if-no-files-found: error
+          retention-days: 30
