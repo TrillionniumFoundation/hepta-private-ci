@@ -353,6 +353,8 @@ pub use neuron_runtime::AgentdNeuronOwner;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AGENTD_NEURON_GENERATION_STATE_SCHEMA_V2;
 #[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronArchivePolicyV1;
+#[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronCapacityTrendV2;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronControlErrorV2;
@@ -385,7 +387,11 @@ pub use neuron_runtime_v2::AgentdNeuronRuntimeV2Host;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronTickProviderV2;
 #[cfg(feature = "server")]
+pub use neuron_runtime_v2::MAX_RETAINED_NEURON_GENERATION_OWNERS_V2;
+#[cfg(feature = "server")]
 pub use neuron_runtime_v2::read_agentd_neuron_generation_state_v2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::read_agentd_neuron_live_generation_state_v2;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::write_agentd_neuron_generation_state_v2;
 #[cfg(feature = "server")]

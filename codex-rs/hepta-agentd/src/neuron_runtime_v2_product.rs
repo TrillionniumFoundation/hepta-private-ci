@@ -16,6 +16,7 @@ pub struct AgentdNeuronRuntimeV2Config {
     active: AgentdNeuronHandleV2,
     retained: Vec<AgentdNeuronHandleV2>,
     control_state_path: PathBuf,
+    archive_policy: AgentdNeuronArchivePolicyV1,
     tick_provider: Arc<dyn AgentdNeuronTickProviderV2>,
 }
 
@@ -34,6 +35,7 @@ impl AgentdNeuronRuntimeV2Config {
             active,
             retained: Vec::new(),
             control_state_path,
+            archive_policy: AgentdNeuronArchivePolicyV1::default(),
             tick_provider,
         })
     }
@@ -41,6 +43,11 @@ impl AgentdNeuronRuntimeV2Config {
     #[must_use]
     pub fn with_retained_generation(mut self, retained: AgentdNeuronHandleV2) -> Self {
         self.retained.push(retained);
+        self
+    }
+
+    pub fn with_archive_policy(mut self, policy: AgentdNeuronArchivePolicyV1) -> Self {
+        self.archive_policy = policy;
         self
     }
 
@@ -59,10 +66,11 @@ impl AgentdNeuronRuntimeV2Config {
         iteration_recovery: bool,
     ) -> Result<Arc<AgentdNeuronRuntimeV2Host>, crate::AgentdError> {
         let controller =
-            AgentdNeuronGenerationControllerV2::from_recovered_generations_with_state_path(
+            AgentdNeuronGenerationControllerV2::from_recovered_generations_with_archive_policy(
                 self.active,
                 self.retained,
                 self.control_state_path,
+                self.archive_policy,
             )
             .map_err(|error| neuron_product_error("recover controller", error))?;
         let lifecycle = controller

@@ -68,3 +68,7 @@ mod decision_cell;
 #[cfg(test)]
 #[path = "neuron_runtime_v2_error_action_tests.rs"]
 mod error_action_tests;
+
+#[path = "neuron_runtime_v2_archive_store.rs"]
+mod archive_store;
+include!("neuron_runtime_v2_archive.rs");

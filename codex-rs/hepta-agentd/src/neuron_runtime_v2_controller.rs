@@ -22,7 +22,12 @@ impl AgentdNeuronGenerationControllerV2 {
         active: AgentdNeuronHandleV2,
         retained: impl IntoIterator<Item = AgentdNeuronHandleV2>,
     ) -> Result<Self, AgentdNeuronControlErrorV2> {
-        Self::from_recovered_generations_inner(active, retained, None)
+        Self::from_recovered_generations_inner(
+            active,
+            retained,
+            None,
+            AgentdNeuronArchivePolicyV1::default(),
+        )
     }
 
     /// Rebuild the controller and reconcile it with the durable Agentd
@@ -38,6 +43,21 @@ impl AgentdNeuronGenerationControllerV2 {
             active,
             retained,
             Some(state_path.as_ref().to_path_buf()),
+            AgentdNeuronArchivePolicyV1::default(),
+        )
+    }
+
+    pub fn from_recovered_generations_with_archive_policy(
+        active: AgentdNeuronHandleV2,
+        retained: impl IntoIterator<Item = AgentdNeuronHandleV2>,
+        state_path: impl AsRef<Path>,
+        policy: AgentdNeuronArchivePolicyV1,
+    ) -> Result<Self, AgentdNeuronControlErrorV2> {
+        Self::from_recovered_generations_inner(
+            active,
+            retained,
+            Some(state_path.as_ref().to_path_buf()),
+            policy,
         )
     }
 
@@ -45,22 +65,64 @@ impl AgentdNeuronGenerationControllerV2 {
         active: AgentdNeuronHandleV2,
         retained: impl IntoIterator<Item = AgentdNeuronHandleV2>,
         state_path: Option<PathBuf>,
+        policy: AgentdNeuronArchivePolicyV1,
     ) -> Result<Self, AgentdNeuronControlErrorV2> {
         let active_generation = active.generation()?;
+        let archives = state_path
+            .as_deref()
+            .map(|path| {
+                archive_store::GenerationArchiveStore::open(path, policy.maximum_total_bytes)
+            })
+            .transpose()?;
         let mut retained_by_generation = BTreeMap::new();
         for handle in retained {
             let generation = handle.generation()?;
+            if generation >= active_generation {
+                return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+            }
+            if archives
+                .as_ref()
+                .map(|store| store.contains(generation))
+                .transpose()?
+                .unwrap_or(false)
+            {
+                handle.close_lifecycle_gate()?;
+                let _drain = handle.try_drain_lifecycle_gate()?;
+                handle.owner.retire_control()?;
+                continue;
+            }
             if generation >= active_generation
                 || retained_by_generation.insert(generation, handle).is_some()
             {
                 return Err(AgentdNeuronControlErrorV2::GenerationConflict);
             }
         }
+        if retained_by_generation.len() > MAX_RETAINED_NEURON_GENERATION_OWNERS_V2 {
+            return Err(AgentdNeuronControlErrorV2::PendingRecovery);
+        }
         let retained_generations = retained_by_generation.keys().copied().collect::<Vec<_>>();
         let lifecycle = if let Some(path) = state_path.as_deref() {
             if generation_state_exists(path).map_err(poison_control_state)? {
-                let persisted =
+                let mut persisted =
                     read_agentd_neuron_generation_state_v2(path).map_err(poison_control_state)?;
+                let mut live = Vec::new();
+                for generation in &persisted.retained_generations {
+                    if !archives
+                        .as_ref()
+                        .map(|store| store.contains(*generation))
+                        .transpose()?
+                        .unwrap_or(false)
+                    {
+                        live.push(*generation);
+                    }
+                }
+                persisted = AgentdNeuronGenerationStateV2::new(
+                    persisted.lifecycle,
+                    persisted.active_generation,
+                    live,
+                    persisted.reload_target_generation,
+                )
+                .map_err(poison_control_state)?;
                 resolve_recovered_lifecycle(&persisted, active_generation, &retained_generations)?
             } else {
                 AgentdNeuronLifecycleStateV2::Starting
@@ -82,6 +144,7 @@ impl AgentdNeuronGenerationControllerV2 {
             retained: retained_by_generation,
             reload_target_generation: None,
             state_path,
+            archives,
         };
         state
             .persist_transition(lifecycle, None)
@@ -303,6 +366,21 @@ impl AgentdNeuronGenerationControllerV2 {
     }
 
     pub fn reload(&self, next: AgentdNeuronHandleV2) -> Result<(), AgentdNeuronControlErrorV2> {
+        {
+            let state = self.lock_state()?;
+            if state.lifecycle != AgentdNeuronLifecycleStateV2::Sealed {
+                return Err(AgentdNeuronControlErrorV2::InvalidTransition);
+            }
+            if next.generation()? <= state.active.generation()? {
+                return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+            }
+        }
+        // Reserve one hot slot before admitting the successor. Failed archive
+        // maintenance keeps the sealed predecessor, never partially activates.
+        self.archive_retained_generations_to(
+            MAX_RETAINED_NEURON_GENERATION_OWNERS_V2 - 1,
+            std::time::Duration::from_secs(5),
+        )?;
         let next_generation = next.generation()?;
         let (previous, previous_generation) = {
             let mut state = self.lock_state()?;
@@ -424,11 +502,15 @@ impl AgentdNeuronGenerationControllerV2 {
             if state.active.generation()? == generation {
                 state.active.clone()
             } else {
-                state
-                    .retained
-                    .get(&generation)
-                    .cloned()
-                    .ok_or(AgentdNeuronControlErrorV2::UnknownGeneration)?
+                if let Some(handle) = state.retained.get(&generation) {
+                    handle.clone()
+                } else {
+                    return state
+                        .archives
+                        .as_ref()
+                        .ok_or(AgentdNeuronControlErrorV2::UnknownGeneration)?
+                        .query(generation, tick_id, input_digest);
+                }
             }
         };
         handle.query_operation_control(tick_id, input_digest)

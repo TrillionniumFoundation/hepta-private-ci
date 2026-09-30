@@ -277,6 +277,7 @@ struct AgentdNeuronGenerationControllerStateV2 {
     retained: BTreeMap<u64, AgentdNeuronHandleV2>,
     reload_target_generation: Option<u64>,
     state_path: Option<PathBuf>,
+    archives: Option<archive_store::GenerationArchiveStore>,
 }
 
 /// Explicit daemon lifecycle and generation handoff controller. Historical
