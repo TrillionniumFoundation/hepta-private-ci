@@ -66,12 +66,14 @@ commands = [
     "cargo build --locked -p codex-hepta-bellman-operator --target <rustc-host>",
     "cargo test --locked -p codex-hepta-bellman-operator --all-features --lib",
     "cargo test --locked -p codex-hepta-agentd --lib learning_operator_coordinator::tests",
+    "cargo test --locked -p codex-hepta-bellman-operator --all-features distinct_process_load_changes_prediction_and_rolls_back_without_retraining",
+    "cargo test --locked -p codex-hepta-agentd --lib evaluated_load_uses_real_owner_training_selection_revocation_and_rollback",
     "cargo llvm-cov --locked -p codex-hepta-bellman-operator --all-features --lib --fail-under-lines 70",
     "python3 scripts/hepta-learning-operator-mutation.py",
     "cargo test --release -p codex-hepta-bellman-operator authoritative_performance_matrix_v1 -- --ignored",
     "cargo clippy --locked -p codex-hepta-bellman-operator --all-features --all-targets -- -D warnings",
     "cargo clippy --locked -p codex-hepta-agentd --lib -- -D warnings",
-    "deterministic ordered-parent synthetic merge + contract/check/test",
+    "deterministic ordered-parent synthetic merge + contract/check/test/product-E2E",
 ]
 Path('.hepta-evidence/learning-operator/test-set.json').write_text(
     json.dumps({'schema': 'hepta.learning-operator.test-set.v1', 'commands': commands}, indent=2, sort_keys=True) + '\n',
@@ -109,6 +111,18 @@ run_log "${EVIDENCE}/module-tests.log" \
 run_log "${EVIDENCE}/lifecycle-state-space.log" \
   cargo test --manifest-path codex-rs/Cargo.toml --locked \
     -p codex-hepta-agentd --lib learning_operator_coordinator::tests \
+    -- --test-threads=1
+
+run_log "${EVIDENCE}/fresh-process-load.log" \
+  cargo test --manifest-path codex-rs/Cargo.toml --locked \
+    -p codex-hepta-bellman-operator --all-features \
+    distinct_process_load_changes_prediction_and_rolls_back_without_retraining \
+    -- --test-threads=1
+
+run_log "${EVIDENCE}/product-shadow-e2e.log" \
+  cargo test --manifest-path codex-rs/Cargo.toml --locked \
+    -p codex-hepta-agentd --lib \
+    evaluated_load_uses_real_owner_training_selection_revocation_and_rollback \
     -- --test-threads=1
 
 run_log "${EVIDENCE}/payload-replay.log" \
@@ -181,6 +195,14 @@ trap cleanup EXIT
   cargo test --manifest-path codex-rs/Cargo.toml --locked \
     -p codex-hepta-agentd --lib learning_operator_coordinator::tests \
     -- --test-threads=1
+  cargo test --manifest-path codex-rs/Cargo.toml --locked \
+    -p codex-hepta-bellman-operator --all-features \
+    distinct_process_load_changes_prediction_and_rolls_back_without_retraining \
+    -- --test-threads=1
+  cargo test --manifest-path codex-rs/Cargo.toml --locked \
+    -p codex-hepta-agentd --lib \
+    evaluated_load_uses_real_owner_training_selection_revocation_and_rollback \
+    -- --test-threads=1
   printf 'SYNTHETIC_SHA=%s\nSYNTHETIC_TREE=%s\n' \
     "${SYNTHETIC_SHA}" "${SYNTHETIC_TREE}" \
     > "${ROOT}/${EVIDENCE}/synthetic.env"
@@ -210,12 +232,14 @@ emit_gate workspace-all-targets "cargo check owner/operator/Agentd all targets" 
 emit_gate target-build "cargo build operator for rustc host target" "${EVIDENCE}/target-build.log"
 emit_gate module-tests "operator all-feature library tests" "${EVIDENCE}/module-tests.log"
 emit_gate lifecycle-state-space "Agentd shadow-only lifecycle state-space tests" "${EVIDENCE}/lifecycle-state-space.log"
+emit_gate fresh-process-load "independent-process selected load and rollback without retraining" "${EVIDENCE}/fresh-process-load.log"
+emit_gate product-shadow-e2e "real ledger evaluation selection artifact ranker revocation rollback chain" "${EVIDENCE}/product-shadow-e2e.log"
 emit_gate payload-replay "opaque persisted payload mutation/replay rejection" "${EVIDENCE}/payload-replay.log"
 emit_gate coverage "operator source-bound line coverage threshold" "${EVIDENCE}/coverage.log"
 emit_gate mutation-profile "executed fail-closed source mutation suite" "${EVIDENCE}/mutation-profile.log"
-emit_gate performance-profile "1K-16K sensor and 100K-1M tabular qualification matrix" "${EVIDENCE}/performance-profile.log"
+emit_gate performance-profile "1K-16K sensor and 100K-1M tabular time and memory qualification matrix" "${EVIDENCE}/performance-profile.log"
 emit_gate static-quality "strict clippy, formatting, and source hygiene" "${EVIDENCE}/static-quality.log"
-emit_gate synthetic-merge "deterministic ordered-parent synthetic merge compile and tests" "${EVIDENCE}/synthetic-merge.log"
+emit_gate synthetic-merge "deterministic ordered-parent synthetic merge compile tests and product E2E" "${EVIDENCE}/synthetic-merge.log"
 
 WORKFLOW_PATH="${QUALIFICATION_WORKFLOW_PATH:-.github/workflows/learning-operator-authoritative.yml}"
 WORKFLOW_BLOB="$(git rev-parse "${SOURCE_SHA}:${WORKFLOW_PATH}")"
