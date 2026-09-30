@@ -24,6 +24,7 @@ mod frontier_backend_file {
     pub use segmented::SegmentedFileEvidenceFrontierBackend;
 }
 mod frontier_merge;
+mod frontier_repair;
 mod frontier_v2;
 mod governance_store;
 mod governance_validation;
@@ -143,6 +144,14 @@ pub use frontier_merge::FrontierRepairReasonV1;
 pub use frontier_merge::classify_frontier_merge;
 pub use frontier_merge::frontier_repair_authorization_signing_bytes;
 pub use frontier_merge::verify_frontier_repair_authorization;
+pub use frontier_repair::EVIDENCE_FRONTIER_REPAIR_EVENT_SCHEMA_VERSION;
+pub use frontier_repair::EVIDENCE_FRONTIER_REPAIR_MAX_CANONICAL_BYTES;
+pub use frontier_repair::EVIDENCE_FRONTIER_REPAIR_MAX_ROWS;
+pub use frontier_repair::EvidenceFrontierRepairActionV1;
+pub use frontier_repair::EvidenceFrontierRepairBackend;
+pub use frontier_repair::EvidenceFrontierRepairBackendObservationV1;
+pub use frontier_repair::EvidenceFrontierRepairOperationV1;
+pub use frontier_repair::EvidenceFrontierRepairStateV1;
 pub use frontier_v2::EVIDENCE_RECOVERY_FRONTIER_V2_MAX_SIGNATURES;
 pub use frontier_v2::EVIDENCE_RECOVERY_FRONTIER_V2_SCHEMA_VERSION;
 pub use frontier_v2::EvidenceRecoveryFrontierSignatureV2;
