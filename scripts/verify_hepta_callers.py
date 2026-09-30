@@ -25,6 +25,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
@@ -33,6 +34,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "CALLERS.toml"
+RAW_STRING_START = re.compile(r'r(#{0,255})"')
 
 
 class VerificationFailure(RuntimeError):
@@ -187,12 +189,12 @@ def _strip_rust_non_code(source: str) -> str:
                 state = "char"
                 continue
             if char == "r":
-                raw_match = re.match(r'r(#{0,255})"', source[index:])
+                raw_match = RAW_STRING_START.match(source, index)
                 if raw_match is not None:
                     raw_hashes = len(raw_match.group(1))
-                    for offset in range(raw_match.end()):
-                        output[index + offset] = " "
-                    index += raw_match.end()
+                    for offset in range(index, raw_match.end()):
+                        output[offset] = " "
+                    index = raw_match.end()
                     state = "raw_string"
                     continue
             index += 1
@@ -453,8 +455,14 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
                 raise VerificationFailure(
                     f"{relative}: required marker missing: {marker!r}"
                 )
+        code = _strip_cfg_test_items(_strip_rust_non_code(text))
         for marker in _string_tuple(row, "forbidden"):
-            if marker in text:
+            pattern = re.escape(marker)
+            if marker and (marker[0].isalnum() or marker[0] == "_"):
+                pattern = r"(?<!\w)" + pattern
+            if marker and (marker[-1].isalnum() or marker[-1] == "_"):
+                pattern += r"(?!\w)"
+            if re.search(pattern, code):
                 raise VerificationFailure(
                     f"{relative}: forbidden marker present: {marker!r}"
                 )
@@ -507,6 +515,15 @@ def main() -> int:
         )
         if "Hidden::new" in code or "call" not in code or "real" not in code:
             raise VerificationFailure("lexical scanner self-test failed")
+        raw_code = _strip_rust_non_code(
+            'before(); let raw = r##"Hidden::new() /* braces { } */"##; after();'
+        )
+        if (
+            "Hidden::new" in raw_code
+            or "before" not in raw_code
+            or "after" not in raw_code
+        ):
+            raise VerificationFailure("raw-string offset self-test failed")
         if re.search(r"authority\s*\.\s*claim\s*\(", "authority\n  .claim(x)") is None:
             raise VerificationFailure("method call-pattern self-test failed")
         cfg_code = _strip_cfg_test_items(
@@ -517,6 +534,35 @@ def main() -> int:
             or "authority.claim(y)" not in cfg_code
         ):
             raise VerificationFailure("cfg-test stripping self-test failed")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            protected = root / "protected.rs"
+            manifest = {
+                "protected_file": [
+                    {
+                        "path": "protected.rs",
+                        "required": ["required_error_code"],
+                        "forbidden": ["codex_hepta_memory::CognitiveStore"],
+                    }
+                ]
+            }
+            protected.write_text(
+                "let error = codex_hepta_memory::CognitiveStoreError;\n"
+                'let code = "required_error_code";\n'
+                "// codex_hepta_memory::CognitiveStore\n"
+                'let example = "codex_hepta_memory::CognitiveStore";\n'
+                "#[cfg(test)] mod tests { use codex_hepta_memory::CognitiveStore; }\n",
+                encoding="utf-8",
+            )
+            _verify_protected_files(root, manifest)
+            with protected.open("a", encoding="utf-8") as handle:
+                handle.write("use codex_hepta_memory::CognitiveStore;\n")
+            try:
+                _verify_protected_files(root, manifest)
+            except VerificationFailure:
+                pass
+            else:
+                raise VerificationFailure("protected code boundary self-test failed")
         print(
             json.dumps({"status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"}, sort_keys=True)
         )
