@@ -28,11 +28,26 @@ on:
       - codex-rs/app-server-client/**
       - codex-rs/app-server-transport/**
       - codex-rs/uds/**
+      - docs/modules/memory.retrieval/**
+      - qualification/memory-retrieval/**
+      - scripts/hepta_memory_retrieval_candidate.py
+      - scripts/hepta_memory_retrieval_policy.py
+      - scripts/hepta_memory_retrieval_qualification.py
+      - scripts/hepta_memory_retrieval_status.py
+      - scripts/tests/test_hepta_memory_retrieval_qualification.py
+      - scripts/tests/test_hepta_memory_retrieval_status.py
+      - scripts/tests/test_hepta_memory_retrieval_workflow_policy.py
       - .github/scripts/check_ci_results.py
       - scripts/test_hepta_agentd_ci.py
       - scripts/hepta_ci_candidate.py
       - scripts/hepta_workspace.py
       - scripts/test_hepta_workspace.py
+      - .github/workflows/blocking-ci.yml
+      - .github/workflows/hepta-memory-retrieval-calibration.yml
+      - .github/workflows/hepta-memory-retrieval-convergence.yml
+      - .github/workflows/hepta-memory-retrieval-maintenance.yml
+      - .github/workflows/hepta-memory-retrieval-qualification-host.yml
+      - .github/workflows/hepta-repository-integrity.yml
       - .github/workflows/hepta-gap-agentd-process.yml
 
 permissions:
