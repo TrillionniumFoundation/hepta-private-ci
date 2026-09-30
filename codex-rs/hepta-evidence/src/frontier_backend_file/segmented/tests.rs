@@ -242,4 +242,54 @@ mod tests {
         assert_eq!(history.len(), 6);
         assert_eq!(history.last().unwrap().frontier_generation, 6);
     }
+
+    #[test]
+    fn rehashed_archive_to_active_repair_transition_fails_reopen() {
+        let fixture = Fixture::new();
+        let mut backend = fixture.open();
+        for generation in 1_u64..=5 {
+            backend
+                .compare_and_swap(
+                    "store:segmented-test",
+                    generation.checked_sub(1).filter(|value| *value > 0),
+                    &frontier(generation, fixture.identity_sha256.clone()),
+                )
+                .unwrap();
+        }
+        let paths = backend.paths("store:segmented-test").unwrap();
+        let active = std::fs::read(&paths.active).unwrap();
+        let mut record: EvidenceFrontierAuditRecordV1 =
+            serde_json::from_slice(active.strip_suffix(b"\n").unwrap()).unwrap();
+        record.frontier.source_commit = "c".repeat(40);
+        record.frontier_sha256 =
+            evidence_recovery_frontier_v2_sha256(&record.frontier).unwrap();
+        record.record_sha256 = audit_record_sha256(&record).unwrap();
+        let active = encode_record(&record).unwrap();
+        std::fs::write(&paths.active, &active).unwrap();
+        std::fs::set_permissions(&paths.active, std::fs::Permissions::from_mode(0o600))
+            .unwrap();
+
+        let mut index = backend
+            .read_index(&paths, "store:segmented-test")
+            .unwrap()
+            .unwrap();
+        index.active_journal_bytes = u64::try_from(active.len()).unwrap();
+        index.active_journal_sha256 = Sha256Digest::for_bytes(&active);
+        index.frontier_generation = record.frontier.frontier_generation;
+        index.frontier = record.frontier.clone();
+        index.frontier_sha256 = record.frontier_sha256.clone();
+        index.record_sha256 = record.record_sha256.clone();
+        index.index_sha256 = latest_index_sha256(&index).unwrap();
+        std::fs::write(&paths.index, serde_json::to_vec(&index).unwrap()).unwrap();
+        std::fs::set_permissions(&paths.index, std::fs::Permissions::from_mode(0o600))
+            .unwrap();
+
+        let mut reopened = fixture.open();
+        assert!(matches!(
+            reopened.get_latest("store:segmented-test"),
+            Err(EvidenceFrontierBackendError::Corrupt(message))
+                if message.contains("non-automatic transition")
+                    && message.contains("RepairRequired")
+        ));
+    }
 }
