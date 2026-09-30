@@ -27,6 +27,7 @@ non-world-writable harnesses:
 - `/opt/hepta/authbus-qualification/fsync-failure`
 - `/opt/hepta/authbus-qualification/rename-failure`
 - `/opt/hepta/authbus-qualification/checkpoint-corruption`
+- `/opt/hepta/authbus-qualification/performance`
 
 Each harness is invoked as:
 
@@ -67,3 +68,13 @@ The workflow uploads raw receipts, the target fingerprint and one aggregate
 manifest. Uploading an artifact does not grant acceptance. A separate security
 identity must review and sign the exact manifest; the activation decision must
 name that signature and the unchanged candidate SHA.
+
+## End-to-end performance
+
+The performance harness executes the matrix in
+`PERFORMANCE_QUALIFICATION.json`, retains raw samples and emits p50, p95, p99
+and maximum latency for signature verification, authority validation, mutation
+gate wait, SQLite transaction, frontier update, checkpoint publication,
+reconciliation, product acknowledgement and the full caller-visible operation.
+`authbus-performance-evidence.py` binds that receipt to the same target identity
+as the fault matrix. Production thresholds remain an activation-owner decision.
