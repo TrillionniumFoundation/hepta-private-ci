@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       candidate_sha:
-        description: Exact immutable candidate SHA to qualify
+        description: Exact immutable candidate SHA already merged into main
         required: true
         type: string
       target_profile:
@@ -22,29 +22,48 @@ concurrency:
 jobs:
   target-host:
     name: AuthBus protected target-host fault matrix
+    if: github.ref == 'refs/heads/main'
     environment: authbus-target-host-qualification
     runs-on: [self-hosted, linux, authbus-target]
     timeout-minutes: 360
     env:
+      CONTROL_SHA: ${{ github.sha }}
       CANDIDATE_SHA: ${{ inputs.candidate_sha }}
       TARGET_PROFILE: ${{ inputs.target_profile }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout trusted qualification controller
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ env.CANDIDATE_SHA }}
+          ref: ${{ env.CONTROL_SHA }}
 
-      - name: Verify exact immutable candidate
+      - name: Verify trusted controller and immutable candidate
         shell: bash
         run: |
           set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$CONTROL_SHA"
+          [[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          [[ "$TARGET_PROFILE" =~ ^[A-Za-z0-9._-]{1,128}$ ]]
+          git cat-file -e "$CANDIDATE_SHA^{commit}"
+          git merge-base --is-ancestor "$CANDIDATE_SHA" "$CONTROL_SHA"
+          control_paths=(
+            .github/workflows/authbus-target-host-qualification.yml
+            docs/modules/auth.authbus/CRASH_CONSISTENCY_MATRIX.json
+            docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.json
+            docs/modules/auth.authbus/PRODUCTION_ACCEPTANCE.json
+            scripts/authbus-target-host-evidence.py
+            scripts/authbus-performance-evidence.py
+          )
+          for path in "${control_paths[@]}"; do
+            test "$(git rev-parse "$CANDIDATE_SHA:$path")" = "$(git rev-parse "$CONTROL_SHA:$path")"
+          done
           git diff --exit-code
           git diff --cached --exit-code
 
-      - name: Verify root-owned target harnesses
+      - name: Verify root-owned isolated target harnesses
         shell: bash
         run: |
           set -euo pipefail
@@ -98,7 +117,7 @@ jobs:
           os_release = pathlib.Path("/etc/os-release")
           boot_id = pathlib.Path("/proc/sys/kernel/random/boot_id")
           payload = {
-              "schema": "hepta.authbus.target-fingerprint.v1",
+              "schema": "hepta.authbus.target-fingerprint.v2",
               "runnerName": os.environ.get("RUNNER_NAME"),
               "targetProfile": os.environ["TARGET_PROFILE"],
               "kernelRelease": platform.release(),
@@ -106,6 +125,7 @@ jobs:
               "bootId": boot_id.read_text().strip(),
               "osReleaseSha256": hashlib.sha256(os_release.read_bytes()).hexdigest(),
               "rootFilesystem": command("findmnt", "-n", "-o", "FSTYPE,SOURCE,OPTIONS", "/"),
+              "controlSha": os.environ["CONTROL_SHA"],
               "candidateSha": os.environ["CANDIDATE_SHA"],
           }
           pathlib.Path(sys.argv[1]).write_text(
@@ -114,7 +134,7 @@ jobs:
           )
           PY
 
-      - name: Execute real fault matrix
+      - name: Execute isolated real fault matrix
         shell: bash
         run: |
           set -euo pipefail
@@ -135,12 +155,13 @@ jobs:
           for scenario in "${scenarios[@]}"; do
             sudo --non-interactive "/opt/hepta/authbus-qualification/$scenario" \
               --candidate-sha "$CANDIDATE_SHA" \
+              --control-sha "$CONTROL_SHA" \
               --target-profile "$TARGET_PROFILE" \
               --output-dir "$evidence/receipts"
             test -s "$evidence/receipts/$scenario.json"
           done
 
-      - name: Validate and bind target-host receipts
+      - name: Validate and bind target-host receipts with trusted controller
         shell: bash
         run: |
           set -euo pipefail
@@ -151,13 +172,14 @@ jobs:
             --receipt-dir "$evidence/receipts" \
             --output "$evidence/qualification-manifest.json"
 
-      - name: Execute full end-to-end performance matrix
+      - name: Execute isolated full end-to-end performance matrix
         shell: bash
         run: |
           set -euo pipefail
           evidence="$RUNNER_TEMP/authbus-target-evidence"
           sudo --non-interactive "/opt/hepta/authbus-qualification/performance" \
             --candidate-sha "$CANDIDATE_SHA" \
+            --control-sha "$CONTROL_SHA" \
             --target-profile "$TARGET_PROFILE" \
             --contract "$GITHUB_WORKSPACE/docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.json" \
             --output "$evidence/performance-receipt.json"
@@ -170,7 +192,7 @@ jobs:
             --receipt "$evidence/performance-receipt.json" \
             --output "$evidence/performance-manifest.json"
 
-      - name: Execute production security and operations drills
+      - name: Execute isolated production security and operations drills
         shell: bash
         run: |
           set -euo pipefail
@@ -186,28 +208,31 @@ jobs:
             output="$evidence/production/${drills[$drill]}"
             sudo --non-interactive "/opt/hepta/authbus-qualification/$drill" \
               --candidate-sha "$CANDIDATE_SHA" \
+              --control-sha "$CONTROL_SHA" \
               --target-profile "$TARGET_PROFILE" \
               --output "$output"
             test -s "$output"
           done
           sudo --non-interactive "/opt/hepta/authbus-qualification/activation-plan" \
             --candidate-sha "$CANDIDATE_SHA" \
+            --control-sha "$CONTROL_SHA" \
             --target-profile "$TARGET_PROFILE" \
             --output "$evidence/production/activation-plan.json"
           sudo --non-interactive "/opt/hepta/authbus-qualification/rollback-plan" \
             --candidate-sha "$CANDIDATE_SHA" \
+            --control-sha "$CONTROL_SHA" \
             --target-profile "$TARGET_PROFILE" \
             --output "$evidence/production/rollback-plan.json"
           test -s "$evidence/production/activation-plan.json"
           test -s "$evidence/production/rollback-plan.json"
 
-      - name: Verify qualification did not mutate source
+      - name: Verify qualification controller remained read-only
         shell: bash
         run: |
           set -euo pipefail
           git diff --exit-code
           git diff --cached --exit-code
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git rev-parse HEAD)" = "$CONTROL_SHA"
 
       - name: Upload immutable target-host evidence
         uses: actions/upload-artifact@v4
