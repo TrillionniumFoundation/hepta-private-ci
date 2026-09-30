@@ -1,0 +1,45 @@
+name: runtime.supervisor phase-2 patch inspection
+
+on:
+  push:
+    branches:
+      - ops/runtime-supervisor-phase2-patch-inspect-20260930
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Decode and validate reviewed payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          base64 --decode .github/runtime-supervisor/phase2_patch.b64 | gzip --decompress > .hepta-evidence/phase2.patch
+          sha256sum .hepta-evidence/phase2.patch > .hepta-evidence/phase2.patch.sha256
+          git apply --check .hepta-evidence/phase2.patch
+          git apply .hepta-evidence/phase2.patch
+          git diff --check
+          git diff --name-status > .hepta-evidence/changed-files.txt
+          git diff --stat > .hepta-evidence/diff-stat.txt
+          git diff --binary > .hepta-evidence/applied.patch
+          sha256sum .hepta-evidence/applied.patch > .hepta-evidence/applied.patch.sha256
+
+      - name: Upload inspection evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-phase2-patch-inspection
+          path: .hepta-evidence/*
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
