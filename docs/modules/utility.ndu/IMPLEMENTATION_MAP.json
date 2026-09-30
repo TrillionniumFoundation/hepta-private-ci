@@ -187,8 +187,8 @@
           "symbol": "zero_context_digest_rejects_before_protocol_publication"
         },
         {
-          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-          "symbol": "malformed_local_solver_receipts_reject_before_protocol_publication"
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "impossible_local_receipt_invariants_are_rejected"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
@@ -298,7 +298,11 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "hash_valid_but_semantically_impossible_recovery_rejects"
+          "symbol": "reopen_rejects_well_hashed_selection_without_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_well_hashed_revocation_without_projection"
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",

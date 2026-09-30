@@ -282,6 +282,18 @@ fn impossible_local_receipt_invariants_are_rejected() {
         must_err(invalid.validate()),
         NduError::InvalidSolverReceipt("iteration")
     );
+    let context = crate::NduIterationContextV1 {
+        subject_id: id("agent-a"),
+        subject_class: SubjectClass::Agent,
+        objective_digest: Digest32::of_bytes(b"objective"),
+        generation: must(Generation::new(4)),
+        event_digest: Digest32::of_bytes(b"event"),
+        coefficient_digest: Digest32::of_bytes(b"coefficient"),
+    };
+    assert_eq!(
+        crate::bind_solver_iteration_receipt_v1(&context, &invalid),
+        Err(NduError::InvalidSolverReceipt("iteration"))
+    );
 }
 
 #[test]
