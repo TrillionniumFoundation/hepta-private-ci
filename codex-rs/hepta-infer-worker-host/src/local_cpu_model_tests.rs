@@ -158,3 +158,7 @@ fn signed_q24_rounding_uses_nearest_even_in_both_directions_and_saturates() {
         vec![LIMIT]
     );
 }
+
+#[cfg(feature = "agentd-host")]
+#[path = "local_cpu_control_tests.rs"]
+mod control_tests;

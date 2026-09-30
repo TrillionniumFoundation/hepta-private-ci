@@ -10,7 +10,21 @@
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+#[cfg(feature = "agentd-host")]
+mod local_cpu_control;
+#[cfg(feature = "agentd-host")]
+mod local_cpu_generation;
 pub mod local_cpu_model;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_control::CpuNeuronControlConfigV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_control::CpuNeuronInferenceControlV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::CpuNeuronGenerationOpenModeV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::CpuNeuronGenerationPlanV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::open_installed_cpu_neuron_generation_v1;
 
 pub mod final_use_authorizer;
 mod final_use_trust_port;
