@@ -10,6 +10,13 @@ on:
       - "codex-rs/hepta-types/**"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-prompt-optimizer/**"
+      - "docs/modules/knowledge.graph/**"
+      - "qualification/knowledge-graph/**"
+      - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
+      - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta_knowledge_graph_map_verify.py"
+      - "scripts/hepta_kg_documentation_sync.py"
+      - "scripts/hepta_kg_status.py"
       - "codex-rs/Cargo.toml"
       - "codex-rs/Cargo.lock"
       - "codex-rs/rust-toolchain.toml"
@@ -73,6 +80,58 @@ jobs:
           tar -C "$artifact_dir" -czf "$artifact_dir/rustfmt-files.tar.gz" formatted
           printf 'rustfmt_status=dirty\n' > "$artifact_dir/rustfmt-status.txt"
           git -C .. reset --hard "$GITHUB_SHA"
+          exit 1
+
+      - name: Check exact metadata and preserve deterministic regeneration
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact_dir="$RUNNER_TEMP/kg-development-artifact"
+          metadata_log="$artifact_dir/metadata-checks.log"
+          failures=0
+          run_check() {
+            printf '== %s ==\n' "$1" | tee -a "$metadata_log"
+            shift
+            if "$@" 2>&1 | tee -a "$metadata_log"; then
+              printf 'PASS\n' | tee -a "$metadata_log"
+            else
+              failures=$((failures + 1))
+              printf 'FAIL\n' | tee -a "$metadata_log"
+            fi
+          }
+
+          run_check split_status python3 scripts/hepta_kg_status.py --check
+          run_check documentation_sync python3 scripts/hepta_kg_documentation_sync.py --check
+          run_check implementation_map python3 scripts/hepta_knowledge_graph_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+
+          if [[ "$failures" -eq 0 ]]; then
+            printf 'metadata_status=clean\n' > "$artifact_dir/metadata-status.txt"
+            exit 0
+          fi
+
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          python3 scripts/hepta_kg_documentation_sync.py --apply
+          python3 scripts/hepta_kg_status.py --apply
+          git diff --binary -- \
+            docs/modules/knowledge.graph \
+            qualification/knowledge-graph \
+            qualification/module-execution-dossiers/detail/knowledge.graph.md \
+            > "$artifact_dir/metadata.patch"
+          git diff --name-only -- \
+            docs/modules/knowledge.graph \
+            qualification/knowledge-graph \
+            qualification/module-execution-dossiers/detail/knowledge.graph.md \
+            > "$artifact_dir/metadata-paths.txt"
+          while IFS= read -r path; do
+            test -n "$path" || continue
+            mkdir -p "$artifact_dir/generated/$(dirname "$path")"
+            cp "$path" "$artifact_dir/generated/$path"
+          done < "$artifact_dir/metadata-paths.txt"
+          tar -C "$artifact_dir" -czf "$artifact_dir/metadata-files.tar.gz" generated
+          printf 'metadata_status=dirty\n' > "$artifact_dir/metadata-status.txt"
+          git reset --hard "$GITHUB_SHA"
           exit 1
 
       - name: Check KG package and all targets
