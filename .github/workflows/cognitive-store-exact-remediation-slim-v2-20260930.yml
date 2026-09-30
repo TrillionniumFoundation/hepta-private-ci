@@ -1,0 +1,83 @@
+name: Cognitive store exact remediation slim v2
+
+on:
+  push:
+    branches:
+      - automation/cognitive-store-exact-remediation-20260930
+    paths:
+      - '.github/workflows/cognitive-store-exact-remediation-slim-v2-20260930.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-exact-remediation-slim-v2-20260930
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: codex/cognitive-store-full-closure-20260927
+  EXPECTED_SHA: a7cfdefa6643855d6a3735bf36a37cd7193a633d
+  PAYLOAD_COMMIT: 805dbd05dc73bb3e118aec6d1d5b6887ddbca7b6
+
+jobs:
+  author:
+    runs-on: ubuntu-slim
+    timeout-minutes: 180
+    steps:
+      - name: Checkout immutable authoring inputs
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Retain authoring script and reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .github/scripts/cognitive-store-exact-remediation-20260930.sh \
+            /tmp/cognitive-store-exact-remediation.sh
+          chmod 0700 /tmp/cognitive-store-exact-remediation.sh
+          git show "${PAYLOAD_COMMIT}:.github/workflows/cognitive-store-exact-remediation-20260930.yml" \
+            > /tmp/payload-workflow.yml
+          python3 - <<'PY'
+          from pathlib import Path
+          lines = Path('/tmp/payload-workflow.yml').read_text(encoding='utf-8').splitlines()
+          capture = False
+          payload = []
+          for line in lines:
+              if "<<'PATCH_B64'" in line:
+                  capture = True
+                  continue
+              if capture and line.strip() == 'PATCH_B64':
+                  break
+              if capture:
+                  payload.append(line.strip())
+          if not payload:
+              raise SystemExit('reviewed patch payload is absent')
+          Path('/tmp/cognitive-fixes.patch.gz.b64').write_text(''.join(payload), encoding='ascii')
+          PY
+          base64 --decode /tmp/cognitive-fixes.patch.gz.b64 \
+            | gzip --decompress > /tmp/cognitive-fixes.patch
+          test "$(sha256sum /tmp/cognitive-fixes.patch | awk '{print $1}')" = \
+            '9f4cb4c2c777a2cc2c512cd4951b001c32beba540533467f9dbddf6537b707b4'
+
+      - name: Checkout exact target with publication credential
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Test, bind and publish exact remediation
+        shell: bash
+        env:
+          PATCH_FILE: /tmp/cognitive-fixes.patch
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+        run: /tmp/cognitive-store-exact-remediation.sh
