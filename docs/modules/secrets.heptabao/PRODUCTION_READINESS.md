@@ -1,14 +1,19 @@
 # `secrets.heptabao` production-readiness boundary
 
 This document accompanies `READINESS_POLICY_V1.json` and the read-only
-CI-generated `hepta.secrets-heptabao-readiness.v2` receipt.
+CI-generated `hepta.secrets-heptabao-readiness.v3` receipt.
 
 ## Exact-candidate rule
 
 Source, tests, documentation, artifacts and qualification must refer to one Git
 commit and one workflow attempt. Results from another SHA or attempt cannot be
 combined. Qualification checks out the exact review object with persisted Git
-credentials disabled and must leave the complete worktree unchanged.
+credentials disabled and must leave the complete worktree unchanged. A qualified readiness receipt must
+load the current role's retained native receipt and all nine gate logs, verify
+the executed Rust toolchain, commit/tree and current workflow run/attempt, and
+reject a dirty worktree. Synthetic-merge readiness also binds the exact ordered
+base/source parents. Retained local logs do not constitute independently signed
+operator acceptance.
 
 ## Build surface
 
@@ -22,8 +27,12 @@ normal full package targets.
 `SqliteBaoOwnerV1` and `SqliteBaoProductRuntimeV1` are source-present. The owner
 contains revision CAS, append-only transitions, bounded generation-fenced
 recovery claims, schema-4 import, immutable terminal archival and checkpoint
-hashing/publication hooks. No non-test Agentd or App Server binary currently
-selects this runtime.
+hashing/publication hooks. The exported `product_bootstrap` library constructor binds a registered
+`hepta-secrets-runtime` binary source. The binary currently describes and
+validates configuration; no normal process constructs its trusted dependencies
+and starts the provider, consumers, recovery worker or metrics export.
+A constructor helper is therefore source-bound, while `productComposed` remains
+false.
 
 Consequently source presence is true while source qualification,
 storage-profile qualification, product composition, target-host qualification,

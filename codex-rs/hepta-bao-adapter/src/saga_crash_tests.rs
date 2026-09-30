@@ -2,19 +2,23 @@
 //! The provider is a synthetic TLS fixture, not the external HeptaBao service.
 use super::*;
 use std::io::Write;
-use std::os::unix::fs::{OpenOptionsExt, PermissionsExt};
-use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::os::unix::fs::OpenOptionsExt;
+use std::os::unix::fs::PermissionsExt;
+use std::path::Path;
+use std::path::PathBuf;
+use std::process::Command;
+use std::process::Stdio;
 use std::sync::Mutex;
 use std::time::Instant;
 
-use crate::{
-    BaoConsumerObservationV1, BaoFinalUseHost, BaoProductHostError, DurableLeaseRegistryV1,
-    RegisteredBaoConsumer,
-};
-use codex_hepta_contracts::{
-    FinalUseApprovalVerifier, FinalUseRevocationFeedVerifier, SystemAuthorityClock,
-};
+use crate::BaoConsumerObservationV1;
+use crate::BaoFinalUseHost;
+use crate::BaoProductHostError;
+use crate::DurableLeaseRegistryV1;
+use crate::RegisteredBaoConsumer;
+use codex_hepta_contracts::FinalUseApprovalVerifier;
+use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
+use codex_hepta_contracts::SystemAuthorityClock;
 
 #[derive(serde::Deserialize, serde::Serialize)]
 struct RecoveryInputs {

@@ -4,7 +4,8 @@
 //! a reserve whose SQLite commit may finish after cancellation.
 use crate::LeaseRegistryErrorV1;
 use std::collections::BTreeSet;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
 
 #[derive(Default)]
 pub(crate) struct OperationExecutionSet {
