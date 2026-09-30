@@ -270,6 +270,7 @@ impl CognitiveStore {
                 owner_agent_id: layout.agent_id().clone(),
                 path: candidate.clone(),
                 _open_guard: Some(std::sync::Arc::new(exclusive_guard)),
+                federation_peer_pools: std::sync::Arc::default(),
             })
         }
         .await;

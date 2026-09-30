@@ -416,6 +416,7 @@ impl CognitiveRuntime {
                 ))
             }
             Self::AvailableFederatedV2 {
+                store,
                 consumer_agent_id,
                 owner_layouts,
                 omitted_owner_candidates,
@@ -423,6 +424,7 @@ impl CognitiveRuntime {
                 ..
             } => {
                 retrieve_federated_product(
+                    &store.federation_peer_pools,
                     consumer_agent_id,
                     owner_layouts.as_slice(),
                     *omitted_owner_candidates,
@@ -449,6 +451,7 @@ impl CognitiveRuntime {
     ) -> Result<(FederatedRetrievalBatch, FederatedCoverageV2), CognitiveStoreError> {
         match self {
             Self::AvailableFederatedV2 {
+                store,
                 consumer_agent_id,
                 owner_layouts,
                 omitted_owner_candidates,
@@ -456,6 +459,7 @@ impl CognitiveRuntime {
                 ..
             } => {
                 retrieve_federated_product(
+                    &store.federation_peer_pools,
                     consumer_agent_id,
                     owner_layouts.as_slice(),
                     *omitted_owner_candidates,
@@ -506,12 +510,14 @@ impl CognitiveRuntime {
     ) -> Result<Vec<FederatedRevalidationStatus>, CognitiveStoreError> {
         match self {
             Self::AvailableFederatedV2 {
+                store,
                 consumer_agent_id,
                 owner_layouts,
                 host_profile,
                 ..
             } => {
                 revalidate_federated_product_batch(
+                    &store.federation_peer_pools,
                     consumer_agent_id,
                     owner_layouts.as_slice(),
                     host_profile,
@@ -546,12 +552,14 @@ impl CognitiveRuntime {
                     .await
             }
             Self::AvailableFederatedV2 {
+                store,
                 consumer_agent_id,
                 owner_layouts,
                 host_profile,
                 ..
             } => {
                 revalidate_federated_product(
+                    &store.federation_peer_pools,
                     consumer_agent_id,
                     owner_layouts.as_slice(),
                     host_profile,
@@ -629,6 +637,7 @@ impl CognitiveRuntime {
 }
 
 async fn retrieve_federated_product(
+    pools: &crate::cognitive_federation_pool::FederationPeerPools,
     consumer_agent_id: &AgentId,
     owner_layouts: &[HeptaAgentLayout],
     omitted_owner_candidates: u32,
@@ -652,7 +661,8 @@ async fn retrieve_federated_product(
         let discovery_deadline = tokio::time::Instant::now() + host_profile.discovery_budget();
         let discovery = stream::iter(owner_layouts.iter().cloned())
             .map(|owner_layout| async move {
-                let outcome = FederatedMemoryReader::discover(
+                let outcome = FederatedMemoryReader::discover_cached(
+                    pools,
                     &owner_layout,
                     consumer_agent_id,
                     request.now_unix_seconds(),
@@ -739,6 +749,7 @@ async fn retrieve_federated_product(
                 captured: Arc::clone(&captured),
             };
             let authority = ProductReaderAuthority {
+                pools,
                 owner_layout: &owner_layout,
                 consumer_agent_id,
                 expected_capability: reader.capability(),
@@ -966,6 +977,7 @@ fn record_product_failure(failures: &mut FederatedFailureCoverageV2, error: &Fed
 }
 
 async fn revalidate_federated_product(
+    pools: &crate::cognitive_federation_pool::FederationPeerPools,
     consumer_agent_id: &AgentId,
     owner_layouts: &[HeptaAgentLayout],
     host_profile: &MemoryFederationHostProfile,
@@ -974,6 +986,7 @@ async fn revalidate_federated_product(
     now_unix_seconds: i64,
 ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
     revalidate_federated_product_batch(
+        pools,
         consumer_agent_id,
         owner_layouts,
         host_profile,
@@ -991,6 +1004,7 @@ async fn revalidate_federated_product(
 }
 
 async fn revalidate_federated_product_batch(
+    pools: &crate::cognitive_federation_pool::FederationPeerPools,
     consumer_agent_id: &AgentId,
     owner_layouts: &[HeptaAgentLayout],
     host_profile: &MemoryFederationHostProfile,
@@ -1054,7 +1068,8 @@ async fn revalidate_federated_product_batch(
                     .map(|(_, binding)| binding)
                     .collect::<Vec<_>>();
                 let operation = async {
-                    let readers = FederatedMemoryReader::discover(
+                    let readers = FederatedMemoryReader::discover_cached(
+                        pools,
                         &owner_layout,
                         &consumer_agent_id,
                         now_unix_seconds,
@@ -1177,6 +1192,7 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
 }
 
 struct ProductReaderAuthority<'a> {
+    pools: &'a crate::cognitive_federation_pool::FederationPeerPools,
     owner_layout: &'a HeptaAgentLayout,
     consumer_agent_id: &'a AgentId,
     expected_capability: &'a FederationCapability,
@@ -1195,7 +1211,8 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
                 elapsed_logical_ms(self.logical_start_ms, self.started_at);
             let discovery_unix_seconds = i64::try_from(observation_started_unix_ms / 1_000)
                 .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
-            let readers = FederatedMemoryReader::discover(
+            let readers = FederatedMemoryReader::discover_cached(
+                self.pools,
                 self.owner_layout,
                 self.consumer_agent_id,
                 discovery_unix_seconds,

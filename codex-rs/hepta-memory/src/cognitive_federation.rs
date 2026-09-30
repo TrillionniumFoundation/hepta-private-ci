@@ -35,7 +35,6 @@ pub const MAX_FEDERATION_SOURCES_PER_AGENT: usize = 16;
 const MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT: usize = 128;
 const FEDERATION_REFRESH_TIMEOUT: Duration = Duration::from_secs(2);
 
-const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const CAPABILITY_ID_PREFIX: &str = "federation:v1:";
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -561,6 +560,7 @@ impl CognitiveStore {
 pub struct FederatedMemoryReader {
     owner: Arc<CognitiveStore>,
     capability: FederationCapability,
+    peer: Arc<crate::cognitive_federation_pool::FederationPeer>,
 }
 
 impl FederatedMemoryReader {
@@ -572,9 +572,21 @@ impl FederatedMemoryReader {
         if owner_layout.agent_id() == consumer_agent_id {
             return Ok(Vec::new());
         }
-        let database_path = owner_layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
-        let pool = open_read_only_pool(&database_path).await?;
-        verify_read_only_store(&pool, owner_layout.agent_id()).await?;
+        let pools = crate::cognitive_federation_pool::FederationPeerPools::default();
+        Self::discover_cached(&pools, owner_layout, consumer_agent_id, now_unix_seconds).await
+    }
+
+    pub(crate) async fn discover_cached(
+        pools: &crate::cognitive_federation_pool::FederationPeerPools,
+        owner_layout: &HeptaAgentLayout,
+        consumer_agent_id: &AgentId,
+        now_unix_seconds: i64,
+    ) -> Result<Vec<Self>, CognitiveStoreError> {
+        if owner_layout.agent_id() == consumer_agent_id {
+            return Ok(Vec::new());
+        }
+        let peer = pools.get(owner_layout).await?;
+        let owner = Arc::clone(&peer.owner);
         let rows = sqlx::query(
             "SELECT e.*, e.owner_workspace_sha256 AS workspace_sha256
              FROM memory_federation_heads h JOIN memory_federation_events e
@@ -582,14 +594,10 @@ impl FederatedMemoryReader {
              WHERE e.consumer_agent_id = ? ORDER BY e.capability_id",
         )
         .bind(consumer_agent_id.as_str())
-        .fetch_all(&pool)
+        .fetch_all(&owner.pool)
         .await
         .map_err(unavailable)?;
-        let owner = Arc::new(CognitiveStore::from_read_only_pool(
-            pool,
-            owner_layout.agent_id().clone(),
-            database_path,
-        ));
+        peer.validate().await?;
         let mut readers = Vec::new();
         for row in rows {
             let event = decode_event(row)?;
@@ -607,6 +615,7 @@ impl FederatedMemoryReader {
                 readers.push(Self {
                     owner: Arc::clone(&owner),
                     capability: event.capability,
+                    peer: Arc::clone(&peer),
                 });
             }
         }
@@ -764,6 +773,7 @@ impl FederatedMemoryReader {
         access: &FederationConsumerAccess,
         now_unix_seconds: i64,
     ) -> Result<Option<FederationRevalidationDrift>, CognitiveStoreError> {
+        self.peer.validate().await?;
         if access.agent_id != self.capability.consumer_agent_id {
             return Ok(Some(FederationRevalidationDrift::Consumer));
         }
@@ -809,6 +819,7 @@ impl FederatedMemoryReader {
         if now_unix_seconds >= current.capability.expires_at_unix_seconds {
             return Ok(Some(FederationRevalidationDrift::Expired));
         }
+        self.peer.validate().await?;
         Ok(None)
     }
 }
@@ -1134,7 +1145,7 @@ fn require_authorized(
     }
 }
 
-async fn open_read_only_pool(path: &Path) -> Result<SqlitePool, CognitiveStoreError> {
+pub(crate) async fn open_read_only_pool(path: &Path) -> Result<SqlitePool, CognitiveStoreError> {
     let metadata = std::fs::metadata(path).map_err(unavailable)?;
     if !metadata.is_file()
         || canonical_path_without_redirection(path)
@@ -1173,53 +1184,6 @@ async fn open_read_only_pool(path: &Path) -> Result<SqlitePool, CognitiveStoreEr
         ));
     }
     Ok(pool)
-}
-
-async fn verify_read_only_store(
-    pool: &SqlitePool,
-    expected_owner: &AgentId,
-) -> Result<(), CognitiveStoreError> {
-    let quick_check = sqlx::query_scalar::<_, String>("PRAGMA quick_check(1)")
-        .fetch_all(pool)
-        .await
-        .map_err(unavailable)?;
-    if quick_check != ["ok"]
-        || !sqlx::query("PRAGMA foreign_key_check")
-            .fetch_all(pool)
-            .await
-            .map_err(unavailable)?
-            .is_empty()
-    {
-        return Err(CognitiveStoreError::Corrupt(
-            "federated cognitive store failed SQLite integrity checks".to_string(),
-        ));
-    }
-    let owner: String =
-        sqlx::query_scalar("SELECT owner_agent_id FROM cognitive_meta WHERE singleton = 1")
-            .fetch_one(pool)
-            .await
-            .map_err(unavailable)?;
-    if owner != expected_owner.as_str() {
-        return Err(CognitiveStoreError::AccessDenied(
-            "federated cognitive store owner does not match its AgentId path".to_string(),
-        ));
-    }
-    let objects: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM sqlite_schema WHERE name IN (
-            'memory_federation_events', 'memory_federation_events_no_update',
-            'memory_federation_events_no_delete', 'memory_federation_heads',
-            'memory_federation_consumer_heads'
-         )",
-    )
-    .fetch_one(pool)
-    .await
-    .map_err(unavailable)?;
-    if objects != 5 {
-        return Err(CognitiveStoreError::Corrupt(
-            "memory federation schema is incomplete".to_string(),
-        ));
-    }
-    Ok(())
 }
 
 fn now_unix_seconds() -> Result<i64, CognitiveStoreError> {
