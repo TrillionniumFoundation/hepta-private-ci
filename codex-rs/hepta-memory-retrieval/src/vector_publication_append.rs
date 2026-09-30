@@ -25,6 +25,11 @@ pub enum DurableVectorPublicationAppendErrorV1<E> {
         actual: u64,
     },
     Port(E),
+    CommitOutcomeUnknown {
+        publish_error: Option<E>,
+        reconciliation_error: Option<E>,
+        observed: Option<Digest32>,
+    },
     CommittedPublicationMismatch {
         expected: Digest32,
         actual: Option<Digest32>,
@@ -46,7 +51,24 @@ impl<E: fmt::Display> fmt::Display for DurableVectorPublicationAppendErrorV1<E> 
                 "durable vector publication without a current object must use sequence 1, got {actual}",
             ),
             Self::Port(error) => {
-                write!(formatter, "durable vector publication port failed: {error}")
+                write!(formatter, "durable vector publication port failed before mutation: {error}")
+            }
+            Self::CommitOutcomeUnknown {
+                publish_error,
+                reconciliation_error,
+                observed,
+            } => {
+                write!(
+                    formatter,
+                    "durable vector publication commit outcome is unknown; observed {observed:?}",
+                )?;
+                if let Some(error) = publish_error {
+                    write!(formatter, "; publish error: {error}")?;
+                }
+                if let Some(error) = reconciliation_error {
+                    write!(formatter, "; reconciliation error: {error}")?;
+                }
+                Ok(())
             }
             Self::CommittedPublicationMismatch { expected, actual } => write!(
                 formatter,
@@ -61,6 +83,18 @@ impl<E: StdError + 'static> StdError for DurableVectorPublicationAppendErrorV1<E
         match self {
             Self::Validation(error) => Some(error),
             Self::Port(error) => Some(error),
+            Self::CommitOutcomeUnknown {
+                publish_error,
+                reconciliation_error,
+                ..
+            } => publish_error
+                .as_ref()
+                .map(|error| error as &(dyn StdError + 'static))
+                .or_else(|| {
+                    reconciliation_error
+                        .as_ref()
+                        .map(|error| error as &(dyn StdError + 'static))
+                }),
             Self::CurrentPublicationMismatch { .. }
             | Self::InvalidGenesisSequence { .. }
             | Self::CommittedPublicationMismatch { .. } => None,
@@ -78,7 +112,9 @@ impl<E: StdError + 'static> StdError for DurableVectorPublicationAppendErrorV1<E
 /// treated as an uncertain commit: the helper reloads the tenant and succeeds
 /// only when the exact `next` object is now current. It never blindly publishes
 /// a second object. A nominally successful mutation is also reloaded and must
-/// equal `next` byte-for-byte at the typed-object level.
+/// equal `next` byte-for-byte at the typed-object level. When either path cannot
+/// prove the exact committed object, the error is `CommitOutcomeUnknown` rather
+/// than a retry-safe pre-mutation port failure.
 pub fn append_vector_publication_checked_v1<P: DurableVectorPublicationPortV1>(
     port: &mut P,
     tenant_digest: Digest32,
@@ -126,20 +162,42 @@ pub fn append_vector_publication_checked_v1<P: DurableVectorPublicationPortV1>(
         None => {}
     }
 
-    if let Err(error) = port.compare_and_publish(tenant_digest, expected_current, next) {
-        let reconciled = port.load_current(tenant_digest);
-        if reconciled
-            .as_ref()
-            .is_ok_and(|current| current.as_ref() == Some(next))
-        {
-            return Ok(next.publication_digest());
-        }
-        return Err(DurableVectorPublicationAppendErrorV1::Port(error));
+    if let Err(publish_error) =
+        port.compare_and_publish(tenant_digest, expected_current, next)
+    {
+        return match port.load_current(tenant_digest) {
+            Ok(Some(committed)) if &committed == next => Ok(next.publication_digest()),
+            Ok(observed) => Err(
+                DurableVectorPublicationAppendErrorV1::CommitOutcomeUnknown {
+                    publish_error: Some(publish_error),
+                    reconciliation_error: None,
+                    observed: observed
+                        .as_ref()
+                        .map(VectorIndexPublicationV1::publication_digest),
+                },
+            ),
+            Err(reconciliation_error) => Err(
+                DurableVectorPublicationAppendErrorV1::CommitOutcomeUnknown {
+                    publish_error: Some(publish_error),
+                    reconciliation_error: Some(reconciliation_error),
+                    observed: None,
+                },
+            ),
+        };
     }
 
-    let committed = port
-        .load_current(tenant_digest)
-        .map_err(DurableVectorPublicationAppendErrorV1::Port)?;
+    let committed = match port.load_current(tenant_digest) {
+        Ok(committed) => committed,
+        Err(reconciliation_error) => {
+            return Err(
+                DurableVectorPublicationAppendErrorV1::CommitOutcomeUnknown {
+                    publish_error: None,
+                    reconciliation_error: Some(reconciliation_error),
+                    observed: None,
+                },
+            );
+        }
+    };
     if committed.as_ref() != Some(next) {
         return Err(
             DurableVectorPublicationAppendErrorV1::CommittedPublicationMismatch {
