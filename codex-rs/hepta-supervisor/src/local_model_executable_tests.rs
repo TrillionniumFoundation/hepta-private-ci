@@ -106,7 +106,7 @@ fn mutable_permissions_links_and_parents_cannot_reuse_or_create_enrollment() -> 
     assert!(cache.verify(&executable).is_err());
     assert!(enrolled(&path, &digests).is_err());
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
-    std::fs::chown(&path, Some(1000), Some(1000))?;
+    std::os::unix::fs::chown(&path, Some(1000), Some(1000))?;
     assert!(cache.verify(&executable).is_err());
     assert!(enrolled(&path, &digests).is_err());
     Ok(())
