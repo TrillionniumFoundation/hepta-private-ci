@@ -1,31 +1,222 @@
-name: channel.matrix documentation consistency
+name: channel.matrix reviewed source materialization
 
 on:
-  pull_request:
+  push:
+    branches:
+      - codex/channel-matrix-full-closure-20260927
     paths:
-      - 'docs/modules/channel.matrix/**'
-      - 'codex-rs/hepta-matrix-store/migrations/**'
-      - 'scripts/tests/test_channel_matrix_documentation.py'
       - '.github/workflows/channel-matrix-materialize.yml'
-  workflow_dispatch: {}
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/channel-matrix-materialize.yml'
 
 permissions:
   contents: read
 
 concurrency:
-  group: channel-matrix-docs-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: channel-matrix-reviewed-materialization-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  OPS_PAYLOAD_SHA256: 3ad03651989919489dfc3e4171b2fccad252e948247ecc7ab1ee15810aea11e9
+  CLOSURE_PAYLOAD_SHA256: 6be88c59e74ef4d6f16231c0ba13dadfe542c69b3e060c10719bb7b7245d90a2
+  PYTHONDONTWRITEBYTECODE: '1'
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
 
 jobs:
-  validate:
-    name: Matrix documentation consistency
+  materialize:
+    name: Materialize reviewed ordinary source
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 90
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
           persist-credentials: false
-      - name: Verify migration floor, rollback contract, and read-only publication policy
+
+      - name: Verify exact candidate identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git diff --name-only HEAD^ HEAD)" = '.github/workflows/channel-matrix-materialize.yml'
+
+      - name: Materialize reviewed payloads
+        id: apply
+        run: |
+          set -euo pipefail
+          cat .matrix-staging/channel-matrix-ops-evidence.part* \
+            | base64 --decode > "$RUNNER_TEMP/channel-matrix-ops-evidence.tar.gz"
+          echo "$OPS_PAYLOAD_SHA256  $RUNNER_TEMP/channel-matrix-ops-evidence.tar.gz" \
+            | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/channel-matrix-ops-evidence.tar.gz"
+
+          cat .matrix-staging/channel_matrix_apply.part* \
+            | base64 --decode > "$RUNNER_TEMP/channel-matrix-closure.py.gz"
+          echo "$CLOSURE_PAYLOAD_SHA256  $RUNNER_TEMP/channel-matrix-closure.py.gz" \
+            | sha256sum --check --strict
+          gzip -dc "$RUNNER_TEMP/channel-matrix-closure.py.gz" \
+            > .matrix-staging/channel_matrix_apply.py
+          python3 .matrix-staging/channel_matrix_apply.py
+
+          rm -f \
+            .github/channel-matrix-repair.py \
+            .github/workflows/channel-matrix-bootstrap.yml \
+            .github/workflows/channel-matrix-closure-apply.yml \
+            .github/workflows/channel-matrix-hardening-apply.yml \
+            .github/workflows/channel-matrix-ops-evidence-finalize.yml \
+            .github/workflows/channel-matrix-source-export.yml \
+            scripts/channel_matrix_full_patch.py.gz.b64
+          rm -rf .matrix-staging
+
+          python3 - <<'PY'
+          from pathlib import Path
+          forbidden = (
+              'permissions:\n  contents: write',
+              'git push',
+              'git commit',
+              'clippy --fix',
+              'channel_matrix_apply.part',
+              'channel-matrix-ops-evidence.part',
+          )
+          for path in sorted(Path('.github/workflows').glob('channel-matrix*.yml')):
+              text = path.read_text(encoding='utf-8')
+              hits = [token for token in forbidden if token in text]
+              if hits:
+                  raise SystemExit(f'{path}: forbidden source-writing token(s): {hits}')
+              if 'permissions:\n  contents: read' not in text:
+                  raise SystemExit(f'{path}: workflow is not explicitly read-only')
+          PY
+          git diff --check
+
+      - name: Validate Python, SQLite, documentation and evidence contracts
+        id: python
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/materialized-logs"
+          python3 -m compileall -q scripts \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/python-compile.log"
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/python-tests.log"
+
+      - name: Validate affected native owners
+        id: rust
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/materialized-logs"
+          rustup component add rustfmt clippy
+          cd codex-rs
+          cargo check -p codex-hepta-operations --all-targets \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/operations-check.log"
+          cargo fmt --package codex-state --package codex-hepta-operations
+          cargo fmt --all -- --check \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/format.log"
+          cargo check --locked --all-targets \
+            -p codex-hepta-matrix-protocol \
+            -p codex-hepta-matrix-store \
+            -p codex-hepta-matrix-sdk \
+            -p codex-hepta-matrixd \
+            -p codex-hepta-operations \
+            -p codex-state \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/all-target-check.log"
+          cargo test --locked \
+            -p codex-hepta-matrix-protocol \
+            -p codex-hepta-matrix-store \
+            -p codex-hepta-matrix-sdk \
+            -p codex-hepta-matrixd \
+            -p codex-hepta-operations \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/tests.log"
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-matrix-protocol \
+            -p codex-hepta-matrix-store \
+            -p codex-hepta-matrix-sdk \
+            -p codex-hepta-matrixd \
+            -p codex-hepta-operations \
+            -p codex-state \
+            --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/clippy.log"
+
+      - name: Package exact source tree and deletion set
+        if: always() && steps.apply.outcome == 'success'
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/channel-matrix-materialized"
+          mkdir -p "$out"
+          git diff --name-only --diff-filter=ACMRT -z "$SOURCE_SHA" -- \
+            | tar --null -T - -cf "$out/materialized-tree.tar"
+          git diff --name-only --diff-filter=D "$SOURCE_SHA" -- \
+            | LC_ALL=C sort > "$out/deletions.txt"
+          git diff --binary --full-index "$SOURCE_SHA" -- > "$out/materialized.patch"
+          git diff --name-status "$SOURCE_SHA" -- > "$out/name-status.txt"
+          cp -a "$RUNNER_TEMP/materialized-logs" "$out/logs"
+          python3 - "$out" <<'PY'
+          import hashlib, json, os, stat, subprocess, sys
+          from pathlib import Path
+          out = Path(sys.argv[1])
+          changed = subprocess.check_output(
+              ['git', 'diff', '--name-only', '--diff-filter=ACMRT', os.environ['SOURCE_SHA'], '--'],
+              text=True,
+          ).splitlines()
+          deleted = (out / 'deletions.txt').read_text(encoding='utf-8').splitlines()
+          files = []
+          for name in changed:
+              path = Path(name)
+              payload = path.read_bytes()
+              files.append({
+                  'path': name,
+                  'mode': '100755' if path.stat().st_mode & stat.S_IXUSR else '100644',
+                  'bytes': len(payload),
+                  'sha256': hashlib.sha256(payload).hexdigest(),
+              })
+          row = {
+              'schema': 'hepta.channel-matrix-reviewed-materialization.v1',
+              'candidate': {
+                  'commit': os.environ['SOURCE_SHA'],
+                  'tree': subprocess.check_output(['git','rev-parse','HEAD^{tree}'], text=True).strip(),
+              },
+              'reviewedPayloads': {
+                  'operatorEvidenceSha256': os.environ['OPS_PAYLOAD_SHA256'],
+                  'closureSha256': os.environ['CLOSURE_PAYLOAD_SHA256'],
+              },
+              'files': files,
+              'deletions': deleted,
+              'pythonValidation': '${{ steps.python.outcome }}',
+              'rustValidation': '${{ steps.rust.outcome }}',
+              'authorityGranted': False,
+              'activation': False,
+              'release': False,
+          }
+          (out / 'manifest.json').write_text(
+              json.dumps(row, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          PY
+          sha256sum "$out/materialized-tree.tar" "$out/materialized.patch" \
+            > "$out/archive-digests.txt"
+
+      - name: Upload reviewed materialization
+        if: always() && steps.apply.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-reviewed-materialization-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/channel-matrix-materialized/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Require all validation
+        if: always()
         env:
-          PYTHONDONTWRITEBYTECODE: '1'
-        run: python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_documentation.py' -v
+          APPLY: ${{ steps.apply.outcome }}
+          PYTHON: ${{ steps.python.outcome }}
+          RUST: ${{ steps.rust.outcome }}
+        run: |
+          test "$APPLY" = success
+          test "$PYTHON" = success
+          test "$RUST" = success
