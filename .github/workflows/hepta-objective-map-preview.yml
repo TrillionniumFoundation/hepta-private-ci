@@ -1,0 +1,69 @@
+name: Hepta objective implementation map preview
+
+on:
+  push:
+    branches:
+      - work/objective-compiler-production-convergence-20260927
+    paths:
+      - .github/workflows/hepta-objective-map-preview.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: objective-map-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Generate and locally verify objective implementation map
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py migrate --module objective.compiler
+          git diff --check
+          git diff -- docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
+            > "${RUNNER_TEMP}/objective-implementation-map.patch"
+          test -s "${RUNNER_TEMP}/objective-implementation-map.patch"
+          git config user.name "objective-map-preview"
+          git config user.email "objective-map-preview@users.noreply.github.com"
+          git add docs/modules/objective.compiler/IMPLEMENTATION_MAP.json
+          git commit --no-gpg-sign -m "preview(objective): regenerate implementation map"
+          PREVIEW_SHA="$(git rev-parse HEAD)"
+          PREVIEW_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module objective.compiler \
+            --expected-sha "${PREVIEW_SHA}" \
+            --expected-tree "${PREVIEW_TREE}"
+          mkdir -p "${RUNNER_TEMP}/objective-map-preview"
+          cp docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
+            "${RUNNER_TEMP}/objective-map-preview/IMPLEMENTATION_MAP.json"
+          cp "${RUNNER_TEMP}/objective-implementation-map.patch" \
+            "${RUNNER_TEMP}/objective-map-preview/IMPLEMENTATION_MAP.patch"
+          printf '%s\n' \
+            "sourceSha=${SOURCE_SHA}" \
+            "sourceTree=${SOURCE_TREE}" \
+            "previewSha=${PREVIEW_SHA}" \
+            "previewTree=${PREVIEW_TREE}" \
+            > "${RUNNER_TEMP}/objective-map-preview/IDENTITY.txt"
+
+      - name: Retain generated map without repository write authority
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-map-preview-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-map-preview
+          if-no-files-found: error
+          retention-days: 3
