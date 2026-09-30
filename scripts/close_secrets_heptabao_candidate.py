@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-'''Materialize the reviewable secrets.heptabao source candidate.
+'''Materialize one reviewable secrets.heptabao source candidate.
 
-This is a development-time materializer. It may update source and documentation,
-but it never runs qualification and is never invoked by a read-only qualifier.
-The resulting commit is the only object eligible for exact-source review.
+This development-only transformation is deterministic and idempotent. It may
+change source and canonical documentation, but it never runs qualification and
+is never invoked by the read-only qualification workflows. The commit produced
+from these bytes is the only object eligible for exact-source review.
 '''
 from __future__ import annotations
 
@@ -13,27 +14,24 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
+MANIFEST = ROOT / "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json"
 
+STATUS_START = "<!-- secrets-heptabao-sqlite-source-status:v1 -->"
+STATUS_END = "<!-- /secrets-heptabao-sqlite-source-status:v1 -->"
+STATUS_BLOCK = f'''{STATUS_START}
+## SQLite source and qualification status
 
-def replace_once(path: str, old: str, new: str) -> None:
-    target = ROOT / path
-    text = target.read_text(encoding="utf-8")
-    if old in text:
-        target.write_text(text.replace(old, new, 1), encoding="utf-8")
-        return
-    if new in text:
-        return
-    words = old.split()
-    pattern = re.compile(r"\s+".join(re.escape(word) for word in words))
-    match = pattern.search(text)
-    if match is None:
-        raise SystemExit(
-            f"materialization anchor missing in {path}: {old[:100]!r}"
-        )
-    target.write_text(
-        text[: match.start()] + new + text[match.end() :],
-        encoding="utf-8",
-    )
+The current source candidate contains `SqliteBaoOwnerV1` and
+`SqliteBaoProductRuntimeV1`, including revision-CAS transitions, generation-
+fenced recovery claims, schema-4 reference import, immutable terminal archive
+and external-checkpoint hashing/publication hooks. This is a **source-presence**
+fact only. Exact-head compilation/qualification, storage-profile qualification,
+a named product caller, target-host qualification, activation, operator
+acceptance and release remain false until independently proved for one exact
+SHA. The fixed provider remains KV-v2-read-only; generic dynamic issue, renew
+and revoke remain fail-closed.
+{STATUS_END}
+'''
 
 
 def append_unique(values: list[str], additions: list[str]) -> list[str]:
@@ -52,17 +50,19 @@ def upsert_named(rows: list[dict[str, Any]], key: str, row: dict[str, Any]) -> N
     rows.append(row)
 
 
-def materialize_boxed_errors() -> None:
+def box_product_errors() -> None:
     constructor = re.compile(
         r"BaoProductHostError::(OutcomePending|TerminalFailure)"
-        r"\((?!Box::new\()([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)\)"
+        r"\((?!Box::new\()"
+        r"([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)"
+        r"\)"
     )
-    for path in (
+    for relative in (
         "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
         "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
     ):
-        target = ROOT / path
-        text = target.read_text(encoding="utf-8")
+        path = ROOT / relative
+        text = path.read_text(encoding="utf-8")
         text = text.replace(
             "OutcomePending(BaoConsumptionOperationV1)",
             "OutcomePending(Box<BaoConsumptionOperationV1>)",
@@ -77,25 +77,34 @@ def materialize_boxed_errors() -> None:
             ),
             text,
         )
-        target.write_text(text, encoding="utf-8")
+        if re.search(
+            r"BaoProductHostError::(?:OutcomePending|TerminalFailure)"
+            r"\((?!Box::new\()",
+            text,
+        ):
+            raise SystemExit(f"unboxed product-error constructor remains in {relative}")
+        path.write_text(text, encoding="utf-8")
 
 
 def materialize_manifest() -> None:
-    path = ROOT / "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json"
-    manifest = json.loads(path.read_text(encoding="utf-8"))
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
     manifest.setdefault("documents", {}).update(
         {
-            "productionReadiness": "docs/modules/secrets.heptabao/PRODUCTION_READINESS.md",
-            "readinessPolicy": "docs/modules/secrets.heptabao/READINESS_POLICY_V1.json",
+            "productionReadiness": (
+                "docs/modules/secrets.heptabao/PRODUCTION_READINESS.md"
+            ),
+            "readinessPolicy": (
+                "docs/modules/secrets.heptabao/READINESS_POLICY_V1.json"
+            ),
         }
     )
     manifest["buildSurface"] = {
         "kind": "single_complete",
         "cargoFeatures": [],
         "statement": (
-            "The adapter is one complete build surface. Qualification must not "
-            "pass undeclared synthetic feature names."
+            "The adapter is one complete Cargo build surface. Qualification "
+            "must not pass undeclared synthetic feature names."
         ),
     }
     manifest["states"] = {
@@ -117,6 +126,7 @@ def materialize_manifest() -> None:
         "operatorAccepted": False,
         "released": False,
     }
+
     manifest["currentCapabilities"] = append_unique(
         manifest.get("currentCapabilities", []),
         [
@@ -126,8 +136,8 @@ def materialize_manifest() -> None:
                 "and checkpoint hashing"
             ),
             (
-                "SQLite product-runtime source with an atomic forward execution "
-                "lease, bounded recovery claims and secret-free metrics"
+                "SQLite product-runtime source with atomic forward execution "
+                "leases, bounded recovery claims and secret-free metrics"
             ),
             (
                 "schema-4 JSON reference-owner import into the SQLite owner with "
@@ -136,18 +146,27 @@ def materialize_manifest() -> None:
         ],
     )
     target_only = [
-        item
-        for item in manifest.get("targetOnlyCapabilities", [])
-        if not item.startswith("transactional SQLite production owner")
-        and not item.startswith("bounded fair recovery worker")
+        value
+        for value in manifest.get("targetOnlyCapabilities", [])
+        if not value.startswith("transactional SQLite production owner")
+        and not value.startswith("bounded fair recovery worker")
     ]
     manifest["targetOnlyCapabilities"] = append_unique(
         target_only,
         [
-            "exact-head and deterministic-merge qualification of the SQLite owner/runtime source",
+            (
+                "exact-head and deterministic-merge qualification of the SQLite "
+                "owner/runtime source"
+            ),
             "selected Agentd or App Server production bootstrap",
-            "independently operated trusted-time settlement and key-rotation services",
-            "external anti-rollback checkpoint service and disaster-recovery ceremony",
+            (
+                "independently operated trusted-time settlement and key-rotation "
+                "services"
+            ),
+            (
+                "external anti-rollback checkpoint service and disaster-recovery "
+                "ceremony"
+            ),
             "target-host power-loss and long-history archival qualification",
             "selected-host metrics export alerting and retention policy",
             "independent operator acceptance promotion and release",
@@ -161,7 +180,7 @@ def materialize_manifest() -> None:
                 "qualification, product composition, activation or deployment."
             ),
             (
-                "The qualification workflows are read-only and never materialize, "
+                "Qualification workflows are read-only and never materialize, "
                 "commit or push source."
             ),
             (
@@ -172,7 +191,7 @@ def materialize_manifest() -> None:
     )
 
     operations = manifest.setdefault("operations", [])
-    sqlite_operations = [
+    for row in (
         {
             "operation": "sqlite_owner_open_and_verify",
             "symbol": "SqliteBaoOwnerV1::open",
@@ -209,8 +228,7 @@ def materialize_manifest() -> None:
             "path": "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
             "class": "product_runtime_source_present_not_composed",
         },
-    ]
-    for row in sqlite_operations:
+    ):
         upsert_named(operations, "operation", row)
 
     anchors = manifest.setdefault("sourceAnchors", [])
@@ -265,201 +283,202 @@ def materialize_manifest() -> None:
         upsert_named(anchors, "path", row)
 
     identity = manifest.setdefault("candidateIdentity", {})
-    identity["binding"] = "external_read_only_ci_attestation"
-    identity["identityRule"] = (
-        "candidateSha == testedSha == documentedSha == artifactSourceSha == qualificationSha"
+    identity.update(
+        {
+            "binding": "external_read_only_ci_attestation",
+            "identityRule": (
+                "candidateSha == testedSha == documentedSha == "
+                "artifactSourceSha == qualificationSha"
+            ),
+            "requiredFields": [
+                "sourceCommitSha",
+                "sourceTreeSha",
+                "baseSha",
+                "deterministicMergeSha",
+                "workflowSha",
+                "workflowRunId",
+                "workflowAttempt",
+                "rustToolchain",
+                "targetTriple",
+                "dependencyLockSha256",
+                "migrationSha256",
+                "schemaSha256",
+                "testSetSha256",
+                "documentationSha256",
+                "artifactHashes",
+            ],
+            "selfReferentialCommitInDocument": False,
+        }
     )
-    identity["requiredFields"] = [
-        "sourceCommitSha",
-        "sourceTreeSha",
-        "baseSha",
-        "deterministicMergeSha",
-        "workflowSha",
-        "workflowRunId",
-        "workflowAttempt",
-        "rustToolchain",
-        "targetTriple",
-        "dependencyLockSha256",
-        "migrationSha256",
-        "schemaSha256",
-        "testSetSha256",
-        "documentationSha256",
-        "artifactHashes",
-    ]
-    identity["selfReferentialCommitInDocument"] = False
 
-    path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    MANIFEST.write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def optional_rewrite(relative: str, substitutions: list[tuple[str, str]]) -> None:
+    path = ROOT / relative
+    text = path.read_text(encoding="utf-8")
+    for pattern, replacement in substitutions:
+        text = re.sub(pattern, replacement, text, flags=re.MULTILINE)
+    path.write_text(text, encoding="utf-8")
+
+
+def upsert_status(relative: str) -> None:
+    path = ROOT / relative
+    text = path.read_text(encoding="utf-8")
+    if STATUS_START in text and STATUS_END in text:
+        prefix, remainder = text.split(STATUS_START, 1)
+        _, suffix = remainder.split(STATUS_END, 1)
+        text = prefix.rstrip() + "\n\n" + STATUS_BLOCK + suffix.lstrip("\n")
+    else:
+        text = text.rstrip() + "\n\n" + STATUS_BLOCK
+    path.write_text(text, encoding="utf-8")
 
 
 def materialize_documents() -> None:
-    replace_once(
-        "docs/modules/secrets.heptabao/TECHNICAL.md",
-        (
-            "These contracts\nsupersede older metadata-only lifecycle descriptions where they differ.\n"
-            "Provider-native dynamic lease dispatch and normal daemon activation remain\n"
-            "unqualified."
-        ),
-        (
-            "These contracts supersede older metadata-only lifecycle descriptions where\n"
-            "they differ. The source candidate also contains `SqliteBaoOwnerV1` and\n"
-            "`SqliteBaoProductRuntimeV1`; those symbols are source-present but remain\n"
-            "unqualified and not product-composed. Provider-native dynamic lease dispatch\n"
-            "and normal daemon activation remain unqualified."
-        ),
+    optional_rewrite(
+        "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
+        [
+            (
+                r"This is the current implementation contract for PR #998 on\n"
+                r"`codex/secrets-heptabao-convergence`\.",
+                "This is the current durable-owner contract for the canonical "
+                "`secrets.heptabao` candidate.",
+            ),
+            (
+                r"The Bao metadata owner in this document remains the JSON reference "
+                r"owner; an\s+AuthBus SQLite dependency is not a Bao production writer\.",
+                "The JSON profile remains the reference and migration oracle. The "
+                "candidate also contains a Bao-owned SQLite writer/runtime source; "
+                "source presence is not product composition or production qualification.",
+            ),
+        ],
     )
-    replace_once(
-        "docs/modules/secrets.heptabao/TECHNICAL.md",
-        (
-            "A production replacement must preserve deduplication, immutable results, "
-            "compare-and-swap transitions, recovery fairness, archive semantics and "
-            "external anti-rollback. It must also remove synchronous snapshot work from "
-            "async runtime workers. Merely changing the container format to SQLite is "
-            "insufficient."
-        ),
-        (
-            "The source candidate now includes a transactional SQLite owner and async\n"
-            "product-runtime surface with revision CAS, append-only transitions, bounded\n"
-            "recovery claims, terminal archival and checkpoint hashing. Source presence is\n"
-            "not storage-profile qualification: exact-head and deterministic-merge native\n"
-            "execution, a selected product caller, external checkpoint operation and\n"
-            "target-host power-loss evidence remain required."
-        ),
-    )
-    replace_once(
+    optional_rewrite(
         "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
-        (
-            "A production SQLite replacement is still pending in this source candidate.\n"
-            "Staged, truncated or partially recovered patches are not an executable owner.\n"
-            "Migration, independently retained anti-rollback state, bounded archival,\n"
-            "nonblocking writer integration and target-host power-loss qualification remain\n"
-            "open."
-        ),
-        (
-            "The source candidate contains `SqliteBaoOwnerV1` and\n"
-            "`SqliteBaoProductRuntimeV1`, including schema-4 import, revision CAS,\n"
-            "generation-fenced recovery claims, terminal archival and checkpoint hashing.\n"
-            "Those sources are not yet exact-head/storage-profile qualified and no normal\n"
-            "product process composes them. Independently retained anti-rollback state,\n"
-            "archive offload and target-host power-loss qualification remain open."
-        ),
+        [
+            (
+                r"A production SQLite replacement is still pending in this source "
+                r"candidate\.",
+                "A transactional SQLite owner/runtime source is present in this "
+                "candidate but remains exact-head and storage-profile unqualified.",
+            ),
+        ],
     )
-    replace_once(
-        "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
-        (
-            "This is the current implementation contract for PR #998 on\n"
-            "`codex/secrets-heptabao-convergence`. It complements `TECHNICAL.md` and does not\n"
-            "activate a daemon, certify an external provider, or grant release authority."
-        ),
-        (
-            "This is the current durable-owner contract for the canonical\n"
-            "`secrets.heptabao` candidate. It complements `TECHNICAL.md` and does not\n"
-            "activate a daemon, certify an external provider, or grant release authority."
-        ),
-    )
-    replace_once(
-        "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
-        (
-            "`DurableLeaseRegistryV1` remains the single metadata writer. The historical type\n"
-            "and document names are retained for source compatibility; its current persistent\n"
-            "document is schema 4.\n"
-            "It owns lease records, lease operation history and secret-consumption operation\n"
-            "history. It never contains a provider token or secret value."
-        ),
-        (
-            "`DurableLeaseRegistryV1` is the bounded schema-4 JSON reference owner and\n"
-            "migration oracle. `SqliteBaoOwnerV1` is the transactional SQLite owner source;\n"
-            "`SqliteBaoProductRuntimeV1` is its forward/recovery runtime source. Neither\n"
-            "profile contains a provider token or secret value. The SQLite profile is\n"
-            "source-present but remains exact-head, storage-profile and product-composition\n"
-            "unqualified."
-        ),
-    )
-    replace_once(
-        "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
-        (
-            "The Bao metadata owner in this document remains the JSON reference owner; an "
-            "AuthBus SQLite dependency is not a Bao production writer.\n"
-            "The Python qualification tests prove exit propagation and receipt binding only;\n"
-            "they must not be counted as Rust/provider execution."
-        ),
-        (
-            "The JSON profile remains the reference/migration oracle. The same candidate now\n"
-            "contains a Bao-owned SQLite writer and runtime, but source presence is not\n"
-            "product composition or production qualification. The Python qualification\n"
-            "tests prove exit propagation and receipt binding only; they must not be counted\n"
-            "as Rust/provider execution."
-        ),
-    )
-    replace_once(
+    optional_rewrite(
         "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md",
-        (
-            "A production SQLite owner remains target-only. Merely storing one JSON blob in a\n"
-            "SQLite row does not satisfy this gate. A replacement must preserve:"
-        ),
-        (
-            "A transactional SQLite owner and product-runtime source now exist in this\n"
-            "candidate. They do not satisfy this gate by source presence alone. Exact-head,\n"
-            "deterministic-merge and selected-host qualification must prove that the source\n"
-            "preserves:"
-        ),
+        [
+            (
+                r"A production SQLite owner remains target-only\.",
+                "A transactional SQLite owner/runtime source is present, but exact-head, "
+                "storage-profile, target-host and product-composition qualification "
+                "remain open.",
+            ),
+        ],
     )
-    replace_once(
-        "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md",
-        (
-            "The repository's truncated phase-three staging payload is not executable source\n"
-            "and must not be applied or cited as completion. Until a complete implementation\n"
-            "passes the gates above, production-writer and activation claims remain false."
-        ),
-        (
-            "The committed SQLite owner/runtime is the executable candidate; historical\n"
-            "truncated staging payloads remain non-evidence. Until the exact candidate passes\n"
-            "the gates above and a named product caller is composed, production-writer,\n"
-            "activation and release claims remain false."
-        ),
-    )
-    replace_once(
+    optional_rewrite(
         "codex-rs/hepta-bao-adapter/README.md",
-        (
-            "The operation and production-store gates are specified in\n"
-            "`docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md`. A production SQLite\n"
-            "owner is still target-only: no truncated staging payload or SQLite-wrapped JSON\n"
-            "blob is treated as implementation. Production activation remains false until a\n"
-            "complete transactional owner, external monotonic checkpoint, target-host\n"
-            "qualification and nonblocking host integration exist."
-        ),
-        (
-            "The operation and production-store gates are specified in\n"
-            "`docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md`. The source candidate\n"
-            "contains a transactional SQLite owner and `SqliteBaoProductRuntimeV1`; they are\n"
-            "not yet exact-head/storage-profile qualified or composed by a normal product\n"
-            "binary. Production activation remains false until external monotonic checkpoint\n"
-            "operation, target-host qualification and a named caller exist."
-        ),
+        [
+            (
+                r"A production SQLite\s+owner is still target-only:",
+                "The transactional SQLite owner/runtime source is present but remains "
+                "unqualified and uncomposed:",
+            ),
+        ],
     )
 
-    current = ROOT / "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md"
-    text = current.read_text(encoding="utf-8")
-    marker = "## Target-only design\n"
-    section = (
-        "## SQLite source candidate\n\n"
-        "`SqliteBaoOwnerV1` and `SqliteBaoProductRuntimeV1` are present in the\n"
-        "reviewed source. The owner uses WAL/FULL transactions, revision CAS,\n"
-        "append-only transition evidence, bounded generation-fenced recovery claims,\n"
-        "terminal archival, schema-4 reference import and checkpoint hashing. The\n"
-        "runtime acquires an execution lease in the same transaction as a new claim and\n"
-        "performs observer-only recovery without provider redispatch.\n\n"
-        "This is a source-presence statement only. Exact-head and deterministic-merge\n"
-        "qualification, external checkpoint operation, target-host durability and a\n"
-        "named non-test product caller remain false.\n\n"
+    for relative in (
+        "docs/modules/secrets.heptabao/TECHNICAL.md",
+        "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+        "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
+        "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
+        "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md",
+        "codex-rs/hepta-bao-adapter/README.md",
+    ):
+        upsert_status(relative)
+
+    policy_path = ROOT / "docs/modules/secrets.heptabao/READINESS_POLICY_V1.json"
+    policy = json.loads(policy_path.read_text(encoding="utf-8"))
+    policy.update(
+        {
+            "schema": "hepta.secrets-heptabao-readiness-policy.v2",
+            "module": "secrets.heptabao",
+            "buildSurface": "single_complete",
+            "cargoFeatures": [],
+            "identityRule": (
+                "candidateSha == testedSha == documentedSha == "
+                "artifactSourceSha == qualificationSha"
+            ),
+            "aggregationRule": (
+                "one workflow run and one attempt; cross-SHA and cross-attempt "
+                "stitching forbidden"
+            ),
+            "productCallerState": "not_composed",
+            "productionQualified": False,
+            "mergeReady": False,
+        }
     )
-    if section not in text:
-        if marker not in text:
-            raise SystemExit("CURRENT_IMPLEMENTATION target section anchor missing")
-        current.write_text(text.replace(marker, section + marker, 1), encoding="utf-8")
+    policy_path.write_text(
+        json.dumps(policy, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    readiness = ROOT / "docs/modules/secrets.heptabao/PRODUCTION_READINESS.md"
+    readiness.write_text(
+        """# `secrets.heptabao` production-readiness boundary
+
+This document accompanies `READINESS_POLICY_V1.json` and the read-only
+CI-generated `hepta.secrets-heptabao-readiness.v2` receipt.
+
+## Exact-candidate rule
+
+Source, tests, documentation, artifacts and qualification must refer to one Git
+commit and one workflow attempt. Results from another SHA or attempt cannot be
+combined. Qualification checks out the exact review object with persisted Git
+credentials disabled and must leave the complete worktree unchanged.
+
+## Build surface
+
+`codex-hepta-bao-adapter` is one complete Cargo build surface. SQLite, AuthBus,
+HTTPS and registered-host code are not represented by undeclared synthetic
+feature names. The qualifier runs `cargo metadata --locked --no-deps` and the
+normal full package targets.
+
+## Current source truth
+
+`SqliteBaoOwnerV1` and `SqliteBaoProductRuntimeV1` are source-present. The owner
+contains revision CAS, append-only transitions, bounded generation-fenced
+recovery claims, schema-4 import, immutable terminal archival and checkpoint
+hashing/publication hooks. No non-test Agentd or App Server binary currently
+selects this runtime.
+
+Consequently source presence is true while source qualification,
+storage-profile qualification, product composition, target-host qualification,
+activation, operator acceptance and release remain false until independently
+proved for one exact SHA.
+
+## Deployment topology
+
+| Deployment | Current state | Required proof |
+|---|---|---|
+| One process, local filesystem | source candidate | exact-head tests, schema verification, anti-rollback operation |
+| Multiple processes, one host | unqualified | writer exclusion, stale-claim takeover and shutdown drain |
+| Multiple pods on one volume | denied by default | independently qualified filesystem lock and fencing semantics |
+| Multiple hosts/network filesystem | denied | independent storage qualification |
+| Active/passive failover | target-only | owner epoch and stale-writer rejection |
+| Restored database copy | target-only | checkpoint CAS, rollback detection and explicit recovery ceremony |
+
+The fixed HeptaBao provider remains qualified only for exact KV-v2 reads.
+Generic dynamic issue, renew and revoke remain fail-closed.
+""",
+        encoding="utf-8",
+    )
 
 
 def main() -> int:
-    materialize_boxed_errors()
+    box_product_errors()
     materialize_manifest()
     materialize_documents()
     print("materialized reviewable secrets.heptabao source candidate")
