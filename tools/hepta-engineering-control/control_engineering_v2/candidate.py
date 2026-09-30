@@ -38,6 +38,8 @@ from .control_plane import (
     semantic_digest,
 )
 
+from .git_security import git_environment, guard_git_status
+
 MAX_CANDIDATES = 32
 MAX_CHANGED_FILES = 100
 MAX_TEXT_DIFF_BYTES = 1_048_576
@@ -417,17 +419,7 @@ def _run_bounded(
 
 
 def _git_environment() -> dict[str, str]:
-    environment = dict(os.environ)
-    environment.update(
-        {
-            "GIT_CONFIG_NOSYSTEM": "1",
-            "GIT_CONFIG_GLOBAL": os.devnull,
-            "GIT_NO_REPLACE_OBJECTS": "1",
-            "GIT_TERMINAL_PROMPT": "0",
-            "LC_ALL": "C",
-        }
-    )
-    return environment
+    return git_environment()
 
 
 def _git_bytes(
@@ -436,6 +428,7 @@ def _git_bytes(
     allow_failure: bool = False,
     maximum_output: int = MAX_GIT_OUTPUT_BYTES,
 ) -> bytes:
+    guard_git_status(root, args)
     try:
         result = subprocess.run(
             [

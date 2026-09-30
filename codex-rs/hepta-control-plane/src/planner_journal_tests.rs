@@ -218,3 +218,53 @@ fn revocation_clears_selection_and_prevents_reselection() {
         PlannerJournalError::RevokedPlan
     );
 }
+
+#[test]
+fn raw_append_cannot_bypass_decision_and_revocation_checks() {
+    let mut journal = PlannerJournalV1::new();
+    let receipt = receipt();
+    assert_eq!(
+        journal.append(
+            PlannerJournalKindV1::SelectedPlan,
+            digest("orphan-selection"),
+            receipt.receipt_digest(),
+        ),
+        Err(PlannerJournalError::DecisionNotRecorded)
+    );
+    assert!(journal.entries().is_empty());
+    must(journal.record_decision(&receipt));
+    must(journal.revoke(digest("revoke"), receipt.receipt_digest()));
+    assert_eq!(
+        journal.append(
+            PlannerJournalKindV1::SelectedPlan,
+            digest("revoked-selection"),
+            receipt.receipt_digest(),
+        ),
+        Err(PlannerJournalError::RevokedPlan)
+    );
+    assert_eq!(journal.entries().len(), 2);
+}
+
+#[test]
+fn reopen_rejects_chain_consistent_selection_without_a_decision() {
+    let mut journal = PlannerJournalV1::new();
+    let identity = digest("selection");
+    let payload = receipt().receipt_digest();
+    must(journal.append(PlannerJournalKindV1::Snapshot, identity, payload));
+    let mut bytes = journal.export_bytes();
+    // A correct hash chain does not establish the required semantic predecessor.
+    bytes[20] = PlannerJournalKindV1::SelectedPlan.tag();
+    let changed_digest = super::digest_entry(
+        1,
+        PlannerJournalKindV1::SelectedPlan,
+        identity,
+        payload,
+        Digest32::ZERO,
+    );
+    let last_digest = bytes.len() - 32;
+    bytes[last_digest..].copy_from_slice(changed_digest.as_array());
+    assert_eq!(
+        PlannerJournalV1::reopen(&bytes),
+        Err(PlannerJournalError::DecisionNotRecorded)
+    );
+}
