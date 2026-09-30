@@ -73,3 +73,33 @@ fn missing_initial_revision_is_rejected() {
         Err(Error::BrokenLineage("memory:1".to_string()))
     );
 }
+
+#[test]
+fn legacy_checkpoint_cannot_resurrect_a_tombstoned_record() {
+    let live = record(1, None, RecordState::Live);
+    let tombstone = record(2, Some(live.record_digest()), RecordState::Tombstone);
+    let resurrected = record(3, Some(tombstone.record_digest()), RecordState::Live);
+    assert!(
+        compact(
+            generation(),
+            Digest32::of_bytes(b"snapshot"),
+            vec![resurrected, tombstone, live],
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn legacy_checkpoint_rejects_duplicate_revisions_with_conflicting_content() {
+    let first = record(1, None, RecordState::Live);
+    let mut conflicting = first.clone();
+    conflicting.content_digest = Digest32::of_bytes(b"conflicting-content");
+    assert_eq!(
+        compact(
+            generation(),
+            Digest32::of_bytes(b"snapshot"),
+            vec![first, conflicting],
+        ),
+        Err(Error::DuplicateRevision("memory:1".to_string()))
+    );
+}

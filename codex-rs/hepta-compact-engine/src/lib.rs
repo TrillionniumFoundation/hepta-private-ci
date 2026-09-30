@@ -9,6 +9,7 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -43,6 +44,7 @@ pub enum Error {
     InvalidRecord(String),
     DuplicateRevision(String),
     BrokenLineage(String),
+    ResurrectionDenied(String),
 }
 
 impl fmt::Display for Error {
@@ -83,6 +85,9 @@ pub fn compact(
                 || record.predecessor_digest != Some(previous.record_digest())
             {
                 return Err(Error::BrokenLineage(record.record_id.to_string()));
+            }
+            if previous.state == RecordState::Tombstone && record.state == RecordState::Live {
+                return Err(Error::ResurrectionDenied(record.record_id.to_string()));
             }
         } else if record.revision.get() != 1 {
             return Err(Error::BrokenLineage(record.record_id.to_string()));
