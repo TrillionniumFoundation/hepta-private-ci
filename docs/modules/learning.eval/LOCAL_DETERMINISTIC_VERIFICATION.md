@@ -37,7 +37,7 @@ The local verifier executes and records:
 
 The trusted-reporter aggregate suite contains 60 deterministic regressions: the original 15 producer/run,
 workflow-identity, Git-object, exact-matrix, stale-head, symlink, and marker
-tests plus 43 hardened entrypoint and local-evidence regressions for:
+tests plus 45 hardened entrypoint and local-evidence regressions for:
 
 - duplicate JSON keys at any object depth;
 - non-finite JSON constants;
