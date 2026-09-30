@@ -36,7 +36,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: learning-plasticity-exact-${{ github.event.pull_request.number || github.ref }}
+  group: learning-plasticity-exact-v2-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -87,6 +87,33 @@ jobs:
         with:
           name: plasticity-source-${{ env.SOURCE_SHA }}
           path: ${{ runner.temp }}/plasticity-source/
+          retention-days: 14
+          if-no-files-found: error
+
+  map-projection:
+    name: Project exact implementation map
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Generate prospective tracked map/status files outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          python3 scripts/project_learning_plasticity_map.py \
+            --output "$RUNNER_TEMP/plasticity-map-projection"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: plasticity-map-projection-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/plasticity-map-projection/
           retention-days: 14
           if-no-files-found: error
 
@@ -174,7 +201,7 @@ jobs:
 
   readiness:
     name: Single candidate readiness
-    needs: [source-snapshot, qualify]
+    needs: [source-snapshot, map-projection, qualify]
     if: always()
     runs-on: ubuntu-24.04
     timeout-minutes: 15
