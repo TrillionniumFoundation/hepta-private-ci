@@ -1,5 +1,10 @@
 {
   "activation": false,
+  "bootstrapFacade": {
+    "rawConstructorVisibility": "crate_private",
+    "retryRule": "only pristine post-migration database without authority rows may be discarded",
+    "symbol": "bootstrap_retryable"
+  },
   "capabilityPorts": {
     "AuthBusAdminPort": [
       "create_policy",
@@ -38,12 +43,11 @@
     ]
   },
   "hostOperations": [
-    "bootstrap",
     "open"
   ],
   "module": "auth.authbus",
   "periodicOwner": "AuthBusAuthorityWorker",
-  "schema": "hepta.authbus.public-api-inventory.v1",
+  "schema": "hepta.authbus.public-api-inventory.v2",
   "sealedRegistrations": [
     {
       "construction": [
