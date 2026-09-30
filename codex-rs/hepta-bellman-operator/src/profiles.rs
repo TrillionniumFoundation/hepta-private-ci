@@ -88,12 +88,14 @@ impl TrainingProfileV1 {
         if maximum_absolute_error < FixedQ32::ZERO {
             return Err(ProfileError::InvalidErrorBudget);
         }
+        let minimum_samples_u64 = u64::try_from(minimum_samples_per_cell)
+            .map_err(|_| ProfileError::InvalidMinimumSupport)?;
         let mut bytes = b"hepta.bellman-operator.training-profile.v1\0".to_vec();
         bytes.extend_from_slice(&generation.get().to_be_bytes());
         bytes.extend_from_slice(objective_digest.as_array());
         bytes.extend_from_slice(sensor_core_digest.as_array());
         bytes.extend_from_slice(&dataset_frontier.to_be_bytes());
-        bytes.extend_from_slice(&(minimum_samples_per_cell as u64).to_be_bytes());
+        bytes.extend_from_slice(&minimum_samples_u64.to_be_bytes());
         bytes.extend_from_slice(&maximum_absolute_error.raw().to_be_bytes());
         bytes.extend_from_slice(&runtime.max_duration_millis.to_be_bytes());
         bytes.extend_from_slice(&runtime.max_operations.to_be_bytes());
@@ -195,12 +197,14 @@ impl WorldModelProfileV1 {
         if !(FixedQ32::ZERO..=FixedQ32::ONE).contains(&maximum_uncertainty) {
             return Err(ProfileError::InvalidUncertaintyBudget);
         }
+        let minimum_support_u64 = u64::try_from(minimum_support_per_state_action)
+            .map_err(|_| ProfileError::InvalidMinimumSupport)?;
         let mut bytes = b"hepta.bellman-operator.world-model-profile.v1\0".to_vec();
         bytes.extend_from_slice(&generation.get().to_be_bytes());
         bytes.extend_from_slice(objective_digest.as_array());
         bytes.extend_from_slice(sensor_core_digest.as_array());
         bytes.extend_from_slice(&dataset_frontier.to_be_bytes());
-        bytes.extend_from_slice(&(minimum_support_per_state_action as u64).to_be_bytes());
+        bytes.extend_from_slice(&minimum_support_u64.to_be_bytes());
         bytes.extend_from_slice(&maximum_uncertainty.raw().to_be_bytes());
         bytes.extend_from_slice(&runtime.max_duration_millis.to_be_bytes());
         bytes.extend_from_slice(&runtime.max_operations.to_be_bytes());
