@@ -34,7 +34,8 @@
       "sourcePathExists": true,
       "designOperation": "wire_v1",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "00e767ccc12e1703296f8f73ef1f53da6996922a"
     },
     {
       "operation": "wire_v2",
@@ -60,7 +61,8 @@
         "codex-rs/hepta-codex-adapter/src/wire.rs",
         "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
         "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
-      ]
+      ],
+      "sourceBlob": "0195d24fca437fd458fb880e80176e4d566baced"
     },
     {
       "operation": "negotiate",
@@ -76,7 +78,8 @@
       "sourcePathExists": true,
       "designOperation": "negotiate",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "ff25aedea6d5c42d641ac64aac832a6931445e51"
     },
     {
       "operation": "session_decode",
@@ -91,7 +94,8 @@
       "sourcePathExists": true,
       "designOperation": "session_decode",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "527e270ef9de0631cc0b9a9d314d411394a64667"
     },
     {
       "operation": "schema_admission",
@@ -103,12 +107,14 @@
         "codex-rs/hepta-wire/src/schema_tests.rs",
         "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs",
         "codex-rs/hepta-context-compiler/src/wire_tests.rs",
-        "codex-rs/hepta-codex-adapter/src/wire_tests.rs"
+        "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
+        "codex-rs/hepta-wire/src/secure_session_preflight_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "schema_admission",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "65726d3677e10806baf29a851b5847ca81e8eba8"
     },
     {
       "operation": "stream_decode",
@@ -124,7 +130,8 @@
       "sourcePathExists": true,
       "designOperation": "stream_decode",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "cee2eda411d5a04f8301747000ef4bb0294cf52f"
     },
     {
       "operation": "authenticated_session",
@@ -134,12 +141,14 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/secure_session.rs",
-        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs"
+        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs",
+        "codex-rs/hepta-wire/src/secure_session_preflight_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "authenticated_session",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "0e6c1fbb50fbac13cf2c7a755cc9e6bec1ae5ea0"
     },
     {
       "operation": "authenticated_record",
@@ -153,7 +162,8 @@
       "sourcePathExists": true,
       "designOperation": "authenticated_record",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "ff879370b7e069b2c97fc4d25a11815b44cd7244"
     },
     {
       "operation": "runtime_codex_v3_admission",
@@ -171,7 +181,8 @@
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
         "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
-      ]
+      ],
+      "sourceBlob": "a5a6c27a54332941b8ca30911f4f323d00969fa8"
     },
     {
       "operation": "qualification_lifecycle",
@@ -180,27 +191,179 @@
       "state": "source_implemented_fail_closed_receipt_v2_lifecycle",
       "authority": "none",
       "tests": [
-        "scripts/platform_wire_status.py"
+        "scripts/tests/test_platform_wire_artifact_intake.py",
+        "scripts/tests/test_platform_wire_exact_qualification.py",
+        "scripts/tests/test_platform_wire_fuzz_campaign.py",
+        "scripts/tests/test_platform_wire_production_surface.py",
+        "scripts/tests/test_platform_wire_receipt_subject.py",
+        "scripts/tests/test_platform_wire_target_qualification.py",
+        "scripts/platform_wire_status_selftest.py"
       ],
       "sourcePathExists": true,
       "designOperation": "qualification_lifecycle",
       "mappingClass": "delegated_composition",
       "delegatedCallees": [
         ".github/workflows/lane-a-foundation.yml",
-        ".github/workflows/platform-wire-target-host.yml"
-      ]
+        ".github/workflows/platform-wire-benchmark.yml",
+        ".github/workflows/platform-wire-core.yml",
+        ".github/workflows/platform-wire-exact.yml",
+        ".github/workflows/platform-wire-fuzz.yml",
+        ".github/workflows/platform-wire-performance-intake.yml",
+        ".github/workflows/platform-wire-production-contract.yml",
+        ".github/workflows/platform-wire-production-intake.yml",
+        ".github/workflows/platform-wire-production-surface.yml",
+        ".github/workflows/platform-wire-repair.yml",
+        ".github/workflows/platform-wire-target-host.yml",
+        ".github/workflows/platform-wire-worktree-export.yml",
+        "scripts/platform_wire_exact_qualification.py",
+        "scripts/platform_wire_fleet_contract.py",
+        "scripts/platform_wire_fuzz_campaign.py",
+        "scripts/platform_wire_managed_fleet_profile.py",
+        "scripts/platform_wire_managed_profile.py",
+        "scripts/platform_wire_performance_gate.py",
+        "scripts/platform_wire_performance_intake.py",
+        "scripts/platform_wire_production_gate.py",
+        "scripts/platform_wire_production_intake.py",
+        "scripts/platform_wire_production_schema.py",
+        "scripts/platform_wire_production_surface.py",
+        "scripts/platform_wire_receipt_subject.py",
+        "scripts/platform_wire_retention_profile.py",
+        "scripts/platform_wire_status.py",
+        "scripts/platform_wire_status_contracts.py",
+        "scripts/platform_wire_status_receipts.py",
+        "scripts/platform_wire_status_selftest.py",
+        "scripts/platform_wire_target_qualification.py"
+      ],
+      "sourceBlob": "22c4f22d48876bf8cab46dab23d6ae4b0657fa73"
+    },
+    {
+      "operation": "frame_header",
+      "nativeSymbol": "FrameHeader",
+      "sourcePath": "codex-rs/hepta-wire/src/frame_header.rs",
+      "state": "source_implemented_header_first_bounded",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/boundary_tests.rs",
+        "codex-rs/hepta-wire/src/stream_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "frame_header",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "32d337de4ee0d6cb4d2d3bf6f4d582392f9ba58d"
+    },
+    {
+      "operation": "typed_envelope",
+      "nativeSymbol": "WireSession::{encode_typed_envelope,decode_typed_envelope}",
+      "sourcePath": "codex-rs/hepta-wire/src/secure_session.rs",
+      "state": "source_implemented_metadata_preflight_and_envelope_bound",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/schema_tests.rs",
+        "codex-rs/hepta-wire/src/secure_session_preflight_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "typed_envelope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "0e6c1fbb50fbac13cf2c7a755cc9e6bec1ae5ea0"
+    },
+    {
+      "operation": "hardened_owner",
+      "nativeSymbol": "HardenedManagedWireSession",
+      "sourcePath": "codex-rs/hepta-wire/src/hardened_managed_session.rs",
+      "state": "source_implemented_unique_key_owner_and_codec_bound",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/hardened_managed_session.rs",
+        "codex-rs/hepta-wire/src/hardened_session.rs",
+        "codex-rs/hepta-wire/tests/production_surface/clone_key.rs",
+        "codex-rs/hepta-wire/tests/production_surface/pass.rs",
+        "codex-rs/hepta-wire/tests/production_surface/raw_envelope.rs",
+        "codex-rs/hepta-wire/tests/production_surface/raw_owners.rs",
+        "codex-rs/hepta-wire/tests/production_surface/session_escape.rs",
+        "codex-rs/hepta-wire/tests/production_surface/unbound_codec.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "hardened_owner",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "2155993ca7527786c860c86ff9ee91efba8b8583"
+    },
+    {
+      "operation": "hardened_stream",
+      "nativeSymbol": "HardenedRecordStream<C: BoundPayloadCodec>",
+      "sourcePath": "codex-rs/hepta-wire/src/hardened_record_stream/impl.rs",
+      "state": "source_implemented_typed_prefix_and_shared_work_budget",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/hardened_record_stream/tests.rs",
+        "codex-rs/hepta-wire/fuzz/fuzz_targets/managed_records.rs",
+        "codex-rs/hepta-wire/fuzz/fuzz_targets/hardened_fixture.rs",
+        "codex-rs/hepta-wire/tests/production_surface/clone_key.rs",
+        "codex-rs/hepta-wire/tests/production_surface/pass.rs",
+        "codex-rs/hepta-wire/tests/production_surface/raw_envelope.rs",
+        "codex-rs/hepta-wire/tests/production_surface/raw_owners.rs",
+        "codex-rs/hepta-wire/tests/production_surface/session_escape.rs",
+        "codex-rs/hepta-wire/tests/production_surface/unbound_codec.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "hardened_stream",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "615223f6df59a9e202011f7ed4c0b8830d74213b"
+    },
+    {
+      "operation": "performance_evidence",
+      "nativeSymbol": "platform_wire_performance_gate.py",
+      "sourcePath": "scripts/platform_wire_performance_gate.py",
+      "state": "source_implemented_closed_five_path_evidence_gate",
+      "authority": "none",
+      "tests": [
+        "scripts/platform_wire_performance_gate.py",
+        "scripts/tests/test_platform_wire_artifact_intake.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "performance_evidence",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "scripts/platform_wire_performance_intake.py",
+        ".github/workflows/platform-wire-performance-intake.yml"
+      ],
+      "sourceBlob": "aa5193ab782b1ed5d8bf01dd860157a310a4fdca"
+    },
+    {
+      "operation": "production_evidence",
+      "nativeSymbol": "platform_wire_production_gate.py",
+      "sourcePath": "scripts/platform_wire_production_gate.py",
+      "state": "source_implemented_closed_eight_scenario_evidence_gate",
+      "authority": "none",
+      "tests": [
+        "scripts/platform_wire_production_gate.py",
+        "scripts/tests/test_platform_wire_artifact_intake.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "production_evidence",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "scripts/platform_wire_production_intake.py",
+        ".github/workflows/platform-wire-production-intake.yml"
+      ],
+      "sourceBlob": "8c6b080d2acda2f22f07b9126e4e2e1ffe1496a1"
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain current exact-head, deterministic synthetic-merge and protected target-host receipts after the final source/map commit.",
-    "Compose the authenticated WireSession/HPTM posture into every selected production transport and obtain source-bound independent reviewer and operations acceptance receipts.",
+    "Obtain current exact-head, deterministic synthetic-merge, protected target-host and three-target fuzz receipts after the final source/map commit.",
+    "Compose HardenedManagedWireSession and HardenedRecordStream<C: BoundPayloadCodec> at each selected authenticated production transport boundary; current codec callers use the protocol-tooling surface.",
+    "Register reviewed real five-path paired candidate/gRPC performance and eight-scenario production-composition producers, then retain same-source passing observations.",
     "Register and qualify each additional product-domain schema codec before admitting it.",
-    "Issue the source-bound release receipt and artifact digest only after qualification and acceptance are complete."
+    "Obtain source-bound independent semantic/security reviewer and distinct operations acceptance, followed by governed canary/promotion and a separate release receipt with artifact digest."
   ],
   "externalEvidenceGates": [
-    "independent semantic and security review",
-    "protected target-host product execution and authenticated transport qualification",
-    "distinct operations acceptance, canary, promotion and release"
+    "same-source protected target-host execution and three-target fuzz qualification",
+    "real five-path paired candidate/gRPC performance and eight-scenario selected-deployment observations",
+    "independent semantic/security reviewer and distinct operations acceptance",
+    "governed canary, promotion and source-bound release with artifact digest"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -240,11 +403,59 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/lane-a-foundation.yml",
-      "object": "fb133d45f2125fbb3aaef1b9adc19c3f6aeacff9"
+      "object": "3b47878ad1f81e6c41f185a7083e7f4361d66ebe"
+    },
+    {
+      "path": ".github/workflows/platform-wire-benchmark.yml",
+      "object": "e3ad6e7f926f61f4c3dfb7d394dfb108c772ee80"
+    },
+    {
+      "path": ".github/workflows/platform-wire-core.yml",
+      "object": "0f969d40dc058977e8bd4c2b6b8b8fabd56985ce"
+    },
+    {
+      "path": ".github/workflows/platform-wire-exact.yml",
+      "object": "f6ca7809c9bf52dce5227a4725f10b1bf6c1d14f"
+    },
+    {
+      "path": ".github/workflows/platform-wire-fuzz.yml",
+      "object": "1e198ca63d12b5393a651eb6901b3f8010c2a680"
+    },
+    {
+      "path": ".github/workflows/platform-wire-performance-intake.yml",
+      "object": "5fa17c40c22151bece75713f4677b72e520f0994"
+    },
+    {
+      "path": ".github/workflows/platform-wire-production-contract.yml",
+      "object": "13e45fffd6ecb7919f8710e5c8bb792652e03d20"
+    },
+    {
+      "path": ".github/workflows/platform-wire-production-intake.yml",
+      "object": "de8fec2718df0f4e525f5e01e5046fb49440dea5"
+    },
+    {
+      "path": ".github/workflows/platform-wire-production-surface.yml",
+      "object": "069b9f77ecd12072040e012d8fb8f2d4a3a313c7"
+    },
+    {
+      "path": ".github/workflows/platform-wire-repair.yml",
+      "object": "2094e59d93e904f9b5d8a097e84ca74054701030"
     },
     {
       "path": ".github/workflows/platform-wire-target-host.yml",
-      "object": "8c6e013ad739e31e45d4651f35f3f95981d230c5"
+      "object": "c8793aad270af45532e3a08c165bb5341bf719e5"
+    },
+    {
+      "path": ".github/workflows/platform-wire-worktree-export.yml",
+      "object": "b85c639b1601fcb7abe82472074867d2da8b8093"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "1dc924f2ca5f44adc4358b405e4e4a1405e9d64f"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
@@ -252,11 +463,11 @@
     },
     {
       "path": "codex-rs/hepta-codex-adapter/src/wire.rs",
-      "object": "7f61e07d67189bea1c9cc0bc31a653f80fe3f3a8"
+      "object": "a5a6c27a54332941b8ca30911f4f323d00969fa8"
     },
     {
       "path": "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
-      "object": "b85fb3d89881e736d64f0e190f86db2db6cfe2bd"
+      "object": "f61949995c70c0baf48c6f13058f56eea9d7b13d"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/wire.rs",
@@ -276,7 +487,7 @@
     },
     {
       "path": "codex-rs/hepta-native-gateway/src/lib.rs",
-      "object": "990e07d87d1cd5c67ee18250bfcd58f2c0e6b040"
+      "object": "7050266f7c0ec051fa57c6c6dd48b5c54e0ca10c"
     },
     {
       "path": "codex-rs/hepta-runtime/src/lib.rs",
@@ -288,19 +499,83 @@
     },
     {
       "path": "codex-rs/hepta-wire",
-      "object": "7dada4a83be146471d64ca82506fc66347d89312"
+      "object": "15ed961d58a07880772b7ead99bab4a9d864283b"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/Cargo.toml",
+      "object": "299d137f3f1184af51efc4aaa47ad35544d52cd5"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-0",
+      "object": "3b20ea03a7871c69839fe43fcd80e91d93020e6a"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-1",
+      "object": "7e35bae4917b72ccf6750e7cc2bf972090dd1bf0"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-2",
+      "object": "738a0e1965e84ad746aa38cfbc3e0dcf6ad7a039"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-3",
+      "object": "a8e4d1814c377561f9faaa5a085ebb5db17dba13"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-4",
+      "object": "900e99f897111d26c974c654a9591941bdcdd623"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-5",
+      "object": "ad905d377c238a3a12c6db00e30881319c0be479"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-6",
+      "object": "4e465564f69e0e1e4e6f0259da92fcfca1c5de41"
     },
     {
       "path": "codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs",
-      "object": "799fb6ddb63aafc70ab232a1e3043c0d3e0b6abb"
+      "object": "f14100c03cc66160f636804a21625597697f1b0f"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/fuzz_targets/hardened_fixture.rs",
+      "object": "1cf4ba6018bed95bd1bfebaf356bb7c5c4394fde"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/fuzz_targets/managed_fixture.rs",
+      "object": "13bb50806e0754de54f7fbaca64d6b75adc3611b"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/fuzz_targets/managed_records.rs",
+      "object": "e7fd833c5b2cdb5a9c6ab34765b5d647994f23c7"
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/fuzz_targets/policy_admission.rs",
+      "object": "42e0e56f0d50f828fbfbdd8150c861547d73200a"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/authentication.rs",
+      "object": "b7b48aa3b493099edf5a84ac8d759996d800eaad"
     },
     {
       "path": "codex-rs/hepta-wire/src/boundary_tests.rs",
       "object": "f1614bba342ab97b4782b71b8bdf9fe45a09dfc0"
     },
     {
+      "path": "codex-rs/hepta-wire/src/bounded_read.rs",
+      "object": "cdf7274d32f786c9eeb607c3daaf15a8891fcef5"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/bounded_read_tests.rs",
+      "object": "f2027501fef4d630c940d8bd68683d96049c0de9"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/codec_binding.rs",
+      "object": "aa09b2c1cfa377bef4210972f56877e99e5d9ad2"
+    },
+    {
       "path": "codex-rs/hepta-wire/src/directional_session.rs",
-      "object": "194408faf369e8c899f318b24c81dd7e8068e769"
+      "object": "ff879370b7e069b2c97fc4d25a11815b44cd7244"
     },
     {
       "path": "codex-rs/hepta-wire/src/envelope.rs",
@@ -319,84 +594,405 @@
       "object": "dc760e52d315ddd17ee5237db064e511f5f32775"
     },
     {
+      "path": "codex-rs/hepta-wire/src/feed.rs",
+      "object": "6c5bedc2bbd83def7f13371f77f87435fa5722a7"
+    },
+    {
       "path": "codex-rs/hepta-wire/src/frame.rs",
-      "object": "32545befa5ef426a4b2a639a8a4827f53a88198a"
+      "object": "2196ab56a907a5a3cccb271e5d2eee526ddbb5cf"
     },
     {
       "path": "codex-rs/hepta-wire/src/frame_header.rs",
-      "object": "aa4cf1a92cdf62ca905b7578f4ae8a636fdc59d9"
+      "object": "32d337de4ee0d6cb4d2d3bf6f4d582392f9ba58d"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/hardened_managed_session.rs",
+      "object": "2155993ca7527786c860c86ff9ee91efba8b8583"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/hardened_record_stream.rs",
+      "object": "851d5edc2ef4a29cb37008e5d4e5c5f431fc205c"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/hardened_record_stream/impl.rs",
+      "object": "615223f6df59a9e202011f7ed4c0b8830d74213b"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/hardened_record_stream/tests.rs",
+      "object": "c9512af6d02cac02862f5533eb3946f7043a6e4d"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/hardened_record_stream/types.rs",
+      "object": "3e4bb94f99e0effb2397c40e7b1b7e0774aa0945"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/hardened_session.rs",
+      "object": "60075bb1cc582af9a365c665f1d5e9ca19f03e32"
     },
     {
       "path": "codex-rs/hepta-wire/src/lib.rs",
-      "object": "9ebc8010c40cbb2e3db4d459c46298f13afec7bf"
+      "object": "6eca363bdcbf7d65afd8e58f42433c51c552d65b"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/managed_session.rs",
+      "object": "07724a8b174833c8f5bd21eaef7efe6bd1f88d82"
     },
     {
       "path": "codex-rs/hepta-wire/src/property_tests.rs",
       "object": "4ee69dfc4846e38b533a6767e3c734657d019b7c"
     },
     {
+      "path": "codex-rs/hepta-wire/src/record_stream.rs",
+      "object": "c0b959b341cf12c131f8c1532f496ffdfe171a53"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/record_stream_budget_tests.rs",
+      "object": "4edc5fa8689f6cac662f397a2aa403149a3c3ea3"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/record_stream_output_tests.rs",
+      "object": "4be11c8a30a00032010c8bc0678530c59420164c"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/record_stream_production.rs",
+      "object": "f8633f4462e207d8c377406ce576436625fab77c"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/record_stream_retention_tests.rs",
+      "object": "468394169d8f939623865715dc053585540ef48c"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/record_stream_tests.rs",
+      "object": "24f0789c6dcdcb6cd81126e6371f63d53ab0350b"
+    },
+    {
       "path": "codex-rs/hepta-wire/src/registry.rs",
-      "object": "95c15170333c56acfefd385f490167522593ec0a"
+      "object": "65726d3677e10806baf29a851b5847ca81e8eba8"
     },
     {
       "path": "codex-rs/hepta-wire/src/schema.rs",
-      "object": "dc06ad7a692d87404ee8d3d2bcb76e9dea984717"
+      "object": "ba7529ffb85cdd82add4e48a8a2410b0a76088c3"
     },
     {
       "path": "codex-rs/hepta-wire/src/schema_tests.rs",
-      "object": "a317246b9a4487ae1aaee45debfa7c79553d4c31"
+      "object": "fa2c1268db6e6c57d024f141638ed79c1becb1d3"
     },
     {
       "path": "codex-rs/hepta-wire/src/secure_session.rs",
-      "object": "542c5e1dc0f18022fb2939c3256f58e29ccce952"
+      "object": "0e6c1fbb50fbac13cf2c7a755cc9e6bec1ae5ea0"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/secure_session_preflight_tests.rs",
+      "object": "fec5c8081963df60d848ce30632bcade130188a3"
     },
     {
       "path": "codex-rs/hepta-wire/src/session.rs",
-      "object": "fc4c7c84e2306d0febd8c753aba8010277eb93a5"
+      "object": "527e270ef9de0631cc0b9a9d314d411394a64667"
     },
     {
       "path": "codex-rs/hepta-wire/src/session_tests.rs",
-      "object": "4901bd0df8ccb948221677e6746c953e33f21fbd"
+      "object": "5b4d0170b9b60c082434fd82115235009f64919a"
     },
     {
       "path": "codex-rs/hepta-wire/src/stream.rs",
-      "object": "01f524ccb7dd6bd7a107ba43f6e08d6e2489b43d"
+      "object": "cee2eda411d5a04f8301747000ef4bb0294cf52f"
     },
     {
       "path": "codex-rs/hepta-wire/src/stream_tests.rs",
-      "object": "80aec09d95143b7e551c415f048dccbdd6eeeb40"
+      "object": "71ead493de530043e3f84dfb2a4eb2a4e212c935"
     },
     {
       "path": "codex-rs/hepta-wire/src/version.rs",
-      "object": "8559fc3bb8a61911e08e32da0ff47bfdfd4d72b1"
+      "object": "ff25aedea6d5c42d641ac64aac832a6931445e51"
     },
     {
       "path": "codex-rs/hepta-wire/src/version_tests.rs",
-      "object": "4ae32d887c47f81dc32d20b685cf47b3d810bc8e"
+      "object": "db30982ce1c2713a2dcad3c841be1e298ba25021"
+    },
+    {
+      "path": "codex-rs/hepta-wire/tests/production_surface",
+      "object": "60392a9d1d7ac979a1a9f50e4541bc8a6b9c78c0"
+    },
+    {
+      "path": "codex-rs/hepta-wire/tests/production_surface/clone_key.rs",
+      "object": "c89530d01575781929d6b8db612a04a6f2f094f6"
+    },
+    {
+      "path": "codex-rs/hepta-wire/tests/production_surface/pass.rs",
+      "object": "355d97d7e64354aba4986074075cc822d3641577"
+    },
+    {
+      "path": "codex-rs/hepta-wire/tests/production_surface/raw_envelope.rs",
+      "object": "6163acc6a01bae52d3cb2a6f9cc9bc0973afeca9"
+    },
+    {
+      "path": "codex-rs/hepta-wire/tests/production_surface/raw_owners.rs",
+      "object": "c3f3d80db3545f9663a45a594a87ff2f15e77c28"
+    },
+    {
+      "path": "codex-rs/hepta-wire/tests/production_surface/session_escape.rs",
+      "object": "21e041cf0a24da0cba9a8229d47c7221d1ed8fc2"
+    },
+    {
+      "path": "codex-rs/hepta-wire/tests/production_surface/unbound_codec.rs",
+      "object": "2d18c1aad1e39521d0639564891ad632b1ea79c9"
     },
     {
       "path": "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
-      "object": "8189591738e2df00b3d64776620ee7d13734ae55"
+      "object": "b9a8eeb9fb41da0e07bb7e340a32de57a1f9aaa6"
+    },
+    {
+      "path": "docs/modules/platform.wire/FRAME_AND_IO_BUDGETS_20260929.md",
+      "object": "a2ca6a1daee6dd5f0463ccd948f8200ff77b895f"
+    },
+    {
+      "path": "docs/modules/platform.wire/HARDENED_SESSION.md",
+      "object": "dadacb423d118885d2897f7a7633d91094b4c776"
+    },
+    {
+      "path": "docs/modules/platform.wire/MANAGED_RECORD_STREAM.md",
+      "object": "9b935fe0b774da63dc1635185373f79f5db00dd5"
+    },
+    {
+      "path": "docs/modules/platform.wire/README.md",
+      "object": "81c1728b32fd6d6055b444d4ce488e4256a2dc53"
     },
     {
       "path": "docs/modules/platform.wire/SECURITY_AND_QUALIFICATION.md",
-      "object": "ed9f43b6ebd11914c51de1c005c3a9f0251fa108"
+      "object": "9ca1789c7599138096e43c30a90353b6ad2ffccf"
     },
     {
       "path": "docs/modules/platform.wire/STATUS.md",
-      "object": "a48f8f81e43b40b6412c3040a11383342e6217c9"
+      "object": "32240a819da101e7cdcd66cdadfbd934b985ed5a"
     },
     {
       "path": "docs/modules/platform.wire/TECHNICAL.md",
-      "object": "11d640de0fbeb41ebd871cad728200cf812731e1"
+      "object": "615dd3cf36cf540b94b23e15743d570fde88e60e"
     },
     {
       "path": "qualification/module-execution-dossiers/detail/platform.wire.md",
       "object": "cbb84d999a48b6231c6f34b4587ced6fc54991bc"
     },
     {
+      "path": "scripts/platform_wire_exact_qualification.py",
+      "object": "331eab0661928675f060a796e20b2ec9faf7c789"
+    },
+    {
+      "path": "scripts/platform_wire_fleet_contract.py",
+      "object": "da8903730f2367e7fcd488bcc32400a4daf959bd"
+    },
+    {
+      "path": "scripts/platform_wire_fuzz_campaign.py",
+      "object": "8fc211d05bbfcd9123c04b4eea22116c05e0341e"
+    },
+    {
+      "path": "scripts/platform_wire_managed_fleet_profile.py",
+      "object": "d86b39f2792192e255935b748da06b0bb2fa3768"
+    },
+    {
+      "path": "scripts/platform_wire_managed_profile.py",
+      "object": "c8e4d5f46f476829acaffdbc52b4dea34f5fc517"
+    },
+    {
+      "path": "scripts/platform_wire_performance_gate.py",
+      "object": "aa5193ab782b1ed5d8bf01dd860157a310a4fdca"
+    },
+    {
+      "path": "scripts/platform_wire_performance_intake.py",
+      "object": "a3cbbff365b41442c7e2e0a201404ccca5d4cb48"
+    },
+    {
+      "path": "scripts/platform_wire_production_gate.py",
+      "object": "8c6b080d2acda2f22f07b9126e4e2e1ffe1496a1"
+    },
+    {
+      "path": "scripts/platform_wire_production_intake.py",
+      "object": "c5967ea9184ee605d46d2c9e44974c3e9861eb1e"
+    },
+    {
+      "path": "scripts/platform_wire_production_schema.py",
+      "object": "826f170cd23c252598e7cb8f604c903b43f24fa7"
+    },
+    {
+      "path": "scripts/platform_wire_production_surface.py",
+      "object": "210fe4e37c9f073fb0aef2ae2844240ad8f7f75e"
+    },
+    {
+      "path": "scripts/platform_wire_receipt_subject.py",
+      "object": "43ee751357445af6ab233a476d130bea718ef8c8"
+    },
+    {
+      "path": "scripts/platform_wire_retention_profile.py",
+      "object": "320363f9e99e2f5425461f4780ceb60c3e3bd8cf"
+    },
+    {
       "path": "scripts/platform_wire_status.py",
-      "object": "4291f4a6c78e3b7069824e894ffd9fda856dd7cf"
+      "object": "22c4f22d48876bf8cab46dab23d6ae4b0657fa73"
+    },
+    {
+      "path": "scripts/platform_wire_status_contracts.py",
+      "object": "53b939b1406e2c25cc0fbbbfbc9f6e499de5f7bf"
+    },
+    {
+      "path": "scripts/platform_wire_status_receipts.py",
+      "object": "118feccaf523ab90411addb7d5eb73d2dad621d4"
+    },
+    {
+      "path": "scripts/platform_wire_status_selftest.py",
+      "object": "b4564edd00c31029fdecd46562b83c22147ae222"
+    },
+    {
+      "path": "scripts/platform_wire_target_qualification.py",
+      "object": "b1c1364a28139c9c2abc5d82f1a3706c9c3a1b54"
+    },
+    {
+      "path": "scripts/tests/test_platform_wire_artifact_intake.py",
+      "object": "cae00a03b5417bebf00916f0e153f6df6e045bdc"
+    },
+    {
+      "path": "scripts/tests/test_platform_wire_exact_qualification.py",
+      "object": "86abe52deabff77c496baae05a9159acd7b0e716"
+    },
+    {
+      "path": "scripts/tests/test_platform_wire_fuzz_campaign.py",
+      "object": "b4a50c8ab036214fe05505224effd0c1e7fc71e6"
+    },
+    {
+      "path": "scripts/tests/test_platform_wire_production_surface.py",
+      "object": "0e2d892e33659b005063126bb7b87bece5ec0ca1"
+    },
+    {
+      "path": "scripts/tests/test_platform_wire_receipt_subject.py",
+      "object": "c9ca86f2bba69f092fc08df84b1b28462176a633"
+    },
+    {
+      "path": "scripts/tests/test_platform_wire_target_qualification.py",
+      "object": "a63daaad789dcfc69fdc00ecf3aaaf2d90c3df12"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "9dde2bf03f33979ef6e2dfa9e6354141d1a47c19",
+    "tree": "cb271620945d4ae38ea852e8ca1e18c19ce1649e"
+  },
+  "observedSourcePaths": [
+    ".github/workflows/lane-a-foundation.yml",
+    ".github/workflows/platform-wire-benchmark.yml",
+    ".github/workflows/platform-wire-core.yml",
+    ".github/workflows/platform-wire-exact.yml",
+    ".github/workflows/platform-wire-fuzz.yml",
+    ".github/workflows/platform-wire-performance-intake.yml",
+    ".github/workflows/platform-wire-production-contract.yml",
+    ".github/workflows/platform-wire-production-intake.yml",
+    ".github/workflows/platform-wire-production-surface.yml",
+    ".github/workflows/platform-wire-repair.yml",
+    ".github/workflows/platform-wire-target-host.yml",
+    ".github/workflows/platform-wire-worktree-export.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+    "codex-rs/hepta-codex-adapter/src/wire.rs",
+    "codex-rs/hepta-codex-adapter/src/wire_tests.rs",
+    "codex-rs/hepta-context-compiler/src/wire.rs",
+    "codex-rs/hepta-context-compiler/src/wire_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+    "codex-rs/hepta-native-gateway/src/lib.rs",
+    "codex-rs/hepta-runtime/src/lib.rs",
+    "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs",
+    "codex-rs/hepta-wire",
+    "codex-rs/hepta-wire/fuzz/Cargo.toml",
+    "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-0",
+    "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-1",
+    "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-2",
+    "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-3",
+    "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-4",
+    "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-5",
+    "codex-rs/hepta-wire/fuzz/corpus/managed_records/mode-6",
+    "codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs",
+    "codex-rs/hepta-wire/fuzz/fuzz_targets/hardened_fixture.rs",
+    "codex-rs/hepta-wire/fuzz/fuzz_targets/managed_fixture.rs",
+    "codex-rs/hepta-wire/fuzz/fuzz_targets/managed_records.rs",
+    "codex-rs/hepta-wire/fuzz/fuzz_targets/policy_admission.rs",
+    "codex-rs/hepta-wire/src/authentication.rs",
+    "codex-rs/hepta-wire/src/boundary_tests.rs",
+    "codex-rs/hepta-wire/src/bounded_read.rs",
+    "codex-rs/hepta-wire/src/bounded_read_tests.rs",
+    "codex-rs/hepta-wire/src/codec_binding.rs",
+    "codex-rs/hepta-wire/src/directional_session.rs",
+    "codex-rs/hepta-wire/src/envelope.rs",
+    "codex-rs/hepta-wire/src/envelope_tests.rs",
+    "codex-rs/hepta-wire/src/envelope_v2.rs",
+    "codex-rs/hepta-wire/src/envelope_v2_tests.rs",
+    "codex-rs/hepta-wire/src/feed.rs",
+    "codex-rs/hepta-wire/src/frame.rs",
+    "codex-rs/hepta-wire/src/frame_header.rs",
+    "codex-rs/hepta-wire/src/hardened_managed_session.rs",
+    "codex-rs/hepta-wire/src/hardened_record_stream.rs",
+    "codex-rs/hepta-wire/src/hardened_record_stream/impl.rs",
+    "codex-rs/hepta-wire/src/hardened_record_stream/tests.rs",
+    "codex-rs/hepta-wire/src/hardened_record_stream/types.rs",
+    "codex-rs/hepta-wire/src/hardened_session.rs",
+    "codex-rs/hepta-wire/src/lib.rs",
+    "codex-rs/hepta-wire/src/managed_session.rs",
+    "codex-rs/hepta-wire/src/property_tests.rs",
+    "codex-rs/hepta-wire/src/record_stream.rs",
+    "codex-rs/hepta-wire/src/record_stream_budget_tests.rs",
+    "codex-rs/hepta-wire/src/record_stream_output_tests.rs",
+    "codex-rs/hepta-wire/src/record_stream_production.rs",
+    "codex-rs/hepta-wire/src/record_stream_retention_tests.rs",
+    "codex-rs/hepta-wire/src/record_stream_tests.rs",
+    "codex-rs/hepta-wire/src/registry.rs",
+    "codex-rs/hepta-wire/src/schema.rs",
+    "codex-rs/hepta-wire/src/schema_tests.rs",
+    "codex-rs/hepta-wire/src/secure_session.rs",
+    "codex-rs/hepta-wire/src/secure_session_preflight_tests.rs",
+    "codex-rs/hepta-wire/src/session.rs",
+    "codex-rs/hepta-wire/src/session_tests.rs",
+    "codex-rs/hepta-wire/src/stream.rs",
+    "codex-rs/hepta-wire/src/stream_tests.rs",
+    "codex-rs/hepta-wire/src/version.rs",
+    "codex-rs/hepta-wire/src/version_tests.rs",
+    "codex-rs/hepta-wire/tests/production_surface",
+    "codex-rs/hepta-wire/tests/production_surface/clone_key.rs",
+    "codex-rs/hepta-wire/tests/production_surface/pass.rs",
+    "codex-rs/hepta-wire/tests/production_surface/raw_envelope.rs",
+    "codex-rs/hepta-wire/tests/production_surface/raw_owners.rs",
+    "codex-rs/hepta-wire/tests/production_surface/session_escape.rs",
+    "codex-rs/hepta-wire/tests/production_surface/unbound_codec.rs",
+    "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
+    "docs/modules/platform.wire/FRAME_AND_IO_BUDGETS_20260929.md",
+    "docs/modules/platform.wire/HARDENED_SESSION.md",
+    "docs/modules/platform.wire/MANAGED_RECORD_STREAM.md",
+    "docs/modules/platform.wire/README.md",
+    "docs/modules/platform.wire/SECURITY_AND_QUALIFICATION.md",
+    "docs/modules/platform.wire/STATUS.md",
+    "docs/modules/platform.wire/TECHNICAL.md",
+    "qualification/module-execution-dossiers/detail/platform.wire.md",
+    "scripts/platform_wire_exact_qualification.py",
+    "scripts/platform_wire_fleet_contract.py",
+    "scripts/platform_wire_fuzz_campaign.py",
+    "scripts/platform_wire_managed_fleet_profile.py",
+    "scripts/platform_wire_managed_profile.py",
+    "scripts/platform_wire_performance_gate.py",
+    "scripts/platform_wire_performance_intake.py",
+    "scripts/platform_wire_production_gate.py",
+    "scripts/platform_wire_production_intake.py",
+    "scripts/platform_wire_production_schema.py",
+    "scripts/platform_wire_production_surface.py",
+    "scripts/platform_wire_receipt_subject.py",
+    "scripts/platform_wire_retention_profile.py",
+    "scripts/platform_wire_status.py",
+    "scripts/platform_wire_status_contracts.py",
+    "scripts/platform_wire_status_receipts.py",
+    "scripts/platform_wire_status_selftest.py",
+    "scripts/platform_wire_target_qualification.py",
+    "scripts/tests/test_platform_wire_artifact_intake.py",
+    "scripts/tests/test_platform_wire_exact_qualification.py",
+    "scripts/tests/test_platform_wire_fuzz_campaign.py",
+    "scripts/tests/test_platform_wire_production_surface.py",
+    "scripts/tests/test_platform_wire_receipt_subject.py",
+    "scripts/tests/test_platform_wire_target_qualification.py"
   ]
 }
