@@ -37,6 +37,7 @@ use tokio::io::BufReader;
 #[cfg(test)]
 use tokio::sync::Mutex;
 use tokio::sync::Semaphore;
+use tokio::task::JoinSet;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
@@ -233,12 +234,14 @@ impl MatrixdControlState {
                     .acquire()
                     .await
                     .map_err(|_| MatrixdControlRequestError::CorruptState)?;
+                self.require_live_mutation()?;
                 let snapshot = self.store.control_snapshot().await?;
                 if snapshot.active_thread_id.as_deref() != Some(thread_id.as_str())
                     || snapshot.active_turn_id.as_deref() != Some(turn_id.as_str())
                 {
                     return Err(MatrixdControlRequestError::Conflict);
                 }
+                self.require_live_mutation()?;
                 self.transport.interrupt_turn(thread_id, turn_id).await?;
                 Ok(MatrixdPayload::Accepted)
             }
@@ -251,6 +254,7 @@ impl MatrixdControlState {
                     .acquire()
                     .await
                     .map_err(|_| MatrixdControlRequestError::CorruptState)?;
+                self.require_live_mutation()?;
                 let now_ms = system_time_ms()?;
                 let pending = self
                     .store
@@ -272,33 +276,27 @@ impl MatrixdControlState {
                     .await?;
                 let request_id = serde_json::from_str::<RequestId>(&record.request_id_json)
                     .map_err(|_| MatrixdControlRequestError::CorruptState)?;
+                // Store awaits and queued control requests must not freeze an
+                // observed lifecycle fence before the App Server effect.
+                self.require_live_mutation()?;
                 self.transport
                     .resolve_approval(request_id, record.request_kind, decision)
                     .await?;
-                let completion = self
-                    .store
-                    .complete_pending_approval_resolution(
-                        &approval_key,
-                        self.identity.fence.attached_agent_generation,
-                        &self.identity.fence.process_incarnation,
-                        decision,
-                        system_time_ms()?,
-                    )
-                    .await;
-                match completion {
-                    Ok(_) => {}
-                    Err(MatrixDurableError::Conflict)
-                        if self.store.pending_approval(&approval_key).await?.is_none() =>
-                    {
-                        // The authoritative `serverRequest/resolved` event may
-                        // win the race with this local completion after App
-                        // Server accepted the response. Absence is terminal in
-                        // that exact post-send window, not a failed resolve.
-                    }
-                    Err(error) => return Err(error.into()),
-                }
+                // Transport success acknowledges a local socket write, not
+                // App Server resolution. Preserve the exact decision until
+                // its authoritative serverRequest/resolved notification.
                 Ok(MatrixdPayload::Accepted)
             }
+        }
+    }
+
+    fn require_live_mutation(&self) -> Result<(), MatrixdControlRequestError> {
+        match self.connections.health().lifecycle {
+            MatrixdLifecycle::Ready => Ok(()),
+            MatrixdLifecycle::Fenced | MatrixdLifecycle::Draining => {
+                Err(MatrixdControlRequestError::LifecycleFenced)
+            }
+            MatrixdLifecycle::Degraded => Err(MatrixdControlRequestError::NotReady),
         }
     }
 
@@ -306,6 +304,11 @@ impl MatrixdControlState {
         let now_ms = system_time_ms()?;
         let metrics = self.store.queue_metrics(now_ms).await?;
         let control = self.store.control_snapshot().await?;
+        let resync_required = !self
+            .store
+            .redaction_quarantines(/*limit*/ 1)
+            .await?
+            .is_empty();
         let inbox_depth = metrics
             .pending_inbox_depth
             .saturating_add(metrics.pending_dispatch_depth);
@@ -324,7 +327,7 @@ impl MatrixdControlState {
             active_thread_id: control.active_thread_id,
             active_turn_id: control.active_turn_id,
             pending_approvals: control.pending_approvals,
-            resync_required: false,
+            resync_required,
             event_cursor: control.cursor,
         }))
     }
@@ -357,9 +360,16 @@ impl MatrixdControlServer {
     }
 
     pub(crate) async fn run(mut self) -> Result<(), MatrixdControlError> {
+        let mut handlers = JoinSet::new();
         loop {
             let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => return Ok(()),
+                biased;
+                _ = self.cancellation.cancelled() => {
+                    handlers.abort_all();
+                    while handlers.join_next().await.is_some() {}
+                    return Ok(());
+                },
+                Some(_) = handlers.join_next(), if !handlers.is_empty() => continue,
                 accepted = self.listener.accept() => accepted?,
             };
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
@@ -367,7 +377,7 @@ impl MatrixdControlServer {
                 continue;
             };
             let state = Arc::clone(&self.state);
-            tokio::spawn(async move {
+            handlers.spawn(async move {
                 let _permit = permit;
                 let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
             });
@@ -483,6 +493,10 @@ enum MatrixdControlRequestError {
     AccessDenied,
     #[error("Matrix control request fence is stale")]
     StaleFence,
+    #[error("Matrix control lifecycle is fenced or draining")]
+    LifecycleFenced,
+    #[error("Matrix control dependencies are not ready")]
+    NotReady,
     #[error("Matrix approval decision is not available")]
     DecisionDenied,
     #[error("Matrix control request conflicts with current state")]
@@ -503,6 +517,8 @@ impl MatrixdControlRequestError {
             Self::InvalidRequest => "invalid_request",
             Self::AccessDenied => "access_denied",
             Self::StaleFence => "stale_fence",
+            Self::LifecycleFenced => "fenced",
+            Self::NotReady => "not_ready",
             Self::DecisionDenied => "decision_denied",
             Self::Conflict => "conflict",
             Self::CorruptState => "corrupt_state",
@@ -666,6 +682,8 @@ mod tests {
             MatrixDurableStore::open(&layout(temp, &agent_id()?)?, MatrixDurableConfig::default())
                 .await?;
         let connections = Arc::new(MatrixdConnectionState::default());
+        connections.set_agentd_connected(true);
+        connections.set_matrix_sync_connected(true);
         Ok((
             Arc::new(MatrixdControlState::new(
                 identity()?,
@@ -802,7 +820,15 @@ mod tests {
                 LocalApprovalDecision::Accept,
             )]
         );
-        assert!(state.store.pending_approval("approval-1").await?.is_none());
+        assert_eq!(
+            state
+                .store
+                .pending_approval("approval-1")
+                .await?
+                .expect("resolving approval")
+                .resolution_decision,
+            Some(LocalApprovalDecision::Accept)
+        );
         Ok(())
     }
 
@@ -832,6 +858,8 @@ mod tests {
             })
             .await?;
         let connections = Arc::new(MatrixdConnectionState::default());
+        connections.set_agentd_connected(true);
+        connections.set_matrix_sync_connected(true);
         let state = MatrixdControlState::new(
             identity()?,
             store.clone(),
@@ -849,6 +877,20 @@ mod tests {
             .await;
         assert!(matches!(response.payload, MatrixdPayload::Accepted));
         assert!(store.pending_approval("approval-race").await?.is_none());
+        let replay = state
+            .response(fenced_request(MatrixdMethod::ResolveApproval {
+                approval_key: "approval-race".to_string(),
+                decision: LocalApprovalDecision::Accept,
+            })?)
+            .await;
+        assert!(matches!(
+            replay.payload,
+            MatrixdPayload::Error { ref code, .. } if code == "conflict"
+        ));
+        assert_eq!(
+            store.read_control_events(0, 16).await?.batch.events.iter().filter(|event| matches!(&event.kind, codex_hepta_matrix_protocol::MatrixdEventKind::ApprovalResolved { approval_key } if approval_key == "approval-race")).count(),
+            1
+        );
         Ok(())
     }
 
@@ -862,6 +904,8 @@ mod tests {
             .tempdir_in("/tmp")?;
         let fake = Arc::new(FakeTransport::default());
         let (state, connections) = state(&temp, fake).await?;
+        connections.set_agentd_connected(false);
+        connections.set_matrix_sync_connected(false);
         let socket = layout(&temp, &agent_id()?)?
             .matrixd_control_socket()
             .to_path_buf();
@@ -906,3 +950,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "control_lifecycle_tests.rs"]
+mod lifecycle_tests;
