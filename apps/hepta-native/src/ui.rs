@@ -6,6 +6,7 @@ mod shutdown;
 mod task_supervisor;
 mod update_views;
 
+use self::history_page::HISTORY_PAGE_SIZE;
 use self::readiness::ReadinessFrames;
 use self::shutdown::Shutdown;
 use self::task_supervisor::FileInputTarget;
@@ -20,6 +21,7 @@ use crate::model::PlatformReceipt;
 use crate::model::PlatformRequest;
 use crate::model::RuntimeView;
 use crate::runtime::NativeShellRuntime;
+use crate::runtime::OperationHistoryPage;
 use crate::security::now_unix_ms;
 use crate::session_store::SessionReferenceStore;
 use crate::updater::PendingUpdateStatus;
@@ -45,6 +47,7 @@ enum Screen {
     Updates,
     Accessibility,
 }
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Locale {
     English,
@@ -59,6 +62,7 @@ impl Locale {
             .unwrap_or_default();
         Self::from_name(&locale)
     }
+
     fn from_name(locale: &str) -> Self {
         if locale.trim().to_ascii_lowercase().starts_with("zh") {
             Self::Chinese
@@ -66,6 +70,7 @@ impl Locale {
             Self::English
         }
     }
+
     fn text(self, english: &'static str, chinese: &'static str) -> &'static str {
         match self {
             Self::English => english,
@@ -81,6 +86,7 @@ enum UiTaskKind {
     Execute,
     StageUpdate,
     Ready,
+    History,
     PickFile,
     Shutdown,
 }
@@ -93,10 +99,12 @@ impl UiTaskKind {
             Self::Execute => "hepta-native-effect",
             Self::StageUpdate => "hepta-native-update-stage",
             Self::Ready => "hepta-native-readiness",
+            Self::History => "hepta-native-history-read",
             Self::PickFile => "hepta-native-file-picker",
             Self::Shutdown => "hepta-native-shutdown",
         }
     }
+
     fn label(self, locale: Locale) -> &'static str {
         match self {
             Self::Refresh => locale.text("Refreshing runtime", "正在刷新运行时"),
@@ -104,6 +112,7 @@ impl UiTaskKind {
             Self::Execute => locale.text("Executing bounded operation", "正在执行受限操作"),
             Self::StageUpdate => locale.text("Verifying and staging update", "正在验证并暂存更新"),
             Self::Ready => locale.text("Recording verified GUI readiness", "正在记录界面就绪状态"),
+            Self::History => locale.text("Reading one history page", "正在读取一页历史"),
             Self::PickFile => locale.text("Selecting one input file", "正在选择一个输入文件"),
             Self::Shutdown => locale.text("Closing runtime", "正在关闭运行时"),
         }
@@ -117,14 +126,17 @@ enum UiTaskOutput {
         status: serde_json::Value,
         view_revision: u64,
         ready_view: RuntimeView,
-        operations: Vec<PlatformReceipt>,
+        history: OperationHistoryPage,
     },
     Reconcile {
-        operations: Vec<PlatformReceipt>,
+        history: OperationHistoryPage,
     },
     Execute {
         message: String,
-        operations: Vec<PlatformReceipt>,
+        history: OperationHistoryPage,
+    },
+    History {
+        history: OperationHistoryPage,
     },
     StageUpdate {
         message: String,
@@ -143,6 +155,8 @@ struct PendingUiTask {
     kind: UiTaskKind,
     worker: SupervisedTask<Result<UiTaskOutput, String>>,
 }
+
+type JoinedUiTask = Result<Result<UiTaskOutput, String>, &'static str>;
 
 fn lock_runtime_for_task<'a>(
     admission: &TaskAdmission,
@@ -180,6 +194,14 @@ where
     Ok(PendingUiTask { kind, worker })
 }
 
+fn poll_task_slot(slot: &mut Option<PendingUiTask>) -> Option<(UiTaskKind, JoinedUiTask)> {
+    let task = slot.as_mut()?;
+    let kind = task.kind;
+    let outcome = task.worker.poll()?;
+    *slot = None;
+    Some((kind, outcome))
+}
+
 pub struct HeptaNativeApp {
     runtime: Arc<Mutex<NativeShellRuntime>>,
     manifest: EndpointManifest,
@@ -191,10 +213,19 @@ pub struct HeptaNativeApp {
     ready_view: Option<RuntimeView>,
     gui_frame: u64,
     readiness_frames: ReadinessFrames,
+    /// One newest-first page only. Durable history remains in OperationJournal.
     operations: Vec<PlatformReceipt>,
     history_page: usize,
+    history_total: usize,
     file_input_focus: Option<FileInputTarget>,
-    pending_task: Option<PendingUiTask>,
+    /// Single mutation owner lane. It includes runtime/update/readiness/shutdown
+    /// mutations and never runs concurrently with the history-read lane.
+    pending_runtime: Option<PendingUiTask>,
+    /// Bounded read-only lane for persistent history pages.
+    pending_read: Option<PendingUiTask>,
+    /// Platform dialogs are isolated from the runtime owner and may remain open
+    /// without blocking refresh, reconciliation, or final-use mutation.
+    pending_picker: Option<PendingUiTask>,
     shutdown: Shutdown,
     repaint: Arc<Mutex<Option<egui::Context>>>,
     last_error: Option<String>,
@@ -229,7 +260,7 @@ impl HeptaNativeApp {
         activate_update_on_exit.store(false, Ordering::Release);
         let session = runtime.connect_runtime(&manifest)?;
         SessionReferenceStore::default().save(&session, &manifest.manifest_digest)?;
-        let operations = runtime.operation_history();
+        let history = runtime.operation_history_page(0, HISTORY_PAGE_SIZE)?;
         let pending_update = updater.load_pending()?;
         let mut app = Self {
             runtime: Arc::new(Mutex::new(runtime)),
@@ -242,10 +273,13 @@ impl HeptaNativeApp {
             ready_view: None,
             gui_frame: 0,
             readiness_frames: ReadinessFrames::default(),
-            operations,
-            history_page: 0,
+            operations: history.receipts,
+            history_page: history.page,
+            history_total: history.total,
             file_input_focus: None,
-            pending_task: None,
+            pending_runtime: None,
+            pending_read: None,
+            pending_picker: None,
             shutdown: Shutdown::default(),
             repaint: Arc::new(Mutex::new(None)),
             last_error: None,
@@ -276,8 +310,15 @@ impl HeptaNativeApp {
     pub fn set_startup_recorder(&mut self, recorder: crate::startup::StartupRecorder) {
         self.startup_recorder = Some(recorder);
     }
+
     pub fn set_update_handoff(&mut self, handoff: crate::update_handoff::UpdateHandoff) {
         self.update_handoff = Some(handoff);
+    }
+
+    fn apply_history(&mut self, history: OperationHistoryPage) {
+        self.history_page = history.page;
+        self.history_total = history.total;
+        self.operations = history.receipts;
     }
 
     fn fail_readiness(&mut self, message: String) {
@@ -294,7 +335,7 @@ impl HeptaNativeApp {
     }
 
     fn confirm_rendered_update(&mut self, ui: &egui::Ui) {
-        if self.is_busy()
+        if self.runtime_busy()
             || self.status_rendered.is_none()
             || self.last_error.is_some()
             || (self.startup_recorder.is_none() && self.update_handoff.is_none())
@@ -335,7 +376,7 @@ impl HeptaNativeApp {
                 pending: updater.load_pending()?.map(Box::new),
             })
         });
-        if self.pending_task.is_none() {
+        if self.pending_runtime.is_none() {
             self.fail_readiness(
                 self.last_error
                     .clone()
@@ -344,16 +385,18 @@ impl HeptaNativeApp {
         }
     }
 
+    /// Start a mutation-owner task. A history read must finish first; this keeps
+    /// pages stable without creating a second journal authority.
     fn start_task<F>(&mut self, kind: UiTaskKind, task: F)
     where
         F: FnOnce(TaskAdmission) -> Result<UiTaskOutput, ShellError> + Send + 'static,
     {
-        if self.is_busy() {
+        if self.runtime_busy() {
             self.last_error = Some(
                 self.locale
                     .text(
-                        "Another native operation is still running.",
-                        "另一个原生操作仍在运行。",
+                        "Another native runtime operation is still running.",
+                        "另一个原生运行时操作仍在运行。",
                     )
                     .to_owned(),
             );
@@ -361,22 +404,73 @@ impl HeptaNativeApp {
         }
         match spawn_ui_task(kind, Arc::clone(&self.repaint), task) {
             Ok(pending) => {
-                self.pending_task = Some(pending);
+                self.pending_runtime = Some(pending);
                 self.last_error = None;
             }
             Err(error) => self.last_error = Some(format!("start native worker: {error}")),
         }
     }
 
-    fn poll_task(&mut self) {
-        let outcome = self
-            .pending_task
-            .as_mut()
-            .and_then(|task| task.worker.poll().map(|outcome| (task.kind, outcome)));
-        let Some((kind, joined)) = outcome else {
+    fn start_read_task<F>(&mut self, kind: UiTaskKind, task: F)
+    where
+        F: FnOnce(TaskAdmission) -> Result<UiTaskOutput, ShellError> + Send + 'static,
+    {
+        if self.runtime_busy() {
+            self.last_error = Some(
+                self.locale
+                    .text(
+                        "The runtime owner is busy; the history page was not changed.",
+                        "运行时 owner 正忙；历史页面未改变。",
+                    )
+                    .to_owned(),
+            );
             return;
-        };
-        self.pending_task = None;
+        }
+        match spawn_ui_task(kind, Arc::clone(&self.repaint), task) {
+            Ok(pending) => {
+                self.pending_read = Some(pending);
+                self.last_error = None;
+            }
+            Err(error) => self.last_error = Some(format!("start history reader: {error}")),
+        }
+    }
+
+    fn start_picker_task<F>(&mut self, task: F)
+    where
+        F: FnOnce(TaskAdmission) -> Result<UiTaskOutput, ShellError> + Send + 'static,
+    {
+        if self.picker_busy() {
+            self.last_error = Some(
+                self.locale
+                    .text(
+                        "Another platform file dialog is still open.",
+                        "另一个平台文件对话框仍处于打开状态。",
+                    )
+                    .to_owned(),
+            );
+            return;
+        }
+        match spawn_ui_task(UiTaskKind::PickFile, Arc::clone(&self.repaint), task) {
+            Ok(pending) => {
+                self.pending_picker = Some(pending);
+                self.last_error = None;
+            }
+            Err(error) => self.last_error = Some(format!("start native picker: {error}")),
+        }
+    }
+
+    fn poll_tasks(&mut self) {
+        let completed = [
+            poll_task_slot(&mut self.pending_runtime),
+            poll_task_slot(&mut self.pending_read),
+            poll_task_slot(&mut self.pending_picker),
+        ];
+        for (kind, joined) in completed.into_iter().flatten() {
+            self.handle_task_outcome(kind, joined);
+        }
+    }
+
+    fn handle_task_outcome(&mut self, kind: UiTaskKind, joined: JoinedUiTask) {
         let outcome = match joined {
             Ok(outcome) => outcome,
             Err(error) => {
@@ -395,27 +489,28 @@ impl HeptaNativeApp {
                 status,
                 view_revision,
                 ready_view,
-                operations,
+                history,
             }) => {
                 self.status_rendered = Some(render_runtime_status(&status));
                 self.view_revision = Some(view_revision);
                 self.ready_view = Some(ready_view);
                 self.readiness_frames.reset();
                 self.connected = true;
-                self.operations = operations;
+                self.apply_history(history);
                 self.operation_binding = None;
                 self.last_error = None;
             }
-            Ok(UiTaskOutput::Reconcile { operations }) => {
-                self.operations = operations;
+            Ok(UiTaskOutput::Reconcile { history }) => {
+                self.apply_history(history);
                 self.last_error = None;
             }
-            Ok(UiTaskOutput::Execute {
-                message,
-                operations,
-            }) => {
+            Ok(UiTaskOutput::Execute { message, history }) => {
                 self.operation_message = Some(message);
-                self.operations = operations;
+                self.apply_history(history);
+                self.last_error = None;
+            }
+            Ok(UiTaskOutput::History { history }) => {
+                self.apply_history(history);
                 self.last_error = None;
             }
             Ok(UiTaskOutput::StageUpdate { message, pending }) => {
@@ -456,18 +551,57 @@ impl HeptaNativeApp {
                     self.operation_message = None;
                 } else if kind == UiTaskKind::StageUpdate {
                     self.update_message = None;
+                } else if kind == UiTaskKind::PickFile {
+                    if let Some(context) = self.repaint.lock().ok().and_then(|value| value.clone()) {
+                        task_supervisor::cancel_file_input(&context);
+                    }
                 }
                 self.last_error = Some(error);
             }
         }
     }
 
+    fn runtime_busy(&self) -> bool {
+        self.pending_runtime.is_some() || self.pending_read.is_some() || self.shutdown.requested()
+    }
+
     fn is_busy(&self) -> bool {
-        self.pending_task.is_some() || self.shutdown.requested()
+        self.runtime_busy()
+    }
+
+    fn picker_busy(&self) -> bool {
+        self.pending_picker.is_some() || self.shutdown.requested()
+    }
+
+    fn history_read_busy(&self) -> bool {
+        self.pending_read.is_some()
+    }
+
+    fn any_task_active(&self) -> bool {
+        self.pending_runtime.is_some()
+            || self.pending_read.is_some()
+            || self.pending_picker.is_some()
+    }
+
+    fn all_tasks_idle(&self) -> bool {
+        !self.any_task_active()
+    }
+
+    pub(super) fn load_history_page(&mut self, requested_page: usize) {
+        let runtime = Arc::clone(&self.runtime);
+        self.start_read_task(UiTaskKind::History, move |admission| {
+            let runtime = lock_runtime_for_task(&admission, &runtime)?;
+            admission
+                .begin()
+                .map_err(|message| ShellError::State(message.to_owned()))?;
+            Ok(UiTaskOutput::History {
+                history: runtime.operation_history_page(requested_page, HISTORY_PAGE_SIZE)?,
+            })
+        });
     }
 
     fn refresh(&mut self) {
-        if self.is_busy() {
+        if self.runtime_busy() {
             return;
         }
         self.connected = false;
@@ -486,17 +620,18 @@ impl HeptaNativeApp {
             let ready_view = runtime.view().cloned().ok_or_else(|| {
                 ShellError::State("authenticated refresh did not retain its view".into())
             })?;
-            let operations = runtime.operation_history();
+            let history = runtime.operation_history_page(0, HISTORY_PAGE_SIZE)?;
             Ok(UiTaskOutput::Refresh {
                 status,
                 view_revision: presentation.revision,
                 ready_view,
-                operations,
+                history,
             })
         });
     }
 
     fn reconcile(&mut self) {
+        let requested_page = self.history_page;
         let runtime = Arc::clone(&self.runtime);
         self.start_task(UiTaskKind::Reconcile, move |admission| {
             let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
@@ -505,18 +640,18 @@ impl HeptaNativeApp {
                 .map_err(|message| ShellError::State(message.to_owned()))?;
             let _ = runtime.reconcile_pending()?;
             Ok(UiTaskOutput::Reconcile {
-                operations: runtime.operation_history(),
+                history: runtime.operation_history_page(requested_page, HISTORY_PAGE_SIZE)?,
             })
         });
     }
 
     fn top_bar(&mut self, ui: &mut egui::Ui) {
-        let busy = self.is_busy();
+        let busy = self.runtime_busy();
         ui.horizontal(|ui| {
             ui.heading("Hepta Native");
             ui.separator();
             if self
-                .pending_task
+                .pending_runtime
                 .as_ref()
                 .is_some_and(|task| task.kind == UiTaskKind::Refresh)
             {
@@ -553,7 +688,14 @@ impl HeptaNativeApp {
             {
                 self.reconcile();
             }
-            if let Some(task) = &self.pending_task {
+            for task in [
+                self.pending_runtime.as_ref(),
+                self.pending_read.as_ref(),
+                self.pending_picker.as_ref(),
+            ]
+            .into_iter()
+            .flatten()
+            {
                 ui.spinner();
                 ui.label(task.kind.label(self.locale));
             }
@@ -625,11 +767,11 @@ impl eframe::App for HeptaNativeApp {
             Some(frame) => self.gui_frame = frame,
             None => self.fail_readiness("GUI frame identity exhausted".into()),
         }
-        self.poll_task();
+        self.poll_tasks();
         if self.shutdown_view(ui) {
             return;
         }
-        if self.is_busy() {
+        if self.any_task_active() || self.shutdown.requested() {
             ui.ctx().request_repaint_after(Duration::from_millis(250));
         }
         egui::Panel::top("hepta-native-top").show(ui, |ui| self.top_bar(ui));
@@ -645,8 +787,9 @@ impl eframe::App for HeptaNativeApp {
         });
         self.confirm_rendered_update(ui);
     }
+
     fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
-        let closed = self.shutdown.runtime_closed && self.pending_task.is_none();
+        let closed = self.shutdown.runtime_closed && self.all_tasks_idle();
         self.activate_update_on_exit.store(
             closed && self.shutdown.activation_allowed(),
             Ordering::Release,

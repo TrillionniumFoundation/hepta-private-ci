@@ -23,6 +23,18 @@ use crate::security::KernelFinalUseGate;
 use crate::security::PlatformConfirmationContext;
 use crate::security::platform_final_use_binding;
 
+const MAX_OPERATION_HISTORY_PAGE_SIZE: usize = 256;
+
+#[derive(Debug, Clone)]
+pub struct OperationHistoryPage {
+    pub page: usize,
+    pub page_size: usize,
+    pub total: usize,
+    /// Newest receipt first. This is presentation only; journal ordering and
+    /// replay fences remain owned by the durable operation journal.
+    pub receipts: Vec<PlatformReceipt>,
+}
+
 pub struct NativeShellRuntime {
     backend: Box<dyn BackendAdapter>,
     platform: Box<dyn PlatformAdapter>,
@@ -409,12 +421,41 @@ impl NativeShellRuntime {
             .collect()
     }
 
-    pub fn operation_history(&self) -> Vec<PlatformReceipt> {
-        self.journal
-            .all()
+    /// Return one bounded, newest-first page directly from the journal slice.
+    /// The UI never clones the complete history. Mutation and history-read lanes
+    /// are mutually exclusive, so a displayed page is stable until the next
+    /// authoritative mutation publishes a replacement page.
+    pub fn operation_history_page(
+        &self,
+        requested_page: usize,
+        page_size: usize,
+    ) -> Result<OperationHistoryPage, ShellError> {
+        self.journal.ensure_healthy()?;
+        if page_size == 0 || page_size > MAX_OPERATION_HISTORY_PAGE_SIZE {
+            return Err(ShellError::InvalidInput(format!(
+                "operation history page size must be between 1 and {MAX_OPERATION_HISTORY_PAGE_SIZE}"
+            )));
+        }
+        let records = self.journal.all();
+        let total = records.len();
+        let last_page = total.saturating_sub(1) / page_size;
+        let page = requested_page.min(last_page);
+        let start = page
+            .checked_mul(page_size)
+            .ok_or_else(|| ShellError::State("operation history page offset overflow".to_owned()))?;
+        let receipts = records
             .iter()
+            .rev()
+            .skip(start)
+            .take(page_size)
             .map(OperationRecord::receipt)
-            .collect()
+            .collect();
+        Ok(OperationHistoryPage {
+            page,
+            page_size,
+            total,
+            receipts,
+        })
     }
 
     pub fn close_operation_observation(

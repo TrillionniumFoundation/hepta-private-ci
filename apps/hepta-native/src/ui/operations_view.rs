@@ -1,5 +1,5 @@
 use super::history_page::HISTORY_PAGE_SIZE;
-use super::history_page::history_page_range;
+use super::history_page::history_last_page;
 use super::task_supervisor::FileInputTarget;
 use super::*;
 
@@ -74,10 +74,17 @@ impl HeptaNativeApp {
             });
         match self.operation_action {
             PlatformAction::OpenPath | PlatformAction::RevealPath => {
-                ui.label(self.locale.text(
-                    "Unavailable: verified OS resource handoff is not implemented. No path operation will be dispatched.",
-                    "当前不可用：尚未实现已验证资源的 OS 句柄交付；不会派发路径操作。",
-                ));
+                if cfg!(target_os = "linux") {
+                    ui.label(self.locale.text(
+                        "Linux: the path is opened with NOFOLLOW, the exact device/inode/metadata identity is bound into final-use confirmation, then the already-open descriptor is handed to XDG OpenURI. No mutable name is reopened after admission.",
+                        "Linux：路径以 NOFOLLOW 打开，精确的设备/inode/元数据身份被绑定到 final-use 确认，随后把已打开描述符交给 XDG OpenURI。准入后不会重新按可变名称打开。",
+                    ));
+                } else {
+                    ui.label(self.locale.text(
+                        "Unavailable on this platform until a verified OS resource-capability adapter is qualified; mutable path-string launch remains disabled.",
+                        "当前平台尚未通过已验证 OS 资源能力适配器资格；可变路径字符串启动仍被禁用。",
+                    ));
+                }
                 ui.label(self.locale.text("Absolute path", "绝对路径"));
                 ui.text_edit_singleline(&mut self.operation_path);
             }
@@ -98,7 +105,7 @@ impl HeptaNativeApp {
                 let response = ui.text_edit_singleline(&mut self.operation_grant_path);
                 if ui
                     .add_enabled(
-                        !self.is_busy(),
+                        !self.picker_busy(),
                         egui::Button::new(self.locale.text("Choose file", "选择文件")),
                     )
                     .clicked()
@@ -106,9 +113,12 @@ impl HeptaNativeApp {
                     self.pick_file_input_target(ui.ctx(), FileInputTarget::OperationGrant);
                 }
                 if ui
-                    .button(
-                        self.locale
-                            .text("Use next dropped file", "使用下一个拖放文件"),
+                    .add_enabled(
+                        !self.picker_busy(),
+                        egui::Button::new(
+                            self.locale
+                                .text("Use next dropped file", "使用下一个拖放文件"),
+                        ),
                     )
                     .clicked()
                 {
@@ -186,80 +196,119 @@ impl HeptaNativeApp {
                     .map_err(|message| ShellError::State(message.to_owned()))?;
                 runtime.compact_closed_history(256)?;
                 Ok(UiTaskOutput::Reconcile {
-                    operations: runtime.operation_history(),
+                    history: runtime.operation_history_page(0, HISTORY_PAGE_SIZE)?,
                 })
             });
         }
-        if self.operations.is_empty() {
+        if self.history_total == 0 {
             self.history_page = 0;
+            self.operations.clear();
             ui.label(self.locale.text("No operation receipts.", "暂无操作回执。"));
             return;
         }
-        let total = self.operations.len();
-        let (page, _) = history_page_range(total, self.history_page);
-        self.history_page = page;
-        let last_page = total.saturating_sub(1) / HISTORY_PAGE_SIZE;
+        let last_page = history_last_page(self.history_total);
+        let page_busy = self.history_read_busy() || busy;
         ui.horizontal(|ui| {
             if ui
                 .add_enabled(
-                    self.history_page > 0,
+                    !page_busy && self.history_page > 0,
                     egui::Button::new(self.locale.text("Previous page", "上一页")),
                 )
                 .clicked()
             {
-                self.history_page -= 1;
+                self.load_history_page(self.history_page - 1);
             }
             ui.label(format!(
                 "{} / {} · {}",
                 self.history_page + 1,
                 last_page + 1,
-                total
+                self.history_total
             ));
             if ui
                 .add_enabled(
-                    self.history_page < last_page,
+                    !page_busy && self.history_page < last_page,
                     egui::Button::new(self.locale.text("Next page", "下一页")),
                 )
                 .clicked()
             {
-                self.history_page += 1;
+                self.load_history_page(self.history_page + 1);
             }
         });
-        let (_, range) = history_page_range(total, self.history_page);
         let mut close_observation = None;
         egui::ScrollArea::vertical().show(ui, |ui| {
-            for receipt in self.operations.iter().rev().skip(range.start).take(range.len()) {
-                ui.push_id((&receipt.key.session_id, receipt.key.session_generation, &receipt.key.operation_id), |ui| {
-                    ui.group(|ui| {
-                        ui.label(format!("{} · {}", receipt.key.operation_id, receipt.action));
-                        ui.label(format!("session={} generation={}", receipt.key.session_id, receipt.key.session_generation));
-                        ui.label(format!("terminal={} status={:?}", receipt.terminal_observed, receipt.terminal_status));
-                        ui.label(format!("payload={}", receipt.payload_digest));
-                        match project_operation_presentation(receipt.terminal_observed, receipt.may_have_executed, receipt.observation_closed) {
-                            OperationPresentation::TerminalObserved => {
-                                ui.label(self.locale.text("Terminal platform observation recorded.", "已记录平台终态观察。"));
+            for receipt in &self.operations {
+                ui.push_id(
+                    (
+                        &receipt.key.session_id,
+                        receipt.key.session_generation,
+                        &receipt.key.operation_id,
+                    ),
+                    |ui| {
+                        ui.group(|ui| {
+                            ui.label(format!(
+                                "{} · {}",
+                                receipt.key.operation_id, receipt.action
+                            ));
+                            ui.label(format!(
+                                "session={} generation={}",
+                                receipt.key.session_id, receipt.key.session_generation
+                            ));
+                            ui.label(format!(
+                                "terminal={} status={:?}",
+                                receipt.terminal_observed, receipt.terminal_status
+                            ));
+                            ui.label(format!("payload={}", receipt.payload_digest));
+                            match project_operation_presentation(
+                                receipt.terminal_observed,
+                                receipt.may_have_executed,
+                                receipt.observation_closed,
+                            ) {
+                                OperationPresentation::TerminalObserved => {
+                                    ui.label(self.locale.text(
+                                        "Terminal platform observation recorded.",
+                                        "已记录平台终态观察。",
+                                    ));
+                                }
+                                OperationPresentation::PreparedNotDispatched => {
+                                    ui.label(self.locale.text(
+                                        "Prepared; not dispatched.",
+                                        "已准备；尚未派发。",
+                                    ));
+                                }
+                                OperationPresentation::AwaitingObservation => {
+                                    ui.label(self.locale.text(
+                                        "May have executed; awaiting a trustworthy terminal observation.",
+                                        "可能已经执行；正在等待可信终态观察。",
+                                    ));
+                                }
+                                OperationPresentation::ObservationClosedUnknown => {
+                                    ui.label(self.locale.text(
+                                        "Observation closed; outcome UNKNOWN; replay forbidden.",
+                                        "已结束观察；执行结果仍未知；禁止重放。",
+                                    ));
+                                }
                             }
-                            OperationPresentation::PreparedNotDispatched => {
-                                ui.label(self.locale.text("Prepared; not dispatched.", "已准备；尚未派发。"));
+                            if !receipt.observation_closed
+                                && receipt.can_close_observation
+                                && ui
+                                    .add_enabled(
+                                        !busy,
+                                        egui::Button::new(self.locale.text(
+                                            "End observation (may have executed)",
+                                            "结束观察（可能已执行）",
+                                        )),
+                                    )
+                                    .clicked()
+                            {
+                                close_observation = Some(receipt.key.clone());
                             }
-                            OperationPresentation::AwaitingObservation => {
-                                ui.label(self.locale.text("May have executed; awaiting a trustworthy terminal observation.", "可能已经执行；正在等待可信终态观察。"));
-                            }
-                            OperationPresentation::ObservationClosedUnknown => {
-                                ui.label(self.locale.text("Observation closed; outcome UNKNOWN; replay forbidden.", "已结束观察；执行结果仍未知；禁止重放。"));
-                            }
-                        }
-                        if !receipt.observation_closed
-                            && receipt.can_close_observation
-                            && ui.add_enabled(!busy, egui::Button::new(self.locale.text("End observation (may have executed)", "结束观察（可能已执行）"))).clicked()
-                        {
-                            close_observation = Some(receipt.key.clone());
-                        }
-                    });
-                });
+                        });
+                    },
+                );
             }
         });
         if let Some(key) = close_observation {
+            let requested_page = self.history_page;
             let runtime = Arc::clone(&self.runtime);
             self.start_task(UiTaskKind::Reconcile, move |admission| {
                 let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
@@ -269,7 +318,8 @@ impl HeptaNativeApp {
                 runtime.close_operation_observation(&key)?;
                 runtime.compact_closed_history(256)?;
                 Ok(UiTaskOutput::Reconcile {
-                    operations: runtime.operation_history(),
+                    history: runtime
+                        .operation_history_page(requested_page, HISTORY_PAGE_SIZE)?,
                 })
             });
         }
@@ -311,10 +361,14 @@ impl HeptaNativeApp {
         match outcome {
             Ok(binding) => {
                 self.operation_binding = Some(binding);
-                self.operation_message = Some(self.locale.text(
-                    "Binding prepared. The independent authority owner must choose grant identity, nonce, epoch and lifetime and sign the complete grant.",
-                    "Binding 已生成。独立 authority owner 必须自行选择 grant identity、nonce、epoch 与有效期，并签署完整 grant。",
-                ).to_owned());
+                self.operation_message = Some(
+                    self.locale
+                        .text(
+                            "Binding prepared. The independent authority owner must choose grant identity, nonce, epoch and lifetime and sign the complete grant.",
+                            "Binding 已生成。独立 authority owner 必须自行选择 grant identity、nonce、epoch 与有效期，并签署完整 grant。",
+                        )
+                        .to_owned(),
+                );
                 self.last_error = None;
             }
             Err(error) => {
@@ -367,7 +421,7 @@ impl HeptaNativeApp {
                     );
                     Ok(UiTaskOutput::Execute {
                         message,
-                        operations: runtime.operation_history(),
+                        history: runtime.operation_history_page(0, HISTORY_PAGE_SIZE)?,
                     })
                 });
             }

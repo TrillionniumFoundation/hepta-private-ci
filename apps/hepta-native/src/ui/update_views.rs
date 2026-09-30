@@ -18,6 +18,9 @@ impl HeptaNativeApp {
             .input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape));
         if escape {
             if let Some(ticket) = cancel_file_input(ui.ctx()) {
+                if let Some(task) = self.pending_picker.as_ref() {
+                    task.worker.cancel_before_admission();
+                }
                 self.set_file_input_message(
                     ticket.target(),
                     self.locale
@@ -30,13 +33,42 @@ impl HeptaNativeApp {
                 self.last_error = None;
                 return None;
             }
-            if let Some(task) = self.pending_task.as_ref() {
+            if let Some(task) = self.pending_picker.as_ref() {
                 let cancelled = task.worker.cancel_before_admission();
-                self.last_error = Some(if cancelled {
-                    self.locale.text("Cancelled before admission; waiting for the worker acknowledgement.", "已在准入前取消；等待 worker 确认。")
-                } else {
-                    self.locale.text("Already admitted: the owned worker must finish; Escape did not undo it.", "任务已准入，worker 必须完成；Escape 不会撤销任务。")
-                }.into());
+                self.last_error = Some(
+                    if cancelled {
+                        self.locale.text(
+                            "Picker cancelled before admission; waiting for acknowledgement.",
+                            "文件选择器已在准入前取消；正在等待确认。",
+                        )
+                    } else {
+                        self.locale.text(
+                            "Picker already admitted: the owned dialog must finish or time out.",
+                            "文件选择器已准入：受控对话框必须完成或超时。",
+                        )
+                    }
+                    .into(),
+                );
+            } else if let Some(task) = self
+                .pending_read
+                .as_ref()
+                .or(self.pending_runtime.as_ref())
+            {
+                let cancelled = task.worker.cancel_before_admission();
+                self.last_error = Some(
+                    if cancelled {
+                        self.locale.text(
+                            "Cancelled before admission; waiting for the worker acknowledgement.",
+                            "已在准入前取消；等待 worker 确认。",
+                        )
+                    } else {
+                        self.locale.text(
+                            "Already admitted: the owned worker must finish; Escape did not undo it.",
+                            "任务已准入，worker 必须完成；Escape 不会撤销任务。",
+                        )
+                    }
+                    .into(),
+                );
             }
         }
         let files = ui.ctx().input(|input| input.raw.dropped_files.clone());
@@ -45,6 +77,9 @@ impl HeptaNativeApp {
         }
         match accept_active_dropped_file(ui.ctx(), &files) {
             Ok((target, path)) => {
+                if let Some(task) = self.pending_picker.as_ref() {
+                    task.worker.cancel_before_admission();
+                }
                 self.install_file_input_path(target, path);
                 self.last_error = None;
                 Some(target)
@@ -63,10 +98,15 @@ impl HeptaNativeApp {
             FileInputTarget::UpdateManifest => self.update_manifest_path = path,
             FileInputTarget::UpdatePackage => self.update_package_path = path,
         }
-        self.set_file_input_message(target, self.locale.text(
-            "One absolute path is bound to the exact target. It will be reopened and validated; selection is not authority.",
-            "一个绝对路径已绑定到精确目标。准入前仍会重新打开并验证；选择文件不构成执行授权。",
-        ).into());
+        self.set_file_input_message(
+            target,
+            self.locale
+                .text(
+                    "One absolute path is bound to the exact target. It will be reopened and validated; selection is not authority.",
+                    "一个绝对路径已绑定到精确目标。准入前仍会重新打开并验证；选择文件不构成执行授权。",
+                )
+                .into(),
+        );
     }
 
     pub(super) fn finish_picker_result(
@@ -108,7 +148,7 @@ impl HeptaNativeApp {
         context: &egui::Context,
         target: FileInputTarget,
     ) {
-        if self.is_busy() {
+        if self.picker_busy() {
             return;
         }
         let ticket = match arm_file_input(context, target) {
@@ -118,7 +158,7 @@ impl HeptaNativeApp {
                 return;
             }
         };
-        self.start_task(UiTaskKind::PickFile, move |admission| {
+        self.start_picker_task(move |admission| {
             admission
                 .begin()
                 .map_err(|message| ShellError::State(message.to_owned()))?;
@@ -127,7 +167,7 @@ impl HeptaNativeApp {
                 path: super::native_picker::choose_file()?,
             })
         });
-        if self.pending_task.is_none() && active_file_input(context) == Some(ticket) {
+        if self.pending_picker.is_none() && active_file_input(context) == Some(ticket) {
             cancel_file_input(context);
         }
     }
@@ -190,7 +230,7 @@ impl HeptaNativeApp {
                 let response = ui.text_edit_singleline(&mut self.update_manifest_path);
                 if ui
                     .add_enabled(
-                        !self.is_busy(),
+                        !self.picker_busy(),
                         egui::Button::new(self.locale.text("Choose file", "选择文件")),
                     )
                     .clicked()
@@ -198,9 +238,12 @@ impl HeptaNativeApp {
                     self.pick_file_input_target(ui.ctx(), FileInputTarget::UpdateManifest);
                 }
                 if ui
-                    .button(
-                        self.locale
-                            .text("Use next dropped file", "使用下一个拖放文件"),
+                    .add_enabled(
+                        !self.picker_busy(),
+                        egui::Button::new(
+                            self.locale
+                                .text("Use next dropped file", "使用下一个拖放文件"),
+                        ),
                     )
                     .clicked()
                 {
@@ -218,7 +261,7 @@ impl HeptaNativeApp {
                 let response = ui.text_edit_singleline(&mut self.update_package_path);
                 if ui
                     .add_enabled(
-                        !self.is_busy(),
+                        !self.picker_busy(),
                         egui::Button::new(self.locale.text("Choose file", "选择文件")),
                     )
                     .clicked()
@@ -226,9 +269,12 @@ impl HeptaNativeApp {
                     self.pick_file_input_target(ui.ctx(), FileInputTarget::UpdatePackage);
                 }
                 if ui
-                    .button(
-                        self.locale
-                            .text("Use next dropped file", "使用下一个拖放文件"),
+                    .add_enabled(
+                        !self.picker_busy(),
+                        egui::Button::new(
+                            self.locale
+                                .text("Use next dropped file", "使用下一个拖放文件"),
+                        ),
                     )
                     .clicked()
                 {
@@ -356,8 +402,12 @@ impl HeptaNativeApp {
             "Tab/Shift+Tab 切换控件，Enter/Space 激活按钮。Escape 取消输入意图或准入前任务，不撤销已准入工作。",
         ));
         ui.label(self.locale.text(
-            "Choose file opens a platform dialog (Zenity is required on Linux). Exact tickets reject stale callbacks. A selected path is not an OS resource capability.",
-            "选择文件打开系统对话框（Linux 需要 Zenity）。精确票据拒绝过期回调。所选路径不是 OS 资源能力。",
+            "Choose file uses XDG Desktop Portal by default on Linux; Zenity is an explicit compatibility backend. Exact tickets reject stale callbacks. A selected path is not an OS resource capability.",
+            "Linux 的“选择文件”默认使用 XDG Desktop Portal；Zenity 仅作为显式兼容后端。精确票据拒绝过期回调。所选路径不是 OS 资源能力。",
+        ));
+        ui.label(self.locale.text(
+            "Picker, persistent history read and single mutation owner lanes are separate. Shutdown still owns and joins every admitted worker before update activation.",
+            "文件选择、持久历史读取与单一 mutation owner 分属独立 lane。关机仍会持有并等待所有已准入 worker，之后才允许更新激活。",
         ));
         ui.label(self.locale.text(
             "English/Chinese strings follow LC_ALL/LC_MESSAGES/LANG. Physical screen-reader, IME, focus and mixed-DPI acceptance require separate evidence.",
