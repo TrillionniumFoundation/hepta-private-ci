@@ -33,6 +33,11 @@ verifier beneath the selected-host adapter. Their existence does not permit a
 selected-host caller to bypass root activation, and it does not authenticate a
 real deployment host.
 
+The default API qualification includes a compiler-negative fixture that attempts
+to call the selected-host ingress with `LearningEvidenceVerifierV1`. Qualification
+passes only when rustc reports the exact `ActivatedLearningTrustV1` type boundary;
+an unrelated compiler failure is rejected rather than counted as evidence.
+
 ## Per-attempt current trust at recovery use
 
 A persistent recovery page must not receive one bare
@@ -103,7 +108,8 @@ The source regressions exercise:
 - accepted-but-unacknowledged anchor CAS with mandatory reopen;
 - every legal lifecycle prefix followed by one process restart;
 - exact replay, reservation conservation and monotonic anchor advancement;
-- root-signed selected-host activation, signer revocation and distribution expiry.
+- root-signed selected-host activation, signer revocation and distribution expiry;
+- compile-time rejection of a bare verifier at the selected-host ingress.
 
 These tests establish repository source behavior only. The selected host still
 must qualify the independent anchor authority and the durability/failure domains
