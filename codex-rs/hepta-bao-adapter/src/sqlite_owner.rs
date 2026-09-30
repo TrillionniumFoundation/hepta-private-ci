@@ -2857,22 +2857,41 @@ fn prepare_private_storage(path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
             "parent must be owner-only and owner-owned",
         ));
     }
-    match fs::symlink_metadata(path) {
-        Ok(metadata) => {
-            if metadata.file_type().is_symlink()
-                || !metadata.is_file()
-                || metadata.nlink() != 1
-                || metadata.uid() != rustix::process::geteuid().as_raw()
-            {
-                return Err(SqliteBaoOwnerErrorV1::UnsafeStorage(
-                    "database must be an owner-owned single-link regular file",
-                ));
-            }
+    // SQLite may read or write the WAL, shared-memory and hot rollback journal
+    // during connection setup. Reject unsafe sidecars before that first access.
+    for file_path in [
+        path.to_path_buf(),
+        sidecar_path(path, "-wal"),
+        sidecar_path(path, "-shm"),
+        sidecar_path(path, "-journal"),
+    ] {
+        match fs::symlink_metadata(&file_path) {
+            Ok(_) => secure_database_file(&file_path)?,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(storage(error)),
         }
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
-        Err(error) => return Err(storage(error)),
     }
-    Ok(())
+    // Set the database mode before SQLite creates sidecars inheriting it.
+    if !path.exists() {
+        match fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .custom_flags(rustix::fs::OFlags::NOFOLLOW.bits() as i32)
+            .open(path)
+        {
+            Ok(file) => {
+                file.sync_all().map_err(storage)?;
+                fs::File::open(parent)
+                    .map_err(storage)?
+                    .sync_all()
+                    .map_err(storage)?;
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
+            Err(error) => return Err(storage(error)),
+        }
+    }
+    secure_database_file(path)
 }
 
 #[cfg(not(unix))]
@@ -2883,6 +2902,7 @@ fn prepare_private_storage(_path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
 #[cfg(unix)]
 fn secure_database_file(path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
     use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
     use std::os::unix::fs::PermissionsExt;
 
     let metadata = fs::symlink_metadata(path).map_err(storage)?;
@@ -2895,8 +2915,21 @@ fn secure_database_file(path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
             "database identity changed while opening",
         ));
     }
-    fs::set_permissions(path, fs::Permissions::from_mode(0o600)).map_err(storage)?;
-    let secured = fs::metadata(path).map_err(storage)?;
+    let file = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .custom_flags((rustix::fs::OFlags::NOFOLLOW | rustix::fs::OFlags::NONBLOCK).bits() as i32)
+        .open(path)
+        .map_err(storage)?;
+    let opened = file.metadata().map_err(storage)?;
+    if opened.dev() != metadata.dev() || opened.ino() != metadata.ino() {
+        return Err(SqliteBaoOwnerErrorV1::UnsafeStorage(
+            "database identity changed while securing storage",
+        ));
+    }
+    file.set_permissions(fs::Permissions::from_mode(0o600))
+        .map_err(storage)?;
+    let secured = file.metadata().map_err(storage)?;
     if secured.mode() & 0o077 != 0 {
         return Err(SqliteBaoOwnerErrorV1::UnsafeStorage(
             "database permissions are not owner-only",
