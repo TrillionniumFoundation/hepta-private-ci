@@ -5,6 +5,7 @@ use std::path::PathBuf;
 
 use codex_hepta_automation::AutomationError;
 use codex_hepta_cognitive_store::DurableCognitiveStoreError;
+use codex_hepta_compact_engine::CompactionCoordinatorErrorV2;
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_memory::ProductionCognitiveMutationError;
 use codex_hepta_memory::ProductionWriterError;
@@ -21,6 +22,8 @@ pub enum AgentdError {
     Protocol(String),
     #[error("agentd control overloaded; retry after {retry_after_ms} ms")]
     Overloaded { retry_after_ms: u64 },
+    #[error(transparent)]
+    Compaction(#[from] CompactionCoordinatorErrorV2),
     #[error(transparent)]
     Fleet(#[from] FleetRegistryError),
     #[error(transparent)]
