@@ -222,7 +222,7 @@ fn legacy_posix_probe_process() {
         match rustix::fs::fcntl_lock(&file, rustix::fs::FlockOperation::NonBlockingLockExclusive) {
             Ok(()) => "acquired",
             Err(error)
-                if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCES =>
+                if error == rustix::io::Errno::AGAIN || error == rustix::io::Errno::ACCESS =>
             {
                 "blocked"
             }
