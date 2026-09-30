@@ -308,7 +308,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/ui-native-storage-target
+      CARGO_TARGET_DIR: ${{ github.workspace }}/apps/hepta-native/target-storage-scale
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -517,13 +517,13 @@ jobs:
               "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
               "platformAggregateSha256": digest(platform_path),
               "storageQualificationSha256": digest(storage_path),
-              "repositoryControlledQualificationPassed": True,
-              "physicalHostAcceptance": False,
-              "accessibilityAcceptance": False,
-              "productionSigningObserved": False,
-              "productionQualified": False,
-              "deploymentQualified": False,
-              "releaseAuthorized": False,
+              "repositoryControlledQualificationPassed": true,
+              "physicalHostAcceptance": false,
+              "accessibilityAcceptance": false,
+              "productionSigningObserved": false,
+              "productionQualified": false,
+              "deploymentQualified": false,
+              "releaseAuthorized": false
           }
           output = Path("native-aggregate/qualification-result.json")
           output.parent.mkdir(parents=True, exist_ok=True)
