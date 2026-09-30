@@ -122,6 +122,21 @@ pub fn with_fit_context_v1<T>(context: &FitContextV1, operation: impl FnOnce() -
     operation()
 }
 
+/// Execute a composite operation under its caller's active context, or create
+/// one context around the entire composite operation when there is no caller
+/// context. This keeps build, validation and receipt emission on one absolute
+/// elapsed-time origin without overriding explicit cancellation supplied by a
+/// parent final-use capability.
+pub(crate) fn with_inherited_fit_context_v1<T>(operation: impl FnOnce() -> T) -> T {
+    let inherited = ACTIVE_FIT_CONTEXT.with(|slot| slot.borrow().clone());
+    if inherited.is_some() {
+        operation()
+    } else {
+        let context = WorkControlV1::new().fit_context();
+        with_fit_context_v1(&context, operation)
+    }
+}
+
 /// Compatibility helper for existing synchronous fitters.
 ///
 /// This creates a new elapsed-time origin at the call boundary. Parallel or
@@ -368,6 +383,20 @@ mod tests {
                 ));
             });
             assert!(OperatorWorkMeter::new(budget(1_000_000)).is_ok());
+        });
+    }
+
+    #[test]
+    fn inherited_context_spans_composite_suboperations() {
+        let context = WorkControlV1::new().fit_context();
+        context.run(|| {
+            let first = OperatorWorkMeter::new(budget(1_000_000)).unwrap();
+            thread::sleep(Duration::from_millis(2));
+            let second = with_inherited_fit_context_v1(|| {
+                OperatorWorkMeter::new(budget(1_000_000)).unwrap()
+            });
+            assert!(second.started >= first.started);
+            assert_eq!(second.started, first.started);
         });
     }
 }
