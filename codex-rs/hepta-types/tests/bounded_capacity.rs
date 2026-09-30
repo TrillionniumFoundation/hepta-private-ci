@@ -31,12 +31,16 @@ fn within_bound_owned_allocations_are_reused() {
 #[test]
 fn borrowed_and_cloned_values_keep_capacity_within_declared_bound() {
     let text = BoundedText::<16>::try_from_str("hello").expect("borrowed text");
-    let text = text.clone().into_inner();
+    let cloned_text = text.clone();
+    assert_eq!(text.as_str(), cloned_text.as_str());
+    let text = cloned_text.into_inner();
     assert_eq!(text, "hello");
     assert!(text.capacity() <= 16);
 
     let bytes = BoundedBytes::<16>::try_from_slice(b"hello").expect("borrowed bytes");
-    let bytes = bytes.clone().into_inner();
+    let cloned_bytes = bytes.clone();
+    assert_eq!(bytes.as_slice(), cloned_bytes.as_slice());
+    let bytes = cloned_bytes.into_inner();
     assert_eq!(bytes, b"hello");
     assert!(bytes.capacity() <= 16);
 }
