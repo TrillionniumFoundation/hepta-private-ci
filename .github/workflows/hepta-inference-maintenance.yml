@@ -208,6 +208,8 @@ jobs:
             scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_repository_controls
           record 05-cargo-metadata.json cargo metadata --locked \
             --manifest-path codex-rs/Cargo.toml --format-version 1
+          record 05a-worker-helper-build.json cargo build --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-exec --bin codex-exec
           python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/commands/06-tests.json" \
             --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-types
@@ -246,7 +248,7 @@ jobs:
         run: |
           set -euo pipefail
           expected=(00-candidate.json 01-current-state.json 01a-ownership.json 01b-actor-migration.json 01c-boundary-planning.json \
-            02-implementation-maps.json 03-runner.json 04-controls-scope.json 05-cargo-metadata.json \
+            02-implementation-maps.json 03-runner.json 04-controls-scope.json 05-cargo-metadata.json 05a-worker-helper-build.json \
             06-tests.json 07-clippy.json 08-maintenance-scale.json 09-format.json)
           args=()
           for name in "${expected[@]}"; do args+=(--expected "$name"); done
@@ -370,6 +372,8 @@ jobs:
             scripts.test_hepta_inference_current_state scripts.test_hepta_inference_capacity
           map_exit=0
           record 01-implementation-maps.json python3 scripts/hepta-implementation-maps.py verify || map_exit=$?
+          record 01a-worker-helper-build.json cargo build --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-exec --bin codex-exec
           python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/commands/02-native-host.json" \
             --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-infer-worker-host --all-targets --all-features
@@ -419,7 +423,7 @@ jobs:
         run: |
           set -euo pipefail
           expected=(00-current-state.json 00a-ownership.json 00b-actor-migration.json 00c-boundary-planning.json \
-            01-implementation-maps.json 02-native-host.json 03-durable-faults.json \
+            01-implementation-maps.json 01a-worker-helper-build.json 02-native-host.json 03-durable-faults.json \
             04-checkpoint-tamper.json 05-process-crash.json 06-expired-recovery.json \
             07-clippy.json 08-format.json)
           args=()

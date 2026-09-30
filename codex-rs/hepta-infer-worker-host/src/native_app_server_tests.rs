@@ -397,24 +397,29 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(!output.succeeded());
 }
 
-#[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
-        .find("control.dispatch_native_with_pre_effect_abort(")
-        .expect("durable native dispatch");
-    let revalidation = source
-        .find("owner.revalidate_cognitive_context(snapshot).await")
-        .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
-    assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
+#[cfg(unix)]
+fn assert_durable_dispatch_before_final_revalidation(
+    journal: &std::path::Path,
+    request_id: &str,
+) -> Result<()> {
+    use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+    use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+
+    // The live writer is paused at final revalidation. Replay an independent
+    // copy to verify the actual durable boundary without opening a second writer.
+    let snapshot_directory = tempfile::tempdir()?;
+    let snapshot_journal = snapshot_directory.path().join("dispatch.journal");
+    std::fs::copy(journal, &snapshot_journal)?;
+    let snapshot = DurableInferenceControl::open(&snapshot_journal, 8)?;
+    let record = snapshot
+        .native_record(request_id)
+        .ok_or("missing durably dispatched final-use request")?;
+    assert_eq!(record.state, NativeReservationState::Dispatching);
+    assert!(record.dispatch.is_some());
+    assert_eq!(record.turn_id, None);
+    assert_eq!(record.observation, None);
+    assert_eq!(record.pre_dispatch_stop, None);
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -450,8 +455,21 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // Reuse the existing test-support resolver for a real local helper binary;
+    // constructing this command does not launch Codex or contact a provider.
+    let codex_self_exe = std::path::PathBuf::from(
+        core_test_support::test_codex_exec::test_codex_exec()
+            .cmd()
+            .get_program(),
+    );
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_self_exe,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -535,6 +553,18 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     );
     let mutation = async {
         hook.reached.notified().await;
+        assert_durable_dispatch_before_final_revalidation(&journal, RACE_REQUEST_ID)?;
+        assert_eq!(
+            server
+                .received_requests()
+                .await
+                .unwrap_or_default()
+                .iter()
+                .filter(|request| request.url.path().ends_with("/responses"))
+                .count(),
+            1,
+            "physical model use must wait for final cognitive revalidation",
+        );
         let result = host
             .tombstone(&race_memory, "revoked during final-use race")
             .await;
@@ -591,6 +621,18 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     );
     let correction = async {
         correction_hook.reached.notified().await;
+        assert_durable_dispatch_before_final_revalidation(&journal, CORRECTION_REQUEST_ID)?;
+        assert_eq!(
+            server
+                .received_requests()
+                .await
+                .unwrap_or_default()
+                .iter()
+                .filter(|request| request.url.path().ends_with("/responses"))
+                .count(),
+            1,
+            "physical model use must wait for final cognitive revalidation",
+        );
         let result = host.correct(&correction_memory, CORRECTED_MEMORY).await;
         correction_hook.release.notify_one();
         result

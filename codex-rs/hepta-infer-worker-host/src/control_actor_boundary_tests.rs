@@ -232,6 +232,10 @@ async fn signed_post_effect_terminal_reply_loss_keeps_exact_durable_result() {
     let dispatched = prepared.cross_effect_boundary();
     dispatched.started("turn-1".to_string()).await.unwrap();
     let output = signed::terminal_output("thread-1", "turn-1", "private output");
+    let expected_protection =
+        ProtectedOutput::digest_only(now, plan.output_policy(), output.output.as_bytes()).unwrap();
+    let mut expected_observation = output.clone();
+    expected_observation.output = expected_protection.journal_marker().unwrap();
     let (reply, response) = oneshot::channel();
     drop(response);
     writer
@@ -250,9 +254,18 @@ async fn signed_post_effect_terminal_reply_loss_keeps_exact_durable_result() {
         .unwrap()
         .unwrap();
     assert_eq!(settled.state, NativeReservationState::Released);
-    assert!(settled.observation.as_ref().unwrap().terminal_observed);
-    // Digest-only policy remains intact; losing delivery cannot persist plaintext.
-    assert!(settled.observation.as_ref().unwrap().output.is_empty());
+    // Losing delivery retains the exact terminal facts and their protected
+    // marker, while the durable journal never retains the live plaintext.
+    assert_eq!(settled.observation.as_ref(), Some(&expected_observation));
+    assert_eq!(
+        settled.protected_output.as_ref(),
+        Some(&expected_protection)
+    );
+    assert!(
+        !std::fs::read_to_string(&journal)
+            .unwrap()
+            .contains("private output")
+    );
     assert_eq!(
         writer
             .reserve(signed::request("signed-loss"), 1)

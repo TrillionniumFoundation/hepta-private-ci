@@ -68,6 +68,9 @@ jobs:
             --package codex-hepta-types \
             -- --check
 
+      - name: Build local Codex helper for embedded App Server tests
+        run: cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-exec --bin codex-exec
+
       - name: Compile and test exact inference surface
         run: |
           cargo test --locked --manifest-path codex-rs/Cargo.toml \

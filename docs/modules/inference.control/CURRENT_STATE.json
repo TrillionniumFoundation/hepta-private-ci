@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "module": "inference.control",
   "generatedFrom": "docs/modules/inference.control/CURRENT_STATE_SOURCE.json",
-  "sourceManifestSha256": "7b3935994f350722dcb59bea1d445c9b57b5236e6fbc9bddc1c5e086159bbd6f",
+  "sourceManifestSha256": "6bb2ed9884870dd451870548fe49e70c68779a6257ebc13d46f1444d25e3094b",
   "provenance": {
     "baselineCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "baselineTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
@@ -259,6 +259,7 @@
     "requiredWorkflow": ".github/workflows/hepta-inference-maintenance.yml",
     "supplementalWorkflow": ".github/workflows/hepta-inference-x64-smoke.yml",
     "commands": [
+      "cargo build --locked -p codex-exec --bin codex-exec",
       "cargo fmt --all -- --check",
       "cargo test -p codex-hepta-infer-core",
       "cargo test -p codex-hepta-infer-worker-host --all-targets --all-features",

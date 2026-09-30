@@ -260,6 +260,7 @@
     "requiredWorkflow": ".github/workflows/hepta-inference-maintenance.yml",
     "supplementalWorkflow": ".github/workflows/hepta-inference-x64-smoke.yml",
     "commands": [
+      "cargo build --locked -p codex-exec --bin codex-exec",
       "cargo fmt --all -- --check",
       "cargo test -p codex-hepta-infer-core",
       "cargo test -p codex-hepta-infer-worker-host --all-targets --all-features",

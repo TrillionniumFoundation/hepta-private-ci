@@ -157,6 +157,7 @@ jobs:
         working-directory: codex-rs
         run: |
           set -euo pipefail
+          cargo build --locked -p codex-exec --bin codex-exec
           just test --locked --lib -p codex-hepta-agentd -p codex-hepta-cognitive-read \
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
             -p codex-hepta-supervisor --test-threads=1

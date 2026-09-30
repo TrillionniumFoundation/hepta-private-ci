@@ -29,6 +29,7 @@ This projection records source facts and required evidence. It is not an accepta
 
 ## Required exact-candidate commands
 
+- `cargo build --locked -p codex-exec --bin codex-exec`
 - `cargo fmt --all -- --check`
 - `cargo test -p codex-hepta-infer-core`
 - `cargo test -p codex-hepta-infer-worker-host --all-targets --all-features`

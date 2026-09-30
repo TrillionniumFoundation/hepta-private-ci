@@ -246,6 +246,8 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-infer-core/tests/process_crash_recovery.rs](../../../codex-rs/hepta-infer-core/tests/process_crash_recovery.rs).
 - [codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs).
 
+The embedded Agentd/App Server regression uses a real local `codex-exec` helper with loopback mock Responses. First build it with `cargo build --locked -p codex-exec --bin codex-exec` in `codex-rs`; this compiles the helper without launching a provider. The inference CI command sets perform the same prerequisite build. Bazel splits the cognitive final-use fixture into a dedicated wrapper with the helper runfile; run both worker test wrappers (or the package `:all`) to retain complete coverage.
+
 In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
