@@ -22,6 +22,7 @@ HEX = re.compile(r"[0-9a-f]{64}\Z")
 VERSION = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?\Z")
 ROOTS = {"linux": "HeptaNative.AppDir", "macos": "Hepta Native.app", "windows": "HeptaNative"}
 BINARIES = ("hepta-native", "hepta-native-updater", "hepta-native-credential")
+WINDOWS_IDENTITY_SCRIPT = "Register-HeptaNativeIdentity.ps1"
 DEVICES = {"con", "prn", "aux", "nul", *(f"com{i}" for i in range(1, 10)), *(f"lpt{i}" for i in range(1, 10))}
 
 
@@ -101,6 +102,14 @@ def binary_paths(platform: str) -> set[str]:
     return {f"{name}.exe" for name in BINARIES}
 
 
+def platform_metadata(platform: str) -> set[str]:
+    if platform == "linux":
+        return {"usr/share/applications/hepta-native.desktop", "PACKAGING.md"}
+    if platform == "macos":
+        return {"Contents/Info.plist", "PACKAGING.md"}
+    return {"app.manifest", WINDOWS_IDENTITY_SCRIPT, "PACKAGING.md"}
+
+
 def validate_open_archive(source: zipfile.ZipFile) -> tuple[dict, list[zipfile.ZipInfo]]:
     members = validated_members(source)
     by_name = {member.filename: member for member in members}
@@ -126,14 +135,16 @@ def validate_open_archive(source: zipfile.ZipFile) -> tuple[dict, list[zipfile.Z
                             ("notarizationObserved", False), ("releaseAuthorized", False)):
         if manifest.get(field) is not expected:
             raise ValueError(f"unsigned package cannot promote {field}")
+    if manifest.get("windowsAppUserModelIdRegistrationIncluded") is not (platform == "windows"):
+        raise ValueError("Windows identity registration declaration is inconsistent")
+    if manifest.get("linuxPortalFirstPicker") is not (platform == "linux"):
+        raise ValueError("Linux portal declaration is inconsistent")
     files, binaries = manifest.get("fileSha256"), manifest.get("binarySha256")
     if not isinstance(files, dict) or not isinstance(binaries, dict):
         raise ValueError("missing closed package inventories")
     if set(binaries) != binary_paths(platform):
         raise ValueError("package binary population is not the three product executables")
-    metadata = {"linux": "usr/share/applications/hepta-native.desktop",
-                "macos": "Contents/Info.plist", "windows": "app.manifest"}[platform]
-    if set(files) != binary_paths(platform) | {metadata, "PACKAGING.md"}:
+    if set(files) != binary_paths(platform) | platform_metadata(platform):
         raise ValueError("package file population differs from the platform contract")
     for relative, expected in files.items():
         safe_path(relative)

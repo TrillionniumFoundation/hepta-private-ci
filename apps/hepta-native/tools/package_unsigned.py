@@ -19,6 +19,7 @@ from archive_safety import SCHEMA, extract_verified_archive, validate_archive
 APP = Path(__file__).resolve().parents[1]
 BINARIES = ("hepta-native", "hepta-native-updater", "hepta-native-credential")
 PLATFORMS = {"linux", "macos", "windows"}
+WINDOWS_IDENTITY_SCRIPT = "Register-HeptaNativeIdentity.ps1"
 
 
 def sha256(data: bytes) -> str:
@@ -71,6 +72,10 @@ def copy_platform_metadata(platform: str, root: Path) -> None:
         shutil.copyfile(APP / "packaging/macos/Info.plist", target)
     else:
         shutil.copyfile(APP / "packaging/windows/app.manifest", root / "app.manifest")
+        shutil.copyfile(
+            APP / "packaging/windows" / WINDOWS_IDENTITY_SCRIPT,
+            root / WINDOWS_IDENTITY_SCRIPT,
+        )
     shutil.copyfile(APP / "packaging/README.md", root / "PACKAGING.md")
 
 
@@ -89,7 +94,6 @@ def write_deterministic_zip(root: Path, archive: Path) -> None:
             mode = stat.S_IMODE(path.stat().st_mode)
             info.external_attr = (stat.S_IFREG | mode) << 16
             output.writestr(info, path.read_bytes())
-
 
 
 def build_package(
@@ -129,6 +133,8 @@ def build_package(
         "productionSigningObserved": False,
         "notarizationObserved": False,
         "releaseAuthorized": False,
+        "windowsAppUserModelIdRegistrationIncluded": platform == "windows",
+        "linuxPortalFirstPicker": platform == "linux",
         "binarySha256": binary_digests,
         "fileSha256": {
             path.relative_to(root).as_posix(): file_sha256(path)
@@ -185,6 +191,10 @@ def self_test() -> None:
                     raise AssertionError(
                         "packaging self-test lost verified extracted root"
                     )
+                if platform == "windows" and not (
+                    base / receipt["extractedRoot"] / WINDOWS_IDENTITY_SCRIPT
+                ).is_file():
+                    raise AssertionError("Windows package lost AppUserModelID registrar")
 
 
 def main() -> None:
