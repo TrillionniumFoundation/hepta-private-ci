@@ -294,7 +294,9 @@ impl DurableInferenceControl {
         {
             return Err(Error::Conflict);
         }
-        if archive_store::lookup(&self.path, &request.request_id)?.is_some() {
+        if archive_store::lookup(&self.path, &request.request_id)?.is_some()
+            || feature::archive_store::lookup(&self.path, &request.request_id)?.is_some()
+        {
             return Err(Error::Conflict);
         }
         if self.records.len() + self.native.records.len() + self.features.records.len()

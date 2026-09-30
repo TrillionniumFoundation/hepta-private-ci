@@ -15,6 +15,8 @@ use crate::verify_neuron_feature_receipt_v1;
 use super::DurableInferenceControl;
 use super::Error;
 
+#[path = "feature_archive_store.rs"]
+pub(super) mod archive_store;
 #[path = "feature_control_codec.rs"]
 mod codec;
 pub(super) const JOURNAL_PREFIX: &str = "feature-v1|";
@@ -73,6 +75,13 @@ impl DurableInferenceControl {
         if let Some(current) = self.features.records.get(id) {
             return if current.request == request {
                 Ok(current.clone())
+            } else {
+                Err(Error::Conflict)
+            };
+        }
+        if let Some(current) = archive_store::lookup(&self.path, id)? {
+            return if current.request == request {
+                Ok(current)
             } else {
                 Err(Error::Conflict)
             };
@@ -154,9 +163,13 @@ impl DurableInferenceControl {
         }
         neuron_feature_request_digest_v1(request)
             .map_err(|_| Error::InvalidDigest("typed feature query"))?;
-        match self.features.records.get(request.request_id.as_str()) {
+        let value = match self.features.records.get(request.request_id.as_str()) {
+            Some(value) => Some(value.clone()),
+            None => archive_store::lookup(&self.path, request.request_id.as_str())?,
+        };
+        match value {
             Some(value) if value.request != *request => Err(Error::Conflict),
-            value => Ok(value.cloned()),
+            value => Ok(value),
         }
     }
 

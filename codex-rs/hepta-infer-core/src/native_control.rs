@@ -448,7 +448,9 @@ impl DurableInferenceControl {
         {
             return Err(Error::Conflict);
         }
-        if self.features.records.contains_key(&request.request_id) {
+        if self.features.records.contains_key(&request.request_id)
+            || super::feature::archive_store::lookup(&self.path, &request.request_id)?.is_some()
+        {
             return Err(Error::Conflict);
         }
         if let Some(record) = self.native.records.get(&request.request_id) {
