@@ -16,6 +16,8 @@ mod durability;
 mod durability_qualification_tests;
 mod durable_publish;
 mod error;
+#[cfg(unix)]
+mod fleet_setup;
 mod lease;
 mod matrix;
 mod model;
@@ -108,6 +110,8 @@ pub use driver::SpawnSpec;
 pub use driver::SpawnedProcess;
 pub use error::ProcessDriverError;
 pub use error::SupervisorError;
+#[cfg(unix)]
+pub use fleet_setup::with_offline_fleet_registry;
 pub use model::AgentCommand;
 pub use model::AgentFault;
 pub use model::AgentRelease;

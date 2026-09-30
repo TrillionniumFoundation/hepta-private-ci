@@ -85,6 +85,18 @@ impl SupervisordClient {
         }
     }
 
+    /// Bound transport waiting without changing lifecycle or execution budgets.
+    /// A timeout after admission still requires a durable status query.
+    pub fn with_timeout(mut self, timeout: Duration) -> Result<Self, SupervisorError> {
+        if timeout.is_zero() || timeout > Duration::from_secs(30) {
+            return Err(SupervisorError::Invalid(
+                "supervisord transport timeout must be within 0..=30 seconds".to_string(),
+            ));
+        }
+        self.timeout = timeout;
+        Ok(self)
+    }
+
     pub async fn execute_mutation_with_request_id(
         &self,
         request_id: u64,

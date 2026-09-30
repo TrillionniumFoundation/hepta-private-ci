@@ -130,7 +130,7 @@ use mutation::reconcile_ordinary_mutation;
 mod mutex;
 #[cfg(unix)]
 #[path = "daemon_owner.rs"]
-mod owner;
+pub(crate) mod owner;
 #[cfg(unix)]
 #[path = "daemon_read_view.rs"]
 mod read_view;

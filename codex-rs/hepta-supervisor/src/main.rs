@@ -5,7 +5,7 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaFleetRoot;
 use tokio_util::sync::CancellationToken;
 
-#[tokio::main]
+#[tokio::main(worker_threads = 2)]
 async fn main() -> anyhow::Result<()> {
     let options = parse_options_from(std::env::args_os().skip(1))?;
     let cancellation = CancellationToken::new();

@@ -19,12 +19,12 @@ use crate::SupervisorError;
 /// Never unlink this file on release: a new inode would be a second lock domain.
 /// Keep this guard as the last field of the shared daemon writer state, so the
 /// writer (including its destructor) is gone before the kernel lock is released.
-pub(super) struct SingleInstanceLock {
+pub(crate) struct SingleInstanceLock {
     file: File,
 }
 
 impl SingleInstanceLock {
-    pub(super) fn acquire(path: &Path) -> Result<Self, SupervisorError> {
+    pub(crate) fn acquire(path: &Path) -> Result<Self, SupervisorError> {
         let file = OpenOptions::new()
             .create(true)
             .read(true)
