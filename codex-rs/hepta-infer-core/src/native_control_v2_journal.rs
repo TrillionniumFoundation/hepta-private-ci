@@ -192,8 +192,14 @@ impl NativeJournal {
                 {
                     return Err(Error::InvalidTransition);
                 }
-                if record.execution_binding.is_some()
-                    && protected_output.is_none()
+                if let Some(protected) = &protected_output {
+                    let marker = protected
+                        .journal_marker()
+                        .map_err(|_| Error::InvalidIdentity("native protected output"))?;
+                    if output.output != marker {
+                        return Err(Error::AssignmentMismatch);
+                    }
+                } else if record.execution_binding.is_some()
                     && (!output.output.is_empty() || output.terminal_observed)
                 {
                     return Err(Error::InvalidIdentity("native protected output"));
@@ -251,6 +257,13 @@ impl NativeJournal {
                         }))
                 {
                     return Err(Error::Conflict);
+                }
+                if let Some(protected) = &record.protected_output {
+                    // Earlier partial output may have a different digest from
+                    // the final receipt, but its retained metadata must be valid.
+                    protected
+                        .journal_marker()
+                        .map_err(|_| Error::InvalidIdentity("native protected output"))?;
                 }
                 apply_observation(record, output, Some(&audit))?;
                 record.reconciliation = Some(audit);

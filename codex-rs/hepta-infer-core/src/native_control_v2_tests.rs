@@ -957,3 +957,6 @@ fn post_compaction_multi_generation_curve() {
 
 #[path = "native_checkpoint_migration_tests.rs"]
 mod checkpoint_migration_tests;
+
+#[path = "native_protected_replay_tests.rs"]
+mod protected_replay_tests;
