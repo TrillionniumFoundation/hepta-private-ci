@@ -233,8 +233,9 @@ class CampaignTests(unittest.TestCase):
         pid = int(pid_file.read_text())
         def running():
             try:
-                return Path(f"/proc/{pid}/stat").read_text().split()[2] not in ("Z", "X")
-            except FileNotFoundError:
+                stat = Path(f"/proc/{pid}/stat").read_text().split()
+                return len(stat) > 2 and stat[2] not in ("Z", "X")
+            except (FileNotFoundError, ProcessLookupError, OSError):
                 return False
         deadline = time.monotonic() + 2
         while running() and time.monotonic() < deadline:
