@@ -1,67 +1,61 @@
-name: Kernel authority persist verified closure workflow
+name: Kernel authority exact-head Rust diagnostic
 
 on:
   push:
     branches: [automation/kernel-authority-remaining-four-20260929]
     paths:
       - '.github/workflows/kernel-authority-remote-apply.yml'
-      - '.kernel-authority-staging/full.part*'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: kernel-authority-persist-verified-closure-workflow
+  group: kernel-authority-exact-head-rust-diagnostic
   cancel-in-progress: true
 
 jobs:
-  persist:
+  diagnostic:
     runs-on: ubuntu-slim
-    timeout-minutes: 10
+    timeout-minutes: 120
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+      CARGO_INCREMENTAL: 0
+      RUST_BACKTRACE: 1
+      RUST_MIN_STACK: 8388608
+      PYTHONDONTWRITEBYTECODE: 1
     steps:
-      - name: Checkout immutable staging payload
+      - name: Checkout immutable target head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          path: staging
-          persist-credentials: true
-      - name: Checkout exact patch base
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: 0b4e14d786e962306be424792d15f9d2c2078134
+          ref: d98cf4f4d98a9e6858b103ffc4668a86b304ee49
           fetch-depth: 1
-          path: target
           persist-credentials: false
-      - name: Verify payload and persist exact workflow bytes
+      - name: Verify exact source
         shell: bash
-        env:
-          EXPECTED_HEAD: 0b4e14d786e962306be424792d15f9d2c2078134
-          PATCH_SHA256: 3f177e1a86f77d0282630d88da77fbb5c9d152b4c6bfb088292768625cda9038
-          PATCH_GZIP_SHA256: a36e308baf5e34ee08ce7063b48e928a24fdcfc7bdf14a6574e9851188186a50
-          WORKFLOW_SHA256: fb16f9449fe50007fd41bcc8db92009d55c0a8142f13949d8dbfabb1772c15f4
         run: |
           set -euo pipefail
-          cd "$GITHUB_WORKSPACE"
-          cat staging/.kernel-authority-staging/full.part* | base64 --decode > patch.gz
-          printf '%s  %s\n' "$PATCH_GZIP_SHA256" patch.gz | sha256sum --check --strict
-          gzip --decompress --stdout patch.gz > patch.diff
-          printf '%s  %s\n' "$PATCH_SHA256" patch.diff | sha256sum --check --strict
-
-          cd target
-          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git rev-parse HEAD)" = d98cf4f4d98a9e6858b103ffc4668a86b304ee49
           test -z "$(git status --porcelain)"
-          git apply --index --check ../patch.diff
-          git apply --index ../patch.diff
-          git diff --cached --check
-          printf '%s  %s\n' "$WORKFLOW_SHA256" .github/workflows/kernel-authority-production-closure.yml | sha256sum --check --strict
-
-          cp .github/workflows/kernel-authority-production-closure.yml \
-            ../staging/.kernel-authority-staging/rendered-production-closure.yml
-          cd ../staging
-          printf '%s  %s\n' "$WORKFLOW_SHA256" .kernel-authority-staging/rendered-production-closure.yml | sha256sum --check --strict
-          git add .kernel-authority-staging/rendered-production-closure.yml
-          git diff --cached --check
-          test "$(git diff --cached --name-only)" = ".kernel-authority-staging/rendered-production-closure.yml"
-          git config user.name 'OpenAI Codex'
-          git config user.email 'codex@openai.com'
-          git commit -m 'chore(kernel.authority): persist verified closure workflow bytes'
-          git push origin HEAD:refs/heads/automation/kernel-authority-remaining-four-20260929
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - name: Verify product-process contract parser
+        run: python3 -B qualification/kernel-authority/test_product_process_recovery.py
+      - name: Verify formatting
+        working-directory: codex-rs
+        run: cargo fmt --check -p codex-hepta-agentd -p codex-hepta-contracts -p codex-hepta-fleet
+      - name: Strict product-process Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-agentd --test authority_effect_process_restart -- -D warnings
+      - name: Execute two-product-process recovery
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-agentd --test authority_effect_process_restart -- --nocapture
+      - name: Preserve read-only checkout
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain)"
