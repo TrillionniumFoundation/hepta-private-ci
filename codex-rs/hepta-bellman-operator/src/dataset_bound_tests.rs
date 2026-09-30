@@ -135,3 +135,34 @@ fn op_06_world_model_requires_exact_frozen_dataset_evidence() {
     let model = fit_transition_model_verified_v2(verified).expect("fit");
     assert_eq!(model.dataset_digest, receipt.snapshot.dataset_digest);
 }
+
+#[test]
+fn verified_inputs_reject_relabelled_duplicates_before_fitting() {
+    let records = [digest("record-a"), digest("record-b")];
+    let receipt = receipt(records.to_vec());
+    let mut duplicate = tabular_plan(receipt.snapshot.dataset_digest, records);
+    let mut extra = duplicate.samples[0].clone();
+    extra.sample_id = id("relabelled-duplicate");
+    duplicate.samples.push(extra);
+    assert!(matches!(
+        verify_tabular_operator_plan_v2(duplicate, &receipt, 50),
+        Err(OperatorDatasetBindingError::EvidenceSetMismatch)
+    ));
+
+    let rows = [records[0], records[1], records[0]]
+        .into_iter()
+        .enumerate()
+        .map(|(index, evidence_digest)| WorldModelSampleV1 {
+            sample_id: id(&format!("sample-{index}")),
+            state_id: id("state"),
+            action_id: id("action"),
+            next_state_id: id("next"),
+            outcome: FixedQ32::ZERO,
+            evidence_digest,
+        })
+        .collect();
+    assert!(matches!(
+        verify_world_model_dataset_v2(id("world-model"), rows, &receipt, 50),
+        Err(OperatorDatasetBindingError::EvidenceSetMismatch)
+    ));
+}

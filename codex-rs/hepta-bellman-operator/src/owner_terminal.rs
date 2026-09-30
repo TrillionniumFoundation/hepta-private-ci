@@ -44,6 +44,7 @@ pub struct TerminalCellProfileV1 {
 pub struct FrozenTerminalCellV1 {
     plan: TabularOperatorPlanV1,
     dataset: DatasetSnapshotReceiptV3,
+    frozen_at: u64,
 }
 
 impl FrozenTerminalCellV1 {
@@ -79,7 +80,6 @@ pub fn freeze_terminal_cell_from_owner_v1(
     mut profile: TerminalCellProfileV1,
     now: u64,
 ) -> Result<FrozenTerminalCellV1, TerminalCellError> {
-    owner.revalidate_dataset_snapshot(dataset, now)?;
     if dataset.snapshot.objective_digest != profile.objective_digest
         || profile.objective_digest.is_zero()
         || profile.run_snapshot_digest.is_zero()
@@ -133,10 +133,12 @@ pub fn freeze_terminal_cell_from_owner_v1(
                 if value.terminality != AuthenticatedOutcomeTerminality::Terminal
                     || value.value.is_none()
                     || value.unit_profile_digest != profile.unit_profile_digest
-                    || value.finalized_at.is_none()
+                    || value.finalized_at.is_none_or(|finalized| finalized > now)
+                    || value.observed_at.is_none_or(|observed| observed > now)
+                    || value.latest_observable_at > now
                 {
                     return Err(TerminalCellError::Unsupported(
-                        "nonterminal or different-unit target",
+                        "nonterminal, future or different-unit target",
                     ));
                 }
                 if outcomes
@@ -199,6 +201,7 @@ pub fn freeze_terminal_cell_from_owner_v1(
     Ok(FrozenTerminalCellV1 {
         plan,
         dataset: dataset.clone(),
+        frozen_at: now,
     })
 }
 
@@ -207,6 +210,9 @@ pub fn fit_terminal_cell_from_owner_v1(
     frozen: FrozenTerminalCellV1,
     now: u64,
 ) -> Result<TabularOperatorArtifactV1, TerminalCellError> {
+    if now < frozen.frozen_at {
+        return Err(TerminalCellError::Unsupported("fit predates dataset freeze"));
+    }
     // Correction, withdrawal or a changed witness between freeze and fitting
     // rejects the candidate rather than quietly training on a stale dataset.
     owner.revalidate_dataset_snapshot(&frozen.dataset, now)?;

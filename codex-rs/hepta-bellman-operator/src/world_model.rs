@@ -16,7 +16,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
-const MAX_SAMPLES: usize = 65_536;
+pub(crate) const MAX_SAMPLES: usize = 65_536;
 const MAX_STATE_ACTIONS: usize = 16_384;
 const MAX_BRANCHES_PER_STATE_ACTION: usize = 1_024;
 const Q32_SCALE: u64 = 1_u64 << 32;
@@ -55,6 +55,9 @@ pub struct TabularWorldModelV1 {
     pub estimates: Vec<TransitionEstimateV1>,
     pub model_digest: Digest32,
     pub authority: AuthorityPosture,
+    // Owned by fitting, so public inspection fields cannot silently change the
+    // values authenticated by the training digests before inference.
+    prediction_integrity: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -81,6 +84,7 @@ pub enum WorldModelError {
     StateActionLimit,
     BranchLimit,
     UnsupportedStateAction,
+    InvalidModel,
     Arithmetic,
 }
 
@@ -97,7 +101,7 @@ struct Group {
     outcome_sum: i128,
     count: u32,
     next_counts: BTreeMap<StableId, u32>,
-    evidence_digests: BTreeSet<Digest32>,
+    sample_digests: Vec<Digest32>,
 }
 
 pub fn fit_transition_model(
@@ -112,7 +116,7 @@ pub fn fit_transition_model(
     if samples.len() > MAX_SAMPLES {
         return Err(WorldModelError::SampleLimit);
     }
-    samples.sort_by_key(|sample| sample.sample_id.clone());
+    samples.sort_by(|left, right| left.sample_id.cmp(&right.sample_id));
     if let Some(adjacent) = samples
         .windows(2)
         .find(|adjacent| adjacent[0].sample_id == adjacent[1].sample_id)
@@ -148,13 +152,13 @@ pub fn fit_transition_model(
             .entry(sample.next_state_id.clone())
             .and_modify(|count| *count += 1)
             .or_insert(1);
-        group.evidence_digests.insert(sample.evidence_digest);
+        group.sample_digests.push(digest_sample(sample));
         if group.next_counts.len() > MAX_BRANCHES_PER_STATE_ACTION {
             return Err(WorldModelError::BranchLimit);
         }
-    }
-    if groups.len() > MAX_STATE_ACTIONS {
-        return Err(WorldModelError::StateActionLimit);
+        if groups.len() > MAX_STATE_ACTIONS {
+            return Err(WorldModelError::StateActionLimit);
+        }
     }
 
     let mut estimates = Vec::with_capacity(groups.len());
@@ -170,7 +174,7 @@ pub fn fit_transition_model(
             group.count,
             mean_outcome,
             &branches,
-            &group.evidence_digests,
+            &group.sample_digests,
         )?;
         estimates.push(TransitionEstimateV1 {
             state_id,
@@ -182,7 +186,7 @@ pub fn fit_transition_model(
         });
     }
 
-    let mut bytes = b"hepta.bellman-operator.tabular-world-model.v1".to_vec();
+    let mut bytes = b"hepta.bellman-operator.tabular-world-model.v2".to_vec();
     push_id(&mut bytes, &model_id);
     bytes.extend_from_slice(dataset_digest.as_array());
     bytes.extend_from_slice(
@@ -193,13 +197,16 @@ pub fn fit_transition_model(
     for estimate in &estimates {
         bytes.extend_from_slice(estimate.estimate_digest.as_array());
     }
-    Ok(TabularWorldModelV1 {
+    let mut model = TabularWorldModelV1 {
         model_id,
         dataset_digest,
         estimates,
         model_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
-    })
+        prediction_integrity: Digest32::ZERO,
+    };
+    model.prediction_integrity = digest_prediction_surface(&model);
+    Ok(model)
 }
 
 pub fn predict_transition(
@@ -207,11 +214,14 @@ pub fn predict_transition(
     state_id: &StableId,
     action_id: &StableId,
 ) -> Result<WorldModelPredictionV1, WorldModelError> {
-    let estimate = model
+    validate_prediction_model(model)?;
+    let index = model
         .estimates
-        .iter()
-        .find(|estimate| &estimate.state_id == state_id && &estimate.action_id == action_id)
-        .ok_or(WorldModelError::UnsupportedStateAction)?;
+        .binary_search_by(|estimate| {
+            (&estimate.state_id, &estimate.action_id).cmp(&(state_id, action_id))
+        })
+        .map_err(|_| WorldModelError::UnsupportedStateAction)?;
+    let estimate = &model.estimates[index];
     Ok(WorldModelPredictionV1 {
         model_id: model.model_id.clone(),
         dataset_digest: model.dataset_digest,
@@ -223,6 +233,57 @@ pub fn predict_transition(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+fn validate_prediction_model(model: &TabularWorldModelV1) -> Result<(), WorldModelError> {
+    if model.estimates.is_empty() || model.estimates.len() > MAX_STATE_ACTIONS {
+        return Err(WorldModelError::InvalidModel);
+    }
+    let mut total_samples = 0_u64;
+    for estimate in &model.estimates {
+        if estimate.branches.is_empty()
+            || estimate.branches.len() > MAX_BRANCHES_PER_STATE_ACTION
+            || estimate.sample_count == 0
+        {
+            return Err(WorldModelError::InvalidModel);
+        }
+        total_samples += u64::from(estimate.sample_count);
+        // Every retained branch must have occurred at least once. These caps
+        // bound all work before serializing the public prediction surface.
+        if estimate.branches.len() > estimate.sample_count as usize
+            || total_samples > MAX_SAMPLES as u64
+        {
+            return Err(WorldModelError::InvalidModel);
+        }
+    }
+    if model.prediction_integrity.is_zero()
+        || digest_prediction_surface(model) != model.prediction_integrity
+    {
+        return Err(WorldModelError::InvalidModel);
+    }
+    Ok(())
+}
+
+fn digest_prediction_surface(model: &TabularWorldModelV1) -> Digest32 {
+    let mut bytes = b"hepta.bellman-operator.world-model-inference.v1".to_vec();
+    push_id(&mut bytes, &model.model_id);
+    bytes.extend_from_slice(model.dataset_digest.as_array());
+    bytes.extend_from_slice(model.model_digest.as_array());
+    bytes.extend_from_slice(&(model.estimates.len() as u32).to_be_bytes());
+    for estimate in &model.estimates {
+        push_id(&mut bytes, &estimate.state_id);
+        push_id(&mut bytes, &estimate.action_id);
+        bytes.extend_from_slice(&estimate.sample_count.to_be_bytes());
+        bytes.extend_from_slice(&estimate.mean_outcome.raw().to_be_bytes());
+        bytes.extend_from_slice(estimate.estimate_digest.as_array());
+        bytes.extend_from_slice(&(estimate.branches.len() as u32).to_be_bytes());
+        for branch in &estimate.branches {
+            push_id(&mut bytes, &branch.next_state_id);
+            bytes.extend_from_slice(&branch.count.to_be_bytes());
+            bytes.extend_from_slice(&branch.probability.raw().to_be_bytes());
+        }
+    }
+    Digest32::of_bytes(&bytes)
 }
 
 fn exact_probabilities(
@@ -264,7 +325,6 @@ fn exact_probabilities(
             .checked_add(1)
             .ok_or(WorldModelError::Arithmetic)?;
     }
-    rows.sort_by_key(|row| row.0.clone());
     let mut branches = Vec::with_capacity(rows.len());
     let mut check_sum = 0_u64;
     for (next_state_id, count, raw_probability, _) in rows {
@@ -291,9 +351,9 @@ fn digest_estimate(
     sample_count: u32,
     mean_outcome: FixedQ32,
     branches: &[TransitionBranchV1],
-    evidence_digests: &BTreeSet<Digest32>,
+    sample_digests: &[Digest32],
 ) -> Result<Digest32, WorldModelError> {
-    let mut bytes = b"hepta.bellman-operator.transition-estimate.v1".to_vec();
+    let mut bytes = b"hepta.bellman-operator.transition-estimate.v2".to_vec();
     push_id(&mut bytes, state_id);
     push_id(&mut bytes, action_id);
     bytes.extend_from_slice(&sample_count.to_be_bytes());
@@ -309,14 +369,29 @@ fn digest_estimate(
         bytes.extend_from_slice(&branch.probability.raw().to_be_bytes());
     }
     bytes.extend_from_slice(
-        &u32::try_from(evidence_digests.len())
+        &u32::try_from(sample_digests.len())
             .map_err(|_| WorldModelError::Arithmetic)?
             .to_be_bytes(),
     );
-    for digest in evidence_digests {
+    for digest in sample_digests {
         bytes.extend_from_slice(digest.as_array());
     }
     Ok(Digest32::of_bytes(&bytes))
+}
+
+fn digest_sample(sample: &WorldModelSampleV1) -> Digest32 {
+    let mut bytes = b"hepta.bellman-operator.world-model-sample.v2".to_vec();
+    for id in [
+        &sample.sample_id,
+        &sample.state_id,
+        &sample.action_id,
+        &sample.next_state_id,
+    ] {
+        push_id(&mut bytes, id);
+    }
+    bytes.extend_from_slice(&sample.outcome.raw().to_be_bytes());
+    bytes.extend_from_slice(sample.evidence_digest.as_array());
+    Digest32::of_bytes(&bytes)
 }
 
 fn round_ratio_i128(numerator: i128, denominator: i128) -> Result<i64, WorldModelError> {

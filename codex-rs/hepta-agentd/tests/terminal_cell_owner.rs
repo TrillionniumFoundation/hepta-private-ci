@@ -160,8 +160,10 @@ fn real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal() {
     collect(&mut owner, "initial-a", "read", 0);
     collect(&mut owner, "initial-stop", "abstain", 0);
     let initial = freeze(&owner, "dataset.initial");
+    assert!(freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(1), 45).is_err());
     let frozen = freeze_terminal_cell_from_owner_v1(&owner, &initial, profile(1), 50).unwrap();
     assert_eq!(frozen.sample_count(), 2);
+    assert!(fit_terminal_cell_from_owner_v1(&owner, frozen.clone(), 49).is_err());
     let trained = fit_terminal_cell_from_owner_v1(&owner, frozen, 50).unwrap();
     let mut registry = artifacts::ArtifactRegistry::new();
     let first = persist_reload(&fixture.root, &mut registry, &trained, None);
