@@ -11,12 +11,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: context-compiler-finalize-generated-truth-macos
+  group: context-compiler-finalize-generated-truth-arm-v2
   cancel-in-progress: false
 
 jobs:
   finalize:
-    runs-on: macos-15
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     env:
       SOURCE_SHA: bedf77652f74b62c1e5d6bb3b2119893e581cecc
@@ -56,13 +56,15 @@ jobs:
           python3 -B scripts/generate_context_compiler_module_docs.py --write
           python3 -B scripts/generate_context_compiler_module_docs.py --check
           python3 -B -m unittest discover -s scripts -p 'test_context_compiler_*.py' -q
-      - name: Commit projections and retire this workflow
+      - name: Commit projections and retire transient workflows
         shell: bash
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git rm .github/workflows/context-compiler-finalize-generated-truth.yml
+          git rm -f \
+            .github/workflows/context-compiler-finalize-generated-truth.yml \
+            .github/workflows/context-compiler-finalize-generated-truth-arm.yml
           git add \
             docs/modules/context.compiler/CURRENT_STATE.json \
             docs/modules/context.compiler/CURRENT_PRODUCT_PATH.md \
