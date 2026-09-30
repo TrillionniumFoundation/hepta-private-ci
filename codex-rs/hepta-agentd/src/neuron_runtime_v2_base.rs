@@ -219,7 +219,7 @@ where
     W: AnchorWitnessStore,
     P: DurableNeuronInferenceControlPort,
 {
-    guard: MutexGuard<'a, GuardedOwnerV2<W, P, G>>,
+    guard: MutexGuard<'a, Option<GuardedOwnerV2<W, P, G>>>,
     counters: &'a AgentdNeuronCounterStoreV2,
     acquired_at: Instant,
 }
@@ -232,7 +232,9 @@ where
     type Target = GuardedOwnerV2<W, P, G>;
 
     fn deref(&self) -> &Self::Target {
-        &self.guard
+        self.guard
+            .as_ref()
+            .expect("live owner checked under the same lock")
     }
 }
 
@@ -242,7 +244,9 @@ where
     P: DurableNeuronInferenceControlPort,
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.guard
+        self.guard
+            .as_mut()
+            .expect("live owner checked under the same lock")
     }
 }
 
@@ -269,7 +273,7 @@ where
     W: AnchorWitnessStore,
     P: DurableNeuronInferenceControlPort,
 {
-    guarded: Mutex<GuardedOwnerV2<W, P, G>>,
+    guarded: Mutex<Option<GuardedOwnerV2<W, P, G>>>,
     counters: AgentdNeuronCounterStoreV2,
     telemetry: Mutex<AgentdNeuronTelemetryV2>,
     generation: u64,
@@ -277,6 +281,18 @@ where
 }
 
 trait ProductNeuronOwnerV2: Send + Sync {
+    fn export_archive_control(
+        &self,
+    ) -> Result<
+        codex_hepta_agent_components::neuron::NeuronGenerationArchiveV1,
+        AgentdNeuronControlErrorV2,
+    > {
+        Err(AgentdNeuronControlErrorV2::PendingRecovery)
+    }
+    fn retire_control(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+        Err(AgentdNeuronControlErrorV2::PendingRecovery)
+    }
+
     fn execute_decision_cell(
         &self,
         _invocation: &DecisionCellInvocationV2,
@@ -430,7 +446,8 @@ fn compatibility_error(error: AgentdNeuronControlErrorV2) -> NeuronRuntimeV2Erro
         AgentdNeuronControlErrorV2::OwnerBusy | AgentdNeuronControlErrorV2::ControllerBusy => {
             NeuronRuntimeV2Error::Admission(NeuronAdmissionError::Unavailable)
         }
-        AgentdNeuronControlErrorV2::PendingRecovery => NeuronRuntimeV2Error::PendingOperation,
+        AgentdNeuronControlErrorV2::PendingRecovery
+        | AgentdNeuronControlErrorV2::StoragePressure => NeuronRuntimeV2Error::PendingOperation,
         AgentdNeuronControlErrorV2::NotServing
         | AgentdNeuronControlErrorV2::InvalidTransition
         | AgentdNeuronControlErrorV2::GenerationConflict

@@ -49,6 +49,7 @@ pub enum AgentdNeuronControlErrorV2 {
     InvalidTransition,
     GenerationConflict,
     PendingRecovery,
+    StoragePressure,
     UnknownGeneration,
 }
 
@@ -66,6 +67,7 @@ impl AgentdNeuronControlErrorV2 {
             Self::InvalidTransition => "invalid_lifecycle_transition",
             Self::GenerationConflict => "generation_conflict",
             Self::PendingRecovery => "pending_recovery",
+            Self::StoragePressure => "storage_pressure",
             Self::UnknownGeneration => "unknown_generation",
         }
     }
@@ -78,7 +80,8 @@ impl AgentdNeuronControlErrorV2 {
             }
             Self::ControlState(AgentdNeuronControlStateErrorV2::Io(_))
             | Self::OwnerBusy
-            | Self::ControllerBusy => AgentdNeuronRetryClassV2::BoundedBackoff,
+            | Self::ControllerBusy
+            | Self::StoragePressure => AgentdNeuronRetryClassV2::BoundedBackoff,
             Self::ControlState(
                 AgentdNeuronControlStateErrorV2::Invalid | AgentdNeuronControlStateErrorV2::Corrupt,
             ) => AgentdNeuronRetryClassV2::RepairControlState,
@@ -112,6 +115,7 @@ impl AgentdNeuronControlErrorV2 {
             Self::InvalidTransition => "correct_lifecycle_transition_order",
             Self::GenerationConflict => "correct_generation_handoff_plan",
             Self::PendingRecovery => "reconcile_exact_provider_or_witness_identity",
+            Self::StoragePressure => "increase_archive_storage_budget_without_discarding_receipts",
             Self::UnknownGeneration => "restore_retained_generation_topology",
         }
     }

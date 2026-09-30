@@ -73,6 +73,9 @@ where
         let started = Instant::now();
         match self.guarded.try_lock() {
             Ok(guard) => {
+                if guard.is_none() {
+                    return Err(AgentdNeuronControlErrorV2::NotServing);
+                }
                 self.counters.record_lock_wait(elapsed_micros(started));
                 Ok(AgentdNeuronOwnerLockGuardV2 {
                     guard,
@@ -199,6 +202,31 @@ where
     P: DurableNeuronInferenceControlPort + Send,
     G: NeuronAdmissionGuard + Send,
 {
+    fn export_archive_control(
+        &self,
+    ) -> Result<
+        codex_hepta_agent_components::neuron::NeuronGenerationArchiveV1,
+        AgentdNeuronControlErrorV2,
+    > {
+        self.lock_control()?
+            .owner
+            .runtime
+            .export_generation_archive(
+                codex_hepta_agent_components::neuron::MAX_NEURON_GENERATION_ARCHIVE_BYTES_V1,
+            )
+            .map_err(AgentdNeuronControlErrorV2::Runtime)
+    }
+    fn retire_control(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+        let mut locked = self
+            .guarded
+            .try_lock()
+            .map_err(|_| AgentdNeuronControlErrorV2::OwnerBusy)?;
+        // Removing the canonical owner frees its model and durable file locks
+        // even when callers still hold fenced invocation/handle clones.
+        drop(locked.take());
+        Ok(())
+    }
+
     fn execute_decision_cell(
         &self,
         invocation: &DecisionCellInvocationV2,

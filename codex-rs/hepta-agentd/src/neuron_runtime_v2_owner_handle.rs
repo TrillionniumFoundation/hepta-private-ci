@@ -12,10 +12,10 @@ where
         let body_bundle_digest = self.runtime.body_bundle_digest();
         Ok(AgentdNeuronHandleV2 {
             owner: Arc::new(SharedProductNeuronOwnerV2 {
-                guarded: Mutex::new(GuardedOwnerV2 {
+                guarded: Mutex::new(Some(GuardedOwnerV2 {
                     owner: self,
                     admission,
-                }),
+                })),
                 counters: AgentdNeuronCounterStoreV2::default(),
                 telemetry: Mutex::new(AgentdNeuronTelemetryV2::default()),
                 generation,
