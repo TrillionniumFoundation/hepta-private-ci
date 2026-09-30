@@ -1,9 +1,11 @@
 //! Read-only learned ranking at the existing Agentd cognitive read boundary.
 //!
 //! An embedding host explicitly supplies a selected model and independently
-//! authenticated current registry views. The normal CLI does not invent either.
-//! This component can only permute already-admitted SQLite records; it cannot
-//! add context, grant access, select a new artifact, train, or dispatch a turn.
+//! authenticated current artifact-use views. The normal CLI does not invent
+//! either. This component can only permute already-admitted SQLite records; it
+//! cannot add context, grant access, select a new artifact, train, or dispatch a
+//! turn. Every use is rebound to the current registry, withdrawal frontier,
+//! authority epoch and expiry.
 
 use std::fs::File;
 use std::sync::Arc;
@@ -15,11 +17,11 @@ use codex_hepta_bellman_operator::TabularPayloadPinV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
+use codex_hepta_learning_artifacts::CurrentArtifactUseViewV1;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 #[cfg(test)]
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
-use codex_hepta_learning_artifacts::RevalidatingCandidate;
-use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
+use codex_hepta_learning_artifacts::WithdrawalAwareCandidateSessionV1;
 use codex_hepta_learning_artifacts::load_pinned_candidate;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
@@ -28,20 +30,28 @@ use codex_hepta_types::StableId;
 use crate::CognitiveContextItem;
 
 /// The artifact authority, not the model or a caller-supplied receipt,
-/// determines currentness. Implementations must return an opaque view issued
-/// only after signed CURRENT verification and exact snapshot binding.
+/// determines currentness. Implementations return an opaque use view issued
+/// only after signed CURRENT verification, exact snapshot binding, and current
+/// withdrawal-frontier binding.
 pub trait CurrentCognitiveRegistry: Send + Sync {
-    fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String>;
+    fn current(&self) -> Result<CurrentArtifactUseViewV1, String>;
 }
+
+// Existing internal test modules use this historical local name. It is a test
+// alias only; product callers receive the withdrawal-aware use view above.
+#[cfg(test)]
+type VerifiedCurrentRegistryViewV1 = CurrentArtifactUseViewV1;
 
 #[cfg(test)]
 pub(crate) fn verified_fixture_current_view(
     snapshot: File,
     receipt: RegistrySnapshotReceipt,
     expected_predecessor_head_digest: Digest32,
-) -> Result<VerifiedCurrentRegistryViewV1, String> {
+) -> Result<CurrentArtifactUseViewV1, String> {
     use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
     use codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1;
+    use codex_hepta_learning_artifacts::DatasetWithdrawalRegistry;
+    use codex_hepta_learning_artifacts::DatasetWithdrawalScopeV1;
     use codex_hepta_learning_artifacts::RegistryHeadRequirementV1;
     use codex_hepta_learning_artifacts::RegistryHeadWitnessV1;
     use codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1;
@@ -56,7 +66,17 @@ pub(crate) fn verified_fixture_current_view(
         .map_err(|error| error.to_string())?;
     let registry_id = StableId::new("agentd-current-fixture-registry".to_owned())
         .map_err(|error| error.to_string())?;
-    let scope_digest = Digest32::of_bytes(b"agentd-current-fixture-scope");
+    let withdrawals = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
+        authority_domain_id: StableId::new("agentd-fixture-dataset-authority".to_owned())
+            .map_err(|error| error.to_string())?,
+        registry_id: StableId::new("agentd-fixture-withdrawals".to_owned())
+            .map_err(|error| error.to_string())?,
+        scope_id: StableId::new("agentd-fixture-scope".to_owned())
+            .map_err(|error| error.to_string())?,
+    });
+    let scope_digest = withdrawals
+        .scope_digest()
+        .ok_or_else(|| "fixture withdrawal scope unavailable".to_owned())?;
     let signer = TrustedArtifactSignerV1 {
         signer_id: signer_id.clone(),
         verifying_key,
@@ -103,8 +123,10 @@ pub(crate) fn verified_fixture_current_view(
         minimum_authority_epoch: 1,
         now: 20,
     };
-    verifier
+    let current = verifier
         .verify_current_registry_view(snapshot, receipt, &signed, &requirement)
+        .map_err(|error| error.to_string())?;
+    CurrentArtifactUseViewV1::bind(current, &signed, &requirement, &withdrawals, 20)
         .map_err(|error| error.to_string())
 }
 
@@ -116,7 +138,7 @@ pub struct PinnedCognitiveRanker {
     policy_digest: Digest32,
     model: LoadedTabularOperatorV1,
     current: Arc<dyn CurrentCognitiveRegistry>,
-    cache: Mutex<Option<RevalidatingCandidate>>,
+    cache: Mutex<Option<WithdrawalAwareCandidateSessionV1>>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -175,16 +197,17 @@ impl PinnedCognitiveRanker {
         if model.artifact_id() != &candidate.spec().manifest.artifact_id {
             return Err("model identity differs from selected registry artifact".to_string());
         }
-        let value = Self {
+        let initial = current.current()?;
+        let session = WithdrawalAwareCandidateSessionV1::new(candidate, initial)
+            .map_err(|error| error.to_string())?;
+        Ok(Self {
             owner,
             body_generation,
             policy_digest: model_pin.payload_digest,
             model,
             current,
-            cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
-        };
-        value.revalidate()?;
-        Ok(value)
+            cache: Mutex::new(Some(session)),
+        })
     }
 
     /// Load a candidate only after independent longitudinal evaluation and a
@@ -275,9 +298,9 @@ impl PinnedCognitiveRanker {
         let Some(mut candidate) = cache.take() else {
             return Err("ranker unavailable; explicit reload required".to_string());
         };
-        // Keep the cache absent on witness errors, panics and failed refreshes.
-        // The provider cannot inject a bare file/receipt: the artifact authority
-        // must first issue an opaque verified CURRENT view.
+        // Keep the cache absent on witness, withdrawal, expiry, panic and failed
+        // refresh. A stale pinned handle can never silently resume after an
+        // authority or withdrawal transition.
         let current = self.current.current()?;
         let result = candidate
             .with_current(current, |_| consume())
