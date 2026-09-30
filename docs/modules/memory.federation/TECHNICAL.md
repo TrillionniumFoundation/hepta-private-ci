@@ -160,6 +160,30 @@ attempts then run with bounded `buffer_unordered` concurrency under the original
 single global horizon; the split narrows discovery rather than extending the
 request.
 
+For an admitted capability, the owner scope is part of retrieval selection, not
+a post-processing filter. Memory FTS, entity/projection FTS and recency queries
+apply the exact capability scope inside the same SQLite read transaction before
+channel ranking, reciprocal-rank fusion and the final top-K. Graph and typed
+relation expansion inherit only seeds from that exact projection scope. This
+prevents higher-ranked memories from another authorized local scope from
+crowding the federated scope out before selection.
+
+Completeness is also owner-observed rather than inferred from response length.
+Each retrieval channel reports whether its bounded query was exhausted in the
+same owner snapshot. The owner resolves the bounded fused candidate set before
+the product top-K and reports exhaustion only when every channel is exhausted
+and no candidate lies beyond the product result ceiling. `Complete` and
+`Empty` therefore require this same-snapshot exhaustion witness; otherwise the
+response is `Partial`, even when fewer than K items are returned.
+
+A capability-local query/lease construction failure is recorded as a failed peer
+with integrity coverage and does not discard already valid peers. Authority
+observation timestamps are sampled after the asynchronous owner-store
+observation completes. At physical provider entry, the final-use guard samples
+the clock again and requires both the capability window and every selected
+memory's own validity window to remain current; clock regression or expiry
+crossing suppresses the attachment.
+
 ### 4.3 Authenticated wire and host boundary candidate
 
 The wire crate provides:

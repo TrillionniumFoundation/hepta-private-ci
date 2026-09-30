@@ -122,18 +122,25 @@ For each physical recall:
 4. deterministically sort/deduplicate and cap admitted sources, recording peer
    truncation and pre-discovery owner omission;
 5. reserve the remaining global budget for admitted reads and authority fences;
-6. build query and lease bindings over consumer, peer, scope, purpose,
+6. apply the capability's exact owner scope inside the owner SQLite snapshot
+   before FTS/recency ranking and graph expansion, then derive `Complete` or
+   `Empty` only from explicit same-snapshot channel exhaustion;
+7. build query and lease bindings over consumer, peer, scope, purpose,
    capability generation/revision, query digest, nonce and deadline;
-7. require current preflight authority before dispatch;
-8. execute one interruptible owner read;
-9. seal and recompute the response digest;
-10. rediscover current owner capability after I/O;
-11. admit evidence only if final authority is current;
-12. deterministically aggregate candidates and structured coverage;
-13. batch-revalidate exact owner/capability/memory bindings at physical
+8. require current preflight authority before dispatch;
+9. execute one interruptible owner read;
+10. seal and recompute the response digest;
+11. rediscover current owner capability after I/O and timestamp the authority
+    observation only after that asynchronous owner-store read completes;
+12. admit evidence only if final authority is current;
+13. convert capability-local setup failures into typed failed-peer coverage
+    without discarding other valid peers;
+14. deterministically aggregate candidates and structured coverage;
+15. batch-revalidate exact owner/capability/memory bindings at physical
     model-request assembly under one bounded final-use deadline;
-14. take a fresh post-batch wall-clock observation and reject expiry crossing or
-    clock regression before provider transport entry.
+16. take a fresh post-batch wall-clock observation and reject clock regression,
+    capability expiry, or any selected memory crossing its own validity window
+    before provider transport entry.
 
 The discovery/read split closes the starvation case in which a fast owner was
 successfully discovered but a second permanently pending owner consumed the
