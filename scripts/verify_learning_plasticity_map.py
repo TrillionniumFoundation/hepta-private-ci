@@ -220,21 +220,30 @@ def main() -> int:
         if f"`{operation}`" not in status:
             raise SystemExit(f"current-implementation status omits {operation}")
 
-    hidden = []
-    authoring = ROOT / ".authoring"
-    if authoring.is_dir():
-        for item in authoring.iterdir():
-            if item.is_file() and ("plasticity" in item.name or item.name.startswith("review-p1-core")):
-                hidden.append(str(item.relative_to(ROOT)))
+    hidden: list[str] = []
+    tracked = git("ls-files", ".authoring", "scripts").splitlines()
+    for relative in tracked:
+        name = Path(relative).name
+        if relative.startswith("scripts/.learning_plasticity"):
+            hidden.append(relative)
+        elif relative.startswith(".authoring/") and (
+            "plasticity" in name or name.startswith("review-p1-core")
+        ):
+            hidden.append(relative)
     if hidden:
-        raise SystemExit("hidden plasticity source remains: " + ", ".join(sorted(hidden)))
+        raise SystemExit("hidden plasticity source remains: " + ", ".join(sorted(set(hidden))))
 
     write_workflows = []
     for workflow in (ROOT / ".github/workflows").glob("*plasticity*.yml"):
         text = workflow.read_text(encoding="utf-8")
         if re.search(r"(?m)^\s*contents:\s*write\s*$", text):
             write_workflows.append(str(workflow.relative_to(ROOT)))
-        if ".authoring/" in text or "git reset --hard" in text or "git push" in text:
+        if (
+            ".authoring/" in text
+            or ".learning_plasticity" in text
+            or "git reset --hard" in text
+            or "git push" in text
+        ):
             write_workflows.append(str(workflow.relative_to(ROOT)))
     if write_workflows:
         raise SystemExit(

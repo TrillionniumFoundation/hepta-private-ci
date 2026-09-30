@@ -1,6 +1,8 @@
-name: Learning plasticity one-shot metadata rebind
-# Transitional metadata-only publisher. It never extracts, patches, formats, or writes Rust source.
-# The published commit deletes this workflow; all subsequent qualification is read-only.
+name: Learning plasticity one-shot source closure
+# Transitional migration only. It materializes the already-reviewed timing patch
+# into ordinary Rust/docs source, commits that source, binds machine metadata to
+# the resulting immutable source commit, then deletes itself and all fragments.
+# Required qualification never executes this workflow and remains read-only.
 
 on:
   push:
@@ -11,15 +13,15 @@ permissions:
   contents: write
 
 concurrency:
-  group: learning-plasticity-metadata-rebind-${{ github.ref }}
+  group: learning-plasticity-source-closure-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  rebind:
+  close:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 60
     steps:
-      - name: Check out exact authored source commit
+      - name: Check out exact staging commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
@@ -27,7 +29,7 @@ jobs:
           persist-credentials: true
           clean: true
 
-      - name: Bind machine metadata to ordinary committed source
+      - name: Materialize phase timing as ordinary source
         shell: bash
         env:
           SOURCE_SHA: ${{ github.sha }}
@@ -35,8 +37,60 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
+          fragments=(
+            scripts/.learning_plasticity_phase_timing.part00
+            scripts/.learning_plasticity_phase_timing.part01
+            scripts/.learning_plasticity_phase_timing.part02
+            scripts/.learning_plasticity_phase_timing.part03
+          )
+          for fragment in "${fragments[@]}"; do
+            test -f "$fragment"
+          done
+          cat "${fragments[@]}" > "$RUNNER_TEMP/learning_plasticity_phase_timing.py"
+          python3 -m py_compile "$RUNNER_TEMP/learning_plasticity_phase_timing.py"
+          python3 "$RUNNER_TEMP/learning_plasticity_phase_timing.py"
+          rm -f "${fragments[@]}"
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd
+          git diff --check
+
+      - name: Verify materialized timing source compiles
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo check --locked \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd
+
+      - name: Commit immutable ordinary source base
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          git commit -m 'feat(plasticity): materialize end-to-end phase timing'
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+          test -z "$(git status --porcelain)"
+
+      - name: Bind exact source and test objects
+        shell: bash
+        env:
+          AUTHORED_SHA: ${{ steps.source.outputs.commit }}
+          AUTHORED_TREE: ${{ steps.source.outputs.tree }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$AUTHORED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$AUTHORED_TREE"
           python3 - <<'PY'
           import json
+          import os
           import pathlib
           import re
           import subprocess
@@ -44,8 +98,8 @@ jobs:
           root = pathlib.Path('.').resolve()
           path = root / 'docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json'
           row = json.loads(path.read_text())
-          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
-          tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          head = os.environ['AUTHORED_SHA']
+          tree = os.environ['AUTHORED_TREE']
           anchor = {'commit': head, 'tree': tree}
           row['sourceBase'] = anchor
           row['sourceIdentityPolicy'] = 'authored_source_base_plus_runtime_exact_candidate_v1'
@@ -211,12 +265,27 @@ jobs:
 
           evidence_paths = set(row.get('resolvedRoots', []))
           evidence_paths.add(row['technicalGuide'])
-          evidence_paths.update({'codex-rs/Cargo.toml', 'codex-rs/Cargo.lock'})
+          evidence_paths.update(
+              {
+                  'codex-rs/Cargo.toml',
+                  'codex-rs/Cargo.lock',
+                  'codex-rs/hepta-intelligence/src/lib.rs',
+                  'codex-rs/hepta-intelligence/src/plasticity_product.rs',
+                  'codex-rs/hepta-intelligence/src/topology_product.rs',
+                  'codex-rs/hepta-agentd/src/lib.rs',
+                  'codex-rs/hepta-agentd/src/plasticity_host.rs',
+                  'codex-rs/hepta-agentd/src/topology_plasticity_host.rs',
+                  'codex-rs/hepta-agentd/src/plasticity_runtime.rs',
+                  'docs/modules/learning.plasticity/RUNTIME_RESOURCE_RECOVERY.md',
+              }
+          )
           for candidate in (
               '.github/workflows/learning-plasticity-exact-qualification.yml',
               '.github/workflows/learning-plasticity-exact-status.yml',
               'scripts/qualify_learning_plasticity.py',
               'scripts/verify_learning_plasticity_map.py',
+              'scripts/learning_plasticity_exact_status.py',
+              'scripts/test_learning_plasticity_grammar_contract.py',
               'scripts/hepta-implementation-maps.py',
               'scripts/hepta-docs.py',
               'scripts/hepta-module-docs.py',
@@ -308,21 +377,28 @@ jobs:
 
       - name: Remove final writer and validate closure metadata
         shell: bash
+        env:
+          AUTHORED_SHA: ${{ steps.source.outputs.commit }}
+          AUTHORED_TREE: ${{ steps.source.outputs.tree }}
         run: |
           set -euo pipefail
           rm -f .github/workflows/learning-plasticity-p1-apply.yml
+          test -z "$(find scripts -maxdepth 1 -type f -name '.learning_plasticity*' -print -quit)"
           git diff --check
           python3 - <<'PY'
           import json
+          import os
           import pathlib
           import subprocess
 
           path = pathlib.Path('docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json')
           row = json.loads(path.read_text())
-          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
-          tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
-          if row.get('sourceBase') != {'commit': head, 'tree': tree}:
-              raise SystemExit('source base is not the exact authored commit')
+          anchor = {
+              'commit': os.environ['AUTHORED_SHA'],
+              'tree': os.environ['AUTHORED_TREE'],
+          }
+          if row.get('sourceBase') != anchor or row.get('observedAtHead') != anchor:
+              raise SystemExit('source base is not the exact immutable authored commit')
           if row.get('sourceIdentityPolicy') != 'authored_source_base_plus_runtime_exact_candidate_v1':
               raise SystemExit('source identity policy drift')
           required = {
@@ -350,7 +426,7 @@ jobs:
                   raise SystemExit(f'operation binding drift: {op.get("operation")}')
               if op.get('sourceSymbol') != op.get('nativeSymbol'):
                   raise SystemExit(f'source symbol drift: {op.get("operation")}')
-              if op.get('candidateCommitSha') != head:
+              if op.get('candidateCommitSha') != anchor['commit']:
                   raise SystemExit(f'candidate commit drift: {op.get("operation")}')
               if op.get('sourceBlobSha') != object_map.get(op.get('sourcePath')):
                   raise SystemExit(f'source blob drift: {op.get("operation")}')
@@ -368,27 +444,23 @@ jobs:
           state = json.loads(
               pathlib.Path('docs/modules/learning.plasticity/CURRENT_STATE.json').read_text()
           )
-          if state.get('sourceBase') != row.get('sourceBase'):
+          if state.get('sourceBase') != anchor:
               raise SystemExit('current state source base drift')
           PY
 
-      - name: Publish metadata-only closure commit
+      - name: Publish self-deleting closure commits
         shell: bash
         env:
           SOURCE_SHA: ${{ github.sha }}
           TARGET_BRANCH: feat/learning-plasticity-product-closure-20260928
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          if git diff --quiet; then
-            echo 'metadata already rebound'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
           git diff --cached --check
-          git commit -m 'fix(plasticity): bind exact authored source metadata'
+          test -n "$(git diff --cached --name-only)"
+          git commit -m 'fix(plasticity): bind immutable source and remove materializers'
+          test -z "$(git status --porcelain)"
+          python3 scripts/verify_learning_plasticity_map.py
           git fetch origin "$TARGET_BRANCH"
           test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
           git push origin "HEAD:refs/heads/$TARGET_BRANCH"
