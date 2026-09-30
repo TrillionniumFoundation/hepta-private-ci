@@ -20,7 +20,7 @@ use crate::VectorQueryV1;
 pub const MAX_VECTOR_WITHDRAWALS: usize = 16_384;
 
 const ENCODER_RELEASE_DOMAIN: &[u8] = b"hepta.memory-retrieval.encoder-release.v1";
-const VECTOR_PUBLICATION_DOMAIN: &[u8] = b"hepta.memory-retrieval.vector-publication.v1";
+const VECTOR_PUBLICATION_DOMAIN: &[u8] = b"hepta.memory-retrieval.vector-publication.v2";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EncoderReleaseIdentityV1 {
@@ -114,6 +114,7 @@ pub enum VectorPublicationStateV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VectorIndexPublicationV1 {
     tenant_digest: Digest32,
+    writer_fence: u64,
     sequence: u64,
     generation: u64,
     previous_publication_digest: Option<Digest32>,
@@ -130,6 +131,7 @@ impl VectorIndexPublicationV1 {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         tenant_digest: Digest32,
+        writer_fence: u64,
         sequence: u64,
         generation: u64,
         previous_publication_digest: Option<Digest32>,
@@ -143,6 +145,7 @@ impl VectorIndexPublicationV1 {
         withdrawn_record_digests.sort();
         let mut value = Self {
             tenant_digest,
+            writer_fence,
             sequence,
             generation,
             previous_publication_digest,
@@ -162,6 +165,9 @@ impl VectorIndexPublicationV1 {
     pub fn validate(&self) -> Result<(), VectorPublicationErrorV1> {
         if self.tenant_digest.is_zero() {
             return Err(VectorPublicationErrorV1::EmptyDigest("tenant"));
+        }
+        if self.writer_fence == 0 {
+            return Err(VectorPublicationErrorV1::InvalidWriterFence);
         }
         if self.sequence == 0 || self.generation == 0 {
             return Err(VectorPublicationErrorV1::InvalidSequence);
@@ -215,7 +221,9 @@ impl VectorIndexPublicationV1 {
 
     /// Validate an atomic successor. Index or encoder changes require a strict
     /// generation increment; policy-only frontier changes may remain within the
-    /// same generation but still advance the durable sequence.
+    /// same generation but still advance the durable sequence. A writer fence
+    /// may remain stable for one owner epoch or increase after takeover, but an
+    /// older process can never publish after a newer fence is observed.
     pub fn validate_successor(&self, next: &Self) -> Result<(), VectorPublicationErrorV1> {
         self.validate()?;
         next.validate()?;
@@ -228,6 +236,9 @@ impl VectorIndexPublicationV1 {
             || next.previous_publication_digest != Some(self.publication_digest)
         {
             return Err(VectorPublicationErrorV1::InvalidSuccessor);
+        }
+        if next.writer_fence < self.writer_fence {
+            return Err(VectorPublicationErrorV1::StaleWriterFence);
         }
         if next.generation < self.generation
             || next.withdrawal_frontier < self.withdrawal_frontier
@@ -264,6 +275,11 @@ impl VectorIndexPublicationV1 {
     #[must_use]
     pub fn tenant_digest(&self) -> Digest32 {
         self.tenant_digest
+    }
+
+    #[must_use]
+    pub fn writer_fence(&self) -> u64 {
+        self.writer_fence
     }
 
     #[must_use]
@@ -305,6 +321,7 @@ impl VectorIndexPublicationV1 {
     pub fn compute_digest(&self) -> Digest32 {
         let mut bytes = VECTOR_PUBLICATION_DOMAIN.to_vec();
         push_digest(&mut bytes, self.tenant_digest);
+        bytes.extend_from_slice(&self.writer_fence.to_be_bytes());
         bytes.extend_from_slice(&self.sequence.to_be_bytes());
         bytes.extend_from_slice(&self.generation.to_be_bytes());
         push_optional_digest(&mut bytes, self.previous_publication_digest);
@@ -379,9 +396,16 @@ impl PublishedVectorOwnerV1 {
 /// A product implementation must map this contract to one durable writer and
 /// use a real compare-and-swap transaction. An uncertain commit result must be
 /// reconciled by loading the current publication; it must never be retried as a
-/// blind second publish.
+/// blind second publish. The returned fence must be persisted atomically with
+/// the owner's lease/epoch and copied into every publication.
 pub trait DurableVectorPublicationPortV1 {
     type Error: StdError + Send + Sync + 'static;
+
+    fn acquire_writer_fence(
+        &mut self,
+        tenant_digest: Digest32,
+        writer_identity_digest: Digest32,
+    ) -> Result<u64, Self::Error>;
 
     fn load_current(
         &self,
@@ -400,6 +424,8 @@ pub trait DurableVectorPublicationPortV1 {
 pub enum VectorPublicationErrorV1 {
     EmptyDigest(&'static str),
     InvalidDimensions,
+    InvalidWriterFence,
+    StaleWriterFence,
     InvalidSequence,
     SequenceExhausted,
     InvalidPreviousPublication,
