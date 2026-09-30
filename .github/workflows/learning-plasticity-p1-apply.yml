@@ -43,18 +43,41 @@ jobs:
           import hashlib
           from pathlib import Path
 
-          parts = [Path(f'.authoring/review-p1-core.part{i:02d}') for i in range(5)]
-          if not all(path.is_file() for path in parts):
-              raise SystemExit('reviewed P1 patch is incomplete')
-          encoded = b''.join(path.read_bytes() for path in parts)
-          if hashlib.sha256(encoded).hexdigest() != '30fe79204b73efd1f50957d73fe68f9f4beaf17ed2087a94abfdc4ebf9e3a6b0':
-              raise SystemExit('reviewed P1 base64 digest mismatch')
+          expected_parts = [
+              (Path('.authoring/review-p1-core.part00'), 16000, 'b74b602c4cee1724e5e4dff547fadd23b014b853'),
+              (Path('.authoring/review-p1-core.part01'), 16000, '90caaefd83e4f9db3f1e3f86f154dcf1ac5e99c6'),
+              (Path('.authoring/review-p1-core.part02'), 16000, '9e33055cf1a93833a3c794924dda46a4f95572dc'),
+              (Path('.authoring/review-p1-core.part03'), 9440, '795f0fe785b16d6b6dd3b4c6e3d8386ebce655db'),
+              (Path('.authoring/review-p1-core.part04'), 3804, 'a2fd398ccffb4f86e250c96109c06354a7447255'),
+          ]
+          encoded_parts = []
+          for path, expected_size, expected_blob in expected_parts:
+              if not path.is_file():
+                  raise SystemExit(f'reviewed P1 patch is incomplete: {path}')
+              raw = path.read_bytes()
+              actual_blob = hashlib.sha1(
+                  f'blob {len(raw)}\0'.encode('ascii') + raw
+              ).hexdigest()
+              if len(raw) != expected_size or actual_blob != expected_blob:
+                  raise SystemExit(
+                      f'reviewed P1 part identity mismatch: {path}; '
+                      f'size={len(raw)} blob={actual_blob}'
+                  )
+              encoded_parts.append(raw)
+
+          encoded = b''.join(encoded_parts)
           compressed = base64.b64decode(b''.join(encoded.split()), validate=True)
-          if hashlib.sha256(compressed).hexdigest() != '37b1430915ca47e103d4893261e7178f5487c1d41932adc5e0195b700e3980c0':
-              raise SystemExit('reviewed P1 gzip digest mismatch')
+          compressed_digest = hashlib.sha256(compressed).hexdigest()
+          if compressed_digest != '37b1430915ca47e103d4893261e7178f5487c1d41932adc5e0195b700e3980c0':
+              raise SystemExit(
+                  f'reviewed P1 gzip digest mismatch: {compressed_digest}'
+              )
           patch = gzip.decompress(compressed)
-          if hashlib.sha256(patch).hexdigest() != 'd0090d90d005338fa9580220abc863e50eeff007deef27f9f2565f84c79c7809':
-              raise SystemExit('reviewed P1 patch digest mismatch')
+          patch_digest = hashlib.sha256(patch).hexdigest()
+          if patch_digest != 'd0090d90d005338fa9580220abc863e50eeff007deef27f9f2565f84c79c7809':
+              raise SystemExit(
+                  f'reviewed P1 patch digest mismatch: {patch_digest}'
+              )
           Path('/tmp/learning-plasticity-p1.patch').write_bytes(patch)
           PY
           git apply --binary --check /tmp/learning-plasticity-p1.patch
