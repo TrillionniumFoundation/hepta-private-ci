@@ -1222,6 +1222,9 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     verify_taskflow_store(pool, owner_agent_id)
         .await
         .map_err(map_taskflow_verify_error)?;
+    crate::circuit_v2::verify_circuit_v2_store(pool, owner_agent_id)
+        .await
+        .map_err(map_taskflow_verify_error)?;
     Ok(())
 }
 
