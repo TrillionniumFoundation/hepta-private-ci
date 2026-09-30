@@ -142,7 +142,7 @@ id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
 caller_markers = ["FinalUseAuthority::open_state_dir", "SignedFinalUseGrant"]
 
 [[boundary]]
