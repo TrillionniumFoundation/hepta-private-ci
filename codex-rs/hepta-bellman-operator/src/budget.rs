@@ -379,7 +379,6 @@ pub struct OperatorWorkSnapshotV1 {
 pub(crate) struct OperatorWorkMeter {
     budget: OperatorResourceBudgetV1,
     context: FitContextV1,
-    started: Instant,
     operations: u64,
     estimated_bytes: u64,
     shared_reserved_bytes: u64,
@@ -401,7 +400,6 @@ impl OperatorWorkMeter {
         }
         let meter = Self {
             budget,
-            started: context.started,
             context,
             operations: 0,
             estimated_bytes: 0,
@@ -614,7 +612,7 @@ mod tests {
             let second = with_work_control_v1(&control, || {
                 OperatorWorkMeter::new(budget(1_000_000)).unwrap()
             });
-            assert_eq!(second.started, first.started);
+            assert_eq!(second.context.started, first.context.started);
         });
     }
 
@@ -627,7 +625,7 @@ mod tests {
             let second = with_inherited_fit_context_v1(|| {
                 OperatorWorkMeter::new(budget(1_000_000)).unwrap()
             });
-            assert_eq!(second.started, first.started);
+            assert_eq!(second.context.started, first.context.started);
         });
     }
 
