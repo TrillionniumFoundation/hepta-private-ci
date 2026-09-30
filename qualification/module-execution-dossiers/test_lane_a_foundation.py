@@ -220,6 +220,12 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             self.assertTrue(row["protocolId"].startswith("hepta."))
             self.assertTrue(row["source"])
             self.assertTrue(row["invariants"])
+        evidence = next(
+            row for row in registry["protocols"] if row["module"] == "kernel.evidence"
+        )
+        self.assertIn(
+            "migration lineage is exactly 0001 through 0012", evidence["invariants"]
+        )
         operations = registry["protocols"][3]
         self.assertEqual(
             operations["protocolId"],
