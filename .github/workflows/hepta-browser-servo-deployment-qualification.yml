@@ -1,10 +1,28 @@
 name: Hepta Browser Servo deployment qualification
 
 on:
-  # Automatic pull-request and main-branch fan-out is owned by the two
-  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  # Deep qualification stays explicitly reusable and manually runnable.
   workflow_call:
+    inputs:
+      build_run_id:
+        description: GitHub Actions run ID containing the exact worker evidence artifact
+        required: true
+        type: string
+      worker_sha256:
+        description: Expected SHA-256 of the worker binary from the reviewed build receipt
+        required: true
+        type: string
+
   workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: GitHub Actions run ID containing the exact worker evidence artifact
+        required: true
+        type: string
+      worker_sha256:
+        description: Expected SHA-256 of the worker binary from the reviewed build receipt
+        required: true
+        type: string
 
 permissions:
   contents: read
