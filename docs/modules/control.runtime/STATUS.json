@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.control-runtime.status.v1",
+  "module": "control.runtime",
+  "generationMode": "ci-generated",
+  "sourceSha": "${GITHUB_SHA}",
+  "sourceDigest": "${CONTROL_RUNTIME_SOURCE_DIGEST}",
+  "implementationState": "production-candidate",
+  "productionOwnerState": "candidate-implemented",
+  "journalSemanticReplay": true,
+  "durableExactAttemptRecovery": true,
+  "trustedFinalUseClock": true,
+  "canonicalProducerAdmission": true,
+  "transitionBoundModuleAdmission": true,
+  "productionOrganHostProfile": "synchronous-acyclic-only",
+  "unsupportedRuntimeProfilesFailClosed": true,
+  "externalAntiRollbackAnchorRequired": true,
+  "qualification": {
+    "sourceHead": "required",
+    "syntheticMerge": "required",
+    "independentSecurityAcceptance": "not-established",
+    "hil": "not-established",
+    "physicalDevice": "not-established",
+    "activation": "not-approved",
+    "release": "not-approved"
+  }
+}

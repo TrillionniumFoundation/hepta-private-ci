@@ -137,7 +137,9 @@ fn run() -> Result<(), String> {
                 PlannerStoreV1::open(&store_path).map_err(|error| error.to_string())?;
             recovered_count = recovered.records().len();
             if recovered_count != expected_complete_records {
-                return Err("partial-tail recovery changed the complete record frontier".to_string());
+                return Err(
+                    "partial-tail recovery changed the complete record frontier".to_string()
+                );
             }
             recovered
                 .append_checkpoint(b"named-host-external-anchor")
@@ -149,8 +151,7 @@ fn run() -> Result<(), String> {
 
         PlannerStoreV1::restore_from_backup(&restored_path, &backup_path)
             .map_err(|error| error.to_string())?;
-        let restored =
-            PlannerStoreV1::open(&restored_path).map_err(|error| error.to_string())?;
+        let restored = PlannerStoreV1::open(&restored_path).map_err(|error| error.to_string())?;
         let backup_rollback_ok = restored.records().len() == recovered_count + 1;
         let restart_recovery_ok = recovered_count == expected_complete_records;
         let performance_slo_met = append_ops_per_second >= MINIMUM_APPEND_OPS_PER_SECOND;

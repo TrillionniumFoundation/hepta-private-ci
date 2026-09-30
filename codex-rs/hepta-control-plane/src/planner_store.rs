@@ -29,6 +29,7 @@ pub enum PlannerStoreRecordKindV1 {
     Reconciliation,
     Checkpoint,
     MigratedLegacyRecord,
+    IndependentAuthorization,
 }
 
 impl PlannerStoreRecordKindV1 {
@@ -41,6 +42,7 @@ impl PlannerStoreRecordKindV1 {
             Self::Reconciliation => 4,
             Self::Checkpoint => 5,
             Self::MigratedLegacyRecord => 6,
+            Self::IndependentAuthorization => 7,
         }
     }
 
@@ -53,6 +55,7 @@ impl PlannerStoreRecordKindV1 {
             4 => Ok(Self::Reconciliation),
             5 => Ok(Self::Checkpoint),
             6 => Ok(Self::MigratedLegacyRecord),
+            7 => Ok(Self::IndependentAuthorization),
             _ => Err(PlannerStoreError::UnknownRecordKind(value)),
         }
     }
@@ -683,7 +686,7 @@ mod tests {
             assert_eq!(store.records().len(), 2);
         }
         PlannerStoreV1::restore_from_backup(&restored, &backup).expect("restore");
-        let restored_store = PlannerStoreV1::open(&restored).expect("reopen restored");
+        let restored_store = PlannerStoreV1::open(&restored).expect("reopen restored store");
         assert_eq!(restored_store.records().len(), 3);
         assert_eq!(restored_store.records()[0].payload_digest, digest);
     }
