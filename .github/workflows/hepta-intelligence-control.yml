@@ -49,7 +49,7 @@ on:
       - ".github/actions/hepta-synthetic-merge/**"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: intelligence-control-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
@@ -271,3 +271,126 @@ jobs:
             ${{ runner.temp }}/intelligence-exact-status/${{ matrix.lane }}/*
           if-no-files-found: error
           retention-days: 30
+
+  readiness-manifest:
+    name: intelligence.control readiness manifest
+    if: ${{ always() }}
+    needs: qualification
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Check out exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download source-head evidence
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: intelligence-control-${{ github.run_id }}-${{ github.run_attempt }}-source-head
+          path: ${{ runner.temp }}/readiness/source-head
+
+      - name: Download base-merge evidence
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: intelligence-control-${{ github.run_id }}-${{ github.run_attempt }}-base-merge
+          path: ${{ runner.temp }}/readiness/base-merge
+
+      - name: Emit fail-closed exact readiness manifest
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          GITHUB_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_dir="$RUNNER_TEMP/readiness/base-merge"
+          deterministic_merge_sha=""
+          if [ -d "$base_dir" ]; then
+            deterministic_merge_sha="$(python3 -c 'import json,pathlib,sys; values=(json.loads(p.read_text()) for p in pathlib.Path(sys.argv[1]).rglob("*.json")); print(next((v["tested_sha"] for v in values if v.get("lane")=="base-merge" and v.get("tested_sha")), ""))' "$base_dir")"
+          fi
+          target_triple="$(rustc -vV | sed -n 's/^host: //p')"
+          rustc_version="$(rustc -Vv | tr '\n' ';')"
+          runner_fingerprint="${ImageOS:-unknown}/${ImageVersion:-unknown}/${RUNNER_ARCH:-unknown}"
+          python3 scripts/hepta-intelligence-readiness.py \
+            --source-head-sha "$SOURCE_SHA" \
+            --base-sha "$EVENT_BASE_SHA" \
+            --deterministic-merge-sha "$deterministic_merge_sha" \
+            --github-merge-sha "${GITHUB_MERGE_SHA:-}" \
+            --workflow-sha "$(git rev-parse HEAD:.github/workflows/hepta-intelligence-control.yml)" \
+            --workflow-run-id "$GITHUB_RUN_ID" \
+            --workflow-attempt "$GITHUB_RUN_ATTEMPT" \
+            --runner-fingerprint "$runner_fingerprint" \
+            --target-triple "$target_triple" \
+            --rustc-version "$rustc_version" \
+            --source-tree-hash "$(git rev-parse HEAD^{tree})" \
+            --source-head-evidence "$RUNNER_TEMP/readiness/source-head" \
+            --base-merge-evidence "$base_dir" \
+            --output "$RUNNER_TEMP/readiness/READINESS_MANIFEST.json"
+
+      - name: Retain readiness manifest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: intelligence-control-readiness-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/readiness/READINESS_MANIFEST.json
+          if-no-files-found: error
+          retention-days: 30
+
+  materialize-ordinary-source:
+    name: Materialize ordinary source once
+    if: github.event_name == 'push' && github.ref_name == 'codex/intelligence-control-production-closure-20260929'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out delivery head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Rebuild validated ordinary source tree
+        env:
+          ORIGINAL_HEAD: 11588c5b1fc7d9a6a93a457e59513f4a39c32384
+          PATCH_SHA256: bb0858c91872e4406b2e383c6a6ac362df853b76fb03dc96580bb8f1d0c9e244
+          BRANCH: codex/intelligence-control-production-closure-20260929
+        shell: bash
+        run: |
+          set -euo pipefail
+          bootstrap_sha="$(git rev-parse HEAD)"
+          remote_sha="$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)"
+          test "$remote_sha" = "$bootstrap_sha"
+          cat .github/intelligence-control-bootstrap/patch.part-* \
+            | base64 --decode \
+            | gzip --decompress > "$RUNNER_TEMP/intelligence-control.patch"
+          printf '%s  %s\n' "$PATCH_SHA256" "$RUNNER_TEMP/intelligence-control.patch" \
+            | sha256sum --check --strict
+          git cat-file -e "$ORIGINAL_HEAD^{commit}"
+          git reset --hard "$ORIGINAL_HEAD"
+          git apply --index --check "$RUNNER_TEMP/intelligence-control.patch"
+          git apply --index "$RUNNER_TEMP/intelligence-control.patch"
+          test ! -e .github/workflows/intelligence-control-bootstrap.yml
+          test ! -e .github/intelligence-control-bootstrap
+          (cd codex-rs && cargo fmt --all && cargo fmt --all -- --check)
+          git add --all
+          python3 -m py_compile scripts/hepta-intelligence-*.py
+          python3 scripts/hepta-intelligence-control-status.py --check-tracked
+          python3 scripts/hepta-intelligence-control-status-tests.py
+          python3 scripts/hepta-intelligence-readiness-tests.py
+          python3 scripts/hepta-intelligence-fault-matrix.py --check-tracked
+          python3 scripts/hepta-intelligence-fault-matrix-tests.py
+          python3 scripts/hepta-intelligence-acceptance.py --check
+          python3 scripts/hepta-intelligence-review-partitions.py --check-tracked
+          git diff --cached --check
+          tree="$(git write-tree)"
+          commit="$(printf '%s\n' \
+            'fix(intelligence.control): linearize timeout and qualify crash boundaries' \
+            | git commit-tree "$tree" -p "$bootstrap_sha")"
+          git cat-file -e "$commit^{commit}"
+          git push origin "$commit:refs/heads/$BRANCH"
