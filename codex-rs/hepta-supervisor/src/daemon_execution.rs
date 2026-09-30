@@ -128,6 +128,7 @@ where
     })
 }
 
+#[cfg(test)]
 pub(super) async fn handle(
     state: Arc<DaemonState<UnixProcessDriver>>,
     method: SupervisordMethod,

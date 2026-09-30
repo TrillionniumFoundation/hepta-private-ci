@@ -185,16 +185,14 @@ impl DurableRestartLineage {
                 "restart operation identity or phase is outside its bounds".to_string(),
             ));
         }
-        if let (Some(predecessor), Some(replacement)) = (&self.predecessor, &self.replacement) {
-            if predecessor == replacement
+        if let (Some(predecessor), Some(replacement)) = (&self.predecessor, &self.replacement)
+            && (predecessor == replacement
                 || replacement.spawn_generation <= predecessor.spawn_generation
-                || replacement.release_id != predecessor.release_id
-            {
-                return Err(RestartLineageError::Invalid(
-                    "restart replacement does not prove a fresh same-release generation"
-                        .to_string(),
-                ));
-            }
+                || replacement.release_id != predecessor.release_id)
+        {
+            return Err(RestartLineageError::Invalid(
+                "restart replacement does not prove a fresh same-release generation".to_string(),
+            ));
         }
         if self.record_sha256 != self.compute_digest()? {
             return Err(RestartLineageError::DigestMismatch);
