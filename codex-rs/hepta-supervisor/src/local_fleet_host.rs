@@ -33,6 +33,8 @@ mod containment;
 mod environment;
 #[path = "local_fleet_maintenance.rs"]
 mod maintenance;
+#[path = "local_fleet_runtime.rs"]
+mod runtime;
 #[path = "local_fleet_trust.rs"]
 mod trust;
 pub(crate) use containment::PreparedExecution;
@@ -145,7 +147,7 @@ impl LocalFleetHost {
         &self,
         spec: &SpawnSpec,
     ) -> Result<containment::PreparedExecution, ProcessDriverError> {
-        self.runtime.block_on(async {
+        self.run(async {
             let launch = Arc::clone(&self.launch_gate).lock_owned().await;
             let record = self
                 .registry
@@ -192,14 +194,14 @@ impl LocalFleetHost {
             prepared.launch = Some(launch);
             prepared.environment = environment;
             Ok(prepared)
-        })
+        })?
     }
 
     pub(crate) fn prepare_matrix(
         &self,
         spec: &crate::MatrixSpawnSpec,
     ) -> Result<containment::PreparedExecution, ProcessDriverError> {
-        self.runtime.block_on(async {
+        self.run(async {
             let launch = Arc::clone(&self.launch_gate).lock_owned().await;
             let record = self
                 .registry
@@ -229,7 +231,7 @@ impl LocalFleetHost {
                 .await?;
             prepared.launch = Some(launch);
             Ok(prepared)
-        })
+        })?
     }
 
     async fn prepare(
@@ -344,8 +346,7 @@ impl LocalFleetHost {
         execution: &containment::PreparedExecution,
         pid: u32,
     ) -> Result<(), ProcessDriverError> {
-        self.runtime
-            .block_on(self.store.bind_local_process(&execution.id, pid))
+        self.run(self.store.bind_local_process(&execution.id, pid))?
             .map_err(host_error)
     }
 
@@ -380,7 +381,7 @@ impl LocalFleetHost {
         principal: &str,
         pid: u32,
     ) -> Result<String, ProcessDriverError> {
-        self.runtime.block_on(async {
+        self.run(async {
             let hold = self
                 .store
                 .active_execution_for_principal(principal)
@@ -394,24 +395,22 @@ impl LocalFleetHost {
                 .await
                 .map_err(host_error)?;
             Ok(hold.context.execution_id)
-        })
+        })?
     }
 
     pub(crate) fn request_stop(&self, id: &str) -> Result<(), ProcessDriverError> {
-        self.runtime
-            .block_on(self.store.request_local_stop(id))
+        self.run(self.store.request_local_stop(id))?
             .map(|_| ())
             .map_err(host_error)
     }
 
     pub(crate) fn kill(&self, id: &str) -> Result<(), ProcessDriverError> {
-        self.runtime
-            .block_on(self.store.kill_local_containment(id))
+        self.run(self.store.kill_local_containment(id))?
             .map_err(host_error)
     }
 
     pub(crate) fn finish_exit(&self, id: &str) -> Result<bool, ProcessDriverError> {
-        self.runtime.block_on(async {
+        self.run(async {
             match self.store.confirm_local_exit(id).await {
                 Ok(()) => {
                     if let Some(hold) = self.store.execution_hold(id).await.map_err(host_error)? {
@@ -433,11 +432,11 @@ impl LocalFleetHost {
                 }
                 Err(error) => Err(host_error(error)),
             }
-        })
+        })?
     }
 
     pub(crate) fn validate_retirement(&self, agent: &AgentId) -> Result<(), ProcessDriverError> {
-        self.runtime.block_on(async {
+        self.run(async {
             for principal in [agent.to_string(), format!("matrix:{agent}")] {
                 if self
                     .store
@@ -452,7 +451,7 @@ impl LocalFleetHost {
                 }
             }
             Ok(())
-        })
+        })?
     }
 }
 

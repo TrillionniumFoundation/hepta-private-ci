@@ -1,0 +1,136 @@
+use std::os::unix::fs::PermissionsExt;
+use std::path::Path;
+use std::process::Command;
+use std::sync::Arc;
+
+use codex_hepta_contracts::AgentId;
+use codex_hepta_fleet::AgentManifest;
+use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::ResourceBudget;
+use codex_hepta_fleet::WorkspaceBinding;
+use codex_hepta_paths::HeptaFleetRoot;
+use pretty_assertions::assert_eq;
+use tokio::runtime::Handle;
+
+use super::super::LocalFleetHost;
+use crate::AgentCommand;
+use crate::SpawnSpec;
+
+// This exercises the exact production nesting: a serialized blocking owner
+// polls the request future, which calls the synchronous process resource port.
+// Run explicitly under root on a writable native cgroup v2 host; no mock or
+// skipped assertion can stand in for kernel placement and exit reclamation.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires root and writable native cgroup v2"]
+async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
+-> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    assert_eq!(unsafe { libc::geteuid() }, 0);
+    let fixture = tempfile::tempdir_in("/var/lib/hepta-private-ci")?;
+    let cgroup = format!("hepta-runtime-native-{}", uuid::Uuid::new_v4().simple());
+    let agent = AgentId::parse(&uuid::Uuid::new_v4().to_string())?;
+    let workspace = fixture.path().join("workspace");
+    std::fs::create_dir(&workspace)?;
+    let registry = FleetRegistry::initialize(HeptaFleetRoot::parse(fixture.path().join("fleet"))?)?;
+    let manifest = AgentManifest::new(
+        agent.clone(),
+        WorkspaceBinding::new(&workspace, registry.layout().fleet_root())?,
+        ResourceBudget {
+            max_concurrent_turns: 1,
+            memory_limit_mib: 128,
+            max_tool_processes: 1,
+            turn_queue_capacity: 64,
+        },
+    )?;
+    let record = registry.register(manifest)?;
+    let policy = fixture.path().join("policy.json");
+    std::fs::write(
+        &policy,
+        serde_json::to_vec(&serde_json::json!({
+            "version": 1,
+            "workload_uid": 1000,
+            "workload_gid": 1000,
+            "cgroup_root": cgroup,
+            "resource_authority_frontier": fixture.path().join("frontier.json"),
+            "process_thread_reserve": 64,
+            "matrix_resources": {
+                "cpu_millis": 1000, "memory_bytes": 134_217_728,
+                "accelerator_millis": 0, "concurrent_turns": 1,
+                "tool_processes": 1, "turn_queue_slots": 64
+            }
+        }))?,
+    )?;
+    std::fs::set_permissions(&policy, std::fs::Permissions::from_mode(0o600))?;
+    let host = LocalFleetHost::open(&policy, registry.clone()).await?;
+    let spec = SpawnSpec {
+        agent_id: agent.clone(),
+        generation: 1,
+        fleet_root: registry.layout().fleet_root().as_path().to_path_buf(),
+        workspace,
+        home_root: record.layout.home_root().to_path_buf(),
+        run_root: record.layout.run_root().to_path_buf(),
+        control_socket: record.layout.agentd_control_socket().to_path_buf(),
+        logs_root: record.layout.logs_root().to_path_buf(),
+        command: AgentCommand::new("/usr/bin/sleep", vec!["30".into()])?,
+    };
+    let runtime = Handle::current();
+    let owner = Arc::clone(&host);
+    tokio::task::spawn_blocking(move || {
+        runtime.block_on(async move {
+            let execution = owner.prepare_agent(&spec)?;
+            let held = owner.store.execution_hold(&execution.id).await?;
+            let held = held.ok_or("prepared execution was not durable before spawn")?;
+            assert_eq!((held.state.as_str(), held.process_id), ("prepared", None));
+            assert!(owner.validate_retirement(&spec.agent_id).is_err());
+
+            let mut command = Command::new(&spec.command.program);
+            command.args(&spec.command.args);
+            owner.constrain(&mut command, &execution);
+            let mut child = command.spawn()?;
+            owner.bind(&execution, child.id())?;
+            assert_eq!(
+                owner.recover_execution(&spec.agent_id.to_string(), child.id())?,
+                execution.id
+            );
+            let status = std::fs::read_to_string(format!("/proc/{}/status", child.id()))?;
+            assert!(
+                status
+                    .lines()
+                    .any(|line| line == "Uid:\t1000\t1000\t1000\t1000")
+            );
+            assert!(
+                status
+                    .lines()
+                    .any(|line| line == "Gid:\t1000\t1000\t1000\t1000")
+            );
+            let membership = std::fs::read_to_string(format!("/proc/{}/cgroup", child.id()))?;
+            assert_eq!(membership, format!("0::/{}\n", execution.relative));
+            let bound = owner.store.execution_hold(&execution.id).await?;
+            let bound = bound.ok_or("bound execution disappeared")?;
+            assert_eq!(
+                (bound.state.as_str(), bound.process_id),
+                ("running", Some(u64::from(child.id())))
+            );
+            drop(execution.launch);
+
+            owner.request_stop(&execution.id)?;
+            owner.kill(&execution.id)?;
+            assert!(!child.wait()?.success());
+            assert!(owner.finish_exit(&execution.id)?);
+            owner.validate_retirement(&spec.agent_id)?;
+            assert_eq!(
+                owner
+                    .store
+                    .active_execution_for_principal(&spec.agent_id.to_string())
+                    .await?,
+                None
+            );
+            Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
+        })
+    })
+    .await??;
+    host.store.close().await;
+    let base = Path::new("/sys/fs/cgroup").join(&cgroup);
+    std::fs::remove_dir(base.join(format!("agent-{agent}")))?;
+    std::fs::remove_dir(base)?;
+    Ok(())
+}
