@@ -21,6 +21,7 @@ mod publication_coordination;
 mod recovery;
 mod reconciliation;
 mod registry_commands;
+mod service_authority;
 mod transaction;
 
 pub use bootstrap::ArtifactOwnerBootstrapConfigV1;
@@ -89,6 +90,7 @@ pub use registry_commands::ArtifactManifestCommandV1;
 pub use registry_commands::ArtifactOwnerCommandDecodeError;
 pub use registry_commands::InstallWithdrawalSnapshotCommandV1;
 pub use registry_commands::PublishArtifactCommandV1;
+pub use service_authority::LEARNING_ARTIFACT_OWNER_SERVICE_AUTHORITY;
 pub use transaction::OwnerDurableStoreV1;
 pub use transaction::OwnerJournalError;
 pub use transaction::OwnerRequestDispositionV1;
