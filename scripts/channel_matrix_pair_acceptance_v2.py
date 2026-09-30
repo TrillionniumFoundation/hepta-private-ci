@@ -15,6 +15,7 @@ if str(SCRIPT_DIRECTORY) not in sys.path:
 
 import channel_matrix_evidence_v2 as policy
 import channel_matrix_pair_acceptance as base
+import channel_matrix_source_provenance as source_provenance
 
 API_LABEL = "api-compile-fail"
 FOCUSED_LABEL = "focused-tests"
@@ -26,6 +27,14 @@ REQUIRED_EXACT_PATHS = {
     "codex-rs/hepta-supervisor/src/matrix.rs",
     "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh",
     "tests/fixtures/run-hermetic-synapse.sh",
+    "docs/modules/channel.matrix/MODULE_STATUS.json",
+    "docs/modules/channel.matrix/PROCESS_FAULT_MATRIX.json",
+    "docs/modules/channel.matrix/REVIEW_SLICES.json",
+    "docs/modules/channel.matrix/TRANSPORT_TCB.json",
+    "scripts/channel_matrix_process_qualification.py",
+    "scripts/channel_matrix_readiness.py",
+    "scripts/channel_matrix_source_provenance.py",
+    "scripts/channel_matrix_transport_tcb.py",
 }
 REQUIRED_PREFIXES = {
     "codex-rs/hepta-contracts/",
@@ -50,14 +59,10 @@ def _source_paths(source: dict[str, Any]) -> set[str]:
     if missing:
         raise ValueError(f"source closure misses exact paths: {sorted(missing)}")
     missing_prefixes = [
-        prefix
-        for prefix in REQUIRED_PREFIXES
-        if not any(path.startswith(prefix) for path in paths)
+        prefix for prefix in REQUIRED_PREFIXES if not any(path.startswith(prefix) for path in paths)
     ]
     if missing_prefixes:
-        raise ValueError(
-            f"source closure misses owner roots: {sorted(missing_prefixes)}"
-        )
+        raise ValueError(f"source closure misses owner roots: {sorted(missing_prefixes)}")
     return paths
 
 
@@ -93,8 +98,7 @@ def _command_receipt(
         or row.get("arguments") != arguments
         or row.get("workingDirectory") != "codex-rs"
         or row.get("testedSha") != source.get("testedSha")
-        or row.get("sourceSnapshotSha256")
-        != base.digest(directory / "source.json")
+        or row.get("sourceSnapshotSha256") != base.digest(directory / "source.json")
         or type(row.get("exitCode")) is not int
         or row.get("exitCode") != 0
         or row.get("completed") is not True
@@ -122,34 +126,15 @@ def _provenance_receipt(
     if PROVENANCE_FILE not in inventory:
         raise ValueError("paired manifest omits source provenance")
     row = base.read_object(directory / PROVENANCE_FILE)
-    execution = row.get("execution")
-    claims = row.get("claims")
-    if (
-        row.get("schema") != "hepta.channel-matrix-source-provenance.v1"
-        or row.get("valid") is not True
-        or row.get("errors") != []
-        or row.get("stage") != expected_lane
-        or row.get("checkoutSha") != source.get("testedSha")
-        or row.get("checkoutTree") != source.get("testedTree")
-        or not isinstance(execution, dict)
-        or not isinstance(claims, dict)
-        or claims.get("trackedSourceOnly") is not True
-        or claims.get("generatedSourceIncluded") is not False
-        or claims.get("cacheSourceIncluded") is not False
-        or claims.get("artifactSourceIncluded") is not False
-        or claims.get("authorityGranted") is not False
-    ):
-        raise ValueError(
-            "source provenance is missing, invalid or authority-escalating"
-        )
     manifest = base.read_object(directory / "manifest.json")
-    if (
-        execution.get("workflowRunId") != manifest.get("runId")
-        or execution.get("attemptId") != manifest.get("runAttempt")
-    ):
-        raise ValueError(
-            "source provenance and artifact manifest mix workflow attempts"
-        )
+    source_provenance.validate_receipt(
+        row,
+        expected_stage=expected_lane,
+        expected_sha=str(source.get("testedSha", "")),
+        expected_tree=str(source.get("testedTree", "")),
+        expected_run=manifest.get("runId"),
+        expected_attempt=manifest.get("runAttempt"),
+    )
     return row
 
 
@@ -157,10 +142,7 @@ def _extended_lane(directory_value: Path, expected_lane: str) -> dict[str, Any]:
     row = base.lane(directory_value, expected_lane)
     _source_paths(row["source"])
     row["provenance"] = _provenance_receipt(
-        row["directory"],
-        row["source"],
-        row["inventory"],
-        expected_lane,
+        row["directory"], row["source"], row["inventory"], expected_lane
     )
     states = row["status"].get("states")
     if not isinstance(states, dict) or any(
@@ -188,9 +170,7 @@ def paired(source_head: Path, base_merge: Path) -> dict[str, Any]:
         source_manifest.get("runId") != merge_manifest.get("runId")
         or source_manifest.get("runAttempt") != merge_manifest.get("runAttempt")
     ):
-        raise ValueError(
-            "source-head and deterministic merge mix workflow attempts"
-        )
+        raise ValueError("source-head and deterministic merge mix workflow attempts")
     result = base.paired(source_head, base_merge)
     result["schema"] = "hepta.channel-matrix-paired-qualification.v4"
     result["workflowRunId"] = source_manifest.get("runId")
@@ -212,30 +192,23 @@ def paired(source_head: Path, base_merge: Path) -> dict[str, Any]:
         command_digests = {}
         for label in policy.evidence.COMMANDS:
             command_digests[label] = {
-                "command": base.digest(
-                    directory / f"{label}.command.json"
-                ),
+                "command": base.digest(directory / f"{label}.command.json"),
                 "log": base.digest(directory / f"{label}.log"),
             }
             if label == FOCUSED_LABEL:
                 command_digests[label]["junit"] = base.digest(
                     directory / "focused-tests.junit.xml"
                 )
+        provenance = lane["provenance"]
         result["extendedLaneDigests"][lane_name] = {
             "sourceProvenance": base.digest(directory / PROVENANCE_FILE),
-            "apiCommand": base.digest(
-                directory / f"{API_LABEL}.command.json"
-            ),
+            "sourceInventory": provenance["sourceInventorySha256"],
+            "sourceContentInventory": provenance["sourceContentInventorySha256"],
+            "apiCommand": base.digest(directory / f"{API_LABEL}.command.json"),
             "apiLog": base.digest(directory / f"{API_LABEL}.log"),
-            "focusedCommand": base.digest(
-                directory / f"{FOCUSED_LABEL}.command.json"
-            ),
-            "focusedLog": base.digest(
-                directory / f"{FOCUSED_LABEL}.log"
-            ),
-            "focusedJunit": base.digest(
-                directory / "focused-tests.junit.xml"
-            ),
+            "focusedCommand": base.digest(directory / f"{FOCUSED_LABEL}.command.json"),
+            "focusedLog": base.digest(directory / f"{FOCUSED_LABEL}.log"),
+            "focusedJunit": base.digest(directory / "focused-tests.junit.xml"),
             "commands": command_digests,
         }
     return result
@@ -248,10 +221,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     try:
-        base.write_exclusive(
-            args.output,
-            paired(args.source_head, args.base_merge),
-        )
+        base.write_exclusive(args.output, paired(args.source_head, args.base_merge))
     except (
         OSError,
         ValueError,
@@ -260,10 +230,7 @@ def main() -> int:
         json.JSONDecodeError,
         re.error,
     ) as exc:
-        parser.exit(
-            1,
-            f"FAIL_CHANNEL_MATRIX_PAIRED_QUALIFICATION_V4: {exc}\n",
-        )
+        parser.exit(1, f"FAIL_CHANNEL_MATRIX_PAIRED_QUALIFICATION_V4: {exc}\n")
     return 0
 
 

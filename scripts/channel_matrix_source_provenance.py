@@ -20,7 +20,13 @@ import channel_matrix_evidence_v2 as policy
 
 ROOT = SCRIPT_DIRECTORY.parent
 SOURCE_ROOTS = tuple(policy.evidence.SOURCE_ROOTS)
+PROVENANCE_SCHEMA = "hepta.channel-matrix-source-provenance.v1"
+PROVENANCE_DOMAIN = b"hepta.channel-matrix-source-provenance.v1"
+CONTENT_INVENTORY_DOMAIN = b"hepta.channel-matrix-source-content.v1"
+PATH_INVENTORY_DOMAIN = b"hepta.channel-matrix-source-paths.v1"
+TRACKED_ORIGIN = "tracked_repository_source"
 SHA1 = re.compile(r"[0-9a-f]{40}")
+SHA256 = re.compile(r"[0-9a-f]{64}")
 
 
 def git(root: Path, *arguments: str, check: bool = True) -> subprocess.CompletedProcess[bytes]:
@@ -38,9 +44,33 @@ def split_z(value: bytes) -> list[str]:
     return [item.decode("utf-8") for item in value.split(b"\0") if item]
 
 
+def bytes_digest(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
+def canonical_digest(domain: bytes, value: object) -> str:
+    encoded = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(domain + b"\0" + encoded).hexdigest()
+
+
 def aggregate(rows: list[dict[str, Any]]) -> str:
-    encoded = json.dumps(rows, sort_keys=True, separators=(",", ":")).encode()
-    return hashlib.sha256(b"hepta.channel-matrix-source-provenance.v1\0" + encoded).hexdigest()
+    return canonical_digest(PROVENANCE_DOMAIN, rows)
+
+
+def content_inventory(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        {
+            "repoRelativePath": row["repoRelativePath"],
+            "gitBlob": row["gitBlob"],
+            "sha256": row["sha256"],
+            "bytes": row["bytes"],
+        }
+        for row in rows
+    ]
+
+
+def path_inventory(paths: list[str]) -> str:
+    return canonical_digest(PATH_INVENTORY_DOMAIN, paths)
 
 
 def runner_image() -> str:
@@ -94,12 +124,20 @@ def clean_state(root: Path) -> dict[str, Any]:
             *SOURCE_ROOTS,
         ).stdout
     )
+    status_command = ["git", "status", "--porcelain=v2", "-z", "--untracked-files=all"]
+    status = git(root, *status_command[1:])
     return {
-        "clean": not (unstaged or staged or untracked or ignored),
+        "clean": not (unstaged or staged or untracked or ignored or status.stdout),
         "unstaged": unstaged,
         "staged": staged,
         "untrackedClosureInputs": untracked,
         "ignoredClosureInputs": ignored,
+        "workspaceStatus": {
+            "command": status_command,
+            "bytes": len(status.stdout),
+            "sha256": bytes_digest(status.stdout),
+            "empty": not status.stdout,
+        },
     }
 
 
@@ -113,6 +151,155 @@ def classify(relative: str) -> dict[str, bool]:
         "cache": False,
         "artifact": False,
     }
+
+
+def introduction_history(root: Path) -> tuple[dict[str, str], list[str]]:
+    command = [
+        "git",
+        "log",
+        "--reverse",
+        "--format=%H",
+        "--name-only",
+        "-z",
+        "--diff-filter=A",
+        "--no-renames",
+        "--",
+        *SOURCE_ROOTS,
+    ]
+    raw = git(root, *command[1:]).stdout
+    result: dict[str, str] = {}
+    commit: str | None = None
+    for token in raw.split(b"\0"):
+        if not token:
+            continue
+        value = token.decode("utf-8").strip("\n")
+        if SHA1.fullmatch(value):
+            commit = value
+        elif value and commit is not None:
+            result.setdefault(value, commit)
+    return result, command
+
+
+def _valid_relative_path(value: object) -> bool:
+    if not isinstance(value, str) or not value:
+        return False
+    path = Path(value)
+    return not path.is_absolute() and path.as_posix() == value and ".." not in path.parts
+
+
+def _valid_clean_state(value: object) -> bool:
+    if not isinstance(value, dict) or value.get("clean") is not True:
+        return False
+    status = value.get("workspaceStatus")
+    return (
+        value.get("unstaged") == []
+        and value.get("staged") == []
+        and value.get("untrackedClosureInputs") == []
+        and value.get("ignoredClosureInputs") == []
+        and isinstance(status, dict)
+        and status.get("command")
+        == ["git", "status", "--porcelain=v2", "-z", "--untracked-files=all"]
+        and status.get("bytes") == 0
+        and status.get("sha256") == hashlib.sha256(b"").hexdigest()
+        and status.get("empty") is True
+    )
+
+
+def validate_receipt(
+    row: object,
+    *,
+    expected_stage: str,
+    expected_sha: str,
+    expected_tree: str,
+    expected_run: str | None = None,
+    expected_attempt: str | None = None,
+) -> dict[str, Any]:
+    if not isinstance(row, dict):
+        raise ValueError("source provenance must be an object")
+    execution = row.get("execution")
+    claims = row.get("claims")
+    scan = row.get("scan")
+    workspace = row.get("workspaceRoot")
+    if (
+        row.get("schema") != PROVENANCE_SCHEMA
+        or row.get("valid") is not True
+        or row.get("errors") != []
+        or row.get("stage") != expected_stage
+        or row.get("checkoutSha") != expected_sha
+        or row.get("checkoutTree") != expected_tree
+        or not isinstance(workspace, str)
+        or not Path(workspace).is_absolute()
+        or not isinstance(execution, dict)
+        or not isinstance(claims, dict)
+        or not isinstance(scan, dict)
+        or claims.get("trackedSourceOnly") is not True
+        or claims.get("generatedSourceIncluded") is not False
+        or claims.get("cacheSourceIncluded") is not False
+        or claims.get("artifactSourceIncluded") is not False
+        or claims.get("authorityGranted") is not False
+        or not _valid_clean_state(scan.get("cleanBefore"))
+        or not _valid_clean_state(scan.get("cleanAfter"))
+    ):
+        raise ValueError(f"invalid {expected_stage} source provenance")
+    if scan.get("defaultCommand") != ["git", "ls-files", "-z"]:
+        raise ValueError("source provenance default scan is not tracked-only")
+    files = row.get("files")
+    if not isinstance(files, list) or not files:
+        raise ValueError(f"empty {expected_stage} source provenance")
+    if scan.get("closureFileCount") != len(files):
+        raise ValueError("source provenance closure count mismatch")
+    paths: list[str] = []
+    for item in files:
+        if not isinstance(item, dict):
+            raise ValueError(f"unverifiable {expected_stage} source input")
+        relative = item.get("repoRelativePath")
+        absolute = item.get("absolutePath")
+        tracked_check = item.get("trackedCheck")
+        classification = item.get("classification")
+        if (
+            not _valid_relative_path(relative)
+            or not isinstance(absolute, str)
+            or Path(absolute) != Path(workspace) / str(relative)
+            or item.get("tracked") is not True
+            or item.get("gitLsFilesErrorUnmatch") is not True
+            or item.get("firstObservedStage") != expected_stage
+            or item.get("origin") != TRACKED_ORIGIN
+            or item.get("sourceClass") != TRACKED_ORIGIN
+            or not SHA1.fullmatch(str(item.get("gitBlob", "")))
+            or not SHA1.fullmatch(str(item.get("introducedAtCommit", "")))
+            or not SHA256.fullmatch(str(item.get("sha256", "")))
+            or type(item.get("bytes")) is not int
+            or item["bytes"] < 0
+            or not isinstance(tracked_check, dict)
+            or tracked_check.get("command")
+            != ["git", "ls-files", "--error-unmatch", "--", relative]
+            or tracked_check.get("exitStatus") != 0
+            or not SHA256.fullmatch(str(tracked_check.get("stdoutSha256", "")))
+            or not SHA256.fullmatch(str(tracked_check.get("stderrSha256", "")))
+            or not isinstance(classification, dict)
+            or classification.get("generated") is not False
+            or classification.get("cache") is not False
+            or classification.get("artifact") is not False
+        ):
+            raise ValueError(f"unverifiable {expected_stage} source input")
+        paths.append(str(relative))
+    if paths != sorted(paths) or len(paths) != len(set(paths)):
+        raise ValueError("source provenance paths are duplicate or unordered")
+    if row.get("sourceInventorySha256") != aggregate(files):
+        raise ValueError("source provenance inventory digest mismatch")
+    if row.get("sourceContentInventorySha256") != canonical_digest(
+        CONTENT_INVENTORY_DOMAIN, content_inventory(files)
+    ):
+        raise ValueError("source content inventory digest mismatch")
+    if scan.get("closurePathInventorySha256") != path_inventory(paths):
+        raise ValueError("source closure path inventory digest mismatch")
+    run_id = execution.get("workflowRunId")
+    attempt = execution.get("attemptId")
+    if expected_run is not None and run_id != expected_run:
+        raise ValueError(f"{expected_stage} provenance belongs to another workflow run")
+    if expected_attempt is not None and attempt != expected_attempt:
+        raise ValueError(f"{expected_stage} provenance belongs to another workflow attempt")
+    return row
 
 
 def build(root_value: Path, expected_sha: str, stage: str) -> dict[str, Any]:
@@ -131,13 +318,19 @@ def build(root_value: Path, expected_sha: str, stage: str) -> dict[str, Any]:
     all_tracked = split_z(git(root, "ls-files", "-z").stdout)
     closure = split_z(git(root, "ls-files", "-z", "--", *SOURCE_ROOTS).stdout)
     tracked_set = set(all_tracked)
+    introduced, history_command = introduction_history(root)
     rows: list[dict[str, Any]] = []
     for relative in closure:
         absolute = root / relative
-        unmatched = git(root, "ls-files", "--error-unmatch", "--", relative, check=False)
+        tracked_command = ["git", "ls-files", "--error-unmatch", "--", relative]
+        unmatched = git(root, *tracked_command[1:], check=False)
         tracked = relative in tracked_set and unmatched.returncode == 0
         if not tracked:
             errors.append(f"source input is not tracked: {relative}")
+            continue
+        introduced_at = introduced.get(relative)
+        if introduced_at is None or not SHA1.fullmatch(introduced_at):
+            errors.append(f"source input lacks introduction provenance: {relative}")
             continue
         if absolute.is_symlink() or not absolute.is_file():
             errors.append(f"source input is not a regular file: {relative}")
@@ -161,8 +354,16 @@ def build(root_value: Path, expected_sha: str, stage: str) -> dict[str, Any]:
                 "bytes": len(data),
                 "tracked": True,
                 "gitLsFilesErrorUnmatch": True,
+                "trackedCheck": {
+                    "command": tracked_command,
+                    "exitStatus": unmatched.returncode,
+                    "stdoutSha256": bytes_digest(unmatched.stdout),
+                    "stderrSha256": bytes_digest(unmatched.stderr),
+                },
+                "introducedAtCommit": introduced_at,
                 "firstObservedStage": stage,
-                "origin": "tracked_repository_source",
+                "origin": TRACKED_ORIGIN,
+                "sourceClass": TRACKED_ORIGIN,
                 "classification": classify(relative),
             }
         )
@@ -171,8 +372,9 @@ def build(root_value: Path, expected_sha: str, stage: str) -> dict[str, Any]:
     after = clean_state(root)
     if not after["clean"]:
         errors.append("checkout was not clean after source scan")
+    paths = [row["repoRelativePath"] for row in rows]
     return {
-        "schema": "hepta.channel-matrix-source-provenance.v1",
+        "schema": PROVENANCE_SCHEMA,
         "valid": not errors,
         "errors": errors,
         "stage": stage,
@@ -182,8 +384,11 @@ def build(root_value: Path, expected_sha: str, stage: str) -> dict[str, Any]:
         "scan": {
             "defaultCommand": ["git", "ls-files", "-z"],
             "closureCommand": ["git", "ls-files", "-z", "--", *SOURCE_ROOTS],
+            "introductionHistoryCommand": history_command,
             "trackedFileCount": len(all_tracked),
             "closureFileCount": len(rows),
+            "trackedPathInventorySha256": path_inventory(all_tracked),
+            "closurePathInventorySha256": path_inventory(paths),
             "sourceRoots": list(SOURCE_ROOTS),
             "cleanBefore": before,
             "cleanAfter": after,
@@ -202,6 +407,9 @@ def build(root_value: Path, expected_sha: str, stage: str) -> dict[str, Any]:
         },
         "files": rows,
         "sourceInventorySha256": aggregate(rows),
+        "sourceContentInventorySha256": canonical_digest(
+            CONTENT_INVENTORY_DOMAIN, content_inventory(rows)
+        ),
         "claims": {
             "trackedSourceOnly": not errors,
             "generatedSourceIncluded": False,
@@ -234,6 +442,14 @@ def main() -> int:
     args = parser.parse_args()
     try:
         row = build(ROOT, args.expected_sha, args.stage)
+        validate_receipt(
+            row,
+            expected_stage=args.stage,
+            expected_sha=args.expected_sha,
+            expected_tree=row["checkoutTree"],
+            expected_run=os.environ.get("GITHUB_RUN_ID"),
+            expected_attempt=os.environ.get("GITHUB_RUN_ATTEMPT"),
+        )
         write_output(args.output, row)
     except (OSError, ValueError, subprocess.SubprocessError) as exc:
         parser.exit(1, f"FAIL_CHANNEL_MATRIX_SOURCE_PROVENANCE: {exc}\n")

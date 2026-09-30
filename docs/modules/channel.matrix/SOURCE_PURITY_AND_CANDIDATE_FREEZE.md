@@ -2,8 +2,10 @@
 
 Status: repository-controlled source and evidence contract. This document grants no
 deployment, activation, promotion, release, Matrix-send, or external-effect
-authority. The executable regression is
-`scripts/tests/test_channel_matrix_closure_workflow.py`.
+authority. The executable regressions are
+`scripts/tests/test_channel_matrix_closure_workflow.py`,
+`scripts/tests/test_channel_matrix_source_provenance.py` and
+`scripts/tests/test_channel_matrix_readiness.py`.
 
 ## 1. Purpose
 
@@ -47,12 +49,13 @@ source roots, Matrix qualification scripts, and Matrix staging or patch payloads
 
 The allowed repository qualification path is read-only:
 
-- GitHub permissions are `contents: read`.
-- `actions/checkout` uses `persist-credentials: false`.
+- GitHub permissions are `contents: read`;
+- `actions/checkout` uses `persist-credentials: false`;
 - deterministic merge construction may use `git merge-tree` and
   `git commit-tree` only to create an in-run test object;
 - receipts and logs are written outside the checkout;
-- the tracked tree is checked clean before and after every command;
+- the tracked tree and the complete workspace status are checked clean before
+  and after every source-provenance scan;
 - source-head and deterministic-merge lanes use the same closed command policy;
 - the paired result must come from one workflow run and one attempt.
 
@@ -70,7 +73,7 @@ directly touches Matrix source:
 `git commit-tree` is not source authoring when it is used solely to materialize
 the deterministic merge candidate that is immediately tested and never pushed.
 
-## 4. Ordinary source and tracked payload closure
+## 4. Ordinary source and tracked provenance closure
 
 All reviewed implementation, tests, documentation, registries, migrations, and
 qualification logic live at their ordinary tracked paths. The repository must
@@ -78,22 +81,68 @@ not contain Matrix-specific encoded patch bundles, numbered patch fragments,
 temporary staging directories, repair scripts, or preservation patches that can
 reconstruct a different source tree during CI.
 
-The executable guard checks both the historical forbidden paths and the complete
-tracked-file inventory. A newly named patch bundle therefore fails even when it
-is not listed in the historical inventory.
+The default source inventory command is exactly:
+
+```text
+git ls-files -z
+```
+
+The closure-specific invocation narrows that tracked inventory only by the
+closed Matrix pathspec set. Generated directories, caches and downloaded
+artifacts are never silently included as source. When a separately governed
+execution needs generated output, that output remains in its own artifact
+provenance and cannot satisfy tracked-source closure.
+
+For every closure input, `source-provenance.json` binds:
+
+```text
+workspace_root
+checkout_sha
+checkout_tree
+absolute_path
+repo_relative_path
+git_blob
+sha256
+bytes
+git_ls_files_error_unmatch_command
+git_ls_files_error_unmatch_exit_status
+git_ls_files_stdout_sha256
+git_ls_files_stderr_sha256
+introduced_at_commit
+first_observed_stage
+source_class
+fixture/workflow/documentation classification
+```
+
+The introduction commit is derived from the exact repository history with a
+single ordered add-history scan. Both complete workspace `git status
+--porcelain=v2 -z --untracked-files=all` snapshots, tracked path inventories,
+closure path inventories, complete provenance rows and content-only inventories
+are hashed. Paired acceptance and readiness independently revalidate those
+hashes instead of trusting a Boolean written by the provenance producer.
+
+The executable guard also checks both the historical forbidden paths and the
+complete tracked-file inventory. A newly named patch bundle therefore fails
+even when it is not listed in the historical inventory.
 
 ## 5. Frozen candidate identity
 
 A candidate freeze records:
 
 ```text
+candidate_key
 source_head_sha
-source_head_tree
+source_tree_hash
+frozen_source_sha
+frozen_source_tree_hash
 base_sha
 deterministic_merge_sha
-deterministic_merge_tree
+deterministic_merge_tree_hash
 github_merge_sha
+github_merge_tree_hash
 workflow_sha
+final_merge_sha
+final_merge_tree_hash
 workflow_run_id
 attempt_id
 runner_image
@@ -102,16 +151,28 @@ Cargo.lock_hash
 migration_hash
 test_set_hash
 qualification_profile_hash
+production_qualification_profile_hash
+process_fault_profile_hash
+transport_tcb_hash
 implementation_map_hash
+module_status_hash
+document_sources_hash
+review_slices_hash
 documentation_hash
-source_tree_hash
 artifact_hashes
+required_lanes
+lane_status
 ```
 
-The source-head commit/tree are immutable. The base and both merge identities
-are explicit and cannot be inferred later from a branch name. No green result
-may be assembled from another commit, workflow run, attempt, runner context, or
-artifact set.
+The source-head commit/tree are immutable. The base and every merge identity are
+explicit and cannot be inferred later from a branch name. No green result may be
+assembled from another commit, workflow run, attempt, runner context, source
+inventory, command policy, profile, documentation set or artifact set.
+
+`candidate_key` is a domain-separated SHA-256 of the complete closed identity
+above. It changes when an attempt, artifact, source inventory, profile or merge
+identity changes. It is an anti-mixing identity only: it grants no deployment,
+activation, promotion, release or Matrix-send authority.
 
 `IMPLEMENTATION_MAP.json` owns frozen inspected-source mapping and provenance.
 The external candidate/readiness receipts own the metadata candidate and
@@ -127,12 +188,21 @@ moving pull-request branch.
 Repository readiness is true only when source-head and deterministic-merge lanes
 both complete the canonical locked commands, public API compile-fail proof,
 Q01-Q29 JUnit ledger, strict lint, formatting, tracked-source provenance, review
-slices, and clean-tree checks in one workflow run and attempt.
+slices, and clean-tree checks in one workflow run and attempt. The GitHub
+synthetic merge must resolve to the exact deterministic merge tree. Protected
+`main` readiness additionally requires the real final merge SHA and tree to be
+the exact tested source.
 
 The readiness generator must fail closed for a missing, queued, canceled,
-skipped, superseded, partial, flaky, failed, stale, mixed-attempt, duplicate, or
-tampered input. A workflow definition, local authoring run, status label, or PR
-comment is never execution evidence.
+skipped, superseded, partial, flaky, failed, stale, mixed-candidate,
+mixed-attempt, duplicate, path-inconsistent or tampered input. If any required
+repository lane fails, `candidate_key` is absent and both `repositoryQualified`
+and `mergeReady` are false. A workflow definition, local authoring run, status
+label, or PR comment is never execution evidence.
+
+Repository CI always keeps `productionQualified = false`. Target qualification
+and independent security/operator acceptance are separate required lanes whose
+receipts cannot be authored or joined by the repository candidate itself.
 
 ## 7. Post-integration rule
 
@@ -156,8 +226,9 @@ security acceptance require target-bound, separately governed evidence.
 
 Consequently, production qualification remains external. Until those receipts
 exist and verify against the exact target binary, configuration, process
-identity, runner, target triple, and homeserver identity, all production,
-independent-acceptance, activation, promotion, and release claims remain false.
+identity, runner, target triple, homeserver identity and the same candidate key,
+all production, independent-acceptance, activation, promotion, and release
+claims remain false.
 
 ## 9. Reviewer checklist
 
@@ -167,10 +238,13 @@ objects and retained receipts:
 1. No workflow can reconstruct or push a different Matrix source tree.
 2. Every Matrix qualification workflow is read-only regardless of filename.
 3. The repository write-capable workflow inventory is closed and Matrix-disjoint.
-4. The candidate commit/tree, base, deterministic merge, GitHub merge, workflow,
-   run, attempt, toolchain, target, source inventory, and artifacts are explicit.
-5. Both exact lanes ran the same canonical command set and Q01-Q29 ledger.
-6. No result was borrowed from a superseded candidate or another attempt.
-7. The real merge SHA is scheduled for a fresh post-integration execution.
-8. External production and independent-acceptance gates remain false unless
+4. Every scanned source path is tracked, regular, byte-identical to its Git blob,
+   bound to its first introducing commit and independently hash-verifiable.
+5. The candidate commit/tree, base, deterministic merge, GitHub merge, workflow,
+   run, attempt, toolchain, target, source inventories, machine registries and
+   artifacts are explicit under one non-mixable candidate key.
+6. Both exact lanes ran the same canonical command set and Q01-Q29 ledger.
+7. No result was borrowed from a superseded candidate or another attempt.
+8. The real merge SHA is scheduled for a fresh post-integration execution.
+9. External production and independent-acceptance gates remain false unless
    their protected receipts are present and valid.

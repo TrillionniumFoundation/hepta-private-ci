@@ -23,6 +23,10 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def empty_sha256() -> str:
+    return hashlib.sha256(b"").hexdigest()
+
+
 class ExtendedPairAcceptanceTests(unittest.TestCase):
     def source(self) -> dict:
         paths = sorted(
@@ -90,13 +94,78 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
         run_id="42",
         attempt="1",
     ):
+        workspace = "/tmp/channel-matrix-pair-fixture"
+        files = [
+            {
+                "absolutePath": f"{workspace}/fixture",
+                "repoRelativePath": "fixture",
+                "gitBlob": "3" * 40,
+                "sha256": "4" * 64,
+                "bytes": 1,
+                "tracked": True,
+                "gitLsFilesErrorUnmatch": True,
+                "trackedCheck": {
+                    "command": [
+                        "git",
+                        "ls-files",
+                        "--error-unmatch",
+                        "--",
+                        "fixture",
+                    ],
+                    "exitStatus": 0,
+                    "stdoutSha256": "5" * 64,
+                    "stderrSha256": "6" * 64,
+                },
+                "introducedAtCommit": "7" * 40,
+                "firstObservedStage": lane,
+                "origin": "tracked_repository_source",
+                "sourceClass": "tracked_repository_source",
+                "classification": {
+                    "fixture": True,
+                    "workflow": False,
+                    "documentation": False,
+                    "generated": False,
+                    "cache": False,
+                    "artifact": False,
+                },
+            }
+        ]
+        clean = {
+            "clean": True,
+            "unstaged": [],
+            "staged": [],
+            "untrackedClosureInputs": [],
+            "ignoredClosureInputs": [],
+            "workspaceStatus": {
+                "command": [
+                    "git",
+                    "status",
+                    "--porcelain=v2",
+                    "-z",
+                    "--untracked-files=all",
+                ],
+                "bytes": 0,
+                "sha256": empty_sha256(),
+                "empty": True,
+            },
+        }
         row = {
             "schema": "hepta.channel-matrix-source-provenance.v1",
             "valid": True,
             "errors": [],
             "stage": lane,
+            "workspaceRoot": workspace,
             "checkoutSha": source["testedSha"],
             "checkoutTree": source["testedTree"],
+            "scan": {
+                "defaultCommand": ["git", "ls-files", "-z"],
+                "closureFileCount": 1,
+                "closurePathInventorySha256": module.source_provenance.path_inventory(
+                    ["fixture"]
+                ),
+                "cleanBefore": clean,
+                "cleanAfter": clean,
+            },
             "execution": {
                 "workflowRunId": run_id,
                 "attemptId": attempt,
@@ -110,7 +179,12 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
                 "artifactSourceIncluded": False,
                 "authorityGranted": False,
             },
-            "files": [{"repoRelativePath": "fixture"}],
+            "files": files,
+            "sourceInventorySha256": module.source_provenance.aggregate(files),
+            "sourceContentInventorySha256": module.source_provenance.canonical_digest(
+                module.source_provenance.CONTENT_INVENTORY_DOMAIN,
+                module.source_provenance.content_inventory(files),
+            ),
         }
         path = directory / module.PROVENANCE_FILE
         path.write_text(json.dumps(row), encoding="utf-8")
@@ -122,9 +196,7 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
 
     def test_source_closure_accepts_all_required_owners(self) -> None:
         self.assertTrue(
-            module.REQUIRED_EXACT_PATHS.issubset(
-                module._source_paths(self.source())
-            )
+            module.REQUIRED_EXACT_PATHS.issubset(module._source_paths(self.source()))
         )
 
     def test_source_closure_rejects_missing_target_runner(self) -> None:
@@ -153,8 +225,7 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
             directory = Path(raw)
             source = self.source()
             (directory / "source.json").write_text(
-                json.dumps(source, sort_keys=True),
-                encoding="utf-8",
+                json.dumps(source, sort_keys=True), encoding="utf-8"
             )
             for label, arguments in module.policy.evidence.COMMANDS.items():
                 with self.subTest(label=label):
@@ -185,8 +256,7 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
             directory = Path(raw)
             source = self.source()
             (directory / "source.json").write_text(
-                json.dumps(source, sort_keys=True),
-                encoding="utf-8",
+                json.dumps(source, sort_keys=True), encoding="utf-8"
             )
             inventory = self.write_receipt(
                 directory,
@@ -212,8 +282,7 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
             directory = Path(raw)
             source = self.source()
             (directory / "source.json").write_text(
-                json.dumps(source, sort_keys=True),
-                encoding="utf-8",
+                json.dumps(source, sort_keys=True), encoding="utf-8"
             )
             inventory = self.write_receipt(
                 directory,
@@ -234,38 +303,35 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
                 0,
             )
 
-    def test_provenance_receipt_binds_lane_and_attempt(self) -> None:
+    def test_provenance_receipt_binds_lane_attempt_and_inventory(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)
             source = self.source()
-            inventory = self.write_provenance(
-                directory,
-                source,
-                "source-head",
-            )
+            inventory = self.write_provenance(directory, source, "source-head")
             row = module._provenance_receipt(
-                directory,
-                source,
-                inventory,
-                "source-head",
+                directory, source, inventory, "source-head"
             )
             self.assertEqual(row["execution"]["workflowRunId"], "42")
-            manifest = json.loads(
-                (directory / "manifest.json").read_text()
-            )
+            manifest = json.loads((directory / "manifest.json").read_text())
             manifest["runAttempt"] = "2"
-            (directory / "manifest.json").write_text(
-                json.dumps(manifest)
-            )
-            with self.assertRaisesRegex(
-                ValueError,
-                "mix workflow attempts",
-            ):
+            (directory / "manifest.json").write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, "workflow attempt"):
                 module._provenance_receipt(
-                    directory,
-                    source,
-                    inventory,
-                    "source-head",
+                    directory, source, inventory, "source-head"
+                )
+
+    def test_provenance_receipt_rejects_tampered_inventory(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            source = self.source()
+            inventory = self.write_provenance(directory, source, "source-head")
+            path = directory / module.PROVENANCE_FILE
+            row = json.loads(path.read_text())
+            row["files"][0]["sha256"] = "9" * 64
+            path.write_text(json.dumps(row))
+            with self.assertRaisesRegex(ValueError, "inventory digest"):
+                module._provenance_receipt(
+                    directory, source, inventory, "source-head"
                 )
 
 

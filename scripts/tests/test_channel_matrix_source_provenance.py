@@ -48,22 +48,66 @@ class SourceProvenanceTests(unittest.TestCase):
         with mock.patch.object(module, "SOURCE_ROOTS", self.roots):
             return module.build(self.root, self.head, "source-head")
 
+    def validate(self, row):
+        return module.validate_receipt(
+            row,
+            expected_stage="source-head",
+            expected_sha=self.head,
+            expected_tree=row["checkoutTree"],
+        )
+
     def test_tracked_inputs_have_complete_reproducible_provenance(self) -> None:
         row = self.build()
         self.assertTrue(row["valid"])
         self.assertEqual(row["scan"]["defaultCommand"], ["git", "ls-files", "-z"])
         self.assertTrue(row["scan"]["cleanBefore"]["clean"])
         self.assertTrue(row["scan"]["cleanAfter"]["clean"])
+        self.assertTrue(row["scan"]["cleanBefore"]["workspaceStatus"]["empty"])
         item = row["files"][0]
         self.assertEqual(item["repoRelativePath"], "codex-rs/hepta-matrix-sdk/src/lib.rs")
         self.assertEqual(item["absolutePath"], str(self.source))
         self.assertTrue(item["tracked"])
         self.assertTrue(item["gitLsFilesErrorUnmatch"])
+        self.assertEqual(item["trackedCheck"]["exitStatus"], 0)
+        self.assertEqual(
+            item["trackedCheck"]["command"],
+            [
+                "git",
+                "ls-files",
+                "--error-unmatch",
+                "--",
+                "codex-rs/hepta-matrix-sdk/src/lib.rs",
+            ],
+        )
+        self.assertEqual(item["introducedAtCommit"], self.head)
+        self.assertEqual(item["sourceClass"], "tracked_repository_source")
         self.assertFalse(item["classification"]["generated"])
         self.assertEqual(
             item["gitBlob"],
-            self.git("rev-parse", f"{self.head}:codex-rs/hepta-matrix-sdk/src/lib.rs").strip(),
+            self.git(
+                "rev-parse",
+                f"{self.head}:codex-rs/hepta-matrix-sdk/src/lib.rs",
+            ).strip(),
         )
+        self.assertEqual(row["sourceInventorySha256"], module.aggregate(row["files"]))
+        self.validate(row)
+
+    def test_introduction_history_survives_later_modification(self) -> None:
+        first = self.head
+        self.source.write_text("pub fn source() { let _ = 1; }\n", encoding="utf-8")
+        self.git("add", ".")
+        self.git("commit", "-qm", "modify")
+        self.head = self.git("rev-parse", "HEAD").strip()
+        row = self.build()
+        self.assertTrue(row["valid"])
+        self.assertEqual(row["files"][0]["introducedAtCommit"], first)
+        self.validate(row)
+
+    def test_provenance_tampering_fails_closed(self) -> None:
+        row = self.build()
+        row["files"][0]["absolutePath"] = "/tmp/not-the-checkout/source"
+        with self.assertRaisesRegex(ValueError, "unverifiable"):
+            self.validate(row)
 
     def test_untracked_closure_input_fails_closed_and_is_named(self) -> None:
         hidden = self.source.with_name("hidden.rs")
