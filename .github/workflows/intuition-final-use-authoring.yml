@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   author:
-    runs-on: macos-15
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -38,7 +38,7 @@ jobs:
           raw = b''.join(path.read_bytes() for path in sorted(Path('.github/intuition-final-use-authoring').glob('part-*')))
           Path(__import__('os').environ['RUNNER_TEMP'], 'transform.py').write_bytes(gzip.decompress(base64.b64decode(raw)))
           PY
-          test "$(shasum -a 256 "$RUNNER_TEMP/transform.py" | awk '{print $1}')" = "ecc77ed897363aa99e2d6d7f406773a0c37d2217fe76c12fee1eeb82e02c85f4"
+          test "$(sha256sum "$RUNNER_TEMP/transform.py" | awk '{print $1}')" = "ecc77ed897363aa99e2d6d7f406773a0c37d2217fe76c12fee1eeb82e02c85f4"
           python3 "$RUNNER_TEMP/transform.py"
           python3 - <<'PY'
           from pathlib import Path
