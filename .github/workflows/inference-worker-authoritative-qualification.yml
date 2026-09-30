@@ -8,7 +8,7 @@ on:
       - .github/workflows/inference-worker-authoritative-qualification.yml
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: inference-worker-final-source-materialization
@@ -20,7 +20,6 @@ env:
   TARGET_BRANCH: codex/inference-worker-authoritative-20260929
   EXPECTED_TARGET_SHA: 3a4d0e6bb7018c77e9443a38855d69146542febe
   STAGING_BRANCH: automation/inference-worker-materialize-final-20260930
-  TRANSFER_BRANCH: automation/inference-worker-materialized-output-20260930
   PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
@@ -34,7 +33,7 @@ jobs:
         with:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
-          persist-credentials: true
+          persist-credentials: false
           clean: true
 
       - name: Bind immutable source and target
@@ -44,7 +43,6 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain --untracked-files=normal)"
           test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$EXPECTED_TARGET_SHA"
-          test -z "$(git ls-remote origin "refs/heads/$TRANSFER_BRANCH" | awk '{print $1}')"
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
@@ -80,20 +78,62 @@ jobs:
           rm -f .github/workflows/inference-worker-authoritative-materialize.yml
           rm -f .github/workflows/inference-worker-qualification.yml
           grep -Fq 'contents: read' .github/workflows/inference-worker-authoritative-qualification.yml
-          ! grep -Eq 'git push|contents: write|apply\.py' .github/workflows/inference-worker-authoritative-qualification.yml
+          ! grep -Eq 'git push|git commit|contents: write|apply\.py' .github/workflows/inference-worker-authoritative-qualification.yml
           test ! -e .github/materialization/inference-worker-runtime-closure
           test ! -e .github/materialization/inference-worker-stage1
           test ! -e .github/materialization/inference-worker-stage2
           git diff --check
 
-      - name: Commit ordinary source to transfer branch
+      - name: Package immutable ordinary-source payload
         shell: bash
+        env:
+          PAYLOAD_DIR: ${{ runner.temp }}/inference-worker-materialized-source
         run: |
           set -euo pipefail
-          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$EXPECTED_TARGET_SHA"
-          test -z "$(git ls-remote origin "refs/heads/$TRANSFER_BRANCH" | awk '{print $1}')"
-          git config user.name hepta-inference-materializer
-          git config user.email hepta-inference-materializer@users.noreply.github.com
+          rm -rf "$PAYLOAD_DIR"
+          mkdir -p "$PAYLOAD_DIR/files"
           git add -A
-          git commit -m 'inference.worker: materialize runtime closure as ordinary source'
-          git push origin "HEAD:refs/heads/$TRANSFER_BRANCH"
+          git diff --cached --check
+          git diff --cached --name-status > "$PAYLOAD_DIR/manifest.tsv"
+          git diff --cached --name-only --diff-filter=D > "$PAYLOAD_DIR/deleted-paths.txt"
+          git diff --cached --name-only --diff-filter=ACMRTUXB -z > "$PAYLOAD_DIR/changed-paths.z"
+          git diff --cached --binary --full-index > "$PAYLOAD_DIR/materialized-source.patch"
+          git write-tree > "$PAYLOAD_DIR/expected-tree.txt"
+          printf '%s\n' "$SOURCE_SHA" > "$PAYLOAD_DIR/source-head.txt"
+          printf '%s\n' "$EXPECTED_TARGET_SHA" > "$PAYLOAD_DIR/expected-target-head.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$PAYLOAD_DIR/materializer-workflow-head.txt"
+          python3 - <<'PY'
+          import os
+          import shutil
+          from pathlib import Path
+
+          root = Path.cwd().resolve()
+          payload = Path(os.environ["PAYLOAD_DIR"]).resolve()
+          raw_paths = (payload / "changed-paths.z").read_bytes().split(b"\0")
+          for raw_path in raw_paths:
+              if not raw_path:
+                  continue
+              relative = Path(os.fsdecode(raw_path))
+              if relative.is_absolute() or ".." in relative.parts:
+                  raise SystemExit(f"unsafe materialized path: {relative}")
+              source = root / relative
+              if not source.is_file():
+                  raise SystemExit(f"materialized file missing: {relative}")
+              destination = payload / "files" / relative
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(source, destination)
+          PY
+          find "$PAYLOAD_DIR" -type f ! -name payload-sha256.txt -print0 \
+            | LC_ALL=C sort -z \
+            | xargs -0 sha256sum > "$PAYLOAD_DIR/payload-sha256.txt"
+          test -s "$PAYLOAD_DIR/manifest.tsv"
+          test -s "$PAYLOAD_DIR/materialized-source.patch"
+
+      - name: Retain immutable ordinary-source payload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-worker-materialized-source-${{ github.sha }}
+          path: ${{ runner.temp }}/inference-worker-materialized-source
+          if-no-files-found: error
+          retention-days: 3
+          include-hidden-files: true
