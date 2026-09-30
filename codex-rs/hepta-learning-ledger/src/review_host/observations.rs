@@ -17,7 +17,7 @@ use super::files::read_root;
 pub(super) struct NativeObservation {
     schema: String,
     pub(super) request_id: String,
-    input_line_digest: String,
+    pub(super) input_line_digest: String,
     model_manifest_digest: String,
     pub(super) input_digest: String,
     pub(super) executed_at_ms: u64,
@@ -27,8 +27,8 @@ pub(super) struct NativeObservation {
     weights_digest: String,
     encoder_digest: String,
     head_digest: String,
-    drive_q24: Vec<i64>,
-    prediction_q24: Vec<i64>,
+    pub(super) drive_q24: Vec<i64>,
+    pub(super) prediction_q24: Vec<i64>,
     latency_micros: u64,
     resident_bytes: u64,
     transient_allocation_bytes: u64,
@@ -38,19 +38,19 @@ pub(super) struct NativeObservation {
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct NativeInput {
-    request_id: String,
-    feature_vector_q24: Vec<i64>,
-    expected_output_width: usize,
+pub(super) struct NativeInput {
+    pub(super) request_id: String,
+    pub(super) feature_vector_q24: Vec<i64>,
+    pub(super) expected_output_width: usize,
 }
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct SourceMapping {
-    request_id: String,
-    claim_id: u64,
-    doc_id: u64,
-    source_record_sha256: String,
+pub(super) struct SourceMapping {
+    pub(super) request_id: String,
+    pub(super) claim_id: u64,
+    pub(super) doc_id: u64,
+    pub(super) source_record_sha256: String,
 }
 
 pub(super) struct CalibrationExecution {
@@ -154,10 +154,12 @@ pub(super) fn load_calibration(
     if gold.is_empty() || gold.len() > 2048 {
         return Err("calibration labeled source bound".into());
     }
-    let mappings = parse_lines::<SourceMapping>(mapping, 1024)?;
-    let frozen_inputs = parse_lines::<NativeInput>(inputs, 16 * 1024)?;
-    let candidate = parse_lines::<NativeObservation>(candidate_file.path, 16 * 1024)?;
-    let baseline = parse_lines::<NativeObservation>(baseline_file.path, 16 * 1024)?;
+    let mappings = parse_lines::<SourceMapping>(mapping, 1024, Access::Immutable)?;
+    let frozen_inputs = parse_lines::<NativeInput>(inputs, 16 * 1024, Access::Immutable)?;
+    let candidate =
+        parse_lines::<NativeObservation>(candidate_file.path, 16 * 1024, Access::Private)?;
+    let baseline =
+        parse_lines::<NativeObservation>(baseline_file.path, 16 * 1024, Access::Private)?;
     if [
         mappings.len(),
         frozen_inputs.len(),
@@ -240,8 +242,9 @@ pub(super) fn load_calibration(
 fn parse_lines<T: serde::de::DeserializeOwned>(
     path: &Path,
     row_maximum: usize,
+    access: Access,
 ) -> ReviewResult<Vec<(Vec<u8>, T)>> {
-    let bytes = read_root(path, 4 * 1024 * 1024, Access::Private)?;
+    let bytes = read_root(path, 4 * 1024 * 1024, access)?;
     if !bytes.ends_with(b"\n") {
         return Err("a complete terminated execution stream is required".into());
     }
@@ -255,7 +258,7 @@ fn parse_lines<T: serde::de::DeserializeOwned>(
     Ok(values)
 }
 
-fn validate_observation(
+pub(super) fn validate_observation(
     value: &NativeObservation,
     model: &PinnedModel,
     request: &str,

@@ -16,7 +16,7 @@ workspace = true
 [features]
 default = []
 qualification-legacy-write = []
-# A root-custody local calibration review. It never grants activation authority.
+# Opt-in Linux calibration controllers. They never grant activation authority.
 review-host = []
 
 [dependencies]
@@ -34,5 +34,17 @@ pretty_assertions = { workspace = true }
 [[bin]]
 name = "hepta-evolution-review"
 path = "src/bin/hepta-evolution-review.rs"
+required-features = ["review-host"]
+test = false
+
+[[bin]]
+name = "hepta-native-generator"
+path = "src/bin/hepta-native-generator.rs"
+required-features = ["review-host"]
+test = false
+
+[[bin]]
+name = "hepta-custody-evaluator"
+path = "src/bin/hepta-custody-evaluator.rs"
 required-features = ["review-host"]
 test = false

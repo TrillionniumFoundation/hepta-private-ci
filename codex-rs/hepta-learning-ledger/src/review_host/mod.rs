@@ -1,8 +1,15 @@
-//! A concrete local calibration refusal through production ledger admission.
-//! Offline measurements can veto candidates; they cannot create independent
-//! outcomes, qualified predecessors, selector approvals or activation leases.
+//! Local calibration review through production ledger admission.
+//! Same-controller diagnostics refuse outcome admission. A separate fixed
+//! custody evaluator runs its own measurements and signs only those outcomes.
+//! Neither path issues qualification, selector approvals or activation leases.
 
+mod events;
+mod execution_service;
 mod files;
+mod generator_wire;
+mod independent;
+mod independent_trust;
+mod native_generator;
 mod observations;
 mod trust;
 
@@ -11,11 +18,13 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 
+use self::events::EventBindings;
+use self::events::ExecutedPolicy;
+use self::events::decision;
+use self::events::outcome;
 use self::files::Access;
 use self::files::ReviewResult;
 use self::files::create_private;
@@ -23,24 +32,16 @@ use self::files::mutable_file;
 use self::files::read_root;
 use self::files::root_directory;
 use self::observations::ModelExecutionFile;
-use self::observations::NativeObservation;
 use self::observations::PinnedModel;
 use self::observations::load_calibration;
 use self::trust::LocalAuditTrust;
-use crate::AuthenticatedOutcomeV1;
-use crate::CandidateSetCompletenessReceiptV1;
 use crate::DatasetFreezePlanV2;
 use crate::DurableLedger;
 use crate::LearningEvidenceRoleV1;
 use crate::LedgerRecovery;
 use crate::LedgerWitnessStore;
 use crate::LedgerWriter;
-use crate::OutcomeTerminalityV1;
-use crate::OutcomeWatermarkV1;
-use crate::ProductionDecisionV2;
 use crate::ProductionLedgerError;
-use crate::candidate_ids_digest_v2;
-use crate::candidate_order_digest_v2;
 use crate::dataset_freeze_signing_payload_v2;
 use crate::decision_signing_payload_v2;
 use crate::outcome_signing_payload_v2;
@@ -228,6 +229,12 @@ pub fn run_local_calibration_review(request_path: &Path) -> ReviewResult<()> {
         create_private(&signing_path, &bytes)?;
         now
     };
+    let bindings = EventBindings {
+        objective: trust.objective,
+        generator: trust.generator.clone(),
+        observer: trust.observer.clone(),
+        program_digest: trust.program_digest,
+    };
     let mut rejected_outcomes = 0;
     let mut first_outcome_rejection = None;
     for (index, execution) in executions.iter().enumerate() {
@@ -248,7 +255,7 @@ pub fn run_local_calibration_review(request_path: &Path) -> ReviewResult<()> {
             ),
         ] {
             let decision = decision(
-                &trust,
+                &bindings,
                 audit_digest,
                 index,
                 ExecutedPolicy {
@@ -280,7 +287,7 @@ pub fn run_local_calibration_review(request_path: &Path) -> ReviewResult<()> {
                 head = append.chain_digest;
             }
             let outcome = outcome(
-                &trust,
+                &bindings,
                 &decision,
                 observation,
                 selected == execution.gold_class,
@@ -401,107 +408,12 @@ pub fn run_local_calibration_review(request_path: &Path) -> ReviewResult<()> {
     Ok(())
 }
 
-struct ExecutedPolicy<'a> {
-    label: &'a str,
-    observation: &'a NativeObservation,
-    selected: usize,
-    model: &'a PinnedModel,
-    support: Digest32,
+pub fn run_native_generator(request: &Path) -> ReviewResult<()> {
+    native_generator::run(request)
 }
-
-fn decision(
-    trust: &LocalAuditTrust,
-    audit: Digest32,
-    index: usize,
-    policy: ExecutedPolicy<'_>,
-    source: Digest32,
-) -> ReviewResult<ProductionDecisionV2> {
-    let ExecutedPolicy {
-        label,
-        observation,
-        selected,
-        model,
-        support,
-    } = policy;
-    let candidates = vec![
-        StableId::new("SUPPORT")?,
-        StableId::new("CONTRADICT")?,
-        StableId::new("abstain")?,
-    ];
-    let selected_action = if selected < 2 { selected } else { 2 };
-    let input: Digest32 = observation.input_digest.parse()?;
-    let snapshot = Digest32::of_bytes(
-        &[
-            source.as_array().as_slice(),
-            input.as_array(),
-            model.manifest.as_array(),
-        ]
-        .concat(),
-    );
-    Ok(ProductionDecisionV2 {
-        record_id: StableId::new(format!("calibration.decision.{audit}.{label}.{index}"))?,
-        episode_id: StableId::new(format!("calibration.episode.{audit}.{label}.{index}"))?,
-        run_snapshot_digest: snapshot,
-        objective_digest: trust.objective,
-        policy_digest: model.weights,
-        selected_candidate_id: candidates[selected_action].clone(),
-        selected_propensity: ProbabilityQ32::ONE,
-        completeness: CandidateSetCompletenessReceiptV1 {
-            set_id: StableId::new(format!("calibration.set.{audit}.{label}.{index}"))?,
-            state_digest: snapshot,
-            generator_id: trust.generator.principal_id.clone(),
-            generator_code_digest: trust.program_digest,
-            grammar_digest: Digest32::of_bytes(
-                b"SUPPORT, CONTRADICT, abstain; HPTNCPU1 argmax drive; lowest-index tie",
-            ),
-            hard_filter_digest: Digest32::of_bytes(
-                b"native drive index 0 SUPPORT; 1 CONTRADICT; all other indices map to abstain",
-            ),
-            truncation_digest: Digest32::of_bytes(
-                b"complete three semantic actions from frozen native output width 10; none omitted",
-            ),
-            candidates_digest: candidate_ids_digest_v2(&candidates),
-            candidate_count: 3,
-            omitted_count_bound: 0,
-            canonical_order_digest: candidate_order_digest_v2(&candidates),
-            complete_for_generator: true,
-        },
-        candidate_ids: candidates,
-        support_digest: support,
-    })
+pub fn initialize_native_generator_key(path: &Path, uid: u32) -> ReviewResult<()> {
+    native_generator::initialize_key(path, uid)
 }
-
-fn outcome(
-    trust: &LocalAuditTrust,
-    decision: &ProductionDecisionV2,
-    observation: &NativeObservation,
-    correct: bool,
-    support: Digest32,
-) -> ReviewResult<AuthenticatedOutcomeV1> {
-    Ok(AuthenticatedOutcomeV1 {
-        record_id: StableId::new(format!("{}.outcome", decision.record_id.as_str()))?,
-        outcome_id: StableId::new(format!("{}.outcome", decision.episode_id.as_str()))?,
-        episode_id: decision.episode_id.clone(),
-        observer: trust.observer.clone(),
-        observed_at: Some(observation.executed_at_ms),
-        value: Some(if correct {
-            FixedQ32::ONE
-        } else {
-            FixedQ32::ZERO
-        }),
-        unit_profile_digest: Digest32::of_bytes(
-            b"SciFact original expert-label exact correctness; unknown never negative",
-        ),
-        support_digest: support,
-        watermark: OutcomeWatermarkV1 {
-            latest_observable_at: observation.executed_at_ms,
-            expected_delay_profile_digest: Digest32::of_bytes(
-                b"bounded completed offline native calibration inference",
-            ),
-            terminality: OutcomeTerminalityV1::Terminal,
-            censoring_reason: None,
-            correction_predecessor: None,
-            finalized_at: Some(observation.executed_at_ms),
-        },
-    })
+pub fn run_fixed_custody_evaluator(request: &Path) -> ReviewResult<()> {
+    independent::run(request)
 }

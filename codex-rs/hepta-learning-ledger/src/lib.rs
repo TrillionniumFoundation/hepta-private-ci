@@ -183,3 +183,10 @@ pub use recovery_work::measure_ledger_recovery_work;
 mod review_host;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::run_local_calibration_review;
+
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::initialize_native_generator_key;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::run_fixed_custody_evaluator;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::run_native_generator;
