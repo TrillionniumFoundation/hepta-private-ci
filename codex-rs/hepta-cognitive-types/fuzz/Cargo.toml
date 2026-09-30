@@ -9,8 +9,45 @@ cargo-fuzz = true
 
 [dependencies]
 codex-hepta-cognitive-types = { path = ".." }
-libfuzzer-sys = "0.4"
+libfuzzer-sys = "=0.4.13"
 
+[[bin]]
+name = "hnmf_base"
+path = "fuzz_targets/hnmf_base.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "hnmf_learning"
+path = "fuzz_targets/hnmf_learning.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "shared_experience_v2"
+path = "fuzz_targets/shared_experience_v2.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "consumer_handoff"
+path = "fuzz_targets/consumer_handoff.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "canonical_json_grammar"
+path = "fuzz_targets/canonical_json_grammar.rs"
+test = false
+doc = false
+bench = false
+
+# Compatibility aggregate retained for the closed-world HNMF verifier. Product
+# fuzz qualification is issued only by the five target-specific campaigns above.
 [[bin]]
 name = "decode_contracts"
 path = "fuzz_targets/decode_contracts.rs"
