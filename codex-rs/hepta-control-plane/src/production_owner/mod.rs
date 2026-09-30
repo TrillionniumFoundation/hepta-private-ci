@@ -1,3 +1,4 @@
+#[allow(clippy::too_many_arguments)]
 #[path = "../production_owner_v2/fence_v2.rs"]
 mod fence;
 #[path = "../production_owner_v2/owner.rs"]
