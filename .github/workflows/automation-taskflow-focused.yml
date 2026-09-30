@@ -1,8 +1,21 @@
 name: automation-taskflow-focused
 
 on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-automation/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-operations/**
+      - codex-rs/hepta-types/**
+      - codex-rs/Cargo.lock
+      - CALLERS.toml
+      - docs/modules/automation.taskflow/**
+      - qualification/module-execution-dossiers/detail/automation.taskflow.md
+      - .github/workflows/automation-taskflow-focused.yml
   push:
     branches:
+      - main
       - work/automation-taskflow-durable-causal-chain
     paths:
       - codex-rs/hepta-automation/**
@@ -11,6 +24,9 @@ on:
       - codex-rs/hepta-operations/**
       - codex-rs/hepta-types/**
       - codex-rs/Cargo.lock
+      - CALLERS.toml
+      - docs/modules/automation.taskflow/**
+      - qualification/module-execution-dossiers/detail/automation.taskflow.md
       - .github/workflows/automation-taskflow-focused.yml
   workflow_dispatch:
 
@@ -32,6 +48,8 @@ jobs:
         run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
       - name: Check automation, operations and Agentd
         run: cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+      - name: Verify privileged caller closure
+        run: python3 ../scripts/verify_hepta_callers.py verify --root ..
       - name: Test kernel operation contract
         run: cargo test -p codex-hepta-operations
       - name: Test durable automation causal chain
