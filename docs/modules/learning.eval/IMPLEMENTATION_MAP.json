@@ -22,7 +22,10 @@
     "rootActivatedRecoveryTrustImplemented": true,
     "selectedHostActivatedTrustExpiryFinalUseImplemented": true,
     "selectedHostBareVerifierCompileRejectionSourcePresent": true,
+    "selectedHostClockFinalUseImplemented": true,
     "selectedHostRootActivatedTrustFinalUseImplemented": true,
+    "selectedHostRootRevocationBoundSourcePresent": true,
+    "selectedHostScalarTimeCompileRejectionSourcePresent": true,
     "sequentialClusterConfidenceImplemented": true,
     "targetHostQualified": false,
     "temporalCrossFitExecutorImplemented": true,
@@ -211,6 +214,15 @@
       ]
     },
     {
+      "nativeSymbol": "SelectedHostClockV1::sample_current_time",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/product.rs",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/tests/selected_host_recovery_e2e.rs",
+        "codex-rs/hepta-intelligence-eval/tests/selected_host_outcome_recovery_e2e.rs",
+        "scripts/hepta-learning-eval-api-surface.sh"
+      ]
+    },
+    {
       "nativeSymbol": "CrossFoldPlanV1::execute_temporal_cross_fit_v1",
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/temporal_cross_fit.rs",
       "tests": [
@@ -261,14 +273,14 @@
       ]
     },
     {
-      "nativeSymbol": "trusted_workflow_run_report",
+      "nativeSymbol": "update_current_pull_request",
       "sourcePath": "scripts/hepta-learning-eval-trusted-report.py",
       "tests": [
         "scripts/test_hepta_learning_eval_trusted_report.py"
       ]
     },
     {
-      "nativeSymbol": "hardened_trusted_workflow_run_report",
+      "nativeSymbol": "update_current_pull_request_strict",
       "sourcePath": "scripts/hepta-learning-eval-trusted-entry.py",
       "tests": [
         "scripts/test_hepta_learning_eval_trusted_entry.py",
@@ -283,7 +295,7 @@
       ]
     },
     {
-      "nativeSymbol": "local_deterministic_verification",
+      "nativeSymbol": "command_inventory",
       "sourcePath": "scripts/hepta-learning-eval-local-verify.py",
       "tests": [
         "scripts/test_hepta_learning_eval_local_verify.py",
@@ -335,10 +347,10 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "c7bca91cb40198d2c4a8826bb1f624ee52b9b23c",
-    "tree": "e596bc313a13bd7a9a967207385b681862ef2d5b"
+    "commit": "3be6fd1f8ff0c6ab468dc58b2b0dc4226a93dea1",
+    "tree": "8642b852987e458fcb804f1d3fa03aa31277464c"
   },
-  "sourceBaseSemantics": "Exact source/test/documentation observation immediately preceding this map-only rebind. It binds anchored known-no-write rejection recovery, anchored near-capacity completion, accepted-unknown poisoning, every legal lifecycle prefix and single-crash-cut recovery, repaired audit navigation, fail-closed Markdown link/anchor validation with lexical symlink-component and symlink-source rejection before resolution, separately reported default-production versus compatibility coverage, trusted default-branch closed-world discovery of every hepta-learning-eval workflow, selected-host root-signed ActivatedLearningTrustV1 final-use admission with signed distribution expiry validation before publication-store access, and a compiler-negative fixture that accepts only the intended ActivatedLearningTrustV1-versus-LearningEvidenceVerifierV1 type mismatch as proof. The candidate workflow inventory must be exactly equal to the trusted default-branch inventory; additions, removals and byte drift fail closed. Every workflow plus the API, Markdown, projection, Rust-identifier and status-model auxiliary control-plane files is compared byte-for-byte before any PR marker update. Root activation is a repository trust-distribution fact and does not authenticate a real target host, anchor service, provider or publication owner. This observation is not passing exact-head or ordered-parent execution, target-host qualification, independent acceptance, activation, promotion or release authority.",
+  "sourceBaseSemantics": "Exact source/test/documentation observation at the parent of this map-only rebind. It binds anchored known-no-write rejection recovery, anchored near-capacity completion, accepted-unknown poisoning, legal-prefix single-crash-cut recovery, repaired audit navigation, fail-closed Markdown link/anchor validation, separated default-production and compatibility coverage, closed-world trusted control-plane identity, root-activated selected-host trust, scheduled root-revocation bounds, and host-owned SelectedHostClockV1 sampling immediately before current-trust verification and archive/publication final use. Compiler-negative fixtures reject raw product ingress, low-level signed decision ingress, a bare verifier, and caller-provided scalar time. These are repository source facts only and do not authenticate a real target host, independent anchor service, outcome provider, publication owner, future-calendar observations, independent acceptance, activation, promotion, or release.",
   "sourceIdentityPolicy": "exact_observation_plus_candidate_unchanged_v2",
   "sourceRootPresent": true,
   "technicalGuide": "docs/modules/learning.eval/TECHNICAL.md"
