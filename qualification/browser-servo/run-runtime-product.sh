@@ -22,13 +22,28 @@ cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd br
 cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd \
   --bin hepta-agentd-browser-service 2>&1 | tee candidate-evidence/agentd-service-tests.log
 cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd \
-  --bin hepta-agentd-browser --bin hepta-agentd-browser-service
+  --bin hepta-agentd-browser --bin hepta-agentd-browser-service \
+  2>&1 | tee candidate-evidence/agentd-check.log
+clippy_messages=candidate-evidence/agentd-clippy.messages.jsonl
+clippy_stderr=candidate-evidence/agentd-clippy.stderr.log
+set +e
 cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd \
   --lib --bin hepta-agentd-browser --bin hepta-agentd-browser-service \
-  --no-deps -- -D warnings
-npm --prefix apps/hepta-browser run worker:check
-npm --prefix apps/hepta-browser run worker:test
-cargo check --manifest-path "$root/codex-rs/Cargo.toml" --locked --workspace --all-targets
+  --no-deps --message-format=json \
+  >"$clippy_messages" 2>"$clippy_stderr"
+clippy_status=$?
+set -e
+cat "$clippy_stderr"
+node qualification/browser-servo/strict-agentd-clippy.mjs \
+  --input "$clippy_messages" --stderr "$clippy_stderr" \
+  --cargo-status "$clippy_status" --expected-sha "$SOURCE_SHA" \
+  --output candidate-evidence/agentd-clippy-receipt.json
+npm --prefix apps/hepta-browser run worker:check \
+  2>&1 | tee candidate-evidence/worker-check.log
+npm --prefix apps/hepta-browser run worker:test \
+  2>&1 | tee candidate-evidence/worker-tests.log
+cargo check --manifest-path "$root/codex-rs/Cargo.toml" --locked --workspace --all-targets \
+  2>&1 | tee candidate-evidence/full-workspace-check.log
 
 stage="${RUNNER_TEMP:-/tmp}/browser-servo-stage"
 rm -rf "$stage"
