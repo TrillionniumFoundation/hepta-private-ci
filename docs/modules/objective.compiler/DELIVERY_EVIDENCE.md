@@ -1,170 +1,293 @@
-# objective.compiler: exact execution evidence
+# objective.compiler exact execution and delivery evidence
 
-This is an execution-procedure supplement to `TECHNICAL.md`. Architecture,
-ownership, semantic limits and recovery requirements remain in the technical
-guide and implementation map. `CURRENT_STATE.json` is the canonical static
-source/policy manifest; it intentionally contains no hand-maintained dynamic
-pass state.
+**Normative execution contract:** `docs/modules/objective.compiler/NORMATIVE_EXECUTION.md`
 
-## Source authoring and qualification are separate
+This document defines how implementation observations are produced, retained and
+interpreted. Architecture, semantic support and authority boundaries remain in
+the normative contract, `TECHNICAL.md` and `SEMANTIC_SUPPORT.md`.
+`CURRENT_STATE.json` contains static source/policy truth only; it intentionally
+contains no hand-maintained dynamic pass state.
 
-The normal product path remains:
+## 1. Evidence classes are not interchangeable
+
+The module distinguishes:
+
+1. source declarations and test definitions;
+2. unprivileged authoring diagnostics;
+3. exact source-head execution;
+4. deterministic synthetic-merge execution;
+5. selected target-host measurement;
+6. storage durability and destructive-recovery acceptance;
+7. independent semantic/security review;
+8. canary, rollback, promotion and release authority.
+
+A later class may depend on an earlier one, but no class can be inferred from a
+lower class. A source file, green unit test, queued workflow, artifact upload or
+measurement template is not independent acceptance or release authority.
+
+## 2. Static source truth
+
+`docs/modules/objective.compiler/CURRENT_STATE.json` remains fail closed:
 
 ```text
-Agentd ObjectiveRuntimeHost
--> validated intelligence façade
--> destination-owned RunStartJournal
--> current runtime/final-use owners
+productionImplementation = false
+accepted = false
+activated = false
+released = false
 ```
 
-The compiler does not own a private objective database and this closure adds no
-parallel demo or qualification-only caller. Agentd freezes one
-`ValidatedAdmissionProfileV1` during host open. Only static profile validation,
-indexes, collision proofs and the exact profile digest/revision/compiler-contract
-identity are reused. Each submission still authenticates the signed source and
-rechecks source identity, scope, intent/schema/normalization binding, freshness,
-deadline and selected profile. Current trust, revocation, generation, fence and
-final-use authority remain live owner checks.
+`scripts/hepta-objective-current-state.py` projects that static truth into the
+implementation map and generated document blocks. Dynamic fields such as
+source-head qualification, synthetic-merge qualification and target-host
+measurement are forbidden in the checked-in manifest and exist only in an
+artifact-bound evidence projection.
 
-Source changes are committed before qualification. Exact-source workflows may
-not execute migration helpers, regenerate source fixtures, update status files,
-commit fixes or push a candidate. Historical source-authoring workflows and
-migration outputs are not execution evidence.
+## 3. Authoring and qualification are separate
 
-## Read-only exact-head and deterministic-merge procedure
+Normal authoring commits source and documentation before execution. The
+unprivileged authoring workflow may:
 
-`hepta-objective-exact-execution.yml` checks out the requested complete source
-SHA with read-only repository permissions and no persisted credentials. A manual
-run uses its `source_commit` input for checkout and requires an explicit
-`merge_base` SHA. A push run resolves `origin/main` once after checkout and
-records that exact merge base before testing. It does not follow a moving branch
-during execution.
+- regenerate the objective implementation map;
+- synchronize static source-state blocks;
+- run normative consistency tests;
+- compile and test Rust packages;
+- run strict default and compatibility Clippy;
+- retain a bounded source archive, generated patch and logs.
 
-The recorder `scripts/hepta-objective-qualify-exact.py` requires a clean source
-and an output directory outside the repository. It creates detached source-head
-and deterministic synthetic-merge worktrees. Merge conflicts are recorded as
-errors, not automatically resolved. Synthetic merge objects never move a branch
-ref. Source writes by tests make the candidate fail its clean-source check.
+It has read-only repository permission and no persisted credential. Its generated
+map and logs are diagnostics for the next source commit. It does not modify the
+branch, qualify the candidate or issue a release receipt.
 
-Each command records argv, working directory, start time, elapsed time, exit
-code, execution status and SHA-256 of its actual combined stdout/stderr log. The
-receipt includes source/merge commits and trees, fixed merge base, workflow
-identity, run ID/attempt, runner image metadata and toolchain commands. The
-receipt is updated atomically after each command. An interruption leaves an
-incomplete report with `checksPassed: false`.
+Source qualification workflows may not regenerate source fixtures, patch status
+files, commit repairs or push a candidate. Any source repair creates a new commit
+and invalidates earlier execution evidence for the changed head.
 
-The declared native scope includes default and compatibility objective tests,
-all-target compilation, focused durable journal/publication/Agentd/checkpoint
-tests, real-process `objective_product_e2e`, strict package lint and format
-checks. `checksPassed` becomes true only when both candidates completed every
-declared check successfully with clean source.
+## 4. Exact source and deterministic merge recorder
 
-`complete()` is a reduction over freshly recorded command results, not a
-signature verifier for caller-supplied JSON. Consumers must authenticate the
-workflow artifact and verify its log hashes before relying on an external copy.
-Source-generated evidence cannot appoint itself an independent acceptance
-authority.
+`.github/workflows/hepta-objective-exact-execution.yml` checks out one complete
+source SHA and fixes one complete merge-base SHA. The recorder
+`scripts/hepta-objective-qualify-exact.py` requires a clean source checkout and an
+output directory outside the repository. It creates detached worktrees for:
 
-Example:
-
-```sh
-python3 scripts/hepta-objective-qualify-exact.py \
-  --source-commit "$(git rev-parse HEAD)" \
-  --merge-base "<full-fixed-main-commit>" \
-  --out "/absolute/path/outside/repository/new-evidence-directory"
+```text
+source-head
+synthetic-merge(base, source)
 ```
 
-## Target-host measurement and resources
+The synthetic merge is generated deterministically with a fixed commit identity.
+Merge conflicts are errors and are never auto-resolved, filtered or patched. No
+branch ref is moved.
 
-The target-host recorder distinguishes:
+Both candidates execute the same declared inventory:
 
-- cold profile validation;
-- warm request-local authenticated admission;
-- native deterministic compile;
-- proof-bound protocol encode and strict decode;
-- maximum conflict extraction;
-- signed Agentd product ingress and execution phases.
+- exact implementation-map verification with candidate commit/tree;
+- static current-state verification;
+- normative execution consistency;
+- fail-closed release-source truth;
+- toolchain capture and formatting;
+- all-target product-package compilation;
+- default objective tests;
+- `qualification-legacy-compile` tests;
+- durable RunStart/proof/recovery tests;
+- intelligence publication tests;
+- Agentd admission/checkpoint/product E2E tests;
+- strict owned-package Clippy;
+- strict compatibility-feature Clippy;
+- clean-source verification.
 
-The destination-owned durable append, external checkpoint CAS and Agentd
-handoff remain one atomic observable phase. The harness does not fabricate
-separate completion or latency claims for internal operations that are not
-independently committed.
+Every command records its name, exact argv, working directory, start time,
+elapsed time, status, integer exit code and SHA-256 of actual combined
+stdout/stderr. The receipt is atomically updated after each command. An
+interruption retains an incomplete receipt with `checksPassed=false`.
 
-Each ordinary, maximum-conflict and product fixture now executes below a fresh
-helper process. Its receipt contains an isolated command-process-tree peak RSS,
-user/system CPU time, wall time, page faults and context switches. This replaces
-the previous cumulative `RUSAGE_CHILDREN` peak that could include earlier
-fixtures. Internal phase latency distributions remain separate. The process-tree
-peak includes the test executable and descendants and is not represented as a
-per-internal-phase allocator profile.
+`complete()` is a reduction over freshly observed command records. It does not
+authenticate arbitrary caller-supplied JSON. Missing, duplicate, failed,
+timed-out, unavailable or log-drifted commands cannot pass.
 
-The target receipt binds source commit/tree, workflow/run identity when
-available, host profile, filesystem identity, toolchain, workload/sample counts
-and the resource observations. A GitHub-hosted runner is development and
-qualification evidence only. Selected deployment-host storage, crash/restart,
-backpressure and resource-policy acceptance remain external gates.
+## 5. Trusted verifier separation
 
-## One evidence projection, no manual dynamic status
+Candidate-owned code may execute tests and produce raw evidence only on an
+unprivileged GitHub-hosted runner or an externally provisioned ephemeral target
+runner. Protected decisions use a separate trusted-control checkout from
+protected `main`:
+
+```text
+trusted-control checkout at immutable workflow SHA
++ separate candidate checkout/data workspace
++ digest-bound raw logs/artifacts
+-> trusted parser/projector/release verifier
+```
+
+A protected workflow must not execute a release verifier imported from the
+candidate workspace. Candidate and trusted-control workspaces must be distinct and
+clean, and their complete commits/trees are retained in the output.
+
+A development push may produce an untrusted exact-execution artifact. A trusted
+qualification claim requires the protected-main workflow definition and trusted
+verification path. This distinction is explicit in retained envelopes; a raw
+artifact is never silently relabelled as trusted.
+
+## 6. Evidence projection
 
 `scripts/hepta-objective-evidence-project.py` consumes:
 
-1. the static `CURRENT_STATE.json` manifest;
-2. an exact-execution receipt, a target-measurement receipt, or both;
-3. the exact candidate commit and tree.
+1. exact candidate commit and tree;
+2. static `CURRENT_STATE.json`;
+3. an exact-execution receipt, target-measurement receipt or both;
+4. retained artifacts and their actual content digests.
 
-It emits `hepta.objective-evidence-projection.v2`. Dynamic source-head,
-synthetic-merge and target-host-observation fields exist only in this projection.
-The projector rejects source/tree mismatch, inconsistent aggregate success,
-missing workload identities, missing isolated resource observations and any
-static manifest that attempts to embed a dynamic pass field.
+It emits `hepta.objective-evidence-projection.v2`. The projector rejects:
 
-Each observed claim carries its artifact SHA-256 and available workflow/run
-identity. Missing, queued, interrupted or failed execution cannot be rewritten
-as passed. The checked-in manifest continues to force production implementation,
-acceptance, activation and release false. Selected deployment-host acceptance,
-independent review and operator approval remain unverified until their own
-authorized evidence exists.
+- source or tree mismatch;
+- incorrect deterministic merge identity;
+- missing or duplicate declared commands;
+- changed argv;
+- Boolean values masquerading as integer exit codes;
+- missing, changed or symlinked retained logs;
+- inconsistent aggregate pass state;
+- absent workload or artifact identities;
+- attempted promotion of production, acceptance, activation or release truth.
 
-## Interpreting results
+Every observed claim carries its artifact SHA-256 and available workflow run,
+attempt and trusted-control identity. Missing observations remain missing.
 
-| Evidence | Meaning | Not established |
+## 7. Target-host measurement V2
+
+The target-host recorder distinguishes:
+
+- cold validated-profile construction;
+- warm request-local authenticated admission;
+- deterministic native compile;
+- proof-bearing protocol encode/decode;
+- maximum conflict extraction;
+- signed Agentd product ingress;
+- destination append, checkpoint CAS and handoff as one observable atomic phase;
+- physical execution only where explicitly enrolled.
+
+Build, discovery and hashing occur outside fixture resource sampling. Cargo JSON
+compiler-artifact messages identify the exact executable. The recorder hashes
+emitted artifacts, resolves exactly one test name from `--list`, invokes it
+through direct `--exact` execution, and verifies executable hashes before listing,
+before execution and after execution. Missing, ambiguous, symlinked or changed
+artifacts fail closed.
+
+Each fixture runs under a fresh helper process. Resource evidence includes the
+OS-reported waited-child peak RSS, user/system CPU, wall time, page faults and
+context switches. Peak RSS is not represented as simultaneous process-tree sum or
+an internal allocation profile.
+
+## 8. Ephemeral selected-host boundary
+
+The selected-host workflow routes candidate execution only to a runner carrying
+all of:
+
+```text
+self-hosted
+objective-target-host
+ephemeral
+```
+
+The candidate job receives read-only repository permission, no persisted
+credential and job-local Cargo home/target directories. It uploads raw observations
+and removes the candidate workspace and job-local caches. A separate
+GitHub-hosted trusted-control job downloads, verifies and projects the raw
+measurement.
+
+The label set is a routing precondition, not proof that the runner was actually
+created for one job or destroyed afterwards. The host infrastructure authority
+must issue an independent lifecycle/host attestation before selected-host
+acceptance. Persistent shared runners, shared writable caches or reusable
+credentials cannot satisfy this gate.
+
+## 9. Provenance and artifact integrity
+
+Retained bundles bind:
+
+- candidate commit and tree;
+- fixed merge base and deterministic merge commit/tree;
+- trusted workflow commit/tree where applicable;
+- workflow run and attempt;
+- runner image/profile identity;
+- toolchain commands;
+- command inventory and log digests;
+- native executable and test identity;
+- evidence bundle digest.
+
+Protected-main verification may create a GitHub build-provenance attestation for a
+verified manifest or bundle digest. Such attestation proves the workflow produced
+those bytes under the recorded identity; it does not establish semantic
+acceptance, target-host suitability, canary success or release authority.
+
+Unsigned templates remain templates. An external acceptance receipt is valid only
+when its exact candidate, policy, dependency chain, issuer independence and
+required provenance fields are verified by the protected release gate.
+
+## 10. Storage qualification is separate
+
+Ordinary append/reopen tests and target-host latency do not establish storage
+acceptance. The selected storage authority must separately exercise and retain
+receipts for:
+
+- segment rotation under the writer lease;
+- concurrent writer rejection at every rotation cut;
+- external checkpoint acknowledgement loss;
+- missing checkpoint with existing local history;
+- checkpoint rollback and checkpoint-ahead-of-local state;
+- torn active tail;
+- removed or rewritten sealed segment;
+- compaction crash cuts before and after checkpoint advance;
+- storage-full and sync failure;
+- long-running capacity/backpressure;
+- recovery without duplicate physical execution.
+
+The resulting storage qualification digest is an input to, not a consequence of,
+target-host measurement.
+
+## 11. Interpreting common observations
+
+| Observation | Established | Not established |
 |---|---|---|
-| Source and test files exist | Implementation is inspectable | Compilation or test success |
-| Recorder unit tests pass | Recorder rejection, identity and projection behavior was tested | Rust module correctness |
-| A workflow is queued or running | Execution was requested or started | Any final pass |
-| Both exact candidates pass | Declared checks passed on the recorded identities | Full module acceptance or deployment |
-| Target-host measurement observed | Bounded workloads and resources were recorded on the named host | Selected deployment-host approval |
-| Independent acceptance and operator approval | Separate evidence issued by the appropriate owners | Automatic release authority |
+| Source/test files exist | implementation is inspectable | compilation or test success |
+| Recorder unit tests pass | recorder rejection and identity behavior | Rust module correctness |
+| Workflow queued/running | execution requested/started | final pass |
+| Authoring workflow passes | source compiles/tests in unprivileged development scope | trusted qualification |
+| Exact source and merge pass | declared commands passed on recorded identities | selected-host or independent acceptance |
+| Target measurement observed | bounded workload/resource facts on named host | resource/storage approval |
+| GitHub provenance attestation exists | recorded workflow produced exact bytes | semantic correctness or release approval |
+| Independent receipts complete | named external gate was issued | automatic promotion unless dependencies also complete |
 
-Proof framing and durable admission-proof persistence/recovery now have source
-implementations and focused regressions. Broadening Source V1 beyond its Q32
-contract remains a versioned feature decision. Selected deployment-host destructive
-crash/backpressure qualification and independent acceptance remain separate
-work. Missing observations stay missing; source optimizations are not measured
-performance results until their corresponding artifacts exist.
+## 12. Historical evidence
 
-## V2 native-artifact measurement evidence
+All observations created before the final convergence candidate remain historical
+and retain their original source/tree, workflow and artifact identity. They are
+useful for regression comparison but cannot qualify a later source head.
 
-`hepta.objective-target-host-evidence.v2` separates `cargo test --no-run` from
-resource sampling. The recorder selects exactly one libtest executable from
-Cargo's compiler-artifact messages, hashes the emitted package executables,
-resolves exactly one test name from `--list`, and samples a direct `--exact`
-invocation. It verifies executable hashes before listing, before execution and
-after execution; the receipt binds build command, source commit/tree, artifact
-content identities, test list, exact invocation and output digest. No target
-folder glob or caller-supplied pass flag can select an alternative binary.
+In particular, the focused September 29 objective runs belong only to their
+recorded candidates. The September 30 proof/preflight/publication refactor and all
+subsequent normative, workflow or source changes require new exact-source and
+synthetic-merge execution. PR descriptions and closeout documents must not present
+an older artifact as current-head success.
 
-Each fixture still uses a fresh resource helper. RSS means the OS-reported
-waited-child high-water value, not the sum of simultaneous process RSS and not
-per-phase allocation. Builds, hashing and discovery are outside that resource
-sample. Phase timing remains inside the real fixture; durable append, checkpoint
-and handoff remain atomic. These artifacts do not prove an unrelated FFI or a
-selected deployment target. Older V1 measurements remain historical evidence,
-but are not accepted by the V2 native-artifact projection. Missing binding,
-source mismatch, changed artifacts, failed execution and build-in-sample output
-fail closed. Selected-host policy/storage/destructive acceptance remains external.
+## 13. Release order and authority
 
-The release source guard now recognizes the canonical V2 static manifest and
-rejects manual dynamic claims or true release flags in it. This removes the
-schema mismatch that blocked selected-host setup without waiving any receipt
-kind, distinct-issuer check, resource policy, review, canary or release approval.
+The protected release gate evaluates the dependency-ordered receipts declared by
+`RELEASE_POLICY.json`:
+
+```text
+exact source head
+-> deterministic synthetic merge
+-> selected target-host measurement
+-> storage durability acceptance
+-> independent semantic/security review
+-> canary
+-> rollback authority
+-> promotion
+-> release authority
+```
+
+Required independent issuers remain distinct. Source authors and CI jobs cannot
+self-issue external review, canary, rollback, promotion or release authority.
+
+Until all required receipts bind the same immutable candidate and policy, the
+checked-in source truth remains false for production implementation, acceptance,
+activation and release.

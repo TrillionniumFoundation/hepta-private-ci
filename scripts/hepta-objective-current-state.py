@@ -19,6 +19,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "docs/modules/objective.compiler/CURRENT_STATE.json"
 MAP = ROOT / "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
+NORMATIVE = "docs/modules/objective.compiler/NORMATIVE_EXECUTION.md"
 DOCS = (
     ROOT / "docs/modules/objective.compiler/TECHNICAL.md",
     ROOT / "qualification/module-execution-dossiers/detail/objective.compiler.md",
@@ -138,6 +139,7 @@ def block(manifest: dict[str, Any]) -> str:
         "synthetic-merge and target-host observations are never hand-maintained here; "
         "they are emitted by the receipt-bound evidence projection named below.",
         "",
+        f"- Normative execution contract: `{NORMATIVE}`",
         f"- Manifest SHA-256: `{digest(manifest)}`",
         f"- Core: `{state['core']}`",
         f"- Product composition: `{state['productComposition']}`",
@@ -199,6 +201,7 @@ def project(original: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any
         "schema": manifest["schema"],
         "schemaVersion": manifest["schemaVersion"],
         "manifestPath": str(MANIFEST.relative_to(ROOT)),
+        "normativeExecutionContract": NORMATIVE,
         "manifestSha256": digest(manifest),
         "implementationState": state,
         "truth": truth,
@@ -251,6 +254,7 @@ def verify() -> None:
                 "status": "PASS_OBJECTIVE_CURRENT_STATE",
                 "module": manifest["module"],
                 "manifestSha256": digest(manifest),
+                "normativeExecutionContract": NORMATIVE,
                 "truth": manifest["truth"],
                 "dynamicQualificationSource": "receipt_projection_only",
             },

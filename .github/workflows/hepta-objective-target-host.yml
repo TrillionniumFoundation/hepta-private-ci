@@ -41,6 +41,8 @@ env:
 
 jobs:
   measure-candidate:
+    permissions:
+      contents: read
     runs-on: [self-hosted, objective-target-host, ephemeral]
     environment: objective-target-host-qualification
     timeout-minutes: 180
@@ -137,6 +139,10 @@ jobs:
 
   verify-measurement:
     needs: measure-candidate
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -196,6 +202,8 @@ jobs:
           HOST_PROFILE_ID: ${{ inputs.host_profile_id }}
         run: |
           set -euo pipefail
+          cp "$RUNNER_TEMP/objective-target-raw/evidence.json" \
+            "$RUNNER_TEMP/objective-target-verified/evidence.json"
           python3 - <<'PY'
           import hashlib
           import json
@@ -263,14 +271,36 @@ jobs:
               json.dumps(template, sort_keys=True, indent=2) + "\n",
               encoding="utf-8",
           )
-          (out / "SHA256SUMS").write_text(
-              f"{digest}  evidence.json\n", encoding="utf-8"
+          files = {}
+          for path in sorted(out.iterdir()):
+              if path.is_file() and path.name != "bundle-manifest.json":
+                  files[path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
+          manifest = {
+              "schema": "hepta.objective-verified-bundle.v1",
+              "schemaVersion": 1,
+              "module": "objective.compiler",
+              "candidateCommit": os.environ["CANDIDATE_SHA"],
+              "candidateTree": os.environ["CANDIDATE_TREE"],
+              "trustedControlCommit": os.environ["GITHUB_WORKFLOW_SHA"],
+              "workflowRunId": int(os.environ["GITHUB_RUN_ID"]),
+              "workflowRunAttempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "files": files,
+              "accepted": False,
+              "activated": False,
+              "released": False,
+          }
+          (out / "bundle-manifest.json").write_text(
+              json.dumps(manifest, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
           )
           PY
-          cp "$RUNNER_TEMP/objective-target-raw/evidence.json" \
-            "$RUNNER_TEMP/objective-target-verified/evidence.json"
           test -z "$(git -C trusted-control status --porcelain)"
           test -z "$(git -C candidate status --porcelain)"
+
+      - name: Attest verified bundle-manifest provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ${{ runner.temp }}/objective-target-verified/bundle-manifest.json
 
       - name: Retain trusted target-host evidence
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0

@@ -108,9 +108,12 @@ def validate_manifest(manifest: dict[str, Any]) -> None:
         raise ConsistencyError("normative durable formats drifted")
 
     compatibility = manifest.get("compatibility")
-    if not isinstance(compatibility, dict) or compatibility.get(
-        "legacyCompileFeature"
-    ) != "qualification-legacy-compile" or compatibility.get("productDefault") is not False:
+    if (
+        not isinstance(compatibility, dict)
+        or compatibility.get("legacyCompileFeature")
+        != "qualification-legacy-compile"
+        or compatibility.get("productDefault") is not False
+    ):
         raise ConsistencyError("compatibility boundary drifted")
 
     codes = manifest.get("errorCodes")
@@ -151,6 +154,8 @@ def verify() -> dict[str, Any]:
         "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md",
         "docs/modules/objective.compiler/DELIVERY_EVIDENCE.md",
         "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+        "docs/modules/objective.compiler/CLOSEOUT_20260930.md",
     ):
         require_markers(rel, [normative_link])
 
@@ -212,6 +217,8 @@ def verify() -> dict[str, Any]:
             "codex-rs/hepta-objective/src/admission_proof.rs",
             "codex-rs/hepta-objective/src/admission_results.rs",
             "codex-rs/hepta-objective/src/proof_projection.rs",
+            "docs/modules/objective.compiler/NORMATIVE_EXECUTION.md",
+            "scripts/hepta-objective-spec-consistency.py",
         ],
     )
 
@@ -226,11 +233,25 @@ def verify() -> dict[str, Any]:
     )
     require_markers(
         ".github/workflows/hepta-objective-release-gate.yml",
-        ["refs/heads/main", "trusted-control", "candidate-root"],
+        ["refs/heads/main", "trusted-control", "--candidate-root"],
     )
     require_markers(
         ".github/workflows/hepta-objective-target-host.yml",
-        ["objective-target-host", "ephemeral", "trusted-control", "candidate-root"],
+        [
+            "objective-target-host",
+            "ephemeral",
+            "trusted-control",
+            "actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8",
+            "id-token: write",
+            "attestations: write",
+        ],
+    )
+    require_markers(
+        "scripts/hepta-objective-current-state.py",
+        [
+            "docs/modules/objective.compiler/NORMATIVE_EXECUTION.md",
+            "normativeExecutionContract",
+        ],
     )
 
     commit = git("rev-parse", "HEAD")

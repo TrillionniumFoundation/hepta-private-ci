@@ -1,142 +1,172 @@
 # objective.compiler semantic support matrix
 
-This document records the exact boundary between the registered `ObjectiveSourceEnvelopeV1`
-syntax, authenticated admission, the owner-internal compiler IR and the generic typed
-feasibility API. Structural decode support is not the same thing as executable compiler
-support. Unsupported source semantics fail closed with `OBJ-E002`; they are never
-approximated or silently dropped.
+**Normative execution contract:** `docs/modules/objective.compiler/NORMATIVE_EXECUTION.md`
 
-| Source V1 semantic | JSON/structure decode | Admission result | Owner-internal IR | Generic feasibility support | Runtime result |
+This document is a semantic-support supplement. The normative contract owns the
+canonical product API, durable versions, authority boundary and qualification
+order. This matrix records the exact boundary between registered
+`ObjectiveSourceEnvelopeV1` syntax, authenticated admission, owner-internal IR,
+the typed feasibility engine and runtime publication. Structural decode support
+is not executable compiler support. Unsupported source semantics fail closed with
+`OBJ-E002`; they are never approximated, silently dropped or reinterpreted.
+
+## Source V1 matrix
+
+| Source V1 semantic | JSON/structure decode | Authenticated admission | Owner-internal IR | Direct typed feasibility API | Product result |
 |---|---|---|---|---|---|
-| constraint `eq` | yes | admitted when registered/profile-bound | scalar `Equal` | scalar interval | compiled/conflict |
-| constraint `lte` | yes | admitted when registered/profile-bound | scalar `AtMost` | scalar interval | compiled/conflict |
-| constraint `gte` | yes | admitted when registered/profile-bound | scalar `AtLeast` | scalar interval | compiled/conflict |
-| constraint `ne` | yes | deterministic reject | none | not represented by Source V1 adapter | `OBJ-E002` |
-| constraint `lt` / `gt` | yes | deterministic reject | none | not represented by Source V1 adapter | `OBJ-E002` |
-| constraint `in` / `not_in` | yes | deterministic reject | none | generic API supports finite enum Include/Exclude | `OBJ-E002` |
-| success/terminal `eq/lte/gte` | yes | admitted when registered/profile-bound | scalar success predicate | downstream observation semantics | compiled |
-| success/terminal `ne/lt/gt` | yes | deterministic reject | none | not represented by Source V1 adapter | `OBJ-E002` |
-| legal/forbidden/confirmation actions | yes | registered action mapping required | legal action grammar + intrinsic `abstain` | action require/forbid/positive implication exists in generic API | compiled/conflict |
-| resources | yes | all six fields mapped through frozen profile | hard `AtMost` constraints | scalar interval | compiled/conflict |
-| risk / rollback / compensation / abstention rule | yes | frozen monotone profile mapping required | hard constraints | scalar interval | compiled/conflict |
-| evidence requirements | yes | registered requirement mapping required | success predicate with confidence bound | scalar interval | compiled |
+| constraint `eq` | yes | admitted when profile-bound | scalar `Equal` | scalar interval | compiled or typed conflict |
+| constraint `lte` | yes | admitted when profile-bound | scalar `AtMost` | scalar interval | compiled or typed conflict |
+| constraint `gte` | yes | admitted when profile-bound | scalar `AtLeast` | scalar interval | compiled or typed conflict |
+| constraint `ne` | yes | deterministic reject | none | not lowered by Source V1 | `OBJ-E002` |
+| constraint `lt` / `gt` | yes | deterministic reject | none | not lowered by Source V1 | `OBJ-E002` |
+| constraint `in` / `not_in` | yes | deterministic reject | none | bounded enum Include/Exclude exists | `OBJ-E002` |
+| success/terminal `eq/lte/gte` | yes | admitted when profile-bound | scalar success predicate | downstream observation semantics | compiled |
+| success/terminal `ne/lt/gt` | yes | deterministic reject | none | not lowered by Source V1 | `OBJ-E002` |
+| legal/forbidden/confirmation actions | yes | registered action mapping required | legal-action grammar plus intrinsic `abstain` | require/forbid/positive implication | compiled or typed conflict |
+| resources | yes | all six axes map through frozen profile | generated hard `AtMost` constraints | scalar interval | compiled or typed conflict |
+| risk/rollback/compensation/abstention | yes | frozen monotone mapping required | generated hard constraints | scalar interval | compiled or typed conflict |
+| evidence requirements | yes | registered mapping required | success predicate with confidence bound | scalar interval | compiled |
 | soft dimensions | yes | registered unit/direction/baseline required | bounded soft preferences | excluded from hard feasibility | compiled |
-| immutable identity / generation atoms | not expressible by this Source V1 constraint payload | n/a | n/a | supported by `check_feasibility_v1` typed API | typed-API only |
-| positive Horn action implications | not expressible by this Source V1 constraint payload | n/a | n/a | supported by `check_feasibility_v1` typed API | typed-API only |
+| immutable scope/generation atoms | not expressible by Source V1 constraint payload | n/a | n/a | supported | typed-API only |
+| positive Horn action implications | not expressible by Source V1 constraint payload | n/a | n/a | supported | typed-API only |
 
-## Why `in` / `not_in` remain rejected
+## Q32 contract
 
-The registered Source V1 constraint object currently carries one `boundQ32` and has no
-finite-set member payload. Interpreting that scalar as a set would invent semantics and break
-canonical compatibility. The generic feasibility engine already supports bounded enum domains,
-but Source V1 needs a separately registered additive or successor protocol representation before
-those operators can be admitted losslessly.
-
-## Public API boundary
-
-The existing Agentd product route validates and freezes its owner-local profile once in
-`ObjectiveRuntimeHost::open`. Each `ObjectiveRuntimeHost::submit` then constructs a fresh
-authenticated admission context and calls the intelligence façade
-`compile_and_publish_validated_objective_run_v1`. Its compiler/publication sequence is:
+Source V1 uses exact signed Q32 raw values. It is not a Float, Decimal or implicit
+set-valued protocol. The full comparator/extreme-value regression set covers
+`eq/lte/gte` at `i64::MIN`, `-1`, `0`, `1` and `i64::MAX` through:
 
 ```text
-process-generation ValidatedAdmissionProfileV1
-+ ObjectiveSourceEnvelopeV1
-+ current authenticated ObjectiveAdmissionContextV1
--> compile_authoritative_objective_v1(...)
--> ProofBearingObjectiveCompileV1
--> encode_proof_bearing_objective_function_v1(&outcome, &source, &profile)
--> destination-owner RunStartJournal
+Source V1 decode
+-> authenticated admission
+-> native constraints and predicates
+-> proof-bearing protocol projection
+-> strict canonical decode
+-> destination-owned RunStart publication
 ```
 
-The proof-bearing value has no public constructor or mutable outcome access. Encoding
-checks the complete source-envelope proof identity and the exact frozen profile, then
-retains the existing native/source/admission/protocol validation and strict canonical
-wire decoder. It does not repeat authenticated admission or native feasibility solving.
-A hard conflict follows the existing conflict-journal path and cannot be projected into
-a compiled run. `ExplicitAbstain` remains a valid immutable publication with no effect authority.
+Negative product-facade tests require `ne/lt/gt/in/not_in` to publish neither a
+run nor a partial proof.
 
-The raw-profile façade `compile_and_publish_objective_run_v1` remains a compatibility entrypoint:
-it validates one raw profile and delegates to the validated-profile publication function. The
-lower-level `admit_objective_v1 -> AdmittedObjectiveV1 -> compile_admitted_objective_v1`
-API also remains available; neither is the normal Agentd product composition.
-`encode_authenticated_objective_function_v1` remains the compatibility/revalidation
-entrypoint for callers holding separate receipts and the original authenticated context.
-It independently repeats admission and compilation. `encode_objective_function_v1` is
-crate-private, not a public product bypass.
+## Why finite-set operators remain rejected
 
-`AdmittedObjectiveV1` has no public raw-source constructor. The legacy
-`ObjectiveSourceEnvelope -> compile` surface is no longer exported by default. It exists only
-as `compile_prevalidated_legacy_objective_v1` under the explicit
-`qualification-legacy-compile` Cargo feature for historical qualification fixtures.
+The registered Source V1 constraint object carries one `boundQ32` value and no
+finite-set member payload. Treating that scalar as a set would invent semantics
+and break canonical compatibility. The generic feasibility engine already
+supports bounded enumeration domains, but Source V1 requires an additive or
+successor protocol with an explicit member payload, lowering rules, versioned
+proof framing and independent compatibility tests before those operators may be
+admitted losslessly.
 
-### Static reuse is not authorization reuse
+## Canonical product boundary
 
-`ObjectiveRuntimeHost::open` constructs one opaque `ValidatedAdmissionProfileV1` for the
-process generation. Reuse is bound to the exact profile digest, profile revision and
-compiler-contract digest and covers only static profile validation, indexes and collision
-proofs. The host does not expose a caller-controlled cache key or skip-validation flag.
+Agentd constructs one `ValidatedAdmissionProfileV1` at
+`ObjectiveRuntimeHost::open`. Each `ObjectiveRuntimeHost::submit` authenticates a
+fresh signed request, samples the owner time inside the serialized publication
+boundary and calls:
 
-Every submission still authenticates the signed source and checks source identity, principal
-scope, intent/schema/normalization binding, locale, freshness, deadline and exact selected
-profile. Current issuer trust, revocation, generation, fence and final-use authority remain
-checks of their existing owners for every applicable request/use; none are cached grants.
-Changing the owner-local profile requires a new process generation rather than mutating the
-frozen profile in place.
+```text
+ValidatedAdmissionProfileV1
++ ObjectiveSourceEnvelopeV1
++ fresh ObjectiveAdmissionContextV1
+-> compile_authoritative_objective_v1
+-> ProofBearingObjectiveCompileV1
+-> encode_proof_bearing_objective_function_v1
+-> compile_and_publish_validated_objective_run_v1
+-> destination-owned RunStartJournal
+```
 
-## Canonical ObjectiveFunctionV1 publication
+The authoritative result has no public constructor and is not cloneable. Protocol
+projection rebinds the complete source-envelope proof identity and exact frozen
+profile before retaining native/source/receipt validation and strict canonical
+wire decoding. It does not re-run authenticated admission or native feasibility.
+A hard conflict follows the durable conflict path and cannot masquerade as a
+compiled objective. `ExplicitAbstain` is a valid immutable publication and grants
+no effect authority.
 
-After authoritative compilation, product publication uses
-`encode_proof_bearing_objective_function_v1` in `hepta-objective/src/proof_projection.rs`.
-The artifact retains the registered canonical JSON representation, strict projection
-checks, re-decoding of exact bytes, and a protocol-wire digest. The parity regression
-compares this artifact with the compatibility encoder's independent recompilation;
-metadata, supplied-intent and profile substitutions have dedicated rejection tests.
-Test source presence is not an execution pass receipt.
+## Static reuse is not authorization reuse
 
-The protocol-wire digest is intentionally **not** the native
-`ObjectiveFunction::semantic_digest`. The native digest identifies the compact compiler
-semantics used by `RunStartSnapshotV1.objectiveDigest`; the protocol digest identifies the
-registered JSON transport including explicit evidence requirements, legal/forbidden actions,
-resource endowment and deadline. The durable run-start v3 record binds both identities
-and the complete versioned admission-proof evidence. Historical v1/v2 records retain
-their original byte identities when decoded for migration/recovery inspection; they do
-not acquire a fabricated proof. Agentd runtime admission requires the canonical protocol
-identity, the persisted proof and the current frozen-profile/compiler-contract binding.
-The façade persists this evidence in the same destination-owner transaction before
-returning its proof digest; decoding it does not reconstruct an opaque compiler capability
-or replace current authentication and final-use checks.
+The generation-local validated profile may reuse only:
 
-## Feasibility determinism
+- complete static profile validation;
+- exact profile digest and revision;
+- compiler-contract digest;
+- source lookup indexes;
+- semantic-identity collision proofs.
 
-The constraint solver is deterministic for a fixed validated grammar, canonical atom set and
-oracle-call budget. The explicit availability API additionally accepts a wall-clock budget and
-records elapsed host time; exhaustion near that deadline is host-sensitive and is not semantic
-identity. The owner-internal compiler compatibility adapter uses `Duration::MAX` so host
-scheduling does not alter objective semantics.
+Every submission still checks signed source identity, principal scope,
+intent/schema/normalization binding, locale, freshness, exact deadline and the
+selected profile. Current issuer trust, revocation, generation, fence and final-use
+authority remain checks of their existing owners. Changing the profile requires a
+new process generation.
 
-## Exact-candidate evidence
+## Capacity closure
 
-See [DELIVERY_EVIDENCE.md](DELIVERY_EVIDENCE.md) for the read-only source/merge execution
-recorder, interpretation of missing or failed commands, and the remaining independent
-and selected-target-host gates. No source declaration in this matrix grants acceptance,
-activation, promotion or release.
+The source adapter reserves ten generated native constraints before accepting
+caller constraints:
 
-## 2026-09-29 bounded Source V1 closure
+```text
+246 caller constraints
++ 6 resource constraints
++ 4 risk/rollback/compensation/abstention constraints
+= 256 native hard constraints maximum
+```
 
-Source V1 continues to use exact signed Q32 raw values, not Float/Decimal or
-set-valued operands. The new regression cross-product checks `eq/lte/gte` at
-`i64::MIN`, -1, 0, 1 and `i64::MAX` through authoritative admission, native
-constraints, proof-bound protocol encoding, strict canonical decoding and the
-real intelligence-to-RunStart publication facade. Negative facade tests ensure
-`ne/lt/gt/in/not_in` publish neither a run nor a partial proof. This completes
-coverage of the existing scalar contract rather than silently broadening V1.
+Success, terminal and evidence predicates share one maximum of 128. The compiled
+legal-action set has a maximum of 128 including intrinsic `abstain`; when abstain
+is implicit the caller may supply at most 127 actions. The compiler never silently
+truncates an input to fit these limits.
 
-Source-envelope proof framing now has one crate-owned implementation shared by
-issuance and proof projection. The seven-owner preflight uses the validated
-admission entrypoint. The separate authenticated-recompilation encoder remains
-an independent parity/reference and compatibility check for callers holding
-separate receipts; it is not substituted into the ordinary single-compilation
-publication path. Broader typed semantics still require an explicit new source
-contract, lowering, verifier and versioned evidence; their absence does not
-justify implicit coercion of V1 inputs.
+## Hard feasibility and conflict semantics
+
+Hard feasibility is deterministic for fixed canonical grammar, atoms and
+explicit solver budgets. Soft preferences are absent from the hard solver and
+cannot repair infeasibility. A conflict receipt contains a deterministic
+inclusion-minimal core; no minimum-cardinality guarantee is claimed.
+
+The direct deterministic engine reads no clock. The compatibility availability
+wrapper measures elapsed host time after bounded execution. Exceeding that
+threshold produces an availability disposition, not an infeasibility proof and
+not hard preemption.
+
+## Native identity, wire identity and durable evidence
+
+`ObjectiveFunction::semantic_digest` identifies compact owner-native semantics.
+The canonical `ObjectiveFunctionV1` protocol digest identifies registered JSON
+transport semantics. RunStart V3 binds both complete byte strings and both
+digests, plus V1 admission-proof bytes and digest.
+
+The admission proof carries source-envelope, profile, authentication-context,
+compiler-contract and admitted-source digests. Persisted bytes decode only as
+historical integrity evidence. They do not reconstruct the opaque compiler
+capability and do not replace current authentication or final-use checks.
+
+RunStart V1/V2 and conflict V1 records retain their historical bytes. Recovery and
+compaction do not synthesize a proof for them, and Agentd refuses them at final
+use. An authorized new revision is required.
+
+## Compatibility surfaces
+
+The following remain compatibility, diagnostics or qualification surfaces rather
+than the ordinary product path:
+
+- raw-profile publication via `compile_and_publish_objective_run_v1`;
+- two-stage raw admission/compile;
+- independent authenticated revalidation via
+  `encode_authenticated_objective_function_v1`;
+- pre-admitted legacy compilation available only under
+  `qualification-legacy-compile`.
+
+Default and compatibility tests and strict lint run separately. Source presence or
+parity fixtures do not qualify the product route.
+
+## Evidence boundary
+
+Exact source and deterministic synthetic-merge execution must bind one immutable
+commit/tree and run the same semantic, source-map, product, compatibility and
+strict-lint inventory. Candidate-owned scripts may generate diagnostics but cannot
+issue trusted qualification. See `DELIVERY_EVIDENCE.md` and the normative contract
+for trusted-control verification, selected-host and external acceptance gates.
+
+No statement in this matrix grants production implementation, independent
+acceptance, activation, promotion or release.
