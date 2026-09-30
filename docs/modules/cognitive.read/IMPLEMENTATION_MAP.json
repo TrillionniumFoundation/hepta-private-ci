@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "235428e55101e4c548c71577cb3c36912f354c32",
+    "tree": "241a2e211be09c13f902526eaaede5d93a6009b2"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -205,7 +205,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/test_support.rs",
-      "object": "acd350012b1af7dd1092d4688d85f5accd779f33"
+      "object": "a6e740077f20fd85dc539148b8ea5ca9e7512a16"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
@@ -253,11 +253,11 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-      "object": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0"
+      "object": "d30352e6fc8f149e89636932188da9fe1b0e5e86"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
-      "object": "e96da1855228f1bb27c3aec7431631e5018e89ac"
+      "object": "5cca6d8a60692cf13a384dfa5a16ca429a6a7ecf"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
@@ -303,7 +303,7 @@
     },
     {
       "role": "model_effect_consumer",
-      "blobSha": "3f4c9682e4e899c86c7ad14503c3ae222ed80cb0",
+      "blobSha": "d30352e6fc8f149e89636932188da9fe1b0e5e86",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "nativeSymbol": "owner.revalidate_cognitive_context(snapshot).await"
     },
@@ -320,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "235428e55101e4c548c71577cb3c36912f354c32",
+    "tree": "241a2e211be09c13f902526eaaede5d93a6009b2"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
