@@ -38,26 +38,12 @@ on:
       - .github/workflows/authbus-authority-qualification.yml
       - .github/workflows/authbus-target-host-qualification.yml
       - .github/workflows/authbus-production-acceptance.yml
-  workflow_dispatch:
-    inputs:
-      candidate_sha:
-        description: Exact PR head SHA
-        required: true
-        type: string
-      base_sha:
-        description: Exact PR base SHA
-        required: true
-        type: string
-      pr_number:
-        description: Pull request number whose deterministic merge ref is qualified
-        required: true
-        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: authbus-authority-${{ github.event.pull_request.number || inputs.pr_number || github.ref }}
+  group: authbus-authority-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -70,7 +56,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     env:
-      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || inputs.candidate_sha || github.sha }}
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       CANDIDATE_KIND: ${{ github.event_name == 'push' && 'main_head' || 'exact_head' }}
     steps:
       - uses: actions/checkout@v4
@@ -155,22 +141,26 @@ jobs:
       - name: Exact-head evidence receipt
         shell: bash
         env:
-          EXPECTED_BASE: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
+          EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
-          python3 scripts/authbus-exact-head-evidence.py \
-            --output "$RUNNER_TEMP/authbus-evidence/receipt.json" \
-            --projection-dir "$RUNNER_TEMP/authbus-evidence/projections" \
-            --candidate-kind "$CANDIDATE_KIND" \
-            --expected-head "$CANDIDATE_SHA" \
-            --expected-base "$EXPECTED_BASE" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/authbus.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/qualification.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/evidence.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/agentd.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/bao.log" \
-            --test-log "$RUNNER_TEMP/authbus-evidence/workspace.log" \
+          args=(
+            --output "$RUNNER_TEMP/authbus-evidence/receipt.json"
+            --projection-dir "$RUNNER_TEMP/authbus-evidence/projections"
+            --candidate-kind "$CANDIDATE_KIND"
+            --expected-head "$CANDIDATE_SHA"
+            --test-log "$RUNNER_TEMP/authbus-evidence/authbus.log"
+            --test-log "$RUNNER_TEMP/authbus-evidence/qualification.log"
+            --test-log "$RUNNER_TEMP/authbus-evidence/evidence.log"
+            --test-log "$RUNNER_TEMP/authbus-evidence/agentd.log"
+            --test-log "$RUNNER_TEMP/authbus-evidence/bao.log"
+            --test-log "$RUNNER_TEMP/authbus-evidence/workspace.log"
             --test-log "$RUNNER_TEMP/authbus-evidence/clippy.log"
+          )
+          if [[ -n "${EXPECTED_BASE:-}" ]]; then
+            args+=(--expected-base "$EXPECTED_BASE")
+          fi
+          python3 scripts/authbus-exact-head-evidence.py "${args[@]}"
 
       - name: Clean tracked tree
         run: |
@@ -187,20 +177,20 @@ jobs:
           retention-days: 30
 
   synthetic-merge:
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'pull_request'
     name: AuthBus deterministic synthetic merge
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     env:
-      EXPECTED_BASE: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
-      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || inputs.candidate_sha }}
-      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      MERGE_REF: refs/pull/${{ github.event.pull_request.number }}/merge
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: refs/pull/${{ env.PR_NUMBER }}/merge
+          ref: ${{ env.MERGE_REF }}
 
       - name: Verify synthetic-merge identity
         shell: bash
@@ -324,6 +314,6 @@ jobs:
         run: |
           set -euo pipefail
           test "$SOURCE_RESULT" = success
-          if [[ "$GITHUB_EVENT_NAME" == pull_request || "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+          if [[ "$GITHUB_EVENT_NAME" == pull_request ]]; then
             test "$MERGE_RESULT" = success
           fi
