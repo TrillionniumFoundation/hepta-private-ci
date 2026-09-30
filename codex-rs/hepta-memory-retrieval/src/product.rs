@@ -48,6 +48,12 @@ impl RetrievalCompletenessPolicyV1 {
     /// missing batch is equivalent to an explicit `Unavailable` batch and is
     /// evaluated with `on_unavailable`; omitting an authority-critical owner
     /// therefore cannot turn a partial observation into `Complete`.
+    ///
+    /// `Unavailable -> Degrade` is deliberately rejected. The strict generated
+    /// recall receipt requires every enabled owner and cannot bind an absent
+    /// owner generation. A future degraded policy may enable that transition
+    /// only after the unavailable-owner evidence and effective policy are
+    /// cryptographically bound into the recall receipt.
     pub fn new(
         mut rows: Vec<RetrievalCompletenessPolicyRowV1>,
     ) -> Result<Self, ProductRecallErrorV1> {
@@ -58,6 +64,14 @@ impl RetrievalCompletenessPolicyV1 {
                 .any(|window| window[0].generator == window[1].generator)
         {
             return Err(ProductRecallErrorV1::InvalidCompletenessPolicy);
+        }
+        if let Some(row) = rows
+            .iter()
+            .find(|row| row.on_unavailable == IncompleteSourceActionV1::Degrade)
+        {
+            return Err(
+                ProductRecallErrorV1::UnavailableDegradationRequiresBoundPolicy(row.generator),
+            );
         }
         Ok(Self { rows })
     }
@@ -256,6 +270,7 @@ pub enum ProductRecallErrorV1 {
     Generator(GeneratorErrorV1),
     InvalidCompletenessPolicy,
     MissingCompletenessPolicy(RetrievalGeneratorOwnerV1),
+    UnavailableDegradationRequiresBoundPolicy(RetrievalGeneratorOwnerV1),
     FailClosed(Vec<IncompleteRetrievalSourceV1>),
 }
 
