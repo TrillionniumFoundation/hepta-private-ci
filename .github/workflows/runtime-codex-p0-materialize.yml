@@ -58,8 +58,7 @@ jobs:
             set -e
             printf '%s=%s\n' "$name" "$rc" | tee -a "$LOG_DIR/status.txt"
             if test "$rc" -ne 0; then
-              tail -n 400 "$LOG_DIR/$name.log" \
-                | tee "$LOG_DIR/$name.tail.log"
+              tail -n 400 "$LOG_DIR/$name.log" | tee "$LOG_DIR/$name.tail.log"
               return "$rc"
             fi
           }
@@ -67,9 +66,7 @@ jobs:
           retain_failure() {
             local rc=$?
             trap - EXIT
-            if test "$rc" -eq 0; then
-              return 0
-            fi
+            if test "$rc" -eq 0; then return 0; fi
             cp -a "$LOG_DIR" /tmp/runtime-codex-materialize-debug
             git reset --hard "$input_sha"
             git clean -fdx
@@ -108,7 +105,8 @@ jobs:
             scripts/runtime-codex-qualification-fixup.py
             scripts/runtime-codex-final-closure.py
           )
-          migration_support=(
+          support=(
+            scripts/runtime-codex-owner-lineage-fixup.py
             scripts/runtime-codex-quarantine-authority-v2.py
             scripts/runtime-codex-process-crash-expansion-v2.py
           )
@@ -117,28 +115,24 @@ jobs:
             scripts/runtime-codex-finalize-map-followup.py
           )
 
-          run_logged py_compile \
-            python3 -m py_compile \
-              "${migrations[@]}" "${migration_support[@]}" "${finalizers[@]}"
+          run_logged py_compile python3 -m py_compile \
+            "${migrations[@]}" "${support[@]}" "${finalizers[@]}"
           for script in "${migrations[@]}"; do
             run_logged "$(basename "$script" .py)" python3 "$script"
           done
           run_logged rustfmt_materialized bash -lc 'cd codex-rs && cargo fmt --all'
           run_logged materialized_diff_check git diff --check
-          run_logged fault_matrix \
-            python3 scripts/check-runtime-codex-fault-matrix.py
+          run_logged fault_matrix python3 scripts/check-runtime-codex-fault-matrix.py
 
           cp "${finalizers[0]}" /tmp/runtime-codex-finalize-map.py
           cp "${finalizers[1]}" /tmp/runtime-codex-finalize-map-followup.py
           cat > /tmp/run-runtime-codex-finalizer.py <<'PY'
           import pathlib
           import sys
-
           copy = pathlib.Path(sys.argv[1])
           original = pathlib.Path(sys.argv[2]).resolve()
           namespace = {"__name__": "__main__", "__file__": str(original)}
-          source = copy.read_text(encoding="utf-8")
-          exec(compile(source, str(original), "exec"), namespace)
+          exec(compile(copy.read_text(encoding="utf-8"), str(original), "exec"), namespace)
           PY
 
           rm -f \
@@ -147,9 +141,7 @@ jobs:
             .github/workflows/runtime-codex-maintainer.yml \
             .github/workflows/runtime-codex-fast-feedback.yml \
             .github/workflows/runtime-codex-candidate-qualification.yml \
-            "${migrations[@]}" \
-            "${migration_support[@]}" \
-            "${finalizers[@]}"
+            "${migrations[@]}" "${support[@]}" "${finalizers[@]}"
 
           cat > docs/modules/runtime.codex/MIGRATION_HISTORY.md <<'EOF'
           # runtime.codex migration history
@@ -164,8 +156,7 @@ jobs:
           EOF
 
           run_logged post_cleanup_diff git diff --check
-          run_logged format_check bash -lc \
-            'cd codex-rs && cargo fmt --all -- --check'
+          run_logged format_check bash -lc 'cd codex-rs && cargo fmt --all -- --check'
           run_logged all_target_check bash -lc \
             'cd codex-rs && cargo check --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-codex-adapter -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets'
           run_logged agent_protocol bash -lc \
@@ -200,8 +191,7 @@ jobs:
             RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
             RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
             python3 /tmp/run-runtime-codex-finalizer.py \
-              /tmp/runtime-codex-finalize-map.py \
-              scripts/runtime-codex-finalize-map.py
+              /tmp/runtime-codex-finalize-map.py scripts/runtime-codex-finalize-map.py
           run_logged finalize_map_followup env \
             RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
             RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
@@ -209,7 +199,6 @@ jobs:
               /tmp/runtime-codex-finalize-map-followup.py \
               scripts/runtime-codex-finalize-map-followup.py
           run_logged lane_b_generate python3 scripts/hepta-lane-b-truth.py generate
-          run_logged lane_b_truth python3 scripts/hepta-lane-b-truth.py verify
           run_logged map_diff_check git diff --check
 
           git add -A -- . ':!qualification/runtime-codex-materialize-debug'
@@ -217,6 +206,7 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m 'docs(runtime.codex): bind immutable P0 source identity'
           fi
+          run_logged lane_b_truth python3 scripts/hepta-lane-b-truth.py verify
           test -z "$(git status --short --untracked-files=no)"
 
           trap - EXIT
