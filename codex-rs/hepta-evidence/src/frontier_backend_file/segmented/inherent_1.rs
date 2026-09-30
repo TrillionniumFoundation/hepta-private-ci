@@ -131,8 +131,11 @@ impl SegmentedFileEvidenceFrontierBackend {
             &self.legacy.identity,
             &self.legacy.identity_sha256,
         )?;
-        if segment_pointer(&metadata, pointer.metadata_file_name.clone(), pointer.metadata_file_sha256.clone())
-            != pointer.clone()
+        if segment_pointer(
+            &metadata,
+            pointer.metadata_file_name.clone(),
+            pointer.metadata_file_sha256.clone(),
+        ) != pointer.clone()
         {
             return Err(corrupt("frontier segment pointer does not match its metadata"));
         }
@@ -146,15 +149,47 @@ impl SegmentedFileEvidenceFrontierBackend {
         active: Option<&mut File>,
     ) -> Result<SegmentedState, EvidenceFrontierBackendError> {
         let index = self.read_index(paths, store_id)?;
-        let latest_segment_metadata = index
+        let archived = index
             .as_ref()
             .and_then(|index| index.latest_segment.as_ref())
-            .map(|pointer| self.read_segment_metadata(pointer, store_id))
+            .map(|pointer| self.verify_archived_history(store_id, pointer))
             .transpose()?;
-        let cursor = index
+        if let Some(index) = &index {
+            match &archived {
+                Some(history)
+                    if history.segment_count == index.segment_count
+                        && history.archived_records == index.archived_records
+                        && history.archived_bytes == index.archived_bytes
+                        && history.latest_record.record_sha256 == index
+                            .latest_segment
+                            .as_ref()
+                            .expect("verified archive has a pointer")
+                            .last_record_sha256 => {}
+                Some(_) => {
+                    return Err(corrupt(
+                        "verified frontier archive counters differ from the latest index",
+                    ));
+                }
+                None
+                    if index.segment_count == 0
+                        && index.archived_records == 0
+                        && index.archived_bytes == 0 => {}
+                None => {
+                    return Err(corrupt(
+                        "frontier latest index declares an archive without a segment chain",
+                    ));
+                }
+            }
+        }
+        let latest_segment_metadata = archived
             .as_ref()
-            .and_then(|index| index.latest_segment.as_ref())
-            .map(ChainCursor::after_pointer)
+            .map(|history| history.latest_metadata.clone());
+        let archived_latest_record = archived
+            .as_ref()
+            .map(|history| history.latest_record.clone());
+        let cursor = archived_latest_record
+            .as_ref()
+            .map(ChainCursor::after_record)
             .transpose()?
             .unwrap_or_else(ChainCursor::initial);
         let (active_records, active_bytes, active_sha256) = match active {
@@ -174,25 +209,37 @@ impl SegmentedFileEvidenceFrontierBackend {
             }
             None => (Vec::new(), 0, Sha256Digest::for_bytes(&[])),
         };
+        let derived_latest = active_records
+            .last()
+            .or(archived_latest_record.as_ref());
         if let Some(index) = &index {
-            let derived_sequence = active_records
-                .last()
-                .map(|record| record.audit_sequence)
-                .unwrap_or(index.archived_records);
+            let derived_sequence = derived_latest.map_or(0, |record| record.audit_sequence);
             if derived_sequence < index.audit_sequence {
-                return Err(corrupt("frontier latest index is ahead of durable active history"));
+                return Err(corrupt("frontier latest index is ahead of durable history"));
             }
             if index.audit_sequence < index.archived_records {
                 return Err(corrupt("frontier latest index sequence precedes archived history"));
+            }
+            if derived_sequence == index.audit_sequence {
+                let record = derived_latest
+                    .ok_or_else(|| corrupt("frontier latest index has no durable record"))?;
+                if record.frontier != index.frontier
+                    || record.frontier_sha256 != index.frontier_sha256
+                    || record.record_sha256 != index.record_sha256
+                {
+                    return Err(corrupt(
+                        "frontier latest index differs from the replayed durable record",
+                    ));
+                }
             }
         }
         Ok(SegmentedState {
             index,
             latest_segment_metadata,
+            archived_latest_record,
             active_records,
             active_bytes,
             active_sha256,
         })
     }
-
 }
