@@ -48,7 +48,20 @@ production-authority feature must be deliberately enabled for the supervisor
 binary. The default build remains authority-denied. A production build alone is
 not a production activation.
 
-The daemon's existing verifier configuration consists of two complete triplets:
+The preferred production verifier configuration is one externally distributed,
+public-only authority bundle pinned by its exact digest:
+
+```text
+--authority-bundle ABSOLUTE_PUBLIC_BUNDLE_FILE
+--authority-bundle-sha256 APPROVED_BUNDLE_SHA256
+```
+
+The bundle binds the grant signer ID/epoch/key and H7 signer ID/epoch/key in one
+versioned object. The daemon validates the bundle's internal digest and requires
+the operator-supplied exact bundle digest before constructing either verifier.
+The bundle contains no private signing material and does not select a release.
+
+The direct six-option verifier tuple remains a compatibility path:
 
 ```text
 --grant-verifier-key ABSOLUTE_PUBLIC_KEY_FILE
@@ -59,11 +72,11 @@ The daemon's existing verifier configuration consists of two complete triplets:
 --h7-signer-epoch APPROVED_H7_SIGNER_EPOCH
 ```
 
-All six options must be supplied together with `--fleet-root`. The public keys
-must come from an independently authenticated external custody process, not from
-a request field, a fixture seed, a repository-generated key, or a self-approved
-receipt. These options configure the existing verifier; they do not themselves
-establish a key-distribution service.
+Use exactly one configuration form together with `--fleet-root`. The public
+verifier material must come from an independently authenticated external custody
+process, not from a request field, fixture seed, repository-generated key, or
+self-approved receipt. Neither form establishes a key-distribution service by
+itself.
 
 Before deployment, the external custodian must provide a versioned manifest
 binding signer ID, signer epoch, key fingerprint, purpose, approved environment,
