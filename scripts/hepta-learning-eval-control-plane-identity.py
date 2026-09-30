@@ -269,7 +269,12 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(value, sort_keys=True))
         return 0
     except (OSError, ValueError, json.JSONDecodeError) as error:
-        print(str(error), file=sys.stderr)
+        # The exception may originate from a request carrying an Authorization
+        # header. Never serialize or log the exception object on this boundary.
+        print(
+            f"{type(error).__name__}: control-plane verification failed",
+            file=sys.stderr,
+        )
         return 1
 
 
