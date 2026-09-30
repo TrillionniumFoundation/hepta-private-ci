@@ -1,0 +1,45 @@
+groups:
+  - name: hepta-learning-artifacts
+    rules:
+      - alert: LearningArtifactPersistenceOutcomeUnknown
+        expr: increase(hepta_learning_artifact_persistence_unknown_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: learning.artifacts has an unknown persistence outcome
+      - alert: LearningArtifactRecoveryReconciliationFailure
+        expr: increase(hepta_learning_artifact_recovery_reconciliation_failures_total[10m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: learning.artifacts recovery reconciliation failed
+      - alert: LearningArtifactPendingAttemptStale
+        expr: hepta_learning_artifact_oldest_pending_attempt_age_seconds > 300
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: learning.artifacts has a stale pending publication attempt
+      - alert: LearningArtifactDrainStalled
+        expr: hepta_learning_artifact_drain_age_seconds > 900
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: learning.artifacts drain has not completed
+      - alert: LearningArtifactWithdrawalBlocked
+        expr: increase(hepta_learning_artifact_withdrawal_blocks_total[15m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: learning.artifacts rejected work on the withdrawal frontier
+      - alert: LearningArtifactIdentityConflict
+        expr: increase(hepta_learning_artifact_identity_conflicts_total[15m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: learning.artifacts observed conflicting request identity

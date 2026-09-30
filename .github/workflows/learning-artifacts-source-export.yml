@@ -1,0 +1,52 @@
+name: learning.artifacts source export
+
+on:
+  push:
+    branches:
+      - work/learning-artifacts-convergence-20260929
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-artifacts-source-export
+  cancel-in-progress: true
+
+jobs:
+  export:
+    if: contains(github.event.head_commit.message, '[la-export]')
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+      - name: Package bounded remediation workspace
+        run: |
+          tar -czf /tmp/learning-artifacts-source.tgz \
+            .github/workflows/hepta-learning-artifacts-qualification.yml \
+            .github/workflows/learning-artifacts-source-export.yml \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-types \
+            codex-rs/hepta-learning-artifacts \
+            docs/modules/learning.artifacts \
+            deploy/learning-artifacts \
+            scripts/hepta_artifact_qualification.py \
+            scripts/hepta_learning_artifact_ops_assets.py \
+            scripts/hepta_artifact_receipt_guard.py \
+            scripts/hepta_artifact_source_binding.py \
+            scripts/hepta-lane-e-closure.py \
+            rust-toolchain.toml
+          sha256sum /tmp/learning-artifacts-source.tgz > /tmp/learning-artifacts-source.tgz.sha256
+      - name: Retain exact source
+        uses: actions/upload-artifact@v4
+        with:
+          name: learning-artifacts-source-${{ github.sha }}
+          path: |
+            /tmp/learning-artifacts-source.tgz
+            /tmp/learning-artifacts-source.tgz.sha256
+          if-no-files-found: error
+          retention-days: 2
+
+# Registered by a second branch commit so GitHub evaluates this workflow from the parent tree.

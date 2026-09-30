@@ -535,3 +535,32 @@ The bootstrap source-location obligation for `learning.artifacts` is implemented
 - `codex-rs/hepta-learning-artifacts`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## Production daemon and durable capability closure
+
+The repository candidate now includes a real `hepta-learning-artifactd` process
+entry point. It loads the canonical on-disk bootstrap configuration, binds only
+the loopback endpoint accepted by bootstrap validation, accepts one bounded
+signed request per connection and drives the existing
+`DurableInstrumentedLearningArtifactReferenceHostV1`. The daemon does not gain
+selection, activation, promotion or release authority.
+
+Writer use is represented by the opaque `VerifiedArtifactWriterFenceV1`;
+durable withdrawal state is represented by `CurrentWithdrawalFrontierV1`.
+Successful publication exposes the existing final publication receipt under the
+semantic name `DurableCommitReceiptV1`. The underlying publication transition
+remains the single canonical sequence
+`Prepared -> PayloadDurable -> RegistryDurable -> WitnessDurable -> Acknowledged`.
+
+On Unix, create-beneath immutable artifact writes traverse from an opened root
+directory using no-follow directory descriptors, create the final component
+relative to the retained parent descriptor, synchronize the file and then
+synchronize that exact parent descriptor. A directory-sync failure is
+indeterminate and cannot be reported as a successful durable publication.
+
+Operational metrics have a Prometheus text projection. Deployment assets live
+under `deploy/learning-artifacts/` and cover persistence-unknown, recovery
+failure, withdrawal blocking, identity conflict, stale pending work, stalled
+drain and retention bytes. These assets do not establish target-host power-loss
+qualification or operator acceptance.
