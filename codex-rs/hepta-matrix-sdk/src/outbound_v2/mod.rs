@@ -25,6 +25,7 @@ use crate::authority::build_matrix_final_use_request;
 mod admission;
 mod clock;
 mod gate;
+mod latency;
 mod permit;
 mod retry;
 mod settlement;
@@ -33,6 +34,7 @@ use admission::Admission;
 use admission::admit_claim;
 use clock::DispatchClock;
 use gate::FinalSendGate;
+pub use latency::LatencyHistogram;
 use permit::MatrixSendPermit;
 use retry::*;
 use settlement::settle_entered;
@@ -51,6 +53,12 @@ pub type MatrixSendFuture<'a> =
 /// ```compile_fail
 /// use codex_hepta_matrix_sdk::MatrixRawSendSeal;
 /// let _forged = MatrixRawSendSeal { _private: () };
+/// ```
+///
+/// The private permit and authorized adapter are also absent from the public API:
+///
+/// ```compile_fail
+/// use codex_hepta_matrix_sdk::MatrixSendPermit;
 /// ```
 #[doc(hidden)]
 pub struct MatrixRawSendSeal {
@@ -193,6 +201,11 @@ pub struct OutboxDispatchStats {
     pub payload_digest_ns: u64,
     pub dynamic_checks: u64,
     pub dynamic_check_ns: u64,
+    pub claim_to_first_poll_latency: LatencyHistogram,
+    pub broker_latency: LatencyHistogram,
+    pub sqlite_latency: LatencyHistogram,
+    pub revocation_latency: LatencyHistogram,
+    pub transport_latency: LatencyHistogram,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
@@ -209,6 +222,16 @@ pub enum OutboxDispatchError {
     LeaseExpired,
     #[error("Matrix dispatch was canceled before physical adapter entry")]
     Canceled,
+}
+
+async fn timed_sqlite<T>(
+    stats: &mut OutboxDispatchStats,
+    future: impl Future<Output = T>,
+) -> T {
+    let started = std::time::Instant::now();
+    let result = future.await;
+    stats.sqlite_latency.observe_duration(started.elapsed());
+    result
 }
 
 pub async fn dispatch_outbox_once<
@@ -253,10 +276,12 @@ async fn dispatch_pass<
         }
         // Acquire immediately before preparation. Later messages keep no lease
         // while an earlier message waits on SQLite, the broker or transport.
-        let claims = store
-            .claim_outbox_fenced(clock.now_ms()?, config.lease_ms, /*limit*/ 1)
-            .await
-            .map_err(store_error)?;
+        let claims = timed_sqlite(
+            stats,
+            store.claim_outbox_fenced(clock.now_ms()?, config.lease_ms, /*limit*/ 1),
+        )
+        .await
+        .map_err(store_error)?;
         let Some(claim) = claims.first() else {
             break;
         };
@@ -313,15 +338,17 @@ async fn close_observed_terminal(
         MatrixDispatchState::Failed => MatrixDispatchAttemptEventKind::PermanentlyRejected,
         _ => return Err(OutboxDispatchError::Store),
     };
-    store
-        .close_terminal_outbox_claim(
+    timed_sqlite(
+        stats,
+        store.close_terminal_outbox_claim(
             claim,
             kind,
             observed.terminal_event_id.as_ref(),
             clock.now_ms()?,
-        )
-        .await
-        .map_err(store_error)?;
+        ),
+    )
+    .await
+    .map_err(store_error)?;
     match observed.state {
         MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted => stats.sent += 1,
         MatrixDispatchState::ObservedUnqualified => stats.observed_unqualified += 1,

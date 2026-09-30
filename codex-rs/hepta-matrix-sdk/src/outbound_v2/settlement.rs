@@ -16,57 +16,72 @@ pub(super) async fn settle_entered(
     let outcome_at_ms = clock.now_ms()?;
     match entered.outcome() {
         Ok(event_id) => {
-            let observed = store
-                .record_outbox_transport_accepted(
+            let observed = timed_sqlite(
+                stats,
+                store.record_outbox_transport_accepted(
                     &record.stable_txn_id,
                     record.attempts,
                     event_id,
                     outcome_at_ms,
-                )
-                .await
-                .map_err(store_error)?;
+                ),
+            )
+            .await
+            .map_err(store_error)?;
             stats.transport_accepted += 1;
             if observed.state.is_terminal() {
                 close_observed_terminal(store, claim, &observed, clock, stats).await?;
             } else {
                 let scheduled_at_ms = clock.now_ms()?;
                 let next = reconciliation_attempt_at(config, record, scheduled_at_ms)?;
-                store
-                    .finish_outbox_transport_accepted(claim, event_id, scheduled_at_ms, next)
-                    .await
-                    .map_err(store_error)?;
+                timed_sqlite(
+                    stats,
+                    store.finish_outbox_transport_accepted(
+                        claim,
+                        event_id,
+                        scheduled_at_ms,
+                        next,
+                    ),
+                )
+                .await
+                .map_err(store_error)?;
                 count_retry(stats, next);
             }
         }
         Err(MatrixTransportError::Permanent) => {
-            let observed = store
-                .record_outbox_transport_rejected(
+            let observed = timed_sqlite(
+                stats,
+                store.record_outbox_transport_rejected(
                     &record.stable_txn_id,
                     record.attempts,
                     outcome_at_ms,
-                )
-                .await
-                .map_err(store_error)?;
+                ),
+            )
+            .await
+            .map_err(store_error)?;
             if matches!(
                 observed.state,
                 MatrixDispatchState::Accepted | MatrixDispatchState::Indeterminate
             ) {
-                store
-                    .finish_outbox_indeterminate(
+                timed_sqlite(
+                    stats,
+                    store.finish_outbox_indeterminate(
                         claim,
                         MatrixAttemptFailureClass::Permanent,
                         /*retry_after_ms*/ None,
                         clock.now_ms()?,
                         PARKED_RECONCILIATION_AT_MS,
-                    )
-                    .await
-                    .map_err(store_error)?;
+                    ),
+                )
+                .await
+                .map_err(store_error)?;
                 stats.indeterminate += 1;
             } else if observed.state == MatrixDispatchState::Failed {
-                store
-                    .finish_outbox_permanently_rejected(claim, clock.now_ms()?)
-                    .await
-                    .map_err(store_error)?;
+                timed_sqlite(
+                    stats,
+                    store.finish_outbox_permanently_rejected(claim, clock.now_ms()?),
+                )
+                .await
+                .map_err(store_error)?;
                 stats.permanent_failure += 1;
             } else if observed.state.is_terminal() {
                 close_observed_terminal(store, claim, &observed, clock, stats).await?;
@@ -75,29 +90,33 @@ pub(super) async fn settle_entered(
             }
         }
         Err(error) => {
-            let observed = store
-                .record_outbox_transport_indeterminate(
+            let observed = timed_sqlite(
+                stats,
+                store.record_outbox_transport_indeterminate(
                     &record.stable_txn_id,
                     record.attempts,
                     outcome_at_ms,
-                )
-                .await
-                .map_err(store_error)?;
+                ),
+            )
+            .await
+            .map_err(store_error)?;
             if observed.state.is_terminal() {
                 close_observed_terminal(store, claim, &observed, clock, stats).await?;
             } else {
                 let scheduled_at_ms = clock.now_ms()?;
                 let next = classified_retry_at(config, record, scheduled_at_ms, *error)?;
-                store
-                    .finish_outbox_indeterminate(
+                timed_sqlite(
+                    stats,
+                    store.finish_outbox_indeterminate(
                         claim,
                         failure_class(*error),
                         retry_after_hint(*error),
                         scheduled_at_ms,
                         next,
-                    )
-                    .await
-                    .map_err(store_error)?;
+                    ),
+                )
+                .await
+                .map_err(store_error)?;
                 count_retry(stats, next);
             }
         }

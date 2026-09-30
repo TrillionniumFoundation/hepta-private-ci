@@ -119,12 +119,14 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
         binding: &FinalUseBinding,
         stats: &mut OutboxDispatchStats,
     ) -> Result<EnteredSend<'claim>, OutboxDispatchError> {
-        let authority_claim = self
-            .store
-            .dispatch_authority_claim(&self.record.stable_txn_id, self.record.attempts)
-            .await
-            .map_err(store_error)?
-            .ok_or(OutboxDispatchError::Store)?;
+        let authority_claim = timed_sqlite(
+            stats,
+            self.store
+                .dispatch_authority_claim(&self.record.stable_txn_id, self.record.attempts),
+        )
+        .await
+        .map_err(store_error)?
+        .ok_or(OutboxDispatchError::Store)?;
         let grant = LiveGrant {
             epoch: token.claimed_authority_epoch(),
             revision: token.claimed_revocation_revision(),
@@ -188,7 +190,8 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                     .clock
                     .now_ms()
                     .map_err(EnteredFaultClass::from_live_error)?;
-                tokio::time::timeout_at(
+                let persistence_started = std::time::Instant::now();
+                let persistence = tokio::time::timeout_at(
                     self.deadline,
                     self.store.record_outbox_entered_use(
                         entered.claim,
@@ -197,9 +200,13 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                         recorded_at_ms,
                     ),
                 )
-                .await
-                .map_err(|_| EnteredFaultClass::ProofPersistenceUnknown)?
-                .map_err(|_| EnteredFaultClass::ProofPersistenceUnknown)?;
+                .await;
+                stats
+                    .sqlite_latency
+                    .observe_duration(persistence_started.elapsed());
+                persistence
+                    .map_err(|_| EnteredFaultClass::ProofPersistenceUnknown)?
+                    .map_err(|_| EnteredFaultClass::ProofPersistenceUnknown)?;
                 self.preflight(grant, stats)
                     .map_err(EnteredFaultClass::from_live_error)?;
                 let permit = MatrixSendPermit::new(
@@ -218,6 +225,7 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                 let mut permit = Some(permit);
                 let mut send: Option<MatrixSendFuture<'_>> = None;
                 let mut first_poll = true;
+                let mut transport_started = None;
                 let gated = poll_fn(|context| {
                     if let Err(error) = self.preflight(grant, stats) {
                         return Poll::Ready(Err(EnteredFaultClass::from_live_error(error)));
@@ -235,6 +243,7 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                             }
                         };
                         send = Some(future);
+                        transport_started = Some(std::time::Instant::now());
                         // Identity/permit validation and future construction are
                         // synchronous and may consume the remaining live window.
                         if let Err(error) = self.preflight(grant, stats) {
@@ -255,6 +264,7 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                             stats.claim_to_first_poll_ms.saturating_add(wait_ms);
                         stats.claim_to_first_poll_max_ms =
                             stats.claim_to_first_poll_max_ms.max(wait_ms);
+                        stats.claim_to_first_poll_latency.observe_ms(wait_ms);
                         first_poll = false;
                     }
                     let Some(send) = send.as_mut() else {
@@ -263,13 +273,17 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
                     stats.transport_polls = stats.transport_polls.saturating_add(1);
                     send.as_mut().poll(context).map(Ok)
                 });
-                tokio::select! {
+                let result = tokio::select! {
                     biased;
                     _ = self.cancel.cancelled() => Err(EnteredFaultClass::Canceled),
                     result = tokio::time::timeout_at(self.deadline, gated) => {
                         result.unwrap_or(Err(EnteredFaultClass::DeadlineExpired))
                     }
+                };
+                if let Some(started) = transport_started {
+                    stats.transport_latency.observe_duration(started.elapsed());
                 }
+                result
             }
             .await;
         entered.result = match observed {
@@ -289,16 +303,26 @@ impl<'claim, T: MatrixOutboundTransport + ?Sized, A: MatrixOutboundAuthorizer + 
     ) -> Result<(), OutboxDispatchError> {
         let started = Instant::now();
         stats.dynamic_checks = stats.dynamic_checks.saturating_add(1);
-        let result = self.check_live_authority(grant);
+        let result = self.check_live_authority(grant, stats);
         stats.dynamic_check_ns = stats.dynamic_check_ns.saturating_add(elapsed_ns(started));
         result
     }
 
-    fn check_live_authority(&self, grant: LiveGrant) -> Result<(), OutboxDispatchError> {
+    fn check_live_authority(
+        &self,
+        grant: LiveGrant,
+        stats: &mut OutboxDispatchStats,
+    ) -> Result<(), OutboxDispatchError> {
         self.require_live_window(grant.expires_at_ms)?;
-        self.authorizer
+        let revocation_started = std::time::Instant::now();
+        let refresh = self
+            .authorizer
             .refresh_revocations()
-            .map_err(authority_error)?;
+            .map_err(authority_error);
+        stats
+            .revocation_latency
+            .observe_duration(revocation_started.elapsed());
+        refresh?;
         let head = self
             .authorizer
             .authority()

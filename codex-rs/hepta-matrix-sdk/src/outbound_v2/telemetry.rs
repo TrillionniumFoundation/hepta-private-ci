@@ -66,6 +66,13 @@ impl TelemetryWindow {
             .stats
             .claim_to_first_poll_max_ms
             .max(stats.claim_to_first_poll_max_ms);
+        self.stats
+            .claim_to_first_poll_latency
+            .merge(stats.claim_to_first_poll_latency);
+        self.stats.broker_latency.merge(stats.broker_latency);
+        self.stats.sqlite_latency.merge(stats.sqlite_latency);
+        self.stats.revocation_latency.merge(stats.revocation_latency);
+        self.stats.transport_latency.merge(stats.transport_latency);
         if error.is_some() || stats.cancelled || self.started.elapsed().as_secs() >= 10 {
             self.flush(error);
         }
