@@ -364,3 +364,31 @@ A complete durable stage must implement all of the following together:
 Cold support must resolve exact omitted ID/revision/digest against the bound source and current owner eligibility. `latest_memory` alone checks authorization/decoding and is insufficient to admit a currently verified, live and valid cold reference. An updated, pending, expired or deleted head must not resurrect retained or omitted historical support.
 
 Named production composition, independently executed COMPACT-01..04, target-host budgets, durable publication/reload/selection, replay scheduling and skill induction remain open. No product, deployment, acceptance, activation or release claim is changed by this source stage.
+
+## 20. Sealed publication proposal admission
+
+The source-only publication admission stage is implemented in [publication.rs](../../../codex-rs/hepta-compact-engine/src/publication.rs), with adversarial regressions in [publication_tests.rs](../../../codex-rs/hepta-compact-engine/src/publication_tests.rs). It creates an immutable typed proposal, not a durable publication receipt. No SQLite writer, selected pointer, outbox destination handler, final-use grant or restart codec is added.
+
+`CompactionPublicationRequestV1` carries owner/scope/purpose and operation IDs, configured policy generation, expected selected state, the candidate, full frozen policy/input preimages and sealed authenticated proof. `CompactionPublicationContextV1` supplies independently obtained current owner/scope/purpose, policy generation and content digest, selected state, source cut, host verifier and use time. Matching declarations do not establish their external authenticity; host composition must derive them from the actual owners. Stable IDs are bounded identifiers, not agent credentials or writer capabilities.
+
+`CompactionPublicationProposalV1::new` checks the namespace against both host context and the candidate's source vector, and requires both the current configured policy generation and nonzero content digest, and exact expected/current selection. It bounds input count and aggregate canonical bytes/citations before cloning for `validate_against_inputs`, then revalidates the original signed proof under current source/trust/time. The private proposal preserves the original typed candidate, policy, inputs and evidence; borrowed getters cannot mutate them. Its authority remains `DENY_ALL`.
+
+Selection has two explicit states:
+
+| Selected state | Admission rule |
+| --- | --- |
+| `Empty` | Candidate generation is 1 with no predecessor; the source vector's compact generation is the nonzero bootstrap placeholder 1. That placeholder does not mean a checkpoint already exists. |
+| `Selected { generation, checkpoint_digest }` | Digest is nonzero; candidate generation is checked `generation + 1`; predecessor equals that exact digest; the frozen source vector names the same selected generation. Overflow, skipped generation, wrong predecessor or stale selection fails closed. |
+
+`revalidate(context)` repeats admission with newly obtained host state before use. It detects changed selection, namespace, policy generation, source binding, expired evidence and trust rotation. A separate read followed by a later write remains racy: the durable writer must acquire current declarations and repeat these checks inside the same fenced transaction that validates source eligibility and performs selected-pointer CAS, dedupe and immutable receipt insertion. A valid proposal is not evidence that any of those effects happened.
+
+The native semantic intent bytes are fixed-order binary identity bytes:
+
+1. UTF8 domain `hepta.compaction.publication-intent.v1` followed by one NUL byte.
+2. Owner, scope, purpose, fixed destination `compact.engine.checkpoint.publish.v1`, and operation IDs, each framed by its UTF8 byte length as unsigned u32 big-endian.
+3. Policy generation as u64 big-endian; selected discriminator (`0` for Empty, `1` for Selected). Selected appends its generation as u64 big-endian and 32-byte checkpoint digest.
+4. Candidate checkpoint generation as u64 big-endian, then eight 32-byte digests in order: candidate, checkpoint, source vector, owner-source cut, policy, current-head selection inputs, authenticated admission, structural proof.
+
+The SHA256 of these exact bytes is `intent_digest()`. Four bounded IDs, a fixed destination and fixed-width fields keep the complete identity below 2 KiB. Use time is deliberately excluded, so retrying the same operation under unchanged valid owner/trust state preserves identity. Signed issuance/expiry and trust are already committed by the authenticated-proof digest and are rechecked at use. Input arrival order and other semantically equivalent preimages do not create different intent identities; this commits validated semantic bindings, not every raw field/order of a future body encoding.
+
+These compact identity bytes are **not** the existing outbox's JSON payload and **not** a restart-resolvable body. A writer must freeze an exact bounded transport/body codec, hash the actual admitted JSON bytes for the existing operation/final-use payload binding, preserve or resolve every required preimage after restart, and compare both semantic identity and exact payload identity for dedupe. A digest-only envelope or process-local proposal cache cannot establish durable restart support. The small complete-command versus bounded immutable staged-row choices and all source/trust/fence/recovery requirements in section 19 remain open.
