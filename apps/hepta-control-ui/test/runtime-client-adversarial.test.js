@@ -245,3 +245,70 @@ test("recovery validation accepts the supported 4096-operation capacity", async 
   const recovering = new RuntimeClient({ transport: createTransport(), maxPending: 4096 });
   assert.equal(recovering.restoreRecoveryState({ ...saved, operations }).pendingCount, 4096);
 });
+
+test("acknowledgement accessors cannot trigger premature recovery cleanup", async () => {
+  const { client, transport } = await ready();
+  let reads = 0;
+  let discarded = 0;
+  client.setRecoveryPersistence(async () => ({ discardRejected() { discarded += 1; } }));
+  const original = transport.request;
+  transport.request = async (...args) => {
+    const accepted = await original(...args);
+    return { ...accepted, get accepted() { reads += 1; return false; } };
+  };
+  await assert.rejects(client.submitRequest(input()), error => error.code === C.AMBIGUOUS_SUBMISSION);
+  assert.equal(reads, 0);
+  assert.equal(discarded, 0);
+  assert.equal(client.readView().pendingCount, 1);
+  assert.equal((await client.recoverOperation("audit-operation")).state, "pending");
+  assert.equal(transport.state.requestCount, 1);
+});
+
+for (const field of ["sessionId", "permissions"]) {
+  test(`invalid session ${field} accessors never reach cleanup callbacks`, async () => {
+    let reads = 0;
+    let closed = 0;
+    const raw = session();
+    if (field === "sessionId") Object.defineProperty(raw, "sessionId", {
+      enumerable: true, get() { reads += 1; return "unsafe-session"; },
+    });
+    else {
+      raw.permissions = [];
+      Object.defineProperty(raw.permissions, "0", { enumerable: true,
+        get() { reads += 1; return "hepta://ui.control/runtime.read"; } });
+    }
+    const transport = createTransport({ connect: async () => raw,
+      async close(value) { closed += 1; void value.sessionId; void value.permissions[0]; } });
+    const client = new RuntimeClient({ transport });
+    await assert.rejects(client.connect({}), error => error.code === C.INVALID_INPUT);
+    assert.equal(reads, 0);
+    assert.equal(closed, 0);
+    assert.equal(client.readView().connected, false);
+  });
+}
+
+test("operation digest input is captured before asynchronous hashing", async () => {
+  const { client } = await ready();
+  const mutable = input();
+  let reads = 0;
+  const submitted = client.submitRequest(mutable);
+  Object.defineProperty(mutable, "semanticDigest", { enumerable: true,
+    get() { reads += 1; return undefined; } });
+  const accepted = await submitted;
+  assert.equal(accepted.state, "pending");
+  assert.equal(reads, 0);
+});
+
+test("a rejection outcome stays immutable while recovery cleanup awaits", async () => {
+  let acknowledgement;
+  const { client } = await ready({ async request(method, request) {
+    acknowledgement = { accepted: false, operationId: request.operationId,
+      semanticDigest: request.semanticDigest, status: "accepted", auditTraceId: "audit-unadmitted" };
+    return acknowledgement;
+  } });
+  client.setRecoveryPersistence(async () => ({ async discardRejected() {
+    acknowledgement.accepted = true;
+  } }));
+  await assert.rejects(client.submitRequest(input()), error => error.code === C.BACKEND_REJECTED);
+  assert.equal(client.readView().pendingCount, 0);
+});

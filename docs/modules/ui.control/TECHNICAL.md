@@ -70,6 +70,7 @@ The transition validator enforces:
 1. Session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers are rendered only in deterministic redacted form; full values remain outside DOM text and attributes.
 1. Control actions are disabled while the displayed view is stale or the session lacks the required permission.
 1. Snapshot refresh failure marks the view stale; view inspection removes expired session permissions without erasing pending operations.
+1. Raw backend session and acknowledgement data are validated before cleanup decisions; operation intent values are captured before asynchronous hashing.
 1. Backend observations preserve the admission audit identity; missing or changed traces never authorize terminal cleanup.
 1. An absent V1 lookup remains indeterminate because delayed admission is still possible; final non-admission requires a separately versioned durable backend fence.
 1. Recovery import validates bounded data without executing accessors or inherited iterators, preserves live dispatch promises and terminal history, rejects conflicts atomically, and bounds the combined pending inventory.

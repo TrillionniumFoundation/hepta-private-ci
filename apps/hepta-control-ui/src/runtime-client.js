@@ -5,6 +5,7 @@ import {
   assertSha256,
   assertStableIdentifier,
   constantTimeEqual,
+  canonicalJson,
 } from "./canonical.js";
 import {
   buildOperationIntent,
@@ -160,7 +161,11 @@ export class RuntimeClient {
 
   async #discardUnadoptedSession(session) {
     try {
-      await this.#transport.close(session, {});
+      // A rejected handshake can contain unsafe containers too. Cleanup must
+      // receive a validated data copy, never the untrusted response object.
+      const fields = Object.entries(assertPlainObject(session, "unadopted session"))
+        .filter(([, value]) => value !== undefined);
+      await this.#transport.close(JSON.parse(canonicalJson(Object.fromEntries(fields))), {});
     } catch {
       // Local authority was never adopted. Backend cleanup is best effort and
       // must not resurrect or replace the current client session.
@@ -397,6 +402,7 @@ export class RuntimeClient {
     assertPlainObject(input, "operation input");
     const operationId = assertStableIdentifier(input.operationId, "operationId");
     const signal = input.signal;
+    const providedSemanticDigest = input.semanticDigest;
     const persist = this.#persistBeforeDispatch;
     const confirmation = input.confirmation === undefined ? null
       : Object.freeze({ ...assertPlainObject(input.confirmation, "confirmation") });
@@ -432,9 +438,9 @@ export class RuntimeClient {
       reason,
     });
     const computedSemanticDigest = await digestOperationIntent(intent);
-    const semanticDigest = input.semanticDigest === undefined
+    const semanticDigest = providedSemanticDigest === undefined
       ? computedSemanticDigest
-      : assertSha256(input.semanticDigest, "semanticDigest");
+      : assertSha256(providedSemanticDigest, "semanticDigest");
     if (!constantTimeEqual(semanticDigest, computedSemanticDigest)) {
       throw uiControlError(
         UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT,
@@ -523,7 +529,7 @@ export class RuntimeClient {
           throw uiControlError(UI_CONTROL_ERROR_CODES.ABORTED, "Request cancelled before dispatch.",
             { retryable: true, details: { requestDispatched: false } });
         }
-        const acknowledgement = await this.#transport.request(
+        const rawAcknowledgement = await this.#transport.request(
           entry.method,
           Object.freeze({
             protocolVersion: entry.protocolVersion,
@@ -540,7 +546,10 @@ export class RuntimeClient {
           }),
           { signal: dispatchSignal },
         );
-        if (acknowledgement?.accepted === false) await discardRejected();
+        const acknowledgement = Object.freeze({
+          ...assertPlainObject(rawAcknowledgement, "acknowledgement"),
+        });
+        if (acknowledgement.accepted === false) await discardRejected();
         return acknowledgement;
         } catch (error) {
           if (definitelyNotAccepted(error)) await discardRejected();
