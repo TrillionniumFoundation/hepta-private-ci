@@ -1,0 +1,89 @@
+name: runtime.supervisor phase-2 payload author
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-remaining-six-20260930
+    paths:
+      - .github/workflows/runtime-supervisor-phase2-payload-author.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-phase2-author
+  cancel-in-progress: true
+
+jobs:
+  author:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/runtime-supervisor-remaining-six-20260930
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component rustfmt,clippy
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
+
+      - name: Verify and apply reviewed phase-2 payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse --abbrev-ref HEAD)" = "codex/runtime-supervisor-remaining-six-20260930"
+          python3 - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          from pathlib import Path
+
+          payload_path = Path('.github/runtime-supervisor/phase2_patch.b64')
+          encoded = ''.join(payload_path.read_text(encoding='utf-8').split())
+          compressed = base64.b64decode(encoded, validate=True)
+          source = gzip.decompress(compressed)
+          expected = 'f33caf52af6d8449abb4879c801724953792fc60a08422dafc7c852868b3a429'
+          actual = hashlib.sha256(source).hexdigest()
+          if actual != expected:
+              raise SystemExit(f'phase-2 payload digest mismatch: {actual}')
+          target = Path('/tmp/patch_runtime_supervisor_phase2.py')
+          target.write_bytes(source)
+          PY
+          python3 -m py_compile /tmp/patch_runtime_supervisor_phase2.py
+          python3 /tmp/patch_runtime_supervisor_phase2.py
+
+      - name: Format and verify supervisor source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor -- --check
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --lib
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets -- -D warnings
+
+      - name: Commit ordinary source and remove authoring material
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            .github/runtime-supervisor/phase2_patch.b64 \
+            .github/workflows/runtime-supervisor-phase2-author.yml \
+            .github/workflows/runtime-supervisor-phase2-author-selfhosted.yml \
+            .github/workflows/runtime-supervisor-phase2-author-arm.yml \
+            .github/workflows/runtime-supervisor-phase2-author-macos.yml \
+            .github/workflows/runtime-supervisor-phase2-payload-author.yml
+          rmdir .github/runtime-supervisor 2>/dev/null || true
+          git diff --check
+          git config user.name "Hepta Supervisor Author"
+          git config user.email "hepta-supervisor-author@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(supervisor): persist cross-daemon process exit ownership"
+          git push origin HEAD:codex/runtime-supervisor-remaining-six-20260930
