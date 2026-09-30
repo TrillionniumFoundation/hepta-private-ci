@@ -127,3 +127,31 @@ pub trait ProcessDriver {
 
     /// Refuse retirement while the concrete host still owns resource occupancy.
     fn validate_agent_retirement(&mut self, _agent: &AgentId) -> Result<(), ProcessDriverError> {
+        Ok(())
+    }
+
+    fn spawn(
+        &mut self,
+        spec: &SpawnSpec,
+    ) -> Result<SpawnedProcess<Self::Process>, ProcessDriverError>;
+
+    fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError>;
+
+    fn spawn_matrixd(
+        &mut self,
+        _spec: &MatrixSpawnSpec,
+    ) -> Result<SpawnedProcess<Self::Process>, ProcessDriverError> {
+        Err(ProcessDriverError::new(
+            "process driver does not support matrixd companions",
+        ))
+    }
+
+    fn adopt_matrixd(
+        &mut self,
+        _spec: &MatrixAdoptSpec,
+    ) -> Result<Adoption<Self::Process>, ProcessDriverError> {
+        Err(ProcessDriverError::new(
+            "process driver does not support matrixd companion adoption",
+        ))
+    }
+}
