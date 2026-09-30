@@ -22,6 +22,7 @@ use codex_hepta_learning_artifacts::DatasetWithdrawalScopeV1;
 use codex_hepta_learning_artifacts::SignedArtifactWriterLeaseV1;
 use codex_hepta_learning_artifacts::owner::ArtifactOwnerActionV1;
 use codex_hepta_learning_artifacts::owner::SignedArtifactOwnerRequestV1;
+use codex_hepta_learning_artifacts::owner::restore_owner_root_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
@@ -86,7 +87,7 @@ fn free_address() -> std::net::SocketAddr {
     address
 }
 
-fn prepare(root: &TestRoot, address: std::net::SocketAddr) -> (PathBuf, SigningKey) {
+fn prepare(root: &TestRoot, address: std::net::SocketAddr) -> (PathBuf, PathBuf, PathBuf, SigningKey) {
     let store = root.0.join("store");
     let backup = root.0.join("backup");
     fs::create_dir(&backup).expect("backup root");
@@ -124,7 +125,7 @@ fn prepare(root: &TestRoot, address: std::net::SocketAddr) -> (PathBuf, SigningK
             concat!(
                 "schema=hepta.learning-artifactd.authz.v1\n",
                 "generation=1\n",
-                "client.operator=operator|{}|{}|{}|-|health,metrics,shutdown\n"
+                "client.operator=operator|{}|{}|{}|-|health,metrics,backup,reload_authz,shutdown\n"
             ),
             hex(&client_key.verifying_key().to_bytes()),
             issued,
@@ -174,7 +175,7 @@ fn prepare(root: &TestRoot, address: std::net::SocketAddr) -> (PathBuf, SigningK
         )
         .as_bytes(),
     );
-    (config, client_key)
+    (config, authz, backup, client_key)
 }
 
 fn spawn(config: &Path) -> Child {
@@ -190,11 +191,12 @@ fn spawn(config: &Path) -> Child {
 fn signed_request(
     action: ArtifactOwnerActionV1,
     sequence: u64,
+    generation: u64,
     client_key: &SigningKey,
 ) -> SignedArtifactOwnerRequestV1 {
     let issued = now();
     let mut request = SignedArtifactOwnerRequestV1 {
-        keyring_generation: 1,
+        keyring_generation: generation,
         request_id: id(&format!("request-{sequence}")),
         client_id: id("operator"),
         action,
@@ -230,32 +232,67 @@ fn exchange(
 }
 
 #[test]
-fn real_daemon_bootstrap_kill_restart_metrics_and_durable_shutdown() {
+fn real_daemon_bootstrap_backup_rotate_kill_restore_restart_and_durable_shutdown() {
     let root = TestRoot::new();
     let address = free_address();
-    let (config, client_key) = prepare(&root, address);
+    let (config, authz, backup_root, client_key) = prepare(&root, address);
 
     let mut first = spawn(&config);
     let health = exchange(
         address,
-        &signed_request(ArtifactOwnerActionV1::Health, 1, &client_key),
+        &signed_request(ArtifactOwnerActionV1::Health, 1, 1, &client_key),
     );
     assert!(String::from_utf8_lossy(&health).contains("\"live\":true"));
+
+    let backup = exchange(
+        address,
+        &signed_request(ArtifactOwnerActionV1::Backup, 2, 1, &client_key),
+    );
+    assert!(String::from_utf8_lossy(&backup).contains("hepta.learning-artifactd.backup.v1"));
+    assert!(backup_root.join("request-2/BACKUP.complete").is_file());
+
+    let authz_text = fs::read_to_string(&authz).expect("read authz");
+    secure_write(&authz, authz_text.replacen("generation=1", "generation=2", 1).as_bytes());
+    let rotated = exchange(
+        address,
+        &signed_request(ArtifactOwnerActionV1::ReloadAuthz, 3, 1, &client_key),
+    );
+    assert!(String::from_utf8_lossy(&rotated).contains("\"generation\":2"));
 
     first.kill().expect("kill first daemon");
     let status = first.wait().expect("reap first daemon");
     assert!(!status.success());
 
-    let mut second = spawn(&config);
+    let restored_root = root.0.join("restored-store");
+    let receipt = restore_owner_root_v1(backup_root.join("request-2"), &restored_root)
+        .expect("restore owner backup");
+    assert_eq!(receipt.backup_id, id("request-2"));
+    assert!(restored_root.join("host/RESTORE.complete").is_file());
+
+    let restored_config = root.0.join("restored-owner.conf");
+    let config_text = fs::read_to_string(&config).expect("read owner config");
+    let original_root = root.0.join("store");
+    secure_write(
+        &restored_config,
+        config_text
+            .replacen(
+                &format!("root={}\n", original_root.display()),
+                &format!("root={}\n", restored_root.display()),
+                1,
+            )
+            .as_bytes(),
+    );
+
+    let mut second = spawn(&restored_config);
     let health = exchange(
         address,
-        &signed_request(ArtifactOwnerActionV1::Health, 2, &client_key),
+        &signed_request(ArtifactOwnerActionV1::Health, 4, 2, &client_key),
     );
     assert!(String::from_utf8_lossy(&health).contains("\"live\":true"));
 
     let metrics = exchange(
         address,
-        &signed_request(ArtifactOwnerActionV1::Metrics, 3, &client_key),
+        &signed_request(ArtifactOwnerActionV1::Metrics, 5, 2, &client_key),
     );
     let metrics = String::from_utf8(metrics).expect("Prometheus text");
     assert!(metrics.contains("hepta_learning_artifact_requests_received_total"));
@@ -263,9 +300,9 @@ fn real_daemon_bootstrap_kill_restart_metrics_and_durable_shutdown() {
 
     let shutdown = exchange(
         address,
-        &signed_request(ArtifactOwnerActionV1::Shutdown, 4, &client_key),
+        &signed_request(ArtifactOwnerActionV1::Shutdown, 6, 2, &client_key),
     );
     assert!(String::from_utf8_lossy(&shutdown).contains("\"accepted\":true"));
     assert!(second.wait().expect("graceful daemon exit").success());
-    assert!(root.0.join("store/writer/DRAIN.v1").is_file());
+    assert!(restored_root.join("writer/DRAIN.v1").is_file());
 }
