@@ -19,6 +19,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CANONICAL_MAP = ROOT / "docs/modules/learning.operator/IMPLEMENTATION_MAP.json"
 DEFAULT_OUTPUT = ROOT / "qualification/lane-e/learning-operator-current-implementation-map.json"
+SOURCE_SUFFIXES = {
+    ".json",
+    ".md",
+    ".py",
+    ".rs",
+    ".sh",
+    ".toml",
+    ".yaml",
+    ".yml",
+}
 
 
 def git(*args: str) -> str:
@@ -46,7 +56,9 @@ def sha256_bytes(value: bytes) -> str:
 
 
 def canonical_bytes(value: object) -> bytes:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
 
 
 def reject_legacy_source_commit(value: object, path: str = "$") -> None:
@@ -61,12 +73,39 @@ def reject_legacy_source_commit(value: object, path: str = "$") -> None:
 
 
 def source_path_from_test(value: object) -> str | None:
-    if isinstance(value, str):
-        return value.split(".rs::", 1)[0] + ".rs" if ".rs::" in value else value
+    """Return a repository path only when an entry syntactically names one.
+
+    Test inventories may also contain semantic mutant IDs, scenario names and
+    delegated symbols. Those are evidence labels, not Git paths, and must not be
+    passed to `git rev-parse <sha>:<path>`.
+    """
+
     if isinstance(value, dict):
         candidate = value.get("path", value.get("sourcePath"))
         return source_path_from_test(candidate)
-    return None
+    if not isinstance(value, str):
+        return None
+    candidate = value.split("::", 1)[0]
+    if "/" not in candidate:
+        return None
+    if Path(candidate).suffix not in SOURCE_SUFFIXES:
+        return None
+    return candidate
+
+
+def validate_source_path_classifier() -> None:
+    if source_path_from_test("omit-runtime-profile-from-training-profile-digest") is not None:
+        raise AssertionError("semantic mutation IDs must not become Git paths")
+    expected = "codex-rs/hepta-bellman-operator/src/authoritative_tests.rs"
+    observed = source_path_from_test(
+        expected + "::mutation_profile_digest_covers_runtime_and_error_budget"
+    )
+    if observed != expected:
+        raise AssertionError("Rust test path classification drift")
+    if source_path_from_test({"path": "scripts/hepta-learning-operator-mutation.py"}) != (
+        "scripts/hepta-learning-operator-mutation.py"
+    ):
+        raise AssertionError("structured source path classification drift")
 
 
 def mapped_paths(row: dict[str, object]) -> list[str]:
@@ -75,6 +114,7 @@ def mapped_paths(row: dict[str, object]) -> list[str]:
         "codex-rs/Cargo.lock",
         "codex-rs/hepta-bellman-operator/Cargo.toml",
         "codex-rs/hepta-bellman-operator/src/authoritative_lib.rs",
+        "codex-rs/hepta-bellman-operator/src/budget.rs",
         "codex-rs/hepta-bellman-operator/src/sensor_core_qualification.rs",
         "docs/modules/learning.operator/STATUS.json",
         "docs/modules/learning.operator/TECHNICAL.md",
@@ -139,6 +179,7 @@ def source_object(source_sha: str, path: str) -> dict[str, str]:
 
 
 def generate(source_sha: str, source_tree: str, output: Path) -> None:
+    validate_source_path_classifier()
     require_sha(source_sha, "source SHA")
     require_sha(source_tree, "source tree")
     if git("rev-parse", f"{source_sha}^{{tree}}") != source_tree:
@@ -177,7 +218,13 @@ def generate(source_sha: str, source_tree: str, output: Path) -> None:
     verify(output, expected_sha=source_sha, expected_tree=source_tree)
 
 
-def verify(path: Path, *, expected_sha: str | None = None, expected_tree: str | None = None) -> None:
+def verify(
+    path: Path,
+    *,
+    expected_sha: str | None = None,
+    expected_tree: str | None = None,
+) -> None:
+    validate_source_path_classifier()
     value = json.loads(path.read_text(encoding="utf-8"))
     reject_legacy_source_commit(value)
     if value.get("schemaVersion") != 2 or value.get("module") != "learning.operator":
@@ -221,7 +268,11 @@ def verify(path: Path, *, expected_sha: str | None = None, expected_tree: str | 
         object_path = entry.get("path")
         object_sha = entry.get("object")
         kind = entry.get("kind")
-        if not isinstance(object_path, str) or not isinstance(object_sha, str) or kind not in {"blob", "tree"}:
+        if (
+            not isinstance(object_path, str)
+            or not isinstance(object_sha, str)
+            or kind not in {"blob", "tree"}
+        ):
             raise ValueError("source object entry malformed")
         if object_path in by_path:
             raise ValueError(f"duplicate source object path: {object_path}")
@@ -253,7 +304,11 @@ def main() -> None:
     if args.command == "emit":
         generate(args.source_sha, args.source_tree, ROOT / args.output)
     else:
-        verify(ROOT / args.path, expected_sha=args.expected_sha, expected_tree=args.expected_tree)
+        verify(
+            ROOT / args.path,
+            expected_sha=args.expected_sha,
+            expected_tree=args.expected_tree,
+        )
 
 
 if __name__ == "__main__":
