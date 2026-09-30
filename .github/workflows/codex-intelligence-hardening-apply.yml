@@ -23,7 +23,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .codex/intelligence-hardening.patch.b64.part-* | base64 --decode > "$RUNNER_TEMP/intelligence-hardening.patch"
+          cat .codex/intelligence-hardening.patch.gz.b64.part-* \
+            | base64 --decode \
+            | gzip --decompress \
+            > "$RUNNER_TEMP/intelligence-hardening.patch"
           git apply --index "$RUNNER_TEMP/intelligence-hardening.patch"
           git rm -r .codex
           git rm .github/workflows/codex-intelligence-hardening-apply.yml
