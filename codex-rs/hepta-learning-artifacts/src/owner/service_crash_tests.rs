@@ -15,6 +15,7 @@ use std::time::Instant;
 use crate::ArtifactOwnerHostError;
 use crate::ArtifactPublicationTransactionV1;
 use crate::ArtifactRegistry;
+use crate::DatasetWithdrawalNoticeV1;
 use crate::DatasetWithdrawalRegistry;
 use crate::LearningArtifactOwnerService;
 use crate::LearningArtifactOwnerServiceConfigV1;
@@ -81,6 +82,80 @@ fn request_and_registry(
         .fixture("preview registration");
     let request = publish_request(&key(), withdrawals, predecessor, staged.snapshot().head_digest);
     (request, staged)
+}
+
+fn frontier(count: usize) -> DatasetWithdrawalRegistry {
+    let mut registry = DatasetWithdrawalRegistry::new_scoped(scope());
+    for sequence in 0..count {
+        registry
+            .append(DatasetWithdrawalNoticeV1 {
+                notice_id: id(&format!("crash-notice-{sequence}")),
+                dataset_digest: digest(&format!("withdrawn-dataset-{sequence}")),
+                source_tombstone_digest: digest("tombstone"),
+                authority_id: id("dataset-authority"),
+                credential_chain_digest: digest("credential"),
+                signing_key_digest: digest("withdrawal-key"),
+                authority_epoch: 1,
+                issued_at: 20,
+            })
+            .fixture("append crash withdrawal");
+    }
+    registry
+}
+
+fn config_with_frontier(
+    root: PathBuf,
+    withdrawals: DatasetWithdrawalRegistry,
+) -> LearningArtifactOwnerServiceConfigV1 {
+    let key = key();
+    let scope_digest = withdrawals.scope_digest().fixture("scope");
+    LearningArtifactOwnerServiceConfigV1 {
+        root,
+        trust: trust(&key, scope_digest),
+        writer_lease: lease(&key, scope_digest),
+        required_current_head: None,
+        withdrawal_registry: withdrawals,
+        storage_binding: digest("binding"),
+        now: 20,
+    }
+}
+
+fn wait_for_marker(child: &mut Child, marker: &std::path::Path, expected: &[u8]) {
+    let deadline = Instant::now() + Duration::from_secs(10);
+    loop {
+        if fs::read(marker).is_ok_and(|bytes| bytes == expected) {
+            return;
+        }
+        assert!(child.try_wait().fixture("worker status").is_none());
+        assert!(Instant::now() < deadline, "crash worker did not reach barrier");
+        thread::sleep(Duration::from_millis(5));
+    }
+}
+
+#[test]
+fn recovery_crash_worker() {
+    let Some(root) = std::env::var_os("HEPTA_ARTIFACT_RECOVERY_CRASH_ROOT") else {
+        return;
+    };
+    let mut service =
+        LearningArtifactOwnerService::open(config(PathBuf::from(root).join("store")))
+            .fixture("recovery worker service");
+    let (request, _) = request_and_registry(&service);
+    let _ = service.publish(request);
+    panic!("recovery crash worker crossed deterministic crash cut");
+}
+
+#[test]
+fn withdrawal_crash_worker() {
+    let Some(root) = std::env::var_os("HEPTA_ARTIFACT_WITHDRAWAL_CRASH_ROOT") else {
+        return;
+    };
+    let root = PathBuf::from(root);
+    let mut service =
+        LearningArtifactOwnerService::open(config_with_frontier(root.join("store"), frontier(0)))
+            .fixture("withdrawal worker service");
+    let _ = service.install_withdrawal_frontier(frontier(1));
+    panic!("withdrawal crash worker crossed deterministic crash cut");
 }
 
 #[test]
@@ -221,4 +296,135 @@ fn sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion
             receipt.registry_head_digest
         );
     }
+}
+
+#[test]
+fn repeated_sigkill_during_recovery_never_relabels_unknown_as_not_started() {
+    let directory = TestDir::new();
+    let store = directory.0.join("store");
+    fs::create_dir(&store).fixture("store directory");
+    let service = LearningArtifactOwnerService::open(config(store.clone())).fixture("seed service");
+    let (request, staged) = request_and_registry(&service);
+    let withdrawals = service.withdrawal_registry();
+    let mut transaction = service
+        .host
+        .begin_publication(
+            request.operation_id.clone(),
+            request.admission.clone(),
+            withdrawals,
+            service.registry(),
+            request.expected_registry_predecessor_head,
+            20,
+        )
+        .fixture("prepare recovery checkpoint");
+    service
+        .host
+        .ensure_payload_durable(&mut transaction, &staged, &request.payload, 20)
+        .fixture("payload durable");
+    service
+        .host
+        .ensure_registry_durable(
+            &mut transaction,
+            &staged,
+            withdrawals,
+            digest("binding"),
+            20,
+        )
+        .fixture("registry durable");
+    drop(service);
+
+    for attempt in 0..2 {
+        let marker = directory.0.join(format!("recovery-cut-{attempt}"));
+        let mut child = ChildGuard(
+            Command::new(std::env::current_exe().fixture("test executable"))
+                .args([
+                    "--exact",
+                    "owner_service::tests::process::recovery_crash_worker",
+                    "--nocapture",
+                ])
+                .env("HEPTA_ARTIFACT_RECOVERY_CRASH_ROOT", &directory.0)
+                .env(
+                    "HEPTA_ARTIFACT_SERVICE_CRASH_CUT",
+                    "recovery-after-durable-revalidation",
+                )
+                .env("HEPTA_ARTIFACT_SERVICE_CRASH_MARKER", &marker)
+                .stdin(Stdio::null())
+                .stdout(Stdio::null())
+                .stderr(Stdio::inherit())
+                .spawn()
+                .fixture("spawn recovery crash worker"),
+        );
+        wait_for_marker(
+            &mut child.0,
+            &marker,
+            b"recovery-after-durable-revalidation",
+        );
+        child.0.kill().fixture("SIGKILL recovery worker");
+        assert!(!child.0.wait().fixture("reap recovery worker").success());
+
+        let reopened =
+            LearningArtifactOwnerService::open(config(store.clone())).fixture("reopen after crash");
+        assert_eq!(
+            reopened.recovery_required(),
+            Some(&request.operation_id),
+            "unknown recovery outcome must remain fenced"
+        );
+        drop(reopened);
+    }
+
+    let mut recovered =
+        LearningArtifactOwnerService::open(config(store)).fixture("final recovery open");
+    let receipt = recovered
+        .publish(request.clone())
+        .fixture("resume exact request after repeated crash");
+    assert_eq!(
+        recovered.publish(request).fixture("terminal retry"),
+        receipt,
+        "exact terminal retry must not duplicate the publication"
+    );
+    assert!(recovered.recovery_required().is_none());
+}
+
+#[test]
+fn sigkill_after_withdrawal_floor_sync_never_reopens_stale_frontier() {
+    let directory = TestDir::new();
+    let store = directory.0.join("store");
+    fs::create_dir(&store).fixture("store directory");
+    let marker = directory.0.join("withdrawal-cut");
+    let mut child = ChildGuard(
+        Command::new(std::env::current_exe().fixture("test executable"))
+            .args([
+                "--exact",
+                "owner_service::tests::process::withdrawal_crash_worker",
+                "--nocapture",
+            ])
+            .env("HEPTA_ARTIFACT_WITHDRAWAL_CRASH_ROOT", &directory.0)
+            .env(
+                "HEPTA_ARTIFACT_SERVICE_CRASH_CUT",
+                "withdrawal-after-durable-before-ack",
+            )
+            .env("HEPTA_ARTIFACT_SERVICE_CRASH_MARKER", &marker)
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .fixture("spawn withdrawal crash worker"),
+    );
+    wait_for_marker(
+        &mut child.0,
+        &marker,
+        b"withdrawal-after-durable-before-ack",
+    );
+    child.0.kill().fixture("SIGKILL withdrawal worker");
+    assert!(!child.0.wait().fixture("reap withdrawal worker").success());
+
+    assert!(
+        LearningArtifactOwnerService::open(config_with_frontier(store.clone(), frontier(0))).is_err(),
+        "a stale independently supplied frontier cannot erase a synced withdrawal floor"
+    );
+    let reopened =
+        LearningArtifactOwnerService::open(config_with_frontier(store, frontier(1)))
+            .fixture("reopen exact durable withdrawal frontier");
+    assert_eq!(reopened.withdrawal_registry().head_digest(), frontier(1).head_digest());
+    assert!(reopened.withdrawal_frontier_is_durable());
 }
