@@ -1,5 +1,10 @@
 # knowledge.graph query closure — 2026-09-27
 
+Historical candidate design. The published final-convergence staging branch did
+not compile or call the indexed view and history test described below. The
+2026-10-01 audit materializes those paths and supersedes completion claims here;
+see [AUDIT_20261001.md](AUDIT_20261001.md). This document is not an execution receipt.
+
 ## Candidate identity and scope
 
 Integration base: `a126987b84737dbc2ee2592442a314117bddb4a2`.
