@@ -14,6 +14,68 @@ static NEXT_RECORD: AtomicU64 = AtomicU64::new(1);
 // Five canonical checkpoints per operation plus one pending-record allowance.
 const MAX_OWNER_RECORDS: usize = MAX_HEAD_RECORDS * 6;
 
+pub(super) fn validate_checkpoint(
+    checkpoint: &ArtifactOwnerPublicationCheckpointV1,
+    admission: WithdrawalBoundArtifactAdmissionV3,
+    previous: Option<&ArtifactOwnerPublicationCheckpointV1>,
+) -> Result<(), ArtifactOwnerHostError> {
+    // Read the complete admission independently of the checkpoint. Replaying
+    // only phase names and receipt fields would let a corrupt terminal state
+    // become a trusted retry receipt without checking its commitment.
+    if checkpoint.original_writer_lease_digest.is_zero()
+        || checkpoint.registry_receipt.is_some_and(|receipt| {
+            receipt.binding.is_zero()
+                || receipt.head_digest.is_zero()
+                || receipt.file_digest.is_zero()
+                || receipt.records == 0
+                || receipt.records > crate::limits::MAX_DURABLE_ARTIFACT_RECORDS
+                || receipt.encoded_bytes == 0
+        })
+        || checkpoint.witness_receipt.is_some_and(|receipt| {
+            receipt.binding.is_zero()
+                || receipt.witness_digest.is_zero()
+                || receipt.file_digest.is_zero()
+                || receipt.encoded_bytes == 0
+                || checkpoint
+                    .registry_receipt
+                    .is_none_or(|registry| receipt.binding != registry.binding)
+        })
+    {
+        return Err(ArtifactOwnerHostError::CheckpointMismatch);
+    }
+    if let Some(previous) = previous
+        && (previous.registry_receipt.is_some()
+            && previous.registry_receipt != checkpoint.registry_receipt
+            || previous.witness_receipt.is_some()
+                && previous.witness_receipt != checkpoint.witness_receipt)
+    {
+        return Err(ArtifactOwnerHostError::CheckpointMismatch);
+    }
+    if let Some(acknowledged_at) = checkpoint.acknowledged_at {
+        crate::verify_artifact_admission_v3(
+            &admission,
+            admission.withdrawal_head_digest,
+            acknowledged_at,
+        )
+        .map_err(|_| ArtifactOwnerHostError::CheckpointMismatch)?;
+    }
+    ArtifactPublicationTransactionV1::from_snapshot(ArtifactPublicationTransactionSnapshotV1 {
+        intent: crate::ArtifactPublicationIntentV1 {
+            operation_id: checkpoint.operation_id.clone(),
+            admission,
+            expected_registry_predecessor_head: checkpoint.expected_registry_predecessor_head,
+            intent_digest: checkpoint.intent_digest,
+        },
+        phase: checkpoint.phase,
+        registry_receipt: checkpoint.registry_receipt,
+        witness_receipt: checkpoint.witness_receipt,
+        acknowledged_at: checkpoint.acknowledged_at,
+        state_digest: checkpoint.state_digest,
+    })
+    .map_err(|_| ArtifactOwnerHostError::CheckpointMismatch)?;
+    Ok(())
+}
+
 pub(super) fn all_checkpoints(
     owner: &LearningArtifactOwnerHost,
 ) -> Result<Vec<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {
@@ -38,26 +100,41 @@ pub(super) fn all_checkpoints(
         }
         checkpoints.push(checkpoint);
     }
+    // Registry recovery and CURRENT reads also consume this inventory. They
+    // must not bypass the complete per-operation recovery validation.
+    let mut operations = BTreeSet::new();
+    for checkpoint in &checkpoints {
+        operations.insert(&checkpoint.operation_id);
+    }
+    for operation in operations {
+        owner
+            .recover_publication(operation)?
+            .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
+    }
     Ok(checkpoints)
 }
 
 pub(super) fn recovery_required_operations(
     owner: &LearningArtifactOwnerHost,
 ) -> Result<Vec<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {
-    let operations = all_checkpoints(owner)?
-        .into_iter()
-        .map(|checkpoint| checkpoint.operation_id)
-        .collect::<BTreeSet<_>>();
-    let mut recovery = Vec::new();
-    for operation in operations {
-        let latest = owner
-            .recover_publication(&operation)?
-            .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
-        if latest.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged {
-            recovery.push(latest.checkpoint);
+    let mut latest = BTreeMap::<StableId, ArtifactOwnerPublicationCheckpointV1>::new();
+    for checkpoint in all_checkpoints(owner)? {
+        let previous = latest.entry(checkpoint.operation_id.clone());
+        match previous {
+            std::collections::btree_map::Entry::Vacant(entry) => {
+                entry.insert(checkpoint);
+            }
+            std::collections::btree_map::Entry::Occupied(mut entry) => {
+                if phase_code(checkpoint.phase) > phase_code(entry.get().phase) {
+                    entry.insert(checkpoint);
+                }
+            }
         }
     }
-    Ok(recovery)
+    Ok(latest
+        .into_values()
+        .filter(|checkpoint| checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged)
+        .collect())
 }
 
 struct PendingRecord(PathBuf);

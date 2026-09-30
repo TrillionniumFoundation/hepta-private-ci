@@ -896,6 +896,7 @@ impl LearningArtifactOwnerHost {
         let mut latest = None;
         let mut missing_seen = false;
         let mut invariant = None;
+        let mut recovered_admission: Option<WithdrawalBoundArtifactAdmissionV3> = None;
         for phase in ordered_phases() {
             let path = self.checkpoint_path(operation_id, phase);
             if !path.exists() {
@@ -922,7 +923,15 @@ impl LearningArtifactOwnerHost {
                 return Err(ArtifactOwnerHostError::CheckpointMismatch);
             }
             invariant = Some(key);
-            self.validate_checkpoint_admission(&checkpoint)?;
+            let admission = match &recovered_admission {
+                Some(admission) => admission.clone(),
+                None => {
+                    let admission = self.validate_checkpoint_admission(&checkpoint)?;
+                    recovered_admission = Some(admission.clone());
+                    admission
+                }
+            };
+            records::validate_checkpoint(&checkpoint, admission, latest.as_ref())?;
             latest = Some(checkpoint);
         }
         Ok(latest.map(|checkpoint| ArtifactOwnerRecoveryV1 {
@@ -1244,7 +1253,7 @@ fn decode_checkpoint(
     if fields.len() != 13 || fields[0] != CHECKPOINT_MAGIC {
         return Err(ArtifactOwnerHostError::CheckpointMismatch);
     }
-    Ok(ArtifactOwnerPublicationCheckpointV1 {
+    let checkpoint = ArtifactOwnerPublicationCheckpointV1 {
         operation_id: StableId::new(fields[1].to_owned())
             .map_err(|_| ArtifactOwnerHostError::CheckpointMismatch)?,
         phase: phase_from_code(fields[2])?,
@@ -1259,7 +1268,11 @@ fn decode_checkpoint(
         witness_receipt: parse_witness_receipt(fields[11])?,
         acknowledged_at: parse_optional_u64(fields[12])?,
         authority: AuthorityPosture::DENY_ALL,
-    })
+    };
+    if encode_checkpoint(&checkpoint) != bytes {
+        return Err(ArtifactOwnerHostError::CheckpointMismatch);
+    }
+    Ok(checkpoint)
 }
 
 fn parse_registry_receipt(
@@ -2301,3 +2314,7 @@ mod adversarial_tests;
 #[cfg(test)]
 #[path = "owner_atomic_storage_tests.rs"]
 mod atomic_storage_tests;
+
+#[cfg(test)]
+#[path = "owner_checkpoint_tests.rs"]
+mod checkpoint_tests;
