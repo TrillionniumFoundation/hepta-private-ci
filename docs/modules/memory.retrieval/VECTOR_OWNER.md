@@ -35,6 +35,8 @@ A product publisher must use `append_vector_publication_checked_v1` through one 
 4. resolves a failed compare-and-publish only by reloading the exact current object, never by blind republish;
 5. reloads after a successful port return and requires the exact typed publication to be current.
 
+A failed publish or a successful publish whose confirmation reload cannot prove the exact `next` object returns `DurableVectorPublicationAppendErrorV1::CommitOutcomeUnknown`. That result is not retry-safe. The caller must reconcile the exact tenant, predecessor, fence and publication object before attempting any later mutation; it may not infer that no write occurred or issue an automatic second publish.
+
 The source boundary closes stale-parent, stale-writer, lost-acknowledgement and incorrect-commit behavior at the API level. It does **not** establish a deployed durable backend. The selected store must still prove atomic compare-and-publish, durable fencing, crash recovery, corruption handling, disk-full behavior, backup/restore and independent target-host qualification.
 
 ## Product composition requirements
