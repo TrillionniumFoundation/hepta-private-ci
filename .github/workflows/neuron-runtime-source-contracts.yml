@@ -52,8 +52,6 @@ jobs:
           test ! -e scripts/neuron_runtime_apply_gate_repair.sh
           test ! -e .github/workflows/neuron-runtime-gate-fix-once.yml
           test ! -e .github/workflows/neuron-runtime-product-materialize-once.yml
-          # Construct the forbidden permission spelling at runtime so this
-          # read-only guard does not match its own workflow source.
           forbidden='contents: w''rite'
           if grep -R --line-number --fixed-strings "$forbidden" \
             .github/workflows/*neuron*.yml; then
@@ -61,12 +59,22 @@ jobs:
             exit 1
           fi
 
-      - name: Validate generated projections and Python contracts
+      - name: Validate generated projections
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/neuron/readiness.py render --check
+
+      - name: Validate Python contracts
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 -m unittest discover -v -s scripts/neuron -p 'test_*.py'
+
+      - name: Validate Cargo lock
+        shell: bash
+        run: |
+          set -euo pipefail
           python3 scripts/verify_cargo_lock.py
 
       - name: Validate Rust formatting and Agentd contracts
