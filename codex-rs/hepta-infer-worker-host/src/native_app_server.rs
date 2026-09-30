@@ -136,6 +136,8 @@ pub trait TurnStartAuthorizer: Send + Sync {
 pub struct NativeWorkerConfig {
     pub agentd_socket: PathBuf,
     pub agent_id: AgentId,
+    /// Exact Agentd process spawn generation used on the control wire. A
+    /// canonical run belongs to the next, Running lifecycle generation.
     pub generation: u64,
     pub model: String,
     pub timeout: Duration,
@@ -159,6 +161,7 @@ impl AppServerModelDriver {
     pub fn new(config: NativeWorkerConfig) -> Result<Self> {
         if !config.agentd_socket.is_absolute()
             || config.generation == 0
+            || config.generation.checked_add(1).is_none()
             || config.model.is_empty()
             || config.model.len() > 256
             || config.timeout.is_zero()
@@ -680,7 +683,7 @@ impl AppServerModelDriver {
             // physical-send permit. A competing worker must not redispatch.
             if dispatched.phase != AgentRunPhase::Dispatched
                 || dispatched.idempotent
-                || dispatched.generation != self.config.generation
+                || self.config.generation.checked_add(1) != Some(dispatched.generation)
                 || dispatched.terminal_observed
                 || dispatched.context_digest.as_deref() != Some(binding.context_digest.as_str())
                 || dispatched.compilation_receipt_digest.as_deref()

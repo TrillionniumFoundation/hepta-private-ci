@@ -47,7 +47,7 @@ impl AppServerModelDriver {
             .await
             .map_err(|_| "terminal reconciliation run status unavailable")?
             .ok_or("Agentd run is unavailable during terminal reconciliation")?;
-        if run.generation != self.config.generation
+        if self.config.generation.checked_add(1) != Some(run.generation)
             || run.context_digest.as_deref() != Some(binding.context_digest.as_str())
             || run.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
         {

@@ -91,7 +91,7 @@ async fn serve_owner(listener: UnixListener, initial: AgentRunPhase) -> AgentRun
         context_digest: Some("a".repeat(64)),
         compilation_receipt_digest: Some("b".repeat(64)),
         authority_epoch: 1,
-        generation: 1,
+        generation: 2,
         fence_digest: "d".repeat(64),
         deadline_ms: u64::MAX,
         cancel_reason: None,
@@ -105,6 +105,7 @@ async fn serve_owner(listener: UnixListener, initial: AgentRunPhase) -> AgentRun
         let mut line = String::new();
         BufReader::new(reader).read_line(&mut line).await.unwrap();
         let request: AgentdRequest = serde_json::from_str(&line).unwrap();
+        assert_eq!(request.spawn_generation, 1);
         let mut terminal = false;
         let payload = match request.method {
             AgentdMethod::Health => AgentdPayload::Health(
@@ -167,7 +168,7 @@ async fn serve_owner(listener: UnixListener, initial: AgentRunPhase) -> AgentRun
             request_id: request.request_id,
             agent_id: AgentId::parse("00000000-0000-4000-8000-000000000001").unwrap(),
             spawn_generation: request.spawn_generation,
-            current_generation: 1,
+            current_generation: 2,
             payload,
         };
         let mut bytes = serde_json::to_vec(&response).unwrap();

@@ -166,6 +166,11 @@ impl AppServerModelDriver {
             {
                 return Err("physical prompt bytes do not match the intelligence handoff".into());
             }
+            if admission.request_id != binding.run_id {
+                return Err(
+                    "native admission identity differs from the canonical intelligence run".into(),
+                );
+            }
         }
         let request = NativeRequest {
             request_id: admission.request_id,

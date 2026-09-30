@@ -54,6 +54,14 @@ fn admission() -> NativeAdmission {
     }
 }
 
+#[test]
+fn worker_spawn_without_a_running_successor_is_rejected() {
+    let (driver, _) = fixture("generation-overflow");
+    let mut config = driver.config;
+    config.generation = u64::MAX;
+    assert!(AppServerModelDriver::new(config).is_err());
+}
+
 #[tokio::test]
 async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
     let (driver, path) = fixture("reopen");
@@ -342,6 +350,46 @@ async fn intelligence_prompt_substitution_fails_before_provider_contact() {
         .expect_err("substituted physical prompt must fail before provider contact");
     assert!(error.to_string().contains("physical prompt bytes"));
     assert!(control.native_record("r1").is_none());
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn intelligence_admission_cannot_name_a_different_canonical_run() {
+    let (driver, path) = fixture("run-substitution");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let binding = NativeIntelligenceRunBinding {
+        run_id: "other-run".to_string(),
+        expected_revision: 2,
+        context_digest: "a".repeat(64),
+        envelope_digest: "b".repeat(64),
+        prompt_digest: digest(b"prompt"),
+    };
+    let error = driver
+        .run_intelligence(
+            &mut control,
+            admission(),
+            "prompt".to_string(),
+            None,
+            binding.clone(),
+            &CancellationToken::new(),
+        )
+        .await
+        .expect_err("a different canonical run cannot authorize execution");
+    assert!(error.to_string().contains("admission identity"));
+    assert_eq!(control.native_record("r1"), None);
+    let error = driver
+        .reconcile_intelligence(
+            &mut control,
+            admission(),
+            "prompt".to_string(),
+            binding,
+            &CancellationToken::new(),
+        )
+        .await
+        .expect_err("a different canonical run cannot authorize reconciliation");
+    assert!(error.to_string().contains("admission identity"));
+    assert_eq!(control.native_record("r1"), None);
     drop(control);
     std::fs::remove_file(path).unwrap();
 }

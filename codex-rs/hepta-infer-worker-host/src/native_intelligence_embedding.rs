@@ -17,7 +17,6 @@ use codex_hepta_agentd::PreparedAgentdIntelligenceRunV1;
 use codex_hepta_agentd::RunReceipt;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_types::Digest32;
-use tokio::sync::Mutex;
 use tokio::sync::Semaphore;
 use tokio_util::sync::CancellationToken;
 
@@ -25,6 +24,10 @@ use crate::native_app_server::NativeAdmission;
 use crate::native_app_server::NativeRunOutput;
 use crate::native_intelligence_product::NativeIntelligenceProductHostV1;
 use crate::native_intelligence_product::NativeIntelligenceProductResult;
+
+#[path = "native_intelligence_control.rs"]
+mod control_owner;
+use control_owner::NativeIntelligenceControlOwnerV1;
 
 /// Reads authenticated evidence from existing owners. Implementations cannot
 /// replace the observed run or physical output; the product host rechecks both
@@ -48,7 +51,7 @@ pub trait NativeIntelligenceEvidenceSourceV1: Send + Sync {
 /// replacement operation identity. Another journal requires another owner.
 pub struct NativeIntelligenceProductEmbeddingV1 {
     host: NativeIntelligenceProductHostV1,
-    control: Mutex<DurableInferenceControl>,
+    control: NativeIntelligenceControlOwnerV1,
     evidence: Arc<dyn NativeIntelligenceEvidenceSourceV1>,
     evidence_slots: Arc<Semaphore>,
     running_generation: u64,
@@ -70,7 +73,7 @@ impl NativeIntelligenceProductEmbeddingV1 {
         }
         Ok(Self {
             host,
-            control: Mutex::new(control),
+            control: NativeIntelligenceControlOwnerV1::new(control),
             evidence,
             evidence_slots: Arc::new(Semaphore::new(4)),
             running_generation,
@@ -135,11 +138,7 @@ impl AgentdIntelligenceExecutionHostV1 for NativeIntelligenceProductEmbeddingV1 
                 ));
             }
             let run_id = run_receipt.run_id.clone();
-            let mut control = self.control.try_lock().map_err(|_| {
-                AgentdError::Protocol(
-                    "native execution journal busy; retry the same run".to_string(),
-                )
-            })?;
+            let mut control = self.control.checkout()?;
             let source = Arc::clone(&self.evidence);
             let prepared = prepared.clone();
             let decision = owner_evidence(Arc::clone(&self.evidence_slots), move || {
@@ -150,7 +149,9 @@ impl AgentdIntelligenceExecutionHostV1 for NativeIntelligenceProductEmbeddingV1 
             let receipt = self
                 .host
                 .execute(
-                    &mut control,
+                    control.control.as_mut().ok_or_else(|| {
+                        AgentdError::Protocol("native execution journal unavailable".to_string())
+                    })?,
                     NativeAdmission {
                         request_id: run_id.clone(),
                         maximum_in_flight: 1,
