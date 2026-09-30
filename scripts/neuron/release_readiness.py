@@ -136,7 +136,10 @@ def validate_module_manifest(
 
 
 def validate_baseline(
-    baseline: dict[str, Any], source_sha: str, base_sha: str
+    baseline: dict[str, Any],
+    source_sha: str,
+    base_sha: str,
+    pull_request_number: int,
 ) -> list[str]:
     blockers: list[str] = []
     if baseline.get("schema") != BASELINE_SCHEMA:
@@ -152,6 +155,8 @@ def validate_baseline(
         number = pull_request.get("number")
         if not isinstance(number, int) or number <= 0:
             blockers.append("repository baseline pull request number is invalid")
+        elif number != pull_request_number:
+            blockers.append("repository baseline pull request number differs from candidate")
         if pull_request.get("headSha") != source_sha:
             blockers.append("repository baseline pull request head differs from candidate")
         if pull_request.get("baseSha") != base_sha:
@@ -225,11 +230,16 @@ def source_bindings(spec_path: Path) -> dict[str, Any]:
 def finalize(args: argparse.Namespace) -> dict[str, Any]:
     source_sha = require_sha("source SHA", args.source_sha)
     base_sha = require_sha("base SHA", args.base_sha)
+    pull_request_number = args.pull_request_number
+    if pull_request_number <= 0:
+        raise ReleaseReadinessError("pull request number must be positive")
     module_manifest = read_json(args.module_manifest)
     baseline = read_json(args.baseline)
 
     blockers = validate_module_manifest(module_manifest, source_sha, base_sha)
-    blockers.extend(validate_baseline(baseline, source_sha, base_sha))
+    blockers.extend(
+        validate_baseline(baseline, source_sha, base_sha, pull_request_number)
+    )
     bindings = source_bindings(args.spec.resolve())
 
     generated_at = (
@@ -242,6 +252,7 @@ def finalize(args: argparse.Namespace) -> dict[str, Any]:
         "generatedAt": generated_at,
         "sourceSha": source_sha,
         "baseSha": base_sha,
+        "pullRequestNumber": pull_request_number,
         "qualificationReady": not blockers,
         "moduleReadiness": {
             "schema": module_manifest.get("schema"),
@@ -263,7 +274,7 @@ def finalize(args: argparse.Namespace) -> dict[str, Any]:
                 module_manifest, source_sha, base_sha
             ),
             "repositoryBaselineQualified": not validate_baseline(
-                baseline, source_sha, base_sha
+                baseline, source_sha, base_sha, pull_request_number
             ),
             "productExecutionProved": False,
             "independentAcceptance": False,
@@ -292,6 +303,7 @@ def parser() -> argparse.ArgumentParser:
     command.add_argument("--baseline", type=Path, required=True)
     command.add_argument("--source-sha", required=True)
     command.add_argument("--base-sha", required=True)
+    command.add_argument("--pull-request-number", type=int, required=True)
     command.add_argument("--generated-at")
     command.add_argument("--output", type=Path, required=True)
     command.add_argument("--allow-incomplete", action="store_true")

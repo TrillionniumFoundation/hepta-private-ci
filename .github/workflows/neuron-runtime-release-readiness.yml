@@ -28,6 +28,10 @@ on:
         description: Exact integration base commit
         required: true
         type: string
+      pull_request_number:
+        description: Exact pull request number for the candidate
+        required: true
+        type: string
       readiness_run_id:
         description: Optional exact successful readiness run
         required: false
@@ -60,6 +64,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || inputs.source_sha }}
       INPUT_BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
+      INPUT_PR_NUMBER: ${{ github.event.pull_request.number || inputs.pull_request_number }}
       INPUT_READINESS_RUN_ID: ${{ inputs.readiness_run_id }}
       INPUT_BLOCKING_RUN_ID: ${{ inputs.blocking_run_id }}
       PYTHONDONTWRITEBYTECODE: "1"
@@ -75,50 +80,74 @@ jobs:
               raise SystemExit("SOURCE_SHA must be a lowercase 40-hex commit")
           PY
 
-          base_sha="$INPUT_BASE_SHA"
-          if [ -z "$base_sha" ]; then
-            pulls="$(gh api \
-              -H 'Accept: application/vnd.github+json' \
-              -H 'X-GitHub-Api-Version: 2022-11-28' \
-              "/repos/$GITHUB_REPOSITORY/commits/$SOURCE_SHA/pulls")"
-            base_sha="$(python3 - <<'PY' "$SOURCE_SHA" "$pulls"
+          pulls="$(gh api \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "/repos/$GITHUB_REPOSITORY/commits/$SOURCE_SHA/pulls")"
+          read -r pull_request_number base_sha < <(
+            python3 - <<'PY' "$SOURCE_SHA" "$INPUT_BASE_SHA" "$INPUT_PR_NUMBER" "$pulls"
           import json, sys
-          source = sys.argv[1]
-          pulls = json.loads(sys.argv[2])
+          source, requested_base, requested_pr = sys.argv[1:4]
+          pulls = json.loads(sys.argv[4])
+          requested_number = None
+          if requested_pr:
+              try:
+                  requested_number = int(requested_pr)
+              except ValueError as error:
+                  raise SystemExit("pull request number must be an integer") from error
+              if requested_number <= 0:
+                  raise SystemExit("pull request number must be positive")
           exact = [
               item for item in pulls
               if item.get("state") == "open"
               and item.get("head", {}).get("sha") == source
           ]
-          if not exact:
-              raise SystemExit("no open pull request has the exact source SHA")
-          exact.sort(key=lambda item: item["number"], reverse=True)
-          print(exact[0]["base"]["sha"])
+          if requested_base:
+              exact = [
+                  item for item in exact
+                  if item.get("base", {}).get("sha") == requested_base
+              ]
+          if requested_number is not None:
+              exact = [item for item in exact if item.get("number") == requested_number]
+          if len(exact) != 1:
+              raise SystemExit(
+                  "expected exactly one open pull request for the exact source/base/number"
+              )
+          selected = exact[0]
+          print(selected["number"], selected["base"]["sha"])
           PY
-            )"
-          fi
-          python3 - <<'PY' "$base_sha"
+          )
+          python3 - <<'PY' "$base_sha" "$pull_request_number"
           import re, sys
           if re.fullmatch(r"[0-9a-f]{40}", sys.argv[1]) is None:
               raise SystemExit("BASE_SHA must be a lowercase 40-hex commit")
+          try:
+              number = int(sys.argv[2])
+          except ValueError as error:
+              raise SystemExit("pull request number must be an integer") from error
+          if number <= 0:
+              raise SystemExit("pull request number must be positive")
           PY
 
           resolve_run() {
             workflow_file="$1"
             explicit_id="$2"
             expected_base="$3"
+            expected_pr="$4"
             if [ -n "$explicit_id" ]; then
               payload="$(gh api \
                 -H 'Accept: application/vnd.github+json' \
                 -H 'X-GitHub-Api-Version: 2022-11-28' \
                 "/repos/$GITHUB_REPOSITORY/actions/runs/$explicit_id")"
-              python3 - <<'PY' "$SOURCE_SHA" "$expected_base" "$payload"
+              python3 - <<'PY' "$SOURCE_SHA" "$expected_base" "$expected_pr" "$payload"
           import json, sys
           source, base = sys.argv[1:3]
-          run = json.loads(sys.argv[3])
+          expected_pr = int(sys.argv[3])
+          run = json.loads(sys.argv[4])
           pull_requests = run.get("pull_requests") or []
           bound = any(
-              item.get("head", {}).get("sha") == source
+              item.get("number") == expected_pr
+              and item.get("head", {}).get("sha") == source
               and item.get("base", {}).get("sha") == base
               for item in pull_requests
           )
@@ -146,13 +175,15 @@ jobs:
                 -f head_sha="$SOURCE_SHA" \
                 -f status=completed \
                 -f per_page=100)"
-              selected="$(python3 - <<'PY' "$SOURCE_SHA" "$expected_base" "$payload"
+              selected="$(python3 - <<'PY' "$SOURCE_SHA" "$expected_base" "$expected_pr" "$payload"
           import json, sys
           source, base = sys.argv[1:3]
-          runs = json.loads(sys.argv[3]).get("workflow_runs", [])
+          expected_pr = int(sys.argv[3])
+          runs = json.loads(sys.argv[4]).get("workflow_runs", [])
           def bound_to_candidate(run):
               return any(
-                  item.get("head", {}).get("sha") == source
+                  item.get("number") == expected_pr
+                  and item.get("head", {}).get("sha") == source
                   and item.get("base", {}).get("sha") == base
                   for item in (run.get("pull_requests") or [])
               )
@@ -183,15 +214,16 @@ jobs:
           }
 
           read -r readiness_run readiness_attempt < <(
-            resolve_run neuron-runtime-readiness.yml "$INPUT_READINESS_RUN_ID" "$base_sha"
+            resolve_run neuron-runtime-readiness.yml "$INPUT_READINESS_RUN_ID" "$base_sha" "$pull_request_number"
           )
           read -r blocking_run blocking_attempt < <(
-            resolve_run blocking-ci.yml "$INPUT_BLOCKING_RUN_ID" "$base_sha"
+            resolve_run blocking-ci.yml "$INPUT_BLOCKING_RUN_ID" "$base_sha" "$pull_request_number"
           )
 
           {
             printf 'source_sha=%s\n' "$SOURCE_SHA"
             printf 'base_sha=%s\n' "$base_sha"
+            printf 'pull_request_number=%s\n' "$pull_request_number"
             printf 'readiness_run_id=%s\n' "$readiness_run"
             printf 'readiness_run_attempt=%s\n' "$readiness_attempt"
             printf 'blocking_run_id=%s\n' "$blocking_run"
@@ -228,6 +260,7 @@ jobs:
         shell: bash
         env:
           BASE_SHA: ${{ steps.resolve.outputs.base_sha }}
+          PULL_REQUEST_NUMBER: ${{ steps.resolve.outputs.pull_request_number }}
           BLOCKING_RUN_ID: ${{ steps.resolve.outputs.blocking_run_id }}
           BLOCKING_RUN_ATTEMPT: ${{ steps.resolve.outputs.blocking_run_attempt }}
         run: |
@@ -243,20 +276,22 @@ jobs:
             -f filter=latest \
             -f per_page=100)"
           python3 - <<'PY' \
-            "$SOURCE_SHA" "$BASE_SHA" "$BLOCKING_RUN_ATTEMPT" \
+            "$SOURCE_SHA" "$BASE_SHA" "$PULL_REQUEST_NUMBER" "$BLOCKING_RUN_ATTEMPT" \
             "$run" "$jobs" "$RUNNER_TEMP/repository-baseline.json"
           import hashlib
           import json
           import sys
 
-          source, base, expected_attempt, run_raw, jobs_raw, output = sys.argv[1:]
+          source, base, expected_pr, expected_attempt, run_raw, jobs_raw, output = sys.argv[1:]
+          expected_pr = int(expected_pr)
           run = json.loads(run_raw)
           jobs = json.loads(jobs_raw).get("jobs", [])
           pull_requests = run.get("pull_requests") or []
           matches = [
               item
               for item in pull_requests
-              if item.get("head", {}).get("sha") == source
+              if item.get("number") == expected_pr
+              and item.get("head", {}).get("sha") == source
               and item.get("base", {}).get("sha") == base
           ]
           if run.get("head_sha") != source or run.get("event") != "pull_request":
@@ -314,6 +349,7 @@ jobs:
         shell: bash
         env:
           BASE_SHA: ${{ steps.resolve.outputs.base_sha }}
+          PULL_REQUEST_NUMBER: ${{ steps.resolve.outputs.pull_request_number }}
         run: |
           set -euo pipefail
           python3 -m unittest discover -v -s scripts/neuron -p 'test_release_readiness.py'
@@ -324,6 +360,7 @@ jobs:
             --baseline "$RUNNER_TEMP/repository-baseline.json" \
             --source-sha "$SOURCE_SHA" \
             --base-sha "$BASE_SHA" \
+            --pull-request-number "$PULL_REQUEST_NUMBER" \
             --output "$RUNNER_TEMP/RELEASE_READINESS_MANIFEST.json"
           python3 - <<'PY' "$RUNNER_TEMP/RELEASE_READINESS_MANIFEST.json"
           import json, sys

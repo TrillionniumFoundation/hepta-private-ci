@@ -72,6 +72,7 @@ class ReleaseReadinessTests(unittest.TestCase):
             baseline=self.write_json(root, "baseline.json", repo),
             source_sha=SOURCE,
             base_sha=BASE,
+            pull_request_number=1240,
             generated_at="2026-09-30T00:00:00+00:00",
             output=root / "final.json",
             allow_incomplete=allow,
@@ -124,6 +125,19 @@ class ReleaseReadinessTests(unittest.TestCase):
             self.assertFalse(result["qualificationReady"])
             self.assertIn(
                 "repository baseline pull request base differs from candidate",
+                result["blockers"],
+            )
+
+    @mock.patch.object(release_readiness, "source_bindings", return_value={})
+    def test_mixed_pull_request_number_fails_closed(self, _bindings):
+        with tempfile.TemporaryDirectory() as directory:
+            value = baseline()
+            value["pullRequest"]["number"] = 1241
+            args = self.args(Path(directory), module_manifest(), value, allow=True)
+            result = release_readiness.finalize(args)
+            self.assertFalse(result["qualificationReady"])
+            self.assertIn(
+                "repository baseline pull request number differs from candidate",
                 result["blockers"],
             )
 
