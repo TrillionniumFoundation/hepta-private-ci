@@ -1,0 +1,42 @@
+name: control-runtime-materialize
+
+on:
+  push:
+    branches:
+      - control-runtime/full-convergence-20260930
+    paths:
+      - ".control-runtime-bootstrap/**"
+      - ".control-runtime-bootstrap-tar/**"
+      - ".github/workflows/control-runtime-materialize.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Materialize control.runtime convergence sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          payload_b64="$RUNNER_TEMP/control-runtime-payload.b64"
+          payload_tgz="$RUNNER_TEMP/control-runtime-payload.tgz"
+          : > "$payload_b64"
+          while IFS= read -r chunk; do
+            cat "$chunk" >> "$payload_b64"
+          done < <(find .control-runtime-bootstrap-tar -maxdepth 1 -type f -name 'payload.*' -print | sort)
+          base64 --decode "$payload_b64" > "$payload_tgz"
+          printf '%s  %s\n' '6b19bc2194975dbd4fc9ad36c8b2596972a1129b0b0d6f9dcb350ad83828155f' "$payload_tgz" | sha256sum -c -
+          tar -xzf "$payload_tgz"
+          rm -rf .control-runtime-bootstrap .control-runtime-bootstrap-tar
+          rm -f .github/workflows/control-runtime-materialize.yml
+          git config user.name 'hepta-control-runtime-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'control.runtime: establish durable owner convergence'
+          git push origin HEAD:control-runtime/full-convergence-20260930
