@@ -20,7 +20,7 @@ jobs:
   maintenance:
     name: Memory retrieval maintenance tests
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -37,6 +37,19 @@ jobs:
           scripts.tests.test_hepta_memory_retrieval_refresh_map
       - name: Enforce read-only retrieval workflows
         run: python3 scripts/hepta_memory_retrieval_workflow_policy.py
+      - name: Compile default controlled API and explicit migration feature
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo check --locked -p codex-hepta-memory-retrieval --no-default-features
+          cargo test --locked -p codex-hepta-memory-retrieval \
+            --no-default-features --test controlled_api
+          cargo check --locked -p codex-hepta-memory-retrieval \
+            --no-default-features --features legacy-uncontrolled-retrieval
+          cargo test --locked -p codex-hepta-memory-retrieval \
+            --no-default-features --features legacy-uncontrolled-retrieval \
+            --test controlled_api
       - name: Verify retained original historical archive and canonical manifest
         run: >-
           python3 scripts/hepta_memory_retrieval_archive.py verify
