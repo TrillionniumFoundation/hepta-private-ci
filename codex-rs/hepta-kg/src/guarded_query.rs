@@ -11,7 +11,6 @@ use std::fmt;
 
 use crate::KnowledgeGenerationErrorV2;
 use crate::KnowledgeGenerationV2;
-use crate::validation::ValidatedKnowledgeGenerationV2;
 use crate::KnowledgeOperationGuardV2;
 use crate::KnowledgePhysicalLimitsV2;
 use crate::KnowledgePhysicalUsageV2;
@@ -24,6 +23,7 @@ use crate::KnowledgeResourceErrorV2;
 use crate::VerifiedKnowledgeGenerationV2;
 use crate::validate_generation_physical_limits_v2;
 use crate::validate_query_output_physical_limits_v2;
+use crate::validation::ValidatedKnowledgeGenerationV2;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct KnowledgePhysicalQueryObservationV2 {
