@@ -154,7 +154,7 @@ async fn redirected_root_remains_indeterminate_at_product_boundary() -> TestResu
     let config = configuration(&root, true)?;
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let before = store.recovery_anchor().await?;
-    drop(store);
+    store.close_for_recovery_handoff().await?;
     let cognitive = config.identity().layout.cognitive_root().to_path_buf();
     let retained = root.join("retained-cognitive-generation");
     fs::rename(&cognitive, &retained)?;
@@ -239,11 +239,16 @@ async fn committed_child_exit_before_witness_update_rejects_stale_restart() -> T
         }
         tokio::time::sleep(Duration::from_millis(20)).await;
     };
-    assert_eq!(
-        status.code(),
-        Some(86),
-        "child must exit after a committed semantic write"
-    );
+    if status.code() != Some(86) {
+        let diagnostics = match fs::read_to_string(root.join("child.log")) {
+            Ok(value) => value,
+            Err(error) => format!("<unable to read child log: {error}>"),
+        };
+        return Err(format!(
+            "child must exit after a committed semantic write; status={status:?}; diagnostics:\n{diagnostics}"
+        )
+        .into());
+    }
     assert_eq!(fs::read(root.join("retained-witness.json"))?, witness);
     let error = open(&config, &before, 2, Arc::new(AtomicBool::new(true)))
         .await
@@ -310,7 +315,9 @@ fn configuration(root: &Path, initialize: bool) -> TestResult<AgentdConfig> {
 
 async fn seed(config: &AgentdConfig) -> TestResult<CognitiveRecoveryAnchor> {
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    Ok(store.recovery_anchor().await?)
+    let anchor = store.recovery_anchor().await?;
+    store.close_for_recovery_handoff().await?;
+    Ok(anchor)
 }
 
 fn now_seconds() -> TestResult<u64> {

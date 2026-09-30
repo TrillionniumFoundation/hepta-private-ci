@@ -107,6 +107,18 @@ async fn agentd_product_host_commits_through_canonical_cognitive_store()
 
     let after = host.writer().recovery_anchor().await?;
     assert_ne!(after, before);
+    assert!(
+        host.writer().release().await.is_err(),
+        "an unresolved local occurrence must fence lease terminalization"
+    );
+    let rejected = host
+        .writer()
+        .reject(
+            "occurrence:product-writer:1",
+            "qualification closes the admitted fixture occurrence",
+        )
+        .await?;
+    assert_eq!(rejected.state, LocalOutcomeState::Rejected);
     host.writer().release().await?;
     drop(host);
 
@@ -144,7 +156,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
-    drop(store);
+    store.close_for_recovery_handoff().await?;
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -184,11 +196,23 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    assert_ne!(
+        recovered_anchor, expected,
+        "writer lease admission must advance non-semantic provenance after exact recovery"
+    );
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
+    let reader = host
+        .read_capability()
+        .ok_or("recovered product host omitted its bounded read capability")?;
+    let opened = reader
+        .lane_c_snapshot_page(&access, &scope, now, 1, None)
+        .await?;
+    assert!(opened.records().is_empty());
+    assert_eq!(opened.frontiers().memory, 0);
+    assert!(!opened.authority().grants_any());
     let content = "Production semantic memory survives recovery.";
     let source = SourceDraft {
         scope: scope.clone(),

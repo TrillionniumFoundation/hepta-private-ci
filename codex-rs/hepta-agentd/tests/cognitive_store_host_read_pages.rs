@@ -8,6 +8,8 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdProductionWriterHost;
@@ -44,7 +46,9 @@ async fn ordinary_host_reader_tracks_correction_tombstone_and_revoked_writer()
     let config = configuration(&temp.path().canonicalize()?)?;
     let anchor = {
         let seed = CognitiveStore::open(&config.identity().layout).await?;
-        seed.recovery_anchor().await?
+        let anchor = seed.recovery_anchor().await?;
+        seed.close_for_recovery_handoff().await?;
+        anchor
     };
     let owner = config.identity().agent_id.clone();
     let grant = Sha256Digest::for_bytes(b"host-read-page-fixture-grant");
@@ -53,7 +57,12 @@ async fn ordinary_host_reader_tracks_correction_tombstone_and_revoked_writer()
         grant.clone(),
         /*authority_epoch*/ 1,
         /*owner_epoch*/ 1,
-        /*lease_expires_at_unix_seconds*/ u64::MAX,
+        /*lease_expires_at_unix_seconds*/
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)?
+            .as_secs()
+            .checked_add(3_600)
+            .ok_or("host-read-page fixture expiry overflow")?,
         ProductionAuthorityToken::from_verified_bytes(b"host-read-page-fixture-token".to_vec())?,
     )?;
     let live = Arc::new(AtomicBool::new(true));

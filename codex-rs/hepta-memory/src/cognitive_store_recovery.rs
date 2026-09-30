@@ -167,8 +167,8 @@ impl CognitiveStore {
         let canonical_root = canonical_path_without_redirection(root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
             .ok_or_else(|| {
-                CognitiveRecoveryError::Unavailable(
-                    "cognitive recovery root does not exist".to_string(),
+                CognitiveRecoveryError::Indeterminate(
+                    "cognitive recovery root is redirected".to_string(),
                 )
             })?;
         if canonical_root != root {

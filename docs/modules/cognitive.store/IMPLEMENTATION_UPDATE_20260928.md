@@ -186,3 +186,26 @@ not establish target-host qualification, independent acceptance, activation or r
 The repository now includes two additional read-only evidence verifiers. `host_qualification.py` authenticates the complete selected-host ceremony—exact-source bootstrap, publication-fault indeterminacy, canary, crash/restart, witness-gap reconciliation, revocation, fresh-generation rollback and both recovery profiles—against independently pinned plan/trust digests. Its v2 contract binds the rollback to a strictly newer writer generation and distinct authority grant, then requires both recovery profiles to use that new context; a semantic-cut match alone cannot masquerade as fresh-generation rollback. `retention_readiness.py` authenticates ordered immutable-segment owner receipts and an unpublished successor rebuild that preserves the exact cut, head set, tombstone/source/fact/KG frontiers and all rebuild checks. Its v2 range contract rejects reversed, degenerate multi-row, overlapping and reordered segment ranges. Acceptance v2 additionally rejects later approvals built on supplied non-approved prerequisite reviews rather than treating a contradictory approval chain as a merely incomplete set.
 
 Neither tool performs the observed effects. A complete host report does not set target-host qualification, SLO acceptance, activation or release. A complete retention report does not publish a successor, prune hot history, erase a predecessor or prove physical erasure. These contracts make missing, pending, mismatched or stale evidence executable failures without fabricating the remaining external operations.
+
+## Follow-on: quiescent recovery handoff and exact execution repairs
+
+Descriptor recovery now has an explicit owner handoff instead of relying on
+`SqlitePool` drop timing. `CognitiveStore::close_for_recovery_handoff` consumes the
+process-scoped handle, closes the shared pool and waits for pooled connections, then
+normalizes and synchronizes the database and remaining WAL/SHM/journal identities while
+the store fence is still retained. Recovery remains unavailable if another clone keeps
+the open guard. The 256/16,384 release profiles and cross-process recovery fixtures use
+this same public handoff; immutable-file checks are not relaxed to make measurements pass.
+
+A canonicalization result that proves the recovery root was redirected is preserved as
+`Indeterminate`, not collapsed into ordinary unavailability. Product regressions also
+retain the unresolved-occurrence rule: lease release is denied until the admitted
+occurrence reaches an explicit terminal state. Recovery tests distinguish the exact
+pre-admission witness from the writer cut after local lease/provenance admission, while
+the bounded read page proves that no semantic Memory row was replayed.
+
+The schema-oracle regression now opens SQLite through the repository durability shim,
+and strict-Clippy helpers propagate or contextually fail without `expect` exemptions.
+These changes repair exact-candidate source execution only. Target-host acceptance,
+physical erasure, independent approval, activation and release remain separate evidence
+gates and stay false until their externally governed receipts exist.

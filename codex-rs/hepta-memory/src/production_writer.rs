@@ -3493,18 +3493,30 @@ mod final_use_dispatch_tests {
     use std::sync::atomic::Ordering;
     use tempfile::TempDir;
 
+    #[track_caller]
+    fn must<T, E: std::fmt::Display>(result: Result<T, E>, context: &str) -> T {
+        match result {
+            Ok(value) => value,
+            Err(error) => panic!("{context}: {error}"),
+        }
+    }
+
     fn agent() -> AgentId {
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").expect("agent")
+        must(
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff"),
+            "agent",
+        )
     }
 
     async fn store(temp: &TempDir) -> CognitiveStore {
         let root = temp.path().join("fleet-final-use");
-        std::fs::create_dir_all(&root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root"))
-            .expect("fleet root");
-        CognitiveStore::open(&fleet.layout().agent(&agent()))
-            .await
-            .expect("store")
+        must(std::fs::create_dir_all(&root), "fleet root");
+        let canonical = must(root.canonicalize(), "canonical root");
+        let fleet = must(HeptaFleetRoot::parse(canonical), "fleet root");
+        must(
+            CognitiveStore::open(&fleet.layout().agent(&agent())).await,
+            "store",
+        )
     }
 
     struct FinalUseVerifier;
@@ -3564,36 +3576,39 @@ mod final_use_dispatch_tests {
         destination: &str,
         payload: &str,
     ) -> OperationIntentV1 {
-        OperationIntentV1::new(
-            StableId::new(operation_id).expect("operation id"),
-            StableId::new(owner.as_str()).expect("subject"),
-            StableId::new(destination).expect("destination"),
-            Digest32::of_bytes(payload.as_bytes()),
-            Digest32::of_bytes(b"scope:production-test"),
-            codex_hepta_types::Generation::new(1).expect("policy generation"),
-            None,
+        must(
+            OperationIntentV1::new(
+                must(StableId::new(operation_id), "operation id"),
+                must(StableId::new(owner.as_str()), "subject"),
+                must(StableId::new(destination), "destination"),
+                Digest32::of_bytes(payload.as_bytes()),
+                Digest32::of_bytes(b"scope:production-test"),
+                must(codex_hepta_types::Generation::new(1), "policy generation"),
+                None,
+            ),
+            "operation intent",
         )
-        .expect("operation intent")
     }
 
     fn production_authority(owner: AgentId) -> ProductionAuthorityLease {
-        ProductionAuthorityLease::from_verified_parts(
-            owner,
-            Sha256Digest::for_bytes(b"production-grant"),
-            31,
-            41,
-            now_unix_seconds().expect("clock") + 3_600,
-            ProductionAuthorityToken::from_verified_bytes(b"production-token".to_vec())
-                .expect("token"),
+        must(
+            ProductionAuthorityLease::from_verified_parts(
+                owner,
+                Sha256Digest::for_bytes(b"production-grant"),
+                31,
+                41,
+                must(now_unix_seconds(), "clock") + 3_600,
+                must(
+                    ProductionAuthorityToken::from_verified_bytes(b"production-token".to_vec()),
+                    "token",
+                ),
+            ),
+            "authority",
         )
-        .expect("authority")
     }
 
     fn test_nonce(label: &str) -> [u8; 32] {
-        let now_nanos = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_nanos();
+        let now_nanos = must(SystemTime::now().duration_since(UNIX_EPOCH), "clock").as_nanos();
         let material = format!("{label}:{now_nanos}:{}", std::process::id());
         let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
         digest.into()
@@ -3605,10 +3620,7 @@ mod final_use_dispatch_tests {
         grant_id: &str,
         nonce: [u8; 32],
     ) -> SignedFinalUseGrant {
-        let now_ms = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_millis() as u64;
+        let now_ms = must(SystemTime::now().duration_since(UNIX_EPOCH), "clock").as_millis() as u64;
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "final-use-owner".to_string(),
@@ -3619,10 +3631,8 @@ mod final_use_dispatch_tests {
             not_before_unix_ms: now_ms.saturating_sub(1_000),
             expires_at_unix_ms: now_ms + 30_000,
         };
-        let signature = issuer
-            .sign(&grant.signing_bytes().expect("signing bytes"))
-            .to_bytes()
-            .to_vec();
+        let signing_bytes = must(grant.signing_bytes(), "signing bytes");
+        let signature = issuer.sign(&signing_bytes).to_bytes().to_vec();
         SignedFinalUseGrant { grant, signature }
     }
 

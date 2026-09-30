@@ -175,7 +175,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             .await?;
     }
     let (anchor, initial_acquire, initial_held) = store.recovery_anchor_measured().await?;
-    drop(store);
+    store.close_for_recovery_handoff().await?;
     let root = layout.cognitive_root();
     let baseline_bytes = directory_bytes(root)?;
     let sampler = Sampler::start(root.to_path_buf());
@@ -241,7 +241,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             "activeDatabaseBytes": std::fs::metadata(recovered.path())?.len(),
             "exactCutPreserved": true,
         }));
-        drop(recovered);
+        recovered.close_for_recovery_handoff().await?;
     }
     let samples = sampler.finish()?;
     let report = json!({

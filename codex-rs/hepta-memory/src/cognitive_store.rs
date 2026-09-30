@@ -351,6 +351,37 @@ impl CognitiveStore {
         &self.owner_agent_id
     }
 
+    /// Consume this process-scoped owner and establish a stable filesystem
+    /// handoff for descriptor-bound recovery.
+    ///
+    /// Closing a SQLx pool by dropping its last handle is asynchronous. A host
+    /// that immediately starts recovery can otherwise race SQLite WAL/SHM
+    /// cleanup and fail the immutable file-identity check. This method closes
+    /// the shared pool explicitly, waits for every pooled connection, then
+    /// normalizes and synchronizes the database and any remaining sidecars
+    /// while this handle still retains the store fence.
+    ///
+    /// Calling this method closes the shared pool for every clone. If another
+    /// `CognitiveStore` clone retains the open guard, subsequent writable
+    /// recovery still fails closed when it cannot acquire the exclusive fence.
+    pub async fn close_for_recovery_handoff(self) -> Result<(), CognitiveStoreError> {
+        let path = self.path.clone();
+        self.pool.close().await;
+        protect_sqlite_recovery_files(&path)?;
+        #[cfg(unix)]
+        {
+            let parent = path.parent().ok_or_else(|| {
+                CognitiveStoreError::Invalid(
+                    "SQLite owner file has no recovery handoff directory".to_string(),
+                )
+            })?;
+            File::open(parent)
+                .and_then(|directory| directory.sync_all())
+                .map_err(unavailable)?;
+        }
+        Ok(())
+    }
+
     /// Returns whether two handles refer to the same Agent-local database and
     /// owner.  This is crate-private so composite local writers can reject a
     /// lease/executor assembled from different stores before opening a
