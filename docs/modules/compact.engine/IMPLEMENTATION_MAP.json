@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e58f4c20720bc197dd4087c3688584b62ece1ceb",
-    "tree": "c47d38d4826be7309ebce05b953f7f9661593a4b"
+    "commit": "2f79c3b877e5970183c347d8f7481d9c9cb24090",
+    "tree": "7ec81b0fb33f7ed367a0f1a7cfeb96597be60317"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -90,11 +90,45 @@
       "designOperation": "prove_compaction_with_signed_evidence_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "admit_publication_proposal_v1",
+      "nativeSymbol": "new",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/publication.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/publication_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_publication_proposal_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/authenticated.rs",
+        "codex-rs/hepta-compact-engine/src/candidate.rs"
+      ]
+    },
+    {
+      "operation": "revalidate_publication_proposal_v1",
+      "nativeSymbol": "revalidate",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/publication.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/publication_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_publication_proposal_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/authenticated.rs",
+        "codex-rs/hepta-compact-engine/src/candidate.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
     "Compose a named product consumer of the existing SQLite owner lane_c_lineage observation with frozen external context and policy/input validation; test composition is not product execution.",
-    "Establish compact-owned fenced atomic publication, selected-generation CAS, restart-resolvable payloads and revocation-aware reload/recovery. Revalidate source eligibility in the publication transaction.",
+    "Implement compact-owned fenced atomic publication for the sealed native proposal, a complete restart body/outbox codec, selected-generation CAS and revocation-aware reload/recovery. Revalidate current host/source eligibility in that publication transaction.",
     "Provision host trust and scope/objective/epoch mappings, execute the signed candidate-specific evaluation obligations independently, and revalidate sealed proof/source bindings at every use.",
     "Implement target replay planning and skill proposal separately; neither is implied by checkpoint construction.",
     "Run exact-head and deterministic synthetic-merge checks and named COMPACT-01..04 product acceptance before changing the claim boundary."
