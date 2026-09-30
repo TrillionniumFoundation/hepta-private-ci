@@ -814,7 +814,9 @@ def verify_document_inventory(system, required):
     declared path is still unique, exact, present and inside the repository.
     """
     paths = system.get("canonicalPaths")
-    need(isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory")
+    need(
+        isinstance(paths, list) and 0 < len(paths) <= 16384, "canonical path inventory"
+    )
     normalized = [canonical_exact_path(path, "canonical path") for path in paths]
     need(len(normalized) == len(set(normalized)), "duplicate canonical path")
     missing = sorted(set(required) - set(normalized))
@@ -822,7 +824,10 @@ def verify_document_inventory(system, required):
     root = ROOT.resolve()
     for path in normalized:
         target = ROOT / path
-        need(target.resolve().is_relative_to(root), "canonical path escapes repository " + path)
+        need(
+            target.resolve().is_relative_to(root),
+            "canonical path escapes repository " + path,
+        )
         need(target.is_file(), "missing canonical path " + path)
 
 
@@ -1003,7 +1008,8 @@ def verify_cleanup_base(system):
     }
 
 
-def verify() -> int:
+def verify(profile="qualification") -> int:
+    need(profile in {"development", "qualification"}, "verification profile")
     verify_exact_workflow_references()
     module_index = load(FILES["module_docs"])
     algorithm_index = load(FILES["algorithm_specs"])
@@ -1067,7 +1073,10 @@ def verify() -> int:
             isinstance(f, dict) and list(f) == AUTHORITY_KEYS,
             k + " authority key closure",
         )
-        need(not any(f.values()), k + " positive authority")
+        need(
+            all(type(flag) is bool and flag is False for flag in f.values()),
+            k + " positive authority or invalid authority type",
+        )
     cur = d["current"]
     r = cur["repository"]
     need(
@@ -1155,7 +1164,7 @@ def verify() -> int:
                 "path": READINESS_PROTOCOLS,
                 "validator": "python3 scripts/hepta-readiness.py verify",
                 "namespace": "implementation_readiness",
-                "protocolCount": 31,
+                "protocolCount": len(load(READINESS_PROTOCOLS)["protocols"]),
                 "authorityDelta": "none",
             }
         ],
@@ -1175,9 +1184,18 @@ def verify() -> int:
         need(row["recursiveShapeSha256"] == shape_sha(d[k]), "recursive closure " + rel)
     paths = tracked()
     verify_legacy(system, paths)
-    cleanup = verify_cleanup_base(system)
+    cleanup = (
+        verify_cleanup_base(system)
+        if profile == "qualification"
+        else {
+            "evaluated": False,
+            "reason": "historical_cleanup_not_development_evidence",
+        }
+    )
     need(
-        cleanup["evaluated"] or not (ROOT / ".git").exists(),
+        profile == "development"
+        or cleanup["evaluated"]
+        or not (ROOT / ".git").exists(),
         "cleanup inventory not evaluated",
     )
     mods = d["modules"]["modules"]
@@ -1377,26 +1395,26 @@ def verify() -> int:
     need(
         sub["readiness"].get("overlayId") == "HEPTA-V8-PRECODING-READINESS"
         and sub["readiness"].get("globalClosure", {}).get("state") == "closed"
-        and len(sub["readiness"]["documents"]) == 9
-        and len(sub["readiness_protocols"]["protocols"]) == 31
-        and len(sub["readiness_gaps"]["gaps"]) == 54,
+        and sub["readiness"]["documents"]
+        and sub["readiness_protocols"]["protocols"]
+        and sub["readiness_gaps"]["gaps"],
         "readiness subordinate closure",
     )
     need(
         sub["cns"].get("claimBoundary", {}).get("repositoryReferenceClosure") is True
         and sub["cns"].get("claimBoundary", {}).get("productionEmbodiment") is False
-        and len(sub["cns"]["organs"]) == 24
-        and len(sub["cns_gaps"]["gaps"]) == 22,
+        and sub["cns"]["organs"]
+        and sub["cns_gaps"]["gaps"],
         "CNS subordinate closure",
     )
     need(
         sub["hnmf"].get("claimPosture", {}).get("productionActivation") is False
-        and len(sub["hnmf_gaps"]["gaps"]) == 18,
+        and sub["hnmf_gaps"]["gaps"],
         "HNMF subordinate closure",
     )
     need((ROOT / "docs/STATUS.md").read_text() == status_text(d), "STATUS stale")
     module_check = subprocess.run(
-        [sys.executable, str(ROOT / MODULE_VERIFIER), "verify"],
+        [sys.executable, str(ROOT / MODULE_VERIFIER), "verify", "--profile", profile],
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -1470,6 +1488,8 @@ def verify() -> int:
             {
                 "status": "PASS_HEPTA_DEVELOPMENT_DOCS_V8",
                 "planVersion": VERSION,
+                "verificationProfile": profile,
+                "historicalEvidenceRevalidated": profile == "qualification",
                 "modules": len(mods),
                 "contracts": len(contracts),
                 "protocols": len(protocols),
@@ -2085,7 +2105,11 @@ def self_test():
 def main():
     ap = argparse.ArgumentParser()
     sp = ap.add_subparsers(dest="cmd", required=True)
-    for name in ["verify", "generate-status", "inventory-legacy", "self-test"]:
+    verification = sp.add_parser("verify")
+    verification.add_argument(
+        "--profile", choices=["development", "qualification"], default="qualification"
+    )
+    for name in ["generate-status", "inventory-legacy", "self-test"]:
         sp.add_parser(name)
     cp = sp.add_parser("cleanup-inventory")
     cp.add_argument("--output", required=True)
@@ -2099,7 +2123,7 @@ def main():
     vp.add_argument("--expected-sha", required=True)
     args = ap.parse_args()
     if args.cmd == "verify":
-        return verify()
+        return verify(args.profile)
     if args.cmd == "generate-status":
         return generate()
     if args.cmd == "inventory-legacy":

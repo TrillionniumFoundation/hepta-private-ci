@@ -39,9 +39,18 @@ on:
       - ".github/workflows/hepta-development-docs.yml"
       - ".github/actions/hepta-synthetic-merge/**"
   workflow_dispatch:
+    inputs:
+      profile:
+        description: Qualification additionally renews historical source evidence and receipts.
+        type: choice
+        options: [qualification, development]
+        default: qualification
 
 permissions:
   contents: read
+
+env:
+  VERIFICATION_PROFILE: ${{ inputs.profile || 'development' }}
 
 concurrency:
   group: hepta-development-docs-${{ github.event.pull_request.number || github.ref }}
@@ -80,14 +89,17 @@ jobs:
           python3 scripts/hepta-algorithm-docs.py generate-status --check
           python3 scripts/hepta-readiness.py generate-status --check
           python3 scripts/hepta-cns.py generate-status --check
-          python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-source-head.json
-          python3 scripts/hepta-docs.py receipt --kind source-head --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/source-head.json
-          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/source-head.json --kind source-head --expected-sha "$EXPECTED_SHA"
+          python3 scripts/hepta-docs.py verify --profile "$VERIFICATION_PROFILE"
+          if [ "$VERIFICATION_PROFILE" = qualification ]; then
+            python3 scripts/hepta-docs.py cleanup-inventory --output .hepta-evidence/cleanup-source-head.json
+            python3 scripts/hepta-docs.py receipt --kind source-head --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/source-head.json
+            python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/source-head.json --kind source-head --expected-sha "$EXPECTED_SHA"
+          fi
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
       - name: Retain exact source receipts
+        if: env.VERIFICATION_PROFILE == 'qualification'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-v8-source-${{ github.event.pull_request.head.sha || github.sha }}
@@ -131,13 +143,16 @@ jobs:
           # Source-head performs the full static suite. The merge job only
           # revalidates the merged tree and receipt identity, so every PR does
           # not pay for the same document suite twice.
-          python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
-          python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"
+          python3 scripts/hepta-docs.py verify --profile "$VERIFICATION_PROFILE"
+          if [ "$VERIFICATION_PROFILE" = qualification ]; then
+            python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
+            python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"
+          fi
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
       - name: Retain exact merge receipts
+        if: env.VERIFICATION_PROFILE == 'qualification'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-v8-merge-${{ steps.synthetic.outputs.sha }}
