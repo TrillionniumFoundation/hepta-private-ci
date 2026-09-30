@@ -1,4 +1,4 @@
-name: Hepta knowledge.graph stage-one three-way apply
+name: Hepta knowledge.graph stage-one materialization
 
 on:
   push:
@@ -8,18 +8,20 @@ on:
       - .github/workflows/hepta-kg-stage1-apply-3way.yml
   workflow_dispatch:
 
+# Transitional one-shot materializer. The produced source commit deletes this
+# workflow and every other stage-one apply workflow before it is pushed.
 permissions:
   contents: write
 
 concurrency:
-  group: hepta-kg-stage1-three-way-${{ github.ref }}
+  group: hepta-kg-stage1-materialize-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  apply:
-    name: Apply reviewed stage-one patch with three-way fallback
+  materialize:
+    name: Materialize reviewed stage-one patch as ordinary source
     runs-on: macos-15
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -61,23 +63,51 @@ jobs:
 
           git apply --stat "$RUNNER_TEMP/kg-stage1.patch"
           git apply --3way --index "$RUNNER_TEMP/kg-stage1.patch"
+          git diff --cached --check
 
-      - name: Run stage-one preflight
+      - name: Prepare native prerequisites
         shell: bash
         run: |
           set -euo pipefail
-          test -f scripts/hepta_kg_stage1_preflight.py
-          python3 scripts/hepta_kg_stage1_preflight.py
-          git diff --check --cached
-          git status --short
+          command -v protoc >/dev/null || brew install protobuf
 
-      - name: Commit and push exact patch result
+      - name: Format and verify materialized source
         shell: bash
         run: |
           set -euo pipefail
+          cd codex-rs
+          cargo fmt --package codex-hepta-kg \
+            --package codex-hepta-prompt-registry \
+            --package codex-hepta-prompt-optimizer \
+            --package codex-hepta-memory \
+            --package codex-hepta-agentd
+          cargo fmt --package codex-hepta-kg \
+            --package codex-hepta-prompt-registry \
+            --package codex-hepta-prompt-optimizer \
+            --package codex-hepta-memory \
+            --package codex-hepta-agentd -- --check
+          cargo test -p codex-hepta-kg -p codex-hepta-prompt-optimizer --no-fail-fast
+          cargo test -p codex-hepta-memory --lib --no-run
+          cargo test -p codex-hepta-memory --test kg_delivery_consistency --no-run
+          cargo clippy -p codex-hepta-kg --all-targets -- -D warnings
+          cd ..
+          python3 scripts/hepta_kg_legacy_guard.py
+          python3 -m unittest discover -s scripts -p 'test_hepta_kg_*.py' -v
+          git diff --check
+
+      - name: Commit ordinary source and retire write workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm -f \
+            .github/workflows/hepta-kg-stage1-apply.yml \
+            .github/workflows/hepta-kg-stage1-apply-clean.yml \
+            .github/workflows/hepta-kg-stage1-apply-3way.yml
+          git add -A
+          git diff --cached --check
           if git diff --cached --quiet; then
             echo "reviewed stage-one patch produced no changes" >&2
             exit 1
           fi
-          git commit -s -m "feat(knowledge.graph): close stage-one resource correctness"
+          git commit -s -m "feat(knowledge.graph): materialize stage-one resource correctness"
           git push origin HEAD:work/kg-abc-evidence-hardening-20260928
