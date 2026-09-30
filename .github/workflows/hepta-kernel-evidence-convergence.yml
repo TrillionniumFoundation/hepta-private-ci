@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: kernel-evidence-convergence-${{ github.event.pull_request.number || github.ref }}
@@ -83,6 +83,72 @@ jobs:
           path: /tmp/evidence-convergence/
           if-no-files-found: error
           retention-days: 14
+
+  materialize-map-once:
+    name: Materialize final kernel.evidence map once
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.ref == 'codex/kernel-evidence-final-closure-20260930' &&
+      contains(github.event.pull_request.head.sha, github.event.pull_request.head.sha)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EXPECTED_PARENT: 1ea41eb082f7562cd6011affa49d1e4e437f9031
+      TARGET_BRANCH: codex/kernel-evidence-final-closure-20260930
+      WORKFLOW_PATH: .github/workflows/hepta-kernel-evidence-convergence.yml
+    steps:
+      - name: Check out exact materialization request
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Admit the exact one-shot request
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          git log -1 --format=%B | grep -Fq '[kernel-evidence-map-via-existing-workflow]'
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Restore the read-only convergence workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout "$EXPECTED_PARENT" -- "$WORKFLOW_PATH"
+          git add "$WORKFLOW_PATH"
+          git commit -s -m 'ci(kernel.evidence): restore read-only convergence workflow'
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Generate the implementation map from the restored source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module kernel.evidence
+          git diff --check
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+          value = json.loads(Path('docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json').read_text(encoding='utf-8'))
+          expected = {
+              'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+          }
+          if value.get('module') != 'kernel.evidence' or value.get('sourceBase') != expected:
+              raise SystemExit('implementation map is not bound to the restored exact source')
+          PY
+          test "$(git diff --name-only)" = 'docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json'
+          git add docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json
+          git commit -s -m 'docs(kernel.evidence): bind final implementation map'
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Publish only if the branch is unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "refs/heads/$TARGET_BRANCH"
+          test "$(git rev-parse HEAD^^)" = "$(git rev-parse FETCH_HEAD)"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
 
   required:
     name: Kernel evidence convergence required
