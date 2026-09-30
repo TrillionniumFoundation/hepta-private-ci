@@ -17,14 +17,12 @@ use std::time::Instant;
 use codex_hepta_types::StableId;
 
 use crate::KnowledgeEdgeV2;
-use crate::KnowledgeGenerationErrorV2;
 use crate::KnowledgeGenerationV2;
 use crate::KnowledgeNodeV2;
 use crate::KnowledgeProjectionInputV2;
 use crate::KnowledgeRelationKindV2;
 use crate::KnowledgeRelationResultV2;
 use crate::KnowledgeSupportV2;
-use crate::VerifiedKnowledgeGenerationV2;
 
 pub const MAX_KNOWLEDGE_GENERATION_BYTES_V2: u64 = 128 * 1024 * 1024;
 pub const MAX_KNOWLEDGE_QUERY_OUTPUT_BYTES_V2: u64 = 8 * 1024 * 1024;
@@ -132,6 +130,8 @@ impl Default for KnowledgePhysicalLimitsV2 {
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct KnowledgePhysicalUsageV2 {
+    /// Deterministic cross-host admission cost. This is not allocator RSS,
+    /// SQLite page growth or wire-encoding size.
     pub canonical_bytes: u64,
     pub maximum_field_bytes: u64,
     pub node_count: u64,
@@ -551,150 +551,11 @@ impl Drop for KnowledgePublicationPermitV2<'_> {
     }
 }
 
-struct CachedGenerationV2 {
-    view: Arc<VerifiedKnowledgeGenerationV2>,
-    bytes: u64,
-    last_access: u64,
-}
-
-#[derive(Debug)]
-pub enum KnowledgeCacheErrorV2 {
-    Generation(KnowledgeGenerationErrorV2),
-    Resource(KnowledgeResourceErrorV2),
-}
-
-impl fmt::Display for KnowledgeCacheErrorV2 {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Generation(error) => write!(formatter, "{error}"),
-            Self::Resource(error) => write!(formatter, "{error}"),
-        }
-    }
-}
-
-impl StdError for KnowledgeCacheErrorV2 {
-    fn source(&self) -> Option<&(dyn StdError + 'static)> {
-        match self {
-            Self::Generation(error) => Some(error),
-            Self::Resource(error) => Some(error),
-        }
-    }
-}
-
-struct KnowledgeGenerationCacheStateV2 {
-    clock: u64,
-    bytes: u64,
-    entries: BTreeMap<String, CachedGenerationV2>,
-}
-
-pub struct KnowledgeGenerationCacheV2 {
-    maximum_entries: usize,
-    maximum_bytes: u64,
-    limits: KnowledgePhysicalLimitsV2,
-    state: Mutex<KnowledgeGenerationCacheStateV2>,
-}
-
-impl KnowledgeGenerationCacheV2 {
-    pub fn new(
-        maximum_entries: usize,
-        maximum_bytes: u64,
-        limits: KnowledgePhysicalLimitsV2,
-    ) -> Self {
-        Self {
-            maximum_entries,
-            maximum_bytes,
-            limits,
-            state: Mutex::new(KnowledgeGenerationCacheStateV2 {
-                clock: 0,
-                bytes: 0,
-                entries: BTreeMap::new(),
-            }),
-        }
-    }
-
-    pub fn get_or_insert(
-        &self,
-        generation: KnowledgeGenerationV2,
-    ) -> Result<Arc<VerifiedKnowledgeGenerationV2>, KnowledgeCacheErrorV2> {
-        generation
-            .validate()
-            .map_err(KnowledgeCacheErrorV2::Generation)?;
-        let digest = generation.generation_digest.to_string();
-        let usage = validate_generation_physical_limits_v2(&generation, self.limits)
-            .map_err(KnowledgeCacheErrorV2::Resource)?;
-        if usage.canonical_bytes > self.maximum_bytes || self.maximum_entries == 0 {
-            return Err(KnowledgeCacheErrorV2::Resource(
-                KnowledgeResourceErrorV2::exceeded(
-                    KnowledgeResourceErrorCodeV2::CacheCapacityExceeded,
-                    usage.canonical_bytes,
-                    self.maximum_bytes,
-                    "single cached generation bytes",
-                ),
-            ));
-        }
-        let mut state = self.state.lock().map_err(|_| {
-            KnowledgeCacheErrorV2::Resource(KnowledgeResourceErrorV2::exceeded(
-                KnowledgeResourceErrorCodeV2::StatePoisoned,
-                1,
-                0,
-                "generation cache mutex",
-            ))
-        })?;
-        state.clock = state.clock.saturating_add(1);
-        let clock = state.clock;
-        if let Some(entry) = state.entries.get_mut(&digest) {
-            entry.last_access = clock;
-            return Ok(Arc::clone(&entry.view));
-        }
-        let view = Arc::new(
-            VerifiedKnowledgeGenerationV2::new(generation)
-                .map_err(KnowledgeCacheErrorV2::Generation)?,
-        );
-        while state.entries.len() >= self.maximum_entries
-            || state.bytes.saturating_add(usage.canonical_bytes) > self.maximum_bytes
-        {
-            let Some(oldest) = state
-                .entries
-                .iter()
-                .min_by_key(|(_, entry)| entry.last_access)
-                .map(|(key, _)| key.clone())
-            else {
-                break;
-            };
-            if let Some(removed) = state.entries.remove(&oldest) {
-                state.bytes = state.bytes.saturating_sub(removed.bytes);
-            }
-        }
-        state.bytes = state.bytes.saturating_add(usage.canonical_bytes);
-        state.entries.insert(
-            digest,
-            CachedGenerationV2 {
-                view: Arc::clone(&view),
-                bytes: usage.canonical_bytes,
-                last_access: clock,
-            },
-        );
-        Ok(view)
-    }
-
-    pub fn len(&self) -> Result<usize, KnowledgeResourceErrorV2> {
-        self.state
-            .lock()
-            .map(|state| state.entries.len())
-            .map_err(|_| {
-                KnowledgeResourceErrorV2::exceeded(
-                    KnowledgeResourceErrorCodeV2::StatePoisoned,
-                    1,
-                    0,
-                    "generation cache mutex",
-                )
-            })
-    }
-
-    pub fn is_empty(&self) -> Result<bool, KnowledgeResourceErrorV2> {
-        self.len().map(|length| length == 0)
-    }
-}
+#[path = "generation_cache.rs"]
+mod generation_cache;
+pub use generation_cache::KnowledgeCacheErrorV2;
+pub use generation_cache::KnowledgeGenerationCacheMetricsV2;
+pub use generation_cache::KnowledgeGenerationCacheV2;
 
 #[cfg(test)]
 #[path = "resource_tests.rs"]

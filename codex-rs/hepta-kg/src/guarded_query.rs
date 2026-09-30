@@ -11,6 +11,7 @@ use std::fmt;
 
 use crate::KnowledgeGenerationErrorV2;
 use crate::KnowledgeGenerationV2;
+use crate::validation::ValidatedKnowledgeGenerationV2;
 use crate::KnowledgeOperationGuardV2;
 use crate::KnowledgePhysicalLimitsV2;
 use crate::KnowledgePhysicalUsageV2;
@@ -43,9 +44,10 @@ impl KnowledgePhysicalQueryViewV2 {
         generation: KnowledgeGenerationV2,
         limits: KnowledgePhysicalLimitsV2,
     ) -> Result<Self, KnowledgePhysicalQueryErrorV2> {
-        let verified = VerifiedKnowledgeGenerationV2::new(generation)?;
+        let validated = ValidatedKnowledgeGenerationV2::new(generation)?;
         let generation_usage =
-            validate_generation_physical_limits_v2(verified.generation(), limits)?;
+            validate_generation_physical_limits_v2(validated.generation(), limits)?;
+        let verified = VerifiedKnowledgeGenerationV2::from_validated(validated);
         Ok(Self {
             verified,
             limits,

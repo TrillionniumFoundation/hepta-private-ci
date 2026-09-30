@@ -13,6 +13,7 @@ use crate::KnowledgeResourceErrorV2;
 use crate::MAX_QUERY_SUPPORT_WORK_V2;
 use crate::measure_query_edge_bytes_v2;
 use crate::measure_query_result_base_bytes_v2;
+use crate::validation::ValidatedKnowledgeGenerationV2;
 
 const SUPPORT_CHECKPOINT_INTERVAL: u64 = 64;
 
@@ -82,7 +83,12 @@ pub struct VerifiedKnowledgeGenerationV2 {
 
 impl VerifiedKnowledgeGenerationV2 {
     pub fn new(generation: KnowledgeGenerationV2) -> Result<Self, KnowledgeGenerationErrorV2> {
-        generation.validate()?;
+        let validated = ValidatedKnowledgeGenerationV2::new(generation)?;
+        Ok(Self::from_validated(validated))
+    }
+
+    pub(crate) fn from_validated(validated: ValidatedKnowledgeGenerationV2) -> Self {
+        let generation = validated.into_generation();
         let nodes = generation
             .nodes
             .iter()
@@ -104,12 +110,12 @@ impl VerifiedKnowledgeGenerationV2 {
             }
             relation_kinds.insert(edge.identity.relation.clone());
         }
-        Ok(Self {
+        Self {
             generation,
             nodes,
             adjacency,
             relation_kinds,
-        })
+        }
     }
 
     pub fn generation(&self) -> &KnowledgeGenerationV2 {
@@ -150,7 +156,12 @@ impl VerifiedKnowledgeGenerationV2 {
         maximum_support_work: u64,
     ) -> Result<(KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2), KnowledgeGenerationErrorV2>
     {
-        match self.query_relations_external(query, Some(maximum_support_work)) {
+        let guard = KnowledgeOperationGuardV2::unbounded(KnowledgeCancellationV2::default());
+        match self.query_relations_external_guarded(
+            query,
+            Some(maximum_support_work),
+            &guard,
+        ) {
             Ok(result) => Ok(result),
             Err(KnowledgeQueryAdmissionErrorV2::Query(error)) => Err(error),
             Err(KnowledgeQueryAdmissionErrorV2::InvalidBudget { .. })

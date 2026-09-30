@@ -10,6 +10,7 @@ mod legacy_v1;
 mod prompt_factor;
 mod publication;
 mod resource;
+mod validation;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -76,6 +77,7 @@ pub use publication::KnowledgeTransactionalStorageV2;
 pub use publication::publish_transactionally;
 pub use resource::KnowledgeCacheErrorV2;
 pub use resource::KnowledgeCancellationV2;
+pub use resource::KnowledgeGenerationCacheMetricsV2;
 pub use resource::KnowledgeGenerationCacheV2;
 pub use resource::KnowledgeJsonShapeV2;
 pub use resource::KnowledgeOperationGuardV2;
