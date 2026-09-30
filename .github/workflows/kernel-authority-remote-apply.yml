@@ -29,8 +29,11 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = d98cf4f4d98a9e6858b103ffc4668a86b304ee49
           test -z "$(git status --porcelain)"
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
-        with:
-          tool: actionlint@1.7.7
+      - name: Install pinned actionlint
+        shell: bash
+        run: |
+          set -euo pipefail
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+          "$HOME/go/bin/actionlint" -version
       - name: Lint target capacity workflow
-        run: actionlint -verbose .github/workflows/kernel-authority-target-capacity.yml
+        run: "$HOME/go/bin/actionlint" -verbose .github/workflows/kernel-authority-target-capacity.yml
