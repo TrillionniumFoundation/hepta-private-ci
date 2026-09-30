@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import tempfile
 from pathlib import Path
@@ -11,6 +12,9 @@ from platform_wire_status_receipts import (
     ACCEPT,
     ASSERTS,
     DESIGN,
+    FUZZ,
+    FUZZ_SCHEMA,
+    FUZZ_TARGETS,
     IMPL,
     PERF,
     PROD,
@@ -19,7 +23,40 @@ from platform_wire_status_receipts import (
 )
 
 
-def fixtures(source: str) -> tuple[dict, dict]:
+def workflow_receipt(kind: str, source: str, tested: str, **extra: object) -> dict:
+    payload = {
+        "schema": SCHEMA,
+        "kind": kind,
+        "source_sha": source,
+        "tested_sha": tested,
+        "status": "passed",
+        "workflow": "fixture",
+        "workflow_ref": "fixture@main",
+        "run_id": 1,
+        "run_attempt": 1,
+        "event": "pull_request",
+        "generated_at": "2026-09-29T00:00:00Z",
+    }
+    payload.update(extra)
+    return payload
+
+
+def acceptance_receipt(kind: str, source: str, approver: str) -> dict:
+    return {
+        "schema": SCHEMA,
+        "kind": kind,
+        "source_sha": source,
+        "tested_sha": source,
+        "status": "accepted",
+        "approver": approver,
+        "approver_role": ACCEPT[kind],
+        "implementation_author": "implementation-author",
+        "approved_at": "2026-09-29T00:00:00Z",
+        "evidence_url": "https://github.com/o/r/pull/1",
+    }
+
+
+def performance_fixture(source: str) -> dict:
     paths = [
         {
             "path_id": f"p{index}",
@@ -31,7 +68,7 @@ def fixtures(source: str) -> tuple[dict, dict]:
         }
         for index in range(5)
     ]
-    performance = workflow_receipt(
+    return workflow_receipt(
         PERF,
         source,
         source,
@@ -55,6 +92,9 @@ def fixtures(source: str) -> tuple[dict, dict]:
         p99_ratio_denominator=100,
         paths=paths,
     )
+
+
+def production_fixture(source: str) -> dict:
     metrics = {
         "authenticated-ingress": {
             "authenticated_sessions": 2,
@@ -115,7 +155,7 @@ def fixtures(source: str) -> tuple[dict, dict]:
         }
         for index, scenario in enumerate(PROD_METRICS, 1)
     ]
-    production = workflow_receipt(
+    return workflow_receipt(
         PROD,
         source,
         source,
@@ -146,40 +186,78 @@ def fixtures(source: str) -> tuple[dict, dict]:
         },
         scenarios=scenarios,
     )
-    return performance, production
 
 
-def workflow_receipt(kind: str, source: str, tested: str, **extra: object) -> dict:
-    payload = {
-        "schema": SCHEMA,
-        "kind": kind,
-        "source_sha": source,
-        "tested_sha": tested,
+def fuzz_fixture(root: Path, source: str) -> tuple[dict, Path]:
+    directory = root / "fuzz"
+    directory.mkdir(parents=True, exist_ok=True)
+    targets: dict[str, dict] = {}
+    duration = 180
+    target_duration = duration // len(FUZZ_TARGETS)
+    for index, target in enumerate(FUZZ_TARGETS, 1):
+        executed = index * 17
+        log = directory / f"{target}.log"
+        log.write_text(
+            f"INFO: seed corpus\nstat::number_of_executed_units: {executed}\n",
+            encoding="utf-8",
+        )
+        targets[target] = {
+            "status": "passed",
+            "command": [
+                "cargo",
+                "+nightly-2026-09-20",
+                "fuzz",
+                "run",
+                target,
+                f"fuzz/corpus/{target}",
+                "--",
+                f"-max_total_time={target_duration}",
+            ],
+            "cwd": "codex-rs/hepta-wire",
+            "duration_seconds": target_duration,
+            "timeout_seconds": target_duration + 120,
+            "exit_code": 0,
+            "executed_units": executed,
+            "elapsed_seconds": 1.0,
+            "log_sha256": hashlib.sha256(log.read_bytes()).hexdigest(),
+        }
+    receipt = {
+        "schema": FUZZ_SCHEMA,
         "status": "passed",
-        "workflow": "fixture",
-        "workflow_ref": "fixture@main",
-        "run_id": 1,
-        "run_attempt": 1,
-        "event": "pull_request",
-        "generated_at": "2026-09-29T00:00:00Z",
-    }
-    payload.update(extra)
-    return payload
-
-
-def acceptance_receipt(kind: str, source: str, approver: str) -> dict:
-    return {
-        "schema": SCHEMA,
-        "kind": kind,
+        "created_at": "2026-09-29T00:00:00Z",
+        "finalized_at": "2026-09-29T00:03:00Z",
         "source_sha": source,
         "tested_sha": source,
-        "status": "accepted",
-        "approver": approver,
-        "approver_role": ACCEPT[kind],
-        "implementation_author": "implementation-author",
-        "approved_at": "2026-09-29T00:00:00Z",
-        "evidence_url": "https://github.com/o/r/pull/1",
+        "source_tree": "e" * 40,
+        "toolchain": "nightly-2026-09-20",
+        "cargo_fuzz_version": "0.13.2",
+        "installer_toolchain": "1.95.0",
+        "workflow_sha": source,
+        "workflow_ref": "o/r/.github/workflows/platform-wire-fuzz.yml@refs/pull/1/merge",
+        "run_id": "1",
+        "run_attempt": "1",
+        "event": "pull_request",
+        "runner_image": "ubuntu24",
+        "runner_image_version": "20260927.320.1",
+        "engine": "libFuzzer",
+        "sanitizer": "address",
+        "duration_seconds": duration,
+        "targets": targets,
+        "production_activation": False,
+        "independent_acceptance": False,
+        "real_transport_acceptance": False,
     }
+    path = directory / "campaign.json"
+    path.write_text(json.dumps(receipt), encoding="utf-8")
+    return receipt, path
+
+
+def expect_value_error(action, message: str) -> None:
+    try:
+        action()
+    except ValueError:
+        return
+    raise AssertionError(message)
 
 
 def run(evaluate) -> None:
@@ -193,7 +271,7 @@ def run(evaluate) -> None:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("fixture\n", encoding="utf-8")
 
-        performance, production = fixtures(source)
+        fuzz, fuzz_path = fuzz_fixture(root, source)
         data = {
             "exact": workflow_receipt(
                 "platform-wire-exact-head",
@@ -220,8 +298,8 @@ def run(evaluate) -> None:
                 runner_os="Linux",
                 runner_arch="X64",
             ),
-            "performance": performance,
-            "production": production,
+            "performance": performance_fixture(source),
+            "production": production_fixture(source),
             "reviewer": acceptance_receipt(
                 "platform-wire-reviewer-acceptance", source, "reviewer"
             ),
@@ -241,7 +319,7 @@ def run(evaluate) -> None:
             },
         }
 
-        paths: dict[str, str] = {}
+        paths: dict[str, str] = {"fuzz": str(fuzz_path)}
 
         def write(name: str) -> None:
             path = root / f"{name}.json"
@@ -257,6 +335,7 @@ def run(evaluate) -> None:
             exact_head=paths["exact"],
             synthetic_merge=paths["merge"],
             target_host=paths["target"],
+            fuzz=paths["fuzz"],
             performance=paths["performance"],
             production=paths["production"],
             reviewer_acceptance=paths["reviewer"],
@@ -267,15 +346,19 @@ def run(evaluate) -> None:
         if not all(evaluate(args)["states"].values()):
             raise AssertionError("complete current-source evidence must release")
 
-        args.performance = None
-        if evaluate(args)["states"]["accepted"]:
-            raise AssertionError("performance evidence must gate acceptance")
-        args.performance = paths["performance"]
+        args.fuzz = None
+        if evaluate(args)["states"]["qualified"]:
+            raise AssertionError("fuzz evidence must gate qualification")
+        args.fuzz = paths["fuzz"]
 
-        args.production = None
-        if evaluate(args)["states"]["accepted"]:
-            raise AssertionError("production evidence must gate acceptance")
-        args.production = paths["production"]
+        target_log = fuzz_path.parent / f"{FUZZ_TARGETS[0]}.log"
+        original_log = target_log.read_text(encoding="utf-8")
+        target_log.write_text(original_log + "tampered\n", encoding="utf-8")
+        expect_value_error(
+            lambda: evaluate(args),
+            "tampered fuzz logs must fail closed",
+        )
+        target_log.write_text(original_log, encoding="utf-8")
 
         original_approver = data["operations"]["approver"]
         data["operations"]["approver"] = data["reviewer"]["approver"]
@@ -288,33 +371,26 @@ def run(evaluate) -> None:
         original_size = data["performance"]["paths"][0]["candidate_package_bytes"]
         data["performance"]["paths"][0]["candidate_package_bytes"] = 71
         write("performance")
-        try:
-            evaluate(args)
-        except ValueError:
-            pass
-        else:
-            raise AssertionError("over-threshold performance must fail closed")
+        expect_value_error(
+            lambda: evaluate(args),
+            "over-threshold performance must fail closed",
+        )
         data["performance"]["paths"][0]["candidate_package_bytes"] = original_size
         write("performance")
 
         data["production"]["scenarios"][0]["unexpected_failures"] = 1
         write("production")
-        try:
-            evaluate(args)
-        except ValueError:
-            pass
-        else:
-            raise AssertionError("failed production scenario must fail closed")
+        expect_value_error(
+            lambda: evaluate(args),
+            "failed production scenario must fail closed",
+        )
         data["production"]["scenarios"][0]["unexpected_failures"] = 0
         write("production")
 
-        mismatched = copy.deepcopy(data["production"])
+        mismatched = copy.deepcopy(fuzz)
         mismatched["source_sha"] = "f" * 40
-        data["production"] = mismatched
-        write("production")
-        try:
-            evaluate(args)
-        except ValueError:
-            pass
-        else:
-            raise AssertionError("cross-source evidence must fail closed")
+        fuzz_path.write_text(json.dumps(mismatched), encoding="utf-8")
+        expect_value_error(
+            lambda: evaluate(args),
+            "cross-source fuzz evidence must fail closed",
+        )

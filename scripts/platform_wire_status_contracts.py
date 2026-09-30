@@ -4,11 +4,14 @@ from __future__ import annotations
 import re
 
 SCHEMA = "hepta.platform-wire.receipt.v2"
+FUZZ_SCHEMA = "hepta.platform-wire.fuzz-campaign.v2"
 PASS = {"pass", "passed", "success", "qualified", "accepted", "released"}
 H40 = re.compile(r"[0-9a-f]{40}")
 H64 = re.compile(r"[0-9a-f]{64}")
 PERF = "platform-wire-performance"
 PROD = "platform-wire-production"
+FUZZ = "platform-wire-fuzz-campaign"
+FUZZ_TARGETS = ("decode_frames", "managed_records", "policy_admission")
 DESIGN = (
     "docs/modules/platform.wire/README.md",
     "docs/modules/platform.wire/TECHNICAL.md",
