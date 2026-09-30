@@ -96,6 +96,13 @@ def _sha(value: str, label: str) -> str:
     return value
 
 
+def _workflow_identity(value: object, repository: str) -> bool:
+    return isinstance(value, str) and re.fullmatch(
+        re.escape(repository + EXPECTED_WORKFLOW_SUFFIX)
+        + r"@refs/(?:heads/[A-Za-z0-9._/-]+|pull/[1-9][0-9]*/merge)", value
+    ) is not None
+
+
 def _canonical_engineering_package(root: Path) -> dict[str, object]:
     """Bind the product caller to the exact HEAD blob for canonical ECP-1."""
     relative = CANONICAL_WORK_PACKAGE_PATH.as_posix()
@@ -190,10 +197,7 @@ def build_product_receipt(
         raise ValueError("repository_identity_mismatch")
     if type(repository_id) is not int or repository_id != EXPECTED_REPOSITORY_ID:
         raise ValueError("repository_id_mismatch")
-    if (
-        not isinstance(workflow_ref, str)
-        or EXPECTED_WORKFLOW_SUFFIX not in workflow_ref
-    ):
+    if not _workflow_identity(workflow_ref, repository_full_name):
         raise ValueError("workflow_identity_mismatch")
     if job_name != EXPECTED_JOB:
         raise ValueError("job_identity_mismatch")
@@ -1009,6 +1013,11 @@ def verify_product_receipt_pair(
     """Verify the two independently executed PR product-caller lanes."""
     expected_source_sha = _sha(expected_source_sha, "source_sha")
     expected_base_sha = _sha(expected_base_sha, "base_sha")
+    if any(type(value) is not int or value <= 0 for value in (
+        expected_repository_id, expected_run_id, expected_run_attempt,
+        expected_pull_request_number,
+    )):
+        raise ValueError("product_receipt_pair_ci_identity")
     source_digest = _verify_product_receipt(
         source_head,
         expected_lane="source-head",
@@ -1027,6 +1036,9 @@ def verify_product_receipt_pair(
     for identity in (source_identity, merge_identity):
         if (
             identity.get("repository") != expected_repository
+            or any(type(identity.get(field)) is not int for field in (
+                "repositoryId", "runId", "runAttempt", "pullRequestNumber"
+            ))
             or identity.get("repositoryId") != expected_repository_id
             or identity.get("runId") != expected_run_id
             or identity.get("runAttempt") != expected_run_attempt
@@ -1036,10 +1048,7 @@ def verify_product_receipt_pair(
         ):
             raise ValueError("product_receipt_pair_ci_identity")
         workflow_ref = identity.get("workflowRef")
-        if (
-            not isinstance(workflow_ref, str)
-            or EXPECTED_WORKFLOW_SUFFIX not in workflow_ref
-        ):
+        if not _workflow_identity(workflow_ref, expected_repository):
             raise ValueError("product_receipt_pair_workflow_identity")
 
     if (

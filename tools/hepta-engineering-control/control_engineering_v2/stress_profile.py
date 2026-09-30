@@ -26,11 +26,11 @@ def build_stress_profile(
     writers: int = 4,
     reopen_cycles: int = 16,
 ) -> dict[str, object]:
-    if not 1 <= records <= 100_000:
+    if type(records) is not int or not 1 <= records <= 100_000:
         raise ValueError("stress_records")
-    if not 1 <= writers <= 32:
+    if type(writers) is not int or not 1 <= writers <= 32:
         raise ValueError("stress_writers")
-    if not 1 <= reopen_cycles <= 1000:
+    if type(reopen_cycles) is not int or not 1 <= reopen_cycles <= 1000:
         raise ValueError("stress_reopen_cycles")
     now = 1_000_000
     with tempfile.TemporaryDirectory(prefix="hepta-control-stress-") as temporary:

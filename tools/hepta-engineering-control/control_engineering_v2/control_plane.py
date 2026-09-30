@@ -433,13 +433,25 @@ class EngineeringStore:
         outermost = not self.connection.in_transaction
         if outermost:
             self.connection.execute("BEGIN IMMEDIATE")
+        else:
+            # A caller may catch a failed nested operation and continue its
+            # transaction. Roll back that operation's writes without discarding
+            # previously successful owner work.
+            self._savepoint_sequence = getattr(self, "_savepoint_sequence", 0) + 1
+            savepoint = f"engineering_owner_{self._savepoint_sequence}"
+            self.connection.execute(f"SAVEPOINT {savepoint}")
         try:
             yield
             if outermost:
                 self.connection.commit()
+            else:
+                self.connection.execute(f"RELEASE {savepoint}")
         except BaseException:
             if outermost:
                 self.connection.rollback()
+            else:
+                self.connection.execute(f"ROLLBACK TO {savepoint}")
+                self.connection.execute(f"RELEASE {savepoint}")
             raise
 
     def _create_schema(self, source_version: int) -> None:
@@ -643,9 +655,11 @@ class EngineeringStore:
 
     def _expire_leases(self, now: int) -> None:
         rows = self.connection.execute(
-            "SELECT lease_id,revision,authority_epoch FROM path_leases "
-            "WHERE state='active' AND expires_unix_ns<=? ORDER BY fencing_token",
-            (now,),
+            "SELECT l.lease_id,l.revision,l.authority_epoch FROM path_leases l "
+            "JOIN work_envelopes e ON e.envelope_id=l.envelope_id "
+            "WHERE l.state='active' AND (l.expires_unix_ns<=? OR e.expires_unix_ns<=?) "
+            "ORDER BY l.fencing_token",
+            (now, now),
         ).fetchall()
         for row in rows:
             new_revision = int(row["revision"]) + 1
@@ -740,9 +754,11 @@ class EngineeringStore:
 
     def _active_lease_rows(self, now_ns: int) -> list[sqlite3.Row]:
         rows = self.connection.execute(
-            "SELECT * FROM path_leases WHERE state='active' AND expires_unix_ns>? "
-            "ORDER BY fencing_token,lease_id LIMIT ?",
-            (now_ns, MAX_ACTIVE_LEASES + 1),
+            "SELECT l.* FROM path_leases l "
+            "JOIN work_envelopes e ON e.envelope_id=l.envelope_id "
+            "WHERE l.state='active' AND l.expires_unix_ns>? AND e.expires_unix_ns>? "
+            "ORDER BY l.fencing_token,l.lease_id LIMIT ?",
+            (now_ns, now_ns, MAX_ACTIVE_LEASES + 1),
         ).fetchall()
         if len(rows) > MAX_ACTIVE_LEASES:
             _error("active_lease_limit_exceeded")
@@ -769,6 +785,8 @@ class EngineeringStore:
         normalized = canonical_paths(paths)
         with self._transaction():
             envelope = self._get_envelope(envelope_id, now)
+            if expires_unix_ns > int(envelope["expires_unix_ns"]):
+                _error("lease_expiry_outside_envelope")
             allowed = tuple(
                 json.loads(bytes(envelope["allowed_paths_json"]).decode("utf-8"))
             )
@@ -869,10 +887,13 @@ class EngineeringStore:
             expiry = int(row["expires_unix_ns"])
             state = "active"
             if disposition == "renew":
+                envelope = self._get_envelope(str(row["envelope_id"]), now)
                 if type(new_expiry_unix_ns) is not int or new_expiry_unix_ns <= max(
                     now, expiry
                 ):
                     _error("invalid_lease_expiry")
+                if new_expiry_unix_ns > int(envelope["expires_unix_ns"]):
+                    _error("lease_expiry_outside_envelope")
                 expiry = new_expiry_unix_ns
             elif disposition == "release":
                 state = "released"

@@ -7,7 +7,7 @@ not a deployment, acceptance, promotion, merge, or release authority.
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, replace
+from dataclasses import replace
 import hashlib
 import json
 import os

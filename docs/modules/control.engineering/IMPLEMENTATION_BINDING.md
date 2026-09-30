@@ -25,12 +25,17 @@ boolean-based `decide_integration()` can never produce review eligibility.
 source/test navigation maps. They do not self-certify maturity or grant authority.
 `IMPLEMENTATION_MAP.json.sourceBase` is immutable integration provenance, not the
 self-referential candidate commit. This module opts into
-`mappingSourceIdentityMode=exact_blob`: every mapped operation records the Git blob OID
-of its current `sourcePath`; `observedAtHead` covers the complete current source/evidence
-set; and the global verifier requires the provenance commit to be an ancestor, recomputes
-every `HEAD:<sourcePath>` blob and rejects a missing or stale current observation. A
-mapping migration updates the exact blobs and current observation without rewriting
-`sourceBase`. Exact candidate commit/tree execution identity remains the responsibility
+`mappingSourceIdentityMode=exact_blob` and
+`sourceIdentityPolicy=candidate_or_exact_manifest_v2`: every mapped operation records
+the Git blob OID of its current `sourcePath`, and the complete `sourceObjects` manifest
+binds resolved roots, mapped sources, tests, delegates, callers and additional observed
+inputs to their candidate Git tree/blob objects. The verifier keeps `sourceBase`
+ancestral, rejects incomplete or stale manifests, and verifies the candidate checkout.
+`observedAtHead` is provenance metadata: a locally available observation must identify
+its exact tree, but it need not remain ancestral after an equal-tree squash integration.
+It grants no source-currentness or execution claim. A mapping migration refreshes the
+exact objects without rewriting `sourceBase` or manufacturing execution evidence.
+Exact candidate commit/tree execution identity remains the responsibility
 of source-head and deterministic synthetic-merge execution receipts.
 Historical `HARDENING.json`, `CLOSURE_V4.json`, `MATURITY.json` and copied package
 registries are retired; their useful behavior is in the current source, schema,

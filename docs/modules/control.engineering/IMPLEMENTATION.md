@@ -156,15 +156,21 @@ semantic digest; verification also requires the package to have been assigned in
 that generation and the stored assignment frontier to match the same envelope and
 source identity. A signed arbitrary generation string cannot satisfy a predecessor.
 Completion observation cannot predate the referenced generation and its
-freshness window cannot outlive the owning work envelope. Encoded semantic records
-also have a 256 KiB bound; hitting a byte bound may reject input below the item-count
-limit. Graph validation is iterative, so valid deep DAGs do not depend on Python's
+freshness window cannot outlive the current persisted work envelope; a caller-made
+extended lifetime cannot replace that owner state. Planner preflight caps the
+cumulative normalized envelope, capacity, package, Worker and completion-receipt
+inputs at 256 KiB; hitting this byte bound may reject input below an item-count
+limit. This is a planner ingress limit, not a universal bound on `canonical_json`
+or every owner record. Graph validation is iterative, so valid deep DAGs do not depend on Python's
 recursion limit. Canonical resource-aware scheduling runs under one `BEGIN IMMEDIATE`
 owner transaction: it freezes the active-lease frontier, removes completed or
 dependency-blocked work, ranks ready packages by expected value minus architecture
 debt and rollback cost (priority is a deterministic tie-breaker), then admits only
 packages with an eligible worker, remaining worker/CI/reviewer capacity and no path
-conflict. Infeasible work does not consume the assignment limit. The exact final
+conflict. Worker matching deterministically preserves workers whose skills and
+path scope are useful for more remaining ready packages. This is a bounded greedy
+heuristic, not a guarantee of globally optimal assignment or freedom from
+starvation across future generations. Infeasible work does not consume the assignment limit. The exact final
 assigned/blocked set—not a coarser preliminary schedule—is written to
 `assignment_generations` in the same transaction as its frontier and audit event.
 The generation semantic digest binds normalized package/worker/capacity inputs, the

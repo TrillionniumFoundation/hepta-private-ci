@@ -353,6 +353,19 @@ class ProductGateTests(unittest.TestCase):
                 ),
             )
 
+    def test_workflow_identity_rejects_foreign_repository_and_path_suffix(self):
+        for workflow in (
+            "attacker/repository/.github/workflows/hepta-consolidated-source.yml@refs/heads/main",
+            product_gate.EXPECTED_REPOSITORY + "/.github/workflows/hepta-consolidated-source.yml.evil@refs/heads/main",
+        ):
+            with self.subTest(workflow=workflow):
+                identity = self.identity(lane="source-head")
+                identity["workflow_ref"] = workflow
+                with self.assertRaisesRegex(ValueError, "workflow_identity_mismatch"):
+                    product_gate.build_product_receipt(
+                        ".", source_sha="a" * 40, base_sha="b" * 40, **identity
+                    )
+
     def test_github_review_observation_binds_real_numeric_identity_without_acceptance(self):
         reviews = [
             {

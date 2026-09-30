@@ -96,6 +96,25 @@ def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
     return {"commit": commit, "tree": tree}
 
 
+def checked_observation_identity(value) -> dict[str, str]:
+    """Validate provenance metadata without requiring its Git ancestry."""
+    if not isinstance(value, dict) or any(
+        not isinstance(value.get(key), str)
+        or re.fullmatch(r"[0-9a-f]{40}", value[key]) is None
+        or value[key] == "0" * 40
+        for key in ("commit", "tree")
+    ):
+        raise ValueError("source observation requires literal commit/tree SHA-1 values")
+    commit, tree = value["commit"], value["tree"]
+    try:
+        kind = git("cat-file", "-t", commit)
+    except subprocess.CalledProcessError:
+        return {"commit": commit, "tree": tree}
+    if kind != "commit" or git("rev-parse", f"{commit}^{{tree}}") != tree:
+        raise ValueError("source observation tree mismatch")
+    return {"commit": commit, "tree": tree}
+
+
 def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
     paths = set(resolved_roots)
     guide = row.get("technicalGuide")
@@ -218,25 +237,71 @@ def require_tracked_paths(commit: str, paths: list[str], *, historical=False) ->
             raise ValueError(f"invalid source/evidence: {path!r}")
 
 
+def _validate_exact_source_objects(
+    row: dict, paths: list[str], candidate: dict[str, str]
+) -> list[str]:
+    entries = row.get("sourceObjects")
+    if not isinstance(entries, list) or not entries:
+        raise ValueError("exact manifest policy requires sourceObjects")
+    by_path: dict[str, str] = {}
+    own_map = f"docs/modules/{row.get('module')}/IMPLEMENTATION_MAP.json"
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise ValueError("invalid exact source object")
+        path, object_id = entry.get("path"), entry.get("object")
+        if (
+            not isinstance(path, str)
+            or not path
+            or not isinstance(object_id, str)
+            or re.fullmatch(r"[0-9a-f]{40}", object_id) is None
+        ):
+            raise ValueError("invalid exact source object")
+        if path == own_map:
+            raise ValueError("source object cannot bind its own implementation map")
+        if path in by_path:
+            raise ValueError("duplicate exact source object: " + path)
+        checked_source_path(ROOT, path)
+        by_path[path] = object_id
+    missing = sorted(set(paths) - set(by_path))
+    if missing:
+        raise ValueError("exact source objects omit evidence: " + ", ".join(missing))
+    require_tracked_paths(candidate["commit"], sorted(by_path))
+    for path, object_id in by_path.items():
+        if git("rev-parse", f"{candidate['commit']}:{path}") != object_id:
+            raise SourceDrift("exact source object drift: " + path)
+    for operation in row.get("operations", []):
+        if not isinstance(operation, dict) or not operation.get("sourcePath"):
+            continue
+        path = operation["sourcePath"]
+        if operation.get("sourceBlob") != by_path[path]:
+            raise SourceDrift("mapped operation blob drift: " + path)
+    return sorted(by_path)
+
+
 def verify_source_identity(
     row: dict, roots: list[str], candidate: dict[str, str], *, check_checkout=True
 ) -> list[str]:
     policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
-    if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
+    if policy not in {
+        "legacy_shared_batch",
+        "candidate_or_exact_observation_v1",
+        "candidate_or_exact_manifest_v2",
+    }:
         raise ValueError(f"unknown source identity policy: {policy}")
     source = checked_identity(row.get("sourceBase"), candidate)
     mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
     if mapping_mode not in {"path_only", "exact_blob"}:
         raise ValueError(f"unknown mapping source identity mode: {mapping_mode}")
+    if policy == "candidate_or_exact_manifest_v2" and mapping_mode != "exact_blob":
+        raise ValueError("exact manifest policy requires exact_blob mode")
     paths = evidence_paths(row, roots)
     # In exact-blob mode ``sourceBase`` is immutable integration provenance,
     # not the current-source observation. Currentness is proved independently
     # by every mapped HEAD blob plus ``observedAtHead`` over the complete
     # evidence/root set. Path-only maps retain the historical no-drift anchor.
     observations = [] if mapping_mode == "exact_blob" else [(source, paths)]
+    observed_paths = row.get("observedSourcePaths", roots)
     if "observedAtHead" in row:
-        observed = checked_identity(row["observedAtHead"], candidate)
-        observed_paths = row.get("observedSourcePaths", roots)
         if (
             not isinstance(observed_paths, list)
             or not observed_paths
@@ -245,7 +310,10 @@ def verify_source_identity(
             raise ValueError("invalid observed source paths")
         if not set(roots).issubset(observed_paths):
             raise ValueError("observed source paths omit resolved roots")
-        if policy == "candidate_or_exact_observation_v1" and any(
+        if policy in {
+            "candidate_or_exact_observation_v1",
+            "candidate_or_exact_manifest_v2",
+        } and any(
             source_root == "codex-rs" or source_root.startswith("codex-rs/")
             for source_root in roots
         ):
@@ -258,7 +326,11 @@ def verify_source_identity(
                     "observed source paths omit Rust workspace build inputs "
                     + ", ".join(missing_workspace_inputs)
                 )
-        observations.append((observed, sorted(set(paths + observed_paths))))
+        if policy == "candidate_or_exact_manifest_v2":
+            observed = checked_observation_identity(row["observedAtHead"])
+        else:
+            observed = checked_identity(row["observedAtHead"], candidate)
+            observations.append((observed, sorted(set(paths + observed_paths))))
     else:
         observed = None
         if mapping_mode == "exact_blob":
@@ -271,7 +343,11 @@ def verify_source_identity(
         and source not in (candidate, observed)
     ):
         raise ValueError("source base is neither candidate nor exact observed source")
-    checked_paths = sorted({path for _, items in observations for path in items})
+    checked_paths = (
+        sorted(set(paths + observed_paths))
+        if policy == "candidate_or_exact_manifest_v2"
+        else sorted({path for _, items in observations for path in items})
+    )
     for path in checked_paths:
         if not checked_source_path(ROOT, path).exists():
             raise ValueError(f"missing observed source/evidence: {path}")
@@ -279,6 +355,8 @@ def verify_source_identity(
         require_clean_candidate(candidate, checked_paths)
     # Validate the candidate first: a missing path at both ends is not a rebind.
     require_tracked_paths(candidate["commit"], checked_paths)
+    if policy == "candidate_or_exact_manifest_v2":
+        checked_paths = _validate_exact_source_objects(row, checked_paths, candidate)
     for identity, observed_paths in observations:
         if identity == candidate:
             continue
@@ -317,6 +395,13 @@ def tracked_source_paths(row: dict) -> list[str]:
     if isinstance(roots, str):
         roots = [roots]
     paths = set(evidence_paths(row, roots))
+    if row.get("sourceIdentityPolicy") == "candidate_or_exact_manifest_v2":
+        observed_paths = row.get("observedSourcePaths", roots)
+        if not isinstance(observed_paths, list) or any(
+            not isinstance(path, str) for path in observed_paths
+        ):
+            raise ValueError("invalid observed source paths")
+        paths.update(observed_paths)
     for entry in row.get("sourceObjects", []):
         if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
             raise ValueError("invalid explicit source object path")
@@ -725,7 +810,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     )
     if (
         "observedAtHead" in migrated
-        or migrated.get("sourceIdentityPolicy") == "candidate_or_exact_observation_v1"
+        or migrated.get("sourceIdentityPolicy") in {
+            "candidate_or_exact_observation_v1", "candidate_or_exact_manifest_v2"
+        }
         or migrated.get("mappingSourceIdentityMode") == "exact_blob"
     ):
         # A navigation-only migration must survive committing the map itself.
@@ -741,7 +828,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         observed_paths.update(migrated["resolvedRoots"])
         if migrated.get(
             "sourceIdentityPolicy"
-        ) == "candidate_or_exact_observation_v1" and any(
+        ) in {"candidate_or_exact_observation_v1", "candidate_or_exact_manifest_v2"} and any(
             root == "codex-rs" or root.startswith("codex-rs/")
             for root in migrated["resolvedRoots"]
         ):

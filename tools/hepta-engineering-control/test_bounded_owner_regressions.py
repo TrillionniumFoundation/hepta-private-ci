@@ -23,12 +23,14 @@ from control_engineering_v2 import (
     EngineeringWorkPackage,
     HmacTrustStore,
     ReviewCapacity,
+    WorkerHeartbeatReceipt,
     WorkerProfile,
     WorkerRegistrationReceipt,
     WorkerRegistrationRenewalReceipt,
     WorkerResultReceipt,
     WorkEnvelope,
     claim_assignment,
+    heartbeat_claim,
 )
 from control_engineering_v2.capacity_policy import StoreCapacityMonitor, evaluate_store_capacity
 from control_engineering_v2.control_plane import DENIED_AUTHORITIES
@@ -348,6 +350,17 @@ class BoundedOwnerRegressions(unittest.TestCase):
             claim = claim_assignment(
                 external, "generation-a", "package-a", "worker-a", "lease-a",
                 heartbeat_ttl_ns=1_000_000_000, now_ns=NOW + 2,
+            )
+            heartbeat = WorkerHeartbeatReceipt(
+                "worker-a", "worker-key", claim.claim_id, claim.claim_fence,
+                claim.revision, NOW + 3, NOW + 1_000_000_003,
+            )
+            heartbeat = replace(heartbeat, signature=trust().sign(
+                heartbeat, heartbeat.worker_id, heartbeat.worker_signing_identity,
+            ))
+            claim = heartbeat_claim(
+                external, heartbeat, trust(), heartbeat_ttl_ns=1_000_000_000,
+                now_ns=NOW + 3,
             )
         # Do not refresh the local projection before settling a foreign claim.
         submitted = self.product.submit_result(self.result_receipt(claim), now_ns=NOW + 4)

@@ -110,7 +110,12 @@ def _git_sha(value: str, label: str) -> str:
 
 
 def _verify_receipt(
-    value: object,
+    value: (
+        TargetDeploymentReceipt
+        | BackupRecoveryReceipt
+        | RollbackRehearsalReceipt
+        | OperatorAcceptanceReceipt
+    ),
     expected_type: type,
     expected_issuer: str,
     trust_store: SignatureTrustStore,
@@ -201,6 +206,8 @@ def verify_production_acceptance_evidence(
         raise EngineeringError("production_evidence_rollback_source_mismatch")
     _git_sha(rollback.predecessor_commit, "predecessor_commit")
     _git_sha(rollback.predecessor_tree, "predecessor_tree")
+    if rollback.predecessor_commit == source_commit:
+        raise EngineeringError("production_evidence_rollback_predecessor")
     for value, label in (
         (deployment.artifact_digest, "artifact_digest"),
         (deployment.owner_snapshot_digest, "owner_snapshot_digest"),
@@ -213,6 +220,8 @@ def verify_production_acceptance_evidence(
         (operator.rollback_receipt_digest, "rollback_receipt_digest"),
     ):
         checked_sha256(value, label)
+        if value == "0" * 64:
+            raise EngineeringError("invalid_" + label)
     if (
         recovery.expected_owner_snapshot_digest != deployment.owner_snapshot_digest
         or recovery.restored_owner_snapshot_digest != deployment.owner_snapshot_digest
@@ -226,10 +235,10 @@ def verify_production_acceptance_evidence(
     ):
         raise EngineeringError("operator_acceptance_binding_mismatch")
     if not (
-        deployment.passed
-        and recovery.integrity_verified
-        and rollback.rollback_succeeded
-        and operator.accepted
+        deployment.passed is True
+        and recovery.integrity_verified is True
+        and rollback.rollback_succeeded is True
+        and operator.accepted is True
     ):
         raise EngineeringError("production_evidence_negative_observation")
     evidence = {

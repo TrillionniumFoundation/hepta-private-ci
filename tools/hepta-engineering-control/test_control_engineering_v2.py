@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from control_engineering_v2 import (
     CandidateEnvelope,
@@ -138,6 +139,94 @@ class StoreTests(unittest.TestCase):
             reopened.verify_audit_chain()
             self.assertEqual(reopened.audit_projection(), events)
             reopened.close()
+
+    def test_caught_nested_failure_rolls_back_only_failed_owner_operation(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            database = Path(temp) / "store.db"
+            with EngineeringStore(database) as store:
+                with store._transaction():
+                    with patch.object(store, "_append_audit", side_effect=OSError("disk full")):
+                        with self.assertRaisesRegex(OSError, "disk full"):
+                            store.issue_work_envelope(self.envelope(), now_ns=1_000_000)
+                    self.assertTrue(store.connection.in_transaction)
+                    store.issue_work_envelope(
+                        replace(self.envelope(), envelope_id="surviving"), now_ns=1_000_001,
+                    )
+                self.assertEqual(
+                    tuple(row[0] for row in store.connection.execute(
+                        "SELECT envelope_id FROM work_envelopes ORDER BY envelope_id"
+                    )),
+                    ("surviving",),
+                )
+                anchor = store.audit_anchor()
+            with EngineeringStore(database) as reopened:
+                self.assertEqual(reopened.audit_anchor(), anchor)
+                self.assertEqual(reopened.audit_projection()[0]["payload"]["envelopeId"], "surviving")
+
+    def test_lease_acquisition_and_renewal_cannot_outlive_envelope(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope(), now_ns=1_000_000)
+                anchor = store.audit_anchor()
+                with self.assertRaisesRegex(EngineeringError, "lease_expiry_outside_envelope"):
+                    store.acquire_path_lease(
+                        "too-long", "env-1", "worker-a", ("tools/hepta-engineering-control/a",),
+                        authority_epoch=1, expires_unix_ns=2_000_001, now_ns=1_000_001,
+                    )
+                self.assertEqual(store.audit_anchor(), anchor)
+                lease = store.acquire_path_lease(
+                    "lease", "env-1", "worker-a", ("tools/hepta-engineering-control/a",),
+                    authority_epoch=1, expires_unix_ns=1_500_000, now_ns=1_000_001,
+                )
+                anchor = store.audit_anchor()
+                with self.assertRaisesRegex(EngineeringError, "lease_expiry_outside_envelope"):
+                    store.transition_path_lease(
+                        lease.lease_id, expected_revision=lease.revision, authority_epoch=1,
+                        disposition="renew", new_expiry_unix_ns=2_000_001, now_ns=1_000_002,
+                    )
+                self.assertEqual(store.audit_anchor(), anchor)
+                self.assertEqual(store.connection.execute(
+                    "SELECT revision,expires_unix_ns FROM path_leases WHERE lease_id='lease'"
+                ).fetchone()[:], (1, 1_500_000))
+
+    def test_legacy_lease_beyond_expired_envelope_does_not_block_new_owner(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            database = Path(temp) / "store.db"
+            with EngineeringStore(database) as store:
+                store.issue_work_envelope(self.envelope(), now_ns=1_000_000)
+                lease = store.acquire_path_lease(
+                    "old-lease", "env-1", "worker-a", ("tools/hepta-engineering-control/a",),
+                    authority_epoch=1, expires_unix_ns=2_000_000, now_ns=1_000_001,
+                )
+                # Before lifetime enforcement, v10 legitimately retained leases
+                # with windows longer than the owning envelope.
+                digest = semantic_digest({
+                    "leaseId": lease.lease_id, "envelopeId": lease.envelope_id,
+                    "holder": lease.holder, "paths": lease.paths,
+                    "authorityEpoch": lease.epoch, "expiresUnixNs": 3_000_000,
+                })
+                store.connection.execute(
+                    "UPDATE path_leases SET expires_unix_ns=?,semantic_digest=? WHERE lease_id=?",
+                    (3_000_000, digest, lease.lease_id),
+                )
+            with EngineeringStore(database) as store:
+                anchor = store.audit_anchor()
+                with self.assertRaisesRegex(EngineeringError, "stale_lease_revision"):
+                    store.transition_path_lease(
+                        lease.lease_id, expected_revision=lease.revision, authority_epoch=1,
+                        disposition="renew", new_expiry_unix_ns=4_000_000, now_ns=2_000_001,
+                    )
+                self.assertEqual(store.audit_anchor(), anchor)
+                envelope = replace(self.envelope(2_000_001), envelope_id="new-env")
+                store.issue_work_envelope(envelope, now_ns=2_000_001)
+                replacement = store.acquire_path_lease(
+                    "new-lease", envelope.envelope_id, "worker-b", lease.paths,
+                    authority_epoch=2, expires_unix_ns=3_000_000, now_ns=2_000_001,
+                )
+                self.assertEqual(replacement.fencing_token, lease.fencing_token + 1)
+                self.assertEqual(store.connection.execute(
+                    "SELECT state,revision FROM path_leases WHERE lease_id=?", (lease.lease_id,),
+                ).fetchone()[:], ("expired", 2))
 
     def test_envelope_and_generation_semantic_conflicts(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

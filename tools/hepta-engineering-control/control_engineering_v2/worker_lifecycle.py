@@ -480,6 +480,11 @@ def claim_assignment(
                     "result_submitted",
                     "completed_observed",
                 }:
+                    if (
+                        previous_state in {"claimed", "running"}
+                        and int(previous["heartbeat_deadline_unix_ns"]) <= now
+                    ):
+                        raise EngineeringError("claim_heartbeat_expired")
                     # Claim identity is immutable once committed. Heartbeats may
                     # legitimately advance the persisted heartbeat deadline, so
                     # an acknowledgement-loss replay must not compare the
@@ -754,10 +759,6 @@ def submit_worker_result(
         ).fetchone()
         if persisted is None:
             raise EngineeringError("unknown_worker_claim")
-        persisted_registration = store.connection.execute(
-            "SELECT * FROM worker_registrations WHERE worker_id=?",
-            (persisted["worker_id"],),
-        ).fetchone()
         persisted_state = str(persisted["state"])
         receipt_digest = semantic_digest(asdict(receipt))
         if persisted_state in {"result_submitted", "retryable", "failed", "completed_observed"}:

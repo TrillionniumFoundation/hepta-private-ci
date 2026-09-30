@@ -749,6 +749,7 @@ def verify_external_key_custody(
     bindings: dict[str, tuple[str, str, str]] = {}
     seen_receipt_keys: set[tuple[str, str]] = set()
     seen_subject_identities: set[str] = set()
+    seen_public_keys: set[str] = set()
     canonical: list[KeyCustodyReceipt] = []
     for receipt in values:
         checked_id(receipt.provider, "key_provider")
@@ -801,6 +802,7 @@ def verify_external_key_custody(
             if (
                 key in seen_receipt_keys
                 or receipt.subject_signing_identity in seen_subject_identities
+                or receipt.public_key_digest in seen_public_keys
             ):
                 raise EngineeringError("key_custody_role_separation")
             bindings[role] = (
@@ -810,6 +812,7 @@ def verify_external_key_custody(
             )
             seen_receipt_keys.add(key)
             seen_subject_identities.add(receipt.subject_signing_identity)
+            seen_public_keys.add(receipt.public_key_digest)
         canonical.append(receipt)
 
     if set(bindings) != required:

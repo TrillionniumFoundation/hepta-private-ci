@@ -15,12 +15,14 @@ import hashlib
 import math
 import os
 from pathlib import Path
+import re
 import shutil
 import signal
 import stat
 import subprocess
 import sys
 import tempfile
+from threading import Timer
 import time
 import unicodedata
 
@@ -37,6 +39,7 @@ from .control_plane import (
     path_is_within,
     semantic_digest,
 )
+from .git_security import git_environment, run_git_bytes
 
 MAX_CANDIDATES = 32
 MAX_CHANGED_FILES = 100
@@ -97,6 +100,8 @@ _ORACLE_EXACT_FILES = frozenset(
         "pytest.ini",
         "tox.ini",
         "noxfile.py",
+        "conftest.py",
+        "setup.cfg",
         "package.json",
         "package-lock.json",
         "pnpm-lock.yaml",
@@ -140,22 +145,18 @@ _ORACLE_FILE_SUFFIXES = (
     ".golden",
 )
 _INLINE_ORACLE_MARKERS = (
-    "#[test]",
-    "#[cfg(test)]",
-    "#[tokio::test]",
-    "#[async_std::test]",
     "import unittest",
     "from unittest",
     "pytest.",
     "def test_",
     "class Test",
-    "describe(",
-    "it(",
-    "test(",
     "@Test",
     "func Test",
-    "TEST(",
-    "TEST_F(",
+)
+_INLINE_ORACLE_PATTERN = re.compile(
+    r"#\s*\[\s*(?:test\b|cfg\s*\(\s*test\b|(?:tokio|async_std)\s*::\s*test\b)"
+    r"|\b(?:describe|it|test|TEST_F)\s*\(",
+    re.IGNORECASE,
 )
 
 
@@ -163,6 +164,8 @@ def is_candidate_oracle_path(value: str) -> bool:
     path = canonical_repo_path(value)
     parts = path.split("/")
     name = parts[-1].casefold()
+    if any(part.casefold() == ".cargo" for part in parts[:-1]):
+        return True
     if any(part.casefold() in _ORACLE_SEGMENTS for part in parts[:-1]):
         return True
     if name in _ORACLE_EXACT_FILES or name.startswith(_ORACLE_CONFIG_PREFIXES):
@@ -417,17 +420,7 @@ def _run_bounded(
 
 
 def _git_environment() -> dict[str, str]:
-    environment = dict(os.environ)
-    environment.update(
-        {
-            "GIT_CONFIG_NOSYSTEM": "1",
-            "GIT_CONFIG_GLOBAL": os.devnull,
-            "GIT_NO_REPLACE_OBJECTS": "1",
-            "GIT_TERMINAL_PROMPT": "0",
-            "LC_ALL": "C",
-        }
-    )
-    return environment
+    return git_environment()
 
 
 def _git_bytes(
@@ -437,30 +430,15 @@ def _git_bytes(
     maximum_output: int = MAX_GIT_OUTPUT_BYTES,
 ) -> bytes:
     try:
-        result = subprocess.run(
-            [
-                "git",
-                "-c",
-                "core.fsmonitor=false",
-                "-c",
-                "core.untrackedCache=false",
-                "-C",
-                str(root),
-                *args,
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=_git_environment(),
-            timeout=60,
-            check=False,
+        return run_git_bytes(
+            root,
+            *args,
+            maximum_output_bytes=maximum_output,
+            timeout_seconds=60,
+            allow_failure=allow_failure,
         )
-    except (OSError, subprocess.TimeoutExpired):
+    except EngineeringError:
         raise EngineeringError("git_operation_failed") from None
-    if len(result.stdout) > maximum_output or len(result.stderr) > maximum_output:
-        raise EngineeringError("git_operation_failed")
-    if result.returncode != 0 and not allow_failure:
-        raise EngineeringError("git_operation_failed")
-    return result.stdout
 
 
 def _git(root: Path, *args: str, allow_failure: bool = False) -> str:
@@ -587,7 +565,22 @@ def _normalize_candidate_mutation(value: Mutation | MutationSet) -> Mutation | M
 
 def _contains_inline_oracle(value: str) -> bool:
     folded = value.casefold()
-    return any(marker.casefold() in folded for marker in _INLINE_ORACLE_MARKERS)
+    return _INLINE_ORACLE_PATTERN.search(value) is not None or any(
+        marker.casefold() in folded for marker in _INLINE_ORACLE_MARKERS
+    )
+
+
+def _read_mutation_text(target: Path) -> str:
+    try:
+        if target.stat().st_size > MAX_TEXT_DIFF_BYTES:
+            raise EngineeringError("diff_limit_exceeded")
+        with target.open("rb") as source:
+            encoded = source.read(MAX_TEXT_DIFF_BYTES + 1)
+    except OSError:
+        raise EngineeringError("mutation_target_invalid") from None
+    if len(encoded) > MAX_TEXT_DIFF_BYTES:
+        raise EngineeringError("diff_limit_exceeded")
+    return encoded.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
 
 
 def _reject_inline_oracle_mutation(
@@ -601,7 +594,7 @@ def _reject_inline_oracle_mutation(
         target = _safe_target(worktree, item.path)
         if target.is_file() and not target.is_symlink():
             try:
-                existing = target.read_text(encoding="utf-8")
+                existing = _read_mutation_text(target)
             except UnicodeDecodeError:
                 existing = ""
             except OSError:
@@ -714,7 +707,7 @@ def _apply_mutation(worktree: Path, mutation: Mutation) -> None:
             raise EngineeringError("mutation_target_invalid") from None
         return
     try:
-        text = target.read_text(encoding="utf-8")
+        text = _read_mutation_text(target)
     except UnicodeDecodeError:
         raise EngineeringError("binary_change_rejected") from None
     except OSError:
@@ -829,6 +822,8 @@ def _materialize_exact_tree(
     root: Path,
     base_commit: str,
     destination: Path,
+    *,
+    timeout_seconds: float = 60,
 ) -> None:
     entries = _git_tree_entries(root, base_commit)
     try:
@@ -859,6 +854,11 @@ def _materialize_exact_tree(
             _terminate_process(process)
             raise EngineeringError("git_operation_failed")
         total_bytes = 0
+        # The timeout on wait() alone cannot bound blocking pipe reads. A Git
+        # helper that stalls before emitting its header must also be terminated.
+        watchdog = Timer(timeout_seconds, _terminate_process, args=(process,))
+        watchdog.daemon = True
+        watchdog.start()
         try:
             for mode, _object_type, oid, relative in entries:
                 process.stdin.write(oid.encode("ascii") + b"\n")
@@ -886,6 +886,8 @@ def _materialize_exact_tree(
                 except OSError:
                     raise EngineeringError("unsupported_changed_entry") from None
                 if mode == "120000":
+                    if size > 4096:
+                        raise EngineeringError("sandbox_path_escape")
                     content = _read_exact(process.stdout, size)
                     try:
                         link = content.decode("utf-8")
@@ -925,6 +927,11 @@ def _materialize_exact_tree(
                 _terminate_process(process)
             raise
         finally:
+            watchdog.cancel()
+            try:
+                process.stdin.close()
+            except OSError:
+                pass
             try:
                 process.stdout.close()
             except OSError:
@@ -1232,6 +1239,32 @@ def _admit_bubblewrap(workspace: Path, envelope: CandidateEnvelope) -> str:
     return bubblewrap
 
 
+def _normalize_checks(checks: Iterable[Sequence[str]]) -> tuple[tuple[str, ...], ...]:
+    raw_checks = bounded_tuple(checks, MAX_CHECKS, "check_limit_exceeded")
+    if not raw_checks:
+        raise EngineeringError("invalid_check")
+    values: list[tuple[str, ...]] = []
+    for check in raw_checks:
+        if (
+            isinstance(check, (str, bytes))
+            or not isinstance(check, Sequence)
+            or not check
+            or len(check) > MAX_COMMAND_ARGUMENTS
+            or any(
+                not isinstance(item, str)
+                or not item
+                or "\x00" in item
+                or len(item.encode("utf-8")) > MAX_COMMAND_ARGUMENT_BYTES
+                for item in check
+            )
+        ):
+            raise EngineeringError("invalid_check")
+        if sum(len(item.encode("utf-8")) for item in check) > MAX_COMMAND_BYTES:
+            raise EngineeringError("invalid_check")
+        values.append(tuple(check))
+    return tuple(values)
+
+
 def sandbox_candidate(
     repository: str | Path,
     envelope: CandidateEnvelope,
@@ -1267,28 +1300,7 @@ def sandbox_candidate(
         )
     ):
         raise EngineeringError("candidate_envelope_mismatch")
-    raw_checks = bounded_tuple(checks, MAX_CHECKS, "check_limit_exceeded")
-    if not raw_checks:
-        raise EngineeringError("invalid_check")
-    check_values: list[tuple[str, ...]] = []
-    for check in raw_checks:
-        if (
-            isinstance(check, (str, bytes))
-            or not isinstance(check, Sequence)
-            or not check
-            or len(check) > MAX_COMMAND_ARGUMENTS
-            or any(
-                not isinstance(item, str)
-                or not item
-                or "\x00" in item
-                or len(item.encode("utf-8")) > MAX_COMMAND_ARGUMENT_BYTES
-                for item in check
-            )
-        ):
-            raise EngineeringError("invalid_check")
-        if sum(len(item.encode("utf-8")) for item in check) > MAX_COMMAND_BYTES:
-            raise EngineeringError("invalid_check")
-        check_values.append(tuple(check))
+    check_values = _normalize_checks(checks)
     check_set_digest = semantic_digest(check_values)
     try:
         root = Path(repository).resolve(strict=True)
@@ -1304,7 +1316,12 @@ def sandbox_candidate(
     with tempfile.TemporaryDirectory(prefix="hepta-lane-g-") as temporary_name:
         temporary = Path(temporary_name)
         workspace = temporary / "candidate"
-        _materialize_exact_tree(root, envelope.base_commit, workspace)
+        _materialize_exact_tree(
+            root,
+            envelope.base_commit,
+            workspace,
+            timeout_seconds=min(60, envelope.wall_time_seconds),
+        )
         if (workspace / ".git").exists() or (workspace / ".git").is_symlink():
             raise EngineeringError("source_tree_mutated")
         base_manifest = _tree_manifest(workspace)

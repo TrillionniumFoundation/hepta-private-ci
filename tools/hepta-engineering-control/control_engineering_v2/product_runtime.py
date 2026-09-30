@@ -85,6 +85,52 @@ class EngineeringControlProduct:
             self.store.connection.close()
             raise
         self._startup_reconciled = False
+        self._startup_recovery_report: WorkerRecoveryReport | None = None
+
+    @classmethod
+    def open_and_reconcile(
+        cls,
+        database: str | Path,
+        repository: str | Path,
+        *,
+        expected_repository: str,
+        trust_store: SignatureTrustStore,
+        now_ns: int | None = None,
+    ) -> "EngineeringControlProduct":
+        """Open the durable owner and complete startup recovery atomically.
+
+        Product callers should prefer this constructor.  A returned object has
+        validated/opened its store and reconciled stale registrations, leases,
+        claims, envelopes and durable capacity reservations.  Failure closes the
+        connection before the error escapes, so a partially reconciled owner is
+        never returned to the caller.
+        """
+        product = cls(
+            database,
+            repository,
+            expected_repository=expected_repository,
+            trust_store=trust_store,
+        )
+        try:
+            product.startup_reconcile(now_ns=now_ns)
+        except BaseException:
+            try:
+                product.store.connection.rollback()
+            finally:
+                product.store.connection.close()
+            raise
+        return product
+
+    @property
+    def ready(self) -> bool:
+        """Whether startup recovery completed for this process instance."""
+        return self._startup_reconciled
+
+    @property
+    def startup_recovery_report(self) -> WorkerRecoveryReport:
+        if not self._startup_reconciled or self._startup_recovery_report is None:
+            raise EngineeringError("product_startup_reconciliation_required")
+        return self._startup_recovery_report
 
     def __enter__(self) -> "EngineeringControlProduct":
         return self
@@ -215,6 +261,7 @@ class EngineeringControlProduct:
         self._startup_reconciled = False
         report = recover_worker_lifecycle(self.store, now_ns=now_ns)
         self._capacity_monitor.reconcile()
+        self._startup_recovery_report = report
         self._startup_reconciled = True
         return report
 

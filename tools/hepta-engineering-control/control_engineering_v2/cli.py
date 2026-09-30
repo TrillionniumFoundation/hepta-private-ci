@@ -4,6 +4,7 @@ import argparse
 from dataclasses import asdict, fields
 import json
 from pathlib import Path
+import sqlite3
 import sys
 
 from .candidate import (
@@ -17,6 +18,7 @@ from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope, Wor
 from .production import ProductionReadinessFacts, evaluate_production_readiness
 
 MAX_INPUT_BYTES = 2 * 1024 * 1024
+MAX_INPUT_DEPTH = 64
 
 
 def _unique_pairs(pairs):
@@ -33,6 +35,26 @@ def _read(path):
         content = source.read(MAX_INPUT_BYTES + 1)
     if len(content) > MAX_INPUT_BYTES:
         raise EngineeringError("input_byte_limit_exceeded")
+    content = content.decode(json.detect_encoding(content))
+    depth = 0
+    in_string = False
+    escaped = False
+    for character in content:
+        if in_string:
+            if escaped:
+                escaped = False
+            elif character == "\\":
+                escaped = True
+            elif character == '"':
+                in_string = False
+        elif character == '"':
+            in_string = True
+        elif character in ("[", "{"):
+            depth += 1
+            if depth > MAX_INPUT_DEPTH:
+                raise EngineeringError("input_depth_limit_exceeded")
+        elif character in ("]", "}"):
+            depth -= 1
     return json.loads(content, object_pairs_hook=_unique_pairs)
 
 
@@ -189,7 +211,7 @@ def main(argv=None):
     args = parser().parse_args(argv)
     try:
         result = run(args)
-    except (EngineeringError, OSError, ValueError, TypeError) as exc:
+    except (EngineeringError, OSError, sqlite3.Error, ValueError, TypeError, RecursionError, OverflowError) as exc:
         code = exc.code if isinstance(exc, EngineeringError) else "invalid_input"
         print(json.dumps({"error": code, "authorityGranted": False}), file=sys.stderr)
         return 1

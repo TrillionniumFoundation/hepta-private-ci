@@ -4,13 +4,16 @@ from __future__ import annotations
 import argparse
 from dataclasses import asdict
 import json
+import os
 from pathlib import Path
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
 
 from .candidate import CandidateEnvelope, Mutation, generate_candidates
+from .git_security import run_git
 from .mutation_testing import run_mutation_testing
 from .sandbox_control import SandboxCoordinator, SandboxExecutionPolicy
 
@@ -18,13 +21,15 @@ _SCHEMA = "hepta.control-engineering-mutation-campaign.v1"
 
 
 def _git(root: Path, *args: str) -> str:
-    return subprocess.run(
-        ["git", *args],
-        cwd=root,
-        text=True,
-        capture_output=True,
-        check=True,
-    ).stdout.strip()
+    # Subject preparation happens before the sandbox. Ambient repository
+    # redirection, hooks, signing helpers and templates must never execute here.
+    return run_git(
+        root,
+        "-c", "core.hooksPath=" + os.devnull,
+        "-c", "commit.gpgSign=false",
+        "-c", "init.templateDir=",
+        *args,
+    )
 
 
 def build_mutation_campaign(repository: str | Path) -> dict[str, object]:
@@ -40,18 +45,37 @@ def build_mutation_campaign(repository: str | Path) -> dict[str, object]:
     )
     if any(not path.is_file() for path in required):
         raise ValueError("mutation_campaign_source_missing")
+    # copytree follows symlinks by default. Keep evaluator preparation from
+    # copying host files outside the package or blocking on special files.
+    for path in (source_root / "tools", tests, package, *required):
+        mode = path.lstat().st_mode
+        if not (stat.S_ISREG(mode) or stat.S_ISDIR(mode)):
+            raise ValueError("mutation_campaign_source_not_regular")
+    for path in package.rglob("*"):
+        mode = path.lstat().st_mode
+        if not (stat.S_ISREG(mode) or stat.S_ISDIR(mode)):
+            raise ValueError("mutation_campaign_source_not_regular")
     with tempfile.TemporaryDirectory(prefix="hepta-control-mutation-") as temporary:
         root = Path(temporary)
-        shutil.copytree(package, root / "subject/control_engineering_v2")
+        shutil.copytree(
+            package,
+            root / "subject/control_engineering_v2",
+            ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+            symlinks=True,
+        )
         (root / "tests").mkdir()
         shutil.copy2(
             tests / "test_control_engineering_extensions.py",
             root / "tests/test_control_engineering_extensions.py",
+            follow_symlinks=False,
         )
         shutil.copy2(
             tests / "test_deployment_evidence.py",
             root / "tests/test_deployment_evidence.py",
+            follow_symlinks=False,
         )
+        if any(path.is_symlink() for path in root.rglob("*")):
+            raise ValueError("mutation_campaign_source_not_regular")
         _git(root, "init", "-q")
         _git(root, "config", "user.name", "Hepta Mutation Evaluator")
         _git(root, "config", "user.email", "mutation@example.invalid")
@@ -108,7 +132,7 @@ def build_mutation_campaign(repository: str | Path) -> dict[str, object]:
             envelope,
             baseline,
             mutants,
-            ((sys.executable, "-I", "-c", test_program),),
+            ((sys.executable, "-I", "-B", "-c", test_program),),
             SandboxCoordinator(
                 SandboxExecutionPolicy(
                     maximum_parallel_sandboxes=1,

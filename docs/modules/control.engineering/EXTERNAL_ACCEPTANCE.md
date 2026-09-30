@@ -3,8 +3,12 @@
 This document defines evidence that must be produced by systems outside
 `control.engineering`. Repository source, CI fixtures, local HMAC keys, digest-shaped
 strings and author assertions cannot satisfy these gates. The canonical repository
-fact remains `production_implementation=false` until all evidence is current,
-independently verified and bound to one exact target and source identity.
+fact `production_implementation` concerns exact-source native product composition
+and executable product qualification, as defined in
+[IMPLEMENTATION_BINDING.md](IMPLEMENTATION_BINDING.md). Deployment readiness and
+external acceptance additionally require the evidence below to be current,
+independently verified and bound to one exact target and source identity. This
+contract does not promote either fact merely because its source is present.
 
 ## Required independent providers
 
@@ -58,9 +62,9 @@ The workflow fails closed when the runner, verifier, evidence bundle or any requ
 observation is absent. Repository maintainers must configure the protected
 environment, runner and secret mounts outside this change.
 
-## Promotion rule
+## Deployment-readiness and external-acceptance rule
 
-Changing `production_implementation` requires, at minimum:
+Deployment readiness requires, at minimum:
 
 - exact source-head and deterministic base-merge product receipts;
 - an exact post-merge main product receipt;

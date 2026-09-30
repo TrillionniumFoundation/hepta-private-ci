@@ -140,6 +140,21 @@ class SandboxCoordinatorTests(unittest.TestCase):
         with self.assertRaisesRegex(EngineeringError, "invalid_sandbox_execution_policy"):
             SandboxCoordinator(SandboxExecutionPolicy(8, 3))
 
+    def test_check_stream_is_bounded_before_execution(self):
+        coordinator = SandboxCoordinator()
+        consumed = []
+
+        def checks():
+            for index in range(1000):
+                consumed.append(index)
+                yield ("true",)
+
+        with mock.patch("control_engineering_v2.sandbox_control.sandbox_candidate") as runner:
+            with self.assertRaisesRegex(EngineeringError, "check_limit_exceeded"):
+                coordinator.execute("/repo", CandidateEnvelope("env", "a" * 40, ("src",)), self.candidate(), checks())
+        self.assertEqual(len(consumed), 65)
+        runner.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

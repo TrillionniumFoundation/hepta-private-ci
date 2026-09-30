@@ -19,6 +19,7 @@ from .control_plane import (
     EngineeringStore,
     WorkEnvelope,
     WorkPackage,
+    _validate_envelope,
     _validate_package,
     bounded_tuple,
     canonical_json,
@@ -37,6 +38,7 @@ MAX_SKILLS = 64
 MAX_REVIEW_ROLES = 16
 MAX_CAPACITY_UNITS = 1_000_000
 MAX_SCORE_ABS = 1 << 62
+MAX_PLAN_INPUT_BYTES = 256 * 1024
 
 
 def _valid_git_object_id(value: str) -> bool:
@@ -183,13 +185,20 @@ def issue_signed_work_envelope(
     now = time.time_ns() if now_ns is None else now_ns
     if type(now) is not int or now < 0:
         raise EngineeringError("invalid_time")
+    envelope = _validate_envelope(envelope)
+    if not isinstance(source, CanonicalSourceReceipt):
+        raise EngineeringError("invalid_source_receipt")
     checked_sha256(expected_document_set_digest, "document_set_digest")
+    if expected_document_set_digest == "0" * 64:
+        raise EngineeringError("invalid_document_set_digest")
     if source.repository_full_name != expected_repository:
         raise EngineeringError("repository_mismatch")
     if (
         source.source_commit != envelope.source_commit
         or source.source_tree != envelope.source_tree
         or source.document_set_digest != expected_document_set_digest
+        or not _valid_git_object_id(source.source_commit)
+        or not _valid_git_object_id(source.source_tree)
         or not _valid_git_object_id(source.base_commit)
         or not _valid_git_object_id(source.base_tree)
     ):
@@ -199,6 +208,7 @@ def issue_signed_work_envelope(
     if not (
         type(source.observed_unix_ns) is int
         and type(source.expires_unix_ns) is int
+        and source.observed_unix_ns >= 0
         and source.observed_unix_ns <= now < source.expires_unix_ns
     ):
         raise EngineeringError("source_receipt_stale")
@@ -218,6 +228,7 @@ def _verify_completion(
     trust_store: SignatureTrustStore,
     now: int,
 ) -> None:
+    _require_envelope_binding(store, envelope, now)
     checked_id(receipt.package_id, "package_id")
     checked_id(receipt.generation_id, "generation_id")
     checked_sha256(receipt.generation_digest, "generation_digest")
@@ -298,6 +309,40 @@ def _score(package: EngineeringWorkPackage) -> int:
     )
 
 
+def _require_envelope_binding(
+    store: EngineeringStore,
+    envelope: WorkEnvelope,
+    now: int,
+):
+    """Bind every completion/planning admission to the durable envelope ceiling."""
+    envelope = _validate_envelope(envelope)
+    persisted = store._get_envelope(envelope.envelope_id, now)
+    try:
+        persisted_allowed = tuple(
+            json.loads(bytes(persisted["allowed_paths_json"]).decode("utf-8"))
+        )
+        persisted_denied = tuple(
+            json.loads(bytes(persisted["denied_authorities_json"]).decode("utf-8"))
+        )
+    except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+        raise EngineeringError("orchestration_envelope_state_invalid") from None
+    if (
+        str(persisted["source_commit"]) != envelope.source_commit
+        or str(persisted["source_tree"]) != envelope.source_tree
+        or str(persisted["objective_digest"]) != envelope.objective_digest
+        or str(persisted["contract_digest"]) != envelope.contract_digest
+        or str(persisted["owner"]) != envelope.owner
+        or persisted_allowed != envelope.allowed_paths
+        or persisted_denied != envelope.denied_authorities
+        or int(persisted["maximum_assignments"]) != envelope.maximum_assignments
+        or int(persisted["expires_unix_ns"]) != envelope.expires_unix_ns
+        or int(persisted["revision"]) != envelope.revision
+        or str(persisted["semantic_digest"]) != semantic_digest(asdict(envelope))
+    ):
+        raise EngineeringError("orchestration_envelope_binding_mismatch")
+    return persisted
+
+
 def plan_engineering_work(
     store: EngineeringStore,
     envelope: WorkEnvelope,
@@ -317,8 +362,7 @@ def plan_engineering_work(
     if not isinstance(store, EngineeringStore):
         raise EngineeringError("invalid_engineering_store")
     checked_id(generation_id, "generation_id")
-    if not isinstance(envelope, WorkEnvelope):
-        raise EngineeringError("invalid_envelope")
+    envelope = _validate_envelope(envelope)
 
     package_values = bounded_tuple(packages, 4096, "package_limit_exceeded")
     worker_values = bounded_tuple(workers, MAX_WORKERS, "worker_limit_exceeded")
@@ -342,10 +386,10 @@ def plan_engineering_work(
     if any(not isinstance(value, CompletionReceipt) for value in receipt_values):
         raise EngineeringError("invalid_completion_receipt")
 
-    package_ids = [value.package_id for value in package_values]
+    package_ids = [checked_id(value.package_id, "package_id") for value in package_values]
     if len(package_ids) != len(set(package_ids)):
         raise EngineeringError("duplicate_package_identity")
-    worker_ids = [value.worker_id for value in worker_values]
+    worker_ids = [checked_id(value.worker_id, "worker_id") for value in worker_values]
     if len(worker_ids) != len(set(worker_ids)):
         raise EngineeringError("duplicate_worker_identity")
 
@@ -360,11 +404,12 @@ def plan_engineering_work(
         if (
             not isinstance(worker.skills, tuple)
             or len(worker.skills) > MAX_SKILLS
-            or len(set(worker.skills)) != len(worker.skills)
         ):
             raise EngineeringError("invalid_worker_skills")
         for skill in worker.skills:
             checked_id(skill, "worker_skill")
+        if len(set(worker.skills)) != len(worker.skills):
+            raise EngineeringError("invalid_worker_skills")
         if (
             not isinstance(worker.allowed_paths, tuple)
             or not worker.allowed_paths
@@ -388,6 +433,10 @@ def plan_engineering_work(
 
     envelope_scope = canonical_paths(envelope.allowed_paths)
     normalized_packages: list[tuple[EngineeringWorkPackage, WorkPackage]] = []
+    normalized_package_rows = []
+    input_bytes = len(canonical_json(asdict(envelope))) + len(canonical_json(asdict(capacity)))
+    if input_bytes > MAX_PLAN_INPUT_BYTES:
+        raise EngineeringError("orchestration_input_byte_limit")
     for package in package_values:
         checked_id(package.package_id, "package_id")
         if (
@@ -399,16 +448,19 @@ def plan_engineering_work(
             or not 0 <= package.ci_units <= MAX_CAPACITY_UNITS
             or not isinstance(package.required_skills, tuple)
             or len(package.required_skills) > MAX_SKILLS
-            or len(set(package.required_skills)) != len(package.required_skills)
             or not isinstance(package.review_roles, tuple)
             or len(package.review_roles) > MAX_REVIEW_ROLES
-            or len(set(package.review_roles)) != len(package.review_roles)
         ):
             raise EngineeringError("invalid_package_capacity")
         for skill in package.required_skills:
             checked_id(skill, "required_skill")
         for role in package.review_roles:
             checked_id(role, "required_review_role")
+        if (
+            len(set(package.required_skills)) != len(package.required_skills)
+            or len(set(package.review_roles)) != len(package.review_roles)
+        ):
+            raise EngineeringError("invalid_package_capacity")
         _score(package)
         native = _validate_package(
             WorkPackage(
@@ -424,11 +476,31 @@ def plan_engineering_work(
         ):
             raise EngineeringError("package_path_outside_envelope")
         normalized_packages.append((package, native))
+        row = asdict(package)
+        row["predecessors"] = native.predecessors
+        row["write_paths"] = native.write_paths
+        input_bytes += len(canonical_json(row))
+        if input_bytes > MAX_PLAN_INPUT_BYTES:
+            raise EngineeringError("orchestration_input_byte_limit")
+        normalized_package_rows.append(row)
+
+    normalized_worker_rows = []
+    for worker in worker_values:
+        row = asdict(worker)
+        row["allowed_paths"] = worker_scopes[worker.worker_id]
+        input_bytes += len(canonical_json(row))
+        if input_bytes > MAX_PLAN_INPUT_BYTES:
+            raise EngineeringError("orchestration_input_byte_limit")
+        normalized_worker_rows.append(row)
 
     completed: dict[str, CompletionReceipt] = {}
     for receipt in receipt_values:
+        checked_id(receipt.package_id, "package_id")
         if receipt.package_id in completed:
             raise EngineeringError("duplicate_completion_receipt")
+        input_bytes += len(canonical_json(asdict(receipt)))
+        if input_bytes > MAX_PLAN_INPUT_BYTES:
+            raise EngineeringError("orchestration_input_byte_limit")
         _verify_completion(receipt, envelope, store, trust_store, now)
         completed[receipt.package_id] = receipt
 
@@ -438,44 +510,8 @@ def plan_engineering_work(
         completed_ids,
     )
 
-    normalized_package_rows = []
-    for package, native in normalized_packages:
-        row = asdict(package)
-        row["predecessors"] = native.predecessors
-        row["write_paths"] = native.write_paths
-        normalized_package_rows.append(row)
-    normalized_worker_rows = []
-    for worker in worker_values:
-        row = asdict(worker)
-        row["allowed_paths"] = worker_scopes[worker.worker_id]
-        normalized_worker_rows.append(row)
-
     with store._transaction():
-        persisted = store._get_envelope(envelope.envelope_id, now)
-        try:
-            persisted_allowed = tuple(
-                json.loads(bytes(persisted["allowed_paths_json"]).decode("utf-8"))
-            )
-            persisted_denied = tuple(
-                json.loads(
-                    bytes(persisted["denied_authorities_json"]).decode("utf-8")
-                )
-            )
-        except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
-            raise EngineeringError("orchestration_envelope_state_invalid") from None
-        if (
-            str(persisted["source_commit"]) != envelope.source_commit
-            or str(persisted["source_tree"]) != envelope.source_tree
-            or str(persisted["objective_digest"]) != envelope.objective_digest
-            or str(persisted["contract_digest"]) != envelope.contract_digest
-            or str(persisted["owner"]) != envelope.owner
-            or persisted_allowed != canonical_paths(envelope.allowed_paths)
-            or persisted_denied != tuple(sorted(envelope.denied_authorities))
-            or int(persisted["maximum_assignments"]) != envelope.maximum_assignments
-            or int(persisted["expires_unix_ns"]) != envelope.expires_unix_ns
-            or int(persisted["revision"]) != envelope.revision
-        ):
-            raise EngineeringError("orchestration_envelope_binding_mismatch")
+        persisted = _require_envelope_binding(store, envelope, now)
 
         store._expire_leases(now)
         active_rows = store._active_lease_rows(now)
@@ -546,11 +582,34 @@ def plan_engineering_work(
                 item[0].package_id,
             ),
         )
+        worker_skills = {
+            worker.worker_id: frozenset(worker.skills) for worker in worker_values
+        }
+        compatible_workers: dict[str, tuple[WorkerProfile, ...]] = {}
+        worker_demand = dict.fromkeys(worker_remaining, 0)
+        for package, native in ordered:
+            required = frozenset(package.required_skills)
+            compatible = tuple(
+                worker
+                for worker in worker_values
+                if required.issubset(worker_skills[worker.worker_id])
+                and worker_remaining[worker.worker_id] >= package.capacity_units
+                and all(
+                    path_is_within(path, worker_scopes[worker.worker_id])
+                    for path in native.write_paths
+                )
+            )
+            compatible_workers[package.package_id] = compatible
+            for worker in compatible:
+                worker_demand[worker.worker_id] += 1
         assignment_limit = min(
             int(persisted["maximum_assignments"]),
             128,
         )
         for package, native in ordered:
+            compatible = compatible_workers[package.package_id]
+            for worker in compatible:
+                worker_demand[worker.worker_id] -= 1
             if len(assignments) >= assignment_limit:
                 blocked[package.package_id] = "assignment_limit"
                 continue
@@ -558,19 +617,11 @@ def plan_engineering_work(
                 blocked[package.package_id] = "batch_path_conflict"
                 continue
 
-            required = set(package.required_skills)
-            eligible_workers = []
-            for worker in worker_values:
-                if not required.issubset(set(worker.skills)):
-                    continue
-                if any(
-                    not path_is_within(path, worker_scopes[worker.worker_id])
-                    for path in native.write_paths
-                ):
-                    continue
-                if worker_remaining[worker.worker_id] < package.capacity_units:
-                    continue
-                eligible_workers.append(worker)
+            eligible_workers = [
+                worker
+                for worker in compatible
+                if worker_remaining[worker.worker_id] >= package.capacity_units
+            ]
             if not eligible_workers:
                 blocked[package.package_id] = "worker_skill_or_capacity"
                 continue
@@ -592,6 +643,10 @@ def plan_engineering_work(
             worker = sorted(
                 eligible_workers,
                 key=lambda row: (
+                    # Preserve workers that can serve more remaining ready
+                    # packages, including uniquely skilled/scoped work. This is
+                    # a bounded greedy heuristic, not an optimal bin packing.
+                    worker_demand[row.worker_id],
                     -worker_remaining[row.worker_id],
                     row.worker_id,
                 ),
