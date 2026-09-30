@@ -1,0 +1,43 @@
+name: Memory federation source export 20260930
+
+on:
+  push:
+    branches:
+      - tmp/memory-federation-source-export-20260930-r1
+    paths:
+      - .github/workflows/memory-federation-source-export-20260930.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-federation-source-export-20260930-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Build immutable source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          tar --exclude=.git -czf "${RUNNER_TEMP}/memory-federation-source-${GITHUB_SHA}.tar.gz" .
+          sha256sum "${RUNNER_TEMP}/memory-federation-source-${GITHUB_SHA}.tar.gz" > "${RUNNER_TEMP}/memory-federation-source-${GITHUB_SHA}.tar.gz.sha256"
+      - name: Upload source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-source-export-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/memory-federation-source-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/memory-federation-source-${{ github.sha }}.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
