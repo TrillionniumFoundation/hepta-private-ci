@@ -20,6 +20,7 @@ mod owner_host;
 mod owner_service;
 mod pinned;
 mod publication;
+mod publication_registry_suffix;
 mod registry;
 mod selection;
 mod sensor_core_registry;

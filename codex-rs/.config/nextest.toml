@@ -158,3 +158,16 @@ retries = 0
 filter = 'package(codex-hepta-infer-worker-host) & test(physical_cpu_traffic_retires_observed_features_and_replays_full_cold_receipts)'
 slow-timeout = { period = "30s", terminate-after = 6 }
 retries = 0
+
+# Real native publication/refresh fixtures include multiple full fsync phases.
+# This whole-case budget leaves runtime freshness and request deadlines intact.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(neuron_artifact_admission::refresh::tests)'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-learning-artifacts) & test(owner_service::tests::suffix_tests)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0

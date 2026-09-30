@@ -174,17 +174,16 @@ fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
     let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
     let scope_digest = withdrawals.scope_digest().fixture("scope digest");
 
-    let mut service =
-        LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-            root: directory.0.clone(),
-            trust: trust(&key, scope_digest),
-            writer_lease: lease(&key, scope_digest),
-            required_current_head: None,
-            withdrawal_registry: withdrawals.clone(),
-            storage_binding: digest("binding"),
-            now: 20,
-        })
-        .fixture("open service");
+    let mut service = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+        root: directory.0.clone(),
+        trust: trust(&key, scope_digest),
+        writer_lease: lease(&key, scope_digest),
+        required_current_head: None,
+        withdrawal_registry: withdrawals.clone(),
+        storage_binding: digest("binding"),
+        now: 20,
+    })
+    .fixture("open service");
 
     let predecessor = service.registry().head_digest();
     let admission = admit_manifest_at_withdrawal_head_v3(
@@ -249,3 +248,6 @@ fn named_owner_service_publishes_retries_and_reopens_from_current_head() {
         receipt.registry_head_digest
     );
 }
+
+#[path = "owner_service_suffix_tests.rs"]
+mod suffix_tests;

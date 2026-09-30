@@ -14,7 +14,6 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::ArtifactAdmissionError;
-use crate::ArtifactEvent;
 use crate::ArtifactRegistry;
 use crate::DatasetWithdrawalRegistry;
 use crate::RegistryHeadRequirementV1;
@@ -199,31 +198,19 @@ impl ArtifactPublicationTransactionV1 {
         {
             return Err(ArtifactPublicationError::RegistryReceiptMismatch);
         }
-        let record = registry
-            .records()
-            .last()
-            .ok_or(ArtifactPublicationError::RegistryProjectionMismatch)?;
-        if record.predecessor_chain_digest != self.intent.expected_registry_predecessor_head {
-            return Err(ArtifactPublicationError::RegistryPredecessorMismatch);
-        }
-        let v2 = &self.intent.admission.validated_manifest.manifest;
-        let ArtifactEvent::Register { manifest: v1, .. } = &record.event else {
-            return Err(ArtifactPublicationError::RegistryProjectionMismatch);
-        };
-        if v1.artifact_id != v2.artifact_id
-            || v1.kind != v2.kind
-            || v1.generation != v2.generation
-            || v1.content_digest != v2.bytes_digest
-            || v1.producer_id != v2.producer_id
-            || v1.compatibility_digest != v2.compatibility_digest
-            || v1.encoded_size_bytes != v2.encoded_size_bytes
-        {
-            return Err(ArtifactPublicationError::RegistryProjectionMismatch);
-        }
+        self.validate_registry_projection(registry)?;
 
         self.registry_receipt = Some(receipt);
         self.phase = ArtifactPublicationPhaseV1::RegistryDurable;
         self.refresh_state_digest();
+        Ok(())
+    }
+
+    pub(crate) fn validate_registry_projection(
+        &self,
+        registry: &ArtifactRegistry,
+    ) -> Result<(), ArtifactPublicationError> {
+        crate::publication_registry_suffix::validate_registry_suffix(&self.intent, registry)?;
         Ok(())
     }
 

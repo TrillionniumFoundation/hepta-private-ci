@@ -559,3 +559,22 @@ The bootstrap source-location obligation for `learning.artifacts` is implemented
 - `codex-rs/hepta-learning-artifacts`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Native publication state changes and exact recovery
+
+`LearningArtifactOwnerService::publish_with_state_changes` uses the existing
+writer fence, publication intent and Payload → Registry → signed Witness → ACK
+journal. The registry must contain the exact native admitted registration
+immediately after the pinned predecessor, including objective, support and
+predecessor fields. It may then append at most 64 irreversible Quarantine or
+Revoke records for previously registered artifacts. Additional registrations
+and changes disabling the candidate being published are rejected before the
+staged registry replaces the owner projection.
+
+The full registry suffix is bound by its real fsynced snapshot, signed CURRENT
+and original publication receipt. `resume_publication` reads and verifies that
+exact snapshot with the same projection rules. The service reloads the complete
+written suffix after restart and verifies exact requested records before
+resuming or replaying ACK. Omitting a written revocation cannot return the old
+receipt. These operations change registry eligibility; independent evaluation,
+selection and physical activation retain their existing owners.

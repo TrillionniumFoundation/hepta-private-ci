@@ -536,6 +536,24 @@ impl LearningArtifactOwnerHost {
         })?)
     }
 
+    /// Stage bounded irreversible changes to old artifacts in the same native
+    /// publication. The complete suffix is bound by registry fsync and signed
+    /// CURRENT; no extra registration or change to this candidate is accepted.
+    pub fn stage_publication_state_changes(
+        &self,
+        transaction: &ArtifactPublicationTransactionV1,
+        registry: &mut ArtifactRegistry,
+        changes: &[ArtifactEvent],
+        now: u64,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        self.require_current_writer(now)?;
+        crate::publication_registry_suffix::stage_state_changes(
+            transaction.intent(),
+            registry,
+            changes,
+        )
+    }
+
     /// Persist or reconcile immutable payload bytes, then checkpoint the
     /// PayloadDurable phase. Existing bytes are accepted only after full
     /// registry-bound digest and length validation.
@@ -974,7 +992,13 @@ impl LearningArtifactOwnerHost {
         if expected != recovery.checkpoint {
             return Err(ArtifactOwnerHostError::CheckpointMismatch);
         }
-        Ok(ArtifactPublicationTransactionV1::from_snapshot(snapshot)?)
+        let transaction = ArtifactPublicationTransactionV1::from_snapshot(snapshot)?;
+        if let Some(receipt) = transaction.snapshot().registry_receipt {
+            let registry =
+                read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+            transaction.validate_registry_projection(&registry)?;
+        }
+        Ok(transaction)
     }
 
     pub fn discover_current_head(

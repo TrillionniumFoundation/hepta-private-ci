@@ -13,6 +13,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::ArtifactEvent;
 use crate::ArtifactOwnerHostError;
 use crate::ArtifactOwnerPublicationCheckpointV1;
 use crate::ArtifactOwnerTrustV1;
@@ -49,6 +50,9 @@ pub struct LearningArtifactPublishRequestV1 {
     pub expected_registry_predecessor_head: Digest32,
     pub now: u64,
 }
+
+#[path = "owner_service_suffix.rs"]
+mod suffix;
 
 pub struct LearningArtifactOwnerService {
     host: LearningArtifactOwnerHost,
@@ -167,6 +171,17 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        self.publish_with_state_changes(request, &[])
+    }
+
+    /// Publish the admitted candidate and a bounded irreversible suffix using
+    /// this same writer, journal and signed CURRENT. Exact recovery verifies the
+    /// original complete durable suffix before returning a terminal receipt.
+    pub fn publish_with_state_changes(
+        &mut self,
+        request: LearningArtifactPublishRequestV1,
+        state_changes: &[ArtifactEvent],
+    ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
         if let Some(blocked) = &self.recovery_required
             && blocked != &request.operation_id
         {
@@ -175,7 +190,7 @@ impl LearningArtifactOwnerService {
             ));
         }
         let operation_id = request.operation_id.clone();
-        let result = self.publish_inner(&request);
+        let result = self.publish_inner(&request, state_changes);
         match result {
             Ok(receipt) => {
                 self.recovery_required = None;
@@ -195,6 +210,7 @@ impl LearningArtifactOwnerService {
     fn publish_inner(
         &mut self,
         request: &LearningArtifactPublishRequestV1,
+        state_changes: &[ArtifactEvent],
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
         if request.signed_current_head.binding != self.storage_binding
             || request.signed_current_head.witness.predecessor_head_digest
@@ -209,7 +225,12 @@ impl LearningArtifactOwnerService {
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
-                return receipt_from_checkpoint(&recovery.checkpoint);
+                return suffix::replay_acknowledged_suffix(
+                    &self.host,
+                    request,
+                    &recovery.checkpoint,
+                    state_changes,
+                );
             }
         }
 
@@ -227,8 +248,22 @@ impl LearningArtifactOwnerService {
         )?;
         self.host
             .stage_compatibility_registration(&transaction, &mut staged, request.now)?;
+        self.host.stage_publication_state_changes(
+            &transaction,
+            &mut staged,
+            state_changes,
+            request.now,
+        )?;
 
         if let Some(recovery) = checkpoint {
+            if let Some(receipt) = recovery.checkpoint.registry_receipt {
+                let written = self.host.recover_registry_by_head(receipt.head_digest)?;
+                transaction.validate_registry_projection(&written)?;
+                if written.records() != staged.records() {
+                    return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+                }
+                staged = written;
+            }
             transaction = rebuild_transaction(
                 transaction,
                 &staged,

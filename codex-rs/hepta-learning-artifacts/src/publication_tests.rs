@@ -1,4 +1,5 @@
 use super::*;
+use crate::ArtifactEvent;
 
 use codex_hepta_types::Generation;
 
@@ -74,8 +75,10 @@ fn registry_with_candidate(predecessor_head: Digest32) -> ArtifactRegistry {
             generation: generation(2),
             predecessor_id: None,
             content_digest: digest("payload"),
-            objective_digest: digest("objective-index"),
-            support_digest: digest("support-index"),
+            objective_digest: v2_manifest().objective_class_digest,
+            support_digest: crate::validate_artifact_manifest_v2(v2_manifest(), 20)
+                .expect("canonical fixture admission")
+                .manifest_digest,
             producer_id: id("producer"),
             compatibility_digest: digest("compatibility"),
             encoded_size_bytes: 7,
@@ -176,12 +179,9 @@ fn art_07_publication_requires_ordered_durable_phases_before_ack() {
 
     let registry = registry_with_candidate(Digest32::ZERO);
     let registry_receipt = snapshot_receipt(&registry);
-    if let Err(error) = transaction.record_registry_durable(
-        &registry,
-        registry_receipt,
-        &withdrawal_registry(),
-        20,
-    ) {
+    if let Err(error) =
+        transaction.record_registry_durable(&registry, registry_receipt, &withdrawal_registry(), 20)
+    {
         panic!("registry durability failed: {error}");
     }
     assert_eq!(
@@ -221,8 +221,7 @@ fn art_07_publication_requires_ordered_durable_phases_before_ack() {
 #[test]
 fn art_07_crash_snapshots_never_promote_partial_publication() {
     let mut transaction = prepared();
-    let prepared = match ArtifactPublicationTransactionV1::from_snapshot(transaction.snapshot())
-    {
+    let prepared = match ArtifactPublicationTransactionV1::from_snapshot(transaction.snapshot()) {
         Ok(value) => value,
         Err(error) => panic!("prepared recovery failed: {error}"),
     };
@@ -332,8 +331,10 @@ fn art_07_registry_projection_cannot_swap_payload_or_identity() {
             generation: generation(2),
             predecessor_id: None,
             content_digest: digest("wrong-payload"),
-            objective_digest: digest("objective-index"),
-            support_digest: digest("support-index"),
+            objective_digest: v2_manifest().objective_class_digest,
+            support_digest: crate::validate_artifact_manifest_v2(v2_manifest(), 20)
+                .expect("canonical fixture admission")
+                .manifest_digest,
             producer_id: id("producer"),
             compatibility_digest: digest("compatibility"),
             encoded_size_bytes: 7,
@@ -351,3 +352,6 @@ fn art_07_registry_projection_cannot_swap_payload_or_identity() {
         Err(ArtifactPublicationError::RegistryProjectionMismatch)
     );
 }
+
+#[path = "publication_registry_suffix_tests.rs"]
+mod suffix_tests;
