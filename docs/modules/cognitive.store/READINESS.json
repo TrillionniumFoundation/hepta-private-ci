@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.cognitive-store-readiness.v1",
+  "module": "cognitive.store",
+  "mergeReady": false,
+  "productionQualified": false,
+  "knownRegressions": [
+    {
+      "id": "CS-REC-FENCE-001",
+      "severity": "P0",
+      "mergeBlocking": true,
+      "status": "source_fixed_execution_pending",
+      "summary": "Failed production-writer admission must close the recovered SQLx pool before releasing the exclusive recovery fence.",
+      "source": "codex-rs/hepta-cognitive-store/src/lib.rs",
+      "regression": "codex-rs/hepta-cognitive-store/tests/production_writer_admission_fence.rs"
+    }
+  ],
+  "sourceMaterializationPolicy": {
+    "ordinaryGitDiffOnly": true,
+    "workflowReadOnly": true,
+    "workflowMayDeleteItself": false,
+    "workflowMayCommit": false,
+    "workflowMayPush": false,
+    "qualificationTargetsFinalSourceSha": true
+  },
+  "qualificationPolicy": {
+    "oneCoherentAttempt": true,
+    "terminalSuccessOnly": true,
+    "zeroJobsIsFailure": true,
+    "actionRequiredIsFailure": true,
+    "skippedIsFailure": true,
+    "artifactOnlyIsFailure": true,
+    "olderAttemptReuseForbidden": true,
+    "requiredLanes": ["source-head", "deterministic-base-merge"],
+    "requiredAssertions": [
+      "source-head qualification success",
+      "deterministic-base-merge qualification success",
+      "qualification manifest validation success",
+      "all committed plan records present",
+      "tested commit and tree exactly match the lane candidate"
+    ],
+    "readinessManifestFields": [
+      "source_head_sha",
+      "base_sha",
+      "deterministic_merge_sha",
+      "workflow_sha",
+      "workflow_run_id",
+      "attempt_id",
+      "runner_image",
+      "target_triple",
+      "Cargo.lock_hash",
+      "qualification_plan_hash",
+      "implementation_map_hash",
+      "documentation_hash",
+      "source_tree_hash",
+      "artifact_hashes"
+    ]
+  },
+  "capabilities": {
+    "semanticMutation": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "writableRecovery": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": "CS-REC-FENCE-001", "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "durableReadCapability": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "federationPolicyCapability": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "liveRevocation": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "archiveRestore": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "physicalDeletion": {"source_present": false, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "compileTimeOwnerIsolation": {"source_present": false, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null}
+  },
+  "externalGates": [
+    "independent signer governance",
+    "current-cut witness retained outside the rollback domain",
+    "trusted commit-to-witness gap reconciliation",
+    "selected-host directory-fsync fault injection",
+    "selected-host canary, restart, rollback and SLO receipts",
+    "independent review and operator acceptance",
+    "backup and derived-artifact physical erasure",
+    "third-party deletion acknowledgement",
+    "model or parameter unlearning evidence"
+  ]
+}

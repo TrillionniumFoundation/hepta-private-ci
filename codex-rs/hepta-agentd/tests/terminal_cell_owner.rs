@@ -338,6 +338,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     use codex_hepta_contracts::AgentId;
     use codex_hepta_contracts::Sha256Digest;
     use codex_hepta_memory::CognitiveAccess;
+    use codex_hepta_memory::CognitiveRuntime;
     use codex_hepta_memory::CognitiveScope;
     use codex_hepta_memory::CognitiveStore;
     use codex_hepta_memory::FederationConsumerAccess;
@@ -433,8 +434,9 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     );
     collect_with_support(&mut ledger, "shared.stop", "abstain", 0, support);
     let data = freeze(&ledger, "shared.dataset");
+    let source_runtime = CognitiveRuntime::Available(Arc::clone(&source));
     let host = AgentdSharedReplayHostV1::new(
-        Arc::clone(&source),
+        &source_runtime,
         consumer.clone(),
         "domain.terminal".into(),
         receiver_id.clone(),
@@ -593,7 +595,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             .is_err()
     );
     let wrong_scope = AgentdSharedReplayHostV1::new(
-        Arc::clone(&source),
+        &source_runtime,
         consumer.clone(),
         "global.base".into(),
         receiver_id.clone(),
@@ -606,7 +608,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             .is_err()
     );
     let wrong_workspace = AgentdSharedReplayHostV1::new(
-        Arc::clone(&source),
+        &source_runtime,
         FederationConsumerAccess::new(
             receiver_id.clone(),
             Sha256Digest::for_bytes(b"other-workspace"),

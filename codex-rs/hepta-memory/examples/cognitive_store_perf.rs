@@ -7,6 +7,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
@@ -25,6 +26,7 @@ use tempfile::TempDir;
 
 const DEFAULT_RECORDS: usize = 256;
 const MAX_RECORDS: usize = 16_384;
+const MAX_RECORDS_PER_SCOPE: usize = 8_192;
 const CONTENT_BYTES: usize = 1024;
 
 #[tokio::main]
@@ -43,7 +45,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     std::fs::create_dir_all(&fleet)?;
     let owner = AgentId::parse("00000000-0000-4000-8000-00000000c057")?;
     let layout = HeptaFleetRoot::parse(fleet)?.layout().agent(&owner);
-    let access = CognitiveAccess::agent_private(owner.clone());
+    let scopes = profile_scopes(&owner, requested);
 
     let opened = Instant::now();
     let store = CognitiveStore::open(&layout).await?;
@@ -51,9 +53,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let mut commit_us = Vec::with_capacity(requested);
     for index in 0..requested {
+        let shard = index / MAX_RECORDS_PER_SCOPE;
+        let (access, scope) = &scopes[shard];
         let content = bounded_content(index);
         let source = SourceDraft {
-            scope: CognitiveScope::AgentPrivate,
+            scope: scope.clone(),
             kind: LedgerSourceKind::ExplicitMemoryDirective,
             event_key: format!("perf-source-{index:05}"),
             content: content.as_bytes().to_vec(),
@@ -62,7 +66,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         let memory = MemoryDraft {
             stable_key: format!("perf-memory-{index:05}"),
             revision: MemoryRevisionDraft {
-                scope: CognitiveScope::AgentPrivate,
+                scope: scope.clone(),
                 content,
                 verification: MemoryVerification::Verified,
                 lifecycle: MemoryLifecycleState::Active,
@@ -73,7 +77,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         };
         let started = Instant::now();
         store
-            .remember_with_kg(&access, &source, &memory, &KgFactSetDraft::default())
+            .remember_with_kg(access, &source, &memory, &KgFactSetDraft::default())
             .await?;
         commit_us.push(elapsed_us(started));
     }
@@ -84,11 +88,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let journal_bytes = file_len(&sidecar(&database, "-journal"));
 
     let snapshot_started = Instant::now();
-    let snapshot = store
-        .lane_c_snapshot(&access, &CognitiveScope::AgentPrivate, now_unix_seconds()?)
-        .await?;
+    let mut snapshot_records = 0usize;
+    for (access, scope) in &scopes {
+        let snapshot = store
+            .lane_c_snapshot(access, scope, now_unix_seconds()?)
+            .await?;
+        snapshot_records = snapshot_records
+            .checked_add(snapshot.snapshot().records.len())
+            .ok_or("snapshot record count overflow")?;
+    }
     let snapshot_us = elapsed_us(snapshot_started);
-    let snapshot_records = snapshot.snapshot().records.len();
+    if snapshot_records != requested {
+        return Err(format!(
+            "profile snapshot retained {snapshot_records} records, expected {requested}"
+        )
+        .into());
+    }
 
     let anchor_started = Instant::now();
     let anchor = store.recovery_anchor().await?;
@@ -111,6 +126,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         "profile": "PERF-DURABLE",
         "sourceSha": std::env::var("SOURCE_SHA").ok(),
         "records": requested,
+        "scopeCount": scopes.len(),
+        "maximumRecordsPerScopeInProfile": MAX_RECORDS_PER_SCOPE,
         "contentBytesPerRecord": CONTENT_BYTES,
         "sqliteJournalMode": PRODUCTION_DURABLE_WRITER_JOURNAL_MODE,
         "sqliteSynchronous": PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL,
@@ -144,6 +161,26 @@ async fn main() -> Result<(), Box<dyn Error>> {
         std::fs::write(output, format!("{rendered}\n"))?;
     }
     Ok(())
+}
+
+fn profile_scopes(owner: &AgentId, requested: usize) -> Vec<(CognitiveAccess, CognitiveScope)> {
+    let count = requested.div_ceil(MAX_RECORDS_PER_SCOPE);
+    if count == 1 {
+        return vec![(
+            CognitiveAccess::agent_private(owner.clone()),
+            CognitiveScope::AgentPrivate,
+        )];
+    }
+    (0..count)
+        .map(|index| {
+            let workspace_sha256 =
+                Sha256Digest::for_bytes(format!("cognitive-perf-workspace-{index}").as_bytes());
+            (
+                CognitiveAccess::workspace_private(owner.clone(), workspace_sha256.clone()),
+                CognitiveScope::WorkspacePrivate { workspace_sha256 },
+            )
+        })
+        .collect()
 }
 
 fn bounded_content(index: usize) -> String {

@@ -1,4 +1,4 @@
-//! Explicit Agentd/host seam for the production durable writer.
+//! Unique canonical Agentd production facade for cognitive durable writes.
 //!
 //! The host must supply an externally verified authority lease and verifier.
 //! Nothing in Agentd startup installs this capability automatically; the
@@ -13,6 +13,7 @@ use std::time::Duration;
 
 use codex_hepta_cognitive_store::CognitiveAccess;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
+#[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_cognitive_store::ForgetMemoryDraft;
 use codex_hepta_cognitive_store::KgFactSetDraft;
@@ -33,6 +34,8 @@ use codex_hepta_cognitive_store::StableMemoryId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
+#[cfg(not(feature = "qualification-cognitive-write"))]
+use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::FinalUseProductionOutboxTarget;
 use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 
@@ -270,9 +273,7 @@ impl AgentdProductionWriterHost {
             verifier.as_ref(),
         )
         .await
-        .map_err(|error| {
-            AgentdError::Protocol(format!("recover production cognitive store: {error}"))
-        })?;
+        .map_err(AgentdError::CognitiveRecovery)?;
         let runtime_store = store.clone();
         let writer = Arc::new(
             ProductionDurableWriter::open_with_live_verifier(
@@ -380,8 +381,39 @@ impl AgentdProductionWriterHost {
             .await?)
     }
 
+    /// Qualification-only raw writer inspection.  Default product builds
+    /// keep this accessor crate-private, so external callers can mutate only
+    /// through the verified facade methods above.
+    #[cfg(feature = "qualification-cognitive-write")]
     pub fn writer(&self) -> Arc<ProductionDurableWriter> {
         Arc::clone(&self.writer)
+    }
+
+    #[cfg(not(feature = "qualification-cognitive-write"))]
+    pub(crate) fn writer(&self) -> Arc<ProductionDurableWriter> {
+        Arc::clone(&self.writer)
+    }
+
+    /// Derive the bounded read surface from this exact recovered owner.
+    /// No raw store, second connection or write authority escapes this method.
+    pub fn read_capability(
+        &self,
+    ) -> Option<codex_hepta_cognitive_store::DurableCognitiveReadStore> {
+        codex_hepta_cognitive_store::DurableCognitiveReadStore::from_runtime(
+            &self.cognitive_runtime,
+        )
+    }
+
+    pub(crate) fn owner_agent_id(&self) -> &codex_hepta_contracts::AgentId {
+        self.writer.owner_agent_id()
+    }
+
+    pub(crate) fn writer_generation(&self) -> u64 {
+        self.writer.generation()
+    }
+
+    pub(crate) fn authority(&self) -> &ProductionAuthorityLease {
+        self.writer.authority()
     }
 
     /// Reuse the exact recovered generation for Agentd's read side without
@@ -393,7 +425,7 @@ impl AgentdProductionWriterHost {
 
     /// Return the sealed production mutation capability, if this host was
     /// created through exact-cut recovery with a retained live verifier.
-    pub fn production_mutation(&self) -> Option<Arc<dyn ProductionCognitiveMutation>> {
+    pub(crate) fn production_mutation(&self) -> Option<Arc<dyn ProductionCognitiveMutation>> {
         self.mutation.as_ref().map(|capability| {
             let capability: Arc<dyn ProductionCognitiveMutation> = capability.clone();
             capability

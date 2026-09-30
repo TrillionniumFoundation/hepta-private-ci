@@ -8,7 +8,6 @@ use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_arg0::Arg0DispatchPaths;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationStore;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_memory::CognitiveRuntime;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::time::Instant;
@@ -189,7 +188,7 @@ pub async fn run(
         None => {
             let cognitive_layout = identity.layout.clone();
             open_cognitive_runtime_after_generation_fence(&state, || async move {
-                CognitiveStore::open(&cognitive_layout).await
+                CognitiveRuntime::open_local_owner(&cognitive_layout).await
             })
             .await?
         }
@@ -199,9 +198,7 @@ pub async fn run(
     // the existing availability-tolerant behavior; only the explicit
     // compile-time qualification profile takes this fail-closed startup gate.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
-    if let Some(store) = cognitive_runtime.available_store() {
-        state.attach_cognitive_store(Arc::clone(store))?;
-    }
+    state.attach_cognitive_runtime(&cognitive_runtime)?;
     let production_operations = match production_operations {
         Some(operations) => {
             let recovered_host = production_writer_host.as_ref().ok_or_else(|| {
@@ -392,10 +389,10 @@ async fn open_cognitive_runtime_after_generation_fence<Open, OpenFuture>(
 ) -> Result<CognitiveRuntime, AgentdError>
 where
     Open: FnOnce() -> OpenFuture,
-    OpenFuture: Future<Output = Result<CognitiveStore, codex_hepta_memory::CognitiveStoreError>>,
+    OpenFuture: Future<Output = CognitiveRuntime>,
 {
     state.refresh_generation()?;
-    let cognitive_runtime = CognitiveRuntime::from_open_result(open().await);
+    let cognitive_runtime = open().await;
     // Opening and migrating the store is bounded durable work. Fence again
     // before binding control or starting App Server so a generation change
     // concurrent with that work cannot reach a serving runtime.

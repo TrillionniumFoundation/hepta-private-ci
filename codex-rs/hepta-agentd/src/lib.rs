@@ -14,6 +14,7 @@ mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
 mod client;
+pub mod cognitive_bootstrap;
 mod cognitive_context;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;

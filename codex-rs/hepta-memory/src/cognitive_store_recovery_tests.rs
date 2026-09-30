@@ -94,6 +94,39 @@ async fn seeded(
     (store, access, receipt.memory)
 }
 
+#[cfg(unix)]
+#[tokio::test]
+async fn current_cut_capture_hardens_existing_sqlite_sidecars_without_replacing_them() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(92);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let sidecars = ["-wal", "-shm"].map(|suffix| {
+        let mut value = store.path().as_os_str().to_os_string();
+        value.push(suffix);
+        PathBuf::from(value)
+    });
+    let mut identities = Vec::new();
+    for path in &sidecars {
+        let metadata = std::fs::metadata(path).expect("SQLite sidecar exists");
+        assert_eq!(metadata.nlink(), 1);
+        identities.push((metadata.dev(), metadata.ino()));
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o644))
+            .expect("simulate SQLite umask sidecar mode");
+    }
+
+    store
+        .recovery_anchor()
+        .await
+        .expect("capture hardens descriptor recovery inputs");
+
+    for (path, expected_identity) in sidecars.iter().zip(identities) {
+        let metadata = std::fs::symlink_metadata(path).expect("retained sidecar");
+        assert_eq!((metadata.dev(), metadata.ino()), expected_identity);
+        assert_eq!(metadata.mode() & 0o7777, 0o600);
+        assert_eq!(metadata.nlink(), 1);
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct RecoveryTreeImage {
     directory: MetadataImage,
@@ -149,8 +182,10 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
         serde_json::from_slice(&serialized).expect("retained witness");
     assert_eq!(retained, anchor);
     let original = store.path().to_path_buf();
-    store.pool.close().await;
-    drop(store);
+    store
+        .close_for_recovery_handoff()
+        .await
+        .expect("quiescent recovery handoff");
 
     let authority = recovery_authority(&owner);
     let recovered = CognitiveStore::open_with_recovery(
@@ -184,8 +219,10 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
         .expect("advanced current witness");
     assert_ne!(advanced, retained);
     let recovered_path = recovered.path().to_path_buf();
-    recovered.pool.close().await;
-    drop(recovered);
+    recovered
+        .close_for_recovery_handoff()
+        .await
+        .expect("quiescent recovered-generation handoff");
 
     let reopened = CognitiveStore::open(&layout(&temp, &owner))
         .await
@@ -284,8 +321,10 @@ async fn predecessor_witness_is_rejected_and_current_witness_recovers() {
         .expect("acknowledged forget");
     let current = store.recovery_anchor().await.expect("current witness");
     assert_ne!(current, predecessor);
-    store.pool.close().await;
-    drop(store);
+    store
+        .close_for_recovery_handoff()
+        .await
+        .expect("quiescent current-cut handoff");
     let authority = recovery_authority(&owner);
 
     assert!(matches!(
@@ -358,8 +397,10 @@ async fn revoked_owner_profile_and_witness_checks_precede_recovery_admission() {
         Err(CognitiveRecoveryError::Invalid(_))
     ));
 
-    store.pool.close().await;
-    drop(store);
+    store
+        .close_for_recovery_handoff()
+        .await
+        .expect("quiescent tamper-test handoff");
     let mut tampered = anchor;
     tampered.state_digest = Sha256Digest::for_bytes(b"altered witness");
     assert!(matches!(
@@ -399,8 +440,10 @@ async fn hostile_file_identities_fail_closed_without_additional_mutation() {
         let anchor = store.recovery_anchor().await.expect("current witness");
         let database = store.path().to_path_buf();
         let root = database.parent().expect("cognitive root").to_path_buf();
-        store.pool.close().await;
-        drop(store);
+        store
+            .close_for_recovery_handoff()
+            .await
+            .expect("quiescent identity-attack handoff");
         install_identity_attack(&database, attack);
         let attacked = capture_recovery_tree(&root);
         let authority = recovery_authority(&owner);
@@ -427,8 +470,10 @@ async fn byte_identical_rename_replacement_can_recover_only_with_current_witness
     let (store, _, _) = seeded(&temp, &owner).await;
     let anchor = store.recovery_anchor().await.expect("current witness");
     let database = store.path().to_path_buf();
-    store.pool.close().await;
-    drop(store);
+    store
+        .close_for_recovery_handoff()
+        .await
+        .expect("quiescent replacement-test handoff");
 
     let retained = database.with_extension("retained");
     std::fs::rename(&database, &retained).expect("retain original database");
@@ -500,8 +545,10 @@ async fn corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io() {
     assert!(damaged.rows_affected() > 0);
     assert!(store.recovery_anchor().await.is_err());
     let database = store.path().to_path_buf();
-    store.pool.close().await;
-    drop(store);
+    store
+        .close_for_recovery_handoff()
+        .await
+        .expect("quiescent damaged-store handoff");
     let before = std::fs::read(&database).expect("read damaged source");
     let authority = recovery_authority(&owner);
     let failure = recovery_failure(

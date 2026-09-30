@@ -1,0 +1,84 @@
+name: Cognitive store authoring snapshot
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-closure-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-store-authoring-snapshot
+  cancel-in-progress: true
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind and retain immutable authored source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git archive --format=tar HEAD | gzip -1 > "$RUNNER_TEMP/cognitive-source.tar.gz"
+          git cat-file commit HEAD > "$RUNNER_TEMP/cognitive-source.commit"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/cognitive-source.identity"
+          sha256sum "$RUNNER_TEMP/cognitive-source.tar.gz" > "$RUNNER_TEMP/cognitive-source.sha256"
+      - name: Generate exact source-object bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/cognitive_store_map_generate.py \
+            --source-commit "$GITHUB_SHA" \
+            > "$RUNNER_TEMP/IMPLEMENTATION_MAP.generated.json"
+      - name: Resolve and retain the exact Cargo lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo metadata \
+            --manifest-path codex-rs/Cargo.toml \
+            --format-version 1 \
+            --no-deps \
+            > "$RUNNER_TEMP/cargo-metadata.json"
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/Cargo.lock.generated"
+      - name: Render canonical formatting and status projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-cognitive-store \
+            --package codex-hepta-memory \
+            --package codex-hepta-agentd
+          python3 scripts/cognitive_store_status.py --write
+          git diff --binary -- \
+            codex-rs/hepta-cognitive-store \
+            codex-rs/hepta-memory \
+            codex-rs/hepta-agentd \
+            docs/modules/cognitive.store/CURRENT_STATUS.md \
+            docs/modules/cognitive.store/EXECUTION_DOSSIER.md \
+            > "$RUNNER_TEMP/authoring.patch"
+      - name: Retain reviewed authoring outputs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-store-authoring-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/IMPLEMENTATION_MAP.generated.json
+            ${{ runner.temp }}/Cargo.lock.generated
+            ${{ runner.temp }}/cargo-metadata.json
+            ${{ runner.temp }}/authoring.patch
+            ${{ runner.temp }}/cognitive-source.tar.gz
+            ${{ runner.temp }}/cognitive-source.commit
+            ${{ runner.temp }}/cognitive-source.identity
+            ${{ runner.temp }}/cognitive-source.sha256
+          if-no-files-found: error
+          retention-days: 3

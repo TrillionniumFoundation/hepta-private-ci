@@ -10,10 +10,24 @@ name = "codex_hepta_cognitive_store"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Only the named Agentd production host may compose the mutable durable owner.
+agentd-production-host = []
+# Qualification fixtures extend the exact same host capability rather than
+# creating a second mutable-owner feature or product route.
+qualification-cognitive-write = ["agentd-production-host"]
+
 [lints]
 workspace = true
 
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
+codex-hepta-contracts = { workspace = true }
 codex-hepta-memory = { workspace = true }
+
+[dev-dependencies]
+codex-hepta-paths = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

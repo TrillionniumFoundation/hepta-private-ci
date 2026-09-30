@@ -1,0 +1,215 @@
+name: Cognitive store qualification
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-cognitive-store/**'
+      - 'codex-rs/hepta-memory/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/ext/hepta-memory/src/cognitive/**'
+      - 'codex-rs/state/**'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'tools/cognitive-store-host-bootstrap/**'
+      - 'docs/modules/cognitive.store/**'
+      - 'scripts/*cognitive*'
+      - 'scripts/check-rust-module-inventory.py'
+      - 'scripts/hepta_ci_exec.py'
+      - 'scripts/hepta_ci_v8.py'
+      - '.github/actions/hepta-synthetic-merge/**'
+      - '.github/workflows/cognitive-store-qualification.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'codex-rs/hepta-cognitive-store/**'
+      - 'codex-rs/hepta-memory/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/ext/hepta-memory/src/cognitive/**'
+      - 'codex-rs/state/**'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'tools/cognitive-store-host-bootstrap/**'
+      - 'docs/modules/cognitive.store/**'
+      - 'scripts/*cognitive*'
+      - 'scripts/check-rust-module-inventory.py'
+      - 'scripts/hepta_ci_exec.py'
+      - 'scripts/hepta_ci_v8.py'
+      - '.github/actions/hepta-synthetic-merge/**'
+      - '.github/workflows/cognitive-store-qualification.yml'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: cognitive-store-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  resolve:
+    name: Freeze cognitive source and base
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      source: ${{ steps.freeze.outputs.source }}
+      base: ${{ steps.freeze.outputs.base }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Freeze both identities once for both lanes
+        id: freeze
+        env:
+          SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_BASE: ${{ github.event.pull_request.base.sha }}
+          EVENT_BEFORE: ${{ github.event.before }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          if [ -n "$EVENT_BASE" ]; then
+            BASE="$EVENT_BASE"
+          elif [ "$EVENT_NAME" = push ] && [ "$REF_NAME" = main ]; then
+            BASE="$EVENT_BEFORE"
+          else
+            BASE="$(git rev-parse refs/remotes/origin/main^{commit})"
+          fi
+          [[ "$SOURCE" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE" =~ ^[0-9a-f]{40}$ ]]
+          test "$BASE" != 0000000000000000000000000000000000000000
+          git cat-file -e "$BASE^{commit}"
+          printf 'source=%s\nbase=%s\n' "$SOURCE" "$BASE" >> "$GITHUB_OUTPUT"
+
+  qualify:
+    name: cognitive.store (${{ matrix.lane }})
+    needs: [resolve]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ needs.resolve.outputs.source }}
+      BASE_SHA: ${{ needs.resolve.outputs.base }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct deterministic base merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number || 0 }}
+          author-name: Hepta Cognitive Qualification
+          author-email: hepta-cognitive-ci@users.noreply.github.com
+          message: Cognitive store synthetic merge
+      - name: Bind exact candidate identity
+        id: candidate
+        env:
+          CANDIDATE_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          if [ "${{ matrix.lane }}" = base-merge ]; then
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+            test "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")" = "$(git rev-parse HEAD^{tree})"
+          else
+            test "$CANDIDATE_SHA" = "$SOURCE_SHA"
+          fi
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'TESTED_SHA=%s\n' "$CANDIDATE_SHA" >> "$GITHUB_ENV"
+          printf 'TESTED_TREE=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
+          printf 'HEPTA_CI_LANE=%s\n' '${{ matrix.lane }}' >> "$GITHUB_ENV"
+      - name: Prepare native prerequisites
+        id: native
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config openssl python3-venv
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Install native test tools
+        id: tools
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install DotSlash
+        id: dotslash
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash for integration tests
+        id: expose
+        if: ${{ !cancelled() && steps.dotslash.outcome == 'success' }}
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve verified V8 artifacts
+        id: v8
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Execute every independent qualification command
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        env:
+          COGNITIVE_NATIVE_READY: ${{ steps.native.outcome == 'success' && steps.tools.outcome == 'success' && steps.dotslash.outcome == 'success' && steps.expose.outcome == 'success' && steps.v8.outcome == 'success' }}
+        run: >-
+          python3 scripts/cognitive_store_qualify.py
+          --plan docs/modules/cognitive.store/QUALIFICATION_PLAN.json
+          --records "$RUNNER_TEMP/cognitive-command-records"
+      - name: Retain complete success, failure and non-execution dossier
+        if: always()
+        run: >-
+          python3 scripts/cognitive_qualification_manifest.py
+          --plan docs/modules/cognitive.store/QUALIFICATION_PLAN.json
+          --records "$RUNNER_TEMP/cognitive-command-records"
+          --output "$RUNNER_TEMP/cognitive-qualification-manifest.json"
+      - name: Retain cognitive qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-store-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: |
+            ${{ runner.temp }}/cognitive-command-records/*
+            ${{ runner.temp }}/cognitive-boundary-receipt.json
+            ${{ runner.temp }}/cognitive-perf-*.json
+            ${{ runner.temp }}/cognitive-history-*.json
+            ${{ runner.temp }}/cognitive-api-probes.json
+            ${{ runner.temp }}/cognitive-api-probes-logs/**
+            ${{ runner.temp }}/cognitive-recovery-perf-*.json
+            ${{ runner.temp }}/cognitive-qualification-manifest.json
+          if-no-files-found: error
+          retention-days: 30
+
+  required:
+    name: Cognitive store required
+    needs: [resolve, qualify]
+    if: always()
+    runs-on: ubuntu-24.04
+    permissions: {}
+    steps:
+      - name: Require all exact-candidate lanes
+        env:
+          FREEZE_RESULT: ${{ needs.resolve.result }}
+          RESULT: ${{ needs.qualify.result }}
+        run: test "$FREEZE_RESULT" = success && test "$RESULT" = success

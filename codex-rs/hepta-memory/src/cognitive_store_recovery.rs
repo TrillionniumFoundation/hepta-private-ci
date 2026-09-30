@@ -31,6 +31,7 @@ use super::CognitiveStoreOpenGuard;
 use super::REQUIRED_SCHEMA_OBJECTS;
 use super::REQUIRED_SCHEMA_ORACLE_SHA256;
 use super::protect_database_file;
+use super::protect_sqlite_recovery_files;
 use super::publish_active_database;
 use super::recovered_database_filename;
 use super::resolve_active_database_path;
@@ -96,14 +97,38 @@ impl CognitiveStore {
     /// Capture one coherent bounded owner cut. The host retains/authenticates it
     /// independently; this method does not publish an acknowledgement witness.
     pub async fn recovery_anchor(&self) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {
+        self.recovery_anchor_measured()
+            .await
+            .map(|(anchor, _, _)| anchor)
+    }
+
+    /// Capture the same exact cut plus separate acquisition and held-transaction
+    /// durations. Acquisition includes pool scheduling and SQLite lock wait;
+    /// held duration includes capture and COMMIT acknowledgement, not only SQL.
+    /// These observations grant no authority and never change digest semantics.
+    pub async fn recovery_anchor_measured(
+        &self,
+    ) -> Result<
+        (
+            CognitiveRecoveryAnchor,
+            std::time::Duration,
+            std::time::Duration,
+        ),
+        CognitiveStoreError,
+    > {
+        let acquisition = std::time::Instant::now();
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
+        let acquisition_duration = acquisition.elapsed();
+        let held = std::time::Instant::now();
         let anchor = capture(&mut transaction, &self.owner_agent_id).await?;
         transaction.commit().await.map_err(unavailable)?;
-        Ok(anchor)
+        let held_duration = held.elapsed();
+        protect_sqlite_recovery_files(self.path())?;
+        Ok((anchor, acquisition_duration, held_duration))
     }
 
     /// Recover one exact current owner cut into a new writable generation.
@@ -142,8 +167,8 @@ impl CognitiveStore {
         let canonical_root = canonical_path_without_redirection(root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
             .ok_or_else(|| {
-                CognitiveRecoveryError::Unavailable(
-                    "cognitive recovery root does not exist".to_string(),
+                CognitiveRecoveryError::Indeterminate(
+                    "cognitive recovery root is redirected".to_string(),
                 )
             })?;
         if canonical_root != root {
@@ -259,8 +284,26 @@ impl CognitiveStore {
                 return Err(error);
             }
 
-            publish_active_database(&canonical_root, &candidate)
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            // The copy/checkpoint path may be slow. Preflight authority is not
+            // a permission cache: reread live authority and expiry at final use,
+            // while the store fence is still exclusive. No await separates a
+            // successful final check from the synchronous pointer publication.
+            let publication_authority = verifier
+                .verify(authority, layout.agent_id())
+                .map_err(CognitiveRecoveryError::AccessDenied)
+                .and_then(|()| {
+                    authority
+                        .validate_for_agent(layout.agent_id())
+                        .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))
+                });
+            if let Err(error) = publication_authority {
+                pool.close().await;
+                return Err(error);
+            }
+            if let Err(error) = publish_active_database(&canonical_root, &candidate) {
+                pool.close().await;
+                return Err(CognitiveRecoveryError::Unavailable(error.to_string()));
+            }
             // Keep the recovery fence exclusive for this recovered writer
             // generation. Callers that need additional handles clone this
             // store; reopening by path would otherwise create a second writer
@@ -293,15 +336,20 @@ fn reconcile_failed_recovery_candidate(
     // A pointer rename can succeed while the following directory fsync reports
     // an error. In that state publication durability is unknown: never launder
     // it into ordinary Unavailable and never delete the possibly-active
-    // generation. A later trusted recovery ceremony must reconcile it.
-    let active = resolve_active_database_path(root).ok();
-    if active.as_deref() == Some(candidate) {
-        return CognitiveRecoveryError::Indeterminate(format!(
+    // generation. Failure to authenticate the pointer is itself ambiguous;
+    // absence of proof that the candidate is active is not proof it is inactive.
+    match resolve_active_database_path(root) {
+        Ok(active) if active == candidate => CognitiveRecoveryError::Indeterminate(format!(
             "active generation publication became ambiguous after pointer rename: {error}"
-        ));
+        )),
+        Ok(_) => {
+            cleanup_recovery_candidate(candidate);
+            error
+        }
+        Err(pointer_error) => CognitiveRecoveryError::Indeterminate(format!(
+            "active generation cannot be established after recovery failure; retained candidate for trusted reconciliation: publication error: {error}; pointer resolution error: {pointer_error}"
+        )),
     }
-    cleanup_recovery_candidate(candidate);
-    error
 }
 
 fn cleanup_candidate_sidecars(path: &std::path::Path) -> Result<(), CognitiveRecoveryError> {
@@ -624,5 +672,42 @@ async fn capture(
 }
 
 #[cfg(test)]
+mod reconciliation_tests {
+    use super::*;
+    use tempfile::TempDir;
+
+    #[test]
+    fn unreadable_active_pointer_retains_candidate_as_indeterminate() {
+        let temp = TempDir::new().expect("temporary recovery root");
+        let root = temp.path();
+        let candidate = root.join("cognitive_recovered_v1_candidate.sqlite3");
+        std::fs::write(&candidate, b"candidate").expect("candidate file");
+        let pointer = root.join(super::super::COGNITIVE_ACTIVE_DB_POINTER);
+        std::fs::create_dir(&pointer).expect("unreadable pointer identity");
+
+        let error = reconcile_failed_recovery_candidate(
+            root,
+            &candidate,
+            CognitiveRecoveryError::Unavailable("injected publication failure".to_string()),
+        );
+
+        assert!(matches!(
+            error,
+            CognitiveRecoveryError::Indeterminate(ref message)
+                if message.contains("pointer resolution error")
+        ));
+        assert!(candidate.exists(), "ambiguous candidate must be retained");
+        assert!(
+            pointer.is_dir(),
+            "the ambiguous pointer must remain untouched"
+        );
+    }
+}
+
+#[cfg(test)]
 #[path = "cognitive_store_recovery_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "cognitive_store_recovery_final_use_tests.rs"]
+mod final_use_tests;
