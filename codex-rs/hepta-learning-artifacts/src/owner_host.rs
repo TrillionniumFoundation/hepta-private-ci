@@ -2080,6 +2080,18 @@ mod tests {
 
         match stage {
             "prepared" => {}
+            "payload-write-before-sync" => {
+                let mut file = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(root.join(&payload_relative))
+                    .fixture("payload write-before-sync");
+                file.write_all(b"payload").fixture("payload bytes before sync");
+                durable_process_marker(root, stage);
+                loop {
+                    thread::sleep(Duration::from_secs(1));
+                }
+            }
             "payload-effect" => {
                 write_candidate_payload_beneath(
                     root,
@@ -2090,8 +2102,15 @@ mod tests {
                 )
                 .fixture("payload effect");
             }
-            "payload-durable" | "registry-effect" | "registry-durable" | "head-effect"
-            | "witness-durable" | "acknowledged" => {
+            "payload-durable"
+            | "registry-write-before-sync"
+            | "registry-effect"
+            | "registry-durable"
+            | "current-head-write"
+            | "route-effect"
+            | "head-effect"
+            | "witness-durable"
+            | "acknowledged" => {
                 owner
                     .ensure_payload_durable(&mut transaction, &registry, b"payload", 20)
                     .fixture("payload durable");
@@ -2102,7 +2121,7 @@ mod tests {
                     }
                 }
 
-                if stage == "registry-effect" {
+                if matches!(stage, "registry-write-before-sync" | "registry-effect") {
                     let encoded = encode_snapshot(&registry, binding).fixture("encode registry");
                     let receipt = RegistrySnapshotReceipt {
                         binding,
@@ -2115,8 +2134,17 @@ mod tests {
                         "{}-{}.snapshot",
                         receipt.head_digest, receipt.file_digest
                     ));
-                    write_registry_snapshot_beneath(root, relative, &registry, binding)
-                        .fixture("registry effect");
+                    if stage == "registry-write-before-sync" {
+                        let mut file = OpenOptions::new()
+                            .write(true)
+                            .create_new(true)
+                            .open(root.join(&relative))
+                            .fixture("registry write-before-sync");
+                        file.write_all(&encoded).fixture("registry bytes before sync");
+                    } else {
+                        write_registry_snapshot_beneath(root, &relative, &registry, binding)
+                            .fixture("registry effect");
+                    }
                     durable_process_marker(root, stage);
                     loop {
                         thread::sleep(Duration::from_secs(1));
@@ -2134,7 +2162,7 @@ mod tests {
                 }
 
                 let head = signed_head(&key, scope_digest, registry.snapshot().head_digest);
-                if stage == "head-effect" {
+                if matches!(stage, "current-head-write" | "route-effect" | "head-effect") {
                     let requirement = RegistryHeadRequirementV1 {
                         registry_id: id("learning-artifacts"),
                         minimum_generation: Generation::new(1).fixture("generation"),
@@ -2158,9 +2186,23 @@ mod tests {
                         binding,
                     )
                     .fixture("witness side effect");
-                    owner
-                        .persist_signed_head_record(&head)
-                        .fixture("signed head side effect");
+                    if matches!(stage, "route-effect" | "head-effect") {
+                        owner
+                            .persist_signed_head_record(&head)
+                            .fixture("signed route-head side effect");
+                        let current = owner
+                            .discover_current_head(20)
+                            .fixture("reconcile route effect")
+                            .fixture("route head");
+                        assert_eq!(current.signed, head);
+                    } else {
+                        assert!(
+                            owner
+                                .discover_current_head(20)
+                                .fixture("current head before route commit")
+                                .is_none()
+                        );
+                    }
                     durable_process_marker(root, stage);
                     loop {
                         thread::sleep(Duration::from_secs(1));
@@ -2222,9 +2264,14 @@ mod tests {
         let executable = std::env::current_exe().fixture("current test executable");
         for (stage, expected_phase) in [
             ("prepared", ArtifactPublicationPhaseV1::Prepared),
+            ("payload-write-before-sync", ArtifactPublicationPhaseV1::Prepared),
             ("payload-effect", ArtifactPublicationPhaseV1::Prepared),
             (
                 "payload-durable",
+                ArtifactPublicationPhaseV1::PayloadDurable,
+            ),
+            (
+                "registry-write-before-sync",
                 ArtifactPublicationPhaseV1::PayloadDurable,
             ),
             (
@@ -2235,6 +2282,11 @@ mod tests {
                 "registry-durable",
                 ArtifactPublicationPhaseV1::RegistryDurable,
             ),
+            (
+                "current-head-write",
+                ArtifactPublicationPhaseV1::RegistryDurable,
+            ),
+            ("route-effect", ArtifactPublicationPhaseV1::RegistryDurable),
             ("head-effect", ArtifactPublicationPhaseV1::RegistryDurable),
             (
                 "witness-durable",
@@ -2275,7 +2327,7 @@ mod tests {
                 .fixture("process checkpoint exists");
             assert_eq!(recovery.checkpoint.phase, expected_phase);
 
-            if stage == "head-effect" {
+            if matches!(stage, "route-effect" | "head-effect") {
                 let current = reopened
                     .discover_current_head(21)
                     .fixture("discover head after owner death")
