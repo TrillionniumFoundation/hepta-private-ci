@@ -22,7 +22,7 @@ async fn stalled_request_returns_before_reclaim_and_retry_uses_completion_time()
     let agent_id = agent(FIRST_AGENT)?;
     let agent_layout = layout(&temp, &agent_id)?;
     let store = prepared_store(&agent_layout).await?;
-    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let original = enqueue_final(&store, &agent_id, /*created_at_ms*/ 10).await?;
     let transport = StalledTransport {
         txn_ids: Mutex::new(Vec::new()),
     };
@@ -36,7 +36,13 @@ async fn stalled_request_returns_before_reclaim_and_retry_uses_completion_time()
     };
     let stats = tokio::time::timeout(
         Duration::from_secs(1),
-        dispatch_outbox_once(&store, &transport, &config, &CancellationToken::new(), 100),
+        dispatch_outbox_once(
+            &store,
+            &transport,
+            &config,
+            &CancellationToken::new(),
+            /*now_ms*/ 100,
+        ),
     )
     .await??;
     assert_eq!(
@@ -71,7 +77,7 @@ async fn cancelled_dispatch_does_not_acquire_a_durable_attempt() -> TestResult {
     let agent_id = agent(FIRST_AGENT)?;
     let agent_layout = layout(&temp, &agent_id)?;
     let store = prepared_store(&agent_layout).await?;
-    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let original = enqueue_final(&store, &agent_id, /*created_at_ms*/ 10).await?;
     let transport = FakeTransport::new([Ok(event("$must-not-send")?)]);
     let cancel = CancellationToken::new();
     cancel.cancel();
@@ -80,7 +86,7 @@ async fn cancelled_dispatch_does_not_acquire_a_durable_attempt() -> TestResult {
         &transport,
         &OutboxDispatchConfig::default(),
         &cancel,
-        100,
+        /*now_ms*/ 100,
     )
     .await?;
     assert_eq!((stats.claimed, stats.cancelled), (0, true));
@@ -100,7 +106,7 @@ async fn crashed_last_attempt_is_parked_after_reclaim_without_another_network_re
     let agent_id = agent(FIRST_AGENT)?;
     let agent_layout = layout(&temp, &agent_id)?;
     let store = prepared_store(&agent_layout).await?;
-    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let original = enqueue_final(&store, &agent_id, /*created_at_ms*/ 10).await?;
     let last_attempt = store
         .claim_outbox(/*now_ms*/ 10, /*lease_ms*/ 20, /*limit*/ 1)
         .await?;
@@ -118,7 +124,7 @@ async fn crashed_last_attempt_is_parked_after_reclaim_without_another_network_re
         &transport,
         &config,
         &CancellationToken::new(),
-        31,
+        /*now_ms*/ 31,
     )
     .await?;
     assert_eq!(
@@ -155,7 +161,7 @@ async fn later_request_rejection_cannot_disprove_an_earlier_lost_acknowledgement
     let agent_id = agent(FIRST_AGENT)?;
     let agent_layout = layout(&temp, &agent_id)?;
     let store = prepared_store(&agent_layout).await?;
-    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let original = enqueue_final(&store, &agent_id, /*created_at_ms*/ 10).await?;
     // The first request may already exist on the homeserver; a later 403 only
     // establishes that the second request was rejected under current credentials.
     let transport = FakeTransport::new([
@@ -167,7 +173,7 @@ async fn later_request_rejection_cannot_disprove_an_earlier_lost_acknowledgement
         ..OutboxDispatchConfig::default()
     };
     let cancel = CancellationToken::new();
-    let first = dispatch_outbox_once(&store, &transport, &config, &cancel, 100).await?;
+    let first = dispatch_outbox_once(&store, &transport, &config, &cancel, /*now_ms*/ 100).await?;
     assert_eq!((first.retry_scheduled, first.needs_reconciliation), (1, 0));
     let retry = store
         .outbox_for_txn(&original.stable_txn_id)
@@ -202,7 +208,10 @@ async fn later_request_rejection_cannot_disprove_an_earlier_lost_acknowledgement
     store.close().await;
     let reopened = MatrixDurableStore::open(&agent_layout, MatrixDurableConfig::default()).await?;
     assert_eq!(reopened.unresolved_outbox(/*limit*/ 10).await?, markers);
-    let settled = dispatch_outbox_once(&reopened, &transport, &config, &cancel, 100_000).await?;
+    let settled = dispatch_outbox_once(
+        &reopened, &transport, &config, &cancel, /*now_ms*/ 100_000,
+    )
+    .await?;
     assert_eq!((settled.claimed, transport.txn_ids()?.len()), (0, 2));
     reopened.close().await;
     Ok(())
@@ -261,8 +270,8 @@ async fn room_revocation_during_first_send_prevents_later_batch_send() -> TestRe
     let agent_id = agent(FIRST_AGENT)?;
     let agent_layout = layout(&temp, &agent_id)?;
     let store = prepared_store(&agent_layout).await?;
-    let first = enqueue_final(&store, &agent_id, 10).await?;
-    let later_txn = transaction_id("later-final", 1)?;
+    let first = enqueue_final(&store, &agent_id, /*created_at_ms*/ 10).await?;
+    let later_txn = transaction_id("later-final", /*revision*/ 1)?;
     store
         .enqueue_outbox(&OutboxDraft {
             logical_outbox_id: "later-final".to_string(),
@@ -285,7 +294,7 @@ async fn room_revocation_during_first_send_prevents_later_batch_send() -> TestRe
         &transport,
         &OutboxDispatchConfig::default(),
         &CancellationToken::new(),
-        100,
+        /*now_ms*/ 100,
     )
     .await?;
     assert_eq!((stats.claimed, stats.sent), (1, 1));

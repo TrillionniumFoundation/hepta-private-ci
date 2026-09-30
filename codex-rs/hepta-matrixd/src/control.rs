@@ -45,7 +45,7 @@ use crate::MatrixBridgeError;
 use crate::RemoteMatrixAppServerTransport;
 
 const CONNECTION_CAPACITY: usize = 32;
-const IO_TIMEOUT: Duration = Duration::from_secs(2);
+const IO_TIMEOUT: Duration = Duration::from_secs(/*secs*/ 2);
 const MAX_ERROR_MESSAGE_CHARS: usize = 512;
 
 pub(crate) type MatrixControlFuture<'a> =
@@ -115,11 +115,11 @@ impl MatrixdConnectionState {
     }
 
     pub(crate) fn set_fenced(&self) {
-        self.fenced.store(true, Ordering::Release);
+        self.fenced.store(/*val*/ true, Ordering::Release);
     }
 
     pub(crate) fn set_draining(&self) {
-        self.draining.store(true, Ordering::Release);
+        self.draining.store(/*val*/ true, Ordering::Release);
     }
 
     fn health(&self) -> MatrixdHealth {
@@ -172,7 +172,7 @@ impl MatrixdControlState {
             store,
             transport,
             connections,
-            mutation_gate: Semaphore::new(1),
+            mutation_gate: Semaphore::new(/*permits*/ 1),
         })
     }
 
@@ -464,7 +464,7 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
 async fn set_owner_only(path: &Path) -> Result<(), MatrixdControlError> {
     use std::os::unix::fs::PermissionsExt;
 
-    tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).await?;
+    tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(/*mode*/ 0o600)).await?;
     Ok(())
 }
 
@@ -595,9 +595,9 @@ mod tests {
                     .reconcile_server_request_resolved(
                         &request_id_json,
                         "thread-1",
-                        7,
+                        /*attached_agent_generation*/ 7,
                         "matrixd-incarnation-1",
-                        12,
+                        /*resolved_at_ms*/ 12,
                     )
                     .await
                     .map_err(|error| MatrixBridgeError::Protocol(error.to_string()))?;
@@ -682,8 +682,8 @@ mod tests {
             MatrixDurableStore::open(&layout(temp, &agent_id()?)?, MatrixDurableConfig::default())
                 .await?;
         let connections = Arc::new(MatrixdConnectionState::default());
-        connections.set_agentd_connected(true);
-        connections.set_matrix_sync_connected(true);
+        connections.set_agentd_connected(/*connected*/ true);
+        connections.set_matrix_sync_connected(/*connected*/ true);
         Ok((
             Arc::new(MatrixdControlState::new(
                 identity()?,
@@ -733,7 +733,7 @@ mod tests {
 
         state
             .store
-            .record_turn_started("thread-1", "turn-1", 10)
+            .record_turn_started("thread-1", "turn-1", /*recorded_at_ms*/ 10)
             .await?;
         for request_id in [2, 3] {
             let mut request = fenced_request(MatrixdMethod::CancelTurn {
@@ -786,10 +786,10 @@ mod tests {
             .store
             .begin_pending_approval_resolution(
                 "approval-1",
-                7,
+                /*attached_agent_generation*/ 7,
                 "matrixd-incarnation-1",
                 LocalApprovalDecision::Accept,
-                11,
+                /*resolving_at_ms*/ 11,
             )
             .await?;
 
@@ -858,8 +858,8 @@ mod tests {
             })
             .await?;
         let connections = Arc::new(MatrixdConnectionState::default());
-        connections.set_agentd_connected(true);
-        connections.set_matrix_sync_connected(true);
+        connections.set_agentd_connected(/*connected*/ true);
+        connections.set_matrix_sync_connected(/*connected*/ true);
         let state = MatrixdControlState::new(
             identity()?,
             store.clone(),
@@ -888,7 +888,7 @@ mod tests {
             MatrixdPayload::Error { ref code, .. } if code == "conflict"
         ));
         assert_eq!(
-            store.read_control_events(0, 16).await?.batch.events.iter().filter(|event| matches!(&event.kind, codex_hepta_matrix_protocol::MatrixdEventKind::ApprovalResolved { approval_key } if approval_key == "approval-race")).count(),
+            store.read_control_events(/*after_cursor*/ 0, /*limit*/ 16).await?.batch.events.iter().filter(|event| matches!(&event.kind, codex_hepta_matrix_protocol::MatrixdEventKind::ApprovalResolved { approval_key } if approval_key == "approval-race")).count(),
             1
         );
         Ok(())
@@ -904,8 +904,8 @@ mod tests {
             .tempdir_in("/tmp")?;
         let fake = Arc::new(FakeTransport::default());
         let (state, connections) = state(&temp, fake).await?;
-        connections.set_agentd_connected(false);
-        connections.set_matrix_sync_connected(false);
+        connections.set_agentd_connected(/*connected*/ false);
+        connections.set_matrix_sync_connected(/*connected*/ false);
         let socket = layout(&temp, &agent_id()?)?
             .matrixd_control_socket()
             .to_path_buf();
@@ -940,8 +940,8 @@ mod tests {
             })
         ));
 
-        connections.set_agentd_connected(true);
-        connections.set_matrix_sync_connected(true);
+        connections.set_agentd_connected(/*connected*/ true);
+        connections.set_matrix_sync_connected(/*connected*/ true);
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Ready);
         connections.set_fenced();
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);

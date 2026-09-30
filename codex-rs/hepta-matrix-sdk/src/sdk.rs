@@ -452,7 +452,7 @@ fn classify_http_error(error: &HttpError) -> MatrixTransportError {
         HttpError::Api(_) => error
             .as_client_api_error()
             .map(|error| classify_http_status(error.status_code.as_u16()))
-            // An unparseable ACK can follow an accepted send. It supplies no
+            // An unparsable ACK can follow an accepted send. It supplies no
             // proof of server rejection and must retain the stable transaction.
             .unwrap_or(MatrixTransportError::Retryable),
         HttpError::Cached(error) => classify_http_error(error),

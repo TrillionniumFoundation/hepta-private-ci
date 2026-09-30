@@ -595,8 +595,10 @@ async fn unknown_send_result_exhausts_retry_budget_without_claiming_terminal_fai
     store.close().await;
     let reopened = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
     assert_eq!(reopened.unresolved_outbox(/*limit*/ 10).await?, markers);
-    let after_reopen =
-        dispatch_outbox_once(&reopened, &transport, &config, &cancel, 10_000).await?;
+    let after_reopen = dispatch_outbox_once(
+        &reopened, &transport, &config, &cancel, /*now_ms*/ 10_000,
+    )
+    .await?;
     assert_eq!((after_reopen.claimed, transport.txn_ids()?.len()), (0, 3));
     reopened.close().await;
     Ok(())

@@ -55,7 +55,9 @@ impl Fixture {
             .layout()
             .agent(&agent_id);
         let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
-        store.record_turn_started("thread-1", "turn-1", 10).await?;
+        store
+            .record_turn_started("thread-1", "turn-1", /*recorded_at_ms*/ 10)
+            .await?;
         store
             .store_pending_approval(&PendingApprovalDraft {
                 approval: PendingApproval {
@@ -74,8 +76,8 @@ impl Fixture {
             })
             .await?;
         let connections = Arc::new(MatrixdConnectionState::default());
-        connections.set_agentd_connected(true);
-        connections.set_matrix_sync_connected(true);
+        connections.set_agentd_connected(/*connected*/ true);
+        connections.set_matrix_sync_connected(/*connected*/ true);
         let transport = Arc::new(LifecycleTransport::default());
         let state = Arc::new(MatrixdControlState::new(
             MatrixdControlIdentity {
@@ -83,7 +85,7 @@ impl Fixture {
                 release_id: "release-1".to_string(),
                 fence: MatrixdFence {
                     binding_revision: 1,
-                    binding_digest: Sha256Digest::parse("a".repeat(64))?,
+                    binding_digest: Sha256Digest::parse("a".repeat(/*n*/ 64))?,
                     attached_agent_generation: 7,
                     process_incarnation: "matrixd-1".to_string(),
                     plane_epoch: 1,
@@ -126,7 +128,10 @@ async fn lifecycle_fence_and_dependency_loss_block_exact_fence_mutations() -> an
             MatrixdLifecycle::Fenced => fixture.state.connections.set_fenced(),
             MatrixdLifecycle::Draining => fixture.state.connections.set_draining(),
             MatrixdLifecycle::Degraded => {
-                fixture.state.connections.set_agentd_connected(false);
+                fixture
+                    .state
+                    .connections
+                    .set_agentd_connected(/*connected*/ false);
             }
             MatrixdLifecycle::Ready => unreachable!(),
         }
@@ -209,17 +214,17 @@ async fn control_shutdown_joins_in_flight_connections() -> anyhow::Result<()> {
     bytes.push(b'\n');
     stream.write_all(&bytes).await?;
     timeout(
-        Duration::from_secs(1),
+        Duration::from_secs(/*secs*/ 1),
         fixture.transport.interrupt_entered.notified(),
     )
     .await?;
     cancellation.cancel();
-    timeout(Duration::from_secs(1), task).await???;
+    timeout(Duration::from_secs(/*secs*/ 1), task).await???;
     let mut byte = [0];
     // Joining the listener alone must not leave a detached effect-bearing
     // connection alive until its unrelated I/O deadline expires.
     assert_eq!(
-        timeout(Duration::from_secs(1), stream.read(&mut byte)).await??,
+        timeout(Duration::from_secs(/*secs*/ 1), stream.read(&mut byte)).await??,
         0
     );
     Ok(())
@@ -251,7 +256,7 @@ async fn socket_write_without_authoritative_ack_preserves_resolution_across_rest
         !fixture
             .state
             .store
-            .read_control_events(0, 16)
+            .read_control_events(/*after_cursor*/ 0, /*limit*/ 16)
             .await?
             .batch
             .events
@@ -274,17 +279,29 @@ async fn socket_write_without_authoritative_ack_preserves_resolution_across_rest
     // durable decision; repeating that observation after receipt loss is safe.
     assert!(
         reopened
-            .reconcile_server_request_resolved("17", "thread-1", 7, "matrixd-1", 30)
+            .reconcile_server_request_resolved(
+                "17",
+                "thread-1",
+                /*attached_agent_generation*/ 7,
+                "matrixd-1",
+                /*resolved_at_ms*/ 30
+            )
             .await?
             .is_some()
     );
     assert!(
         reopened
-            .reconcile_server_request_resolved("17", "thread-1", 7, "matrixd-1", 31)
+            .reconcile_server_request_resolved(
+                "17",
+                "thread-1",
+                /*attached_agent_generation*/ 7,
+                "matrixd-1",
+                /*resolved_at_ms*/ 31
+            )
             .await?
             .is_none()
     );
     assert!(reopened.pending_approval("approval-1").await?.is_none());
-    assert_eq!(reopened.read_control_events(0, 16).await?.batch.events.iter().filter(|event| matches!(&event.kind, codex_hepta_matrix_protocol::MatrixdEventKind::ApprovalResolved { approval_key } if approval_key == "approval-1")).count(), 1);
+    assert_eq!(reopened.read_control_events(/*after_cursor*/ 0, /*limit*/ 16).await?.batch.events.iter().filter(|event| matches!(&event.kind, codex_hepta_matrix_protocol::MatrixdEventKind::ApprovalResolved { approval_key } if approval_key == "approval-1")).count(), 1);
     Ok(())
 }
