@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 
-const verifier = resolve(
-  "apps/hepta-browser/scripts/verify-deployment-evidence.py",
+const verifier = fileURLToPath(
+  new URL("../scripts/verify-deployment-evidence.py", import.meta.url),
 );
 
 test("deployment evidence verifier is valid Python", () => {
@@ -12,7 +12,6 @@ test("deployment evidence verifier is valid Python", () => {
     "python3",
     ["-m", "py_compile", verifier],
     {
-      cwd: resolve("."),
       encoding: "utf8",
       env: {
         ...process.env,
