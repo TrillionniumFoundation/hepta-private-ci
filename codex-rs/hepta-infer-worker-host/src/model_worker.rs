@@ -132,6 +132,7 @@ pub enum Error {
     DeadlineExpired,
     ActiveRequests,
     DriverFailure(String),
+    DriverUnavailable,
     MissingTerminalOutput,
     ArithmeticOverflow,
     FeatureLimit,
@@ -147,6 +148,9 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Executes model lifecycle operations and reports actual observations.
+/// A driver error or nonterminal run does not prove that resources or execution
+/// have stopped; the worker preserves the corresponding local fence.
 pub trait ModelDriver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
     fn run(
@@ -172,6 +176,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     driver: D,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
+    driver_fenced: bool,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -194,6 +199,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             driver,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
+            driver_fenced: false,
         })
     }
 
@@ -215,11 +221,31 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
-            return Err(Error::ModelCapacity);
+        let resident_memory = self.models.values().try_fold(0_u64, |total, model| {
+            total
+                .checked_add(model.handle.observed_memory_bytes)
+                .ok_or(Error::ModelCapacity)
+        })?;
+        let handle = match self.driver.load(&manifest) {
+            Ok(handle) => handle,
+            Err(error) => {
+                self.driver_fenced = true;
+                return Err(error);
+            }
+        };
+        let admission = validate_identity(&handle.opaque_id, "model handle").and_then(|()| {
+            resident_memory
+                .checked_add(handle.observed_memory_bytes)
+                .filter(|total| *total <= self.grant.maximum_memory_bytes)
+                .map(|_| ())
+                .ok_or(Error::ModelCapacity)
+        });
+        if let Err(error) = admission {
+            if let Err(cleanup_error) = self.driver.unload(handle) {
+                self.driver_fenced = true;
+                return Err(cleanup_error);
+            }
+            return Err(error);
         }
         let observation = ModelLoadObservation {
             model_id: manifest.model_id.clone(),
@@ -291,9 +317,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
         let observed = self.driver.run(&loaded.handle, &request);
-        self.active_requests.remove(&request.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
+        if observed.terminal_observed {
+            self.active_requests.remove(&request.request_id);
+            loaded.active_requests = loaded.active_requests.saturating_sub(1);
+        }
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
@@ -342,8 +370,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        if let Err(error) = self.driver.unload(loaded.handle.clone()) {
+            self.driver_fenced = true;
+            return Err(error);
+        }
+        self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -352,6 +383,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.driver_fenced {
+            return Err(Error::DriverUnavailable);
+        }
         validate_grant(now_ms, &self.grant)
     }
 }
@@ -522,6 +556,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
+        }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
@@ -557,10 +597,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             model_id.to_string(),
         );
         let observed = self.driver.run_neuron_features(&loaded.handle, &request);
-        self.active_requests
-            .remove(&request.authorization.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
+        if observed.terminal_observed {
+            self.active_requests
+                .remove(&request.authorization.request_id);
+            loaded.active_requests = loaded.active_requests.saturating_sub(1);
+        }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
