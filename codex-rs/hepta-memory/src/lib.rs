@@ -22,6 +22,7 @@ mod h7_signed_artifact;
 mod h7_trajectory_store;
 mod intuition_shadow;
 mod lane_c_lineage;
+mod lane_c_metadata;
 mod lane_c_snapshot;
 mod local_atomic_witness;
 mod local_compact_executor;

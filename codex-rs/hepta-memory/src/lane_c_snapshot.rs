@@ -42,6 +42,7 @@ use crate::lane_c_lineage::LaneCProjection;
 use crate::lane_c_lineage::MAX_LANE_C_LINEAGE_CITATIONS;
 use crate::lane_c_lineage::MAX_LANE_C_LINEAGE_REVISIONS;
 use crate::lane_c_lineage::validate_citation_owner;
+use crate::lane_c_metadata::validate_scope_metadata;
 
 const MAX_REVISIONS: usize = MAX_LANE_C_LINEAGE_REVISIONS;
 const MAX_CITATIONS: usize = MAX_LANE_C_LINEAGE_CITATIONS;
@@ -301,6 +302,13 @@ impl CognitiveStore {
         ))
         .map_err(corrupt)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        validate_scope_metadata(
+            &mut transaction,
+            self.owner_agent_id.as_str(),
+            scope_kind,
+            workspace,
+        )
+        .await?;
         let memory_count: i64 = sqlx::query_scalar(
             "SELECT count(*) FROM memory_revisions
              WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?",
@@ -699,6 +707,13 @@ impl CognitiveStore {
         }
         let (scope_kind, workspace) = scope.database_parts();
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        validate_scope_metadata(
+            &mut transaction,
+            self.owner_agent_id.as_str(),
+            scope_kind,
+            workspace,
+        )
+        .await?;
         let rows = sqlx::query(
             "SELECT r.memory_id, r.revision, r.content_sha256, r.verification,
                     r.lifecycle, r.valid_from_unix_seconds, r.valid_to_unix_seconds,
