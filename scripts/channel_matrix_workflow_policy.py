@@ -47,6 +47,14 @@ PROTECTED_CANDIDATE_EXECUTION_PATTERNS = {
         r"(?m)\b(?:python3?|bash|sh)\b[^\n]*(?:\$CANDIDATE_SHA|candidate-checkout)"
     ),
 }
+ALLOWED_CANDIDATE_REFERENCE_LINES = {
+    '[[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]',
+    'test "$(git rev-parse "$CANDIDATE_SHA^{commit}")" = "$CANDIDATE_SHA"',
+    'test "$(git rev-parse "$CANDIDATE_SHA^{tree}")" = "$CANDIDATE_TREE"',
+    'git merge-base --is-ancestor "$CANDIDATE_SHA" "$VERIFIER_SHA"',
+    'evidence="$MATRIX_PRODUCTION_EVIDENCE_ROOT/$CANDIDATE_SHA"',
+    '--expected-commit "$CANDIDATE_SHA" \\',
+}
 PROTECTED_MARKERS = (
     "if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/main'",
     "environment: channel-matrix-production-qualification",
@@ -130,9 +138,19 @@ def validate_protected_workflow(path: Path) -> dict[str, Any]:
         for name, pattern in PROTECTED_CANDIDATE_EXECUTION_PATTERNS.items()
         if pattern.search(text)
     ]
+    unexpected_references = sorted(
+        {
+            line.strip()
+            for line in text.splitlines()
+            if "$CANDIDATE_SHA" in line
+            and line.strip() not in ALLOWED_CANDIDATE_REFERENCE_LINES
+        }
+    )
+    if unexpected_references:
+        violations.append("candidate_reference_outside_closed_identity_uses")
     if violations:
         raise ValueError(
-            "protected production workflow executes candidate code: "
+            "protected production workflow executes or materializes candidate code: "
             + ",".join(violations)
         )
     row["protectedEnvironment"] = True

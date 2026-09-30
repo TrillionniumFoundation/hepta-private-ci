@@ -104,6 +104,24 @@ class WorkflowPolicyTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 policy.validate_protected_workflow(path)
 
+    def test_protected_candidate_sha_uses_are_closed(self):
+        source = (
+            ROOT / ".github/workflows" / policy.PROTECTED_WORKFLOW
+        ).read_text(encoding="utf-8")
+        marker = 'git merge-base --is-ancestor "$CANDIDATE_SHA" "$VERIFIER_SHA"'
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary).resolve() / policy.PROTECTED_WORKFLOW
+            path.write_text(
+                source.replace(
+                    marker,
+                    marker + '\n          git archive "$CANDIDATE_SHA" > candidate.tar',
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                policy.validate_protected_workflow(path)
+
     def test_protected_runner_is_main_only(self):
         source = (
             ROOT / ".github/workflows" / policy.PROTECTED_WORKFLOW
