@@ -12,6 +12,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = ROOT / "docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.json"
 RECEIPT_SCHEMA = "hepta.authbus.performance-receipt.v1"
+HEX = set("0123456789abcdef")
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -49,6 +50,10 @@ def exact_int(value: Any, label: str, minimum: int = 0) -> int:
     return value
 
 
+def valid_sha1(value: str) -> bool:
+    return len(value) == 40 and all(character in HEX for character in value)
+
+
 def validate_percentiles(
     stage: dict[str, Any],
     label: str,
@@ -76,16 +81,17 @@ def validate_percentiles(
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidate-sha", required=True)
+    parser.add_argument("--control-sha", required=True)
     parser.add_argument("--target-profile", required=True)
     parser.add_argument("--expected-target-identity", required=True)
     parser.add_argument("--receipt", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
 
-    if len(args.candidate_sha) != 40 or any(
-        character not in "0123456789abcdef" for character in args.candidate_sha
-    ):
+    if not valid_sha1(args.candidate_sha):
         raise SystemExit("candidate SHA must be a lowercase 40-character SHA-1")
+    if not valid_sha1(args.control_sha):
+        raise SystemExit("control SHA must be a lowercase 40-character SHA-1")
     if not args.receipt.is_file():
         raise SystemExit("performance receipt is missing")
 
@@ -98,6 +104,8 @@ def main() -> None:
             raise ValueError("performance receipt schema mismatch")
         if receipt.get("candidateSha") != args.candidate_sha:
             raise ValueError("performance receipt candidate drift")
+        if receipt.get("controlSha") != args.control_sha:
+            raise ValueError("performance receipt trusted-controller drift")
         if receipt.get("targetProfile") != args.target_profile:
             raise ValueError("performance receipt target-profile drift")
         target_identity = exact_string(
@@ -113,7 +121,7 @@ def main() -> None:
             receipt.get("rawSamplesSha256"), "performance.rawSamplesSha256", 64
         )
         if len(raw_samples_sha) != 64 or any(
-            character not in "0123456789abcdef" for character in raw_samples_sha
+            character not in HEX for character in raw_samples_sha
         ):
             raise ValueError("performance.rawSamplesSha256 is not lowercase SHA-256")
         if receipt.get("completed") is not True:
@@ -238,6 +246,7 @@ def main() -> None:
     manifest = {
         "schema": "hepta.authbus.performance-evidence.v1",
         "candidateSha": args.candidate_sha,
+        "controlSha": args.control_sha,
         "targetProfile": args.target_profile,
         "targetIdentity": target_identity,
         "contractSha256": sha256(CONTRACT_PATH),
