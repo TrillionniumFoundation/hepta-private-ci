@@ -23,6 +23,7 @@ mod frontier_backend_file {
     pub use segmented::EvidenceFrontierCapacityV1;
     pub use segmented::SegmentedFileEvidenceFrontierBackend;
 }
+mod frontier_merge;
 mod frontier_v2;
 mod governance_store;
 mod governance_validation;
@@ -131,6 +132,17 @@ pub use frontier_backend::EvidenceFrontierHistoryRangeV1;
 pub use frontier_backend_file::EvidenceFrontierCapacityAlertV1;
 pub use frontier_backend_file::EvidenceFrontierCapacityV1;
 pub use frontier_backend_file::SegmentedFileEvidenceFrontierBackend as LockedFileEvidenceFrontierBackend;
+pub use frontier_merge::FRONTIER_REPAIR_AUTHORIZATION_MAX_VALIDITY_MS;
+pub use frontier_merge::FRONTIER_REPAIR_AUTHORIZATION_SCHEMA_VERSION;
+pub use frontier_merge::FRONTIER_REPAIR_AUTHORITY_SCHEMA_VERSION;
+pub use frontier_merge::FrontierMergeDecision;
+pub use frontier_merge::FrontierRepairAlgorithmV1;
+pub use frontier_merge::FrontierRepairAuthorityV1;
+pub use frontier_merge::FrontierRepairAuthorizationV1;
+pub use frontier_merge::FrontierRepairReasonV1;
+pub use frontier_merge::classify_frontier_merge;
+pub use frontier_merge::frontier_repair_authorization_signing_bytes;
+pub use frontier_merge::verify_frontier_repair_authorization;
 pub use frontier_v2::EVIDENCE_RECOVERY_FRONTIER_V2_MAX_SIGNATURES;
 pub use frontier_v2::EVIDENCE_RECOVERY_FRONTIER_V2_SCHEMA_VERSION;
 pub use frontier_v2::EvidenceRecoveryFrontierSignatureV2;
