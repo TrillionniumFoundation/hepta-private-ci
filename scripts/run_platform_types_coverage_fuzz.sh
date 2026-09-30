@@ -7,7 +7,7 @@ if [[ $# -ne 1 ]]; then
 fi
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-OUT="$1"
+OUT="$(python3 -c 'import pathlib, sys; print(pathlib.Path(sys.argv[1]).absolute())' "$1")"
 TOOLCHAIN="${PLATFORM_TYPES_FUZZ_TOOLCHAIN:-nightly-2026-09-20}"
 CARGO_FUZZ_VERSION="${PLATFORM_TYPES_CARGO_FUZZ_VERSION:-0.12.0}"
 TYPE_RUNS="${PLATFORM_TYPES_TYPE_FUZZ_RUNS:-4096}"
@@ -19,6 +19,8 @@ rm -rf "$OUT"
 mkdir -p \
   "$OUT/types/corpus" "$OUT/types/artifacts" \
   "$OUT/wire/corpus" "$OUT/wire/artifacts"
+
+python3 "$ROOT/scripts/platform_types_fuzz_corpus.py" "$OUT"
 
 rustup toolchain install "$TOOLCHAIN" --profile minimal
 if ! cargo fuzz --version 2>/dev/null | grep -F "cargo-fuzz $CARGO_FUZZ_VERSION" >/dev/null; then
@@ -53,6 +55,9 @@ import pathlib
 import sys
 
 out = pathlib.Path(sys.argv[1])
+seed_receipt = out / "corpus-seeds.json"
+seed_bytes = seed_receipt.read_bytes()
+seed_summary = json.loads(seed_bytes)
 records = []
 for target in ("types", "wire"):
     log = out / f"{target}.log"
@@ -80,6 +85,14 @@ summary = {
     "toolchain": sys.argv[2],
     "cargoFuzzVersion": sys.argv[3],
     "runs": {"canonicalValidate": int(sys.argv[4]), "platformTypesJson": int(sys.argv[5])},
+    "corpusSeeds": {
+        "receipt": seed_receipt.name,
+        "receiptSha256": hashlib.sha256(seed_bytes).hexdigest(),
+        "counts": {
+            target: sum(row["target"] == target for row in seed_summary["seeds"])
+            for target in ("types", "wire")
+        },
+    },
     "wireDecoders": [
         "PromptDeliveryObservationV2",
         "RuntimeTopologyCandidateV1",

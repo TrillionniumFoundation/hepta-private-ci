@@ -85,6 +85,7 @@ truth_check() {
     scripts/test_platform_types_rama_lock_guard.py \
     scripts/test_platform_types_rustdoc_api.py
   python3 -m unittest discover -s scripts -p test_platform_types_nonempty_tests.py -v
+  python3 -m unittest discover -s scripts -p test_platform_types_fuzz_corpus.py -v
   python3 scripts/platform_types_public_api.py
   python3 scripts/platform_types_implementation_map.py \
     --output "$OUT/generated-implementation-map.json"
