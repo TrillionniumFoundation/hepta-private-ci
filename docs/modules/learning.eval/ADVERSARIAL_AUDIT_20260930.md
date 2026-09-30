@@ -81,7 +81,7 @@ P1 表示可能破坏资格、统计或耐久性合约的缺陷；优先级并�
 | cross-fit 全局资源预算检查过晚 | 在构造 global identity sets 或 fitting 任一 fold 前预检整个 input 的 row/action-cell 预算。晚到的超预算 fold 不能先触发早期训练工作 |
 | CAS replay 重复重建语义前缀 | replay 保留同一个 canonical semantic journal，逐 transition 更新；减少每个前缀重复 reconstruction，同时保留 fence、anchor 和完整 use history |
 | 存储 profile 的 holdout 历史不足 | profile 现在每个 generation 消费不同 frozen plan，包含非空 holdout records、fence takeover、source reopen、copy-compaction 和 successor reopen，并核对完整 authoritative state |
-| source projection 与人读文档漂移 | generator 按 CURRENT_STATUS 的 single/multi typed recovery source fact 和七相事件数输出；源码存在和 deployed host qualification 明确分开 |
+| source projection 与人读文档漂移 | generator 按 CURRENT_STATUS 的 single/multi typed recovery source fact 和七相事件数输出；主模型补齐已提交投影中已有的三项 root-activated final-use/API source facts，恢复单一模型与投影一致性。源码存在和 deployed host qualification 明确分开，全部外部 claims 仍为 false |
 | Lane E API 追踪与 readiness metric-role 范围未同步 | matrix 保留原 closed-world source operations，但明确 raw runner 的 default private/compatibility 分类和 signed primitives 的 crate-internal 边界，并在既有 `productCallsites` 结构列出 recorded archived public 入口。readiness §5 改为 preregistered V2 superiority/non-inferiority/absolute roles，保留所有保护阈值与独立接受边界 |
 | trusted reporter 文档/检查器使用旧入口假设 | AUDIT_INDEX 补齐 `workflow_run` 与 untrusted data 边界；控制面检查识别 trusted entrypoint/report 路径及其 delegation，并保留 fail-closed 约束和回归覆盖 |
 | 初始缺失 import 和陈旧测试假设 | 补齐所需 test import；修正本轮变化涉及的真实 clock/trust、seven-phase archive 和持久状态 fixture，使回归验证当前合约，保留原来的故障断言 |
