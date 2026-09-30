@@ -142,14 +142,33 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config libcap-dev
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
       - name: Resolve verified V8 artifacts
+        id: v8
+        continue-on-error: true
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Diagnose exact workspace lockfile
+        id: lock
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          original="$RUNNER_TEMP/control-runtime-Cargo.lock.original"
+          evidence="$RUNNER_TEMP/control-runtime-records"
+          cp Cargo.lock "$original"
+          cargo generate-lockfile
+          if cmp -s Cargo.lock "$original"; then
+            status=clean
+          else
+            status=drift
+            cp Cargo.lock "$evidence/Cargo.lock.generated"
+            git diff -- Cargo.lock > "$evidence/Cargo.lock.diff"
+          fi
+          printf '%s\n' "$status" > "$evidence/lockfile-status.txt"
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
       - name: Formatting
         id: fmt
         continue-on-error: true
@@ -166,7 +185,9 @@ jobs:
         run: >-
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/control-runtime-records/tests.json" --
-          just test --locked -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+          cargo test --locked
+          -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+          --features codex-hepta-control-plane/qualification-failpoints
       - name: All-target compilation
         id: check
         if: '!cancelled()'
@@ -175,7 +196,9 @@ jobs:
         run: >-
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/control-runtime-records/check.json" --
-          cargo check --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+          cargo check --locked --all-targets
+          -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+          --features codex-hepta-control-plane/qualification-failpoints
       - name: Strict lint
         id: lint
         if: '!cancelled()'
@@ -184,11 +207,16 @@ jobs:
         run: >-
           python3 ../scripts/hepta_ci_exec.py
           --output "$RUNNER_TEMP/control-runtime-records/clippy.json" --
-          cargo clippy --locked --all-targets -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu -- -D warnings
+          cargo clippy --locked --all-targets
+          -p codex-hepta-control-plane -p codex-hepta-agentd -p codex-hepta-ndu
+          --features codex-hepta-control-plane/qualification-failpoints -- -D warnings
       - name: Require every independent check and unchanged tracked source
         if: always()
         env:
           STATE_RESULT: ${{ steps.state.outcome }}
+          V8_RESULT: ${{ steps.v8.outcome }}
+          LOCK_RESULT: ${{ steps.lock.outcome }}
+          LOCK_STATUS: ${{ steps.lock.outputs.status }}
           FMT_RESULT: ${{ steps.fmt.outcome }}
           TEST_RESULT: ${{ steps.tests.outcome }}
           CHECK_RESULT: ${{ steps.check.outcome }}
@@ -196,6 +224,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [[ -f "$RUNNER_TEMP/control-runtime-Cargo.lock.original" ]]; then
+            cp "$RUNNER_TEMP/control-runtime-Cargo.lock.original" codex-rs/Cargo.lock
+          fi
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           if ! git diff --exit-code || ! git diff --cached --exit-code; then
             git status --short
@@ -204,11 +235,14 @@ jobs:
             exit 1
           fi
           test "$STATE_RESULT" = success
+          test "$V8_RESULT" = success
+          test "$LOCK_RESULT" = success
+          test "$LOCK_STATUS" = clean
           test "$FMT_RESULT" = success
           test "$TEST_RESULT" = success
           test "$CHECK_RESULT" = success
           test "$LINT_RESULT" = success
-      - name: Preserve successes, failures, logs, and candidate identities
+      - name: Preserve successes, failures, logs, lock diagnostics, and candidate identities
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

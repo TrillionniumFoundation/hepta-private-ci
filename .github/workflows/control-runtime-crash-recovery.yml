@@ -61,49 +61,118 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config libcap-dev
       - name: Canonical state validation
+        id: state
+        continue-on-error: true
         run: >-
           python3 scripts/control_runtime_validate_state.py
           --output "$RUNNER_TEMP/control-runtime-recovery-evidence/state.json"
-      - name: Formatting
+      - name: Diagnose exact workspace lockfile
+        id: lock
+        continue-on-error: true
         working-directory: codex-rs
-        run: cargo fmt -p codex-hepta-control-plane -- --check
-      - name: Full control-plane regression suite
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-control-plane
-      - name: Abnormal process and restore regressions
-        working-directory: codex-rs
-        run: >-
-          cargo test --locked -p codex-hepta-control-plane
-          --test planner_store_process_recovery -- --nocapture
-      - name: Durable execution hardening regressions
-        working-directory: codex-rs
-        run: >-
-          cargo test --locked -p codex-hepta-control-plane
-          --test planner_durable_hardening -- --nocapture
-      - name: Fanout evidence and continuation regressions
-        working-directory: codex-rs
-        run: >-
-          cargo test --locked -p codex-hepta-control-plane
-          --test organ_fanout_receipts -- --nocapture
-      - name: All-target compilation
-        working-directory: codex-rs
-        run: cargo check --locked --all-targets -p codex-hepta-control-plane
-      - name: Strict lint
-        working-directory: codex-rs
-        run: >-
-          cargo clippy --locked --all-targets -p codex-hepta-control-plane -- -D warnings
-      - name: Verify tracked source is unchanged
-        if: always()
         shell: bash
         run: |
           set -euo pipefail
+          original="$RUNNER_TEMP/control-runtime-Cargo.lock.original"
+          evidence="$RUNNER_TEMP/control-runtime-recovery-evidence"
+          cp Cargo.lock "$original"
+          cargo generate-lockfile
+          if cmp -s Cargo.lock "$original"; then
+            status=clean
+          else
+            status=drift
+            cp Cargo.lock "$evidence/Cargo.lock.generated"
+            git diff -- Cargo.lock > "$evidence/Cargo.lock.diff"
+          fi
+          printf '%s\n' "$status" > "$evidence/lockfile-status.txt"
+          printf 'status=%s\n' "$status" >> "$GITHUB_OUTPUT"
+      - name: Formatting
+        id: fmt
+        continue-on-error: true
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-control-plane -- --check
+      - name: Full control-plane regression suite
+        id: tests
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-control-plane
+          --features qualification-failpoints
+      - name: Abnormal process and restore regressions
+        id: process
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-control-plane
+          --features qualification-failpoints
+          --test planner_store_process_recovery -- --nocapture
+      - name: Durable execution hardening regressions
+        id: durable
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-control-plane
+          --features qualification-failpoints
+          --test planner_durable_hardening -- --nocapture
+      - name: Fanout evidence and continuation regressions
+        id: fanout
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-control-plane
+          --features qualification-failpoints
+          --test organ_fanout_receipts -- --nocapture
+      - name: All-target compilation
+        id: check
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked --all-targets -p codex-hepta-control-plane
+          --features qualification-failpoints
+      - name: Strict lint
+        id: lint
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked --all-targets -p codex-hepta-control-plane
+          --features qualification-failpoints -- -D warnings
+      - name: Require exact lockfile, every regression, and unchanged tracked source
+        if: always()
+        env:
+          STATE_RESULT: ${{ steps.state.outcome }}
+          LOCK_RESULT: ${{ steps.lock.outcome }}
+          LOCK_STATUS: ${{ steps.lock.outputs.status }}
+          FMT_RESULT: ${{ steps.fmt.outcome }}
+          TEST_RESULT: ${{ steps.tests.outcome }}
+          PROCESS_RESULT: ${{ steps.process.outcome }}
+          DURABLE_RESULT: ${{ steps.durable.outcome }}
+          FANOUT_RESULT: ${{ steps.fanout.outcome }}
+          CHECK_RESULT: ${{ steps.check.outcome }}
+          LINT_RESULT: ${{ steps.lint.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f "$RUNNER_TEMP/control-runtime-Cargo.lock.original" ]]; then
+            cp "$RUNNER_TEMP/control-runtime-Cargo.lock.original" codex-rs/Cargo.lock
+          fi
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           if ! git diff --exit-code || ! git diff --cached --exit-code; then
             git status --short
             git diff --stat
             git diff --name-only
             exit 1
           fi
-      - name: Preserve exact recovery evidence
+          test "$STATE_RESULT" = success
+          test "$LOCK_RESULT" = success
+          test "$LOCK_STATUS" = clean
+          test "$FMT_RESULT" = success
+          test "$TEST_RESULT" = success
+          test "$PROCESS_RESULT" = success
+          test "$DURABLE_RESULT" = success
+          test "$FANOUT_RESULT" = success
+          test "$CHECK_RESULT" = success
+          test "$LINT_RESULT" = success
+      - name: Preserve exact recovery evidence and lock diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
