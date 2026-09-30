@@ -13,8 +13,15 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[path = "native_archive.rs"]
+mod archive;
+#[path = "native_archive_compaction.rs"]
+mod archive_compaction;
+#[path = "native_archive_store.rs"]
+mod archive_store;
 #[path = "native_control.rs"]
 pub mod native;
+pub use archive::NativeHistoryMaintenanceReceipt;
 
 const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
@@ -227,6 +234,7 @@ impl DurableInferenceControl {
                 continue;
             }
             if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                archive::validate_replay_archive(&path, json)?;
                 native.replay(json)?;
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
@@ -269,6 +277,9 @@ impl DurableInferenceControl {
             return Err(Error::Conflict);
         }
         if self.native.records.contains_key(&request.request_id) {
+            return Err(Error::Conflict);
+        }
+        if archive_store::lookup(&self.path, &request.request_id)?.is_some() {
             return Err(Error::Conflict);
         }
         if self.records.len() + self.native.records.len() >= self.capacity {

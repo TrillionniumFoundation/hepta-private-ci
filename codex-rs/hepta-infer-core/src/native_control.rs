@@ -5,7 +5,6 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_types::Digest32;
-use rand::RngCore;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -334,13 +333,21 @@ pub struct NativeRunRecord {
 
 #[derive(Clone, Debug, Default)]
 pub(super) struct NativeJournal {
-    maximum_in_flight: Option<usize>,
+    pub(super) maximum_in_flight: Option<usize>,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
+    pub(super) compaction_pending: bool,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-enum Event {
+pub(super) enum Event {
+    CapacityPinned {
+        maximum_in_flight: usize,
+    },
+    Archive {
+        request_id: String,
+        record_sha256: String,
+    },
     Reserve {
         request: NativeRequest,
         maximum_in_flight: usize,
@@ -394,6 +401,27 @@ enum Event {
     },
 }
 
+impl Event {
+    pub(super) fn request_id(&self) -> Option<&str> {
+        match self {
+            Self::CapacityPinned { .. } => None,
+            Self::Reserve { request, .. } => Some(&request.request_id),
+            Self::Archive { request_id, .. }
+            | Self::Dispatch { request_id, .. }
+            | Self::Started { request_id, .. }
+            | Self::RejectBeforeStart { request_id, .. }
+            | Self::Cancel { request_id }
+            | Self::Stop { request_id, .. }
+            | Self::AbortBeforeEffect { request_id, .. }
+            | Self::PrepareAbortBeforeEffect { request_id, .. }
+            | Self::ConfirmAbortBeforeEffect { request_id, .. }
+            | Self::Observe { request_id, .. }
+            | Self::TerminalPublicationFailed { request_id, .. }
+            | Self::TerminalPublicationAcknowledged { request_id, .. } => Some(request_id),
+        }
+    }
+}
+
 impl DurableInferenceControl {
     /// The first admission pins the local slot limit for this journal. A
     /// duplicate binds every request field and never reserves a second slot.
@@ -423,6 +451,13 @@ impl DurableInferenceControl {
         if let Some(record) = self.native.records.get(&request.request_id) {
             return if record.request == request {
                 Ok(record.clone())
+            } else {
+                Err(Error::Conflict)
+            };
+        }
+        if let Some(record) = super::archive_store::lookup(&self.path, &request.request_id)? {
+            return if record.request == request {
+                Ok(record)
             } else {
                 Err(Error::Conflict)
             };
@@ -750,8 +785,28 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Borrow a resident record. Archived immutable receipts are available
+    /// through `native_record_resolved`, which explicitly reports storage errors.
     pub fn native_record(&self, request_id: &str) -> Option<&NativeRunRecord> {
         self.native.records.get(request_id)
+    }
+
+    pub(super) fn commit_native_archive(
+        &mut self,
+        request_id: &str,
+        record_sha256: String,
+    ) -> Result<(), Error> {
+        let event = Event::Archive {
+            request_id: request_id.to_string(),
+            record_sha256,
+        };
+        let mut next = self.native.clone();
+        next.apply(event.clone())?;
+        let json = serde_json::to_string(&event)
+            .map_err(|_| Error::CorruptJournal("native archive event encode"))?;
+        self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
+        self.native = next;
+        Ok(())
     }
 
     fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
@@ -788,6 +843,37 @@ impl NativeJournal {
     }
 
     fn apply(&mut self, event: Event) -> Result<(), Error> {
+        let event = match event {
+            Event::CapacityPinned { maximum_in_flight } => {
+                if !(1..=256).contains(&maximum_in_flight)
+                    || self
+                        .maximum_in_flight
+                        .is_some_and(|limit| limit != maximum_in_flight)
+                {
+                    return Err(Error::Conflict);
+                }
+                self.maximum_in_flight = Some(maximum_in_flight);
+                return Ok(());
+            }
+            Event::Archive {
+                request_id,
+                record_sha256,
+            } => {
+                let record = self
+                    .records
+                    .get(&request_id)
+                    .ok_or(Error::RequestNotFound)?;
+                if !super::archive::eligible(record)
+                    || super::archive_store::record_digest(record)? != record_sha256
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                self.records.remove(&request_id);
+                self.compaction_pending = true;
+                return Ok(());
+            }
+            event => event,
+        };
         if let Event::Reserve {
             request,
             maximum_in_flight,
@@ -842,7 +928,9 @@ impl NativeJournal {
             return Ok(());
         }
         let id = match &event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::CapacityPinned { .. } | Event::Archive { .. } => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
             | Event::RejectBeforeStart { request_id, .. }
@@ -857,7 +945,9 @@ impl NativeJournal {
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::CapacityPinned { .. } | Event::Archive { .. } => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Dispatch {
                 dispatch,
                 terminal_owner,
@@ -1345,7 +1435,8 @@ fn derive_terminal_publication(
     } else {
         match output.boundary_status {
             NativeBoundaryStatus::Failed
-                if output.terminal_observed && output.status == NativeRunStatus::Failed => {
+                if output.terminal_observed && output.status == NativeRunStatus::Failed =>
+            {
                 (NativeTerminalPublicationPhase::Failed, true)
             }
             NativeBoundaryStatus::Interrupted | NativeBoundaryStatus::Cancelled
