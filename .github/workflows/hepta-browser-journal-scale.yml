@@ -1,0 +1,88 @@
+name: Hepta Browser journal scale
+
+on:
+  pull_request:
+    paths:
+      - 'apps/hepta-browser/**'
+      - 'docs/modules/browser.servo/**'
+      - '.github/workflows/hepta-browser-journal-scale.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/hepta-browser/**'
+      - 'docs/modules/browser.servo/**'
+      - '.github/workflows/hepta-browser-journal-scale.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-browser-journal-scale-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  journal-scale:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact source and generated registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          npm --prefix apps/hepta-browser run verify:registry
+
+      - name: Measure bounded journal index, compaction and restart
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p journal-evidence
+          node apps/hepta-browser/scripts/journal-scale-probe.js \
+            | tee journal-evidence/journal-scale.json
+          python3 - <<'PY'
+          import json, pathlib
+          result = json.loads(pathlib.Path("journal-evidence/journal-scale.json").read_text())
+          assert result["schema"] == "hepta.browser.journal-scale-receipt.v2"
+          assert result["operationCount"] == 192
+          assert result["terminalOperationCount"] == 128
+          assert result["unresolvedOperationCount"] == 64
+          assert result["totalDurableTransitions"] == 704
+          assert result["incrementalIndexReused"] is True
+          assert result["warmPathFullReloads"] == 1
+          assert result["warmOwnerStatistics"]["diskReadBytes"] == 0
+          assert result["restartSnapshotValidated"] is True
+          assert result["unresolvedBacklogSurvivedCompactionAndRestart"] is True
+          assert result["nearCapacityQualification"] is False
+          assert result["slowStorageQualification"] is False
+          assert result["performanceQualification"] is False
+          PY
+
+      - name: Preserve source-bound diagnostic receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: browser-journal-scale-${{ env.SOURCE_SHA }}
+          path: journal-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Verify tracked source remains clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

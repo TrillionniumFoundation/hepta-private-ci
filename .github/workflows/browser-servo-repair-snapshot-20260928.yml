@@ -1,0 +1,45 @@
+name: Browser Servo pinned repair snapshot
+
+on:
+  push:
+    branches: [codex/browser-servo-full-convergence-20260927]
+    paths: [.github/workflows/browser-servo-repair-snapshot-20260928.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 4b6e8af1773baa67ada72892f9d3128e4ce824b4
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export exact tracked source and original diagnostics
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 4b6e8af1773baa67ada72892f9d3128e4ce824b4
+          mkdir -p "$RUNNER_TEMP/browser-repair"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/browser-repair/source.tar.gz"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/browser-repair/source-identity.txt"
+          git ls-tree -r HEAD > "$RUNNER_TEMP/browser-repair/source-tree.txt"
+          sha256sum "$RUNNER_TEMP/browser-repair/source.tar.gz" > "$RUNNER_TEMP/browser-repair/source.sha256"
+          for run in 36375483629 36375483673 36375483680 36375483726; do
+            gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run/jobs?per_page=100" > "$RUNNER_TEMP/browser-repair/jobs-$run.json"
+            gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run/logs" > "$RUNNER_TEMP/browser-repair/logs-$run.zip"
+          done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: browser-servo-repair-source-4b6e8af177
+          path: ${{ runner.temp }}/browser-repair
+          if-no-files-found: error
+          retention-days: 3

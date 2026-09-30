@@ -1,0 +1,216 @@
+name: Hepta Browser Servo runtime product qualification
+
+on:
+  pull_request:
+    paths:
+      - 'apps/hepta-browser/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'docs/modules/browser.servo/**'
+      - 'third_party/servo-patches/**'
+      - 'qualification/browser-servo/**'
+      - '.github/workflows/hepta-browser-servo-runtime-product.yml'
+  push:
+    branches: [main, work, codex/browser-servo-full-convergence-20260927]
+    paths:
+      - 'apps/hepta-browser/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'docs/modules/browser.servo/**'
+      - 'third_party/servo-patches/**'
+      - 'qualification/browser-servo/**'
+      - '.github/workflows/hepta-browser-servo-runtime-product.yml'
+  workflow_dispatch:
+    inputs:
+      wss_url:
+        description: Optional exact-product WSS qualification endpoint
+        required: false
+        type: string
+      require_product_qualification:
+        description: Fail unless product execution is fully qualified
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+  pull-requests: write
+
+concurrency:
+  group: browser-servo-runtime-product-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  qualify:
+    name: Exact-head source, candidate and runtime qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+
+      - name: Install exact-target native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            bubblewrap build-essential cmake curl git jq libdbus-1-dev \
+            libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglib2.0-dev \
+            libssl-dev libx11-dev libxcb1-dev libxkbcommon-dev llvm pkg-config \
+            python3 util-linux
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Execute source, staged, workspace, build and real-runtime gates
+        shell: bash
+        run: qualification/browser-servo/run-runtime-product.sh
+
+      - name: Attest fresh Agentd candidate
+        if: github.event_name != 'pull_request'
+        id: agentd-attestation
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-path: candidate-evidence/bin/hepta-agentd-browser-service
+
+      - name: Attest fresh Servo candidate
+        if: github.event_name != 'pull_request'
+        id: worker-attestation
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-path: candidate-evidence/bin/hepta-servo-worker
+
+      - name: Preserve signed bundles beside exact candidates
+        if: github.event_name != 'pull_request'
+        env:
+          AGENTD_BUNDLE: ${{ steps.agentd-attestation.outputs.bundle-path }}
+          WORKER_BUNDLE: ${{ steps.worker-attestation.outputs.bundle-path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$AGENTD_BUNDLE" && test -s "$WORKER_BUNDLE"
+          cp "$AGENTD_BUNDLE" candidate-evidence/agentd-attestation.jsonl
+          cp "$WORKER_BUNDLE" candidate-evidence/worker-attestation.jsonl
+          sha256sum candidate-evidence/*attestation.jsonl > candidate-evidence/attestation.sha256
+
+      - name: Probe WSS accepted-executed-committed-observed sequence
+        continue-on-error: true
+        env:
+          INPUT_WSS_URL: ${{ inputs.wss_url }}
+          REPOSITORY_WSS_URL: ${{ vars.BROWSER_SERVO_WSS_URL }}
+          SECRET_WSS_URL: ${{ secrets.BROWSER_SERVO_WSS_URL }}
+          BROWSER_SERVO_WSS_SUBPROTOCOLS: ${{ secrets.BROWSER_SERVO_WSS_SUBPROTOCOLS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="${INPUT_WSS_URL:-${SECRET_WSS_URL:-${REPOSITORY_WSS_URL:-}}}"
+          node qualification/browser-servo/wss-transaction-probe.mjs \
+            --url "$url" --source-sha "$SOURCE_SHA" \
+            --candidate-manifest candidate-evidence/candidate-manifest.json \
+            --timeout-ms 60000 --required true \
+            --output candidate-evidence/wss-transaction.json
+
+      - name: Preserve an explicit missing-WSS receipt without inventing success
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -s candidate-evidence/wss-transaction.json ]; then
+            node qualification/browser-servo/wss-transaction-probe.mjs \
+              --url '' --source-sha "$SOURCE_SHA" \
+              --candidate-manifest candidate-evidence/candidate-manifest.json \
+              --required false --output candidate-evidence/wss-transaction.json
+          fi
+
+      - name: Generate machine-owned runtime qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p final-evidence
+          agentd_attestation=''
+          worker_attestation=''
+          [ ! -s candidate-evidence/agentd-attestation.jsonl ] || agentd_attestation=candidate-evidence/agentd-attestation.jsonl
+          [ ! -s candidate-evidence/worker-attestation.jsonl ] || worker_attestation=candidate-evidence/worker-attestation.jsonl
+          node qualification/browser-servo/finalize-qualification.mjs \
+            --candidate-manifest candidate-evidence/candidate-manifest.json \
+            --protocol candidate-evidence/protocol-compatibility.json \
+            --real-worker candidate-evidence/real-worker-smoke.json \
+            --real-browser candidate-evidence/real-browser-e2e.json \
+            --soak candidate-evidence/real-browser-soak.json \
+            --fault candidate-evidence/product-fault-probe.json \
+            --wss candidate-evidence/wss-transaction.json \
+            --agentd-attestation "$agentd_attestation" \
+            --worker-attestation "$worker_attestation" \
+            --source-result success --staged-result success --workspace-result success \
+            --source-receipts-present true --expected-sha "$SOURCE_SHA" \
+            --require-signatures true --require-qualified false \
+            --output final-evidence/runtime-qualification.json \
+            --markdown final-evidence/runtime-qualification.md
+          jq . final-evidence/runtime-qualification.json
+
+      - name: Update PR exact-head and evidence; undraft only after full qualification
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+            pr='${{ github.event.pull_request.number }}'
+          else
+            pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$GITHUB_REF_NAME" --state open --json number --jq '.[0].number // empty')"
+          fi
+          [ -n "$pr" ] || exit 0
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$pr" --jq .body > final-evidence/current-pr-body.md
+          python3 - final-evidence/current-pr-body.md final-evidence/runtime-qualification.md > final-evidence/pr-body.md <<'PY'
+          import os, pathlib, re, sys
+          body = pathlib.Path(sys.argv[1]).read_text()
+          section = pathlib.Path(sys.argv[2]).read_text()
+          marker = re.compile(r"<!-- browser-servo-runtime-qualification:start -->.*?<!-- browser-servo-runtime-qualification:end -->\n?", re.S)
+          body = marker.sub(section.strip() + "\n", body) if marker.search(body) else body.rstrip() + "\n\n" + section
+          run = f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+          print(body.replace("This runtime receipt is evidence-bound", f"Run: {run}\n\nThis runtime receipt is evidence-bound"))
+          PY
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$pr" --method PATCH \
+            --raw-field body="$(cat final-evidence/pr-body.md)" >/dev/null
+          if jq -e '.sourceBoundaryQualified and .productExecutionQualified' final-evidence/runtime-qualification.json >/dev/null; then
+            gh pr ready "$pr"
+          else
+            echo 'PR remains draft: exact product qualification is incomplete.'
+          fi
+
+      - name: Preserve all exact-source qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: browser-servo-runtime-product-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            source-evidence
+            candidate-evidence
+            final-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce terminal truth
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq -e '.sourceBoundaryQualified == true' final-evidence/runtime-qualification.json
+          if [ "$GITHUB_EVENT_NAME" != pull_request ]; then
+            jq -e '.productExecutionQualified == true' final-evidence/runtime-qualification.json
+          fi
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ] && [ '${{ inputs.require_product_qualification }}' = true ]; then
+            jq -e '.productExecutionQualified == true' final-evidence/runtime-qualification.json
+          fi

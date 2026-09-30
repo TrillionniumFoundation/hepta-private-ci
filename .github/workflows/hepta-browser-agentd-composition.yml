@@ -1,13 +1,25 @@
 name: Hepta Browser Agentd composition
 
 on:
-  push:
-    branches: [codex/browser-servo-agentd-composition-20260917]
+  pull_request:
     paths:
       - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-agent-protocol/**'
-      - 'apps/hepta-browser/src/agentd-*.js'
-      - 'apps/hepta-browser/test/agentd-service.test.js'
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
+      - '.github/workflows/hepta-browser-agentd-composition.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
       - '.github/workflows/hepta-browser-agentd-composition.yml'
   workflow_dispatch:
 
@@ -15,17 +27,19 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-browser-agentd-composition-${{ github.ref }}
+  group: hepta-browser-agentd-composition-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   exact-composition:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -33,14 +47,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Verify Browser private-parent protocol tests
+      - name: Verify generated Browser source registry
+        run: npm --prefix apps/hepta-browser run verify:registry
+
+      - name: Verify complete Browser owner boundary
         shell: bash
         run: |
           set -euo pipefail
-          node --test apps/hepta-browser/test/agentd-service.test.js apps/hepta-browser/test/worker-driver.test.js
+          for test_file in apps/hepta-browser/test/*.test.js; do
+            echo "::group::browser-node-test $test_file"
+            timeout --kill-after=5s 90s node --test "$test_file"
+            echo "::endgroup::"
+          done
+          for script in apps/hepta-browser/src/*.js apps/hepta-browser/scripts/*.js apps/hepta-browser/scripts/*.mjs; do
+            test ! -f "$script" || node --check "$script"
+          done
 
       - name: Verify Agentd Browser formatting
         shell: bash
@@ -48,32 +72,76 @@ jobs:
           set -euo pipefail
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
 
-      - name: Exercise real FinalUseAuthority handoff tests
+      - name: Exercise legacy and persistent FinalUseAuthority handoff tests
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           cargo test --locked -p codex-hepta-agentd browser_servo --lib
+          cargo test --locked -p codex-hepta-agentd --bin hepta-agentd-browser-service
 
-      - name: Compile named Agentd Browser product caller
+      - name: Compile diagnostic and persistent Agentd Browser callers
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser
+          cargo check --locked -p codex-hepta-agentd \
+            --bin hepta-agentd-browser \
+            --bin hepta-agentd-browser-service
 
       - name: Deny Agentd Browser lint warnings
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd \
+            --lib \
+            --bin hepta-agentd-browser \
+            --bin hepta-agentd-browser-service \
+            --no-deps -- -D warnings
+
+      - name: Retain exact source and non-mutating native diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/browser-composition-evidence"
+          mkdir -p "$evidence/formatted"
+          git rev-parse HEAD HEAD^{tree} > "$evidence/source-identity.txt"
+          node --version >> "$evidence/source-identity.txt"
+          rustfmt --version >> "$evidence/source-identity.txt" 2>&1 || true
+          git archive --format=tar.gz --output="$evidence/exact-source.tar.gz" HEAD \
+            apps/hepta-browser codex-rs .github/workflows docs/modules/browser.servo \
+            third_party/servo-patches qualification/module-execution-dossiers/detail/browser.servo.md
+          for source in \
+            codex-rs/hepta-agentd/src/browser_servo_persistent.rs \
+            codex-rs/hepta-agentd/src/bin/hepta-agentd-browser-service.rs \
+            apps/hepta-browser/servo-worker/src/main.rs; do
+            mkdir -p "$evidence/formatted/$(dirname "$source")"
+            if rustfmt --edition 2024 --config skip_children=true --emit stdout "$source" \
+              > "$evidence/formatted/$source" 2> "$evidence/formatted/$source.stderr"; then
+              printf '%s\tformatted-diagnostic-only\n' "$source" >> "$evidence/format-status.tsv"
+            else
+              printf '%s\tformat-diagnostic-failed\n' "$source" >> "$evidence/format-status.tsv"
+            fi
+          done
+          sha256sum "$evidence/exact-source.tar.gz" > "$evidence/archive.sha256"
+
+      - name: Upload source-bound diagnostics even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: browser-composition-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/browser-composition-evidence
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Verify source stayed clean
         if: always()
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"

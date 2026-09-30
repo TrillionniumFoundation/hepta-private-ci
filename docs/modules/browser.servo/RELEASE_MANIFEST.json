@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.browser.servo-release-manifest.v1",
+  "schemaVersion": 1,
+  "module": "browser.servo",
+  "qualificationManifest": "docs/modules/browser.servo/QUALIFICATION.json",
+  "qualificationManifestSha256": "a5248106858767587c2524edb0b846b9e04cecfd478928f1a0638250100c6524",
+  "sourceBinding": {
+    "mode": "runtime-exact-source",
+    "headShaEnvironment": "GITHUB_SHA",
+    "headTreeCommand": "git rev-parse HEAD^{tree}",
+    "pullRequestHeadExpression": "github.event.pull_request.head.sha",
+    "pullRequestBaseExpression": "github.event.pull_request.base.sha",
+    "syntheticMergeConstructor": ".github/actions/hepta-synthetic-merge/action.yml",
+    "trackedShaPolicy": "No tracked file claims its own final commit SHA. Read-only CI emits a digest-bound exact-head or synthetic-merge receipt after checkout."
+  },
+  "claimBoundary": {
+    "sourceRootPresent": true,
+    "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "promotion": false,
+    "release": false,
+    "implementedOperationMappingComplete": true
+  },
+  "requiredGateIds": [
+    "generated_truth_consistency",
+    "browser_node_suite",
+    "agentd_rust_composition",
+    "servo_locked_worker",
+    "workspace_integration_check",
+    "hostile_page_real_worker",
+    "real_browser_lifecycle_and_egress",
+    "process_filesystem_and_resource_faults",
+    "byte_identical_multi_builder_artifact",
+    "signed_sbom_and_provenance",
+    "trusted_linux_target",
+    "operator_acceptance_activation_promotion_release"
+  ],
+  "requiredArtifactIds": [
+    "exact_head_receipt",
+    "synthetic_merge_receipt",
+    "primary_worker",
+    "independent_worker",
+    "spdx_2_3_sbom",
+    "primary_and_independent_provenance",
+    "trusted_target_receipt"
+  ],
+  "releaseDecision": {
+    "selfAuthorizing": false,
+    "trackedRelease": false,
+    "requiredExternalClaims": [
+      "deploymentQualificationComplete",
+      "independentAcceptance",
+      "activation",
+      "promotion",
+      "release"
+    ]
+  }
+}

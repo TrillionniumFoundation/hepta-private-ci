@@ -3,6 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test test/*.test.js",
+    "check": "npm run verify:qualification && npm run verify:registry && npm test",
+    "verify:qualification": "node scripts/qualification-state.mjs --check",
+    "verify:registry": "node scripts/generate-source-registry.mjs --check",
+    "worker:check": "cargo check --locked --manifest-path servo-worker/Cargo.toml",
+    "worker:test": "cargo test --locked --manifest-path servo-worker/Cargo.toml"
   }
 }

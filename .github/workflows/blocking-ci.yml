@@ -210,6 +210,31 @@ jobs:
           python3 scripts/hepta-docs.py verify
           test -z "$(git status --porcelain --untracked-files=no)"
 
+  browser-servo-source:
+    name: Browser Servo source gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify generated RPC capability and source-object registry
+        run: npm --prefix apps/hepta-browser run verify:registry
+
+      - name: Run complete Browser owner and protocol suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-browser/test/*.test.js
+          node --check apps/hepta-browser/src/*.js
+          for script in apps/hepta-browser/scripts/*.js; do node --check "$script"; done
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
   required:
     timeout-minutes: 30
     name: CI required
@@ -226,6 +251,7 @@ jobs:
       - sdk
       - hepta-scoped
       - lightweight
+      - browser-servo-source
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

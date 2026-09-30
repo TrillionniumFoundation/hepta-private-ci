@@ -21,37 +21,13 @@ test("navigation digest binds policy and expected revision", () => {
   assert.notEqual(left, right);
 });
 
-test("credential and upload actions carry references, never ambient secret or path fields", () => {
-  assert.deepEqual(
-    normalizeBrowserAction({
-      kind: "credential",
-      selector: "#password",
-      credentialRef: "credential.login.1",
-    }),
+test("credential upload and download remain fail-closed future capabilities", () => {
+  for (const action of [
     {
       kind: "credential",
       selector: "#password",
       credentialRef: "credential.login.1",
     },
-  );
-  assert.throws(
-    () =>
-      normalizeBrowserAction({
-        kind: "credential",
-        selector: "#password",
-        credentialRef: "credential.login.1",
-        secret: "raw-secret",
-      }),
-    /missing or unknown fields/,
-  );
-  assert.deepEqual(
-    normalizeBrowserAction({
-      kind: "upload",
-      selector: "input[type=file]",
-      fileRef: "artifact.upload.1",
-      fileDigest: D1,
-      maxBytes: 1024,
-    }),
     {
       kind: "upload",
       selector: "input[type=file]",
@@ -59,17 +35,15 @@ test("credential and upload actions carry references, never ambient secret or pa
       fileDigest: D1,
       maxBytes: 1024,
     },
-  );
-  assert.throws(
-    () =>
-      normalizeBrowserAction({
-        kind: "upload",
-        selector: "input[type=file]",
-        fileRef: "artifact.upload.1",
-        fileDigest: D1,
-        maxBytes: 1024,
-        path: "/private/file",
-      }),
-    /missing or unknown fields/,
-  );
+    {
+      kind: "download",
+      url: "https://example.com/file",
+      maxBytes: 1024,
+    },
+  ]) {
+    assert.throws(
+      () => normalizeBrowserAction(action),
+      /future capability and is not connected/,
+    );
+  }
 });

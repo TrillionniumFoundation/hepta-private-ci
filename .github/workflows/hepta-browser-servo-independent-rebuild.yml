@@ -1,0 +1,197 @@
+name: Hepta Browser Servo independent rebuild
+
+on:
+  pull_request:
+    paths:
+      - 'apps/hepta-browser/servo-worker/**'
+      - 'apps/hepta-browser/src/**'
+      - 'apps/hepta-browser/scripts/generate-source-registry.mjs'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - '.github/workflows/hepta-browser-servo-worker-dev.yml'
+      - '.github/workflows/hepta-browser-servo-independent-rebuild.yml'
+      - '.github/workflows/hepta-browser-servo-deployment-qualification.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/hepta-browser/servo-worker/**'
+      - 'apps/hepta-browser/src/**'
+      - 'apps/hepta-browser/scripts/generate-source-registry.mjs'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - '.github/workflows/hepta-browser-servo-worker-dev.yml'
+      - '.github/workflows/hepta-browser-servo-independent-rebuild.yml'
+      - '.github/workflows/hepta-browser-servo-deployment-qualification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: hepta-browser-servo-independent-rebuild-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SERVO_PIN: b5a1f5e6ec6f8685d40cd389802ced7abe4980f6
+  WORKER_MANIFEST: apps/hepta-browser/servo-worker/Cargo.toml
+  WORKER_LOCK: apps/hepta-browser/servo-worker/Cargo.lock
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  independent-rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact source and generated registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          npm --prefix apps/hepta-browser run verify:registry
+
+      - name: Install exact Rust toolchain and Servo prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.88.0 --profile minimal
+          rustup override set 1.88.0
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake git libdbus-1-dev libfontconfig1-dev \
+            libfreetype6-dev libgl1-mesa-dev libglib2.0-dev libssl-dev \
+            libx11-dev libxcb1-dev libxkbcommon-dev llvm pkg-config python3
+          rustc -vV | tee rustc-vV.txt
+          cargo -vV | tee cargo-vV.txt
+
+      - name: Require exact reviewed committed lock and dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p independent-evidence
+          git ls-files --error-unmatch "$WORKER_LOCK"
+          test -s "$WORKER_LOCK"
+          grep -F "$SERVO_PIN" "$WORKER_LOCK"
+          cp "$WORKER_LOCK" independent-evidence/Cargo.lock
+          cargo metadata --locked --format-version 1 --manifest-path "$WORKER_MANIFEST" \
+            > independent-evidence/cargo-metadata.json
+          grep -F "$SERVO_PIN" independent-evidence/cargo-metadata.json
+
+      - name: Independently rebuild exact worker artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
+          export CARGO_INCREMENTAL=0
+          export CARGO_BUILD_JOBS=1
+          export NUM_JOBS=1
+          export CMAKE_BUILD_PARALLEL_LEVEL=1
+          export RAYON_NUM_THREADS=1
+          export MAKEFLAGS=-j1
+          export LC_ALL=C.UTF-8
+          export TZ=UTC
+          export RUSTFLAGS="--remap-path-prefix=${GITHUB_WORKSPACE}=/src --remap-path-prefix=${RUNNER_TEMP}=/runner-temp -C debuginfo=0 -C link-arg=-Wl,--build-id=none"
+          export CARGO_TERM_COLOR=never
+          CARGO_TARGET_DIR="$RUNNER_TEMP/servo-worker-independent" \
+            cargo build --release --locked --manifest-path "$WORKER_MANIFEST" 2>&1 \
+            | tee independent-evidence/build.log
+          binary="$RUNNER_TEMP/servo-worker-independent/release/hepta-servo-worker"
+          test -x "$binary"
+          install -m 0555 "$binary" independent-evidence/hepta-servo-worker
+          sha256sum independent-evidence/hepta-servo-worker \
+            | tee independent-evidence/hepta-servo-worker.sha256
+          ldd independent-evidence/hepta-servo-worker \
+            | tee independent-evidence/hepta-servo-worker.ldd.txt
+          ! grep -F 'not found' independent-evidence/hepta-servo-worker.ldd.txt
+
+      - name: Emit independent builder receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, platform, subprocess
+          root = pathlib.Path('independent-evidence')
+          def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+          receipt = {
+              'schema': 'hepta.browser.servo-independent-rebuild-receipt.v1',
+              'sourceSha': os.environ['SOURCE_SHA'],
+              'sourceTree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'servoPin': os.environ['SERVO_PIN'],
+              'cargoLockSha256': digest(root / 'Cargo.lock'),
+              'workerSha256': digest(root / 'hepta-servo-worker'),
+              'rustcVersionSha256': hashlib.sha256(pathlib.Path('rustc-vV.txt').read_bytes()).hexdigest(),
+              'builderOs': platform.platform(),
+              'githubRunId': os.environ['GITHUB_RUN_ID'],
+              'githubRunAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'committedLock': True,
+              'independentEphemeralRunner': True,
+              'signedProvenanceRequiredForDeployment': True,
+          }
+          (root / 'independent-rebuild-receipt.json').write_text(
+              json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          sha256sum independent-evidence/independent-rebuild-receipt.json \
+            | tee independent-evidence/independent-rebuild-receipt.json.sha256
+
+      - name: Sign independent worker build provenance
+        if: github.ref == 'refs/heads/main'
+        id: independent-provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-path: independent-evidence/hepta-servo-worker
+
+      - name: Preserve independent signed provenance
+        if: github.ref == 'refs/heads/main'
+        env:
+          PROVENANCE_BUNDLE: ${{ steps.independent-provenance.outputs.bundle-path }}
+          PROVENANCE_ID: ${{ steps.independent-provenance.outputs.attestation-id }}
+          PROVENANCE_URL: ${{ steps.independent-provenance.outputs.attestation-url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$PROVENANCE_BUNDLE"
+          cp "$PROVENANCE_BUNDLE" independent-evidence/build-provenance-attestation.jsonl
+          python3 - <<'PY'
+          import json, os, pathlib
+          summary = {
+              'schema': 'hepta.browser.servo-independent-attestation-summary.v1',
+              'sourceSha': os.environ['SOURCE_SHA'],
+              'signerWorkflow': 'TrillionniumFoundation/hepta-private-ci/.github/workflows/hepta-browser-servo-independent-rebuild.yml',
+              'provenanceAttestationId': os.environ['PROVENANCE_ID'],
+              'provenanceAttestationUrl': os.environ['PROVENANCE_URL'],
+          }
+          pathlib.Path('independent-evidence/attestation-summary.json').write_text(
+              json.dumps(summary, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Preserve independent rebuild
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-browser-servo-independent-rebuild-${{ env.SOURCE_SHA }}
+          path: independent-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Verify tracked source remains clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
