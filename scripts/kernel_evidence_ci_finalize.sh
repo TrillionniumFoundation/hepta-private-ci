@@ -38,6 +38,23 @@ python3 scripts/kernel_evidence_runtime_status.py \
   --crash-summary "$READINESS_RECORDS/crash/SUMMARY.json" \
   --output "$READINESS_RECORDS/STATUS_SOURCE.json"
 
+map_path=docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json
+current_map="$READINESS_RECORDS/metadata/IMPLEMENTATION_MAP.current.json"
+original_map="$READINESS_RECORDS/metadata/IMPLEMENTATION_MAP.checked-in.json"
+map_overlaid=false
+restore_map() {
+  if [[ "$map_overlaid" == true && -f "$original_map" ]]; then
+    cp "$original_map" "$map_path"
+    map_overlaid=false
+  fi
+}
+trap restore_map EXIT
+if [[ -s "$current_map" ]]; then
+  cp "$map_path" "$original_map"
+  cp "$current_map" "$map_path"
+  map_overlaid=true
+fi
+
 python3 scripts/kernel_evidence_readiness.py \
   --root "$GITHUB_WORKSPACE" \
   "${common[@]}" \
@@ -47,10 +64,17 @@ python3 scripts/kernel_evidence_readiness.py \
   --artifact "source_log=$READINESS_RECORDS/source/tests.log" \
   --artifact "merge_log=$READINESS_RECORDS/merge/tests.log" \
   --artifact "metadata_log=$READINESS_RECORDS/metadata/metadata.log" \
+  --artifact "implementation_map_current=$current_map" \
+  --artifact "implementation_map_binding=$READINESS_RECORDS/metadata/implementation-map-binding.txt" \
   --artifact "publication_log=$READINESS_RECORDS/publication/publication.log" \
   --artifact "crash_summary=$READINESS_RECORDS/crash/SUMMARY.json" \
   --crash-receipts "$READINESS_RECORDS/crash" \
   --output "$READINESS_RECORDS/READINESS_MANIFEST.json"
+
+restore_map
+test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
 python3 - "$READINESS_RECORDS/READINESS_MANIFEST.json" "${IS_MAIN:-false}" <<'PY'
 import json, pathlib, sys
