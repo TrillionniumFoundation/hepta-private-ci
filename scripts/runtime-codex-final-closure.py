@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Final idempotent runtime.codex source-binding repairs.
 
-This runs after all structural migrations. It binds qualification to the actual
-workspace toolchain and keeps source-closure claims separate from pending
-execution receipts.
+This runs after all structural migrations. It installs the final durable-owner
+lineage/tombstone layer, binds qualification to the actual workspace toolchain,
+and keeps source-closure claims separate from pending execution receipts.
 """
 
 from pathlib import Path
+import runpy
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -21,6 +22,36 @@ def replace_once(path: Path, old: str, new: str, marker: str) -> None:
     if new in text:
         return
     raise RuntimeError(f"{marker}: expected legacy or migrated content")
+
+
+def apply_owner_lineage() -> None:
+    migration = ROOT / "scripts/runtime-codex-owner-lineage-fixup.py"
+    target = ROOT / "codex-rs/hepta-agentd/src/lane_b_runtime.rs"
+    marker = "self.runs.len().saturating_add(self.tombstones.len())"
+    text = target.read_text(encoding="utf-8")
+    if marker not in text:
+        old = '''        if self.active_run_count() >= self.max_active_runs || self.runs.len() >= MAX_RETAINED_RUNS {
+            return Err(AgentRunError::CapacityExceeded);
+        }
+'''
+        new = '''        if self.active_run_count() >= self.max_active_runs
+            || self.runs.len().saturating_add(self.tombstones.len()) >= MAX_RETAINED_RUNS
+        {
+            return Err(AgentRunError::CapacityExceeded);
+        }
+'''
+        count = text.count(old)
+        if count != 2:
+            raise RuntimeError(
+                f"durable owner capacity migration expected two legacy blocks, found {count}"
+            )
+        # Pre-apply one occurrence. The reviewed exact migration then sees one
+        # remaining legacy block and applies its normal single-match assertion.
+        target.write_text(text.replace(old, new, 1), encoding="utf-8")
+    if migration.exists():
+        runpy.run_path(str(migration), run_name="__main__")
+    elif "struct DurableRunTombstoneV1" not in target.read_text(encoding="utf-8"):
+        raise RuntimeError("durable owner lineage migration is missing")
 
 
 def separate_qualification_pending(path: Path) -> None:
@@ -47,6 +78,7 @@ def separate_qualification_pending(path: Path) -> None:
 
 
 def main() -> None:
+    apply_owner_lineage()
     replace_once(
         ROOT / "scripts/runtime-codex-qualification.py",
         '    "rust-toolchain.toml",\n',
