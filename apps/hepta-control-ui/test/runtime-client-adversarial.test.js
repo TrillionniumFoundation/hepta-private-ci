@@ -198,3 +198,50 @@ test("session permission accessors are rejected without executing them", async (
   assert.equal(reads, 0);
   assert.equal(client.readView().connected, false);
 });
+
+for (const method of ["requestStart", "requestStop"]) {
+  test(`operation wrappers reject accessors before ${method} copies input`, async () => {
+    const { client, transport } = await ready();
+    let reads = 0;
+    const hostile = { ...input(), get reason() { reads += 1; return "Copied getter."; } };
+    await assert.rejects(client[method](hostile), error => error.code === C.INVALID_INPUT);
+    assert.equal(reads, 0);
+    assert.equal(transport.state.requestCount, 0);
+  });
+}
+
+test("recovery arrays reject accessors without executing them", async () => {
+  const { client } = await ready();
+  await client.submitRequest(input());
+  const saved = client.exportRecoveryState();
+  let reads = 0;
+  const operations = [];
+  Object.defineProperty(operations, "0", { enumerable: true,
+    get() { reads += 1; return saved.operations[0]; } });
+  assert.throws(() => client.restoreRecoveryState({ ...saved, operations }), error => error.code === C.INVALID_INPUT);
+  assert.equal(reads, 0);
+  assert.equal(client.readView().pendingCount, 1);
+});
+
+test("recovery arrays cannot substitute an inherited iteration hook", async () => {
+  const { client } = await ready();
+  await client.submitRequest(input());
+  const saved = client.exportRecoveryState();
+  let calls = 0;
+  class Operations extends Array { *[Symbol.iterator]() { calls += 1; } }
+  const recovering = new RuntimeClient({ transport: createTransport() });
+  const view = recovering.restoreRecoveryState({ ...saved,
+    operations: new Operations(saved.operations[0]) });
+  assert.equal(calls, 0);
+  assert.equal(view.pendingCount, 1);
+});
+
+test("recovery validation accepts the supported 4096-operation capacity", async () => {
+  const { client } = await ready();
+  await client.submitRequest(input());
+  const saved = client.exportRecoveryState();
+  const operations = Array.from({ length: 4096 }, (_, index) =>
+    ({ ...saved.operations[0], operationId: `restored-${index}` }));
+  const recovering = new RuntimeClient({ transport: createTransport(), maxPending: 4096 });
+  assert.equal(recovering.restoreRecoveryState({ ...saved, operations }).pendingCount, 4096);
+});

@@ -368,6 +368,7 @@ export class RuntimeClient {
   }
 
   async requestStart(input) {
+    assertPlainObject(input, "operation input");
     return this.#submit("runtime/start", UI_CONTROL_PERMISSIONS.START, {
       ...input,
       action: "request_start",
@@ -375,6 +376,7 @@ export class RuntimeClient {
   }
 
   async requestStop(input) {
+    assertPlainObject(input, "operation input");
     return this.#submit("runtime/stop", UI_CONTROL_PERMISSIONS.STOP, {
       ...input,
       action: "request_stop",

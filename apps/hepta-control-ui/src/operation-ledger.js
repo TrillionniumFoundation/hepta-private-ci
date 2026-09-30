@@ -5,6 +5,7 @@ import {
   assertSha256,
   assertStableIdentifier,
   constantTimeEqual,
+  canonicalJson,
 } from "./canonical.js";
 import {
   UI_CONTROL_ERROR_CODES,
@@ -283,6 +284,13 @@ export class OperationLedger {
         "recovery state exceeds pending operation capacity",
       );
     }
+    // Copy validated data before iteration; accessors and inherited iteration
+    // hooks cannot run or substitute the recovery inventory.
+    state = JSON.parse(canonicalJson(state, {
+      maxArrayLength: this.#maxPending,
+      maxEntries: 20 * this.#maxPending + 4,
+      maxEncodedBytes: 8192 * this.#maxPending,
+    }));
     const restored = new Map();
     for (const operation of state.operations) {
       assertPlainObject(operation, "recovery operation");

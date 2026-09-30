@@ -43,6 +43,8 @@ For a new operation, `prepare()` holds the scope Web Lock and performs the follo
 
 No session, permission, generation, revision, confirmation, or terminal decision is cached by the directory. The client and backend continue to perform their current checks at the existing boundaries.
 
+The in-memory recovery importer validates and copies bounded canonical data before iteration. Array accessors are rejected without invocation, and inherited iteration hooks cannot hide or substitute records. The import then joins compatible pending identities atomically, preserves live dispatch promises and terminal history, and enforces the combined configured capacity. The canonical budget supports the full 4,096-record ceiling; an empty import is never a reset.
+
 If an exact record already exists but directory repair fails, the result remains `UI_CONTROL_AMBIGUOUS_SUBMISSION` with `requestDispatched: true`. Storage degradation must never disguise a possibly dispatched identity as a fresh operation.
 
 ## Cleanup sequence

@@ -72,7 +72,7 @@ The transition validator enforces:
 1. Snapshot refresh failure marks the view stale; view inspection removes expired session permissions without erasing pending operations.
 1. Backend observations preserve the admission audit identity; missing or changed traces never authorize terminal cleanup.
 1. An absent V1 lookup remains indeterminate because delayed admission is still possible; final non-admission requires a separately versioned durable backend fence.
-1. Recovery import preserves live dispatch promises and terminal history, rejects conflicts atomically, and bounds the combined pending inventory.
+1. Recovery import validates bounded data without executing accessors or inherited iterators, preserves live dispatch promises and terminal history, rejects conflicts atomically, and bounds the combined pending inventory.
 1. Independent accessibility and security reviewers are distinct from one another and from deployment, release, and security approval authorities.
 1. Production approval cannot predate deployment, real-backend, independent review, or operational evidence; accepted bundles expose only domain-separated principal digests.
 
