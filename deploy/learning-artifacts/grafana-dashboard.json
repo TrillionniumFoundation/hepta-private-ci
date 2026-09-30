@@ -113,6 +113,22 @@
         "x": 0,
         "y": 14
       }
+    },
+    {
+      "type": "timeseries",
+      "title": "Identity conflicts",
+      "targets": [
+        {
+          "expr": "increase(hepta_learning_artifact_identity_conflicts_total[15m])",
+          "legendFormat": "identity conflicts"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      }
     }
   ]
 }
