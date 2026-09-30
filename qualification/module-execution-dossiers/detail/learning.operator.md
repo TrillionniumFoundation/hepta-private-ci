@@ -31,16 +31,19 @@ source SHA/tree.
 
 ## 2. Public operations and API boundary
 
-Default public operations include owner-authenticated V3 verification and fit,
-canonical profile construction, opaque final-use capability issue/consumption,
-semantic sensor-core qualification, V2 pinned loading and read-only shadow
-composition.
+Default public operations include canonical profile construction, opaque
+single-use final-use capability issue/consumption, semantic sensor-core
+qualification, V2 pinned loading and read-only shadow composition. The
+owner-authenticated V3 verification and fitting primitives remain crate-internal
+on the default path so an external caller cannot bypass the final-use capability
+fence.
 
-The crate root uses an explicit allowlist. Raw structural fitters, generic V2
-caller-authored verification inputs and raw prediction helpers are unavailable
-to default consumers; they are feature-gated under
-`qualification-unverified-input` and grouped in `compatibility`. Independent
-consumer compile-pass/compile-fail tests enforce this boundary.
+The crate root uses an explicit allowlist. Raw structural fitters, direct V3
+owner-bound verify/fit functions, generic V2 caller-authored verification inputs
+and raw prediction helpers are unavailable to default consumers; they are
+feature-gated under `qualification-unverified-input` and grouped in
+`compatibility`. Independent consumer compile-pass/compile-fail tests enforce
+this boundary.
 
 The original `build_targets` remains a deterministic target builder, not a
 neural trainer or authority boundary. The historical `train` alias is
@@ -57,11 +60,12 @@ applicability, error budget and predecessor.
 The tabular learner requires a complete canonical sensor-by-action grid and a
 minimum sample count for every cell. Per-cell mean, minimum, maximum, count and
 evidence digest are retained. Missing/underfilled cells and relabelled duplicate
-evidence reject. `verify_tabular_operator_plan_v3` binds the durable
-`LedgerWriter`, independently verifies `DatasetSnapshotReceiptV3`, objective,
-dataset and exact signed source records, then issues an opaque input consumed by
-the fit. Current-owner verification repeats immediately before and after work.
-Unsupported predictions abstain rather than extrapolate.
+evidence reject. Inside the final-use implementation,
+`verify_tabular_operator_plan_v3` binds the durable `LedgerWriter`, independently
+verifies `DatasetSnapshotReceiptV3`, objective, dataset and exact signed source
+records, then issues an opaque input consumed by the internal fit. Current-owner
+verification repeats immediately before and after work. Unsupported predictions
+abstain rather than extrapolate.
 
 The action-conditioned world model groups immutable observed rows by
 state/action, rejects relabelled evidence, publishes exact Q32 branch
@@ -148,9 +152,9 @@ not hidden. Any non-passing, cancelled, skipped or missing required stage forces
 - OP-03: high in-sample fit with poor future calibration or retention fails evaluation.
 - OP-04: synthetic rollouts remain synthetic; unsupported pairs abstain; duplicate world-model evidence rejects.
 - OP-05: tabular fitting is deterministic and complete-grid; duplicate evidence rejects.
-- OP-06: V3 fitting consumes the exact owner-authenticated frozen dataset and signed rows.
+- OP-06: the internal V3 path consumes the exact owner-authenticated frozen dataset and signed rows only through final-use or the explicit compatibility feature.
 - OP-07: semantic sensor receipt reports exact/reduced modes and stable algorithm identity.
-- OP-08: default consumers cannot compile raw fitter, compatibility, publish or activation imports.
+- OP-08: default consumers cannot compile raw fitter, direct V3 verify/fit, compatibility, publish or activation imports.
 - OP-09: fresh-process V2 load, revocation and exact predecessor rollback execute through Agentd.
 - OP-10: exclusive deadline and issuance-clock mutations are killed.
 
