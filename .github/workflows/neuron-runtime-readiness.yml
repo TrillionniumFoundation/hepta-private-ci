@@ -178,26 +178,40 @@ jobs:
 
           cd codex-rs
           cargo metadata --locked --format-version=1 >/dev/null
-          cargo check --locked \
-            -p codex-hepta-neuron \
-            -p codex-hepta-agentd \
-            -p codex-hepta-infer-core \
-            -p codex-hepta-infer-worker-host \
-            --all-targets
-          cargo build --locked -p codex-cli --bin codex
-          export CARGO_BIN_EXE_codex="$(
-            cargo metadata --locked --format-version=1 --no-deps |
-              python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"] + "/debug/codex")'
-          )"
-          test -x "$CARGO_BIN_EXE_codex"
+          if [ '${{ matrix.toolchain }}' = msrv ]; then
+            # Rust 1.88 is the durable Neuron core MSRV. The wider Agentd/App
+            # Server product graph is intentionally not claimed at 1.88: its
+            # locked AWS/Smithy dependencies require a newer compiler and are
+            # qualified by the stable target lanes below.
+            cargo check --locked \
+              -p codex-hepta-neuron \
+              -p codex-hepta-infer-core \
+              --lib
+            cargo test --locked -p codex-hepta-neuron --lib
+            cargo test --locked -p codex-hepta-infer-core --lib
+          else
+            cargo check --locked \
+              -p codex-hepta-neuron \
+              -p codex-hepta-agentd \
+              -p codex-hepta-infer-core \
+              -p codex-hepta-infer-worker-host \
+              --all-targets
+            cargo build --locked -p codex-cli --bin codex
+            export CARGO_BIN_EXE_codex="$(
+              cargo metadata --locked --format-version=1 --no-deps |
+                python3 -c 'import json,sys; print(json.load(sys.stdin)["target_directory"] + "/debug/codex")'
+            )"
+            test -x "$CARGO_BIN_EXE_codex"
 
-          # The complete Neuron suite below includes every named crash-cut test.
-          just test --locked --retries 0 \
-            -p codex-hepta-neuron \
-            -p codex-hepta-infer-core \
-            -p codex-hepta-infer-worker-host
-          just test --locked --retries 0 -p codex-hepta-agentd \
-            -E 'test(/neuron_runtime_v2/)'
+            # The complete stable Neuron suite includes every named crash cut,
+            # Agentd lifecycle, external adapter and process-runner boundary.
+            just test --locked --retries 0 \
+              -p codex-hepta-neuron \
+              -p codex-hepta-infer-core \
+              -p codex-hepta-infer-worker-host
+            just test --locked --retries 0 -p codex-hepta-agentd \
+              -E 'test(/neuron_runtime_v2/)'
+          fi
 
           if [ '${{ matrix.toolchain }}' = stable ]; then
             cargo clippy --locked \

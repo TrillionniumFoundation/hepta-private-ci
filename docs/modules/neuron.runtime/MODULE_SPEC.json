@@ -137,14 +137,18 @@
   ],
   "qualification": {
     "workflow": ".github/workflows/neuron-runtime-readiness.yml",
-    "testSetVersion": "2026-09-30.2",
+    "testSetVersion": "2026-09-30.3",
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "workflowName": "Neuron runtime unified readiness",
+    "scopePolicy": {
+      "msrv": "Rust 1.88 qualifies the durable Neuron core and infer-core only. The locked Agentd/App Server, worker-host and product adapter graph contains dependencies with higher compiler floors and is qualified on the same source SHA by stable Linux, Linux ARM64 and macOS ARM64 gates. A core MSRV pass is never represented as a full product-graph MSRV pass.",
+      "repositoryBaseline": "Failures outside sourceRoots remain repository blockers. They may be reported as baseline-isolated only when reproduced on the fixed base SHA; they are never converted into a neuron.runtime pass, production activation or release authorization."
+    },
     "requiredGates": [
       {"id": "linux-stable-source-head", "runner": "ubuntu-24.04", "platform": "linux-x86_64", "toolchain": "stable", "lane": "source-head", "commandSets": ["common", "stablePolicy", "linuxFrozen"]},
       {"id": "linux-stable-synthetic-merge", "runner": "ubuntu-24.04", "platform": "linux-x86_64", "toolchain": "stable", "lane": "synthetic-merge", "commandSets": ["common", "stablePolicy", "linuxFrozen"]},
-      {"id": "linux-msrv-source-head", "runner": "ubuntu-24.04", "platform": "linux-x86_64", "toolchain": "msrv", "lane": "source-head", "commandSets": ["common", "msrvPolicy"]},
-      {"id": "linux-msrv-synthetic-merge", "runner": "ubuntu-24.04", "platform": "linux-x86_64", "toolchain": "msrv", "lane": "synthetic-merge", "commandSets": ["common", "msrvPolicy"]},
+      {"id": "linux-msrv-source-head", "runner": "ubuntu-24.04", "platform": "linux-x86_64", "toolchain": "msrv", "lane": "source-head", "commandSets": ["msrvCommon", "msrvPolicy"]},
+      {"id": "linux-msrv-synthetic-merge", "runner": "ubuntu-24.04", "platform": "linux-x86_64", "toolchain": "msrv", "lane": "synthetic-merge", "commandSets": ["msrvCommon", "msrvPolicy"]},
       {"id": "linux-arm64-source-head", "runner": "ubuntu-24.04-arm", "platform": "linux-arm64", "toolchain": "stable", "lane": "source-head", "commandSets": ["common", "stablePolicy"]},
       {"id": "linux-arm64-synthetic-merge", "runner": "ubuntu-24.04-arm", "platform": "linux-arm64", "toolchain": "stable", "lane": "synthetic-merge", "commandSets": ["common", "stablePolicy"]},
       {"id": "macos-arm64-source-head", "runner": "macos-15", "platform": "macos-arm64", "toolchain": "stable", "lane": "source-head", "commandSets": ["common", "stablePolicy"]},
@@ -161,6 +165,15 @@
         "just test --locked --retries 0 -p codex-hepta-neuron -p codex-hepta-infer-core -p codex-hepta-infer-worker-host",
         "just test --locked --retries 0 -p codex-hepta-agentd -E test(/neuron_runtime_v2/)"
       ],
+      "msrvCommon": [
+        "python3 scripts/neuron/readiness.py render --check",
+        "python3 -m unittest discover -v -s scripts/neuron -p test_*.py",
+        "python3 scripts/verify_cargo_lock.py",
+        "cargo metadata --locked --format-version=1",
+        "cargo check --locked -p codex-hepta-neuron -p codex-hepta-infer-core --lib",
+        "cargo test --locked -p codex-hepta-neuron --lib",
+        "cargo test --locked -p codex-hepta-infer-core --lib"
+      ],
       "stablePolicy": [
         "cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings",
         "cargo fmt --package codex-hepta-neuron --package codex-hepta-agentd --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check",
@@ -168,7 +181,8 @@
       ],
       "linuxFrozen": ["python3 -m unittest discover -v -s codex-rs/hepta-neuron/qualification -p test_*.py"],
       "msrvPolicy": [
-        "MSRV proves locked build and owned tests only",
+        "MSRV proves locked durable Neuron core and infer-core build/tests only",
+        "Agentd, worker-host and product adapters are same-SHA stable target gates, not Rust 1.88 claims",
         "rustfmt and clippy are pinned to the repository stable toolchain and are not MSRV gates"
       ]
     }
