@@ -12,6 +12,7 @@ use crate::SchemaAdmissionError;
 use crate::SchemaDescriptor;
 use crate::SchemaRegistry;
 use crate::WireCapabilities;
+use crate::WireVersion;
 
 pub const MAX_FROZEN_SCHEMA_ENTRIES: usize = 256;
 pub const MAX_POLICY_SUBJECTS: usize = 64;
@@ -306,16 +307,37 @@ impl FrozenSchemaRegistry {
         self.registry
             .admit(envelope.version(), envelope.schema(), envelope.payload())
             .map_err(FrozenAdmissionError::Schema)?;
-        let policy = self
-            .policies
-            .get(envelope.schema())
-            .ok_or_else(|| FrozenAdmissionError::Schema(SchemaAdmissionError::UnknownSchema(
-                envelope.schema().clone(),
-            )))?;
-        if envelope.version() != negotiated.version() {
+        self.admit_metadata(
+            negotiated,
+            role,
+            envelope.version(),
+            envelope.schema(),
+            envelope.producer(),
+            envelope.generation(),
+        )
+    }
+
+    /// Validate all policy fields available before payload serialization.
+    /// The completed envelope still undergoes payload-bound admission.
+    pub(crate) fn admit_metadata(
+        &self,
+        negotiated: NegotiatedWire,
+        role: &StableId,
+        version: WireVersion,
+        schema: &StableId,
+        producer: &StableId,
+        generation: Generation,
+    ) -> Result<&SchemaPolicy, FrozenAdmissionError> {
+        self.registry
+            .admit_schema(version, schema)
+            .map_err(FrozenAdmissionError::Schema)?;
+        let policy = self.policies.get(schema).ok_or_else(|| {
+            FrozenAdmissionError::Schema(SchemaAdmissionError::UnknownSchema(schema.clone()))
+        })?;
+        if version != negotiated.version() {
             return Err(FrozenAdmissionError::VersionMismatch {
                 expected: negotiated.version().as_u16(),
-                actual: envelope.version().as_u16(),
+                actual: version.as_u16(),
                 byte_offset: 4,
             });
         }
@@ -323,32 +345,28 @@ impl FrozenSchemaRegistry {
         let required = policy.required_capabilities();
         if !effective.contains(required) {
             return Err(FrozenAdmissionError::CapabilityDenied {
-                schema: envelope.schema().clone(),
+                schema: schema.clone(),
                 required: required.bits(),
                 actual: effective.bits(),
             });
         }
-        if policy
-            .allowed_producers()
-            .binary_search(envelope.producer())
-            .is_err()
-        {
+        if policy.allowed_producers().binary_search(producer).is_err() {
             return Err(FrozenAdmissionError::ProducerDenied {
-                schema: envelope.schema().clone(),
-                producer: envelope.producer().clone(),
+                schema: schema.clone(),
+                producer: producer.clone(),
             });
         }
         if policy.allowed_roles().binary_search(role).is_err() {
             return Err(FrozenAdmissionError::RoleDenied {
-                schema: envelope.schema().clone(),
+                schema: schema.clone(),
                 role: role.clone(),
             });
         }
-        if !policy.generation_policy().admits(envelope.generation()) {
+        if !policy.generation_policy().admits(generation) {
             return Err(FrozenAdmissionError::GenerationDenied {
-                schema: envelope.schema().clone(),
+                schema: schema.clone(),
                 minimum: policy.generation_policy().minimum(),
-                actual: envelope.generation().get(),
+                actual: generation.get(),
             });
         }
         Ok(policy)
@@ -371,7 +389,10 @@ fn snapshot_digest(policies: &BTreeMap<StableId, SchemaPolicy>) -> Digest32 {
         encoded.extend_from_slice(&(descriptor.max_payload_bytes() as u64).to_be_bytes());
         encoded.extend_from_slice(policy.schema_revision().as_array());
         encoded.extend_from_slice(&policy.generation_policy().minimum().to_be_bytes());
-        put_raw(&mut encoded, policy.canonicalization_profile().id().as_bytes());
+        put_raw(
+            &mut encoded,
+            policy.canonicalization_profile().id().as_bytes(),
+        );
         encoded.extend_from_slice(&policy.required_capabilities().bits().to_be_bytes());
         encoded.extend_from_slice(&(policy.allowed_producers().len() as u16).to_be_bytes());
         for producer in policy.allowed_producers() {
@@ -437,7 +458,10 @@ impl fmt::Display for RegistryBuildError {
                 "frozen schema registry would contain {attempted} entries, maximum is {maximum}"
             ),
             Self::ZeroSchemaRevision(schema) => {
-                write!(formatter, "schema {schema} has a zero semantic revision digest")
+                write!(
+                    formatter,
+                    "schema {schema} has a zero semantic revision digest"
+                )
             }
             Self::InvalidGenerationFloor { schema, minimum } => write!(
                 formatter,
@@ -531,10 +555,16 @@ impl fmt::Display for FrozenAdmissionError {
                 "schema {schema} requires capabilities 0x{required:016x}, session has 0x{actual:016x}"
             ),
             Self::ProducerDenied { schema, producer } => {
-                write!(formatter, "producer {producer} is not admitted for schema {schema}")
+                write!(
+                    formatter,
+                    "producer {producer} is not admitted for schema {schema}"
+                )
             }
             Self::RoleDenied { schema, role } => {
-                write!(formatter, "runtime role {role} is not admitted for schema {schema}")
+                write!(
+                    formatter,
+                    "runtime role {role} is not admitted for schema {schema}"
+                )
             }
             Self::GenerationDenied {
                 schema,
@@ -688,11 +718,7 @@ mod tests {
         )?)?;
         let registry = builder.freeze()?;
         let offer = NegotiationOffer::current();
-        let negotiated = negotiate(
-            &offer,
-            &offer,
-            WireCapabilities::METADATA_BOUND_DIGEST,
-        )?;
+        let negotiated = negotiate(&offer, &offer, WireCapabilities::METADATA_BOUND_DIGEST)?;
         let admitted = DecodedEnvelope::V2(WireEnvelopeV2::new(
             schema.clone(),
             producer.clone(),

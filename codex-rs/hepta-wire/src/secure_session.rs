@@ -225,6 +225,24 @@ impl WireSession {
         codec: &C,
         value: &C::Value,
     ) -> Result<DecodedEnvelope, WireSessionError> {
+        self.registry
+            .admit_metadata(
+                self.negotiated,
+                &self.role,
+                self.negotiated.version(),
+                codec.descriptor().schema(),
+                &producer,
+                generation,
+            )
+            .map_err(|source| match source {
+                FrozenAdmissionError::Schema(source) => {
+                    WireSessionError::Codec(SchemaCodecError::Admission(source))
+                }
+                source => WireSessionError::Admission {
+                    context: SessionErrorContext::for_admission(self.session_id, &source),
+                    source,
+                },
+            })?;
         let payload = encode_typed(
             self.registry.inner(),
             self.negotiated.version(),
@@ -272,6 +290,10 @@ impl WireSession {
         .map_err(WireSessionError::Codec)
     }
 }
+
+#[cfg(test)]
+#[path = "secure_session_preflight_tests.rs"]
+mod preflight_tests;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct SessionErrorContext {
@@ -1000,12 +1022,7 @@ mod construction_tests {
         let v1_offer = NegotiationOffer::new(vec![1], WireCapabilities::NONE)?;
         let downgraded = negotiate(&v1_offer, &v1_offer, WireCapabilities::NONE)?;
         assert!(matches!(
-            WireSession::new(
-                downgraded,
-                StableId::new("role.a")?,
-                registry,
-                transcript
-            ),
+            WireSession::new(downgraded, StableId::new("role.a")?, registry, transcript),
             Err(WireSessionError::NegotiationResultMismatch)
         ));
         assert!(matches!(

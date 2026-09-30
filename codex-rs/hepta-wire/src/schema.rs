@@ -95,6 +95,24 @@ impl SchemaRegistry {
         schema: &StableId,
         payload: &[u8],
     ) -> Result<&SchemaDescriptor, SchemaAdmissionError> {
+        let descriptor = self.admit_schema(version, schema)?;
+        if payload.is_empty() || payload.len() > descriptor.max_payload_bytes {
+            return Err(SchemaAdmissionError::PayloadLength {
+                schema: schema.clone(),
+                length: payload.len(),
+                maximum: descriptor.max_payload_bytes,
+            });
+        }
+        Ok(descriptor)
+    }
+
+    /// Admit the schema and wire version before invoking a payload encoder.
+    /// Payload bounds remain checked against the resulting bytes by `admit`.
+    pub(crate) fn admit_schema(
+        &self,
+        version: WireVersion,
+        schema: &StableId,
+    ) -> Result<&SchemaDescriptor, SchemaAdmissionError> {
         let descriptor = self
             .schemas
             .get(schema)
@@ -103,13 +121,6 @@ impl SchemaRegistry {
             return Err(SchemaAdmissionError::UnsupportedSchemaVersion {
                 schema: schema.clone(),
                 version,
-            });
-        }
-        if payload.is_empty() || payload.len() > descriptor.max_payload_bytes {
-            return Err(SchemaAdmissionError::PayloadLength {
-                schema: schema.clone(),
-                length: payload.len(),
-                maximum: descriptor.max_payload_bytes,
             });
         }
         Ok(descriptor)
@@ -139,6 +150,9 @@ pub fn encode_typed<C: PayloadCodec>(
     value: &C::Value,
 ) -> Result<Vec<u8>, SchemaCodecError> {
     require_registered_descriptor(registry, codec.descriptor())?;
+    registry
+        .admit_schema(version, codec.descriptor().schema())
+        .map_err(SchemaCodecError::Admission)?;
     let payload = codec.encode_value(value)?;
     registry
         .admit(version, codec.descriptor().schema(), &payload)

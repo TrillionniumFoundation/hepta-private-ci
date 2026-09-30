@@ -1,4 +1,5 @@
 use super::*;
+use std::cell::Cell;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct StrictMessage {
@@ -179,5 +180,72 @@ fn conflicting_schema_registration_rejects() -> Result<(), Box<dyn Error>> {
         registry.register(conflicting),
         Err(SchemaAdmissionError::ConflictingRegistration(_))
     ));
+    Ok(())
+}
+
+struct CountingCodec {
+    inner: StrictCodec,
+    encode_calls: Cell<usize>,
+}
+
+impl PayloadCodec for CountingCodec {
+    type Value = StrictMessage;
+
+    fn descriptor(&self) -> &SchemaDescriptor {
+        self.inner.descriptor()
+    }
+
+    fn encode_value(&self, value: &Self::Value) -> Result<Vec<u8>, SchemaCodecError> {
+        self.encode_calls.set(self.encode_calls.get() + 1);
+        self.inner.encode_value(value)
+    }
+
+    fn decode_value(&self, payload: &[u8]) -> Result<Self::Value, SchemaCodecError> {
+        self.inner.decode_value(payload)
+    }
+}
+
+#[test]
+fn encoding_admits_schema_and_version_before_invoking_codec() -> Result<(), Box<dyn Error>> {
+    let codec = CountingCodec {
+        inner: StrictCodec::new()?,
+        encode_calls: Cell::new(0),
+    };
+    let mut registry = SchemaRegistry::new();
+    let value = StrictMessage {
+        objective: "ndu".to_string(),
+        step: 7,
+    };
+    assert!(matches!(
+        encode_typed(&registry, WireVersion::V2, &codec, &value),
+        Err(SchemaCodecError::Admission(
+            SchemaAdmissionError::UnknownSchema(_)
+        ))
+    ));
+    registry.register(codec.descriptor().clone())?;
+    assert!(matches!(
+        encode_typed(&registry, WireVersion::V1, &codec, &value),
+        Err(SchemaCodecError::Admission(
+            SchemaAdmissionError::UnsupportedSchemaVersion { .. }
+        ))
+    ));
+    assert_eq!(codec.encode_calls.get(), 0);
+    assert_eq!(
+        encode_typed(&registry, WireVersion::V2, &codec, &value)?,
+        b"objective=ndu;step=7"
+    );
+    assert_eq!(codec.encode_calls.get(), 1);
+
+    let oversized = StrictMessage {
+        objective: "x".repeat(256),
+        step: 7,
+    };
+    assert!(matches!(
+        encode_typed(&registry, WireVersion::V2, &codec, &oversized),
+        Err(SchemaCodecError::Admission(
+            SchemaAdmissionError::PayloadLength { .. }
+        ))
+    ));
+    assert_eq!(codec.encode_calls.get(), 2);
     Ok(())
 }
