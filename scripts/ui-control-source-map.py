@@ -17,7 +17,26 @@ if row.get("resolvedRoots") != roots or row.get("module") != "ui.control":
     raise ValueError("ui.control module/root identity differs from the registry")
 maps["validate_claim_types"](row)
 maps["validate_closed_world_bindings"](row)
-maps["verify_source_identity"](row, roots, candidate)
+maps["require_clean_candidate"](candidate)
+paths = maps["verify_source_identity"](row, roots, candidate, check_checkout=False)
+# npm and Playwright put generated outputs inside the source root. These
+# declared output directories are not extra source inputs; every other ignored
+# or untracked owner file remains forbidden, as in the canonical verifier.
+outputs = tuple(
+    f"{root}/{directory}/"
+    for root in roots
+    for directory in ("dist", "node_modules", "test-results", "playwright-report")
+)
+untracked = maps["git"]("ls-files", "--others", "-z", "--", *paths).split("\0")
+unexpected = [
+    path
+    for path in untracked
+    if path
+    and not path.startswith(outputs)
+    and not maps["_ephemeral_untracked_artifact"](path)
+]
+if unexpected:
+    raise ValueError("ui.control source checkout contains uncommitted evidence")
 if row.get("mappingSourceIdentityMode") != "exact_blob":
     raise ValueError("ui.control requires exact mapped source blobs")
 for operation in row["operations"]:
