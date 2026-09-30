@@ -49,9 +49,14 @@ jobs:
             codex-rs/rust-toolchain.toml
             codex-rs/.cargo/**
             codex-rs/hepta-authbus/**
+            codex-rs/hepta-authbus-p1-3-qualification/**
             codex-rs/hepta-types/**
             docs/modules/auth.authbus/**
             docs/lane-a-foundation/auth.authbus/**
             qualification/module-execution-dossiers/**
+            scripts/generate-authbus-implementation-map.py
+            scripts/authbus-evidence-projection.py
+            scripts/authbus-production-acceptance.py
+            scripts/check-authbus-closed-world.py
             .github/scripts/generate-authbus-status.py
             .github/workflows/authbus-authority-qualification.yml
