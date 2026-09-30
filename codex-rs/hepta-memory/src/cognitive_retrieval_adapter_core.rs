@@ -121,29 +121,6 @@ impl RetrievalExecutionContextV1 {
     }
 }
 
-/// Compatibility name retained with a bounded signature. It cannot construct
-/// or renew work control and therefore cannot bypass the product deadline.
-#[deprecated(note = "use execute_owner_observation_controlled")]
-pub fn execute_owner_observation(
-    observation: &RetrievalObservation,
-    cut: &DurableCognitiveSnapshot,
-    context: &RetrievalExecutionContextV1,
-    request_digest: Digest32,
-    acquired_at_unix_ms: u64,
-    lease_expires_unix_ms: u64,
-    work: &codex_hepta_memory_retrieval::RecallWorkControlV1,
-) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
-    execute_owner_observation_controlled(
-        observation,
-        cut,
-        context,
-        request_digest,
-        acquired_at_unix_ms,
-        lease_expires_unix_ms,
-        work,
-    )
-}
-
 /// Execute against the same owner cut with cancellation and a host deadline.
 /// The generated owner batches cross the product admission facade before recall;
 /// a missing expected owner is therefore unavailable, never silently complete.
