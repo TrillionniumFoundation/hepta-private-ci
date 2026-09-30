@@ -56,7 +56,7 @@ jobs:
           cd ..
           git diff --check
 
-      - name: Commit and fast-forward the delivery candidate
+      - name: Commit source and exact generated truth
         shell: bash
         run: |
           set -euo pipefail
@@ -67,9 +67,17 @@ jobs:
           git diff --cached --check
           git -c commit.gpgsign=false commit --no-verify \
             -m 'fix(prompt.registry): restore exact qualification build'
+          source_sha=$(git rev-parse HEAD)
+          source_tree=$(git rev-parse HEAD^{tree})
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+            docs/modules/prompt.registry/QUALIFICATION_STATUS.md
+          git diff --cached --check
+          git -c commit.gpgsign=false commit --no-verify \
+            -m 'docs(prompt.registry): bind phase 1 exact source'
           git push origin "HEAD:$TARGET_BRANCH"
-          printf 'source_sha=%s\nsource_tree=%s\n' \
-            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" \
+          printf 'source_sha=%s\nsource_tree=%s\nmap_sha=%s\n' \
+            "$source_sha" "$source_tree" "$(git rev-parse HEAD)" \
             | tee "$RUNNER_TEMP/prompt-registry-phase1.txt"
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
