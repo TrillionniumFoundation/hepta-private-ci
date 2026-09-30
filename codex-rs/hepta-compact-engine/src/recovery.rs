@@ -11,7 +11,7 @@ use codex_hepta_types::Digest32;
 use sqlx::sqlite::{
     SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous,
 };
-use sqlx::{Executor, Row, Sqlite, SqlitePool, Transaction};
+use sqlx::{Row, Sqlite, SqlitePool, Transaction};
 
 use crate::coordinator::CompactionCoordinatorErrorV2;
 use crate::durable::{DurableCompactionError, DurableCompactionOutboxEventV1};
@@ -291,7 +291,7 @@ impl RecoveryStoreV1 {
                  'compaction_outbox_active_claim_guard_v3'
                )",
         )
-        .fetch_one(&mut **transaction)
+        .fetch_one(&mut *transaction)
         .await
         .map_err(sql_error)?;
         if required != 3 {
@@ -344,7 +344,7 @@ impl RecoveryStoreV1 {
         )
         .bind(&self.owner_id)
         .bind(to_i64(now_unix_seconds, "outbox claim time")?)
-        .fetch_optional(&mut **transaction)
+        .fetch_optional(&mut *transaction)
         .await
         .map_err(sql_error)?;
         let Some(row) = row else {
@@ -371,7 +371,7 @@ impl RecoveryStoreV1 {
         )?)
         .bind(&self.owner_id)
         .bind(&event_id_text)
-        .execute(&mut **transaction)
+        .execute(&mut *transaction)
         .await
         .map_err(sql_error)?
         .rows_affected();
@@ -405,7 +405,7 @@ impl RecoveryStoreV1 {
             "outbox claim deadline",
         )?)
         .bind(to_i64(now_unix_seconds, "outbox claimed at")?)
-        .execute(&mut **transaction)
+        .execute(&mut *transaction)
         .await
         .map_err(sql_error)?;
 
@@ -467,7 +467,7 @@ impl RecoveryStoreV1 {
             claim.claim_deadline_unix_seconds,
             "outbox claim deadline",
         )?)
-        .fetch_one(&mut **transaction)
+        .fetch_one(&mut *transaction)
         .await
         .map_err(sql_error)?;
         if lease_count != 1 {
@@ -485,7 +485,7 @@ impl RecoveryStoreV1 {
         .bind(&self.owner_id)
         .bind(claim.event.event_id.to_string())
         .bind(&claim.event.claim_token)
-        .execute(&mut **transaction)
+        .execute(&mut *transaction)
         .await
         .map_err(sql_error)?
         .rows_affected();
@@ -505,7 +505,7 @@ impl RecoveryStoreV1 {
         .bind(&claim.worker_id)
         .bind(token_digest.to_string())
         .bind(to_i64(self.lease_epoch, "outbox claim lease epoch")?)
-        .execute(&mut **transaction)
+        .execute(&mut *transaction)
         .await
         .map_err(sql_error)?
         .rows_affected();
@@ -576,7 +576,7 @@ impl RecoveryStoreV1 {
         .bind(to_i64(now_unix_seconds, "claim reconciliation time")?)
         .bind(to_i64(self.lease_epoch, "claim reconciliation epoch")?)
         .bind(i64::from(limit))
-        .fetch_all(&mut **transaction)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(sql_error)?;
 
@@ -594,7 +594,7 @@ impl RecoveryStoreV1 {
             .bind(to_i64(now_unix_seconds, "claim abandonment time")?)
             .bind(&self.owner_id)
             .bind(&event_id)
-            .execute(&mut **transaction)
+            .execute(&mut *transaction)
             .await
             .map_err(sql_error)?
             .rows_affected();
@@ -610,7 +610,7 @@ impl RecoveryStoreV1 {
             .bind(to_i64(now_unix_seconds, "claim retry time")?)
             .bind(&self.owner_id)
             .bind(&event_id)
-            .execute(&mut **transaction)
+            .execute(&mut *transaction)
             .await
             .map_err(sql_error)?
             .rows_affected();
@@ -631,7 +631,7 @@ impl RecoveryStoreV1 {
                AND lease.event_id IS NULL",
         )
         .bind(&self.owner_id)
-        .fetch_one(&mut **transaction)
+        .fetch_one(&mut *transaction)
         .await
         .map_err(sql_error)?;
         summary.quarantined_orphans = u64::try_from(orphan_count)
@@ -674,7 +674,7 @@ impl RecoveryStoreV1 {
         )
         .bind(&self.owner_id)
         .bind(i64::from(limit))
-        .fetch_all(&mut **transaction)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(sql_error)?;
 
@@ -720,7 +720,7 @@ impl RecoveryStoreV1 {
                     .bind(to_i64(now_unix_seconds, "admission recovery time")?)
                     .bind(&self.owner_id)
                     .bind(&key)
-                    .execute(&mut **transaction)
+                    .execute(&mut *transaction)
                     .await
                     .map_err(sql_error)?
                     .rows_affected();
@@ -748,7 +748,7 @@ impl RecoveryStoreV1 {
                     .bind(&self.owner_id)
                     .bind(&key)
                     .bind(admission)
-                    .execute(&mut **transaction)
+                    .execute(&mut *transaction)
                     .await
                     .map_err(sql_error)?
                     .rows_affected();

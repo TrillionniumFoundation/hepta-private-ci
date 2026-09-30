@@ -8,11 +8,10 @@
 use std::str::FromStr;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use codex_hepta_cognitive_types::lane_c::{CompactionProofV2, CompactionProofWitnessV1};
 use codex_hepta_types::{Digest32, StableId};
 use sha2::{Digest, Sha256};
 use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
-use sqlx::{Connection, Executor, Row, SqliteConnection, SqlitePool};
+use sqlx::{Row, SqliteConnection, SqlitePool};
 
 use crate::{
     CompactionTrustRoleV1, QualifiedCompactionCandidateV2, TrustEnrollmentV1,
@@ -1433,3 +1432,7 @@ fn corrupt(message: impl Into<String>) -> DurableCompactionError {
 #[cfg(test)]
 #[path = "durable_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "durable_fence_tests.rs"]
+mod fence_tests;

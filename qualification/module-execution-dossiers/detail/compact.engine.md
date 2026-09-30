@@ -55,7 +55,7 @@ A newly materialized local owner may start at any positive generation proven by 
 
 `fenced_coordinator_final.rs` verifies the complete signed manifest chain and compares its final root/digest with durable active state before any lease mutation. A stale/forked chain therefore cannot seize or replace a lease as a side effect of rejected open.
 
-`fenced_coordinator_guarded.rs` continuously compares in-memory and durable active manifests. `durable_facade.rs` repeats owner, root, exact lease token/epoch, non-regressing expiry and active-manifest checks inside the same transaction that writes artifacts, head and outbox. Lease replacement or manifest rotation between reservation and artifact commit aborts publication.
+`lib.rs` selects `fenced_coordinator_final.rs`; that file path-loads `fenced_coordinator_guarded.rs`, which path-loads `fenced_coordinator.rs`. This is one nested authoritative coordinator module, not three competing implementations. The guarded layer continuously compares in-memory and durable active manifests. `durable.rs` performs the immutable artifact/head/outbox transaction, while `mutation_guard.rs` repeats owner, root, exact lease token/epoch, non-regressing expiry, active-manifest and operation checks in the same protected write boundary. Lease replacement or manifest rotation between reservation and artifact commit aborts publication.
 
 ## 6. Recovery and rollback
 
@@ -90,7 +90,7 @@ The Agentd host composes the current production writer and checks its authority 
 - `src/qualified_tests.rs` — determinism, exact coverage, deletion/protected support and capacity boundaries.
 - `src/trust_tests.rs` — signatures, subjects, nonces, epochs, rotation, revocation and historical validation.
 - `src/durable_tests.rs` — schema/reopen, outbox recovery, immutability and artifact limits.
-- `src/durable_fence_tests.rs` — lease replacement, stale manifest and NULL predecessor CAS regressions.
+- `src/durable_fence_tests.rs` — lease replacement, stale manifest and NULL predecessor CAS regressions; reached from the `durable.rs` test module and mechanically checked by the qualification verifier.
 - `src/product_e2e_tests.rs` — public build→proof→atomic publish→restart→reconstruct→incremental successor path.
 - `tests/capacity_profile.rs` — 65,536-record / 64-MiB / 8,000,000-token pure-kernel profile.
 
@@ -98,17 +98,19 @@ These paths are test identities, not pass receipts.
 
 ## 9. Qualification
 
-The focused workflow runs from a clean read-only checkout in exact-head and deterministic synthetic-merge modes:
+The focused workflow runs from a clean read-only checkout in exact-head and deterministic synthetic-merge modes and includes a required same-attempt capacity lane:
 
 ```bash
+python3 -m unittest -v scripts.test_compact_engine_qualification
+python3 scripts/compact_engine_qualification.py verify-map
 cd codex-rs
+cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets
+just test --locked -p codex-hepta-compact-engine -p codex-hepta-agentd
+cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets -- -D warnings
 cargo fmt --all -- --check
-cargo check --locked -p codex-hepta-compact-engine --all-targets
-cargo test --locked -p codex-hepta-compact-engine --all-targets
-cargo clippy --locked -p codex-hepta-compact-engine --all-targets -- -D warnings
 ```
 
-Queued, pending, skipped, cancelled or failed work is not evidence. Capacity evidence must be bound to the same final source identity.
+The terminal job creates one fail-closed `hepta.compact-engine-readiness-manifest.v1` from artifacts belonging to exactly one source SHA, workflow run and attempt. It binds source/base/deterministic/GitHub/workflow/final merge identities, runner/target, source tree, Cargo lock, migration, tests, qualification profile, implementation map, documentation and artifact hashes. Missing or mixed evidence forces `requiredLanesPassed`, `mergeReady` and `productionQualified` false. Queued, pending, skipped, cancelled or failed work is not evidence. The standalone capacity workflow is diagnostic only and cannot be spliced into this manifest.
 
 ## 10. Remaining repository-controlled work
 

@@ -26,3 +26,13 @@ A saved patch is not source delivery. A test file is not a pass receipt. SQLite 
 The existing read-only developer-toolchain archive is a development aid, not qualification. It contains tool binaries/sysroot, not source-generation scripts or credentials.
 
 `productionImplementation`, independent acceptance, activation and release remain false until their separate gates are actually met. This record will be updated with delivered source and observed results rather than anticipatory completion claims.
+
+## 2026-09-30 P0 qualification-identity closure
+
+The convergence line now closes the repository-controlled identity gaps without adding a second owner or compaction architecture:
+
+- SQLx 0.9 transaction executors in `recovery.rs` use the correct owned-transaction dereference, removing the common compile failure in exact-head, synthetic-merge and capacity lanes.
+- `durable_fence_tests.rs` is an actual child of `durable.rs`; qualification rejects any mapped or crate-local Rust test source that is not reachable from the crate test graph.
+- the authoritative coordinator layout is recorded as the nested `final -> guarded -> original` module chain; stale `durable_facade.rs` references are removed in favor of the real `durable.rs` plus `mutation_guard.rs` boundary.
+- one focused workflow attempt now owns source snapshot, exact-head, deterministic synthetic-merge and full capacity evidence. A machine-generated readiness manifest binds every required identity/hash and fails closed; no result from another workflow run or attempt can be spliced in.
+- `productionQualified` remains false until final-merge and post-merge evidence exists. This source change does not grant merge, activation, promotion or release authority.

@@ -130,7 +130,7 @@ Current publication requires current trust. Historical reopen first verifies acc
 
 ## 9. Required qualification evidence
 
-The focused workflow binds every result to an exact SHA and runs both exact-head and deterministic synthetic-merge modes. Terminal success requires locked check, complete tests, strict Clippy, rustfmt and clean worktree evidence.
+The focused workflow freezes one source SHA and runs exact-head, deterministic synthetic-merge and required full-capacity lanes in one workflow run and attempt. Terminal success requires implementation-map/test reachability, locked check, complete compact-engine plus Agentd tests, strict Clippy, rustfmt and clean worktree evidence. The terminal job emits one fail-closed readiness manifest; it refuses missing success markers, identity disagreement, mixed attempts and non-terminal results.
 
 Crash/recovery qualification includes:
 

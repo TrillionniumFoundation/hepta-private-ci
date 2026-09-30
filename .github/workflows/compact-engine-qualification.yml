@@ -13,7 +13,10 @@ on:
       - "**/rust-toolchain*"
       - "docs/modules/compact.engine/**"
       - "qualification/module-execution-dossiers/detail/compact.engine.md"
+      - "scripts/compact_engine_qualification.py"
+      - "scripts/test_compact_engine_qualification.py"
       - ".github/workflows/compact-engine-qualification.yml"
+      - ".github/workflows/compact-engine-capacity.yml"
   pull_request:
     paths:
       - "codex-rs/hepta-compact-engine/**"
@@ -25,7 +28,10 @@ on:
       - "**/rust-toolchain*"
       - "docs/modules/compact.engine/**"
       - "qualification/module-execution-dossiers/detail/compact.engine.md"
+      - "scripts/compact_engine_qualification.py"
+      - "scripts/test_compact_engine_qualification.py"
       - ".github/workflows/compact-engine-qualification.yml"
+      - ".github/workflows/compact-engine-capacity.yml"
 
 permissions:
   contents: read
@@ -36,7 +42,10 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  FROZEN_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   REQUESTED_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+  GITHUB_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha || '' }}
+  WORKFLOW_SHA: ${{ github.sha }}
 
 jobs:
   source-snapshot:
@@ -47,29 +56,69 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
           persist-credentials: false
-      - name: Archive tracked source without credentials or worktree mutation
+      - name: Archive tracked source and bind immutable identity
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          mkdir -p "$RUNNER_TEMP/compact-source"
-          git archive --format=tar HEAD | gzip -n > "$RUNNER_TEMP/compact-source/source.tar.gz"
-          git ls-tree -r HEAD > "$RUNNER_TEMP/compact-source/source-tree.txt"
-          printf '%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/compact-source/source-sha.txt"
-          (cd "$RUNNER_TEMP/compact-source" && sha256sum source.tar.gz source-tree.txt > SHA256SUMS)
+          if [ -n "$REQUESTED_BASE_SHA" ]; then
+            BASE_SHA="$REQUESTED_BASE_SHA"
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          else
+            git fetch --no-tags --depth=1 origin main
+            BASE_SHA="$(git rev-parse FETCH_HEAD)"
+          fi
+          git cat-file -e "${BASE_SHA}^{commit}"
+          evidence="$RUNNER_TEMP/compact-source"
+          mkdir -p "$evidence"
+          export BASE_SHA CHECKED_SHA="$SOURCE_SHA"
+          export RUNNER_IMAGE_ID="${ImageOS:-ubuntu24}/${ImageVersion:-unknown}"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "compact-source"
+          identity = {
+              "lane": "source_snapshot",
+              "source_head_sha": os.environ["SOURCE_SHA"],
+              "frozen_source_sha": os.environ["FROZEN_SOURCE_SHA"],
+              "base_sha": os.environ["BASE_SHA"],
+              "checked_sha": os.environ["CHECKED_SHA"],
+              "github_merge_sha": os.environ.get("GITHUB_MERGE_SHA", ""),
+              "workflow_sha": os.environ["WORKFLOW_SHA"],
+              "workflow_run_id": os.environ["GITHUB_RUN_ID"],
+              "attempt_id": os.environ["GITHUB_RUN_ATTEMPT"],
+              "event_name": os.environ["GITHUB_EVENT_NAME"],
+              "runner_image": os.environ["RUNNER_IMAGE_ID"],
+          }
+          (evidence / "identity.json").write_text(
+              json.dumps(identity, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          git archive --format=tar HEAD | gzip -n > "$evidence/source.tar.gz"
+          git ls-tree -r HEAD > "$evidence/source-tree.txt"
+          printf '%s\n' "$SOURCE_SHA" > "$evidence/source-sha.txt"
+          (cd "$evidence" && sha256sum source.tar.gz source-tree.txt > SHA256SUMS)
+          printf '{"success":true}\n' > "$evidence/success.json"
           git diff --exit-code
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+          git diff --cached --exit-code
+      - name: Retain exact source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: compact-engine-source-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/compact-source/
-          retention-days: 7
+          retention-days: 14
           if-no-files-found: error
 
   qualify:
     name: compact.engine ${{ matrix.mode }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -108,17 +157,61 @@ jobs:
             export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
             export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
             export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
-            MERGE_SHA="$(printf 'compact.engine deterministic qualification\n' | git commit-tree "$TREE_SHA" -p "$BASE_SHA" -p "$SOURCE_SHA")"
-            git checkout --detach "$MERGE_SHA"
+            CHECKED_SHA="$(printf 'compact.engine deterministic qualification\n' | git commit-tree "$TREE_SHA" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            git checkout --detach "$CHECKED_SHA"
+          else
+            CHECKED_SHA="$SOURCE_SHA"
           fi
+          printf 'BASE_SHA=%s\nCHECKED_SHA=%s\n' "$BASE_SHA" "$CHECKED_SHA" >> "$GITHUB_ENV"
           printf 'source=%s\nbase=%s\nchecked=%s\ntree=%s\nmode=%s\n' \
-            "$SOURCE_SHA" "$BASE_SHA" "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" "$QUALIFICATION_MODE" \
+            "$SOURCE_SHA" "$BASE_SHA" "$CHECKED_SHA" "$(git rev-parse HEAD^{tree})" "$QUALIFICATION_MODE" \
             > "$RUNNER_TEMP/compact-evidence/identity.txt"
           git diff --exit-code
           git diff --cached --exit-code
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           components: rustfmt,clippy
+      - name: Record typed lane identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TARGET_TRIPLE="$(rustc -vV | sed -n 's/^host: //p')"
+          test -n "$TARGET_TRIPLE"
+          export RUNNER_IMAGE_ID="${ImageOS:-ubuntu24}/${ImageVersion:-unknown}"
+          export LANE="${QUALIFICATION_MODE//-/_}"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "compact-evidence"
+          identity = {
+              "lane": os.environ["LANE"],
+              "source_head_sha": os.environ["SOURCE_SHA"],
+              "frozen_source_sha": os.environ["FROZEN_SOURCE_SHA"],
+              "base_sha": os.environ["BASE_SHA"],
+              "checked_sha": os.environ["CHECKED_SHA"],
+              "github_merge_sha": os.environ.get("GITHUB_MERGE_SHA", ""),
+              "workflow_sha": os.environ["WORKFLOW_SHA"],
+              "workflow_run_id": os.environ["GITHUB_RUN_ID"],
+              "attempt_id": os.environ["GITHUB_RUN_ATTEMPT"],
+              "event_name": os.environ["GITHUB_EVENT_NAME"],
+              "runner_image": os.environ["RUNNER_IMAGE_ID"],
+              "target_triple": os.environ["TARGET_TRIPLE"],
+          }
+          (evidence / "identity.json").write_text(
+              json.dumps(identity, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Verify qualification tooling and implementation-map reachability
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.test_compact_engine_qualification 2>&1 \
+            | tee "$RUNNER_TEMP/compact-evidence/qualification-tooling-tests.log"
+          python3 scripts/compact_engine_qualification.py verify-map \
+            --output "$RUNNER_TEMP/compact-evidence/implementation-map-verification.json"
       - name: Retain exact rustfmt for source normalization
         if: matrix.mode == 'exact-head'
         shell: bash
@@ -140,29 +233,38 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets 2>&1 | tee "$RUNNER_TEMP/compact-evidence/check.log"
+          cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets 2>&1 \
+            | tee "$RUNNER_TEMP/compact-evidence/check.log"
       - name: Install repository test runners
         run: cargo install --locked just cargo-nextest
       - name: Run repository test entrypoint
         shell: bash
         run: |
           set -euo pipefail
-          just test --locked -p codex-hepta-compact-engine -p codex-hepta-agentd 2>&1 | tee "$RUNNER_TEMP/compact-evidence/test.log"
+          just test --locked -p codex-hepta-compact-engine -p codex-hepta-agentd 2>&1 \
+            | tee "$RUNNER_TEMP/compact-evidence/test.log"
       - name: Strict Clippy
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/compact-evidence/clippy.log"
+          cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-agentd \
+            --all-targets -- -D warnings 2>&1 \
+            | tee "$RUNNER_TEMP/compact-evidence/clippy.log"
       - name: Format and source cleanliness
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --all -- --check 2>&1 | tee "$RUNNER_TEMP/compact-evidence/format.log"
+          cargo fmt --all -- --check 2>&1 \
+            | tee "$RUNNER_TEMP/compact-evidence/format.log"
           git diff --exit-code
+          git diff --cached --exit-code
+      - name: Mark lane success
+        shell: bash
+        run: printf '{"success":true}\n' > "$RUNNER_TEMP/compact-evidence/success.json"
       - name: Retain dependency sources for offline diagnosis (not qualification)
-        if: always() && matrix.mode == 'exact-head'
+        if: failure() && matrix.mode == 'exact-head'
         shell: bash
         run: |
           set -euo pipefail
@@ -173,8 +275,6 @@ jobs:
             if [ -d "$cargo_home/$path" ]; then paths+=("$path"); fi
           done
           test "${#paths[@]}" -gt 0
-          # Only resolver/source caches: never Cargo credentials, configuration,
-          # the checkout .git directory, environment, signing keys or binaries.
           tar -czf "$RUNNER_TEMP/compact-dependencies/cargo-cache.tar.gz" \
             -C "$cargo_home" "${paths[@]}"
           printf 'source=%s\nmode=%s\nnotQualification=true\n' \
@@ -182,7 +282,7 @@ jobs:
             > "$RUNNER_TEMP/compact-dependencies/identity.txt"
           (cd "$RUNNER_TEMP/compact-dependencies" && sha256sum cargo-cache.tar.gz > SHA256SUMS)
       - name: Upload dependency diagnostic cache
-        if: always() && matrix.mode == 'exact-head'
+        if: failure() && matrix.mode == 'exact-head'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: compact-engine-dependencies-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
@@ -198,14 +298,199 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  capacity:
+    name: compact.engine required capacity profile
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      RUST_BACKTRACE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind capacity source and base identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [ -n "$REQUESTED_BASE_SHA" ]; then
+            BASE_SHA="$REQUESTED_BASE_SHA"
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          else
+            git fetch --no-tags --depth=1 origin main
+            BASE_SHA="$(git rev-parse FETCH_HEAD)"
+          fi
+          git cat-file -e "${BASE_SHA}^{commit}"
+          mkdir -p "$RUNNER_TEMP/compact-capacity-required"
+          printf 'BASE_SHA=%s\nCHECKED_SHA=%s\n' "$BASE_SHA" "$SOURCE_SHA" >> "$GITHUB_ENV"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Record capacity lane identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TARGET_TRIPLE="$(rustc -vV | sed -n 's/^host: //p')"
+          test -n "$TARGET_TRIPLE"
+          export RUNNER_IMAGE_ID="${ImageOS:-ubuntu24}/${ImageVersion:-unknown}"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = Path(os.environ["RUNNER_TEMP"]) / "compact-capacity-required"
+          identity = {
+              "lane": "capacity",
+              "source_head_sha": os.environ["SOURCE_SHA"],
+              "frozen_source_sha": os.environ["FROZEN_SOURCE_SHA"],
+              "base_sha": os.environ["BASE_SHA"],
+              "checked_sha": os.environ["CHECKED_SHA"],
+              "github_merge_sha": os.environ.get("GITHUB_MERGE_SHA", ""),
+              "workflow_sha": os.environ["WORKFLOW_SHA"],
+              "workflow_run_id": os.environ["GITHUB_RUN_ID"],
+              "attempt_id": os.environ["GITHUB_RUN_ATTEMPT"],
+              "event_name": os.environ["GITHUB_EVENT_NAME"],
+              "runner_image": os.environ["RUNNER_IMAGE_ID"],
+              "target_triple": os.environ["TARGET_TRIPLE"],
+          }
+          (evidence / "identity.json").write_text(
+              json.dumps(identity, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          {
+            rustc --version --verbose
+            cargo --version --verbose
+            uname -a
+            lscpu
+            free -b
+            df -B1 .
+          } > "$RUNNER_TEMP/compact-capacity-required/host-and-toolchain.txt"
+      - name: Run production-ceiling kernel profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v \
+            cargo test --locked -p codex-hepta-compact-engine \
+              --test capacity_profile \
+              production_ceiling_capacity_profile \
+              -- --ignored --exact --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/compact-capacity-required/kernel-profile.log"
+          grep -F 'COMPACT_ENGINE_CAPACITY_PROFILE=' \
+            "$RUNNER_TEMP/compact-capacity-required/kernel-profile.log" \
+            > "$RUNNER_TEMP/compact-capacity-required/kernel-profile.jsonl"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Run full signed publish and cryptographic reopen profile
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v \
+            cargo test --locked -p codex-hepta-compact-engine \
+              --test full_operation_profile \
+              profile::full_publication_reopen_profile \
+              -- --ignored --exact --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/compact-capacity-required/full-operation-profile.log"
+          grep -F 'COMPACT_ENGINE_FULL_OPERATION_PROFILE=' \
+            "$RUNNER_TEMP/compact-capacity-required/full-operation-profile.log" \
+            > "$RUNNER_TEMP/compact-capacity-required/full-operation-profile.jsonl"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Mark capacity lane success
+        shell: bash
+        run: printf '{"success":true}\n' > "$RUNNER_TEMP/compact-capacity-required/success.json"
+      - name: Retain required capacity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compact-engine-capacity-required-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compact-capacity-required/
+          if-no-files-found: error
+          retention-days: 14
+
   qualification-result:
     name: compact.engine qualification result
     if: always()
-    needs: [source-snapshot, qualify]
+    needs: [source-snapshot, qualify, capacity]
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - name: Require terminal success for every qualification mode
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Download source evidence from this run and attempt
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: compact-engine-source-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compact-readiness-input/compact-engine-source-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+      - name: Download exact-head evidence from this run and attempt
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: compact-engine-exact-head-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compact-readiness-input/compact-engine-exact-head-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+      - name: Download synthetic-merge evidence from this run and attempt
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: compact-engine-synthetic-merge-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compact-readiness-input/compact-engine-synthetic-merge-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+      - name: Download required capacity evidence from this run and attempt
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: compact-engine-capacity-required-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compact-readiness-input/compact-engine-capacity-required-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+      - name: Build fail-closed readiness manifest
         env:
           SOURCE_RESULT: ${{ needs.source-snapshot.result }}
           QUALIFY_RESULT: ${{ needs.qualify.result }}
-        run: test "$SOURCE_RESULT" = success && test "$QUALIFY_RESULT" = success
+          CAPACITY_RESULT: ${{ needs.capacity.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/compact-readiness"
+          python3 scripts/compact_engine_qualification.py build-manifest \
+            --artifacts "$RUNNER_TEMP/compact-readiness-input" \
+            --output "$RUNNER_TEMP/compact-readiness/readiness-manifest.json" \
+            --source-head-sha "$SOURCE_SHA" \
+            --frozen-source-sha "$FROZEN_SOURCE_SHA" \
+            --workflow-sha "$WORKFLOW_SHA" \
+            --github-merge-sha "$GITHUB_MERGE_SHA" \
+            --final-merge-sha "" \
+            --workflow-run-id "$GITHUB_RUN_ID" \
+            --attempt-id "$GITHUB_RUN_ATTEMPT" \
+            --event-name "$GITHUB_EVENT_NAME" \
+            --source-result "$SOURCE_RESULT" \
+            --qualify-result "$QUALIFY_RESULT" \
+            --capacity-result "$CAPACITY_RESULT" \
+            --postmerge-result not-run
+      - name: Retain one-candidate readiness manifest
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: compact-engine-readiness-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/compact-readiness/readiness-manifest.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Require the current-run candidate gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          field=requiredLanesPassed
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+            field=mergeReady
+          fi
+          python3 scripts/compact_engine_qualification.py require \
+            --manifest "$RUNNER_TEMP/compact-readiness/readiness-manifest.json" \
+            --field "$field"

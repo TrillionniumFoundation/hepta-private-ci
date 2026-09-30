@@ -11,7 +11,7 @@ use codex_hepta_types::Digest32;
 use sqlx::sqlite::{
     SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous,
 };
-use sqlx::{Acquire, Executor, Row, Sqlite, SqlitePool, Transaction};
+use sqlx::{Sqlite, SqlitePool, Transaction};
 
 use crate::coordinator::CompactionCoordinatorErrorV2;
 use crate::durable::DurableCompactionError;

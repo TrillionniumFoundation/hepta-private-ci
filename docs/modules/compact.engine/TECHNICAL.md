@@ -42,12 +42,13 @@ Core implementation:
 - `src/trust.rs` — role-scoped Ed25519 enrollments and selector/generator/tokenizer/evaluator receipt validation.
 - `src/trust_registry.rs` — root-authenticated, append-only manifest chain, rotation, revocation and current/historical trust semantics.
 - `src/publication.rs` — sealed publication request, fresh batch token-accounting receipt, canonical archive and cryptographic reopen.
-- `src/coordinator.rs` — V2 publication/reopen logic over the durable owner.
+- `src/coordinator.rs` — V2 publication/reopen protocol over the immutable durable owner.
 - `src/fenced_coordinator.rs` — durable lease, nonce reservation, admission recovery, source-retention release and manifest persistence.
-- `src/fenced_coordinator_guarded.rs` — continuous equality checks between in-memory registry, durable active manifest and root pin.
-- `src/fenced_coordinator_final.rs` — signed-chain verification and durable-manifest preflight before any lease mutation, preventing stale-chain fencing denial of service.
-- `src/durable.rs` — reviewed immutable artifact store and outbox implementation.
-- `src/durable_facade.rs` — corrected local-root semantics and same-transaction owner/root/lease/manifest verification.
+- `src/fenced_coordinator_guarded.rs` — the middle guard layer; it path-loads `fenced_coordinator.rs` and continuously compares the in-memory registry with the durable active manifest and root pin.
+- `src/fenced_coordinator_final.rs` — the public outer layer selected by `src/lib.rs`; it path-loads `fenced_coordinator_guarded.rs`, verifies the complete signed chain and performs durable-manifest preflight before any lease mutation. These three files are one nested authoritative module chain, not parallel implementations.
+- `src/durable.rs` — immutable artifact/head/outbox owner, publication transaction and same-transaction owner/root/lease/manifest verification. It also owns the `durable_tests.rs` and `durable_fence_tests.rs` test-module roots.
+- `src/mutation_guard.rs` — permanent SQLite mutation-intent tables/triggers and exact owner/root/manifest/lease/operation checks at every protected write boundary.
+- `src/recovery.rs` — bounded admission/outbox recovery, claim lifecycle and restart reconciliation.
 - `src/compaction_schema.sql` — immutable artifact, active-pointer, trust, revocation and outbox schema.
 - `src/compaction_schema_hardening.sql` — NULL-safe predecessor CAS hardening applied on every open.
 - `src/archive_codec.rs` — bounded canonical archive codec; it is not an authority deserializer.
@@ -67,8 +68,10 @@ Verification and operations:
 - `docs/modules/compact.engine/RECOVERY_PROTOCOL_V2.md`
 - `.github/workflows/compact-engine-qualification.yml`
 - `.github/workflows/compact-engine-capacity.yml`
+- `scripts/compact_engine_qualification.py`
+- `scripts/test_compact_engine_qualification.py`
 
-The presence of these sources proves only materialization. Terminal exact-head and deterministic synthetic-merge workflow success on the final SHA is still required before the source candidate is called qualified.
+`durable_fence_tests.rs` is reached from the `durable.rs` test module; the qualification verifier rejects any mapped or crate-local `*_tests.rs` source that is not reachable from the Rust test graph. The presence of these sources proves only materialization. A candidate is merge-ready only when the focused workflow emits one fail-closed readiness manifest for one source SHA, workflow run and attempt, with exact-head, deterministic synthetic-merge and required capacity lanes all terminally successful.
 
 ## 3. Canonical kernel contract
 
@@ -267,27 +270,29 @@ The repository test matrix covers or is required to cover:
 - property tests and bounded codec fuzzing;
 - public build→proof→atomic publish→restart→reopen/reconstruct→successor publication E2E.
 
-The focused read-only workflow executes both exact-head and deterministic synthetic-merge modes:
+The focused read-only workflow executes exact-head, deterministic synthetic-merge and required full-capacity lanes from one frozen source identity. Both compile/test lanes run the repository entrypoint for `codex-hepta-compact-engine` and `codex-hepta-agentd`, strict Clippy, rustfmt, implementation-map reachability verification and qualification-tool regression tests.
 
 ```bash
+python3 -m unittest -v scripts.test_compact_engine_qualification
+python3 scripts/compact_engine_qualification.py verify-map
 cd codex-rs
+cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets
+just test --locked -p codex-hepta-compact-engine -p codex-hepta-agentd
+cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets -- -D warnings
 cargo fmt --all -- --check
-cargo check --locked -p codex-hepta-compact-engine --all-targets
-cargo test --locked -p codex-hepta-compact-engine --all-targets
-cargo clippy --locked -p codex-hepta-compact-engine --all-targets -- -D warnings
 ```
 
-Queued, pending, skipped, cancelled or failed jobs are not qualification evidence.
+The terminal job downloads only artifacts named for the current source SHA and run attempt. It emits `hepta.compact-engine-readiness-manifest.v1`, binding `source_head_sha`, `frozen_source_sha`, `base_sha`, deterministic and GitHub merge SHAs, workflow/final merge SHAs, run/attempt, runner image, target triple, `Cargo.lock`, migration, test-set, qualification-profile, implementation-map, documentation and source-tree hashes, plus every required artifact hash. Missing, queued, skipped, cancelled, failed, stale or cross-attempt evidence forces `requiredLanesPassed=false`, `mergeReady=false` and `productionQualified=false`. A pull-request gate requires `mergeReady=true`; a branch-push gate requires `requiredLanesPassed=true`. `productionQualified` remains false until a final merge SHA and an explicit successful post-merge receipt are bound.
 
 ## 11. Capacity and performance evidence
 
-The dedicated capacity lane exercises the pure kernel at:
+The required capacity lane in the same focused workflow attempt exercises the pure kernel at:
 
 - 65,536 records;
 - 64 MiB semantic payload;
 - 8,000,000 payload tokens.
 
-It records wall time, process CPU ticks and peak RSS in a read-only exact-source artifact. Publication and reopen metrics additionally expose bounded payload/archive bytes, observed hash count, clone-byte estimate and latency.
+It records wall time, process CPU, peak RSS, host/toolchain identity and exact source binding, then runs the representative signed publication plus cryptographic reopen profile. Its artifact is a required input to the same readiness manifest. The standalone capacity workflow remains a diagnostic/check-name compatibility lane and is never accepted as a substitute for the current focused-workflow attempt. Publication and reopen metrics additionally expose bounded payload/archive bytes, observed hash count, clone-byte estimate and latency.
 
 The pure-kernel ceiling is distinct from a full durable publish/reopen claim. An exact 64 MiB payload cannot traverse a transient archive that also needs metadata unless an explicit metadata-overhead allowance is implemented and qualified. Numeric SLOs require terminal target-host receipts on the final SHA.
 
@@ -312,7 +317,9 @@ The convergence branch contains:
 - pre-lease stale-manifest rejection;
 - named Agentd product host;
 - public V2 restart/reconstruction/successor E2E source;
-- focused and capacity workflows.
+- focused and capacity workflows;
+- machine-checked implementation-map/test reachability;
+- one-run fail-closed readiness-manifest generation.
 
 The following remain gates before `productionImplementation` may become true:
 
