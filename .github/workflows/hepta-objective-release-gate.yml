@@ -4,10 +4,15 @@ on:
   pull_request:
     paths:
       - docs/modules/objective.compiler/CURRENT_STATE.json
+      - docs/modules/objective.compiler/NORMATIVE_EXECUTION.json
+      - docs/modules/objective.compiler/NORMATIVE_EXECUTION.md
       - docs/modules/objective.compiler/RELEASE_POLICY.json
       - qualification/objective.compiler/receipts/**
       - scripts/hepta-objective-release-gate.py
-      - scripts/test_hepta_objective_release_gate.py
+      - scripts/hepta-objective-trusted-release.py
+      - scripts/hepta-objective-spec-consistency.py
+      - scripts/test_hepta_objective-release-gate.py
+      - scripts/test_hepta_objective-spec-consistency.py
       - scripts/hepta-objective-release-surface.py
       - scripts/test_hepta_objective_release_surface.py
       - scripts/hepta-objective-materialize-closure.py
@@ -17,10 +22,15 @@ on:
     branches: [main]
     paths:
       - docs/modules/objective.compiler/CURRENT_STATE.json
+      - docs/modules/objective.compiler/NORMATIVE_EXECUTION.json
+      - docs/modules/objective.compiler/NORMATIVE_EXECUTION.md
       - docs/modules/objective.compiler/RELEASE_POLICY.json
       - qualification/objective.compiler/receipts/**
       - scripts/hepta-objective-release-gate.py
+      - scripts/hepta-objective-trusted-release.py
+      - scripts/hepta-objective-spec-consistency.py
       - scripts/test_hepta_objective_release_gate.py
+      - scripts/test_hepta_objective_spec_consistency.py
       - scripts/hepta-objective-release-surface.py
       - scripts/test_hepta_objective_release_surface.py
       - scripts/hepta-objective-materialize-closure.py
@@ -51,16 +61,20 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Verify fail-closed source truth and read-only release surface
+      - name: Verify fail-closed candidate source truth
         shell: bash
         run: |
           set -euo pipefail
           python3 -m py_compile \
             scripts/hepta-objective-release-gate.py \
+            scripts/hepta-objective-trusted-release.py \
+            scripts/hepta-objective-spec-consistency.py \
             scripts/hepta-objective-release-surface.py
           python3 -m unittest -v \
             scripts.test_hepta_objective_release_gate \
+            scripts.test_hepta_objective_spec_consistency \
             scripts.test_hepta_objective_release_surface
+          python3 scripts/hepta-objective-spec-consistency.py verify
           python3 scripts/hepta-objective-release-surface.py verify
           python3 scripts/hepta-objective-release-gate.py verify-source
           git diff --check
@@ -70,31 +84,61 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     environment: objective-production-release
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
-      - name: Check out exact candidate
+      - name: Require protected-main workflow definition
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$GITHUB_SHA" = "$GITHUB_WORKFLOW_SHA"
+
+      - name: Check out trusted control plane
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+          path: trusted-control
+
+      - name: Check out exact candidate as data
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ inputs.candidate_sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Verify complete receipt chain
+          path: candidate
+
+      - name: Bind trusted control and candidate identities
         shell: bash
         env:
           CANDIDATE_SHA: ${{ inputs.candidate_sha }}
         run: |
           set -euo pipefail
           test "${#CANDIDATE_SHA}" = 40
-          test "$(git rev-parse HEAD)" = "${CANDIDATE_SHA}"
-          CANDIDATE_TREE="$(git rev-parse HEAD^{tree})"
-          python3 scripts/hepta-objective-release-surface.py verify
-          python3 scripts/hepta-objective-release-gate.py verify-release \
+          test "$(git -C trusted-control rev-parse HEAD)" = "$GITHUB_WORKFLOW_SHA"
+          git -C trusted-control merge-base --is-ancestor "$GITHUB_WORKFLOW_SHA" origin/main
+          test "$(git -C candidate rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test -z "$(git -C trusted-control status --porcelain)"
+          test -z "$(git -C candidate status --porcelain)"
+          printf 'CANDIDATE_TREE=%s\n' "$(git -C candidate rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
+
+      - name: Verify complete receipt chain with trusted-control code
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          python3 trusted-control/scripts/hepta-objective-trusted-release.py verify-release \
+            --candidate-root "$GITHUB_WORKSPACE/candidate" \
             --receipts qualification/objective.compiler/receipts \
-            --expected-sha "${CANDIDATE_SHA}" \
-            --expected-tree "${CANDIDATE_TREE}" \
-            --output "${RUNNER_TEMP}/objective-release-readiness.json"
-          test -z "$(git status --porcelain)"
-      - name: Retain release-readiness receipt
+            --expected-sha "$CANDIDATE_SHA" \
+            --expected-tree "$CANDIDATE_TREE" \
+            --output "$RUNNER_TEMP/objective-release-readiness.json"
+          test -z "$(git -C trusted-control status --porcelain)"
+          test -z "$(git -C candidate status --porcelain)"
+
+      - name: Retain trusted release-readiness receipt
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: objective-release-readiness-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
