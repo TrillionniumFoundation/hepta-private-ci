@@ -613,17 +613,6 @@ impl CognitiveStore {
         Ok((Some(generation), generation_sha256))
     }
 
-    async fn memory_fts_channel_tx(
-        &self,
-        transaction: &mut Transaction<'_, Sqlite>,
-        access: &CognitiveAccess,
-        fts_query: &str,
-        now: i64,
-    ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
-        self.memory_fts_channel_scoped_tx(transaction, access, fts_query, now, None)
-            .await
-    }
-
     async fn memory_fts_channel_scoped_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
@@ -673,6 +662,7 @@ impl CognitiveStore {
         })
     }
 
+    #[cfg(test)]
     async fn entity_fts_channel_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
@@ -1054,16 +1044,6 @@ impl CognitiveStore {
                 })
             })
             .collect()
-    }
-
-    async fn recency_channel_tx(
-        &self,
-        transaction: &mut Transaction<'_, Sqlite>,
-        workspace: Option<&str>,
-        now: i64,
-    ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
-        self.recency_channel_scoped_tx(transaction, workspace, now, None)
-            .await
     }
 
     async fn recency_channel_scoped_tx(
