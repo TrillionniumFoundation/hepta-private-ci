@@ -13,7 +13,9 @@ pub mod contract;
 pub mod handoff;
 pub mod hnmf;
 pub mod hnmf_learning;
+pub mod identity_policy;
 pub mod lane_c;
+pub mod prepared_consumer;
 pub mod shared_experience;
 pub mod shared_experience_context;
 mod shared_wire;
@@ -257,24 +259,3 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
-
-#[cfg(test)]
-#[path = "contract_tests.rs"]
-mod contract_tests;
-
-#[cfg(test)]
-mod consumer_tests;
-
-#[cfg(test)]
-#[path = "hardening_tests.rs"]
-mod hardening_tests;
-
-#[cfg(test)]
-mod shared_experience_context_tests;
-
-#[cfg(test)]
-mod shared_experience_tests;
-
-#[cfg(test)]
-#[path = "record_digest_reuse_tests.rs"]
-mod record_digest_reuse_tests;

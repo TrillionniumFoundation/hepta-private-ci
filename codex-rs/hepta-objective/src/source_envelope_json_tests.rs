@@ -316,7 +316,6 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
     for (pointer, invalid) in [
         ("/locale", json!("é".repeat(17))),
-        ("/structuredIntent/legalActionClasses", json!([])),
         (
             "/structuredIntent/legalActionClasses",
             json!(vec!["read"; 129]),
@@ -333,6 +332,18 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
             Err(ObjectiveSourceJsonError::Structure(_))
         ));
     }
+
+    // The native source contract deliberately allows an empty caller action
+    // set for intrinsic abstention. Keep the JSON adapter aligned with that
+    // contract rather than classifying an accepted source as malformed.
+    let mut intrinsic_abstain = original.clone();
+    intrinsic_abstain["structuredIntent"]["legalActionClasses"] = json!([]);
+    let decoded = decode_source_envelope_json_v1(
+        &serde_json::to_vec(&intrinsic_abstain).unwrap(),
+    )
+    .expect("empty legal action set remains structurally valid");
+    assert!(decoded.structured_intent.legal_action_classes.is_empty());
+
     let mut source = original;
     let predicates = source["structuredIntent"]["successPredicates"]
         .as_array_mut()
