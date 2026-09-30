@@ -31,6 +31,7 @@ use crate::native_app_server::AppServerModelDriver;
 use crate::native_app_server::NativeAdmission;
 use crate::native_app_server::NativeIntelligenceRunBinding;
 use crate::native_app_server::NativeRunOutput;
+use crate::native_app_server::NativeRunStatus;
 
 pub type NativeIntelligenceProductResult<T> =
     std::result::Result<T, Box<dyn StdError + Send + Sync>>;
@@ -156,8 +157,7 @@ impl NativeIntelligenceProductHostV1 {
                     .await
                     .map_err(|_| "terminal Agentd status unavailable")?
                     .ok_or("Agentd terminal receipt unavailable")?;
-                let terminal = local_terminal_receipt_v1(terminal)
-                    .map_err(|_| "terminal Agentd receipt not verified")?;
+                let terminal = local_terminal_receipt_v1(terminal, &execution)?;
                 let request = build_outcome(&prepared, &terminal, &execution)
                     .await
                     .map_err(|_| "terminal Outcome evidence unavailable")?;
@@ -266,7 +266,19 @@ fn require_acknowledged(
 
 fn local_terminal_receipt_v1(
     value: AgentRunReceipt,
-) -> NativeIntelligenceProductResult<RunReceipt> {
+    execution: &NativeRunOutput,
+) -> std::result::Result<RunReceipt, &'static str> {
+    if !execution.terminal_observed {
+        return Err("physical terminal observation unavailable");
+    }
+    let expected_phase = match execution.status {
+        NativeRunStatus::Completed => RunPhase::Succeeded,
+        NativeRunStatus::Failed => RunPhase::Failed,
+        NativeRunStatus::Interrupted => RunPhase::Cancelled,
+        NativeRunStatus::Indeterminate => {
+            return Err("physical terminal observation unavailable");
+        }
+    };
     let phase = match value.phase {
         AgentRunPhase::Admitted => RunPhase::Admitted,
         AgentRunPhase::ContextAttached => RunPhase::ContextAttached,
@@ -283,7 +295,13 @@ fn local_terminal_receipt_v1(
             RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed
         )
     {
-        return Err("physical observation lacks a terminal Agentd receipt".into());
+        return Err("terminal Agentd receipt not verified");
+    }
+    // An acknowledged Outcome must describe the same physical terminal. An
+    // already-terminal Agentd run cannot wash away a conflicting observation
+    // simply because both receipts independently claim terminality.
+    if phase != expected_phase {
+        return Err("terminal Agentd phase differs from physical observation");
     }
     Ok(RunReceipt {
         run_id: value.run_id,
@@ -301,3 +319,7 @@ fn local_terminal_receipt_v1(
         idempotent: value.idempotent,
     })
 }
+
+#[cfg(test)]
+#[path = "native_intelligence_product_tests.rs"]
+mod tests;
