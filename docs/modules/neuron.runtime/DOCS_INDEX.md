@@ -7,8 +7,10 @@ Generated from `docs/modules/neuron.runtime/MODULE_SPEC.json`. Do not edit this 
 - [`docs/modules/neuron.runtime/V2_CONTROL_PLANE.md`](V2_CONTROL_PLANE.md) — control-plane contract
 - [`docs/modules/neuron.runtime/V2_DURABLE_CONTROL_STATE.md`](V2_DURABLE_CONTROL_STATE.md) — durable state contract
 - [`docs/modules/neuron.runtime/V2_STARTUP_RECOVERY.md`](V2_STARTUP_RECOVERY.md) — startup recovery
+- [`docs/modules/neuron.runtime/V2_SECURITY_BOUNDARY.md`](V2_SECURITY_BOUNDARY.md) — formal rollback threat boundary and blocking security gap
 - [`docs/modules/neuron.runtime/V2_DEVELOPMENT.md`](V2_DEVELOPMENT.md) — development and qualification
 - [`docs/modules/neuron.runtime/V2_RUNBOOK.md`](V2_RUNBOOK.md) — operator runbook
+- [`docs/modules/neuron.runtime/V3_SEGMENT_MANIFEST.md`](V3_SEGMENT_MANIFEST.md) — separately versioned lossless rollover and compaction contract
 - [`docs/modules/neuron.runtime/SUPPORT_CALIBRATION.md`](SUPPORT_CALIBRATION.md) — frozen experiment, independent OOD and prospective acceptance contract
 - [`docs/modules/neuron.runtime/TEACHER_QUALIFICATION.md`](TEACHER_QUALIFICATION.md) — separate transport, provider and account-specific data-use contract
 - [`codex-rs/hepta-neuron/qualification/README.md`](../../../codex-rs/hepta-neuron/qualification/README.md) — existing experiment entry points and receipt boundaries
