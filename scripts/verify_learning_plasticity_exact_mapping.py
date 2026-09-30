@@ -117,14 +117,14 @@ def merge_operations(base: dict[str, Any], overlay: dict[str, Any]) -> list[dict
 
 
 def reject_hidden_source() -> None:
-    tracked = (
-        git("ls-files", ".authoring", "scripts/.learning_plasticity_phase_timing.part*")
-        .splitlines()
-    )
+    tracked = git("ls-files", ".authoring", "scripts").splitlines()
     offenders = [
         path
         for path in tracked
-        if "plasticity" in path.lower() or "review-p1-core" in path.lower()
+        if (path.startswith(".authoring/") and (
+            "plasticity" in path.lower() or "review-p1-core" in path.lower()
+        ))
+        or path.startswith("scripts/.learning_plasticity_phase_timing.part")
     ]
     if offenders:
         raise ValueError("hidden plasticity source remains tracked: " + ", ".join(offenders))
@@ -133,6 +133,18 @@ def reject_hidden_source() -> None:
         raise ValueError(
             "source-mutating plasticity workflow remains: " + ", ".join(workflow_offenders)
         )
+
+
+def inventory_identity(rows: list[dict[str, Any]]) -> str:
+    semantic_rows = []
+    for row in rows:
+        semantic = dict(row)
+        semantic.pop("candidateCommitSha", None)
+        semantic_rows.append(semantic)
+    encoded = json.dumps(
+        semantic_rows, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def main() -> int:
@@ -252,11 +264,8 @@ def main() -> int:
         "activation": False,
         "release": False,
         "operations": rows,
+        "testInventorySha256": inventory_identity(rows),
     }
-    encoded_inventory = json.dumps(
-        rows, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode("utf-8")
-    receipt["testInventorySha256"] = hashlib.sha256(encoded_inventory).hexdigest()
     output = args.output.resolve()
     if output == ROOT or ROOT in output.parents:
         raise SystemExit("exact mapping receipt must be written outside the candidate checkout")

@@ -7,6 +7,17 @@
   "productionImplementation": false,
   "operations": [
     {
+      "operation": "agentd_plasticity_runtime_owner",
+      "nativeSymbol": "PlasticityRuntimeOwnerV1",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "state": "named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified",
+      "authority": "proposal_registry_only",
+      "tests": [
+        "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::plasticity_runtime_queue_capacity_is_bounded",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
+      ]
+    },
+    {
       "operation": "generator_coverage_receipt",
       "nativeSymbol": "build_generator_coverage_draft_v1",
       "sourcePath": "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs",
