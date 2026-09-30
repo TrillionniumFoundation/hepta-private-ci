@@ -79,6 +79,7 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
 }
 
 pub struct AgentdConfig {
+    self_iteration_runtime: Option<crate::AgentdSelfIterationRuntimeConfigV1>,
     neuron_runtime_v2: Option<crate::AgentdNeuronRuntimeV2Config>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
@@ -235,6 +236,7 @@ impl AgentdConfig {
             intuition_policy_host: None,
             intelligence_product_runner: None,
             neuron_runtime_v2: None,
+            self_iteration_runtime: None,
             intelligence_invocation_provider: None,
         })
     }
@@ -599,6 +601,24 @@ impl AgentdConfig {
         &mut self,
     ) -> Option<crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Config> {
         self.neuron_runtime_v2.take()
+    }
+
+    pub fn with_self_iteration_runtime(
+        mut self,
+        runtime: crate::AgentdSelfIterationRuntimeConfigV1,
+    ) -> Result<Self, AgentdError> {
+        if self.self_iteration_runtime.is_some() {
+            return Err(AgentdError::Invalid(
+                "self-iteration runtime already configured".into(),
+            ));
+        }
+        self.self_iteration_runtime = Some(runtime);
+        Ok(self)
+    }
+    pub(crate) fn take_self_iteration_runtime(
+        &mut self,
+    ) -> Option<crate::AgentdSelfIterationRuntimeConfigV1> {
+        self.self_iteration_runtime.take()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

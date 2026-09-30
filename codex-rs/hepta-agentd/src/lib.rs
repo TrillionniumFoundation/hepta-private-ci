@@ -513,9 +513,13 @@ pub use self_iteration::AgentdSelfIterationCanaryVerdictV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationCandidateV1;
 #[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationHandleV1;
+#[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationPhaseV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationRecordV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationRuntimeConfigV1;
 #[cfg(feature = "server")]
 pub use self_iteration::self_iteration_canary_payload_v1;
 #[cfg(feature = "server")]

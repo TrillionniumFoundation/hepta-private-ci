@@ -189,6 +189,22 @@ impl AgentdNeuronGenerationControllerV2 {
         Ok(())
     }
 
+    /// Resume the same sealed generation after exact iteration recovery. This
+    /// preserves the generation and renews the execution epoch; no history is rewound.
+    pub(crate) fn resume_sealed_for_iteration(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+        {
+            let mut state = self.lock_state()?;
+            if state.lifecycle != AgentdNeuronLifecycleStateV2::Sealed {
+                return Err(AgentdNeuronControlErrorV2::InvalidTransition);
+            }
+            state
+                .persist_transition(AgentdNeuronLifecycleStateV2::Starting, None)
+                .map_err(poison_control_state)?;
+            state.lifecycle = AgentdNeuronLifecycleStateV2::Starting;
+        }
+        self.start()
+    }
+
     pub fn prepare(
         &self,
         run_id: StableId,

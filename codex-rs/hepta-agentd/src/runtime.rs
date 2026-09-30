@@ -91,8 +91,26 @@ pub async fn run(
                 .to_string(),
         ));
     }
+    let self_iteration_config = config.take_self_iteration_runtime();
+    let iteration_recovery = self_iteration_config
+        .as_ref()
+        .is_some_and(crate::AgentdSelfIterationRuntimeConfigV1::unresolved_apply);
     let neuron_runtime_v2 = neuron_runtime_v2
-        .map(crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Config::start)
+        .map(|runtime| {
+            if iteration_recovery {
+                runtime.start_for_iteration_recovery()
+            } else {
+                runtime.start()
+            }
+        })
+        .transpose()?;
+    let self_iteration_runtime = self_iteration_config
+        .map(|runtime| {
+            let host = neuron_runtime_v2.as_ref().ok_or_else(|| {
+                AgentdError::Invalid("self-iteration requires the durable Neuron V2 owner".into())
+            })?;
+            runtime.start(Arc::clone(host))
+        })
         .transpose()?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -263,6 +281,9 @@ pub async fn run(
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        if let Some(owner) = self_iteration_runtime {
+            tasks.spawn_required("self-iteration-owner", owner.run(cancellation.clone()))?;
+        }
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(
                 "production-operation-reconciler",
