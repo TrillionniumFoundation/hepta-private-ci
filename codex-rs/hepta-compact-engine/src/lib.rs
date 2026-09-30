@@ -13,6 +13,7 @@ mod durable;
 #[allow(unused_imports)]
 #[path = "fenced_coordinator_final.rs"]
 mod fenced_coordinator;
+mod mutation_guard;
 mod operational_contract;
 mod publication;
 #[allow(clippy::too_many_arguments)]
