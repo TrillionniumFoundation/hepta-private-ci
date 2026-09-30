@@ -8,7 +8,7 @@ script="scripts/neuron_runtime_apply_gate_repair.sh"
 if [[ -n "${GITHUB_SHA:-}" ]]; then
   test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
 fi
-test -z "$(git status --porcelain)"
+test -z "$(git status --porcelain --untracked-files=all)"
 
 python3 - <<'PY'
 from pathlib import Path
@@ -129,7 +129,9 @@ allowed = {
     "codex-rs/hepta-neuron/src/lib.rs",
     "scripts/neuron_runtime_apply_gate_repair.sh",
 }
-lines = subprocess.check_output(["git", "status", "--porcelain=v1"], text=True).splitlines()
+lines = subprocess.check_output(
+    ["git", "status", "--porcelain=v1", "--untracked-files=all"], text=True
+).splitlines()
 paths = {line[3:] for line in lines if len(line) >= 4}
 unexpected = sorted(paths - allowed)
 if unexpected:
@@ -150,7 +152,7 @@ for path in sorted(paths):
     print(path)
 PY
 
-python3 scripts/neuron_runtime_source_gate_test.py
+python3 -m unittest discover -v -s scripts/neuron -p 'test_*.py'
 (
   cd codex-rs
   cargo +stable fmt --all -- --check
@@ -158,6 +160,8 @@ python3 scripts/neuron_runtime_source_gate_test.py
   cargo +1.88.0 check -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
   cargo +stable test -p codex-hepta-infer-worker-host native_app_server -- --nocapture
 )
+
+test -z "$(git diff --check)"
 
 git config user.name hepta-qualification
 git config user.email qualification@invalid

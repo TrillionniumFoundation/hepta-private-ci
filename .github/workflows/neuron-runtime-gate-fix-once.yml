@@ -6,18 +6,19 @@ on:
       - codex/neuron-runtime-five-phase-closure-v2
     paths:
       - .github/workflows/neuron-runtime-gate-fix-once.yml
+      - scripts/neuron_runtime_apply_gate_repair.sh
   workflow_dispatch: {}
 
 permissions:
   contents: write
 
 concurrency:
-  group: neuron-runtime-exact-gate-repair
-  cancel-in-progress: false
+  group: neuron-runtime-exact-gate-repair-${{ github.sha }}
+  cancel-in-progress: true
 
 jobs:
   repair:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 45
     steps:
       - name: Checkout exact triggering commit
