@@ -1,5 +1,7 @@
 name: Hepta objective source convergence author
 
+# Exact-parent retrigger: this workflow was introduced on the preceding head,
+# so this source-only change schedules the first run against a stable parent.
 on:
   push:
     branches:
