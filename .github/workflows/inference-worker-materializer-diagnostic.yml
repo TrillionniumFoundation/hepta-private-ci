@@ -38,7 +38,7 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Run materializer and persist exact failure
+      - name: Run materializer and persist exact probe
         shell: bash
         run: |
           set -uo pipefail
@@ -53,7 +53,37 @@ jobs:
           python3 .github/materialization/inference-worker-runtime-closure/apply.py >> "$log" 2>&1
           status=$?
           set -e
-          echo "--- exit_status=$status ---" >> "$log"
+          echo "--- materializer_exit_status=$status ---" >> "$log"
+
+          if [[ "$status" -eq 0 ]]; then
+            python3 - <<'PY' >> "$log" 2>&1
+          from pathlib import Path
+
+          tests = Path("codex-rs/hepta-infer-core/src/native_control_tests.rs").read_text(encoding="utf-8")
+          native = Path("codex-rs/hepta-infer-core/src/native_control.rs").read_text(encoding="utf-8")
+          checks = {
+              "observed_fixture": '''    let event = Event::Observe {
+                  request_id: "r1".to_string(),
+                  output: observed,
+              };''',
+              "old_output_fixture": '''    let event = Event::Observe {
+                  request_id: "r1".to_string(),
+                  output: old_output,
+              };''',
+              "legacy_json_anchor": '''    let mut json = serde_json::to_value(event).unwrap();
+              json["Observe"]["output"]''',
+              "idempotency_anchor": '''        if record.observation.as_ref() == Some(&output)
+                  && usage_units.is_none_or(|usage| record.observed_usage_units == Some(usage))
+              {
+                  return Ok(record.clone());
+              }''',
+          }
+          for name, needle in checks.items():
+              haystack = native if name == "idempotency_anchor" else tests
+              print(f"probe.{name}.count={haystack.count(needle)}")
+          print("probe.native_tests_event_observe_count=" + str(tests.count("let event = Event::Observe")))
+          PY
+          fi
           cat "$log"
 
           diagnostic="$RUNNER_TEMP/inference-worker-materializer-${GITHUB_RUN_ID}.log"
