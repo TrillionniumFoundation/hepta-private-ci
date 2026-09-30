@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Verify auxiliary learning.eval control-plane bytes against a candidate SHA.
+"""Verify the complete learning.eval control-plane against a candidate SHA.
 
 This script is executed from the trusted default-branch checkout by the
-`workflow_run` reporter. Candidate files are fetched as untrusted data and must
-match the trusted local bytes exactly. It complements the primary allowlist in
-`hepta-learning-eval-trusted-entry.py`; it does not execute candidate code or
-issue qualification, acceptance, activation, promotion, or release authority.
+`workflow_run` reporter. Candidate files and the candidate workflow inventory
+are fetched as untrusted data and must match the trusted checkout exactly. It
+does not execute candidate code or issue qualification, acceptance, activation,
+promotion, or release authority.
 """
 from __future__ import annotations
 
@@ -25,14 +25,14 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_FILE_BYTES = 1024 * 1024
-MAX_RESPONSE_BYTES = 2 * 1024 * 1024
+MAX_FILE_RESPONSE_BYTES = 2 * 1024 * 1024
+MAX_DIRECTORY_RESPONSE_BYTES = 8 * 1024 * 1024
 REPOSITORY_RE = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+")
 SHA1_RE = re.compile(r"[0-9a-f]{40}")
-EXTRA_CONTROL_PLANE_PATHS = (
-    ".github/workflows/hepta-learning-eval-control-plane-bootstrap.yml",
-    ".github/workflows/hepta-learning-eval-convergence.yml",
-    ".github/workflows/hepta-learning-eval-exact.yml",
-    ".github/workflows/hepta-learning-eval-trusted-report.yml",
+WORKFLOW_DIRECTORY = ".github/workflows"
+WORKFLOW_PREFIX = "hepta-learning-eval-"
+WORKFLOW_SUFFIX = ".yml"
+AUXILIARY_CONTROL_PLANE_PATHS = (
     "scripts/hepta-learning-eval-control-plane-identity.py",
     "scripts/hepta-learning-eval-markdown-links.py",
     "scripts/hepta_learning_eval_projection.py",
@@ -76,6 +76,26 @@ def trusted_file_bytes(path: str, root: Path = ROOT) -> bytes:
     return candidate.read_bytes()
 
 
+def trusted_learning_eval_workflow_paths(root: Path = ROOT) -> tuple[str, ...]:
+    root = root.resolve(strict=True)
+    directory = root / WORKFLOW_DIRECTORY
+    if directory.is_symlink() or not directory.is_dir():
+        raise ValueError("trusted workflow directory is missing, invalid, or a symlink")
+    selected: list[str] = []
+    for candidate in sorted(directory.iterdir(), key=lambda path: path.name):
+        if not (
+            candidate.name.startswith(WORKFLOW_PREFIX)
+            and candidate.name.endswith(WORKFLOW_SUFFIX)
+        ):
+            continue
+        relative = candidate.relative_to(root).as_posix()
+        trusted_file_bytes(relative, root=root)
+        selected.append(relative)
+    if not selected:
+        raise ValueError("trusted learning.eval workflow inventory is empty")
+    return tuple(selected)
+
+
 def contents_url(repository: str, path: str, source_sha: str) -> str:
     encoded = "/".join(quote(part, safe="") for part in validate_relative_path(path).parts)
     return (
@@ -84,16 +104,11 @@ def contents_url(repository: str, path: str, source_sha: str) -> str:
     )
 
 
-def fetch_candidate_file(
-    repository: str,
-    path: str,
-    source_sha: str,
-    token: str,
-) -> bytes:
+def github_request(url: str, token: str) -> Request:
     if not token:
         raise ValueError("GitHub token is required")
-    request = Request(
-        contents_url(repository, path, source_sha),
+    return Request(
+        url,
         headers={
             "Accept": "application/vnd.github+json",
             "Authorization": f"Bearer {token}",
@@ -101,13 +116,31 @@ def fetch_candidate_file(
             "User-Agent": "hepta-learning-eval-control-plane-identity",
         },
     )
+
+
+def read_response(request: Request, maximum: int) -> bytes:
     with urlopen(request, timeout=30) as response:
-        raw = response.read(MAX_RESPONSE_BYTES + 1)
-    if len(raw) > MAX_RESPONSE_BYTES:
-        raise ValueError(f"candidate Contents response is too large: {path}")
+        raw = response.read(maximum + 1)
+    if len(raw) > maximum:
+        raise ValueError("GitHub Contents response is too large")
+    return raw
+
+
+def fetch_candidate_file(
+    repository: str,
+    path: str,
+    source_sha: str,
+    token: str,
+) -> bytes:
+    raw = read_response(
+        github_request(contents_url(repository, path, source_sha), token),
+        MAX_FILE_RESPONSE_BYTES,
+    )
     value = json.loads(raw.decode("utf-8"))
     if not isinstance(value, dict) or value.get("type") != "file":
         raise ValueError(f"candidate control-plane path is not a regular file: {path}")
+    if value.get("path") != path:
+        raise ValueError(f"candidate control-plane path identity changed: {path}")
     if value.get("encoding") != "base64" or not isinstance(value.get("content"), str):
         raise ValueError(f"candidate control-plane encoding is invalid: {path}")
     try:
@@ -122,7 +155,45 @@ def fetch_candidate_file(
     return decoded
 
 
+def fetch_candidate_workflow_paths(
+    repository: str,
+    source_sha: str,
+    token: str,
+) -> tuple[str, ...]:
+    raw = read_response(
+        github_request(
+            contents_url(repository, WORKFLOW_DIRECTORY, source_sha),
+            token,
+        ),
+        MAX_DIRECTORY_RESPONSE_BYTES,
+    )
+    value = json.loads(raw.decode("utf-8"))
+    if not isinstance(value, list):
+        raise ValueError("candidate workflow inventory is not a directory listing")
+    selected: list[str] = []
+    seen: set[str] = set()
+    for entry in value:
+        if not isinstance(entry, dict):
+            raise ValueError("candidate workflow inventory contains a non-object")
+        name = entry.get("name")
+        if not isinstance(name, str) or not (
+            name.startswith(WORKFLOW_PREFIX) and name.endswith(WORKFLOW_SUFFIX)
+        ):
+            continue
+        path = f"{WORKFLOW_DIRECTORY}/{name}"
+        if entry.get("type") != "file" or entry.get("path") != path:
+            raise ValueError(f"candidate learning.eval workflow is not a regular file: {path}")
+        if path in seen:
+            raise ValueError(f"candidate workflow inventory contains a duplicate: {path}")
+        seen.add(path)
+        selected.append(path)
+    if not selected:
+        raise ValueError("candidate learning.eval workflow inventory is empty")
+    return tuple(sorted(selected))
+
+
 Fetcher = Callable[[str, str, str, str], bytes]
+WorkflowFetcher = Callable[[str, str, str], tuple[str, ...]]
 
 
 def verify_control_plane(
@@ -131,11 +202,19 @@ def verify_control_plane(
     token: str,
     *,
     root: Path = ROOT,
-    paths: Iterable[str] = EXTRA_CONTROL_PLANE_PATHS,
+    paths: Iterable[str] = AUXILIARY_CONTROL_PLANE_PATHS,
     fetcher: Fetcher = fetch_candidate_file,
+    workflow_fetcher: WorkflowFetcher = fetch_candidate_workflow_paths,
 ) -> dict[str, object]:
     validate_identity(repository, source_sha)
-    selected = tuple(paths)
+    trusted_workflows = trusted_learning_eval_workflow_paths(root)
+    candidate_workflows = workflow_fetcher(repository, source_sha, token)
+    if candidate_workflows != trusted_workflows:
+        raise ValueError(
+            "candidate learning.eval workflow inventory differs from trusted default branch: "
+            f"trusted={list(trusted_workflows)!r} candidate={list(candidate_workflows)!r}"
+        )
+    selected = trusted_workflows + tuple(paths)
     if not selected or len(selected) != len(set(selected)):
         raise ValueError("control-plane path inventory is empty or duplicated")
     digests: dict[str, str] = {}
@@ -144,15 +223,16 @@ def verify_control_plane(
         candidate = fetcher(repository, path, source_sha, token)
         if candidate != trusted:
             raise ValueError(
-                "candidate auxiliary qualification control-plane file differs "
+                "candidate qualification control-plane file differs "
                 f"from trusted default branch: {path}"
             )
         digests[path] = hashlib.sha256(trusted).hexdigest()
     aggregate = hashlib.sha256(canonical(digests)).hexdigest()
     return {
-        "schema": "hepta.learning-eval.auxiliary-control-plane-identity.v1",
+        "schema": "hepta.learning-eval.control-plane-identity.v2",
         "repository": repository,
         "sourceCommit": source_sha,
+        "workflowInventory": list(trusted_workflows),
         "files": digests,
         "controlPlaneSha256": aggregate,
         "authority": "DENY_ALL",
