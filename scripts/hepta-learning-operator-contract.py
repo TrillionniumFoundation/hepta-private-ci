@@ -139,7 +139,10 @@ def verify_default_surface() -> None:
         "pub use legacy::verify_tabular_operator_plan_v3;",
         "pub use legacy::verify_world_model_dataset_v3;",
     ):
-        require(forbidden not in surface, f"default surface exposes direct V3 bypass: {forbidden}")
+        require(
+            forbidden not in surface,
+            f"default surface exposes direct V3 bypass: {forbidden}",
+        )
     require_tokens(
         "scripts/hepta-learning-operator-api-surface.py",
         [
@@ -333,12 +336,14 @@ def verify_documents() -> None:
     }
     for label, text in documents.items():
         lowered = text.lower()
+        normalized = " ".join(lowered.split())
         require(
             "status.json" in lowered,
             f"{label} must name the canonical status source",
         )
         require(
-            "activation remains false" in lowered,
+            "activation remains false" in normalized
+            or "activation and release remain false" in normalized,
             f"{label} must retain the activation boundary",
         )
     for phrase in (
