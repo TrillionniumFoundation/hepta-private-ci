@@ -563,8 +563,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         // ordinary live kill leaves retirement blocked until an owner restart.
         let terminal = self.record(agent_id)?.lifecycle.lifecycle;
         if matches!(terminal, AgentLifecycle::Stopped | AgentLifecycle::Failed) {
-            crate::control_intent::reconcile_absent(record.layout.run_root(), agent_id, terminal)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            crate::control_intent::reconcile_absent(
+                record.layout.owner_run_root(),
+                agent_id,
+                terminal,
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         }
 
         process_exit_witness::consume_process_exit_witness(

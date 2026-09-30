@@ -36,6 +36,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             ));
         }
         let record = self.registry.register(manifest)?;
+        self.driver
+            .prepare_agent_registration(&record)
+            .map_err(|error| crate::runtime::driver_error(&record.manifest.agent_id, error))?;
         self.slots
             .insert(record.manifest.agent_id, AgentSlot::new(&self.config));
         Ok(())
@@ -61,9 +64,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.lifecycle.lifecycle,
                 AgentLifecycle::Stopped | AgentLifecycle::Failed
             )
-            || crate::lease::read_lease(record.layout.run_root())?.is_some()
+            || crate::lease::read_lease(record.layout.owner_run_root())?.is_some()
             || crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
-            || crate::control_intent::has_unresolved(record.layout.run_root())
+            || crate::control_intent::has_unresolved(record.layout.owner_run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         {
             return Err(SupervisorError::Invalid(
@@ -101,15 +104,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        let signed = crate::signed_intent::read_intent(record.layout.run_root())
+        let signed = crate::signed_intent::read_intent(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let transaction =
-            crate::release_transaction::read_release_transaction(record.layout.run_root())
+            crate::release_transaction::read_release_transaction(record.layout.owner_run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let restart = crate::restart_journal::read_main_restart_budget(record.layout.run_root())?;
+        let restart =
+            crate::restart_journal::read_main_restart_budget(record.layout.owner_run_root())?;
         // Reading also verifies the companion budget's integrity. It records
         // attempts, not a pending operation; live retry state remains owner-held.
-        crate::restart_journal::read_restart_journal(record.layout.run_root())?;
+        crate::restart_journal::read_restart_journal(record.layout.owner_run_root())?;
         if slot.pending_control.is_some()
             || slot.deferred_agent_action.is_some()
             || slot.restart_pending
@@ -120,18 +124,19 @@ impl<D: ProcessDriver> Supervisor<D> {
             || signed.is_some_and(|intent| !intent.status.terminal())
             || transaction.is_some_and(|transaction| !transaction.phase.terminal())
             || restart.is_some_and(|budget| budget.pending)
-            || crate::control_intent::has_unresolved(record.layout.run_root())
+            || crate::control_intent::has_unresolved(record.layout.owner_run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         {
             return Err(SupervisorError::Invalid(
                 "configuration requires resolved control and restart ownership".to_string(),
             ));
         }
-        let ordinary = crate::read_mutation_status(record.layout.run_root())
+        let ordinary = crate::read_mutation_status(record.layout.owner_run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let emergency = crate::mutation_journal_slots::read_emergency(record.layout.run_root())
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-            .map(|owned| owned.status);
+        let emergency =
+            crate::mutation_journal_slots::read_emergency(record.layout.owner_run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                .map(|owned| owned.status);
         if ordinary
             .into_iter()
             .chain(emergency)

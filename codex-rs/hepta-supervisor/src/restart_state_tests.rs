@@ -101,7 +101,11 @@ impl Fixture {
             WorkspaceBinding::new(workspace.canonicalize()?, &root)?,
             ResourceBudget::local_default(),
         )?)?;
-        let run_root = registry.layout().agent(&agent).run_root().to_path_buf();
+        let run_root = registry
+            .layout()
+            .agent(&agent)
+            .owner_run_root()
+            .to_path_buf();
         std::fs::create_dir_all(&run_root)?;
         Ok(Self {
             _temp: temp,

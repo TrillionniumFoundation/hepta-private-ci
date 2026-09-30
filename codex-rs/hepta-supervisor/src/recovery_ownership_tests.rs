@@ -358,7 +358,7 @@ fn main_control_parse_fault_cannot_skip_matrix_ownership() -> Result<()> {
     std::fs::write(
         f.record()?
             .layout
-            .run_root()
+            .owner_run_root()
             .join(control_intent::CONTROL_INTENT_FILE),
         b"{",
     )?;

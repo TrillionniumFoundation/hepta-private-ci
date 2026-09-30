@@ -75,7 +75,11 @@ fn retirement_rejects_durable_restart_and_host_hold_without_erasing_evidence() -
         SupervisorConfig::local_default(),
         Instant::now(),
     )?;
-    let run_root = registry.load_agent(&agent)?.layout.run_root().to_path_buf();
+    let run_root = registry
+        .load_agent(&agent)?
+        .layout
+        .owner_run_root()
+        .to_path_buf();
     crate::restart_budget::claim_restart(
         &run_root,
         3,

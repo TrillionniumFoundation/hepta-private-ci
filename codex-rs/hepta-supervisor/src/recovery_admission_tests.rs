@@ -181,7 +181,7 @@ impl Fixture {
         std::fs::write(
             self.record()?
                 .layout
-                .run_root()
+                .owner_run_root()
                 .join(control_intent::CONTROL_INTENT_FILE),
             b"{truncated",
         )?;
@@ -288,7 +288,7 @@ fn missing_identity_never_erases_a_rejected_control_journal_or_lease() -> Result
         std::fs::read(
             record
                 .layout
-                .run_root()
+                .owner_run_root()
                 .join(control_intent::CONTROL_INTENT_FILE)
         )?,
         b"{truncated"

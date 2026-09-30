@@ -325,7 +325,7 @@ fn repeated_stop_preserves_the_first_deadline() -> Result<()> {
         .registry
         .load_agent(&f.agent)?
         .layout
-        .run_root()
+        .owner_run_root()
         .to_path_buf();
     let intent_path = run_root.join(crate::control_intent::CONTROL_INTENT_FILE);
     let original = std::fs::read(&intent_path)?;
@@ -489,7 +489,7 @@ fn restart_retains_its_claim_when_the_first_drain_signal_fails() -> Result<()> {
     assert!(f.slot.restart_pending);
     let root = f.registry.load()?.agents[&f.agent]
         .layout
-        .run_root()
+        .owner_run_root()
         .to_path_buf();
     let claim =
         crate::restart_budget::pending_restart(&root, f.supervisor.config.restart_max_attempts)?
