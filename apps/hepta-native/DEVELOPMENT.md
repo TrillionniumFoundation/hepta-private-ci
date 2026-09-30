@@ -1,34 +1,30 @@
 # hepta-native developer guide
 
 This guide applies to immutable implementation source
-`a417e5756d4dba18737b9d3e6aa8b13016c23662`, tree
-`76c085b09b249be772deae1ce8fdbab0acfb0908`. The module is an implementation
+`bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52`, tree
+`136c62bfe0cc0ca6c7455169162c3f5a1b951f8a`. The source is an implementation
 candidate; production, deployment and release flags remain false.
 
-## Toolchain and identity
+## Toolchain and source identity
 
-Use Rust `1.95.0` and `apps/hepta-native/Cargo.lock`. Product source must be an
-ordinary commit. CI must not patch, format, commit or push it. The sole module
-workflow is `.github/workflows/ui-native-qualification.yml` with read-only
-permissions.
+Use Rust `1.95.0` and locked dependencies. Product changes must be ordinary
+commits. The sole module workflow is
+`.github/workflows/ui-native-qualification.yml`; it has read-only repository
+permissions and must never patch, format, commit or push source.
 
-Run the structural checks from the repository root:
+Run structural checks from the repository root:
 
 ```bash
 python3 scripts/check_hepta_ui_native_convergence.py
-python3 -m unittest \
-  scripts.test_hepta_ui_native_convergence \
-  scripts.test_hepta_ui_native_package_security -v
+python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v
 ```
 
-The checker rejects retired writer/materializer workflows, patch capsules,
-write permissions, mutation commands, stale state or budget anchors,
-product-source drift after the frozen commit and promoted release flags. It also
-checks journal/WAL, retirement-index, storage-budget and fixed-launcher
-contracts. It does not replace compilation, crash tests, physical acceptance or
-release review.
+These checks reject retired writer/materializer workflows, patch capsules,
+write permissions, source drift after the frozen implementation, changed portal
+or packaging adapters, stale state anchors and promoted release flags. They do
+not replace compilation, crash tests, physical acceptance or release review.
 
-## Build, formatting and lint
+## Build, format, lint and tests
 
 ```bash
 cargo +1.95.0 fmt \
@@ -39,28 +35,115 @@ cargo +1.95.0 check \
 cargo +1.95.0 clippy \
   --manifest-path apps/hepta-native/Cargo.toml \
   --locked --all-targets --all-features -- -D warnings
-```
-
-A formatting change is source: commit and review it before qualification. Never
-format inside a qualification job and then test a derived future tree.
-
-## Tests
-
-```bash
 cargo +1.95.0 test \
   --manifest-path apps/hepta-native/Cargo.toml \
   --locked --all-targets
 ```
 
-Preserve tests for final-use linearization, exact duplicates, journal transition
-legality, WAL framing/checksum/sequence/partial tail, checkpoint recovery,
-retirement chain/index integrity, legacy migration, private-root rejection,
-update handoff/rollback, task admission, stale picker tickets and shutdown.
-Targeted tests are useful while developing but are not a qualification pass.
+A formatting change is source. Commit and review it before freezing a new
+implementation SHA. Preserve tests for final-use linearization, duplicate
+identity, transition legality, WAL framing/checksum/sequence/partial tail,
+checkpoint recovery, retirement authority/index rebuild, private-root rejection,
+update rollback, task admission, stale picker tickets, resource identity change,
+final symlink rejection, durable history paging and shutdown of all lanes.
 
-The full-scale storage subjects are intentionally ignored during ordinary test
-runs. The read-only workflow executes them against the frozen implementation
-source and supplies exact source identity and evidence paths:
+## Final-use protocol
+
+The shell never signs its own grant. Prepare a binding from the current
+authenticated view; an independent owner chooses grant identity, nonce, epoch
+and lifetime and signs the complete grant.
+
+```text
+validate request
+→ resolve adapter confirmation resource
+→ durable Prepared
+→ local permission
+→ final-use claim/current revalidation
+→ durable Invoking
+→ final policy and verified-use fence
+→ platform boundary
+→ durable terminal or Indeterminate
+```
+
+Do not reorder barriers, cache authorization across mutable work or interpret a
+timeout, helper exit or cancellation as known non-execution. UNKNOWN is never
+automatically replayed.
+
+## Journal, WAL and retirement
+
+Current schemas:
+
+```text
+journal                  hepta.native-operation-journal.v7
+WAL                      hepta.native-operation-wal.v1
+retirement head          hepta.native-retirement.v3
+retirement segment       hepta.native-retirement.v2
+retirement index         hepta.native-retirement-index.v1
+retirement index bucket  hepta.native-retirement-index-bucket.v1
+```
+
+A mutation synchronizes a complete WAL frame before changing memory. A
+checkpoint synchronizes the replacement snapshot before truncating the WAL. The
+`.previous` snapshot is forensic evidence only. After persistence error, reopen
+and reconcile; never retry through the same object or delete history.
+
+Retirement segments and archived records are authority. Manifests, buckets and
+cache are rebuildable acceleration. Index uncertainty rejects or rebuilds; it
+never makes a retired identity executable.
+
+## Linux picker and verified resource handoff
+
+Linux file selection defaults to XDG Desktop Portal. The selected URI is bounded
+to one local absolute path and remains untrusted. Use Zenity only when explicitly
+requested:
+
+```bash
+HEPTA_NATIVE_PICKER_BACKEND=zenity cargo +1.95.0 run \
+  --manifest-path apps/hepta-native/Cargo.toml --locked --bin hepta-native -- \
+  <launch arguments>
+```
+
+There is no silent fallback. Portal and compatibility adapters use owned child
+processes, bounded observation and cleared environments.
+
+Linux Open/Reveal opens with `NOFOLLOW`, binds the open descriptor's
+resource identity into final-use confirmation, revalidates the final handle and
+passes that descriptor to XDG OpenURI. Do not replace it with `xdg-open`, shell
+commands or a second mutable path lookup. Non-Linux path operations remain
+fail-closed until they have an equivalent capability adapter.
+
+## Windows identity and notification
+
+The unsigned package includes:
+
+```text
+HeptaNative/Register-HeptaNativeIdentity.ps1
+```
+
+On a physical Windows qualification host, run the registrar against the exact
+packaged executable, inspect the Start Menu shortcut's AppUserModelID, launch the
+packaged process and exercise a WinRT toast. Preserve the shortcut identity,
+script digest, package digest, logs and screenshots/automation evidence. The
+marker must never be pre-created to bypass registration.
+
+## UI lanes and persistent history
+
+Keep one mutation authority. The GUI uses:
+
+- `pending_runtime`: mutation owner;
+- `pending_read`: bounded persistent-history page read;
+- `pending_picker`: owned native dialog.
+
+Read and mutation admission are mutually exclusive. The picker may run
+independently but cannot mutate runtime state. `operation_history_page` returns
+newest-first bounded pages; the GUI uses 64 receipts and never clones the full
+journal history. Shutdown must cancel only pre-admission work and wait for all
+three lanes before update activation.
+
+## Storage qualification
+
+`STORAGE_BUDGETS.json` contains blocking provisional ceilings. The ignored
+subjects exercise:
 
 ```bash
 cargo +1.95.0 test \
@@ -74,136 +157,53 @@ cargo +1.95.0 test \
   --ignored --exact --nocapture --test-threads=1
 ```
 
-Do not treat a manual invocation as qualification. The workflow additionally
-records Linux `strace -yy` write and sync syscalls, validates every hard ceiling
-with `scripts/qualify_hepta_ui_native_storage.py`, and retains the raw trace and
-JSON artifacts.
+A manual run is not qualification. The workflow additionally records Linux
+write/sync syscalls, validates all hard ceilings and retains raw trace and JSON
+artifacts. Process-kill qualification must terminate a real process at each
+durable cut point; injected in-process errors are insufficient.
 
-Process-kill qualification must terminate a real process at each durable cut
-point. In-process injected errors do not establish crash recovery.
+## Packaging, SBOM and provenance
 
-## Running the application
+Build a deterministic unsigned package with:
 
 ```bash
-cargo +1.95.0 run \
-  --manifest-path apps/hepta-native/Cargo.toml \
-  --locked --bin hepta-native -- <launch arguments>
+python3 apps/hepta-native/tools/package_unsigned.py \
+  --platform linux --architecture x86_64 \
+  --release-dir apps/hepta-native/target/release \
+  --out-dir /absolute/new/output
 ```
 
-`--check-connection` exercises bootstrap only. It does not prove GUI readiness,
-platform effects, accessibility or installation. Credential and updater helpers
-do not issue final-use authority or select a release.
+The archive has a closed file inventory. Windows includes the AUMID registrar.
+Linux declares portal-first picker behavior. Unsigned package receipts always
+keep signing, notarization and release flags false.
 
-## Final-use operation protocol
+The qualification seal runs `scripts/hepta_ui_native_supply_chain.py` against the
+exact package receipt and emits `sbom.cdx.json`, `provenance.intoto.json` and a
+binding manifest. These artifacts bind exact/merge source, candidate, ordered
+base, implementation SHA, runner, both Cargo lockfiles and package digest. They
+are evidence inputs, not release authority.
 
-The shell never signs its own grant. Prepare the exact binding from the current
-authenticated view; an independent owner chooses grant identity, nonce, epoch
-and lifetime and signs the complete grant. Runtime order is:
+## Qualification and troubleshooting
 
-```text
-validate request
-→ resolve adapter confirmation resource
-→ durable Prepared WAL entry
-→ local permission
-→ final-use claim and current revalidation
-→ durable Invoking WAL entry
-→ final local policy and verified-use fence
-→ platform boundary
-→ durable terminal or Indeterminate observation
-```
+Pull requests evaluate exact head and deterministic ordered-parent merge on
+Linux, macOS and Windows. Linux additionally runs gateway/keyring/Xvfb lifecycle
+and exact-source storage scale. The aggregate succeeds only when every required
+subject succeeds in the same run and attempt.
 
-Do not reorder barriers, cache authorization across mutable work, or interpret
-timeout/launcher exit/cancellation as known non-execution. UNKNOWN is never
-automatically replayed. `OpenPath` and `RevealPath` remain unavailable until an
-adapter consumes an already verified OS resource capability without reopening a
-mutable path.
+Common failures:
 
-## Storage protocol
-
-Current schemas:
-
-```text
-journal                  hepta.native-operation-journal.v7
-WAL                      hepta.native-operation-wal.v1
-retirement head          hepta.native-retirement.v3
-retirement segment       hepta.native-retirement.v2
-retirement index         hepta.native-retirement-index.v1
-retirement index bucket  hepta.native-retirement-index-bucket.v1
-```
-
-A mutation appends and synchronizes a complete WAL frame before changing memory.
-A checkpoint synchronizes the replacement snapshot before truncating the WAL.
-The `.previous` snapshot is forensic evidence only; automatic restoration can
-resurrect an effect identity. After persistence error the owner is fenced:
-reopen and reconcile, never retry through the same object or delete history.
-
-Retirement segments and archived records are authority. Manifest, buckets and
-cache are rebuildable acceleration. Index uncertainty rejects or rebuilds; it
-never makes a retired identity executable.
-
-## Storage budgets and profiles
-
-`STORAGE_BUDGETS.json` contains blocking provisional ceilings. The implemented
-qualification harness exercises the same immutable source and records:
-
-- 4096 active records through Prepared, Invoking and Terminal transitions;
-- 1,000,000 retired identities;
-- cold-start and mutation p50/p95/p99;
-- real write bytes and fsync/fdatasync counts from Linux syscall traces;
-- WAL/snapshot growth and write amplification;
-- peak RSS;
-- indexed cold open and deterministic legacy-index rebuild time.
-
-Retain raw samples, runner image, source, ordered parents, command and artifact
-digest. Missing, cancelled or over-budget data fails qualification. The declared
-budgets remain `provisional-unqualified` until the immutable workflow artifact
-passes and is independently reviewed.
-
-## Picker and platform helpers
-
-Picker results are untrusted paths bound to one exact target ticket. Reject stale
-callbacks, multiple/relative paths, control delimiters and oversized output.
-Reopen accepted paths through the bounded regular-file reader. A chooser result
-is not a grant or resource capability.
-
-Linux currently uses `/usr/bin/zenity`; portal-first integration remains
-required. macOS/Linux notifications use fixed `/usr/bin` executables and a
-cleared environment. Windows notification remains disabled until packaged
-AppUserModelID and WinRT integration exist. Helper exit is not delivery proof.
-
-## UI task ownership
-
-Keep one serial mutation owner. `TaskAdmission::begin()` is the cancellation
-linearization point; admitted work is joined. The approved evolution is a
-picker-process lane returning ticketed input, immutable read snapshots,
-generation-bound persistent history pages and one durable mutation lane. Do not
-add a detached task or second journal writer.
-
-## Qualification
-
-Pushes check exact head on Linux, macOS and Windows. Pull requests also check a
-fixed merge with exact target base as parent 1 and candidate head as parent 2.
-The Linux exact-source storage subject enforces every provisional storage budget
-and uploads raw evidence. The aggregate `ui.native / qualification result`
-succeeds only when every applicable subject succeeds.
-
-The final manifest additionally binds compiler-negative API tests, process kill,
-cold restart, corruption, updater rollback, installed-package E2E, measured
-coverage, sustained performance, physical accessibility, signing, SBOM and
-provenance. Only an independent reviewer promotes release flags.
-
-## Branch protection and troubleshooting
-
-Required GitHub settings are in
-`docs/modules/ui.native/BRANCH_PROTECTION.md`. A file does not enable an admin
-ruleset. Review the normal commit chain in `REVIEW_DIFF.md`.
-
-- journal already owned: do not delete the lock or state;
-- persistence indeterminate: stop effects, reopen and reconcile;
-- index failure: reject or rebuild from verified segments;
-- picker unavailable: report it, never use ambient shell fallback;
-- UNKNOWN effect: reconcile only through an operation-bound observer or close
+- **journal already owned:** do not delete lock or state;
+- **persistence indeterminate:** stop effects, reopen and reconcile;
+- **index failure:** reject or rebuild from verified segments;
+- **portal unavailable:** report it; use Zenity only through explicit policy;
+- **UNKNOWN effect:** reconcile with an operation-bound observer or close
   observation without replay;
-- update readiness failure: deny activation and preserve recovery evidence;
-- cancelled/skipped CI: rerun unchanged source or create a new candidate, never
-  hand-edit the manifest to pass.
+- **Windows toast unavailable:** run and verify the packaged identity registrar;
+- **update readiness failure:** deny activation and preserve recovery evidence;
+- **cancelled/skipped CI:** rerun unchanged source or create a new candidate;
+  never hand-edit the qualification manifest to pass.
+
+Required GitHub administration is recorded in
+`docs/modules/ui.native/BRANCH_PROTECTION.md`. A checked-in file cannot enable an
+administrator ruleset. Only an independent reviewer may promote the false
+production/deployment/release flags.

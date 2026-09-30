@@ -1,10 +1,10 @@
 {
-  "schema": "hepta.ui.native.qualification-manifest.v2",
+  "schema": "hepta.ui.native.qualification-manifest.v3",
   "manifestStatus": "pending-executed-evidence",
-  "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
-  "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
+  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
+  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
   "orderedParents": {
-    "base": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
+    "base": "6f145464d9d58233c59aafe262a1250a5ea873a8",
     "head": "pending-final-review-head"
   },
   "toolchain": {
@@ -17,6 +17,7 @@
     "scripts/hepta_ui_native_qualification_evidence.py",
     "scripts/hepta_ui_native_qualification_aggregate.py",
     "scripts/hepta_ui_native_compile_negative.py",
+    "scripts/hepta_ui_native_supply_chain.py",
     "scripts/qualify_hepta_ui_native_storage.py",
     "apps/hepta-native/tools/linux_product_qualification.py"
   ],
@@ -45,7 +46,8 @@
     "process-kill-and-updater-rollback",
     "deterministic-unsigned-package",
     "packaged-self-test",
-    "packaged-process-kill-and-updater-rollback"
+    "packaged-process-kill-and-updater-rollback",
+    "CycloneDX-SBOM-and-provenance"
   ],
   "linuxAdditionalChecks": [
     "release-gateway",
@@ -61,16 +63,21 @@
     "write-amplification",
     "fsync-fdatasync-count"
   ],
-  "stillRequiredBeforePromotion": [
-    "measured-source-coverage",
-    "sustained-performance-soak",
+  "implementedPendingQualification": [
     "persistent-history-paging",
     "picker-read-mutation-lane-split",
-    "verified-Open-Reveal-resource-handoff",
+    "Linux-verified-Open-Reveal-FD-handoff",
     "portal-first-Linux-picker",
-    "packaged-Windows-WinRT-notification",
+    "packaged-Windows-AUMID-registrar-and-WinRT-toast-adapter"
+  ],
+  "stillRequiredBeforePromotion": [
+    "one-successful-same-source-seven-subject-run",
+    "measured-source-coverage",
+    "sustained-performance-soak",
     "physical-platform-accessibility-and-IME-acceptance",
-    "production-signing-notarization-Authenticode-SBOM-provenance",
+    "physical-packaged-Windows-AUMID-and-WinRT-execution",
+    "production-signing-notarization-Authenticode",
+    "independent-SBOM-and-provenance-acceptance",
     "independent-review-and-branch-protection-administration"
   ],
   "runIds": [],

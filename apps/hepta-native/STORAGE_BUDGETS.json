@@ -1,7 +1,7 @@
 {
-  "schema": "hepta.ui-native-storage-budgets.v1",
-  "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
-  "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
+  "schema": "hepta.ui-native-storage-budgets.v2",
+  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
+  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
   "walIndexSourceCommit": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
   "status": "provisional-unqualified",
   "structural": {
@@ -15,7 +15,9 @@
     "retirementRecordBytes": 32768,
     "retirementIndexBuckets": 256,
     "retirementIndexBucketEntries": 65536,
-    "retirementIndexCacheEntries": 65536
+    "retirementIndexCacheEntries": 65536,
+    "maximumHistoryPageSize": 256,
+    "uiHistoryPageSize": 64
   },
   "performance": {
     "activeRecordsSubject": 4096,
@@ -35,8 +37,12 @@
     "fsync count by state transition",
     "WAL and snapshot byte growth",
     "peak resident set size",
-    "retirement index deterministic rebuild time"
+    "retirement index deterministic rebuild time",
+    "64-record durable history page latency and allocation profile"
   ],
   "measurements": null,
-  "qualificationRule": "Every performance field is a blocking ceiling. Missing, cancelled, skipped or non-identical-SHA evidence is failure, not not-applicable."
+  "qualificationRule": "Every performance field is a blocking ceiling. Missing, cancelled, skipped, foreign-SHA or over-budget evidence is failure.",
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
 }

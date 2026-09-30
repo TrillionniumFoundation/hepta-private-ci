@@ -1,11 +1,12 @@
 {
-  "schema": "hepta.ui.native.current-source.v5",
+  "schema": "hepta.ui.native.current-source.v6",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
-  "convergenceBranch": "work/ui-native-exact-convergence-20260930",
-  "baselineCommit": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
+  "convergenceBranch": "work/ui-native-product-closure-20260930",
+  "baselineCommit": "6f145464d9d58233c59aafe262a1250a5ea873a8",
   "walIndexSourceCommit": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
-  "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
-  "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
+  "productClosureSourceCommit": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
+  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
+  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
   "implementationRole": "immutable ordinary product source; later commits may change only qualification tooling, evidence metadata and review navigation",
   "inventoryPolicy": {
     "trackedRoots": [
@@ -13,23 +14,23 @@
       "codex-rs/hepta-native-gateway",
       "codex-rs/hepta-private-state"
     ],
+    "implementationPaths": [
+      "apps/hepta-native/src",
+      "apps/hepta-native/tests",
+      "apps/hepta-native/tools",
+      "apps/hepta-native/packaging",
+      "apps/hepta-native/portal",
+      "apps/hepta-native/Cargo.toml",
+      "apps/hepta-native/Cargo.lock",
+      "codex-rs/hepta-native-gateway",
+      "codex-rs/hepta-private-state",
+      "codex-rs/hepta-contracts final-use/native-gateway source"
+    ],
     "integrationFiles": [
       ".github/workflows/ui-native-qualification.yml",
       "CALLERS.toml",
       "codex-rs/Cargo.lock",
       "codex-rs/Cargo.toml",
-      "codex-rs/hepta-contracts/Cargo.toml",
-      "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "codex-rs/hepta-contracts/src/final_use.rs",
-      "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
-      "codex-rs/hepta-contracts/src/final_use_tests.rs",
-      "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
-      "codex-rs/hepta-contracts/src/lib.rs",
-      "codex-rs/hepta-contracts/src/native_gateway.rs",
-      "codex-rs/hepta-contracts/src/native_gateway_tests.rs",
-      "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
       "docs/modules/ui.native/BRANCH_PROTECTION.md",
       "docs/modules/ui.native/CURRENT_DELIVERY.json",
       "docs/modules/ui.native/CURRENT_SOURCE.json",
@@ -38,15 +39,15 @@
       "docs/modules/ui.native/REVIEW_DIFF.md",
       "docs/modules/ui.native/TECHNICAL.md",
       "scripts/check_hepta_ui_native_convergence.py",
-      "scripts/hepta_ui_native_evidence.py",
-      "scripts/hepta_ui_native_aggregate.py",
-      "scripts/hepta_ui_native_product_evidence.py",
       "scripts/hepta_ui_native_qualification_evidence.py",
       "scripts/hepta_ui_native_qualification_aggregate.py",
       "scripts/hepta_ui_native_compile_negative.py",
+      "scripts/hepta_ui_native_supply_chain.py",
       "scripts/qualify_hepta_ui_native_storage.py",
       "scripts/test_hepta_ui_native_convergence.py",
-      "scripts/test_hepta_ui_native_package_security.py"
+      "scripts/test_hepta_ui_native_package_security.py",
+      "scripts/test_hepta_ui_native_product_closure.py",
+      "scripts/test_hepta_ui_native_supply_chain.py"
     ],
     "excludedFromSelfHash": [
       "apps/hepta-native/CURRENT_SOURCE.json",
@@ -54,7 +55,7 @@
     ],
     "digest": "sha256-canonical-path-map-at-verification"
   },
-  "identityBinding": "immutable implementation commit and tree plus exact review head, fixed ordered-parent merge, workflow digest, runner image, retained logs, package digests and storage artifact",
+  "identityBinding": "immutable implementation commit/tree plus exact review head, fixed ordered-parent merge, workflow digest, runner image, logs, package, SBOM, provenance and storage artifacts",
   "qualificationSubjects": {
     "platform": 6,
     "storage": 1,

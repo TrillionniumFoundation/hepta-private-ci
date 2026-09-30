@@ -1,13 +1,15 @@
 {
-  "schema": "hepta.ui.native.delivery.v3",
+  "schema": "hepta.ui.native.delivery.v4",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
-  "convergenceBranch": "work/ui-native-exact-convergence-20260930",
-  "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
-  "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
+  "convergenceBranch": "work/ui-native-product-closure-20260930",
+  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
+  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
   "ordinarySourceHistory": {
-    "baseline": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
+    "baseline": "6f145464d9d58233c59aafe262a1250a5ea873a8",
     "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
-    "convergence": "a417e5756d4dba18737b9d3e6aa8b13016c23662"
+    "portalResource": "23d20707aebcdf8e5646d2bc3d74fd6751ec83d9",
+    "lanesAndPaging": "172fb1edaa5471c7cb28e14582c2b2a2dc1ff6f3",
+    "packageClosure": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52"
   },
   "implemented": {
     "exactActiveOperationIndex": true,
@@ -20,8 +22,16 @@
     "preparedBeforeFinalUseAndInvokingBeforeEffect": true,
     "unknownEffectsNeverAutomaticallyReplay": true,
     "ticketedNativePicker": true,
+    "xdgDesktopPortalPrimaryPicker": true,
+    "explicitZenityCompatibilityBackend": true,
+    "linuxVerifiedResourceFdHandoff": true,
+    "windowsAppUserModelIdRegistrarPackaged": true,
+    "windowsWinrtToastAdapterCandidate": true,
     "fixedSystemNotificationLaunchers": true,
     "clearedLauncherEnvironment": true,
+    "persistentHistoryPaging": true,
+    "splitPickerReadMutationLanes": true,
+    "singleMutationAuthorityPreserved": true,
     "readOnlyQualificationWorkflow": true,
     "selfMutatingUiNativeWorkflowsRemoved": 16,
     "storageBudgetsDeclared": true,
@@ -35,22 +45,21 @@
     "packagedFaultQualificationHarness": true,
     "isolatedLinuxAppDirLifecycleHarness": true,
     "sameRunEvidenceAggregate": true,
-    "failureArtifactRetention": true
+    "failureArtifactRetention": true,
+    "sbomAndProvenanceGenerator": true
   },
   "repositoryBlocking": [
-    "the final seven-subject workflow has not yet completed successfully for the exact review head",
-    "4096-active and 1000000-retired storage evidence has not yet passed every hard budget",
-    "measured source coverage and a sustained soak profile remain absent",
-    "persistent history paging and split picker/read/mutation lanes remain unimplemented",
-    "verified OS resource capability handoff for OpenPath and RevealPath remains unavailable",
-    "xdg-desktop-portal primary picker integration remains unavailable",
-    "packaged Windows AppUserModelID and WinRT notification integration remains unavailable"
+    "the final seven-subject workflow has not completed successfully for the exact review head",
+    "4096-active and 1000000-retired storage evidence has not passed every hard budget",
+    "measured source coverage and sustained soak evidence remain absent",
+    "Windows AppUserModelID registration and WinRT notification require execution on a physical packaged Windows host",
+    "macOS and Linux portal/notification resource paths require physical-host acceptance"
   ],
   "externalBlocking": [
     "physical Windows, macOS, X11 and Wayland acceptance",
     "multi-display, high-DPI, Chinese IME, screen-reader and keyboard-navigation acceptance",
     "production signing key custody, Developer ID/notarization and Authenticode",
-    "release SBOM and provenance acceptance",
+    "independent SBOM and provenance acceptance",
     "independent reviewer promotion decision",
     "repository administrator application of the recorded branch-protection ruleset"
   ],
@@ -73,8 +82,11 @@
     "durabilitySyscallEvidencePassed": false,
     "millionRecordMeasurementsComplete": false,
     "sameRunAggregatePassed": false,
+    "sbomGenerated": false,
+    "provenanceGenerated": false,
     "physicalPlatformAcceptanceComplete": false
   },
+  "productImplementationCandidateComplete": true,
   "productionImplementation": false,
   "productionQualified": false,
   "deploymentQualified": false,

@@ -1,13 +1,17 @@
 {
-  "schema": "hepta.module-implementation-map.v5",
-  "schemaVersion": 5,
+  "schema": "hepta.module-implementation-map.v6",
+  "schemaVersion": 6,
   "module": "ui.native",
   "owner": "ui-platform",
   "deputy": "accessibility",
-  "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
-  "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
+  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
+  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
   "sourceMaturity": "implementation-candidate-qualification-blocked",
-  "declaredRoots": ["apps/hepta-native", "codex-rs/hepta-native-gateway", "codex-rs/hepta-private-state"],
+  "declaredRoots": [
+    "apps/hepta-native",
+    "codex-rs/hepta-native-gateway",
+    "codex-rs/hepta-private-state"
+  ],
   "technicalGuide": "docs/modules/ui.native/TECHNICAL.md",
   "developmentGuide": "apps/hepta-native/DEVELOPMENT.md",
   "qualificationWorkflow": ".github/workflows/ui-native-qualification.yml",
@@ -16,14 +20,44 @@
     "runtimeOwner": "apps/hepta-native/src/runtime.rs::NativeShellRuntime",
     "journalOwner": "apps/hepta-native/src/journal.rs::OperationJournal",
     "authorityOwner": "codex-rs/hepta-contracts final-use authority",
-    "rule": "UI coordination, picker callbacks, qualification fixtures and retirement indexes never become execution authority"
+    "uiLanes": [
+      "single mutation owner",
+      "bounded persistent-history read",
+      "platform picker"
+    ],
+    "rule": "read and picker coordination never become another execution or journal authority"
   },
   "operations": [
-    {"operation": "connect_runtime", "entrypoint": "apps/hepta-native/src/runtime.rs::connect_runtime", "state": "implemented-unqualified"},
-    {"operation": "refresh_runtime_view", "entrypoint": "apps/hepta-native/src/runtime.rs::refresh_runtime_view", "state": "implemented-unqualified"},
-    {"operation": "request_platform_capability", "entrypoint": "apps/hepta-native/src/runtime.rs::request_platform_capability", "state": "clipboard-and-notification-candidate; open-and-reveal-fail-closed"},
-    {"operation": "reconcile_pending", "entrypoint": "apps/hepta-native/src/runtime.rs::reconcile_pending", "state": "implemented; unknown-result-replay-forbidden"},
-    {"operation": "verify_and_stage_update", "entrypoint": "apps/hepta-native/src/updater.rs::verify_and_stage", "state": "implemented-unqualified"}
+    {
+      "operation": "connect_runtime",
+      "entrypoint": "apps/hepta-native/src/runtime.rs::connect_runtime",
+      "state": "implemented-unqualified"
+    },
+    {
+      "operation": "refresh_runtime_view",
+      "entrypoint": "apps/hepta-native/src/runtime.rs::refresh_runtime_view",
+      "state": "implemented-unqualified"
+    },
+    {
+      "operation": "request_platform_capability",
+      "entrypoint": "apps/hepta-native/src/runtime.rs::request_platform_capability",
+      "state": "Linux Open/Reveal verified-FD candidate; clipboard and notifications candidate; non-Linux path actions fail closed"
+    },
+    {
+      "operation": "operation_history_page",
+      "entrypoint": "apps/hepta-native/src/runtime.rs::operation_history_page",
+      "state": "implemented bounded newest-first durable page"
+    },
+    {
+      "operation": "reconcile_pending",
+      "entrypoint": "apps/hepta-native/src/runtime.rs::reconcile_pending",
+      "state": "implemented; unknown-result replay forbidden"
+    },
+    {
+      "operation": "verify_and_stage_update",
+      "entrypoint": "apps/hepta-native/src/updater.rs::verify_and_stage",
+      "state": "implemented-unqualified"
+    }
   ],
   "storageProtocols": {
     "journal": "hepta.native-operation-journal.v7",
@@ -34,14 +68,20 @@
     "retirementIndexBucket": "hepta.native-retirement-index-bucket.v1",
     "authorityRule": "immutable retirement segments are authoritative; manifests, buckets and caches are rebuildable acceleration only"
   },
+  "nativeAdapters": {
+    "linuxPicker": "XDG Desktop Portal primary; Zenity explicit compatibility",
+    "linuxOpenReveal": "NOFOLLOW open, device/inode/metadata binding, final handle revalidation, XDG OpenURI FD handoff",
+    "windowsNotification": "packaged AppUserModelID registrar and WinRT toast adapter; physical qualification pending",
+    "macosNotification": "absolute /usr/bin/osascript with cleared environment; physical qualification pending"
+  },
   "qualificationSubjects": [
-    "Linux exact head",
-    "macOS exact head",
-    "Windows exact head",
-    "Linux fixed ordered-parent merge",
-    "macOS fixed ordered-parent merge",
-    "Windows fixed ordered-parent merge",
-    "Linux exact implementation storage scale"
+    "linux-exact-head",
+    "macos-exact-head",
+    "windows-exact-head",
+    "linux-fixed-ordered-parent-merge",
+    "macos-fixed-ordered-parent-merge",
+    "windows-fixed-ordered-parent-merge",
+    "linux-exact-implementation-storage-scale"
   ],
   "testSurfaces": [
     "apps/hepta-native/src/*_tests.rs",
@@ -51,12 +91,10 @@
     "apps/hepta-native/tools/linux_product_qualification.py",
     "apps/hepta-native/tools/package_unsigned.py",
     "scripts/check_hepta_ui_native_convergence.py",
-    "scripts/hepta_ui_native_evidence.py",
-    "scripts/hepta_ui_native_aggregate.py",
-    "scripts/hepta_ui_native_product_evidence.py",
     "scripts/hepta_ui_native_qualification_evidence.py",
     "scripts/hepta_ui_native_qualification_aggregate.py",
     "scripts/hepta_ui_native_compile_negative.py",
+    "scripts/hepta_ui_native_supply_chain.py",
     "scripts/qualify_hepta_ui_native_storage.py",
     "scripts/test_hepta_ui_native_*.py"
   ],
@@ -69,44 +107,43 @@
       "compiler-negative private-boundary tests",
       "release binary self-test",
       "journal parent-death and updater-death qualification",
-      "unsigned deterministic package",
-      "packaged self-test and packaged fault qualification"
+      "deterministic unsigned package",
+      "packaged self-test and packaged fault qualification",
+      "CycloneDX SBOM and SLSA-shaped provenance"
     ],
     "linuxAdditional": [
       "release gateway",
       "isolated AppDir with real D-Bus keyring",
       "authenticated gateway connection",
-      "two visible Xvfb GUI starts with distinct sessions",
-      "virtual focus, keyboard delivery and normal close",
-      "owner fixture remains read-only"
+      "visible Xvfb GUI lifecycle",
+      "virtual focus and keyboard delivery"
     ],
     "storageAdditional": [
-      "4096 active records through Prepared, Invoking and Terminal",
+      "4096 active records",
       "1000000 retired identities",
-      "indexed cold open and deterministic legacy index rebuild",
+      "indexed cold open and deterministic legacy rebuild",
       "p50/p95/p99 mutation latency",
       "WAL/snapshot sizes, peak RSS, write bytes and fsync/fdatasync calls"
     ]
   },
   "repositoryControlledGaps": [
     "successful execution of the final seven-subject workflow",
-    "measured source coverage and sustained soak",
-    "persistent history paging",
-    "split picker/read/mutation lanes without a second state owner",
-    "verified resource capability handoff for OpenPath and RevealPath",
-    "xdg-desktop-portal primary picker",
-    "packaged Windows WinRT notification integration"
+    "measured source coverage",
+    "sustained soak",
+    "physical execution of packaged Windows identity/WinRT notification"
   ],
   "externalEvidenceGates": [
     "physical platform, accessibility and IME acceptance",
-    "production signing, notarization, Authenticode, SBOM and provenance",
+    "production signing, notarization and Authenticode",
+    "independent SBOM/provenance acceptance",
     "independent promotion review and branch-protection administration"
   ],
   "claimBoundary": {
     "ordinarySourceCommitEstablished": true,
     "selfMutatingQualificationRemoved": true,
     "sevenSubjectEvidenceChainImplemented": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productImplementationCandidateComplete": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
