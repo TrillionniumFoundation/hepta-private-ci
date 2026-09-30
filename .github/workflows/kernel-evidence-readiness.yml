@@ -1,0 +1,208 @@
+name: Kernel evidence readiness
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - codex/kernel-evidence-final-closure-20260930
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-evidence-readiness-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  readiness:
+    name: Immutable candidate readiness
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      GITHUB_SYNTHETIC_SHA: ${{ github.event_name == 'pull_request' && github.sha || '' }}
+      WORKFLOW_SHA: ${{ github.workflow_sha }}
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Resolve source, base, target and record directory
+        id: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/kernel-evidence-readiness"
+          mkdir -p "$records/source" "$records/merge" "$records/crash"
+          printf 'READINESS_RECORDS=%s\n' "$records" >> "$GITHUB_ENV"
+          python3 scripts/kernel_evidence_candidate.py \
+            --source "$SOURCE_SHA" --base "$BASE_SHA" \
+            --diagnostic "$records/candidate-plan.json" \
+            --github-env "$GITHUB_ENV" --github-output "$GITHUB_OUTPUT"
+          target="$(rustc -vV | sed -n 's/^host: //p')"
+          test -n "$target"
+          printf 'TARGET_TRIPLE=%s\n' "$target" >> "$GITHUB_ENV"
+          printf 'RUNNER_IMAGE=%s-%s\n' "${ImageOS:-ubuntu24}" "${ImageVersion:-unknown}" >> "$GITHUB_ENV"
+
+      - name: Verify readiness generators
+        shell: bash
+        run: python3 -m unittest scripts.tests.test_kernel_evidence_readiness
+
+      - name: Execute exact-source evidence and Agentd suites
+        shell: bash
+        run: |
+          set -o pipefail
+          {
+            cd codex-rs
+            cargo test --locked -p codex-hepta-evidence
+            cargo test --locked -p codex-hepta-agentd --lib \
+              --test kernel_evidence_product \
+              --test kernel_evidence_profile \
+              --test kernel_evidence_paging_product \
+              --test kernel_evidence_publication_cli
+          } 2>&1 | tee "$READINESS_RECORDS/source/tests.log"
+
+      - name: Project machine-verifiable crash receipts
+        shell: bash
+        run: |
+          python3 scripts/kernel_evidence_crash_matrix.py \
+            --log "$READINESS_RECORDS/source/tests.log" \
+            --tested-sha "$SOURCE_SHA" \
+            --target-triple "$TARGET_TRIPLE" \
+            --workflow-run-id "$GITHUB_RUN_ID" \
+            --output-directory "$READINESS_RECORDS/crash" \
+            --command 'cargo test --locked -p codex-hepta-evidence; cargo test --locked -p codex-hepta-agentd evidence targets'
+
+      - name: Verify exact-source metadata, docs and implementation maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 - "$READINESS_RECORDS" "$SOURCE_SHA" <<'PY'
+          import json, pathlib, sys
+          root = pathlib.Path(sys.argv[1])
+          source = sys.argv[2]
+          for name in ("exact_source", "metadata"):
+              (root / f"{name}.json").write_text(json.dumps({
+                  "schemaVersion": 1, "module": "kernel.evidence",
+                  "testedSha": source, "passed": True,
+                  "qualificationGranted": False,
+              }, sort_keys=True) + "\n", encoding="utf-8")
+          summary = json.loads((root / "crash/SUMMARY.json").read_text(encoding="utf-8"))
+          (root / "publication_diagnostics.json").write_text(json.dumps({
+              "schemaVersion": 1, "module": "kernel.evidence", "testedSha": source,
+              "passed": summary.get("passed") is True,
+              "qualificationGranted": False,
+          }, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Construct deterministic base merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.candidate.outputs.base-sha }}
+          source-sha: ${{ steps.candidate.outputs.source-sha }}
+          pr-number: ${{ github.event.pull_request.number || '0' }}
+          author-name: Hepta kernel evidence readiness
+          author-email: hepta-kernel-evidence-ci@users.noreply.github.com
+          message: Synthetic kernel evidence readiness merge
+
+      - name: Execute deterministic-merge evidence and Agentd suites
+        shell: bash
+        env:
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+          MERGE_TREE: ${{ steps.merge.outputs.tree }}
+        run: |
+          set -o pipefail
+          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$MERGE_TREE"
+          {
+            cd codex-rs
+            cargo test --locked -p codex-hepta-evidence
+            cargo test --locked -p codex-hepta-agentd --lib \
+              --test kernel_evidence_product \
+              --test kernel_evidence_profile \
+              --test kernel_evidence_paging_product \
+              --test kernel_evidence_publication_cli
+          } 2>&1 | tee "$READINESS_RECORDS/merge/tests.log"
+          python3 - "$READINESS_RECORDS/deterministic_merge.json" "$SOURCE_SHA" "$MERGE_SHA" <<'PY'
+          import json, pathlib, sys
+          pathlib.Path(sys.argv[1]).write_text(json.dumps({
+              "schemaVersion": 1, "module": "kernel.evidence",
+              "testedSha": sys.argv[2], "deterministicMergeSha": sys.argv[3],
+              "passed": True, "qualificationGranted": False,
+          }, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Build one runtime readiness manifest
+        if: always()
+        shell: bash
+        env:
+          DETERMINISTIC_MERGE_SHA: ${{ steps.merge.outputs.sha }}
+          FINAL_MERGE_SHA: ${{ github.ref == 'refs/heads/main' && github.sha || '' }}
+        run: |
+          set -euo pipefail
+          git checkout --detach "$SOURCE_SHA"
+          args=(
+            --root "$GITHUB_WORKSPACE"
+            --source-head-sha "$SOURCE_SHA"
+            --base-sha "$BASE_SHA"
+            --deterministic-merge-sha "${DETERMINISTIC_MERGE_SHA:-}"
+            --github-synthetic-merge-sha "$GITHUB_SYNTHETIC_SHA"
+            --workflow-sha "$WORKFLOW_SHA"
+            --final-merge-sha "$FINAL_MERGE_SHA"
+            --workflow-run-id "$GITHUB_RUN_ID"
+            --runner-image "$RUNNER_IMAGE"
+            --target-triple "$TARGET_TRIPLE"
+            --qualification-receipt "exact_source=$READINESS_RECORDS/exact_source.json"
+            --qualification-receipt "deterministic_merge=$READINESS_RECORDS/deterministic_merge.json"
+            --qualification-receipt "metadata=$READINESS_RECORDS/metadata.json"
+            --qualification-receipt "publication_diagnostics=$READINESS_RECORDS/publication_diagnostics.json"
+            --artifact "candidate_plan=$READINESS_RECORDS/candidate-plan.json"
+            --artifact "source_log=$READINESS_RECORDS/source/tests.log"
+            --artifact "merge_log=$READINESS_RECORDS/merge/tests.log"
+            --artifact "crash_summary=$READINESS_RECORDS/crash/SUMMARY.json"
+            --crash-receipts "$READINESS_RECORDS/crash"
+            --output "$READINESS_RECORDS/READINESS_MANIFEST.json"
+          )
+          python3 scripts/kernel_evidence_readiness.py "${args[@]}"
+
+      - name: Upload complete readiness evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: kernel-evidence-readiness-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kernel-evidence-readiness/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Fail closed on any repository-controlled readiness gap
+        if: always()
+        shell: bash
+        run: |
+          python3 - "$READINESS_RECORDS/READINESS_MANIFEST.json" <<'PY'
+          import json, pathlib, sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          readiness = value["readiness"]
+          required = (
+              "exact_source_qualified", "deterministic_merge_qualified",
+              "metadata_qualified", "publication_diagnostics_qualified",
+              "crash_matrix_ready",
+          )
+          missing = [name for name in required if readiness.get(name) is not True]
+          if missing:
+              raise SystemExit("readiness failed closed: " + ", ".join(missing))
+          if readiness.get("production_activation") or readiness.get("release_approved"):
+              raise SystemExit("repository workflow must not self-activate or self-release")
+          PY
