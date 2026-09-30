@@ -1,4 +1,4 @@
-name: Inference worker exact-head source export
+name: Inference worker P0 authority qualification
 
 on:
   push:
@@ -6,70 +6,177 @@ on:
       - automation/inference-worker-materialize-final-20260930
     paths:
       - .github/workflows/inference-worker-authoritative-qualification.yml
+      - .github/materialization/inference-worker-p05.patch.gz.b64
 
 permissions:
   contents: read
 
 concurrency:
-  group: inference-worker-exact-head-source-export
+  group: inference-worker-p0-authority-qualification
   cancel-in-progress: true
 
 env:
   SOURCE_SHA: 7626ccb14444403a3a27cca7200c5f29b2b392ab
+  TARGET_BRANCH: codex/inference-worker-authoritative-20260929
+  STAGING_BRANCH: automation/inference-worker-materialize-final-20260930
+  PATCH_SHA256: da481e6697f893e573bb2e50a0bdc393515dbe23dd5812dca694da23c239228c
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
-  export:
-    name: Export exact-head inference.worker source
-    runs-on: ubuntu-slim
-    timeout-minutes: 10
+  qualify:
+    name: P0 authority, interrupt and journal qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Check out exact ordinary-source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
           clean: true
 
-      - name: Bind immutable source
+      - name: Bind immutable source and retrieve reviewed patch
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$SOURCE_SHA"
           test -z "$(git status --porcelain --untracked-files=normal)"
+          git fetch origin "refs/heads/$STAGING_BRANCH:refs/remotes/origin/$STAGING_BRANCH"
+          git show "origin/$STAGING_BRANCH:.github/materialization/inference-worker-p05.patch.gz.b64" \
+            | base64 --decode \
+            | gzip --decompress \
+            > "$RUNNER_TEMP/inference-worker-p05.patch"
+          printf '%s  %s\n' "$PATCH_SHA256" "$RUNNER_TEMP/inference-worker-p05.patch" | sha256sum --check --strict
+          git apply --check --verbose "$RUNNER_TEMP/inference-worker-p05.patch"
+          git apply "$RUNNER_TEMP/inference-worker-p05.patch"
+          git diff --check
 
-      - name: Stage bounded source slice
+      - name: Format exact Rust surfaces
         shell: bash
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/inference-worker-source"
-          mkdir -p "$out"
-          for path in \
-            codex-rs/hepta-infer-core/src/native_control.rs \
-            codex-rs/hepta-infer-core/src/native_control_tests.rs \
-            codex-rs/hepta-infer-worker-host/Cargo.toml \
+          rustfmt --edition 2024 \
             codex-rs/hepta-infer-worker-host/src/experimental_local.rs \
             codex-rs/hepta-infer-worker-host/src/experimental_local/authority.rs \
             codex-rs/hepta-infer-worker-host/src/experimental_local/driver.rs \
             codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs \
-            codex-rs/hepta-infer-worker-host/src/experimental_local/resources.rs \
-            codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs \
-            docs/modules/inference.worker/TECHNICAL.md \
-            docs/modules/inference.worker/RECOVERY_AND_OPERATIONS.md \
-            docs/modules/inference.worker/LOCAL_MODEL_RECOVERY.md \
-            docs/modules/inference.worker/CURRENT_STATUS.json \
-            docs/modules/inference.worker/IMPLEMENTATION_MAP.json
-          do
-            mkdir -p "$out/$(dirname "$path")"
-            cp "$path" "$out/$path"
-          done
-          printf '%s\n' "$SOURCE_SHA" > "$out/SOURCE_SHA"
-          find "$out" -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum > "$out/SHA256SUMS"
+            codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs
+          git diff --check
 
-      - name: Retain exact source slice
+      - name: Refresh generated documentation projection
+        run: python3 scripts/hepta-module-docs.py refresh-derived
+
+      - name: Prepare native build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install DotSlash
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Expose DotSlash for integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Test durable inference core
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-core
+
+      - name: Test hosted worker default profile
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-worker-host
+
+      - name: Test experimental local authority and interrupt profile
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-infer-worker-host --features experimental-local-model
+
+      - name: Check and lint exact targets
+        working-directory: codex-rs
+        run: |
+          cargo check --locked -p codex-hepta-infer-core --all-targets
+          cargo check --locked -p codex-hepta-infer-worker-host --all-targets
+          cargo check --locked -p codex-hepta-infer-worker-host --features experimental-local-model --all-targets
+          cargo clippy --locked -p codex-hepta-infer-core --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-infer-worker-host --features experimental-local-model --all-targets --no-deps -- -D warnings
+
+      - name: Verify source and documentation projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 -m unittest discover -v -s scripts/tests -p 'test_inference_worker_*.py'
+          git diff --check
+
+      - name: Package exact ordinary-source candidate
+        shell: bash
+        env:
+          PAYLOAD_DIR: ${{ runner.temp }}/inference-worker-p0-source
+        run: |
+          set -euo pipefail
+          rm -rf "$PAYLOAD_DIR"
+          mkdir -p "$PAYLOAD_DIR/files"
+          git add -A
+          git diff --cached --check
+          git diff --cached --name-status > "$PAYLOAD_DIR/manifest.tsv"
+          git diff --cached --name-only --diff-filter=D > "$PAYLOAD_DIR/deleted-paths.txt"
+          git diff --cached --name-only --diff-filter=ACMRTUXB -z > "$PAYLOAD_DIR/changed-paths.z"
+          git diff --cached --binary --full-index > "$PAYLOAD_DIR/ordinary-source.patch"
+          git write-tree > "$PAYLOAD_DIR/expected-tree.txt"
+          printf '%s\n' "$SOURCE_SHA" > "$PAYLOAD_DIR/source-head.txt"
+          printf '%s\n' "$PATCH_SHA256" > "$PAYLOAD_DIR/reviewed-patch-sha256.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$PAYLOAD_DIR/qualification-workflow-head.txt"
+          python3 - <<'PY'
+          import os
+          import shutil
+          from pathlib import Path
+
+          root = Path.cwd().resolve()
+          payload = Path(os.environ["PAYLOAD_DIR"]).resolve()
+          for raw_path in (payload / "changed-paths.z").read_bytes().split(b"\0"):
+              if not raw_path:
+                  continue
+              relative = Path(os.fsdecode(raw_path))
+              if relative.is_absolute() or ".." in relative.parts:
+                  raise SystemExit(f"unsafe candidate path: {relative}")
+              source = root / relative
+              if not source.is_file():
+                  raise SystemExit(f"candidate file missing: {relative}")
+              destination = payload / "files" / relative
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(source, destination)
+          PY
+          find "$PAYLOAD_DIR" -type f ! -name payload-sha256.txt -print0 \
+            | LC_ALL=C sort -z \
+            | xargs -0 sha256sum > "$PAYLOAD_DIR/payload-sha256.txt"
+          test -s "$PAYLOAD_DIR/manifest.tsv"
+          test -s "$PAYLOAD_DIR/ordinary-source.patch"
+
+      - name: Retain qualified ordinary-source candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: inference-worker-source-${{ env.SOURCE_SHA }}
-          path: ${{ runner.temp }}/inference-worker-source
+          name: inference-worker-p0-source-${{ env.SOURCE_SHA }}-${{ github.sha }}
+          path: ${{ runner.temp }}/inference-worker-p0-source
           if-no-files-found: error
           retention-days: 3
           include-hidden-files: true
