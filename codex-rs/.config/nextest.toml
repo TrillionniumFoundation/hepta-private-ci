@@ -99,6 +99,15 @@ slow-timeout = { period = "45s", terminate-after = 2 }
 [test-groups.hepta_durable_capacity]
 max-threads = 1
 
+# The explicitly selected maintenance soak preserves 1024 request identities
+# across 16 real compactions and reopens. Its fsync workload is qualification,
+# separate from a provider or RPC latency budget; never reduce the workload.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-infer-core) & test(=durable_control::native::v2_tests::post_compaction_multi_generation_curve)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0
+
 [[profile.default.overrides]]
 filter = 'package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)'
 test-group = 'hepta_durable_capacity'

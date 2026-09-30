@@ -28,7 +28,7 @@ impl ObservedAgentMessages {
             // A duplicate or delayed start must not replay an initial prefix.
             return Ok(());
         }
-        self.update(output, id, text, false)
+        self.update(output, id, text, /*completed*/ false)
     }
 
     pub(super) fn delta(
@@ -37,7 +37,7 @@ impl ObservedAgentMessages {
         id: &str,
         delta: &str,
     ) -> Result<(), String> {
-        self.update(output, id, delta, false)
+        self.update(output, id, delta, /*completed*/ false)
     }
 
     pub(super) fn complete(
@@ -46,7 +46,7 @@ impl ObservedAgentMessages {
         id: &str,
         text: &str,
     ) -> Result<(), String> {
-        self.update(output, id, text, true)
+        self.update(output, id, text, /*completed*/ true)
     }
 
     fn update(
