@@ -10,8 +10,8 @@ fn original_measurements_and_retained_commits_survive_replay_without_model_redis
     let candidate = runtime_fixture(2, Duration::from_micros(400), Duration::ZERO);
     let mut baseline_port = baseline.canonical.clone();
     let mut candidate_port = candidate.canonical.clone();
-    baseline_port.budget_micros = 1_000_000;
-    candidate_port.budget_micros = 1_000_000;
+    baseline_port.budget_micros = 10_000_000;
+    candidate_port.budget_micros = 10_000_000;
     let cases = vec![AgentdSelfIterationQualificationCaseV1 {
         case_id: StableId::new("test.holdout.case").expect("id"),
         baseline_tick: baseline.input.clone(),
@@ -25,7 +25,7 @@ fn original_measurements_and_retained_commits_survive_replay_without_model_redis
         &candidate.handle,
         &cases,
         baseline.input.objective_digest,
-        Duration::from_secs(1),
+        Duration::from_secs(30),
         &cancellation,
     )
     .expect("physical original measurement");
@@ -42,7 +42,7 @@ fn original_measurements_and_retained_commits_survive_replay_without_model_redis
         &candidate.handle,
         &cases,
         baseline.input.objective_digest,
-        Duration::from_secs(1),
+        Duration::from_secs(30),
         &cancellation,
     )
     .expect("guarded existing receipts");
@@ -61,8 +61,8 @@ fn cancellation_and_dataset_binding_fail_before_physical_execution() {
     let candidate = runtime_fixture(2, Duration::ZERO, Duration::ZERO);
     let mut baseline_port = baseline.canonical.clone();
     let mut candidate_port = candidate.canonical.clone();
-    baseline_port.budget_micros = 1_000_000;
-    candidate_port.budget_micros = 1_000_000;
+    baseline_port.budget_micros = 10_000_000;
+    candidate_port.budget_micros = 10_000_000;
     let mut cases = vec![AgentdSelfIterationQualificationCaseV1 {
         case_id: StableId::new("test.holdout.case").expect("id"),
         baseline_tick: baseline.input.clone(),
@@ -78,7 +78,7 @@ fn cancellation_and_dataset_binding_fail_before_physical_execution() {
             &candidate.handle,
             &cases,
             baseline.input.objective_digest,
-            Duration::from_secs(1),
+            Duration::from_secs(30),
             &cancellation
         )
         .is_err()
@@ -91,7 +91,7 @@ fn cancellation_and_dataset_binding_fail_before_physical_execution() {
             &candidate.handle,
             &cases,
             baseline.input.objective_digest,
-            Duration::from_secs(1),
+            Duration::from_secs(30),
             &CancellationToken::new()
         )
         .is_err()

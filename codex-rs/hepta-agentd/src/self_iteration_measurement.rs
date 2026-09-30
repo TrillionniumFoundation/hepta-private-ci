@@ -101,6 +101,18 @@ pub fn measure_self_iteration_qualification_v1(
             ),
             cancellation,
         };
+        let baseline_previous = baseline
+            .query_result_guarded(&case.baseline_tick, &mut baseline_guard)
+            .map_err(|error| invalid(format!("baseline current use: {error}")))?;
+        let before = baseline
+            .prepare(
+                case.baseline_tick.tick_id.clone(),
+                baseline_body,
+                case.baseline_tick.clone(),
+            )
+            .map_err(|error| invalid(error.to_string()))?
+            .execute(&case.baseline_port, &mut baseline_guard)
+            .map_err(|error| invalid(error.to_string()))?;
         let mut candidate_guard = MeasurementGuard {
             objective,
             generation: candidate.generation().map_err(control_error)?,
@@ -111,21 +123,9 @@ pub fn measure_self_iteration_qualification_v1(
             ),
             cancellation,
         };
-        let baseline_previous = baseline
-            .query_result_guarded(&case.baseline_tick, &mut baseline_guard)
-            .map_err(|error| invalid(format!("baseline current use: {error}")))?;
         let candidate_previous = candidate
             .query_result_guarded(&case.candidate_tick, &mut candidate_guard)
             .map_err(|error| invalid(format!("candidate current use: {error}")))?;
-        let before = baseline
-            .prepare(
-                case.baseline_tick.tick_id.clone(),
-                baseline_body,
-                case.baseline_tick.clone(),
-            )
-            .map_err(|error| invalid(error.to_string()))?
-            .execute(&case.baseline_port, &mut baseline_guard)
-            .map_err(|error| invalid(error.to_string()))?;
         let after = candidate
             .prepare(
                 case.candidate_tick.tick_id.clone(),
@@ -137,12 +137,22 @@ pub fn measure_self_iteration_qualification_v1(
             .map_err(|error| invalid(error.to_string()))?;
         // Re-read through the same current-use guards. Equality covers the full
         // durable result, not merely an acknowledged flag or digest projection.
+        // Retention is a fresh guarded read, with the enclosing qualification
+        // lifetime; it does not refresh an in-flight physical model deadline.
+        let mut baseline_retention = MeasurementGuard {
+            deadline,
+            ..baseline_guard
+        };
+        let mut candidate_retention = MeasurementGuard {
+            deadline,
+            ..candidate_guard
+        };
         let retained = baseline
-            .query_result_guarded(&case.baseline_tick, &mut baseline_guard)
+            .query_result_guarded(&case.baseline_tick, &mut baseline_retention)
             .map_err(|error| invalid(error.to_string()))?
             == Some(before.clone())
             && candidate
-                .query_result_guarded(&case.candidate_tick, &mut candidate_guard)
+                .query_result_guarded(&case.candidate_tick, &mut candidate_retention)
                 .map_err(|error| invalid(error.to_string()))?
                 == Some(after.clone());
         if !retained {
