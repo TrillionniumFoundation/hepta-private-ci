@@ -308,17 +308,26 @@ fn load_dotenv() {
     }
 }
 
-/// Helper to set vars from a dotenvy iterator while filtering out `CODEX_` keys.
+/// Preserve host-selected startup configuration while loading user dotenv values.
 fn set_filtered<I>(iter: I)
 where
     I: IntoIterator<Item = Result<(String, String), dotenvy::Error>>,
 {
     for (key, value) in iter.into_iter().flatten() {
-        if !key.to_ascii_uppercase().starts_with(ILLEGAL_ENV_VAR_PREFIX) {
-            // It is safe to call set_var() because our process is
-            // single-threaded at this point in its execution.
-            unsafe { std::env::set_var(&key, &value) };
+        let normalized = key.to_ascii_uppercase();
+        if normalized.starts_with(ILLEGAL_ENV_VAR_PREFIX)
+            || matches!(
+                normalized.as_str(),
+                "HEPTA_SELF_ITERATION_HOST_CONFIG"
+                    | "HEPTA_SELF_ITERATION_HOST_CONFIG_DIGEST"
+                    | "HEPTA_MODEL_CREDENTIAL_PROFILE_HOME"
+            )
+        {
+            continue;
         }
+        // It is safe to call set_var() because our process is
+        // single-threaded at this point in its execution.
+        unsafe { std::env::set_var(&key, &value) };
     }
 }
 
@@ -543,6 +552,51 @@ mod tests {
     use std::path::Path;
     use std::path::PathBuf;
     use tempfile::TempDir;
+
+    #[test]
+    fn dotenv_preserves_installed_host_configuration() -> anyhow::Result<()> {
+        const CHILD_INPUT: &str = "HEPTA_ARG0_TEST_DOTENV_PATH";
+        const ORDINARY: &str = "HEPTA_ARG0_DOTENV_ORDINARY";
+        let protected = [
+            ("HEPTA_SELF_ITERATION_HOST_CONFIG", "/etc/hepta/agent.json"),
+            ("HEPTA_SELF_ITERATION_HOST_CONFIG_DIGEST", "installed-pin"),
+            ("HEPTA_MODEL_CREDENTIAL_PROFILE_HOME", "/srv/hepta/auth"),
+        ];
+        if let Some(path) = std::env::var_os(CHILD_INPUT) {
+            super::set_filtered(dotenvy::from_path_iter(path)?);
+            for (name, expected) in protected {
+                assert_eq!(std::env::var(name)?.as_str(), expected);
+            }
+            assert_eq!(std::env::var(ORDINARY)?.as_str(), "loaded");
+            return Ok(());
+        }
+        let directory = TempDir::new()?;
+        let path = directory.path().join(".env");
+        fs::write(
+            &path,
+            "HEPTA_SELF_ITERATION_HOST_CONFIG=/tmp/untrusted.json\n\
+             HEPTA_SELF_ITERATION_HOST_CONFIG_DIGEST=replaced-pin\n\
+             HEPTA_MODEL_CREDENTIAL_PROFILE_HOME=/tmp/untrusted-auth\n\
+             HEPTA_ARG0_DOTENV_ORDINARY=loaded\n",
+        )?;
+        // Environment mutation happens only in the isolated child process.
+        let output = std::process::Command::new(std::env::current_exe()?)
+            .args([
+                "--exact",
+                "tests::dotenv_preserves_installed_host_configuration",
+                "--test-threads=1",
+            ])
+            .env(CHILD_INPUT, path)
+            .envs(protected)
+            .env_remove(ORDINARY)
+            .output()?;
+        assert!(
+            output.status.success(),
+            "dotenv child failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        Ok(())
+    }
 
     struct PackagePathTestFixture {
         _temp_dir: TempDir,
