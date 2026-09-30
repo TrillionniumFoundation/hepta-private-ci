@@ -59,6 +59,10 @@ fn parse_active_records(
             };
             if Some(boundary.frontier.frontier_generation) != cursor.previous_generation
                 || Some(boundary.record_sha256.clone()) != cursor.previous_record_sha256
+                || cursor
+                    .previous_frontier
+                    .as_ref()
+                    .is_some_and(|frontier| frontier != &boundary.frontier)
             {
                 return Err(corrupt(
                     "duplicate active prefix conflicts with the sealed segment boundary",
@@ -132,6 +136,14 @@ fn parse_records(
             return Err(corrupt(
                 "frontier audit record digest or generation is inconsistent",
             ));
+        }
+        if let Some(previous) = cursor.previous_frontier.as_ref() {
+            let decision = crate::classify_frontier_merge(previous, &record.frontier);
+            if decision != crate::FrontierMergeDecision::IncomingWins {
+                return Err(corrupt(&format!(
+                    "frontier audit segment contains a non-automatic transition: {decision:?}"
+                )));
+            }
         }
         cursor.advance(&record)?;
         records.push(record);
