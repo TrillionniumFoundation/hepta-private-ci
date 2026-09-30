@@ -64,19 +64,21 @@ mod final_use;
 pub use final_use::FinalUseErrorV1;
 pub use final_use::FinalUseFenceV1;
 pub use final_use::FinalUseTabularCandidateV1;
-pub use final_use::FinalUseTabularCapabilityV1;
 pub use final_use::FinalUseWitnessV1;
 pub use final_use::FinalUseWorldModelCandidateV1;
-pub use final_use::FinalUseWorldModelCapabilityV1;
 pub use final_use::OpaquePinnedTabularArtifactV1;
 pub use final_use::OpaquePinnedWorldModelV1;
 pub use final_use::SelectionCurrentnessV1;
 pub use final_use::TabularTrainingRequestV1;
 pub use final_use::WorldModelTrainingRequestV1;
-pub use final_use::fit_tabular_final_use_v1;
-pub use final_use::fit_world_model_final_use_v1;
-pub use final_use::issue_tabular_final_use_capability_v1;
-pub use final_use::issue_world_model_final_use_capability_v1;
+
+mod final_use_hardening;
+pub use final_use_hardening::FinalUseTabularCapabilityV1;
+pub use final_use_hardening::FinalUseWorldModelCapabilityV1;
+pub use final_use_hardening::fit_tabular_final_use_v1;
+pub use final_use_hardening::fit_world_model_final_use_v1;
+pub use final_use_hardening::issue_tabular_final_use_capability_v1;
+pub use final_use_hardening::issue_world_model_final_use_capability_v1;
 
 #[cfg(test)]
 mod authoritative_tests;
