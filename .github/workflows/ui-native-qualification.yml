@@ -302,7 +302,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-  storage-scale:
+  storage_scale:
     name: ui.native / Linux / exact implementation storage scale
     needs: subject
     runs-on: ubuntu-24.04
@@ -425,7 +425,7 @@ jobs:
   qualification-result:
     name: ui.native / qualification result
     if: always()
-    needs: [subject, qualify, storage-scale]
+    needs: [subject, qualify, storage_scale]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -434,7 +434,7 @@ jobs:
         env:
           SUBJECT: ${{ needs.subject.result }}
           QUALIFY: ${{ needs.qualify.result }}
-          STORAGE: ${{ needs['storage-scale'].result }}
+          STORAGE: ${{ needs.storage_scale.result }}
         run: |
           set -euo pipefail
           test "$SUBJECT" = success
