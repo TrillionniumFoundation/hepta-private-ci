@@ -428,6 +428,16 @@ This receipt records repository source bindings for the current documentation ca
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
 
+### Exact profile boundary
+
+The client-only Cargo profile omits the Agentd server/components/App Server
+composition. It is not yet SQL-free: client protocol DTOs still depend on the
+Automation crate, and client evidence-return types still depend on the Evidence
+crate; those crates retain their durable-storage dependencies. A shorter list of
+direct imports or re-exporting them through `agent-components` does not remove
+that transitive build surface. Any further profile split must preserve these wire
+types, current durable owners and Cargo/Bazel behavior together.
+
 ### Client-only Cargo composition
 
 The default Agentd profile retains `server` and `production-cognitive-write`.
