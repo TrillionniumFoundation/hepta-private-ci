@@ -1,0 +1,142 @@
+name: Kernel authority convergence source gate
+
+on:
+  push:
+    branches:
+      - work/kernel-authority-convergence-20260925
+    paths:
+      - .github/workflows/kernel-authority-convergence.yml
+      - .github/workflows/kernel-authority-production-closure.yml
+      - .github/workflows/kernel-authority-product-process-recovery.yml
+      - .github/workflows/kernel-authority-target-capacity.yml
+      - codex-rs/hepta-contracts/src/authority_trust.rs
+      - codex-rs/hepta-agentd/src/authority_feed_clock.rs
+      - codex-rs/hepta-agentd/src/automation_authority_bootstrap.rs
+      - codex-rs/hepta-agentd/src/automation_effect_host.rs
+      - codex-rs/hepta-agentd/src/config.rs
+      - codex-rs/hepta-agentd/src/runtime.rs
+      - codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs
+      - codex-rs/hepta-fleet/src/authority_port.rs
+      - qualification/kernel-authority/convergence_acceptance.py
+      - qualification/kernel-authority/convergence_manifest.json
+      - qualification/kernel-authority/port_acceptance.py
+      - qualification/kernel-authority/test_convergence_acceptance.py
+      - docs/modules/kernel.authority/CONVERGENCE_STATUS.md
+      - docs/modules/kernel.authority/README.md
+  pull_request:
+    paths:
+      - .github/workflows/kernel-authority-convergence.yml
+      - .github/workflows/kernel-authority-production-closure.yml
+      - .github/workflows/kernel-authority-product-process-recovery.yml
+      - .github/workflows/kernel-authority-target-capacity.yml
+      - codex-rs/hepta-contracts/src/authority_trust.rs
+      - codex-rs/hepta-agentd/src/authority_feed_clock.rs
+      - codex-rs/hepta-agentd/src/automation_authority_bootstrap.rs
+      - codex-rs/hepta-agentd/src/automation_effect_host.rs
+      - codex-rs/hepta-agentd/src/config.rs
+      - codex-rs/hepta-agentd/src/runtime.rs
+      - codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs
+      - codex-rs/hepta-fleet/src/authority_port.rs
+      - qualification/kernel-authority/convergence_acceptance.py
+      - qualification/kernel-authority/convergence_manifest.json
+      - qualification/kernel-authority/port_acceptance.py
+      - qualification/kernel-authority/test_convergence_acceptance.py
+      - docs/modules/kernel.authority/CONVERGENCE_STATUS.md
+      - docs/modules/kernel.authority/README.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-authority-convergence-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  exact-source:
+    name: Validate immutable source and claim boundaries
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SUBJECT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      OUTPUT: ${{ runner.temp }}/kernel-authority-convergence/projection.json
+    steps:
+      - name: Checkout the exact source subject
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SUBJECT_SHA }}
+          persist-credentials: false
+
+      - name: Pin immutable candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SUBJECT_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD > "$RUNNER_TEMP/kernel-authority-candidate.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/kernel-authority-tree.txt"
+
+      - name: Run convergence regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/kernel-authority/test_convergence_acceptance.py
+
+      - name: Produce source-only convergence projection
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "$OUTPUT")"
+          python3 qualification/kernel-authority/convergence_acceptance.py \
+            --output "$OUTPUT"
+          python3 - "$OUTPUT" "$SUBJECT_SHA" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          path = pathlib.Path(sys.argv[1])
+          subject = sys.argv[2]
+          value = json.loads(path.read_text(encoding="utf-8"))
+          if value.get("candidate", {}).get("commit") != subject:
+              raise SystemExit("convergence projection candidate drifted")
+          if value.get("repositorySourceClosurePassed") is not True:
+              raise SystemExit("repository source closure did not pass")
+          checks = value.get("sourceChecks")
+          if not isinstance(checks, dict) or not checks or not all(checks.values()):
+              raise SystemExit("one or more source convergence checks failed")
+          for field in (
+              "exactCandidateExecutionProved",
+              "ordinaryDeploymentProviderWired",
+              "allDeclaredPortsNativelyVerified",
+              "targetCollectionExecuted",
+              "runtimeOptimizationAuthorized",
+              "productionImplementation",
+              "productExecutionProved",
+              "targetHostQualified",
+              "independentAcceptance",
+              "activationGranted",
+              "releaseGranted",
+          ):
+              if value.get(field) is not False:
+                  raise SystemExit(f"source projection overclaims {field}")
+          PY
+
+      - name: Verify source checkout remains read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Retain candidate-bound source projection
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kernel-authority-convergence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/kernel-authority-candidate.txt
+            ${{ runner.temp }}/kernel-authority-tree.txt
+            ${{ env.OUTPUT }}
+          if-no-files-found: warn
+          retention-days: 14
