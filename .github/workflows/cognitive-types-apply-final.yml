@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   apply-verify-commit:
-    runs-on: [self-hosted, linux, x64, rog]
+    runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
       - name: Check out exact staged candidate
@@ -31,7 +31,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$RUNNER_NAME" = 'rog'
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           remote_head="$(git ls-remote origin refs/heads/codex/cognitive-types-full-closure-20260927 | cut -f1)"
           test "$remote_head" = "$GITHUB_SHA"
