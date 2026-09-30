@@ -78,6 +78,17 @@ def string_list(manifest: dict[str, Any], key: str) -> list[str]:
 
 
 def validate(manifest: dict[str, Any]) -> None:
+    if set(manifest) != {
+        "schema",
+        "schemaVersion",
+        "module",
+        "implementationState",
+        "truth",
+        "evidenceProjection",
+        "requiredChecks",
+        "externalGates",
+    }:
+        raise ValueError("source manifest must contain only registered static fields")
     if (
         manifest.get("schema") != SCHEMA
         or manifest.get("schemaVersion") != 2
@@ -88,7 +99,10 @@ def validate(manifest: dict[str, Any]) -> None:
     if (
         not isinstance(state, dict)
         or set(state) != STATIC_STATE_KEYS
-        or any(not isinstance(state[key], str) or not state[key] for key in STATIC_STATE_KEYS)
+        or any(
+            not isinstance(state[key], str) or not state[key]
+            for key in STATIC_STATE_KEYS
+        )
     ):
         raise ValueError("implementationState must contain only static source facts")
     if FORBIDDEN_DYNAMIC_KEYS.intersection(state):
@@ -110,6 +124,8 @@ def validate(manifest: dict[str, Any]) -> None:
     projection = manifest.get("evidenceProjection")
     if (
         not isinstance(projection, dict)
+        or set(projection)
+        != {"schema", "producer", "dynamicClaims", "manualPassFieldsForbidden"}
         or projection.get("schema") != PROJECTION_SCHEMA
         or projection.get("producer") != "scripts/hepta-objective-evidence-project.py"
         or projection.get("manualPassFieldsForbidden") is not True
@@ -228,7 +244,9 @@ def sync() -> None:
     )
     generated = block(manifest)
     for path in DOCS:
-        path.write_text(render(path.read_text(encoding="utf-8"), generated), encoding="utf-8")
+        path.write_text(
+            render(path.read_text(encoding="utf-8"), generated), encoding="utf-8"
+        )
 
 
 def verify() -> None:
@@ -236,7 +254,9 @@ def verify() -> None:
     validate(manifest)
     current = load(MAP)
     if current != project(current, manifest):
-        raise SystemExit("FAIL_OBJECTIVE_CURRENT_STATE: implementation map projection drift")
+        raise SystemExit(
+            "FAIL_OBJECTIVE_CURRENT_STATE: implementation map projection drift"
+        )
     expected = block(manifest)
     pattern = re.compile(re.escape(BEGIN) + r".*?" + re.escape(END), re.S)
     for path in DOCS:

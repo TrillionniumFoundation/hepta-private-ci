@@ -63,6 +63,17 @@ def nonempty_strings(value: Any, field: str) -> list[str]:
 
 def current_state_projection(path: Path) -> dict[str, Any]:
     manifest = load(path)
+    if set(manifest) != {
+        "schema",
+        "schemaVersion",
+        "module",
+        "implementationState",
+        "truth",
+        "evidenceProjection",
+        "requiredChecks",
+        "externalGates",
+    }:
+        raise ValueError("source manifest must contain only registered static fields")
     if (
         manifest.get("schema") != CURRENT_SCHEMA
         or manifest.get("schemaVersion") != 2
@@ -81,7 +92,9 @@ def current_state_projection(path: Path) -> dict[str, Any]:
     if (
         not isinstance(state, dict)
         or set(state) != required_state
-        or any(not isinstance(state[key], str) or not state[key] for key in required_state)
+        or any(
+            not isinstance(state[key], str) or not state[key] for key in required_state
+        )
     ):
         raise ValueError("objective current-state implementationState is incomplete")
     if DYNAMIC_SOURCE_FIELDS.intersection(state):
@@ -101,6 +114,8 @@ def current_state_projection(path: Path) -> dict[str, Any]:
     contract = manifest.get("evidenceProjection")
     if (
         not isinstance(contract, dict)
+        or set(contract)
+        != {"schema", "producer", "dynamicClaims", "manualPassFieldsForbidden"}
         or contract.get("schema") != PROJECTION_SCHEMA
         or contract.get("producer") != "scripts/hepta-objective-evidence-project.py"
         or contract.get("manualPassFieldsForbidden") is not True
@@ -134,7 +149,8 @@ def qualification_commands() -> dict[str, list[str]]:
     # The existing read-only runner owns the check inventory. Do not maintain a
     # second, weaker list of commands in the receipt consumer.
     spec = importlib.util.spec_from_file_location(
-        "objective_exact_contract", Path(__file__).with_name("hepta-objective-qualify-exact.py")
+        "objective_exact_contract",
+        Path(__file__).with_name("hepta-objective-qualify-exact.py"),
     )
     if spec is None or spec.loader is None:
         raise ValueError("exact execution contract is unavailable")
@@ -143,13 +159,29 @@ def qualification_commands() -> dict[str, list[str]]:
     return dict(module.commands())
 
 
+def measurement_contract() -> Any:
+    # The producer owns measurement semantics; reparse its retained output with
+    # the same validator instead of accepting weaker receipt metadata.
+    spec = importlib.util.spec_from_file_location(
+        "objective_measurement_contract",
+        Path(__file__).with_name("hepta-objective-target-measure.py"),
+    )
+    if spec is None or spec.loader is None:
+        raise ValueError("target measurement contract is unavailable")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def synthetic_commit_identity(tree: str, base: str, source: str) -> str:
     # Frozen author/date/message and parent order from deterministic_merge().
     # This checks the recorded merge identity, not independent merge correctness.
     actor = "Hepta immutable qualification <qualification@localhost> 946684800 +0000"
-    text = (f"tree {tree}\nparent {base}\nparent {source}\n"
-            f"author {actor}\ncommitter {actor}\n\n"
-            f"objective qualification merge\nbase {base}\nsource {source}\n").encode()
+    text = (
+        f"tree {tree}\nparent {base}\nparent {source}\n"
+        f"author {actor}\ncommitter {actor}\n\n"
+        f"objective qualification merge\nbase {base}\nsource {source}\n"
+    ).encode()
     return hashlib.sha1(f"commit {len(text)}\0".encode() + text).hexdigest()
 
 
@@ -157,16 +189,21 @@ def candidate_state(receipt: dict[str, Any], kind: str, root: Path) -> str:
     candidates = receipt.get("candidates")
     if not isinstance(candidates, list) or receipt.get("sourceClean") is not True:
         return "failed"
-    if any(not isinstance(item, dict) or item.get("kind") not in
-           {"source-head", "synthetic-merge"} for item in candidates):
+    if any(
+        not isinstance(item, dict)
+        or item.get("kind") not in {"source-head", "synthetic-merge"}
+        for item in candidates
+    ):
         return "failed"
     matching = [item for item in candidates if item.get("kind") == kind]
     if len(matching) != 1:
         return "failed"
     candidate = matching[0]
     commit, tree = candidate.get("commit"), candidate.get("tree")
-    if any(not isinstance(value, str) or not SHA.fullmatch(value)
-           for value in (commit, tree)):
+    if any(
+        not isinstance(value, str) or not SHA.fullmatch(value)
+        for value in (commit, tree)
+    ):
         return "failed"
     if kind == "source-head":
         if (commit, tree) != (receipt["sourceCommit"], receipt["sourceTree"]):
@@ -192,11 +229,15 @@ def candidate_state(receipt: dict[str, Any], kind: str, root: Path) -> str:
         return "failed"
     for check in checks:
         name = check["name"]
-        if (check.get("argv") != expected[name] or check.get("status") != "completed"
-            or type(check.get("exitCode")) is not int or check["exitCode"] != 0
+        if (
+            check.get("argv") != expected[name]
+            or check.get("status") != "completed"
+            or type(check.get("exitCode")) is not int
+            or check["exitCode"] != 0
             or check.get("log") != f"{name}.log"
             or not isinstance(check.get("logSha256"), str)
-            or not LOG_SHA.fullmatch(check["logSha256"])):
+            or not LOG_SHA.fullmatch(check["logSha256"])
+        ):
             return "failed"
         log = directory / f"{name}.log"
         if log.is_symlink() or not log.is_file() or sha256(log) != check["logSha256"]:
@@ -210,17 +251,28 @@ def exact_projection(
     receipt = load(path)
     if receipt.get("schema") != "hepta.objective.exact-execution.v1":
         raise ValueError("unexpected exact-execution schema")
-    if (receipt.get("sourceCommit") != source_commit
-        or receipt.get("sourceTree") != source_tree):
+    if (
+        receipt.get("sourceCommit") != source_commit
+        or receipt.get("sourceTree") != source_tree
+    ):
         raise ValueError("exact-execution source identity mismatch")
     if type(receipt.get("checksPassed")) is not bool:
         raise ValueError("exact-execution checksPassed must be a Boolean")
     errors = receipt.get("errors")
-    if not isinstance(errors, list) or any(not isinstance(error, str) for error in errors):
+    if not isinstance(errors, list) or any(
+        not isinstance(error, str) for error in errors
+    ):
         raise ValueError("exact-execution errors must be an explicit string list")
-    for field in ("selectedTargetHostAccepted", "independentAcceptance", "activated", "released"):
+    for field in (
+        "selectedTargetHostAccepted",
+        "independentAcceptance",
+        "activated",
+        "released",
+    ):
         if receipt.get(field) is not False:
-            raise ValueError("exact execution cannot grant external acceptance or release")
+            raise ValueError(
+                "exact execution cannot grant external acceptance or release"
+            )
     source_state = candidate_state(receipt, "source-head", path.parent)
     merge_state = candidate_state(receipt, "synthetic-merge", path.parent)
     derived_pass = source_state == merge_state == "passed" and not errors
@@ -259,17 +311,33 @@ def valid_resource_observation(value: Any) -> bool:
     return value["wallNanoseconds"] > 0
 
 
-def validate_native_fixture(value: Any, source_commit: str, source_tree: str) -> None:
-    if not isinstance(value, dict) or value.get("schema") != "hepta.objective-native-fixture.v1":
+def validate_native_fixture(
+    value: Any, source_commit: str, source_tree: str, root: Path, workload: str
+) -> tuple[str, dict[str, Any]]:
+    if (
+        not isinstance(value, dict)
+        or value.get("schema") != "hepta.objective-native-fixture.v1"
+    ):
         raise ValueError("missing native fixture artifact identity")
-    if value.get("sourceCommit") != source_commit or value.get("sourceTree") != source_tree:
+    if (
+        value.get("sourceCommit") != source_commit
+        or value.get("sourceTree") != source_tree
+    ):
         raise ValueError("native fixture candidate identity mismatch")
-    if (type(value.get("exitCode")) is not int or value["exitCode"] != 0
+    if (
+        type(value.get("exitCode")) is not int
+        or value["exitCode"] != 0
         or value.get("artifactsUnchangedAfterExecution") is not True
         or value.get("buildCostsExcludedFromFixtureResources") is not True
-        or value.get("nativeFfiQualificationProved") is not False):
+        or value.get("nativeFfiQualificationProved") is not False
+    ):
         raise ValueError("native fixture execution boundary is incomplete")
-    for field in ("cargoArtifactMessagesSha256", "testListSha256", "executionOutputSha256"):
+    for field in (
+        "cargoArtifactMessagesSha256",
+        "testListSha256",
+        "executionOutputSha256",
+        "processOutputSha256",
+    ):
         if not isinstance(value.get(field), str) or not LOG_SHA.fullmatch(value[field]):
             raise ValueError("native fixture log identity is invalid")
     artifacts = value.get("artifacts")
@@ -282,20 +350,128 @@ def validate_native_fixture(value: Any, source_commit: str, source_tree: str) ->
         path = artifact.get("path")
         if not isinstance(path, str) or not path or path in paths:
             raise ValueError("native artifact path is missing or ambiguous")
-        if (not isinstance(artifact.get("sha256"), str)
+        if (
+            not isinstance(artifact.get("sha256"), str)
             or not LOG_SHA.fullmatch(artifact["sha256"])
-            or type(artifact.get("sizeBytes")) is not int or artifact["sizeBytes"] <= 0):
+            or type(artifact.get("sizeBytes")) is not int
+            or artifact["sizeBytes"] <= 0
+        ):
             raise ValueError("invalid native artifact content identity")
         paths.add(path)
     executable, test = value.get("executable"), value.get("testName")
-    if executable not in paths or not isinstance(test, str) or not test:
+    if (
+        executable not in paths
+        or not isinstance(test, str)
+        or not test
+        or not Path(executable).is_absolute()
+    ):
         raise ValueError("selected native executable or test is not bound")
-    expected = [executable, test, "--ignored", "--exact", "--nocapture", "--test-threads=1"]
+    expected = [
+        executable,
+        test,
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1",
+    ]
     if value.get("executionCommand") != expected:
         raise ValueError("resource sample must execute the exact prebuilt native test")
-    build = value.get("buildCommand")
-    if not isinstance(build, list) or build[:2] != ["cargo", "test"] or "--no-run" not in build:
-        raise ValueError("native fixture build must be separate from execution")
+    workloads = {
+        "ordinary_authenticated_admission_compile": (
+            "codex-hepta-objective",
+            None,
+            "measurement_ordinary_admission_compile_v1",
+        ),
+        "maximum_conflict_extraction": (
+            "codex-hepta-objective",
+            None,
+            "measurement_conflict_extraction_v1",
+        ),
+        "signed_objective_daemon_round_trip": (
+            "codex-hepta-agentd",
+            "objective_product_e2e",
+            "measurement_signed_objective_daemon_round_trip",
+        ),
+    }
+    package, target, requested_test = workloads[workload]
+    build = ["cargo", "test", "--locked", "--release", "-p", package]
+    build.extend(["--test", target] if target else ["--lib"])
+    build.extend(["--no-run", "--message-format=json"])
+    if value.get("buildCommand") != build:
+        raise ValueError("native fixture build does not match its workload")
+    retained = value.get("retainedLogs")
+    names = {
+        "cargoArtifactMessages": ("cargo-artifacts.log", "cargoArtifactMessagesSha256"),
+        "testList": ("test-list.log", "testListSha256"),
+        "executionOutput": ("execution.log", "executionOutputSha256"),
+        "processOutput": ("process.log", "processOutputSha256"),
+    }
+    if not isinstance(retained, dict) or set(retained) != set(names):
+        raise ValueError("native fixture lacks retained execution logs")
+    logs = {}
+    for key, (filename, digest_key) in names.items():
+        relative = Path("native-fixtures") / requested_test / filename
+        if retained[key] != str(relative):
+            raise ValueError("native fixture log does not match its workload")
+        log = root / relative
+        if (
+            any(parent.is_symlink() for parent in (log, *log.parents) if parent != root)
+            or not log.is_file()
+            or sha256(log) != value[digest_key]
+        ):
+            raise ValueError("native fixture retained log is missing or changed")
+        logs[key] = log.read_text(encoding="utf-8")
+    contract = measurement_contract()
+    try:
+        if contract.select_exact_test(logs["testList"], requested_test) != test:
+            raise ValueError("native fixture test listing identity mismatch")
+    except SystemExit as error:
+        raise ValueError(str(error)) from error
+    target_name = target or package.replace("-", "_")
+    target_kind = "test" if target else "lib"
+    selected = []
+    for line in logs["cargoArtifactMessages"].splitlines():
+        try:
+            row = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(row, dict) or row.get("reason") != "compiler-artifact":
+            continue
+        actual_target, profile = row.get("target"), row.get("profile")
+        if (
+            isinstance(actual_target, dict)
+            and isinstance(profile, dict)
+            and actual_target.get("name") == target_name
+            and actual_target.get("kind") == [target_kind]
+            and profile.get("test") is True
+        ):
+            selected.append(row.get("executable"))
+    if selected != [executable]:
+        raise ValueError("native fixture Cargo target identity is missing or ambiguous")
+    resource_rows = [
+        line[len(contract.RESOURCE_PREFIX) :]
+        for line in logs["processOutput"].splitlines()
+        if line.startswith(contract.RESOURCE_PREFIX)
+    ]
+    if len(resource_rows) != 1:
+        raise ValueError(
+            "native fixture process log must contain one resource observation"
+        )
+    try:
+        resources = contract.process_resource_observation(json.loads(resource_rows[0]))
+    except SystemExit as error:
+        raise ValueError(str(error)) from error
+    child_lines = [
+        line
+        for line in logs["processOutput"].splitlines()
+        if not line.startswith(contract.RESOURCE_PREFIX)
+    ]
+    child_output = "\n".join(child_lines) + ("\n" if child_lines else "")
+    if child_output != logs["executionOutput"]:
+        raise ValueError(
+            "native fixture execution output differs from the actual process log"
+        )
+    return logs["executionOutput"], resources
 
 
 def target_projection(
@@ -327,18 +503,63 @@ def target_projection(
         for item in by_path.values()
     ):
         raise ValueError("target measurement lacks isolated fixture resources")
-    for item in by_path.values():
-        validate_native_fixture(item.get("nativeFixture"), source_commit, source_tree)
+    contract = measurement_contract()
+    for workload, item in by_path.items():
+        output, resources = validate_native_fixture(
+            item.get("nativeFixture"),
+            source_commit,
+            source_tree,
+            path.parent.resolve(),
+            workload,
+        )
+        try:
+            parsed = (
+                contract.parse_product_measurement(output)
+                if workload == "signed_objective_daemon_round_trip"
+                else contract.parse_measurement(output, workload)
+            )
+        except SystemExit as error:
+            raise ValueError(str(error)) from error
+        observed = {
+            key: value
+            for key, value in item.items()
+            if key
+            not in {
+                "nativeFixture",
+                "fixtureProcessResources",
+                "harnessWallNanoseconds",
+            }
+        }
+        if parsed != observed:
+            raise ValueError(
+                "target measurement disagrees with its actual fixture output"
+            )
+        if resources != item["fixtureProcessResources"]:
+            raise ValueError(
+                "target measurement resources disagree with the actual process log"
+            )
+        if (
+            item.get("harnessWallNanoseconds")
+            != item["fixtureProcessResources"]["wallNanoseconds"]
+        ):
+            raise ValueError("target measurement fixture wall time is inconsistent")
+    if (
+        not isinstance(receipt.get("hostProfileId"), str)
+        or not receipt["hostProfileId"]
+    ):
+        raise ValueError("target measurement lacks a named host profile")
     interpretation = receipt.get("interpretation")
     if (
         not isinstance(interpretation, dict)
-        or interpretation.get("fixtureResourcesIsolatedByFreshHelperProcess") is not True
+        or interpretation.get("fixtureResourcesIsolatedByFreshHelperProcess")
+        is not True
         or interpretation.get("memoryIsNotPerInternalPhaseAllocation") is not True
         or interpretation.get("buildCostsExcludedFromFixtureResources") is not True
         or interpretation.get("nativeArtifactsBoundBeforeAndAfterExecution") is not True
         or interpretation.get("nativeFfiQualificationProved") is not False
         or interpretation.get("dynamicAuthorizationCachingAllowed") is not False
-        or interpretation.get("atomicAppendCheckpointHandoffBoundaryPreserved") is not True
+        or interpretation.get("atomicAppendCheckpointHandoffBoundaryPreserved")
+        is not True
     ):
         raise ValueError("target measurement interpretation boundary is incomplete")
     return {
@@ -371,7 +592,9 @@ def main() -> int:
     args = parser.parse_args()
 
     if not SHA.fullmatch(args.source_commit) or not SHA.fullmatch(args.source_tree):
-        parser.error("source commit and tree must be complete lowercase SHA-1 identities")
+        parser.error(
+            "source commit and tree must be complete lowercase SHA-1 identities"
+        )
     if args.exact_execution is None and args.target_measurement is None:
         parser.error("at least one evidence input is required")
 
