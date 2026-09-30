@@ -1,21 +1,28 @@
-//! Authenticated, transport-neutral memory-federation wire protocol core.
+//! Authenticated memory-federation wire protocol with durable host/client recovery.
 //!
-//! This layer owns canonical framing, directional credentials, immutable
-//! verified frames, bounded replay admission, frontier witnesses, and typed
-//! cancellation attempts. It deliberately owns no durable recovery backend,
-//! network transport, Agentd composition, activation, or release authority.
+//! This layer adds restart-surviving replay and attempt state, correlated
+//! outbound client admission, a two-stage read-only host, and an owner-only Unix
+//! snapshot backend. It still owns no canonical V2 product packet adapter,
+//! selected network transport, Agentd serving, activation, or release authority.
 
 #![forbid(unsafe_code)]
 
 mod attempt;
+mod client;
 mod codec;
 mod credential;
+#[cfg(unix)]
+mod file_store;
+mod host;
 mod protocol;
+mod recovery;
 mod replay;
 
 pub use attempt::AttemptRegistryError;
 pub use attempt::FederationAttemptRegistryV1;
 pub use attempt::MAX_FEDERATION_ATTEMPTS;
+pub use client::FederationClientError;
+pub use client::FederationWireClientV1;
 pub use codec::AUTHENTICATED_FRAME_FORMAT_VERSION_V1;
 pub use codec::AUTHENTICATED_FRAME_SCHEMA_V1;
 pub use codec::AuthenticatedFrameCodecV1;
@@ -30,6 +37,17 @@ pub use credential::MAX_FEDERATION_CREDENTIAL_KEYS;
 pub use credential::MAX_FEDERATION_CREDENTIAL_KEYS_PER_PEER_PAIR;
 pub use credential::PeerCredentialRegistryV1;
 pub use credential::PeerCredentialV1;
+#[cfg(unix)]
+pub use file_store::FileFederationRecoveryStoreV1;
+#[cfg(unix)]
+pub use file_store::MAX_FEDERATION_SNAPSHOT_BYTES;
+pub use host::AdmittedFederationQueryV1;
+pub use host::FederationHostAdmissionV1;
+pub use host::FederationHostError;
+pub use host::FederationHostQueryResultV1;
+pub use host::FederationOutboundCredentialV1;
+pub use host::FederationWireHostV1;
+pub use host::MAX_FEDERATION_HOST_PEERS;
 pub use protocol::AuthenticatedFederationFrameV1;
 pub use protocol::AuthenticatedFrontierV1;
 pub use protocol::FEDERATION_MAC_BYTES;
@@ -45,6 +63,12 @@ pub use protocol::FederationResponseMessageV1;
 pub use protocol::FederationWireMessageV1;
 pub use protocol::MAX_AUTHENTICATED_FRAME_LIFETIME_MS;
 pub use protocol::VerifiedFederationFrameV1;
+pub use recovery::DurableFederationStateV1;
+pub use recovery::FEDERATION_RECOVERY_CLEANUP_BATCH;
+pub use recovery::FederationRecoveryError;
+pub use recovery::FederationRecoveryLimitsV1;
+pub use recovery::FederationRecoveryStoreV1;
+pub use recovery::InMemoryFederationRecoveryStoreV1;
 pub use replay::FEDERATION_REPLAY_CLEANUP_BATCH;
 pub use replay::FederationReplayKeyV1;
 pub use replay::MAX_FEDERATION_REPLAY_ENTRIES;
@@ -55,6 +79,14 @@ pub use replay::ReplayError;
 #[cfg(test)]
 mod attempt_tests;
 #[cfg(test)]
+mod client_tests;
+#[cfg(test)]
 mod credential_tests;
+#[cfg(test)]
+mod host_atomicity_tests;
+#[cfg(test)]
+mod host_terminal_tests;
+#[cfg(test)]
+mod host_tests;
 #[cfg(test)]
 mod tests;
