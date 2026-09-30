@@ -13,6 +13,7 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::DurableMutationPhaseV1;
+use codex_hepta_supervisor::DurableMutationStatusV1;
 use codex_hepta_supervisor::SupervisordClient;
 use codex_hepta_supervisor::SupervisordHealth;
 use codex_hepta_supervisor::SupervisordMethod;
@@ -78,6 +79,30 @@ impl Fleet {
             run_root: record.layout.run_root().to_path_buf(),
             client,
             cancellation: CancellationToken::new(),
+        }
+    }
+
+    async fn wait_for_mutation_status(
+        &self,
+        request_id: u64,
+        phase: DurableMutationPhaseV1,
+    ) -> DurableMutationStatusV1 {
+        let deadline = Instant::now() + Duration::from_secs(10);
+        loop {
+            let result = self
+                .client
+                .ordinary_mutation_status(self.agent.clone(), request_id)
+                .await;
+            match result {
+                Ok(Some(status)) if status.phase == phase => return status,
+                result => {
+                    assert!(
+                        Instant::now() < deadline,
+                        "durable outcome {phase:?} was not observed: {result:?}"
+                    );
+                    tokio::time::sleep(Duration::from_millis(10)).await;
+                }
+            }
         }
     }
 
@@ -209,18 +234,13 @@ async fn socket_reconnect_preserves_outcome_and_emergency_kill_preserves_ambigui
     assert_eq!(killed.operation, SupervisordMutation::Kill);
     assert_eq!(
         fleet
-            .client
-            .ordinary_mutation_status(fleet.agent.clone(), pending_id)
-            .await
-            .expect("query original ambiguity"),
-        Some(ambiguous.clone())
+            .wait_for_mutation_status(pending_id, DurableMutationPhaseV1::Ambiguous)
+            .await,
+        ambiguous.clone()
     );
     let kill_status = fleet
-        .client
-        .ordinary_mutation_status(fleet.agent.clone(), kill_id)
-        .await
-        .expect("query independent kill")
-        .expect("kill outcome");
+        .wait_for_mutation_status(kill_id, DurableMutationPhaseV1::Committed)
+        .await;
     assert_eq!(kill_status.phase, DurableMutationPhaseV1::Committed);
     assert_eq!(
         read_mutation_status(&fleet.run_root).expect("preserved crash evidence"),
@@ -329,18 +349,19 @@ async fn a_real_spawn_failure_immediately_blocks_readiness_and_further_mutations
         )
         .await
         .expect_err("Unix spawn fails after persisted effect boundary");
-    assert!(error.to_string().contains("operation_indeterminate"));
-    let outcome = read_mutation_status(&fleet.run_root)
-        .expect("read failed outcome")
-        .expect("durable failed outcome");
+    // The transport can expire before the owner completes its journal writes.
+    // Only the exact durable outcome determines whether the effect is known;
+    // an error string is not a recovery witness.
+    assert!(!error.to_string().is_empty());
+    let outcome = fleet
+        .wait_for_mutation_status(request_id, DurableMutationPhaseV1::Ambiguous)
+        .await;
     assert_eq!(outcome.phase, DurableMutationPhaseV1::Ambiguous);
     assert_eq!(
         fleet
-            .client
-            .ordinary_mutation_status(fleet.agent.clone(), request_id)
-            .await
-            .expect("query failed request"),
-        Some(outcome)
+            .wait_for_mutation_status(request_id, DurableMutationPhaseV1::Ambiguous)
+            .await,
+        outcome
     );
     assert!(
         !fleet

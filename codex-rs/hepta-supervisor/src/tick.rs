@@ -81,6 +81,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             && slot.release_change.is_none()
             && !slot.signed_recovery_required()
             && slot.restart_pending
+            && slot.matrix.runtime.is_none()
+            && crate::lease::read_matrix_lease(
+                self.record(agent_id)?.layout.matrixd_process_lease(),
+            )?
+            .is_none()
             && slot
                 .restart_not_before
                 .is_none_or(|eligible| now >= eligible)
@@ -92,9 +97,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             });
             let release =
                 release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
-            // A failed replacement start remains the same pending restart. It
-            // is not falsely terminalized as complete, and recovery will use
-            // the durable lineage to decide whether another start is allowed.
+            // No replacement overlaps a still-owned or unresolved companion.
+            // A definite pre-acquisition spawn failure cancels this bounded
+            // attempt; an acquired child remains owned and quarantined.
             self.start_release_slot(agent_id, slot, release, now)?;
             slot.restart_pending = false;
         }

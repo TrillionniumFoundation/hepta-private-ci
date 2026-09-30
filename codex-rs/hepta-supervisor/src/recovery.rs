@@ -302,13 +302,32 @@ impl<D: ProcessDriver> Supervisor<D> {
         let spawned = match self.driver.spawn(&spec) {
             Ok(spawned) => spawned,
             Err(error) => {
-                self.transition_without_runtime(
+                let failure = driver_error(agent_id, error);
+                let transition = self.transition_without_runtime(
                     agent_id,
                     slot,
                     starting.generation,
                     AgentLifecycle::Failed,
-                )?;
-                return Err(driver_error(agent_id, error));
+                );
+                if slot.restart_pending {
+                    // The driver acquired no child. Terminalize this attempt;
+                    // another automatic tick must not replay the same claim.
+                    // Keep its attempt count so an explicit retry consumes the
+                    // next bounded attempt. Acquired/leased children follow the
+                    // separate quarantine path below instead.
+                    slot.restart_pending = false;
+                    slot.restart_not_before = None;
+                    let lineage = restart_lineage::cancel(record.layout.run_root(), agent_id)
+                        .map_err(|error| SupervisorError::Invalid(error.to_string()));
+                    let budget = crate::restart_budget::cancel_restart(record.layout.run_root())
+                        .map_err(|error| SupervisorError::Invalid(error.to_string()));
+                    transition?;
+                    lineage?;
+                    budget?;
+                } else {
+                    transition?;
+                }
+                return Err(failure);
             }
         };
         let lease = ProcessLease {

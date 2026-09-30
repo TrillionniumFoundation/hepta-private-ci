@@ -103,7 +103,7 @@ test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
 
-# Agentd and worker-host tests open real SQLite owners and App Server processes,
+# Agentd, worker-host and Supervisor tests open real durable owners and processes,
 # including library fixtures. Bound contention BETWEEN these independent product
 # fixtures on the shared runner disk, not just the named evolution experiments.
 # The tests retain their own concurrent requests, 256 writer rotations, per-use
@@ -112,7 +112,7 @@ retries = 0
 max-threads = 1
 
 [[profile.default.overrides]]
-filter = 'package(codex-hepta-agentd) | package(codex-hepta-infer-worker-host)'
+filter = 'package(codex-hepta-agentd) | package(codex-hepta-infer-worker-host) | package(codex-hepta-supervisor)'
 test-group = 'hepta_product_lifecycle'
 
 # This single experiment starts and restarts the real product repeatedly. Keep

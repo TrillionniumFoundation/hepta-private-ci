@@ -122,8 +122,8 @@ fn matrix_budget_restore_preserves_main_pending_claim() -> Result<(), Supervisor
     let state = recovered.snapshot(&fleet.first).expect("recovered");
     assert_eq!(state.restart_attempt, 1);
     assert!(
-        !state.restart_pending,
-        "the exact adopted main process already satisfies the claim"
+        state.restart_pending,
+        "a legacy budget-only claim retains its adopted predecessor; Matrix recovery cannot invent a replacement witness"
     );
     assert_eq!(state.matrix.restart_attempt, 1);
     assert_eq!(

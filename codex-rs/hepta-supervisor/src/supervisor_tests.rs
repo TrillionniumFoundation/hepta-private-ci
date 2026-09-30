@@ -771,20 +771,18 @@ fn recovered_running_restart_settles_pending_budget_before_next_claim()
     control.set_healthy(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
 
-    let record = fleet
-        .registry
-        .load()?
-        .agent(&fleet.first)
-        .expect("registered agent")
-        .clone();
-    let first_claim = crate::restart_budget::claim_restart(
-        record.layout.run_root(),
-        config().restart_max_attempts,
-        config().restart_window,
-        config().restart_backoff_base,
-    )
-    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    assert_eq!(first_claim.attempt, 1);
+    // Persist the actual predecessor exit and a fresh replacement identity.
+    // A budget-only legacy record cannot prove that a live predecessor is a
+    // replacement, even if its health probe succeeds after recovery.
+    supervisor.restart(&fleet.first, now)?;
+    control.set_drained(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let now = now + config().restart_backoff_base;
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    control.set_healthy(&fleet.first);
     drop(supervisor);
 
     let (mut recovered, report) =
@@ -1611,6 +1609,8 @@ fn paired_companions_stop_before_agent_restart_and_fail_independently()
     assert_eq!(control.counts(&fleet.first), (1, 1, 0));
     control.set_exit(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
+    let now = now + config().restart_backoff_base;
+    assert_eq!(supervisor.tick(now), TickReport::default());
     control.set_healthy(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.matrix_spawn_count(&fleet.first), 2);
@@ -1663,8 +1663,15 @@ fn ready_paired_supervisor(
         AgentRelease::try_from(fleet.registry.resolve_release(&fleet.second, &release_id)?)?;
     let control = FakeControl::default();
     let now = Instant::now();
-    let (mut supervisor, report) =
-        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let (mut supervisor, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        control.driver(),
+        SupervisorConfig {
+            stop_grace: Duration::from_secs(60),
+            ..config()
+        },
+        now,
+    )?;
     assert_eq!(report, TickReport::default());
     supervisor.start_release(&fleet.first, first_release, now)?;
     supervisor.start_release(&fleet.second, second_release, now)?;
@@ -1745,8 +1752,8 @@ fn kill_supersedes_inflight_paired_restart_without_replacement() -> Result<(), S
         .position(|event| event.kind == SupervisorEventKind::KillRequested)
         .expect("agent kill event");
     assert!(
-        matrix_kill < agent_kill,
-        "Matrix must be killed before agentd"
+        agent_kill < matrix_kill,
+        "emergency main termination cannot wait behind a failing companion signal"
     );
 
     control.set_exit(&fleet.first);
@@ -1793,6 +1800,17 @@ fn stale_deferred_drain_is_generation_fenced_from_replacement_starting()
             .restart_pending
     );
     let now = now + config().restart_backoff_base;
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert!(
+        !supervisor
+            .snapshot(&fleet.first)
+            .expect("predecessor gone")
+            .active
+    );
+    // The still-owned old Matrix must exit before a replacement main can start.
+    control.set_matrix_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(supervisor.tick(now), TickReport::default());
     let replacement = supervisor
         .snapshot(&fleet.first)

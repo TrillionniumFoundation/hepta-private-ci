@@ -376,7 +376,7 @@ impl SupervisordServer {
             let state = Arc::clone(&self.state);
             tasks.spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = serve_connection(stream, state).await;
             });
         };
         self.cancellation.cancel();
@@ -422,7 +422,9 @@ async fn serve_connection(
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_SUPERVISORD_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
-    let count = reader.read_until(b'\n', &mut frame).await?;
+    let count = timeout(IO_TIMEOUT, reader.read_until(b'\n', &mut frame))
+        .await
+        .map_err(|_| std::io::Error::new(ErrorKind::TimedOut, "control frame read timed out"))??;
     if count == 0 || count as u64 > MAX_SUPERVISORD_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
         return Ok(());
     }
@@ -459,12 +461,28 @@ async fn serve_connection(
             schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
 
-            payload: execution::handle_with_request_id(
-                Arc::clone(&state),
-                request.request_id,
-                request.method,
+            payload: match timeout(
+                IO_TIMEOUT,
+                execution::handle_with_request_id(
+                    Arc::clone(&state),
+                    request.request_id,
+                    request.method,
+                ),
             )
-            .await,
+            .await
+            {
+                Ok(payload) => payload,
+                // Dropping the response waiter cannot release the blocking
+                // owner's Arc or permit. That owner completes durable state
+                // before another mutation can be admitted. Return a bounded,
+                // explicit unknown outcome instead of silently closing the
+                // socket after a potentially completed process effect.
+                Err(_) => error_payload(
+                    "operation_indeterminate",
+                    "request exceeded its response budget; inspect durable state before retry",
+                    /*actual*/ None,
+                ),
+            },
         },
     };
     write_response(&mut writer, response).await
@@ -483,8 +501,14 @@ async fn write_response(
             "supervisord response exceeded frame bound".to_string(),
         ));
     }
-    writer.write_all(&bytes).await?;
-    writer.shutdown().await?;
+    timeout(IO_TIMEOUT, writer.write_all(&bytes))
+        .await
+        .map_err(|_| {
+            std::io::Error::new(ErrorKind::TimedOut, "control response write timed out")
+        })??;
+    timeout(IO_TIMEOUT, writer.shutdown()).await.map_err(|_| {
+        std::io::Error::new(ErrorKind::TimedOut, "control response shutdown timed out")
+    })??;
     Ok(())
 }
 

@@ -118,7 +118,10 @@ impl ManagedProcess for Process {
 
 impl Drop for Process {
     fn drop(&mut self) {
-        self.0.lock().expect("process state").drops += 1;
+        self.0
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .drops += 1;
     }
 }
 
@@ -359,7 +362,15 @@ fn main_control_parse_fault_cannot_skip_matrix_ownership() -> Result<()> {
     )?;
     f.driver.matrix.lock().expect("matrix state").fail_kill = true;
     assert!(f.recover().is_err());
-    assert_eq!(f.driver.main.lock().expect("main state").adoption_count, 0);
+    assert_eq!(f.driver.main.lock().expect("main state").adoption_count, 1);
+    let runtime = f
+        .slot
+        .runtime
+        .as_ref()
+        .expect("exact main owner retained before control parsing");
+    assert_eq!(runtime.identity, main.identity);
+    assert!(runtime.fenced && !runtime.healthy);
+    assert_eq!(f.driver.main.lock().expect("main state").drops, 0);
     assert_eq!(
         f.driver.matrix.lock().expect("matrix state").adoption_count,
         1
