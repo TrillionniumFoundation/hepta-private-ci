@@ -4,17 +4,28 @@ use super::*;
 fn attachment(text: String) -> PromptRuntimeAttachmentV1 {
     PromptRuntimeAttachmentV1::new(
         StableId::new("compilation:lifecycle").expect("id"),
-        Digest32::of_bytes(b"attachment"), Digest32::of_bytes(text.as_bytes()),
-        "model", 10_000,
+        Digest32::of_bytes(b"attachment"),
+        Digest32::of_bytes(text.as_bytes()),
+        "model",
+        10_000,
         vec![PromptRuntimeDeveloperFragmentV1::new(text).expect("fragment")],
-    ).expect("attachment")
+    )
+    .expect("attachment")
 }
 
-fn stage(owner: &AgentdPromptRuntimeOwner, turn: &str, value: PromptRuntimeAttachmentV1)
-    -> Result<(), AgentdPromptRuntimeError>
-{
+fn stage(
+    owner: &AgentdPromptRuntimeOwner,
+    turn: &str,
+    value: PromptRuntimeAttachmentV1,
+) -> Result<(), AgentdPromptRuntimeError> {
     owner.commit_state(|state| {
-        state.staged.insert(PromptRuntimeKey { thread_id: "thread".into(), turn_id: turn.into() }, value);
+        state.staged.insert(
+            PromptRuntimeKey {
+                thread_id: "thread".into(),
+                turn_id: turn.into(),
+            },
+            value,
+        );
         Ok(())
     })
 }
@@ -25,8 +36,11 @@ fn dispatch(value: &PromptRuntimeAttachmentV1) -> PromptRuntimeDispatchRecordV1 
         context_attachment_digest: value.context_attachment_digest,
         context_payload_digest: value.context_payload_digest,
         source_binding_digest: value.source_binding_digest,
-        thread_id: "thread".into(), turn_id: "turn".into(), attempt_id: "attempt".into(),
-        request_binding_id: "binding".into(), provider_request_digest: Digest32::of_bytes(b"body"),
+        thread_id: "thread".into(),
+        turn_id: "turn".into(),
+        attempt_id: "attempt".into(),
+        request_binding_id: "binding".into(),
+        provider_request_digest: Digest32::of_bytes(b"body"),
         dispatched_unix_ms: 1,
     }
 }
@@ -37,11 +51,16 @@ fn terminal(value: &PromptRuntimeAttachmentV1) -> PromptRuntimeTerminalRecordV1 
         context_attachment_digest: value.context_attachment_digest,
         context_payload_digest: value.context_payload_digest,
         source_binding_digest: value.source_binding_digest,
-        thread_id: "thread".into(), turn_id: "turn".into(), attempt_id: "attempt".into(),
-        request_binding_id: "binding".into(), provider_request_digest: Digest32::of_bytes(b"body"),
-        outcome: PromptRuntimeTerminalOutcomeV1::NotDispatched, end_turn: None,
+        thread_id: "thread".into(),
+        turn_id: "turn".into(),
+        attempt_id: "attempt".into(),
+        request_binding_id: "binding".into(),
+        provider_request_digest: Digest32::of_bytes(b"body"),
+        outcome: PromptRuntimeTerminalOutcomeV1::NotDispatched,
+        end_turn: None,
         terminal_reason_code: Some("fixture_not_dispatched".into()),
-        delivery_observation: None, observed_unix_ms: 2,
+        delivery_observation: None,
+        observed_unix_ms: 2,
     }
 }
 
@@ -75,7 +94,10 @@ fn unresolved_attempt_cannot_be_retired() {
     let mut unknown = terminal(&value);
     unknown.outcome = PromptRuntimeTerminalOutcomeV1::Indeterminate;
     owner.record(unknown).expect("unknown");
-    assert_eq!(owner.clear_turn("thread", "turn"), Err(AgentdPromptRuntimeError::IndeterminatePending));
+    assert_eq!(
+        owner.clear_turn("thread", "turn"),
+        Err(AgentdPromptRuntimeError::IndeterminatePending)
+    );
     assert_eq!(owner.staged_count().expect("count"), 1);
 }
 
@@ -87,7 +109,10 @@ fn schema_one_cannot_smuggle_retirement_and_schema_two_rejects_orphans() {
     for schema in [1, PROMPT_RUNTIME_SCHEMA] {
         let mut stored = stored_state(&PromptRuntimeState::default());
         stored.schema = schema;
-        stored.retired.push(PromptRuntimeKey { thread_id: "thread".into(), turn_id: "turn".into() });
+        stored.retired.push(PromptRuntimeKey {
+            thread_id: "thread".into(),
+            turn_id: "turn".into(),
+        });
         assert!(restore_state(stored).is_err());
     }
 }
@@ -99,11 +124,14 @@ fn new_staging_cannot_spend_an_admitted_attempts_completion_reserve() {
     let value = attachment("context".into());
     stage(&owner, "turn", value.clone()).expect("stage");
     owner.record_dispatch(dispatch(&value)).expect("dispatch");
-    let near_capacity = usize::try_from(MAX_DURABLE_STATE_BYTES - TERMINAL_RESERVE_BYTES - 32 * 1024)
-        .expect("bounded capacity");
+    let near_capacity =
+        usize::try_from(MAX_DURABLE_STATE_BYTES - TERMINAL_RESERVE_BYTES - 32 * 1024)
+            .expect("bounded capacity");
     stage(&owner, "large-turn", attachment("x".repeat(near_capacity))).expect("reserve-aware fill");
-    assert_eq!(stage(&owner, "extra-turn", attachment("x".repeat(40 * 1024))),
-        Err(AgentdPromptRuntimeError::CapacityExceeded));
+    assert_eq!(
+        stage(&owner, "extra-turn", attachment("x".repeat(40 * 1024))),
+        Err(AgentdPromptRuntimeError::CapacityExceeded)
+    );
     let mut final_record = terminal(&value);
     final_record.outcome = PromptRuntimeTerminalOutcomeV1::Delivered;
     final_record.end_turn = Some(true);
@@ -111,12 +139,18 @@ fn new_staging_cannot_spend_an_admitted_attempts_completion_reserve() {
     final_record.delivery_observation = Some(PromptDeliveryObservationV1 {
         compilation_id: value.compilation_id.clone(),
         provider_request_digest: final_record.provider_request_digest,
-        delivered: true, rejected_reason: None,
+        delivered: true,
+        rejected_reason: None,
         observed_token_positions: Some((u32::MAX - 8192..u32::MAX).collect()),
         truncation_observed: false,
     });
-    owner.record(final_record.clone()).expect("maximum positions final fits reserved space");
+    owner
+        .record(final_record.clone())
+        .expect("maximum positions final fits reserved space");
     drop(owner);
     let owner = AgentdPromptRuntimeOwner::open_state_dir(directory.path()).expect("reopen final");
-    assert_eq!(owner.terminal_record("attempt").expect("terminal"), Some(final_record));
+    assert_eq!(
+        owner.terminal_record("attempt").expect("terminal"),
+        Some(final_record)
+    );
 }

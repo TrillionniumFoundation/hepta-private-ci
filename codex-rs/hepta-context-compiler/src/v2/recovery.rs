@@ -145,8 +145,7 @@ impl ContextDeliveryRecoveryBindingV2 {
             Digest32::of_bytes(self.provider_intent.binding.provider_id.as_bytes());
         let provider_model_digest =
             Digest32::of_bytes(self.provider_intent.binding.model.as_bytes());
-        let wire_digest =
-            parse_digest(self.provider_intent.binding.wire_semantic_sha256.as_str())?;
+        let wire_digest = parse_digest(self.provider_intent.binding.wire_semantic_sha256.as_str())?;
         let request_digest = self
             .provider_intent
             .binding

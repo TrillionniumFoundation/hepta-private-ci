@@ -76,14 +76,20 @@ impl Default for Metrics {
 
 impl Metrics {
     pub(crate) fn measure(&self, phase: Phase) -> Measurement<'_> {
-        Measurement { metrics: self, phase, started: Instant::now() }
+        Measurement {
+            metrics: self,
+            phase,
+            started: Instant::now(),
+        }
     }
 
     pub(crate) fn record(&self, phase: Phase, elapsed: Duration) {
         let Ok(mut samples) = self.samples.lock() else {
-            let _ = self.dropped.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
-                Some(value.saturating_add(1))
-            });
+            let _ = self
+                .dropped
+                .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+                    Some(value.saturating_add(1))
+                });
             return;
         };
         let micros = u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX);

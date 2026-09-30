@@ -143,25 +143,31 @@ impl AgentdExactContextDeliveryOwner {
 
 pub(super) fn retire_completed_stage(state: &mut ExactRuntimeState, key: &ExactTurnKey) {
     if state.preparing.contains(key)
-        || state.durable.has_unresolved_for_turn(&key.thread_id, &key.turn_id)
+        || state
+            .durable
+            .has_unresolved_for_turn(&key.thread_id, &key.turn_id)
     {
         return;
     }
     let ended = state.durable.pre_sends.iter().any(|(attempt, record)| {
         record.thread_id == key.thread_id
             && record.turn_id == key.turn_id
-            && state.durable.terminals.get(attempt).is_some_and(|terminal| {
-                terminal.disposition == "Rejected"
-                    || terminal.provider_receipt.as_ref().is_some_and(|receipt| {
-                        matches!(
-                            &receipt.terminal,
-                            ProviderTerminal::Completed {
-                                end_turn: Some(true),
-                                ..
-                            }
-                        )
-                    })
-            })
+            && state
+                .durable
+                .terminals
+                .get(attempt)
+                .is_some_and(|terminal| {
+                    terminal.disposition == "Rejected"
+                        || terminal.provider_receipt.as_ref().is_some_and(|receipt| {
+                            matches!(
+                                &receipt.terminal,
+                                ProviderTerminal::Completed {
+                                    end_turn: Some(true),
+                                    ..
+                                }
+                            )
+                        })
+                })
     });
     if ended {
         // Raw context dies here; proof, attempt and observation history stays.
