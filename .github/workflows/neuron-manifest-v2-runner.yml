@@ -1,0 +1,78 @@
+name: Neuron exact candidate manifest migration runner
+
+on:
+  push:
+    branches:
+      - codex/neuron-runtime-manifest-v2-staging-20260930
+    paths:
+      - .github/workflows/neuron-manifest-v2-runner.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: neuron-manifest-v2-migration-runner
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact migration input
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: "${{ github.sha }}"
+          fetch-depth: 0
+
+      - name: Execute staged transform and remove migration authority
+        shell: bash
+        env:
+          TARGET_BRANCH: codex/neuron-runtime-manifest-v2-staging-20260930
+        run: |
+          set -euo pipefail
+          staged=.github/workflows/neuron-manifest-v2-once.yml
+          runner=.github/workflows/neuron-manifest-v2-runner.yml
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+          python3 - <<'PY_EXTRACT'
+          import textwrap
+          from pathlib import Path
+
+          source = Path('.github/workflows/neuron-manifest-v2-once.yml').read_text()
+          marker = "          python3 - <<'PY'\n"
+          start = source.index(marker) + len(marker)
+          end = source.index("\n          PY\n", start)
+          Path('/tmp/neuron_manifest_v2_migration.py').write_text(
+              textwrap.dedent(source[start:end]) + '\n'
+          )
+          PY_EXTRACT
+          python3 /tmp/neuron_manifest_v2_migration.py
+
+          python3 -m py_compile \
+            scripts/neuron/readiness.py \
+            scripts/neuron/release_readiness.py \
+            scripts/neuron/test_readiness.py \
+            scripts/neuron/test_release_readiness.py
+          python3 -m unittest discover -v -s scripts/neuron -p 'test_readiness.py'
+          python3 -m unittest discover -v -s scripts/neuron -p 'test_release_readiness.py'
+          python3 scripts/neuron/readiness.py render --check
+          python3 scripts/verify_cargo_lock.py
+          (cd codex-rs && cargo metadata --locked --format-version=1 >/dev/null)
+
+          rm -f "$staged" "$runner"
+          if grep -R --line-number --fixed-strings 'contents: write' \
+            .github/workflows/*neuron*.yml; then
+            echo 'mutable Neuron workflow remains' >&2
+            exit 1
+          fi
+          git add -A
+          git diff --cached --check
+          git config user.name hepta-source-migration
+          git config user.email source-migration@invalid
+          git commit -m "fix(neuron): bind one exact candidate readiness manifest"
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse HEAD^)" = "$(git rev-parse FETCH_HEAD)"
+          git push origin "HEAD:$TARGET_BRANCH"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
