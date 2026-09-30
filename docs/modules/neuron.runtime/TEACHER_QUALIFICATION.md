@@ -148,3 +148,23 @@ Resolve current applicable versions at use:
   scope and output-use restrictions.
 - [Codex non-interactive mode](https://developers.openai.com/codex/noninteractive/),
   event-stream, configuration and credential-handling documentation.
+
+
+### Service availability is not this provider's qualification
+
+Official availability checked 2026-09-30: [GPT-6 Sol and Luna](https://openai.com/index/introducing-gpt-6-sol-and-luna/)
+are announced for Codex and the API; [Work and Codex access](https://help.openai.com/en/articles/20001275-chatgpt-work-and-codex)
+still depends on the plan, workspace settings and rollout. This resolves the
+public model-name/availability question only. It neither demonstrates which model
+a particular native request served nor qualifies its isolation or training use.
+An old Gateway rejection is transport-specific historical evidence, not proof
+that the separately announced native/API model does not exist.
+
+The reviewed public Services Agreement and ROW consumer Terms remain effective
+2026-01-01 at this check. Their scope differs; do not apply a Services Agreement
+exception to a consumer subscription by analogy. The engineering receipt should
+bind the rights owner's decision reference, governing agreement/version, account
+route, permitted training purpose and distribution scope, validity period and
+revocation policy. If any of these are unresolved, record that field as unresolved
+and keep dataset admission closed. This specification is not the rights decision
+and does not authorize new teacher collection. Diagnostic nonces remain excluded.

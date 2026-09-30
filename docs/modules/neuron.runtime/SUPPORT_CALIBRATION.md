@@ -197,3 +197,59 @@ pre/post-dispatch cancellation, witness outage, process death and request
 substitution before any isolated motor experiment. Only a distinct currently
 authorized motor stage may perform effects. This order is an experimental design,
 not an executed result, new runtime, production selection or migration receipt.
+
+## Minimum acceptance receipts for the remaining boundaries
+
+This table specifies what the existing owners must receive; it is not a second
+roadmap, an executed experiment or a new approval authority. Source-level
+implementation, controlled execution, independent acceptance and product release
+are separate claims. A prerequisite can be implemented without its empirical
+boundary being closed. PR comments and run artifacts, not this table, retain
+changing SHAs, counts, failures and operational status.
+
+| Boundary | Existing owner and frozen inputs | Required acceptance observation; insufficient substitute |
+| --- | --- | --- |
+| DecisionCell backend selection | `learning.artifacts` selector with exact parameter/runtime tuple, model/code/license review, intended deployment and admitted calibration/OOD scope | A verified selection consumed by the ordinary owner under current trust, followed by revocation/expiry rejection. A synthetic scorer recommendation or a hand-edited selected flag cannot select a backend. |
+| Laya versus encoder bakeoff | Existing complete-panel runner; freeze all candidates and upstream/loader identities, task groups, device, precision, batch/concurrency, seeds, tuning budget and stopping rule | Every named candidate is attempted under the frozen comparison protocol; record unsupported/timeout/abstention and complete decision/resource measurements. Compare common eligible tasks and retain the complete planned denominator separately. Frozen-feature replay is not a fresh encoder run. |
+| Live V2 DecisionCell migration | Existing generation controller, store/index and witness; old/new binary and state-format versions, namespaces, original request identities and provider reconciliation | On disposable copies first: fence/drain, preserve committed/failed/unknown histories, migrate, reopen, verify each request/result and witness frontier, and execute the declared rollback or explicit no-downgrade boundary at each crash cut. A V2 bootstrap or typed API test is not migration of live V1 history. |
+| Base/organ/cell/head consumption | Existing inference worker and typed Agentd invocation; all tensor groups, raw-input projection, previous-state bytes, parameter units, graph and calibration digest | One actual model execution supplies the complete typed output and transition tensors; admitted bytes and observed resource/clock semantics survive result reuse and process loss. Constants, arbitrary state hashes, truncating encoder features and a Python-only head probe cannot fill missing learned contracts. |
+| Calibrated OOD trust | Existing artifact/calibration admission; independently sampled task/episode populations, coverage/risk budgets and simultaneous candidate-family policy | Frozen evaluation reports marginal OOD false acceptance and complete supported-decision risk with the stated sampling assumptions and uncertainty. Confidence rejection cannot hide a marginal OOD error; a small synthetic zero-error count or probability-consistency check is not independent trust. |
+| ComputerActionIR registration | Existing `hepta-types` semantic contract and Rust/JavaScript `hepta-wire` HAC1 registry/codecs | Confirm the already registered version/opcode and cross-language golden bytes, decode/encode rejection, exact target generation and deadline semantics at the consumer. Do not create a parallel schema or describe existing registration as absent; registration alone grants no effect authority. |
+| Browser/native binary motor | Existing Browser/Native effect owner; same-candidate worker binary digest, sandbox posture, exact IR/request, current grant and target generation | On disposable isolated targets, observe actual postconditions and terminal failures through the production consumer; inject lost acknowledgement/cancel/restart and retain unknown outcomes without duplicate effects. JS protocol tests, a fixture-authorized clipboard effect, or an unsandboxed substitute do not qualify the ordinary product motor. |
+| Local Codex `gpt-6-luna` teacher provider | Existing provider/operation owner; native executable/configuration, auth-route scope, requested identity, bounded nonce/deadline/cost and trusted transport observations | Establish observed served identity, supported account route and independently enforced isolation, plus cancellation/error/unknown handling. Catalogue membership, a model self-description and absence of tool events are insufficient. A blocked probe is not remotely executed evidence and does not authorize a workaround. |
+| Teacher-data use rights | Responsible rights/data owner; applicable account/product terms and any controlling agreement, intended purpose, allowed inputs/outputs, distribution, validity and revocation scope | Retain an account-specific reviewed decision and restricted evidence reference; each admitted dataset must match that scope. Repository permissions, output ownership, service availability and provider connectivity cannot substitute for the decision. |
+| Actual training | Existing training and artifact owners; admitted episode/source lineage, split role, optimizer/seed/budget, trainable/frozen groups and saved artifact identities | Record actual optimizer execution and changed intended groups, reload exact saved tensors and evaluate the frozen outputs. Distinguish head retraining from new base encoding, backbone training and teacher distillation. A dry run, changed config or fixture weights is not training evidence. |
+| Future-window efficacy | Existing evaluation owner; artifact/baseline, population/eligibility, outcomes, analysis and stopping rule committed before the real calendar window | Collect the complete eligible episode denominator during the stated window and evaluate paired/randomized frozen arms as preregistered, including failures, abstentions and unknown outcomes. Retrospective timestamp labels, repeated cases or inspecting a window before freezing the model invalidate a prospective claim. |
+
+### Dataset partition and prospective-window rules
+
+Assign the complete source task/episode (and any shared template, user/session or
+asset family that induces dependence) to one split role before model fitting.
+Store the grouping function/version and group-to-split manifest digest with the
+dataset; row disjointness is insufficient when neighbouring frames or transformed
+copies share an episode. Separate training, tuning, calibration and independent
+acceptance roles. Development observations already inspected can motivate a new
+hypothesis but cannot return to the untouched acceptance population.
+
+Freeze candidate artifacts and the baseline before opening the prospective
+collection window. Retain a trusted registration receipt with an absolute UTC
+window and data-cut identity; a commit hash proves content, not when an author
+actually preregistered it. A retrospective capture of an old commit is not proof
+that the evaluation stayed blinded. Maintain independent collection/outcome
+provenance and an access policy for the holdout. Clock uncertainty crossing the
+registration boundary makes temporal qualification unresolved, not satisfied.
+
+The prespecified estimand must include all eligible tasks, not only model-supported
+rows. Report coverage and conditional risk separately. For paired evaluation,
+retain both arms under each original task ID, randomize order where order matters,
+and define reset/carry-over handling. Count missing or indeterminate outcomes in
+the denominator and report bounds/sensitivity under the declared missing-outcome
+policy; silently discarding them can bias efficacy. Cluster-dependent episodes
+need a prespecified cluster-level analysis, not a binomial bound over frames.
+
+Record the planned sample/elapsed-time/cost stopping rule and safety stops before
+collection. A safety stop remains an observed stop with all accrued cases; it
+cannot become an efficacy pass. Do not repeatedly peek and extend a fixed-sample
+confidence calculation until it passes. Further model or threshold changes require
+new immutable artifacts, an explicit amendment and a new untouched evaluation
+window. This specifies the experiment; it supplies no observations or approval.

@@ -128,3 +128,37 @@ for newly fitted artifacts, never the recorded meaning of historical receipts.
 diagnostics from native Codex transport identity, isolation and account-specific
 teacher-data rights. Neither guide adds a runtime owner or grants selection,
 training admission, product qualification or activation.
+
+
+## Readiness evidence is not experiment acceptance
+
+`MODULE_SPEC.json` configures the existing readiness workflow and its generated
+navigation. `IMPLEMENTATION_MAP.json` remains the existing module source map;
+`IMPLEMENTATION_MAP.generated.json` is a projection of the readiness specification,
+not a second runtime owner or replacement for empirical evidence. The minimum
+receipts for all eleven DecisionCell/provider/motor/training boundaries are in
+[the existing experiment contract](SUPPORT_CALIBRATION.md#minimum-acceptance-receipts-for-the-remaining-boundaries).
+
+Provenance v2 binds exact source/base commits and the deterministic tested lane,
+actual compiler release/target, platform metadata, one workflow run and attempt,
+and every required prerequisite/test stage outcome. Content hashes bind the exact
+lane's documentation, workflow, validator and generated map. Missing documents,
+modified/untracked source, stale projections, malformed JSON, duplicate gates,
+failed/skipped prerequisites and inconsistent identities cannot establish readiness.
+Historical v1 records remain historical input; they are not upgraded in place.
+
+Capture and aggregation publish new private evidence files outside the source
+checkout, never overwrite an earlier receipt, and retain input evidence hashes.
+`--allow-incomplete` controls diagnostic exit handling only; blockers still keep
+`qualificationReady=false`. Aggregation consumes the current matrix and download
+outcomes too; even complete successful per-gate records cannot make the manifest
+ready after a matrix failure. The workflow's final result additionally requires
+all matrix jobs, artifact download and aggregation to succeed, including
+post-capture cleanup.
+A metadata fingerprint is not remote attestation: local fixture records do not
+prove a hosted run. The manifest explicitly leaves hosted execution independently
+unverified; trusted workflow/job records and retained command logs are required.
+
+None of these checks selects a model, grants teacher-data rights, proves independent
+OOD calibration, qualifies a motor, trains a model or establishes future-window
+efficacy. Production activation, independent acceptance and release stay separate.
