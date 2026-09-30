@@ -1,8 +1,9 @@
 [package]
-name = "codex-hepta-bellman-operator"
-version.workspace = true
 edition.workspace = true
 license.workspace = true
+name = "codex-hepta-bellman-operator"
+version.workspace = true
+publish = false
 
 [lib]
 name = "codex_hepta_bellman_operator"
@@ -19,5 +20,8 @@ qualification-unverified-input = []
 workspace = true
 
 [dependencies]
-codex-hepta-learning-ledger = { workspace = true }
-codex-hepta-types = { workspace = true }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+codex-hepta-types = { path = "../hepta-types" }
+
+[dev-dependencies]
+ed25519-dalek = { workspace = true }
