@@ -164,7 +164,8 @@ def verify_truth_boundary(row: dict[str, Any], mapping: dict[str, Any]) -> None:
         need(boundary.get(key) is False, f"truth boundary {module} {key}")
     need(
         dimensions["productCaller"].get("authenticatedProductionEstablished") is False
-        and boundary.get("authenticatedProductionProductExecutionProved", False) is False,
+        and boundary.get("authenticatedProductionProductExecutionProved", False)
+        is False,
         f"truth boundary {module} authenticated production",
     )
     need(
@@ -189,7 +190,8 @@ def verify_truth_boundary(row: dict[str, Any], mapping: dict[str, Any]) -> None:
             need(target.is_file(), f"{module} missing caller source {path}")
             symbol = caller["nativeSymbol"].split("::")[-1]
             need(
-                re.search(rf"\bfn\s+{re.escape(symbol)}\b", target.read_text()) is not None,
+                re.search(rf"\bfn\s+{re.escape(symbol)}\b", target.read_text())
+                is not None,
                 f"{module} missing read-only caller symbol {symbol}",
             )
 

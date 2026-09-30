@@ -424,8 +424,12 @@ class LaneDTruthBoundaryTests(unittest.TestCase):
             },
         }
 
-    def test_descriptive_caller_wording_does_not_mint_execution_or_block_read_only_source(self) -> None:
-        self.row["dimensions"]["productCaller"]["state"] = "editorial wording may evolve"
+    def test_descriptive_caller_wording_does_not_mint_execution_or_block_read_only_source(
+        self,
+    ) -> None:
+        self.row["dimensions"]["productCaller"]["state"] = (
+            "editorial wording may evolve"
+        )
         LANE_D.verify_truth_boundary(self.row, self.mapping)
         real_map = LANE_D.load(LANE_D.MAPS["utility.ndu"])
         LANE_D.verify_truth_boundary(self.row, real_map)
@@ -433,7 +437,9 @@ class LaneDTruthBoundaryTests(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, "missing read-only caller symbol"):
             LANE_D.verify_truth_boundary(self.row, real_map)
 
-    def test_execution_and_activation_claims_reject_without_rewriting_prose(self) -> None:
+    def test_execution_and_activation_claims_reject_without_rewriting_prose(
+        self,
+    ) -> None:
         for key in self.mapping["claimBoundary"]:
             with self.subTest(key=key):
                 self.mapping["claimBoundary"][key] = True
@@ -442,11 +448,17 @@ class LaneDTruthBoundaryTests(unittest.TestCase):
                         LANE_D.verify_truth_boundary(self.row, self.mapping)
                 finally:
                     self.mapping["claimBoundary"][key] = False
-        self.row["dimensions"]["productCaller"]["authenticatedProductionEstablished"] = "false"
+        self.row["dimensions"]["productCaller"][
+            "authenticatedProductionEstablished"
+        ] = "false"
         with self.assertRaisesRegex(SystemExit, "authenticated production"):
             LANE_D.verify_truth_boundary(self.row, self.mapping)
-        self.row["dimensions"]["productCaller"]["authenticatedProductionEstablished"] = False
-        self.mapping["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = "true"
+        self.row["dimensions"]["productCaller"][
+            "authenticatedProductionEstablished"
+        ] = False
+        self.mapping["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = (
+            "true"
+        )
         with self.assertRaisesRegex(SystemExit, "read-only claim type"):
             LANE_D.verify_truth_boundary(self.row, self.mapping)
 
