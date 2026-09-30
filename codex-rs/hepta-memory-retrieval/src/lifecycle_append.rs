@@ -98,8 +98,7 @@ pub fn validate_durable_decision_append_v1(
     next: &DurableDecisionRecordV1,
     quarantine: Option<&QuarantinedUnknownOutcomeV1>,
 ) -> Result<(), DurableDecisionTransitionErrorV1> {
-    next.validate()
-        .map_err(DurableDecisionTransitionErrorV1::InvalidRecord)?;
+    validate_record_and_quarantine(next, quarantine)?;
 
     let required_frontier = expected_frontier
         .checked_add(1)
@@ -109,21 +108,6 @@ pub fn validate_durable_decision_append_v1(
             expected: required_frontier,
             actual: next.frontier,
         });
-    }
-
-    match (next.phase, quarantine) {
-        (RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome, None) => {
-            return Err(DurableDecisionTransitionErrorV1::MissingQuarantineEvidence);
-        }
-        (RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome, Some(outcome)) => {
-            if outcome.identity() != &next.identity {
-                return Err(DurableDecisionTransitionErrorV1::QuarantineIdentityMismatch);
-            }
-        }
-        (_, Some(_)) => {
-            return Err(DurableDecisionTransitionErrorV1::UnexpectedQuarantineEvidence);
-        }
-        (_, None) => {}
     }
 
     let Some(latest) = latest else {
@@ -160,6 +144,8 @@ pub fn validate_durable_decision_append_v1(
 
 /// Validate and append through one existing durable owner. Unknown outcomes use
 /// the port's quarantine operation; all other phases use compare-and-append.
+/// An exact record already returned by `load_latest` is acknowledged as an
+/// idempotent committed replay without calling the mutating port operation.
 /// A port error is an uncertain commit result and must be reconciled by loading
 /// the exact execution identity before any retry.
 pub fn append_durable_decision_checked_v1<P: DurableDecisionPortV1>(
@@ -168,16 +154,16 @@ pub fn append_durable_decision_checked_v1<P: DurableDecisionPortV1>(
     next: &DurableDecisionRecordV1,
     quarantine: Option<&QuarantinedUnknownOutcomeV1>,
 ) -> Result<u64, DurableDecisionAppendErrorV1<P::Error>> {
+    validate_record_and_quarantine(next, quarantine)
+        .map_err(DurableDecisionAppendErrorV1::Transition)?;
     let latest = port
         .load_latest(&next.identity)
         .map_err(DurableDecisionAppendErrorV1::Port)?;
-    validate_durable_decision_append_v1(
-        latest.as_ref(),
-        expected_frontier,
-        next,
-        quarantine,
-    )
-    .map_err(DurableDecisionAppendErrorV1::Transition)?;
+    if latest.as_ref() == Some(next) {
+        return Ok(next.frontier);
+    }
+    validate_durable_decision_append_v1(latest.as_ref(), expected_frontier, next, quarantine)
+        .map_err(DurableDecisionAppendErrorV1::Transition)?;
 
     let committed = match quarantine {
         Some(outcome) => port.quarantine_unknown_outcome(
@@ -197,6 +183,28 @@ pub fn append_durable_decision_checked_v1<P: DurableDecisionPortV1>(
         });
     }
     Ok(committed)
+}
+
+fn validate_record_and_quarantine(
+    next: &DurableDecisionRecordV1,
+    quarantine: Option<&QuarantinedUnknownOutcomeV1>,
+) -> Result<(), DurableDecisionTransitionErrorV1> {
+    next.validate()
+        .map_err(DurableDecisionTransitionErrorV1::InvalidRecord)?;
+    match (next.phase, quarantine) {
+        (RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome, None) => {
+            Err(DurableDecisionTransitionErrorV1::MissingQuarantineEvidence)
+        }
+        (RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome, Some(outcome)) => {
+            if outcome.identity() == &next.identity {
+                Ok(())
+            } else {
+                Err(DurableDecisionTransitionErrorV1::QuarantineIdentityMismatch)
+            }
+        }
+        (_, Some(_)) => Err(DurableDecisionTransitionErrorV1::UnexpectedQuarantineEvidence),
+        (_, None) => Ok(()),
+    }
 }
 
 fn phase_transition_allowed(

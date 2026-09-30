@@ -69,8 +69,14 @@ boundary:
 - requires exact identity equality and a nondecreasing writer fence;
 - enforces the monotonic phase and quarantine rules above;
 - requires quarantine evidence exactly when the phase is
-  `QuarantinedUnknownOutcome`; and
-- verifies that the port reports the exact committed frontier.
+  `QuarantinedUnknownOutcome`;
+- recognizes an exact already-committed record as an idempotent replay and
+  returns its durable frontier without issuing a second mutating append;
+- verifies that a new append reports the exact committed frontier.
+
+An exact replay must still provide the typed quarantine evidence required by a
+`QuarantinedUnknownOutcome` record. A same-identity record with different phase,
+frontier, fence, or payload is not an idempotent replay and remains a conflict.
 
 The raw `append_retrieval_lifecycle_projection_v1` helper remains a low-level
 compatibility surface for existing storage implementations. It is not the

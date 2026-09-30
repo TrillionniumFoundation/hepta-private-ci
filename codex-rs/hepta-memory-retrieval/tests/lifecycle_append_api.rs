@@ -45,6 +45,7 @@ fn record(
 struct MemoryDecisionPort {
     frontier: u64,
     latest: Vec<DurableDecisionRecordV1>,
+    append_count: u64,
     wrong_commit_frontier: bool,
 }
 
@@ -67,6 +68,7 @@ impl DurableDecisionPortV1 for MemoryDecisionPort {
             .frontier
             .checked_add(1)
             .ok_or_else(|| io::Error::other("frontier exhausted"))?;
+        self.append_count = self.append_count.saturating_add(1);
         self.latest.retain(|value| value.identity != record.identity);
         self.latest.push(record.clone());
         if self.wrong_commit_frontier {
@@ -100,9 +102,7 @@ impl DurableDecisionPortV1 for MemoryDecisionPort {
                 outcome.identity().clone(),
                 RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
                 writer_fence,
-                expected_frontier
-                    .checked_add(1)
-                    .ok_or_else(|| io::Error::other("frontier exhausted"))?,
+                expected_frontier + 1,
                 payload_digest,
             ),
         )
@@ -173,6 +173,60 @@ fn quarantine_cannot_regress_to_prepared_or_be_blindly_replayed() {
             }
         ))
     ));
+}
+
+#[test]
+fn exact_committed_replay_is_idempotent_without_second_append() {
+    let execution = identity("request-a");
+    let next = record(
+        execution,
+        RetrievalLifecyclePhaseV1::QualifiedDecision,
+        7,
+        1,
+        "prepared",
+    );
+    let mut port = MemoryDecisionPort::default();
+    assert_eq!(
+        append_durable_decision_checked_v1(&mut port, 0, &next, None)
+            .expect("initial append"),
+        1
+    );
+    assert_eq!(port.append_count, 1);
+
+    assert_eq!(
+        append_durable_decision_checked_v1(&mut port, 0, &next, None)
+            .expect("exact replay is already committed"),
+        1
+    );
+    assert_eq!(port.append_count, 1);
+}
+
+#[test]
+fn exact_replay_still_requires_matching_quarantine_evidence() {
+    let execution = identity("request-a");
+    let quarantined = record(
+        execution.clone(),
+        RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
+        7,
+        1,
+        "dispatch-unknown",
+    );
+    let quarantine = QuarantinedUnknownOutcomeV1::new(
+        execution,
+        "native dispatch outcome unknown".to_string(),
+    )
+    .expect("bounded quarantine");
+    let mut port = MemoryDecisionPort::default();
+    append_durable_decision_checked_v1(&mut port, 0, &quarantined, Some(&quarantine))
+        .expect("quarantine append");
+
+    assert!(matches!(
+        append_durable_decision_checked_v1(&mut port, 0, &quarantined, None),
+        Err(DurableDecisionAppendErrorV1::Transition(
+            DurableDecisionTransitionErrorV1::MissingQuarantineEvidence
+        ))
+    ));
+    assert_eq!(port.append_count, 1);
 }
 
 #[test]
@@ -326,7 +380,7 @@ fn identity_and_frontier_mismatch_fail_before_storage() {
 fn quarantine_phase_requires_matching_typed_evidence() {
     let execution = identity("request-a");
     let next = record(
-        execution,
+        execution.clone(),
         RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
         7,
         1,
