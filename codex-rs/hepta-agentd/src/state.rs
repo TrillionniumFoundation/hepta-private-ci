@@ -35,6 +35,7 @@ mod control;
 
 pub(crate) struct AgentdState {
     pub(crate) retrieval_executor: crate::retrieval_executor::RetrievalExecutor,
+    pub(crate) neuron_runtime_v2: std::sync::OnceLock<Arc<crate::AgentdNeuronRuntimeV2Host>>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -134,6 +135,7 @@ impl AgentdState {
             retrieval_executor: crate::retrieval_executor::RetrievalExecutor::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
+            neuron_runtime_v2: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
@@ -562,8 +564,13 @@ impl AgentdState {
         // provider is allowed to derive seven-owner inputs. This applies to
         // abstain and slow-path outcomes as well as a Ready continuation.
         let first_now = self.require_current_run_start(record)?;
-        let invocation = runner
-            .build_host_invocation(Arc::clone(provider), self.identity.clone(), record.clone())
+        let (invocation, neuron) = runner
+            .build_host_invocation(
+                Arc::clone(provider),
+                self.identity.clone(),
+                record.clone(),
+                self.neuron_runtime_v2.get().cloned(),
+            )
             .await?;
         invocation.validate(&self.identity, record)?;
 
@@ -576,14 +583,28 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .composition()
             .clone();
-        let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "canonical intelligence preparation failed: {error}"
-                ))
-            })?;
+        let outcome = match neuron {
+            Some(neuron) => {
+                runner
+                    .prepare_for_composition_with_durable_neuron_v2(
+                        &composition,
+                        invocation.request,
+                        invocation.inputs,
+                        neuron,
+                    )
+                    .await
+            }
+            None => {
+                runner
+                    .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+                    .await
+            }
+        }
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "canonical intelligence preparation failed: {error}"
+            ))
+        })?;
 
         // Owner preparation is asynchronous. Revalidate the durable signed
         // Objective and Fleet fence after it completes before reporting any

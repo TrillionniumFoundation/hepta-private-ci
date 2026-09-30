@@ -331,14 +331,14 @@ async fn timed_out_invocation_workers_keep_capacity_until_the_provider_retires()
         let mut short = record.clone();
         short.admission.deadline_unix_micros = now_micros() + 50_000;
         assert!(matches!(
-            runner.build_host_invocation(std::sync::Arc::clone(&provider), identity.clone(), short).await,
+            runner.build_host_invocation(std::sync::Arc::clone(&provider), identity.clone(), short, /*neuron_host*/ None).await,
             Err(AgentdError::Protocol(message)) if message.contains("timed out")
         ));
     }
     let mut current = record.clone();
     current.admission.deadline_unix_micros = now_micros() + 2_000_000;
     assert!(matches!(
-        runner.build_host_invocation(std::sync::Arc::clone(&provider), identity.clone(), current.clone()).await,
+        runner.build_host_invocation(std::sync::Arc::clone(&provider), identity.clone(), current.clone(), /*neuron_host*/ None).await,
         Err(AgentdError::Protocol(message)) if message.contains("Busy")
     ));
     drop(release_workers);
@@ -349,6 +349,7 @@ async fn timed_out_invocation_workers_keep_capacity_until_the_provider_retires()
                 std::sync::Arc::clone(&provider),
                 identity.clone(),
                 current.clone(),
+                /*neuron_host*/ None,
             )
             .await;
         match result {

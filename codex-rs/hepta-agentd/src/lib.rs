@@ -61,7 +61,11 @@ mod lane_b_runtime;
 #[cfg(feature = "server")]
 mod module_selection;
 #[cfg(feature = "server")]
+mod neuron_artifact_admission;
+#[cfg(feature = "server")]
 mod neuron_runtime;
+#[cfg(feature = "server")]
+pub mod neuron_runtime_v2;
 #[cfg(feature = "server")]
 mod objective_runtime;
 #[cfg(feature = "server")]
@@ -335,7 +339,53 @@ pub use lane_b_runtime::RunSnapshot;
 #[cfg(feature = "server")]
 pub use lane_b_runtime::RuntimeComposition;
 #[cfg(feature = "server")]
+pub use neuron_artifact_admission::AgentdNeuronArtifactAdmissionV1;
+#[cfg(feature = "server")]
+pub use neuron_artifact_admission::NeuronSelectedArtifactsV1;
+#[cfg(feature = "server")]
+pub use neuron_runtime::AgentdNeuronHandleV1;
+#[cfg(feature = "server")]
+pub use neuron_runtime::AgentdNeuronInvocationV1;
+#[cfg(feature = "server")]
 pub use neuron_runtime::AgentdNeuronOwner;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AGENTD_NEURON_GENERATION_STATE_SCHEMA_V2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronCapacityTrendV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronControlErrorV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronControlStateErrorV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronGenerationControllerSnapshotV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronGenerationControllerV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronGenerationStateV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronHandleV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronInvocationV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronLifecycleStateV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronOperationalCountersV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronOperationalSnapshotV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronOwnerV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronRecoveryReportV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronRuntimeV2Config;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronRuntimeV2Host;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronTickProviderV2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::read_agentd_neuron_generation_state_v2;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::write_agentd_neuron_generation_state_v2;
 #[cfg(feature = "server")]
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 #[cfg(feature = "server")]
@@ -455,3 +505,20 @@ use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 #[cfg(feature = "server")]
 use state::AgentdState;
+
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationCanaryVerdictV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationCandidateV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationHandleV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationPhaseV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationRecordV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationRuntimeConfigV1;
+#[cfg(feature = "server")]
+pub use self_iteration::self_iteration_canary_payload_v1;
+#[cfg(feature = "server")]
+pub use self_iteration::self_iteration_candidate_payload_v1;

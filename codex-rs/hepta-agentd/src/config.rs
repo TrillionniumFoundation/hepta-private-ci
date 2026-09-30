@@ -79,6 +79,7 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
 }
 
 pub struct AgentdConfig {
+    neuron_runtime_v2: Option<crate::AgentdNeuronRuntimeV2Config>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     _writer_lock: File,
@@ -233,6 +234,7 @@ impl AgentdConfig {
             plasticity_bootstrap: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
+            neuron_runtime_v2: None,
             intelligence_invocation_provider: None,
         })
     }
@@ -576,6 +578,27 @@ impl AgentdConfig {
                 "canonical intelligence runner and invocation provider must be configured together; refusing compatibility fallback".to_string(),
             )),
         }
+    }
+
+    /// Attach the single daemon-owned V2 Neuron runtime. The ordinary process
+    /// environment path never manufactures model, storage or tick authority.
+    pub fn with_neuron_runtime_v2(
+        mut self,
+        runtime: crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Config,
+    ) -> Result<Self, AgentdError> {
+        if self.neuron_runtime_v2.is_some() {
+            return Err(AgentdError::Invalid(
+                "Neuron V2 runtime already configured".to_string(),
+            ));
+        }
+        self.neuron_runtime_v2 = Some(runtime);
+        Ok(self)
+    }
+
+    pub(crate) fn take_neuron_runtime_v2(
+        &mut self,
+    ) -> Option<crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Config> {
+        self.neuron_runtime_v2.take()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

@@ -112,7 +112,6 @@ impl AgentdIntelligenceRunIdentityV1 {
         if self.run_id != request.run_id
             || self.objective_digest != request.snapshot.objective_digest()
             || self.authority_epoch != request.snapshot.authority_epoch()
-            || self.generation != request.snapshot.body_generation().get()
             || self.objective_digest != request.legal_candidates.state_digest
         {
             return Err(AgentdError::Invalid(

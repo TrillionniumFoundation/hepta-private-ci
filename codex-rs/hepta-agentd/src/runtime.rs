@@ -82,6 +82,18 @@ pub async fn run(
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    let neuron_runtime_v2 = config.take_neuron_runtime_v2();
+    if neuron_runtime_v2.is_some()
+        && (intelligence_product.is_none() || intelligence_invocation.is_none())
+    {
+        return Err(AgentdError::Invalid(
+            "Neuron V2 requires the canonical intelligence runner and invocation provider"
+                .to_string(),
+        ));
+    }
+    let neuron_runtime_v2 = neuron_runtime_v2
+        .map(crate::neuron_runtime_v2::AgentdNeuronRuntimeV2Config::start)
+        .transpose()?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -118,6 +130,12 @@ pub async fn run(
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
+    }
+    if let Some(host) = neuron_runtime_v2.as_ref() {
+        state
+            .neuron_runtime_v2
+            .set(Arc::clone(host))
+            .map_err(|_| AgentdError::Invalid("Neuron V2 host already attached".to_string()))?;
     }
     if let Some(current) = retrieval_context {
         state
@@ -296,15 +314,33 @@ pub async fn run(
     .await;
     if let Err(error) = startup {
         tasks.shutdown().await;
+        if let Some(host) = neuron_runtime_v2.as_ref()
+            && let Err(shutdown_error) = host.shutdown()
+        {
+            return Err(AgentdError::Protocol(format!(
+                "Agentd startup failed: {error}; Neuron V2 shutdown also failed: {shutdown_error}"
+            )));
+        }
         return Err(error);
     }
-    tasks
+    let runtime_result = tasks
         .run_until(async move {
             shutdown_signal().await?;
             // Keep control and owner reconciliation alive throughout drain.
             drain_runtime(state).await
         })
-        .await
+        .await;
+    let neuron_shutdown = neuron_runtime_v2
+        .as_ref()
+        .map_or(Ok(()), |host| host.shutdown());
+    match (runtime_result, neuron_shutdown) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(error), Ok(())) => Err(error),
+        (Ok(()), Err(error)) => Err(error),
+        (Err(runtime_error), Err(neuron_error)) => Err(AgentdError::Protocol(format!(
+            "Agentd runtime failed: {runtime_error}; Neuron V2 shutdown also failed: {neuron_error}"
+        ))),
+    }
 }
 
 fn require_cognitive_retrieval_context_for_mode(
@@ -467,6 +503,9 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
 }
 
 async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
+    if let Some(host) = state.neuron_runtime_v2.get() {
+        host.begin_quiesce()?;
+    }
     state.mark_draining()?;
     let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
     loop {

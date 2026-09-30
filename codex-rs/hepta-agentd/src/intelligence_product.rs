@@ -682,6 +682,9 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     >,
 }
 
+#[path = "intelligence_durable_neuron.rs"]
+mod durable_neuron;
+
 #[path = "intelligence_product_runner.rs"]
 mod runner;
 

@@ -1085,3 +1085,42 @@ async fn missing_foreign_or_expired_run_identity_is_rejected_before_owner_io() {
         Err(AgentdIntelligenceProductError::TimedOut)
     ));
 }
+
+#[test]
+fn model_generation_can_advance_without_changing_the_fleet_process_fence() {
+    let mut value = fixture();
+    let identity = value
+        .inputs
+        .run_identity
+        .as_ref()
+        .expect("run identity")
+        .clone();
+    let snapshot = &value.request.snapshot;
+    value.request.snapshot = CanonicalIntelligenceSnapshotV1::admit(CanonicalSnapshotRequestV1 {
+        objective_digest: snapshot.objective_digest(),
+        authority_epoch: snapshot.authority_epoch(),
+        body_generation: Generation::new(8).expect("model successor"),
+        configuration_digest: snapshot.configuration_digest(),
+        revocation_frontier_digest: snapshot.revocation_frontier_digest(),
+        owner_bindings: value
+            .owners
+            .iter()
+            .map(|owner| OwnerBindingV1 {
+                owner_id: owner.owner_id.clone(),
+                generation: owner.generation,
+                implementation_digest: owner.implementation_digest,
+                key_digest: owner.key_digest,
+                key_epoch: owner.key_epoch,
+            })
+            .collect(),
+    })
+    .expect("successor model snapshot");
+    identity
+        .validate_process_binding("agent.product", 6)
+        .expect("same process");
+    identity
+        .validate_request(&value.request)
+        .expect("separate model generation");
+    assert_eq!(identity.generation, 7);
+    assert_eq!(value.request.snapshot.body_generation().get(), 8);
+}

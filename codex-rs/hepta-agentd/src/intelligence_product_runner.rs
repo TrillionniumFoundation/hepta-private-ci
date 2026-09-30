@@ -65,7 +65,14 @@ impl AgentdIntelligenceProductRunnerV1 {
         provider: std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>,
         identity: crate::AgentdIdentity,
         record: codex_hepta_agent_components::learning_ledger::RunStartRecordV1,
-    ) -> Result<crate::AgentdIntelligenceInvocationV1, crate::AgentdError> {
+        neuron_host: Option<std::sync::Arc<crate::AgentdNeuronRuntimeV2Host>>,
+    ) -> Result<
+        (
+            crate::AgentdIntelligenceInvocationV1,
+            Option<crate::AgentdNeuronInvocationV2>,
+        ),
+        crate::AgentdError,
+    > {
         let run_identity =
             crate::AgentdIntelligenceRunIdentityV1::from_run_start(&identity, &record)?;
         let now =
@@ -83,7 +90,10 @@ impl AgentdIntelligenceProductRunnerV1 {
                 let mut invocation = provider.build(&identity, &record)?;
                 invocation.inputs.run_identity = Some(run_identity);
                 invocation.validate(&identity, &record)?;
-                Ok(invocation)
+                let neuron = neuron_host
+                    .map(|host| host.prepare(&identity, &record, &invocation))
+                    .transpose()?;
+                Ok::<_, crate::AgentdError>((invocation, neuron))
             })
             .map_err(|error| {
                 crate::AgentdError::Protocol(format!("invocation admission: {error}"))
@@ -98,6 +108,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 crate::AgentdError::Protocol("canonical invocation provider crashed".to_string())
             })??;
         let deadline = result
+            .0
             .inputs
             .run_identity
             .as_ref()
@@ -130,8 +141,32 @@ impl AgentdIntelligenceProductRunnerV1 {
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
-        mut inputs: AgentdIntelligenceOwnerInputsV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_for_composition_with_ports(composition, request, inputs, |ports, _, _, _| {
+            ports
+        })
+        .await
+    }
+
+    pub(super) async fn prepare_for_composition_with_ports<P, F>(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        mut inputs: AgentdIntelligenceOwnerInputsV1,
+        build_ports: F,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError>
+    where
+        P: CanonicalOwnerPortsV1 + Send + 'static,
+        F: FnOnce(
+                AgentdOwnerPortsV1,
+                CanonicalIntelligenceSnapshotV1,
+                Instant,
+                tokio_util::sync::CancellationToken,
+            ) -> P
+            + Send
+            + 'static,
+    {
         let run_identity = inputs
             .run_identity
             .take()
@@ -140,6 +175,11 @@ impl AgentdIntelligenceProductRunnerV1 {
             .validate_process_binding(&composition.agent_id, composition.supervisor_generation)
             .and_then(|()| run_identity.validate_request(&request))
             .map_err(|_| AgentdIntelligenceProductError::RunIdentityMismatch)?;
+        // Fleet process epochs and model/body generations evolve independently.
+        // The frozen model generation comes from the host-owned owner inputs.
+        if inputs.neural_config.generation != request.snapshot.body_generation() {
+            return Err(AgentdIntelligenceProductError::RunIdentityMismatch);
+        }
         let candidate_ids = request
             .legal_candidates
             .candidates
@@ -168,34 +208,42 @@ impl AgentdIntelligenceProductRunnerV1 {
             .min(remaining_ms.saturating_mul(1_000));
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
-        let evaluation_session = match inputs.signed_evaluation.take() {
-            None => None,
-            Some(signed) => {
-                let trust = self
-                    .evaluation_trust
-                    .as_ref()
-                    .ok_or(AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
-                let mut oracle = FileBackedFreshnessOracleV1::new(
-                    authority_file.clone(),
-                    authority_verifier.clone(),
-                );
-                let owner_id = StableId::new("learning.eval")
-                    .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
-                let current_owner = oracle
-                    .current(&owner_id)
-                    .map_err(AgentdIntelligenceProductError::Canonical)?;
-                Some(AgentdEvaluationSessionV1 {
-                    run_id: request.run_id.clone(),
-                    current_owner,
-                    trust: std::sync::Arc::clone(trust),
-                    signed,
-                })
-            }
-        };
+        let evaluation_trust = self.evaluation_trust.clone();
+        let worker_snapshot = snapshot.clone();
+        let cancellation = tokio_util::sync::CancellationToken::new();
+        let _cancel_on_return = cancellation.clone().drop_guard();
+        let deadline = Instant::now()
+            .checked_add(Duration::from_micros(timeout_micros))
+            .ok_or(AgentdIntelligenceProductError::TimedOut)?;
         let mut worker = self.spawn_owner_work(move || {
-            let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-            prepare_intelligence_run(request, &mut ports, &mut oracle)
+            let evaluation_session = match inputs.signed_evaluation.take() {
+                None => None,
+                Some(signed) => {
+                    let trust = evaluation_trust
+                        .ok_or(AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
+                    let owner_id = StableId::new("learning.eval")
+                        .map_err(|_| AgentdIntelligenceProductError::InvalidAuthorityVerifier)?;
+                    let current_owner = oracle
+                        .current(&owner_id)
+                        .map_err(AgentdIntelligenceProductError::Canonical)?;
+                    Some(AgentdEvaluationSessionV1 {
+                        run_id: request.run_id.clone(),
+                        current_owner,
+                        trust,
+                        signed,
+                    })
+                }
+            };
+            let inner = AgentdOwnerPortsV1::new(inputs, evaluation_session);
+            let mut ports = build_ports(inner, worker_snapshot.clone(), deadline, cancellation);
+            let outcome = prepare_intelligence_run(request, &mut ports, &mut oracle)
+                .map_err(AgentdIntelligenceProductError::Canonical)?;
+            if matches!(&outcome, CanonicalRunOutcomeV1::Ready(_)) {
+                validate_current_snapshot(&worker_snapshot, &mut oracle)
+                    .map_err(AgentdIntelligenceProductError::Canonical)?;
+            }
+            Ok::<_, AgentdIntelligenceProductError>(outcome)
         })?;
         let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
             .await
@@ -203,17 +251,10 @@ impl AgentdIntelligenceProductRunnerV1 {
                 worker.abort();
                 AgentdIntelligenceProductError::TimedOut
             })?
-            .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
-            .map_err(AgentdIntelligenceProductError::Canonical)?;
+            .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)??;
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
-                let mut oracle = FileBackedFreshnessOracleV1::new(
-                    self.authority_file.clone(),
-                    self.authority_verifier.clone(),
-                );
-                validate_current_snapshot(&snapshot, &mut oracle)
-                    .map_err(AgentdIntelligenceProductError::Canonical)?;
                 let mut bytes = b"hepta.agentd.intelligence-dispatch-proposal.v1\0".to_vec();
                 bytes.extend_from_slice(envelope.envelope_digest.as_array());
                 bytes.extend_from_slice(snapshot.revocation_frontier_digest().as_array());
