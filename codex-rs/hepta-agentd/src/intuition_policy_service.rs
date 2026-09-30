@@ -150,12 +150,11 @@ impl AgentdState {
         .map_err(Into::into)
     }
 
-    pub(crate) fn commit_intuition_policy_v3(
+    pub(crate) fn commit_intuition_policy_v4(
         &self,
         prepared: PreparedAgentdIntuitionDecisionV3,
         expected_ledger_head: Digest32,
         decision_evidence: Option<SignedLearningEvidenceV1>,
-        now: u64,
     ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionServiceErrorV1> {
         if !self.automation_admission_ready()? {
             return Err(AgentdIntuitionServiceErrorV1::NotReady);
@@ -165,13 +164,12 @@ impl AgentdState {
             .get()
             .ok_or(AgentdIntuitionServiceErrorV1::NotConfigured)?;
         let identity = self.identity();
-        let receipt = host.commit_v3(
+        let receipt = host.commit_v4(
             &identity.agent_id,
             identity.spawn_generation,
             prepared,
             expected_ledger_head,
             decision_evidence,
-            now,
         )?;
         retain_committed_receipt(self.automation_admission_ready(), receipt).map_err(|receipt| {
             AgentdIntuitionServiceErrorV1::GenerationChangedAfterCommit { receipt }

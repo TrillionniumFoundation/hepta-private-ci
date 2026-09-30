@@ -2,10 +2,13 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::Path;
 use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_agentd::AgentdIntuitionPolicyError;
 use codex_hepta_agentd::AgentdIntuitionPolicyHostV1;
 use codex_hepta_agentd::AgentdIntuitionPolicyPinsV2;
+use codex_hepta_agentd::IntuitionPolicyClock;
 use codex_hepta_agentd::IntuitionPolicyLearningSink;
 use codex_hepta_agentd::intuition_risk_rule_digest_v1;
 use codex_hepta_contracts::AgentId;
@@ -61,6 +64,29 @@ use tempfile::tempdir;
 const NOW: u64 = 150;
 const GENERATION: u64 = 4;
 const SPAWN_GENERATION: u64 = 7;
+
+#[derive(Debug)]
+struct TestIntuitionClock {
+    now: AtomicU64,
+}
+
+impl TestIntuitionClock {
+    fn new(now: u64) -> Self {
+        Self {
+            now: AtomicU64::new(now),
+        }
+    }
+
+    fn set(&self, now: u64) {
+        self.now.store(now, Ordering::Release);
+    }
+}
+
+impl IntuitionPolicyClock for TestIntuitionClock {
+    fn now(&self) -> Result<u64, AgentdIntuitionPolicyError> {
+        Ok(self.now.load(Ordering::Acquire))
+    }
+}
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("stable id")
@@ -177,6 +203,69 @@ fn trust_material_with_observer_controller(
     let activated = activate_learning_trust(&root, signed, None, 50).expect("activated trust");
     let verifier = Arc::new(activated.verifier().clone());
     (activated, verifier, keys, principals)
+}
+
+fn successor_trust_distribution(
+    keys: &[SigningKey; 3],
+    principals: &[AuthenticatedPrincipalV1; 3],
+    generation: u64,
+    generator_revoked_at: Option<u64>,
+) -> (LearningTrustRootV1, SignedLearningTrustDistributionV1) {
+    let scope_digest = digest("scope:intuition-product-v3");
+    let mut generator = trusted(
+        principals[0].clone(),
+        "controller:generator",
+        &keys[0],
+        LearningEvidenceRoleV1::Generator,
+    );
+    generator.revoked_at = generator_revoked_at;
+    let trust = LearningEvidenceTrustV1 {
+        scope_digest,
+        objective_digest: digest("objective:intuition-product-v3"),
+        authority_epoch: 9,
+        signers: vec![
+            generator,
+            trusted(
+                principals[1].clone(),
+                "controller:evaluator",
+                &keys[1],
+                LearningEvidenceRoleV1::Evaluator,
+            ),
+            trusted(
+                principals[2].clone(),
+                "controller:observer",
+                &keys[2],
+                LearningEvidenceRoleV1::Observer,
+            ),
+        ],
+    };
+    let root_key = SigningKey::from_bytes(&[97; 32]);
+    let root = LearningTrustRootV1 {
+        root_id: id("root:intuition-product-v3"),
+        scope_digest,
+        verifying_key: root_key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 1_000,
+        revoked_at: None,
+    };
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id(&format!(
+                "distribution:intuition-product-v3:{generation}"
+            )),
+            generation,
+            effective_at: 151,
+            trust,
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 151,
+        expires_at: 900,
+        signature: [0; 64],
+    };
+    signed.signature = root_key
+        .sign(&signed.signing_bytes().expect("successor trust payload"))
+        .to_bytes();
+    (root, signed)
 }
 
 fn sign_evidence(
@@ -352,7 +441,11 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
         &witness_directory,
     )
     .expect("product ledger writer");
-    let learning = Arc::new(IntuitionPolicyLearningSink::new(writer));
+    let clock = Arc::new(TestIntuitionClock::new(NOW));
+    let learning = Arc::new(IntuitionPolicyLearningSink::new_with_clock(
+        writer,
+        clock.clone(),
+    ));
     let pins = AgentdIntuitionPolicyPinsV2 {
         policy_profile_digest: canonical_policy_profile_digest_v1(&profile)
             .expect("profile digest"),
@@ -488,23 +581,21 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
     );
     let replay_prepared = prepared.clone();
     let first = host
-        .commit_v3(
+        .commit_v4(
             &agent_id,
             SPAWN_GENERATION,
             prepared,
             Digest32::ZERO,
             Some(decision_evidence.clone()),
-            NOW,
         )
         .expect("first durable commit");
     let replay = host
-        .commit_v3(
+        .commit_v4(
             &agent_id,
             SPAWN_GENERATION,
             replay_prepared,
             Digest32::ZERO,
             Some(decision_evidence),
-            NOW,
         )
         .expect("idempotent durable replay");
     let first_append = first.learning.as_ref().expect("first append receipt");

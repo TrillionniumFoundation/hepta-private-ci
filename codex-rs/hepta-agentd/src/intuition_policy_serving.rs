@@ -144,14 +144,13 @@ pub(crate) fn authenticate_canonical_intuition(
             &policy_prepared.decision().decision.propensities,
         )?;
 
-        // A lease validated at prepare cannot be extended by reusing its time.
-        let commit_now = crate::authbus_ingress::now_ms()?;
+        // Final-use time and current trust are sampled inside the sole
+        // LedgerWriter lock; the serving caller cannot extend a prepared lease.
         let committed = state
-            .commit_intuition_policy_v3(
+            .commit_intuition_policy_v4(
                 policy_prepared,
                 expected_ledger_head,
                 decision_evidence,
-                commit_now,
             )
             .map_err(AgentdError::from)?;
         let final_check = (|| {

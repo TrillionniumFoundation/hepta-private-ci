@@ -9,6 +9,10 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_intelligence::AuthenticatedIntuitionDecisionV2;
@@ -40,6 +44,48 @@ use codex_hepta_learning_ledger::candidate_order_digest_v2;
 use codex_hepta_learning_ledger::decision_signing_payload_v2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+
+/// Agentd-owned clock sampled only after the sole LedgerWriter lock is held.
+///
+/// Implementations must be nondecreasing for one process generation. A clock
+/// failure is a hard admission failure; callers cannot supply or cache `now`.
+pub trait IntuitionPolicyClock: Send + Sync {
+    fn now(&self) -> Result<u64, AgentdIntuitionPolicyError>;
+}
+
+/// Wall-clock milliseconds with a process-local monotonic fence. Evidence validity
+/// uses wall-clock timestamps, while a backward host adjustment fails closed.
+#[derive(Debug, Default)]
+pub struct SystemIntuitionPolicyClock {
+    last_seen: AtomicU64,
+}
+
+impl IntuitionPolicyClock for SystemIntuitionPolicyClock {
+    fn now(&self) -> Result<u64, AgentdIntuitionPolicyError> {
+        let current = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_err(|_| AgentdIntuitionPolicyError::TrustedClockUnavailable)?
+                .as_millis(),
+        )
+        .map_err(|_| AgentdIntuitionPolicyError::TrustedClockUnavailable)?;
+        let mut observed = self.last_seen.load(Ordering::Acquire);
+        loop {
+            if current < observed {
+                return Err(AgentdIntuitionPolicyError::TrustedClockReversed);
+            }
+            match self.last_seen.compare_exchange_weak(
+                observed,
+                current,
+                Ordering::AcqRel,
+                Ordering::Acquire,
+            ) {
+                Ok(_) => return Ok(current),
+                Err(next) => observed = next,
+            }
+        }
+    }
+}
 
 /// Immutable owner identities admitted by the historical Agentd composition.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -81,43 +127,186 @@ pub struct AgentdIntuitionPolicyHostV1 {
 /// Sole Agentd-owned durable Decision sink for this module.
 pub struct IntuitionPolicyLearningSink {
     writer: Mutex<LedgerWriter>,
+    clock: Arc<dyn IntuitionPolicyClock>,
 }
 
 impl IntuitionPolicyLearningSink {
     #[must_use]
     pub fn new(writer: LedgerWriter) -> Self {
+        Self::new_with_clock(writer, Arc::new(SystemIntuitionPolicyClock::default()))
+    }
+
+    #[must_use]
+    pub fn new_with_clock(
+        writer: LedgerWriter,
+        clock: Arc<dyn IntuitionPolicyClock>,
+    ) -> Self {
         Self {
             writer: Mutex::new(writer),
+            clock,
         }
     }
 
-    pub fn trust_digest(&self) -> Result<Digest32, AgentdIntuitionPolicyError> {
+    pub fn trust_identity(
+        &self,
+    ) -> Result<(Digest32, u64, Digest32), AgentdIntuitionPolicyError> {
         let writer = self
             .writer
             .lock()
             .map_err(|_| AgentdIntuitionPolicyError::LearningLockPoisoned)?;
-        Ok(writer.verifier().trust_digest())
+        Ok((
+            writer.verifier().trust_digest(),
+            writer.trust_generation(),
+            writer.trust_distribution_digest(),
+        ))
     }
 
-    fn append_decision(
+    pub fn trust_digest(&self) -> Result<Digest32, AgentdIntuitionPolicyError> {
+        Ok(self.trust_identity()?.0)
+    }
+
+    /// Rotate the sole writer-owned trust distribution under the same lock used
+    /// by final-use admission. A commit either observes the predecessor or the
+    /// successor generation; rotation cannot interleave with revalidation.
+    pub fn rotate_trust(
         &self,
-        expected_predecessor: Digest32,
-        request: ProductionDecisionV2,
-        evidence: SignedLearningEvidenceV1,
+        root: &codex_hepta_learning_ledger::LearningTrustRootV1,
+        signed: codex_hepta_learning_ledger::SignedLearningTrustDistributionV1,
         now: u64,
-    ) -> Result<AppendReceipt, AgentdIntuitionPolicyError> {
+    ) -> Result<Digest32, AgentdIntuitionPolicyError> {
         let mut writer = self
             .writer
             .lock()
             .map_err(|_| AgentdIntuitionPolicyError::LearningLockPoisoned)?;
-        match writer.append_decision(expected_predecessor, request, &evidence, now) {
-            Ok(receipt) => Ok(receipt),
-            Err(ProductionLedgerError::IndeterminateAfterLedgerCommit {
-                receipt,
-                witness_error: _,
-            }) => Err(AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { receipt }),
-            Err(error) => Err(AgentdIntuitionPolicyError::Learning(error)),
+        writer
+            .rotate_trust(root, signed, now)
+            .map_err(AgentdIntuitionPolicyError::TrustRotation)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn commit_prepared(
+        &self,
+        agent_id: &AgentId,
+        spawn_generation: u64,
+        pins: &AgentdIntuitionPolicyPinsV2,
+        prepared: PreparedAgentdIntuitionDecisionV3,
+        expected_predecessor: Digest32,
+        decision_evidence: Option<SignedLearningEvidenceV1>,
+    ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionPolicyError> {
+        // This is the sole final-use serialization boundary. The product clock,
+        // current trust distribution, all three qualification signatures, host
+        // pins and the durable Decision append are evaluated under one lock.
+        let mut writer = self
+            .writer
+            .lock()
+            .map_err(|_| AgentdIntuitionPolicyError::LearningLockPoisoned)?;
+        let now = self.clock.now()?;
+        let current_trust_digest = writer.verifier().trust_digest();
+        let current_trust_generation = writer.trust_generation();
+        let current_distribution_digest = writer.trust_distribution_digest();
+
+        if prepared.owner_agent_id != *agent_id
+            || prepared.owner_spawn_generation != spawn_generation
+            || prepared.owner_trust_digest != current_trust_digest
+            || prepared.owner_trust_generation != current_trust_generation
+            || prepared.owner_trust_distribution_digest != current_distribution_digest
+        {
+            return Err(AgentdIntuitionPolicyError::PreparedOwnerMismatch);
         }
+        validate_prepared_time(prepared.prepared_at, prepared.qualification_expires_at, now)?;
+        validate_current_pins(
+            pins,
+            &prepared.request,
+            &prepared.profile,
+            &prepared.scoring,
+            &prepared.assignment,
+        )?;
+
+        let revalidated = decide_authenticated_intuition_v3(
+            prepared.request.clone(),
+            prepared.profile.clone(),
+            prepared.scoring.clone(),
+            prepared.assignment.clone(),
+            prepared.qualification.as_borrowed(),
+            writer.verifier(),
+            now,
+        )?;
+        if revalidated != prepared.decision {
+            return Err(AgentdIntuitionPolicyError::PreparedQualificationMismatch);
+        }
+        let current_binding = product_host_binding_digest(
+            agent_id,
+            spawn_generation,
+            current_trust_digest,
+            pins,
+            revalidated.authentication_digest,
+        );
+        if current_binding != prepared.host_binding_digest {
+            return Err(AgentdIntuitionPolicyError::PreparedProfileMismatch);
+        }
+
+        let (production_record_id, learning) =
+            match (prepared.production.clone(), decision_evidence) {
+                (Some(production), Some(evidence)) => {
+                    let record_id = production.record_id.clone();
+                    let retry_production = production.clone();
+                    let retry_evidence = evidence.clone();
+                    let receipt = match writer.append_decision(
+                        expected_predecessor,
+                        production,
+                        &evidence,
+                        now,
+                    ) {
+                        Ok(receipt) => receipt,
+                        Err(ProductionLedgerError::IndeterminateAfterLedgerCommit {
+                            receipt,
+                            witness_error: _,
+                        }) => preserve_known_commit(
+                            receipt,
+                            writer.append_decision(
+                                expected_predecessor,
+                                retry_production,
+                                &retry_evidence,
+                                now,
+                            ),
+                        )
+                        .map_err(|receipt| {
+                            AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { receipt }
+                        })?,
+                        Err(error) => return Err(AgentdIntuitionPolicyError::Learning(error)),
+                    };
+                    (Some(record_id), Some(receipt))
+                }
+                (Some(_), None) => {
+                    return Err(AgentdIntuitionPolicyError::MissingDecisionEvidence);
+                }
+                (None, Some(_)) => {
+                    return Err(AgentdIntuitionPolicyError::UnexpectedDecisionEvidence);
+                }
+                (None, None) => (None, None),
+            };
+
+        let mut bytes = b"hepta.agentd.committed-intuition.v2\0".to_vec();
+        bytes.extend_from_slice(prepared.prepared_digest.as_array());
+        bytes.extend_from_slice(&now.to_be_bytes());
+        bytes.extend_from_slice(&current_trust_generation.to_be_bytes());
+        bytes.extend_from_slice(current_distribution_digest.as_array());
+        match &learning {
+            Some(receipt) => {
+                bytes.push(1);
+                bytes.extend_from_slice(receipt.event_digest.as_array());
+                bytes.extend_from_slice(receipt.chain_digest.as_array());
+                bytes.extend_from_slice(&receipt.sequence.get().to_be_bytes());
+            }
+            None => bytes.push(0),
+        }
+        Ok(AgentdIntuitionDecisionReceiptV2 {
+            decision: revalidated,
+            host_binding_digest: prepared.host_binding_digest,
+            production_record_id,
+            learning,
+            service_receipt_digest: Digest32::of_bytes(&bytes),
+        })
     }
 }
 
@@ -127,15 +316,56 @@ pub struct AgentdIntuitionDecisionReceiptV1 {
     pub host_binding_digest: Digest32,
 }
 
-/// Non-dispatchable result of authenticated policy preparation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct OwnedIntuitionQualificationEvidenceV2 {
+    completeness: SignedLearningEvidenceV1,
+    profile_qualification: SignedLearningEvidenceV1,
+    runtime: SignedLearningEvidenceV1,
+}
+
+impl OwnedIntuitionQualificationEvidenceV2 {
+    fn from_borrowed(value: IntuitionQualificationEvidenceV2<'_>) -> Self {
+        Self {
+            completeness: value.completeness.clone(),
+            profile_qualification: value.profile_qualification.clone(),
+            runtime: value.runtime.clone(),
+        }
+    }
+
+    fn as_borrowed(&self) -> IntuitionQualificationEvidenceV2<'_> {
+        IntuitionQualificationEvidenceV2 {
+            completeness: &self.completeness,
+            profile_qualification: &self.profile_qualification,
+            runtime: &self.runtime,
+        }
+    }
+
+    fn earliest_expiry(&self) -> u64 {
+        self.completeness
+            .expires_at
+            .min(self.profile_qualification.expires_at)
+            .min(self.runtime.expires_at)
+    }
+}
+
+/// Non-dispatchable result of authenticated policy preparation. It owns the
+/// original request and all three signed qualification records so final use can
+/// revalidate exact bytes against the current writer-owned trust distribution.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PreparedAgentdIntuitionDecisionV3 {
     decision: AuthenticatedIntuitionDecisionV3,
+    request: CalibratedDecisionRequestV1,
+    profile: CanonicalPolicyProfileV1,
+    scoring: ScoringCommitmentV2,
+    assignment: AssignmentCommitmentV2,
+    qualification: OwnedIntuitionQualificationEvidenceV2,
     host_binding_digest: Digest32,
     production: Option<ProductionDecisionV2>,
     owner_agent_id: AgentId,
     owner_spawn_generation: u64,
     owner_trust_digest: Digest32,
+    owner_trust_generation: u64,
+    owner_trust_distribution_digest: Digest32,
     prepared_at: u64,
     qualification_expires_at: u64,
     prepared_digest: Digest32,
@@ -200,8 +430,12 @@ pub enum AgentdIntuitionPolicyError {
     SelectedPropensityMissing,
     PreparedOwnerMismatch,
     PreparedProfileMismatch,
+    PreparedQualificationMismatch,
     PreparedEvidenceExpired,
     PreparedClockReversed,
+    TrustedClockUnavailable,
+    TrustedClockReversed,
+    TrustRotation(codex_hepta_learning_ledger::LearningTrustDistributionError),
     MissingDecisionEvidence,
     UnexpectedDecisionEvidence,
     Qualification(IntuitionQualificationError),
@@ -232,8 +466,14 @@ impl AgentdIntuitionPolicyError {
             Self::SelectedPropensityMissing => "agentd.intuition.selected_propensity_missing",
             Self::PreparedOwnerMismatch => "agentd.intuition.prepared_owner_mismatch",
             Self::PreparedProfileMismatch => "agentd.intuition.prepared_profile_mismatch",
+            Self::PreparedQualificationMismatch => {
+                "agentd.intuition.prepared_qualification_mismatch"
+            }
             Self::PreparedEvidenceExpired => "agentd.intuition.prepared_evidence_expired",
             Self::PreparedClockReversed => "agentd.intuition.prepared_clock_reversed",
+            Self::TrustedClockUnavailable => "agentd.intuition.trusted_clock_unavailable",
+            Self::TrustedClockReversed => "agentd.intuition.trusted_clock_reversed",
+            Self::TrustRotation(_) => "agentd.intuition.trust_rotation_rejected",
             Self::MissingDecisionEvidence => "agentd.intuition.missing_decision_evidence",
             Self::UnexpectedDecisionEvidence => "agentd.intuition.unexpected_decision_evidence",
             Self::Qualification(_) => "agentd.intuition.legacy_qualification_rejected",
@@ -259,6 +499,7 @@ impl StdError for AgentdIntuitionPolicyError {
             Self::Qualification(source) => Some(source),
             Self::QualificationV3(source) => Some(source),
             Self::Learning(source) => Some(source),
+            Self::TrustRotation(source) => Some(source),
             _ => None,
         }
     }
@@ -304,7 +545,7 @@ impl AgentdIntuitionPolicyHostV1 {
         learning: Arc<IntuitionPolicyLearningSink>,
     ) -> Result<Self, AgentdIntuitionPolicyError> {
         validate_product_pins(spawn_generation, &pins)?;
-        if learning.trust_digest()? != verifier.trust_digest() {
+        if learning.trust_identity()?.0 != verifier.trust_digest() {
             return Err(AgentdIntuitionPolicyError::InvalidHost(
                 "policy and ledger trust snapshots differ",
             ));
@@ -425,26 +666,28 @@ impl AgentdIntuitionPolicyHostV1 {
             .as_ref()
             .ok_or(AgentdIntuitionPolicyError::ProductHostRequired)?;
         validate_current_pins(&product.pins, &request, &profile, &scoring, &assignment)?;
+        let qualification = OwnedIntuitionQualificationEvidenceV2::from_borrowed(qualification);
         let generator_id = qualification.completeness.principal_id.clone();
-        let qualification_expires_at = qualification
-            .completeness
-            .expires_at
-            .min(qualification.profile_qualification.expires_at)
-            .min(qualification.runtime.expires_at);
+        let qualification_expires_at = qualification.earliest_expiry();
         validate_prepared_time(now, qualification_expires_at, now)?;
+        let (owner_trust_digest, owner_trust_generation, owner_trust_distribution_digest) =
+            product.learning.trust_identity()?;
+        if owner_trust_digest != self.verifier.trust_digest() {
+            return Err(AgentdIntuitionPolicyError::PreparedOwnerMismatch);
+        }
         let decision = decide_authenticated_intuition_v3(
             request.clone(),
-            profile,
-            scoring,
-            assignment,
-            qualification,
+            profile.clone(),
+            scoring.clone(),
+            assignment.clone(),
+            qualification.as_borrowed(),
             &self.verifier,
             now,
         )?;
         let host_binding_digest = product_host_binding_digest(
             &self.agent_id,
             self.spawn_generation,
-            self.verifier.trust_digest(),
+            owner_trust_digest,
             &product.pins,
             decision.authentication_digest,
         );
@@ -458,11 +701,13 @@ impl AgentdIntuitionPolicyHostV1 {
             run_snapshot_digest,
             host_binding_digest,
         )?;
-        let mut bytes = b"hepta.agentd.prepared-intuition.v2\0".to_vec();
+        let mut bytes = b"hepta.agentd.prepared-intuition.v3\0".to_vec();
         bytes.extend_from_slice(host_binding_digest.as_array());
         bytes.extend_from_slice(decision.authentication_digest.as_array());
         bytes.extend_from_slice(&now.to_be_bytes());
         bytes.extend_from_slice(&qualification_expires_at.to_be_bytes());
+        bytes.extend_from_slice(&owner_trust_generation.to_be_bytes());
+        bytes.extend_from_slice(owner_trust_distribution_digest.as_array());
         match &production {
             Some(value) => {
                 bytes.push(1);
@@ -474,19 +719,52 @@ impl AgentdIntuitionPolicyHostV1 {
         }
         Ok(PreparedAgentdIntuitionDecisionV3 {
             decision,
+            request,
+            profile,
+            scoring,
+            assignment,
+            qualification,
             host_binding_digest,
             production,
             owner_agent_id: self.agent_id.clone(),
             owner_spawn_generation: self.spawn_generation,
-            owner_trust_digest: self.verifier.trust_digest(),
+            owner_trust_digest,
+            owner_trust_generation,
+            owner_trust_distribution_digest,
             prepared_at: now,
             qualification_expires_at,
             prepared_digest: Digest32::of_bytes(&bytes),
         })
     }
 
-    /// Verify the exact generator signature and durably append the prepared
-    /// Decision. A selected decision without an append never returns success.
+    /// Final-use commit. The caller supplies no time or trust snapshot: the
+    /// sole writer lock owns both immediately before signature revalidation and
+    /// the durable append.
+    pub fn commit_v4(
+        &self,
+        agent_id: &AgentId,
+        spawn_generation: u64,
+        prepared: PreparedAgentdIntuitionDecisionV3,
+        expected_ledger_head: Digest32,
+        decision_evidence: Option<SignedLearningEvidenceV1>,
+    ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionPolicyError> {
+        self.require_identity(agent_id, spawn_generation)?;
+        let product = self
+            .product
+            .as_ref()
+            .ok_or(AgentdIntuitionPolicyError::ProductHostRequired)?;
+        product.learning.commit_prepared(
+            agent_id,
+            spawn_generation,
+            &product.pins,
+            prepared,
+            expected_ledger_head,
+            decision_evidence,
+        )
+    }
+
+    /// Compatibility name retained without the unsafe caller-supplied time.
+    #[deprecated(note = "use commit_v4; final-use time is writer-owned")]
     pub fn commit_v3(
         &self,
         agent_id: &AgentId,
@@ -494,92 +772,16 @@ impl AgentdIntuitionPolicyHostV1 {
         prepared: PreparedAgentdIntuitionDecisionV3,
         expected_ledger_head: Digest32,
         decision_evidence: Option<SignedLearningEvidenceV1>,
-        now: u64,
     ) -> Result<AgentdIntuitionDecisionReceiptV2, AgentdIntuitionPolicyError> {
-        self.require_identity(agent_id, spawn_generation)?;
-        let product = self
-            .product
-            .as_ref()
-            .ok_or(AgentdIntuitionPolicyError::ProductHostRequired)?;
-        if prepared.owner_agent_id != self.agent_id
-            || prepared.owner_spawn_generation != self.spawn_generation
-            || prepared.owner_trust_digest != self.verifier.trust_digest()
-        {
-            return Err(AgentdIntuitionPolicyError::PreparedOwnerMismatch);
-        }
-        // Two hosts can share identity, generation and trust but select different
-        // profiles. Revalidate every pin before any durable mutation.
-        let current_binding = product_host_binding_digest(
-            &self.agent_id,
-            self.spawn_generation,
-            self.verifier.trust_digest(),
-            &product.pins,
-            prepared.decision.authentication_digest,
-        );
-        if current_binding != prepared.host_binding_digest {
-            return Err(AgentdIntuitionPolicyError::PreparedProfileMismatch);
-        }
-        validate_prepared_time(prepared.prepared_at, prepared.qualification_expires_at, now)?;
-
-        let (production_record_id, learning) = match (prepared.production, decision_evidence) {
-            (Some(production), Some(evidence)) => {
-                let record_id = production.record_id.clone();
-                let retry_production = production.clone();
-                let retry_evidence = evidence.clone();
-                let receipt = match product.learning.append_decision(
-                    expected_ledger_head,
-                    production,
-                    evidence,
-                    now,
-                ) {
-                    Ok(receipt) => receipt,
-                    Err(AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { receipt }) => {
-                        // One exact replay may reconcile a ledger/witness lag.
-                        // Any second failure must retain the already-known commit,
-                        // including an ordinary I/O, trust, or lock error.
-                        preserve_known_commit(
-                            receipt,
-                            product.learning.append_decision(
-                                expected_ledger_head,
-                                retry_production,
-                                retry_evidence,
-                                now,
-                            ),
-                        )
-                        .map_err(|receipt| {
-                            AgentdIntuitionPolicyError::IndeterminateAfterLedgerCommit { receipt }
-                        })?
-                    }
-                    Err(error) => return Err(error),
-                };
-                (Some(record_id), Some(receipt))
-            }
-            (Some(_), None) => return Err(AgentdIntuitionPolicyError::MissingDecisionEvidence),
-            (None, Some(_)) => {
-                return Err(AgentdIntuitionPolicyError::UnexpectedDecisionEvidence);
-            }
-            (None, None) => (None, None),
-        };
-
-        let mut bytes = b"hepta.agentd.committed-intuition.v1\0".to_vec();
-        bytes.extend_from_slice(prepared.prepared_digest.as_array());
-        match &learning {
-            Some(receipt) => {
-                bytes.push(1);
-                bytes.extend_from_slice(receipt.event_digest.as_array());
-                bytes.extend_from_slice(receipt.chain_digest.as_array());
-                bytes.extend_from_slice(&receipt.sequence.get().to_be_bytes());
-            }
-            None => bytes.push(0),
-        }
-        Ok(AgentdIntuitionDecisionReceiptV2 {
-            decision: prepared.decision,
-            host_binding_digest: prepared.host_binding_digest,
-            production_record_id,
-            learning,
-            service_receipt_digest: Digest32::of_bytes(&bytes),
-        })
+        self.commit_v4(
+            agent_id,
+            spawn_generation,
+            prepared,
+            expected_ledger_head,
+            decision_evidence,
+        )
     }
+
 }
 
 /// Reconciliation cannot turn a known commit into a not-committed failure.
