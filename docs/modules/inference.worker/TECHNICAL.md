@@ -223,6 +223,8 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 These are enforced source bounds, not throughput, memory, token-rate or tail-latency measurements. Measure the selected host and provider at maximum admissible prompt/output, slow authority response, event overload, repeated restarts and journal capacity. No hosted token or economic budget is enforced by the local-slot policy.
 
+The durable journal has one exclusive writer and bounded append/replay. No compaction or alternating-writer implementation, or current executable history-growth qualification, is supplied. The legacy inference-maintenance and architecture-convergence CI scale filters currently select no tests; their minimum-test gates correctly fail and do not establish those capabilities.
+
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
