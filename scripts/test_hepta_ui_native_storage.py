@@ -89,12 +89,20 @@ class StorageQualificationTests(unittest.TestCase):
             "schema": "hepta.ui-native-storage-retirement-evidence.v1",
             "sourceSha": SOURCE_SHA,
             "retiredIdentities": 1000000,
+            "retirementSegments": 977,
+            "authorityBatchSize": 1024,
+            "authorityMixedPrefixSegments": 977,
+            "authorityMinimumPrefixesPerSegment": 224,
+            "authorityFixtureBuildMilliseconds": 1000,
+            "expectedIndexedHeadSha256": "c" * 64,
             "deterministicRebuild": True,
             "peakRssMiB": 64,
             "processSampleCount": 20,
             "measurementScope": {
                 "buildProfile": "release",
                 "open": storage.OPEN_MEASUREMENT_SCOPE,
+                "rebuild": storage.REBUILD_MEASUREMENT_SCOPE,
+                "authoritySegments": storage.AUTHORITY_SEGMENTS_SCOPE,
             },
             "freshProcessOpenSamplesMilliseconds": list(range(1, 21)),
             "freshProcessOpenP95Milliseconds": 19,
@@ -139,6 +147,17 @@ class StorageQualificationTests(unittest.TestCase):
                 }
                 for index in range(20)
             ]
+        for observation in self.retired["indexRebuildProcessSamples"]:
+            observation.update(
+                {
+                    "beforeDerivedIndexAssets": 0,
+                    "rebuildScope": storage.REBUILD_MEASUREMENT_SCOPE,
+                    "authoritySegmentCount": 977,
+                    "mixedPrefixSegments": 977,
+                    "minimumPrefixesPerSegment": 224,
+                    "rebuiltHeadSha256": "c" * 64,
+                }
+            )
         for evidence in (self.active, self.combined):
             for index, observation in enumerate(evidence["openProcessSamples"]):
                 observation.update(
@@ -171,6 +190,11 @@ class StorageQualificationTests(unittest.TestCase):
     def assert_rejected(self, message):
         with self.assertRaisesRegex(RuntimeError, message):
             self.validate()
+
+    def assert_rehashed_retirement_rejected(self, original_digest, message):
+        self.retired_path.write_text(json.dumps(self.retired), encoding="utf-8")
+        self.assertNotEqual(storage.sha256_file(self.retired_path), original_digest)
+        self.assert_rejected(message)
 
     def sample_populations(self):
         return (
@@ -251,6 +275,141 @@ class StorageQualificationTests(unittest.TestCase):
         self.active["openProcessSamples"][-1]["elapsedMilliseconds"] = 3000
         self.assertEqual(self.validate()["status"], "pass")
 
+    def test_rehashed_legacy_clustered_rebuild_evidence_is_rejected(self):
+        original_digest = self.validate()["retirementEvidence"]["sha256"]
+        self.retired["measurementScope"].pop("rebuild")
+        self.retired["measurementScope"]["authoritySegments"] = "prefix-clustered"
+        for field in (
+            "authorityBatchSize",
+            "authorityMixedPrefixSegments",
+            "authorityMinimumPrefixesPerSegment",
+            "expectedIndexedHeadSha256",
+        ):
+            self.retired.pop(field)
+        self.retired["freshProcessIndexRebuildSamplesMilliseconds"] = [1922] * 20
+        self.retired["freshProcessIndexRebuildP95Milliseconds"] = 1922
+        for observation in self.retired["indexRebuildProcessSamples"]:
+            observation["elapsedMilliseconds"] = 1922
+            for field in (
+                "beforeDerivedIndexAssets",
+                "rebuildScope",
+                "authoritySegmentCount",
+                "mixedPrefixSegments",
+                "minimumPrefixesPerSegment",
+                "rebuiltHeadSha256",
+            ):
+                observation.pop(field)
+        self.assert_rehashed_retirement_rejected(original_digest, "rebuild scope")
+
+    def test_rehashed_rebuild_summary_scope_and_workload_cannot_be_substituted(self):
+        original_digest = self.validate()["retirementEvidence"]["sha256"]
+        for field, invalid, message in (
+            ("rebuild", "fresh-process-reused-index", "rebuild scope"),
+            ("authoritySegments", "prefix-clustered", "mixed-prefix chronological"),
+        ):
+            with self.subTest(field=field):
+                scope = self.retired["measurementScope"]
+                original = scope[field]
+                for value in (invalid, None, False):
+                    scope[field] = value
+                    self.assert_rehashed_retirement_rejected(original_digest, message)
+                del scope[field]
+                self.assert_rehashed_retirement_rejected(original_digest, message)
+                scope[field] = original
+
+    def test_rehashed_rebuild_summary_requires_real_batch_and_mixed_shape(self):
+        original_digest = self.validate()["retirementEvidence"]["sha256"]
+        for field, invalid_values, message in (
+            ("authorityBatchSize", (256, 1000000), "batch size"),
+            ("retirementSegments", (256, 976, 978), "segment count"),
+            ("authorityMixedPrefixSegments", (0, 976, 978), "mix prefixes"),
+            ("authorityMinimumPrefixesPerSegment", (0, 1, 257), "between 2 and 256"),
+        ):
+            original = self.retired[field]
+            for invalid in (*invalid_values, True, 1.5, None):
+                with self.subTest(field=field, invalid=invalid):
+                    self.retired[field] = invalid
+                    self.assert_rehashed_retirement_rejected(
+                        original_digest, message + "|not an integer"
+                    )
+            del self.retired[field]
+            self.assert_rehashed_retirement_rejected(original_digest, "not an integer")
+            self.retired[field] = original
+
+    def test_rehashed_coherently_forged_clustered_shape_still_fails(self):
+        original_digest = self.validate()["retirementEvidence"]["sha256"]
+        self.retired["authorityMinimumPrefixesPerSegment"] = 1
+        for observation in self.retired["indexRebuildProcessSamples"]:
+            observation["minimumPrefixesPerSegment"] = 1
+        self.assert_rehashed_retirement_rejected(original_digest, "between 2 and 256")
+        self.retired["authorityMinimumPrefixesPerSegment"] = 224
+        self.retired["retirementSegments"] = 256
+        self.retired["authorityMixedPrefixSegments"] = 256
+        for observation in self.retired["indexRebuildProcessSamples"]:
+            observation["authoritySegmentCount"] = 256
+            observation["mixedPrefixSegments"] = 256
+        self.assert_rehashed_retirement_rejected(original_digest, "segment count")
+
+    def test_rehashed_summary_expected_indexed_head_must_be_a_sha256(self):
+        original_digest = self.validate()["retirementEvidence"]["sha256"]
+        for digest in (None, False, "", "c" * 63, "C" * 64, "g" * 64):
+            with self.subTest(digest=digest):
+                self.retired["expectedIndexedHeadSha256"] = digest
+                for observation in self.retired["indexRebuildProcessSamples"]:
+                    observation["rebuiltHeadSha256"] = digest
+                self.assert_rehashed_retirement_rejected(
+                    original_digest, "64 lowercase hex"
+                )
+
+    def test_each_rehashed_rebuild_observation_binds_scope_shape_assets_and_head(self):
+        original_digest = self.validate()["retirementEvidence"]["sha256"]
+        for index, observation in enumerate(self.retired["indexRebuildProcessSamples"]):
+            for field, invalid, message in (
+                ("rebuildScope", "reused-index-assets", "rebuild scope mismatch"),
+                ("beforeDerivedIndexAssets", 1, "reused derived index assets"),
+                ("authoritySegmentCount", 976, "authoritySegmentCount workload"),
+                ("mixedPrefixSegments", 976, "mixedPrefixSegments workload"),
+                (
+                    "minimumPrefixesPerSegment",
+                    223,
+                    "minimumPrefixesPerSegment workload",
+                ),
+                ("rebuiltHeadSha256", "d" * 64, "rebuilt head SHA256 mismatch"),
+            ):
+                with self.subTest(index=index, field=field):
+                    original = observation[field]
+                    observation[field] = invalid
+                    self.assert_rehashed_retirement_rejected(original_digest, message)
+                    del observation[field]
+                    self.assert_rehashed_retirement_rejected(
+                        original_digest, message + "|not an integer"
+                    )
+                    observation[field] = original
+
+    def test_rebuild_observation_numeric_shape_fields_reject_boolean_or_fraction(self):
+        for field in (
+            "beforeDerivedIndexAssets",
+            "authoritySegmentCount",
+            "mixedPrefixSegments",
+            "minimumPrefixesPerSegment",
+        ):
+            observation = self.retired["indexRebuildProcessSamples"][0]
+            original = observation[field]
+            for invalid in (True, False, 0.0):
+                with self.subTest(field=field, invalid=invalid):
+                    observation[field] = invalid
+                    self.assert_rejected("not an integer")
+            observation[field] = original
+
+    def test_rebuild_determinism_flag_cannot_hide_sample_head_mismatch(self):
+        self.retired["indexRebuildProcessSamples"][-1]["rebuiltHeadSha256"] = "d" * 64
+        self.assert_rejected("rebuilt head SHA256 mismatch")
+
+    def test_rebuild_fixture_generation_time_is_finite_nonnegative(self):
+        for invalid in (True, -1, float("nan"), float("inf"), None):
+            self.retired["authorityFixtureBuildMilliseconds"] = invalid
+            self.assert_rejected("not numeric|not a finite non-negative")
+
     def test_percentile_substitution_rejected_for_every_population(self):
         for evidence, _, percentile_key in self.sample_populations():
             with self.subTest(percentile=percentile_key, schema=evidence["schema"]):
@@ -306,7 +465,9 @@ class StorageQualificationTests(unittest.TestCase):
             (self.combined, "openProcessSamples"),
         ):
             for profile in ("debug", None, False):
-                with self.subTest(schema=evidence["schema"], population=key, profile=profile):
+                with self.subTest(
+                    schema=evidence["schema"], population=key, profile=profile
+                ):
                     evidence[key][0]["buildProfile"] = profile
                     self.assert_rejected("process build profile is not release")
             evidence[key][0]["buildProfile"] = "release"

@@ -20,6 +20,11 @@ HISTORY_BYTES_MEASUREMENT_SCOPE = (
     "serialized-retained-receipts-not-allocator-accounting"
 )
 QUALIFICATION_BUILD_PROFILE = "release"
+REBUILD_MEASUREMENT_SCOPE = (
+    "fresh-process-mixed-prefix-authority-chain-with-no-derived-assets"
+)
+AUTHORITY_SEGMENTS_SCOPE = "mixed-prefix-chronological-legacy-identity-batches"
+AUTHORITY_BATCH_SIZE = 1024
 
 
 def require(condition: bool, message: str) -> None:
@@ -104,6 +109,46 @@ def sampled_percentile(
     return percentile
 
 
+def validate_rebuild_workload(evidence: dict[str, Any]) -> None:
+    scope = evidence.get("measurementScope")
+    require(isinstance(scope, dict), "retirement measurement scope is missing")
+    require(
+        scope.get("rebuild") == REBUILD_MEASUREMENT_SCOPE,
+        "retirement rebuild scope must describe first migration with no derived assets",
+    )
+    require(
+        scope.get("authoritySegments") == AUTHORITY_SEGMENTS_SCOPE,
+        "retirement authority workload must use mixed-prefix chronological batches",
+    )
+    require(
+        integer(evidence, "authorityBatchSize") == AUTHORITY_BATCH_SIZE,
+        "retirement authority batch size must be 1024",
+    )
+    segments = integer(evidence, "retirementSegments")
+    expected_segments = (
+        integer(evidence, "retiredIdentities") + AUTHORITY_BATCH_SIZE - 1
+    ) // AUTHORITY_BATCH_SIZE
+    require(
+        segments == expected_segments and segments > 0,
+        "retirement authority segment count does not match its chronological batches",
+    )
+    require(
+        integer(evidence, "authorityMixedPrefixSegments") == segments,
+        "retirement authority must mix prefixes in every segment",
+    )
+    require(
+        1 < integer(evidence, "authorityMinimumPrefixesPerSegment") <= 256,
+        "retirement authority minimum prefixes per segment must be between 2 and 256",
+    )
+    expected_head = evidence.get("expectedIndexedHeadSha256")
+    require(
+        isinstance(expected_head, str)
+        and re.fullmatch(r"[0-9a-f]{64}", expected_head) is not None,
+        "retirement expected indexed head SHA256 must be 64 lowercase hex characters",
+    )
+    number(evidence, "authorityFixtureBuildMilliseconds")
+
+
 def validate_process_observations(
     evidence: dict[str, Any],
     observation_key: str,
@@ -161,6 +206,30 @@ def validate_process_observations(
                     integer(observation, subject) == integer(evidence, subject),
                     f"{observation_key}[{index}] combined {subject} subject mismatch",
                 )
+        if kind == "retired-rebuild":
+            require(
+                observation.get("rebuildScope") == REBUILD_MEASUREMENT_SCOPE,
+                f"{observation_key}[{index}] rebuild scope mismatch",
+            )
+            require(
+                integer(observation, "beforeDerivedIndexAssets") == 0,
+                f"{observation_key}[{index}] rebuild reused derived index assets",
+            )
+            for observed_key, summary_key in (
+                ("authoritySegmentCount", "retirementSegments"),
+                ("mixedPrefixSegments", "authorityMixedPrefixSegments"),
+                ("minimumPrefixesPerSegment", "authorityMinimumPrefixesPerSegment"),
+            ):
+                require(
+                    integer(observation, observed_key)
+                    == integer(evidence, summary_key),
+                    f"{observation_key}[{index}] {observed_key} workload mismatch",
+                )
+            require(
+                observation.get("rebuiltHeadSha256")
+                == evidence["expectedIndexedHeadSha256"],
+                f"{observation_key}[{index}] rebuilt head SHA256 mismatch",
+            )
         if kind in {"active-open", "combined-open"}:
             require(
                 integer(observation, "historyPageSize") == 64,
@@ -328,6 +397,7 @@ def validate_storage(
         retired.get("schema") == "hepta.ui-native-storage-retirement-evidence.v1",
         "retirement evidence schema mismatch",
     )
+    validate_rebuild_workload(retired)
     combined = retired.get("combinedJournal")
     require(isinstance(combined, dict), "combined journal evidence is missing")
     require(

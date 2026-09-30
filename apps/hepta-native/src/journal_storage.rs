@@ -27,11 +27,13 @@ enum Boundary {
     DirectorySynced,
 }
 
+#[derive(Clone, Copy)]
 pub(crate) enum FileAccess {
     Read,
     Write,
     Append,
     Lock,
+    CreateNew,
 }
 
 #[derive(Debug)]
@@ -278,6 +280,9 @@ pub(crate) fn open_private_file_in(
                 rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE | rustix::fs::OFlags::APPEND
             }
             FileAccess::Lock => rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE,
+            FileAccess::CreateNew => {
+                rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE | rustix::fs::OFlags::EXCL
+            }
         };
         rustix::fs::openat(
             root.directory_handle(),
@@ -308,12 +313,41 @@ pub(crate) fn open_private_file_in(
             FileAccess::Lock => {
                 options.read(true).write(true).create(true);
             }
+            FileAccess::CreateNew => {
+                options.read(true).write(true).create_new(true);
+            }
         }
         open_private_file(path, &mut options, preexisting)?
     };
-    validate_private_file(&file, path, preexisting)?;
-    root.verify()?;
+    if let Err(error) = validate_private_file(&file, path, preexisting).and_then(|()| root.verify())
+    {
+        drop(file);
+        if matches!(access, FileAccess::CreateNew) {
+            let _ = remove_private_file_in(root, path);
+        }
+        return Err(error);
+    }
     Ok(file)
+}
+
+/// Unlink an exact temporary child from the original pinned directory. Unix
+/// cleanup remains anchored even if the directory's public path was replaced.
+pub(crate) fn remove_private_file_in(
+    root: &PrivateStateRoot,
+    path: &Path,
+) -> Result<(), ShellError> {
+    let name = private_child_name(root, path)?;
+    #[cfg(unix)]
+    rustix::fs::unlinkat(root.directory_handle(), name, rustix::fs::AtFlags::empty())
+        .map_err(std::io::Error::from)?;
+    #[cfg(not(unix))]
+    {
+        let _ = name;
+        root.verify()?;
+        std::fs::remove_file(path)?;
+        root.verify()?;
+    }
+    Ok(())
 }
 
 fn sync_private_root(root: &PrivateStateRoot) -> Result<(), ShellError> {

@@ -1,8 +1,6 @@
 //! Isolated fresh-process observations of persisted qualification fixtures.
 
 use std::fs;
-use std::fs::OpenOptions;
-use std::io::Write as _;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -26,6 +24,10 @@ use crate::platform::SystemPlatformAdapter;
 use crate::retirement::Checkpoint;
 use crate::retirement::RetirementStore;
 use crate::retirement::directory as retirement_directory;
+use crate::retirement::qualification_fixture::MixedAuthority;
+use crate::retirement::qualification_fixture::REBUILD_SCOPE;
+use crate::retirement::qualification_fixture::derived_assets_before_rebuild;
+use crate::retirement::qualification_fixture::inspect_shape;
 use crate::runtime::NativeShellRuntime;
 
 pub(super) fn sample_milliseconds(samples: &[Value], field: &str) -> Vec<f64> {
@@ -173,6 +175,15 @@ fn storage_process_sample_worker() {
         assert!(matches!(kind, "retired-open" | "retired-rebuild"));
         let checkpoint: Checkpoint = serde_json::from_value(config["checkpoint"].clone())
             .expect("sample retirement checkpoint");
+        if kind == "retired-rebuild" {
+            let before = derived_assets_before_rebuild(&path);
+            assert_eq!(
+                before, 0,
+                "first migration must start without derived assets"
+            );
+            sample["beforeDerivedIndexAssets"] = before.into();
+            sample["rebuildScope"] = REBUILD_SCOPE.into();
+        }
         let started = Instant::now();
         let store = RetirementStore::open(&path, Some(&checkpoint))
             .expect("fresh-process retirement open")
@@ -195,6 +206,32 @@ fn storage_process_sample_worker() {
         );
         drop(store);
         if kind == "retired-rebuild" {
+            let shape = inspect_shape(&path, &checkpoint);
+            for (field, expected, actual) in [
+                (
+                    "authoritySegmentCount",
+                    "expectedAuthoritySegments",
+                    shape.segment_count,
+                ),
+                (
+                    "mixedPrefixSegments",
+                    "expectedMixedPrefixSegments",
+                    shape.mixed_prefix_segments,
+                ),
+                (
+                    "minimumPrefixesPerSegment",
+                    "expectedMinimumPrefixesPerSegment",
+                    shape.minimum_prefixes_per_segment,
+                ),
+            ] {
+                assert_eq!(
+                    actual as u64,
+                    config[expected].as_u64().expect("expected authority shape")
+                );
+                sample[field] = actual.into();
+            }
+            assert_eq!(shape.mixed_prefix_segments, shape.segment_count);
+            assert!(shape.minimum_prefixes_per_segment > 1);
             let digest = sha256_hex(
                 fs::read(retirement_directory(&path).join("head.json"))
                     .expect("rebuilt retirement head"),
@@ -205,6 +242,7 @@ fn storage_process_sample_worker() {
                     .as_str()
                     .expect("expected rebuilt head digest")
             );
+            sample["rebuiltHeadSha256"] = digest.into();
         }
     }
     sample["peakRssMiB"] = serde_json::json!(peak_rss_mib());
@@ -294,19 +332,30 @@ fn storage_process_observations_smoke_real_persisted_fixtures() {
     assert_eq!(combined["retiredIdentities"], 32);
     assert_eq!(combined["historyPageSize"], 64);
     assert_ne!(open["pid"], combined["pid"]);
-    let legacy_head =
-        serde_json::json!({"schema": "hepta.native-retirement.v2", "checkpoint": checkpoint});
-    let mut head = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .open(&head_path)
-        .expect("smoke legacy retirement head");
-    head.write_all(&serde_json::to_vec(&legacy_head).expect("smoke legacy projection"))
-        .expect("write smoke legacy head");
-    head.sync_all().expect("sync smoke legacy head");
-    drop(head);
-    config["kind"] = "retired-rebuild".into();
+    let authority_path = root.path.join("mixed-authority.json");
+    let authority = MixedAuthority::build(&authority_path, 2048);
+    let source = RetirementStore::open(&authority_path, Some(&authority.checkpoint))
+        .expect("smoke derive source authority")
+        .expect("source authority exists");
+    drop(source);
+    let expected_head = sha256_hex(
+        fs::read(retirement_directory(&authority_path).join("head.json"))
+            .expect("smoke indexed authority head"),
+    );
+    let cold_path = root.path.join("cold-mixed-authority.json");
+    authority.clone_cold(&cold_path);
+    config = serde_json::json!({
+        "kind": "retired-rebuild", "journalPath": cold_path, "expectedRecords": 2048,
+        "checkpoint": authority.checkpoint, "firstIdentity": authority.first_identity, "lastIdentity": authority.last_identity,
+        "expectedHeadSha256": expected_head, "expectedAuthoritySegments": authority.shape.segment_count,
+        "expectedMixedPrefixSegments": authority.shape.mixed_prefix_segments,
+        "expectedMinimumPrefixesPerSegment": authority.shape.minimum_prefixes_per_segment,
+    });
     let rebuild = fresh_process_sample(&root.path, "smoke-rebuild", 0, &config);
+    assert_eq!(rebuild["beforeDerivedIndexAssets"], 0);
+    assert_eq!(rebuild["authoritySegmentCount"], 2);
+    assert_eq!(rebuild["mixedPrefixSegments"], 2);
+    assert_eq!(rebuild["rebuiltHeadSha256"], expected_head);
     assert!(
         rebuild["elapsedMilliseconds"]
             .as_f64()

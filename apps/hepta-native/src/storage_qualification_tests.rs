@@ -3,8 +3,6 @@
 //! evidence bound to its exact source SHA.
 
 use std::fs;
-use std::fs::OpenOptions;
-use std::io::Write as _;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -24,6 +22,9 @@ use crate::model::sha256_hex;
 use crate::private_state::PrivateStateRoot;
 use crate::retirement::RetirementStore;
 use crate::retirement::directory as retirement_directory;
+use crate::retirement::qualification_fixture::AUTHORITY_SCOPE;
+use crate::retirement::qualification_fixture::MixedAuthority;
+use crate::retirement::qualification_fixture::REBUILD_SCOPE;
 
 mod process_samples;
 
@@ -378,39 +379,20 @@ fn storage_retirement_scale_qualification() {
         }
     }
     drop(journal);
-    let mut store = RetirementStore::create(&journal_path).expect("create retirement store");
-
-    let approximate_bucket = retired_identities.div_ceil(256);
-    let mut buckets = (0..256)
-        .map(|_| Vec::with_capacity(approximate_bucket))
-        .collect::<Vec<Vec<String>>>();
-    let mut first_identity = None;
-    let mut last_identity = String::new();
-    for index in 0..retired_identities {
-        let identity = sha256_hex(format!("hepta-retired-qualification-{index}"));
-        if first_identity.is_none() {
-            first_identity = Some(identity.clone());
-        }
-        last_identity.clone_from(&identity);
-        let prefix = usize::from_str_radix(&identity[..2], 16)
-            .expect("SHA-256 retirement prefix is hexadecimal");
-        buckets[prefix].push(identity);
-    }
-
-    let append_started = Instant::now();
-    for mut bucket in buckets {
-        bucket.sort_unstable();
-        if !bucket.is_empty() {
-            store
-                .append(&bucket)
-                .expect("append retirement qualification bucket");
-        }
-    }
-    let append_ms = append_started.elapsed().as_secs_f64() * 1_000.0;
+    let fixture_started = Instant::now();
+    let authority = MixedAuthority::build(&journal_path, retired_identities);
+    let store = RetirementStore::open(&journal_path, Some(&authority.checkpoint))
+        .expect("derive indexed mixed authority fixture")
+        .expect("mixed authority fixture exists");
+    let append_ms = fixture_started.elapsed().as_secs_f64() * 1_000.0;
     assert_eq!(store.len(), retired_identities);
-    let checkpoint = store.checkpoint();
+    let checkpoint = authority.checkpoint.clone();
     let segment_count = store.segments();
-    let first_identity = first_identity.expect("retirement subject is non-empty");
+    assert_eq!(segment_count, authority.shape.segment_count);
+    assert_eq!(authority.shape.mixed_prefix_segments, segment_count);
+    assert!(authority.shape.minimum_prefixes_per_segment > 1);
+    let first_identity = authority.first_identity.clone();
+    let last_identity = authority.last_identity.clone();
     let head_path = retirement_directory(&journal_path).join("head.json");
     let original_head = fs::read(&head_path).expect("read indexed retirement head");
     drop(store);
@@ -448,28 +430,21 @@ fn storage_retirement_scale_qualification() {
         sample_count,
     );
 
-    let legacy_head = serde_json::json!({
-        "schema": "hepta.native-retirement.v2",
-        "checkpoint": checkpoint,
-    });
     config["kind"] = "retired-rebuild".into();
-    let legacy_head_bytes =
-        serde_json::to_vec(&legacy_head).expect("serialize legacy retirement head");
+    config["expectedAuthoritySegments"] = segment_count.into();
+    config["expectedMixedPrefixSegments"] = authority.shape.mixed_prefix_segments.into();
+    config["expectedMinimumPrefixesPerSegment"] =
+        authority.shape.minimum_prefixes_per_segment.into();
     let mut index_rebuild_process_samples = Vec::with_capacity(sample_count);
     for ordinal in 0..sample_count {
-        // Reset only this private qualification fixture to an authenticated
-        // legacy checkpoint. Every child must perform and verify a full rebuild.
-        let mut head = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .open(&head_path)
-            .expect("open retirement head for deterministic legacy projection");
-        head.write_all(&legacy_head_bytes)
-            .expect("write legacy retirement head");
-        head.sync_all().expect("sync legacy retirement head");
-        drop(head);
+        // A distinct root starts with only immutable authority segments and a
+        // copied v2 head. Every sample pays first-migration derived-asset writes.
+        let cold = QualificationRoot::create(&format!("retired-rebuild-{ordinal}"));
+        let cold_journal = cold.path.join("operation-journal.json");
+        authority.clone_cold(&cold_journal);
+        config["journalPath"] = serde_json::json!(cold_journal);
         index_rebuild_process_samples.push(fresh_process_sample(
-            &root.path,
+            &cold.path,
             "retired-rebuild",
             ordinal,
             &config,
@@ -478,8 +453,10 @@ fn storage_retirement_scale_qualification() {
     let rebuild_samples_ms =
         sample_milliseconds(&index_rebuild_process_samples, "elapsedMilliseconds");
     let rebuild_p95_ms = percentile_samples(&rebuild_samples_ms, 95);
-    let deterministic_rebuild =
-        fs::read(&head_path).expect("read rebuilt retirement head") == original_head;
+    let indexed_head_sha256 = sha256_hex(&original_head);
+    let deterministic_rebuild = index_rebuild_process_samples
+        .iter()
+        .all(|sample| sample["rebuiltHeadSha256"].as_str() == Some(indexed_head_sha256.as_str()));
     let total_bytes = recursive_bytes(&root.path);
     let rss_mib = open_process_samples
         .iter()
@@ -494,10 +471,15 @@ fn storage_retirement_scale_qualification() {
         "root": root.path.display().to_string(),
         "retiredIdentities": retired_identities,
         "retirementSegments": segment_count,
-        "appendMilliseconds": append_ms,
+        "authorityFixtureBuildMilliseconds": append_ms,
+        "authorityBatchSize": 1024,
+        "authorityMixedPrefixSegments": authority.shape.mixed_prefix_segments,
+        "authorityMinimumPrefixesPerSegment": authority.shape.minimum_prefixes_per_segment,
         "measurementScope": {
             "buildProfile": compiled_build_profile(),
             "open": "fresh-process-os-page-cache-uncontrolled",
+            "rebuild": REBUILD_SCOPE,
+            "authoritySegments": AUTHORITY_SCOPE,
         },
         "processSampleCount": sample_count,
         "openProcessSamples": open_process_samples,
@@ -508,6 +490,7 @@ fn storage_retirement_scale_qualification() {
         "freshProcessIndexRebuildP95Milliseconds": rebuild_p95_ms,
         "combinedJournal": combined_journal,
         "deterministicRebuild": deterministic_rebuild,
+        "expectedIndexedHeadSha256": indexed_head_sha256,
         "totalStorageBytes": total_bytes,
         "peakRssMiB": rss_mib,
     });
