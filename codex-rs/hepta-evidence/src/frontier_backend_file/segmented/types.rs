@@ -184,6 +184,7 @@ struct ChainCursor {
     next_audit_sequence: u64,
     previous_generation: Option<u64>,
     previous_record_sha256: Option<Sha256Digest>,
+    previous_frontier: Option<EvidenceRecoveryFrontierV2>,
 }
 
 impl ChainCursor {
@@ -192,27 +193,35 @@ impl ChainCursor {
             next_audit_sequence: 1,
             previous_generation: None,
             previous_record_sha256: None,
+            previous_frontier: None,
         }
     }
 
-    fn after_pointer(pointer: &EvidenceFrontierSegmentPointerV1) -> Result<Self, EvidenceFrontierBackendError> {
+    fn after_record(
+        record: &EvidenceFrontierAuditRecordV1,
+    ) -> Result<Self, EvidenceFrontierBackendError> {
         Ok(Self {
-            next_audit_sequence: pointer
-                .last_audit_sequence
+            next_audit_sequence: record
+                .audit_sequence
                 .checked_add(1)
                 .ok_or_else(|| invalid("frontier audit sequence exhausted"))?,
-            previous_generation: Some(pointer.last_generation),
-            previous_record_sha256: Some(pointer.last_record_sha256.clone()),
+            previous_generation: Some(record.frontier.frontier_generation),
+            previous_record_sha256: Some(record.record_sha256.clone()),
+            previous_frontier: Some(record.frontier.clone()),
         })
     }
 
-    fn advance(&mut self, record: &EvidenceFrontierAuditRecordV1) -> Result<(), EvidenceFrontierBackendError> {
+    fn advance(
+        &mut self,
+        record: &EvidenceFrontierAuditRecordV1,
+    ) -> Result<(), EvidenceFrontierBackendError> {
         self.next_audit_sequence = self
             .next_audit_sequence
             .checked_add(1)
             .ok_or_else(|| corrupt("frontier audit sequence overflow"))?;
         self.previous_generation = Some(record.frontier.frontier_generation);
         self.previous_record_sha256 = Some(record.record_sha256.clone());
+        self.previous_frontier = Some(record.frontier.clone());
         Ok(())
     }
 }
@@ -224,16 +233,24 @@ struct StorePaths {
     index: PathBuf,
 }
 
-
 struct RecoveredPublication {
     frontier_sha256: Sha256Digest,
     audit_sequence: u64,
     durable_path: PathBuf,
 }
 
+struct VerifiedArchivedHistory {
+    latest_metadata: EvidenceFrontierSegmentMetadataV1,
+    latest_record: EvidenceFrontierAuditRecordV1,
+    segment_count: u64,
+    archived_records: u64,
+    archived_bytes: u64,
+}
+
 struct SegmentedState {
     index: Option<EvidenceFrontierLatestIndexV1>,
     latest_segment_metadata: Option<EvidenceFrontierSegmentMetadataV1>,
+    archived_latest_record: Option<EvidenceFrontierAuditRecordV1>,
     active_records: Vec<EvidenceFrontierAuditRecordV1>,
     active_bytes: u64,
     active_sha256: Sha256Digest,
@@ -241,32 +258,29 @@ struct SegmentedState {
 
 impl SegmentedState {
     fn latest_record(&self) -> Option<&EvidenceFrontierAuditRecordV1> {
-        self.active_records.last()
+        self.active_records
+            .last()
+            .or(self.archived_latest_record.as_ref())
     }
 
     fn latest_generation(&self) -> Option<u64> {
         self.latest_record()
             .map(|record| record.frontier.frontier_generation)
-            .or_else(|| self.index.as_ref().map(|index| index.frontier_generation))
     }
 
     fn latest_audit_sequence(&self) -> u64 {
         self.latest_record()
             .map(|record| record.audit_sequence)
-            .or_else(|| self.index.as_ref().map(|index| index.audit_sequence))
             .unwrap_or(0)
     }
 
     fn latest_record_sha256(&self) -> Option<Sha256Digest> {
         self.latest_record()
             .map(|record| record.record_sha256.clone())
-            .or_else(|| self.index.as_ref().map(|index| index.record_sha256.clone()))
     }
 
     fn latest_frontier(&self) -> Option<EvidenceRecoveryFrontierV2> {
-        self.latest_record()
-            .map(|record| record.frontier.clone())
-            .or_else(|| self.index.as_ref().map(|index| index.frontier.clone()))
+        self.latest_record().map(|record| record.frontier.clone())
     }
 
     fn segment_count(&self) -> u64 {
@@ -297,4 +311,3 @@ impl SegmentedState {
 pub struct SegmentedFileEvidenceFrontierBackend {
     legacy: LegacyLockedFileEvidenceFrontierBackend,
 }
-
