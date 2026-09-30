@@ -359,8 +359,12 @@ effect rollback, cross-owner atomic shutdown or independently provisioned trust.
 The current host drain snapshot requires no local effect workers, no durable armed
 or indeterminate effects, no automation blockers and actual App Server drain
 acknowledgement. The reservation closes this registered HTTP host's late-admission
-window. It does not qualify target-host shutdown behavior or prove that arbitrary
-future downstream owners implement the same drain/recovery contract.
+window. A separate existing cross-owner gap remains: normal App Server drain closes
+the RPC path used by automation to obtain historical terminal observations. A
+read-only owner-supported observation path must remain available after new
+admission closes; local control reconciliation and worker counts do not provide
+that path. Target-host shutdown and additional downstream-owner drain/recovery
+contracts still require their own qualification.
 
 ## 8. Failure semantics, recovery and rollback
 
@@ -406,14 +410,22 @@ uses strict signature verification before returning current owner state.
 The private `OperatorNamespace` policy is also applied at file-open boundaries for
 AuthBus and Evidence trust, recovery frontiers, replay checkpoints, Objective
 journals, explicit effect configuration and plasticity bootstrap files. Startup
-checks the Fleet root and the selected home/run writer namespace. Prompt state
+checks the Fleet root and the selected home/run writer namespace. Plasticity
+mutable bootstrap opens additionally require one link and prohibit group/world
+writes on Unix, checking the path before open and the handle/path after open;
+newly created mutable handles receive the same check. Read-only bootstrap inputs
+retain their existing permissions and link contract. These open-time checks do
+not replace the native owner's receipt, anchor, signature or recovery checks.
+Prompt state
 uses descriptor-bound, private regular files before truncation or publication.
 The optional Browser/Servo profile hashes artifacts incrementally with an 8 KiB
 buffer and a size-limited handle, then launches the verified canonical paths.
 These checks reject unsafe writable ancestors; trusted sticky ancestors remain
 compatible. They do not attest a child process's loaded image. Fleet's own
-whole-catalog traversal still needs owner-level permission-drift qualification
-for peer Agent subtrees before its readers open them.
+whole-catalog startup traversal has a remaining owner-level namespace-check gap
+for peer Agent subtrees before its readers open them. Writable peer subtrees can
+block startup; the finding is not an established authentication bypass. The
+current Agentd Fleet-root and selected-writer checks do not close this P1 gap.
 
 This is a bounded freshness observation within the trusted operator-UID/root
 boundary. It neither isolates malicious same-UID/root code nor holds a namespace
@@ -525,6 +537,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-agentd/src/control_tests.rs](../../../codex-rs/hepta-agentd/src/control_tests.rs) covers receiver target rejection, owner-generation errors, connection retirement and backpressure; endpoint identity remains subject to the stated OS-user trust boundary.
 - [codex-rs/hepta-agentd/src/intelligence_authority_file_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_authority_file_tests.rs) covers bounded same-handle reads, namespace/version drift and weak-key/signature rejection.
 - [codex-rs/hepta-agentd/src/authbus_checkpoint_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_checkpoint_tests.rs) covers permission/link/directory drift, exact predecessor replacement and conflicting temporary-file ownership.
+- [codex-rs/hepta-agentd/src/plasticity_process_file_tests.rs](../../../codex-rs/hepta-agentd/src/plasticity_process_file_tests.rs) covers unsafe ancestor/parent rejection, native snapshot substitution and namespace rechecks, plus `mutable_bootstrap_files_reject_group_or_world_write_before_owner_callback` and `hardlinked_mutable_bootstrap_file_is_rejected_before_owner_callback`. Mutable owner callbacks are rejected before unsafe input reaches them; read-only permission/link compatibility remains covered. Source cases require exact-candidate execution.
 - [codex-rs/hepta-agentd/src/automation_effect_host_worker_tests.rs](../../../codex-rs/hepta-agentd/src/automation_effect_host_worker_tests.rs) includes `effect_reservation_is_visible_before_durable_admission_and_drain_closes_the_gate`, exercising the actual Fleet/Agentd/Cognitive readiness gate, pre-durable worker visibility, rejected admission during drain and retained old reservation. It never fabricates a physical App Server drain acknowledgement.
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `context_reads_real_owner_content_and_removes_committed_tombstones`.
 - [codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs); named case: `lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt`.

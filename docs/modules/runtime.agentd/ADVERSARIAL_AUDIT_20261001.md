@@ -77,6 +77,7 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | Prompt runtime public store 接受预置 lock / next symlink，open / truncate 后才 path chmod；受污染本地目录可改写外部目标，retired lock inode 仍可能参与发布 | canonical directory 与 Unix handle 权限操作；现有 regular / uid / private mode / single-link 校验先于打开和 truncate；before / handle / after inode 与 namespace；发布前复核 held lock，保留 atomic rename、directory fsync 和 reopen 语义 | `prompt_runtime::file::tests` 的外部内容 / mode 不变、hardlink / nonregular / directory symlink 拒绝、next / lock replacement、正常 owner lock / staging / stale-next / reopen；source 已落盘，native verification pending |
 | effect authority 同 epoch / revision 换 head；恢复 connect / queue / 分页无统一界限；观察后未重新核 generation；调度时钟陈旧 | head drift fail closed、handle bounded currentness、恢复 connect / queue 与分页总 deadline、远端观察后 fence、操作后更新时间 | `host_dispatches_exact_wire_payload_once`；`recovery_accepts_an_admitted_observation_during_drain_but_rejects_a_replaced_owner`、`recovery_rejects_an_explicitly_fenced_observer`、`stalled_app_server_handshake_cannot_hold_recovery_indefinitely` |
 | sync provider bridge 占用异步执行线程；caller 取消可能早于 durable observation；仅队列 / timer 计数可误报 drain 完成 | 每 host 有限 blocking worker；runtime readiness 锁内生成与 host 绑定的 owned reservation，消除复制 readiness 到 reserve 之间的假 drain 窗口；worker 持 quota / authority guard；drain 合并 durable pending effect 与 occupied slot | `automation_effect_host::worker_tests::cancelled_provider_caller_keeps_bounded_worker_and_durable_attempt`、`effect_reservation_is_visible_before_durable_admission_and_drain_closes_the_gate`；最终 worker / drain 实现待原生验证 |
+| Plasticity 可写 bootstrap registry / journal 的 namespace 安全，但已有文件仍可能被 group/world 修改或通过 hard link 共享；native owner callback 可接到该可写 handle | `plasticity_process_file.rs` 区分只读 / 可写访问；Unix 可写输入在 open 前、opened handle 及后续 path/handle 复核均要求 `mode & 022 == 0`、`nlink == 1`，新建可写 handle 同验；只读 0644 / hard-link contract 保留，原 owner receipt / anchor / signature / recovery 校验不变 | `plasticity_process_file_tests.rs::mutable_bootstrap_files_reject_group_or_world_write_before_owner_callback`、`hardlinked_mutable_bootstrap_file_is_rejected_before_owner_callback`；最终源码已落盘，局部格式和 whitespace 检查通过，原生执行尚无通过证据 |
 
 同类文件保护已统一扩展到 AuthBus/Evidence trust、Evidence recovery frontier、Objective journal 与启动 writer namespace、plasticity bootstrap；新增回归覆盖非 sticky 可写祖先、可信 sticky 兼容和打开前后文件替换。各 owner 的签名、receipt、anchor 和恢复权威保持原有约束。
 
@@ -89,8 +90,9 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | `python3 scripts/hepta_workspace.py` | 通过：193 local manifests，0 errors | 工作区 manifest / 结构校验，未执行 Rust |
 | `python3 -m unittest discover -v -s scripts -p test_hepta_agentd_ci.py` | 通过：15 tests | Agentd CI 脚本行为 |
 | `just fmt` | 执行成功；无关 Python formatter 变更已恢复原字节 | Rust 候选格式化；不包含无关脚本重排 |
-| `CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 just fix --locked -p codex-hepta-agent-protocol -p codex-hepta-agentd --profile dev-small` | 通过，退出 0；使用独立 target cache | 协议与 Agentd production、lib tests 和 integration tests 的编译 / Clippy 检查；不是测试执行通过 |
-| 新测试编译修正 | 大型 fixture `json!` 已拆分；三处不存在的 `pretty_assertions` 导入已去除；最终原生检查通过 | 未提高 crate recursion limit、未新增依赖或改 Bazel lock |
+| `CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 just fix --locked -p codex-hepta-agent-protocol -p codex-hepta-agentd --profile dev-small` | 较早候选通过，退出 0；使用独立 target cache；不包含最后 Plasticity RW mode/link 两文件补丁 | 当时协议与 Agentd production、lib tests 和 integration tests 的编译 / Clippy 检查；不是最终候选检查或测试执行通过 |
+| 新测试编译修正 | 大型 fixture `json!` 已拆分；三处不存在的 `pretty_assertions` 导入已去除；较早候选原生检查通过 | 未提高 crate recursion limit、未新增依赖或改 Bazel lock；不包含最后 RW 补丁及其两项回归 |
+| 最后 Plasticity RW 补丁 | `plasticity_process_file.rs` 与其测试局部 rustfmt、`git diff --check` 通过 | 最终候选 production / tests 编译、Clippy 和原生测试执行仍待 CI；不能复用较早候选的成功结果 |
 | 原生测试构建前几次尝试 | 初次多依赖 SIGKILL；两次低资源构建遇到磁盘不足；一次 Clippy 依赖 core 因内存被终止 | 资源失败记录保留，不能据此声称测试通过或推断测试逻辑失败 |
 | Scoped nextest execution | Protocol nextest 构建在最终链接失败（退出 101），当时共享磁盘 100% 满；没有进入测试运行。Agentd 全模块尚未取得成功执行证据 | Linux 行为 / process 回归仍须实际运行；macOS / Windows 未在本地执行 |
 | `git diff --check` | 通过 | 补丁 whitespace 检查 |
@@ -106,16 +108,16 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | Canonical physical execution | 已认证 Objective ingress、runner + invocation provider、daemon run tuple | 相同冻结身份到实际 `turn/start` / `interrupt` 的 caller，以及可信 owner terminal observation；取消 / failure / restart 的真实闭环 |
 | Durable Decision / Outcome handoff | Objective admission journal 与局部 run 生命周期 | 独立 execution / dispatch ledger 的精确身份交接与跨重启恢复；没有记录时拒绝猜测完成或重新 dispatch |
 | Run recovery daemon 产品入口 | coordinator `recover_indeterminate` | 有认证 durable-owner 供给的 wire / client / caller 与重启证据；恢复只能复建不确定状态，不能自行发明终态 |
-| Drain 后 external observation | 有限 recovery deadline、正常 Draining 代数允许观察、effect worker drain 计数 | App Server drain 关闭 RPC 后仍能读取历史终态的 owner-supported 通路；readonly observation 与新 admission 的明确区分 |
+| Drain 后 external observation（P1） | 有限 recovery deadline、正常 Draining 代数允许观察、effect worker drain 计数 | App Server drain 关闭 RPC 后仍能读取历史终态的 owner-supported 通路；readonly observation 与新 admission 的明确区分 |
 | 默认 Neuron / plasticity 与高阶 profiles | 显式 owner / bootstrap / currentness 接口 | 已授权的完整 owner 组成和产品调用证据；不能把存在的类型或 CLI flag 算成已组成 |
-| Fleet 全目录读取的 namespace | Agentd 已检查 Fleet root、选中 home/run 和各实际文件边界 | Fleet owner 的全目录 startup traversal 仍须在打开每个 Agent 子树前验证权限漂移；可写 peer 子目录存在阻塞风险，尚未证明认证绕过 |
+| Fleet 全目录读取的 namespace（P1） | Agentd 已检查 Fleet root、选中 home/run 和各实际文件边界 | Fleet owner 的全目录 startup traversal 仍须在打开每个 Agent 子树前验证权限漂移；可写 peer 子目录存在阻塞风险，尚未证明认证绕过 |
 | 目标平台与部署验收 | 本地进程、结构和回归入口 | 目标 host 上 authenticated socket / generation、saturation、drain / restart、资源预算测量，以及独立 acceptance / promotion / release |
 
 这些缺口涉及现有跨 owner API 或独立部署权威。它们须以真实接口与操作证据补齐，不应通过改映射布尔值、制造 trust 文件、放松 fence 或把 timeout 当作成功来关闭。
 
 ## 9. 收口标准
 
-本次已完成多个独立领域的初审、整改与再审。最终 production / tests 编译与 Clippy、格式及结构校验已通过；原生测试运行受资源失败限制。在本轮已审阅的本地边界内，再审未发现新的可独立修补缺陷；第 8 节跨 owner 与部署资格项仍开放，不能由此声称整个模块已完成或永无新问题。
+本次已完成多个独立领域的初审、整改与再审。较早候选的 production / tests 编译与 Clippy、格式及结构校验已通过；最后 Plasticity RW mode/link 补丁仅有局部 rustfmt 与 whitespace 检查，最终候选的编译、Clippy 和原生测试执行仍待 CI。原生测试运行曾受资源失败限制。在本轮已审阅的本地边界内，再审未发现新的可独立修补缺陷；第 8 节跨 owner 与部署资格项仍开放，不能由此声称整个模块已完成或永无新问题。
 
 审阅阶段按依赖拆分为：控制与监督、共享文件 namespace 与启动边界、canonical 身份、effect / admission / drain 组成、Browser / Prompt 可选 profile、文档及派生绑定。最先可独立落地的是接收目标绑定与监督修复；组成层必须连同实际调用方和回归一起审阅。
 
