@@ -5,10 +5,7 @@ use super::WAL_CHECKPOINT_ENTRIES;
 use crate::model::OperationKey;
 use crate::model::PlatformAction;
 
-#[path = "private_state_test_support.rs"]
-mod common;
-
-use common::private_tempdir;
+use crate::private_state_test_support::private_tempdir;
 
 fn record(operation_id: &str, phase: OperationPhase) -> OperationRecord {
     OperationRecord {

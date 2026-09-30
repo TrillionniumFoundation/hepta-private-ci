@@ -549,10 +549,10 @@ impl HeptaNativeApp {
                     self.operation_message = None;
                 } else if kind == UiTaskKind::StageUpdate {
                     self.update_message = None;
-                } else if kind == UiTaskKind::PickFile {
-                    if let Some(context) = self.repaint.lock().ok().and_then(|value| value.clone()) {
-                        task_supervisor::cancel_file_input(&context);
-                    }
+                } else if kind == UiTaskKind::PickFile
+                    && let Some(context) = self.repaint.lock().ok().and_then(|value| value.clone())
+                {
+                    task_supervisor::cancel_file_input(&context);
                 }
                 self.last_error = Some(error);
             }

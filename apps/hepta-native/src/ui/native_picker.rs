@@ -48,9 +48,10 @@ fn dialog_command() -> Result<(Command, Option<i32>), ShellError> {
 
 #[cfg(target_os = "windows")]
 fn dialog_command() -> Result<(Command, Option<i32>), ShellError> {
-    let root = PathBuf::from(std::env::var_os("SystemRoot").ok_or_else(|| {
-        ShellError::Platform("Windows system directory is unavailable".into())
-    })?);
+    let root =
+        PathBuf::from(std::env::var_os("SystemRoot").ok_or_else(|| {
+            ShellError::Platform("Windows system directory is unavailable".into())
+        })?);
     if !root.is_absolute() {
         return Err(ShellError::Platform(
             "Windows system directory is not absolute".into(),
@@ -104,9 +105,7 @@ fn parse_linux_picker_backend(
 
 #[cfg(target_os = "linux")]
 fn dialog_command() -> Result<(Command, Option<i32>), ShellError> {
-    match parse_linux_picker_backend(
-        std::env::var_os("HEPTA_NATIVE_PICKER_BACKEND").as_deref(),
-    )? {
+    match parse_linux_picker_backend(std::env::var_os("HEPTA_NATIVE_PICKER_BACKEND").as_deref())? {
         LinuxPickerBackend::Portal => {
             let executable = Path::new("/usr/bin/python3");
             if !executable.is_file() {
@@ -136,9 +135,7 @@ fn dialog_command() -> Result<(Command, Option<i32>), ShellError> {
 
 #[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
 fn dialog_command() -> Result<(Command, Option<i32>), ShellError> {
-    Err(ShellError::Platform(
-        "native picker is unsupported".into(),
-    ))
+    Err(ShellError::Platform("native picker is unsupported".into()))
 }
 
 #[cfg(unix)]
@@ -234,9 +231,7 @@ fn run_dialog(
             Err(error) => {
                 let _ = child.kill();
                 let _ = child.wait();
-                break Err(ShellError::Platform(format!(
-                    "observe picker: {error}"
-                )));
+                break Err(ShellError::Platform(format!("observe picker: {error}")));
             }
         }
     };
@@ -247,9 +242,7 @@ fn run_dialog(
             reader
                 .join()
                 .map_err(|_| ShellError::Platform("picker reader panicked".into()))?
-                .map_err(|error| {
-                    ShellError::Platform(format!("read picker selection: {error}"))
-                })?,
+                .map_err(|error| ShellError::Platform(format!("read picker selection: {error}")))?,
         );
     }
     let status = status?;
@@ -257,9 +250,7 @@ fn run_dialog(
         return Ok(None);
     }
     if !status.success() {
-        return Err(ShellError::Platform(format!(
-            "picker failed: {status}"
-        )));
+        return Err(ShellError::Platform(format!("picker failed: {status}")));
     }
     parse_selection(&output.unwrap_or_default())
 }
@@ -299,12 +290,7 @@ mod tests {
 
     #[test]
     fn picker_rejects_ambiguous_and_unbounded_results() {
-        for bytes in [
-            b"relative".as_slice(),
-            b"/one\n/two",
-            b"/one\0",
-            &[255],
-        ] {
+        for bytes in [b"relative".as_slice(), b"/one\n/two", b"/one\0", &[255]] {
             assert!(parse_selection(bytes).is_err());
         }
         assert!(parse_selection(&vec![b'a'; MAX_SELECTION_BYTES + 1]).is_err());

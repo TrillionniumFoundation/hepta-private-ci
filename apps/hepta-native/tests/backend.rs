@@ -156,10 +156,7 @@ fn stale_close_cannot_invalidate_a_reconnected_gateway() {
     let current = backend.connect(&manifest(address)).unwrap();
     server.join().unwrap();
     assert!(backend.close(&first).is_err());
-    let server = serve_health(
-        listener,
-        r#"{"state":{"runtime_snapshot_generation":1}}"#,
-    );
+    let server = serve_health(listener, r#"{"state":{"runtime_snapshot_generation":1}}"#);
     assert_eq!(
         backend.runtime_status().unwrap().value,
         serde_json::json!({"state": {"runtime_snapshot_generation": 1}})

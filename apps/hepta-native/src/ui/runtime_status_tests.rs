@@ -14,7 +14,9 @@ fn bounded_wire_json_cannot_expand_into_unbounded_gui_diagnostics() {
 #[test]
 fn presentation_writer_rejects_the_first_byte_over_the_limit() {
     let mut writer = BoundedStatus::default();
-    writer.write_all(&vec![b'x'; MAX_RENDERED_STATUS_BYTES]).unwrap();
+    writer
+        .write_all(&vec![b'x'; MAX_RENDERED_STATUS_BYTES])
+        .unwrap();
     assert!(writer.write_all(b"x").is_err());
     assert_eq!(writer.0.len(), MAX_RENDERED_STATUS_BYTES);
 }

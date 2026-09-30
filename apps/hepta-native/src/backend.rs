@@ -155,7 +155,11 @@ impl BackendAdapter for LoopbackGatewayBackend {
 
     fn close(&mut self, session: &SessionIncarnation) -> Result<(), ShellError> {
         session.validate()?;
-        if self.session.as_ref().is_some_and(|current| current != session) {
+        if self
+            .session
+            .as_ref()
+            .is_some_and(|current| current != session)
+        {
             return Err(ShellError::State(
                 "cannot close a different native gateway session incarnation".into(),
             ));

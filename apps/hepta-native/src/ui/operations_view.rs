@@ -346,8 +346,7 @@ impl HeptaNativeApp {
                 runtime.close_operation_observation(&key)?;
                 runtime.compact_closed_history(256)?;
                 Ok(UiTaskOutput::Reconcile {
-                    history: runtime
-                        .operation_history_page(requested_page, HISTORY_PAGE_SIZE)?,
+                    history: runtime.operation_history_page(requested_page, HISTORY_PAGE_SIZE)?,
                 })
             });
         }

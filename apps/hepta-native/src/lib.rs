@@ -35,3 +35,6 @@ mod retirement;
 
 #[cfg(test)]
 mod storage_qualification_tests;
+
+#[cfg(test)]
+mod private_state_test_support;

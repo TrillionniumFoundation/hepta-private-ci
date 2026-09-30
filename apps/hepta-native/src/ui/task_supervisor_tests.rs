@@ -55,7 +55,11 @@ fn drop_rejects_lossy_path_conversion_without_consuming_the_exact_intent() {
     assert_eq!(intent.active(), Some(ticket));
     let exact = absolute_path(" grant.json ");
     assert_eq!(
-        intent.accept(ticket, FileInputTarget::OperationGrant, &[Some(exact.clone())]),
+        intent.accept(
+            ticket,
+            FileInputTarget::OperationGrant,
+            &[Some(exact.clone())]
+        ),
         Ok(exact)
     );
 }

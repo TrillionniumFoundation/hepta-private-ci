@@ -49,10 +49,7 @@ impl HeptaNativeApp {
                     }
                     .into(),
                 );
-            } else if let Some(task) = self
-                .pending_read
-                .as_ref()
-                .or(self.pending_runtime.as_ref())
+            } else if let Some(task) = self.pending_read.as_ref().or(self.pending_runtime.as_ref())
             {
                 let cancelled = task.worker.cancel_before_admission();
                 self.last_error = Some(

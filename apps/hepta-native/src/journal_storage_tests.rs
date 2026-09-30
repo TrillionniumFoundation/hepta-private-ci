@@ -3,10 +3,7 @@ use super::wal_path;
 use crate::error::ShellError;
 use crate::private_state::PrivateStateRoot;
 
-#[path = "private_state_test_support.rs"]
-mod common;
-
-use common::private_tempdir;
+use crate::private_state_test_support::private_tempdir;
 
 fn write(path: &std::path::Path, bytes: &[u8]) -> Result<(), ShellError> {
     let root = PrivateStateRoot::open_existing(path.parent().unwrap())?;

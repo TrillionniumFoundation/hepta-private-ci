@@ -109,18 +109,28 @@ fn actual_notification_fields_bound_paste_and_keep_byte_validation() {
     render_operations(
         &mut app,
         &context,
-        vec![egui::Event::Paste("a".repeat(crate::model::MAX_NOTIFICATION_TITLE_BYTES + 1))],
+        vec![egui::Event::Paste(
+            "a".repeat(crate::model::MAX_NOTIFICATION_TITLE_BYTES + 1),
+        )],
     );
-    assert_eq!(app.notification_title, "a".repeat(crate::model::MAX_NOTIFICATION_TITLE_BYTES));
+    assert_eq!(
+        app.notification_title,
+        "a".repeat(crate::model::MAX_NOTIFICATION_TITLE_BYTES)
+    );
     context.memory_mut(|memory| {
         memory.request_focus(egui::Id::new("native-notification-body"));
     });
     render_operations(
         &mut app,
         &context,
-        vec![egui::Event::Paste("汉".repeat(crate::model::MAX_NOTIFICATION_BODY_BYTES + 1))],
+        vec![egui::Event::Paste(
+            "汉".repeat(crate::model::MAX_NOTIFICATION_BODY_BYTES + 1),
+        )],
     );
-    assert_eq!(app.notification_body, "汉".repeat(crate::model::MAX_NOTIFICATION_BODY_BYTES));
+    assert_eq!(
+        app.notification_body,
+        "汉".repeat(crate::model::MAX_NOTIFICATION_BODY_BYTES)
+    );
     assert!(
         PlatformPayload::Notify {
             title: app.notification_title.clone(),
