@@ -1,33 +1,7 @@
 name: cognitive-types-source-export
-run-name: cognitive-types-source-export @ ${{ github.sha }}
+run-name: cognitive-types-source-export @ ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 on:
-  push:
-    branches: ['codex/cognitive-types-full-closure-20260927']
-    paths:
-      - 'codex-rs/Cargo.toml'
-      - 'codex-rs/Cargo.lock'
-      - 'codex-rs/hepta-cognitive-types/**'
-      - 'codex-rs/hepta-cognitive-read/**'
-      - 'codex-rs/hepta-cognitive-store/**'
-      - 'codex-rs/hepta-memory-retrieval/**'
-      - 'codex-rs/hepta-compact-engine/**'
-      - 'codex-rs/hepta-intelligence/**'
-      - 'codex-rs/hepta-memory/**'
-      - 'codex-rs/hepta-authbus/**'
-      - 'codex-rs/state/**'
-      - 'codex-rs/hepta-agentd/src/intelligence_product*.rs'
-      - 'codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs'
-      - 'docs/modules/cognitive.types/**'
-      - 'docs/hnmf/**'
-      - 'qualification/cognitive-types-v1/**'
-      - 'qualification/cognitive-types-v2/**'
-      - 'qualification/cognitive-types-mutation/**'
-      - 'scripts/hepta-hnmf.py'
-      - 'scripts/cognitive_types_mutants.py'
-      - '.github/workflows/cognitive-types-source-export.yml'
-      - '.github/workflows/cognitive-types-qualification.yml'
-      - '.github/workflows/hnmf-qualification.yml'
   pull_request:
     branches: ['main']
     paths:
@@ -59,22 +33,24 @@ on:
 permissions:
   contents: read
 
-# Only the latest branch candidate needs an exported source bundle. Every
-# surviving artifact is still bound to its exact SHA and tree below; superseded
-# intermediate pushes are cancelled rather than competing with qualification.
+# Export only the immutable pull-request head. Synthetic-merge qualification is
+# produced by its own jobs and must not replace exact-source evidence.
 concurrency:
-  group: cognitive-types-source-export-${{ github.ref }}
+  group: cognitive-types-source-export-${{ github.event.pull_request.head.ref || github.ref }}
   cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   export:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - name: Check out immutable candidate
+      - name: Check out immutable exact-head candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -82,7 +58,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --exit-code
           git diff --cached --exit-code
 
@@ -104,7 +80,7 @@ jobs:
       - name: Upload immutable source
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: cognitive-types-source-${{ github.sha }}
+          name: cognitive-types-source-${{ env.SOURCE_SHA }}
           path: ${{ runner.temp }}/cognitive-source
           if-no-files-found: error
           retention-days: 14
