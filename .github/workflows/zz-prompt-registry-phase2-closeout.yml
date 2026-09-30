@@ -1,3 +1,4 @@
+# exact-dispatch: this workflow existed in the parent commit before this trigger
 name: Prompt registry phase 2 exact closeout
 
 on:
@@ -20,7 +21,8 @@ jobs:
     timeout-minutes: 100
     env:
       TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
-      EXPECTED_PARENT: 8825996f927ca1cb3e1271ffcce0261ce25b398e
+      EXPECTED_TRIGGER_PARENT: 0370f2ee23092735f5a72d5393f3af0eaed4db11
+      EXPECTED_DELIVERY_PARENT: 8825996f927ca1cb3e1271ffcce0261ce25b398e
       AUTHOR_BRANCH: ops/prompt-registry-phase2-author-20260930
       CARGO_INCREMENTAL: '0'
       CARGO_BUILD_JOBS: '2'
@@ -38,7 +40,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_TRIGGER_PARENT"
+          test "$(git rev-parse HEAD^^)" = "$EXPECTED_DELIVERY_PARENT"
           test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$GITHUB_SHA"
           git fetch origin "refs/heads/$AUTHOR_BRANCH:refs/remotes/origin/$AUTHOR_BRANCH"
           git show "refs/remotes/origin/$AUTHOR_BRANCH:.github/scripts/prompt_registry_phase2_20260930.py" > "$RUNNER_TEMP/phase2.py"
