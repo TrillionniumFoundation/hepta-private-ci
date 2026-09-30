@@ -91,7 +91,8 @@ impl AgentdEvaluationSessionV1 {
         candidate: &StableId,
         now: u64,
     ) -> Result<Digest32, AgentdIntelligenceEvaluationError> {
-        if input.run_id != self.run_id
+        if !self.trust.is_current_at(now)
+            || input.run_id != self.run_id
             || input.stage != CanonicalStageV1::EvaluationAdmitted
             || self.current_owner.owner_id.as_str() != "learning.eval"
             || self.signed.bundle.objective_digest != input.objective_digest

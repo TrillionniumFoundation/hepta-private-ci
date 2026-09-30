@@ -95,7 +95,8 @@ impl AgentdEvaluationBindingV1 {
         now: u64,
     ) -> Result<Digest32, AgentdIntelligenceEvaluationError> {
         let decision = receipt.decision();
-        if expected_execution_digest.is_zero()
+        if !trust.is_current_at(now)
+            || expected_execution_digest.is_zero()
             || expected_publication_digest.is_zero()
             || receipt.execution_digest() != expected_execution_digest
             || receipt.publication_digest() != expected_publication_digest

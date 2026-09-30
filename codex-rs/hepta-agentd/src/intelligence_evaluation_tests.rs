@@ -101,7 +101,11 @@ use codex_hepta_learning_ledger::activate_learning_trust;
 use codex_hepta_types::Generation;
 use std::sync::Arc;
 
-fn activate(trust: LearningEvidenceTrustV1, now: u64) -> ActivatedLearningTrustV1 {
+fn activate_until(
+    trust: LearningEvidenceTrustV1,
+    now: u64,
+    expires_at: u64,
+) -> ActivatedLearningTrustV1 {
     let root_key = SigningKey::from_bytes(&[99; 32]);
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
@@ -120,7 +124,7 @@ fn activate(trust: LearningEvidenceTrustV1, now: u64) -> ActivatedLearningTrustV
         },
         root_id: root.root_id.clone(),
         issued_at: now - 150,
-        expires_at: now + 60_000,
+        expires_at,
         signature: [0; 64],
     };
     distribution.signature = root_key
@@ -132,6 +136,14 @@ fn activate(trust: LearningEvidenceTrustV1, now: u64) -> ActivatedLearningTrustV
 pub(super) fn evidence_fixture(
     binding: &AgentdEvaluationBindingV1,
     now: u64,
+) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
+    evidence_fixture_until(binding, now, now + 60_000)
+}
+
+fn evidence_fixture_until(
+    binding: &AgentdEvaluationBindingV1,
+    now: u64,
+    distribution_expires_at: u64,
 ) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
     let objective_digest = binding.objective_digest;
     let dataset_digest = digest("dataset");
@@ -243,7 +255,7 @@ pub(super) fn evidence_fixture(
             },
         ],
     };
-    let trust = activate(trust_definition, now);
+    let trust = activate_until(trust_definition, now, distribution_expires_at);
     let verifier = trust.verifier();
 
     let payload = evaluation_signing_payload_v2(&bundle, &roles).unwrap();
@@ -334,6 +346,33 @@ fn signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust() {
         .evaluate(&input(&binding), &binding.selected_candidate_id, 1_000)
         .unwrap();
     assert!(!receipt.is_zero());
+}
+
+#[test]
+fn signed_candidate_rejects_expired_distribution_with_live_signatures() {
+    let binding = binding();
+    let (trust, signed) = evidence_fixture_until(&binding, 1_000, 1_010);
+    assert!(!trust.is_current_at(1_011));
+    let payload = intelligence_evaluation_binding_payload_v1(&binding, &signed.evidence).unwrap();
+    assert!(
+        trust
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &signed.use_attestation,
+                &payload,
+                1_011,
+            )
+            .is_ok(),
+        "evidence validity must not hide distribution expiry"
+    );
+    let mut session = session(&binding, 1_000);
+    session.trust = Arc::new(trust);
+    session.signed = signed;
+    assert!(matches!(
+        session.evaluate(&input(&binding), &binding.selected_candidate_id, 1_011),
+        Err(AgentdIntelligenceEvaluationError::Binding)
+    ));
 }
 
 #[test]
