@@ -408,3 +408,28 @@ the current source tree. It checks:
 Any source, document or workflow change that alters one of these facts must
 update this contract and the corresponding implementation in the same
 candidate. A prose closeout or historical receipt cannot override this gate.
+
+## Appendix A. Closed gap and protocol mapping
+
+The readiness ledger's `closed_specification` state means a development contract
+is specified; it does not prove implementation execution, deployment acceptance
+or release. The current section inventory in `READINESS.json` refers to this
+contract. Its registered protocol vocabulary maps to the existing implementation
+and never creates another production entrypoint or an alternative encoding.
+
+| Readiness gap | Development contract | Registered protocol vocabulary |
+| --- | --- | --- |
+| `RDY-GAP-OBJ-001` | Bounded authenticated source, exact signed-Q32 semantics and aggregate limits in sections 3–5 | `ObjectiveSourceEnvelopeV1`, `ObjectiveConstraintSetV1` |
+| `RDY-GAP-OBJ-002` | Hard-constraint precedence, deterministic feasibility and bounded conflict extraction in section 5 | `ObjectiveConstraintSetV1`, `ObjectiveConflictReceiptV1` |
+| `RDY-GAP-OBJ-003` | Canonical native/protocol identities, proof and revision binding in section 6 | `ObjectiveSourceEnvelopeV1`, `ObjectiveCompileReceiptV1` |
+| `RDY-GAP-OBJ-004` | Destination-owned RunStart/conflict transactions, replay/recovery and typed failures in sections 7–10 | `ObjectiveCompileReceiptV1`, `ObjectiveConflictReceiptV1` |
+| `RDY-GAP-OBJ-005` | Current source authentication, profile/scope checks, unsupported-semantic rejection and trust separation in sections 1, 3–4 and 11 | `ObjectiveSourceEnvelopeV1`, `ObjectiveConstraintSetV1` |
+| `RDY-GAP-OBJ-006` | Exact-head regressions, independent golden/differential fixtures and selected-host resource/storage qualification in sections 11–13 | `ObjectiveCompileReceiptV1`, `ObjectiveConflictReceiptV1` |
+
+`ObjectiveConstraintSetV1` names the readiness-level bounded constraint contract;
+the implementation uses the typed source/profile/native sets listed in the
+implementation map. Compile and conflict receipt names describe their registered
+contracts; their actual native and durable byte domains remain those in sections
+6–7. Tests and measurement harnesses are indexed in the module guide and delivery
+evidence document. A specification mapping cannot replace their immutable
+execution receipts or change the four fail-closed truth flags.
