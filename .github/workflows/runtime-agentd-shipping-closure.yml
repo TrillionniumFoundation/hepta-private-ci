@@ -24,79 +24,179 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
 
-# This workflow is intentionally read-only. Source materialization is temporary
-# and must be removed once the reviewed Rust sources are committed.
 jobs:
-  format:
-    runs-on: ubuntu-24.04-arm
+  source-integrity:
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Install pinned formatter
+          fetch-depth: 0
+      - name: Require immutable ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/runtime-agentd-shipping-closure-apply.yml
+          test ! -e scripts/qualification/runtime_agentd_shipping_profile_apply.py
+          ! grep -R --line-number --fixed-strings 'contents: write' \
+            .github/workflows/runtime-agentd-*.yml
+          python3 scripts/qualification/runtime_agentd_dependency_boundary.py
+          python3 scripts/hepta_agentd_trust_boundary.py
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+  profile-matrix:
+    name: ${{ matrix.host }} / ${{ matrix.profile }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - host: linux-x86_64
+            runner: ubuntu-24.04
+            profile: compatibility
+            features: ''
+            run_tests: true
+            run_clippy: true
+          - host: linux-x86_64
+            runner: ubuntu-24.04
+            profile: shipping-read-only
+            features: shipping-product
+            run_tests: true
+            run_clippy: true
+          - host: linux-x86_64
+            runner: ubuntu-24.04
+            profile: shipping-read-write
+            features: shipping-read-write
+            run_tests: true
+            run_clippy: true
+          - host: linux-arm64
+            runner: ubuntu-24.04-arm
+            profile: compatibility
+            features: ''
+            run_tests: true
+            run_clippy: false
+          - host: linux-arm64
+            runner: ubuntu-24.04-arm
+            profile: shipping-read-only
+            features: shipping-product
+            run_tests: true
+            run_clippy: false
+          - host: macos-arm64
+            runner: macos-15
+            profile: compatibility
+            features: ''
+            run_tests: true
+            run_clippy: false
+          - host: macos-arm64
+            runner: macos-15
+            profile: shipping-read-only
+            features: shipping-product
+            run_tests: true
+            run_clippy: false
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install pinned toolchain
         shell: bash
         run: |
           set -euo pipefail
           toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
-          rustup toolchain install "$toolchain" --profile minimal --component rustfmt
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt --component clippy
       - name: Verify formatting
         working-directory: codex-rs
         run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd --package codex-hepta-agent-protocol -- --check
-
-  all-target-check:
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
-      - name: Install pinned toolchain
-        shell: bash
-        run: |
-          set -euo pipefail
-          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
-          rustup toolchain install "$toolchain" --profile minimal --component clippy
-      - name: Check all Agentd targets and strict lint
+      - name: Check exact profile
         working-directory: codex-rs
-        run: |
-          cargo check --locked -p codex-hepta-agentd --all-targets
-          cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
-
-  core-tests:
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
-      - name: Install pinned toolchain
         shell: bash
         run: |
           set -euo pipefail
-          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
-          rustup toolchain install "$toolchain" --profile minimal
-      - name: Run Agentd library and process crash tests
+          features=()
+          if [[ -n "${{ matrix.features }}" ]]; then
+            features=(--features "${{ matrix.features }}")
+          fi
+          cargo check --locked -p codex-hepta-agentd --all-targets "${features[@]}"
+      - name: Strict Clippy
+        if: matrix.run_clippy
         working-directory: codex-rs
-        run: |
-          cargo test --locked -p codex-hepta-agentd --lib
-          cargo test --locked -p codex-hepta-agentd --test runtime_codex_process_crash_matrix
-
-  status-projection:
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
-      - name: Verify dependency boundary and clean source
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/qualification/runtime_agentd_dependency_boundary.py
+          features=()
+          if [[ -n "${{ matrix.features }}" ]]; then
+            features=(--features "${{ matrix.features }}")
+          fi
+          cargo clippy --locked -p codex-hepta-agentd --all-targets "${features[@]}" -- -D warnings
+      - name: Run exact profile tests
+        if: matrix.run_tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          features=()
+          if [[ -n "${{ matrix.features }}" ]]; then
+            features=(--features "${{ matrix.features }}")
+          fi
+          cargo test --locked -p codex-hepta-agentd --lib "${features[@]}"
+          cargo test --locked -p codex-hepta-agentd --test runtime_codex_process_crash_matrix "${features[@]}"
+          cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e "${features[@]}"
+      - name: Require clean candidate
+        shell: bash
+        run: |
+          set -euo pipefail
           git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+  deterministic-merge:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Build deterministic merge candidate
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$BASE_SHA" "$HEAD_SHA"
+          git checkout --detach "$HEAD_SHA"
+          git -c user.name=runtime-agentd-qualification \
+              -c user.email=runtime-agentd-qualification@invalid \
+              merge --no-ff --no-commit "$BASE_SHA"
+          git write-tree > "$RUNNER_TEMP/deterministic-merge-tree"
+      - name: Install pinned toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt --component clippy
+      - name: Qualify shipping merge tree
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd --package codex-hepta-agent-protocol -- --check
+          cargo check --locked -p codex-hepta-agentd --all-targets --features shipping-product
+          cargo clippy --locked -p codex-hepta-agentd --all-targets --features shipping-product -- -D warnings
+          cargo test --locked -p codex-hepta-agentd --lib --features shipping-product
+          cargo test --locked -p codex-hepta-agentd --test runtime_codex_process_crash_matrix --features shipping-product
+          cargo test --locked -p codex-hepta-agentd --test runtime_codex_product_e2e --features shipping-product
+      - name: Require no qualification mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"

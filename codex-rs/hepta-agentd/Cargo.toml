@@ -15,7 +15,16 @@ doctest = false
 # mutation authority must be selected explicitly by the named product build;
 # merely depending on Agentd must never install a production writer.
 default = []
+# Named product profiles. Dependencies remain unconditional until the separate
+# product-adapter optionalization migration is complete; these features define
+# capability posture, not a false core-only build claim.
+app-server = []
+canonical-intelligence = []
+runtime-codex = []
+shipping-product = ["app-server", "canonical-intelligence", "runtime-codex"]
+shipping-read-write = ["shipping-product", "production-cognitive-write"]
 production-cognitive-write = []
+qualification-only = ["qualification-cognitive-write", "qualification-legacy-learning-write"]
 # Adds the qualification-only turn-lifecycle witness seam on top of the real
 # product mutation profile. It never substitutes for production authority.
 qualification-cognitive-write = ["production-cognitive-write"]
