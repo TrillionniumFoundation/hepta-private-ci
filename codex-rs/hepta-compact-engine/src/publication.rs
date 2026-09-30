@@ -280,3 +280,6 @@ impl From<AuthenticatedCompactionError> for CompactionPublicationError {
     }
 }
 
+#[cfg(test)]
+#[path = "publication_tests.rs"]
+mod tests;
