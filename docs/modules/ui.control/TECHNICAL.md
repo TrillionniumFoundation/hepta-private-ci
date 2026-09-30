@@ -177,6 +177,7 @@ Repository checks:
 - `npm run build --prefix apps/hepta-control-ui`
 - `npm run test:e2e --prefix apps/hepta-control-ui`
 - `node scripts/ui-control-artifacts.mjs --check`
+- `node scripts/ui-control-truth.mjs`
 - `python3 scripts/hepta-lane-b-path-guard.py self-test`
 - `python3 -m unittest scripts/test_hepta_lane_b_path_guard.py`
 - `python3 scripts/hepta-lane-b-path-guard.py verify`

@@ -5,6 +5,41 @@
     "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "bb3d97c4aa13562d30f6a05c417d83c87a6aaf2c",
+    "tree": "660a7ca05cf50ac038099ab6f8f97afd7ffae955"
+  },
+  "observedSourcePaths": [
+    "apps/hepta-control-ui"
+  ],
+  "sourceObjects": [
+    {
+      "path": "apps/hepta-control-ui",
+      "object": "0b5a1f3eeebd038d446bf9ca246f41dc088a17a5"
+    },
+    {
+      "path": "apps/hepta-control-ui/src/browser-app.js",
+      "object": "a7f3fba80bfe5b14920599349e1a96463b30cedc"
+    },
+    {
+      "path": "apps/hepta-control-ui/src/runtime-client.js",
+      "object": "4c152c78beb98838568494cbc0ee0737744a582e"
+    },
+    {
+      "path": "apps/hepta-control-ui/test/runtime-client.test.js",
+      "object": "0faa5200bc4a37516a2f19e4f515584fa888406f"
+    },
+    {
+      "path": "apps/hepta-control-ui/web/main.js",
+      "object": "fc759d6bcbb6da9d790dbb3e6cbbedd65bf5d9d2"
+    },
+    {
+      "path": "docs/modules/ui.control/TECHNICAL.md",
+      "object": "8a9696f06275513a9b6cdb5b2bf73d288f40295e"
+    }
+  ],
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.control",
   "sourceMaturity": "browser_console_candidate",
@@ -114,6 +149,7 @@
       "operation": "read_view",
       "nativeSymbol": "readView()",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
+      "sourceBlob": "4c152c78beb98838568494cbc0ee0737744a582e",
       "sourcePathExists": true
     },
     {
@@ -137,6 +173,7 @@
       "operation": "submit_request",
       "nativeSymbol": "async submitRequest(",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
+      "sourceBlob": "4c152c78beb98838568494cbc0ee0737744a582e",
       "sourcePathExists": true
     },
     {
@@ -160,6 +197,7 @@
       "operation": "request_stop",
       "nativeSymbol": "async requestStop(",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
+      "sourceBlob": "4c152c78beb98838568494cbc0ee0737744a582e",
       "sourcePathExists": true
     }
   ],
@@ -199,6 +237,16 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "repository_browser_shell_fixture_composed_deployment_unbound",
+  "productCallers": [
+    {
+      "sourcePath": "apps/hepta-control-ui/src/browser-app.js",
+      "nativeSymbol": "createControlConsole"
+    },
+    {
+      "sourcePath": "apps/hepta-control-ui/web/main.js",
+      "nativeSymbol": "createControlConsole"
+    }
+  ],
   "productionWriterState": "backend_contract_defined_writer_unobserved",
   "owner": "ui-platform",
   "deputy": "accessibility",

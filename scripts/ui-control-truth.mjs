@@ -111,6 +111,15 @@ for (const operation of implementationMap.operations ?? []) {
   }
 }
 
+try {
+  execFileSync("python3", ["scripts/ui-control-source-map.py"], {
+    cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], maxBuffer: 64 * 1024,
+  });
+} catch (error) {
+  requireTruth(false, "UI_CONTROL_SOURCE_IDENTITY",
+    String(error.stderr ?? error.message).trim().split("\n").at(-1));
+}
+
 await mkdir(evidenceDir, { recursive: true });
 const receipt = {
   schema: "hepta.ui-control.module-truth-observation.v1",
