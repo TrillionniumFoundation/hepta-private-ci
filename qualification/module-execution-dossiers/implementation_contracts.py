@@ -252,6 +252,11 @@ def verify_bundle(root: Path) -> dict[str, Any]:
             'specified_not_product_evidence',
             'source_implemented_product_composed_requires_candidate_evidence',
         }
+        if mid == 'kernel.operations':
+            # Durable source exists; product execution and deployment stay open.
+            allowed_implementation_states.add('durable_source_implemented_product_execution_pending')
+        elif mid == 'neuron.runtime':
+            allowed_implementation_states.add('source_owner_implemented_not_product_evidence')
         if row['implementationState'] not in allowed_implementation_states or row['nativeMappingRequired'] is not True or row['productTestsExecuted'] is not False or row['deploymentQualified'] is not False:
             raise Invalid(mid+': false source or deployment closure')
         if not row['declaredRoots'] or not row['workPackages']:
