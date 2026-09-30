@@ -6,8 +6,11 @@
   "sourceRoot": "codex-rs/hepta-objective",
   "productPath": {
     "validatedProfileType": "ValidatedAdmissionProfileV1",
+    "indexedAdmission": "admit_indexed_objective_v1",
     "authoritativeCompile": "compile_authoritative_objective_v1",
     "proofBearingResult": "ProofBearingObjectiveCompileV1",
+    "publicationBinding": "ObjectivePublicationBindingV1",
+    "boundPublicationResult": "BoundObjectivePublicationV1",
     "protocolProjection": "encode_proof_bearing_objective_function_v1",
     "publicationFacade": "compile_and_publish_validated_objective_run_v1",
     "runtimeOwner": "ObjectiveRuntimeHost",
@@ -21,6 +24,7 @@
     "legacyFinalUseAllowed": false
   },
   "compatibility": {
+    "rawCompatibilityFeature": "objective-compatibility-api",
     "legacyCompileFeature": "qualification-legacy-compile",
     "legacyCompileEntrypoint": "compile_prevalidated_legacy_objective_v1",
     "authenticatedRevalidationProjection": "encode_authenticated_objective_function_v1",
