@@ -153,7 +153,11 @@ test("opens, observes, reconciles indeterminate action, and closes", async () =>
   const effect = await host.navigateOrAct(operation());
   assert.equal(effect.status, "indeterminate");
   await assert.rejects(
-    host.closeProfile({ profileId: "profile.1", principalId: "principal.1", generation: 1 }),
+    host.closeProfile({
+      profileId: "profile.1",
+      principalId: "principal.1",
+      generation: 1,
+    }),
     /requiring reconciliation/,
   );
   const terminal = await host.reconcileOperation(operation());
@@ -171,7 +175,9 @@ test("opens, observes, reconciles indeterminate action, and closes", async () =>
 
 test("same operation is single-flight and never double-dispatches", async () => {
   let release;
-  const gate = new Promise((resolve) => { release = resolve; });
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
   const fakeDriver = driver({
     dispatchImpl: async () => {
       await gate;
@@ -228,12 +234,19 @@ test("reconciliation and cleanup remain available after grant and deadline expir
 test("typed action bytes are bound to final payload digest and destination", async () => {
   const { host, fakeDriver } = await preparedHost();
   await assert.rejects(
-    host.navigateOrAct(operation({ typedAction: navigationAction("https://example.com/other") })),
+    host.navigateOrAct(
+      operation({ typedAction: navigationAction("https://example.com/other") }),
+    ),
     /does not bind typedAction/,
   );
   const evil = navigationAction("https://other.example/path");
   await assert.rejects(
-    host.navigateOrAct(operation({ typedAction: evil, finalPayloadDigest: browserActionDigest(evil) })),
+    host.navigateOrAct(
+      operation({
+        typedAction: evil,
+        finalPayloadDigest: browserActionDigest(evil),
+      }),
+    ),
     /does not match destinationOrigin/,
   );
   assert.equal(fakeDriver.dispatchCalls, 0);
@@ -242,7 +255,10 @@ test("typed action bytes are bound to final payload digest and destination", asy
 test("final-use authority denial cannot reach the driver", async () => {
   const denied = authority({ authorized: false });
   const { host, fakeDriver } = await preparedHost({ authority: denied });
-  await assert.rejects(host.navigateOrAct(operation()), /final-use authority was denied/);
+  await assert.rejects(
+    host.navigateOrAct(operation()),
+    /final-use authority was denied/,
+  );
   assert.equal(denied.calls, 1);
   assert.equal(fakeDriver.dispatchCalls, 0);
 });
@@ -287,14 +303,20 @@ test("durable intent and local dispatch occur inside the final-use fence", async
       return { terminalObserved: false };
     },
   });
-  const { host } = await preparedHost({ driver: fakeDriver, authority: finalAuthority, journal });
+  const { host } = await preparedHost({
+    driver: fakeDriver,
+    authority: finalAuthority,
+    journal,
+  });
   await host.navigateOrAct(operation());
   assert.equal(insideFence, false);
 });
 
 test("profile serialization prevents close racing an in-flight effect", async () => {
   let release;
-  const gate = new Promise((resolve) => { release = resolve; });
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
   const fakeDriver = driver({
     dispatchImpl: async () => {
       await gate;
@@ -321,10 +343,19 @@ test("driver timeout aborts dispatch and preserves an indeterminate operation", 
   const fakeDriver = driver({
     dispatchImpl: async (_semantics, { signal }) =>
       new Promise(() => {
-        signal.addEventListener("abort", () => { aborted = true; }, { once: true });
+        signal.addEventListener(
+          "abort",
+          () => {
+            aborted = true;
+          },
+          { once: true },
+        );
       }),
   });
-  const { host } = await preparedHost({ driver: fakeDriver, driverCallTimeoutMs: 10 });
+  const { host } = await preparedHost({
+    driver: fakeDriver,
+    driverCallTimeoutMs: 10,
+  });
   const first = await host.navigateOrAct(operation());
   assert.equal(first.status, "indeterminate");
   assert.equal(first.observationReason, "driver_timeout");
@@ -335,14 +366,18 @@ test("driver timeout aborts dispatch and preserves an indeterminate operation", 
 });
 
 test("replay rejects immutable semantic substitution", async () => {
-  const { host } = await preparedHost({ driver: driver({ terminalOnReconcile: false }) });
+  const { host } = await preparedHost({
+    driver: driver({ terminalOnReconcile: false }),
+  });
   await host.navigateOrAct(operation());
   const changed = navigationAction("https://example.com/changed");
   await assert.rejects(
-    host.navigateOrAct(operation({
-      typedAction: changed,
-      finalPayloadDigest: browserActionDigest(changed),
-    })),
+    host.navigateOrAct(
+      operation({
+        typedAction: changed,
+        finalPayloadDigest: browserActionDigest(changed),
+      }),
+    ),
     /changed semantics|does not bind/,
   );
 });
@@ -371,7 +406,10 @@ test("disallowed observed origin is quarantined and cannot authorize an action",
   });
   assert.equal(page.originAllowed, false);
   assert.equal(page.quarantined, true);
-  await assert.rejects(host.navigateOrAct(operation()), /stale page generation/);
+  await assert.rejects(
+    host.navigateOrAct(operation()),
+    /stale page generation/,
+  );
   assert.equal(fakeDriver.dispatchCalls, 0);
 });
 
@@ -395,7 +433,8 @@ test("persisted indeterminate operation reconciles after host process loss witho
     clock: () => 20_000,
     driverCallTimeoutMs: 50,
   });
-  const recovered = await recoveredHost.reconcilePersistedOperation(operation());
+  const recovered =
+    await recoveredHost.reconcilePersistedOperation(operation());
   assert.equal(recovered.status, "succeeded");
   assert.equal(recovered.terminalObserved, true);
   assert.equal(secondDriver.dispatchCalls, 0);
@@ -411,11 +450,15 @@ test("terminal operation retention uses durable tombstones instead of exhausting
   });
   const { host } = await preparedHost({ driver: fakeDriver });
   for (let index = 0; index < 300; index += 1) {
-    const receipt = await host.navigateOrAct(operation({ operationId: `operation.${index}` }));
+    const receipt = await host.navigateOrAct(
+      operation({ operationId: `operation.${index}` }),
+    );
     assert.equal(receipt.terminalObserved, true);
   }
   assert.equal(fakeDriver.dispatchCalls, 300);
-  const replay = await host.navigateOrAct(operation({ operationId: "operation.0" }));
+  const replay = await host.navigateOrAct(
+    operation({ operationId: "operation.0" }),
+  );
   assert.equal(replay.terminalObserved, true);
   assert.equal(fakeDriver.dispatchCalls, 300);
 });

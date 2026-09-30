@@ -23,7 +23,11 @@ function stableId(value, name) {
 }
 
 function digest(value, name) {
-  if (typeof value !== "string" || !DIGEST.test(value) || value === ZERO_DIGEST) {
+  if (
+    typeof value !== "string" ||
+    !DIGEST.test(value) ||
+    value === ZERO_DIGEST
+  ) {
     throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
   }
   return value;
@@ -76,9 +80,16 @@ export class NativeShellRuntime {
     record(manifest, "manifest");
     const endpointId = stableId(manifest.endpointId, "endpointId");
     const manifestDigest = digest(manifest.manifestDigest, "manifestDigest");
-    const protocolVersion = positive(manifest.protocolVersion, "protocolVersion");
+    const protocolVersion = positive(
+      manifest.protocolVersion,
+      "protocolVersion",
+    );
     const observed = record(
-      await this.#backend.connect({ endpointId, manifestDigest, protocolVersion }),
+      await this.#backend.connect({
+        endpointId,
+        manifestDigest,
+        protocolVersion,
+      }),
       "backend connection",
     );
     if (observed.authenticated !== true) {
@@ -114,7 +125,10 @@ export class NativeShellRuntime {
       if (generation < this.#view.generation) {
         throw new TypeError("view generation regressed");
       }
-      if (generation === this.#view.generation && revision <= this.#view.revision) {
+      if (
+        generation === this.#view.generation &&
+        revision <= this.#view.revision
+      ) {
         throw new TypeError("view revision did not advance");
       }
     }
@@ -140,17 +154,27 @@ export class NativeShellRuntime {
       throw new TypeError("platform action is not registered");
     }
     if (input.displayedRevision !== this.#view.revision) {
-      throw new TypeError("platform request was confirmed against a stale view");
+      throw new TypeError(
+        "platform request was confirmed against a stale view",
+      );
     }
-    const finalPayloadDigest = digest(input.finalPayloadDigest, "finalPayloadDigest");
-    const grantPayloadDigest = digest(input.grantPayloadDigest, "grantPayloadDigest");
+    const finalPayloadDigest = digest(
+      input.finalPayloadDigest,
+      "finalPayloadDigest",
+    );
+    const grantPayloadDigest = digest(
+      input.grantPayloadDigest,
+      "grantPayloadDigest",
+    );
     if (finalPayloadDigest !== grantPayloadDigest) {
       throw new TypeError("grant does not bind final platform payload");
     }
     const prior = this.#operations.get(operationId);
     if (prior) {
       if (prior.finalPayloadDigest !== finalPayloadDigest) {
-        throw new TypeError("operation identity was reused with changed payload");
+        throw new TypeError(
+          "operation identity was reused with changed payload",
+        );
       }
       return prior.receipt;
     }
@@ -213,7 +237,10 @@ export class NativeShellRuntime {
     this.#requireSession();
     record(input, "input");
     const packageDigest = digest(input.packageDigest, "packageDigest");
-    const predecessorDigest = digest(input.predecessorDigest, "predecessorDigest");
+    const predecessorDigest = digest(
+      input.predecessorDigest,
+      "predecessorDigest",
+    );
     const evidenceDigest = digest(input.evidenceDigest, "evidenceDigest");
     const selectedBy = stableId(input.selectedBy, "selectedBy");
     if (selectedBy === input.generatorPrincipal) {
