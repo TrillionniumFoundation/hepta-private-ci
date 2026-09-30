@@ -143,7 +143,14 @@ fn decode_repair_row(
             "frontier repair update timestamp",
         )?,
     };
-    verify_decoded_projection(row, &operation, &current_json, &target_json, &authorization_json, &authority_json)?;
+    verify_decoded_projection(
+        row,
+        &operation,
+        &current_json,
+        &target_json,
+        &authorization_json,
+        &authority_json,
+    )?;
     Ok(operation)
 }
 
@@ -201,10 +208,10 @@ fn verify_decoded_projection(
         || parse_digest(row, "authority_sha256")? != canonical.authority_sha256
         || parse_digest(row, "current_frontier_sha256")?
             != evidence_recovery_frontier_v2_sha256(&operation.current_frontier)
-                .map_err(EvidenceError::Corrupt)?
+                .map_err(|error| EvidenceError::Corrupt(error.to_string()))?
         || parse_digest(row, "target_frontier_sha256")?
             != evidence_recovery_frontier_v2_sha256(&operation.target_frontier)
-                .map_err(EvidenceError::Corrupt)?
+                .map_err(|error| EvidenceError::Corrupt(error.to_string()))?
         || projected_operator != operation.operator_principal_id
         || projected_reason != operation.reason_code
         || projected_authority_key_id != operation.authority_key_id
@@ -238,7 +245,7 @@ fn verify_decoded_projection(
         &operation.target_frontier,
         operation.created_at_unix_ms,
     )
-    .map_err(EvidenceError::Corrupt)?;
+    .map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
     if classify_frontier_merge(&operation.current_frontier, &operation.target_frontier)
         != FrontierMergeDecision::RepairRequired
     {

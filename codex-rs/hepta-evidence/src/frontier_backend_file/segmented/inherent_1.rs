@@ -181,12 +181,10 @@ impl SegmentedFileEvidenceFrontierBackend {
                 }
             }
         }
-        let latest_segment_metadata = archived
-            .as_ref()
-            .map(|history| history.latest_metadata.clone());
-        let archived_latest_record = archived
-            .as_ref()
-            .map(|history| history.latest_record.clone());
+        let (latest_segment_metadata, archived_latest_record) = match archived {
+            Some(history) => (Some(history.latest_metadata), Some(history.latest_record)),
+            None => (None, None),
+        };
         let cursor = archived_latest_record
             .as_ref()
             .map(ChainCursor::after_record)

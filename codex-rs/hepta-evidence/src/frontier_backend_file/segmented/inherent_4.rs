@@ -96,13 +96,14 @@ impl SegmentedFileEvidenceFrontierBackend {
             let records =
                 self.read_segment_records_with_cursor(store_id, metadata, cursor.clone())?;
             let last = records
+                .into_iter()
                 .last()
                 .ok_or_else(|| corrupt("verified frontier segment is empty"))?;
             archived_bytes = archived_bytes
                 .checked_add(metadata.segment_bytes)
                 .ok_or_else(|| corrupt("archived frontier byte count overflow"))?;
-            cursor = ChainCursor::after_record(last)?;
-            latest_record = Some(last.clone());
+            cursor = ChainCursor::after_record(&last)?;
+            latest_record = Some(last);
         }
         let latest_record = latest_record
             .ok_or_else(|| corrupt("verified frontier archive has no records"))?;

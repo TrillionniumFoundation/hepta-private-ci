@@ -24,8 +24,7 @@ impl HeptaEvidenceStore {
             current,
             target,
             now_unix_ms,
-        )
-        .map_err(EvidenceError::InvalidRecord)?;
+        )?;
 
         let canonical = CanonicalRepair::new(authorization, authority, current, target)?;
         let repair_id = repair_id(&canonical.authorization_sha256);
