@@ -1,0 +1,41 @@
+name: temporary memory federation product semantics source export
+
+on:
+  push:
+    branches:
+      - tmp/memory-federation-product-semantics-export-20260930
+
+permissions:
+  contents: read
+
+concurrency:
+  group: temporary-memory-federation-product-semantics-source-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Archive parent tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(git rev-parse HEAD^)"
+          git archive --format=tar.gz --output="$RUNNER_TEMP/hepta-private-ci-${SOURCE_SHA}.tar.gz" "$SOURCE_SHA"
+          printf '%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/source-sha.txt"
+      - name: Upload exact parent source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-product-semantics-source-export-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-private-ci-*.tar.gz
+            ${{ runner.temp }}/source-sha.txt
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
