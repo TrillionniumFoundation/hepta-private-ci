@@ -167,14 +167,15 @@ fn omitted_expected_owner_is_typed_as_unavailable() {
     .expect("policy");
     let validated = ValidatedCandidateSetV1::new(input, &policy).expect("validated");
 
+    let expected = [IncompleteRetrievalSourceV1 {
+        generator: RetrievalGeneratorOwnerV1::KnowledgeGraphContradiction,
+        completeness: RetrievalSourceCompletenessV1::Unavailable,
+        action: IncompleteSourceActionV1::FailClosed,
+    }];
     assert!(matches!(
         validated.completeness(),
         RetrievalCompletenessDecisionV1::FailClosed { incomplete_sources }
-            if incomplete_sources == &vec![IncompleteRetrievalSourceV1 {
-                generator: RetrievalGeneratorOwnerV1::KnowledgeGraphContradiction,
-                completeness: RetrievalSourceCompletenessV1::Unavailable,
-                action: IncompleteSourceActionV1::FailClosed,
-            }]
+            if incomplete_sources.as_slice() == expected
     ));
 }
 
