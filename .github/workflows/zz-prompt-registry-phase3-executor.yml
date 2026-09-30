@@ -1,0 +1,133 @@
+name: Prompt registry phase 3 durable pipeline intent
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    branches:
+      - ops/prompt-registry-phase3-executor-20260930
+    paths:
+      - ops/trigger-prompt-registry-phase3-executor
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: prompt-registry-phase3-durable-intent
+  cancel-in-progress: false
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
+      PHASE1_ANCESTOR: 8825996f927ca1cb3e1271ffcce0261ce25b398e
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout reviewed authoring scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: authoring
+          persist-credentials: false
+
+      - name: Checkout delivery candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          path: target
+          fetch-depth: 0
+          token: ${{ github.token }}
+
+      - name: Bind phase 2 closed-world predecessor
+        id: predecessor
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          tested=$(git rev-parse HEAD)
+          git merge-base --is-ancestor "$PHASE1_ANCESTOR" "$tested"
+          grep -q 'pub(crate) fn register_factor(' codex-rs/hepta-prompt-registry/src/durable.rs
+          grep -q 'pub(crate) struct PromptPipelineHost' codex-rs/hepta-agentd/src/prompt_runtime.rs
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('docs/modules/prompt.registry/IMPLEMENTATION_MAP.json').read_text())
+          assert data['closedWorldPublicFunctions'] is True
+          assert data['claimBoundary']['nativeSourceMappingComplete'] is True
+          PY
+          echo "sha=$tested" >> "$GITHUB_OUTPUT"
+
+      - name: Apply reviewed durable intent and restart reconciliation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp authoring/.github/scripts/prompt_registry_phase3_intent_20260930.py "$RUNNER_TEMP/phase3-intent.py"
+          cp authoring/.github/scripts/prompt_registry_phase3_fixups_20260930.py "$RUNNER_TEMP/phase3-fixups.py"
+          cd target
+          python3 "$RUNNER_TEMP/phase3-intent.py"
+          python3 "$RUNNER_TEMP/phase3-fixups.py"
+          test -f codex-rs/hepta-agentd/src/prompt_pipeline_intent_store.rs
+          git diff --check
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Prepare native product dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          CODEX_REPO_ROOT="$GITHUB_WORKSPACE/target" PYTHONPATH="$GITHUB_WORKSPACE/target/scripts" \
+            python3 target/scripts/hepta_ci_v8.py
+
+      - name: Format and verify Agentd pipeline source
+        working-directory: target/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-agentd
+          cargo fmt -p codex-hepta-agentd -- --check
+          cargo check --locked -p codex-hepta-agentd --all-targets
+          cargo test --locked -p codex-hepta-agentd --lib prompt_ -- --nocapture --test-threads=1
+          cargo clippy --locked -p codex-hepta-agentd --all-targets --no-deps -- -D warnings
+
+      - name: Commit conventional source and exact implementation truth
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'OpenAI Codex'
+          git config user.email 'codex@openai.com'
+          changed=$(git diff --name-only)
+          test -n "$changed"
+          unexpected=$(printf '%s\n' "$changed" | grep -Ev '^codex-rs/hepta-agentd/src/(lib|prompt_pipeline_intent_store|prompt_runtime|prompt_runtime_tests)\.rs$' || true)
+          test -z "$unexpected"
+          git add codex-rs/hepta-agentd/src/
+          git commit -m 'feat(prompt.registry): add durable pipeline intent reconciliation'
+
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+                  docs/modules/prompt.registry/QUALIFICATION_STATUS.md
+          if test -n "$(git diff --cached --name-only)"; then
+            git commit -m 'docs(prompt.registry): bind durable intent source truth'
+          fi
+          python3 scripts/hepta-prompt-registry-map.py --check
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Publish only over the exact captured predecessor
+        working-directory: target
+        shell: bash
+        env:
+          EXPECTED: ${{ steps.predecessor.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$EXPECTED"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
