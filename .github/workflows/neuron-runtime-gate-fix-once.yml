@@ -1,0 +1,154 @@
+name: Neuron runtime exact gate repair (one shot)
+
+on:
+  push:
+    branches:
+      - codex/neuron-runtime-five-phase-closure-v2
+    paths:
+      - .github/workflows/neuron-runtime-gate-fix-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: neuron-runtime-exact-gate-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: codex/neuron-runtime-five-phase-closure-v2
+          fetch-depth: 0
+
+      - name: Apply source repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              value = file.read_text()
+              count = value.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one replacement, found {count}")
+              file.write_text(value.replace(old, new))
+
+          replace(
+              "codex-rs/hepta-infer-core/Cargo.toml",
+              "[dependencies]\ncodex-hepta-types = { path = \"../hepta-types\" }\nserde = { workspace = true, features = [\"derive\"] }\nserde_json = { workspace = true }\n",
+              "[dependencies]\ncodex-hepta-types = { path = \"../hepta-types\" }\nfs2 = \"0.4.3\"\nserde = { workspace = true, features = [\"derive\"] }\nserde_json = { workspace = true }\n",
+          )
+
+          replace(
+              "codex-rs/hepta-infer-core/src/durable_control.rs",
+              "use std::path::Path;\nuse std::path::PathBuf;\n",
+              "use std::path::Path;\nuse std::path::PathBuf;\n\nuse fs2::FileExt;\n",
+          )
+          replace(
+              "codex-rs/hepta-infer-core/src/durable_control.rs",
+              "        file.try_lock().map_err(|_| Error::WriterUnavailable)?;\n",
+              "        file.try_lock_exclusive()\n            .map_err(|_| Error::WriterUnavailable)?;\n",
+          )
+
+          replace(
+              "codex-rs/hepta-infer-core/src/neuron_feature_store.rs",
+              "use std::fs::OpenOptions;\nuse std::fs::TryLockError;\n",
+              "use std::fs::OpenOptions;\n",
+          )
+          replace(
+              "codex-rs/hepta-infer-core/src/neuron_feature_store.rs",
+              "use std::str::FromStr;\n\nuse codex_hepta_types::AuthorityPosture;\n",
+              "use std::str::FromStr;\n\nuse fs2::FileExt;\n\nuse codex_hepta_types::AuthorityPosture;\n",
+          )
+          replace(
+              "codex-rs/hepta-infer-core/src/neuron_feature_store.rs",
+              "        match file.try_lock() {\n            Ok(()) => Ok(Self(file)),\n            Err(TryLockError::WouldBlock) => Err(NeuronFeatureStoreError::Busy),\n            Err(TryLockError::Error(error)) => Err(error.into()),\n        }\n",
+              "        match file.try_lock_exclusive() {\n            Ok(()) => Ok(Self(file)),\n            Err(error) if error.kind() == io::ErrorKind::WouldBlock => {\n                Err(NeuronFeatureStoreError::Busy)\n            }\n            Err(error) => Err(error.into()),\n        }\n",
+          )
+          replace(
+              "codex-rs/hepta-infer-core/src/neuron_feature_store.rs",
+              "        let _ = self.0.unlock();\n",
+              "        let _ = FileExt::unlock(&self.0);\n",
+          )
+
+          replace(
+              "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+              '''        ServerNotification::AgentMessageDelta(delta)
+            if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
+        {
+            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
+                return Err("output byte limit exceeded".to_string());
+            }
+            output.output.push_str(&delta.delta);
+        }
+        ServerNotification::ThreadTokenUsageUpdated(usage)
+''',
+              '''        ServerNotification::AgentMessageDelta(delta)
+            if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
+        {
+            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
+                return Err("output byte limit exceeded".to_string());
+            }
+            output.output.push_str(&delta.delta);
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id
+                && completed.turn_id == output.turn_id =>
+        {
+            // Some providers publish only the authoritative completed assistant
+            // item, without preceding text deltas. Preserve that final payload
+            // as an observability field; terminal success remains bound to the
+            // separately validated turn/completed receipt and current owner.
+            if let ThreadItem::AgentMessage { text, .. } = &completed.item
+                && output.output.is_empty()
+            {
+                if text.len() > MAX_OUTPUT_BYTES {
+                    return Err("output byte limit exceeded".to_string());
+                }
+                output.output.push_str(text);
+            }
+        }
+        ServerNotification::ThreadTokenUsageUpdated(usage)
+''',
+          )
+
+          # The final tree must contain only ordinary source. This workflow is a
+          # one-shot transport for the exact patch and deletes itself before the
+          # repair commit is created.
+          Path(".github/workflows/neuron-runtime-gate-fix-once.yml").unlink()
+          PY
+
+      - name: Refresh the locked graph and format
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo check -p codex-hepta-infer-core
+          cargo fmt \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host
+          cd ..
+          git diff --check
+
+      - name: Commit exact repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-qualification
+          git config user.email qualification@invalid
+          git add \
+            .github/workflows/neuron-runtime-gate-fix-once.yml \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-infer-core/Cargo.toml \
+            codex-rs/hepta-infer-core/src/durable_control.rs \
+            codex-rs/hepta-infer-core/src/neuron_feature_store.rs \
+            codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+          git commit -m "fix(neuron): restore MSRV locking and final output observation"
+          git push origin HEAD:codex/neuron-runtime-five-phase-closure-v2
