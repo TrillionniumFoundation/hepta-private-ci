@@ -26,9 +26,30 @@ MUTANTS = (
     {
         "name": "omit-runtime-profile-from-training-profile-digest",
         "path": "codex-rs/hepta-bellman-operator/src/profiles.rs",
-        "old": "        bytes.extend_from_slice(runtime_profile_digest.as_array());\n",
-        "new": "        // MUTANT: runtime profile omitted from canonical identity.\n",
+        "old": (
+            "        bytes.extend_from_slice(&maximum_absolute_error.raw().to_be_bytes());\n"
+            "        bytes.extend_from_slice(runtime_profile_digest.as_array());\n"
+        ),
+        "new": (
+            "        bytes.extend_from_slice(&maximum_absolute_error.raw().to_be_bytes());\n"
+            "        // MUTANT: runtime profile omitted from training identity.\n"
+        ),
         "test": "mutation_profile_digest_covers_runtime_and_error_budget",
+    },
+    {
+        "name": "omit-world-model-sensor-from-profile-digest",
+        "path": "codex-rs/hepta-bellman-operator/src/profiles.rs",
+        "old": (
+            "        let mut bytes = b\"hepta.learning-operator.world-model-profile.v1\\0\".to_vec();\n"
+            "        bytes.extend_from_slice(objective_digest.as_array());\n"
+            "        bytes.extend_from_slice(sensor_core_digest.as_array());\n"
+        ),
+        "new": (
+            "        let mut bytes = b\"hepta.learning-operator.world-model-profile.v1\\0\".to_vec();\n"
+            "        bytes.extend_from_slice(objective_digest.as_array());\n"
+            "        // MUTANT: sensor identity omitted from world-model profile.\n"
+        ),
+        "test": "world_model_profile_digest_binds_sensor_core_identity",
     },
     {
         "name": "disable-cooperative-cancellation",
@@ -38,6 +59,32 @@ MUTANTS = (
             ("        if self.control.is_cancelled() {\n", "        if false {\n"),
         ),
         "test": "mutation_cancelled_work_is_rejected_before_fit",
+    },
+    {
+        "name": "relax-exclusive-final-use-deadline",
+        "path": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
+        "replacements": (
+            (
+                "    if issued_at_unix_micros >= absolute_deadline_unix_micros\n",
+                "    if issued_at_unix_micros > absolute_deadline_unix_micros\n",
+            ),
+            (
+                "        || use_observed_at_unix_micros >= absolute_deadline_unix_micros\n",
+                "        || use_observed_at_unix_micros > absolute_deadline_unix_micros\n",
+            ),
+            (
+                "        || publish_observed_at_unix_micros >= absolute_deadline_unix_micros\n",
+                "        || publish_observed_at_unix_micros > absolute_deadline_unix_micros\n",
+            ),
+        ),
+        "test": "capability_issue_at_deadline_fails_closed",
+    },
+    {
+        "name": "disable-final-use-issuance-clock-fence",
+        "path": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
+        "old": "    if use_observed_at_unix_micros < issued_at_unix_micros\n",
+        "new": "    if false\n",
+        "test": "use_before_capability_issue_is_clock_regression",
     },
 )
 

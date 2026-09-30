@@ -95,6 +95,13 @@ def verify_observation_freshness(implementation: dict[str, object]) -> None:
     )
 
 
+def require_opaque_non_clone(source: str, capability: str) -> None:
+    match = re.search(rf"pub struct {capability}\b", source)
+    require(match is not None, f"opaque capability absent: {capability}")
+    prefix = source[max(0, match.start() - 160) : match.start()]
+    require("derive(Clone" not in prefix, f"{capability} must not be clonable")
+
+
 def verify_source() -> None:
     manifest = read("codex-rs/hepta-bellman-operator/Cargo.toml")
     require('path = "src/authoritative_lib.rs"' in manifest, "authoritative crate root")
@@ -113,6 +120,7 @@ def verify_source() -> None:
             "mod tabular_v2;",
             "mod world_model_v2;",
             "mod final_use;",
+            "mod final_use_hardening;",
             "FinalUseTabularCapabilityV1",
             "OpaquePinnedTabularArtifactV1",
             "OpaquePinnedWorldModelV1",
@@ -123,10 +131,12 @@ def verify_source() -> None:
         [
             "pub struct TrainingProfileV1",
             "pub struct WorldModelProfileV1",
+            "sensor_core_digest",
             "runtime_profile_digest",
             "profile_digest",
             "maximum_absolute_error",
             "maximum_ood_false_acceptance",
+            "world_model_profile_digest_binds_sensor_core_identity",
         ],
     )
     require_tokens(
@@ -138,6 +148,7 @@ def verify_source() -> None:
             "max_elapsed_micros",
         ],
     )
+
     final_use = read("codex-rs/hepta-bellman-operator/src/final_use.rs")
     for token in (
         "issue_tabular_final_use_capability_v1",
@@ -150,15 +161,33 @@ def verify_source() -> None:
     ):
         require(token in final_use, f"final-use source missing {token!r}")
     for capability in (
-        "FinalUseTabularCapabilityV1",
-        "FinalUseWorldModelCapabilityV1",
         "OpaquePinnedTabularArtifactV1",
         "OpaquePinnedWorldModelV1",
     ):
-        match = re.search(rf"pub struct {capability}\b", final_use)
-        require(match is not None, f"opaque capability absent: {capability}")
-        prefix = final_use[max(0, match.start() - 120) : match.start()]
-        require("derive(Clone" not in prefix, f"{capability} must not be clonable")
+        require_opaque_non_clone(final_use, capability)
+
+    final_use_hardening = read(
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs"
+    )
+    for token in (
+        "issued_at_unix_micros",
+        "absolute_deadline_unix_micros",
+        "use_observed_at_unix_micros < issued_at_unix_micros",
+        "publish_observed_at_unix_micros < use_observed_at_unix_micros",
+        "issued_at_unix_micros >= absolute_deadline_unix_micros",
+        "use_observed_at_unix_micros >= absolute_deadline_unix_micros",
+        "publish_observed_at_unix_micros >= absolute_deadline_unix_micros",
+        "capability_issue_at_deadline_fails_closed",
+        "use_at_deadline_fails_closed",
+        "use_before_capability_issue_is_clock_regression",
+        "publish_before_use_is_clock_regression",
+    ):
+        require(token in final_use_hardening, f"final-use hardening missing {token!r}")
+    for capability in (
+        "FinalUseTabularCapabilityV1",
+        "FinalUseWorldModelCapabilityV1",
+    ):
+        require_opaque_non_clone(final_use_hardening, capability)
 
     require_tokens(
         "codex-rs/hepta-bellman-operator/src/sensor_core_v2.rs",
@@ -264,6 +293,11 @@ def verify_source() -> None:
     require(required_operations.issubset(operations), "implementation map operation inventory")
     boundary = implementation.get("claimBoundary", {})
     require(boundary.get("singleUseFinalUseCapabilities") is True, "final-use claim boundary")
+    require(boundary.get("exclusiveFinalUseDeadline") is True, "exclusive deadline claim boundary")
+    require(
+        boundary.get("worldModelSensorIdentityBound") is True,
+        "world-model sensor identity claim boundary",
+    )
     require(boundary.get("defaultShadowOnlyCoordinator") is True, "shadow-only claim boundary")
     require(boundary.get("activation") is False, "repository qualification cannot activate")
     require(boundary.get("release") is False, "repository qualification cannot release")
@@ -295,6 +329,14 @@ def verify_source() -> None:
         "time and memory qualification matrix",
     ):
         require(token in authoritative, f"authoritative qualification missing {token!r}")
+
+    mutation = read("scripts/hepta-learning-operator-mutation.py")
+    for token in (
+        "omit-world-model-sensor-from-profile-digest",
+        "relax-exclusive-final-use-deadline",
+        "disable-final-use-issuance-clock-fence",
+    ):
+        require(token in mutation, f"mutation qualification missing {token!r}")
 
     blocking = read(".github/workflows/blocking-ci.yml")
     for token in (
