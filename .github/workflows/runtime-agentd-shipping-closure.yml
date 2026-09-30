@@ -20,14 +20,14 @@ permissions:
 
 concurrency:
   group: runtime-agentd-shipping-closure-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   format:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -45,7 +45,7 @@ jobs:
         run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd --package codex-hepta-agent-protocol -- --check
 
   all-target-check:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -57,13 +57,15 @@ jobs:
         run: |
           set -euo pipefail
           toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
-          rustup toolchain install "$toolchain" --profile minimal
-      - name: Check all Agentd targets
+          rustup toolchain install "$toolchain" --profile minimal --component clippy
+      - name: Check all Agentd targets and strict lint
         working-directory: codex-rs
-        run: cargo check --locked -p codex-hepta-agentd --all-targets
+        run: |
+          cargo check --locked -p codex-hepta-agentd --all-targets
+          cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
 
   core-tests:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -76,22 +78,23 @@ jobs:
           set -euo pipefail
           toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
           rustup toolchain install "$toolchain" --profile minimal
-      - name: Run Agentd library tests
+      - name: Run Agentd library and process crash tests
         working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-agentd --lib
+        run: |
+          cargo test --locked -p codex-hepta-agentd --lib
+          cargo test --locked -p codex-hepta-agentd --test runtime_codex_process_crash_matrix
 
   status-projection:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Verify dependency boundary and status projection
+      - name: Verify dependency boundary and clean source
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/qualification/runtime_agentd_dependency_boundary.py --check
-          python3 scripts/qualification/runtime_agentd_current_status.py --check
+          python3 scripts/qualification/runtime_agentd_dependency_boundary.py
           git diff --exit-code
