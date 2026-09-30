@@ -1,9 +1,6 @@
 name: ui.native immutable exact-source qualification
 
 on:
-  push:
-    branches:
-      - work/ui-native-exact-convergence-20260930
   pull_request:
     branches:
       - work/ui-native-qualified-integration-20260928
@@ -517,13 +514,13 @@ jobs:
               "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
               "platformAggregateSha256": digest(platform_path),
               "storageQualificationSha256": digest(storage_path),
-              "repositoryControlledQualificationPassed": true,
-              "physicalHostAcceptance": false,
-              "accessibilityAcceptance": false,
-              "productionSigningObserved": false,
-              "productionQualified": false,
-              "deploymentQualified": false,
-              "releaseAuthorized": false
+              "repositoryControlledQualificationPassed": True,
+              "physicalHostAcceptance": False,
+              "accessibilityAcceptance": False,
+              "productionSigningObserved": False,
+              "productionQualified": False,
+              "deploymentQualified": False,
+              "releaseAuthorized": False,
           }
           output = Path("native-aggregate/qualification-result.json")
           output.parent.mkdir(parents=True, exist_ok=True)
