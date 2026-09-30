@@ -120,9 +120,8 @@ fn world_model_identity_binds_exact_rows_and_is_permutation_invariant() {
         sample("sample-1", "state-b", 10),
         sample("sample-2", "state-c", 20),
     ];
-    let fit = |rows| {
-        fit_transition_model(id("world-model"), digest("dataset"), rows).expect("fit rows")
-    };
+    let fit =
+        |rows| fit_transition_model(id("world-model"), digest("dataset"), rows).expect("fit rows");
     let original = fit(rows.clone());
     let mut permuted = rows.clone();
     permuted.reverse();
@@ -134,7 +133,10 @@ fn world_model_identity_binds_exact_rows_and_is_permutation_invariant() {
     reassigned[0].outcome = rows[1].outcome;
     reassigned[1].outcome = rows[0].outcome;
     let changed = fit(reassigned);
-    assert_eq!(original.estimates[0].branches, changed.estimates[0].branches);
+    assert_eq!(
+        original.estimates[0].branches,
+        changed.estimates[0].branches
+    );
     assert_eq!(
         original.estimates[0].mean_outcome,
         changed.estimates[0].mean_outcome

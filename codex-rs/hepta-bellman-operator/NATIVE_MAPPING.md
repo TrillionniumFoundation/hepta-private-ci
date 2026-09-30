@@ -16,6 +16,23 @@ The complete regularity gate uses `OperatorRegularityAssessmentV1`; the legacy
 `RegularityProfile` contains only target-builder diagnostics and must not be
 interpreted as the Hölder/operator qualification profile.
 
+The native structs are owner-local candidate profiles. Sharing a name with a
+registered V1 protocol does not establish canonical-JSON wire parity: the native
+applicability certificate commits profile digests, and the sensor manifest
+contains selected points, while the canonical schemas include additional
+profile, horizon, construction and lifecycle fields. No canonical wire adapter
+or wire round-trip proof is implemented here. `HEPTTB01` is a separate native
+tabular payload, not `BellmanOperatorArtifactV1` canonical JSON.
+
+The sensor manifest, Bellman-reference receipt, legacy target-artifact and
+tabular training commitments now use V2 digest domains. They bind the full
+canonical candidate design/input cells or minimum-sample training threshold;
+target arithmetic uses signed nearest/ties-to-even. Public V1 struct names and
+the `train` alias remain. New fits/rebuilt references have new exact identities
+requiring independent admission; do not reinterpret a V1 commitment as V2.
+The native payload magic remains `HEPTTB01`, and existing correctly pinned
+tabular bytes remain readable under current selection and revocation checks.
+
 ## Design operation to Rust symbol
 
 | Design operation | Native symbol | Source | Status |
@@ -28,11 +45,15 @@ interpreted as the Hölder/operator qualification profile.
 | fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented; evidence uniqueness canonical |
 | bind frozen dataset to tabular training | `verify_tabular_operator_plan_v2` / `fit_tabular_operator_verified_v2` | `src/dataset_bound.rs` | implemented |
 | predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
+| predict a validated public tabular artifact by index | `predict_tabular_operator_indexed_v2` | `src/learned_strict.rs` | implemented; validates before lookup |
+| encode and load an independently pinned tabular payload | `encode_tabular_payload_v1` / `LoadedTabularOperatorV1::from_pinned_payload` | `src/loaded.rs` | implemented; native payload only |
 | validate rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | compatibility implemented |
 | authenticate regularity for qualification | `admit_operator_regularity_with_signed_evidence_v2` | `src/authenticated.rs` | implemented |
 | fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented; evidence uniqueness canonical |
 | bind frozen dataset to world-model training | `verify_world_model_dataset_v2` / `fit_transition_model_verified_v2` | `src/dataset_bound.rs` | implemented |
 | predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
+| freeze terminal targets from current ledger-owner facts | `freeze_terminal_cell_from_owner_v1` | `src/owner_terminal.rs` | implemented; constant-state terminal profile |
+| fit the frozen owner-derived terminal table | `fit_terminal_cell_from_owner_v1` | `src/owner_terminal.rs` | implemented; revalidates dataset at fit |
 
 ## Applicability and sensor core
 
@@ -45,9 +66,20 @@ operator evaluation.
 `build_sensor_core` uses deterministic farthest-point insertion over a bounded,
 canonical candidate design. It rejects duplicate identities, duplicate
 coordinates, mixed dimensions and coordinates outside normalized `[0,1]`.
-The manifest records selected points, fill distance, separation radius, mesh
-ratio and a hull digest. A zero separation radius or mesh ratio above the pilot
-bound fails.
+The manifest records selected points, finite-design fill distance, separation
+radius, mesh ratio and a point-set commitment named `hull_digest`. Fill distance
+is the maximum nearest-sensor distance over the supplied finite candidates; it
+does not certify the supremum over a continuous domain in
+`docs/learning/HOLDER_BELLMAN_SPEC.md`. Selecting every candidate gives zero
+finite-design fill distance even if the continuous domain has holes. The hull
+digest does not construct or test a geometric hull. A zero separation radius or
+mesh ratio above the pilot bound fails. Continuous coverage, reconstruction and
+hull-based OOD require a separate qualified profile; the tabular predictors only
+test exact fitted sensor/action identity membership.
+Fill distance and mesh ratio round upward and separation radius rounds downward
+so fixed-point rounding does not understate finite-design coverage or mesh ratio.
+The manifest additionally commits the full canonical candidate design, including
+unselected points; a supplied design label alone is not the geometry commitment.
 
 ## Bellman reference, learned baseline and regularity
 
@@ -60,13 +92,16 @@ canonical action ID. This reference is the oracle for any later learned model.
 
 `verify_tabular_operator_plan_v2` is the qualification ingress: it independently verifies a `DatasetSnapshotReceiptV3`, requires objective/dataset identity equality, and requires the sorted training evidence set to equal the frozen dataset's canonical `source_record_digests` exactly. Only its opaque `VerifiedTabularOperatorPlanV2` can enter `fit_tabular_operator_verified_v2`.
 
-`fit_tabular_operator` is the first source-complete trainable operator profile.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
 requires a configurable positive minimum sample count for every grid cell. The
 artifact stores each cell's mean, minimum, maximum, sample count and evidence
 digest. Caller order cannot change the result. `predict_tabular_operator`
 returns only an explicitly fitted cell; an unknown sensor or action is OOD. Its
 output is marked both learned and synthetic and retains `DENY_ALL` authority.
+Raw, indexed and persisted inference share the same bounded artifact validation,
+including complete rectangular support, unique cell evidence, positive counts,
+ordered/attainable summary statistics and nonzero identity digests. This is
+structural validation; an independent payload pin establishes expected bytes.
 
 This profile deliberately implements the simplest sufficient learner. A neural
 or low-rank tensor candidate is not required merely because the architecture
@@ -100,6 +135,29 @@ exactly to one. `predict_transition` rejects unsupported pairs rather than
 extrapolating and marks every prediction synthetic with deny-all authority.
 Synthetic predictions cannot become independent factual outcomes.
 
+The world-model fit retains a private inference seal: changing public fitted
+statistics, identities or digests makes prediction reject. Public reads and API
+names remain; external struct-literal construction is no longer supported.
+V2 estimate/model digests commit the complete sorted training rows as well as
+derived distributions. There is no persisted world-model wire format to migrate.
+
+## Owner-derived terminal profile
+
+`freeze_terminal_cell_from_owner_v1` reads the exact frozen record set from
+`LedgerWriter`, requires homogeneous objective/run snapshot/action support and
+terminal outcomes in one unit profile, and derives labels and values from those
+owner facts. `fit_terminal_cell_from_owner_v1` rechecks current dataset validity
+before fitting and rejects a fit clock earlier than freeze. Freeze rejects
+outcomes whose observed/finalized/latest-observable time lies in the future.
+This is stronger provenance than checking that caller-supplied
+targets merely name every digest in a receipt. The generic verified V2 APIs bind
+dataset identity and evidence membership; they do not resolve source records or
+prove that supplied numeric labels equal the source events.
+
+Agentd's `AgentdSharedReplayHostV1` composes the terminal profile with exact
+shared-source permission, ledger revalidation and the existing artifact registry.
+It is a bounded candidate consumer, not a default trainer, selector or live policy.
+
 ## Authenticated qualification admission
 
 The V1 applicability and regularity functions are deterministic structural validators. They do not authenticate the caller merely because an evaluator ID or credential digest is non-zero. Qualification uses `validate_applicability_with_signed_evidence_v2` and `admit_operator_regularity_with_signed_evidence_v2`, which reuse the ledger-owned `LearningEvidenceVerifierV1`. The host supplies immutable trust state; both generator and evaluator sign the exact structural digest; principal/credential identity and controller separation are checked. The signature proves who attested exact bytes, not that the mathematical or empirical conclusion is scientifically correct.
@@ -128,6 +186,9 @@ Focused tests live in:
 - `src/reference_tests.rs`;
 - `src/learned_tests.rs`;
 - `src/world_model_tests.rs`.
+
+The current-ledger provenance path is exercised by
+`../hepta-agentd/tests/terminal_cell_owner.rs`, including the shared-source consumer.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,

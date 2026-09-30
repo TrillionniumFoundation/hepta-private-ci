@@ -377,7 +377,8 @@ pub(crate) fn validate_tabular_artifact(
             .map_err(|_| TabularPayloadError::Grid)?;
         let attainable_maximum = round_ratio(minimum + (count - 1) * maximum, count)
             .map_err(|_| TabularPayloadError::Grid)?;
-        if !(attainable_minimum..=attainable_maximum).contains(&i128::from(cell.mean_target.raw())) {
+        if !(attainable_minimum..=attainable_maximum).contains(&i128::from(cell.mean_target.raw()))
+        {
             return Err(TabularPayloadError::Grid);
         }
         *sensors.entry(&cell.sensor_id).or_default() += 1;

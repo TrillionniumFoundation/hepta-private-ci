@@ -172,7 +172,11 @@ fn sensor_geometry_rounds_coverage_and_mesh_ratio_conservatively() {
         candidate_design_digest: digest("design"),
         seed_digest: digest("seed"),
         requested_count: 2,
-        candidates: vec![point("a", /*raw*/ 0), point("b", /*raw*/ 4), point("c", /*raw*/ 8)],
+        candidates: vec![
+            point("a", /*raw*/ 0),
+            point("b", /*raw*/ 4),
+            point("c", /*raw*/ 8),
+        ],
     };
     for candidate in &mut design.candidates {
         candidate.coordinates.push(candidate.coordinates[0]);
@@ -248,7 +252,11 @@ fn sensor_separation_tracks_all_prior_selected_points() {
             manifest.mesh_ratio_q32,
         ),
         (
-            vec![point("a", /*raw*/ 0), point("d", /*raw*/ 12), point("c", /*raw*/ 6)],
+            vec![
+                point("a", /*raw*/ 0),
+                point("d", /*raw*/ 12),
+                point("c", /*raw*/ 6)
+            ],
             FixedQ32::from_raw(2),
             FixedQ32::from_raw(3),
             FixedQ32::from_raw(2_863_311_531),

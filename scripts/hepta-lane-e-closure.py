@@ -121,7 +121,6 @@ EXPECTED_CRATES = {
     "codex-hepta-intelligence",
     "codex-hepta-shadow-qualification",
 }
-
 EXPECTED_OPERATOR_SUPPLEMENTAL_OPERATIONS = {
     "fit_tabular_operator",
     "fit_tabular_operator_strict_v2",
@@ -267,9 +266,13 @@ def verify_matrix(
         # claims. Preserve truthful integration work in the verifier output;
         # requiring [] incentivizes deleting a real blocker from metadata.
         gaps = item.get("remainingRepositoryGaps")
-        if not isinstance(gaps, list) or len(gaps) > 128 or any(
-            not isinstance(gap, str) or not gap.strip() or len(gap) > 4096
-            for gap in gaps
+        if (
+            not isinstance(gaps, list)
+            or len(gaps) > 128
+            or any(
+                not isinstance(gap, str) or not gap.strip() or len(gap) > 4096
+                for gap in gaps
+            )
         ):
             findings.add(
                 "repository_gap_shape",
@@ -304,16 +307,27 @@ def verify_matrix(
         if module == "learning.operator":
             supplemental = item.get("supplementalOperations")
             if not isinstance(supplemental, list):
-                findings.add("supplemental_operations_missing", "operator supplemental operations missing")
+                findings.add(
+                    "supplemental_operations_missing",
+                    "operator supplemental operations missing",
+                )
             else:
                 names: set[str] = set()
                 for operation in supplemental:
-                    if not isinstance(operation, dict) or not isinstance(operation.get("operation"), str):
-                        findings.add("invalid_operation", "operator supplemental operation is invalid")
+                    if not isinstance(operation, dict) or not isinstance(
+                        operation.get("operation"), str
+                    ):
+                        findings.add(
+                            "invalid_operation",
+                            "operator supplemental operation is invalid",
+                        )
                         continue
                     name = operation["operation"]
                     if name in names or name in operations:
-                        findings.add("duplicate_operation", f"duplicate operator operation: {name}")
+                        findings.add(
+                            "duplicate_operation",
+                            f"duplicate operator operation: {name}",
+                        )
                         continue
                     names.add(name)
                     operations[name] = operation
@@ -968,7 +982,9 @@ def main() -> int:
         "findings": [finding.__dict__ for finding in findings],
         "remainingIntegrationWork": integration_work,
         "repositoryIntegrationComplete": (
-            args.command == "verify" and not findings and not any(integration_work.values())
+            args.command == "verify"
+            and not findings
+            and not any(integration_work.values())
         ),
     }
     print(json.dumps(output, indent=2, sort_keys=True))

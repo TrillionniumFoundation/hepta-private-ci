@@ -211,9 +211,11 @@ pub fn fit_terminal_cell_from_owner_v1(
     now: u64,
 ) -> Result<TabularOperatorArtifactV1, TerminalCellError> {
     if now < frozen.frozen_at {
-        return Err(TerminalCellError::Unsupported("fit predates dataset freeze"));
+        return Err(TerminalCellError::Unsupported(
+            "fit predates dataset freeze",
+        ));
     }
-    // Correction, withdrawal or a changed witness between freeze and fitting
+    // Correction or withdrawal between freeze and fitting
     // rejects the candidate rather than quietly training on a stale dataset.
     owner.revalidate_dataset_snapshot(&frozen.dataset, now)?;
     fit_tabular_operator_strict_v2(frozen.plan).map_err(TerminalCellError::Fit)

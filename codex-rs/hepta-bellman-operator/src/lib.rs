@@ -245,9 +245,7 @@ fn mul_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let product = i128::from(left.raw()) * i128::from(right.raw());
     let quotient = product / SCALE;
     let twice_remainder = (product % SCALE).abs() * 2;
-    let rounded = if twice_remainder > SCALE
-        || (twice_remainder == SCALE && quotient % 2 != 0)
-    {
+    let rounded = if twice_remainder > SCALE || (twice_remainder == SCALE && quotient % 2 != 0) {
         quotient + product.signum()
     } else {
         quotient

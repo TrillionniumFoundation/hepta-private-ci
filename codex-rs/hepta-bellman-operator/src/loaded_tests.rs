@@ -148,10 +148,7 @@ fn host_pinning_cannot_admit_impossible_sample_statistics() {
         malformed[statistics..statistics + 4].copy_from_slice(&count.to_be_bytes());
         malformed[statistics + 4..statistics + 12].copy_from_slice(&mean.to_be_bytes());
         assert_eq!(
-            LoadedTabularOperatorV1::from_pinned_payload(
-                &malformed,
-                &pin(&artifact, &malformed)
-            ),
+            LoadedTabularOperatorV1::from_pinned_payload(&malformed, &pin(&artifact, &malformed)),
             Err(TabularPayloadError::Grid)
         );
     }

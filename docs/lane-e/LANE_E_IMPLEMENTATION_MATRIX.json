@@ -384,7 +384,7 @@
       "dossier": "qualification/module-execution-dossiers/detail/learning.operator.md",
       "nativeMapping": "codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md",
       "implementationState": "source_implemented_ci_pending",
-      "compatibility": "legacy target builder retained; canonical tabular fit rejects duplicate evidence; dataset-bound and signed-admission V2 surfaces are additive",
+      "compatibility": "native candidate profiles are separate from canonical V1 wire schemas; API names retained; sensor/reference/target/tabular/world-model digests use V2 commitments and new candidates require independent admission; existing pinned HEPTTB01 bytes remain readable under current authority; world-model field reads remain but external struct literals are unsupported",
       "operations": [
         {
           "operation": "build_targets",
@@ -493,6 +493,34 @@
           "source": "codex-rs/hepta-bellman-operator/src/loaded.rs",
           "status": "implemented",
           "profile": "pinned_once_validated_persisted_candidate"
+        },
+        {
+          "operation": "encode_tabular_payload_v1",
+          "nativeSymbol": "codex_hepta_bellman_operator::encode_tabular_payload_v1",
+          "source": "codex-rs/hepta-bellman-operator/src/loaded.rs",
+          "status": "implemented",
+          "profile": "bounded_native_HEPTTB01_not_canonical_wire"
+        },
+        {
+          "operation": "predict_tabular_operator_indexed_v2",
+          "nativeSymbol": "codex_hepta_bellman_operator::predict_tabular_operator_indexed_v2",
+          "source": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+          "status": "implemented",
+          "profile": "shared_artifact_validation_before_lookup"
+        },
+        {
+          "operation": "freeze_terminal_cell_from_owner_v1",
+          "nativeSymbol": "codex_hepta_bellman_operator::freeze_terminal_cell_from_owner_v1",
+          "source": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+          "status": "implemented",
+          "profile": "current_owner_derived_constant_state_terminal_targets"
+        },
+        {
+          "operation": "fit_terminal_cell_from_owner_v1",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_terminal_cell_from_owner_v1",
+          "source": "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
+          "status": "implemented",
+          "profile": "revalidate_frozen_dataset_before_fit"
         }
       ],
       "tests": [
@@ -512,14 +540,26 @@
         "op_06_tabular_fit_requires_exact_frozen_dataset_evidence",
         "op_06_world_model_requires_exact_frozen_dataset_evidence",
         "independent_pin_and_all_truncations_are_checked",
-        "distinct_process_load_changes_prediction_and_rolls_back_without_retraining"
+        "distinct_process_load_changes_prediction_and_rolls_back_without_retraining",
+        "sensor_geometry_rounds_coverage_and_mesh_ratio_conservatively",
+        "sensor_manifest_binds_unselected_candidate_coordinates",
+        "sensor_separation_tracks_all_prior_selected_points",
+        "reference_receipt_binds_source_evidence_and_equal_output_inputs",
+        "target_builder_uses_signed_nearest_ties_even_like_reference",
+        "world_model_identity_binds_exact_rows_and_is_permutation_invariant",
+        "world_model_predictions_reject_modified_fitted_statistics_and_lineage",
+        "world_model_prediction_checks_resource_caps_before_integrity_work"
       ],
-      "remainingRepositoryGaps": [],
+      "remainingRepositoryGaps": [
+        "canonical V1 wire adapters and semantic/round-trip parity evidence",
+        "default dataset freeze verified training independent evaluation selection and new-process load shadow composition",
+        "continuous-domain geometry reconstruction and hull-based OOD if a continuous operator profile is proposed"
+      ],
       "remainingExternalEvidence": [
         "independent scientific and semantic review of applicability and measured claims",
         "target-host runtime device and resource measurements",
         "real future calibration retention and live-world model validation",
-        "independent operator acceptance selection default-loop composition and promotion"
+        "independent operator acceptance selector evidence and promotion"
       ]
     },
     {

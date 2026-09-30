@@ -25,11 +25,15 @@ class LaneEClosureTests(unittest.TestCase):
     def setUp(self) -> None:
         self.matrix = json.loads(MODULE.MATRIX_PATH.read_text(encoding="utf-8"))
         self.operator = next(
-            row for row in self.matrix["modules"] if row["module"] == "learning.operator"
+            row
+            for row in self.matrix["modules"]
+            if row["module"] == "learning.operator"
         )
 
     def test_truthful_integration_work_does_not_fail_native_mapping(self) -> None:
-        gap = "The default runtime still needs the complete independent operator handoff."
+        gap = (
+            "The default runtime still needs the complete independent operator handoff."
+        )
         self.operator["remainingRepositoryGaps"] = [gap]
         findings = MODULE.Findings()
         MODULE.verify_matrix(self.matrix, findings)
@@ -51,7 +55,8 @@ class LaneEClosureTests(unittest.TestCase):
         self.operator["operations"] = [
             operation
             for operation in self.operator["operations"]
-            if operation["operation"] != "validate_applicability_with_signed_evidence_v2"
+            if operation["operation"]
+            != "validate_applicability_with_signed_evidence_v2"
         ]
         findings = MODULE.Findings()
         MODULE.verify_matrix(self.matrix, findings)
@@ -68,7 +73,9 @@ class LaneEClosureTests(unittest.TestCase):
             with self.subTest(gaps=gaps):
                 matrix = copy.deepcopy(self.matrix)
                 operator = next(
-                    row for row in matrix["modules"] if row["module"] == "learning.operator"
+                    row
+                    for row in matrix["modules"]
+                    if row["module"] == "learning.operator"
                 )
                 operator["remainingRepositoryGaps"] = gaps
                 findings = MODULE.Findings()
@@ -84,10 +91,13 @@ class LaneEClosureTests(unittest.TestCase):
 
     def test_payload_owner_mapping_must_resolve_actual_source(self) -> None:
         operation = next(
-            item for item in self.operator["supplementalOperations"]
+            item
+            for item in self.operator["supplementalOperations"]
             if item["operation"] == "fit_terminal_cell_from_owner_v1"
         )
-        operation["nativeSymbol"] = "codex_hepta_bellman_operator::missing_owner_handoff"
+        operation["nativeSymbol"] = (
+            "codex_hepta_bellman_operator::missing_owner_handoff"
+        )
         findings = MODULE.Findings()
         MODULE.verify_matrix(self.matrix, findings)
         self.assertTrue(
@@ -123,7 +133,9 @@ class LaneEClosureTests(unittest.TestCase):
 
     def test_source_success_does_not_report_open_integration_complete(self) -> None:
         result = MODULE.Findings()
-        result.integration_work["learning.operator"] = ["Runtime composition remains open."]
+        result.integration_work["learning.operator"] = [
+            "Runtime composition remains open."
+        ]
         output = io.StringIO()
         with (
             mock.patch.object(MODULE, "verify", return_value=result),

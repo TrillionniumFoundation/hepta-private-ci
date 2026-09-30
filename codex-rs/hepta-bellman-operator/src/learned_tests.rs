@@ -209,11 +209,7 @@ fn direct_predictions_reject_malformed_and_impossible_statistics() {
 
 #[test]
 fn direct_prediction_preserves_full_range_and_ties_even_fits() {
-    for (minimum, maximum, mean) in [
-        (i64::MIN, i64::MAX, 0),
-        (1, 2, 2),
-        (-2, -1, -2),
-    ] {
+    for (minimum, maximum, mean) in [(i64::MIN, i64::MAX, 0), (1, 2, 2), (-2, -1, -2)] {
         let mut input = plan(vec![
             sample("minimum", "sensor-a", "action-a", minimum),
             sample("maximum", "sensor-a", "action-a", maximum),
@@ -236,11 +232,7 @@ fn direct_prediction_preserves_full_range_and_ties_even_fits() {
             Ok(expected.clone())
         );
         assert_eq!(
-            crate::predict_tabular_operator_indexed_v2(
-                &artifact,
-                &id("sensor-a"),
-                &id("action-a"),
-            ),
+            crate::predict_tabular_operator_indexed_v2(&artifact, &id("sensor-a"), &id("action-a"),),
             Ok(expected)
         );
     }

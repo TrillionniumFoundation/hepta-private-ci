@@ -1,0 +1,72 @@
+name: Learning operator audit qualification
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-bellman-operator/**'
+      - 'codex-rs/hepta-agentd/tests/terminal_cell_owner.rs'
+      - 'scripts/hepta-lane-e-closure.py'
+      - 'scripts/test_hepta_lane_e_closure.py'
+      - '.github/workflows/hepta-learning-operator-audit.yml'
+  push:
+    branches:
+      - 'audit/learning-operator-*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-operator-audit-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Source and integration inventory regressions
+        run: python3 scripts/test_hepta_lane_e_closure.py
+      - name: Focused operator regression suite
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-bellman-operator
+      - name: All-target compilation
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-bellman-operator --all-targets
+      - name: Strict operator lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-bellman-operator --all-targets -- -D warnings
+      - name: Operator Rust formatting
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-bellman-operator -- --check
+
+  owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Authenticated owner freeze, fitting, reload and withdrawal
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-agentd --test terminal_cell_owner
+
+# These jobs measure the narrow audit candidate. Existing repository, Lane E,
+# head/merge and independent acceptance gates remain mandatory and separate.

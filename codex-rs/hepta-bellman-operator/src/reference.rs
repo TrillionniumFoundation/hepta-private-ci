@@ -227,8 +227,7 @@ pub fn build_sensor_core(
         selected_flags[selected_index] = true;
         selected_indices.push(selected_index);
         // Every selected pair is represented when its later point is inserted.
-        minimum_separation_squared =
-            minimum_separation_squared.min(nearest_distance_squared);
+        minimum_separation_squared = minimum_separation_squared.min(nearest_distance_squared);
         nearest_squared[selected_index] = 0;
         for (index, candidate) in design.candidates.iter().enumerate() {
             if selected_flags[index] {
