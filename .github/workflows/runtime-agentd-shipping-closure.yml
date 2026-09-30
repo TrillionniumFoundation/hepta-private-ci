@@ -1,0 +1,97 @@
+name: Runtime Agentd shipping closure
+
+on:
+  push:
+    branches:
+      - work/runtime-agentd-shipping-closure-20260930
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'docs/modules/runtime.agentd/**'
+      - 'qualification/module-execution-dossiers/detail/runtime.agentd.md'
+      - 'scripts/qualification/*runtime_agentd*'
+      - 'scripts/qualification/*agentd*'
+      - '.github/workflows/runtime-agentd-shipping-closure.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-agentd-shipping-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal --component rustfmt
+      - name: Verify formatting
+        working-directory: codex-rs
+        run: cargo fmt --manifest-path Cargo.toml --package codex-hepta-agentd --package codex-hepta-agent-protocol -- --check
+
+  all-target-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal
+      - name: Check all Agentd targets
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-agentd --all-targets
+
+  core-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          toolchain=$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')
+          rustup toolchain install "$toolchain" --profile minimal
+      - name: Run Agentd library tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-agentd --lib
+
+  status-projection:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify dependency boundary and status projection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/qualification/runtime_agentd_dependency_boundary.py --check
+          python3 scripts/qualification/runtime_agentd_current_status.py --check
+          git diff --exit-code
