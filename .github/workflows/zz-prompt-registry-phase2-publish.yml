@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     env:
-      TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
+      TARGET_BRANCH: codex/prompt-registry-production-closure-20260930
       TARGET_SHA: 8825996f927ca1cb3e1271ffcce0261ce25b398e
       CARGO_INCREMENTAL: '0'
       CARGO_BUILD_JOBS: '2'
