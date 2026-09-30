@@ -28,7 +28,10 @@ fn validate_execution_binding(
         (&binding.quota_lease_digest, "native quota lease"),
         (&binding.resource_lease_digest, "native resource lease"),
         (&binding.output_policy_digest, "native output policy"),
-        (&binding.execution_binding_digest, "native execution binding"),
+        (
+            &binding.execution_binding_digest,
+            "native execution binding",
+        ),
         (&binding.model_digest, "native model"),
         (&binding.tokenizer_digest, "native tokenizer"),
         (&binding.template_digest, "native template"),
@@ -61,9 +64,7 @@ fn validate_dispatch(dispatch: &NativeDispatch) -> Result<(), Error> {
         dispatch.app_server_version.is_some(),
         dispatch.protocol_id.is_some(),
     ];
-    if codex_fields.iter().any(|present| *present)
-        && !codex_fields.iter().all(|present| *present)
-    {
+    if codex_fields.iter().any(|present| *present) && !codex_fields.iter().all(|present| *present) {
         return Err(Error::InvalidIdentity("native codex dispatch binding"));
     }
     let extended_codex_fields = [
@@ -144,7 +145,23 @@ fn validate_dispatch(dispatch: &NativeDispatch) -> Result<(), Error> {
 fn apply_observation(
     record: &mut NativeRunRecord,
     mut output: NativeRunOutput,
+    reconciliation: Option<&NativeReconciliationAudit>,
 ) -> Result<(), Error> {
+    if reconciliation.is_some() {
+        // Provider evidence proves terminality/usage, not Agentd readiness.
+        output.owner_authority = record
+            .observation
+            .as_ref()
+            .map_or(NativeOwnerAuthority::Unverified, |previous| {
+                previous.owner_authority.clone()
+            });
+        if let Some(previous) = &record.observation
+            && matches!(previous.owner_authority, NativeOwnerAuthority::Lost { .. })
+        {
+            output.boundary_status = NativeBoundaryStatus::Quarantined;
+            output.stop_reason = previous.stop_reason.clone();
+        }
+    }
     let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
     if output.thread_id != dispatch.thread_id
         || output.model_provider != dispatch.model_provider
@@ -166,6 +183,36 @@ fn apply_observation(
     }
     if let Some(digest) = &output.codex_terminal_correlation_digest {
         validate_digest(digest, "native codex terminal correlation")?;
+    }
+    let quota_exceeded = record.execution_binding.as_ref().is_some_and(|binding| {
+        output
+            .observed_output_tokens
+            .is_some_and(|tokens| tokens > binding.maximum_output_tokens)
+            || reconciliation
+                .and_then(|audit| audit.usage_microunits)
+                .is_some_and(|usage| usage > binding.maximum_cost_microunits)
+    });
+    if quota_exceeded {
+        // Observed usage above the reservation is retained, never payment authority.
+        output.boundary_status = NativeBoundaryStatus::Quarantined;
+        if let Some(previous) = record
+            .observation
+            .as_ref()
+            .filter(|previous| previous.terminal_observed)
+        {
+            output.stop_reason = previous.stop_reason.clone();
+        }
+        let reason = "observed usage exceeds signed quota; excess payment is not authorized";
+        match &mut output.stop_reason {
+            Some(previous)
+                if !previous.contains(reason) && previous.len() + reason.len() + 2 <= 4096 =>
+            {
+                previous.push_str("; ");
+                previous.push_str(reason);
+            }
+            Some(_) => {}
+            None => output.stop_reason = Some(reason.to_string()),
+        }
     }
     let complete_frontier = dispatch.codex_authority_epoch.is_some()
         && dispatch.codex_revocation_revision.is_some()
@@ -212,11 +259,13 @@ fn apply_observation(
         }
         if previous.terminal_observed
             && (previous.status != output.status
-                || previous.boundary_status != output.boundary_status
+                || (previous.boundary_status != output.boundary_status && !quota_exceeded)
                 || !output.terminal_observed
                 || previous.output != output.output
-                || previous.codex_terminal_correlation_digest
-                    != output.codex_terminal_correlation_digest)
+                || (previous.stop_reason != output.stop_reason && !quota_exceeded)
+                || (previous.codex_terminal_correlation_digest
+                    != output.codex_terminal_correlation_digest
+                    && reconciliation.is_none()))
         {
             return Err(Error::Conflict);
         }
@@ -241,58 +290,7 @@ fn apply_observation(
     Ok(())
 }
 
-fn validate_checkpoint_record(record: &NativeRunRecord) -> Result<(), Error> {
-    validate_native_request(&record.request)?;
-    if record.revision == 0 {
-        return Err(Error::CorruptJournal("native checkpoint revision"));
-    }
-    if let Some(binding) = &record.execution_binding {
-        validate_execution_binding(record, binding)?;
-    }
-    if let Some(dispatch) = &record.dispatch {
-        validate_dispatch(dispatch)?;
-    }
-    match record.state {
-        NativeReservationState::Reserved => {
-            if record.dispatch.is_some()
-                || record.turn_id.is_some()
-                || record.observation.is_some()
-                || record.dispatch_rejection.is_some()
-            {
-                return Err(Error::CorruptJournal("native checkpoint reserved state"));
-            }
-        }
-        NativeReservationState::Dispatching => {
-            if record.dispatch.is_none()
-                || record.turn_id.is_some()
-                || record.observation.is_some()
-                || record.dispatch_rejection.is_some()
-            {
-                return Err(Error::CorruptJournal("native checkpoint dispatching state"));
-            }
-        }
-        NativeReservationState::Running => {
-            if record.dispatch.is_none() || record.turn_id.is_none() {
-                return Err(Error::CorruptJournal("native checkpoint running state"));
-            }
-        }
-        NativeReservationState::Cancelling => {
-            if record.dispatch.is_none() {
-                return Err(Error::CorruptJournal("native checkpoint cancelling state"));
-            }
-        }
-        NativeReservationState::Indeterminate => {
-            if record.dispatch.is_none() {
-                return Err(Error::CorruptJournal("native checkpoint indeterminate state"));
-            }
-        }
-        NativeReservationState::Released => {}
-    }
-    if record.retirement.is_some() && record.state != NativeReservationState::Released {
-        return Err(Error::CorruptJournal("native checkpoint retirement state"));
-    }
-    Ok(())
-}
+include!("native_control_v2_checkpoint.rs");
 
 fn native_dispatch_digest(dispatch: &NativeDispatch) -> Result<String, Error> {
     let bytes = serde_json::to_vec(dispatch)
@@ -334,23 +332,33 @@ fn absolute_parent(path: &Path) -> Result<PathBuf, Error> {
 }
 
 fn sibling_directory(path: &Path, suffix: &str) -> PathBuf {
+    let name = path.file_name().unwrap_or(path.as_os_str());
+    if name.as_encoded_bytes().len() + suffix.len() + 1 > 255 {
+        let digest = sha256_hex(
+            b"hepta.inference-control.journal-name.v1\0",
+            name.as_encoded_bytes(),
+        );
+        return path.with_file_name(format!(".hepta-inference-{digest}.{suffix}"));
+    }
     let mut value = OsString::from(path.as_os_str());
     value.push(format!(".{suffix}"));
     PathBuf::from(value)
 }
 
 fn temporary_generation_path(path: &Path, generation: u64, now_unix_ms: u64) -> PathBuf {
-    let mut value = OsString::from(path.as_os_str());
-    value.push(format!(
-        ".compact.{generation}.{now_unix_ms}.{}",
+    let digest = sha256_hex(
+        b"hepta.inference-control.journal-name.v1\0",
+        path.file_name().unwrap_or(path.as_os_str()).as_encoded_bytes(),
+    );
+    path.with_file_name(format!(
+        ".hepta-inference-{digest}.compact.{generation}.{now_unix_ms}.{}",
         std::process::id()
-    ));
-    PathBuf::from(value)
+    ))
 }
 
 fn write_content_addressed(path: &Path, bytes: &[u8]) -> Result<(), Error> {
     if path.exists() {
-        if fs::read(path)? == bytes {
+        if read_bounded(path, bytes.len() as u64)? == bytes {
             return Ok(());
         }
         return Err(Error::CorruptJournal("content-address collision"));
@@ -367,6 +375,17 @@ fn write_content_addressed(path: &Path, bytes: &[u8]) -> Result<(), Error> {
     file.flush()?;
     file.sync_all()?;
     Ok(())
+}
+
+fn read_bounded(path: &Path, maximum_bytes: u64) -> Result<Vec<u8>, Error> {
+    let mut bytes = Vec::new();
+    File::open(path)?
+        .take(maximum_bytes.saturating_add(1))
+        .read_to_end(&mut bytes)?;
+    if bytes.len() as u64 > maximum_bytes {
+        return Err(Error::CapacityExceeded);
+    }
+    Ok(bytes)
 }
 
 fn set_owner_only_directory(path: &Path) -> Result<(), Error> {

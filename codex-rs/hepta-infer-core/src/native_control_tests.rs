@@ -422,6 +422,7 @@ fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
     let event = Event::Observe {
         request_id: "r1".to_string(),
         output: observed,
+        protected_output: None,
     };
     let json = serde_json::to_string(&event).unwrap();
     let mut file = std::fs::OpenOptions::new()
@@ -525,6 +526,7 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     let event = Event::Observe {
         request_id: "r1".to_string(),
         output: old_output,
+        protected_output: None,
     };
     let mut json = serde_json::to_value(event).unwrap();
     json["Observe"]["output"]

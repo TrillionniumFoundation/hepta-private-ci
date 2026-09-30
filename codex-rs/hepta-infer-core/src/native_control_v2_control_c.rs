@@ -86,7 +86,10 @@ impl DurableInferenceControl {
         now_unix_ms: u64,
         failpoint: &mut dyn NativeMaintenanceFailpoint,
     ) -> Result<NativeMaintenanceReceipt, Error> {
-        let current_bytes = fs::read(&self.path)?;
+        let current_bytes = read_bounded(&self.path, super::MAX_JOURNAL_BYTES).map_err(|error| {
+            self.poisoned = true;
+            error
+        })?;
         if current_bytes.len() as u64 != self.journal_bytes {
             return Err(Error::CorruptJournal("journal metadata drift"));
         }
@@ -209,23 +212,20 @@ impl DurableInferenceControl {
         failpoint.hit(NativeMaintenanceStage::AfterGenerationSync)?;
 
         fs::rename(&temp_path, &self.path)?;
-        failpoint.hit(NativeMaintenanceStage::AfterGenerationRename)
-            .map_err(|error| {
-                self.poisoned = true;
-                error
-            })?;
+        // The active path now names another generation. Any failure until the
+        // new descriptor and replayed state are installed fences this owner,
+        // including validation errors beyond the I/O errors handled outside.
+        self.poisoned = true;
+        failpoint.hit(NativeMaintenanceStage::AfterGenerationRename)?;
         sync_directory(&parent)?;
-        failpoint.hit(NativeMaintenanceStage::AfterParentSync)
-            .map_err(|error| {
-                self.poisoned = true;
-                error
-            })?;
+        failpoint.hit(NativeMaintenanceStage::AfterParentSync)?;
 
         let mut next = NativeJournal::default();
         next.apply(reference)?;
         self.file = replacement;
         self.native = next;
         self.journal_bytes = next_active.len() as u64;
+        self.poisoned = false;
 
         Ok(NativeMaintenanceReceipt {
             generation,

@@ -186,7 +186,10 @@ impl NativeJournal {
                 protected_output,
                 ..
             } => {
-                if record.dispatch_rejection.is_some() {
+                if record.dispatch_rejection.is_some()
+                    || record.pre_dispatch_stop.is_some()
+                    || record.retirement.is_some()
+                {
                     return Err(Error::InvalidTransition);
                 }
                 if record.execution_binding.is_some()
@@ -195,7 +198,7 @@ impl NativeJournal {
                 {
                     return Err(Error::InvalidIdentity("native protected output"));
                 }
-                apply_observation(record, output)?;
+                apply_observation(record, output, /*reconciliation*/ None)?;
                 record.protected_output = protected_output;
             }
             Event::Reconcile { output, audit, .. } => {
@@ -205,16 +208,34 @@ impl NativeJournal {
                         | NativeReservationState::Running
                         | NativeReservationState::Cancelling
                         | NativeReservationState::Indeterminate
+                        | NativeReservationState::Released
                 ) || record.execution_binding.is_none()
                     || record.dispatch_rejection.is_some()
+                    || record.pre_dispatch_stop.is_some()
+                    || record.retirement.is_some()
+                    || (record.state == NativeReservationState::Released
+                        && record.reconciliation.is_none())
                 {
                     return Err(Error::InvalidTransition);
                 }
+                let expected_output = audit
+                    .output_digest
+                    .as_ref()
+                    .map(|digest| format!("hepta-reconciled-output-v1:{digest}"))
+                    .unwrap_or_default();
+                if !output.terminal_observed
+                    || output.codex_terminal_correlation_digest.as_ref()
+                        != Some(&audit.receipt_digest)
+                    || output.output != expected_output
+                    || (output.status == NativeRunStatus::Completed
+                        && audit.output_digest.is_none())
+                {
+                    return Err(Error::InvalidIdentity(
+                        "native reconciliation observation binding",
+                    ));
+                }
                 validate_digest(&audit.receipt_digest, "native reconciliation receipt")?;
-                validate_identity(
-                    &audit.authenticated_key_id,
-                    "native reconciliation key",
-                )?;
+                validate_identity(&audit.authenticated_key_id, "native reconciliation key")?;
                 if audit.terminal_sequence == 0 {
                     return Err(Error::InvalidIdentity(
                         "native reconciliation terminal sequence",
@@ -223,12 +244,23 @@ impl NativeJournal {
                 if let Some(digest) = &audit.output_digest {
                     validate_digest(digest, "native reconciliation output")?;
                 }
-                apply_observation(record, output)?;
+                if let Some(previous) = &record.reconciliation
+                    && (audit.terminal_sequence <= previous.terminal_sequence
+                        || previous.usage_microunits.is_some_and(|usage| {
+                            audit.usage_microunits.is_none_or(|next| next < usage)
+                        }))
+                {
+                    return Err(Error::Conflict);
+                }
+                apply_observation(record, output, Some(&audit))?;
                 record.reconciliation = Some(audit);
             }
             Event::Retire { audit, .. } => {
                 if record.state != NativeReservationState::Indeterminate
-                    || record.retirement.is_some()
+                    || record
+                        .retirement
+                        .as_ref()
+                        .is_some_and(|previous| previous.independent_operator_key_digests.is_some())
                     || audit.reason.is_empty()
                     || audit.reason.len() > 4096
                 {
@@ -244,8 +276,18 @@ impl NativeJournal {
                 {
                     return Err(Error::InvalidTransition);
                 }
+                record.state = if let Some(keys) = &audit.independent_operator_key_digests {
+                    validate_digest(&keys[0], "native retirement verifying key")?;
+                    validate_digest(&keys[1], "native retirement verifying key")?;
+                    if keys[0] == keys[1] {
+                        return Err(Error::InvalidTransition);
+                    }
+                    NativeReservationState::Released
+                } else {
+                    // Legacy key IDs alone cannot prove independent operators.
+                    NativeReservationState::Indeterminate
+                };
                 record.retirement = Some(audit);
-                record.state = NativeReservationState::Released;
             }
         }
         record.revision = record
@@ -293,26 +335,44 @@ impl NativeJournal {
                 return Err(Error::CorruptJournal("native checkpoint permissions"));
             }
         }
-        let bytes = fs::read(path)?;
-        if sha256_hex(b"hepta.inference-control.checkpoint.v1\0", &bytes)
-            != checkpoint_digest
-        {
+        let bytes = read_bounded(path, MAX_CHECKPOINT_BYTES)?;
+        if sha256_hex(b"hepta.inference-control.checkpoint.v1\0", &bytes) != checkpoint_digest {
             return Err(Error::CorruptJournal("native checkpoint digest"));
         }
-        let checkpoint: NativeCheckpoint = serde_json::from_slice(&bytes)
+        let mut checkpoint: NativeCheckpoint = serde_json::from_slice(&bytes)
             .map_err(|_| Error::CorruptJournal("native checkpoint decode"))?;
-        if checkpoint.schema_version != CHECKPOINT_SCHEMA_VERSION
+        if !matches!(checkpoint.schema_version, 1 | CHECKPOINT_SCHEMA_VERSION)
             || checkpoint.generation != generation
             || checkpoint.archive_segment_digest != archive_segment_digest
             || checkpoint.archive_chain_digest != archive_chain_digest
             || checkpoint.records.len() > super::MAX_RECORDS
+            || (!checkpoint.records.is_empty() && checkpoint.maximum_in_flight.is_none())
             || checkpoint
                 .maximum_in_flight
                 .is_some_and(|limit| !(1..=256).contains(&limit))
         {
             return Err(Error::CorruptJournal("native checkpoint binding"));
         }
-        for (id, record) in &checkpoint.records {
+        for (id, record) in &mut checkpoint.records {
+            // Version 1 reconciliations manufactured readiness without host
+            // evidence. Keep terminal/usage facts but deny that success claim.
+            if checkpoint.schema_version == 1
+                && record.reconciliation.is_some()
+                && let Some(observation) = &mut record.observation
+                && observation.owner_authority == NativeOwnerAuthority::ObservedReady
+            {
+                observation.owner_authority = NativeOwnerAuthority::Unverified;
+            }
+            // Historical retirement IDs alone cannot prove independent keys.
+            // A newer checkpoint may contain a historical audit too.
+            if record.state == NativeReservationState::Released
+                && record
+                    .retirement
+                    .as_ref()
+                    .is_some_and(|retirement| retirement.independent_operator_key_digests.is_none())
+            {
+                record.state = NativeReservationState::Indeterminate;
+            }
             if id != &record.request.request_id {
                 return Err(Error::CorruptJournal("native checkpoint request key"));
             }
