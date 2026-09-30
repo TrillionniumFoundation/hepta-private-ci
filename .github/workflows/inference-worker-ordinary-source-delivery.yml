@@ -1,0 +1,138 @@
+name: Inference worker ordinary-source delivery
+
+on:
+  push:
+    branches:
+      - automation/inference-worker-materialize-final-20260930
+    paths:
+      - .github/workflows/inference-worker-ordinary-source-delivery.yml
+      - .github/delivery/inference-worker-ordinary-source.patch.gz.b64.*
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inference-worker-ordinary-source-delivery
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: codex/inference-worker-authoritative-20260929
+  TARGET_SHA: c85e991687c32608e4f3b3c54345ff19e1616d3f
+  PATCH_SHA256: 41c0136021e76343727132744ac296cf351d01d950fa4052a4ebfeb7bddcaa01
+  PATCH_GZIP_SHA256: c690eff44d5c113243e697bad4d99b8c7303bf139cee2a1b87ad3fcfec61197f
+  PATCH_BASE64_SHA256: 24ef891345d8ddba69e96987017f6c2db655b4075bd50315a742e817b56b9b10
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  deliver:
+    name: Deliver one ordinary source commit
+    runs-on: ubuntu-slim
+    timeout-minutes: 30
+    steps:
+      - name: Check out immutable delivery input
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: true
+          clean: true
+
+      - name: Decode and verify reviewed source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          cat \
+            .github/delivery/inference-worker-ordinary-source.patch.gz.b64.part00 \
+            .github/delivery/inference-worker-ordinary-source.patch.gz.b64.part01 \
+            .github/delivery/inference-worker-ordinary-source.patch.gz.b64.part02_04 \
+            .github/delivery/inference-worker-ordinary-source.patch.gz.b64.rem00 \
+            .github/delivery/inference-worker-ordinary-source.patch.gz.b64.rem01 \
+            .github/delivery/inference-worker-ordinary-source.patch.gz.b64.rem02 \
+            .github/delivery/inference-worker-ordinary-source.patch.gz.b64.rem03 \
+            .github/delivery/inference-worker-ordinary-source.patch.gz.b64.rem04 \
+            .github/delivery/inference-worker-ordinary-source.patch.gz.b64.rem05 \
+            .github/delivery/inference-worker-ordinary-source.patch.gz.b64.rem06 \
+            > "$RUNNER_TEMP/inference-worker.patch.b64"
+          printf '%s  %s\n' "$PATCH_BASE64_SHA256" "$RUNNER_TEMP/inference-worker.patch.b64" \
+            | sha256sum --check --strict
+          base64 --decode "$RUNNER_TEMP/inference-worker.patch.b64" \
+            > "$RUNNER_TEMP/inference-worker.patch.gz"
+          printf '%s  %s\n' "$PATCH_GZIP_SHA256" "$RUNNER_TEMP/inference-worker.patch.gz" \
+            | sha256sum --check --strict
+          gzip -dc "$RUNNER_TEMP/inference-worker.patch.gz" > "$RUNNER_TEMP/inference-worker.patch"
+          printf '%s  %s\n' "$PATCH_SHA256" "$RUNNER_TEMP/inference-worker.patch" \
+            | sha256sum --check --strict
+
+      - name: Bind target branch and materialize ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$remote_head" = "$TARGET_SHA"
+          git fetch --no-tags --depth=1 origin "$TARGET_SHA"
+          git checkout --detach "$TARGET_SHA"
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          git apply --check "$RUNNER_TEMP/inference-worker.patch"
+          git apply --index "$RUNNER_TEMP/inference-worker.patch"
+          git diff --cached --check
+
+      - name: Verify source closure and evidence tooling
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/inference-worker-p0-source-converge-once.yml
+          ! grep -Fq 'materialize-authoritative:' .github/workflows/hepta-inference-maintenance.yml
+          ! grep -Fq 'contents: write' .github/workflows/inference-worker-authoritative-qualification.yml
+          ! grep -Eq 'persist-credentials:[[:space:]]*true|git[[:space:]]+(push|commit|apply|am|cherry-pick|update-ref)' \
+            .github/workflows/inference-worker-authoritative-qualification.yml
+          python3 -m py_compile \
+            scripts/hepta-implementation-maps.py \
+            scripts/inference_worker_command_receipt.py \
+            scripts/inference_worker_current_status.py \
+            scripts/inference_worker_source_closure.py \
+            scripts/inference_worker_readiness_manifest.py
+          python3 -m unittest -v \
+            scripts.test_inference_worker_command_receipt \
+            scripts.tests.test_inference_worker_current_status \
+            scripts.tests.test_inference_worker_source_closure \
+            scripts.tests.test_inference_worker_readiness_manifest
+          bash -n scripts/run_inference_worker_qualification_lane.sh
+          python3 scripts/inference_worker_source_closure.py \
+            --repo-root . \
+            --output "$RUNNER_TEMP/source-closure.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          value = json.loads((Path(os.environ["RUNNER_TEMP"]) / "source-closure.json").read_text())
+          assert value["source_writer_count"] == 0, value
+          assert value["sourceClosed"] is True, value
+          PY
+          git diff --cached --check
+
+      - name: Create and publish the ordinary source commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name hepta-inference-source-delivery
+          git config user.email hepta-inference-source-delivery@users.noreply.github.com
+          git commit -m 'inference.worker: close ordinary-source and qualification gaps'
+          final_sha="$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD^)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          remote_head="$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')"
+          test "$remote_head" = "$TARGET_SHA"
+          git push origin "HEAD:$TARGET_BRANCH"
+          printf 'FINAL_SHA=%s\n' "$final_sha" >> "$GITHUB_ENV"
+          printf 'ordinary source commit: `%s`\n' "$final_sha" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify the published identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$FINAL_SHA"
