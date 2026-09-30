@@ -1100,12 +1100,18 @@ async fn verify_current_projection_contents(
             Some("revision_facts_v1") => {
                 let fts_rows = sqlx::query(
                     "SELECT f.memory_id, CAST(f.memory_revision AS INTEGER) AS memory_revision,
-                            f.canonical_entity_id, f.entity_type, f.label
+                            f.canonical_entity_id, f.entity_type, f.label,
+                            e.entity_key AS source_entity_key
                      FROM kg_revision_entity_fts f
                      JOIN memory_heads h
                        ON h.memory_id = f.memory_id AND h.revision = f.memory_revision
                      JOIN memory_revisions r
                        ON r.memory_id = f.memory_id AND r.revision = f.memory_revision
+                     LEFT JOIN kg_revision_entities e
+                       ON e.memory_id = f.memory_id
+                      AND e.memory_revision = f.memory_revision
+                      AND e.entity_key = f.entity_key
+                      AND e.canonical_entity_id = f.canonical_entity_id
                      WHERE r.owner_agent_id = ? AND r.scope_kind = ?
                        AND r.workspace_sha256 IS ?
                        AND r.verification = 'verified' AND r.lifecycle = 'active'
@@ -1127,6 +1133,15 @@ async fn verify_current_projection_contents(
                 let mut stored_fts = fts_rows
                     .into_iter()
                     .map(|row| {
+                        if row
+                            .try_get::<Option<String>, _>("source_entity_key")
+                            .map_err(unavailable)?
+                            .is_none()
+                        {
+                            return Err(CognitiveStoreError::Corrupt(format!(
+                                "KG current projection `{projection_scope}` revision FTS rows have an unbound entity key"
+                            )));
+                        }
                         Ok((
                             row.try_get::<String, _>("memory_id").map_err(unavailable)?,
                             row.try_get::<i64, _>("memory_revision")

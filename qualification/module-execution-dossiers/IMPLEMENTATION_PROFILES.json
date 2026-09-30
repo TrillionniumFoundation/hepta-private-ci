@@ -1338,18 +1338,61 @@
           {
             "path": "codex-rs/hepta-kg/src/generation.rs",
             "symbol": "publish_generation"
+          },
+          {
+            "path": "codex-rs/hepta-kg/src/generation.rs",
+            "symbol": "query_relations"
+          },
+          {
+            "path": "codex-rs/hepta-kg/src/indexed_query.rs",
+            "symbol": "VerifiedKnowledgeGenerationV2"
+          },
+          {
+            "path": "codex-rs/hepta-kg/src/prompt_factor.rs",
+            "symbol": "build_prompt_factor_projection_v1"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+            "symbol": "refresh_scope_projection_tx"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+            "symbol": "relation_channel_tx"
+          },
+          {
+            "path": "codex-rs/hepta-prompt-registry/src/durable_relations.rs",
+            "symbol": "register_factor_relation"
           }
         ],
-        "stateAndRecovery": "KnowledgeGenerationV2 is a rebuildable native projection with source/revision/validity support, generation vector and canonical digest. Publication checks an exact predecessor; projection values are not a durable source writer.",
+        "stateAndRecovery": "Cognitive SQLite owns physical facts and atomic complete-generation publication. V2 binds source/revision/validity supports, source snapshot, generation vector, canonical generation and predecessor publication digests. A sealed indexed query view and compact support mapping are reused only inside one owner read transaction with per-seed digest and temporal checks. KG current/predecessor reconstruction is bounded by scope limits; complete owner startup still inspects retained fact-set history. Prompt relations persist through the existing atomic prompt owner with validated V2/V3 restore and have a sealed owner source plus library consumer; neither projection mints source facts or runtime authority.",
         "testFiles": [
           "codex-rs/hepta-kg/src/generation_tests.rs",
-          "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs"
+          "codex-rs/hepta-kg/src/generation_budget_tests.rs",
+          "codex-rs/hepta-kg/src/query_closure_tests.rs",
+          "codex-rs/hepta-kg/src/query_allocation_tests.rs",
+          "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+          "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+          "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+          "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
+          "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+          "codex-rs/hepta-prompt-registry/src/durable_relations_tests.rs"
         ],
         "runtimeDocuments": [
-          "codex-rs/hepta-memory/LANE_C_SQLITE.md"
+          "codex-rs/hepta-memory/LANE_C_SQLITE.md",
+          "qualification/knowledge-graph/AUDIT_20261001.md",
+          "qualification/knowledge-graph/FOLLOWUP_AUDIT_20261001.md"
         ],
         "remainingWork": [
-          "Bind source deltas and generation publication to the existing cognitive SQLite KG owner; qualify restart, current tombstone propagation and real query consumers without introducing a second fact store."
+          "Run current exact-head and deterministic synthetic-merge execution before changing productExecutionProved or deploymentQualified; new follow-up tests and documentation are pending validation.",
+          "Run current durable relation restart/revocation/corruption checks and compose a named prompt product caller with current source and final-use revocation checks; the sealed owner adapter currently emits only complements/substitutes/conflicts.",
+          "Supply target-host mutation/query/reopen and retained-history budgets plus owner-approved retention policy before selecting an incremental durable writer or claiming history-independent startup.",
+          "Bind registered HNMF event/engram/synapse/cross-modal/forget inputs through native owner adapters and independent review before claiming those target capabilities."
         ]
       }
     },

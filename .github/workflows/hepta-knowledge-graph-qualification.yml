@@ -3,6 +3,14 @@ name: Hepta knowledge.graph qualification
 on:
   pull_request:
     paths:
+      - "justfile"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.config/nextest.toml"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-kg/**"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-prompt-optimizer/**"
@@ -15,6 +23,7 @@ on:
       - "qualification/knowledge-graph/**"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/test_hepta_implementation_maps_scoped.py"
       - "scripts/hepta-knowledge-graph-target-measure.py"
       - "scripts/hepta-knowledge-graph-budget-check.py"
       - "scripts/test_hepta_knowledge_graph_budget.py"
@@ -23,6 +32,14 @@ on:
   push:
     branches: [main]
     paths:
+      - "justfile"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.config/nextest.toml"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-kg/**"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-prompt-optimizer/**"
@@ -35,6 +52,7 @@ on:
       - "qualification/knowledge-graph/**"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/test_hepta_implementation_maps_scoped.py"
       - "scripts/hepta-knowledge-graph-target-measure.py"
       - "scripts/hepta-knowledge-graph-budget-check.py"
       - "scripts/test_hepta_knowledge_graph_budget.py"
@@ -119,12 +137,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module knowledge.graph --module prompt.registry \
+            --module cognitive.store --module memory.retrieval
 
-      - name: Self-test target-host evidence harness
+      - name: Self-test module source and target-host evidence harnesses
         shell: bash
         run: |
           set -euo pipefail
+          python3 scripts/test_hepta_implementation_maps_scoped.py -v
           python3 scripts/test_hepta_knowledge_graph_budget.py -v
           python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
 

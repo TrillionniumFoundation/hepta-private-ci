@@ -198,7 +198,9 @@ impl KnowledgePublicationReceiptV2 {
     pub fn validate(&self) -> Result<(), KnowledgeGenerationErrorV2> {
         ensure_digest("published_generation", self.generation_digest)?;
         match (self.predecessor_generation, self.predecessor_digest) {
-            (None, None) if self.generation.get() == 1 => {}
+            (None, None)
+                if self.generation.get() == 1
+                    && self.disposition == KnowledgePublicationDispositionV2::Published => {}
             (Some(generation), Some(digest)) if generation.next().ok() == Some(self.generation) => {
                 ensure_digest("publication_predecessor", digest)?;
             }
@@ -334,8 +336,9 @@ pub fn publish_generation(
             if predecessor.generation.next().ok() != Some(candidate.generation) {
                 return Err(KnowledgeGenerationErrorV2::InvalidPredecessor);
             }
-            let semantic_unchanged = predecessor.generation_vector_digest
-                == candidate.generation_vector_digest
+            let semantic_unchanged = predecessor.source_snapshot_digest
+                == candidate.source_snapshot_digest
+                && predecessor.generation_vector_digest == candidate.generation_vector_digest
                 && predecessor.graph_profile_digest == candidate.graph_profile_digest
                 && predecessor.nodes == candidate.nodes
                 && predecessor.edges == candidate.edges;
@@ -527,7 +530,9 @@ fn collect_relation_query_edges<const MEASURE_WORK: bool>(
     maximum_edges: usize,
     work: &mut KnowledgeRelationQueryWorkV2,
 ) -> (Vec<KnowledgeEdgeV2>, usize) {
-    let mut selected_edges = Vec::with_capacity(maximum_edges.min(generation.edges.len()));
+    // Sparse and empty queries must not reserve result storage for unrelated
+    // edges merely because the caller permits a complete result.
+    let mut selected_edges = Vec::new();
     let mut omitted_count = 0usize;
     for edge in &generation.edges {
         if MEASURE_WORK {

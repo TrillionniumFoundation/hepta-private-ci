@@ -784,6 +784,44 @@ async fn reopen_recomputes_current_projection_digests_and_exact_fts_rows() {
 }
 
 #[tokio::test]
+async fn reopen_rejects_revision_fts_entity_key_drift() {
+    for replacement_key in ["unbound-entity-key", "engine"] {
+        let temp = TempDir::new().expect("FTS key temp dir");
+        let owner = agent_id(84);
+        let store = seeded_projection_store(&temp, &owner).await;
+        let original_rows: Vec<(String, i64, String, String, String)> = sqlx::query_as(
+            "SELECT memory_id, CAST(memory_revision AS INTEGER),
+                    canonical_entity_id, entity_type, label
+             FROM kg_revision_entity_fts ORDER BY canonical_entity_id",
+        )
+        .fetch_all(&store.pool)
+        .await
+        .expect("original FTS rows");
+        sqlx::query("UPDATE kg_revision_entity_fts SET entity_key = ? WHERE entity_key = 'ada'")
+            .bind(replacement_key)
+            .execute(&store.pool)
+            .await
+            .expect("drift only the FTS entity key");
+        let drifted_rows: Vec<(String, i64, String, String, String)> = sqlx::query_as(
+            "SELECT memory_id, CAST(memory_revision AS INTEGER),
+                    canonical_entity_id, entity_type, label
+             FROM kg_revision_entity_fts ORDER BY canonical_entity_id",
+        )
+        .fetch_all(&store.pool)
+        .await
+        .expect("drifted FTS rows");
+        assert_eq!(drifted_rows, original_rows);
+        store.pool.close().await;
+        drop(store);
+        let error = match CognitiveStore::open(&layout(&temp, &owner)).await {
+            Ok(_) => panic!("FTS entity key {replacement_key:?} must fail reopen"),
+            Err(error) => error,
+        };
+        expect_corrupt_with(error, "FTS rows have an unbound entity key");
+    }
+}
+
+#[tokio::test]
 async fn reopen_rejects_canonical_generation_and_publication_digest_tamper() {
     let generation_temp = TempDir::new().expect("generation semantics temp dir");
     let generation_owner = agent_id(86);

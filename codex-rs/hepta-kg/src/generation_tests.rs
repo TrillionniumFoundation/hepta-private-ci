@@ -537,3 +537,49 @@ fn query_result_digest_binds_complete_request_even_when_edges_match() {
 
 #[path = "query_closure_tests.rs"]
 mod query_closure;
+
+#[path = "query_allocation_tests.rs"]
+mod query_allocation;
+
+#[test]
+fn publication_distinguishes_changed_source_cut_from_unchanged_projection() {
+    let first = build_complete_generation(generation(1), input(vec![node("a", "a")], Vec::new()))
+        .expect("valid predecessor");
+    let mut candidate_input = input(first.nodes.clone(), first.edges.clone());
+    let unchanged = build_complete_generation(generation(2), candidate_input.clone())
+        .expect("valid identical source cut");
+    candidate_input.source_snapshot_digest = digest("snapshot:changed-cut");
+    let changed =
+        build_complete_generation(generation(2), candidate_input).expect("valid new source cut");
+    let unchanged_receipt =
+        publish_generation(Some(&first), &unchanged).expect("valid unchanged publication");
+    let changed_receipt =
+        publish_generation(Some(&first), &changed).expect("valid changed source publication");
+
+    assert_eq!(
+        unchanged_receipt.disposition,
+        KnowledgePublicationDispositionV2::Unchanged
+    );
+    assert_eq!(
+        changed_receipt.disposition,
+        KnowledgePublicationDispositionV2::Published
+    );
+    assert_ne!(
+        unchanged_receipt.publication_digest,
+        changed_receipt.publication_digest
+    );
+}
+
+#[test]
+fn initial_publication_receipt_cannot_claim_an_unchanged_predecessor() {
+    let first = build_complete_generation(generation(1), input(vec![node("a", "a")], Vec::new()))
+        .expect("valid initial generation");
+    let mut receipt = publish_generation(None, &first).expect("valid initial publication");
+    receipt.disposition = KnowledgePublicationDispositionV2::Unchanged;
+    receipt.publication_digest = compute_publication_digest(&receipt);
+
+    assert_eq!(
+        receipt.validate(),
+        Err(KnowledgeGenerationErrorV2::InvalidPredecessor)
+    );
+}
