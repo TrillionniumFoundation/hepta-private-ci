@@ -145,6 +145,36 @@ mod tests {
     }
 
     #[test]
+    fn exact_duplicate_retry_returns_original_ack_without_a_second_commit() {
+        let fixture = Fixture::new();
+        let mut backend = fixture.open();
+        let proposed = frontier(1, fixture.identity_sha256.clone());
+        let original = backend
+            .compare_and_swap("store:segmented-test", None, &proposed)
+            .unwrap();
+        let before = backend.capacity_status("store:segmented-test").unwrap();
+
+        let repeated = backend
+            .compare_and_swap("store:segmented-test", None, &proposed)
+            .unwrap();
+        let after = backend.capacity_status("store:segmented-test").unwrap();
+        let history = backend
+            .get_history(
+                "store:segmented-test",
+                EvidenceFrontierHistoryRangeV1::new(1, 1).unwrap(),
+            )
+            .unwrap();
+
+        assert_eq!(repeated, original);
+        assert_eq!(repeated.audit_sequence, 1);
+        assert_eq!(history, vec![proposed]);
+        assert_eq!(after.segment_count, before.segment_count);
+        assert_eq!(after.archived_records, before.archived_records);
+        assert_eq!(after.active_records, before.active_records);
+        assert_eq!(after.active_bytes, before.active_bytes);
+    }
+
+    #[test]
     fn archived_acknowledgement_is_recoverable_after_reopen() {
         let fixture = Fixture::new();
         let expected = evidence_recovery_frontier_v2_sha256(&frontier(
@@ -194,8 +224,8 @@ mod tests {
         let metadata = backend
             .read_segment_metadata(index.latest_segment.as_ref().unwrap(), "store:segmented-test")
             .unwrap();
-        let segment = std::fs::read(backend.legacy.journals.join(metadata.segment_file_name))
-            .unwrap();
+        let segment =
+            std::fs::read(backend.legacy.journals.join(metadata.segment_file_name)).unwrap();
         let active = std::fs::read(&paths.active).unwrap();
         let mut duplicate = segment;
         duplicate.extend_from_slice(&active);

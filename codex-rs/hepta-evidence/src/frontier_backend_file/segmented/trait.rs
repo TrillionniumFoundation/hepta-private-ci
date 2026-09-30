@@ -1,3 +1,102 @@
+#[derive(Clone, Copy, Debug)]
+struct FrontierMergeEffects {
+    allow_database_write: bool,
+    allow_frontier_overwrite: bool,
+    write_audit_record: bool,
+    advance_epoch: bool,
+    requires_repair_authority: bool,
+    automatic_retry: bool,
+    terminal_success: bool,
+    outcome_code: &'static str,
+}
+
+const fn frontier_merge_effects(decision: crate::FrontierMergeDecision) -> FrontierMergeEffects {
+    use crate::FrontierMergeDecision;
+
+    match decision {
+        FrontierMergeDecision::ExactDuplicate => FrontierMergeEffects {
+            allow_database_write: false,
+            allow_frontier_overwrite: false,
+            write_audit_record: false,
+            advance_epoch: false,
+            requires_repair_authority: false,
+            automatic_retry: false,
+            terminal_success: true,
+            outcome_code: "exact_duplicate",
+        },
+        FrontierMergeDecision::IncomingStale => FrontierMergeEffects {
+            allow_database_write: false,
+            allow_frontier_overwrite: false,
+            write_audit_record: false,
+            advance_epoch: false,
+            requires_repair_authority: false,
+            automatic_retry: false,
+            terminal_success: false,
+            outcome_code: "incoming_stale",
+        },
+        FrontierMergeDecision::IncomingWins => FrontierMergeEffects {
+            allow_database_write: true,
+            allow_frontier_overwrite: true,
+            write_audit_record: true,
+            advance_epoch: true,
+            requires_repair_authority: false,
+            automatic_retry: false,
+            terminal_success: true,
+            outcome_code: "incoming_wins",
+        },
+        FrontierMergeDecision::ConflictSameOrderDifferentIdentity => FrontierMergeEffects {
+            allow_database_write: false,
+            allow_frontier_overwrite: false,
+            write_audit_record: false,
+            advance_epoch: false,
+            requires_repair_authority: false,
+            automatic_retry: false,
+            terminal_success: false,
+            outcome_code: "same_generation_identity_conflict",
+        },
+        FrontierMergeDecision::InvalidIncoming => FrontierMergeEffects {
+            allow_database_write: false,
+            allow_frontier_overwrite: false,
+            write_audit_record: false,
+            advance_epoch: false,
+            requires_repair_authority: false,
+            automatic_retry: false,
+            terminal_success: false,
+            outcome_code: "invalid_incoming",
+        },
+        FrontierMergeDecision::InvalidCurrent => FrontierMergeEffects {
+            allow_database_write: false,
+            allow_frontier_overwrite: false,
+            write_audit_record: false,
+            advance_epoch: false,
+            requires_repair_authority: false,
+            automatic_retry: false,
+            terminal_success: false,
+            outcome_code: "invalid_current",
+        },
+        FrontierMergeDecision::RepairRequired => FrontierMergeEffects {
+            allow_database_write: false,
+            allow_frontier_overwrite: false,
+            write_audit_record: false,
+            advance_epoch: false,
+            requires_repair_authority: true,
+            automatic_retry: false,
+            terminal_success: false,
+            outcome_code: "repair_authorization_required",
+        },
+    }
+}
+
+fn rejected_merge(
+    effects: FrontierMergeEffects,
+    detail: &str,
+) -> EvidenceFrontierBackendError {
+    invalid(&format!(
+        "frontier merge rejected [{}; repairAuthority={}; automaticRetry={}]: {detail}",
+        effects.outcome_code, effects.requires_repair_authority, effects.automatic_retry
+    ))
+}
+
 impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
     fn get_latest(
         &mut self,
@@ -27,9 +126,9 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
     ) -> Result<EvidenceFrontierDurableAckV1, EvidenceFrontierBackendError> {
         self.ensure_available()?;
         self.verify_backend_identity()?;
-        new_frontier.validate_structure().map_err(|error| {
-            invalid(&format!("invalid proposed frontier: {error}"))
-        })?;
+        new_frontier
+            .validate_structure()
+            .map_err(|error| invalid(&format!("invalid proposed frontier: {error}")))?;
         if new_frontier.store_id != store_id
             || new_frontier.backend_identity_sha256 != self.legacy.identity_sha256
         {
@@ -44,42 +143,89 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
         active.lock().map_err(unavailable)?;
         let mut state = self.load_state_from_active(&paths, store_id, Some(&mut active))?;
         let actual_generation = state.latest_generation();
+
+        if let Some(current) = state.latest_frontier() {
+            let decision = crate::classify_frontier_merge(&current, new_frontier);
+            let effects = frontier_merge_effects(decision);
+            match decision {
+                crate::FrontierMergeDecision::IncomingWins => {
+                    if !effects.allow_database_write
+                        || !effects.allow_frontier_overwrite
+                        || !effects.write_audit_record
+                        || !effects.advance_epoch
+                        || !effects.terminal_success
+                    {
+                        return Err(corrupt("frontier merge effect table is inconsistent"));
+                    }
+                }
+                crate::FrontierMergeDecision::ExactDuplicate => {
+                    if effects.allow_database_write
+                        || effects.allow_frontier_overwrite
+                        || effects.write_audit_record
+                        || effects.advance_epoch
+                        || !effects.terminal_success
+                    {
+                        return Err(corrupt("frontier duplicate effect table is inconsistent"));
+                    }
+                    let original_expected = current
+                        .frontier_generation
+                        .checked_sub(1)
+                        .filter(|generation| *generation > 0);
+                    if expected_generation != original_expected {
+                        return Err(rejected_merge(
+                            effects,
+                            "an idempotent retry must preserve the original expected generation",
+                        ));
+                    }
+                    let frontier_sha256 =
+                        evidence_recovery_frontier_v2_sha256(&current).map_err(|error| {
+                            corrupt(&format!(
+                                "cannot hash the accepted duplicate frontier: {error}"
+                            ))
+                        })?;
+                    return Ok(EvidenceFrontierDurableAckV1 {
+                        backend_id: self.legacy.identity.backend_id.clone(),
+                        backend_identity_sha256: self.legacy.identity_sha256.clone(),
+                        store_id: store_id.to_string(),
+                        frontier_generation: current.frontier_generation,
+                        frontier_sha256,
+                        audit_sequence: state.latest_audit_sequence(),
+                    });
+                }
+                crate::FrontierMergeDecision::IncomingStale => {
+                    return Err(rejected_merge(effects, "proposed frontier is stale"));
+                }
+                crate::FrontierMergeDecision::ConflictSameOrderDifferentIdentity => {
+                    return Err(rejected_merge(
+                        effects,
+                        "same-generation frontiers have different canonical identities",
+                    ));
+                }
+                crate::FrontierMergeDecision::InvalidIncoming => {
+                    return Err(rejected_merge(
+                        effects,
+                        "proposed frontier is structurally invalid",
+                    ));
+                }
+                crate::FrontierMergeDecision::InvalidCurrent => {
+                    return Err(corrupt(&format!(
+                        "accepted frontier is structurally invalid under the store lock [{}]",
+                        effects.outcome_code
+                    )));
+                }
+                crate::FrontierMergeDecision::RepairRequired => {
+                    return Err(rejected_merge(
+                        effects,
+                        "an exact signed repair transition is required",
+                    ));
+                }
+            }
+        }
         if actual_generation != expected_generation {
             return Err(EvidenceFrontierBackendError::Conflict {
                 expected: expected_generation,
                 actual: actual_generation,
             });
-        }
-        if let Some(current) = state.latest_frontier() {
-            match crate::classify_frontier_merge(&current, new_frontier) {
-                crate::FrontierMergeDecision::IncomingWins => {}
-                crate::FrontierMergeDecision::ExactDuplicate => {
-                    return Err(invalid(
-                        "proposed frontier is an exact duplicate, not a new generation",
-                    ));
-                }
-                crate::FrontierMergeDecision::IncomingStale => {
-                    return Err(invalid("proposed frontier is stale"));
-                }
-                crate::FrontierMergeDecision::ConflictSameOrderDifferentIdentity => {
-                    return Err(invalid(
-                        "proposed frontier has a same-generation identity conflict",
-                    ));
-                }
-                crate::FrontierMergeDecision::InvalidIncoming => {
-                    return Err(invalid("proposed frontier is structurally invalid"));
-                }
-                crate::FrontierMergeDecision::InvalidCurrent => {
-                    return Err(corrupt(
-                        "accepted frontier is structurally invalid under the store lock",
-                    ));
-                }
-                crate::FrontierMergeDecision::RepairRequired => {
-                    return Err(invalid(
-                        "proposed frontier requires an exact signed repair transition",
-                    ));
-                }
-            }
         }
         let required_generation = actual_generation
             .unwrap_or(0)
@@ -94,9 +240,10 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
             .latest_audit_sequence()
             .checked_add(1)
             .ok_or_else(|| invalid("frontier audit sequence exhausted its numeric domain"))?;
-        let frontier_sha256 = evidence_recovery_frontier_v2_sha256(new_frontier).map_err(|error| {
-            invalid(&format!("cannot hash proposed frontier: {error}"))
-        })?;
+        let frontier_sha256 =
+            evidence_recovery_frontier_v2_sha256(new_frontier).map_err(|error| {
+                invalid(&format!("cannot hash proposed frontier: {error}"))
+            })?;
         let mut record = EvidenceFrontierAuditRecordV1 {
             schema_version: EVIDENCE_FRONTIER_AUDIT_RECORD_SCHEMA_VERSION,
             audit_sequence,
@@ -132,7 +279,9 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
             };
         }
         if encoded.len() as u64 > ACTIVE_SEGMENT_MAX_BYTES {
-            return Err(invalid("one frontier audit record exceeds the active segment bound"));
+            return Err(invalid(
+                "one frontier audit record exceeds the active segment bound",
+            ));
         }
         let current_length = active.metadata().map_err(unavailable)?.len();
         if current_length != state.active_bytes {
