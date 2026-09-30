@@ -1,4 +1,4 @@
-name: Prompt registry phase 3 durable pipeline intent
+name: Prompt registry phase 3 and 4 convergence
 
 on:
   pull_request:
@@ -13,27 +13,35 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: prompt-registry-phase3-durable-intent
-  cancel-in-progress: false
+  group: prompt-registry-phase3-4-convergence
+  cancel-in-progress: true
 
 jobs:
   validate-and-publish:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 100
+    runs-on: ubuntu-slim
+    timeout-minutes: 180
     env:
       TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
       PHASE1_ANCESTOR: 8825996f927ca1cb3e1271ffcce0261ce25b398e
+      MEASUREMENT_AUTHOR_SHA: 0592b1179879515b195018f4dd7203c1eeb7c24a
       CARGO_INCREMENTAL: '0'
       CARGO_BUILD_JOBS: '2'
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_PROFILE_DEV_DEBUG: '0'
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
-      - name: Checkout reviewed authoring scripts
+      - name: Checkout reviewed phase 3 authoring scripts
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           path: authoring
+          persist-credentials: false
+
+      - name: Checkout reviewed phase 4 measurement scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.MEASUREMENT_AUTHOR_SHA }}
+          path: measurement-authoring
           persist-credentials: false
 
       - name: Checkout delivery candidate
@@ -63,7 +71,7 @@ jobs:
           PY
           echo "sha=$tested" >> "$GITHUB_OUTPUT"
 
-      - name: Apply reviewed durable intent and restart reconciliation
+      - name: Apply durable pipeline intent and restart reconciliation
         shell: bash
         run: |
           set -euo pipefail
@@ -81,13 +89,15 @@ jobs:
           components: rustfmt, clippy
 
       - name: Prepare native product dependencies
+        shell: bash
         run: |
+          set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
           CODEX_REPO_ROOT="$GITHUB_WORKSPACE/target" PYTHONPATH="$GITHUB_WORKSPACE/target/scripts" \
             python3 target/scripts/hepta_ci_v8.py
 
-      - name: Format and verify Agentd pipeline source
+      - name: Verify durable pipeline intent
         working-directory: target/codex-rs
         shell: bash
         run: |
@@ -98,7 +108,7 @@ jobs:
           cargo test --locked -p codex-hepta-agentd --lib prompt_ -- --nocapture --test-threads=1
           cargo clippy --locked -p codex-hepta-agentd --all-targets --no-deps -- -D warnings
 
-      - name: Commit conventional source and exact implementation truth
+      - name: Commit phase 3 conventional source locally
         working-directory: target
         shell: bash
         run: |
@@ -112,17 +122,110 @@ jobs:
           git add codex-rs/hepta-agentd/src/
           git commit -m 'feat(prompt.registry): add durable pipeline intent reconciliation'
 
+      - name: Apply versioned GC age and full-operation metrics
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp measurement-authoring/scripts/author_prompt_registry_gc_age.py "$RUNNER_TEMP/gc-age.py"
+          cp measurement-authoring/scripts/author_prompt_registry_metrics.py "$RUNNER_TEMP/metrics.py"
+          python3 "$RUNNER_TEMP/gc-age.py" target
+          python3 "$RUNNER_TEMP/metrics.py" target
+          cd target
+          git diff --check
+
+      - name: Bind phase 4 developer and operator contracts
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def append_once(path: str, marker: str, text: str) -> None:
+              p = Path(path)
+              value = p.read_text(encoding='utf-8')
+              if marker in value:
+                  return
+              p.write_text(value.rstrip() + '\n\n' + text.strip() + '\n', encoding='utf-8')
+
+          append_once(
+              'docs/modules/prompt.registry/API_CONTRACT.md',
+              '## Versioned payload-reclaim policy',
+              '''## Versioned payload-reclaim policy
+
+`PromptRegistryGcPolicyV1` binds minimum revision retention, optional trusted
+wall-clock age, trusted-time epoch, clock authority and clock version. Missing
+or mismatched time authority never shortens retention. A newly discovered
+inactive payload starts conservatively at the current revision/time. GC policy
+is deletion eligibility only; it grants no prompt-use authority and never
+prunes factor, realization, relation, supersession or lifecycle audit facts.
+''')
+          append_once(
+              'docs/modules/prompt.registry/OPERATIONS.md',
+              '## Versioned reclaim-age operation',
+              '''## Versioned reclaim-age operation
+
+Operators must supply an explicit `PromptRegistryGcPolicyV1`. Revision age is
+always durable; millisecond age is reported only when the persisted fact and
+current policy share the exact trusted-time epoch, authority and version.
+Unknown or changed clock provenance remains ineligible rather than being
+coerced to zero. The sidecar is synchronized independently and an uncertain
+post-rename directory sync poisons the owner until reopen and reconciliation.
+''')
+          append_once(
+              'docs/modules/prompt.registry/PERFORMANCE.md',
+              '## Full mutation cost decomposition',
+              '''## Full mutation cost decomposition
+
+Process-generation I/O metrics distinguish full mutation latency, registry
+clone time, mutation-apply time, metadata-encode time and durable publication.
+Counters classify changed, unchanged and failed mutations. These measurements
+make the current full-image O(N) costs explicit; they do not claim that a
+journal, incremental digest or segmented lifecycle history is already active.
+Any replacement must preserve the single-writer, unknown-commit poisoning,
+revocation and strict-reopen invariants and must beat this baseline at
+1k/8k/16k plus long-running churn.
+''')
+          PY
+
+      - name: Verify registry measurement baseline
+        working-directory: target/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-prompt-registry -p codex-hepta-agentd
+          cargo fmt -p codex-hepta-prompt-registry -p codex-hepta-agentd -- --check
+          cargo check --locked -p codex-hepta-prompt-registry -p codex-hepta-agentd --all-targets
+          cargo test --locked -p codex-hepta-prompt-registry -- --test-threads=1
+          cargo test --locked -p codex-hepta-agentd --lib prompt_ -- --nocapture --test-threads=1
+          cargo clippy --locked -p codex-hepta-prompt-registry -p codex-hepta-agentd --all-targets --no-deps -- -D warnings
+          cargo test --locked -p codex-hepta-prompt-registry operational_scale_profile_1k_8k_16k -- --ignored --nocapture --test-threads=1
+          cargo test --locked -p codex-hepta-prompt-registry operational_writer_latency_profile -- --ignored --nocapture --test-threads=1
+          cargo test --locked -p codex-hepta-prompt-registry operational_fsync_profile -- --ignored --nocapture --test-threads=1
+
+      - name: Commit phase 4 and exact implementation truth locally
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed=$(git diff --name-only)
+          test -n "$changed"
+          unexpected=$(printf '%s\n' "$changed" | grep -Ev '^(codex-rs/hepta-prompt-registry/src/[^/]+\.rs|docs/modules/prompt\.registry/(API_CONTRACT|OPERATIONS|PERFORMANCE)\.md)$' || true)
+          test -z "$unexpected"
+          git add codex-rs/hepta-prompt-registry/src docs/modules/prompt.registry/
+          git commit -m 'feat(prompt.registry): persist reclaim age and measure full mutation cost'
+
           python3 scripts/hepta-prompt-registry-map.py --write
           git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
                   docs/modules/prompt.registry/QUALIFICATION_STATUS.md
           if test -n "$(git diff --cached --name-only)"; then
-            git commit -m 'docs(prompt.registry): bind durable intent source truth'
+            git commit -m 'docs(prompt.registry): bind phase 3 and 4 source truth'
           fi
           python3 scripts/hepta-prompt-registry-map.py --check
           git diff --check
           test -z "$(git status --porcelain)"
 
-      - name: Publish only over the exact captured predecessor
+      - name: Publish all validated source as one exact fast-forward
         working-directory: target
         shell: bash
         env:
