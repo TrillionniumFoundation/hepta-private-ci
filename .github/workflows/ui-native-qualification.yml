@@ -7,6 +7,7 @@ on:
       - apps/hepta-native/**
       - docs/modules/ui.native/**
       - scripts/check_hepta_ui_native_convergence.py
+      - scripts/qualify_hepta_ui_native_storage.py
       - scripts/test_hepta_ui_native_convergence.py
       - scripts/test_hepta_ui_native_package_security.py
       - .github/workflows/ui-native-qualification.yml
@@ -16,6 +17,7 @@ on:
       - apps/hepta-native/**
       - docs/modules/ui.native/**
       - scripts/check_hepta_ui_native_convergence.py
+      - scripts/qualify_hepta_ui_native_storage.py
       - scripts/test_hepta_ui_native_convergence.py
       - scripts/test_hepta_ui_native_package_security.py
       - .github/workflows/ui-native-qualification.yml
@@ -173,10 +175,98 @@ jobs:
       - name: Native Rust tests
         run: cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets
 
+  storage-scale:
+    name: ui.native / exact source / storage scale
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.HEAD_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install Linux native and syscall prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev desktop-file-utils strace
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+      - name: Resolve frozen implementation source
+        shell: bash
+        run: |
+          set -euo pipefail
+          implementation_sha="$(python3 - <<'PYTHON'
+          import json
+          from pathlib import Path
+          print(json.loads(Path('apps/hepta-native/CANDIDATE.json').read_text())['implementationSourceSha'])
+          PYTHON
+          )"
+          test "${#implementation_sha}" -eq 40
+          printf 'IMPLEMENTATION_SHA=%s\n' "$implementation_sha" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/ui-native-storage-evidence" "$RUNNER_TEMP/ui-native-storage-roots"
+      - name: Compile the full-scale qualification harness
+        run: cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib --no-run
+      - name: Measure 4096 active records and durability syscalls
+        shell: bash
+        env:
+          HEPTA_UI_NATIVE_REQUIRE_PINNED: "1"
+          HEPTA_UI_NATIVE_STORAGE_ROOT: ${{ runner.temp }}/ui-native-storage-roots
+          HEPTA_UI_NATIVE_STORAGE_EVIDENCE: ${{ runner.temp }}/ui-native-storage-evidence/active.json
+        run: |
+          set -euo pipefail
+          HEPTA_UI_NATIVE_SOURCE_SHA="$IMPLEMENTATION_SHA" \
+          strace -ff -yy \
+            -o "$RUNNER_TEMP/ui-native-storage-evidence/active.strace" \
+            -e trace=write,writev,pwrite64,pwritev,pwritev2,fsync,fdatasync \
+            cargo +1.95.0 test \
+              --manifest-path apps/hepta-native/Cargo.toml --locked --lib \
+              storage_qualification_tests::storage_active_scale_qualification -- \
+              --ignored --exact --nocapture --test-threads=1
+      - name: Measure one million retired identities and deterministic rebuild
+        shell: bash
+        env:
+          HEPTA_UI_NATIVE_REQUIRE_PINNED: "1"
+          HEPTA_UI_NATIVE_STORAGE_ROOT: ${{ runner.temp }}/ui-native-storage-roots
+          HEPTA_UI_NATIVE_STORAGE_EVIDENCE: ${{ runner.temp }}/ui-native-storage-evidence/retired.json
+        run: |
+          set -euo pipefail
+          HEPTA_UI_NATIVE_SOURCE_SHA="$IMPLEMENTATION_SHA" \
+          cargo +1.95.0 test \
+            --manifest-path apps/hepta-native/Cargo.toml --locked --lib \
+            storage_qualification_tests::storage_retirement_scale_qualification -- \
+            --ignored --exact --nocapture --test-threads=1
+      - name: Enforce every hard storage budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/qualify_hepta_ui_native_storage.py \
+            --budgets apps/hepta-native/STORAGE_BUDGETS.json \
+            --active "$RUNNER_TEMP/ui-native-storage-evidence/active.json" \
+            --retired "$RUNNER_TEMP/ui-native-storage-evidence/retired.json" \
+            --trace-prefix "$RUNNER_TEMP/ui-native-storage-evidence/active.strace" \
+            --source-sha "$IMPLEMENTATION_SHA" \
+            --emit "$RUNNER_TEMP/ui-native-storage-evidence/qualification.json"
+      - name: Retain immutable storage evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ui-native-storage-${{ env.HEAD_SHA }}
+          path: ${{ runner.temp }}/ui-native-storage-evidence
+          if-no-files-found: error
+          retention-days: 14
+      - name: Worktree remains immutable
+        shell: bash
+        run: test -z "$(git status --porcelain)"
+
   qualification-result:
     name: ui.native / qualification result
     if: always()
-    needs: [source-identity, head-platform, merge-platform]
+    needs: [source-identity, head-platform, merge-platform, storage-scale]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -187,13 +277,15 @@ jobs:
           SOURCE_RESULT: ${{ needs.source-identity.result }}
           HEAD_RESULT: ${{ needs.head-platform.result }}
           MERGE_RESULT: ${{ needs.merge-platform.result }}
+          STORAGE_RESULT: ${{ needs.storage-scale.result }}
           SOURCE_SHA: ${{ env.HEAD_SHA }}
         run: |
           set -euo pipefail
-          printf 'source_sha=%s\nsource_identity=%s\nexact_head=%s\nordered_parent_merge=%s\n' \
-            "$SOURCE_SHA" "$SOURCE_RESULT" "$HEAD_RESULT" "$MERGE_RESULT"
+          printf 'source_sha=%s\nsource_identity=%s\nexact_head=%s\nordered_parent_merge=%s\nstorage_scale=%s\n' \
+            "$SOURCE_SHA" "$SOURCE_RESULT" "$HEAD_RESULT" "$MERGE_RESULT" "$STORAGE_RESULT"
           test "$SOURCE_RESULT" = success
           test "$HEAD_RESULT" = success
+          test "$STORAGE_RESULT" = success
           if [[ "$EVENT_NAME" = pull_request ]]; then
             test "$MERGE_RESULT" = success
           else

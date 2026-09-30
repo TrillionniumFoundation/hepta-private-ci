@@ -32,3 +32,6 @@ pub mod startup;
 mod resource;
 
 mod retirement;
+
+#[cfg(test)]
+mod storage_qualification_tests;
