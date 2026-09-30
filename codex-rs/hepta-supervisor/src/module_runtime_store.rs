@@ -39,6 +39,9 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
+#[path = "module_runtime_store_topology.rs"]
+mod topology_transactions;
+
 const STORE_SCHEMA: &str = "hepta.runtime-module-supervisor-store.v1";
 const MAX_STORE_BYTES: u64 = 8 * 1024 * 1024;
 
@@ -48,6 +51,8 @@ pub enum DurableRuntimeModuleSupervisorErrorV1 {
     Invalid(String),
     #[error("durable runtime-module supervisor store is already owned")]
     Busy,
+    #[error("runtime-module publication is uncertain; reopen the durable owner before use")]
+    RecoveryRequired,
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error(transparent)]
@@ -62,6 +67,7 @@ pub struct DurableRuntimeModuleSupervisorV1 {
     path: PathBuf,
     _lock: File,
     supervisor: RuntimeModuleSupervisorV1,
+    poisoned: bool,
 }
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -188,6 +194,7 @@ impl DurableRuntimeModuleSupervisorV1 {
             path,
             _lock: lock,
             supervisor,
+            poisoned: false,
         };
         if !owner.path.exists() {
             owner.persist(&owner.supervisor)?;
@@ -195,13 +202,30 @@ impl DurableRuntimeModuleSupervisorV1 {
         Ok(owner)
     }
 
-    pub fn topology(&self) -> codex_hepta_control_plane::RuntimeTopologySnapshotV1 {
-        self.supervisor.topology()
+    pub fn topology(
+        &self,
+    ) -> Result<
+        codex_hepta_control_plane::RuntimeTopologySnapshotV1,
+        DurableRuntimeModuleSupervisorErrorV1,
+    > {
+        self.ready()?;
+        Ok(self.supervisor.topology())
     }
 
-    pub fn checkpoint(&self) -> RuntimeModuleSupervisorCheckpointV1 {
-        self.supervisor.checkpoint()
+    pub fn checkpoint(
+        &self,
+    ) -> Result<RuntimeModuleSupervisorCheckpointV1, DurableRuntimeModuleSupervisorErrorV1> {
+        self.ready()?;
+        Ok(self.supervisor.checkpoint())
     }
+
+    fn ready(&self) -> Result<(), DurableRuntimeModuleSupervisorErrorV1> {
+        if self.poisoned {
+            return Err(DurableRuntimeModuleSupervisorErrorV1::RecoveryRequired);
+        }
+        Ok(())
+    }
+
     fn transaction<T, F>(
         &mut self,
         operation: F,
@@ -209,9 +233,17 @@ impl DurableRuntimeModuleSupervisorV1 {
     where
         F: FnOnce(&mut RuntimeModuleSupervisorV1) -> Result<T, RuntimeModuleSupervisorErrorV1>,
     {
+        self.ready()?;
         let mut staged = self.supervisor.clone();
         let output = operation(&mut staged)?;
-        self.persist(&staged)?;
+        // Publication can replace the file before its directory sync fails.
+        // Do not accept another mutation from the old in-memory generation or
+        // export its snapshot as current. Recovery must re-read durable state
+        // under the same existing owner lock, never blindly reapply the effect.
+        if let Err(error) = self.persist(&staged) {
+            self.poisoned = true;
+            return Err(error);
+        }
         self.supervisor = staged;
         Ok(output)
     }
@@ -1019,6 +1051,7 @@ mod tests {
     ) -> Option<Generation> {
         owner
             .checkpoint()
+            .expect("healthy durable owner")
             .registry
             .generation_fences
             .into_iter()
@@ -1032,14 +1065,26 @@ mod tests {
         let path = root.path().join("runtime-modules.json");
         let first = DurableRuntimeModuleSupervisorV1::open(&path).expect("first owner");
         assert!(path.is_file());
-        assert!(first.topology().active.is_empty());
+        assert!(
+            first
+                .topology()
+                .expect("healthy durable owner")
+                .active
+                .is_empty()
+        );
         assert!(matches!(
             DurableRuntimeModuleSupervisorV1::open(&path),
             Err(DurableRuntimeModuleSupervisorErrorV1::Busy)
         ));
         drop(first);
         let reopened = DurableRuntimeModuleSupervisorV1::open(&path).expect("reopen");
-        assert!(reopened.topology().active.is_empty());
+        assert!(
+            reopened
+                .topology()
+                .expect("healthy durable owner")
+                .active
+                .is_empty()
+        );
     }
 
     #[test]
@@ -1080,10 +1125,22 @@ mod tests {
                     },
                 )
                 .expect("retire");
-            assert!(owner.topology().active.is_empty());
+            assert!(
+                owner
+                    .topology()
+                    .expect("healthy durable owner")
+                    .active
+                    .is_empty()
+            );
         }
         let mut reopened = DurableRuntimeModuleSupervisorV1::open(&path).expect("reopen");
-        assert!(reopened.topology().active.is_empty());
+        assert!(
+            reopened
+                .topology()
+                .expect("healthy durable owner")
+                .active
+                .is_empty()
+        );
         assert_eq!(
             greatest_generation(&reopened, &module_id),
             Some(generation(1))
@@ -1139,7 +1196,7 @@ mod tests {
             "rollback" => {
                 let mut owner =
                     DurableRuntimeModuleSupervisorV1::open(&path).expect("restore generation 2");
-                let topology = owner.topology();
+                let topology = owner.topology().expect("healthy durable owner");
                 assert_eq!(topology.active.len(), 1);
                 assert_eq!(topology.active[0].generation, generation(2));
                 assert_eq!(greatest_generation(&owner, &module_id), Some(generation(2)));
@@ -1171,7 +1228,7 @@ mod tests {
             "verify" => {
                 let mut owner =
                     DurableRuntimeModuleSupervisorV1::open(&path).expect("restore generation 3");
-                let topology = owner.topology();
+                let topology = owner.topology().expect("healthy durable owner");
                 assert_eq!(topology.active.len(), 1);
                 assert_eq!(topology.active[0].generation, generation(3));
                 assert_eq!(
@@ -1220,5 +1277,153 @@ mod tests {
         assert!(root.path().join("rollback.done").is_file());
         run_worker(root.path(), "verify", 0);
         assert!(root.path().join("verify.done").is_file());
+    }
+
+    #[test]
+    fn publication_failure_fences_reads_and_writes_until_real_reopen() {
+        let directory = tempfile::tempdir().expect("temporary owner root");
+        let path = directory.path().join("runtime.json");
+        let retained = directory.path().join("retained.json");
+        let mut owner = DurableRuntimeModuleSupervisorV1::open(&path).expect("open");
+        owner
+            .register_bootstrap(stateful_abi(1, "original", None))
+            .expect("bootstrap");
+        let before = owner.checkpoint().expect("current checkpoint");
+        let mut optional = stateful_abi(1, "optional", None);
+        optional.module_id = id("module.optional");
+        optional.authoritative_domains.clear();
+        optional.effect_scope.clear();
+        optional.state_class = RuntimeModuleStateClassV1::Stateless;
+        // A real destination obstruction makes atomic publication fail. Keep
+        // the sidecar owner lock held while repairing only this fixture's path.
+        std::fs::rename(&path, &retained).expect("retain acknowledged file");
+        std::fs::create_dir(&path).expect("obstruct publication");
+        assert!(owner.register_bootstrap(optional.clone()).is_err());
+        std::fs::remove_dir(&path).expect("remove obstruction");
+        std::fs::rename(&retained, &path).expect("restore acknowledged file");
+        assert!(matches!(
+            owner.topology(),
+            Err(DurableRuntimeModuleSupervisorErrorV1::RecoveryRequired)
+        ));
+        assert!(matches!(
+            owner.checkpoint(),
+            Err(DurableRuntimeModuleSupervisorErrorV1::RecoveryRequired)
+        ));
+        assert!(matches!(
+            owner.register_bootstrap(optional.clone()),
+            Err(DurableRuntimeModuleSupervisorErrorV1::RecoveryRequired)
+        ));
+        assert!(matches!(
+            DurableRuntimeModuleSupervisorV1::open(&path),
+            Err(DurableRuntimeModuleSupervisorErrorV1::Busy)
+        ));
+        drop(owner);
+        let mut recovered =
+            DurableRuntimeModuleSupervisorV1::open(&path).expect("recover existing owner");
+        assert_eq!(
+            recovered.checkpoint().expect("recovered checkpoint"),
+            before
+        );
+        recovered
+            .register_bootstrap(optional)
+            .expect("explicit admission after recovery");
+        assert_eq!(
+            recovered.topology().expect("current topology").active.len(),
+            2
+        );
+    }
+
+    #[test]
+    fn semantic_rejection_does_not_poison_acknowledged_owner() {
+        let directory = tempfile::tempdir().expect("temporary owner root");
+        let mut owner =
+            DurableRuntimeModuleSupervisorV1::open(directory.path().join("runtime.json"))
+                .expect("open");
+        let abi = stateful_abi(1, "original", None);
+        owner.register_bootstrap(abi.clone()).expect("bootstrap");
+        let before = owner.checkpoint().expect("checkpoint");
+        assert!(owner.register_bootstrap(abi).is_err());
+        assert_eq!(owner.checkpoint().expect("still healthy"), before);
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn post_rename_directory_sync_failure_recovers_published_generation() {
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::PermissionsExt;
+        use std::os::unix::process::CommandExt;
+        const ROOT: &str = "HEPTA_RUNTIME_MODULE_DIRECTORY_SYNC_FAULT_ROOT";
+        if let Some(root) = std::env::var_os(ROOT) {
+            let directory = std::path::PathBuf::from(root).join("owner");
+            std::fs::create_dir(&directory).expect("private child owner directory");
+            std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o700))
+                .expect("private directory");
+            let path = directory.join("modules.json");
+            let mut owner = DurableRuntimeModuleSupervisorV1::open(&path).expect("open owner");
+            owner
+                .register_bootstrap(stateful_abi(1, "baseline", None))
+                .expect("bootstrap baseline");
+            let mut optional = stateful_abi(1, "new-content", None);
+            optional.module_id = id("module.optional");
+            optional.authoritative_domains.clear();
+            optional.effect_scope.clear();
+            optional.state_class = RuntimeModuleStateClassV1::Stateless;
+            // Write+search permits staging and rename. Removing directory read
+            // permission makes the subsequent directory-open-for-sync fail.
+            std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o300))
+                .expect("deny directory sync open");
+            let published_but_unacknowledged = owner.register_bootstrap(optional.clone());
+            std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o700))
+                .expect("restore fixture permission");
+            assert!(published_but_unacknowledged.is_err());
+            let disk = read_store(&path)
+                .expect("read actual published bytes")
+                .expect("checkpoint exists");
+            assert_eq!(disk.registry.active_reservations.len(), 2);
+            assert!(matches!(
+                owner.topology(),
+                Err(DurableRuntimeModuleSupervisorErrorV1::RecoveryRequired)
+            ));
+            assert!(matches!(
+                owner.register_bootstrap(optional.clone()),
+                Err(DurableRuntimeModuleSupervisorErrorV1::RecoveryRequired)
+            ));
+            drop(owner);
+            let mut recovered =
+                DurableRuntimeModuleSupervisorV1::open(&path).expect("recover published bytes");
+            assert_eq!(recovered.checkpoint().expect("recovered checkpoint"), disk);
+            assert!(recovered.register_bootstrap(optional).is_err());
+            assert_eq!(
+                recovered
+                    .topology()
+                    .expect("semantic rejection remains healthy")
+                    .active
+                    .len(),
+                2
+            );
+            return;
+        }
+        let directory = tempfile::tempdir().expect("isolated fault root");
+        let mut child = Command::new(std::env::current_exe().expect("test executable"));
+        child.args(["--exact", "module_runtime_store::tests::post_rename_directory_sync_failure_recovers_published_generation", "--nocapture"]);
+        child.env(ROOT, directory.path());
+        // Root bypasses directory permissions. Drop only this isolated test
+        // child's identity instead of silently skipping the fault under root.
+        if std::fs::metadata("/proc/self")
+            .expect("current process identity")
+            .uid()
+            == 0
+        {
+            std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o777))
+                .expect("empty child scratch directory");
+            child.gid(65534).uid(65534);
+        }
+        let output = child.output().expect("run real filesystem fault child");
+        assert!(
+            output.status.success(),
+            "filesystem fault child failed: {} {}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
     }
 }

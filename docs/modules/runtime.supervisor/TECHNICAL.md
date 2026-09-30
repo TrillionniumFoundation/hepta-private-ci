@@ -166,6 +166,31 @@ Agent drain uses an exact Agentd `Drain` RPC acknowledgement. Agentd closes new 
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
+### Durable runtime-module transactions
+
+`DurableRuntimeModuleSupervisorV1` exposes the existing selected topology
+admission, grouped canary, retirement-readiness, final publication and withdrawal
+transitions through the same checkpoint owner and sidecar lock. Per-member
+promotion stays non-serving until the complete selected topology is ready.
+Withdrawal releases pending work but retains generation and anti-resurrection
+fences; it is not cancellation or settlement of a physical worker.
+
+A failed state publication poisons that owner handle. The first operation returns
+the publication error; subsequent mutation, `topology()` and `checkpoint()` return
+`RecoveryRequired`. Those getters now return `Result`. A rename may have taken
+effect before directory sync fails, so continuing from the old memory snapshot
+would risk overwriting a newer durable generation. Drop and reopen the existing
+owner under its lock and reconcile actual domain state before further action.
+Semantic rejection before persistence does not poison acknowledged state.
+
+The product-derived integration fixture covers reopen after selection, canary,
+per-member readiness, group publication and withdrawal. Its independent-role keys
+and future-window metrics are fixtures, not deployed acceptance or measured
+learning benefit. The daemon's selected-topology-to-actual-module-instance path,
+real stateful multi-module handoff and target-host power-loss qualification remain
+separate implementation and qualification work; opening this store is not proof
+that those paths are complete.
+
 ## 8. Failure semantics, recovery and rollback
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.

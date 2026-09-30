@@ -1,5 +1,7 @@
 //! Product-level self-evolution acceptance: the learning chain starts from the
 //! ordinary Agentd product admission and its independently observed outcome.
+//! Signers, future windows and metric intervals below are controlled fixtures,
+//! not independent deployment acceptance or empirical learning benefit.
 
 use std::collections::BTreeSet;
 use std::fs::OpenOptions;
@@ -331,7 +333,7 @@ fn verified_selection(
             candidate_generation: generation(2),
             candidate_artifact_digest: candidate_digest,
         },
-        bundle.clone(),
+        bundle,
         roles,
         &evaluation_evidence,
         &timing,
@@ -579,7 +581,7 @@ async fn ordinary_product_request_drives_signed_future_window_candidate_promotio
 
     let mut restarted =
         DurableRuntimeModuleSupervisorV1::open(&state_file).expect("recover promoted topology");
-    let active = restarted.topology();
+    let active = restarted.topology().expect("healthy durable owner");
     assert_eq!(active.active.len(), 1);
     assert_eq!(active.active[0].generation, generation(2));
     assert_eq!(active.active[0].implementation_digest, candidate_digest);
@@ -614,11 +616,171 @@ async fn ordinary_product_request_drives_signed_future_window_candidate_promotio
 
     let recovered =
         DurableRuntimeModuleSupervisorV1::open(&state_file).expect("recover rollback generation");
-    let active = recovered.topology();
+    let active = recovered.topology().expect("healthy durable owner");
     assert_eq!(active.active[0].generation, generation(3));
     assert_eq!(active.active[0].implementation_digest, baseline_digest);
     assert_eq!(
-        recovered.checkpoint().registry.generation_fences[0].greatest_generation,
+        recovered
+            .checkpoint()
+            .expect("healthy durable owner")
+            .registry
+            .generation_fences[0]
+            .greatest_generation,
         generation(3)
+    );
+
+    // Exercise the full multi-module durable path with the SAME product-derived
+    // dataset. Selection credentials remain fixtures, not deployment authority.
+    let topology_path = temp.path().join("selected-topology.json");
+    let mut topology_owner =
+        DurableRuntimeModuleSupervisorV1::open(&topology_path).expect("topology owner");
+    topology_owner
+        .register_bootstrap(module_abi(1, baseline_digest, None))
+        .expect("baseline module");
+    let mut retiring = module_abi(1, digest("retiring-content"), None);
+    retiring.module_id = id("module.retiring");
+    topology_owner
+        .register_bootstrap(retiring.clone())
+        .expect("retiring sibling");
+    let serving = topology_owner.topology().expect("serving topology");
+    let mut candidate = codex_hepta_agent_components::types::RuntimeTopologyCandidateV1 {
+        proposal_digest: digest("topology-proposal"),
+        candidate_id: id("topology.product.candidate"),
+        candidate_digest: Digest32::ZERO,
+        baseline_generation: generation(1),
+        candidate_generation: generation(2),
+        selected_topology_digest: serving.digest,
+        evaluation_digest: digest("topology-evaluation"),
+        rollback_predecessor_digest: serving.digest,
+        changed: true,
+        deltas: vec![
+            codex_hepta_agent_components::types::RuntimeTopologyDeltaV1 {
+                module_id: id("module.product.self-evolution"),
+                operation: codex_hepta_agent_components::types::RuntimeTopologyOperationV1::Replace,
+                related_module_ids: Vec::new(),
+                predecessor_digest: baseline_digest,
+                candidate_digest,
+                evidence_digest: digest("replace-evidence"),
+            },
+            codex_hepta_agent_components::types::RuntimeTopologyDeltaV1 {
+                module_id: retiring.module_id.clone(),
+                operation: codex_hepta_agent_components::types::RuntimeTopologyOperationV1::Retire,
+                related_module_ids: Vec::new(),
+                predecessor_digest: retiring.implementation_digest,
+                candidate_digest: Digest32::ZERO,
+                evidence_digest: digest("retire-evidence"),
+            },
+        ],
+    };
+    candidate.candidate_digest = candidate.content_digest().expect("bound topology content");
+    let topology_digest = candidate.candidate_digest;
+    let (topology_selection, _) = verified_selection(
+        &ledger_snapshot,
+        &dataset,
+        serving.digest,
+        topology_digest,
+        candidate.candidate_id.clone(),
+    );
+    let mut successor = module_abi(2, candidate_digest, Some((1, baseline_digest)));
+    successor.candidate_artifact_digest = topology_digest;
+    topology_owner
+        .register_selected_topology_candidate(candidate, vec![successor], &topology_selection)
+        .expect("persist independently selected topology");
+    let selected = topology_owner.checkpoint().expect("selected checkpoint");
+    assert_eq!(selected.pending_topologies.len(), 1);
+    drop(topology_owner);
+
+    // Reopen at admission and again after per-member readiness. Neither cut may
+    // expose a half-published topology or lose its retirement obligation.
+    let mut topology_owner =
+        DurableRuntimeModuleSupervisorV1::open(&topology_path).expect("recover selected topology");
+    assert_eq!(topology_owner.checkpoint().expect("checkpoint"), selected);
+    topology_owner
+        .enter_topology_canary(topology_digest)
+        .expect("persist canary");
+    topology_owner
+        .promote_stateless(
+            &id("module.product.self-evolution"),
+            generation(2),
+            digest("topology-canary"),
+        )
+        .expect("stage member promotion");
+    assert_eq!(
+        topology_owner.topology().expect("not yet published"),
+        serving
+    );
+    let staged = topology_owner.checkpoint().expect("staged checkpoint");
+    assert!(
+        topology_owner
+            .finalize_topology_candidate(topology_digest)
+            .is_err()
+    );
+    assert_eq!(
+        topology_owner
+            .checkpoint()
+            .expect("semantic rejection remains healthy"),
+        staged
+    );
+    drop(topology_owner);
+
+    // Independent fixture copy exercises withdrawal. No serving product owner
+    // or external effect is duplicated; both modules in this fixture are stateless.
+    let withdrawal_path = temp.path().join("withdrawal-topology.json");
+    std::fs::copy(&topology_path, &withdrawal_path).expect("copy isolated fixture");
+    let mut withdrawal =
+        DurableRuntimeModuleSupervisorV1::open(&withdrawal_path).expect("withdrawal owner");
+    withdrawal
+        .discard_topology_candidate(topology_digest)
+        .expect("withdraw candidate");
+    assert_eq!(withdrawal.topology().expect("baseline preserved"), serving);
+    let withdrawn = withdrawal.checkpoint().expect("withdrawn checkpoint");
+    assert!(withdrawn.pending_topologies.is_empty());
+    assert_eq!(
+        withdrawn.registry.generation_fences,
+        staged.registry.generation_fences
+    );
+    drop(withdrawal);
+    let withdrawal =
+        DurableRuntimeModuleSupervisorV1::open(&withdrawal_path).expect("recover withdrawal");
+    assert_eq!(
+        withdrawal.checkpoint().expect("withdrawal remains durable"),
+        withdrawn
+    );
+
+    let mut topology_owner =
+        DurableRuntimeModuleSupervisorV1::open(&topology_path).expect("recover staged topology");
+    assert_eq!(
+        topology_owner.checkpoint().expect("staged checkpoint"),
+        staged
+    );
+    topology_owner
+        .record_retirement_ready(
+            &retiring.module_id,
+            generation(1),
+            codex_hepta_supervisor::RuntimeModuleRetirementWitnessV1 {
+                drain_digest: digest("stateless-drain"),
+                reconciliation_digest: Digest32::ZERO,
+                unknown_effect_count: 0,
+            },
+        )
+        .expect("persist existing retirement witness");
+    let published = topology_owner
+        .finalize_topology_candidate(topology_digest)
+        .expect("atomic durable publication");
+    assert_eq!(published.active.len(), 1);
+    assert_eq!(published.active[0].implementation_digest, candidate_digest);
+    drop(topology_owner);
+    let mut topology_owner =
+        DurableRuntimeModuleSupervisorV1::open(&topology_path).expect("recover publication");
+    assert_eq!(
+        topology_owner.topology().expect("published topology"),
+        published
+    );
+    assert!(topology_owner.register_bootstrap(retiring).is_err());
+    assert_eq!(
+        topology_owner
+            .topology()
+            .expect("retired generation stays fenced"),
+        published
     );
 }
