@@ -7,6 +7,7 @@ the canonical evidence implementation and consumed by its manifest verifier.
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -105,8 +106,49 @@ evidence.COMMANDS = {
 }
 
 
+def argument_value(flag: str) -> str | None:
+    try:
+        index = sys.argv.index(flag)
+    except ValueError:
+        return None
+    if index + 1 >= len(sys.argv):
+        return None
+    return sys.argv[index + 1]
+
+
 def main() -> int:
-    return evidence.main()
+    command = sys.argv[1] if len(sys.argv) > 1 else None
+    label = argument_value("--label")
+    directory_value = argument_value("--directory")
+    result = evidence.main()
+    if result != 0:
+        return result
+    if command == "run" and label == "format":
+        if directory_value is None:
+            print(
+                "FAIL_CHANNEL_MATRIX_REVIEW_SLICES: missing evidence directory",
+                file=sys.stderr,
+            )
+            return 1
+        try:
+            import channel_matrix_review_slices as review
+
+            directory = Path(directory_value)
+            review.write_exclusive(
+                directory / "review-slices.json",
+                review.build(review.ROOT, directory, review.REGISTRY_PATH),
+            )
+        except (
+            OSError,
+            ValueError,
+            KeyError,
+            TypeError,
+            json.JSONDecodeError,
+        ) as exc:
+            print(f"FAIL_CHANNEL_MATRIX_REVIEW_SLICES: {exc}", file=sys.stderr)
+            return 1
+        print("PASS_CHANNEL_MATRIX_REVIEW_SLICES")
+    return 0
 
 
 if __name__ == "__main__":
