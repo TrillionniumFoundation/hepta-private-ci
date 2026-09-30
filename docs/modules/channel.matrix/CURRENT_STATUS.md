@@ -1,55 +1,53 @@
 # channel.matrix current candidate status
 
-Status: **source-composed candidate; exact native and external qualification not yet established**.
+Status: **source-composed exact candidate; repository execution and external production qualification are not yet established**.
 
-## Frozen source snapshot
+## Frozen ordinary-source snapshot
 
-The implementation map observes source commit
-`c4b9e1c6547c7cd7c00d9d480ee64b36de0b65c6`, tree
-`f63d0459e05f6ecf4016d1de78eaf417034d1877`. That snapshot is the frozen
-ordinary-source ancestor for the current evidence cycle. The commit containing
-this status file cannot embed its own future Git identity; the exact current
-candidate commit/tree and every inspected blob are bound by
-`scripts/verify_channel_matrix_candidate.py` and the out-of-tree evidence
+The current implementation map observes ordinary-source commit
+`32656ca556a11a0bcfd1e62dc7b4dd3a5bdb5fb4`, tree
+`ee0e65127881b3d502e91f2b2454b50ccfff1d63`. That commit is the immutable
+source snapshot for this evidence cycle. The metadata commit containing this
+status file cannot embed its own future Git identity; the exact current
+candidate commit/tree, the map bytes and every inspected source blob are bound
+by `scripts/verify_channel_matrix_candidate.py` and the out-of-tree lane
 receipts.
 
-## Repository source state
+## Repository source and evidence state
 
-- Matrix apply/finalizer workflows and encoded staging sources are absent.
-- Matrix qualification workflows are read-only and use exact source-head and
-  deterministic-merge lanes plus one paired acceptance receipt.
-- Both exact-candidate lanes execute Rustdoc compile-fail boundaries proving
-  that downstream safe code cannot import the final permit, forge the raw seal,
-  override an authorized send entry or escape to the raw Matrix client.
-- Pull requests qualify the immutable candidate head; protected `main` pushes
-  qualify the real integrated SHA against the immediately preceding main SHA.
-  PR evidence is never reused as merge-SHA evidence.
-- The exact-candidate workflow cancels superseded executions in each branch/PR
-  concurrency group so stale SHAs cannot starve the latest immutable head.
-  Cancellation, queuing, skipping, staleness or partial execution is never a pass.
-- The typed entered-use boundary remains intact. Post-entry proof, persistence,
-  authority, session identity, cancellation, deadline, clock, store, permit and
-  invariant faults retain distinct identity-free diagnostics while all remain
-  conservative unknown effects.
-- Fixed cumulative histograms cover claim-to-first-poll, final-use broker,
-  SQLite owner operations, revocation refresh and physical transport. They are
-  measurements, not target-host SLO claims.
-- `PRODUCTION_QUALIFICATION_PROFILE.json` and
-  `scripts/channel_matrix_production_qualification.py` define a closed external
-  target and independent-acceptance evidence inventory. Candidate-authored CI
-  cannot self-issue those results.
+- Source-writing/apply/finalizer workflows and encoded staging payloads are absent.
+- Matrix qualification is read-only (`contents: read`), uses exact source-head
+  and deterministic-merge lanes, and reruns on the real protected `main` SHA
+  after integration. PR-head evidence is never reused as merge-SHA evidence.
+- The closed source snapshot includes Matrix protocol/store/SDK/matrixd,
+  Supervisor lifecycle composition, final-use contracts, operation/state SQLite
+  owners, documentation/evidence tooling, workflow bytes and the real Synapse
+  runner.
+- Both lanes retain first-class command receipts for locked all-target
+  compilation, Rustdoc public-API compile-fail proofs, the locked mapped Matrix
+  native test set plus nextest JUnit, strict Clippy and rustfmt.
+- The version-2 paired verifier revalidates both artifact manifests, Q01-Q29,
+  transitive source closure and the API compile-fail command/log identity before
+  emitting one paired receipt.
+- The canonical target runner is
+  `codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh`; the historical
+  `tests/fixtures/run-hermetic-synapse.sh` path is a transparent compatibility
+  delegator and is independently source-bound.
+- The typed `Admission` / `EnteredSend` boundary, distinct post-entry diagnostic
+  fault classes, stable transaction reconciliation and bounded latency
+  histograms remain unchanged by the evidence-only closure.
 
-## Evidence state
+## Evidence still required
 
-The current source-head and deterministic-merge lanes must both complete locked
-compilation, public-API negative compile tests, all mapped Matrix native tests,
-all-target checks, strict Clippy, rustfmt, Q01-Q29 JUnit accounting, clean-tree
-verification and the paired receipt. Queued, skipped, canceled, stale-SHA or
-partial runs are not passes.
+For the current metadata candidate, source-head and deterministic-merge must
+both reach terminal success for all command receipts, Q01-Q29 native execution,
+clean-source snapshots and the paired receipt. Queued, skipped, canceled,
+superseded, stale-SHA, partial or tampered evidence is not a pass.
 
-Real enrolled homeserver execution, encrypted-room and multi-device/session
-rotation, protected restore, storage-fault recovery, sustained capacity/network
-pressure, target-host measurements and distinct governed target/operator
-signatures remain external gates. Therefore `productionImplementation`,
-`productExecutionProved`, `deploymentQualificationComplete`,
-`independentAcceptance`, `activation` and `release` remain false.
+Real enrolled homeserver execution, encrypted room and multi-device/session
+rotation, protected restore, ENOSPC/permission/WAL-SHM/stale-snapshot recovery,
+sustained capacity and network-pressure measurements, target-host binding and
+distinct governed target/operator signatures remain external gates. Therefore
+`productionImplementation`, `productExecutionProved`,
+`deploymentQualificationComplete`, `independentAcceptance`, `activation`,
+`promotion` and `release` remain false.
