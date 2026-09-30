@@ -1,11 +1,11 @@
-//! Strict time fencing for the default final-use API.
+//! Strict time and work fencing for the default final-use API.
 //!
 //! The underlying owner-bound implementation validates durable ledger,
 //! authority, generation, stop and dataset currentness before and after fitting.
-//! This wrapper additionally makes the capability issuance instant part of the
-//! single-use token and treats the absolute deadline as an exclusive bound.
-//! Consequently, a caller cannot move the trusted clock backwards after
-//! capability issuance, and work observed exactly at the deadline fails closed.
+//! This wrapper additionally makes the trusted issuance instant and one
+//! monotonic `FitContextV1` part of the single-use token. Consequently, resource
+//! elapsed time starts when the capability is issued, survives worker dispatch,
+//! and cannot be reset immediately before fitting.
 
 use std::fmt;
 
@@ -13,7 +13,9 @@ use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 
+use crate::budget::FitContextV1;
 use crate::budget::WorkControlV1;
+use crate::budget::with_fit_context_v1;
 use crate::final_use;
 use crate::final_use::FinalUseErrorV1;
 use crate::final_use::FinalUseFenceV1;
@@ -26,6 +28,7 @@ use crate::final_use::WorldModelTrainingRequestV1;
 #[must_use = "the capability must be consumed by fit_tabular_final_use_v1"]
 pub struct FinalUseTabularCapabilityV1<'a> {
     inner: final_use::FinalUseTabularCapabilityV1<'a>,
+    fit_context: FitContextV1,
     issued_at_unix_micros: u64,
     absolute_deadline_unix_micros: u64,
 }
@@ -39,6 +42,10 @@ impl fmt::Debug for FinalUseTabularCapabilityV1<'_> {
                 "absolute_deadline_unix_micros",
                 &self.absolute_deadline_unix_micros,
             )
+            .field(
+                "work_elapsed_micros",
+                &self.fit_context.elapsed_micros(),
+            )
             .finish_non_exhaustive()
     }
 }
@@ -46,6 +53,7 @@ impl fmt::Debug for FinalUseTabularCapabilityV1<'_> {
 #[must_use = "the capability must be consumed by fit_world_model_final_use_v1"]
 pub struct FinalUseWorldModelCapabilityV1<'a> {
     inner: final_use::FinalUseWorldModelCapabilityV1<'a>,
+    fit_context: FitContextV1,
     issued_at_unix_micros: u64,
     absolute_deadline_unix_micros: u64,
 }
@@ -58,6 +66,10 @@ impl fmt::Debug for FinalUseWorldModelCapabilityV1<'_> {
             .field(
                 "absolute_deadline_unix_micros",
                 &self.absolute_deadline_unix_micros,
+            )
+            .field(
+                "work_elapsed_micros",
+                &self.fit_context.elapsed_micros(),
             )
             .finish_non_exhaustive()
     }
@@ -82,18 +94,22 @@ pub fn issue_tabular_final_use_capability_v1<'a>(
         issued_at_unix_micros,
         issued_at_unix_micros,
     )?;
-    let inner = final_use::issue_tabular_final_use_capability_v1(
-        owner,
-        receipt,
-        freeze_evidence,
-        row_evidence,
-        request,
-        fence,
-        control,
-        witness,
-    )?;
+    let fit_context = control.fit_context();
+    let inner = with_fit_context_v1(&fit_context, || {
+        final_use::issue_tabular_final_use_capability_v1(
+            owner,
+            receipt,
+            freeze_evidence,
+            row_evidence,
+            request,
+            fence,
+            control,
+            witness,
+        )
+    })?;
     Ok(FinalUseTabularCapabilityV1 {
         inner,
+        fit_context,
         issued_at_unix_micros,
         absolute_deadline_unix_micros,
     })
@@ -118,18 +134,22 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
         issued_at_unix_micros,
         issued_at_unix_micros,
     )?;
-    let inner = final_use::issue_world_model_final_use_capability_v1(
-        owner,
-        receipt,
-        freeze_evidence,
-        row_evidence,
-        request,
-        fence,
-        control,
-        witness,
-    )?;
+    let fit_context = control.fit_context();
+    let inner = with_fit_context_v1(&fit_context, || {
+        final_use::issue_world_model_final_use_capability_v1(
+            owner,
+            receipt,
+            freeze_evidence,
+            row_evidence,
+            request,
+            fence,
+            control,
+            witness,
+        )
+    })?;
     Ok(FinalUseWorldModelCapabilityV1 {
         inner,
+        fit_context,
         issued_at_unix_micros,
         absolute_deadline_unix_micros,
     })
@@ -140,13 +160,21 @@ pub fn fit_tabular_final_use_v1(
     use_witness: &FinalUseWitnessV1,
     publish_witness: &FinalUseWitnessV1,
 ) -> Result<FinalUseTabularCandidateV1, FinalUseErrorV1> {
+    let FinalUseTabularCapabilityV1 {
+        inner,
+        fit_context,
+        issued_at_unix_micros,
+        absolute_deadline_unix_micros,
+    } = capability;
     validate_capability_window(
-        capability.issued_at_unix_micros,
-        capability.absolute_deadline_unix_micros,
+        issued_at_unix_micros,
+        absolute_deadline_unix_micros,
         use_witness.observed_at(),
         publish_witness.observed_at(),
     )?;
-    final_use::fit_tabular_final_use_v1(capability.inner, use_witness, publish_witness)
+    with_fit_context_v1(&fit_context, move || {
+        final_use::fit_tabular_final_use_v1(inner, use_witness, publish_witness)
+    })
 }
 
 pub fn fit_world_model_final_use_v1(
@@ -154,13 +182,21 @@ pub fn fit_world_model_final_use_v1(
     use_witness: &FinalUseWitnessV1,
     publish_witness: &FinalUseWitnessV1,
 ) -> Result<FinalUseWorldModelCandidateV1, FinalUseErrorV1> {
+    let FinalUseWorldModelCapabilityV1 {
+        inner,
+        fit_context,
+        issued_at_unix_micros,
+        absolute_deadline_unix_micros,
+    } = capability;
     validate_capability_window(
-        capability.issued_at_unix_micros,
-        capability.absolute_deadline_unix_micros,
+        issued_at_unix_micros,
+        absolute_deadline_unix_micros,
         use_witness.observed_at(),
         publish_witness.observed_at(),
     )?;
-    final_use::fit_world_model_final_use_v1(capability.inner, use_witness, publish_witness)
+    with_fit_context_v1(&fit_context, move || {
+        final_use::fit_world_model_final_use_v1(inner, use_witness, publish_witness)
+    })
 }
 
 fn validate_capability_window(
@@ -222,5 +258,17 @@ mod tests {
             validate_capability_window(10, 20, 15, 14),
             Err(FinalUseErrorV1::ClockRegression)
         ));
+    }
+
+    #[test]
+    fn monotonic_fit_context_elapsed_time_cannot_reset() {
+        let context = WorkControlV1::new().fit_context();
+        let before = context.elapsed_micros();
+        std::thread::sleep(std::time::Duration::from_millis(2));
+        let after = context.elapsed_micros();
+        assert!(after > before);
+        with_fit_context_v1(&context, || {
+            assert!(context.elapsed_micros() >= after);
+        });
     }
 }
