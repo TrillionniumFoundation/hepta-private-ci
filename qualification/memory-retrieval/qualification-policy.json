@@ -95,6 +95,22 @@
     {
       "name": "Memory retrieval calibration contract",
       "workflow": ".github/workflows/hepta-memory-retrieval-calibration.yml"
+    },
+    {
+      "name": "CI required",
+      "workflow": ".github/workflows/blocking-ci.yml"
+    },
+    {
+      "name": "Agentd process qualification result",
+      "workflow": ".github/workflows/hepta-gap-agentd-process.yml"
+    },
+    {
+      "name": "Cargo workspace preflight",
+      "workflow": ".github/workflows/hepta-repository-integrity.yml"
+    },
+    {
+      "name": "Verify ordinary read-only candidate source",
+      "workflow": ".github/workflows/hepta-repository-integrity.yml"
     }
   ],
   "securityChecks": [
@@ -134,20 +150,69 @@
   },
   "externalGates": [
     {
-      "name": "Memory retrieval target-host",
-      "state": "missing_external"
+      "name": "Memory retrieval target-host full-chain E2E",
+      "state": "missing_external",
+      "evidence": null
     },
     {
-      "name": "independent human exact-head acceptance",
-      "state": "missing_external"
+      "name": "production text encoder release",
+      "state": "missing_external",
+      "evidence": null
     },
     {
-      "name": "external immutable raw-evidence retention",
-      "state": "missing_external"
+      "name": "durable vector-index publisher and store",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "external frontier capability revocation authority",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "tenant withdrawal revocation deletion qualification",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "durable lifecycle outbox and real-process recovery",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "held-out quality calibration and ablations",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "exact binary source-tree receipt",
+      "state": "missing_external",
+      "evidence": null
     },
     {
       "name": "protected killable worker and hard resource isolation",
-      "state": "missing_external"
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "external immutable raw-evidence retention",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "independent human exact-head acceptance and signature",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "canary activation and automatic rollback",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "operator security release approval and signed evidence",
+      "state": "missing_external",
+      "evidence": null
     }
   ],
   "claimBoundary": {
