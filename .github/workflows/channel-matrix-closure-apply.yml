@@ -1,4 +1,4 @@
-name: channel.matrix closure patch apply
+name: channel.matrix reviewed source materialization
 
 on:
   push:
@@ -6,102 +6,223 @@ on:
       - codex/channel-matrix-full-closure-20260927
     paths:
       - '.github/workflows/channel-matrix-closure-apply.yml'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/channel-matrix-closure-apply.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: channel-matrix-closure-patch-apply
+  group: channel-matrix-reviewed-materialization
   cancel-in-progress: false
 
 jobs:
-  apply:
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && ((github.event_name == 'push' && github.ref == 'refs/heads/codex/channel-matrix-full-closure-20260927') || (github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'codex/channel-matrix-full-closure-20260927'))
+  materialize:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/channel-matrix-full-closure-20260927'
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 90
     env:
-      STAGING_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      EXPECTED_PARENT: 0d79fd9a099db4fed259641daa588a93545c41e0
+      STAGING_SHA: ${{ github.sha }}
+      OPS_PAYLOAD_SHA256: 3ad03651989919489dfc3e4171b2fccad252e948247ecc7ab1ee15810aea11e9
+      CLOSURE_PAYLOAD_SHA256: 6be88c59e74ef4d6f16231c0ba13dadfe542c69b3e060c10719bb7b7245d90a2
       PYTHONDONTWRITEBYTECODE: '1'
       CARGO_INCREMENTAL: '0'
       CARGO_BUILD_JOBS: '2'
     steps:
-      - name: Checkout exact staging commit
+      - name: Checkout exact isolated trigger commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Apply closed-scope source and qualification patch
+      - name: Verify immutable trigger identity
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$STAGING_SHA"
-          mkdir -p .matrix-staging
-          printf '%s' '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' | base64 --decode | gzip -dc > .matrix-staging/channel_matrix_apply.py
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test "$(git diff --name-only HEAD^ HEAD)" = '.github/workflows/channel-matrix-closure-apply.yml'
+
+      - name: Materialize reviewed payloads into ordinary paths
+        id: materialize
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .matrix-staging/channel-matrix-ops-evidence.part* \
+            | base64 --decode > "$RUNNER_TEMP/channel-matrix-ops-evidence.tar.gz"
+          echo "$OPS_PAYLOAD_SHA256  $RUNNER_TEMP/channel-matrix-ops-evidence.tar.gz" \
+            | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/channel-matrix-ops-evidence.tar.gz"
+
+          cat .matrix-staging/channel_matrix_apply.part* \
+            | base64 --decode > "$RUNNER_TEMP/channel-matrix-closure.py.gz"
+          echo "$CLOSURE_PAYLOAD_SHA256  $RUNNER_TEMP/channel-matrix-closure.py.gz" \
+            | sha256sum --check --strict
+          gzip -dc "$RUNNER_TEMP/channel-matrix-closure.py.gz" \
+            > .matrix-staging/channel_matrix_apply.py
           python3 .matrix-staging/channel_matrix_apply.py
-          git diff --check
-          python3 -m compileall -q \
-            scripts/channel_matrix_evidence.py \
-            scripts/channel_matrix_qualification.py \
-            scripts/channel_matrix_pair_acceptance.py \
-            scripts/tests/test_channel_matrix_qualification.py \
-            scripts/tests/test_channel_matrix_pair_acceptance.py
-          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' -v
 
-      - name: Update lockfile and verify affected Rust owners
-        shell: bash
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo check -p codex-hepta-operations --all-targets
-          cargo fmt --package codex-state --package codex-hepta-operations
-          cargo fmt --package codex-state --package codex-hepta-operations -- --check
-          cargo clippy --locked --no-deps -p codex-hepta-operations --all-targets -- -D warnings
-
-      - name: Commit verified patch and remove staging material
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
+          rm -f \
+            .github/channel-matrix-repair.py \
+            .github/workflows/channel-matrix-bootstrap.yml \
+            .github/workflows/channel-matrix-closure-apply.yml \
+            .github/workflows/channel-matrix-hardening-apply.yml \
+            .github/workflows/channel-matrix-ops-evidence-finalize.yml \
+            .github/workflows/channel-matrix-source-export.yml \
+            scripts/channel_matrix_full_patch.py.gz.b64
           rm -rf .matrix-staging
-          git rm .github/workflows/channel-matrix-closure-apply.yml
-          git add \
-            .github/workflows/channel-matrix-preserve-unknown.yml \
-            codex-rs/Cargo.lock \
-            codex-rs/hepta-operations/Cargo.toml \
-            codex-rs/hepta-operations/src/destination_dedupe.rs \
-            codex-rs/hepta-operations/src/durable_store.rs \
-            codex-rs/state/src/lib.rs \
-            codex-rs/state/src/sqlite.rs \
-            scripts/channel_matrix_evidence.py \
-            scripts/channel_matrix_qualification.py \
-            scripts/channel_matrix_pair_acceptance.py \
-            scripts/tests/test_channel_matrix_qualification.py \
-            scripts/tests/test_channel_matrix_pair_acceptance.py
-          git diff --cached --check
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit \
-            -m 'channel.matrix: close exact-candidate qualification' \
-            -m 'Route durable SQLite owners through the state shim, eliminate strict clippy failures, bind transitive source bytes, generate per-test scenario executions from nextest JUnit, and add a non-skipping paired source/merge acceptance receipt without granting release authority.'
-          final=$(git rev-parse HEAD)
-          auth=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 | tr -d '\n')
-          echo "::add-mask::$auth"
-          remote=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
-            ls-remote origin refs/heads/codex/channel-matrix-full-closure-20260927 | cut -f1)
-          test "$remote" = "$STAGING_SHA"
-          validated_ref="refs/heads/codex/channel-matrix-closure-validated-$STAGING_SHA"
-          existing=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
-            ls-remote origin "$validated_ref" | cut -f1)
-          test -z "$existing" || test "$existing" = "$final"
-          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" \
-            push origin "HEAD:$validated_ref"
-          echo "FINAL_COMMIT=$final"
-          echo "VALIDATED_REF=$validated_ref"
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          forbidden = (
+              'permissions:\n  contents: write',
+              'git push',
+              'git commit',
+              'clippy --fix',
+              'channel_matrix_apply.part',
+              'channel-matrix-ops-evidence.part',
+          )
+          for path in sorted(Path('.github/workflows').glob('channel-matrix*.yml')):
+              text = path.read_text(encoding='utf-8')
+              hits = [token for token in forbidden if token in text]
+              if hits:
+                  raise SystemExit(f'{path}: forbidden source-writing token(s): {hits}')
+              if 'permissions:\n  contents: read' not in text:
+                  raise SystemExit(f'{path}: channel.matrix workflow is not explicitly read-only')
+          PY
+          git diff --check
+
+      - name: Validate Python, SQLite, documentation and evidence contracts
+        id: python
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/materialized-logs"
+          python3 -m compileall -q scripts \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/python-compile.log"
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/python-tests.log"
+
+      - name: Validate affected Rust owners and Matrix crates
+        id: rust
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/materialized-logs"
+          rustup component add rustfmt clippy
+          cd codex-rs
+          cargo check -p codex-hepta-operations --all-targets \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/lock-and-operations-check.log"
+          cargo fmt --package codex-state --package codex-hepta-operations
+          cargo fmt --all -- --check \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/format.log"
+          cargo check --locked --all-targets \
+            -p codex-hepta-matrix-protocol \
+            -p codex-hepta-matrix-store \
+            -p codex-hepta-matrix-sdk \
+            -p codex-hepta-matrixd \
+            -p codex-hepta-operations \
+            -p codex-state \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/all-target-check.log"
+          cargo test --locked \
+            -p codex-hepta-matrix-protocol \
+            -p codex-hepta-matrix-store \
+            -p codex-hepta-matrix-sdk \
+            -p codex-hepta-matrixd \
+            -p codex-hepta-operations \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/tests.log"
+          cargo clippy --locked --no-deps \
+            -p codex-hepta-matrix-protocol \
+            -p codex-hepta-matrix-store \
+            -p codex-hepta-matrix-sdk \
+            -p codex-hepta-matrixd \
+            -p codex-hepta-operations \
+            -p codex-state \
+            --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/materialized-logs/clippy.log"
+
+      - name: Package exact materialized tree and deletion set
+        if: always() && steps.materialize.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/channel-matrix-materialized"
+          mkdir -p "$out/tree"
+          git diff --name-only --diff-filter=ACMRT -z "$STAGING_SHA" -- \
+            | tar --null -T - -cf "$out/materialized-tree.tar"
+          git diff --name-only --diff-filter=D "$STAGING_SHA" -- \
+            | LC_ALL=C sort > "$out/deletions.txt"
+          git diff --binary --full-index "$STAGING_SHA" -- > "$out/materialized.patch"
+          git diff --name-status "$STAGING_SHA" -- > "$out/name-status.txt"
+          cp -a "$RUNNER_TEMP/materialized-logs" "$out/logs"
+          python3 - "$out" <<'PY'
+          import hashlib
+          import json
+          import os
+          import stat
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          out = Path(sys.argv[1])
+          changed = subprocess.check_output(
+              ['git', 'diff', '--name-only', '--diff-filter=ACMRT', os.environ['STAGING_SHA'], '--'],
+              text=True,
+          ).splitlines()
+          deleted = (out / 'deletions.txt').read_text(encoding='utf-8').splitlines()
+          files = []
+          for name in changed:
+              path = Path(name)
+              payload = path.read_bytes()
+              mode = '100755' if path.stat().st_mode & stat.S_IXUSR else '100644'
+              files.append({
+                  'path': name,
+                  'mode': mode,
+                  'bytes': len(payload),
+                  'sha256': hashlib.sha256(payload).hexdigest(),
+              })
+          row = {
+              'schema': 'hepta.channel-matrix-reviewed-materialization.v1',
+              'triggerCommit': os.environ['STAGING_SHA'],
+              'triggerParent': os.environ['EXPECTED_PARENT'],
+              'reviewedPayloads': {
+                  'operatorEvidenceSha256': os.environ['OPS_PAYLOAD_SHA256'],
+                  'closureSha256': os.environ['CLOSURE_PAYLOAD_SHA256'],
+              },
+              'files': files,
+              'deletions': deleted,
+              'pythonValidation': '${{ steps.python.outcome }}',
+              'rustValidation': '${{ steps.rust.outcome }}',
+              'authorityGranted': False,
+              'activation': False,
+              'release': False,
+          }
+          (out / 'manifest.json').write_text(
+              json.dumps(row, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          PY
+          sha256sum "$out"/materialized-tree.tar "$out"/materialized.patch \
+            > "$out/archive-digests.txt"
+
+      - name: Upload reviewed materialization
+        if: always() && steps.materialize.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-reviewed-materialization-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/channel-matrix-materialized/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Require validation success
+        if: always()
+        env:
+          MATERIALIZE: ${{ steps.materialize.outcome }}
+          PYTHON: ${{ steps.python.outcome }}
+          RUST: ${{ steps.rust.outcome }}
+        run: |
+          test "$MATERIALIZE" = success
+          test "$PYTHON" = success
+          test "$RUST" = success
