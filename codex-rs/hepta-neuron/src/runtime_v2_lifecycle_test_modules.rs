@@ -3,6 +3,26 @@ fn crash_cut(phase: &str) {
     if std::env::var("HEPTA_NEURON_V2_CLOSURE_CHILD").as_deref() == Ok("crash")
         && std::env::var("HEPTA_NEURON_V2_CLOSURE_CUT").as_deref() == Ok(phase)
     {
+        if std::env::var("HEPTA_NEURON_V2_CLOSURE_CRASH_STYLE").as_deref() == Ok("sigkill") {
+            #[cfg(unix)]
+            {
+                let pid = std::process::id().to_string();
+                let status = std::process::Command::new("kill")
+                    .args(["-KILL", pid.as_str()])
+                    .status();
+                if status.is_err() {
+                    std::process::exit(74);
+                }
+                // A successful command terminates this process before the call
+                // returns. Keep a distinct fallback code so the parent never
+                // mistakes a failed signal delivery for a qualified crash cut.
+                std::process::exit(75);
+            }
+            #[cfg(not(unix))]
+            {
+                std::process::exit(73);
+            }
+        }
         std::process::exit(73);
     }
 }

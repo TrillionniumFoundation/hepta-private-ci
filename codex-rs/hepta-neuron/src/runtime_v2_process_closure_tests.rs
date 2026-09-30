@@ -6,6 +6,8 @@ use crate::FileNeuronWitnessStoreV2;
 use crate::NeuronWitnessContextV2;
 use std::fs::OpenOptions;
 use std::io::Write;
+#[cfg(unix)]
+use std::os::unix::process::ExitStatusExt;
 use std::path::Path;
 use std::process::Command;
 
@@ -65,7 +67,12 @@ impl DurableNeuronModelPort for FileModel {
     }
 }
 
-fn child(mode: &str, root: &Path, cut: &str) -> std::process::Output {
+fn child_with_style(
+    mode: &str,
+    root: &Path,
+    cut: &str,
+    crash_style: &str,
+) -> std::process::Output {
     let module = checked(module_path!().split_once("::").ok_or("test module path")).1;
     checked(
         Command::new(checked(std::env::current_exe()))
@@ -78,8 +85,29 @@ fn child(mode: &str, root: &Path, cut: &str) -> std::process::Output {
             .env("HEPTA_NEURON_V2_CLOSURE_CHILD", mode)
             .env("HEPTA_NEURON_V2_CLOSURE_ROOT", root)
             .env("HEPTA_NEURON_V2_CLOSURE_CUT", cut)
+            .env("HEPTA_NEURON_V2_CLOSURE_CRASH_STYLE", crash_style)
             .output(),
     )
+}
+
+fn child(mode: &str, root: &Path, cut: &str) -> std::process::Output {
+    child_with_style(mode, root, cut, "exit")
+}
+
+fn assert_recovery_converges_once(fixture: &Fixture, cut: &str) {
+    for _ in 0..2 {
+        let resumed = child("resume", &fixture.0, "");
+        assert!(
+            resumed.status.success(),
+            "cut={cut}: {} {}",
+            String::from_utf8_lossy(&resumed.stdout),
+            String::from_utf8_lossy(&resumed.stderr)
+        );
+    }
+    assert_eq!(
+        checked(fs::read_to_string(fixture.0.join("physical-model-call"))),
+        checked(input(1, Digest32::ZERO).semantic_digest()).to_string()
+    );
 }
 
 #[test]
@@ -100,19 +128,32 @@ fn real_process_recovery_preserves_one_physical_execution_at_each_durable_bounda
             "cut={cut}: {}",
             String::from_utf8_lossy(&output.stderr)
         );
-        for _ in 0..2 {
-            let resumed = child("resume", &fixture.0, "");
-            assert!(
-                resumed.status.success(),
-                "cut={cut}: {} {}",
-                String::from_utf8_lossy(&resumed.stdout),
-                String::from_utf8_lossy(&resumed.stderr)
-            );
-        }
+        assert_recovery_converges_once(&fixture, cut);
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn sigkill_recovery_preserves_one_physical_execution_at_each_durable_boundary() {
+    for cut in [
+        "after_reservation",
+        "after_dispatch_fence",
+        "after_model_observation",
+        "after_store_commit",
+        "after_index_completion",
+        "after_witness_acknowledgement",
+    ] {
+        let fixture = Fixture::new();
+        let output = child_with_style("crash", &fixture.0, cut, "sigkill");
         assert_eq!(
-            checked(fs::read_to_string(fixture.0.join("physical-model-call"))),
-            checked(input(1, Digest32::ZERO).semantic_digest()).to_string()
+            output.status.signal(),
+            Some(9),
+            "cut={cut}: code={:?} stdout={} stderr={}",
+            output.status.code(),
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
         );
+        assert_recovery_converges_once(&fixture, cut);
     }
 }
 
