@@ -21,6 +21,7 @@ mod h7_runtime;
 mod h7_signed_artifact;
 mod h7_trajectory_store;
 mod intuition_shadow;
+mod lane_c_lineage;
 mod lane_c_snapshot;
 mod local_atomic_witness;
 mod local_compact_executor;
@@ -45,6 +46,9 @@ pub use shared_experience::SharedExperienceGrantV1;
 pub use shared_experience::SharedExperiencePurposeV1;
 pub use shared_experience::SharedExperienceUseV1;
 
+pub use lane_c_lineage::DurableCognitiveLineageObservation;
+pub use lane_c_lineage::MAX_LANE_C_LINEAGE_CITATIONS;
+pub use lane_c_lineage::MAX_LANE_C_LINEAGE_REVISIONS;
 pub use lane_c_snapshot::CognitiveOwnerFrontiers;
 pub use lane_c_snapshot::DURABLE_SQLITE_MEMORY_KIND;
 pub use lane_c_snapshot::DurableCognitiveSnapshot;

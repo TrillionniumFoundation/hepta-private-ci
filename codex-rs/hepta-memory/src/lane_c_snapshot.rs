@@ -37,9 +37,14 @@ use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::cognitive_store::unavailable;
+use crate::lane_c_lineage::LaneCLineageCapture;
+use crate::lane_c_lineage::LaneCProjection;
+use crate::lane_c_lineage::MAX_LANE_C_LINEAGE_CITATIONS;
+use crate::lane_c_lineage::MAX_LANE_C_LINEAGE_REVISIONS;
+use crate::lane_c_lineage::validate_citation_owner;
 
-const MAX_REVISIONS: usize = 16_384;
-const MAX_CITATIONS: usize = 65_536;
+const MAX_REVISIONS: usize = MAX_LANE_C_LINEAGE_REVISIONS;
+const MAX_CITATIONS: usize = MAX_LANE_C_LINEAGE_CITATIONS;
 const MAX_SOURCES: i64 = 65_536;
 /// Maximum number of owner heads scanned by one durable Lane C page.
 pub const MAX_LANE_C_SNAPSHOT_PAGE_HEADS: usize = 512;
@@ -296,7 +301,6 @@ impl CognitiveStore {
         ))
         .map_err(corrupt)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
-
         let memory_count: i64 = sqlx::query_scalar(
             "SELECT count(*) FROM memory_revisions
              WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?",
@@ -505,10 +509,12 @@ impl CognitiveStore {
                 CognitiveStoreError::Invalid("Lane C citation limit exceeds i64".to_string())
             })?;
             let mut citation_query = QueryBuilder::<Sqlite>::new(
-                "SELECT c.memory_id, c.memory_revision, s.source_id, s.content_sha256
+                "SELECT c.memory_id, c.memory_revision, s.source_id, s.content_sha256,
+                        (s.owner_agent_id = r.owner_agent_id AND s.scope_kind = r.scope_kind
+                         AND s.workspace_sha256 IS r.workspace_sha256) AS source_authorized
                  FROM memory_citations c
                  JOIN memory_revisions r ON r.memory_id = c.memory_id AND r.revision = c.memory_revision
-                 JOIN source_ledger s ON s.source_id = c.source_id AND s.source_revision = c.source_revision
+                 LEFT JOIN source_ledger s ON s.source_id = c.source_id AND s.source_revision = c.source_revision
                  WHERE r.owner_agent_id = ",
             );
             citation_query
@@ -539,6 +545,7 @@ impl CognitiveStore {
             }
             let mut citations = BTreeMap::<(String, i64), Vec<Citation>>::new();
             for row in citation_rows {
+                validate_citation_owner(&row)?;
                 let key = (
                     row.try_get("memory_id").map_err(unavailable)?,
                     row.try_get("memory_revision").map_err(unavailable)?,
@@ -669,6 +676,21 @@ impl CognitiveStore {
         scope: &CognitiveScope,
         now_unix_seconds: i64,
     ) -> Result<DurableCognitiveSnapshot, CognitiveStoreError> {
+        let (cut, _) = self
+            .lane_c_snapshot_projection(access, scope, now_unix_seconds, LaneCProjection::Heads)
+            .await?;
+        Ok(cut)
+    }
+
+    // Retain one owner acquisition/validation path rather than duplicating SQL
+    // for compaction. Only the explicit lineage projection copies ancestry.
+    pub(crate) async fn lane_c_snapshot_projection(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        now_unix_seconds: i64,
+        projection: LaneCProjection,
+    ) -> Result<(DurableCognitiveSnapshot, LaneCLineageCapture), CognitiveStoreError> {
         self.authorize(access, scope)?;
         if now_unix_seconds < 0 {
             return Err(CognitiveStoreError::Invalid(
@@ -698,10 +720,12 @@ impl CognitiveStore {
             ));
         }
         let citation_rows = sqlx::query(
-            "SELECT c.memory_id, c.memory_revision, s.source_id, s.content_sha256
+            "SELECT c.memory_id, c.memory_revision, s.source_id, s.content_sha256,
+                    (s.owner_agent_id = r.owner_agent_id AND s.scope_kind = r.scope_kind
+                     AND s.workspace_sha256 IS r.workspace_sha256) AS source_authorized
              FROM memory_citations c
              JOIN memory_revisions r ON r.memory_id = c.memory_id AND r.revision = c.memory_revision
-             JOIN source_ledger s ON s.source_id = c.source_id AND s.source_revision = c.source_revision
+             LEFT JOIN source_ledger s ON s.source_id = c.source_id AND s.source_revision = c.source_revision
              WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?
              ORDER BY c.memory_id, c.memory_revision, c.ordinal LIMIT ?",
         )
@@ -715,6 +739,7 @@ impl CognitiveStore {
         }
         let mut citations = BTreeMap::<(String, i64), Vec<Citation>>::new();
         for row in citation_rows {
+            validate_citation_owner(&row)?;
             let key = (
                 row.try_get("memory_id").map_err(unavailable)?,
                 row.try_get("memory_revision").map_err(unavailable)?,
@@ -756,6 +781,8 @@ impl CognitiveStore {
         let mut tombstones = 0_u64;
         let mut previous: Option<MemoryRecord> = None;
         let mut heads = Vec::new();
+        let mut lineage = Vec::new();
+        let mut capture = LaneCLineageCapture::default();
         let mut last_head = 0_i64;
         for row in rows {
             let id: String = row.try_get("memory_id").map_err(unavailable)?;
@@ -821,12 +848,30 @@ impl CognitiveStore {
                 .map_err(unavailable)?;
             let valid_to: Option<i64> =
                 row.try_get("valid_to_unix_seconds").map_err(unavailable)?;
-            if revision == head
+            let eligible = revision == head
                 && (state == RecordState::Tombstone
                     || (verification == "verified"
                         && valid_from <= now_unix_seconds
-                        && valid_to.is_none_or(|until| now_unix_seconds < until)))
-            {
+                        && valid_to.is_none_or(|until| now_unix_seconds < until)));
+            if projection == LaneCProjection::EligibleLineage {
+                lineage.push(record.clone());
+                if revision == head {
+                    capture.physical_head_digests.push(
+                        crate::lane_c_lineage::physical_head_digest(
+                            &record,
+                            &verification,
+                            valid_from,
+                            valid_to,
+                        )?,
+                    );
+                    if eligible {
+                        capture.records.append(&mut lineage);
+                    } else {
+                        lineage.clear();
+                    }
+                }
+            }
+            if eligible {
                 heads.push(record.clone());
             }
             previous = Some(record);
@@ -862,12 +907,15 @@ impl CognitiveStore {
             Digest32::of_bytes(scope.projection_key().as_bytes())
         ))
         .map_err(corrupt)?;
-        Ok(DurableCognitiveSnapshot {
-            scope_id,
-            frontiers,
-            snapshot,
-            observed_at_unix_seconds: now_unix_seconds,
-        })
+        Ok((
+            DurableCognitiveSnapshot {
+                scope_id,
+                frontiers,
+                snapshot,
+                observed_at_unix_seconds: now_unix_seconds,
+            },
+            capture,
+        ))
     }
 
     /// Compare an independently retained exact witness against this already
