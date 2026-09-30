@@ -120,6 +120,12 @@ SCENARIOS: dict[str, tuple[TestCommand, ...]] = {
                 "recovery_even_of_an_earlier_record"
             )
         ),
+        evidence_lib(
+            (
+                "frontier_backend_file::tests::locked_backend_rejects_"
+                "rehashed_non_automatic_history_on_reopen"
+            )
+        ),
     ),
     "damaged_database": (
         evidence_lib(
@@ -130,6 +136,12 @@ SCENARIOS: dict[str, tuple[TestCommand, ...]] = {
     "stale_valid_frontier": (
         evidence_lib(
             "frontier_backend_file::tests::locked_backend_rejects_stale_or_skipped_generations"
+        ),
+        evidence_lib(
+            (
+                "frontier_backend_file::tests::locked_backend_reclassifies_"
+                "repair_required_successors_under_the_lock"
+            )
         ),
         evidence_lib(
             "frontier_acceptance::tests::rollback_and_same_generation_identity_changes_fail_closed"
