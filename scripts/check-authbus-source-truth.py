@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Enforce one commit-neutral AuthBus source truth.
+"""Enforce one commit-neutral and immutable AuthBus source truth.
 
 Static repository files may describe contracts and source mappings. Candidate
 SHAs, workflow attempts, bound projections, evidence receipts, and release
 decisions are generated artifacts and must never be committed as an alternate
-status authority.
+status authority. AuthBus qualification and authoring workflows are read-only:
+a workflow may validate source, but it may not format, commit, push, or otherwise
+rewrite the candidate it is qualifying.
 """
 
 from __future__ import annotations
@@ -19,6 +21,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 MAP = ROOT / "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json"
 READINESS = ROOT / "docs/modules/auth.authbus/READINESS_CONTRACT.json"
+WORKFLOW_ROOT = ROOT / ".github/workflows"
 GENERATED_NAME = re.compile(
     r"(?:^|/)(?:"
     r"implementation-map\.bound|current-implementation\.bound|"
@@ -32,6 +35,16 @@ SHA_FIELD = re.compile(
     r"(?:^|_)(?:commit|candidate|head|base|tree|merge|final_merge|workflow)_?sha$",
     re.IGNORECASE,
 )
+SOURCE_MUTATION = re.compile(
+    r"(?im)(?:^\s*contents:\s*write\s*(?:#.*)?$|"
+    r"\bgit\s+(?:commit|push)\b|"
+    r"^\s*persist-credentials:\s*true\s*(?:#.*)?$)"
+)
+FORBIDDEN_AUTHORING_WORKFLOWS = {
+    ".github/workflows/authbus-bootstrap-api-authoring.yml",
+    ".github/workflows/authbus-lockfile-authoring.yml",
+    ".github/workflows/authbus-time-floor-authoring.yml",
+}
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -79,6 +92,24 @@ def walk(value: Any, path: str = "$") -> list[str]:
     return errors
 
 
+def verify_workflow_immutability(tracked: set[str]) -> list[str]:
+    errors: list[str] = []
+    for path in sorted(FORBIDDEN_AUTHORING_WORKFLOWS & tracked):
+        errors.append(f"one-shot source-mutating AuthBus workflow is forbidden: {path}")
+    if not WORKFLOW_ROOT.is_dir():
+        return errors
+    for workflow in sorted(WORKFLOW_ROOT.glob("authbus-*.yml")):
+        relative = workflow.relative_to(ROOT).as_posix()
+        text = workflow.read_text(encoding="utf-8")
+        match = SOURCE_MUTATION.search(text)
+        if match:
+            token = " ".join(match.group(0).split())
+            errors.append(
+                f"AuthBus workflow must be read-only: {relative} contains {token!r}"
+            )
+    return errors
+
+
 def verify() -> list[str]:
     errors: list[str] = []
     if not MAP.is_file():
@@ -116,7 +147,9 @@ def verify() -> list[str]:
         }:
             errors.append("readiness contract static decision is not fail-closed")
 
-    for path in tracked_files():
+    tracked = set(tracked_files())
+    errors.extend(verify_workflow_immutability(tracked))
+    for path in sorted(tracked):
         if GENERATED_NAME.search(path):
             errors.append(f"generated AuthBus evidence is committed: {path}")
         if path.startswith("docs/modules/auth.authbus/") and path.endswith(".json"):
