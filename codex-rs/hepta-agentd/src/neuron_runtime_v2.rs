@@ -45,10 +45,12 @@ use codex_hepta_neuron::NeuronRuntimeV2;
 use codex_hepta_neuron::NeuronRuntimeV2Error;
 use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
+include!("neuron_runtime_v2_identity.rs");
 include!("neuron_runtime_v2_base.rs");
 include!("neuron_runtime_v2_shared.rs");
 include!("neuron_runtime_v2_owner_handle.rs");
