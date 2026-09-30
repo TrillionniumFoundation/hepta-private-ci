@@ -1,5 +1,5 @@
 {
-  "schema": "hepta.secrets-heptabao-product-caller.v1",
+  "schema": "hepta.secrets-heptabao-product-caller.v2",
   "callerId": "hepta-secrets-runtime",
   "ownerModule": "secrets.heptabao",
   "binaryPackage": "codex-hepta-bao-adapter",
@@ -16,5 +16,6 @@
   "recoveryWorker": "HeptaSecretsProductRuntimeV1::reconcile_due_just_in_time",
   "shutdownDrainDeadlineMs": 30000,
   "deploymentTopology": "single_process_local_filesystem",
-  "configurationDigest": "6f93406e3edd6f3785c36485e4efc51c3ab9ee0e6dac63fae796c5b52618ee0c"
+  "configurationDigest": "6f93406e3edd6f3785c36485e4efc51c3ab9ee0e6dac63fae796c5b52618ee0c",
+  "constructorSourcePath": "codex-rs/hepta-bao-adapter/src/product_bootstrap.rs"
 }

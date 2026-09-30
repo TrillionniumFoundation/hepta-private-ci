@@ -3,7 +3,9 @@
 `codex-hepta-bao-adapter` now owns the normal binary target
 `hepta-secrets-runtime`. The source-bound constructor is
 `compose_hepta_secrets_runtime` in
-`src/bin/hepta-secrets-runtime.rs`.
+the exported `src/product_bootstrap.rs` library API; the binary source remains
+`src/bin/hepta-secrets-runtime.rs`. The v2 caller manifest binds these two source
+paths separately.
 
 The constructor forces the underlying SQLite recovery runtime to a claim limit
 of one. `maxClaimsPerSweep` controls the number of completed claim/execute
@@ -25,7 +27,9 @@ services remain dependency-injected and independently governed.
 
 ## Truth boundary
 
-This is a source-composed product caller. It is not evidence that a deployment
+This is a source-bound library constructor and binary declaration. The binary
+currently exposes configuration validation and description, and does not start
+a normal product service. It is not evidence that a deployment
 has selected the binary, that the target filesystem is qualified, or that an
 operator has accepted activation. `targetHostQualified`,
 `storageProfileQualified`, `operatorAccepted`, `activated`, `released` and

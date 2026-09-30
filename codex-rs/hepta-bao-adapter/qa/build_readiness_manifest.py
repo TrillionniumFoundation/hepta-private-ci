@@ -7,12 +7,19 @@ import hashlib
 import json
 import os
 import platform
+import re
 import subprocess
+import sys
+import tomllib
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[3]
-PRODUCT_CALLER_SCHEMA = "hepta.secrets-heptabao-product-caller.v1"
+sys.path.insert(0, str(ROOT / "scripts"))
+from verify_hepta_callers import _strip_cfg_test_items, _strip_rust_non_code
+from attest_candidate import load_receipt
+from build_supply_chain_manifest import files as committed_files, digest_paths as committed_tree_hash, source_digest
+PRODUCT_CALLER_SCHEMA = "hepta.secrets-heptabao-product-caller.v2"
 PRODUCT_CALLER_CONFIG = ROOT / "docs/modules/secrets.heptabao/PRODUCT_CALLER_CONFIG_V1.json"
 PRODUCT_CALLER_FIELDS = {
     "schema",
@@ -21,6 +28,7 @@ PRODUCT_CALLER_FIELDS = {
     "binaryPackage",
     "binaryTarget",
     "sourcePath",
+    "constructorSourcePath",
     "constructorSymbol",
     "databasePathSource",
     "providerConfigurationSource",
@@ -45,18 +53,6 @@ def sha256(path: Path) -> str:
     with path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
-    return digest.hexdigest()
-
-
-def tree_hash(paths: list[Path]) -> str:
-    digest = hashlib.sha256()
-    for path in sorted(p for p in paths if p.is_file()):
-        relative = path.relative_to(ROOT).as_posix().encode()
-        payload = path.read_bytes()
-        digest.update(len(relative).to_bytes(8, "big"))
-        digest.update(relative)
-        digest.update(len(payload).to_bytes(8, "big"))
-        digest.update(payload)
     return digest.hexdigest()
 
 
@@ -96,7 +92,7 @@ def load_product_caller(path_text: str) -> tuple[dict[str, Any] | None, str | No
     for name in PRODUCT_CALLER_FIELDS - {"shutdownDrainDeadlineMs"}:
         if not nonempty_string(value[name]):
             raise SystemExit(f"product caller field {name} must be non-empty")
-    if not isinstance(value["shutdownDrainDeadlineMs"], int) or not (
+    if type(value["shutdownDrainDeadlineMs"]) is not int or not (
         1 <= value["shutdownDrainDeadlineMs"] <= 300_000
     ):
         raise SystemExit("shutdownDrainDeadlineMs must be between 1 and 300000")
@@ -109,6 +105,8 @@ def load_product_caller(path_text: str) -> tuple[dict[str, Any] | None, str | No
         "single_host_multi_process",
     }:
         raise SystemExit("unsupported product caller deployment topology")
+    if value["ownerModule"] != "secrets.heptabao":
+        raise SystemExit("product caller must belong to secrets.heptabao")
 
     if not PRODUCT_CALLER_CONFIG.is_file():
         raise SystemExit("product caller configuration does not exist")
@@ -118,27 +116,78 @@ def load_product_caller(path_text: str) -> tuple[dict[str, Any] | None, str | No
     if configuration.get("binaryTarget") != value["binaryTarget"]:
         raise SystemExit("product caller and configuration binary targets differ")
     deadlines = configuration.get("deadlines")
-    if not isinstance(deadlines, dict) or not (
-        deadlines.get("consumerTimeoutMs", 0)
-        < deadlines.get("forwardExecutionLeaseMs", 0)
-        < deadlines.get("absoluteOperationDeadlineMs", 0)
+    if not isinstance(deadlines, dict) or any(
+        type(deadlines.get(name)) is not int or not 1 <= deadlines[name] <= 900_000
+        for name in ("consumerTimeoutMs", "forwardExecutionLeaseMs", "absoluteOperationDeadlineMs", "shutdownDrainDeadlineMs")
+    ) or not (
+        deadlines["consumerTimeoutMs"] < deadlines["forwardExecutionLeaseMs"]
+        < deadlines["absoluteOperationDeadlineMs"]
+        and deadlines["shutdownDrainDeadlineMs"] < deadlines["absoluteOperationDeadlineMs"]
+        and deadlines["shutdownDrainDeadlineMs"] == value["shutdownDrainDeadlineMs"]
     ):
         raise SystemExit("product caller deadline contract is not strictly ordered")
     recovery = configuration.get("recoveryWorker")
     if not isinstance(recovery, dict) or recovery.get("claimMode") != "just_in_time":
         raise SystemExit("product caller recovery must use just-in-time claims")
 
-    source = ROOT / value["sourcePath"]
+    source_path = Path(value["sourcePath"])
+    if source_path.is_absolute() or ".." in source_path.parts:
+        raise SystemExit("product caller source path must be repository-relative without traversal")
+    source = (ROOT / source_path).resolve()
+    try:
+        source.relative_to(ROOT.resolve())
+    except ValueError as error:
+        raise SystemExit("product caller source must remain inside the repository") from error
     if not source.is_file():
         raise SystemExit("product caller source path does not exist")
+    cargo_path = ROOT / "codex-rs/hepta-bao-adapter/Cargo.toml"
+    cargo = tomllib.loads(cargo_path.read_text(encoding="utf-8"))
+    if cargo["package"]["name"] != value["binaryPackage"]:
+        raise SystemExit("product caller package is not the adapter Cargo package")
+    declared_binary = any(
+        item.get("name") == value["binaryTarget"]
+        and (cargo_path.parent / item.get("path", "src/main.rs")).resolve() == source
+        for item in cargo.get("bin", [])
+    )
+    auto_binary = cargo["package"].get("autobins", True) and source == (
+        cargo_path.parent / "src/bin" / (value["binaryTarget"] + ".rs")
+    ).resolve()
+    if not declared_binary and not auto_binary:
+        raise SystemExit("product caller source is not its declared Cargo binary target")
     source_parts = source.relative_to(ROOT).parts
     if any(part in {"test", "tests", "examples", "qa", "fixtures"} for part in source_parts):
         raise SystemExit("test, example, QA or fixture source cannot be a product caller")
     source_text = source.read_text(encoding="utf-8")
-    if value["constructorSymbol"] not in source_text:
-        raise SystemExit("product caller constructor symbol is not present in source")
-    if "SqliteBaoProductRuntimeV1" not in source_text:
+    constructor_path = Path(value["constructorSourcePath"])
+    if constructor_path.is_absolute() or ".." in constructor_path.parts:
+        raise SystemExit("product caller constructor source must be repository-relative without traversal")
+    constructor_source = (ROOT / constructor_path).resolve()
+    try:
+        constructor_parts = constructor_source.relative_to(ROOT.resolve()).parts
+    except ValueError as error:
+        raise SystemExit("product caller constructor must remain inside the repository") from error
+    if any(part in {"test", "tests", "examples", "qa", "fixtures"} for part in constructor_parts):
+        raise SystemExit("test, example, QA or fixture source cannot be a product constructor")
+    if not constructor_source.is_file():
+        raise SystemExit("product caller constructor source does not exist")
+    code = _strip_cfg_test_items(_strip_rust_non_code(constructor_source.read_text(encoding="utf-8")))
+    if not re.search(r"\bpub\s+fn\s+" + re.escape(value["constructorSymbol"]) + r"\s*\(", code):
+        raise SystemExit("product caller constructor declaration is not present in non-test source")
+    if not re.search(r"SqliteBaoProductRuntimeV1\s*::\s*new\s*\(", code):
         raise SystemExit("product caller does not instantiate the SQLite Bao runtime")
+    library_code = _strip_cfg_test_items(_strip_rust_non_code(
+        (cargo_path.parent / "src/lib.rs").read_text(encoding="utf-8")
+    ))
+    module_name = constructor_source.stem
+    if not re.search(r"\bmod\s+" + re.escape(module_name) + r"\s*;", library_code):
+        raise SystemExit("product constructor module is not compiled by the Cargo library")
+    symbol = re.escape(value["constructorSymbol"])
+    if not re.search(
+        r"\bpub\s+use\s+" + re.escape(module_name)
+        + r"\s*::\s*(?:" + symbol + r"\s*;|\{[^}]*\b" + symbol + r"\b[^}]*\}\s*;)",
+        library_code,
+    ):
+        raise SystemExit("product constructor is not publicly exported by the Cargo library")
     if value["binaryTarget"] not in source_text:
         raise SystemExit("product caller source does not bind its declared binary target")
 
@@ -146,7 +195,7 @@ def load_product_caller(path_text: str) -> tuple[dict[str, Any] | None, str | No
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(allow_abbrev=False)
     parser.add_argument("--output", required=True)
     parser.add_argument(
         "--candidate-role",
@@ -164,6 +213,7 @@ def main() -> None:
     parser.add_argument("--runner-image")
     parser.add_argument("--target-triple")
     parser.add_argument("--qualified", action="store_true")
+    parser.add_argument("--native-receipt", type=Path)
     parser.add_argument("--product-caller-manifest", default="")
     parser.add_argument("--artifact", action="append", default=[])
     args = parser.parse_args()
@@ -200,19 +250,46 @@ def main() -> None:
         or platform.platform()
     )
     target_triple = args.target_triple or detected_target
+    native_receipt_sha256 = None
+    if args.qualified:
+        if args.native_receipt is None:
+            raise SystemExit("--qualified requires --native-receipt with retained native gate logs")
+        native = load_receipt(args.native_receipt, args.candidate_role)
+        if native['head'] != head or native['tree'] != tree:
+            raise SystemExit("native receipt must bind the exact current candidate commit and tree")
+        if native['rustToolchain'] != rust:
+            raise SystemExit("native receipt toolchain differs from the current qualification toolchain")
+        for field, expected_value in (
+            ('workflowRunId', workflow_run_id), ('workflowAttempt', attempt_id), ('workflowSha', workflow_sha),
+        ):
+            if native.get(field) != expected_value:
+                raise SystemExit(f"native receipt differs from current execution identity: {field}")
+        for field, selected, environment_key in (
+            ('workflowRunId', workflow_run_id, 'GITHUB_RUN_ID'),
+            ('workflowAttempt', attempt_id, 'GITHUB_RUN_ATTEMPT'),
+            ('workflowSha', workflow_sha, 'GITHUB_WORKFLOW_SHA'),
+        ):
+            current = os.environ.get(environment_key)
+            if current is not None and selected != current:
+                raise SystemExit(f"readiness identity differs from current execution environment: {field}")
+        if target_triple != detected_target:
+            raise SystemExit("native qualification target must match the executed Rust host target")
+        if args.candidate_role == 'synthetic-merge':
+            parents = run('git', 'show', '-s', '--format=%P', head).split()
+            if parents != [args.base_sha, args.source_head_sha]:
+                raise SystemExit("synthetic readiness must bind exact base and source parents in order")
+        if run('git', 'status', '--porcelain=v1', '--untracked-files=all'):
+            raise SystemExit("qualified readiness requires a pristine exact-candidate worktree")
+        native_receipt_sha256 = sha256(args.native_receipt)
 
-    migrations = list(
-        (ROOT / "codex-rs/hepta-bao-adapter/migrations").glob("*.sql")
-    )
-    schemas = list((ROOT / "codex-rs/hepta-bao-adapter").rglob("*schema*"))
-    tests = list((ROOT / "codex-rs/hepta-bao-adapter").rglob("*test*.rs"))
-    tests += list(
-        (ROOT / "codex-rs/hepta-bao-adapter/qa").glob("test_*.py")
-    )
-    docs = list((ROOT / "docs/modules/secrets.heptabao").rglob("*"))
-    docs += list(
-        (ROOT / "docs/lane-a-foundation/secrets.heptabao").rglob("*")
-    )
+    migrations = committed_files("codex-rs/hepta-bao-adapter/migrations/*.sql", head)
+    schemas = committed_files("codex-rs/hepta-bao-adapter/**/*schema*", head)
+    tests = []
+    for package in ("hepta-bao-adapter", "hepta-authbus", "hepta-types", "state/sqlite"):
+        tests += committed_files(f"codex-rs/{package}/**/*test*.rs", head)
+    tests += committed_files("codex-rs/hepta-bao-adapter/qa/test_*.py", head)
+    docs = committed_files("docs/modules/secrets.heptabao/**", head)
+    docs += committed_files("docs/lane-a-foundation/secrets.heptabao/**", head)
     implementation = (
         ROOT / "docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json"
     )
@@ -242,15 +319,15 @@ def main() -> None:
     )
     identity_closed = len(set(identity.values())) == 1 and role_identity_closed
 
-    dependency_lock_hash = sha256(ROOT / "codex-rs/Cargo.lock")
-    migration_hash = tree_hash(migrations)
-    schema_hash = tree_hash(schemas)
-    test_set_hash = tree_hash(tests)
-    qualification_profile_hash = sha256(
-        ROOT / ".github/workflows/secrets-heptabao-five-closure-qualified.yml"
+    dependency_lock_hash = source_digest(ROOT / "codex-rs/Cargo.lock", head)
+    migration_hash = committed_tree_hash(migrations, head)
+    schema_hash = committed_tree_hash(schemas, head)
+    test_set_hash = committed_tree_hash(tests, head)
+    qualification_profile_hash = source_digest(
+        ROOT / ".github/workflows/secrets-heptabao-five-closure-qualified.yml", head
     )
-    implementation_map_hash = sha256(implementation)
-    documentation_hash = tree_hash(docs)
+    implementation_map_hash = source_digest(implementation, head)
+    documentation_hash = committed_tree_hash(docs, head)
 
     qualification_identity = {
         "source_head_sha": optional(source_head),
@@ -345,6 +422,7 @@ def main() -> None:
         "artifactHashes": artifact_hashes,
         "buildSurface": "single_complete",
         "identityClosed": identity_closed,
+        "nativeReceiptSha256": native_receipt_sha256,
         "readinessDimensions": readiness,
         "productCallerSourceBound": product_caller_source_bound,
         "productCaller": product_caller,
