@@ -15,6 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  # One-shot source authoring is pinned to the immutable reviewed candidate.
   SOURCE_SHA: 3a4d0e6bb7018c77e9443a38855d69146542febe
   TARGET_BRANCH: codex/inference-worker-authoritative-20260929
   EXPECTED_TARGET_SHA: 3a4d0e6bb7018c77e9443a38855d69146542febe
