@@ -11,10 +11,12 @@ on:
       - main
     paths:
       - '.github/workflows/channel-matrix-preserve-unknown.yml'
+      - '.github/workflows/channel-matrix-materialize.yml'
       - 'codex-rs/Cargo.lock'
       - 'codex-rs/Cargo.toml'
       - 'codex-rs/rust-toolchain.toml'
       - 'codex-rs/.config/nextest.toml'
+      - 'codex-rs/hepta-contracts/**'
       - 'codex-rs/hepta-matrix-protocol/**'
       - 'codex-rs/hepta-matrix-store/**'
       - 'codex-rs/hepta-matrix-sdk/**'
@@ -85,26 +87,21 @@ jobs:
           set -euo pipefail
           evidence="$RUNNER_TEMP/matrix-source-head"
           python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$SOURCE_SHA" --output "$evidence/candidate.json"
-          python3 scripts/channel_matrix_evidence.py snapshot --expected-sha "$SOURCE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane source-head --output "$evidence/source.json"
-      - name: Prove public API negative compile boundaries
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-matrix-sdk --doc 2>&1 | tee "$RUNNER_TEMP/matrix-source-head/api-compile-fail.log"
+          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$SOURCE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane source-head --output "$evidence/source.json"
       - name: Execute locked source-head qualification
         id: qualify
         run: |
           set -uo pipefail
           evidence="$RUNNER_TEMP/matrix-source-head"
           result=0
-          for label in compile focused-tests clippy format; do
-            python3 scripts/channel_matrix_evidence.py run --directory "$evidence" --label "$label" || result=1
+          for label in compile api-compile-fail focused-tests clippy format; do
+            python3 scripts/channel_matrix_evidence_v2.py run --directory "$evidence" --label "$label" || result=1
           done
-          python3 scripts/channel_matrix_evidence.py snapshot --expected-sha "$SOURCE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane source-head --output "$evidence/source-after.json" || result=1
+          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$SOURCE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane source-head --output "$evidence/source-after.json" || result=1
           python3 scripts/channel_matrix_status.py --directory "$evidence" || result=1
           python3 scripts/channel_matrix_qualification.py --directory "$evidence" || result=1
           if test "$result" -eq 0; then job_status=success; else job_status=failure; fi
-          python3 scripts/channel_matrix_evidence.py manifest --directory "$evidence" --job-status "$job_status" || result=1
+          python3 scripts/channel_matrix_evidence_v2.py manifest --directory "$evidence" --job-status "$job_status" || result=1
           exit "$result"
       - name: Retain source-head evidence
         if: always()
@@ -161,26 +158,21 @@ jobs:
           set -euo pipefail
           evidence="$RUNNER_TEMP/matrix-base-merge"
           python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$MERGE_SHA" --output "$evidence/candidate.json"
-          python3 scripts/channel_matrix_evidence.py snapshot --expected-sha "$MERGE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane base-merge --output "$evidence/source.json"
-      - name: Prove public API negative compile boundaries
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-matrix-sdk --doc 2>&1 | tee "$RUNNER_TEMP/matrix-base-merge/api-compile-fail.log"
+          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$MERGE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane base-merge --output "$evidence/source.json"
       - name: Execute locked merge qualification
         id: qualify
         run: |
           set -uo pipefail
           evidence="$RUNNER_TEMP/matrix-base-merge"
           result=0
-          for label in compile focused-tests clippy format; do
-            python3 scripts/channel_matrix_evidence.py run --directory "$evidence" --label "$label" || result=1
+          for label in compile api-compile-fail focused-tests clippy format; do
+            python3 scripts/channel_matrix_evidence_v2.py run --directory "$evidence" --label "$label" || result=1
           done
-          python3 scripts/channel_matrix_evidence.py snapshot --expected-sha "$MERGE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane base-merge --output "$evidence/source-after.json" || result=1
+          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$MERGE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane base-merge --output "$evidence/source-after.json" || result=1
           python3 scripts/channel_matrix_status.py --directory "$evidence" || result=1
           python3 scripts/channel_matrix_qualification.py --directory "$evidence" || result=1
           if test "$result" -eq 0; then job_status=success; else job_status=failure; fi
-          python3 scripts/channel_matrix_evidence.py manifest --directory "$evidence" --job-status "$job_status" || result=1
+          python3 scripts/channel_matrix_evidence_v2.py manifest --directory "$evidence" --job-status "$job_status" || result=1
           exit "$result"
       - name: Retain deterministic-merge evidence
         if: always()
@@ -219,7 +211,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/pair/result"
-          python3 scripts/channel_matrix_pair_acceptance.py \
+          python3 scripts/channel_matrix_pair_acceptance_v2.py \
             --source-head "$RUNNER_TEMP/pair/source-head" \
             --base-merge "$RUNNER_TEMP/pair/base-merge" \
             --output "$RUNNER_TEMP/pair/result/paired-qualification.json"
