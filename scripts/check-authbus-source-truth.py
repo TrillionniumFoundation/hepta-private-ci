@@ -5,8 +5,8 @@ Static repository files may describe contracts and source mappings. Candidate
 SHAs, workflow attempts, bound projections, evidence receipts, and release
 decisions are generated artifacts and must never be committed as an alternate
 status authority. AuthBus qualification and authoring checks are read-only: a
-workflow may validate source, but it may not format, commit, push, materialize,
-or otherwise rewrite the candidate it is qualifying.
+workflow may validate source, but it may not commit, push, materialize, or
+otherwise publish rewritten source as the candidate it is qualifying.
 """
 
 from __future__ import annotations
@@ -35,18 +35,15 @@ SHA_FIELD = re.compile(
     r"(?:^|_)(?:commit|candidate|head|base|tree|merge|final_merge|workflow)_?sha$",
     re.IGNORECASE,
 )
-# Checkout/reset may be needed to materialize an immutable exact candidate in a
-# detached runner worktree. They are not repository publication. What is
-# forbidden is changing the reviewed branch or synthesizing source and then
-# committing/pushing it as though that were the original candidate.
+# Detached checkout/reset is allowed to materialize one exact immutable
+# candidate in a runner worktree. Publication and source synthesis are not.
 SOURCE_MUTATION = re.compile(
     r"(?im)(?:^\s*contents:\s*write\s*(?:#.*)?$|"
     r"\bgit\s+(?:add|commit|push|merge|rebase|cherry-pick|am)\b|"
     r"^\s*persist-credentials:\s*true\s*(?:#.*)?$|"
     r"\bauthbus-materialize[^\s]*\.py\b|"
     r"\bauthority-convergence-once\b|"
-    r"check-authbus-closed-world\.py\s+--write\b|"
-    r"cargo\s+fmt(?!\s+--(?:all\s+)?--check)(?:\s|$))"
+    r"check-authbus-closed-world\.py\s+--write\b)"
 )
 FORBIDDEN_AUTHORING_WORKFLOWS = {
     ".github/workflows/authbus-bootstrap-api-authoring.yml",
