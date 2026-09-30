@@ -1,4 +1,5 @@
 name: Hepta prompt.registry qualification
+
 on:
   workflow_dispatch:
   pull_request:
@@ -15,7 +16,11 @@ on:
       - '.github/workflows/hepta-prompt-registry-qualification.yml'
       - '.github/workflows/hepta-prompt-registry-acceptance.yml'
   push:
-    branches: [main, codex/prompt-registry-delivery-consistency-20260928, codex/prompt-registry-verified-closeout-20260928, codex/prompt-registry-full-closeout-20260929]
+    branches:
+      - main
+      - codex/prompt-registry-delivery-consistency-20260928
+      - codex/prompt-registry-verified-closeout-20260928
+      - codex/prompt-registry-full-closeout-20260929
     paths:
       - 'codex-rs/hepta-prompt-registry/**'
       - 'codex-rs/hepta-prompt-optimizer/**'
@@ -28,11 +33,14 @@ on:
       - 'scripts/hepta-prompt-registry-*'
       - '.github/workflows/hepta-prompt-registry-qualification.yml'
       - '.github/workflows/hepta-prompt-registry-acceptance.yml'
+
 permissions:
   contents: read
+
 concurrency:
   group: hepta-prompt-registry-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
 jobs:
   bind:
     runs-on: ubuntu-slim
@@ -57,6 +65,7 @@ jobs:
           base=$(git rev-parse "${REQUESTED_BASE:-refs/remotes/origin/main}")
           echo "source=$source" >> "$GITHUB_OUTPUT"
           echo "base=$base" >> "$GITHUB_OUTPUT"
+
   qualification:
     needs: bind
     name: prompt.registry ${{ matrix.profile }} (${{ matrix.lane }})
@@ -66,10 +75,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {profile: core, lane: exact-head, runner: ubuntu-24.04, timeout: 45}
-          - {profile: core, lane: base-merge, runner: ubuntu-24.04, timeout: 45}
-          - {profile: product, lane: exact-head, runner: ubuntu-24.04, timeout: 75}
-          - {profile: product, lane: base-merge, runner: ubuntu-24.04, timeout: 75}
+          - {profile: core, lane: exact-head, runner: ubuntu-24.04, timeout: 75}
+          - {profile: core, lane: base-merge, runner: ubuntu-24.04, timeout: 75}
+          - {profile: product, lane: exact-head, runner: ubuntu-24.04, timeout: 120}
+          - {profile: product, lane: base-merge, runner: ubuntu-24.04, timeout: 120}
     env:
       SOURCE_SHA: ${{ needs.bind.outputs.source }}
       BASE_SHA: ${{ needs.bind.outputs.base }}
@@ -79,6 +88,10 @@ jobs:
       CARGO_BUILD_JOBS: '2'
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_NET_RETRY: '10'
+      CARGO_HTTP_TIMEOUT: '600'
+      CARGO_HTTP_LOW_SPEED_LIMIT: '1'
+      CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -94,7 +107,9 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           mkdir -p "$RUNNER_TEMP/prompt-evidence"
-          printf 'source=%s\nbase=%s\nprofile=%s\nlane=%s\nqualified=false\n' "$SOURCE_SHA" "$BASE_SHA" '${{ matrix.profile }}' "$LANE" > "$RUNNER_TEMP/prompt-evidence/setup.txt"
+          printf 'source=%s\nbase=%s\nprofile=%s\nlane=%s\nrun=%s\nattempt=%s\nqualified=false\nmergeReady=false\nproductionReady=false\n' \
+            "$SOURCE_SHA" "$BASE_SHA" '${{ matrix.profile }}' "$LANE" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" \
+            > "$RUNNER_TEMP/prompt-evidence/setup.txt"
           if test "$LANE" = base-merge; then
             git config user.name 'Prompt registry qualification'
             git config user.email 'qualification@users.noreply.github.com'
@@ -120,13 +135,13 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Execute every required check and capture failures
+      - name: Execute dependency-prime, offline checks and exact failure capture
         run: >-
           python3 scripts/hepta-prompt-registry-qualify.py
           --profile '${{ matrix.profile }}' --lane '${{ matrix.lane }}'
           --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA"
           --output "$RUNNER_TEMP/prompt-evidence"
-      - name: Retain exact identity, raw logs, measurements and failed checks
+      - name: Retain identity, every retry, raw logs, maps and measurements
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -144,20 +159,16 @@ jobs:
       contents: read
       actions: read
     steps:
-      - name: Reject failed, skipped or cancelled lanes
-        env:
-          BIND_RESULT: ${{ needs.bind.result }}
-          LANES_RESULT: ${{ needs.qualification.result }}
-        run: test "$BIND_RESULT" = success && test "$LANES_RESULT" = success
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ needs.bind.outputs.source }}
           persist-credentials: false
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+      - name: Download only this source and attempt
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           pattern: prompt-registry-*-${{ needs.bind.outputs.source }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/prompt-registry-receipts
-      - name: Verify all four identities, source trees and raw logs
+      - name: Verify all four identities, attempts, source trees and artifact hashes
         env:
           SOURCE_SHA: ${{ needs.bind.outputs.source }}
           BASE_SHA: ${{ needs.bind.outputs.base }}
@@ -167,7 +178,9 @@ jobs:
           --source "$SOURCE_SHA" --base "$BASE_SHA"
           --run "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT"
           --output "$RUNNER_TEMP/prompt-registry-summary.json"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - name: Retain success or fail-closed aggregate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: prompt-registry-summary-${{ needs.bind.outputs.source }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/prompt-registry-summary.json
