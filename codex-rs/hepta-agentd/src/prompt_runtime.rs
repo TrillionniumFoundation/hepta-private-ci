@@ -190,9 +190,12 @@ impl AgentdPromptRuntimeOwner {
             return Err(AgentdPromptRuntimeError::EmptySelection);
         }
 
-        let mut effective_deadline_ms = requested_deadline_ms;
+        let mut effective_deadline_ms = requested_deadline_ms.min(compiled.valid_until_unix_ms);
         let mut fragments = Vec::with_capacity(compiled.selected_deliveries.len());
         for delivery in &compiled.selected_deliveries {
+            if delivery.binding.model_id.as_str() != model {
+                return Err(AgentdPromptRuntimeError::InvalidModel);
+            }
             if delivery.binding.role != PromptRoleV2::DeveloperInstruction {
                 return Err(AgentdPromptRuntimeError::UnsupportedPromptRole);
             }

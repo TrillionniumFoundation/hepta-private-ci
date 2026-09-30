@@ -13,6 +13,7 @@ use codex_hepta_context_compiler::CompiledContextV2;
 use codex_hepta_context_compiler::ContextAttachmentV2;
 use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextModelProfileV2;
+use codex_hepta_context_compiler::ContextRoleV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
 use codex_hepta_context_compiler::SerializedContextV2;
@@ -57,6 +58,7 @@ pub struct PromptRegistryCompiledContextV2 {
     pub portfolio_receipt_digest: Digest32,
     pub compiled: CompiledContextV2,
     pub model_profile: ContextModelProfileV2,
+    pub valid_until_unix_ms: u64,
     pub selected_deliveries: Vec<RealizationDeliveryV2>,
     pub serialized_payload: Vec<u8>,
     pub serialization: ContextSerializationReceiptV2,
@@ -64,6 +66,9 @@ pub struct PromptRegistryCompiledContextV2 {
     pub attachment: ContextAttachmentV2,
     pub delivery_set_digest: Digest32,
     pub authority: AuthorityPosture,
+    // Only the registry compiler can mint provenance for an exact output.
+    // Public content digests alone cannot authenticate a caller-created bundle.
+    verified_delivery_set_digest: Digest32,
 }
 
 impl PromptRegistryCompiledContextV2 {
@@ -77,8 +82,10 @@ impl PromptRegistryCompiledContextV2 {
             .map_err(PromptRegistryCompilationErrorV2::Context)?;
         if self.authority.grants_any()
             || self.delivery_set_digest.is_zero()
+            || self.delivery_set_digest != self.verified_delivery_set_digest
             || self.exercise_receipt_digest.is_zero()
             || self.portfolio_receipt_digest.is_zero()
+            || self.valid_until_unix_ms == 0
             || self.compiled.receipt().prompt_portfolio_digest() != self.portfolio_receipt_digest
         {
             return Err(PromptRegistryCompilationErrorV2::Integrity);
@@ -92,13 +99,49 @@ impl PromptRegistryCompiledContextV2 {
         {
             return Err(PromptRegistryCompilationErrorV2::Integrity);
         }
-        for delivery in &self.selected_deliveries {
+        for (candidate, delivery) in self
+            .compiled
+            .selected_candidates()
+            .iter()
+            .zip(&self.selected_deliveries)
+        {
             delivery
                 .validate()
                 .map_err(DurableRegistryError::Read)
                 .map_err(PromptRegistryCompilationErrorV2::Registry)?;
+            let role = match delivery.binding.role {
+                PromptRoleV2::ToolSchemaFragment => ContextRoleV2::Schema,
+                PromptRoleV2::SystemInstruction
+                | PromptRoleV2::DeveloperInstruction
+                | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
+            };
+            let tuple = PromptModelTupleV2 {
+                model_id: delivery.binding.model_id.clone(),
+                model_version: delivery.binding.model_version.clone(),
+                model_digest: delivery.binding.model_digest,
+                tokenizer_digest: delivery.binding.tokenizer_digest,
+                template_digest: delivery.binding.template_digest,
+                tool_schema_digest: delivery.binding.tool_schema_digest,
+                context_profile_digest: delivery.binding.context_profile_digest,
+                locale_id: delivery.binding.locale_id.clone(),
+            };
+            if delivery.snapshot_digest != self.compatible.snapshot_digest
+                || !self.compatible.bindings.contains(&delivery.binding)
+                || tuple.digest() != self.compatible.model_tuple_digest
+                || delivery.binding.model_digest != self.model_profile.model_digest
+                || delivery.binding.tokenizer_digest != self.model_profile.tokenizer_digest
+                || delivery.binding.template_digest != self.model_profile.template_digest
+                || delivery.binding.tool_schema_digest != self.model_profile.tool_schema_digest
+                || candidate.role != role
+                || candidate.content_digest != delivery.binding.payload_digest
+                || candidate.source_digest != delivery.binding.digest()
+                || candidate.tokenization.token_count() != u64::from(delivery.binding.token_cost)
+            {
+                return Err(PromptRegistryCompilationErrorV2::Integrity);
+            }
         }
         if self.serialized_payload.is_empty()
+            || self.serialized_payload != serialize_selected_deliveries(&self.selected_deliveries)
             || Digest32::of_bytes(&self.serialized_payload) != self.serialization.payload_digest()
         {
             return Err(PromptRegistryCompilationErrorV2::Integrity);
@@ -131,6 +174,7 @@ impl PromptRegistryCompiledContextV2 {
         bytes.extend_from_slice(self.compiled.receipt().receipt_digest().as_array());
         bytes.extend_from_slice(self.serialization.receipt_digest().as_array());
         bytes.extend_from_slice(self.attachment.attachment_digest().as_array());
+        bytes.extend_from_slice(&self.valid_until_unix_ms.to_be_bytes());
         bytes.extend_from_slice(
             &u64::try_from(self.selected_deliveries.len())
                 .unwrap_or(u64::MAX)
@@ -214,7 +258,7 @@ pub fn compile_prompt_registry_v2(
     let snapshot = registry
         .snapshot_v2(portfolio.generation_vector_digest, &portfolio.model_tuple)
         .map_err(PromptRegistryCompilationErrorV2::Registry)?;
-    let compatible = registry
+    let mut compatible = registry
         .read_compatible_v2(
             &snapshot,
             portfolio.generation_vector_digest,
@@ -225,12 +269,23 @@ pub fn compile_prompt_registry_v2(
                 .map_err(|_| PromptRegistryCompilationErrorV2::Integrity)?,
         )
         .map_err(PromptRegistryCompilationErrorV2::Registry)?;
+    // Discovery may choose another role for the same factor. Freeze the exact
+    // exercised bindings already dereferenced from this owner and snapshot.
+    compatible.bindings = selected_deliveries
+        .iter()
+        .map(|delivery| delivery.binding.clone())
+        .collect();
+    compatible.bindings.sort_by(|left, right| {
+        (&left.factor_id, &left.realization_id).cmp(&(&right.factor_id, &right.realization_id))
+    });
+    compatible.set_digest = compatible.compute_set_digest();
     let mut output = PromptRegistryCompiledContextV2 {
         compatible,
         exercise_receipt_digest: delivery.exercise.receipt_digest,
         portfolio_receipt_digest: portfolio.receipt.receipt_digest,
         compiled: prepared.compiled,
         model_profile,
+        valid_until_unix_ms: portfolio.receipt.valid_until_unix_ms,
         selected_deliveries,
         serialized_payload,
         serialization: delivery.serialization,
@@ -238,8 +293,10 @@ pub fn compile_prompt_registry_v2(
         attachment: delivery.attachment,
         delivery_set_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
+        verified_delivery_set_digest: Digest32::ZERO,
     };
     output.delivery_set_digest = output.compute_delivery_set_digest();
+    output.verified_delivery_set_digest = output.delivery_set_digest;
     output.validate()?;
     Ok(output)
 }
@@ -300,3 +357,7 @@ impl std::error::Error for PromptRegistryCompilationErrorV2 {}
 #[cfg(test)]
 #[path = "prompt_delivery_tests.rs"]
 pub(crate) mod tests;
+
+#[cfg(test)]
+#[path = "prompt_delivery_multirole_tests.rs"]
+mod multirole_tests;
