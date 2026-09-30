@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   apply-and-verify:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, rog]
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
       - name: Materialize typed shipping profile
         run: python3 scripts/qualification/runtime_agentd_shipping_profile_apply.py
-      - name: Install pinned Rust toolchain
+      - name: Install pinned Rust formatter
         shell: bash
         run: |
           set -euo pipefail
