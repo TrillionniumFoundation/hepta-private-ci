@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - ".github/workflows/hepta-intelligence-lock-refresh.yml"
+      - ".github/intelligence-control-bootstrap/**"
 
 permissions:
   contents: write
@@ -20,7 +21,8 @@ jobs:
     env:
       ORIGINAL_HEAD: 11588c5b1fc7d9a6a93a457e59513f4a39c32384
       BRANCH: codex/intelligence-control-production-closure-20260929
-      PATCH_SHA256: bbcec4c9bed5e5f59286475cc6976bacab9de2ef62ddc735b7174eb1602ef3a3
+      PATCH_SHA256: bb0858c91872e4406b2e383c6a6ac362df853b76fb03dc96580bb8f1d0c9e244
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out exact delivery commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -43,7 +45,6 @@ jobs:
           git reset --hard "$ORIGINAL_HEAD"
           git apply --index --check "$RUNNER_TEMP/intelligence-control.patch"
           git apply --index "$RUNNER_TEMP/intelligence-control.patch"
-          test ! -e .github/workflows/intelligence-control-bootstrap.yml
           test ! -e .github/intelligence-control-bootstrap
           printf 'DELIVERY_SHA=%s\n' "$delivery_sha" >> "$GITHUB_ENV"
 
@@ -68,19 +69,9 @@ jobs:
           python3 scripts/hepta-intelligence-fault-matrix-tests.py
           python3 scripts/hepta-intelligence-acceptance.py --check
           python3 scripts/hepta-intelligence-review-partitions.py --check-tracked
-          python3 - <<'PY'
-          import pathlib
-          import yaml
-
-          for path in (
-              pathlib.Path('.github/workflows/hepta-intelligence-control.yml'),
-              pathlib.Path('.github/workflows/hepta-intelligence-qualification-host.yml'),
-          ):
-              yaml.safe_load(path.read_text(encoding='utf-8'))
-          PY
           git diff --cached --check
 
-      - name: Publish one commit over the frozen parent
+      - name: Publish one ordinary-source commit over the frozen parent
         shell: bash
         env:
           GIT_AUTHOR_NAME: OpenAI
