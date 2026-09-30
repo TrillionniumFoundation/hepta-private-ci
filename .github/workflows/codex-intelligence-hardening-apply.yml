@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   apply:
-    runs-on: ubuntu-24.04-arm
+    runs-on: windows-latest
     steps:
       - name: Check out exact staging branch
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
+          python - <<'PY'
           import base64
           import lzma
           import os
@@ -32,7 +32,8 @@ jobs:
           output = Path(os.environ['RUNNER_TEMP']) / 'intelligence-hardening.patch'
           output.write_bytes(lzma.decompress(base64.b64decode(encoded)))
           PY
-          git apply --index "$RUNNER_TEMP/intelligence-hardening.patch"
+          patch_path="$(cygpath -u "$RUNNER_TEMP")/intelligence-hardening.patch"
+          git apply --index "$patch_path"
           git rm -r .codex
           git rm .github/workflows/codex-intelligence-hardening-apply.yml
           git config user.name "OpenAI Codex"
