@@ -28,7 +28,7 @@ FAMILIES = (
     "pinned", "closure_v2", "admission_v3", "dataset_revocation",
     "lifecycle_journal", "selection",
 )
-GATES = ("closure", "build", "clippy", "format", "inventory", "tests", "process_crash", "host_process_crash", "withdrawal_process_crash", "daemon_process", "product_process", "ops_assets")
+GATES = ("closure", "build", "clippy", "format", "inventory", "tests", "process_crash", "host_process_crash", "withdrawal_process_crash", "key_rotation", "daemon_process", "product_process", "ops_assets")
 MAX_REPORT = 16 * 1024 * 1024
 MAX_OUTPUT = 64 * 1024 * 1024
 RUNNER_KEYS = ("GITHUB_REPOSITORY", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB", "RUNNER_OS")
@@ -303,6 +303,11 @@ def qualify(root: Path, out: Path, source: str, base: str, lane: str) -> int:
         "withdrawal_process_crash": [
             "cargo", "test", *package,
             "sigkill_each_floor_boundary_reopens_only_exact_complete_records",
+            "--", "--test-threads=1",
+        ],
+        "key_rotation": [
+            "cargo", "test", *package,
+            "current_head_rotation_preserves_history_and_requires_current_key_epoch",
             "--", "--test-threads=1",
         ],
         "daemon_process": [
