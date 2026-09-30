@@ -21,6 +21,8 @@ use rustix::fs::OFlags;
 use rustix::fs::open;
 #[cfg(unix)]
 use rustix::fs::openat;
+#[cfg(unix)]
+use rustix::io::Errno;
 use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
@@ -50,8 +52,9 @@ const HEAD_MAGIC: &str = "HEPTAH01";
 ///
 /// Safe callers cannot construct this capability from an arbitrary `File` or
 /// extract/clone its handle. Creation fails when the final path component already
-/// exists, including when it is empty, truncated, or a symbolic link. Trusted
-/// parent traversal and containing-directory durability remain host obligations.
+/// exists, including when it is empty, truncated, or a symbolic link. Beneath
+/// a trusted root, Unix callers retain exact directory capabilities through
+/// traversal and containing-directory synchronization.
 pub struct CreateOnlyArtifactFile {
     file: File,
     #[cfg(unix)]
@@ -122,7 +125,7 @@ fn create_beneath_directory_capability(
         OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
         Mode::empty(),
     )
-    .map_err(|error| ArtifactStorageError::from(io::Error::from(error)))?;
+    .map_err(map_directory_open_error)?;
 
     let mut components = relative.components().peekable();
     while let Some(component) = components.next() {
@@ -136,7 +139,7 @@ fn create_beneath_directory_capability(
                 OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
                 Mode::empty(),
             )
-            .map_err(|error| ArtifactStorageError::from(io::Error::from(error)))?;
+            .map_err(map_directory_open_error)?;
             continue;
         }
         let opened = openat(
@@ -162,6 +165,15 @@ fn create_beneath_directory_capability(
         };
     }
     Err(ArtifactStorageError::InvalidPath)
+}
+
+#[cfg(unix)]
+fn map_directory_open_error(error: Errno) -> ArtifactStorageError {
+    if error == Errno::LOOP {
+        ArtifactStorageError::PathEscape
+    } else {
+        ArtifactStorageError::from(io::Error::from(error))
+    }
 }
 
 fn validate_relative_artifact_path(relative: &Path) -> Result<(), ArtifactStorageError> {
