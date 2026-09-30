@@ -662,6 +662,14 @@ async fn retained_cut_detects_old_valid_backup_after_ordinary_reopen() {
         .execute(&store.pool)
         .await
         .unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+
+        // VACUUM creates a new file with the process umask. A valid restored
+        // owner backup must also satisfy the private-file admission contract.
+        std::fs::set_permissions(&backup, std::fs::Permissions::from_mode(0o600)).unwrap();
+    }
     store
         .correct_memory(
             &access,

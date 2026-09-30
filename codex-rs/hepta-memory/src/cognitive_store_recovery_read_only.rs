@@ -52,8 +52,8 @@ impl CognitiveStore {
     /// Unused physical bytes are not authority and are not covered by that hash.
     /// A mismatch never falls back to an older cut or ordinary store opening.
     ///
-    /// This does NOT complete `open_with_recovery`: writer restoration still
-    /// requires a descriptor-backed VFS and an independently current writer fence.
+    /// This API grants no writer authority. Writable restoration uses the
+    /// separate `open_with_recovery` descriptor-copy path and current fence.
     pub async fn open_read_only_recovery(
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,
@@ -81,15 +81,7 @@ impl CognitiveStore {
             // First authenticate the entire schema/cut: integrity_check may
             // evaluate CHECK expressions embedded in untrusted schema SQL.
             if observed == *expected {
-                let integrity: Vec<String> = sqlx::query_scalar("PRAGMA integrity_check(1)")
-                    .fetch_all(&mut *transaction)
-                    .await
-                    .map_err(unavailable)?;
-                if integrity != ["ok"] {
-                    return Err(CognitiveStoreError::Corrupt(
-                        "cold image integrity check failed".into(),
-                    ));
-                }
+                verify_captured_integrity(&mut transaction).await?;
             }
             transaction.commit().await.map_err(unavailable)?;
             Ok::<_, CognitiveStoreError>(observed)

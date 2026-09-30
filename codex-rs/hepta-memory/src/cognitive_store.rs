@@ -53,6 +53,8 @@ mod files;
 mod integrity;
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
+#[path = "cognitive_store_schema.rs"]
+mod schema;
 pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
@@ -330,16 +332,29 @@ impl CognitiveStore {
             .map_err(unavailable)?;
         let initialized = async {
             database_file.verify()?;
-            MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
+            let mut transaction = pool
+                .begin_with("BEGIN IMMEDIATE")
+                .await
+                .map_err(unavailable)?;
+            // Admit the exact compiled historical schema before pending
+            // migrations can execute SQL against any existing owner object.
+            // The lock keeps this check and migrations in one serialized cut.
+            schema::admit_before_migration(&mut transaction).await?;
+            MIGRATOR
+                .run(&mut *transaction)
+                .await
+                .map_err(classify_migrate_error)?;
+            schema::verify_schema(&mut transaction).await?;
             sqlx::query(
                 "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
                  VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
             )
             .bind(i64::from(COGNITIVE_SCHEMA_VERSION))
             .bind(layout.agent_id().as_str())
-            .execute(&pool)
+            .execute(&mut *transaction)
             .await
             .map_err(unavailable)?;
+            transaction.commit().await.map_err(unavailable)?;
             verify_store(&pool, layout.agent_id()).await?;
             database_file.verify()
         }
@@ -555,6 +570,12 @@ fn now_unix_seconds() -> Result<i64, CognitiveStoreError> {
 }
 
 async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), CognitiveStoreError> {
+    {
+        let mut connection = pool.acquire().await.map_err(unavailable)?;
+        schema::verify_schema(&mut connection).await?;
+    }
+    // Integrity PRAGMAs execute table CHECK expressions. Authenticate every
+    // logical table and the migration schema before those scans run.
     let quick_check = sqlx::query_scalar::<_, String>("PRAGMA quick_check(1)")
         .fetch_all(pool)
         .await
@@ -564,84 +585,16 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
             "SQLite quick_check rejected the cognitive store".to_string(),
         ));
     }
-    let foreign_key_errors = sqlx::query("PRAGMA foreign_key_check")
-        .fetch_all(pool)
+    let foreign_key_errors = sqlx::query("SELECT 1 FROM pragma_foreign_key_check LIMIT 1")
+        .fetch_optional(pool)
         .await
         .map_err(unavailable)?;
-    if !foreign_key_errors.is_empty() {
+    if foreign_key_errors.is_some() {
         return Err(CognitiveStoreError::Corrupt(
             "SQLite foreign_key_check rejected the cognitive store".to_string(),
         ));
     }
     verify_migration_ledger(pool).await?;
-    let dispatch_claim_objects: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM sqlite_schema
-         WHERE name IN (
-             'cognitive_operation_dispatch_claims',
-             'cognitive_operation_dispatch_claims_no_update',
-             'cognitive_operation_dispatch_claims_no_delete',
-             'cognitive_operation_dispatch_claims_active_lookup',
-             'cognitive_operation_dispatch_claims_expiry_lookup'
-         )",
-    )
-    .fetch_one(pool)
-    .await
-    .map_err(unavailable)?;
-    if dispatch_claim_objects != 5 {
-        return Err(CognitiveStoreError::Corrupt(
-            "operation dispatch claim schema is incomplete".to_string(),
-        ));
-    }
-    let mut schema_oracle_parts = Vec::with_capacity(REQUIRED_SCHEMA_OBJECTS.len());
-    for (name, expected_type) in REQUIRED_SCHEMA_OBJECTS {
-        let object = sqlx::query("SELECT type, sql FROM sqlite_schema WHERE name = ?")
-            .bind(name)
-            .fetch_optional(pool)
-            .await
-            .map_err(unavailable)?
-            .ok_or_else(|| {
-                CognitiveStoreError::Corrupt(format!(
-                    "required cognitive schema object `{name}` is missing"
-                ))
-            })?;
-        let object_type: String = object.try_get("type").map_err(unavailable)?;
-        let sql: Option<String> = object.try_get("sql").map_err(unavailable)?;
-        let Some(sql) = sql.filter(|value| !value.is_empty()) else {
-            return Err(CognitiveStoreError::Corrupt(format!(
-                "required cognitive schema object `{name}` has the wrong definition class"
-            )));
-        };
-        if object_type != *expected_type {
-            return Err(CognitiveStoreError::Corrupt(format!(
-                "required cognitive schema object `{name}` has the wrong definition class"
-            )));
-        }
-        schema_oracle_parts.push(((*name).to_string(), object_type, sql));
-    }
-    schema_oracle_parts.sort_by(|left, right| left.0.cmp(&right.0));
-    let mut schema_hasher = Sha256::new();
-    frame_part(
-        &mut schema_hasher,
-        b"hepta:cognitive:required-schema-oracle:v1",
-    );
-    frame_part(
-        &mut schema_hasher,
-        &u64::try_from(schema_oracle_parts.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
-    for (name, object_type, sql) in &schema_oracle_parts {
-        frame_part(&mut schema_hasher, name.as_bytes());
-        frame_part(&mut schema_hasher, object_type.as_bytes());
-        frame_part(&mut schema_hasher, sql.as_bytes());
-    }
-    let schema_oracle = Sha256Digest::from_sha256_output(schema_hasher.finalize());
-    if schema_oracle.as_str() != REQUIRED_SCHEMA_ORACLE_SHA256 {
-        return Err(CognitiveStoreError::Corrupt(format!(
-            "required cognitive schema definition oracle mismatch: {}",
-            schema_oracle.as_str()
-        )));
-    }
     let row = sqlx::query(
         "SELECT schema_version, owner_agent_id FROM cognitive_meta WHERE singleton = 1",
     )

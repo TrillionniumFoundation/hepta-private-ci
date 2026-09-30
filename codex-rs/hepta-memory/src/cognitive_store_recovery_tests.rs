@@ -199,16 +199,19 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
 
 #[tokio::test]
 async fn authority_revoked_during_recovery_cannot_activate_a_generation() {
-    struct RevokedAtActivation(std::sync::atomic::AtomicUsize);
+    struct RevokedDuringRecovery {
+        calls: std::sync::atomic::AtomicUsize,
+        revoke_at: usize,
+    }
 
-    impl crate::ProductionAuthorityVerifier for RevokedAtActivation {
+    impl crate::ProductionAuthorityVerifier for RevokedDuringRecovery {
         fn verify(
             &self,
             authority: &crate::ProductionAuthorityLease,
             expected_agent: &AgentId,
         ) -> Result<(), String> {
             RecoveryVerifier.verify(authority, expected_agent)?;
-            if self.0.fetch_add(1, std::sync::atomic::Ordering::SeqCst) == 0 {
+            if self.calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst) + 1 < self.revoke_at {
                 Ok(())
             } else {
                 Err("authority revoked while the candidate was being verified".to_string())
@@ -216,45 +219,56 @@ async fn authority_revoked_during_recovery_cannot_activate_a_generation() {
         }
     }
 
-    let temp = TempDir::new().expect("temp dir");
-    let owner = agent_id(79);
-    let (store, _, _) = seeded(&temp, &owner).await;
-    let anchor = store.recovery_anchor().await.expect("current cut");
-    let original = store.path().to_path_buf();
-    store.pool.close().await;
-    drop(store);
-    let original_bytes = std::fs::read(&original).expect("original database bytes");
-    let verifier = RevokedAtActivation(std::sync::atomic::AtomicUsize::new(0));
-    let result = CognitiveStore::open_with_recovery(
-        &layout(&temp, &owner),
-        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
-        &recovery_authority(&owner),
-        &verifier,
-    )
-    .await;
-    assert!(
-        matches!(result, Err(CognitiveRecoveryError::AccessDenied(message)) if message.contains("revoked"))
-    );
-    assert_eq!(verifier.0.load(std::sync::atomic::Ordering::SeqCst), 2);
-    let root = original.parent().expect("cognitive root");
-    assert_eq!(
-        resolve_active_database_path(root).expect("active path"),
-        original
-    );
-    assert_eq!(
-        std::fs::read(&original).expect("unchanged original"),
-        original_bytes
-    );
-    assert!(
-        std::fs::read_dir(root)
-            .expect("cognitive entries")
-            .all(|entry| !entry
-                .expect("entry")
-                .file_name()
-                .to_string_lossy()
-                .starts_with(super::super::COGNITIVE_RECOVERED_DB_PREFIX)),
-        "revoked activation must remove the unauthorised candidate"
-    );
+    // Deny before the first integrity scan, before the post-checkpoint scan,
+    // and immediately before activation. Each boundary must independently
+    // refuse publication and preserve the original source generation.
+    for revoke_at in [2, 3, 4] {
+        let temp = TempDir::new().expect("temp dir");
+        let owner = agent_id(79);
+        let (store, _, _) = seeded(&temp, &owner).await;
+        let anchor = store.recovery_anchor().await.expect("current cut");
+        let original = store.path().to_path_buf();
+        store.pool.close().await;
+        drop(store);
+        let original_bytes = std::fs::read(&original).expect("original database bytes");
+        let verifier = RevokedDuringRecovery {
+            calls: std::sync::atomic::AtomicUsize::new(0),
+            revoke_at,
+        };
+        let result = CognitiveStore::open_with_recovery(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &recovery_authority(&owner),
+            &verifier,
+        )
+        .await;
+        assert!(
+            matches!(result, Err(CognitiveRecoveryError::AccessDenied(message)) if message.contains("revoked"))
+        );
+        assert_eq!(
+            verifier.calls.load(std::sync::atomic::Ordering::SeqCst),
+            revoke_at
+        );
+        let root = original.parent().expect("cognitive root");
+        assert_eq!(
+            resolve_active_database_path(root).expect("active path"),
+            original
+        );
+        assert_eq!(
+            std::fs::read(&original).expect("unchanged original"),
+            original_bytes
+        );
+        assert!(
+            std::fs::read_dir(root)
+                .expect("cognitive entries")
+                .all(|entry| !entry
+                    .expect("entry")
+                    .file_name()
+                    .to_string_lossy()
+                    .starts_with(super::super::COGNITIVE_RECOVERED_DB_PREFIX)),
+            "revoked activation must remove the unauthorised candidate"
+        );
+    }
 }
 
 #[cfg(unix)]
