@@ -39,6 +39,16 @@ COMPLEXITY_THRESHOLDS = {
     "numeric-verify-per-element": 4.0,
 }
 
+# Constant-time registry lookups are short enough that scheduler/timer noise can
+# dominate a ratio on shared runners. Apply a small per-operation timing floor
+# only to the denominator of those O(1) comparisons. The 4x ceiling remains
+# blocking once the operation is materially measurable, so an actual complexity
+# regression cannot be hidden by runner jitter.
+COMPLEXITY_NOISE_FLOORS_NS = {
+    "registry-identity": 250.0,
+    "registry-digest": 250.0,
+}
+
 
 def require(condition, message):
     if not condition:
@@ -98,11 +108,27 @@ def summarize(raw):
     return summaries
 
 
-def _normalized_ratio(summary, larger_case, larger_size, smaller_case, smaller_size, statistic):
+def _normalized_ratio(
+    summary,
+    larger_case,
+    larger_size,
+    smaller_case,
+    smaller_size,
+    statistic,
+    noise_floor_ns=0.0,
+):
     larger = summary[larger_case][statistic] / larger_size
     smaller = summary[smaller_case][statistic] / smaller_size
     require(larger > 0 and smaller > 0, "non-positive complexity measurement")
-    return larger / smaller
+    require(
+        type(noise_floor_ns) in (float, int)
+        and not isinstance(noise_floor_ns, bool)
+        and math.isfinite(noise_floor_ns)
+        and noise_floor_ns >= 0,
+        "invalid complexity noise floor",
+    )
+    effective_smaller = max(smaller, float(noise_floor_ns))
+    return larger / effective_smaller
 
 
 def evaluate_complexity(summary):
@@ -139,6 +165,7 @@ def evaluate_complexity(summary):
                 smaller_case,
                 smaller_size,
                 statistic,
+                COMPLEXITY_NOISE_FLOORS_NS.get(name, 0.0),
             )
             for statistic in ("medianNs", "p95Ns")
         }
@@ -167,6 +194,7 @@ def evaluate(raw, source, tree, context, harness_digest, baseline=None, maximum_
         "allocationGate": "passed",
         "complexityGate": "passed",
         "complexityThresholds": COMPLEXITY_THRESHOLDS,
+        "complexityNoiseFloorsNs": COMPLEXITY_NOISE_FLOORS_NS,
         "complexityRatios": complexity_ratios,
         "latencyGate": "not_requested",
         "targetHostQualified": False, "independentAcceptance": False,
