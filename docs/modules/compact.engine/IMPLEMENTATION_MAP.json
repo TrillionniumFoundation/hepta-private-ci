@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
+    "commit": "81f4e8159bb0109aaabce9fe784c7ef046134b73",
+    "tree": "dd2b27d14a5b23ec9b07188a90ac6446957dd513"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "laneId": "LANE-C-MEMORY",
@@ -13,12 +13,10 @@
   "technicalGuide": "docs/modules/compact.engine/TECHNICAL.md",
   "recoveryProtocol": "docs/modules/compact.engine/RECOVERY_PROTOCOL_V2.md",
   "declaredRoots": [
-    "codex-rs/hepta-compact-engine",
-    "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs"
+    "codex-rs/hepta-compact-engine"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-compact-engine",
-    "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs"
+    "codex-rs/hepta-compact-engine"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -39,7 +37,8 @@
       "sourcePathExists": true,
       "designOperation": "build_qualified_candidate",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "071dd9c6cefd482ab2df5e7be3f8c7af8efae404"
     },
     {
       "operation": "prove_compaction",
@@ -54,7 +53,8 @@
       "sourcePathExists": true,
       "designOperation": "prove_compaction",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "071dd9c6cefd482ab2df5e7be3f8c7af8efae404"
     },
     {
       "operation": "seal_verified_publication",
@@ -68,10 +68,12 @@
       "sourcePathExists": true,
       "designOperation": "seal_publication",
       "mappingClass": "owner_native",
-      "delegatedCallees": [
+      "delegatedCallees": [],
+      "delegatedNativeSymbols": [
         "build_qualified_candidate",
         "prove_compaction"
-      ]
+      ],
+      "sourceBlob": "e71f1d8fcd386d6373381674edad8a6890a2758e"
     },
     {
       "operation": "open_fenced_checkpoint_owner",
@@ -88,8 +90,11 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [
         "codex-rs/hepta-compact-engine/src/fenced_coordinator_guarded.rs",
-        "codex-rs/hepta-compact-engine/src/fenced_coordinator.rs"
-      ]
+        "codex-rs/hepta-compact-engine/src/fenced_coordinator.rs",
+        "codex-rs/hepta-compact-engine/src/mutation_guard.rs",
+        "codex-rs/hepta-compact-engine/src/recovery.rs"
+      ],
+      "sourceBlob": "a0d4cda83e6693145fb7505c839684fa9bf1d61f"
     },
     {
       "operation": "publish_verified_checkpoint",
@@ -106,10 +111,13 @@
       "designOperation": "publish_checkpoint",
       "mappingClass": "owner_native",
       "delegatedCallees": [
+        "codex-rs/hepta-compact-engine/src/fenced_coordinator_guarded.rs",
         "codex-rs/hepta-compact-engine/src/fenced_coordinator.rs",
         "codex-rs/hepta-compact-engine/src/coordinator.rs",
-        "codex-rs/hepta-compact-engine/src/durable_facade.rs"
-      ]
+        "codex-rs/hepta-compact-engine/src/durable.rs",
+        "codex-rs/hepta-compact-engine/src/mutation_guard.rs"
+      ],
+      "sourceBlob": "a0d4cda83e6693145fb7505c839684fa9bf1d61f"
     },
     {
       "operation": "recover_current_checkpoint",
@@ -125,8 +133,13 @@
       "designOperation": "recover_checkpoint",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "VerifiedCompactionPublicationV1::reopen"
-      ]
+        "codex-rs/hepta-compact-engine/src/fenced_coordinator_guarded.rs",
+        "codex-rs/hepta-compact-engine/src/fenced_coordinator.rs",
+        "codex-rs/hepta-compact-engine/src/coordinator.rs",
+        "codex-rs/hepta-compact-engine/src/durable.rs",
+        "codex-rs/hepta-compact-engine/src/recovery.rs"
+      ],
+      "sourceBlob": "a0d4cda83e6693145fb7505c839684fa9bf1d61f"
     },
     {
       "operation": "compose_agentd_compaction_scheduler",
@@ -141,9 +154,11 @@
       "sourcePathExists": true,
       "designOperation": "product_compaction_scheduler",
       "mappingClass": "product_composition",
-      "delegatedCallees": [
+      "delegatedCallees": [],
+      "delegatedNativeSymbols": [
         "MemoryCheckpointCoordinatorV2"
-      ]
+      ],
+      "sourceBlob": "bc107c43308bf4a5174b670e841c4dc0f1d89fb5"
     },
     {
       "operation": "claim_compaction_outbox",
@@ -157,7 +172,8 @@
       "sourcePathExists": true,
       "designOperation": "claim_outbox",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "a0d4cda83e6693145fb7505c839684fa9bf1d61f"
     },
     {
       "operation": "revoke_checkpoint",
@@ -171,7 +187,8 @@
       "sourcePathExists": true,
       "designOperation": "revoke_checkpoint",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "a0d4cda83e6693145fb7505c839684fa9bf1d61f"
     }
   ],
   "repositoryControlledGaps": [
@@ -179,8 +196,7 @@
     "Publish exact-source target-host capacity evidence, including a representative full publish/reopen profile in addition to the pure-kernel ceiling.",
     "Complete final-schema transaction crash/power-loss injection and migration rollback rehearsal.",
     "Complete remaining concurrent-writer, corruption, property and bounded-fuzz qualification findings.",
-    "Implement and qualify separately reviewed fenced physical payload GC; current source intentionally fails closed on physical deletion.",
-    "Populate exactSourceEvidence only after the immutable final candidate SHA is known."
+    "Implement and qualify separately reviewed fenced physical payload GC; current source intentionally fails closed on physical deletion."
   ],
   "externalEvidenceGates": [
     "independent semantic review and reconstruction acceptance",
@@ -200,13 +216,199 @@
     "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
-    "codex-rs/hepta-compact-engine",
-    "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs"
+    "codex-rs/hepta-compact-engine"
   ],
   "qualificationWorkflow": ".github/workflows/compact-engine-qualification.yml",
   "capacityWorkflow": ".github/workflows/compact-engine-capacity.yml",
   "exactSourceEvidence": {
-    "kind": "pending_final_path_blob_manifest_v1",
-    "entries": []
-  }
+    "kind": "path_blob_manifest_v1",
+    "entries": [
+      {
+        "path": ".github/workflows/compact-engine-qualification.yml",
+        "blobSha": "bc4164cd0c22898785a49fa5c7a3bc63056c1b0b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs",
+        "blobSha": "bc107c43308bf4a5174b670e841c4dc0f1d89fb5"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/coordinator.rs",
+        "blobSha": "e84f3a93e451418705d0fb22e3ebfc9059821b72"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/durable.rs",
+        "blobSha": "34ae25889e34570ec0fa8e42387a7ac9229a1fdb"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/durable_fence_tests.rs",
+        "blobSha": "61d5ef1089ba66fe00173315c1bb5d360a095de1"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/durable_tests.rs",
+        "blobSha": "867607d6c82db6eb5a380a86e50989314b974357"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/fenced_coordinator.rs",
+        "blobSha": "4224685532ba89b19ade18a35b3d8a5ef24d8925"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/fenced_coordinator_final.rs",
+        "blobSha": "a0d4cda83e6693145fb7505c839684fa9bf1d61f"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/fenced_coordinator_guarded.rs",
+        "blobSha": "29d43b96e13772a599e97dfc0298978cd3276fd9"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/mutation_guard.rs",
+        "blobSha": "d85d89e6b0bdaef51fe5399c77537e493e2aa954"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs",
+        "blobSha": "3db51b0051aa18a6cd1c37675699aef2072cdf7e"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/publication.rs",
+        "blobSha": "e71f1d8fcd386d6373381674edad8a6890a2758e"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+        "blobSha": "70232d3984ee51cc5c504b452420b760746fa832"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/recovery.rs",
+        "blobSha": "3be27080ae536410095d7ae83f2279f2a8c44cc3"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/trust.rs",
+        "blobSha": "071dd9c6cefd482ab2df5e7be3f8c7af8efae404"
+      },
+      {
+        "path": "codex-rs/hepta-compact-engine/src/trust_tests.rs",
+        "blobSha": "daeeebbbc521c070ce9d1d4739dab55be664a5e7"
+      },
+      {
+        "path": "docs/modules/compact.engine/TECHNICAL.md",
+        "blobSha": "6fa068236f78fcbd7ac6abb84e669622817941ac"
+      }
+    ]
+  },
+  "mappingSourceIdentityMode": "exact_blob",
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs",
+      "nativeSymbol": "AgentdCompactionCheckpointHostV1",
+      "state": "source_composed_final_qualification_pending"
+    }
+  ],
+  "qualificationVerifier": {
+    "path": "scripts/compact_engine_qualification.py",
+    "tests": "scripts/test_compact_engine_qualification.py",
+    "workflow": ".github/workflows/compact-engine-qualification.yml",
+    "policy": "single_source_single_run_single_attempt_fail_closed_v1"
+  },
+  "readinessManifest": {
+    "schema": "hepta.compact-engine-readiness-manifest.v1",
+    "requiredLanes": [
+      "source_snapshot",
+      "exact_head",
+      "synthetic_merge",
+      "capacity"
+    ],
+    "mergeReadyDefault": false,
+    "productionQualifiedDefault": false
+  },
+  "observedSourcePaths": [
+    "codex-rs/hepta-compact-engine",
+    "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs",
+    "codex-rs/Cargo.toml",
+    "codex-rs/Cargo.lock",
+    ".github/workflows/compact-engine-qualification.yml",
+    ".github/workflows/compact-engine-capacity.yml",
+    "scripts/compact_engine_qualification.py",
+    "scripts/test_compact_engine_qualification.py",
+    "docs/modules/compact.engine/TECHNICAL.md",
+    "docs/modules/compact.engine/RECOVERY_PROTOCOL_V2.md",
+    "docs/modules/compact.engine/REMEDIATION_20260928.md",
+    "qualification/module-execution-dossiers/detail/compact.engine.md"
+  ],
+  "observedAtHead": {
+    "commit": "81f4e8159bb0109aaabce9fe784c7ef046134b73",
+    "tree": "dd2b27d14a5b23ec9b07188a90ac6446957dd513"
+  },
+  "sourceObjects": [
+    {
+      "path": ".github/workflows/compact-engine-qualification.yml",
+      "object": "bc4164cd0c22898785a49fa5c7a3bc63056c1b0b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/compaction_checkpoint_host.rs",
+      "object": "bc107c43308bf4a5174b670e841c4dc0f1d89fb5"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine",
+      "object": "28281b45613a8ca3c6144a6187524da76ee1a83b"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/coordinator.rs",
+      "object": "e84f3a93e451418705d0fb22e3ebfc9059821b72"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/durable.rs",
+      "object": "34ae25889e34570ec0fa8e42387a7ac9229a1fdb"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/durable_fence_tests.rs",
+      "object": "61d5ef1089ba66fe00173315c1bb5d360a095de1"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/durable_tests.rs",
+      "object": "867607d6c82db6eb5a380a86e50989314b974357"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/fenced_coordinator.rs",
+      "object": "4224685532ba89b19ade18a35b3d8a5ef24d8925"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/fenced_coordinator_final.rs",
+      "object": "a0d4cda83e6693145fb7505c839684fa9bf1d61f"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/fenced_coordinator_guarded.rs",
+      "object": "29d43b96e13772a599e97dfc0298978cd3276fd9"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/mutation_guard.rs",
+      "object": "d85d89e6b0bdaef51fe5399c77537e493e2aa954"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs",
+      "object": "3db51b0051aa18a6cd1c37675699aef2072cdf7e"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/publication.rs",
+      "object": "e71f1d8fcd386d6373381674edad8a6890a2758e"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+      "object": "70232d3984ee51cc5c504b452420b760746fa832"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/recovery.rs",
+      "object": "3be27080ae536410095d7ae83f2279f2a8c44cc3"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/trust.rs",
+      "object": "071dd9c6cefd482ab2df5e7be3f8c7af8efae404"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/trust_tests.rs",
+      "object": "daeeebbbc521c070ce9d1d4739dab55be664a5e7"
+    },
+    {
+      "path": "docs/modules/compact.engine/TECHNICAL.md",
+      "object": "6fa068236f78fcbd7ac6abb84e669622817941ac"
+    }
+  ],
+  "exactSourceEvidenceStatus": "exact_candidate_paths_bound_pending_terminal_qualification"
 }
