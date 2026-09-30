@@ -3,8 +3,13 @@ name: Kernel evidence readiness
 on:
   pull_request:
   push:
-    branches: [main, codex/kernel-evidence-final-closure-20260930]
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Full immutable base commit for an explicit manual candidate
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -20,7 +25,7 @@ jobs:
     timeout-minutes: 180
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha || '' }}
       GITHUB_SYNTHETIC_SHA: ${{ github.event_name == 'pull_request' && github.sha || '' }}
       WORKFLOW_SHA: ${{ github.workflow_sha }}
       FINAL_MERGE_SHA: ${{ github.ref == 'refs/heads/main' && github.sha || '' }}
@@ -40,6 +45,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           if [[ -z "$BASE_SHA" ]]; then BASE_SHA="$(git rev-parse "$SOURCE_SHA^")"; fi
+          test "$(git cat-file -t "$BASE_SHA")" = commit
           SOURCE_TREE="$(git rev-parse "$SOURCE_SHA^{tree}")"
           TARGET_TRIPLE="$(rustc -vV | sed -n 's/^host: //p')"
           RUNNER_IMAGE="${ImageOS:-ubuntu24}-${ImageVersion:-unknown}"
