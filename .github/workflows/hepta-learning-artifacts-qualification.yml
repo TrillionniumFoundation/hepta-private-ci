@@ -109,7 +109,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          results="$RUNNER_TEMP/artifact-evidence"
+          results="$RUNNER_TEMP/artifact-runner-identity"
           mkdir -p "$results"
           test "$(rustc -vV | sed -n 's/^host: //p')" = "$EXPECTED_ARCHITECTURE"
           export RESULTS_DIR="$results"
@@ -174,7 +174,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: learning-artifacts-${{ env.SOURCE_SHA }}-${{ matrix.profile }}-${{ matrix.lane }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/artifact-evidence
+          path: |
+            ${{ runner.temp }}/artifact-runner-identity
+            ${{ runner.temp }}/artifact-evidence
           if-no-files-found: error
           retention-days: 30
 
