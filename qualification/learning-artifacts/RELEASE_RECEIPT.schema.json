@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hepta.invalid/schemas/learning-artifacts-release-receipt-v1.json",
+  "title": "learning.artifacts activation, canary, promotion and rollback receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidateSha",
+    "candidateTree",
+    "operatorAcceptanceDigest",
+    "activationAuthority",
+    "canary",
+    "promotion",
+    "rollback",
+    "releaseEligible",
+    "signatureEnvelope"
+  ],
+  "properties": {
+    "schema": {
+      "const": "hepta.learning-artifacts.release-receipt.v1"
+    },
+    "candidateSha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "candidateTree": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "operatorAcceptanceDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "activationAuthority": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "canary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "startedAt",
+        "endedAt",
+        "result",
+        "evidenceDigest"
+      ],
+      "properties": {
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "result": {
+          "enum": [
+            "passed",
+            "failed",
+            "rolled_back"
+          ]
+        },
+        "evidenceDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "promotion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result",
+        "evidenceDigest"
+      ],
+      "properties": {
+        "result": {
+          "enum": [
+            "promoted",
+            "not_promoted"
+          ]
+        },
+        "evidenceDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tested",
+        "evidenceDigest"
+      ],
+      "properties": {
+        "tested": {
+          "type": "boolean"
+        },
+        "evidenceDigest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "releaseEligible": {
+      "type": "boolean"
+    },
+    "signatureEnvelope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 16384
+    }
+  }
+}

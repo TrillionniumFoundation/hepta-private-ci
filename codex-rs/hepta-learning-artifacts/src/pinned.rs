@@ -14,6 +14,8 @@ use codex_hepta_types::Digest32;
 use crate::ArtifactManifest;
 use crate::ArtifactRegistry;
 use crate::ArtifactStorageError;
+use crate::DatasetWithdrawalRegistry;
+use crate::LearningArtifactManifestV2;
 use crate::RegistrySnapshotReceipt;
 use crate::read_candidate_payload;
 use crate::read_registry_snapshot;
@@ -139,6 +141,42 @@ pub struct VerifiedCurrentRegistryViewV1 {
     registry: ArtifactRegistry,
     witness_digest: Digest32,
     trust_digest: Digest32,
+    withdrawal_scope_digest: Digest32,
+}
+
+#[derive(Clone, Debug)]
+pub struct VerifiedWithdrawalFrontierV1 {
+    registry: DatasetWithdrawalRegistry,
+    scope_digest: Digest32,
+    head_digest: Digest32,
+    trust_digest: Digest32,
+}
+
+impl VerifiedWithdrawalFrontierV1 {
+    pub(crate) fn new(registry: DatasetWithdrawalRegistry, trust_digest: Digest32) -> Option<Self> {
+        let scope_digest = registry.scope_digest()?;
+        Some(Self {
+            head_digest: registry.head_digest(),
+            registry,
+            scope_digest,
+            trust_digest,
+        })
+    }
+
+    #[must_use]
+    pub const fn scope_digest(&self) -> Digest32 {
+        self.scope_digest
+    }
+
+    #[must_use]
+    pub const fn head_digest(&self) -> Digest32 {
+        self.head_digest
+    }
+
+    #[must_use]
+    pub const fn trust_digest(&self) -> Digest32 {
+        self.trust_digest
+    }
 }
 
 impl VerifiedCurrentRegistryViewV1 {
@@ -147,12 +185,14 @@ impl VerifiedCurrentRegistryViewV1 {
         registry: ArtifactRegistry,
         witness_digest: Digest32,
         trust_digest: Digest32,
+        withdrawal_scope_digest: Digest32,
     ) -> Self {
         Self {
             receipt,
             registry,
             witness_digest,
             trust_digest,
+            withdrawal_scope_digest,
         }
     }
 
@@ -169,6 +209,11 @@ impl VerifiedCurrentRegistryViewV1 {
     #[must_use]
     pub const fn trust_digest(&self) -> Digest32 {
         self.trust_digest
+    }
+
+    #[must_use]
+    pub const fn withdrawal_scope_digest(&self) -> Digest32 {
+        self.withdrawal_scope_digest
     }
 
     pub(crate) fn registry(&self) -> &ArtifactRegistry {
@@ -211,6 +256,46 @@ impl RevalidatingCandidate {
     #[must_use]
     pub const fn spec(&self) -> &PinnedCandidateSpec {
         self.candidate.spec()
+    }
+
+    /// Final-use path for V2 artifacts. The current artifact registry and the
+    /// current withdrawal frontier must come from the same authenticated owner
+    /// trust domain. The complete V2 manifest is revalidated against the current
+    /// withdrawal registry before payload bytes are exposed.
+    pub fn with_current_and_withdrawals<T>(
+        &mut self,
+        current: VerifiedCurrentRegistryViewV1,
+        withdrawals: &VerifiedWithdrawalFrontierV1,
+        manifest: &LearningArtifactManifestV2,
+        now: u64,
+        consume: impl FnOnce(&[u8]) -> T,
+    ) -> Result<T, PinnedCandidateLoadError> {
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        if current.trust_digest != withdrawals.trust_digest
+            || current.withdrawal_scope_digest != withdrawals.scope_digest
+        {
+            self.unavailable = true;
+            return Err(PinnedCandidateLoadError::FrontierMismatch);
+        }
+        let validated = match withdrawals.registry.admit_manifest(manifest.clone(), now) {
+            Ok(validated) => validated,
+            Err(_) => {
+                self.unavailable = true;
+                return Err(PinnedCandidateLoadError::Ineligible);
+            }
+        };
+        let selected = &self.candidate.spec.manifest;
+        if selected.artifact_id != validated.manifest.artifact_id
+            || selected.content_digest != validated.manifest.bytes_digest
+            || selected.support_digest != validated.manifest_digest
+            || selected.producer_id != validated.manifest.producer_id
+        {
+            self.unavailable = true;
+            return Err(PinnedCandidateLoadError::PinMismatch);
+        }
+        self.with_current(current, consume)
     }
 
     /// Invoke a bounded, read-only consumer only after checking an authenticated

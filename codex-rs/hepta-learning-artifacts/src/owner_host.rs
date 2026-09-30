@@ -29,6 +29,7 @@ use ed25519_dalek::VerifyingKey;
 
 use crate::ArtifactEvent;
 use crate::ArtifactManifest;
+use crate::ArtifactPublicationCapabilityV1;
 use crate::ArtifactPublicationError;
 use crate::ArtifactPublicationPhaseV1;
 use crate::ArtifactPublicationTransactionSnapshotV1;
@@ -48,6 +49,7 @@ use crate::read_registry_head_witness;
 use crate::read_registry_snapshot;
 use crate::storage::encode_head_witness;
 use crate::storage::encode_snapshot;
+use crate::storage::open_existing_beneath_trusted_root;
 use crate::validate_registry_head_witness;
 use crate::write_candidate_payload_beneath;
 use crate::write_registry_head_witness_beneath;
@@ -181,6 +183,8 @@ pub struct ArtifactOwnerRecoveryV1 {
 struct VerifiedArtifactWriterLeaseV1 {
     producer_id: StableId,
     lease_digest: Digest32,
+    lease_generation: u64,
+    authority_epoch: u64,
 }
 
 #[derive(Clone, Debug)]
@@ -298,6 +302,8 @@ impl ArtifactOwnerVerifierV1 {
         Ok(VerifiedArtifactWriterLeaseV1 {
             producer_id: lease.producer_id.clone(),
             lease_digest: Digest32::of_bytes(&digest_bytes),
+            lease_generation: lease.lease_generation,
+            authority_epoch: lease.authority_epoch,
         })
     }
 
@@ -463,6 +469,93 @@ impl LearningArtifactOwnerHost {
         self.verifier.verify_writer_lease(&self.lease, now)
     }
 
+    /// Mint one non-forgeable publication capability from the currently held
+    /// writer fence, the independently authenticated withdrawal frontier and
+    /// the monotonic current-head chain. A capability is valid only for the
+    /// exact target head and generation named here.
+    pub fn acquire_publication_capability(
+        &self,
+        withdrawal_registry: &DatasetWithdrawalRegistry,
+        expected_registry_predecessor_head: Digest32,
+        target: &SignedCurrentArtifactHeadV1,
+        now: u64,
+    ) -> Result<ArtifactPublicationCapabilityV1, ArtifactOwnerHostError> {
+        let writer = self.require_current_writer(now)?;
+        if withdrawal_registry.scope_digest()
+            != Some(self.verifier.trust.withdrawal_scope_digest)
+            || target.withdrawal_scope_digest != self.verifier.trust.withdrawal_scope_digest
+            || target.witness.registry_id != self.verifier.trust.registry_id
+            || target.witness.predecessor_head_digest != expected_registry_predecessor_head
+        {
+            return Err(ArtifactOwnerHostError::WriterLeaseContext);
+        }
+
+        let current = self.discover_current_head(now)?;
+        let (required_generation, minimum_authority_epoch) = match current.as_ref() {
+            Some(current)
+                if current.signed.witness.head_digest == expected_registry_predecessor_head =>
+            {
+                (
+                    current
+                        .signed
+                        .witness
+                        .generation
+                        .next()
+                        .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?,
+                    current.signed.witness.authority_epoch,
+                )
+            }
+            Some(current)
+                if current.signed.witness.head_digest == target.witness.head_digest
+                    && current.signed.witness.predecessor_head_digest
+                        == expected_registry_predecessor_head =>
+            {
+                if current.signed != *target {
+                    return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+                }
+                (
+                    current.signed.witness.generation,
+                    current.signed.witness.authority_epoch,
+                )
+            }
+            None
+                if expected_registry_predecessor_head
+                    == self.verifier.trust.genesis_predecessor_head_digest =>
+            {
+                (
+                    self.verifier.trust.minimum_registry_generation,
+                    self.verifier.trust.minimum_authority_epoch,
+                )
+            }
+            Some(_) | None => return Err(ArtifactOwnerHostError::CurrentHeadConflict),
+        };
+        if target.witness.generation != required_generation {
+            return Err(ArtifactOwnerHostError::CurrentHeadRollback);
+        }
+        let requirement = RegistryHeadRequirementV1 {
+            registry_id: self.verifier.trust.registry_id.clone(),
+            minimum_generation: required_generation,
+            expected_predecessor_head_digest: expected_registry_predecessor_head,
+            minimum_authority_epoch,
+            now,
+        };
+        self.verifier.verify_signed_head(target, &requirement, true)?;
+
+        Ok(ArtifactPublicationCapabilityV1::new(
+            writer.lease_digest,
+            writer.lease_generation,
+            writer.authority_epoch,
+            writer.producer_id,
+            self.verifier.trust_digest(),
+            required_generation,
+            expected_registry_predecessor_head,
+            target.witness.head_digest,
+            self.verifier.trust.withdrawal_scope_digest,
+            withdrawal_registry.head_digest(),
+            withdrawal_registry.snapshot().records().len(),
+        ))
+    }
+
     pub fn begin_publication(
         &self,
         operation_id: StableId,
@@ -566,7 +659,7 @@ impl LearningArtifactOwnerHost {
             }
             Err(crate::ArtifactStorageError::AlreadyExists) => {
                 let loaded = read_candidate_payload(
-                    File::open(self.root.join(&relative))?,
+                    open_existing_beneath_trusted_root(&self.root, &relative)?,
                     staged_registry,
                     &manifest.artifact_id,
                 )?;
@@ -605,7 +698,7 @@ impl LearningArtifactOwnerHost {
                 Ok(receipt) => receipt,
                 Err(crate::ArtifactStorageError::AlreadyExists) => {
                     let reopened =
-                        read_registry_snapshot(File::open(self.root.join(&relative))?, expected)?;
+                        read_registry_snapshot(open_existing_beneath_trusted_root(&self.root, &relative)?, expected)?;
                     if reopened.snapshot().head_digest != expected.head_digest {
                         return Err(ArtifactOwnerHostError::CheckpointMismatch);
                     }
@@ -691,7 +784,7 @@ impl LearningArtifactOwnerHost {
             Ok(receipt) => receipt,
             Err(crate::ArtifactStorageError::AlreadyExists) => {
                 let reopened = read_registry_head_witness(
-                    File::open(self.root.join(&relative))?,
+                    open_existing_beneath_trusted_root(&self.root, &relative)?,
                     expected_receipt,
                     &requirement,
                 )?;
@@ -785,11 +878,14 @@ impl LearningArtifactOwnerHost {
             }
         }
         let receipt = matched.ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
-        let path = self.root.join("registries").join(format!(
+        let relative = PathBuf::from("registries").join(format!(
             "{}-{}.snapshot",
             receipt.head_digest, receipt.file_digest
         ));
-        Ok(read_registry_snapshot(File::open(path)?, receipt)?)
+        Ok(read_registry_snapshot(
+            open_existing_beneath_trusted_root(&self.root, relative)?,
+            receipt,
+        )?)
     }
 
     /// Recover the artifact registry that exactly backs the authenticated
@@ -842,8 +938,8 @@ impl LearningArtifactOwnerHost {
         matched.ok_or(ArtifactOwnerHostError::CheckpointMissing)
     }
 
-    fn registry_snapshot_path(&self, receipt: RegistrySnapshotReceipt) -> PathBuf {
-        self.root.join("registries").join(format!(
+    fn registry_snapshot_relative(&self, receipt: RegistrySnapshotReceipt) -> PathBuf {
+        PathBuf::from("registries").join(format!(
             "{}-{}.snapshot",
             receipt.head_digest, receipt.file_digest
         ))
@@ -861,7 +957,13 @@ impl LearningArtifactOwnerHost {
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         let receipt = self.current_registry_receipt(&current)?;
         let registry =
-            read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+            read_registry_snapshot(
+                open_existing_beneath_trusted_root(
+                    &self.root,
+                    self.registry_snapshot_relative(receipt),
+                )?,
+                receipt,
+            )?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
@@ -882,7 +984,13 @@ impl LearningArtifactOwnerHost {
         };
         let receipt = self.current_registry_receipt(&current)?;
         let registry =
-            read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
+            read_registry_snapshot(
+                open_existing_beneath_trusted_root(
+                    &self.root,
+                    self.registry_snapshot_relative(receipt),
+                )?,
+                receipt,
+            )?;
         if registry.snapshot().head_digest != current.signed.witness.head_digest {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
@@ -1972,6 +2080,18 @@ mod tests {
 
         match stage {
             "prepared" => {}
+            "payload-write-before-sync" => {
+                let mut file = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(root.join(&payload_relative))
+                    .fixture("payload write-before-sync");
+                file.write_all(b"payload").fixture("payload bytes before sync");
+                durable_process_marker(root, stage);
+                loop {
+                    thread::sleep(Duration::from_secs(1));
+                }
+            }
             "payload-effect" => {
                 write_candidate_payload_beneath(
                     root,
@@ -1982,8 +2102,15 @@ mod tests {
                 )
                 .fixture("payload effect");
             }
-            "payload-durable" | "registry-effect" | "registry-durable" | "head-effect"
-            | "witness-durable" | "acknowledged" => {
+            "payload-durable"
+            | "registry-write-before-sync"
+            | "registry-effect"
+            | "registry-durable"
+            | "current-head-write"
+            | "route-effect"
+            | "head-effect"
+            | "witness-durable"
+            | "acknowledged" => {
                 owner
                     .ensure_payload_durable(&mut transaction, &registry, b"payload", 20)
                     .fixture("payload durable");
@@ -1994,7 +2121,7 @@ mod tests {
                     }
                 }
 
-                if stage == "registry-effect" {
+                if matches!(stage, "registry-write-before-sync" | "registry-effect") {
                     let encoded = encode_snapshot(&registry, binding).fixture("encode registry");
                     let receipt = RegistrySnapshotReceipt {
                         binding,
@@ -2007,8 +2134,17 @@ mod tests {
                         "{}-{}.snapshot",
                         receipt.head_digest, receipt.file_digest
                     ));
-                    write_registry_snapshot_beneath(root, relative, &registry, binding)
-                        .fixture("registry effect");
+                    if stage == "registry-write-before-sync" {
+                        let mut file = OpenOptions::new()
+                            .write(true)
+                            .create_new(true)
+                            .open(root.join(&relative))
+                            .fixture("registry write-before-sync");
+                        file.write_all(&encoded).fixture("registry bytes before sync");
+                    } else {
+                        write_registry_snapshot_beneath(root, &relative, &registry, binding)
+                            .fixture("registry effect");
+                    }
                     durable_process_marker(root, stage);
                     loop {
                         thread::sleep(Duration::from_secs(1));
@@ -2026,7 +2162,7 @@ mod tests {
                 }
 
                 let head = signed_head(&key, scope_digest, registry.snapshot().head_digest);
-                if stage == "head-effect" {
+                if matches!(stage, "current-head-write" | "route-effect" | "head-effect") {
                     let requirement = RegistryHeadRequirementV1 {
                         registry_id: id("learning-artifacts"),
                         minimum_generation: Generation::new(1).fixture("generation"),
@@ -2050,9 +2186,23 @@ mod tests {
                         binding,
                     )
                     .fixture("witness side effect");
-                    owner
-                        .persist_signed_head_record(&head)
-                        .fixture("signed head side effect");
+                    if matches!(stage, "route-effect" | "head-effect") {
+                        owner
+                            .persist_signed_head_record(&head)
+                            .fixture("signed route-head side effect");
+                        let current = owner
+                            .discover_current_head(20)
+                            .fixture("reconcile route effect")
+                            .fixture("route head");
+                        assert_eq!(current.signed, head);
+                    } else {
+                        assert!(
+                            owner
+                                .discover_current_head(20)
+                                .fixture("current head before route commit")
+                                .is_none()
+                        );
+                    }
                     durable_process_marker(root, stage);
                     loop {
                         thread::sleep(Duration::from_secs(1));
@@ -2114,9 +2264,14 @@ mod tests {
         let executable = std::env::current_exe().fixture("current test executable");
         for (stage, expected_phase) in [
             ("prepared", ArtifactPublicationPhaseV1::Prepared),
+            ("payload-write-before-sync", ArtifactPublicationPhaseV1::Prepared),
             ("payload-effect", ArtifactPublicationPhaseV1::Prepared),
             (
                 "payload-durable",
+                ArtifactPublicationPhaseV1::PayloadDurable,
+            ),
+            (
+                "registry-write-before-sync",
                 ArtifactPublicationPhaseV1::PayloadDurable,
             ),
             (
@@ -2127,6 +2282,11 @@ mod tests {
                 "registry-durable",
                 ArtifactPublicationPhaseV1::RegistryDurable,
             ),
+            (
+                "current-head-write",
+                ArtifactPublicationPhaseV1::RegistryDurable,
+            ),
+            ("route-effect", ArtifactPublicationPhaseV1::RegistryDurable),
             ("head-effect", ArtifactPublicationPhaseV1::RegistryDurable),
             (
                 "witness-durable",
@@ -2167,7 +2327,7 @@ mod tests {
                 .fixture("process checkpoint exists");
             assert_eq!(recovery.checkpoint.phase, expected_phase);
 
-            if stage == "head-effect" {
+            if matches!(stage, "route-effect" | "head-effect") {
                 let current = reopened
                     .discover_current_head(21)
                     .fixture("discover head after owner death")

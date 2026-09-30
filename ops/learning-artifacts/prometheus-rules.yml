@@ -1,0 +1,51 @@
+groups:
+  - name: hepta-learning-artifacts
+    rules:
+      - alert: LearningArtifactPersistenceOutcomeUnknown
+        expr: increase(hepta_learning_artifact_persistence_unknown_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: learning.artifacts observed an indeterminate persistence outcome
+          action: fence publication and reconcile the exact operation identity before retry
+      - alert: LearningArtifactRecoveryStalled
+        expr: hepta_learning_artifact_oldest_pending_attempt_age_seconds > 300
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: learning.artifacts has an old pending publication
+          action: inspect the durable checkpoint and reconcile the exact request
+      - alert: LearningArtifactRecoveryFailures
+        expr: increase(hepta_learning_artifact_recovery_reconciliation_failures_total[10m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: exact publication reconciliation is failing
+          action: stop admission and inspect durable inputs plus current-head chain
+      - alert: LearningArtifactWithdrawalBlocked
+        expr: increase(hepta_learning_artifact_withdrawal_blocks_total[10m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: publication was blocked by the withdrawal frontier
+          action: verify the authenticated withdrawal source; never roll the frontier back
+      - alert: LearningArtifactStaleOwner
+        expr: increase(hepta_learning_artifact_stale_owner_rejections_total[10m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: stale writer or current-head authority was rejected
+          action: refresh authority and generation; do not bypass the fence
+      - alert: LearningArtifactPendingEraseBacklog
+        expr: hepta_learning_artifact_pending_physical_erase_bytes > 1073741824
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: pending physical artifact erasure exceeds 1 GiB
+          action: inspect retention owner and erase backlog before capacity pressure

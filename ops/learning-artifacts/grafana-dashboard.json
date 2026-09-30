@@ -1,0 +1,153 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Persistence unknown",
+      "targets": [
+        {
+          "expr": "increase(hepta_learning_artifact_persistence_unknown_total[15m])",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Oldest pending attempt (s)",
+      "targets": [
+        {
+          "expr": "hepta_learning_artifact_oldest_pending_attempt_age_seconds",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Recovery failures",
+      "targets": [
+        {
+          "expr": "increase(hepta_learning_artifact_recovery_reconciliation_failures_total[15m])",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Withdrawal blocks",
+      "targets": [
+        {
+          "expr": "increase(hepta_learning_artifact_withdrawal_blocks_total[15m])",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Publication outcomes",
+      "targets": [
+        {
+          "expr": "rate(hepta_learning_artifact_publications_succeeded_total[5m])",
+          "legendFormat": "success",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(hepta_learning_artifact_publications_failed_total[5m])",
+          "legendFormat": "failure",
+          "refId": "B"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Retention bytes",
+      "targets": [
+        {
+          "expr": "hepta_learning_artifact_pinned_bytes",
+          "legendFormat": "pinned",
+          "refId": "A"
+        },
+        {
+          "expr": "hepta_learning_artifact_pending_physical_erase_bytes",
+          "legendFormat": "pending erase",
+          "refId": "B"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Stage failures",
+      "targets": [
+        {
+          "expr": "rate(hepta_learning_artifact_stage_failures_total[5m])",
+          "legendFormat": "{{stage}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 13
+      }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "hepta",
+    "learning.artifacts"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Hepta learning.artifacts",
+  "uid": "hepta-learning-artifacts",
+  "version": 1
+}
