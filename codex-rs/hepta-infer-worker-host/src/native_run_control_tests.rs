@@ -1,5 +1,7 @@
 use super::*;
 use crate::native_app_server::NativeWorkerConfig;
+use codex_hepta_agentd::AgentRunPhase;
+use codex_hepta_agentd::AgentRunReceipt;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use std::path::PathBuf;
@@ -309,5 +311,91 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
             ))
             .unwrap()
         )
+    );
+}
+
+fn admitted_receipt(phase: AgentRunPhase) -> AgentRunReceipt {
+    let dispatched = phase == AgentRunPhase::Dispatched;
+    AgentRunReceipt {
+        run_id: "intelligence-run".to_string(),
+        revision: if dispatched { 3 } else { 2 },
+        phase,
+        context_digest: Some("a".repeat(64)),
+        compilation_receipt_digest: Some("b".repeat(64)),
+        authority_epoch: 9,
+        generation: 7,
+        fence_digest: "c".repeat(64),
+        deadline_ms: 50_000,
+        dispatch_binding_digest: dispatched.then(|| "d".repeat(64)),
+        pre_effect_abort_commitment_digest: dispatched.then(|| "e".repeat(64)),
+        pre_effect_abort_proof_digest: None,
+        cancel_reason: None,
+        cancel_ack_deadline_ms: None,
+        terminal_observed: false,
+        idempotent: false,
+    }
+}
+
+#[test]
+fn agentd_admitted_binding_is_derived_from_durable_owner_state() {
+    let attached = NativeIntelligenceRunBinding::from_agentd_receipt(
+        "intelligence-run",
+        7,
+        admitted_receipt(AgentRunPhase::ContextAttached),
+    )
+    .unwrap();
+    assert_eq!(attached.expected_revision, 2);
+    assert_eq!(attached.context_digest, "a".repeat(64));
+    assert_eq!(attached.envelope_digest, "b".repeat(64));
+
+    let dispatched = NativeIntelligenceRunBinding::from_agentd_receipt(
+        "intelligence-run",
+        7,
+        admitted_receipt(AgentRunPhase::Dispatched),
+    )
+    .unwrap();
+    assert_eq!(dispatched, attached);
+}
+
+#[test]
+fn agentd_admitted_binding_rejects_caller_minted_or_terminal_state() {
+    let mut wrong_generation = admitted_receipt(AgentRunPhase::ContextAttached);
+    assert!(
+        NativeIntelligenceRunBinding::from_agentd_receipt(
+            "intelligence-run",
+            8,
+            wrong_generation.clone(),
+        )
+        .is_err()
+    );
+    wrong_generation.run_id = "other-run".to_string();
+    assert!(
+        NativeIntelligenceRunBinding::from_agentd_receipt("intelligence-run", 7, wrong_generation,)
+            .is_err()
+    );
+
+    let mut terminal = admitted_receipt(AgentRunPhase::Succeeded);
+    terminal.terminal_observed = true;
+    assert!(
+        NativeIntelligenceRunBinding::from_agentd_receipt("intelligence-run", 7, terminal,)
+            .is_err()
+    );
+
+    let mut malformed = admitted_receipt(AgentRunPhase::ContextAttached);
+    malformed.context_digest = Some("A".repeat(64));
+    assert!(
+        NativeIntelligenceRunBinding::from_agentd_receipt("intelligence-run", 7, malformed,)
+            .is_err()
+    );
+
+    let mut incomplete_dispatch = admitted_receipt(AgentRunPhase::Dispatched);
+    incomplete_dispatch.pre_effect_abort_commitment_digest = None;
+    assert!(
+        NativeIntelligenceRunBinding::from_agentd_receipt(
+            "intelligence-run",
+            7,
+            incomplete_dispatch,
+        )
+        .is_err()
     );
 }

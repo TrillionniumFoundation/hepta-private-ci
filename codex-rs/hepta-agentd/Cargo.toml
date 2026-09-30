@@ -33,6 +33,7 @@ server = [
     "dep:codex-state",
     "dep:ed25519-dalek",
     "dep:http",
+    "dep:libc",
     "dep:sha2",
     "dep:tokio-util",
 ]
@@ -53,6 +54,14 @@ name = "hepta-agentd-browser"
 path = "src/bin/hepta-agentd-browser.rs"
 test = false
 required-features = ["server"]
+
+
+[[bin]]
+name = "runtime-codex-crash-fixture"
+path = "src/bin/runtime-codex-crash-fixture.rs"
+test = false
+required-features = ["server"]
+
 [[example]]
 name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
@@ -79,6 +88,8 @@ codex-utils-home-dir = { optional = true, workspace = true }
 codex-state = { optional = true, workspace = true }
 ed25519-dalek = { optional = true, workspace = true }
 http = { optional = true, workspace = true }
+libc = { optional = true, workspace = true }
+
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { optional = true, workspace = true }
@@ -102,11 +113,15 @@ codex-hepta-evidence = { path = "../hepta-evidence", default-features = false }
 # Restore the qualification-only ledger writer for Agentd tests through the
 # composition boundary; production Agentd keeps the feature disabled.
 codex-hepta-agent-components = { workspace = true, features = ["qualification-legacy-learning-write"] }
+rand = { workspace = true }
+
 codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
-codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
+codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host", features = ["test-support"] }
+codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
+
 codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }

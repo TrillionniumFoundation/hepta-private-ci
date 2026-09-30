@@ -383,6 +383,58 @@ impl AgentdClient {
         }
     }
 
+    pub async fn run_mark_dispatched_bound(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        pre_effect_abort_commitment_digest: String,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_mark_dispatched_bound(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                pre_effect_abort_commitment_digest,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_abort_before_effect(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        abort_nonce_hex: String,
+        proof_digest: String,
+        reason: String,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_abort_before_effect(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                abort_nonce_hex,
+                proof_digest,
+                reason,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn run_cancel(
         &self,
         run_id: String,

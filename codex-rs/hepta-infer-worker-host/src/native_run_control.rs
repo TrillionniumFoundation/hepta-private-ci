@@ -1,5 +1,8 @@
 //! Local durable admission around the actual App Server driver.
 
+use codex_hepta_agentd::AgentRunPhase;
+use codex_hepta_agentd::AgentRunReceipt;
+use codex_hepta_agentd::AgentdClient;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -24,10 +27,117 @@ pub struct NativeAdmission {
 /// physical App Server turn can start.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NativeIntelligenceRunBinding {
-    pub run_id: String,
-    pub expected_revision: u64,
-    pub context_digest: String,
-    pub envelope_digest: String,
+    pub(super) run_id: String,
+    pub(super) expected_revision: u64,
+    pub(super) absolute_deadline_ms: u64,
+    pub(super) context_digest: String,
+    pub(super) envelope_digest: String,
+}
+
+impl NativeIntelligenceRunBinding {
+    /// Load the immutable product binding through the exact Agentd generation.
+    ///
+    /// runtime.codex-agentd-admitted-loader-v1: this is the only public
+    /// constructor. Callers select a durable run ID but cannot supply its
+    /// revision, context or compilation identity.
+    pub async fn load_from_agentd(
+        socket_path: std::path::PathBuf,
+        agent_id: codex_hepta_contracts::AgentId,
+        generation: u64,
+        run_id: String,
+    ) -> Result<Self> {
+        let receipt = AgentdClient::new(socket_path, agent_id, generation)?
+            .run_status(run_id.clone())
+            .await?
+            .ok_or("Agentd has no durable admitted work for the requested run")?;
+        Self::from_agentd_receipt(&run_id, generation, receipt)
+    }
+
+    /// Validate a receipt already obtained through the exact Agentd client.
+    ///
+    /// runtime.codex-agentd-admitted-binding-v1: callers may select a run ID,
+    /// but cannot mint its revision or content identities. `Dispatched` is
+    /// accepted only to reopen and reconcile the same operation; its original
+    /// pre-dispatch revision is derived by removing the single dispatch CAS.
+    fn from_agentd_receipt(
+        expected_run_id: &str,
+        expected_generation: u64,
+        receipt: AgentRunReceipt,
+    ) -> Result<Self> {
+        if expected_run_id.is_empty()
+            || expected_run_id.len() > 256
+            || expected_run_id.as_bytes().contains(&0)
+            || receipt.run_id != expected_run_id
+        {
+            return Err("Agentd admitted run identity mismatch".into());
+        }
+        if expected_generation == 0 || receipt.generation != expected_generation {
+            return Err("Agentd admitted run generation mismatch".into());
+        }
+        if receipt.terminal_observed {
+            return Err("Agentd admitted run is already terminal".into());
+        }
+        let expected_revision = match receipt.phase {
+            AgentRunPhase::ContextAttached => {
+                if receipt.dispatch_binding_digest.is_some()
+                    || receipt.pre_effect_abort_commitment_digest.is_some()
+                    || receipt.pre_effect_abort_proof_digest.is_some()
+                {
+                    return Err("Agentd context-attached run contains dispatch state".into());
+                }
+                receipt.revision
+            }
+            AgentRunPhase::Dispatched => {
+                if receipt.dispatch_binding_digest.is_none()
+                    || receipt.pre_effect_abort_commitment_digest.is_none()
+                    || receipt.pre_effect_abort_proof_digest.is_some()
+                {
+                    return Err("Agentd dispatched run lacks its exact recovery binding".into());
+                }
+                receipt
+                    .revision
+                    .checked_sub(1)
+                    .ok_or("Agentd dispatch revision underflow")?
+            }
+            _ => {
+                return Err(
+                    "Agentd run is not eligible for runtime.codex execution or reconciliation"
+                        .into(),
+                );
+            }
+        };
+        if expected_revision == 0 {
+            return Err("Agentd admitted run revision is zero".into());
+        }
+        if receipt.deadline_ms == 0 {
+            return Err("Agentd admitted run deadline is zero".into());
+        }
+        let context_digest = receipt
+            .context_digest
+            .ok_or("Agentd admitted run omitted its context digest")?;
+        let envelope_digest = receipt
+            .compilation_receipt_digest
+            .ok_or("Agentd admitted run omitted its compilation receipt digest")?;
+        if !runtime_codex_sha256_hex(&context_digest) || !runtime_codex_sha256_hex(&envelope_digest)
+        {
+            return Err("Agentd admitted run contains a non-canonical digest".into());
+        }
+        Ok(Self {
+            run_id: receipt.run_id,
+            expected_revision,
+            absolute_deadline_ms: receipt.deadline_ms,
+            context_digest,
+            envelope_digest,
+        })
+    }
+}
+
+fn runtime_codex_sha256_hex(value: &str) -> bool {
+    value.len() == 64
+        && value
+            .as_bytes()
+            .iter()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(byte))
 }
 
 impl AppServerModelDriver {
@@ -122,16 +232,25 @@ impl AppServerModelDriver {
                 .observation
                 .as_ref()
                 .filter(|output| output.terminal_observed)
+                .cloned()
             {
-                return Ok(output.clone());
+                self.publish_pending_intelligence_terminal(control, &record.request.request_id)
+                    .await?;
+                return Ok(output);
             }
             if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
-                let settled = control.settle_native(&record.request.request_id, reconciled)?;
-                return settled.observation.ok_or_else(|| {
+                let request_id = record.request.request_id.clone();
+                let settled = control.settle_native(&request_id, reconciled)?;
+                let output = settled.observation.ok_or_else(|| {
                     "durable reconciliation omitted its normalized observation".into()
-                });
+                })?;
+                self.publish_pending_intelligence_terminal(control, &request_id)
+                    .await?;
+                return Ok(output);
             }
             if let Some(output) = record.observation {
+                self.publish_pending_intelligence_terminal(control, &record.request.request_id)
+                    .await?;
                 return Ok(output);
             }
             let dispatch = record
@@ -156,6 +275,8 @@ impl AppServerModelDriver {
                 codex_terminal_correlation_digest: None,
             };
             control.settle_native(&record.request.request_id, output.clone())?;
+            self.publish_pending_intelligence_terminal(control, &record.request.request_id)
+                .await?;
             return Ok(output);
         }
         let request_id = record.request.request_id;
@@ -175,9 +296,12 @@ impl AppServerModelDriver {
                     control.cancel_native(&request_id)?;
                 }
                 let settled = control.settle_native(&request_id, output)?;
-                settled.observation.ok_or_else(|| {
+                let output = settled.observation.ok_or_else(|| {
                     "durable execution settlement omitted its normalized observation".into()
-                })
+                })?;
+                self.publish_pending_intelligence_terminal(control, &request_id)
+                    .await?;
+                Ok(output)
             }
             Err(error) => {
                 if control
@@ -219,6 +343,7 @@ fn native_source_payload_digest(
             binding.expected_revision,
             &binding.context_digest,
             &binding.envelope_digest,
+            binding.absolute_deadline_ms,
         ))?,
     };
     Ok(digest(&bytes))

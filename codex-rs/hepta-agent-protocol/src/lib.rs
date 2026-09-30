@@ -70,7 +70,7 @@ pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
 pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_ID: &str = "run.lifecycle";
 pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR: u16 = 1;
-pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 1;
+pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 2;
 pub const MAX_RUN_CANCEL_REASON_BYTES: usize = 512;
 pub const AGENTD_OVERLOAD_RETRY_AFTER_MS: u64 = 50;
 pub const AGENTD_CONTROL_OVERLOAD_FRAME: &[u8] =
@@ -140,6 +140,7 @@ pub enum AgentRunPhase {
     Admitted,
     ContextAttached,
     Dispatched,
+    AbortedBeforeEffect,
     Cancelling,
     Cancelled,
     Succeeded,
@@ -198,6 +199,12 @@ pub struct AgentRunReceipt {
     pub generation: u64,
     pub fence_digest: String,
     pub deadline_ms: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dispatch_binding_digest: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pre_effect_abort_commitment_digest: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pre_effect_abort_proof_digest: Option<String>,
     pub cancel_reason: Option<String>,
     pub cancel_ack_deadline_ms: Option<u64>,
     pub terminal_observed: bool,
@@ -526,6 +533,52 @@ impl AgentdRequest {
         }
     }
 
+    pub fn run_mark_dispatched_bound(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        pre_effect_abort_commitment_digest: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunMarkDispatchedBound {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                pre_effect_abort_commitment_digest,
+            },
+        }
+    }
+
+    pub fn run_abort_before_effect(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        abort_nonce_hex: String,
+        proof_digest: String,
+        reason: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunAbortBeforeEffect {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                abort_nonce_hex,
+                proof_digest,
+                reason,
+            },
+        }
+    }
+
     pub fn run_cancel(
         request_id: u64,
         spawn_generation: u64,
@@ -645,6 +698,20 @@ pub enum AgentdMethod {
     RunMarkDispatched {
         run_id: String,
         expected_revision: u64,
+    },
+    RunMarkDispatchedBound {
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        pre_effect_abort_commitment_digest: String,
+    },
+    RunAbortBeforeEffect {
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        abort_nonce_hex: String,
+        proof_digest: String,
+        reason: String,
     },
     RunCancel {
         run_id: String,
@@ -1363,6 +1430,44 @@ mod tests {
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&release_bytes).expect("parse release"),
             release
+        );
+    }
+
+    #[test]
+    fn bound_dispatch_and_pre_effect_abort_wire_are_strict_and_bounded() {
+        let binding = "a".repeat(64);
+        let commitment = "b".repeat(64);
+        let proof = "c".repeat(64);
+        let mark = AgentdRequest::run_mark_dispatched_bound(
+            17,
+            4,
+            "run.1".to_string(),
+            2,
+            binding.clone(),
+            commitment,
+        );
+        let mark_bytes = serde_json::to_vec(&mark).expect("serialize bound mark");
+        assert!(mark_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&mark_bytes).expect("parse bound mark"),
+            mark
+        );
+
+        let abort = AgentdRequest::run_abort_before_effect(
+            18,
+            4,
+            "run.1".to_string(),
+            3,
+            binding,
+            "11".repeat(32),
+            proof,
+            "final-use fence changed".to_string(),
+        );
+        let abort_bytes = serde_json::to_vec(&abort).expect("serialize pre-effect abort");
+        assert!(abort_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&abort_bytes).expect("parse pre-effect abort"),
+            abort
         );
     }
 

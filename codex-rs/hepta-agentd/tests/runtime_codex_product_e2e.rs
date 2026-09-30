@@ -17,17 +17,28 @@ use codex_hepta_agent_components::contracts::FinalUseBinding;
 use codex_hepta_agent_components::contracts::FinalUseGrant;
 use codex_hepta_agent_components::contracts::FinalUseRevocations;
 use codex_hepta_agent_components::contracts::SignedFinalUseGrant;
+
+use codex_hepta_agentd::AgentContextAttachment;
+use codex_hepta_agentd::AgentRunPhase;
+use codex_hepta_agentd::AgentRunSnapshot;
+use codex_hepta_agentd::AgentdClient;
+
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::final_use_authorizer::FinalUseAuthorizerConfig;
 use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
 use codex_hepta_infer_worker_host::native_app_server::NativeBoundaryStatus;
+use codex_hepta_infer_worker_host::native_app_server::NativeIntelligenceRunBinding;
 use codex_hepta_infer_worker_host::native_app_server::NativeRunStatus;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use core_test_support::responses;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+
+fn random_signing_key() -> SigningKey {
+    SigningKey::from_bytes(&rand::random())
+}
 use serde::Deserialize;
 use serde::Serialize;
 use tokio::io::AsyncReadExt;
@@ -79,6 +90,60 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     let (_, health) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     ensure!(health.ready && !health.fenced);
 
+    // runtime.codex-agentd-admitted-product-e2e-v1: create and attach the
+    // durable owner record first. The worker derives its immutable binding
+    // from this receipt rather than accepting caller-selected fields.
+    let agentd = AgentdClient::new(
+        agent.layout.agentd_control_socket().to_path_buf(),
+        agent.agent_id.clone(),
+        1,
+    )?;
+    let deadline_ms = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?
+        .checked_add(60_000)
+        .context("runtime.codex product deadline overflow")?;
+    let snapshot = AgentRunSnapshot {
+        run_id: REQUEST_ID.to_string(),
+        request_digest: "1".repeat(64),
+        objective_digest: "2".repeat(64),
+        body_digest: "3".repeat(64),
+        artifact_set_digest: "4".repeat(64),
+        authority_epoch: 9,
+        generation: 1,
+        fence_digest: "5".repeat(64),
+        deadline_ms,
+    };
+    let admitted = agentd.run_start(snapshot.clone()).await?;
+    ensure!(admitted.phase == AgentRunPhase::Admitted);
+    let attached = agentd
+        .run_attach_context(
+            admitted.revision,
+            AgentContextAttachment {
+                run_id: snapshot.run_id.clone(),
+                request_digest: snapshot.request_digest.clone(),
+                objective_digest: snapshot.objective_digest.clone(),
+                body_digest: snapshot.body_digest.clone(),
+                artifact_set_digest: snapshot.artifact_set_digest.clone(),
+                authority_epoch: snapshot.authority_epoch,
+                generation: snapshot.generation,
+                fence_digest: snapshot.fence_digest.clone(),
+                deadline_ms: snapshot.deadline_ms,
+                context_digest: "6".repeat(64),
+                compilation_receipt_digest: "7".repeat(64),
+            },
+        )
+        .await?;
+    ensure!(attached.phase == AgentRunPhase::ContextAttached);
+    // runtime.codex-agentd-admitted-loader-v1: the product caller may
+    // name the durable run, but it cannot manufacture the bound identities.
+    let intelligence = NativeIntelligenceRunBinding::load_from_agentd(
+        agent.layout.agentd_control_socket().to_path_buf(),
+        agent.agent_id.clone(),
+        1,
+        REQUEST_ID.to_string(),
+    )
+    .await
+    .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+
     let authority_root = tempfile::tempdir()?;
     std::fs::set_permissions(
         authority_root.path(),
@@ -89,8 +154,8 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     std::fs::set_permissions(&authority_socket, std::fs::Permissions::from_mode(0o660))?;
     let issuer_uid = std::fs::metadata(&authority_socket)?.uid();
 
-    let signer = SigningKey::from_bytes(&[73; 32]);
-    let authorizer = UnixFinalUseAuthorizer::from_config(FinalUseAuthorizerConfig {
+    let signer = random_signing_key();
+    let authorizer = UnixFinalUseAuthorizer::from_test_config(FinalUseAuthorizerConfig {
         issuer_socket: authority_socket,
         issuer_uid,
         signer_id: "authority-owner".to_string(),
@@ -100,6 +165,9 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
         revocation_revision: 1,
         revoked_grant_ids: BTreeSet::new(),
         issuer_timeout_ms: 2_000,
+        // Test-only constructor: production `open` requires Linux process
+        // identity in addition to socket ownership and peer UID.
+        issuer_process_identity: None,
     })
     .map_err(|error| anyhow::anyhow!(error.to_string()))?;
 
@@ -120,7 +188,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     let mut control = DurableInferenceControl::open(&journal, /*capacity*/ 32)?;
     let cancellation = CancellationToken::new();
     let output = driver
-        .run(
+        .run_intelligence(
             &mut control,
             NativeAdmission {
                 request_id: REQUEST_ID.to_string(),
@@ -128,6 +196,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
             },
             "Return the exact phrase runtime codex e2e.".to_string(),
             None,
+            intelligence,
             &cancellation,
         )
         .await
@@ -140,6 +209,12 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
     ensure!(output.status == NativeRunStatus::Completed);
     ensure!(output.boundary_status == NativeBoundaryStatus::Succeeded);
     ensure!(output.terminal_observed);
+    let owner_terminal = agentd
+        .run_status(REQUEST_ID.to_string())
+        .await?
+        .context("Agentd terminal record disappeared")?;
+    ensure!(owner_terminal.phase == AgentRunPhase::Succeeded);
+    ensure!(owner_terminal.terminal_observed);
     ensure!(
         output
             .codex_terminal_correlation_digest

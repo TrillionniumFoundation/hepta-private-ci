@@ -104,18 +104,22 @@ impl AgentdState {
             identity.app_server_socket.display(),
             crate::AGENTD_CONTROL_SCHEMA_VERSION
         );
-        let run_coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
-            agent_id: identity.agent_id.as_str().to_string(),
-            supervisor_generation: identity.spawn_generation,
-            agentd_generation: identity.spawn_generation,
-            configuration_digest: Sha256Digest::for_bytes(configuration_material.as_bytes())
-                .as_str()
-                .to_string(),
-            ports_digest: Sha256Digest::for_bytes(ports_material.as_bytes())
-                .as_str()
-                .to_string(),
-            max_active_runs: usize::from(identity.resources.max_concurrent_turns),
-        })
+        let run_store_path = identity.run_root.join("runtime-codex-agent-runs-v1.json");
+        let run_coordinator = AgentRunCoordinator::open_durable(
+            RuntimeComposition {
+                agent_id: identity.agent_id.as_str().to_string(),
+                supervisor_generation: identity.spawn_generation,
+                agentd_generation: identity.spawn_generation,
+                configuration_digest: Sha256Digest::for_bytes(configuration_material.as_bytes())
+                    .as_str()
+                    .to_string(),
+                ports_digest: Sha256Digest::for_bytes(ports_material.as_bytes())
+                    .as_str()
+                    .to_string(),
+                max_active_runs: usize::from(identity.resources.max_concurrent_turns),
+            },
+            run_store_path,
+        )
         .map_err(run_error)?;
 
         let prompt_registry_root = identity.home_root.join("prompt-registry");
@@ -365,11 +369,12 @@ impl AgentdState {
                     generation: record.lifecycle.generation,
                 });
             if runtime.lifecycle == AgentLifecycle::Draining {
-                self.runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                candidate
                     .begin_drain(unix_now_ms()?, "supervisor_draining")
                     .map_err(run_error)?;
+                runs.publish_candidate(candidate, ()).map_err(run_error)?;
             }
         }
         Ok(())
@@ -442,11 +447,12 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .push(AgentdEventKind::Draining);
         drop(runtime);
-        self.runs
-            .lock()
-            .map_err(poisoned_state)?
+        let mut runs = self.runs.lock().map_err(poisoned_state)?;
+        let mut candidate = runs.clone();
+        candidate
             .begin_drain(unix_now_ms()?, "agentd_shutdown")
             .map_err(run_error)?;
+        runs.publish_candidate(candidate, ()).map_err(run_error)?;
         Ok(())
     }
 
@@ -506,11 +512,13 @@ impl AgentdState {
             events.push(AgentdEventKind::GenerationFenced);
         }
         if let Ok(mut runs) = self.runs.lock() {
-            runs.close_admissions();
+            let mut candidate = runs.clone();
+            candidate.close_admissions();
             if let Ok(now_ms) = unix_now_ms() {
-                let _ = runs.begin_drain(now_ms, "generation_fenced");
+                let _ = candidate.begin_drain(now_ms, "generation_fenced");
             }
-            let _ = runs.mark_unresolved_indeterminate("generation_fenced");
+            let _ = candidate.mark_unresolved_indeterminate("generation_fenced");
+            let _ = runs.publish_candidate(candidate, ());
         }
     }
 
@@ -616,7 +624,8 @@ impl AgentdState {
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let admitted = runs
+                let mut candidate = runs.clone();
+                let admitted = candidate
                     .start_run(
                         now_ms,
                         crate::RunSnapshot {
@@ -632,7 +641,7 @@ impl AgentdState {
                         },
                     )
                     .map_err(run_error)?;
-                let run_receipt = runs
+                let run_receipt = candidate
                     .attach_context(
                         now_ms,
                         admitted.revision,
@@ -651,6 +660,7 @@ impl AgentdState {
                         },
                     )
                     .map_err(run_error)?;
+                runs.publish_candidate(candidate, ()).map_err(run_error)?;
                 Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
                     prepared,
                     run_receipt,
@@ -694,11 +704,15 @@ impl AgentdState {
         // first validation must not survive into runtime admission.
         let final_now_ms = self.require_current_run_start(record)?;
         let now_ms = now_ms.max(final_now_ms);
-        self.runs
-            .lock()
-            .map_err(poisoned_state)?
+        let mut runs = self.runs.lock().map_err(poisoned_state)?;
+        let mut candidate = runs.clone();
+        let receipt = candidate
             .start_revalidated_run_start(now_ms, record)
-            .map_err(run_error)
+            .map_err(run_error)?;
+        if !receipt.idempotent {
+            runs.publish_candidate(candidate, ()).map_err(run_error)?;
+        }
+        Ok(receipt)
     }
 
     fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
@@ -754,11 +768,15 @@ impl AgentdState {
     }
 
     pub(crate) fn expire_run_deadlines(&self) -> Result<usize, AgentdError> {
-        self.runs
-            .lock()
-            .map_err(poisoned_state)?
+        let mut runs = self.runs.lock().map_err(poisoned_state)?;
+        let mut candidate = runs.clone();
+        let changed = candidate
             .expire_deadlines(unix_now_ms()?)
-            .map_err(run_error)
+            .map_err(run_error)?;
+        if changed != 0 {
+            runs.publish_candidate(candidate, ()).map_err(run_error)?;
+        }
+        Ok(changed)
     }
 
     pub(crate) fn active_run_count(&self) -> Result<usize, AgentdError> {
@@ -777,11 +795,15 @@ impl AgentdState {
         &self,
         reason: &str,
     ) -> Result<usize, AgentdError> {
-        self.runs
-            .lock()
-            .map_err(poisoned_state)?
+        let mut runs = self.runs.lock().map_err(poisoned_state)?;
+        let mut candidate = runs.clone();
+        let changed = candidate
             .mark_unresolved_indeterminate(reason)
-            .map_err(run_error)
+            .map_err(run_error)?;
+        if changed != 0 {
+            runs.publish_candidate(candidate, ()).map_err(run_error)?;
+        }
+        Ok(changed)
     }
 }
 

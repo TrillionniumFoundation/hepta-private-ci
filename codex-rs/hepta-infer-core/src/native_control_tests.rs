@@ -601,3 +601,156 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn two_phase_pre_effect_abort_survives_reopen_and_holds_capacity_until_owner_ack() {
+    let path = path("abort-saga");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let binding = "7".repeat(64);
+    let commitment = token
+        .commitment_digest("run.1", &binding)
+        .expect("commitment");
+    let pending = control
+        .prepare_native_abort_before_effect(
+            token,
+            "run.1".to_string(),
+            3,
+            binding.clone(),
+            "final-use fence changed".to_string(),
+        )
+        .expect("prepare abort");
+    assert_eq!(pending.state, NativeReservationState::AbortPending);
+    let abort = pending.pre_effect_abort.as_ref().expect("abort record");
+    assert_eq!(abort.commitment_digest, commitment);
+    assert_eq!(
+        control.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    let proof = abort.proof_digest.clone();
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let recovered = reopened.native_record("r1").cloned().expect("recovered");
+    assert_eq!(recovered, pending);
+    assert_eq!(recovered.state, NativeReservationState::AbortPending);
+    let confirmed = reopened
+        .confirm_native_abort_before_effect("r1", &proof)
+        .expect("confirm owner abort");
+    assert_eq!(confirmed.state, NativeReservationState::Released);
+    assert_eq!(
+        confirmed.pre_dispatch_stop.as_deref(),
+        Some("final-use fence changed")
+    );
+    assert_eq!(confirmed.observation, None);
+    reopened.reserve_native(request("r2"), 1).unwrap();
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+fn terminal_owner() -> NativeTerminalOwnerBinding {
+    NativeTerminalOwnerBinding {
+        run_id: "agent-run-1".to_string(),
+        owner_dispatch_revision: 3,
+        context_digest: "8".repeat(64),
+        envelope_digest: "9".repeat(64),
+    }
+}
+
+fn start_bound(control: &mut DurableInferenceControl, id: &str) {
+    control.reserve_native(request(id), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort_bound(id, dispatch(), terminal_owner())
+        .unwrap();
+    drop(token);
+    control.native_started(id, "turn-1".to_string()).unwrap();
+}
+
+#[test]
+fn terminal_outbox_is_atomic_with_observation_and_replayable() {
+    let path = path("terminal-outbox");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start_bound(&mut control, "r1");
+    let mut observed = output(NativeRunStatus::Completed, Some(5));
+    observed.owner_authority = NativeOwnerAuthority::ObservedReady;
+    let settled = control.settle_native("r1", observed).unwrap();
+    let publication = settled.terminal_publication.clone().unwrap();
+    assert_eq!(publication.phase, NativeTerminalPublicationPhase::Succeeded);
+    assert!(publication.terminal_observed);
+    assert!(publication.pending());
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let replayed = reopened
+        .native_record("r1")
+        .unwrap()
+        .terminal_publication
+        .clone()
+        .unwrap();
+    assert_eq!(replayed, publication);
+    reopened
+        .record_native_terminal_publication_failure(
+            "r1",
+            &publication.publication_digest,
+            &"7".repeat(64),
+        )
+        .unwrap();
+    let acknowledged = reopened
+        .acknowledge_native_terminal_publication("r1", &publication.publication_digest, 4)
+        .unwrap();
+    let publication = acknowledged.terminal_publication.unwrap();
+    assert_eq!(publication.attempts, 2);
+    assert_eq!(publication.acknowledged_revision, Some(4));
+    assert!(!publication.pending());
+    drop(reopened);
+
+    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened
+            .native_record("r1")
+            .unwrap()
+            .terminal_publication
+            .as_ref()
+            .unwrap()
+            .acknowledged_revision,
+        Some(4)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn late_completed_under_non_success_boundaries_never_publishes_success() {
+    for (label, boundary) in [
+        ("cancelled", NativeBoundaryStatus::Cancelled),
+        ("timed-out", NativeBoundaryStatus::TimedOut),
+        ("quarantined", NativeBoundaryStatus::Quarantined),
+    ] {
+        let path = path(label);
+        let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+        start_bound(&mut control, "r1");
+        let mut observed = output(NativeRunStatus::Completed, Some(1));
+        observed.boundary_status = boundary;
+        observed.stop_reason = Some(label.to_string());
+        observed.owner_authority = if boundary == NativeBoundaryStatus::Quarantined {
+            NativeOwnerAuthority::Lost {
+                reason: "owner lost".to_string(),
+            }
+        } else {
+            NativeOwnerAuthority::ObservedReady
+        };
+        let settled = control.settle_native("r1", observed).unwrap();
+        let publication = settled.terminal_publication.unwrap();
+        assert_ne!(publication.phase, NativeTerminalPublicationPhase::Succeeded);
+        assert_eq!(
+            publication.phase,
+            NativeTerminalPublicationPhase::Indeterminate
+        );
+        assert!(!publication.terminal_observed);
+        drop(control);
+        std::fs::remove_file(path).unwrap();
+    }
+}

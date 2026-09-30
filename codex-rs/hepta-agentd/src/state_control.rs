@@ -452,12 +452,14 @@ impl AgentdState {
                     snapshot.generation,
                     &snapshot.fence_digest,
                 )?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let receipt = candidate
                     .start_run(now_ms()?, internal_run_snapshot(snapshot))
                     .map_err(run_error)?;
+                if !receipt.idempotent {
+                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                }
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunAttachContext {
@@ -471,16 +473,18 @@ impl AgentdState {
                     attachment.generation,
                     &attachment.fence_digest,
                 )?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let receipt = candidate
                     .attach_context(
                         now_ms()?,
                         expected_revision,
                         internal_context_attachment(attachment),
                     )
                     .map_err(run_error)?;
+                if !receipt.idempotent {
+                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                }
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunMarkDispatched {
@@ -488,12 +492,63 @@ impl AgentdState {
                 expected_revision,
             } => {
                 require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let receipt = candidate
                     .mark_dispatched(now_ms()?, &run_id, expected_revision)
                     .map_err(run_error)?;
+                if !receipt.idempotent {
+                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                }
+                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunMarkDispatchedBound {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                pre_effect_abort_commitment_digest,
+            } => {
+                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let receipt = candidate
+                    .mark_dispatched_bound(
+                        now_ms()?,
+                        &run_id,
+                        expected_revision,
+                        dispatch_binding_digest,
+                        pre_effect_abort_commitment_digest,
+                    )
+                    .map_err(run_error)?;
+                if !receipt.idempotent {
+                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                }
+                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunAbortBeforeEffect {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                abort_nonce_hex,
+                proof_digest,
+                reason,
+            } => {
+                require_run_reconciliation_ready(lifecycle, fenced)?;
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let receipt = candidate
+                    .abort_before_effect(
+                        &run_id,
+                        expected_revision,
+                        &dispatch_binding_digest,
+                        &abort_nonce_hex,
+                        &proof_digest,
+                        &reason,
+                    )
+                    .map_err(run_error)?;
+                if !receipt.idempotent {
+                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                }
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunCancel {
@@ -502,12 +557,14 @@ impl AgentdState {
                 reason,
             } => {
                 require_run_reconciliation_ready(lifecycle, fenced)?;
-                let (disposition, receipt) = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let (disposition, receipt) = candidate
                     .cancel_run(now_ms()?, &run_id, expected_revision, &reason)
                     .map_err(run_error)?;
+                if !receipt.idempotent {
+                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                }
                 AgentdPayload::RunCancellation(crate::AgentRunCancellation {
                     disposition: wire_cancellation_disposition(disposition),
                     receipt: wire_run_receipt(receipt),
@@ -520,10 +577,9 @@ impl AgentdState {
                 terminal_observed,
             } => {
                 require_run_reconciliation_ready(lifecycle, fenced)?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let receipt = candidate
                     .observe_terminal(
                         &run_id,
                         expected_revision,
@@ -531,6 +587,9 @@ impl AgentdState {
                         terminal_observed,
                     )
                     .map_err(run_error)?;
+                if !receipt.idempotent {
+                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                }
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunStatus { run_id } => {
@@ -548,12 +607,12 @@ impl AgentdState {
                 expected_revision,
             } => {
                 require_run_reconciliation_ready(lifecycle, fenced)?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let receipt = candidate
                     .remove_closed_run(&run_id, expected_revision)
                     .map_err(run_error)?;
+                runs.publish_candidate(candidate, ()).map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::AutomationCreate { draft } => {
@@ -1352,6 +1411,7 @@ fn internal_run_phase(value: crate::AgentRunPhase) -> crate::RunPhase {
         crate::AgentRunPhase::Admitted => crate::RunPhase::Admitted,
         crate::AgentRunPhase::ContextAttached => crate::RunPhase::ContextAttached,
         crate::AgentRunPhase::Dispatched => crate::RunPhase::Dispatched,
+        crate::AgentRunPhase::AbortedBeforeEffect => crate::RunPhase::AbortedBeforeEffect,
         crate::AgentRunPhase::Cancelling => crate::RunPhase::Cancelling,
         crate::AgentRunPhase::Cancelled => crate::RunPhase::Cancelled,
         crate::AgentRunPhase::Succeeded => crate::RunPhase::Succeeded,
@@ -1365,6 +1425,7 @@ fn wire_run_phase(value: crate::RunPhase) -> crate::AgentRunPhase {
         crate::RunPhase::Admitted => crate::AgentRunPhase::Admitted,
         crate::RunPhase::ContextAttached => crate::AgentRunPhase::ContextAttached,
         crate::RunPhase::Dispatched => crate::AgentRunPhase::Dispatched,
+        crate::RunPhase::AbortedBeforeEffect => crate::AgentRunPhase::AbortedBeforeEffect,
         crate::RunPhase::Cancelling => crate::AgentRunPhase::Cancelling,
         crate::RunPhase::Cancelled => crate::AgentRunPhase::Cancelled,
         crate::RunPhase::Succeeded => crate::AgentRunPhase::Succeeded,
@@ -1384,6 +1445,9 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
         generation: value.generation,
         fence_digest: value.fence_digest,
         deadline_ms: value.deadline_ms,
+        dispatch_binding_digest: value.dispatch_binding_digest,
+        pre_effect_abort_commitment_digest: value.pre_effect_abort_commitment_digest,
+        pre_effect_abort_proof_digest: value.pre_effect_abort_proof_digest,
         cancel_reason: value.cancel_reason,
         cancel_ack_deadline_ms: value.cancel_ack_deadline_ms,
         terminal_observed: value.terminal_observed,

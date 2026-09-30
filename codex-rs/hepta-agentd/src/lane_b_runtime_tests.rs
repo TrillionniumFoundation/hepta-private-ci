@@ -513,3 +513,232 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
     );
     assert_eq!(coordinator.run("run.abstain"), None);
 }
+
+#[test]
+fn bound_pre_effect_abort_is_nonce_verified_and_nonterminal() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit");
+    coordinator
+        .attach_context(200, 1, attachment())
+        .expect("attach");
+
+    let binding = digest('a');
+    let nonce: [u8; 32] = rand::random();
+    let nonce_hex = nonce
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let commitment = pre_effect_abort_commitment("run.1", &binding, &nonce);
+    let reason = "final-use fence changed";
+    let proof = pre_effect_abort_proof("run.1", &binding, &nonce, reason);
+
+    let dispatched = coordinator
+        .mark_dispatched_bound(300, "run.1", 2, binding.clone(), commitment.clone())
+        .expect("bound dispatch");
+    assert_eq!(dispatched.phase, RunPhase::Dispatched);
+    assert_eq!(
+        dispatched.dispatch_binding_digest.as_deref(),
+        Some(binding.as_str())
+    );
+    assert_eq!(
+        dispatched.pre_effect_abort_commitment_digest.as_deref(),
+        Some(commitment.as_str())
+    );
+
+    assert_eq!(
+        coordinator.abort_before_effect(
+            "run.1",
+            dispatched.revision,
+            &binding,
+            &"00".repeat(32),
+            &proof,
+            reason,
+        ),
+        Err(AgentRunError::Conflict)
+    );
+
+    let aborted = coordinator
+        .abort_before_effect(
+            "run.1",
+            dispatched.revision,
+            &binding,
+            &nonce_hex,
+            &proof,
+            reason,
+        )
+        .expect("abort");
+    assert_eq!(aborted.phase, RunPhase::AbortedBeforeEffect);
+    assert!(!aborted.terminal_observed);
+    assert_eq!(
+        aborted.pre_effect_abort_proof_digest.as_deref(),
+        Some(proof.as_str())
+    );
+    assert_eq!(coordinator.active_run_count(), 0);
+    assert_eq!(coordinator.unresolved_run_count(), 0);
+
+    let repeated = coordinator
+        .abort_before_effect(
+            "run.1",
+            dispatched.revision,
+            &binding,
+            &nonce_hex,
+            &proof,
+            reason,
+        )
+        .expect("idempotent abort");
+    assert!(repeated.idempotent);
+    assert_eq!(
+        coordinator.observe_terminal(
+            "run.1",
+            aborted.revision,
+            RunPhase::Succeeded,
+            /*terminal_observed*/ true,
+        ),
+        Err(AgentRunError::InvalidTransition)
+    );
+}
+
+#[test]
+fn durable_run_store_recovers_bound_abort_and_fences_stale_writer() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("agent-runs.json");
+    let mut owner =
+        AgentRunCoordinator::open_durable(composition(), path.clone()).expect("open durable owner");
+    owner.start_run(100, snapshot()).expect("admit");
+    owner.persist().expect("persist admission");
+    owner
+        .attach_context(200, 1, attachment())
+        .expect("attach context");
+    owner.persist().expect("persist context");
+
+    let binding = digest('q');
+    let nonce: [u8; 32] = rand::random();
+    let nonce_hex = nonce
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let commitment = pre_effect_abort_commitment("run.1", &binding, &nonce);
+    let reason = "final-use fence changed";
+    let proof = pre_effect_abort_proof("run.1", &binding, &nonce, reason);
+    let dispatched = owner
+        .mark_dispatched_bound(300, "run.1", 2, binding.clone(), commitment.clone())
+        .expect("bound dispatch");
+    owner.persist().expect("persist dispatch");
+    drop(owner);
+
+    let mut current = AgentRunCoordinator::open_durable(composition(), path.clone())
+        .expect("recover current owner");
+    let mut stale = AgentRunCoordinator::open_durable(composition(), path.clone())
+        .expect("open stale observer");
+    let aborted = current
+        .abort_before_effect(
+            "run.1",
+            dispatched.revision,
+            &binding,
+            &nonce_hex,
+            &proof,
+            reason,
+        )
+        .expect("abort before effect");
+    assert_eq!(aborted.phase, RunPhase::AbortedBeforeEffect);
+    current.persist().expect("persist abort proof");
+
+    stale
+        .mark_unresolved_indeterminate("stale writer")
+        .expect("mutate stale in-memory owner");
+    assert!(matches!(
+        stale.persist(),
+        Err(AgentRunError::Persistence(_))
+    ));
+    drop(current);
+    drop(stale);
+
+    let recovered = AgentRunCoordinator::open_durable(composition(), path)
+        .expect("recover exact aborted owner");
+    let receipt = recovered.run("run.1").expect("retained run");
+    assert_eq!(receipt.phase, RunPhase::AbortedBeforeEffect);
+    assert_eq!(
+        receipt.dispatch_binding_digest.as_deref(),
+        Some(binding.as_str())
+    );
+    assert_eq!(
+        receipt.pre_effect_abort_commitment_digest.as_deref(),
+        Some(commitment.as_str())
+    );
+    assert_eq!(
+        receipt.pre_effect_abort_proof_digest.as_deref(),
+        Some(proof.as_str())
+    );
+}
+
+#[test]
+fn failed_candidate_publish_does_not_leak_uncommitted_state() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("agent-runs.json");
+    let mut current =
+        AgentRunCoordinator::open_durable(composition(), path.clone()).expect("open current owner");
+    let mut stale =
+        AgentRunCoordinator::open_durable(composition(), path).expect("open stale owner");
+
+    let mut committed = current.clone();
+    let receipt = committed
+        .start_run(100, snapshot())
+        .expect("prepare committed run");
+    current
+        .publish_candidate(committed, receipt)
+        .expect("publish committed run");
+
+    let mut second = snapshot();
+    second.run_id = "run:stale-candidate".to_string();
+    let mut uncommitted = stale.clone();
+    let stale_receipt = uncommitted
+        .start_run(100, second)
+        .expect("prepare stale candidate");
+    assert!(matches!(
+        stale.publish_candidate(uncommitted, stale_receipt),
+        Err(AgentRunError::Persistence(_))
+    ));
+    assert!(stale.run("run:stale-candidate").is_none());
+    assert!(stale.run("run.1").is_none());
+}
+
+#[test]
+fn closed_run_tombstone_survives_reopen_and_blocks_identity_reuse() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("agent-runs.json");
+    let mut owner =
+        AgentRunCoordinator::open_durable(composition(), path.clone()).expect("open owner");
+    let admitted = owner.start_run(100, snapshot()).expect("start");
+    owner.persist().expect("persist admission");
+    let attached = owner
+        .attach_context(101, admitted.revision, attachment())
+        .expect("attach");
+    owner.persist().expect("persist context");
+    let dispatched = owner
+        .mark_dispatched(102, "run.1", attached.revision)
+        .expect("dispatch");
+    owner.persist().expect("persist dispatch");
+    let terminal = owner
+        .observe_terminal("run.1", dispatched.revision, RunPhase::Succeeded, true)
+        .expect("terminal");
+    owner.persist().expect("persist terminal");
+    owner
+        .remove_closed_run("run.1", terminal.revision)
+        .expect("archive closed run");
+    owner.persist().expect("persist tombstone");
+    drop(owner);
+
+    let mut recovered =
+        AgentRunCoordinator::open_durable(composition(), path).expect("reopen owner");
+    let status = recovered.run("run.1").expect("tombstoned status");
+    assert_eq!(status.phase, RunPhase::Succeeded);
+    assert!(status.terminal_observed);
+    assert!(matches!(
+        recovered.start_run(200, snapshot()),
+        Err(AgentRunError::Conflict)
+    ));
+    let replay = recovered
+        .remove_closed_run("run.1", status.revision)
+        .expect("idempotent tombstone removal");
+    assert!(replay.idempotent);
+}

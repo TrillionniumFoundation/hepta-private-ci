@@ -7,6 +7,7 @@
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
+#[cfg(unix)]
 use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
@@ -19,6 +20,10 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::VerifiedUseToken;
 use serde::Deserialize;
 use serde::Serialize;
+#[cfg(target_os = "linux")]
+use sha2::Digest;
+#[cfg(target_os = "linux")]
+use sha2::Sha256;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::time::timeout;
@@ -33,13 +38,30 @@ const MAX_REQUEST_BYTES: usize = 16 * 1024;
 const MAX_RESPONSE_BYTES: usize = 64 * 1024;
 const MAX_DENIAL_REASON_BYTES: usize = 1024;
 const MAX_ISSUER_TIMEOUT: Duration = Duration::from_secs(30);
+#[cfg(target_os = "linux")]
+const MAX_PROC_TEXT_BYTES: usize = 64 * 1024;
+#[cfg(target_os = "linux")]
+const MAX_ISSUER_EXECUTABLE_BYTES: u64 = 512 * 1024 * 1024;
 
 type Result<T> = std::result::Result<T, Box<dyn StdError + Send + Sync>>;
+
+/// Linux process identity expected behind the protected authority socket.
+///
+/// The executable digest binds the exact issuer binary. The cgroup digest binds
+/// its service/container placement. The boot-id digest prevents a process from a
+/// different host boot from satisfying a stale socket/configuration binding.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct IssuerProcessIdentityConfig {
+    pub executable_sha256: String,
+    pub cgroup_sha256: String,
+    pub boot_id_sha256: String,
+}
 
 /// Protected host configuration for the independent final-use authority port.
 ///
 /// `verifying_key` is public. The private signing key is intentionally absent.
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct FinalUseAuthorizerConfig {
     pub issuer_socket: PathBuf,
@@ -52,6 +74,8 @@ pub struct FinalUseAuthorizerConfig {
     #[serde(default)]
     pub revoked_grant_ids: BTreeSet<String>,
     pub issuer_timeout_ms: u64,
+    #[serde(default)]
+    pub issuer_process_identity: Option<IssuerProcessIdentityConfig>,
 }
 
 /// Production runtime.codex authorizer. The independent endpoint decides
@@ -60,23 +84,57 @@ pub struct UnixFinalUseAuthorizer {
     issuer_socket: PathBuf,
     issuer_uid: u32,
     issuer_timeout: Duration,
+    issuer_process_identity: Option<IssuerProcessIdentityConfig>,
     authority: FinalUseAuthority,
 }
 
 impl UnixFinalUseAuthorizer {
+    /// Open production configuration from a protected file.
+    ///
+    /// Linux production use requires process-instance identity in addition to
+    /// pathname ownership and peer UID. Tests may use the explicit `from_test_config` test-support surface.
     pub fn open(config_path: &Path) -> Result<Self> {
         let config: FinalUseAuthorizerConfig =
             serde_json::from_slice(&read_private_config(config_path)?)?;
-        Self::from_config(config)
+        Self::from_config_inner(config, cfg!(target_os = "linux"))
     }
 
+    /// Build from an already decoded production configuration. This path has
+    /// the same Linux process-identity requirement as `open`; callers cannot
+    /// use a decoded config to bypass the production issuer fence.
     pub fn from_config(config: FinalUseAuthorizerConfig) -> Result<Self> {
+        Self::from_config_inner(config, cfg!(target_os = "linux"))
+    }
+
+    /// Explicit non-production constructor for unit/product qualification.
+    /// It is absent from normal dependency builds unless `test-support` is
+    /// selected, preventing product code from acquiring an unchecked issuer.
+    #[cfg(any(test, feature = "test-support"))]
+    pub fn from_test_config(config: FinalUseAuthorizerConfig) -> Result<Self> {
+        Self::from_config_inner(config, false)
+    }
+
+    fn from_config_inner(
+        config: FinalUseAuthorizerConfig,
+        require_process_identity: bool,
+    ) -> Result<Self> {
         if !config.issuer_socket.is_absolute() || !config.authority_state_dir.is_absolute() {
             return Err("final-use authority socket and state directory must be absolute".into());
         }
         let issuer_timeout = Duration::from_millis(config.issuer_timeout_ms);
         if issuer_timeout.is_zero() || issuer_timeout > MAX_ISSUER_TIMEOUT {
             return Err("final-use issuer timeout must be 1..=30000 ms".into());
+        }
+        if let Some(expected) = config.issuer_process_identity.as_ref() {
+            validate_process_identity_config(expected)?;
+        } else if require_process_identity {
+            return Err(
+                "Linux production final-use authority requires issuer process identity".into(),
+            );
+        }
+        #[cfg(not(target_os = "linux"))]
+        if config.issuer_process_identity.is_some() {
+            return Err("issuer process identity is currently supported only on Linux".into());
         }
         let authority = FinalUseAuthority::open_state_dir(
             &config.authority_state_dir,
@@ -92,6 +150,7 @@ impl UnixFinalUseAuthorizer {
             issuer_socket: config.issuer_socket,
             issuer_uid: config.issuer_uid,
             issuer_timeout,
+            issuer_process_identity: config.issuer_process_identity,
             authority,
         })
     }
@@ -117,6 +176,8 @@ impl UnixFinalUseAuthorizer {
     #[cfg(unix)]
     async fn request_grant(&self, binding: &FinalUseBinding) -> Result<IssuerResponse> {
         validate_issuer_socket(&self.issuer_socket, self.issuer_uid)?;
+        #[cfg(not(target_os = "linux"))]
+        debug_assert!(self.issuer_process_identity.is_none());
         let request = IssuerRequest {
             schema_version: AUTHORITY_PORT_SCHEMA_VERSION,
             operation: AUTHORITY_PORT_OPERATION.to_string(),
@@ -131,6 +192,12 @@ impl UnixFinalUseAuthorizer {
             let mut stream = tokio::net::UnixStream::connect(&self.issuer_socket).await?;
             let peer = stream.peer_cred()?;
             validate_issuer_peer_uid(peer.uid(), self.issuer_uid)?;
+            #[cfg(target_os = "linux")]
+            let process_guard = validate_connected_issuer_process(
+                peer.pid().and_then(|pid| u32::try_from(pid).ok()),
+                self.issuer_process_identity.as_ref(),
+            )?;
+
             stream.write_all(&request_len.to_be_bytes()).await?;
             stream.write_all(&request_bytes).await?;
             stream.flush().await?;
@@ -145,6 +212,10 @@ impl UnixFinalUseAuthorizer {
             }
             let mut response = vec![0_u8; response_len];
             stream.read_exact(&mut response).await?;
+            #[cfg(target_os = "linux")]
+            if let Some(process_guard) = process_guard {
+                process_guard.revalidate()?;
+            }
             Ok(response)
         };
         let response = timeout(self.issuer_timeout, exchange)
@@ -192,6 +263,182 @@ fn sync_revocations(authority: &FinalUseAuthority, candidate: FinalUseRevocation
     }
     authority.update_revocations(candidate)?;
     Ok(())
+}
+
+fn validate_process_identity_config(expected: &IssuerProcessIdentityConfig) -> Result<()> {
+    for (value, field) in [
+        (&expected.executable_sha256, "issuer executable"),
+        (&expected.cgroup_sha256, "issuer cgroup"),
+        (&expected.boot_id_sha256, "host boot id"),
+    ] {
+        if value.len() != 64
+            || value.bytes().all(|byte| byte == b'0')
+            || !value
+                .bytes()
+                .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        {
+            return Err(format!("invalid {field} SHA-256 digest").into());
+        }
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct IssuerProcessSnapshot {
+    pid: u32,
+    start_time_ticks: u64,
+    executable_sha256: String,
+    cgroup_sha256: String,
+    boot_id_sha256: String,
+}
+
+#[cfg(target_os = "linux")]
+struct IssuerProcessGuard {
+    initial: IssuerProcessSnapshot,
+    expected: IssuerProcessIdentityConfig,
+}
+
+#[cfg(target_os = "linux")]
+impl IssuerProcessGuard {
+    fn revalidate(&self) -> Result<()> {
+        let current = capture_issuer_process_identity(self.initial.pid)?;
+        if current != self.initial {
+            return Err("final-use authority process identity changed during exchange".into());
+        }
+        validate_issuer_process_snapshot(&current, &self.expected)
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn validate_connected_issuer_process(
+    pid: Option<u32>,
+    expected: Option<&IssuerProcessIdentityConfig>,
+) -> Result<Option<IssuerProcessGuard>> {
+    let Some(expected) = expected else {
+        return Ok(None);
+    };
+    let pid = pid.ok_or("connected final-use authority peer omitted its Linux PID")?;
+    let initial = capture_issuer_process_identity(pid)?;
+    validate_issuer_process_snapshot(&initial, expected)?;
+    Ok(Some(IssuerProcessGuard {
+        initial,
+        expected: expected.clone(),
+    }))
+}
+
+#[cfg(target_os = "linux")]
+fn validate_issuer_process_snapshot(
+    actual: &IssuerProcessSnapshot,
+    expected: &IssuerProcessIdentityConfig,
+) -> Result<()> {
+    validate_process_identity_config(expected)?;
+    if actual.executable_sha256 != expected.executable_sha256
+        || actual.cgroup_sha256 != expected.cgroup_sha256
+        || actual.boot_id_sha256 != expected.boot_id_sha256
+    {
+        return Err("connected final-use authority process identity mismatch".into());
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+fn capture_issuer_process_identity(pid: u32) -> Result<IssuerProcessSnapshot> {
+    if pid == 0 {
+        return Err("connected final-use authority peer PID is invalid".into());
+    }
+    let proc_root = PathBuf::from(format!("/proc/{pid}"));
+    let stat = read_bounded(&proc_root.join("stat"), MAX_PROC_TEXT_BYTES)?;
+    let stat = std::str::from_utf8(&stat)?;
+    let start_time_ticks = parse_proc_start_time_ticks(stat)?;
+
+    let executable = std::fs::File::open(proc_root.join("exe"))?;
+    let executable_metadata = executable.metadata()?;
+    if !executable_metadata.is_file() || executable_metadata.len() > MAX_ISSUER_EXECUTABLE_BYTES {
+        return Err("final-use authority executable is not a bounded regular file".into());
+    }
+    let executable_sha256 = sha256_reader(executable, MAX_ISSUER_EXECUTABLE_BYTES)?;
+    let cgroup_sha256 = sha256_bytes(&canonical_proc_text(read_bounded(
+        &proc_root.join("cgroup"),
+        MAX_PROC_TEXT_BYTES,
+    )?));
+    let boot_id_sha256 = sha256_bytes(&canonical_proc_text(read_bounded(
+        Path::new("/proc/sys/kernel/random/boot_id"),
+        256,
+    )?));
+    Ok(IssuerProcessSnapshot {
+        pid,
+        start_time_ticks,
+        executable_sha256,
+        cgroup_sha256,
+        boot_id_sha256,
+    })
+}
+
+#[cfg(target_os = "linux")]
+fn parse_proc_start_time_ticks(stat: &str) -> Result<u64> {
+    let close = stat
+        .rfind(')')
+        .ok_or("issuer /proc stat omitted process command terminator")?;
+    let fields: Vec<&str> = stat[close + 1..].split_whitespace().collect();
+    // The suffix starts at field 3 (`state`); starttime is field 22.
+    let value = fields
+        .get(19)
+        .ok_or("issuer /proc stat omitted process start time")?
+        .parse::<u64>()?;
+    if value == 0 {
+        return Err("issuer process start time is invalid".into());
+    }
+    Ok(value)
+}
+
+#[cfg(target_os = "linux")]
+fn read_bounded(path: &Path, maximum: usize) -> Result<Vec<u8>> {
+    let mut file = std::fs::File::open(path)?;
+    let mut value = Vec::new();
+    file.by_ref()
+        .take(u64::try_from(
+            maximum.checked_add(1).ok_or("read bound overflow")?,
+        )?)
+        .read_to_end(&mut value)?;
+    if value.len() > maximum {
+        return Err(format!("{} exceeds its identity bound", path.display()).into());
+    }
+    Ok(value)
+}
+
+#[cfg(target_os = "linux")]
+fn canonical_proc_text(mut value: Vec<u8>) -> Vec<u8> {
+    while value.last().is_some_and(|byte| byte.is_ascii_whitespace()) {
+        value.pop();
+    }
+    value
+}
+
+#[cfg(target_os = "linux")]
+fn sha256_reader(mut reader: impl Read, maximum: u64) -> Result<String> {
+    let mut hasher = Sha256::new();
+    let mut buffer = [0_u8; 64 * 1024];
+    let mut total = 0_u64;
+    loop {
+        let read = reader.read(&mut buffer)?;
+        if read == 0 {
+            break;
+        }
+        total = total
+            .checked_add(u64::try_from(read)?)
+            .ok_or("issuer executable length overflow")?;
+        if total > maximum {
+            return Err("issuer executable exceeds its identity bound".into());
+        }
+        hasher.update(&buffer[..read]);
+    }
+    Ok(format!("{:x}", hasher.finalize()))
+}
+
+#[cfg(target_os = "linux")]
+fn sha256_bytes(value: &[u8]) -> String {
+    format!("{:x}", Sha256::digest(value))
 }
 
 #[cfg(unix)]
@@ -257,14 +504,33 @@ fn validate_issuer_socket(path: &Path, issuer_uid: u32) -> Result<()> {
     {
         return Err("final-use authority socket identity or permissions are unsafe".into());
     }
-    let parent = path
-        .parent()
-        .ok_or("final-use authority socket has no parent directory")?;
-    let parent_metadata = std::fs::symlink_metadata(parent)?;
-    if !parent_metadata.is_dir() || parent_metadata.mode() & 0o022 != 0 {
-        return Err(
-            "final-use authority socket parent directory is writable by an unsafe principal".into(),
-        );
+    validate_protected_directory_chain(
+        path.parent()
+            .ok_or("final-use authority socket has no parent directory")?,
+    )?;
+    Ok(())
+}
+
+#[cfg(unix)]
+fn validate_protected_directory_chain(path: &Path) -> Result<()> {
+    use std::os::unix::fs::MetadataExt;
+
+    if !path.is_absolute() {
+        return Err("protected socket directory must be absolute".into());
+    }
+    let mut current = Some(path);
+    while let Some(directory) = current {
+        let metadata = std::fs::symlink_metadata(directory)?;
+        let writable_by_others = metadata.mode() & 0o022 != 0;
+        let trusted_sticky_ancestor = metadata.uid() == 0 && metadata.mode() & 0o1000 != 0;
+        if !metadata.is_dir() || (writable_by_others && !trusted_sticky_ancestor) {
+            return Err(format!(
+                "final-use authority socket directory is writable by an unsafe principal: {}",
+                directory.display()
+            )
+            .into());
+        }
+        current = directory.parent();
     }
     Ok(())
 }
