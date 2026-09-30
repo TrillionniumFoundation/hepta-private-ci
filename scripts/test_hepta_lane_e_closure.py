@@ -28,9 +28,12 @@ class LaneEClosedWorldTests(unittest.TestCase):
         _, findings = self.matrix_findings(self.matrix)
         self.assertEqual(findings.items, [])
         changed = copy.deepcopy(self.matrix)
-        operator = next(item for item in changed["modules"] if item["module"] == "learning.operator")
+        operator = next(
+            item for item in changed["modules"] if item["module"] == "learning.operator"
+        )
         operator["operations"] = [
-            item for item in operator["operations"]
+            item
+            for item in operator["operations"]
             if item["operation"] != "fit_tabular_operator_verified_v2"
         ]
         _, findings = self.matrix_findings(changed)
@@ -38,8 +41,12 @@ class LaneEClosedWorldTests(unittest.TestCase):
 
     def test_unknown_operator_operation_does_not_expand_the_closed_world(self):
         changed = copy.deepcopy(self.matrix)
-        operator = next(item for item in changed["modules"] if item["module"] == "learning.operator")
-        operator["operations"].append({**operator["operations"][0], "operation": "self_authorize"})
+        operator = next(
+            item for item in changed["modules"] if item["module"] == "learning.operator"
+        )
+        operator["operations"].append(
+            {**operator["operations"][0], "operation": "self_authorize"}
+        )
         _, findings = self.matrix_findings(changed)
         self.assertIn("operation_closed_world", [item.code for item in findings.items])
 
@@ -49,7 +56,9 @@ class LaneEClosedWorldTests(unittest.TestCase):
         self.assertEqual(findings.items, [])
         for missing in ("OP-05", "OP-06"):
             changed = copy.deepcopy(self.trace)
-            changed["cases"] = [item for item in changed["cases"] if item["id"] != missing]
+            changed["cases"] = [
+                item for item in changed["cases"] if item["id"] != missing
+            ]
             findings = CLOSURE.Findings()
             CLOSURE.verify_traceability(changed, modules, findings)
             self.assertIn("case_closed_world", [item.code for item in findings.items])
@@ -81,7 +90,9 @@ class LaneEClosedWorldTests(unittest.TestCase):
             else:
                 gates.append(duplicate)
             _, findings = self.matrix_findings(changed)
-            self.assertIn("duplicate_external_gate", [item.code for item in findings.items])
+            self.assertIn(
+                "duplicate_external_gate", [item.code for item in findings.items]
+            )
 
     def test_malformed_external_gate_record_is_not_discarded(self):
         changed = copy.deepcopy(self.matrix)
