@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "52813fd5196bb46e8dadcfc3f1c3fe2d5965dc08",
-    "tree": "3234851f5c1fc58b72cb36bf6d1d31192cfaaa85"
+    "commit": "ec6de555d5a79821b1f92109656bc546f993d26a",
+    "tree": "e21126cb763af00c15a315881b54cc09c5135e4c"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -11,10 +11,12 @@
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/memory.federation/TECHNICAL.md",
   "declaredRoots": [
-    "codex-rs/hepta-memory-federation"
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory-federation-wire"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-memory-federation"
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory-federation-wire"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -76,7 +78,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
-    "codex-rs/hepta-memory-federation"
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory-federation-wire"
   ],
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
@@ -150,13 +153,14 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "52813fd5196bb46e8dadcfc3f1c3fe2d5965dc08",
-    "tree": "3234851f5c1fc58b72cb36bf6d1d31192cfaaa85"
+    "commit": "ec6de555d5a79821b1f92109656bc546f993d26a",
+    "tree": "e21126cb763af00c15a315881b54cc09c5135e4c"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-memory-federation"
+    "codex-rs/hepta-memory-federation",
+    "codex-rs/hepta-memory-federation-wire"
   ],
   "productCallers": [
     {
@@ -184,6 +188,10 @@
       "object": "da1188da918054d9ffe19ec0bf008d94605ee3cb"
     },
     {
+      "path": "codex-rs/hepta-memory-federation-wire",
+      "object": "39de7f2eeadf2bf18ca29d8682b48bb6693518df"
+    },
+    {
       "path": "codex-rs/hepta-memory-federation/src/v2.rs",
       "object": "ce3547ae354ba6232c55c550ebf8664c3d9aaa32"
     },
@@ -201,7 +209,7 @@
     },
     {
       "path": "docs/modules/memory.federation/TECHNICAL.md",
-      "object": "80045f2b8ed7182750f4b5fa7f65f19c645e110c"
+      "object": "910a1f78e224d63f83de85a08241cfd29cca4112"
     }
   ]
 }
