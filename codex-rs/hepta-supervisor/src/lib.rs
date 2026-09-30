@@ -271,6 +271,10 @@ pub use unix::UnixManagedProcess;
 #[cfg(unix)]
 pub use unix::UnixProcessDriver;
 
-
 #[cfg(all(target_os = "linux", feature = "local-host"))]
 pub use daemon::run_supervisord_with_local_host;
+
+#[cfg(all(target_os = "linux", any(test, feature = "local-model-authority")))]
+mod local_model_authority;
+#[cfg(all(target_os = "linux", feature = "local-model-authority"))]
+pub use local_model_authority::run_local_model_authority;
