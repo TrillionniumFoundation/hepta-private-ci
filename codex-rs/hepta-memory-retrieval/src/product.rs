@@ -42,6 +42,12 @@ pub struct RetrievalCompletenessPolicyV1 {
 }
 
 impl RetrievalCompletenessPolicyV1 {
+    /// Build the complete expected owner inventory for one product profile.
+    ///
+    /// Every row names an owner that must be represented in the input. A
+    /// missing batch is equivalent to an explicit `Unavailable` batch and is
+    /// evaluated with `on_unavailable`; omitting an authority-critical owner
+    /// therefore cannot turn a partial observation into `Complete`.
     pub fn new(
         mut rows: Vec<RetrievalCompletenessPolicyRowV1>,
     ) -> Result<Self, ProductRecallErrorV1> {
@@ -71,20 +77,40 @@ impl RetrievalCompletenessPolicyV1 {
             .iter()
             .map(|row| (row.generator, row))
             .collect::<BTreeMap<_, _>>();
+        let batches = input
+            .batches
+            .iter()
+            .map(|batch| (batch.receipt.generator, batch))
+            .collect::<BTreeMap<_, _>>();
+
+        // Reject caller-supplied owners outside the selected product profile.
+        for batch in &input.batches {
+            if !policy.contains_key(&batch.receipt.generator) {
+                return Err(ProductRecallErrorV1::MissingCompletenessPolicy(
+                    batch.receipt.generator,
+                ));
+            }
+        }
+
         let mut incomplete_sources = Vec::new();
         let mut decision: Option<IncompleteSourceActionV1> = None;
-        for batch in &input.batches {
-            let row = policy.get(&batch.receipt.generator).ok_or(
-                ProductRecallErrorV1::MissingCompletenessPolicy(batch.receipt.generator),
-            )?;
-            let action = match batch.receipt.completeness {
+        // Iterate the policy, not the supplied batches. The policy is the
+        // expected owner inventory, so an omitted batch is unavailable rather
+        // than invisible.
+        for row in &self.rows {
+            let completeness = batches
+                .get(&row.generator)
+                .map_or(RetrievalSourceCompletenessV1::Unavailable, |batch| {
+                    batch.receipt.completeness
+                });
+            let action = match completeness {
                 RetrievalSourceCompletenessV1::Exhausted => continue,
                 RetrievalSourceCompletenessV1::LimitReached => row.on_limit_reached,
                 RetrievalSourceCompletenessV1::Unavailable => row.on_unavailable,
             };
             incomplete_sources.push(IncompleteRetrievalSourceV1 {
-                generator: batch.receipt.generator,
-                completeness: batch.receipt.completeness,
+                generator: row.generator,
+                completeness,
                 action,
             });
             decision = Some(decision.map_or(action, |current| current.max(action)));
@@ -92,7 +118,6 @@ impl RetrievalCompletenessPolicyV1 {
         if incomplete_sources.is_empty() {
             return Ok(RetrievalCompletenessDecisionV1::Complete);
         }
-        incomplete_sources.sort_by_key(|source| source.generator);
         let decision = decision.ok_or(ProductRecallErrorV1::InvalidCompletenessPolicy)?;
         Ok(match decision {
             IncompleteSourceActionV1::Degrade => {
