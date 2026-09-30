@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -16,7 +17,6 @@ use crate::TABULAR_ARTIFACT_SCHEMA_V1;
 use crate::TABULAR_PAYLOAD_SCHEMA_V1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorSampleV1;
-use crate::TabularPayloadPinV2;
 use crate::TrainingProfileV1;
 use crate::WorkControlV1;
 use crate::build_sensor_core_v2;
@@ -209,8 +209,7 @@ fn tabular_plan(sample_count: usize) -> TabularOperatorPlanV1 {
     }
 }
 
-fn percentile(values: &mut [u128], numerator: usize, denominator: usize) -> u128 {
-    values.sort_unstable();
+fn percentile_sorted(values: &[u128], numerator: usize, denominator: usize) -> u128 {
     let rank = values
         .len()
         .checked_mul(numerator)
@@ -220,118 +219,308 @@ fn percentile(values: &mut [u128], numerator: usize, denominator: usize) -> u128
     values[rank.saturating_sub(1).min(values.len() - 1)]
 }
 
-fn summary(mut values: Vec<u128>) -> (u128, u128, u128) {
-    let p50 = percentile(&mut values.clone(), 50, 100);
-    let p95 = percentile(&mut values.clone(), 95, 100);
-    let p99 = percentile(&mut values, 99, 100);
-    (p50, p95, p99)
+#[derive(Clone, Copy, Debug)]
+struct MeasurementSummary {
+    median: u128,
+    p90: u128,
+    maximum: u128,
+    median_absolute_deviation: u128,
 }
 
-fn process_resident_bytes() -> u128 {
+fn summary(mut values: Vec<u128>) -> MeasurementSummary {
+    assert!(!values.is_empty());
+    values.sort_unstable();
+    let median = percentile_sorted(&values, 50, 100);
+    let p90 = percentile_sorted(&values, 90, 100);
+    let maximum = *values.last().unwrap();
+    let mut deviations = values
+        .iter()
+        .map(|value| value.abs_diff(median))
+        .collect::<Vec<_>>();
+    deviations.sort_unstable();
+    MeasurementSummary {
+        median,
+        p90,
+        maximum,
+        median_absolute_deviation: percentile_sorted(&deviations, 50, 100),
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+struct PerformanceRunProfile {
+    name: &'static str,
+    warmups: usize,
+    observations: usize,
+    target_host_candidate: bool,
+}
+
+impl PerformanceRunProfile {
+    const fn regression() -> Self {
+        Self {
+            name: "github-regression-v2",
+            warmups: 2,
+            observations: 7,
+            target_host_candidate: false,
+        }
+    }
+
+    const fn target_host() -> Self {
+        Self {
+            name: "target-host-candidate-v1",
+            warmups: 5,
+            observations: 25,
+            target_host_candidate: true,
+        }
+    }
+}
+
+fn performance_profile() -> PerformanceRunProfile {
+    if std::env::var_os("HEPTA_TARGET_HOST_CAPACITY").as_deref() == Some("1".as_ref()) {
+        PerformanceRunProfile::target_host()
+    } else {
+        PerformanceRunProfile::regression()
+    }
+}
+
+#[test]
+fn target_host_profile_has_statistically_meaningful_minimum_sample() {
+    let profile = PerformanceRunProfile::target_host();
+    assert!(profile.warmups >= 5);
+    assert!(profile.observations >= 20);
+}
+
+fn proc_status_value(label: &str) -> u128 {
     let status = std::fs::read_to_string("/proc/self/status")
         .expect("authoritative Linux qualification must expose /proc/self/status");
     let kibibytes = status
         .lines()
         .find_map(|line| {
-            line.strip_prefix("VmRSS:")?
+            line.strip_prefix(label)?
                 .split_whitespace()
                 .next()?
                 .parse::<u128>()
                 .ok()
         })
-        .expect("VmRSS must be present in /proc/self/status");
+        .unwrap_or(0);
     kibibytes
         .checked_mul(1024)
         .expect("resident byte conversion overflow")
 }
 
-fn resident_measurement(before: u128, checkpoints: &[u128]) -> (u128, u128) {
-    let peak = checkpoints.iter().copied().max().unwrap_or(before);
-    (peak, peak.saturating_sub(before))
+fn process_resident_bytes() -> u128 {
+    proc_status_value("VmRSS:")
 }
 
-/// Dedicated authoritative CI runs this ignored matrix in release mode. The
-/// thresholds are qualification ceilings, not marketing latency claims. The
-/// RSS values are process checkpoints around input materialization and fitting;
-/// the model-estimated bytes come from the bounded work receipt.
+fn process_peak_resident_bytes() -> u128 {
+    proc_status_value("VmHWM:")
+}
+
+fn cgroup_peak_bytes() -> Option<u128> {
+    for path in [
+        Path::new("/sys/fs/cgroup/memory.peak"),
+        Path::new("/sys/fs/cgroup/memory/memory.max_usage_in_bytes"),
+    ] {
+        let Ok(value) = std::fs::read_to_string(path) else {
+            continue;
+        };
+        if let Ok(parsed) = value.trim().parse::<u128>() {
+            return Some(parsed);
+        }
+    }
+    None
+}
+
+fn cpu_governor() -> String {
+    std::fs::read_to_string("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor")
+        .map(|value| value.trim().to_owned())
+        .unwrap_or_else(|_| "unavailable".to_owned())
+}
+
+#[derive(Clone, Copy, Debug)]
+struct PerformanceObservation {
+    elapsed_micros: u128,
+    resident_bytes: u128,
+    resident_delta_bytes: u128,
+    process_peak_resident_bytes: u128,
+    cgroup_peak_bytes: Option<u128>,
+    estimated_bytes: u128,
+}
+
+fn observe_sensor(candidate_count: usize) -> PerformanceObservation {
+    let before = process_resident_bytes();
+    let started = Instant::now();
+    let design = sensor_design(candidate_count);
+    let after_input = process_resident_bytes();
+    let receipt = build_sensor_core_v2(
+        design,
+        SensorCoreExecutionProfileV2 {
+            budget: generous_budget(),
+            exact_candidate_limit: 4_096,
+            maximum_working_candidates: 4_096,
+        },
+    )
+    .unwrap();
+    let after_fit = process_resident_bytes();
+    assert_eq!(
+        usize::try_from(receipt.input_candidate_count).unwrap(),
+        candidate_count
+    );
+    let resident = after_input.max(after_fit);
+    PerformanceObservation {
+        elapsed_micros: started.elapsed().as_micros(),
+        resident_bytes: resident,
+        resident_delta_bytes: resident.saturating_sub(before),
+        process_peak_resident_bytes: process_peak_resident_bytes(),
+        cgroup_peak_bytes: cgroup_peak_bytes(),
+        estimated_bytes: u128::from(receipt.work.estimated_bytes),
+    }
+}
+
+fn observe_tabular(sample_count: usize) -> PerformanceObservation {
+    let before = process_resident_bytes();
+    let started = Instant::now();
+    let plan = tabular_plan(sample_count);
+    let after_input = process_resident_bytes();
+    let fit = fit_tabular_operator_bounded_v2(plan, generous_budget()).unwrap();
+    let after_fit = process_resident_bytes();
+    assert_eq!(fit.artifact.cells.len(), 1_000);
+    let resident = after_input.max(after_fit);
+    PerformanceObservation {
+        elapsed_micros: started.elapsed().as_micros(),
+        resident_bytes: resident,
+        resident_delta_bytes: resident.saturating_sub(before),
+        process_peak_resident_bytes: process_peak_resident_bytes(),
+        cgroup_peak_bytes: cgroup_peak_bytes(),
+        estimated_bytes: u128::from(fit.work.estimated_bytes),
+    }
+}
+
+fn emit_performance_summary(
+    kind: &str,
+    size_name: &str,
+    size: usize,
+    profile: PerformanceRunProfile,
+    cold_micros: u128,
+    observations: &[PerformanceObservation],
+) -> (
+    MeasurementSummary,
+    MeasurementSummary,
+    MeasurementSummary,
+    MeasurementSummary,
+) {
+    let elapsed = summary(
+        observations
+            .iter()
+            .map(|value| value.elapsed_micros)
+            .collect(),
+    );
+    let resident = summary(
+        observations
+            .iter()
+            .map(|value| value.resident_bytes)
+            .collect(),
+    );
+    let resident_delta = summary(
+        observations
+            .iter()
+            .map(|value| value.resident_delta_bytes)
+            .collect(),
+    );
+    let estimated = summary(
+        observations
+            .iter()
+            .map(|value| value.estimated_bytes)
+            .collect(),
+    );
+    let process_peak = observations
+        .iter()
+        .map(|value| value.process_peak_resident_bytes)
+        .max()
+        .unwrap_or(0);
+    let cgroup_peak = observations
+        .iter()
+        .filter_map(|value| value.cgroup_peak_bytes)
+        .max()
+        .map_or_else(|| "null".to_owned(), |value| value.to_string());
+    println!(
+        "{{\"schema\":\"hepta.learning-operator-performance.v2\",\"kind\":\"{kind}\",\"{size_name}\":{size},\"profile\":\"{}\",\"warmups\":{},\"observations\":{},\"targetHostCandidate\":{},\"shippingCapacityClaim\":false,\"hostOs\":\"{}\",\"hostArch\":\"{}\",\"cpuGovernor\":\"{}\",\"coldMicros\":{cold_micros},\"medianMicros\":{},\"p90Micros\":{},\"maxMicros\":{},\"madMicros\":{},\"medianResidentBytes\":{},\"maxResidentBytes\":{},\"medianResidentDeltaBytes\":{},\"maxResidentDeltaBytes\":{},\"processPeakResidentBytes\":{process_peak},\"cgroupPeakBytes\":{cgroup_peak},\"medianEstimatedBytes\":{},\"maxEstimatedBytes\":{}}}",
+        profile.name,
+        profile.warmups,
+        profile.observations,
+        profile.target_host_candidate,
+        std::env::consts::OS,
+        std::env::consts::ARCH,
+        cpu_governor(),
+        elapsed.median,
+        elapsed.p90,
+        elapsed.maximum,
+        elapsed.median_absolute_deviation,
+        resident.median,
+        resident.maximum,
+        resident_delta.median,
+        resident_delta.maximum,
+        estimated.median,
+        estimated.maximum,
+    );
+    (elapsed, resident, resident_delta, estimated)
+}
+
+/// Dedicated authoritative CI runs this ignored matrix in release mode.
+///
+/// The default GitHub-hosted profile is regression evidence only: it performs
+/// warm-up, measures seven full materialize-and-fit operations and reports
+/// median/p90/max/MAD rather than pretending three samples establish p95/p99.
+/// Setting `HEPTA_TARGET_HOST_CAPACITY=1` requires five warm-ups and twenty-five
+/// observations, but still emits `shippingCapacityClaim=false`; independent
+/// target-host acceptance is a separate external gate.
 #[test]
 #[ignore = "authoritative performance qualification"]
 fn authoritative_performance_matrix_v1() {
+    let profile = performance_profile();
     for candidate_count in [1_000_usize, 4_000, 8_000, 16_000] {
-        let mut durations = Vec::new();
-        let mut absolute_resident = Vec::new();
-        let mut resident_deltas = Vec::new();
-        let mut estimated_bytes = Vec::new();
-        for _ in 0..3 {
-            let before = process_resident_bytes();
-            let design = sensor_design(candidate_count);
-            let after_input = process_resident_bytes();
-            let started = Instant::now();
-            let receipt = build_sensor_core_v2(
-                design,
-                SensorCoreExecutionProfileV2 {
-                    budget: generous_budget(),
-                    exact_candidate_limit: 4_096,
-                    maximum_working_candidates: 4_096,
-                },
-            )
-            .unwrap();
-            let after_fit = process_resident_bytes();
-            assert_eq!(
-                usize::try_from(receipt.input_candidate_count).unwrap(),
-                candidate_count
-            );
-            durations.push(started.elapsed().as_micros());
-            let (absolute, delta) = resident_measurement(before, &[after_input, after_fit]);
-            absolute_resident.push(absolute);
-            resident_deltas.push(delta);
-            estimated_bytes.push(u128::from(receipt.work.estimated_bytes));
+        let cold = observe_sensor(candidate_count).elapsed_micros;
+        for _ in 0..profile.warmups {
+            let _ = observe_sensor(candidate_count);
         }
-        let (p50, p95, p99) = summary(durations);
-        let (rss_p50, rss_p95, rss_p99) = summary(absolute_resident);
-        let (rss_delta_p50, rss_delta_p95, rss_delta_p99) = summary(resident_deltas);
-        let (estimated_p50, estimated_p95, estimated_p99) = summary(estimated_bytes);
-        println!(
-            "{{\"kind\":\"sensor-core\",\"candidates\":{candidate_count},\"p50Micros\":{p50},\"p95Micros\":{p95},\"p99Micros\":{p99},\"p50ResidentBytes\":{rss_p50},\"p95ResidentBytes\":{rss_p95},\"p99ResidentBytes\":{rss_p99},\"p50ResidentDeltaBytes\":{rss_delta_p50},\"p95ResidentDeltaBytes\":{rss_delta_p95},\"p99ResidentDeltaBytes\":{rss_delta_p99},\"p50EstimatedBytes\":{estimated_p50},\"p95EstimatedBytes\":{estimated_p95},\"p99EstimatedBytes\":{estimated_p99}}}"
+        let observations = (0..profile.observations)
+            .map(|_| observe_sensor(candidate_count))
+            .collect::<Vec<_>>();
+        let (elapsed, _, resident_delta, estimated) = emit_performance_summary(
+            "sensor-core",
+            "candidates",
+            candidate_count,
+            profile,
+            cold,
+            &observations,
         );
-        assert!(p99 < Duration::from_secs(120).as_micros());
-        assert!(rss_delta_p99 < 512 * MEBIBYTE);
-        assert!(estimated_p99 <= u128::from(generous_budget().max_estimated_bytes));
+        assert!(elapsed.maximum < Duration::from_secs(120).as_micros());
+        assert!(resident_delta.maximum < 512 * MEBIBYTE);
+        assert!(estimated.maximum <= u128::from(generous_budget().max_estimated_bytes));
     }
 
     for sample_count in [100_000_usize, 500_000, 1_000_000] {
-        let mut durations = Vec::new();
-        let mut absolute_resident = Vec::new();
-        let mut resident_deltas = Vec::new();
-        let mut estimated_bytes = Vec::new();
-        for _ in 0..3 {
-            let before = process_resident_bytes();
-            let plan = tabular_plan(sample_count);
-            let after_input = process_resident_bytes();
-            let started = Instant::now();
-            let fit = fit_tabular_operator_bounded_v2(plan, generous_budget()).unwrap();
-            let after_fit = process_resident_bytes();
-            assert_eq!(fit.artifact.cells.len(), 1_000);
-            durations.push(started.elapsed().as_micros());
-            let (absolute, delta) = resident_measurement(before, &[after_input, after_fit]);
-            absolute_resident.push(absolute);
-            resident_deltas.push(delta);
-            estimated_bytes.push(u128::from(fit.work.estimated_bytes));
+        let cold = observe_tabular(sample_count).elapsed_micros;
+        for _ in 0..profile.warmups {
+            let _ = observe_tabular(sample_count);
         }
-        let (p50, p95, p99) = summary(durations);
-        let (rss_p50, rss_p95, rss_p99) = summary(absolute_resident);
-        let (rss_delta_p50, rss_delta_p95, rss_delta_p99) = summary(resident_deltas);
-        let (estimated_p50, estimated_p95, estimated_p99) = summary(estimated_bytes);
-        println!(
-            "{{\"kind\":\"tabular-fit\",\"samples\":{sample_count},\"p50Micros\":{p50},\"p95Micros\":{p95},\"p99Micros\":{p99},\"p50ResidentBytes\":{rss_p50},\"p95ResidentBytes\":{rss_p95},\"p99ResidentBytes\":{rss_p99},\"p50ResidentDeltaBytes\":{rss_delta_p50},\"p95ResidentDeltaBytes\":{rss_delta_p95},\"p99ResidentDeltaBytes\":{rss_delta_p99},\"p50EstimatedBytes\":{estimated_p50},\"p95EstimatedBytes\":{estimated_p95},\"p99EstimatedBytes\":{estimated_p99}}}"
+        let observations = (0..profile.observations)
+            .map(|_| observe_tabular(sample_count))
+            .collect::<Vec<_>>();
+        let (elapsed, _, resident_delta, estimated) = emit_performance_summary(
+            "tabular-fit",
+            "samples",
+            sample_count,
+            profile,
+            cold,
+            &observations,
         );
         let ceiling = match sample_count {
             100_000 => Duration::from_secs(90),
             500_000 => Duration::from_secs(240),
             _ => Duration::from_secs(480),
         };
-        assert!(p99 < ceiling.as_micros());
-        assert!(rss_delta_p99 < 3 * 1024 * MEBIBYTE);
-        assert!(estimated_p99 <= u128::from(generous_budget().max_estimated_bytes));
+        assert!(elapsed.maximum < ceiling.as_micros());
+        assert!(resident_delta.maximum < 3 * 1024 * MEBIBYTE);
+        assert!(estimated.maximum <= u128::from(generous_budget().max_estimated_bytes));
     }
 }
