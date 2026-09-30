@@ -80,6 +80,9 @@ use tokio::time::timeout;
 use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
+#[path = "native_dispatch.rs"]
+mod native_dispatch;
+use native_dispatch::verify_persisted_dispatch_binding;
 #[path = "native_output.rs"]
 mod native_output;
 use native_output::NativeOutputProjection;
@@ -642,18 +645,9 @@ impl AppServerModelDriver {
         verify_persisted_dispatch_binding(
             control,
             request_id,
-            payload_digest,
+            &adapter_intent,
             request_receipt.request_digest,
-            source_admission_digest,
-            codex_home_digest,
-            connection_id,
-            &started.thread.session_id,
-            adapter_intent.deadline_ms,
-            authority_epoch,
-            revocation_revision,
-            &revocation_head_digest,
-            &authority_witness,
-            &app_server_version,
+            &verified_use,
         )?;
 
         if let Some(binding) = intelligence {
@@ -1142,50 +1136,6 @@ async fn send_authorized_turn_start(
             params,
         })
         .await
-}
-
-fn verify_persisted_dispatch_binding(
-    control: &DurableInferenceControl,
-    request_id: &str,
-    payload_digest: Digest32,
-    request_digest: Digest32,
-    source_admission_digest: Digest32,
-    codex_home_digest: Digest32,
-    connection_id: u64,
-    session_id: &str,
-    deadline_ms: u64,
-    authority_epoch: u64,
-    revocation_revision: u64,
-    revocation_head_digest: &str,
-    authority_witness: &str,
-    app_server_version: &str,
-) -> Result<()> {
-    let dispatch = control
-        .native_record(request_id)
-        .and_then(|record| record.dispatch.as_ref())
-        .ok_or("runtime.codex dispatch binding was not durably published")?;
-    let payload_digest = payload_digest.to_string();
-    let request_digest = request_digest.to_string();
-    let source_admission_digest = source_admission_digest.to_string();
-    let codex_home_digest = codex_home_digest.to_string();
-    let exact = dispatch.codex_payload_digest.as_deref() == Some(payload_digest.as_str())
-        && dispatch.codex_request_digest.as_deref() == Some(request_digest.as_str())
-        && dispatch.codex_source_admission_digest.as_deref()
-            == Some(source_admission_digest.as_str())
-        && dispatch.codex_home_digest.as_deref() == Some(codex_home_digest.as_str())
-        && dispatch.codex_connection_id == Some(connection_id)
-        && dispatch.codex_session_id.as_deref() == Some(session_id)
-        && dispatch.codex_deadline_ms == Some(deadline_ms)
-        && dispatch.codex_authority_epoch == Some(authority_epoch)
-        && dispatch.codex_revocation_revision == Some(revocation_revision)
-        && dispatch.codex_revocation_head_sha256.as_deref() == Some(revocation_head_digest)
-        && dispatch.codex_authority_witness_sha256.as_deref() == Some(authority_witness)
-        && dispatch.app_server_version.as_deref() == Some(app_server_version)
-        && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
-    if !exact {
-        return Err("durable runtime.codex dispatch binding changed before physical send".into());
-    }
-    Ok(())
 }
 
 fn unix_time_ms() -> Result<u64> {
