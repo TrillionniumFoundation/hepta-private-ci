@@ -177,6 +177,410 @@ async fn owner_rejects_non_private_parent() {
 }
 
 #[tokio::test]
+async fn unsafe_sqlite_sidecars_are_rejected_before_database_creation() {
+    for suffix in ["-wal", "-shm", "-journal"] {
+        for link_kind in ["symlink", "hardlink"] {
+            let (directory, path) = private_database();
+            let target = directory.path().join("unrelated-owner-file");
+            std::fs::write(&target, b"must remain unchanged").unwrap();
+            let sidecar = sidecar_path(&path, suffix);
+            match link_kind {
+                "symlink" => std::os::unix::fs::symlink(&target, &sidecar).unwrap(),
+                "hardlink" => std::fs::hard_link(&target, &sidecar).unwrap(),
+                _ => unreachable!(),
+            }
+            assert!(matches!(
+                SqliteBaoOwnerV1::open(&path, None).await,
+                Err(SqliteBaoOwnerErrorV1::UnsafeStorage(_))
+            ));
+            assert!(!path.exists());
+            assert_eq!(std::fs::read(&target).unwrap(), b"must remain unchanged");
+        }
+    }
+}
+
+#[tokio::test]
+async fn database_and_sqlite_sidecars_are_private_before_use() {
+    let (_directory, path) = private_database();
+    std::fs::write(&path, []).unwrap();
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).unwrap();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    for file_path in [
+        path.clone(),
+        sidecar_path(&path, "-wal"),
+        sidecar_path(&path, "-shm"),
+    ] {
+        assert_eq!(
+            std::fs::metadata(file_path).unwrap().permissions().mode() & 0o077,
+            0
+        );
+    }
+    owner.close().await;
+}
+
+#[tokio::test]
+async fn lease_projection_requires_exact_result_and_provider_observation_binding() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let prepared = prepared_issue("operation:lease:binding");
+    let claimed = owner
+        .claim_lease_operation(prepared.clone(), 1_000)
+        .await
+        .unwrap();
+    let lease = active_lease(1, 60_000);
+    let applied = applied_issue(&prepared, &lease);
+    let checkpoint = owner.checkpoint().await.unwrap();
+    let mut substituted = lease.clone();
+    substituted.lease_id = "lease:unrelated".to_owned();
+    assert!(matches!(
+        owner
+            .apply_lease_operation(
+                applied.clone(),
+                Some(substituted.clone()),
+                claimed.revision,
+                [81; 32],
+                2_000
+            )
+            .await,
+        Err(SqliteBaoOwnerErrorV1::ObservationMismatch)
+    ));
+    let mut contradicted = applied.clone();
+    contradicted.result_observation =
+        Some(ProviderLeaseObservationV1::IssueApplied { lease: substituted });
+    assert!(matches!(
+        owner
+            .apply_lease_operation(
+                contradicted,
+                Some(lease.clone()),
+                claimed.revision,
+                [81; 32],
+                2_000
+            )
+            .await,
+        Err(SqliteBaoOwnerErrorV1::InvalidInput)
+    ));
+    let denied = LeaseOperationV1 {
+        state: LeaseOperationStateV1::Denied,
+        result_observation: Some(ProviderLeaseObservationV1::Denied),
+        ..prepared.clone()
+    };
+    assert!(matches!(
+        owner
+            .apply_lease_operation(
+                denied,
+                Some(lease.clone()),
+                claimed.revision,
+                [81; 32],
+                2_000
+            )
+            .await,
+        Err(SqliteBaoOwnerErrorV1::ObservationMismatch)
+    ));
+    assert_eq!(owner.checkpoint().await.unwrap(), checkpoint);
+    assert_eq!(owner.lease(&lease.lease_id).await.unwrap(), None);
+    owner
+        .apply_lease_operation(
+            applied,
+            Some(lease.clone()),
+            claimed.revision,
+            [81; 32],
+            2_000,
+        )
+        .await
+        .unwrap();
+
+    let renew = prepared_mutation(
+        "operation:lease:binding-renew",
+        LeaseOperationKindV1::Renew,
+        1,
+    );
+    let claimed = owner
+        .claim_lease_operation(renew.clone(), 3_000)
+        .await
+        .unwrap();
+    let leap = active_lease(3, 120_000);
+    assert!(matches!(
+        owner
+            .apply_lease_operation(
+                applied_renew(&renew, &leap, 4_000),
+                Some(leap),
+                claimed.revision,
+                [82; 32],
+                4_000
+            )
+            .await,
+        Err(SqliteBaoOwnerErrorV1::InvalidInput)
+    ));
+    let renewed = active_lease(2, 120_000);
+    let mut rebound = renewed.clone();
+    rebound.scope_sha256 = [83; 32];
+    assert!(matches!(
+        owner
+            .apply_lease_operation(
+                applied_renew(&renew, &rebound, 4_000),
+                Some(rebound),
+                claimed.revision,
+                [82; 32],
+                4_000
+            )
+            .await,
+        Err(SqliteBaoOwnerErrorV1::ObservationMismatch)
+    ));
+    let mut wrong_kind = applied_renew(&renew, &renewed, 4_000);
+    wrong_kind.result_observation = Some(ProviderLeaseObservationV1::IssueApplied {
+        lease: renewed.clone(),
+    });
+    assert!(matches!(
+        owner
+            .apply_lease_operation(
+                wrong_kind,
+                Some(renewed.clone()),
+                claimed.revision,
+                [82; 32],
+                4_000
+            )
+            .await,
+        Err(SqliteBaoOwnerErrorV1::InvalidInput)
+    ));
+    assert_eq!(owner.lease(&lease.lease_id).await.unwrap(), Some(lease));
+    owner
+        .apply_lease_operation(
+            applied_renew(&renew, &renewed, 4_000),
+            Some(renewed.clone()),
+            claimed.revision,
+            [82; 32],
+            4_000,
+        )
+        .await
+        .unwrap();
+    assert_eq!(owner.lease(&renewed.lease_id).await.unwrap(), Some(renewed));
+}
+
+#[tokio::test]
+async fn stored_json_cannot_substitute_an_immutable_operation_or_lease_projection() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let mut record = owner
+        .claim_consumption(consumption("operation:json-binding"), 1_000)
+        .await
+        .unwrap()
+        .record
+        .operation;
+    record.operation_id = "operation:substituted".to_owned();
+    sqlx::query("UPDATE bao_consumption SET row_json = ? WHERE operation_id = ?")
+        .bind(serde_json::to_vec(&record).unwrap())
+        .bind("operation:json-binding")
+        .execute(&owner.pool)
+        .await
+        .unwrap();
+    assert!(matches!(
+        owner.consumption_result("operation:json-binding").await,
+        Err(SqliteBaoOwnerErrorV1::CorruptState(_))
+    ));
+
+    let prepared = prepared_issue("operation:lease:json-binding");
+    let claimed = owner
+        .claim_lease_operation(prepared.clone(), 2_000)
+        .await
+        .unwrap();
+    let lease = active_lease(1, 60_000);
+    owner
+        .apply_lease_operation(
+            applied_issue(&prepared, &lease),
+            Some(lease.clone()),
+            claimed.revision,
+            [84; 32],
+            3_000,
+        )
+        .await
+        .unwrap();
+    let mut substituted = lease.clone();
+    substituted.generation = 2;
+    sqlx::query("UPDATE bao_lease SET row_json = ? WHERE lease_id = ?")
+        .bind(serde_json::to_vec(&substituted).unwrap())
+        .bind(&lease.lease_id)
+        .execute(&owner.pool)
+        .await
+        .unwrap();
+    assert!(matches!(
+        owner.lease(&lease.lease_id).await,
+        Err(SqliteBaoOwnerErrorV1::CorruptState(_))
+    ));
+}
+
+#[tokio::test]
+async fn denied_renewal_cannot_apply_a_lease_projection() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let issued = prepared_issue("operation:lease:denied-renewal-issue");
+    let claim = owner
+        .claim_lease_operation(issued.clone(), 1_000)
+        .await
+        .unwrap();
+    let lease = active_lease(1, 60_000);
+    owner
+        .apply_lease_operation(
+            applied_issue(&issued, &lease),
+            Some(lease.clone()),
+            claim.revision,
+            [85; 32],
+            2_000,
+        )
+        .await
+        .unwrap();
+    let prepared = prepared_mutation(
+        "operation:lease:denied-renewal",
+        LeaseOperationKindV1::Renew,
+        1,
+    );
+    let claim = owner
+        .claim_lease_operation(prepared.clone(), 3_000)
+        .await
+        .unwrap();
+    let renewed = active_lease(2, 120_000);
+    let denied = LeaseOperationV1 {
+        observed_at_unix_ms: Some(4_000),
+        state: LeaseOperationStateV1::Denied,
+        result_observation: Some(ProviderLeaseObservationV1::Denied),
+        ..prepared
+    };
+    let checkpoint = owner.checkpoint().await.unwrap();
+    for observation in [
+        ProviderLeaseObservationV1::Denied,
+        ProviderLeaseObservationV1::NotApplied,
+    ] {
+        let substituted = LeaseOperationV1 {
+            result_observation: Some(observation),
+            result_lease: Some(renewed.clone()),
+            resulting_generation: Some(2),
+            ..denied.clone()
+        };
+        assert!(matches!(
+            owner
+                .apply_lease_operation(
+                    substituted,
+                    Some(renewed.clone()),
+                    claim.revision,
+                    [86; 32],
+                    4_000
+                )
+                .await,
+            Err(SqliteBaoOwnerErrorV1::InvalidInput)
+        ));
+    }
+    let forged_generation = LeaseOperationV1 {
+        resulting_generation: Some(2),
+        ..denied.clone()
+    };
+    assert!(matches!(
+        owner
+            .apply_lease_operation(forged_generation, None, claim.revision, [86; 32], 4_000)
+            .await,
+        Err(SqliteBaoOwnerErrorV1::InvalidInput)
+    ));
+    assert_eq!(owner.checkpoint().await.unwrap(), checkpoint);
+    let terminal = owner
+        .apply_lease_operation(denied.clone(), None, claim.revision, [86; 32], 4_000)
+        .await
+        .unwrap();
+    assert_eq!(terminal.operation, denied);
+    assert_eq!(owner.lease(&lease.lease_id).await.unwrap(), Some(lease));
+}
+
+#[tokio::test]
+async fn lease_operation_reads_reject_json_identity_semantics_and_state_corruption() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let prepared = prepared_issue("operation:lease:immutable-json");
+    let claimed = owner
+        .claim_lease_operation(prepared.clone(), 1_000)
+        .await
+        .unwrap();
+    let mut different_id = prepared.clone();
+    different_id.operation_id = "operation:lease:substituted-json".to_owned();
+    let mut different_semantics = prepared.clone();
+    different_semantics.semantic_sha256 = [89; 32];
+    let mut different_state = prepared.clone();
+    different_state.state = LeaseOperationStateV1::Unknown;
+    for substituted in [different_id, different_semantics, different_state] {
+        sqlx::query("UPDATE bao_lease_operation SET row_json = ? WHERE operation_id = ?")
+            .bind(serde_json::to_vec(&substituted).unwrap())
+            .bind(&prepared.operation_id)
+            .execute(&owner.pool)
+            .await
+            .unwrap();
+        assert!(matches!(
+            owner
+                .mark_lease_operation_unknown(
+                    &prepared.operation_id,
+                    claimed.revision,
+                    [90; 32],
+                    2_000
+                )
+                .await,
+            Err(SqliteBaoOwnerErrorV1::CorruptState(_))
+        ));
+        let retry = LeaseOperationV1 {
+            state: LeaseOperationStateV1::Prepared,
+            operation_id: prepared.operation_id.clone(),
+            ..substituted
+        };
+        assert!(matches!(
+            owner.claim_lease_operation(retry, 2_000).await,
+            Err(SqliteBaoOwnerErrorV1::CorruptState(_))
+        ));
+    }
+}
+
+#[tokio::test]
+async fn lease_operation_terminal_retry_rejects_a_forged_result_digest() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let prepared = prepared_issue("operation:lease:result-digest");
+    let claimed = owner
+        .claim_lease_operation(prepared.clone(), 1_000)
+        .await
+        .unwrap();
+    let lease = active_lease(1, 60_000);
+    let result = applied_issue(&prepared, &lease);
+    let bytes = serde_json::to_vec(&result).unwrap();
+    // Inject a storage fault before the row becomes immutable; its valid
+    // terminal JSON and SQL projection deliberately carry a different digest.
+    sqlx::query("UPDATE bao_lease_operation SET state = 'applied', resulting_generation = ?, row_json = ?, terminal_result_sha256 = ? WHERE operation_id = ?")
+        .bind(u64_bytes(1).as_slice()).bind(&bytes).bind([91_u8; 32].as_slice())
+        .bind(&prepared.operation_id).execute(&owner.pool).await.unwrap();
+    sqlx::query(
+        "UPDATE bao_operation SET terminal = 1, updated_at_unix_ms = ? WHERE operation_id = ?",
+    )
+    .bind(u64_bytes(2_000).as_slice())
+    .bind(&prepared.operation_id)
+    .execute(&owner.pool)
+    .await
+    .unwrap();
+    sqlx::query("INSERT INTO bao_lease (lease_id, generation, state, row_json, updated_at_unix_ms) VALUES (?, ?, 'active', ?, ?)")
+        .bind(&lease.lease_id).bind(u64_bytes(1).as_slice())
+        .bind(serde_json::to_vec(&lease).unwrap()).bind(u64_bytes(2_000).as_slice())
+        .execute(&owner.pool).await.unwrap();
+    let revision = claimed.revision + 1;
+    sqlx::query("INSERT INTO bao_transition (revision, operation_id, from_state, to_state, evidence_sha256, observed_at_unix_ms) VALUES (?, ?, 'prepared', 'applied', ?, ?)")
+        .bind(u64_bytes(revision).as_slice()).bind(&prepared.operation_id)
+        .bind([92_u8; 32].as_slice()).bind(u64_bytes(2_000).as_slice())
+        .execute(&owner.pool).await.unwrap();
+    sqlx::query(
+        "UPDATE bao_owner_meta SET revision = ?, time_frontier_unix_ms = ? WHERE singleton = 1",
+    )
+    .bind(u64_bytes(revision).as_slice())
+    .bind(u64_bytes(2_000).as_slice())
+    .execute(&owner.pool)
+    .await
+    .unwrap();
+    assert!(matches!(
+        owner.claim_lease_operation(prepared, 3_000).await,
+        Err(SqliteBaoOwnerErrorV1::CorruptState(_))
+    ));
+}
+
+#[tokio::test]
 async fn success_path_reopens_archives_and_preserves_exact_retry_identity() {
     let (_directory, path) = private_database();
     let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
@@ -827,6 +1231,70 @@ async fn checkpoint_publication_is_cas_bound_and_failure_fences_the_writer() {
     ));
     let metrics = owner.metrics(2_000).await.unwrap();
     assert!(metrics.runtime.writer_fence_events >= 1);
+}
+
+#[tokio::test]
+async fn checkpoint_publication_serializes_and_fences_a_waiting_writer() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let expected = owner.checkpoint().await.unwrap();
+    let (started_tx, started_rx) = tokio::sync::oneshot::channel();
+    let (finish_tx, finish_rx) = tokio::sync::oneshot::channel();
+    let publisher_owner = owner.clone();
+    let publisher = tokio::spawn(async move {
+        publisher_owner
+            .publish_checkpoint_with(Some(expected), |_, checkpoint| async move {
+                assert_eq!(checkpoint, expected);
+                started_tx.send(()).unwrap();
+                finish_rx.await.unwrap();
+                Err::<(), ()>(())
+            })
+            .await
+    });
+    started_rx.await.unwrap();
+    let writer = owner.claim_consumption(consumption("operation:publication-race"), 2_000);
+    tokio::pin!(writer);
+    assert!(
+        tokio::time::timeout(std::time::Duration::from_millis(50), &mut writer)
+            .await
+            .is_err()
+    );
+    finish_tx.send(()).unwrap();
+    assert!(matches!(
+        publisher.await.unwrap(),
+        Err(SqliteBaoOwnerErrorV1::ExternalCheckpointUnavailable)
+    ));
+    assert!(matches!(writer.await, Err(SqliteBaoOwnerErrorV1::Fenced)));
+    assert_eq!(owner.checkpoint().await.unwrap(), expected);
+}
+
+#[tokio::test]
+async fn cancelled_checkpoint_publication_fences_the_owner() {
+    let (_directory, path) = private_database();
+    let owner = SqliteBaoOwnerV1::open(&path, None).await.unwrap();
+    let expected = owner.checkpoint().await.unwrap();
+    let (started_tx, started_rx) = tokio::sync::oneshot::channel();
+    let (_finish_tx, finish_rx) = tokio::sync::oneshot::channel::<()>();
+    let publisher_owner = owner.clone();
+    let publisher = tokio::spawn(async move {
+        publisher_owner
+            .publish_checkpoint_with(Some(expected), |_, _| async move {
+                started_tx.send(()).unwrap();
+                finish_rx.await.unwrap();
+                Ok::<(), ()>(())
+            })
+            .await
+    });
+    started_rx.await.unwrap();
+    publisher.abort();
+    assert!(publisher.await.unwrap_err().is_cancelled());
+    assert!(matches!(
+        owner
+            .claim_consumption(consumption("operation:cancelled-publication"), 2_000)
+            .await,
+        Err(SqliteBaoOwnerErrorV1::Fenced)
+    ));
+    assert_eq!(owner.checkpoint().await.unwrap(), expected);
 }
 
 #[tokio::test]
