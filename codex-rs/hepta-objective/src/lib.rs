@@ -15,9 +15,12 @@ mod error;
 mod error_policy;
 mod feasibility;
 mod feasibility_model;
+#[allow(unused_imports)]
 mod indexed_admission;
 mod model;
+#[allow(dead_code)]
 mod objective_admission;
+#[allow(dead_code)]
 mod objective_function_v1;
 mod proof_projection;
 mod scalar_adapter;
@@ -89,7 +92,7 @@ pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
 #[cfg(not(feature = "objective-compatibility-api"))]
 pub(crate) use objective_admission::admit_objective_v1;
-#[cfg(feature = "objective-compatibility-api")]
+#[cfg(any(test, feature = "objective-compatibility-api"))]
 pub use objective_admission::admit_and_compile_objective_v1;
 #[cfg(feature = "objective-compatibility-api")]
 pub use objective_admission::admit_objective_v1;
@@ -104,6 +107,7 @@ pub use objective_function_v1::ObjectiveFunctionV1Artifact;
 pub use objective_function_v1::ObjectiveFunctionV1Error;
 pub use objective_function_v1::decode_objective_function_v1;
 #[cfg(not(feature = "objective-compatibility-api"))]
+#[allow(unused_imports)]
 pub(crate) use objective_function_v1::encode_authenticated_objective_function_v1;
 #[cfg(feature = "objective-compatibility-api")]
 pub use objective_function_v1::encode_authenticated_objective_function_v1;

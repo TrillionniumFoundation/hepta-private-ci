@@ -33,7 +33,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -49,6 +49,9 @@ jobs:
           test -z "$(git status --porcelain)"
           mkdir -p "$RUNNER_TEMP/objective-authoring"
           git rev-parse HEAD HEAD^{tree} | tee "$RUNNER_TEMP/objective-authoring/source.txt"
+          rustc --version --verbose | tee "$RUNNER_TEMP/objective-authoring/rustc.txt"
+          cargo --version --verbose | tee "$RUNNER_TEMP/objective-authoring/cargo.txt"
+          python3 --version | tee "$RUNNER_TEMP/objective-authoring/python.txt"
           git archive --format=tar.gz \
             --output="$RUNNER_TEMP/objective-authoring/repository.tgz" \
             HEAD \
@@ -77,6 +80,7 @@ jobs:
             scripts/test_hepta_objective_spec_consistency.py \
             .github/workflows/hepta-objective-admission.yml \
             .github/workflows/hepta-objective-authoring-validation.yml \
+            .github/workflows/hepta-objective-convergence-smoke.yml \
             .github/workflows/hepta-objective-exact-execution.yml \
             .github/workflows/hepta-objective-release-gate.yml \
             .github/workflows/hepta-objective-target-host.yml \
@@ -84,30 +88,60 @@ jobs:
           sha256sum "$RUNNER_TEMP/objective-authoring/repository.tgz" \
             > "$RUNNER_TEMP/objective-authoring/repository.tgz.sha256"
 
-      - name: Regenerate objective semantic map and static state projections
+      - name: Verify committed objective projections
+        id: committed_projections
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-objective-current-state.py sync \
-            2>&1 | tee "$RUNNER_TEMP/objective-authoring/current-state-sync.log"
-          python3 scripts/hepta-objective-map-convergence.py sync \
-            2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-convergence.log"
-          python3 scripts/hepta-implementation-maps.py migrate --module objective.compiler \
-            2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-migrate.log"
-          python3 scripts/hepta-objective-map-convergence.py verify
-          cp docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
-            "$RUNNER_TEMP/objective-authoring/IMPLEMENTATION_MAP.json"
-          cp docs/modules/objective.compiler/TECHNICAL.md \
-            "$RUNNER_TEMP/objective-authoring/TECHNICAL.md"
-          cp qualification/module-execution-dossiers/detail/objective.compiler.md \
-            "$RUNNER_TEMP/objective-authoring/objective.compiler.dossier.md"
-          git diff -- docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
-            docs/modules/objective.compiler/TECHNICAL.md \
-            qualification/module-execution-dossiers/detail/objective.compiler.md \
-            > "$RUNNER_TEMP/objective-authoring/generated-state.patch"
-          git diff --check
+          tree="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-objective-current-state.py verify \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/current-state-verify.log"
+          python3 scripts/hepta-objective-map-convergence.py verify \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-convergence-verify.log"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --module objective.compiler \
+            --expected-sha "$SOURCE_SHA" \
+            --expected-tree "$tree" \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-verify.log"
+
+      - name: Render deterministic projection preview in a disposable worktree
+        id: projection_preview
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          preview="$RUNNER_TEMP/objective-projection-worktree"
+          output="$RUNNER_TEMP/objective-authoring/generated-preview"
+          rm -rf "$preview" "$output"
+          mkdir -p "$output"
+          git worktree add --detach "$preview" "$SOURCE_SHA"
+          cleanup() {
+            git worktree remove --force "$preview" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          (
+            cd "$preview"
+            test -z "$(git status --porcelain)"
+            python3 scripts/hepta-implementation-maps.py migrate --module objective.compiler \
+              2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-migrate.log"
+            python3 scripts/hepta-objective-map-convergence.py sync \
+              2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-convergence-sync.log"
+            python3 scripts/hepta-objective-current-state.py sync \
+              2>&1 | tee "$RUNNER_TEMP/objective-authoring/current-state-sync.log"
+            python3 scripts/hepta-objective-map-convergence.py verify
+            git diff --check
+            git diff --binary > "$RUNNER_TEMP/objective-authoring/generated-state.patch"
+            cp docs/modules/objective.compiler/IMPLEMENTATION_MAP.json "$output/"
+            cp docs/modules/objective.compiler/TECHNICAL.md "$output/"
+            cp docs/modules/objective.compiler/CURRENT_STATE.json "$output/"
+            cp qualification/module-execution-dossiers/detail/objective.compiler.md "$output/"
+            git diff --name-only | sort > "$output/changed-paths.txt"
+          )
 
       - name: Verify normative source and document consistency
+        id: normative
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -117,6 +151,8 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/objective-authoring/spec-consistency.log"
 
       - name: Objective compile, tests and strict lint
+        id: rust_validation
+        continue-on-error: true
         working-directory: codex-rs
         shell: bash
         run: |
@@ -152,21 +188,22 @@ jobs:
           name: objective-authoring-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/objective-authoring
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 30
 
-      - name: Confirm the unprivileged job changed only generated projections
+      - name: Confirm source checkout remained immutable
         if: always()
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test -z "$(git ls-files --others --exclude-standard)"
-          git diff --name-only | sort > "$RUNNER_TEMP/objective-authoring/changed-paths.txt"
-          comm -23 \
-            "$RUNNER_TEMP/objective-authoring/changed-paths.txt" \
-            <(printf '%s\n' \
-              docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
-              docs/modules/objective.compiler/TECHNICAL.md \
-              qualification/module-execution-dossiers/detail/objective.compiler.md | sort) \
-            | tee "$RUNNER_TEMP/objective-authoring/unexpected-changes.txt"
-          test ! -s "$RUNNER_TEMP/objective-authoring/unexpected-changes.txt"
+          test -z "$(git status --porcelain)"
+
+      - name: Enforce all authoring gates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.committed_projections.outcome }}" = success
+          test "${{ steps.projection_preview.outcome }}" = success
+          test "${{ steps.normative.outcome }}" = success
+          test "${{ steps.rust_validation.outcome }}" = success

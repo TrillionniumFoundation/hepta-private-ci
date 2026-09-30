@@ -16,6 +16,12 @@ use codex_hepta_types::StableId;
 use crate::ObjectiveAbstentionRuleProfileV1;
 use crate::ObjectiveActionProfileV1;
 use crate::ObjectiveAdmissionContextV1;
+#[cfg(test)]
+use crate::ObjectiveSourceAuthenticationV1;
+#[cfg(test)]
+use crate::ObjectiveSourceTrustV1;
+#[cfg(test)]
+use crate::canonical_objective_intent_digest_v1;
 use crate::ObjectiveAdmissionError;
 use crate::ObjectiveAdmissionOutcomeV1;
 use crate::ObjectiveAdmissionProfileV1;

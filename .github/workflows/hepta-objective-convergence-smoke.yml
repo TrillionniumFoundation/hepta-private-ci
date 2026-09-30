@@ -6,10 +6,15 @@ on:
       - work/objective-compiler-final-convergence-20260930
     paths:
       - codex-rs/hepta-objective/**
-      - codex-rs/hepta-intelligence/src/objective_run.rs
-      - codex-rs/hepta-intelligence/src/objective_run_tests.rs
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-provider/**
+       - codex-rs/hepta-ci-adapter/**
       - codex-rs/Cargo.lock
-      - .github/workflows/hepta-objective-convergence-smoke.yml
+      - docs/modules/objective.compiler/**
+      - scripts/hepta-objective-*.py
+      - scripts/hepta-implementation-maps.py
+      - .github/workflows/hepta-objective-*.yml
   workflow_dispatch:
 
 permissions:
@@ -19,59 +24,135 @@ concurrency:
   group: objective-convergence-smoke-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CARGO_TERM_COLOR: always
+  SOURCE_SHA: ${{ github.sha }}
+
 jobs:
-  compile:
-    runs-on: macos-15
-    timeout-minutes: 45
+  compile-target:
+    name: compile / ${{ matrix.target }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - objective
+          - intelligence-golden
+          - intelligence-semantic
+          - agentd-objective
+          - agentd-product-runner
+          - provider
+          - ci-adapter
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Bind exact development source
+      - name: Bind exact source and capture toolchain
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git rev-parse HEAD HEAD^{tree}
+          evidence="$RUNNER_TEMP/objective-${{ matrix.target }}"
+          mkdir -p "$evidence"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          {
+            printf 'commit=%s\n' "$(git rev-parse HEAD)"
+            printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'ref=%s\n' "$GITHUB_REF"
+            printf 'run_id=%s\n' "$GITHUB_RUN_ID"
+            printf 'run_attempt=%s\n' "$GITHUB_RUN_ATTEMPT"
+          } | tee "$evidence/source-identity.txt"
+          rustc --version --verbose | tee "$evidence/rustc.txt"
+          cargo --version --verbose | tee "$evidence/cargo.txt"
 
-      - name: Check default objective and intelligence caller
+      - name: Capture exact feature graph
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked -p codex-hepta-objective --all-targets
-          cargo check --locked -p codex-hepta-intelligence --lib
+          evidence="$RUNNER_TEMP/objective-${{ matrix.target }}"
+          case "${{ matrix.target }}" in
+            objective) package=codex-hepta-objective ;;
+            intelligence-*) package=codex-hepta-intelligence ;;
+            agentd-*) package=codex-hepta-agentd ;;
+            provider) package=codex-hepta-provider ;;
+            ci-adapter) package=codex-hepta-ci-adapter ;;
+            *) echo "unknown target" >&2; exit 2 ;;
+          esac
+          cargo tree --locked -p "$package" -e features \
+            > "$evidence/feature-tree.txt"
 
-      - name: Check compatibility feature
+      - name: Compile isolated target
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo check --locked -p codex-hepta-objective \
-            --all-targets --features qualification-legacy-compile
+          evidence="$RUNNER_TEMP/objective-${{ matrix.target }}"
+          set +e
+          case "${{ matrix.target }}" in
+            objective)
+              cargo test --locked --no-run -p codex-hepta-objective \
+                --message-format=json-render-diagnostics \
+                > "$evidence/cargo-messages.jsonl" \
+                2> "$evidence/cargo-stderr.log"
+              ;;
+            intelligence-golden)
+              cargo test --locked --no-run -p codex-hepta-intelligence --lib \
+                --message-format=json-render-diagnostics \
+                authenticated_objective_is_durable_before_product_receipt_returns \
+                > "$evidence/cargo-messages.jsonl" \
+                2> "$evidence/cargo-stderr.log"
+              ;;
+            intelligence-semantic)
+              cargo test --locked --no-run -p codex-hepta-intelligence --lib \
+                --message-format=json-render-diagnostics \
+                unsupported_scalar_operators_never_publish_a_run_or_partial_proof \
+                > "$evidence/cargo-messages.jsonl" \
+                2> "$evidence/cargo-stderr.log"
+              ;;
+            agentd-objective)
+              cargo test --locked --no-run -p codex-hepta-agentd \
+                --message-format=json-render-diagnostics objective_ \
+                > "$evidence/cargo-messages.jsonl" \
+                2> "$evidence/cargo-stderr.log"
+              ;;
+            agentd-product-runner)
+              cargo test --locked --no-run -p codex-hepta-agentd \
+                --message-format=json-render-diagnostics product_runner_ \
+                > "$evidence/cargo-messages.jsonl" \
+                2> "$evidence/cargo-stderr.log"
+              ;;
+            provider)
+              cargo test --locked --no-run -p codex-hepta-provider --lib \
+                --message-format=json-render-diagnostics \
+                > "$evidence/cargo-messages.jsonl" \
+                2> "$evidence/cargo-stderr.log"
+              ;;
+            ci-adapter)
+              cargo test --locked --no-run -p codex-hepta-ci-adapter --all-targets \
+                --message-format=json-render-diagnostics \
+                > "$evidence/cargo-messages.jsonl" \
+                2> "$evidence/cargo-stderr.log"
+              ;;
+          esac
+          status=$?
+          set -e
+          cat "$evidence/cargo-stderr.log"
+          printf '%s\n' "$status" > "$evidence/exit-status.txt"
+          sha256sum "$evidence"/* > "$evidence/SHA256SUMS"
+          exit "$status"
 
-      - name: Compile focused test targets
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --locked --no-run -p codex-hepta-objective
-          cargo test --locked --no-run -p codex-hepta-intelligence --lib objective_run
-
-      - name: Strict focused lint and format
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo clippy --locked -p codex-hepta-objective --all-targets --no-deps -- -D warnings
-          cargo clippy --locked -p codex-hepta-objective \
-            --all-targets --features qualification-legacy-compile \
-            --no-deps -- -D warnings
-          cargo fmt --package codex-hepta-objective \
-            --package codex-hepta-intelligence -- --check
+      - name: Upload isolated diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-compile-${{ matrix.target }}-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-${{ matrix.target }}
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Verify checkout stayed clean
         if: always()
@@ -81,3 +162,118 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+  objective-test-lane:
+    name: tests / ${{ matrix.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [default, compatibility]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Run objective test lane
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/objective-tests-${{ matrix.lane }}"
+          mkdir -p "$evidence"
+          git -C .. rev-parse HEAD HEAD^{tree} | tee "$evidence/source-identity.txt"
+          rustc --version --verbose | tee "$evidence/rustc.txt"
+          cargo --version --verbose | tee "$evidence/cargo.txt"
+          if [[ "${{ matrix.lane }}" == compatibility ]]; then
+            cargo tree --locked -p codex-hepta-objective \
+              -e features --features qualification-legacy-compile \
+              > "$evidence/feature-tree.txt"
+            cargo test --locked -p codex-hepta-objective \
+              --features qualification-legacy-compile -- --nocapture \
+              2>&1 | tee "$evidence/test.log"
+          else
+            cargo tree --locked -p codex-hepta-objective -e features \
+              > "$evidence/feature-tree.txt"
+            cargo test --locked -p codex-hepta-objective -- --nocapture \
+              2>&1 | tee "$evidence/test.log"
+          fi
+          sha256sum "$evidence"/* > "$evidence/SHA256SUMS"
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-tests-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-tests-${{ matrix.lane }}
+          if-no-files-found: warn
+          retention-days: 30
+
+  quality-gate:
+    name: quality / ${{ matrix.gate }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        gate:
+          - clippy-default
+          - clippy-compatibility
+          - format
+          - normative-consistency
+          - release-absence
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Run independent quality gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/objective-quality-${{ matrix.gate }}"
+          mkdir -p "$evidence"
+          git rev-parse HEAD HEAD{tree} | tee "$evidence/source-identity.txt"
+          case "${{ matrix.gate }}" in
+            clippy-default)
+              (cd codex-rs && cargo clippy --locked -p codex-hepta-objective \
+                --all-targets --no-deps -- -D warnings) \
+                2>&1 | tee "$evidence/gate.log"
+              ;;
+            clippy-compatibility)
+              (cd codex-rs && cargo clippy --locked -p codex-hepta-objective \
+                --all-targets --features qualification-legacy-compile \
+                --no-deps -- -D warnings) \
+                2>&1 | tee "$evidence/gate.log"
+              ;;
+            format)
+              (cd codex-rs && cargo fmt --package codex-hepta-objective \
+                --package codex-hepta-intelligence --package codex-hepta-agentd \
+                -- --check) 2>&1 | tee "$evidence/gate.log"
+              ;;
+            normative-consistency)
+              python3 -m unittest -v scripts.test_hepta_objective_spec_consistency \
+                2>&1 | tee "$evidence/spec-tests.log"
+              python3 scripts/hepta-objective-spec-consistency.py verify \
+                2>&1 | tee "$evidence/gate.log"
+              ;;
+            release-absence)
+              python3 scripts/hepta-objective-release-gate.py verify-source \
+                --expected-sha "$SOURCE_SHA" \
+                --expected-tree "$(git rev-parse HEAD^{tree})" \
+                --output "$evidence/release-source.json" \
+                2>&1 | tee "$evidence/gate.log"
+              ;;
+          esac
+          find "$evidence" -type f -maxdepth 1 -print0 \
+            | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+      - name: Upload quality evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-quality-${{ matrix.gate }}-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-quality-${{ matrix.gate }}
+          if-no-files-found: warn
+          retention-days: 30
