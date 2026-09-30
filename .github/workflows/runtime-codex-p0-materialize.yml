@@ -1,0 +1,156 @@
+name: runtime.codex P0 materialize
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-p0-durable-convergence-20260930
+    paths:
+      - .github/workflows/runtime-codex-p0-materialize.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-p0-materialize-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Materialize all pending runtime.codex migrations
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test -z "$(git status --porcelain=v1)"
+          scripts=(
+            scripts/runtime-codex-maintainer.py
+            scripts/runtime-codex-maintainer-followup.py
+            scripts/runtime-codex-durability-migration.py
+            scripts/runtime-codex-durability-fixup.py
+            scripts/runtime-codex-quarantine-migration.py
+            scripts/runtime-codex-deadline-migration.py
+            scripts/runtime-codex-cleanup-migration.py
+            scripts/runtime-codex-storage-fixup.py
+            scripts/runtime-codex-terminal-outbox-migration.py
+            scripts/runtime-codex-product-executor-migration.py
+            scripts/runtime-codex-product-executor-hardening.py
+            scripts/runtime-codex-structured-sequence-migration.py
+            scripts/runtime-codex-process-crash-migration.py
+            scripts/runtime-codex-qualification-fixup.py
+            scripts/runtime-codex-final-closure.py
+          )
+          python3 -m py_compile "${scripts[@]}" \
+            scripts/runtime-codex-finalize-map.py \
+            scripts/runtime-codex-finalize-map-followup.py
+          for script in "${scripts[@]}"; do
+            echo "materialize: ${script}"
+            python3 "$script"
+          done
+          (
+            cd codex-rs
+            cargo fmt --all
+          )
+          git diff --check
+      - name: Bind generated implementation map
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_commit="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
+          RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
+            python3 scripts/runtime-codex-finalize-map.py
+          RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
+          RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
+            python3 scripts/runtime-codex-finalize-map-followup.py
+          python3 scripts/check-runtime-codex-fault-matrix.py
+      - name: Remove source-writing machinery
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f \
+            .github/workflows/runtime-codex-p0-materialize.yml \
+            .github/workflows/runtime-codex-materialize-once.yml \
+            .github/workflows/runtime-codex-maintainer.yml \
+            .github/workflows/runtime-codex-fast-feedback.yml \
+            scripts/runtime-codex-maintainer.py \
+            scripts/runtime-codex-maintainer-followup.py \
+            scripts/runtime-codex-durability-migration.py \
+            scripts/runtime-codex-durability-fixup.py \
+            scripts/runtime-codex-quarantine-migration.py \
+            scripts/runtime-codex-deadline-migration.py \
+            scripts/runtime-codex-cleanup-migration.py \
+            scripts/runtime-codex-storage-fixup.py \
+            scripts/runtime-codex-terminal-outbox-migration.py \
+            scripts/runtime-codex-product-executor-migration.py \
+            scripts/runtime-codex-product-executor-hardening.py \
+            scripts/runtime-codex-structured-sequence-migration.py \
+            scripts/runtime-codex-process-crash-migration.py \
+            scripts/runtime-codex-qualification-fixup.py \
+            scripts/runtime-codex-final-closure.py \
+            scripts/runtime-codex-finalize-map.py \
+            scripts/runtime-codex-finalize-map-followup.py
+          cat > docs/modules/runtime.codex/MIGRATION_HISTORY.md <<'EOF'
+          # runtime.codex migration history
+
+          The P0 convergence migrations were materialized into ordinary source on
+          2026-09-30. Source-writing workflows and migration programs were removed
+          from the immutable candidate. They are retained only in Git history.
+
+          All qualification after this point is read-only: a clean checkout must
+          compile, test, lint, generate receipts, and remain clean without applying
+          patches or regenerating production source.
+          EOF
+          git diff --check
+      - name: Verify ordinary source checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all -- --check
+          cargo check --locked \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets
+          cargo test --locked -p codex-hepta-agent-protocol
+          cargo test --locked -p codex-hepta-infer-core
+          cargo test --locked -p codex-hepta-codex-adapter
+          cargo test --locked -p codex-hepta-agentd --lib lane_b_runtime
+          cargo test --locked -p codex-hepta-infer-worker-host
+          cargo test --locked -p codex-hepta-infer-worker-host --test runtime_codex_crash_matrix
+          cargo test --locked -p codex-hepta-agentd --test runtime_codex_process_crash
+          cargo test --locked -p codex-hepta-agentd runtime_codex_product_caller_commits_one_authorized_terminal_turn
+          cargo clippy --locked \
+            -p codex-hepta-agent-protocol \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-codex-adapter \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-worker-host \
+            --all-targets --no-deps -- -D warnings
+          cd ..
+          git diff --check
+      - name: Commit immutable materialized source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'runtime.codex P0 materializer'
+          git config user.email 'runtime-codex-p0@invalid'
+          git add -A
+          git diff --cached --check
+          git commit -m 'fix(runtime.codex): materialize immutable P0 convergence source'
+          git push --force-with-lease="refs/heads/codex/runtime-codex-p0-durable-convergence-20260930:${GITHUB_SHA}" \
+            origin HEAD:refs/heads/codex/runtime-codex-p0-durable-convergence-20260930
