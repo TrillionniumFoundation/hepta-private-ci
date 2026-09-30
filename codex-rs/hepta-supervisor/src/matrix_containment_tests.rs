@@ -3,6 +3,7 @@
 
 use super::*;
 use crate::lease::read_matrix_lease;
+use pretty_assertions::assert_eq;
 
 fn current_lease(fixture: &Fixture) -> MatrixProcessLease {
     let runtime = fixture.slot.matrix.runtime.as_ref().expect("owned Matrix");
@@ -45,7 +46,7 @@ fn main_emergency_kill_is_attempted_despite_companion_failure() -> Result<()> {
 #[test]
 fn failed_main_kill_does_not_skip_companion_containment() -> Result<()> {
     let mut fixture = Fixture::new()?;
-    fixture.main.lock().expect("main").failure = Failure::Kill;
+    fixture.main.lock().expect("state").failure = Failure::Kill;
     assert!(fixture.supervisor.kill_slot(&fixture.agent, &mut fixture.slot).is_err());
     assert_eq!(fixture.main.lock().expect("main").kills, 1);
     assert_eq!(fixture.companion.lock().expect("companion").kills, 1);
