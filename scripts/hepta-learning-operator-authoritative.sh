@@ -217,7 +217,7 @@ emit_gate performance-profile "1K-16K sensor and 100K-1M tabular qualification m
 emit_gate static-quality "strict clippy, formatting, and source hygiene" "${EVIDENCE}/static-quality.log"
 emit_gate synthetic-merge "deterministic ordered-parent synthetic merge compile and tests" "${EVIDENCE}/synthetic-merge.log"
 
-WORKFLOW_PATH=".github/workflows/learning-operator-authoritative.yml"
+WORKFLOW_PATH="${QUALIFICATION_WORKFLOW_PATH:-.github/workflows/learning-operator-authoritative.yml}"
 WORKFLOW_BLOB="$(git rev-parse "${SOURCE_SHA}:${WORKFLOW_PATH}")"
 EVIDENCE_ARGS=()
 for path in "${EVIDENCE}"/gates/*.json; do
