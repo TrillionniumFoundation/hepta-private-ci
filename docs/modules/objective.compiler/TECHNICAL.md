@@ -412,5 +412,43 @@ not a proof recomputed with a later clock. Expired compacted payloads are not
 reconstructed from summary indexes; surviving payloads retain their exact
 proof and record identities.
 
+Compiler-contract changes with an unchanged profile digest can reopen the same
+destination owner: startup retains incompatible predecessor proofs inert and
+recovers current-contract records after the normal live checks. The mixed-proof
+recovery fixture tests record filtering, not a configured-profile migration.
+The production RunStart owner and its external checkpoint also bind the exact
+profile digest. A different configured profile therefore fails host open with
+`BindingMismatch`; the owner must not reset the checkpoint, discard consumed
+messages or rewrite historical proof bytes. A separately authorized,
+anti-rollback-preserving destination-owner migration is required for that
+profile change and remains outside the implemented recovery path.
+
+Source V1 permits at most 127 mapped caller legal actions. Its frozen profile
+rejects mapping the reserved `abstain` action, and native compilation adds that
+intrinsic action within the 128-action aggregate limit. A 128-entry source or
+protocol array is a structural bound and does not expand the admitted caller
+action set.
+
+Canonical ObjectiveStart retains the live Fleet lifecycle generation and exact
+durable fence through invocation validation and prepared runtime/context
+projection. The ordinary `Starting N -> Running N+1` transition advances that
+lifecycle generation without changing the process spawn identity. The fence
+binds `(agent, spawn N, lifecycle N+1)`; the frozen composition's spawn generation
+must not replace the publication's current generation. The prepared run uses
+the exact durable deadline, independently of its worker computation budget;
+live trust/generation/fence checks still run after asynchronous preparation.
+
+The canonical objective owner port receives a private validation binding only
+from the already-durable compiled RunStart. That binding checks native semantic
+bytes and their digest, strict canonical protocol bytes/digest/revision, compiled
+disposition, proof presence and deny-all
+authority. The port repeats current frozen-profile admission and matches the
+source-envelope, profile, compiler-contract and admitted-source identities
+against the stored proof, then consumes the existing compiled semantic identity
+without another native solve or publication. The request-local admission clock
+may change; its context proof is not substituted for historical evidence. The
+fresh context revision must still equal the persisted protocol revision.
+Standalone public preparation has no durable binding and remains diagnostic.
+
 Regression coverage is indexed in `CLOSEOUT_20260929.md`. Test source is not a
 passing execution receipt; all acceptance and activation claims remain external.

@@ -121,9 +121,7 @@ class ReleaseSurfaceTests(unittest.TestCase):
                     '          git commit-tree "$tree" -p "$BASE" -p "$HEAD"\n',
                     f"          {command}\n",
                 )
-                self.write(
-                    root, ".github/workflows/hepta-objective-test.yml", workflow
-                )
+                self.write(root, ".github/workflows/hepta-objective-test.yml", workflow)
 
                 with self.assertRaisesRegex(
                     ReleaseSurfaceError,
@@ -132,25 +130,234 @@ class ReleaseSurfaceTests(unittest.TestCase):
                     verify_release_surface(root)
 
     def test_rejects_retired_authoring_paths(self) -> None:
+        for relative in MODULE.RETIRED_AUTHORING_PATHS:
+            with self.subTest(relative=relative):
+                temporary, root = self.make_repo()
+                self.addCleanup(temporary.cleanup)
+                self.write(
+                    root, ".github/workflows/hepta-objective-test.yml", VALID_WORKFLOW
+                )
+                self.write(root, str(relative), "# retired one-shot source writer\n")
+                with self.assertRaisesRegex(
+                    ReleaseSurfaceError, "retired objective authoring path exists"
+                ):
+                    verify_release_surface(root)
+
+    def test_rejects_quoted_and_flow_job_write_permissions(self) -> None:
+        for declaration in (
+            "    permissions: {contents: write}\n",
+            '    permissions: {"contents": "write"}\n',
+            '    permissions:\n      contents: "write"\n',
+            "    'permissions': {'contents': 'write'}\n",
+        ):
+            with self.subTest(declaration=declaration):
+                temporary, root = self.make_repo()
+                self.addCleanup(temporary.cleanup)
+                self.write(
+                    root,
+                    ".github/workflows/hepta-objective-test.yml",
+                    VALID_WORKFLOW.replace(
+                        "    runs-on:", declaration + "    runs-on:"
+                    ),
+                )
+                with self.assertRaisesRegex(
+                    ReleaseSurfaceError, "repository write permission"
+                ):
+                    verify_release_surface(root)
+
+    def test_rejects_quoted_checkout_and_flow_retained_credentials(self) -> None:
         temporary, root = self.make_repo()
         self.addCleanup(temporary.cleanup)
-        self.write(root, ".github/workflows/hepta-objective-test.yml", VALID_WORKFLOW)
-        self.write(
-            root,
-            "scripts/hepta-objective-materialize-closure.py",
-            "# retired one-shot source writer\n",
+        workflow = VALID_WORKFLOW.replace(
+            "uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            'uses: "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"',
+        ).replace(
+            "        with:\n          persist-credentials: false\n          fetch-depth: 0",
+            "        with: {persist-credentials: true, fetch-depth: 0}",
         )
-
+        self.write(root, ".github/workflows/hepta-objective-test.yml", workflow)
         with self.assertRaisesRegex(
-            ReleaseSurfaceError, "retired objective authoring path exists"
+            ReleaseSurfaceError, "credentials may not be retained"
         ):
             verify_release_surface(root)
+
+    def test_other_candidate_jobs_cannot_obtain_identity_or_write_scopes(self) -> None:
+        for scope in ("id-token", "attestations", "actions", "issues", "packages"):
+            with self.subTest(scope=scope):
+                temporary, root = self.make_repo()
+                self.addCleanup(temporary.cleanup)
+                workflow = VALID_WORKFLOW.replace(
+                    "    runs-on:",
+                    f"    permissions: {{contents: read, {scope}: write}}\n    runs-on:",
+                )
+                self.write(root, ".github/workflows/hepta-objective-test.yml", workflow)
+                with self.assertRaisesRegex(
+                    ReleaseSurfaceError, "job write permissions"
+                ):
+                    verify_release_surface(root)
+
+    def test_case_variants_cannot_hide_checkout_credentials(self) -> None:
+        for replacement in (
+            "persist-credentials: true",
+            "persist-credentials: false\n          PERSIST-CREDENTIALS: true",
+        ):
+            with self.subTest(replacement=replacement):
+                temporary, root = self.make_repo()
+                self.addCleanup(temporary.cleanup)
+                workflow = VALID_WORKFLOW.replace(
+                    "actions/checkout@", "Actions/Checkout@"
+                ).replace("persist-credentials: false", replacement)
+                self.write(root, ".github/workflows/hepta-objective-test.yml", workflow)
+                with self.assertRaises(ReleaseSurfaceError):
+                    verify_release_surface(root)
+
+    def test_accepts_static_quoted_and_flow_hardening(self) -> None:
+        temporary, root = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        workflow = (
+            VALID_WORKFLOW.replace(
+                "permissions:\n  contents: read",
+                'permissions: {"contents": "read"}',
+            )
+            .replace(
+                "uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                "uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd'",
+            )
+            .replace(
+                "        with:\n          persist-credentials: false\n          fetch-depth: 0",
+                '        with: {"persist-credentials": "false", fetch-depth: 0}',
+            )
+        )
+        self.write(root, ".github/workflows/hepta-objective-test.yml", workflow)
+        verify_release_surface(root)
+
+    def test_unsupported_security_relevant_yaml_fails_closed(self) -> None:
+        for old, new in (
+            (
+                "permissions:\n  contents: read",
+                "permissions: &read_only\n  contents: read",
+            ),
+            (
+                "    runs-on: ubuntu-24.04",
+                "    permissions: *read_only\n    runs-on: ubuntu-24.04",
+            ),
+            ("        with:", "        with:\n          <<: *checkout_inputs"),
+            ("jobs:\n", "jobs: {verify: {permissions: {contents: write}}}\n"),
+            ("    steps:\n", "    steps: [{uses: actions/checkout@v4}]\n"),
+            (
+                "persist-credentials: false",
+                "persist-credentials: ${{ inputs.keep_credentials }}",
+            ),
+            (
+                "permissions:\n  contents: read",
+                "permissions: {contents: read, contents: write}",
+            ),
+        ):
+            with self.subTest(new=new):
+                temporary, root = self.make_repo()
+                self.addCleanup(temporary.cleanup)
+                self.write(
+                    root,
+                    ".github/workflows/hepta-objective-test.yml",
+                    VALID_WORKFLOW.replace(old, new),
+                )
+                with self.assertRaises(ReleaseSurfaceError):
+                    verify_release_surface(root)
+
+    def test_checkout_cannot_borrow_another_steps_with(self) -> None:
+        temporary, root = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        workflow = VALID_WORKFLOW.replace(
+            "        with:\n          persist-credentials: false\n          fetch-depth: 0\n",
+            "",
+        ).replace(
+            "      - name: Local deterministic merge identity",
+            "      - uses: actions/upload-artifact@v4\n        with:\n          persist-credentials: false\n      - name: Local deterministic merge identity",
+        )
+        self.write(root, ".github/workflows/hepta-objective-test.yml", workflow)
+        with self.assertRaisesRegex(ReleaseSurfaceError, "checkout must set"):
+            verify_release_surface(root)
+
+    def test_top_level_identity_write_permissions_are_forbidden(self) -> None:
+        temporary, root = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        workflow = VALID_WORKFLOW.replace(
+            "  contents: read", "  contents: read\n  id-token: write"
+        )
+        self.write(root, ".github/workflows/hepta-objective-test.yml", workflow)
+        with self.assertRaisesRegex(ReleaseSurfaceError, "workflow-wide write"):
+            verify_release_surface(root)
+
+    def test_actual_target_host_candidate_jobs_remain_unprivileged(self) -> None:
+        temporary, root = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        relative = ".github/workflows/hepta-objective-target-host.yml"
+        source = SCRIPT.resolve().parents[1] / relative
+        self.write(root, relative, source.read_text(encoding="utf-8"))
+        verify_release_surface(root)
+
+    def test_attestation_job_cannot_execute_candidate_or_checkout_code(self) -> None:
+        relative = ".github/workflows/hepta-objective-target-host.yml"
+        original = (SCRIPT.resolve().parents[1] / relative).read_text(encoding="utf-8")
+        for extra in (
+            "      - run: cargo test\n",
+            "      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd\n        with: {persist-credentials: false}\n",
+        ):
+            with self.subTest(extra=extra):
+                temporary, root = self.make_repo()
+                self.addCleanup(temporary.cleanup)
+                workflow = original.replace(
+                    "  target-host:\n", extra + "\n  target-host:\n"
+                )
+                self.write(root, relative, workflow)
+                with self.assertRaisesRegex(ReleaseSurfaceError, "attest-candidate"):
+                    verify_release_surface(root)
+
+    def test_target_host_yaml_extension_has_the_same_privilege_boundary(self) -> None:
+        temporary, root = self.make_repo()
+        self.addCleanup(temporary.cleanup)
+        original = (
+            SCRIPT.resolve().parents[1]
+            / ".github/workflows/hepta-objective-target-host.yml"
+        ).read_text(encoding="utf-8")
+        workflow = original.replace(
+            "  target-host:\n", "      - run: cargo test\n\n  target-host:\n"
+        )
+        self.write(root, ".github/workflows/hepta-objective-target-host.yaml", workflow)
+        with self.assertRaisesRegex(ReleaseSurfaceError, "attest-candidate"):
+            verify_release_surface(root)
+
+    def test_target_host_candidate_job_cannot_receive_identity_write_permission(
+        self,
+    ) -> None:
+        for candidate_job in ("package-candidate", "target-host"):
+            with self.subTest(candidate_job=candidate_job):
+                temporary, root = self.make_repo()
+                self.addCleanup(temporary.cleanup)
+                workflow = VALID_WORKFLOW.replace(
+                    "  verify:\n",
+                    "  package-candidate:\n    permissions: {contents: read}\n",
+                )
+                workflow += "  target-host:\n    permissions: {contents: read}\n    runs-on: ubuntu-24.04\n    steps:\n      - run: true\n"
+                workflow = workflow.replace(
+                    f"  {candidate_job}:\n    permissions: {{contents: read}}",
+                    f"  {candidate_job}:\n    permissions: {{contents: read, id-token: write}}",
+                )
+                self.write(
+                    root, ".github/workflows/hepta-objective-target-host.yml", workflow
+                )
+                with self.assertRaisesRegex(
+                    ReleaseSurfaceError, "candidate job .* may not obtain"
+                ):
+                    verify_release_surface(root)
 
     def test_requires_at_least_one_objective_workflow(self) -> None:
         temporary, root = self.make_repo()
         self.addCleanup(temporary.cleanup)
 
-        with self.assertRaisesRegex(ReleaseSurfaceError, "no objective workflows found"):
+        with self.assertRaisesRegex(
+            ReleaseSurfaceError, "no objective workflows found"
+        ):
             verify_release_surface(root)
 
 

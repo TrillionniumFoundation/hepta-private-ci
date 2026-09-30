@@ -34,8 +34,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
-  attestations: write
 
 env:
   CARGO_INCREMENTAL: "0"
@@ -46,6 +44,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    permissions:
+      contents: read
     outputs:
       candidate_tree: ${{ steps.identity.outputs.candidate_tree }}
       bundle_sha256: ${{ steps.identity.outputs.bundle_sha256 }}
@@ -125,11 +125,6 @@ jobs:
           printf 'bundle_sha256=%s\n' "${BUNDLE_SHA256}" >> "${GITHUB_OUTPUT}"
           printf 'trusted_measure_digest=%s\n' "${TRUSTED_MEASURE_DIGEST}" >> "${GITHUB_OUTPUT}"
 
-      - name: Attest candidate bundle provenance
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
-        with:
-          subject-path: ${{ runner.temp }}/objective-candidate/candidate.bundle
-
       - name: Upload exact candidate bundle
         id: upload
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
@@ -139,11 +134,33 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  target-host:
+  attest-candidate:
     needs: package-candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Download inert candidate bundle for attestation
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: objective-target-candidate-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-candidate
+
+      - name: Attest candidate bundle provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: ${{ runner.temp }}/objective-candidate/candidate.bundle
+
+  target-host:
+    needs: [package-candidate, attest-candidate]
     runs-on: [self-hosted, objective-target-host-ephemeral]
     environment: objective-target-host-qualification
     timeout-minutes: 180
+    permissions:
+      contents: read
     steps:
       - name: Check out protected trusted tooling only
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -176,10 +193,10 @@ jobs:
           test "$(git -C "${RUNNER_TEMP}/candidate" rev-parse HEAD^{tree})" = "${CANDIDATE_TREE}"
           test -z "$(git -C "${RUNNER_TEMP}/candidate" status --porcelain)"
           test "$(
-            sha256sum trusted/scripts/hepta-objective-target-measure.py | cut -d' ' -f1
+            sha256sum "${GITHUB_WORKSPACE}/trusted/scripts/hepta-objective-target-measure.py" | cut -d' ' -f1
           )" = "${TRUSTED_MEASURE_DIGEST}"
           cmp \
-            trusted/scripts/hepta-objective-target-measure.py \
+            "${GITHUB_WORKSPACE}/trusted/scripts/hepta-objective-target-measure.py" \
             "${RUNNER_TEMP}/candidate/scripts/hepta-objective-target-measure.py"
           printf 'CANDIDATE_SHA=%s\nCANDIDATE_TREE=%s\n' \
             "${CANDIDATE_SHA}" "${CANDIDATE_TREE}" >> "${GITHUB_ENV}"

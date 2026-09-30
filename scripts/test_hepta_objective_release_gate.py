@@ -122,8 +122,9 @@ class ReleaseGateTests(unittest.TestCase):
             }
         raise AssertionError(kind)
 
-    def write_receipts(self, issuer_override=None):
+    def write_receipts(self, issuer_override=None, payload_override=None):
         issuer_override = issuer_override or {}
+        payload_override = payload_override or {}
         policy_digest = gate.sha256_value(self.policy)
         receipts = {}
         filenames = {}
@@ -147,6 +148,7 @@ class ReleaseGateTests(unittest.TestCase):
                 },
                 "payload": self.payload(kind, receipts),
             }
+            receipt["payload"].update(payload_override.get(kind, {}))
             receipt["receiptDigest"] = gate.sha256_value(receipt)
             receipts[kind] = receipt
             filenames[kind] = row["fileName"]
@@ -172,6 +174,24 @@ class ReleaseGateTests(unittest.TestCase):
         self.assertEqual(
             result["releaseTruth"], self.policy["sourceTruthBeforeRelease"]
         )
+
+    def test_rehashed_inconsistent_receipt_chain_is_rejected(self):
+        cases = [
+            ("canary", {"windowEndedAt": "2026-09-25T23:59:59Z"}),
+            ("canary", {"windowEndedAt": "2026-09-26T00:00:00Z"}),
+            ("canary", {"windowStartedAt": "2026-09-26 00:00:00Z"}),
+            ("canary", {"hardConstraintViolations": False}),
+            ("canary", {"hardConstraintViolations": 0.0}),
+            ("promotion", {"fromEnvironment": "unobserved-canary"}),
+            ("release_authority", {"targetEnvironment": "unapproved-production"}),
+        ]
+        for kind, payload in cases:
+            with self.subTest(kind=kind, payload=payload):
+                self.write_receipts(payload_override={kind: payload})
+                with self.assertRaises(gate.GateError):
+                    gate.release_verify(
+                        self.state, self.policy, self.root, COMMIT, TREE
+                    )
 
     def test_tampered_receipt_fails_closed(self):
         _, filenames = self.write_receipts()

@@ -2,6 +2,13 @@
 
 use super::*;
 
+struct ObjectiveRuntimeBindingV1 {
+    generation: u64,
+    fence_digest: String,
+    deadline_ms: Option<u64>,
+    objective_publication: Option<ObjectivePublicationValidationV1>,
+}
+
 impl AgentdIntelligenceProductRunnerV1 {
     pub fn new(
         authority_file: PathBuf,
@@ -75,6 +82,73 @@ impl AgentdIntelligenceProductRunnerV1 {
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        // Standalone preparation uses the immutable process composition. The
+        // signed ObjectiveStart path supplies its independently revalidated
+        // durable lifecycle binding through prepare_for_run_start instead.
+        let generation = composition.agentd_generation;
+        let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
+        fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
+        fence_bytes.extend_from_slice(&generation.to_be_bytes());
+        fence_bytes.extend_from_slice(&generation.to_be_bytes());
+        self.prepare_for_runtime_binding(
+            ObjectiveRuntimeBindingV1 {
+                generation,
+                fence_digest: Digest32::of_bytes(&fence_bytes).to_string(),
+                deadline_ms: None,
+                objective_publication: None,
+            },
+            request,
+            inputs,
+        )
+        .await
+    }
+
+    /// Prepare a publication already checked against live Agentd/Fleet trust.
+    /// Spawn identity and current lifecycle generation are distinct: the
+    /// Running transition advances the latter without relaunching this owner.
+    pub(crate) async fn prepare_for_run_start(
+        &self,
+        composition: &crate::RuntimeComposition,
+        record: &codex_hepta_learning_ledger::RunStartRecordV1,
+        request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
+        fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
+        fence_bytes.extend_from_slice(&composition.agentd_generation.to_be_bytes());
+        fence_bytes.extend_from_slice(&record.snapshot.generation.to_be_bytes());
+        if record.snapshot.generation == 0
+            || record.snapshot.fence_digest != Digest32::of_bytes(&fence_bytes)
+            || request.run_id != record.snapshot.run_id
+            || request.snapshot.objective_digest() != record.snapshot.objective_digest
+            || request.snapshot.authority_epoch() != record.snapshot.authority_epoch
+            || request.snapshot.body_generation().get() != record.snapshot.generation
+        {
+            return Err(AgentdIntelligenceProductError::Run(
+                crate::AgentRunError::InvalidRunStart("canonical runtime binding"),
+            ));
+        }
+        self.prepare_for_runtime_binding(
+            ObjectiveRuntimeBindingV1 {
+                generation: record.snapshot.generation,
+                fence_digest: record.snapshot.fence_digest.to_string(),
+                deadline_ms: Some(record.admission.deadline_unix_micros / 1_000),
+                objective_publication: Some(ObjectivePublicationValidationV1::from_run_start(
+                    record,
+                )?),
+            },
+            request,
+            inputs,
+        )
+        .await
+    }
+
+    async fn prepare_for_runtime_binding(
+        &self,
+        runtime_binding: ObjectiveRuntimeBindingV1,
+        request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
         let candidate_ids = request
@@ -93,22 +167,19 @@ impl AgentdIntelligenceProductRunnerV1 {
             return Err(AgentdIntelligenceProductError::CandidateSetMismatch);
         }
 
-        // Freeze the identity of the existing owner, never a new coordinator
-        // or a caller-selected body/model generation. Agentd validates this
-        // fence again at the actual admission and attachment boundary.
-        let generation = composition.agentd_generation;
-        let mut fence_bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-        fence_bytes.extend_from_slice(composition.agent_id.as_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        fence_bytes.extend_from_slice(&generation.to_be_bytes());
-        let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
+        let generation = runtime_binding.generation;
+        let fence_digest = runtime_binding.fence_digest;
+        let objective_publication = runtime_binding.objective_publication;
         let snapshot = request.snapshot.clone();
         let timeout_micros = request.budget.total_micros;
         let started_ms = wall_clock_ms()?;
         let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
-        let deadline_ms = started_ms
-            .checked_add(timeout_ms.max(1))
-            .ok_or(AgentdIntelligenceProductError::Clock)?;
+        let deadline_ms = match runtime_binding.deadline_ms {
+            Some(deadline_ms) => deadline_ms,
+            None => started_ms
+                .checked_add(timeout_ms.max(1))
+                .ok_or(AgentdIntelligenceProductError::Clock)?,
+        };
         let authority_file = self.authority_file.clone();
         let authority_verifier = self.authority_verifier.clone();
         let evaluation_session = match inputs.signed_evaluation.take() {
@@ -137,6 +208,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         };
         let mut worker = self.spawn_owner_work(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
+            ports.objective_publication = objective_publication;
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
             prepare_intelligence_run(request, &mut ports, &mut oracle)
         })?;

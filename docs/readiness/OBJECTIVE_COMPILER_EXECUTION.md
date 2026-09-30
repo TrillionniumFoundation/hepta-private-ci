@@ -118,13 +118,19 @@ The final native aggregate, not an individual source array, defines capacity:
 - at most 256 native hard constraints;
 - at most 128 combined success, terminal and evidence predicates;
 - at most 128 compiled actions including intrinsic `abstain`;
-- at most 127 caller legal actions when `abstain` is implicit;
+- at most 127 caller legal actions in Source V1: its profile cannot map the
+  reserved intrinsic `abstain` action, so the compiler always adds that action;
 - at most 64 soft dimensions;
 - at most 257 compatibility conflict-oracle calls.
 
 No represented hard constraint, predicate, action, evidence requirement,
 resource ceiling, risk rule, rollback rule or provenance identity may be
 silently dropped or approximated.
+
+The source and protocol structures can hold 128 action entries; that structural
+limit does not authorize 128 mapped caller legal actions. The authoritative
+native aggregate must still reserve one of its 128 slots for intrinsic
+`abstain`.
 
 Evidence confidence is expressed in integer ppm by Source V1. Its native lower
 bound is `ceil(minimumConfidencePpm * 2^32 / 1_000_000)`, computed with checked
@@ -173,6 +179,20 @@ capability and not current authorization.
 publication token and cannot be promoted into authoritative publication without
 a fresh owner-controlled admission.
 
+At canonical ObjectiveStart handoff, the runner privately binds the existing
+compiled RunStart record to the objective owner port. The constructor checks
+the native semantic bytes and canonical protocol bytes against their stored
+digests, strictly decodes the protocol revision, and rejects absent proof,
+explicit abstention and authority grants. The port performs fresh frozen-profile
+admission and compares exact source-envelope, profile, compiler-contract and
+admitted-source identities with that publication before using its compiled
+semantic identity. The fresh context revision must equal that persisted protocol
+revision; changing the clock does not authorize changing objective semantics.
+It does not perform another native solve or publish another
+RunStart. A changed admission clock is fresh request-local evidence, not an
+automatic rewrite of the historical authentication-context proof. Public
+standalone preparation has no durable binding and retains diagnostic preflight.
+
 `encode_proof_bearing_objective_function_v1` must rebind source-envelope and
 frozen-profile identity, preserve native/source/receipt checks, produce exact
 canonical `ObjectiveFunctionV1` bytes, decode those bytes strictly, and retain a
@@ -190,6 +210,21 @@ original bytes, but fail the current Agentd final-use binding check. Migration
 requires a newly authorized objective revision/request under the current
 contract. Recovery, compaction and retries must not automatically upgrade the
 proof, overwrite historical records or reuse predecessor execution authority.
+
+Compiler-contract recovery and profile migration are different boundaries.
+When the profile digest remains unchanged, startup can reopen the existing
+destination owner, retain predecessor compiler proofs inert, and recover
+current-contract records after all live checks. The mixed-proof fixture checks
+this record-level filtering; manually included stale profile records do not
+prove that a different configured profile can reopen the old owner.
+
+The actual Agentd RunStart owner and external checkpoint bind the profile
+digest. Changing the configured profile therefore fails `Host::open` with a
+binding mismatch; it must not reset or rewrite that checkpoint, replay history
+or historical proofs. A profile change requires a separately specified and
+authorized destination-owner migration that preserves anti-rollback and
+consumed-message identities. That migration is not implemented by the current
+record-filtering recovery path.
 
 ## 7. Durable publication versions
 
@@ -245,6 +280,15 @@ A canonical intelligence handoff after durable RunStart is a separate lifecycle
 boundary. If it is not durably recoverable, the owner must expose the pending
 state explicitly and must never silently redispatch or enter a compatibility
 execution path.
+
+The process spawn generation and the live Fleet lifecycle generation are
+distinct. On the ordinary `Starting N -> Running N+1` transition, signed
+ObjectiveStart publication, invocation validation, prepared runtime/context
+bindings and final-use revalidation retain the exact durable `N+1` generation
+and the fence over `(agent, spawn N, lifecycle N+1)`. The frozen process
+composition remains the same owner; its spawn generation must not replace the
+durable lifecycle generation. The worker computation budget separately bounds
+preparation and cannot replace or extend the admitted deadline.
 
 ## 9. API and compatibility policy
 

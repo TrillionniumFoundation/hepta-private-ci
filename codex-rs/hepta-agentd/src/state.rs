@@ -586,8 +586,10 @@ impl AgentdState {
             return Ok(None);
         };
 
+        self.require_current_run_start(record)?;
+        let current_generation = self.current_generation()?;
         let invocation = provider.build(&self.identity, record)?;
-        invocation.validate(&self.identity, record)?;
+        invocation.validate(&self.identity, record, current_generation)?;
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
@@ -599,7 +601,7 @@ impl AgentdState {
             .composition()
             .clone();
         let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+            .prepare_for_run_start(&composition, record, invocation.request, invocation.inputs)
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!(

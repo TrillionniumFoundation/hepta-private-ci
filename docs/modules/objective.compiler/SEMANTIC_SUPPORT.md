@@ -120,8 +120,9 @@ or replace current authentication and final-use checks.
 The constraint solver is deterministic for a fixed validated grammar, canonical atom set and
 oracle-call budget. The explicit availability API additionally accepts a wall-clock budget and
 records elapsed host time; exhaustion near that deadline is host-sensitive and is not semantic
-identity. The owner-internal compiler compatibility adapter uses `Duration::MAX` so host
-scheduling does not alter objective semantics.
+identity. The owner-internal compiler scalar adapter calls
+`check_feasibility_deterministic_v1` directly, so host scheduling does not alter objective
+semantics or add wall-clock observations to that path.
 
 ## Exact-candidate evidence
 

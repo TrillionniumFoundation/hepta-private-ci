@@ -67,6 +67,7 @@ impl ObjectiveFunctionV1Artifact {
 pub struct DecodedObjectiveFunctionV1 {
     canonical_bytes: Vec<u8>,
     protocol_digest: Digest32,
+    revision: u64,
 }
 
 impl DecodedObjectiveFunctionV1 {
@@ -78,6 +79,12 @@ impl DecodedObjectiveFunctionV1 {
     #[must_use]
     pub const fn protocol_digest(&self) -> Digest32 {
         self.protocol_digest
+    }
+
+    /// Revision retained only after strict canonical protocol validation.
+    #[must_use]
+    pub const fn revision(&self) -> u64 {
+        self.revision
     }
 }
 
@@ -509,6 +516,7 @@ pub fn decode_objective_function_v1(
     Ok(DecodedObjectiveFunctionV1 {
         protocol_digest: Digest32::of_bytes(&canonical),
         canonical_bytes: canonical,
+        revision: value.revision,
     })
 }
 

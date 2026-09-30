@@ -334,6 +334,7 @@ fn valid_wire_round_trips_exactly() {
     let decoded = decode_objective_function_v1(&encoded).expect("strict decode");
     assert_eq!(decoded.canonical_bytes(), encoded);
     assert_eq!(decoded.protocol_digest(), Digest32::of_bytes(&encoded));
+    assert_eq!(decoded.revision(), 7);
 }
 
 #[test]

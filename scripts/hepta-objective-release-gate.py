@@ -78,14 +78,17 @@ def require_hex(value: Any, pattern: re.Pattern[str], label: str) -> str:
     return value
 
 
-def parse_timestamp(value: Any, label: str) -> str:
-    if not isinstance(value, str) or not value.endswith("Z"):
+def parse_timestamp(value: Any, label: str) -> dt.datetime:
+    if (
+        not isinstance(value, str)
+        or re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z", value)
+        is None
+    ):
         raise GateError(f"{label} must be an RFC3339 UTC timestamp")
     try:
-        dt.datetime.fromisoformat(value[:-1] + "+00:00")
+        return dt.datetime.fromisoformat(value[:-1] + "+00:00")
     except ValueError as error:
         raise GateError(f"{label} is not a valid timestamp") from error
-    return value
 
 
 def validate_policy(policy: dict[str, Any]) -> list[dict[str, Any]]:
@@ -290,10 +293,15 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> None:
             or not payload["environment"]
         ):
             raise GateError("canary requires environment")
-        parse_timestamp(payload.get("windowStartedAt"), "windowStartedAt")
-        parse_timestamp(payload.get("windowEndedAt"), "windowEndedAt")
+        started = parse_timestamp(payload.get("windowStartedAt"), "windowStartedAt")
+        ended = parse_timestamp(payload.get("windowEndedAt"), "windowEndedAt")
+        if ended <= started:
+            raise GateError("canary observation window must advance")
         positive("observedRequests")
-        if payload.get("hardConstraintViolations") != 0:
+        if (
+            type(payload.get("hardConstraintViolations")) is not int
+            or payload["hardConstraintViolations"] != 0
+        ):
             raise GateError("canary hardConstraintViolations must be zero")
         require_hex(payload.get("rollbackDrillDigest"), HEX64, "rollbackDrillDigest")
         boolean("latencyBudgetsSatisfied")
@@ -409,9 +417,13 @@ def validate_receipts(
     canary = receipts["canary"]
     if promotion["payload"]["canaryReceiptDigest"] != canary["receiptDigest"]:
         raise GateError("promotion does not bind the admitted canary receipt")
+    if promotion["payload"]["fromEnvironment"] != canary["payload"]["environment"]:
+        raise GateError("promotion source environment does not match canary")
     release = receipts["release_authority"]
     if release["payload"]["promotionReceiptDigest"] != promotion["receiptDigest"]:
         raise GateError("release authority does not bind promotion")
+    if release["payload"]["targetEnvironment"] != promotion["payload"]["toEnvironment"]:
+        raise GateError("release target environment does not match promotion")
     rollback = receipts["rollback_authority"]
     if (
         release["payload"]["rollbackAuthorityReceiptDigest"]

@@ -6,8 +6,107 @@ use ed25519_dalek::SigningKey;
 
 use super::*;
 
+#[test]
+fn configured_profile_change_cannot_rebind_the_existing_run_start_owner() {
+    let (temp, _registry, agentd) =
+        crate::state::isolation_tests::fixture().expect("private owner fixture");
+    std::fs::set_permissions(
+        &agentd.identity().home_root,
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .expect("private owner home");
+    let profile_file = agentd.identity().home_root.join("objective-profile.json");
+    let checkpoint_file = temp.path().join("objective-profile-checkpoint.json");
+    let original = host_profile_json(1);
+    std::fs::write(&profile_file, &original).expect("owner profile");
+    std::fs::set_permissions(&profile_file, std::fs::Permissions::from_mode(0o600))
+        .expect("private profile");
+    let host =
+        ObjectiveRuntimeHost::open(agentd.identity(), &profile_file, checkpoint_file.clone())
+            .expect("initialize real journal and external checkpoint");
+    drop(host);
+    let checkpoint_before = std::fs::read(&checkpoint_file).expect("checkpoint bytes");
+    std::fs::write(&profile_file, host_profile_json(2)).expect("different configured profile");
+    let error =
+        match ObjectiveRuntimeHost::open(agentd.identity(), &profile_file, checkpoint_file.clone())
+        {
+            Ok(_) => panic!("configured profile must not silently rebind its existing owner"),
+            Err(error) => error,
+        };
+    assert!(error.to_string().contains("BindingMismatch"));
+    assert_eq!(
+        std::fs::read(&checkpoint_file).expect("unchanged checkpoint"),
+        checkpoint_before
+    );
+    std::fs::write(&profile_file, original).expect("restore original configured profile");
+    ObjectiveRuntimeHost::open(agentd.identity(), &profile_file, checkpoint_file)
+        .expect("original owner identity remains recoverable");
+}
+
+fn host_profile_json(revision: u64) -> Vec<u8> {
+    let resource = |name: &str| {
+        serde_json::json!({
+            "constraintId": format!("resource.{name}"),
+            "axis": format!("resource.{name}.value"),
+            "class": "task",
+            "q32PerSourceUnit": 1,
+            "evidenceSource": "profile.resource"
+        })
+    };
+    serde_json::to_vec(&serde_json::json!({
+        "profileId": "objective.profile.recovery.v1",
+        "profileRevision": revision,
+        "expectedInputSchemaDigest": digest("schema").to_string(),
+        "expectedNormalizationProfileDigest": digest("normalization").to_string(),
+        "principalScopeDigest": digest("principal").to_string(),
+        "principalScope": "principal.recovery",
+        "allowedLocales": ["en-US"],
+        "maximumSourceAgeMicros": 60_000_000,
+        "maximumFutureSkewMicros": 1_000_000,
+        "deadlineRequired": true,
+        "allowedTrustedSourceIdentities": ["adapter.console"],
+        "constraints": [],
+        "predicates": [],
+        "actions": [{"sourceActionClass": "read", "actionId": "action.read"}],
+        "softDimensions": [],
+        "evidenceRequirements": [],
+        "resources": {
+            "timeMicros": resource("time"),
+            "tokenCount": resource("tokens"),
+            "computeMicros": resource("compute"),
+            "memoryBytes": resource("memory"),
+            "networkBytes": resource("network"),
+            "externalEffectCount": resource("effects")
+        },
+        "risk": {
+            "evidenceSource": "profile.risk",
+            "class": "principal",
+            "riskConstraintId": "risk.class",
+            "riskAxis": "risk.class.value",
+            "lowValueQ32": 0,
+            "mediumValueQ32": 1,
+            "highValueQ32": 2,
+            "criticalValueQ32": 3,
+            "rollbackConstraintId": "risk.rollback",
+            "rollbackAxis": "risk.rollback.value",
+            "rollbackNoneValueQ32": 0,
+            "rollbackReversibleValueQ32": 1,
+            "rollbackCompensatableValueQ32": 2,
+            "rollbackIrreversibleValueQ32": 3,
+            "compensationConstraintId": "risk.compensation",
+            "compensationAxis": "risk.compensation.value",
+            "compensationFalseValueQ32": 0,
+            "compensationTrueValueQ32": 1,
+            "abstentionConstraintId": "risk.abstention",
+            "abstentionAxis": "risk.abstention.value",
+            "abstentionRules": [{"sourceRule": "ask", "valueQ32": 1}]
+        }
+    }))
+    .expect("strict host profile JSON")
+}
+
 #[tokio::test]
-async fn compiler_upgrade_recovers_current_runs_and_retains_old_proofs_inert() {
+async fn mixed_historical_proofs_recover_current_runs_without_profile_migration() {
     let (temp, registry, previous) =
         crate::state::isolation_tests::fixture().expect("owner fixture");
     let identity = previous.identity().clone();
@@ -114,6 +213,9 @@ async fn compiler_upgrade_recovers_current_runs_and_retains_old_proofs_inert() {
         Box::new(checkpoint.clone()),
     )
     .expect("RunStart owner");
+    // These owner-authored records exercise proof filtering after store open.
+    // They do not simulate changing the configured profile: real Host::open
+    // additionally binds the journal and external checkpoint to its digest.
     for (run_id, sequence, compiler_contract, profile_revision) in [
         (
             "run.upgrade.old-compiler",
