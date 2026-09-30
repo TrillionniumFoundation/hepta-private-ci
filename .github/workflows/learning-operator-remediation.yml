@@ -1,6 +1,10 @@
 name: learning-operator-remediation
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
   push:
     branches:
       - codex/learning-operator-authoritative-convergence-20260930
@@ -10,7 +14,9 @@ permissions:
 
 jobs:
   remediate:
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      (github.event_name == 'push' || github.head_ref == 'codex/learning-operator-authoritative-convergence-20260930')
     runs-on: ubuntu-24.04
     steps:
       - name: Check out exact remediation branch
