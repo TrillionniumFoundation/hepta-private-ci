@@ -91,6 +91,7 @@ pub struct CircuitActivationV1 {
     pub round: u32,
     pub node_id: String,
     pub circuit_digest: Sha256Digest,
+    pub taskflow_definition_digest: Sha256Digest,
     pub causal_event_digest: Sha256Digest,
     pub route_policy_digest: Sha256Digest,
     pub parameter_bundle_digest: Sha256Digest,
@@ -106,6 +107,10 @@ impl CircuitActivationV1 {
             return Err(invalid("activation round must be in 1..=1000000"));
         }
         validate_digest(&self.circuit_digest, "circuit_digest")?;
+        validate_digest(
+            &self.taskflow_definition_digest,
+            "taskflow_definition_digest",
+        )?;
         validate_digest(&self.causal_event_digest, "causal_event_digest")?;
         validate_digest(&self.route_policy_digest, "route_policy_digest")?;
         validate_digest(&self.parameter_bundle_digest, "parameter_bundle_digest")?;
@@ -176,9 +181,9 @@ impl AutomationStore {
         activation.validate()?;
         validate_id(command_id, "command_id")?;
         let run = self.require_current_circuit_run(&activation.run_id, fence, now_ms).await?;
-        if run.definition_digest != activation.circuit_digest {
+        if run.definition_digest != activation.taskflow_definition_digest {
             return Err(TaskFlowError::Conflict(
-                "circuit activation digest differs from the admitted TaskFlow definition"
+                "circuit activation compiled definition differs from the admitted TaskFlow run"
                     .to_string(),
             ));
         }
@@ -192,13 +197,13 @@ impl AutomationStore {
         let result = sqlx::query(
             "INSERT OR IGNORE INTO taskflow_circuit_activations (
                 owner_agent_id, run_id, activation_id, round, node_id,
-                circuit_digest, causal_event_digest, route_policy_digest,
+                circuit_digest, taskflow_definition_digest, causal_event_digest, route_policy_digest,
                 parameter_bundle_digest, resource_profile_digest,
                 fleet_lease_id, fleet_lease_revision, fleet_authority_epoch,
                 compute_units, inference_units, provider_effect_units, queue_units,
                 child_units, uncertainty_units, command_id, command_digest,
                 activation_digest, recorded_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         )
         .bind(fence.owner_agent_id.as_str())
         .bind(&activation.run_id)
@@ -206,6 +211,7 @@ impl AutomationStore {
         .bind(i64::from(activation.round))
         .bind(&activation.node_id)
         .bind(activation.circuit_digest.as_str())
+        .bind(activation.taskflow_definition_digest.as_str())
         .bind(activation.causal_event_digest.as_str())
         .bind(activation.route_policy_digest.as_str())
         .bind(activation.parameter_bundle_digest.as_str())
@@ -519,7 +525,8 @@ mod tests {
             activation_id: "activation-1".to_string(),
             round: 2,
             node_id: "decide".to_string(),
-            circuit_digest: digest("definition"),
+            circuit_digest: digest("circuit"),
+            taskflow_definition_digest: digest("definition"),
             causal_event_digest: digest("event"),
             route_policy_digest: digest("route"),
             parameter_bundle_digest: digest("bundle"),
