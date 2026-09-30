@@ -6,7 +6,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: intuition-final-use-authoring-${{ github.ref }}
+  group: intuition-final-use-authoring-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   author:
