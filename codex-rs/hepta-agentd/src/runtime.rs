@@ -260,7 +260,7 @@ pub async fn run(
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
         if let Some(runtime) = intelligence_learning {
-            let (host, interval, max_batch) = runtime.into_parts();
+            let (host, interval, max_batch, metrics) = runtime.into_parts();
             tasks.spawn_required(
                 "intelligence-learning-reconciler",
                 crate::intelligence_learning_runtime::run_intelligence_learning_runtime_v1(
@@ -268,6 +268,7 @@ pub async fn run(
                     Arc::clone(&state),
                     interval,
                     max_batch,
+                    metrics,
                     cancellation.clone(),
                 ),
             )?;
