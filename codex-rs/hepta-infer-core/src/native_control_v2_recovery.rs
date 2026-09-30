@@ -38,14 +38,19 @@ impl DurableInferenceControl {
     /// Apply fresh signed terminal/usage evidence to a historical execution.
     /// The original dispatch lease may have expired, but every historical
     /// identity and the current receipt signature is re-verified before this
-    /// method is called. The durable pre-effect quota remains authoritative for
-    /// settlement even after its dispatch window expires.
+    /// method is called. Actual usage above the durable pre-effect quota is
+    /// retained with quarantined qualification after its dispatch window expires.
     pub fn reconcile_native_recovery(
         &mut self,
         request_id: &str,
         plan: &crate::recovery_contracts::RecoveryExecutionPlan,
+        now_unix_ms: u64,
         verified: &crate::recovery_contracts::VerifiedRecoveryReconciliationReceipt,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
+        verified
+            .assert_valid_at(now_unix_ms)
+            .map_err(|_| Error::InvalidTime)?;
         self.assert_native_recovery_plan_identity(request_id, plan)?;
         let record = self
             .native
@@ -58,14 +63,14 @@ impl DurableInferenceControl {
                 | NativeReservationState::Running
                 | NativeReservationState::Cancelling
                 | NativeReservationState::Indeterminate
+                | NativeReservationState::Released
         ) || record.dispatch_rejection.is_some()
+            || record.pre_dispatch_stop.is_some()
+            || record.retirement.is_some()
+            || (record.state == NativeReservationState::Released && record.reconciliation.is_none())
         {
             return Err(Error::InvalidTransition);
         }
-        let binding = record
-            .execution_binding
-            .as_ref()
-            .ok_or(Error::InvalidIdentity("native execution binding"))?;
         let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
         let dispatch_digest = native_dispatch_digest(dispatch)?;
         let receipt = verified.receipt();
@@ -77,12 +82,6 @@ impl DurableInferenceControl {
             || receipt.provider_id != dispatch.model_provider
             || receipt.model_digest != plan.model_digest()
             || receipt.execution_authority_epoch != plan.execution_authority_epoch()
-            || receipt
-                .observed_output_tokens
-                .is_some_and(|value| value > binding.maximum_output_tokens)
-            || receipt
-                .usage_microunits
-                .is_some_and(|value| value > binding.maximum_cost_microunits)
         {
             return Err(Error::AssignmentMismatch);
         }
@@ -122,7 +121,12 @@ impl DurableInferenceControl {
             observed_output_tokens: receipt.observed_output_tokens,
             terminal_observed: true,
             stop_reason: None,
-            owner_authority: NativeOwnerAuthority::ObservedReady,
+            owner_authority: record
+                .observation
+                .as_ref()
+                .map_or(NativeOwnerAuthority::Unverified, |previous| {
+                    previous.owner_authority.clone()
+                }),
             codex_terminal_correlation_digest: Some(verified.receipt_digest().to_string()),
         };
         let audit = NativeReconciliationAudit {
@@ -149,8 +153,13 @@ impl DurableInferenceControl {
         &mut self,
         request_id: &str,
         plan: &crate::recovery_contracts::RecoveryExecutionPlan,
+        now_unix_ms: u64,
         verified: &crate::recovery_contracts::VerifiedRecoveryRetirement,
     ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_writer_available()?;
+        verified
+            .assert_valid_at(now_unix_ms)
+            .map_err(|_| Error::InvalidTime)?;
         self.assert_native_recovery_plan_identity(request_id, plan)?;
         let record = self
             .native
@@ -160,7 +169,10 @@ impl DurableInferenceControl {
         let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
         let retirement = verified.retirement();
         if record.state != NativeReservationState::Indeterminate
-            || record.retirement.is_some()
+            || record
+                .retirement
+                .as_ref()
+                .is_some_and(|audit| audit.independent_operator_key_digests.is_some())
             || retirement.request_id != request_id
             || retirement.principal_id != record.request.principal_id
             || retirement.record_revision != record.revision
@@ -176,10 +188,8 @@ impl DurableInferenceControl {
                 verified.operator_ids()[0].clone(),
                 verified.operator_ids()[1].clone(),
             ],
-            key_ids: [
-                verified.key_ids()[0].clone(),
-                verified.key_ids()[1].clone(),
-            ],
+            key_ids: [verified.key_ids()[0].clone(), verified.key_ids()[1].clone()],
+            independent_operator_key_digests: Some(verified.key_fingerprints().clone()),
             reason_code: retirement.reason_code.clone(),
             reason: retirement.reason.clone(),
         };

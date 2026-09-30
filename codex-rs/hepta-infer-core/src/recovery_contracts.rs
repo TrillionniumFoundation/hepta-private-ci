@@ -156,6 +156,7 @@ pub fn verify_execution_plan_for_recovery(
     ];
     let mut authenticated_keys = BTreeMap::new();
     let mut used_keys = BTreeSet::new();
+    let mut used_public_keys = BTreeSet::new();
     for (role, signer_id) in required {
         let candidate = signed
             .signatures
@@ -169,7 +170,12 @@ pub fn verify_execution_plan_for_recovery(
                     })
             })
             .ok_or(RecoveryContractError::SignatureQuorum)?;
-        if !used_keys.insert(candidate.key_id.clone()) {
+        let public_key = trust_keys
+            .iter()
+            .find(|key| key.key_id == candidate.key_id)
+            .ok_or(RecoveryContractError::UnknownTrustKey)?
+            .verifying_key;
+        if !used_keys.insert(candidate.key_id.clone()) || !used_public_keys.insert(public_key) {
             return Err(RecoveryContractError::SignatureQuorum);
         }
         verify_signature(
@@ -299,6 +305,16 @@ impl VerifiedRecoveryReconciliationReceipt {
     pub fn authenticated_key_id(&self) -> &str {
         &self.authenticated_key_id
     }
+
+    /// Recheck the fresh signed window independently from the dispatch lease.
+    pub fn assert_valid_at(&self, now_unix_ms: u64) -> Result<(), RecoveryContractError> {
+        validate_fresh_window(
+            now_unix_ms,
+            self.receipt.issued_at_unix_ms,
+            self.receipt.expires_at_unix_ms,
+            MAX_RECEIPT_LIFETIME_MS,
+        )
+    }
 }
 
 pub fn verify_recovery_reconciliation_receipt(
@@ -377,6 +393,7 @@ pub struct VerifiedRecoveryRetirement {
     retirement_digest: String,
     operator_ids: [String; 2],
     key_ids: [String; 2],
+    key_fingerprints: [String; 2],
 }
 
 impl VerifiedRecoveryRetirement {
@@ -394,6 +411,21 @@ impl VerifiedRecoveryRetirement {
 
     pub fn key_ids(&self) -> &[String; 2] {
         &self.key_ids
+    }
+
+    /// Domain-separated fingerprints of the two independently verified public keys.
+    pub fn key_fingerprints(&self) -> &[String; 2] {
+        &self.key_fingerprints
+    }
+
+    /// Recheck the fresh signed approval window when the durable owner applies it.
+    pub fn assert_valid_at(&self, now_unix_ms: u64) -> Result<(), RecoveryContractError> {
+        validate_fresh_window(
+            now_unix_ms,
+            self.retirement.issued_at_unix_ms,
+            self.retirement.expires_at_unix_ms,
+            MAX_RETIREMENT_LIFETIME_MS,
+        )
     }
 }
 
@@ -419,6 +451,17 @@ pub fn verify_recovery_retirement(
     let first = &signed.approvals[0];
     let second = &signed.approvals[1];
     if first.key_id == second.key_id || first.signer_id == second.signer_id {
+        return Err(RecoveryContractError::SignatureQuorum);
+    }
+    let first_key = trust_keys
+        .iter()
+        .find(|key| key.key_id == first.key_id)
+        .ok_or(RecoveryContractError::UnknownTrustKey)?;
+    let second_key = trust_keys
+        .iter()
+        .find(|key| key.key_id == second.key_id)
+        .ok_or(RecoveryContractError::UnknownTrustKey)?;
+    if first_key.verifying_key == second_key.verifying_key {
         return Err(RecoveryContractError::SignatureQuorum);
     }
     let message = retirement.signing_bytes()?;
@@ -447,6 +490,16 @@ pub fn verify_recovery_retirement(
         retirement_digest,
         operator_ids: [first.signer_id.clone(), second.signer_id.clone()],
         key_ids: [first.key_id.clone(), second.key_id.clone()],
+        key_fingerprints: [
+            digest_domain(
+                b"hepta.inference-control.retirement-verifying-key.v1\0",
+                &first_key.verifying_key,
+            )?,
+            digest_domain(
+                b"hepta.inference-control.retirement-verifying-key.v1\0",
+                &second_key.verifying_key,
+            )?,
+        ],
     })
 }
 

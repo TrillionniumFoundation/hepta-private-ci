@@ -3,6 +3,7 @@ use std::ffi::OsString;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -27,7 +28,7 @@ use super::validate_digest;
 use super::validate_identity;
 
 pub(super) const JOURNAL_PREFIX: &str = "native-v1|";
-const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
+const CHECKPOINT_SCHEMA_VERSION: u32 = 2;
 const MAX_CHECKPOINT_BYTES: u64 = super::MAX_JOURNAL_BYTES;
 const COMPACTION_HEADROOM_BYTES: u64 = 2 * super::MAX_JOURNAL_LINE_BYTES as u64;
 
@@ -226,6 +227,10 @@ pub struct NativeRetirementAudit {
     pub retirement_digest: String,
     pub operator_ids: [String; 2],
     pub key_ids: [String; 2],
+    /// Domain-separated digests of the actual independent verifying keys.
+    /// Missing historical evidence holds capacity until fresh retirement.
+    #[serde(default)]
+    pub independent_operator_key_digests: Option<[String; 2]>,
     pub reason_code: String,
     pub reason: String,
 }
@@ -234,10 +239,12 @@ pub struct NativeRetirementAudit {
 /// has not crossed the external App Server effect boundary.
 ///
 /// The token is deliberately non-cloneable and non-serializable. Recovery can
-/// never recreate it, so a recovered Dispatching record remains reconcile-only.
+/// never recreate it. The original owner incarnation must still match, so
+/// retaining a token across owner reopen cannot release a recovered dispatch.
 pub struct NativePreEffectAbortToken {
     request_id: String,
     dispatch_revision: u64,
+    owner: std::sync::Weak<()>,
 }
 
 impl std::fmt::Debug for NativePreEffectAbortToken {
@@ -432,4 +439,3 @@ pub struct NativeControlMetrics {
     pub protected_outputs: usize,
     pub expired_output_references: usize,
 }
-

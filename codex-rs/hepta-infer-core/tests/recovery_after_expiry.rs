@@ -404,8 +404,19 @@ fn fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry() {
         &signed,
     )
     .unwrap();
+
+    assert_eq!(verified.assert_valid_at(RECOVERY_NOW), Ok(()));
+    assert_eq!(
+        verified.assert_valid_at(RECOVERY_NOW - 2),
+        Err(codex_hepta_infer_core::recovery_contracts::RecoveryContractError::NotYetValid)
+    );
+    assert_eq!(
+        verified.assert_valid_at(RECOVERY_NOW + 100),
+        Err(codex_hepta_infer_core::recovery_contracts::RecoveryContractError::Expired)
+    );
+
     let released = control
-        .reconcile_native_recovery("request-1", &recovery_plan, &verified)
+        .reconcile_native_recovery("request-1", &recovery_plan, RECOVERY_NOW, &verified)
         .unwrap();
     assert_eq!(released.state, NativeReservationState::Released);
     assert_eq!(released.reconciliation.unwrap().terminal_sequence, 9);
@@ -456,8 +467,55 @@ fn fresh_rotated_dual_control_retirement_releases_after_lease_expiry() {
     let verified =
         verify_recovery_retirement(RECOVERY_NOW, &fixture.trust_keys, &recovery_plan, &signed)
             .unwrap();
+
+    assert_eq!(
+        verified.key_fingerprints(),
+        &[
+            digest_bytes(
+                b"hepta.inference-control.retirement-verifying-key.v1\0",
+                &fixture.operator_a.verifying_key().to_bytes()
+            ),
+            digest_bytes(
+                b"hepta.inference-control.retirement-verifying-key.v1\0",
+                &fixture.operator_b.verifying_key().to_bytes()
+            ),
+        ]
+    );
+    assert_ne!(
+        verified.key_fingerprints()[0],
+        verified.key_fingerprints()[1]
+    );
+
+    assert_eq!(verified.assert_valid_at(RECOVERY_NOW), Ok(()));
+    assert_eq!(
+        verified.assert_valid_at(RECOVERY_NOW - 2),
+        Err(codex_hepta_infer_core::recovery_contracts::RecoveryContractError::NotYetValid)
+    );
+    assert_eq!(
+        verified.assert_valid_at(RECOVERY_NOW + 100),
+        Err(codex_hepta_infer_core::recovery_contracts::RecoveryContractError::Expired)
+    );
+
+    let mut aliased_trust = fixture.trust_keys.clone();
+    aliased_trust
+        .iter_mut()
+        .find(|key| key.key_id == "operator-key-b-v2")
+        .unwrap()
+        .verifying_key = fixture.operator_a.verifying_key().to_bytes();
+    let mut aliased_signed = signed.clone();
+    aliased_signed.approvals[1].signature = aliased_signed.approvals[0].signature.clone();
+    assert_eq!(
+        verify_recovery_retirement(
+            RECOVERY_NOW,
+            &aliased_trust,
+            &recovery_plan,
+            &aliased_signed
+        ),
+        Err(codex_hepta_infer_core::recovery_contracts::RecoveryContractError::SignatureQuorum)
+    );
+
     let released = control
-        .retire_native_indeterminate_recovery("request-2", &recovery_plan, &verified)
+        .retire_native_indeterminate_recovery("request-2", &recovery_plan, RECOVERY_NOW, &verified)
         .unwrap();
     assert_eq!(released.state, NativeReservationState::Released);
     assert_eq!(
@@ -481,4 +539,29 @@ fn digest_bytes(domain: &[u8], value: &[u8]) -> String {
     hash.update((value.len() as u64).to_be_bytes());
     hash.update(value);
     format!("{:x}", hash.finalize())
+}
+
+#[test]
+fn historical_four_authority_aliases_cannot_reuse_one_execution_signing_key() {
+    let mut fixture = fixture("four-authority-aliases");
+    let key = SigningKey::from_bytes(&[1; 32]);
+    for trusted in &mut fixture.trust_keys {
+        if matches!(
+            trusted.role,
+            TrustRole::ManifestAuthority
+                | TrustRole::QuotaAuthority
+                | TrustRole::ResourceAuthority
+                | TrustRole::DataAuthority
+        ) {
+            trusted.verifying_key = key.verifying_key().to_bytes();
+        }
+    }
+    let bytes = fixture.signed_bundle.bundle.signing_bytes().unwrap();
+    for signature in &mut fixture.signed_bundle.signatures {
+        signature.signature = key.sign(&bytes).to_bytes().to_vec();
+    }
+    assert_eq!(
+        verify_execution_plan_for_recovery(&fixture.trust_keys, &fixture.signed_bundle),
+        Err(codex_hepta_infer_core::recovery_contracts::RecoveryContractError::SignatureQuorum)
+    );
 }

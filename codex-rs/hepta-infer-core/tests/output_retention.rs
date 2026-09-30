@@ -282,27 +282,45 @@ fn compaction_reports_expiry_without_manufacturing_vault_deletion() {
         "c".repeat(64),
     )
     .unwrap();
+    let observed = NativeRunOutput {
+        thread_id: "thread-1".to_string(),
+        turn_id: "turn-1".to_string(),
+        model: "model-1".to_string(),
+        model_provider: "provider-1".to_string(),
+        status: NativeRunStatus::Completed,
+        boundary_status: NativeBoundaryStatus::Succeeded,
+        output: "secret output".to_string(),
+        observed_output_tokens: Some(7),
+        terminal_observed: true,
+        stop_reason: None,
+        owner_authority: NativeOwnerAuthority::ObservedReady,
+        codex_terminal_correlation_digest: Some("d".repeat(64)),
+    };
+    let before = control.native_record("request-1").unwrap().clone();
+    let bytes_before = fs::metadata(&paths.journal).unwrap().len();
+    for field in [
+        "encrypted_reference",
+        "ciphertext_digest",
+        "encryption_key_id",
+    ] {
+        let mut json = serde_json::to_value(&protected).unwrap();
+        json.as_object_mut().unwrap().remove(field);
+        let forged = serde_json::from_value::<ProtectedOutput>(json).unwrap();
+        assert_eq!(
+            control.settle_native_authorized(
+                "request-1",
+                &plan,
+                NOW,
+                observed.clone(),
+                Some(forged)
+            ),
+            Err(Error::InvalidIdentity("native protected output policy"))
+        );
+        assert_eq!(control.native_record("request-1"), Some(&before));
+        assert_eq!(fs::metadata(&paths.journal).unwrap().len(), bytes_before);
+    }
     control
-        .settle_native_authorized(
-            "request-1",
-            &plan,
-            NOW,
-            NativeRunOutput {
-                thread_id: "thread-1".to_string(),
-                turn_id: "turn-1".to_string(),
-                model: "model-1".to_string(),
-                model_provider: "provider-1".to_string(),
-                status: NativeRunStatus::Completed,
-                boundary_status: NativeBoundaryStatus::Succeeded,
-                output: "secret output".to_string(),
-                observed_output_tokens: Some(7),
-                terminal_observed: true,
-                stop_reason: None,
-                owner_authority: NativeOwnerAuthority::ObservedReady,
-                codex_terminal_correlation_digest: Some("d".repeat(64)),
-            },
-            Some(protected),
-        )
+        .settle_native_authorized("request-1", &plan, NOW, observed, Some(protected))
         .unwrap();
 
     let mut no_failure = |_stage: NativeMaintenanceStage| -> Result<(), Error> { Ok(()) };
@@ -326,6 +344,6 @@ fn compaction_reports_expiry_without_manufacturing_vault_deletion() {
         retained.encrypted_reference.as_deref(),
         Some("vault://tenant/request-1")
     );
-    assert_eq!(retained.ciphertext_digest.as_deref(), Some(&"c".repeat(64)));
+    assert_eq!(retained.ciphertext_digest, Some("c".repeat(64)));
     assert_eq!(retained.encryption_key_id.as_deref(), Some("kms-key-1"));
 }
