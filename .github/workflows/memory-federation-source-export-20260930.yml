@@ -23,14 +23,15 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
-      - name: Build immutable source archive
+      - name: Build immutable source archive with exact Git metadata
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
-          tar --exclude=.git -czf "${RUNNER_TEMP}/memory-federation-source-${GITHUB_SHA}.tar.gz" .
+          git fsck --no-dangling
+          tar -czf "${RUNNER_TEMP}/memory-federation-source-${GITHUB_SHA}.tar.gz" .
           sha256sum "${RUNNER_TEMP}/memory-federation-source-${GITHUB_SHA}.tar.gz" > "${RUNNER_TEMP}/memory-federation-source-${GITHUB_SHA}.tar.gz.sha256"
       - name: Upload source archive
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
