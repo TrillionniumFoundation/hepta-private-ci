@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 import unittest
 
 from control_engineering_v2 import HmacTrustStore
@@ -84,7 +84,7 @@ class KeyCustodyContinuityTests(unittest.TestCase):
             expected_merge_sha=self.merge_sha,
             now_ns=self.now,
         )
-        self.assertEqual(digest, semantic_digest(receipt.__dict__))
+        self.assertEqual(digest, semantic_digest(asdict(receipt)))
         self.assertEqual(
             key_set_digest(receipt.current_keys, rotation_epoch=1),
             key_set_digest(tuple(reversed(receipt.current_keys)), rotation_epoch=1),
@@ -98,7 +98,7 @@ class KeyCustodyContinuityTests(unittest.TestCase):
             merge_sha=self.merge_sha,
             rotation_epoch=2,
             rotation_state="dual_window",
-            previous_set_digest=semantic_digest(previous.__dict__),
+            previous_set_digest=semantic_digest(asdict(previous)),
             revocation_frontier_digest="c" * 64,
             external_audit_anchor_digest="d" * 64,
             current_keys=self.keys("epoch-two"),
@@ -171,7 +171,7 @@ class KeyCustodyContinuityTests(unittest.TestCase):
             merge_sha=self.merge_sha,
             rotation_epoch=2,
             rotation_state="dual_window",
-            previous_set_digest=semantic_digest(previous.__dict__),
+            previous_set_digest=semantic_digest(asdict(previous)),
             revocation_frontier_digest="c" * 64,
             external_audit_anchor_digest="d" * 64,
             current_keys=previous.current_keys,
