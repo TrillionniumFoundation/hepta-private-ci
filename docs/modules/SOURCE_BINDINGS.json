@@ -294,7 +294,7 @@
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
       "source_root_present": true,
-      "production_implementation": true,
+      "production_implementation": false,
       "declaredRoots": [
         "codex-rs/hepta-objective"
       ],
@@ -488,7 +488,7 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-1-STORE",
       "technicalDocument": "docs/modules/cognitive.store/TECHNICAL.md",
-      "interpretation": "normal_agentd_runtime_accepts_only_the_sealed_exact_cut_recovered_cognitive_mutation_capability;_production_implementation_remains_false_until_exact_candidate_execution_and_external_bootstrap_evidence_are_current"
+      "interpretation": "normal_agentd_runtime_accepts_only_the_sealed_exact_cut_recovered_cognitive_mutation_capability;_production_implementation_remains_false_while_current_candidate_qualification_and_declared_module_completion_gates_are_pending;_bootstrap_acceptance_activation_and_release_are_separate_states"
     },
     {
       "module": "cognitive.read",

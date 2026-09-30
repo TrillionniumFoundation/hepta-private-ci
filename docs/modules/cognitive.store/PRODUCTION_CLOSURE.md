@@ -1,7 +1,9 @@
 # cognitive.store production convergence
 
-Status: source implementation and product composition exist; current external
-bootstrap, independent acceptance and production execution remain separate gates.
+Status: source implementation and product composition exist; current
+candidate qualification and declared module completion gates remain pending.
+External bootstrap, independent acceptance, activation and production execution
+are separate states.
 
 ## 1. Ownership and the compiled product route
 
@@ -67,7 +69,15 @@ cannot manufacture those semantics or atomically freeze an external authority.
 
 Ordinary `DurableCognitiveStore::open` is the bounded read/bootstrap path. It
 checks database and existing sidecar identities before SQLite access and verifies
-schema/integrity, recomputes source and memory digests in bounded batches, and
+the compiled owner schema and migration-ledger schema before relying on CHECK constraints
+or integrity queries. Before pending migrations execute, bounded migration rows
+must identify a continuous compiled history prefix whose complete schema matches
+a separate in-memory reference built from the compiled migrations. This
+preserves clean historical upgrades while rejecting altered triggers, CHECKs,
+autoindexes and FTS shadow definitions. Prefix admission, compiled migrations,
+full-schema verification and owner metadata initialization share one
+`BEGIN IMMEDIATE` transaction. The completed schema is verified again
+before integrity scans. It recomputes source and memory digests in bounded batches and
 checks exact historical Memory FTS membership/content plus FTS5 integrity.
 Expired and tombstoned revisions remain in that historical index and are filtered
 by owner read semantics. Existing files with unsafe mode are rejected rather
@@ -79,10 +89,11 @@ cut and is not the production writer recovery route.
 Writable recovery is implemented in `cognitive_store_recovery.rs`. It retains
 source database/WAL/journal descriptors, copies them to a private generation,
 checks the exact independent anchor and integrity, checkpoints the copy, and
-publishes its active pointer atomically. Source files remain untouched. The
-source and exclusive fence are checked again before publication, along with the
-external authority and local lease expiry. Rejection leaves the old active
-pointer in place.
+publishes its active pointer atomically. Source files remain untouched. Source
+descriptor identity is revalidated during materialization while the exclusive
+store fence remains held. The publication boundary rechecks the exclusive fence,
+external authority and local lease expiry; it does not perform a new source
+descriptor capture. Rejection leaves the old active pointer in place.
 
 The old `codex-state` recovery-writer API returning `Unavailable` is not this
 route. Platform inability to supply required identity/locking guarantees still
@@ -112,9 +123,11 @@ correction CAS, non-resurrection and rollback. Run scoped Clippy, formatting,
 caller proof and module-document/implementation-map checks against the exact
 candidate. Test invocations are not pass receipts.
 
-The registry keeps `production_implementation=false` until current execution and
-independent bootstrap evidence justify it. The repository does not provision the
-external issuer, authenticated current-cut witness service or operator acceptance.
+The registry keeps `production_implementation=false` while current candidate
+qualification and declared module completion gates are pending. This fact does
+not erase the compiled source or named product composition. The repository does
+not provision the external issuer, authenticated current-cut witness service or
+operator acceptance; those remain independent host lifecycle obligations.
 
 Agentd context admission, publication and final-use now use bounded exact-ID
 snapshots. Candidate and output selections share a global owner witness covering
@@ -126,9 +139,11 @@ is an error. Global witness construction scans retained heads with bounded RAM,
 so latency still grows with scope size. This witness depends on immutable ledger
 semantics and never replaces the independent full-database recovery anchor.
 
-Reconciliation uses destination-local shared cursors and a frozen upper bound
-per scan cycle; unresolved early rows and continuing new arrivals cannot prevent
-prior rows from being revisited. The cursor resets on writer restart and carries
+Reconciliation uses destination-local shared cursors and a frozen semantic
+preparation-sequence upper bound per scan cycle. Wall-clock preparation timestamps
+and operation IDs are not the admission watermark. Unresolved early rows and
+continuing new arrivals cannot prevent prior rows from being revisited. The cursor
+resets on writer restart and carries
 no durable authority. A missing source row remains unresolved until a trusted
 terminal observation exists. Cross-cache forget settlement, physical erasure and
 canonical shadow promotion also require their own evidence.

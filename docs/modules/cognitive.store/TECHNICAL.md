@@ -193,6 +193,19 @@ Production semantic mutations additionally bind the live authority grant digest,
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
+Before forward migration, [cognitive_store_schema_admission.rs](../../../codex-rs/hepta-memory/src/cognitive_store_schema_admission.rs)
+admits only a bounded, continuous prefix of the compiled migration history.
+It checks migration-row types, sizes, versions, descriptions, success and checksums,
+then compares every SQLite schema object with the corresponding compiled in-memory
+reference. Clean historical prefixes can upgrade; altered CHECK expressions,
+triggers, autoindexes or FTS shadow definitions are rejected before pending
+migrations execute. One `BEGIN IMMEDIATE` transaction serializes prefix admission,
+compiled migrations, full-schema verification and owner metadata initialization.
+The completed schema is verified again before integrity
+PRAGMAs evaluate CHECK expressions. The logical recovery anchor binds registered
+owner tables; FTS shadow definitions are authenticated, while their physical
+contents remain rebuildable index state.
+
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
@@ -244,6 +257,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-cognitive-store/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-store/src/v2_tests.rs): verified-only admission, reserved tombstone capacity, bounded retry journal, cross-object image validation and exact-cut page cursors.
 - [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs): durable owner writes, correction/deletion ancestry, proof-bound paging, reopen and rollback-cut checks.
 - [codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs): descriptor-bound writable recovery, exclusive fencing, current-cut rejection and hostile filesystem identities.
+- [compiled-schema admission tests](../../../codex-rs/hepta-memory/src/cognitive_store_schema_admission_tests.rs) and [hostile-schema recovery tests](../../../codex-rs/hepta-memory/src/cognitive_store_schema_tests.rs): forward upgrade from compiled historical prefixes; schema rejection before migration or integrity scans.
 - [codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs](../../../codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs): named Agentd product host through the canonical cognitive-store façade.
 - [codex-rs/hepta-memory/src/production_writer.rs](../../../codex-rs/hepta-memory/src/production_writer.rs): same-transaction production provenance, semantic-validation rollback, live-authority rejection, and response-loss/restart duplicate rejection (`semantic_response_loss_restart_rejects_duplicate_and_preserves_committed_cut`).
 - [codex-rs/hepta-cognitive-store/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-store/src/lib_tests.rs); named case: `append_and_correction_are_predecessor_fenced`.
@@ -279,13 +293,25 @@ a genesis record or have a successor. Image checksums establish internal
 consistency, not independent authenticity or freshness.
 
 Ordinary SQLite open rejects redirected, multiply linked, nonregular or unsafe
-permission database/sidecar identities before SQLite access. Production recovery
-rechecks external authority immediately before pointer publication. Production
+permission database/sidecar identities before SQLite access. Before CHECK constraints
+are used to establish ledger validity, the owner verifies its compiled schema
+and migration-ledger schema. Production recovery revalidates source descriptor identity during
+materialization while retaining the exclusive store fence; it rechecks that fence,
+external authority and lease expiry immediately before pointer publication. Production
 semantic mutations recheck the retained verifier after taking the SQLite write
 lock and before commit; denial rolls back their semantic and provenance writes.
 
 The [production route and remaining gates](PRODUCTION_CLOSURE.md) identify the
 compiled façade, host composition, cutover and rollback procedure. Agentd now consumes bounded exact-ID owner snapshots, sharing a global head/visibility witness across candidate, output and final-use selections. Each selected ancestry remains bounded; global witness scanning has bounded RAM and scope-dependent latency.
+
+The focused native gate is [hepta-cognitive-store-native.yml](../../../.github/workflows/hepta-cognitive-store-native.yml).
+It qualifies both the exact source head and deterministic base-merge candidate
+with the two owner-library test suites and strict scoped Clippy. The source-head
+job also exercises crash/reopen recovery and records 256-record and 16,384-record
+durable performance samples. This gate runs independently of whole-repository
+document validation. It supplies scoped native evidence and does not replace
+global source/caller/document gates, Agentd integration qualification or independent
+production acceptance.
 
 ## 15. Definition of module completion
 
