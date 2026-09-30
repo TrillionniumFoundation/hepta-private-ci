@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.authbus.production-acceptance-contract.v1",
+  "module": "auth.authbus",
+  "sourceActivation": false,
+  "decision": "blocked_until_signed_external_evidence",
+  "requiredEvidence": [
+    {
+      "name": "exactHead",
+      "schema": "hepta.authbus.exact-head-evidence.v2",
+      "candidateKind": "exact_head"
+    },
+    {
+      "name": "syntheticMerge",
+      "schema": "hepta.authbus.exact-head-evidence.v2",
+      "candidateKind": "synthetic_merge"
+    },
+    {
+      "name": "targetHost",
+      "schema": "hepta.authbus.target-host-qualification.v2"
+    },
+    {
+      "name": "performance",
+      "schema": "hepta.authbus.performance-evidence.v1"
+    },
+    {
+      "name": "kmsHsm",
+      "schema": "hepta.authbus.external-drill.v1",
+      "drill": "kms_hsm_composition"
+    },
+    {
+      "name": "keyRotationRevocation",
+      "schema": "hepta.authbus.external-drill.v1",
+      "drill": "key_rotation_revocation_recovery"
+    },
+    {
+      "name": "backupRestore",
+      "schema": "hepta.authbus.external-drill.v1",
+      "drill": "backup_restore"
+    },
+    {
+      "name": "dualOwnerMount",
+      "schema": "hepta.authbus.external-drill.v1",
+      "drill": "dual_owner_and_mount"
+    },
+    {
+      "name": "activationPlan",
+      "schema": "hepta.authbus.activation-plan.v1"
+    },
+    {
+      "name": "rollbackPlan",
+      "schema": "hepta.authbus.rollback-plan.v1"
+    }
+  ],
+  "signaturePolicy": {
+    "algorithm": "ed25519",
+    "canonicalization": "utf8-json-sort-keys-compact-v1",
+    "securityReviewerKeySource": "protected-environment-secret",
+    "operatorKeySource": "protected-environment-secret",
+    "principalsMustDiffer": true,
+    "securityReviewerSigns": "qualification payload containing candidate, target identity, all evidence digests and plans",
+    "operatorSigns": "security-signed qualification digest plus activation and rollback plan digests"
+  },
+  "activationSemantics": {
+    "verifiedOutput": "approved_for_canary",
+    "productionActivated": false,
+    "release": false,
+    "promotionRequires": [
+      "canary observation receipt",
+      "SLO threshold compliance",
+      "no unresolved AuthBus alerts",
+      "operator promotion signature",
+      "tested rollback command and rollback window"
+    ]
+  }
+}
