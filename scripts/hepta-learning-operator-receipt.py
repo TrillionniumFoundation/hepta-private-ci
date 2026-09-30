@@ -30,6 +30,7 @@ INPUT_PATHS = (
     ".github/workflows/learning-operator-required.yml",
     ".github/workflows/blocking-ci.yml",
     "scripts/hepta-learning-operator-receipt.py",
+    "scripts/hepta-learning-operator-map.py",
     "scripts/hepta-learning-operator-mutation.py",
     "codex-rs/Cargo.lock",
 )
@@ -195,7 +196,7 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
         },
         "testSet": {
             "sha256": sha256_bytes(
-                b"operator-unit\nowner-final-use\nagentd-shadow-loop\nrevocation\nrollback\ncoverage\nmutation\nperformance\n"
+                b"operator-unit\nowner-final-use\nagentd-shadow-loop\nrevocation\nrollback\ncoverage\nmutation\nperformance\nimplementation-map\n"
             ),
             "required": [
                 "operator-unit",
@@ -206,6 +207,7 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
                 "coverage",
                 "mutation",
                 "performance",
+                "implementation-map",
             ],
         },
         "toolchain": {
@@ -226,14 +228,15 @@ def emit(args: argparse.Namespace) -> dict[str, Any]:
         ("coverage", args.coverage),
         ("mutation", args.mutation),
         ("performance", args.performance),
+        ("implementationMap", args.implementation_map),
         ("testLog", args.test_log),
     ):
         if value:
             receipt["outputs"][label] = output_digest(value)
     required_outputs = (
-        {"coverage", "mutation", "performance", "testLog"}
+        {"coverage", "mutation", "performance", "implementationMap", "testLog"}
         if args.mode == "exact-source"
-        else {"testLog"}
+        else {"implementationMap", "testLog"}
     )
     if set(receipt["outputs"]) != required_outputs:
         raise ValueError(
@@ -264,13 +267,19 @@ def verify_receipt(path: Path, *, bind_git_objects: bool = True) -> dict[str, An
     base_sha = None if base_value is None else require_hex(base_value, 40, "base SHA")
 
     if mode == "exact-source":
-        if candidate_sha != source_sha or base_sha is None:
+        if candidate_sha != source_sha:
             raise ValueError("exact-source identity mismatch")
-        required_outputs = {"coverage", "mutation", "performance", "testLog"}
+        required_outputs = {
+            "coverage",
+            "mutation",
+            "performance",
+            "implementationMap",
+            "testLog",
+        }
     else:
         if base_sha is None:
             raise ValueError("synthetic merge is missing base SHA")
-        required_outputs = {"testLog"}
+        required_outputs = {"implementationMap", "testLog"}
 
     if bind_git_objects:
         if source_tree != git_text("rev-parse", f"{source_sha}^{{tree}}"):
@@ -346,6 +355,8 @@ def combine(args: argparse.Namespace) -> dict[str, Any]:
         "baseCommit": merge["source"]["baseCommit"],
         "syntheticMergeCommit": merge["source"]["candidateCommit"],
         "syntheticMergeTree": merge["source"]["candidateTree"],
+        "exactObservedImplementationMap": exact["outputs"]["implementationMap"],
+        "syntheticObservedImplementationMap": merge["outputs"]["implementationMap"],
         "exactReceipt": output_digest(args.exact),
         "syntheticReceipt": output_digest(args.synthetic),
         "qualification": "success",
@@ -372,6 +383,7 @@ def main() -> int:
     emit_parser.add_argument("--coverage")
     emit_parser.add_argument("--mutation")
     emit_parser.add_argument("--performance")
+    emit_parser.add_argument("--implementation-map", required=True)
     emit_parser.add_argument("--test-log", required=True)
     emit_parser.add_argument("--output", required=True)
     verify_parser = sub.add_parser("verify")
