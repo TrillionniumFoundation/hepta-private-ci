@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import platform
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -14,6 +15,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 RELEVANT_ROOTS = [
     ".github/workflows/authbus-authority-qualification.yml",
+    ".github/workflows/authbus-target-host-qualification.yml",
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification",
     "codex-rs/hepta-evidence",
@@ -22,9 +24,18 @@ RELEVANT_ROOTS = [
     "docs/modules/auth.authbus",
     "docs/lane-a-foundation/auth.authbus",
     "scripts/check-authbus-closed-world.py",
+    "scripts/authbus-evidence-projection.py",
     "scripts/authbus-exact-head-evidence.py",
+    "scripts/authbus-target-host-evidence.py",
 ]
 ARTIFACT_TOKENS = ("authbus", "hepta_evidence", "hepta_agentd", "bao_adapter")
+REQUIRED_PROJECTIONS = (
+    "source-head.json",
+    "implementation-map.bound.json",
+    "current-implementation.bound.json",
+    "qualification-dossier.bound.json",
+    "release-status.bound.json",
+)
 
 
 def run(*args: str) -> str:
@@ -91,33 +102,60 @@ def pull_request_identity(event: dict[str, Any]) -> dict[str, Any]:
 def verify_candidate_identity(
     commit: str,
     parents: list[str],
-    job: str | None,
-    pull_request: dict[str, Any],
-) -> str:
-    expected_base = pull_request.get("base")
-    expected_head = pull_request.get("head")
-    if job == "source-head" and expected_head:
-        if commit != expected_head:
+    candidate_kind: str,
+    expected_head: str | None,
+    expected_base: str | None,
+) -> None:
+    if candidate_kind == "exact_head":
+        if expected_head and commit != expected_head:
             raise SystemExit(
-                f"exact-head receipt candidate {commit} does not match PR head {expected_head}"
+                f"exact-head receipt candidate {commit} does not match expected head {expected_head}"
             )
-        return "exact_head"
-    if job == "synthetic-merge" and expected_base and expected_head:
-        if parents != [expected_base, expected_head]:
-            raise SystemExit(
-                "synthetic-merge receipt parents do not match the declared PR base/head"
-            )
-        return "synthetic_merge"
-    if len(parents) == 2:
-        return "merge_candidate"
-    return "source_head"
+        if len(parents) > 1:
+            raise SystemExit("exact-head receipt unexpectedly names a merge commit")
+        return
+    if candidate_kind == "synthetic_merge":
+        if len(parents) != 2:
+            raise SystemExit("synthetic-merge receipt must have exactly two parents")
+        if expected_base and parents[0] != expected_base:
+            raise SystemExit("synthetic-merge first parent does not match expected base")
+        if expected_head and parents[1] != expected_head:
+            raise SystemExit("synthetic-merge second parent does not match expected head")
+        return
+    if candidate_kind == "main_head" and len(parents) > 2:
+        raise SystemExit("main-head receipt has an invalid parent set")
+
+
+def target_triple() -> str:
+    verbose = run("rustc", "--version", "--verbose")
+    for line in verbose.splitlines():
+        if line.startswith("host: "):
+            return line.removeprefix("host: ").strip()
+    raise SystemExit("rustc did not report a host target triple")
+
+
+def nonempty_files(paths: list[Path], label: str) -> list[tuple[str, str]]:
+    entries: list[tuple[str, str]] = []
+    for path in paths:
+        if not path.is_file() or path.stat().st_size == 0:
+            raise SystemExit(f"{label} is missing or empty: {path}")
+        entries.append((path.name, sha256(path)))
+    return entries
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--test-log", action="append", default=[], type=Path)
+    parser.add_argument("--projection-dir", required=True, type=Path)
     parser.add_argument("--artifact-root", type=Path, default=ROOT / "codex-rs/target")
+    parser.add_argument(
+        "--candidate-kind",
+        required=True,
+        choices=("exact_head", "synthetic_merge", "main_head"),
+    )
+    parser.add_argument("--expected-head")
+    parser.add_argument("--expected-base")
     args = parser.parse_args()
 
     if subprocess.call(["git", "diff", "--quiet"], cwd=ROOT) != 0 or subprocess.call(
@@ -128,11 +166,16 @@ def main() -> None:
     commit = run("git", "rev-parse", "HEAD")
     tree = run("git", "rev-parse", "HEAD^{tree}")
     parents = run("git", "show", "-s", "--format=%P", "HEAD").split()
+    verify_candidate_identity(
+        commit,
+        parents,
+        args.candidate_kind,
+        args.expected_head,
+        args.expected_base,
+    )
+
     event = event_payload()
     pull_request = pull_request_identity(event)
-    job = os.environ.get("GITHUB_JOB")
-    candidate_kind = verify_candidate_identity(commit, parents, job, pull_request)
-
     source_entries: list[tuple[str, str]] = []
     for relative in RELEVANT_ROOTS:
         for path in files_under(relative):
@@ -142,24 +185,28 @@ def main() -> None:
         (path.relative_to(ROOT).as_posix(), sha256(path))
         for path in sorted((ROOT / "codex-rs/hepta-authbus/migrations").glob("*.sql"))
     ]
-    log_entries = [
-        (path.name, sha256(path)) for path in args.test_log if path.is_file()
-    ]
-    if len(log_entries) != len(args.test_log):
-        raise SystemExit("one or more declared qualification logs are missing")
+    log_entries = nonempty_files(args.test_log, "qualification log")
+    projection_paths = [args.projection_dir / name for name in REQUIRED_PROJECTIONS]
+    projection_entries = nonempty_files(projection_paths, "evidence projection")
 
     artifact_entries: list[tuple[str, str]] = []
     if args.artifact_root.exists():
         for path in sorted(args.artifact_root.rglob("*")):
-            if not path.is_file() or not any(token in path.name for token in ARTIFACT_TOKENS):
+            if not path.is_file() or not any(
+                token in path.name for token in ARTIFACT_TOKENS
+            ):
                 continue
-            artifact_entries.append((path.relative_to(args.artifact_root).as_posix(), sha256(path)))
+            artifact_entries.append(
+                (path.relative_to(args.artifact_root).as_posix(), sha256(path))
+            )
 
     cargo_lock = ROOT / "codex-rs/Cargo.lock"
+    workflow_sha = os.environ.get("GITHUB_SHA")
+    workflow_event = os.environ.get("GITHUB_EVENT_NAME")
     receipt = {
-        "schema": "hepta.authbus.exact-head-evidence.v1",
+        "schema": "hepta.authbus.exact-head-evidence.v2",
         "candidate": {
-            "kind": candidate_kind,
+            "kind": args.candidate_kind,
             "commit": commit,
             "tree": tree,
             "parents": parents,
@@ -168,23 +215,39 @@ def main() -> None:
         "workflow": {
             "runId": os.environ.get("GITHUB_RUN_ID"),
             "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
-            "job": job,
-            "event": os.environ.get("GITHUB_EVENT_NAME"),
+            "job": os.environ.get("GITHUB_JOB"),
+            "event": workflow_event,
             "ref": os.environ.get("GITHUB_REF"),
-            "sha": os.environ.get("GITHUB_SHA"),
+            "triggerSha": workflow_sha,
+            "repository": os.environ.get("GITHUB_REPOSITORY"),
+            "workflowRef": os.environ.get("GITHUB_WORKFLOW_REF"),
+        },
+        "runner": {
+            "os": os.environ.get("RUNNER_OS") or platform.system(),
+            "arch": os.environ.get("RUNNER_ARCH") or platform.machine(),
+            "name": os.environ.get("RUNNER_NAME"),
+            "environment": os.environ.get("RUNNER_ENVIRONMENT"),
+            "image": os.environ.get("ImageOS") or os.environ.get("ImageVersion"),
+            "targetTriple": target_triple(),
         },
         "digests": {
             "relevantSource": aggregate(source_entries),
             "schema": aggregate(migration_entries),
             "cargoLock": sha256(cargo_lock),
             "testLogs": aggregate(log_entries),
+            "evidenceProjections": aggregate(projection_entries),
             "buildArtifacts": aggregate(artifact_entries),
         },
         "sourceFileCount": len(source_entries),
         "migrationFiles": [
             {"path": name, "sha256": digest} for name, digest in migration_entries
         ],
-        "testLogs": [{"path": name, "sha256": digest} for name, digest in log_entries],
+        "testLogs": [
+            {"path": name, "sha256": digest} for name, digest in log_entries
+        ],
+        "evidenceProjections": [
+            {"path": name, "sha256": digest} for name, digest in projection_entries
+        ],
         "buildArtifactCount": len(artifact_entries),
         "toolchain": {
             "rustc": run("rustc", "--version"),
@@ -192,10 +255,16 @@ def main() -> None:
             "git": run("git", "--version"),
         },
         "trackedWorktreeClean": True,
+        "qualificationComplete": True,
+        "targetHostQualification": False,
+        "independentSecurityAcceptance": False,
         "activation": False,
+        "release": False,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.output.write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":
