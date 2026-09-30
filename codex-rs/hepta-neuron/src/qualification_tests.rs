@@ -87,6 +87,20 @@ fn resource_summary_rejects_mixed_host_profiles() {
 }
 
 #[test]
+fn resource_sample_identity_is_invariant_to_tied_sample_order() {
+    let first = sample(0);
+    let mut second = first.clone();
+    second.receipt.journal_bytes_written += 1;
+    second.receipt.queue_age_micros += 1;
+    let forward = checked(summarize_resource_samples(
+        &[first.clone(), second.clone()],
+        &envelope(),
+    ));
+    let reverse = checked(summarize_resource_samples(&[second, first], &envelope()));
+    assert_eq!(forward, reverse);
+}
+
+#[test]
 fn config_ablations_remove_only_the_named_mechanism() {
     let full = config();
     let no_inhibition = ablate_sparse_config(&full, NeuronAblationProfileV1::NoInhibition);

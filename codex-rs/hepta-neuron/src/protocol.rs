@@ -455,6 +455,9 @@ pub fn canonical_checkpoint_v1(
     tick: &NeuronTickReceiptV1,
     expires_unix_ms: u64,
 ) -> Result<NeuronCheckpointV1, NeuronProtocolError> {
+    if !checkpoint.matches_publication(config.native_config_digest, tick.checkpoint_before) {
+        return Err(NeuronProtocolError::BindingMismatch("checkpoint lineage"));
+    }
     if tick.checkpoint_after != checkpoint.digest()
         || tick.activation_digest != checkpoint.activation_digest()
         || tick.threshold_digest != checkpoint.threshold_digest()
@@ -742,12 +745,13 @@ fn validate_runtime_config(
         || value.temporal_state_dimension > 256
         || value.activation_dimension == 0
         || value.activation_dimension > 512
+        || value.inhibition_edges > 4_096
         || value.modulator_dimension == 0
         || value.modulator_dimension > 8
         || value.state_minimum_q24 != -Q24_LIMIT
         || value.state_maximum_q24 != Q24_LIMIT
         || !value.checked_wide_intermediates
-        || value.top_k_minimum_ratio_ppm == 0
+        || value.top_k_minimum_ratio_ppm < 10_000
         || value.top_k_minimum_ratio_ppm > value.top_k_maximum_ratio_ppm
         || value.top_k_maximum_ratio_ppm > 200_000
         || !value.per_population_first
@@ -758,10 +762,10 @@ fn validate_runtime_config(
         || value.threshold_minimum_q24 < -Q24_LIMIT
         || value.threshold_maximum_q24 > Q24_LIMIT
         || value.threshold_minimum_q24 > value.threshold_maximum_q24
-        || value.saturation_limit == 0
         || value.eligibility_trace_dimension == 0
         || value.eligibility_trace_dimension > 512
         || value.eligibility_maximum_norm_q24 <= 0
+        || value.eligibility_maximum_norm_q24 > ELIGIBILITY_L1_Q24
         || value.eligibility_decay_q24 < 0
         || value.eligibility_decay_q24 > Q24_ONE
         || value.p95_latency_micros == 0
@@ -769,10 +773,7 @@ fn validate_runtime_config(
         || value.transient_allocation_bytes == 0
         || value.checkpoint_bytes == 0
         || !(1_000_000..=4_000_000).contains(&value.write_amplification_ppm)
-        || value.expiry_utc.is_empty()
-        || value.expiry_utc.len() > 64
-        || !value.expiry_utc.contains('T')
-        || !value.expiry_utc.ends_with('Z')
+        || !crate::protocol_timestamp::is_valid_expiry_utc(&value.expiry_utc)
     {
         return Err(NeuronProtocolError::InvalidField("runtime config"));
     }
@@ -813,6 +814,7 @@ fn validate_tick_receipt(value: &NeuronTickReceiptProtocolV1) -> Result<(), Neur
         }
     }
     if value.active_indices.len() > MAX_ACTIVE_INDICES
+        || value.active_indices.iter().any(|index| *index >= 512)
         || value
             .active_indices
             .windows(2)
@@ -820,6 +822,7 @@ fn validate_tick_receipt(value: &NeuronTickReceiptProtocolV1) -> Result<(), Neur
         || value.sparsity_ppm > PPM
         || value.confidence_ppm > PPM
         || value.ood_ppm > PPM
+        || !(0..=2 * Q24_LIMIT).contains(&value.prediction_error_q24)
     {
         return Err(NeuronProtocolError::InvalidField("tick receipt"));
     }
@@ -867,6 +870,7 @@ fn validate_checkpoint(value: &NeuronCheckpointV1) -> Result<(), NeuronProtocolE
     if value.logical_sequence == 0
         || value.expires_unix_ms == 0
         || indices.len() > MAX_ACTIVE_INDICES
+        || indices.iter().any(|index| *index >= 512)
         || indices.windows(2).any(|pair| pair[0] >= pair[1])
         || value.activation_summary.sparsity_ppm > PPM
         || (value.logical_sequence == 1) != value.predecessor_id.is_none()

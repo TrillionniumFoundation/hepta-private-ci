@@ -29,6 +29,7 @@ mod operation_store;
 mod plasticity;
 mod population_v2;
 mod protocol;
+mod protocol_timestamp;
 mod qualification;
 mod receipt_extension_v2;
 mod runtime;

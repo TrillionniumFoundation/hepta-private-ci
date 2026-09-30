@@ -249,6 +249,16 @@ impl SparseCheckpoint {
             && self.objective == objective_digest
     }
 
+    pub(crate) fn matches_publication(
+        &self,
+        config_digest: Digest32,
+        predecessor_digest: Digest32,
+    ) -> bool {
+        self.calculate_digest() == self.digest
+            && self.config == config_digest
+            && self.predecessor == predecessor_digest
+    }
+
     /// Diagonal local-head eligibility sufficient statistics, not model weights.
     pub fn eligibility_q24(&self) -> &[i64] {
         &self.eligibility

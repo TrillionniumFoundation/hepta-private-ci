@@ -126,7 +126,10 @@ impl StdError for PopulationSparseError {}
 impl PopulationSparseConfigV2 {
     pub fn digest(&self) -> Result<Digest32, PopulationSparseError> {
         self.validate()?;
-        let mut bytes = b"hepta.neuron.population-sparse-config.q24.v2".to_vec();
+        // Count each variable-length section. Projection and inhibition edges
+        // share the same tuple width, so concatenation alone cannot distinguish
+        // moving an edge across those mechanism boundaries.
+        let mut bytes = b"hepta.neuron.population-sparse-config.q24.v2.framed".to_vec();
         bytes.extend_from_slice(self.model_digest.as_array());
         bytes.extend_from_slice(self.normalization_digest.as_array());
         bytes.extend_from_slice(&self.generation.get().to_be_bytes());
@@ -155,6 +158,11 @@ impl PopulationSparseConfigV2 {
         }
         let mut projections = self.projection.clone();
         projections.sort();
+        bytes.extend_from_slice(
+            &u64::try_from(projections.len())
+                .map_err(|_| PopulationSparseError::Arithmetic)?
+                .to_be_bytes(),
+        );
         for edge in projections {
             bytes.extend_from_slice(
                 &u64::try_from(edge.source_temporal)
@@ -170,6 +178,11 @@ impl PopulationSparseConfigV2 {
         }
         let mut inhibition = self.inhibition.clone();
         inhibition.sort();
+        bytes.extend_from_slice(
+            &u64::try_from(inhibition.len())
+                .map_err(|_| PopulationSparseError::Arithmetic)?
+                .to_be_bytes(),
+        );
         for edge in inhibition {
             bytes.extend_from_slice(
                 &u64::try_from(edge.source)
@@ -183,6 +196,11 @@ impl PopulationSparseConfigV2 {
             );
             bytes.extend_from_slice(&edge.weight_q24.to_be_bytes());
         }
+        bytes.extend_from_slice(
+            &u64::try_from(self.populations.len())
+                .map_err(|_| PopulationSparseError::Arithmetic)?
+                .to_be_bytes(),
+        );
         for population in &self.populations {
             for value in [population.start, population.len, population.top_k] {
                 bytes.extend_from_slice(
