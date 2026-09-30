@@ -3,6 +3,7 @@ name: Learning plasticity one-shot source closure
 # and both migration scripts. Required qualification remains strictly read-only.
 
 on:
+  workflow_dispatch:
   push:
     branches: [feat/learning-plasticity-product-closure-20260928]
     paths:
