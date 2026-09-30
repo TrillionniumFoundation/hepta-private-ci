@@ -7,7 +7,6 @@
 
 use std::fs::OpenOptions;
 use std::io::ErrorKind;
-use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -290,15 +289,25 @@ fn write_atomic_json<T: Serialize>(
     let temp = run_root.join(format!(".{file_name}.{nanos}.{sequence}.tmp"));
     let final_path = run_root.join(file_name);
     let bytes = serde_json::to_vec(value)?;
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&temp)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
-    drop(file);
-    publish::publish(&temp, &final_path)?;
-    Ok(())
+    let mut options = OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut file = options.open(&temp)?;
+    let result: Result<(), SignedIntentError> = (|| {
+        crate::durability::write_all(&mut file, &bytes, "signed_intent")?;
+        crate::durability::sync_all(&file, "signed_intent")?;
+        drop(file);
+        publish::publish(&temp, &final_path)?;
+        Ok(())
+    })();
+    if result.is_err() && temp.exists() {
+        let _ = std::fs::remove_file(&temp);
+    }
+    result
 }
 
 #[cfg(test)]
