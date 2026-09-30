@@ -1,9 +1,10 @@
 # kernel.authority convergence status
 
-**Status date:** 2026-09-30  
-**Immutable source anchor:** `a4f2dc6601e1251b6a3fa09eda76f5796c01334e`
+**Status date:** 2026-10-01
 
-**Source tree:** `08b45dbc9a0467a6595e20cdf5ef54ce9a80edca`
+**Immutable source anchor:** `786b42cec201f61acc04e99e41bb06a17f3304db`
+
+**Source tree:** `cf51965dc7b96c1a701a97f2a5c625630fb2eb86`
 
 **Machine manifest:** `qualification/kernel-authority/convergence_manifest.json`  
 **Validator:** `qualification/kernel-authority/convergence_acceptance.py`
@@ -184,3 +185,11 @@ its dependency build exhausted the shared workspace disk. Exact-candidate
 hosted compilation/recovery and selected production-provider/target-host
 qualification remain required. No production, activation or release claim
 changes as a result of this audit.
+
+The follow-up source/doc audit corrects qualified Rust owner-anchor resolution
+and the general-lease interval profile. It passes all 687 tests discovered by
+the development-docs workflow, 97 authority qualification tests and eight B4
+tests locally. The native authority runtime is unchanged by this follow-up.
+The earlier head's hosted evidence-integrity gate succeeded; that receipt is
+not reused as execution evidence for the new candidate. Hosted native/process
+qualification for the new head remains pending until exact receipts exist.

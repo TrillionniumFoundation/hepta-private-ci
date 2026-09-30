@@ -3,8 +3,8 @@
   "schemaVersion": 1,
   "module": "kernel.authority",
   "sourceAnchor": {
-    "commit": "a4f2dc6601e1251b6a3fa09eda76f5796c01334e",
-    "tree": "08b45dbc9a0467a6595e20cdf5ef54ce9a80edca"
+    "commit": "786b42cec201f61acc04e99e41bb06a17f3304db",
+    "tree": "cf51965dc7b96c1a701a97f2a5c625630fb2eb86"
   },
   "preservedInvariants": [
     "one-authoritative-lease-and-final-use-owner",
@@ -54,7 +54,10 @@
     "docs/modules/kernel.authority/PRODUCTION_TRUST_PROFILE.md",
     "docs/modules/kernel.authority/PRODUCTION_CLOSURE.md",
     "codex-rs/hepta-contracts/src/authority_lease_storage_tests.rs",
-    "docs/modules/kernel.authority/AUDIT_20261001.md"
+    "docs/modules/kernel.authority/AUDIT_20261001.md",
+    "scripts/hepta-implementation-maps.py",
+    "scripts/hepta-lane-b-truth.py",
+    "scripts/test_hepta_ci_source_identity.py"
   ],
   "closures": {
     "trustedClockOwnership": {
