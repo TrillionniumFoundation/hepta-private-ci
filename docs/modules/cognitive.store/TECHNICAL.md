@@ -36,7 +36,7 @@ Existing declared roots at this exact source snapshot:
 
 Non-authoritative implementation evidence roots:
 
-None.
+- `codex-rs/hepta-memory` (physical SQLite engine; the canonical module API remains in `hepta-cognitive-store`).
 
 Declared roots not yet present:
 
@@ -269,6 +269,24 @@ Activation composes a named product caller through registered ports and verifies
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
+### Adversarial development checks
+
+Recovery images must reconstruct a legal per-record commit order, preserve the
+ordinary/tombstone and retry-journal capacity budgets, and bind each unchanged
+receipt to the head actually visible at its recorded cut. Full snapshot receipts
+must agree on generation, sequence and complete lineage. A tombstone cannot be
+a genesis record or have a successor. Image checksums establish internal
+consistency, not independent authenticity or freshness.
+
+Ordinary SQLite open rejects redirected, multiply linked, nonregular or unsafe
+permission database/sidecar identities before SQLite access. Production recovery
+rechecks external authority immediately before pointer publication. Production
+semantic mutations recheck the retained verifier after taking the SQLite write
+lock and before commit; denial rolls back their semantic and provenance writes.
+
+The [production route and remaining gates](PRODUCTION_CLOSURE.md) identify the
+compiled façade, host composition, cutover and rollback procedure. Agentd now consumes bounded exact-ID owner snapshots, sharing a global head/visibility witness across candidate, output and final-use selections. Each selected ancestry remains bounded; global witness scanning has bounded RAM and scope-dependent latency.
+
 ## 15. Definition of module completion
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
@@ -311,6 +329,11 @@ For `cognitive.store`, this document grants no runtime, production, model, provi
 - Owner/deputy: `cognitive-platform` / `durability-kernel`.
 - Allowed write paths:
 - `codex-rs/hepta-cognitive-store/**`
+- `codex-rs/hepta-memory/src/cognitive_store.rs`
+- `codex-rs/hepta-memory/src/cognitive_store_recovery.rs`
+- `codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs`
+- `codex-rs/hepta-memory/src/cognitive_store_tests.rs`
+- `codex-rs/hepta-memory/src/lib.rs`
 - Development predecessors:
 - `MEM-1-STORE`
 - Activation predecessors:

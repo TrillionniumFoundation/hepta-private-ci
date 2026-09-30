@@ -9,6 +9,8 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 required_boundary_ids = [
   "supervisor_authorized_boot",
   "memory_production_writer_open",
+  "cognitive_store_recovery_open",
+  "cognitive_production_mutation_capability",
   "agentd_production_writer_host",
   "agentd_production_operation_runtime",
   "provider_effect_coordinator",
@@ -422,7 +424,7 @@ forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
-required = ["AgentdProductionOperationRuntimeConfig::open", "attach_production_operations", "run_production_operation_reconciler"]
+required = ["operations.attach", "attach_production_operations", "run_production_operation_reconciler"]
 forbidden = ["ProductionAuthorityToken::from_verified_bytes", "SigningKey::from_bytes"]
 
 [[protected_file]]

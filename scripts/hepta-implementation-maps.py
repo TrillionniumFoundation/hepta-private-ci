@@ -570,6 +570,23 @@ def validate_claim_types(row: dict) -> bool:
     return any(claim.get(name) is True for claim in claims for name in EXECUTION_CLAIMS)
 
 
+def validate_status_projection(row: dict, module: dict) -> None:
+    """Reject a map that contradicts its canonical source/completion facts."""
+    for canonical, projected in (
+        ("source_root_present", "sourceRootPresent"),
+        ("production_implementation", "productionImplementation"),
+    ):
+        expected = module.get(canonical)
+        if type(expected) is not bool or row.get(projected) is not expected:
+            raise ValueError(f"{projected} contradicts canonical {canonical}")
+        for section in ("claimBoundary", "completion"):
+            claim = row.get(section, {})
+            if projected in claim and claim[projected] is not expected:
+                raise ValueError(
+                    f"{section}.{projected} contradicts canonical {canonical}"
+                )
+
+
 def canonical_product_callers(callers: list) -> list[dict]:
     """Normalize legacy navigation spellings without inventing composition."""
     if not isinstance(callers, list):
@@ -1207,7 +1224,9 @@ def verify(
             (expected_tree, "expected-tree"),
         ):
             if value is not None and re.fullmatch(r"[0-9a-f]{40}", value) is None:
-                raise ValueError(f"--{label} must be an exact 40-character Git object id")
+                raise ValueError(
+                    f"--{label} must be an exact 40-character Git object id"
+                )
         if expected_sha is not None and candidate["commit"] != expected_sha:
             raise ValueError(
                 f"expected candidate SHA {expected_sha}, observed {candidate['commit']}"
@@ -1237,6 +1256,7 @@ def verify(
         try:
             row = load(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
             validate_claim_types(row)
+            validate_status_projection(row, module)
             validate_closed_world_bindings(row)
             if (
                 row.get("schema") != "hepta.module-implementation-map.v3"
@@ -1475,7 +1495,9 @@ def main():
         parser.error("--require-current-source applies only to verify")
     if args.modules is not None and args.command != "migrate":
         parser.error("--module applies only to migrate")
-    if (args.expected_sha is not None or args.expected_tree is not None) and args.command != "verify":
+    if (
+        args.expected_sha is not None or args.expected_tree is not None
+    ) and args.command != "verify":
         parser.error("--expected-sha/--expected-tree apply only to verify")
     if args.command == "migrate":
         migrate(args.modules)

@@ -97,6 +97,8 @@ class SourceIdentityTests(unittest.TestCase):
             "deputy": "reviewer",
             "rootBindings": [{"path": f"src/{name}"}],
             "technicalDocument": f"docs/modules/{name}/TECHNICAL.md",
+            "source_root_present": True,
+            "production_implementation": False,
         }
 
     def row(self, name, anchor):
@@ -155,6 +157,25 @@ class SourceIdentityTests(unittest.TestCase):
             json.loads(output.getvalue())["candidateSource"],
             candidate,
         )
+
+    def test_rejects_map_status_drift_from_canonical_registry(self):
+        for canonical, projected in (
+            ("source_root_present", "sourceRootPresent"),
+            ("production_implementation", "productionImplementation"),
+        ):
+            with self.subTest(canonical=canonical):
+                row = copy.deepcopy(self.rows["alpha"])
+                row[projected] = not self.modules[0][canonical]
+                with self.assertRaisesRegex(ValueError, "contradicts canonical"):
+                    maps.validate_status_projection(row, self.modules[0])
+
+    def test_rejects_nested_status_drift_even_when_map_matches(self):
+        for section in ("claimBoundary", "completion"):
+            with self.subTest(section=section):
+                row = copy.deepcopy(self.rows["alpha"])
+                row[section] = {"productionImplementation": True}
+                with self.assertRaisesRegex(ValueError, "contradicts canonical"):
+                    maps.validate_status_projection(row, self.modules[0])
 
     def test_verify_rejects_wrong_or_malformed_expected_candidate_identity(self):
         candidate = maps.current_source_base()
@@ -389,9 +410,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 9; }\n")
         current = self.commit("change exact blob implementation")
         result = self.migrate(["alpha"])
-        self.assertEqual(
-            result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"]
-        )
+        self.assertEqual(result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"])
         migrated = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
         self.assertEqual(migrated["sourceBase"], provenance)
         self.assertEqual(migrated["observedAtHead"], current)
@@ -403,9 +422,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         result = self.verify()
         self.assertEqual(result["provenanceAnchoredExactBlobMaps"], 1)
 
-        before = (
-            self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
-        ).read_bytes()
+        before = (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes()
         self.write("README.md", "later prose must not rewrite provenance\n")
         self.commit("prose after exact blob observation")
         self.assertEqual(self.migrate(["alpha"])["migrated"], 0)
