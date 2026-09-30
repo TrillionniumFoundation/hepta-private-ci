@@ -208,6 +208,7 @@ jobs:
             python3 /tmp/run-runtime-codex-finalizer.py \
               /tmp/runtime-codex-finalize-map-followup.py \
               scripts/runtime-codex-finalize-map-followup.py
+          run_logged lane_b_generate python3 scripts/hepta-lane-b-truth.py generate
           run_logged lane_b_truth python3 scripts/hepta-lane-b-truth.py verify
           run_logged map_diff_check git diff --check
 
