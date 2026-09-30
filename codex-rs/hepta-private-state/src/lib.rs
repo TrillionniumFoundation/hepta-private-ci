@@ -1,3 +1,5 @@
+//! Compatibility exports for the shared OS private-state utility.
+
 #![cfg_attr(not(windows), allow(dead_code))]
 
 #[cfg(windows)]

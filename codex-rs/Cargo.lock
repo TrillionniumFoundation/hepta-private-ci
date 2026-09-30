@@ -3669,8 +3669,8 @@ dependencies = [
 name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
- "codex-hepta-private-state",
  "codex-utils-cargo-bin",
+ "codex-utils-private-state",
  "ed25519-dalek",
  "getrandom 0.4.2",
  "hmac 0.12.1",
@@ -4105,7 +4105,7 @@ dependencies = [
 name = "codex-hepta-private-state"
 version = "0.0.0"
 dependencies = [
- "windows-sys 0.52.0",
+ "codex-utils-private-state",
 ]
 
 [[package]]
@@ -5597,6 +5597,13 @@ dependencies = [
  "serde_json",
  "tempfile",
  "tokio",
+]
+
+[[package]]
+name = "codex-utils-private-state"
+version = "0.0.0"
+dependencies = [
+ "windows-sys 0.52.0",
 ]
 
 [[package]]

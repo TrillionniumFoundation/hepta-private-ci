@@ -677,7 +677,7 @@ dependencies = [
 name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
- "codex-hepta-private-state",
+ "codex-utils-private-state",
  "ed25519-dalek",
  "hmac",
  "rustix 1.1.5",
@@ -691,7 +691,7 @@ dependencies = [
 name = "codex-hepta-private-state"
 version = "0.0.0"
 dependencies = [
- "windows-sys 0.52.0",
+ "codex-utils-private-state",
 ]
 
 [[package]]
@@ -700,6 +700,13 @@ version = "0.0.0"
 dependencies = [
  "keyring",
  "tracing",
+]
+
+[[package]]
+name = "codex-utils-private-state"
+version = "0.0.0"
+dependencies = [
+ "windows-sys 0.52.0",
 ]
 
 [[package]]

@@ -243,6 +243,34 @@ class WorkspacePreflightTests(unittest.TestCase):
             stream.write('[dependencies]\ncodex-hepta-memory = "1.0"\n')
         self.assertTrue(any("codex-hepta-contracts --dependencies--> codex-hepta-memory" in e for e in verify_workspace(self.root)[1]))
 
+    def test_shared_contracts_can_use_os_utility_without_product_layer(self):
+        self.test_shared_kernel_contracts_are_not_product_implementations()
+        with (self.root / "contracts/Cargo.toml").open("a") as stream:
+            stream.write(
+                "[target.'cfg(windows)'.dependencies]\n"
+                'codex-utils-private-state = { path = "../utils/private-state" }\n'
+            )
+        self.write(
+            "utils/private-state/Cargo.toml",
+            '[package]\nname = "codex-utils-private-state"\n'
+            "[target.'cfg(windows)'.dependencies]\n"
+            'windows-sys = "0.52"\n',
+        )
+        self.assertEqual(verify_workspace(self.root), (3, []))
+
+    def test_shared_os_utility_cannot_hide_transitive_product_dependency(self):
+        self.test_shared_contracts_can_use_os_utility_without_product_layer()
+        with (self.root / "utils/private-state/Cargo.toml").open("a") as stream:
+            stream.write('codex-hepta-memory = "1.0"\n')
+        errors = verify_workspace(self.root)[1]
+        self.assertTrue(
+            any(
+                "codex-hepta-contracts --dependencies--> codex-utils-private-state "
+                "--dependencies--> codex-hepta-memory" in error
+                for error in errors
+            )
+        )
+
     def sqlx_package(self):
         self.write(
             "app/Cargo.toml",

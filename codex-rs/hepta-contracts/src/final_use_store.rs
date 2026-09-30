@@ -27,7 +27,7 @@ const CLAIM_FRAME_BYTES: usize = 8 + 32;
 #[cfg(unix)]
 type StoreRoot = File;
 #[cfg(windows)]
-type StoreRoot = codex_hepta_private_state::PrivateStateDirectory;
+type StoreRoot = codex_utils_private_state::PrivateStateDirectory;
 #[cfg(not(any(unix, windows)))]
 type StoreRoot = File;
 
@@ -456,7 +456,7 @@ fn open_private(directory: &StoreRoot, name: &str, access: Access) -> Result<Fil
 
 #[cfg(windows)]
 fn prepare_directory(root: &Path) -> Result<StoreRoot, FinalUseError> {
-    codex_hepta_private_state::PrivateStateDirectory::open(root)
+    codex_utils_private_state::PrivateStateDirectory::open(root)
         .map_err(|_| FinalUseError::UnsafeStateDirectory)
 }
 
