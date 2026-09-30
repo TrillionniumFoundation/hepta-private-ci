@@ -801,14 +801,23 @@ where
     T: FederationTransportV2 + ?Sized,
     C: FederationAttemptControlV2 + ?Sized,
 {
-    let mut transport_future = transport.send_once(query);
+    // Keep adapter construction behind the first stop check: constructing a
+    // future can itself start work in an enrolled transport.
+    let mut transport_future = std::pin::pin!(async { transport.send_once(query).await });
     let mut stop_future = control.wait_for_stop(query, lease);
     poll_fn(|context| {
         if let Poll::Ready(reason) = stop_future.as_mut().poll(context) {
             return Poll::Ready(Err(stop_reason_error(reason)));
         }
         match transport_future.as_mut().poll(context) {
-            Poll::Ready(result) => Poll::Ready(result),
+            Poll::Ready(result) => {
+                // Synchronous work inside a ready poll may consume the deadline
+                // or observe cancellation. Stop wins before admitting its result.
+                if let Poll::Ready(reason) = stop_future.as_mut().poll(context) {
+                    return Poll::Ready(Err(stop_reason_error(reason)));
+                }
+                Poll::Ready(result)
+            }
             Poll::Pending => Poll::Pending,
         }
     })
@@ -825,14 +834,22 @@ where
     A: FederationAuthorityV2 + ?Sized,
     C: FederationAttemptControlV2 + ?Sized,
 {
-    let mut authority_future = authority.revalidate(query, lease);
+    // Authority adapters receive the same pre-construction stop fence as I/O.
+    let mut authority_future = std::pin::pin!(async { authority.revalidate(query, lease).await });
     let mut stop_future = control.wait_for_stop(query, lease);
     poll_fn(|context| {
         if let Poll::Ready(reason) = stop_future.as_mut().poll(context) {
             return Poll::Ready(Err(stop_reason_error(reason)));
         }
         match authority_future.as_mut().poll(context) {
-            Poll::Ready(result) => Poll::Ready(result),
+            Poll::Ready(result) => {
+                // Synchronous work inside a ready poll may consume the deadline
+                // or observe cancellation. Stop wins before admitting its result.
+                if let Poll::Ready(reason) = stop_future.as_mut().poll(context) {
+                    return Poll::Ready(Err(stop_reason_error(reason)));
+                }
+                Poll::Ready(result)
+            }
             Poll::Pending => Poll::Pending,
         }
     })

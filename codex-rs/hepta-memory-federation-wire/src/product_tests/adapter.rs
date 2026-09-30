@@ -262,7 +262,12 @@ fn terminal_persistence_crossing_response_expiry_does_not_expose_evidence() {
     let adapter = FederationWireTransportV2::with_clock(
         client(),
         exchange,
-        ScriptedClock::new(vec![NOW + 1, NOW + 2, NOW + 5, response(&query).expires_unix_ms]),
+        ScriptedClock::new(vec![
+            NOW + 1,
+            NOW + 2,
+            NOW + 5,
+            response(&query).expires_unix_ms,
+        ]),
     );
     assert_eq!(
         block_on(adapter.send_once(&query)).expect("timeout observation"),
