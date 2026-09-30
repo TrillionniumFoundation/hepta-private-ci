@@ -342,13 +342,7 @@ impl CognitiveStore {
         let fts_query = self.validate_retrieval_request(access, request)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let generated = self
-            .generate_retrieval_for_scope_tx(
-                &mut transaction,
-                access,
-                scope,
-                request,
-                &fts_query,
-            )
+            .generate_retrieval_for_scope_tx(&mut transaction, access, scope, request, &fts_query)
             .await?;
         let channels_exhausted = generated.exhausted();
         let mut candidates = self
@@ -360,8 +354,7 @@ impl CognitiveStore {
                 MAX_RETRIEVAL_OWNER_CHANNELS * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             )
             .await?;
-        let owner_exhausted =
-            channels_exhausted && candidates.len() <= MAX_RETRIEVAL_RESULTS;
+        let owner_exhausted = channels_exhausted && candidates.len() <= MAX_RETRIEVAL_RESULTS;
         candidates.truncate(MAX_RETRIEVAL_RESULTS);
         let batch = RetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query.as_bytes()),

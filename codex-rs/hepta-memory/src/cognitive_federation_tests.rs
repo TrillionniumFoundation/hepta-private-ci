@@ -429,7 +429,6 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
     }
 }
 
-
 #[tokio::test]
 async fn exact_scope_is_applied_before_channel_ranking_and_top_k() {
     let temp = TempDir::new().expect("temp dir");

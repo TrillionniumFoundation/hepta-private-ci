@@ -198,14 +198,8 @@ impl CognitiveStore {
         request: &RetrievalRequest,
         fts_query: &str,
     ) -> Result<GeneratedRetrieval, CognitiveStoreError> {
-        self.generate_retrieval_scoped_tx(
-            transaction,
-            access,
-            request,
-            fts_query,
-            Some(scope),
-        )
-        .await
+        self.generate_retrieval_scoped_tx(transaction, access, request, fts_query, Some(scope))
+            .await
     }
 
     async fn generate_retrieval_scoped_tx(
