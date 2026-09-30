@@ -157,11 +157,7 @@ impl VerifiedKnowledgeGenerationV2 {
     ) -> Result<(KnowledgeRelationResultV2, KnowledgeRelationQueryWorkV2), KnowledgeGenerationErrorV2>
     {
         let guard = KnowledgeOperationGuardV2::unbounded(KnowledgeCancellationV2::default());
-        match self.query_relations_external_guarded(
-            query,
-            Some(maximum_support_work),
-            &guard,
-        ) {
+        match self.query_relations_external_guarded(query, Some(maximum_support_work), &guard) {
             Ok(result) => Ok(result),
             Err(KnowledgeQueryAdmissionErrorV2::Query(error)) => Err(error),
             Err(KnowledgeQueryAdmissionErrorV2::InvalidBudget { .. })
