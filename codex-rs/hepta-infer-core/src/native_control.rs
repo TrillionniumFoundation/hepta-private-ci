@@ -1344,11 +1344,12 @@ fn derive_terminal_publication(
         (NativeTerminalPublicationPhase::Succeeded, true)
     } else {
         match output.boundary_status {
-            NativeBoundaryStatus::Failed if output.terminal_observed => {
+            NativeBoundaryStatus::Failed
+                if output.terminal_observed && output.status == NativeRunStatus::Failed => {
                 (NativeTerminalPublicationPhase::Failed, true)
             }
             NativeBoundaryStatus::Interrupted | NativeBoundaryStatus::Cancelled
-                if output.terminal_observed =>
+                if output.terminal_observed && output.status == NativeRunStatus::Interrupted =>
             {
                 (NativeTerminalPublicationPhase::Cancelled, true)
             }
