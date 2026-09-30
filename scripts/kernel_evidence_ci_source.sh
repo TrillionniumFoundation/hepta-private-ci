@@ -70,7 +70,7 @@ python3 scripts/kernel_evidence_crash_matrix.py \
   >"$READINESS_RECORDS/crash/driver.log" 2>&1
 set -e
 
-metadata_command='set -euo pipefail; python3 -m unittest scripts.tests.test_kernel_evidence_readiness scripts.tests.test_kernel_evidence_crash_matrix; python3 scripts/hepta-docs.py verify; python3 scripts/hepta-implementation-maps.py verify'
+metadata_command='set -euo pipefail; python3 -m unittest scripts.tests.test_kernel_evidence_readiness scripts.tests.test_kernel_evidence_crash_matrix; python3 scripts/kernel_evidence_status.py verify; python3 scripts/hepta-docs.py verify; python3 scripts/hepta-implementation-maps.py verify'
 run_and_receipt metadata \
   "$READINESS_RECORDS/metadata/metadata.log" \
   "$metadata_command" \
