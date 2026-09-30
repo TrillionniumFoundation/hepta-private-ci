@@ -82,10 +82,13 @@ P1 表示可能破坏资格、统计或耐久性合约的缺陷；优先级并�
 | CAS replay 重复重建语义前缀 | replay 保留同一个 canonical semantic journal，逐 transition 更新；减少每个前缀重复 reconstruction，同时保留 fence、anchor 和完整 use history |
 | 存储 profile 的 holdout 历史不足 | profile 现在每个 generation 消费不同 frozen plan，包含非空 holdout records、fence takeover、source reopen、copy-compaction 和 successor reopen，并核对完整 authoritative state |
 | source projection 与人读文档漂移 | generator 按 CURRENT_STATUS 的 single/multi typed recovery source fact 和七相事件数输出；源码存在和 deployed host qualification 明确分开 |
+| Lane E API 追踪与 readiness metric-role 范围未同步 | matrix 保留原 closed-world source operations，但明确 raw runner 的 default private/compatibility 分类和 signed primitives 的 crate-internal 边界，并在既有 `productCallsites` 结构列出 recorded archived public 入口。readiness §5 改为 preregistered V2 superiority/non-inferiority/absolute roles，保留所有保护阈值与独立接受边界 |
 | trusted reporter 文档/检查器使用旧入口假设 | AUDIT_INDEX 补齐 `workflow_run` 与 untrusted data 边界；控制面检查识别 trusted entrypoint/report 路径及其 delegation，并保留 fail-closed 约束和回归覆盖 |
 | 初始缺失 import 和陈旧测试假设 | 补齐所需 test import；修正本轮变化涉及的真实 clock/trust、seven-phase archive 和持久状态 fixture，使回归验证当前合约，保留原来的故障断言 |
 
 全局资源预算、default-public API 和独立 anchor 的保护均保持。没有通过减少 bounds、关闭故障测试或改变 `DENY_ALL` 来完成修复。
+
+另有 P3 格式化检查器问题：source-status 检查曾依赖原始字符串/固定格式匹配，Rust 合法空白、注释、literal 或参数顺序会造成错误判断。本轮按实际 Rust token 边界修正匹配，增加八项针对空白、注释、literal 和参数顺序的回归，并将本地控制面 script inventory 同步为规范列表。它验证源码/控制面一致性，不能证明真实宿主或执行资格。
 
 ## 6. 有代表性的对抗回归
 
@@ -128,7 +131,7 @@ P1 表示可能破坏资格、统计或耐久性合约的缺陷；优先级并�
 |---|---|
 | `learning.eval` 全部默认测试 | **223 项全部通过，零跳过**，包括四项缓存/严格回放等价与篡改回归 |
 | Agentd 本轮 scoped filters | **6 项通过**；这是评估相关 scoped consumer 验证，不是整个 Agentd/workspace 全量验收 |
-| Python 资格/控制面回归 | **174 项通过** |
+| Python 资格/控制面回归 | **182 项通过** |
 | default/compatibility API boundary | **通过**，含针对具体边界的 compiler-negative fixtures |
 | production library 严格 Clippy | **通过** |
 | 文档文件/heading-anchor 检查 | **通过（15 documents）**，含本报告及索引链接 |
@@ -166,6 +169,12 @@ P1 表示可能破坏资格、统计或耐久性合约的缺陷；优先级并�
 ## 10. 剩余可执行工作和终止标准
 
 本轮存储性能优化和对应独立复审已收敛，确认的模块缺陷均已落实修复。交付仍需将 map/status 绑定至不可变源码观察，并保留完整源码资格、共享依赖 lint 和外部证据的未闭合状态。新的 docs 或 lexical facts 不能直接设置 `sourceQualifiedByThisRun`。
+
+项目级规范仍有一项未闭合的跨 registry 关系：[MODULES.json](../MODULES.json) 的 `learning.eval.writes=[]`，而 [DATA_AUTHORITY.json](../../data/DATA_AUTHORITY.json) 将 `ndu_well_posedness_certificate_v1`、`operator_applicability_certificate_v1`、`regularity_profile_v1`、`support_audit_receipt_v1`、`candidate_evaluation_receipt_v1`、`conformance_receipt_v1`、`algorithm_fault_receipt_v1` 的 schema owner 和 authoritative writer 指定为 `learning.eval`。两者未机读说明空 bootstrap 列表与 qualification 目标域的关系，现有全局验证器也未比较两侧 writer 集合。本轮不改变任何 registry authority；后续须由项目规范协调明确该关系和一致性验证。这些目标域声明不证明已部署实现，更不授予生产写入权限。
+
+额外执行的全局检查也未闭合：`hepta-docs.py verify` 因当前 checkout 缺少历史 Git 对象 `b621768b70a09d56626bb8a2c331e3dc424e6a4d` 而阻断，这是历史对象/环境可用性问题，不是此次文档修改引入的源码回归；`hepta-lane-e-closure.py verify` 返回 11 项 findings，包括 operator operation 闭世界集合漂移、traceability case 集合/OP-03 旧函数映射及八项 Agentd legacy learning-writer 边界。此次 `learning.eval` matrix 的既有 operation/status 集合与五个新增 public recorded source entries 已通过 scoped 验证；全局 findings 保留为跨模块规范/调用链协调义务，未扩大修改 operator 或 Agentd legacy runtime writer，也未宣称全局文档/Lane E gate 通过。
+
+本轮更新了源码/资格控制面 inventory 与验证器；trusted CI 资格仍要求将对应 bootstrap control-plane 变更独立重堆叠、审阅并与 trusted base 的字节身份对齐。仅在模块候选中出现修复不能宣称已经通过可信控制面的最终资格。
 
 共享依赖的三包 lint 阻断定位于 [destination_dedupe.rs](../../../codex-rs/hepta-operations/src/destination_dedupe.rs) 和 [durable_store.rs](../../../codex-rs/hepta-operations/src/durable_store.rs)。后续应由该 store 的连接/容量合约审查决定如何迁入集中 SQLite shim，同时更新依赖和 Bazel/Cargo 锁文件；仅改写调用名或添加 lint exception 无法修复规约。
 

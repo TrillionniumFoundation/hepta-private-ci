@@ -48,6 +48,8 @@ None.
 
 The canonical delivery path is PR #1011. PR #1051 remains unmerged comparison/history material; divergent commits and checkpoint designs are not silently declared accepted. The generated source-status projection below separates lexical materialization from compiler reachability, product invocation, exact-tree execution, target-host evidence and independent acceptance.
 
+The [Lane E matrix](../../lane-e/LANE_E_IMPLEMENTATION_MATRIX.json) retains its original closed-world `operations` source inventory: raw runner entries are classified as compatibility-only, and signed V2/V3 decisions are crate-internal primitives. These source symbols must not be interpreted as default public exports. Its `productCallsites` records identify the public recorded evaluation and archived qualification paths; the full current API and recovery mapping remains in [NATIVE_MAPPING.md](../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md). Source composition does not establish deployed invocation or independent acceptance.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:

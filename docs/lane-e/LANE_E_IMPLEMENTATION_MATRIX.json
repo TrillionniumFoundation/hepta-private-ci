@@ -560,13 +560,15 @@
           "operation": "ProductEvaluationRunnerV1::evaluate_temporal_comparison",
           "nativeSymbol": "codex_hepta_intelligence_eval::ProductEvaluationRunnerV1::evaluate_temporal_comparison",
           "source": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
-          "status": "implemented"
+          "status": "implemented_compatibility",
+          "notes": "Raw runner is crate-private in default builds and public only with trusted-inprocess-eval. This source symbol is not default product ingress; canonical recorded and archived public entrypoints are listed in productCallsites and PRODUCTION_CONTRACT.md."
         },
         {
           "operation": "ProductEvaluationRunnerV1::qualify_and_persist",
           "nativeSymbol": "codex_hepta_intelligence_eval::ProductEvaluationRunnerV1::qualify_and_persist",
           "source": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
-          "status": "implemented"
+          "status": "implemented_compatibility",
+          "notes": "Raw runner is crate-private in default builds and public only with trusted-inprocess-eval. This source symbol is not default product ingress; canonical recorded and archived public entrypoints are listed in productCallsites and PRODUCTION_CONTRACT.md."
         },
         {
           "operation": "FencedFinalHoldoutOwnerV1::consume",
@@ -584,13 +586,15 @@
           "operation": "decide_with_signed_evidence_v2",
           "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_evidence_v2",
           "source": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
-          "status": "implemented_low_level"
+          "status": "implemented_low_level",
+          "notes": "Crate-internal V2 verification primitive used beneath archived product qualification; nativeSymbol identifies source implementation, not a cross-crate public export."
         },
         {
           "operation": "decide_with_signed_longitudinal_evidence_v3",
           "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_longitudinal_evidence_v3",
           "source": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
-          "status": "implemented_pairwise_independence"
+          "status": "implemented_low_level",
+          "notes": "Crate-internal V3 verification primitive with generator/evaluator/observer separation by principal, credential chain, key and controller; nativeSymbol identifies source implementation, not a cross-crate public export."
         }
       ],
       "tests": [
@@ -619,7 +623,34 @@
         "cross_host_shared_storage_lock_fsync_qualification_if_applicable",
         "independent_operator_acceptance_selection_canary_promotion_release"
       ],
-      "productionContract": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"
+      "productionContract": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
+      "productCallsites": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/recorded_runner.rs",
+          "symbol": "RecordedProductEvaluationRunnerV1::evaluate_temporal_comparison",
+          "state": "source_composed_default_public_recorded_evaluation"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/outcome_runner.rs",
+          "symbol": "RecordedProductEvaluationRunnerV1::evaluate_outcome_comparison",
+          "state": "source_composed_default_public_recorded_evaluation"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/qualification_artifacts.rs",
+          "symbol": "RecordedProductEvaluationRunnerV1::qualify_and_persist_with_artifacts",
+          "state": "source_composed_default_public_archived_qualification"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/selected_host_facade.rs",
+          "symbol": "RecordedProductEvaluationRunnerV1::qualify_and_persist_on_selected_host",
+          "state": "source_composed_default_public_archived_qualification_target_host_external"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/selected_host_facade.rs",
+          "symbol": "RecordedProductEvaluationRunnerV1::qualify_outcomes_and_persist_on_selected_host",
+          "state": "source_composed_default_public_archived_qualification_target_host_external"
+        }
+      ]
     }
   ],
   "crossCrateQualification": {
