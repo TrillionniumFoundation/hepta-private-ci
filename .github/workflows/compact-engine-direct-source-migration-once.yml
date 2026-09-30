@@ -1,0 +1,133 @@
+name: compact.engine direct source migration once
+
+on:
+  push:
+    branches: [fix/compact-engine-current-main-convergence-20260925]
+    paths:
+      - ".github/workflows/compact-engine-direct-source-migration-once.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compact-engine-direct-source-migration-once
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+      - name: Materialize reviewed fixes as ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: expected one exact source match, found {count}")
+              file.write_text(text.replace(old, new, 1))
+
+          replace_once(
+              "codex-rs/hepta-compact-engine/src/durable.rs",
+              '''        None => {
+                      if bundle.generation != 1 || bundle.predecessor_checkpoint_digest.is_some() {
+                          return Err(conflict(
+                              "first durable checkpoint must be generation one with no predecessor",
+                          ));
+                      }
+          ''',
+              '''        None => {
+                      // The local durable lineage may start from any positive generation
+                      // already proven by the authoritative Lane C snapshot. Requiring
+                      // generation one here contradicts the kernel contract when this
+                      // owner materializes a later externally retained generation. The
+                      // local root still must not invent a predecessor.
+                      if bundle.generation == 0 || bundle.predecessor_checkpoint_digest.is_some() {
+                          return Err(conflict(
+                              "first durable checkpoint must be a positive generation with no predecessor",
+                          ));
+                      }
+          ''',
+          )
+
+          replace_once(
+              "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs",
+              '    let first = sealed_publication(&fixture, &["memory:e2e:a"], 1, 1, None, "first");',
+              '    let first = sealed_publication(&fixture, &["memory:e2e:a"], 1, 2, None, "first");',
+          )
+          replace_once(
+              "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs",
+              '    assert_eq!(recovered.generation(), 1);',
+              '    assert_eq!(recovered.generation(), 2);',
+          )
+          replace_once(
+              "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs",
+              '''        2,
+                      2,
+                      Some(first_checkpoint),
+          ''',
+              '''        2,
+                      3,
+                      Some(first_checkpoint),
+          ''',
+          )
+          replace_once(
+              "codex-rs/hepta-compact-engine/src/product_e2e_tests.rs",
+              '    assert_eq!(latest.generation(), 2);',
+              '    assert_eq!(latest.generation(), 3);',
+          )
+
+          replace_once(
+              "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+              '''impl CognitiveStore {
+              /// Capture one coherent bounded owner cut. The host retains/authenticates it
+          ''',
+              '''impl CognitiveStore {
+              /// Close every pooled SQLite connection before releasing the filesystem
+              /// recovery fence. Exact-cut recovery callers must use this instead of
+              /// relying on asynchronous pool drop, because WAL/SHM teardown can race
+              /// descriptor-bound identity capture.
+              pub async fn close(self) {
+                  self.pool.close().await;
+              }
+
+              /// Capture one coherent bounded owner cut. The host retains/authenticates it
+          ''',
+          )
+
+          replace_once(
+              "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+              '    drop(store);',
+              '    store.close().await;',
+          )
+          PY
+          git diff --check
+          (cd codex-rs && cargo fmt --all -- --check)
+      - name: Commit ordinary source and remove this one-shot migrator
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/compact-engine-direct-source-migration-once.yml
+          git add \
+            codex-rs/hepta-compact-engine/src/durable.rs \
+            codex-rs/hepta-compact-engine/src/product_e2e_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_store_recovery.rs \
+            codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs
+          git diff --cached --check
+          git config user.name 'compact.engine source migrator'
+          git config user.email 'compact-engine-source-migrator@users.noreply.github.com'
+          git commit -m 'fix(compact.engine): materialize reviewed source repairs'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
