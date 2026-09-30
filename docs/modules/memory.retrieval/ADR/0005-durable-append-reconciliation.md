@@ -19,10 +19,11 @@ The vector publication boundary already resolves this ambiguity by reloading the
 3. Validate the global frontier, execution identity, writer fence, phase transition, and typed quarantine evidence before mutation.
 4. After a mutating error, reload the exact execution identity. Return success only when the exact candidate record is present.
 5. When a mutating error cannot be reconciled to the exact record, return `CommitOutcomeUnknown`; callers must not blindly retry.
-6. After a nominally successful append, require both the exact returned frontier and an exact typed-record readback.
-7. Report a successful-port/wrong-record condition as `CommittedRecordMismatch`.
+6. After a nominally successful append, reload and confirm the exact typed record before interpreting the frontier returned by the mutating call.
+7. A failed confirmation read is `CommitOutcomeUnknown`; a different current record is `CommittedRecordMismatch`.
+8. Only after exact record confirmation compare the returned frontier. A mismatch is `CommittedFrontierMismatch`: the exact effect is committed, the port contract is invalid, and the caller must not retry the mutation.
 
-The error surface records only frontier and phase metadata for a conflicting observation; it does not render tenant, principal, query, payload, or other execution identity content.
+The layer-added metadata for a conflicting observation is limited to frontier and phase; it does not render tenant, principal, query, payload, or other execution identity content. The selected backend remains responsible for redacting its own generic port error `E`.
 
 ## Required tests
 
@@ -32,6 +33,8 @@ The external crate API tests cover:
 - mutating failure without exact readback, producing typed unknown outcome;
 - successful append followed by confirmation-read failure;
 - successful port return with a different committed record;
+- successful exact commit with an inconsistent returned frontier;
+- confirmation failure taking precedence over returned-frontier validation;
 - existing exact replay, quarantine, fencing, frontier, and terminal-state invariants.
 
 ## Consequences

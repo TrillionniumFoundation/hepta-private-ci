@@ -58,6 +58,7 @@ struct Port {
     fail_before_commit_once: bool,
     fail_after_commit_once: bool,
     fail_confirmation_once: Cell<bool>,
+    reported_frontier: Option<u64>,
     replacement: Option<DurableDecisionRecordV1>,
 }
 
@@ -87,7 +88,7 @@ impl DurableDecisionPortV1 for Port {
             self.fail_after_commit_once = false;
             return Err(PortError::LostAcknowledgement);
         }
-        Ok(self.frontier)
+        Ok(self.reported_frontier.unwrap_or(self.frontier))
     }
 
     fn load_latest(
@@ -230,6 +231,53 @@ fn successful_port_return_requires_the_exact_committed_record() {
             expected_frontier: 1,
             actual_frontier: Some(1),
             actual_phase: Some(RetrievalLifecyclePhaseV1::PublishedRetrieval),
+        }
+    ));
+    assert_eq!(port.writes, 1);
+}
+
+#[test]
+fn wrong_returned_frontier_is_rejected_after_exact_confirmation() {
+    let next = candidate("prepared");
+    let mut port = Port {
+        reported_frontier: Some(9),
+        ..Port::default()
+    };
+
+    let error = append_durable_decision_checked_v1(&mut port, 0, &next, None)
+        .expect_err("inconsistent returned frontier must fail");
+    assert!(matches!(
+        error,
+        DurableDecisionAppendErrorV1::CommittedFrontierMismatch {
+            expected: 1,
+            actual: 9,
+        }
+    ));
+    assert_eq!(port.writes, 1);
+
+    append_durable_decision_checked_v1(&mut port, 0, &next, None)
+        .expect("exact replay recognizes the committed record");
+    assert_eq!(port.writes, 1);
+}
+
+#[test]
+fn failed_confirmation_precedes_returned_frontier_validation() {
+    let next = candidate("prepared");
+    let mut port = Port {
+        fail_confirmation_once: Cell::new(true),
+        reported_frontier: Some(9),
+        ..Port::default()
+    };
+
+    let error = append_durable_decision_checked_v1(&mut port, 0, &next, None)
+        .expect_err("unconfirmed success must remain outcome unknown");
+    assert!(matches!(
+        error,
+        DurableDecisionAppendErrorV1::CommitOutcomeUnknown {
+            append_error: None,
+            reconciliation_error: Some(PortError::Load),
+            observed_frontier: None,
+            observed_phase: None,
         }
     ));
     assert_eq!(port.writes, 1);

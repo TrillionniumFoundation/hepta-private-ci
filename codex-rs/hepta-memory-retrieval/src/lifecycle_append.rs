@@ -62,6 +62,9 @@ pub enum DurableDecisionAppendErrorV1<E> {
         observed_frontier: Option<u64>,
         observed_phase: Option<RetrievalLifecyclePhaseV1>,
     },
+    /// Exact readback proved that the candidate record is committed, but the
+    /// port returned an inconsistent frontier. The durable effect is not
+    /// retry-safe even though the port contract is violated.
     CommittedFrontierMismatch {
         expected: u64,
         actual: u64,
@@ -208,9 +211,10 @@ pub fn validate_durable_decision_append_v1(
 /// Every attempted mutation is reconciled through an exact-identity read. A
 /// mutating port error succeeds only when that read proves the exact candidate
 /// record, covering acknowledgement loss without a second write. A successful
-/// port return is also confirmed byte-for-byte at the typed-record level. Any
-/// result that cannot prove the exact record is typed as commit-outcome unknown
-/// or committed-record mismatch and must never trigger a blind retry.
+/// port return is also confirmed at the typed-record level before its returned
+/// frontier is trusted. Any result that cannot prove the exact record is typed
+/// as commit-outcome unknown or committed-record mismatch and must never trigger
+/// a blind retry.
 pub fn append_durable_decision_checked_v1<P: DurableDecisionPortV1>(
     port: &mut P,
     expected_frontier: u64,
@@ -264,13 +268,6 @@ pub fn append_durable_decision_checked_v1<P: DurableDecisionPortV1>(
         }
     };
 
-    if committed_frontier != next.frontier {
-        return Err(DurableDecisionAppendErrorV1::CommittedFrontierMismatch {
-            expected: next.frontier,
-            actual: committed_frontier,
-        });
-    }
-
     let observed = match port.load_latest(&next.identity) {
         Ok(observed) => observed,
         Err(reconciliation_error) => {
@@ -288,6 +285,12 @@ pub fn append_durable_decision_checked_v1<P: DurableDecisionPortV1>(
             expected_frontier: next.frontier,
             actual_frontier,
             actual_phase,
+        });
+    }
+    if committed_frontier != next.frontier {
+        return Err(DurableDecisionAppendErrorV1::CommittedFrontierMismatch {
+            expected: next.frontier,
+            actual: committed_frontier,
         });
     }
     Ok(committed_frontier)
