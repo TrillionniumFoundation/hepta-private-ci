@@ -15,11 +15,11 @@ permissions:
 
 concurrency:
   group: neuron-runtime-source-materializer-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 45
     steps:
       - name: Checkout exact migration input
