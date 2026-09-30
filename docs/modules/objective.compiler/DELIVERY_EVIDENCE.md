@@ -90,13 +90,13 @@ handoff remain one atomic observable phase. The harness does not fabricate
 separate completion or latency claims for internal operations that are not
 independently committed.
 
-Each ordinary, maximum-conflict and product fixture now executes below a fresh
-helper process. Its receipt contains an isolated command-process-tree peak RSS,
+Each ordinary, maximum-conflict and product fixture executes below a fresh
+helper process. Its receipt contains an isolated OS-reported waited-child peak RSS,
 user/system CPU time, wall time, page faults and context switches. This replaces
 the previous cumulative `RUSAGE_CHILDREN` peak that could include earlier
-fixtures. Internal phase latency distributions remain separate. The process-tree
-peak includes the test executable and descendants and is not represented as a
-per-internal-phase allocator profile.
+fixtures. Internal phase latency distributions remain separate. The RSS value is
+neither a simultaneous sum of descendant RSS nor a per-internal-phase allocator
+profile.
 
 The target receipt binds source commit/tree, workflow/run identity when
 available, host profile, filesystem identity, toolchain, workload/sample counts
@@ -115,7 +115,9 @@ backpressure and resource-policy acceptance remain external gates.
 It emits `hepta.objective-evidence-projection.v2`. Dynamic source-head,
 synthetic-merge and target-host-observation fields exist only in this projection.
 The projector rejects source/tree mismatch, inconsistent aggregate success,
-missing workload identities, missing isolated resource observations and any
+missing workload identities, missing isolated resource observations, missing or
+changed retained native transcripts, measurement/resource metadata differing from
+the actual fixture output, and any
 static manifest that attempts to embed a dynamic pass field.
 
 Each observed claim carries its artifact SHA-256 and available workflow/run
@@ -162,9 +164,26 @@ and handoff remain atomic. These artifacts do not prove an unrelated FFI or a
 selected deployment target. Older V1 measurements remain historical evidence,
 but are not accepted by the V2 native-artifact projection. Missing binding,
 source mismatch, changed artifacts, failed execution and build-in-sample output
-fail closed. Selected-host policy/storage/destructive acceptance remains external.
+fail closed. The retained Cargo artifact, test-list, fixture-output and raw
+process/resource logs are uploaded with the receipt. The projector reparses the
+producer's bounded measurement contract and verifies actual log bytes rather
+than accepting hash-shaped metadata, arbitrary test names or reused workloads.
+Selected-host policy/storage/destructive acceptance remains external.
 
 The release source guard now recognizes the canonical V2 static manifest and
 rejects manual dynamic claims or true release flags in it. This removes the
 schema mismatch that blocked selected-host setup without waiving any receipt
 kind, distinct-issuer check, resource policy, review, canary or release approval.
+
+## Receipt consistency is not external authority
+
+The repository verifier checks candidate, artifact and policy consistency. It
+cannot authenticate external acceptance merely because every file hashes to the
+expected value or because receipt metadata names distinct issuers. A complete
+unsigned chain reports `receiptChainConsistent: true` while
+`receiptAuthenticityVerified: false`, `releaseGranted: false` and all four release
+truth fields remain false. `externalAuthorityVerification: required` identifies
+the unresolved boundary. The protected wrapper binds trusted verifier bytes;
+it does not convert candidate-controlled metadata into an authenticated external
+decision. The owning authority must provide a verifiable issuer/provenance path
+before relying on independent review, host acceptance or release approval.

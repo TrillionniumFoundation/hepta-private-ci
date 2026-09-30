@@ -24,6 +24,14 @@ approximated or silently dropped.
 | immutable identity / generation atoms | not expressible by this Source V1 constraint payload | n/a | n/a | supported by `check_feasibility_v1` typed API | typed-API only |
 | positive Horn action implications | not expressible by this Source V1 constraint payload | n/a | n/a | supported by `check_feasibility_v1` typed API | typed-API only |
 
+Evidence `minimumConfidencePpm` lowers to
+`ceil(ppm * 2^32 / 1_000_000)` so the native minimum never falls below the
+registered ppm threshold. The canonical wire preserves the original ppm value.
+The resulting `conservative-q32-confidence` compiler-contract revision invalidates
+predecessor proof bindings at current Agentd final use; it does not rewrite
+historical records. A newly authorized objective revision/request is required,
+as specified in the [normative migration contract](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md#6-proof-and-protocol-projection).
+
 ## Why `in` / `not_in` remain rejected
 
 The registered Source V1 constraint object currently carries one `boundQ32` and has no

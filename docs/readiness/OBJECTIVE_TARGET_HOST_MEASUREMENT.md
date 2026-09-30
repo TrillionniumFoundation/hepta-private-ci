@@ -20,7 +20,7 @@ python3 scripts/hepta-objective-target-measure.py \
   --output /path/to/objective-target-host.json
 ```
 
-The recorder refuses a dirty tree or source SHA mismatch before measurement and
+The output and retained logs must be outside the source checkout. The recorder refuses a dirty tree or source SHA mismatch before measurement and
 rechecks the same commit/tree and cleanliness after all fixtures. It records the
 exact commit/tree, workflow/run identity when available, the operator-supplied
 host profile identifier, platform/machine, Rust/Cargo versions and release build
@@ -41,7 +41,7 @@ The ordinary fixture measures the canonical owner path used by Agentd rather
 than the lower-level compatibility wrapper:
 
 ```text
-cold ValidatedAdmissionProfileV1::from_profile(raw_profile)
+cold ValidatedAdmissionProfileV1::new(raw_profile)
 
 process-generation ValidatedAdmissionProfileV1
 + ObjectiveSourceEnvelopeV1
@@ -154,11 +154,22 @@ The V2 measurement output is consumed by
 `scripts/hepta-objective-evidence-project.py` together with the static
 `CURRENT_STATE.json`. The resulting projection binds source commit/tree,
 workflow/run identity when available, native fixture identities and the
-measurement artifact digest. Checked-in source does not hand-edit a target-host
-pass field. Exact-execution projection additionally checks the complete command
+measurement artifact digest. Every measurement retains the Cargo artifact
+messages, exact test listing, fixture output and resource-helper process output
+under `native-fixtures/` next to the receipt. The projector verifies their actual
+hashes, the fixed workload/package/target/test mapping, and reparses distributions,
+sample counts, maximum-conflict work and product send/terminal/checkpoint counters.
+It also binds the resource counters and fixture wall time to the process output;
+receipt-shaped metadata with missing or changed logs cannot claim an observation.
+Checked-in source does not hand-edit a target-host pass field. Exact-execution projection additionally checks the complete command
 inventory from the existing runner, candidate commit/tree, deterministic merge
 identity and the actual retained log bytes; digest-shaped labels alone do not
 constitute successful execution evidence.
+
+This verification establishes artifact consistency and observed fixture output.
+The relying authority must independently authenticate the workflow artifact's
+provenance and the claimed host/issuer. A self-consistent receipt or user-supplied
+host label cannot establish an independently accepted measurement.
 
 A GitHub-hosted runner remains qualification/development evidence, not selected
 deployment-host acceptance. Closing `LANE-D-EXT-HOST-MEASUREMENT` requires the

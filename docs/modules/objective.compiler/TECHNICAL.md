@@ -374,6 +374,14 @@ nor filesystem metadata grants target-host acceptance or activation.
 
 ## Admission-proof persistence and recovery contract (2026-09-29)
 
+Current confidence lowering uses conservative integer ceil conversion from ppm
+to Q32. Its compiler-contract digest carries `conservative-q32-confidence`.
+Predecessor-contract RunStart records preserve their historical identity but are
+rejected at current Agentd final use. Migration requires a newly authorized
+objective revision/request; recovery, compaction and retry do not upgrade or
+overwrite an existing proof. The normative compatibility/migration rule is in
+[OBJECTIVE_COMPILER_EXECUTION.md](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md#6-proof-and-protocol-projection).
+
 `ObjectiveAdmissionProofV1` remains privately constructed by authoritative
 admission. Its read-only `canonical_bytes()` export uses the same encoding
 helper as proof issuance: domain `hepta.objective.admission-proof.v1`, followed

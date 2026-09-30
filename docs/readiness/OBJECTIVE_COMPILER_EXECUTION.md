@@ -126,6 +126,12 @@ No represented hard constraint, predicate, action, evidence requirement,
 resource ceiling, risk rule, rollback rule or provenance identity may be
 silently dropped or approximated.
 
+Evidence confidence is expressed in integer ppm by Source V1. Its native lower
+bound is `ceil(minimumConfidencePpm * 2^32 / 1_000_000)`, computed with checked
+wide integer arithmetic. Rounding down would weaken a minimum confidence
+requirement. Native lowering and both protocol encoders use this same
+conservative bound while the wire retains the original ppm value.
+
 ## 5. Deterministic compilation
 
 The semantic engine is a pure, bounded function of validated grammar, canonical
@@ -176,6 +182,14 @@ Persisted proof verification currently establishes exact historical bytes,
 digest integrity, profile binding, admitted-source binding and compiler-contract
 binding. It does not by itself reconstruct current source authentication,
 revocation or final-use permission. Documents and receipts must not claim more.
+
+The conservative confidence correction changes the compiler-contract digest
+through the `conservative-q32-confidence` contract tag. Historical RunStart
+records bound to the predecessor compiler contract remain inspectable with their
+original bytes, but fail the current Agentd final-use binding check. Migration
+requires a newly authorized objective revision/request under the current
+contract. Recovery, compaction and retries must not automatically upgrade the
+proof, overwrite historical records or reuse predecessor execution authority.
 
 ## 7. Durable publication versions
 
@@ -243,9 +257,17 @@ compatibility surfaces, covered by the same strict lint/test gates, and must not
 be used by ordinary product callers. New production callers must enter through
 Agentd and the validated publication façade.
 
-The crate-internal raw compiler, proof constructors and persistence wrappers
-must not be constructible by downstream crates. Public API changes require an
-additive versioned contract or an explicit migration and retirement plan.
+The crate-internal raw compiler and opaque compiler-proof/result constructors
+must not be constructible by downstream crates. A versioned historical
+`RunStartAdmissionProofV1::from_canonical_bytes` decoder remains public: it
+reconstructs historical integrity evidence, never an opaque compiler capability
+or current authorization. A trusted journal owner can assemble self-consistent
+historical bytes; that fact alone is not independent authenticated provenance.
+The library's admission context is a trusted-caller boundary. Product ingress
+must enter the signed Agentd route with current trust, its private frozen profile
+and checkpoint ownership rather than treating a caller-built context as source
+authentication. Public API changes require an additive versioned contract or an
+explicit migration and retirement plan.
 
 ## 10. Error contract
 
@@ -307,6 +329,13 @@ Every receipt is bound to the same immutable candidate commit/tree and to the
 release-policy digest. Required distinct issuers remain distinct. Missing,
 queued, cancelled, skipped, failed, historical or unsigned template material is
 not a passing receipt.
+
+Receipt hashes, predecessor links and distinct issuer labels establish
+consistency only. The current repository verifier reports
+`receiptAuthenticityVerified: false` and `externalAuthorityVerification: required`
+even for a consistent chain, and keeps `releaseGranted` and release truth false.
+Externally verifiable issuer/provenance authentication remains required before
+an authority can rely on independent acceptance or release approval.
 
 `CURRENT_STATE.json` remains static and fail-closed. Dynamic observations exist
 only in the receipt-bound evidence projection. Until the complete authorized
