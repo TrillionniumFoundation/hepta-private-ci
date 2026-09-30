@@ -9,6 +9,7 @@ from pathlib import Path
 from types import ModuleType
 
 HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
 
 
 def load(name: str) -> ModuleType:
@@ -83,6 +84,35 @@ class CorpusTests(unittest.TestCase):
     def test_unknown_contract_only_feeds_grammar(self) -> None:
         module = load("prepare_fuzz_corpus")
         self.assertEqual(module._targets_for("UnknownV9"), {"canonical_json_grammar"})
+
+
+class SourceCoverageTests(unittest.TestCase):
+    def test_campaign_registry_matches_cargo_bins(self) -> None:
+        module = load("run_fuzz_campaign")
+        manifest = (
+            ROOT / "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml"
+        ).read_text(encoding="utf-8")
+        for target in module.TARGETS:
+            self.assertIn(f'name = "{target}"', manifest)
+            self.assertIn(f'path = "fuzz_targets/{target}.rs"', manifest)
+
+    def test_consumer_handoff_exercises_all_registered_consumers(self) -> None:
+        source = (
+            ROOT
+            / "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/consumer_handoff.rs"
+        ).read_text(encoding="utf-8")
+        for variant in (
+            "CognitiveRead",
+            "CognitiveStore",
+            "MemoryRetrieval",
+            "CompactEngine",
+            "IntelligenceControl",
+        ):
+            self.assertIn(f"CanonicalConsumerV1::{variant}", source)
+        self.assertIn("validate_consumer_semantic_identity_v1", source)
+        self.assertIn("bind_prepared_memory_event_consumer_v1", source)
+        self.assertIn("bind_prepared_recall_packet_consumer_v1", source)
+        self.assertIn("bind_prepared_forget_receipt_consumer_v1", source)
 
 
 class ReceiptParserTests(unittest.TestCase):

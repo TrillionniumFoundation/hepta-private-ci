@@ -13,7 +13,8 @@
     "requestScopedCanonicalPayload": "implemented_qualification_pending",
     "typedDigestProfiles": "implemented_qualification_pending",
     "preparedConsumerBindings": "implemented_qualification_pending",
-    "semanticIdentityOwnerRegistry": "implemented_qualification_pending",
+    "semanticIdentityOwnerRegistry": "implemented_owner_consistency_and_confusable_rejection_tested_qualification_pending",
+    "consumerHandoffFuzzCoverage": "all_five_registered_consumers_and_all_current_payload_families",
     "splitFuzzTargets": [
       "hnmf_base",
       "hnmf_learning",
@@ -21,9 +22,10 @@
       "consumer_handoff",
       "canonical_json_grammar"
     ],
-    "deterministicFuzzCorpus": "implemented_python_tests_passed",
-    "fuzzReceiptSealing": "implemented_python_tests_passed",
-    "windowsObjectiveTestDrift": "source_corrected_ci_pending"
+    "deterministicFuzzCorpus": "implemented_python_tests_passed_on_prior_candidate",
+    "fuzzReceiptSealing": "implemented_python_tests_passed_on_prior_candidate",
+    "fuzzCampaignSourceCoverageGuard": "implemented_current_candidate_ci_pending",
+    "windowsObjectiveTestDrift": "source_corrected_current_candidate_ci_pending"
   },
   "qualification": {
     "exactHead": "pending_current_candidate",
@@ -40,6 +42,8 @@
     "registeredCount": 5,
     "sourceBindingsImplemented": true,
     "preparedBindingOptimizationImplemented": true,
+    "consumerHandoffFuzzAllRegisteredConsumers": true,
+    "identityPolicyRegistryOwnerConsistent": true,
     "authenticatedOwnerFinalUseProved": false,
     "canonicalConsumerConvergenceProved": false,
     "compatibilityRetired": false
