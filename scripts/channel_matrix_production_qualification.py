@@ -9,11 +9,14 @@ import re
 from pathlib import Path
 from typing import Any
 
+import channel_matrix_process_qualification as process
+
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE_PATH = ROOT / "docs/modules/channel.matrix/PRODUCTION_QUALIFICATION_PROFILE.json"
 PROFILE_SCHEMA = "hepta.channel-matrix-production-qualification-profile.v1"
 MANIFEST_SCHEMA = "hepta.channel-matrix-production-evidence-manifest.v1"
 RESULT_SCHEMA = "hepta.channel-matrix-production-evidence-validation.v1"
+PROCESS_CHECK_ID = "process_fault_matrix"
 SCOPES = ("target_qualification", "independent_acceptance")
 PROFILE_KEYS = {
     "target_qualification": "targetQualification",
@@ -118,11 +121,16 @@ def load_profile(path: Path = PROFILE_PATH) -> tuple[dict[str, tuple[str, ...]],
             not isinstance(values, list)
             or not values
             or len(values) != len(set(values))
-            or any(not isinstance(value, str) or not IDENTIFIER.fullmatch(value) for value in values)
+            or any(
+                not isinstance(value, str) or not IDENTIFIER.fullmatch(value)
+                for value in values
+            )
             or values != sorted(values)
         ):
             raise ValueError(f"invalid {scope} check inventory")
         result[scope] = tuple(values)
+    if PROCESS_CHECK_ID not in result["target_qualification"]:
+        raise ValueError("target qualification omits the process-fault matrix")
     return result, _digest(payload)
 
 
@@ -130,7 +138,10 @@ def _candidate(value: object) -> dict[str, str]:
     if (
         not isinstance(value, dict)
         or set(value) != {"commit", "tree"}
-        or any(not isinstance(item, str) or not HEX40.fullmatch(item) for item in value.values())
+        or any(
+            not isinstance(item, str) or not HEX40.fullmatch(item)
+            for item in value.values()
+        )
     ):
         raise ValueError("invalid exact candidate")
     return dict(value)
@@ -186,6 +197,7 @@ def validate_manifest(
     observed: set[str] = set()
     artifact_names: set[str] = set()
     artifacts = []
+    process_validation = None
     for check in checks:
         if not isinstance(check, dict) or set(check) != CHECK_FIELDS:
             raise ValueError("invalid qualification check")
@@ -210,11 +222,15 @@ def validate_manifest(
         }
         if artifact != expected or artifact_path.name in artifact_names:
             raise ValueError("qualification artifact identity mismatch")
+        if scope == "target_qualification" and check_id == PROCESS_CHECK_ID:
+            process_validation = process.validate_result(artifact_bytes, candidate)
         observed.add(check_id)
         artifact_names.add(artifact_path.name)
         artifacts.append({"id": check_id, **expected})
     if observed != required:
         raise ValueError("qualification check inventory is incomplete")
+    if scope == "target_qualification" and process_validation is None:
+        raise ValueError("target qualification lacks a validated process-fault matrix")
     artifacts.sort(key=lambda value: value["id"])
     return {
         "schema": RESULT_SCHEMA,
@@ -229,6 +245,16 @@ def validate_manifest(
             "sha256": _digest(payload),
         },
         "artifacts": artifacts,
+        "processFaultMatrix": (
+            {
+                "result": process_validation["result"],
+                "profileSha256": process_validation["profileSha256"],
+                "scenarioCount": len(process_validation["scenarios"]),
+                "manifestSha256": process_validation["manifest"]["sha256"],
+            }
+            if process_validation is not None
+            else None
+        ),
         "authorityGranted": False,
         "activation": False,
         "release": False,
