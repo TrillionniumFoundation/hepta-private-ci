@@ -54,16 +54,29 @@ must come from separately administered evidence and are never upgraded by reposi
 ## Trusted reporting boundary
 
 Candidate workflows have only `contents: read`; they do not receive `pull-requests: write`,
-`id-token: write`, or attestation authority while executing candidate code. They upload
-summaries but do not mutate the PR.
+credential references, `id-token: write`, or attestation authority while executing
+candidate code. They upload summaries but do not mutate the PR.
 
 `.github/workflows/hepta-learning-eval-trusted-report.yml` is a default-branch
 `workflow_run` reporter. It checks out only the trusted default branch and downloads a
 producer artifact as **untrusted data**. Before a PR marker can be changed, the reporter
 requires the expected artifact/file name, a single bounded regular file, a valid schema and
-canonical evidence hash, matching repository/run/attempt identity, a current same-repo PR,
-and an exact current head-SHA match. Symlinks, stale runs, substituted identities, malformed
-claims, or externally self-issued authority fail closed.
+canonical evidence hash, matching repository/workflow path/event/run/attempt identity, a
+current same-repository PR, and exact current head-SHA, base-SHA, source-tree and synthetic
+merge-object bindings where applicable. It re-queries the latest-attempt job inventory from
+GitHub and compares every reported conclusion with the actual producer job.
+
+The candidate producer workflow must also be byte-for-byte identical to the trusted
+workflow checked out from the default branch. A PR that changes its own qualification
+workflow cannot use that modified workflow to update a trusted qualification marker; the
+workflow change must first pass the separate trusted review/merge boundary. Permission-text
+validation remains defense in depth and rejects credential surfaces, direct PR mutation,
+output-derived checkout refs, unapproved write permissions, or candidate execution in the
+main-only attestation job.
+
+Symlinks, stale runs, substituted source trees, stale base revisions, substituted merge
+objects, malformed claims, extra jobs, forged internally consistent green summaries, or
+externally self-issued authority all fail closed.
 
 Successful provenance attestation is isolated to `push` runs on `main`. The attestation job
 downloads the already-produced summary and does not execute the candidate checkout under
