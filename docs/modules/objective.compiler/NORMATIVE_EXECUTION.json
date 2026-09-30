@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.objective-compiler-normative-execution.v1",
+  "schemaVersion": 1,
+  "module": "objective.compiler",
+  "normativeDocument": "docs/modules/objective.compiler/NORMATIVE_EXECUTION.md",
+  "sourceRoot": "codex-rs/hepta-objective",
+  "productPath": {
+    "validatedProfileType": "ValidatedAdmissionProfileV1",
+    "authoritativeCompile": "compile_authoritative_objective_v1",
+    "proofBearingResult": "ProofBearingObjectiveCompileV1",
+    "protocolProjection": "encode_proof_bearing_objective_function_v1",
+    "publicationFacade": "compile_and_publish_validated_objective_run_v1",
+    "runtimeOwner": "ObjectiveRuntimeHost",
+    "durableOwner": "RunStartJournal"
+  },
+  "durableFormats": {
+    "runStartRecordVersion": 3,
+    "conflictRecordVersion": 2,
+    "admissionProofVersion": 1,
+    "admissionProofDomain": "hepta.objective.admission-proof.v1",
+    "legacyFinalUseAllowed": false
+  },
+  "compatibility": {
+    "legacyCompileFeature": "qualification-legacy-compile",
+    "legacyCompileEntrypoint": "compile_prevalidated_legacy_objective_v1",
+    "authenticatedRevalidationProjection": "encode_authenticated_objective_function_v1",
+    "rawProfilePublicationFacade": "compile_and_publish_objective_run_v1",
+    "productDefault": false
+  },
+  "semanticContract": {
+    "sourceScalarRepresentation": "signed-q32",
+    "supportedSourceComparators": [
+      "eq",
+      "lte",
+      "gte"
+    ],
+    "rejectedSourceComparators": [
+      "ne",
+      "lt",
+      "gt",
+      "in",
+      "not_in"
+    ],
+    "intrinsicAbstain": true,
+    "maximumNativeHardConstraints": 256,
+    "maximumSourceHardConstraints": 246,
+    "maximumCompiledActions": 128,
+    "maximumImplicitAbstainCallerActions": 127
+  },
+  "errorCodes": [
+    "OBJ-E001",
+    "OBJ-E002",
+    "OBJ-E003",
+    "OBJ-E004",
+    "OBJ-E005",
+    "OBJ-E006",
+    "OBJ-E007",
+    "OBJ-E008",
+    "OBJ-E009"
+  ],
+  "sourceIdentity": {
+    "implementationMap": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+    "staticState": "docs/modules/objective.compiler/CURRENT_STATE.json",
+    "dynamicProjectionSchema": "hepta.objective-evidence-projection.v2",
+    "exactCommitAndTreeRequired": true,
+    "historicalReceiptsCannotQualifyNewHead": true
+  },
+  "qualification": {
+    "trustedVerifierFromProtectedMain": true,
+    "candidateVerifierMayNotSelfQualify": true,
+    "sourceHeadRequired": true,
+    "deterministicSyntheticMergeRequired": true,
+    "selectedTargetHostRequired": true,
+    "independentReviewRequired": true,
+    "canaryRequired": true,
+    "rollbackDrillRequired": true,
+    "promotionRequired": true,
+    "releaseAuthorityRequired": true
+  },
+  "staticTruth": {
+    "productionImplementation": false,
+    "accepted": false,
+    "activated": false,
+    "released": false
+  }
+}
