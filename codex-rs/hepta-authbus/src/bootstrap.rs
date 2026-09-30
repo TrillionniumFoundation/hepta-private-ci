@@ -54,9 +54,7 @@ pub async fn bootstrap_retryable(
         (false, false) => {
             AuthBusAuthorityHost::bootstrap(database_path, checkpoint_path, owner_id).await
         }
-        (true, true) => {
-            AuthBusAuthorityHost::open(database_path, checkpoint_path, owner_id).await
-        }
+        (true, true) => AuthBusAuthorityHost::open(database_path, checkpoint_path, owner_id).await,
         (false, true) => Err(AuthBusAuthorityError::RollbackDetected),
         (true, false) => {
             validate_checkpoint_parent(&checkpoint_path, database_path)?;
@@ -136,12 +134,11 @@ async fn remove_pristine_database_orphan(
         .fetch_one(&pool)
         .await
         .map_err(storage)?;
-        let recovery: (i64, i64) = sqlx::query_as(
-            "SELECT singleton, recovery_required FROM authbus_recovery_state",
-        )
-        .fetch_one(&pool)
-        .await
-        .map_err(storage)?;
+        let recovery: (i64, i64) =
+            sqlx::query_as("SELECT singleton, recovery_required FROM authbus_recovery_state")
+                .fetch_one(&pool)
+                .await
+                .map_err(storage)?;
         let accumulator = sqlx::query(
             "SELECT singleton, schema_version, length(root_digest), applied_change_id
              FROM authbus_frontier_accumulator",
@@ -225,10 +222,7 @@ fn validate_checkpoint_parent(
         .canonicalize()
         .map_err(storage_io)?;
     let metadata = std::fs::metadata(&checkpoint_parent).map_err(storage_io)?;
-    if checkpoint_parent == database_parent
-        || !metadata.is_dir()
-        || metadata.mode() & 0o077 != 0
-    {
+    if checkpoint_parent == database_parent || !metadata.is_dir() || metadata.mode() & 0o077 != 0 {
         return Err(AuthBusAuthorityError::UnsafeCheckpoint);
     }
     Ok(())
