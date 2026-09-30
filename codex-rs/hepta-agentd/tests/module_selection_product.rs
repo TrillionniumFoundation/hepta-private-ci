@@ -100,7 +100,10 @@ async fn ready(
 ) -> Result<(AgentdClient, SupervisordAgentStatus)> {
     timeout(Duration::from_secs(30), async {
         loop {
-            let status = client.snapshot(agent.clone()).await?;
+            let status = client
+                .snapshot(agent.clone())
+                .await
+                .context("snapshot while awaiting selected Agentd readiness")?;
             if let Some(generation) = status
                 .spawn_generation
                 .filter(|generation| *generation > after)
@@ -129,7 +132,10 @@ async fn exercise(
     release: ReleaseId,
 ) -> Result<()> {
     let before = client.snapshot(agent.clone()).await?;
-    client.start(before.control_fence, release).await?;
+    client
+        .start(before.control_fence, release)
+        .await
+        .context("start explicitly allowed installed release")?;
     let (product, first) = ready(client, registry, agent, 0).await?;
     let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
     // Keep the task outside this test's lifetime: no model/provider dispatch.
@@ -142,10 +148,16 @@ async fn exercise(
         now + 86_400_000,
         now,
     );
-    let created = product.automation_create(draft).await?;
+    let created = product
+        .automation_create(draft)
+        .await
+        .context("create remote product task")?;
     ensure!(product.automation_list(10).await?.len() == 1);
     let current = client.snapshot(agent.clone()).await?;
-    client.restart(current.control_fence).await?;
+    client
+        .restart(current.control_fence)
+        .await
+        .context("restart selected installed release")?;
     let (reopened, second) = ready(
         client,
         registry,
@@ -200,6 +212,9 @@ async fn normal_agentd_binary_consumes_selected_topology_and_recovers_one_durabl
             "supervisor-selected".to_string(),
         ],
     )?;
+    // Explicit administrator allowance in this isolated fixture; installation
+    // alone must not authorize an Agent to execute an otherwise valid release.
+    registry.allow_release(&agent, &release_id)?;
     {
         let mut owner = DurableRuntimeModuleSupervisorV1::open(
             registry.layout().runtime_module_supervisor_state(),
