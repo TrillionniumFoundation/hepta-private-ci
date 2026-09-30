@@ -5,9 +5,9 @@ This script must be executed from the repository default branch. Evidence from a
 candidate workflow is untrusted data: it is never imported or executed. The
 bridge accepts exactly one bounded JSON summary, validates its canonical digest
 and claim scope, verifies the actual producer run and job conclusions through
-the GitHub API, inspects the candidate workflow as data for the read-only
-permission contract, binds everything to the current PR head, then updates only
-the machine-owned marker block.
+the GitHub API, requires the candidate workflow to be byte-for-byte identical to
+the trusted default-branch workflow, binds source/tree/base/merge identities to
+GitHub objects and the current PR, then updates only the machine-owned marker.
 """
 from __future__ import annotations
 
@@ -26,6 +26,7 @@ import urllib.error
 from urllib.parse import quote
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+ROOT = SCRIPT_DIR.parent
 SHA1 = re.compile(r"[0-9a-f]{40}\Z")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\Z")
@@ -211,6 +212,18 @@ def fetch_candidate_workflow(
     return decoded
 
 
+def trusted_workflow_text(marker: str) -> str:
+    if marker not in WORKFLOWS:
+        raise ValueError("unapproved producer workflow")
+    path = ROOT / WORKFLOWS[marker]["path"]
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("trusted default-branch workflow is not a regular file")
+    value = path.read_text(encoding="utf-8")
+    if not value or len(value.encode("utf-8")) > MAX_SUMMARY_BYTES:
+        raise ValueError("trusted workflow size is outside the allowed bound")
+    return value
+
+
 def validate_candidate_workflow_text(text: str, marker: str) -> None:
     if marker not in WORKFLOWS:
         raise ValueError("unapproved producer workflow")
@@ -267,6 +280,15 @@ def validate_candidate_workflow_text(text: str, marker: str) -> None:
             action = stripped.split("uses:", 1)[1].strip()
             if action not in allowed_actions:
                 raise ValueError(f"attestation job uses an unapproved action: {action}")
+
+
+def validate_trusted_workflow_identity(candidate: str, marker: str) -> None:
+    trusted = trusted_workflow_text(marker)
+    if candidate.encode("utf-8") != trusted.encode("utf-8"):
+        raise ValueError(
+            "candidate producer workflow differs from the trusted default-branch workflow"
+        )
+    validate_candidate_workflow_text(candidate, marker)
 
 
 def job_conclusions(value: dict[str, Any], run_attempt: str) -> dict[str, str]:
@@ -326,6 +348,24 @@ def validate_actual_job_results(
             raise ValueError("exact summary job conclusion does not match matrix result")
 
 
+def validate_current_pull_request(
+    current: dict[str, Any],
+    repository: str,
+    pull_request: int,
+    source_sha: str,
+) -> None:
+    if current.get("number", pull_request) != pull_request:
+        raise ValueError("pull request identity mismatch")
+    if current.get("state") != "open":
+        raise ValueError("refusing to update a non-open pull request")
+    head = current.get("head")
+    if not isinstance(head, dict) or head.get("sha") != source_sha:
+        raise ValueError("producer run is stale relative to the current PR head")
+    head_repo = head.get("repo")
+    if not isinstance(head_repo, dict) or head_repo.get("full_name") != repository:
+        raise ValueError("pull request head is not owned by the reporting repository")
+
+
 def validate_producer_run(
     summary: dict[str, Any],
     marker: str,
@@ -363,6 +403,33 @@ def validate_producer_run(
         or pulls[0].get("number") != pull_request
     ):
         raise ValueError("producer run is not bound to the expected single pull request")
+    run_pull = pulls[0]
+    run_head = run_pull.get("head")
+    run_base = run_pull.get("base")
+    if not isinstance(run_head, dict) or run_head.get("sha") != source_sha:
+        raise ValueError("producer run pull-request head mismatch")
+    if not isinstance(run_base, dict) or SHA1.fullmatch(str(run_base.get("sha", ""))) is None:
+        raise ValueError("producer run pull-request base identity is missing")
+
+    commit = request_json(
+        f"https://api.github.com/repos/{repository}/git/commits/{source_sha}", token
+    )
+    tree = commit.get("tree")
+    if not isinstance(tree, dict) or tree.get("sha") != summary["source"]["tree"]:
+        raise ValueError("summary source tree does not match the GitHub commit object")
+
+    current = request_json(
+        f"https://api.github.com/repos/{repository}/pulls/{pull_request}", token
+    )
+    validate_current_pull_request(current, repository, pull_request, source_sha)
+    current_base = current.get("base")
+    if not isinstance(current_base, dict) or current_base.get("sha") != run_base.get("sha"):
+        raise ValueError("producer run is stale relative to the current PR base")
+    if marker == "exact":
+        if summary.get("baseCommit") != current_base.get("sha"):
+            raise ValueError("exact summary base commit does not match the current PR base")
+        if summary.get("syntheticMergeCommit") != current.get("merge_commit_sha"):
+            raise ValueError("exact summary merge commit does not match the current PR merge object")
 
     jobs = request_json(
         f"https://api.github.com/repos/{repository}/actions/runs/{run_id}/jobs?filter=latest&per_page=100",
@@ -374,7 +441,7 @@ def validate_producer_run(
     workflow_text = fetch_candidate_workflow(
         repository, config["path"], source_sha, token
     )
-    validate_candidate_workflow_text(workflow_text, marker)
+    validate_trusted_workflow_identity(workflow_text, marker)
 
 
 def update_current_pull_request(
@@ -393,14 +460,7 @@ def update_current_pull_request(
         raise ValueError("missing GitHub token")
     url = f"https://api.github.com/repos/{repository}/pulls/{pull_request}"
     current = PR_STATUS.request_json(url, token or "dry-run-token")
-    if current.get("state") != "open":
-        raise ValueError("refusing to update a non-open pull request")
-    head = current.get("head")
-    if not isinstance(head, dict) or head.get("sha") != source_sha:
-        raise ValueError("producer run is stale relative to the current PR head")
-    head_repo = head.get("repo")
-    if not isinstance(head_repo, dict) or head_repo.get("full_name") != repository:
-        raise ValueError("pull request head is not owned by the reporting repository")
+    validate_current_pull_request(current, repository, pull_request, source_sha)
     body = current.get("body") or ""
     if not isinstance(body, str):
         raise ValueError("pull request body is not text")

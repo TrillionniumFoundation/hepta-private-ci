@@ -54,11 +54,18 @@ def exact_summary() -> dict[str, object]:
     )
 
 
-def pull_request(head: str = SOURCE) -> dict[str, object]:
+def pull_request(
+    head: str = SOURCE,
+    base: str = BASE,
+    merge: str = MERGE,
+) -> dict[str, object]:
     return {
+        "number": PR_NUMBER,
         "state": "open",
         "body": "intro\n",
         "head": {"sha": head, "repo": {"full_name": REPOSITORY}},
+        "base": {"sha": base},
+        "merge_commit_sha": merge,
     }
 
 
@@ -78,7 +85,13 @@ def run_payload(marker: str) -> dict[str, object]:
         "head_sha": SOURCE,
         "run_attempt": int(RUN_ATTEMPT),
         "head_repository": {"full_name": REPOSITORY},
-        "pull_requests": [{"number": PR_NUMBER}],
+        "pull_requests": [
+            {
+                "number": PR_NUMBER,
+                "head": {"sha": SOURCE},
+                "base": {"sha": BASE},
+            }
+        ],
     }
 
 
@@ -115,14 +128,26 @@ def source_jobs(compile_result: str = "success") -> dict[str, object]:
 def exact_jobs(merge_result: str = "success") -> dict[str, object]:
     config = MODULE.WORKFLOWS["exact"]
     jobs = [
-        {"name": "exact-head", "conclusion": "success", "run_attempt": 2},
-        {"name": "exact-merge", "conclusion": merge_result, "run_attempt": 2},
+        {
+            "name": "exact-head",
+            "conclusion": "success",
+            "run_attempt": int(RUN_ATTEMPT),
+        },
+        {
+            "name": "exact-merge",
+            "conclusion": merge_result,
+            "run_attempt": int(RUN_ATTEMPT),
+        },
         {
             "name": config["summary_job"],
             "conclusion": "success" if merge_result == "success" else "failure",
-            "run_attempt": 2,
+            "run_attempt": int(RUN_ATTEMPT),
         },
-        {"name": config["attestation_job"], "conclusion": "skipped", "run_attempt": 2},
+        {
+            "name": config["attestation_job"],
+            "conclusion": "skipped",
+            "run_attempt": int(RUN_ATTEMPT),
+        },
     ]
     return {"total_count": len(jobs), "jobs": jobs}
 
@@ -136,7 +161,14 @@ def content_payload(marker: str, text: str | None = None) -> dict[str, object]:
     }
 
 
-def producer_api(marker: str, *, jobs: dict[str, object] | None = None, text: str | None = None):
+def producer_api(
+    marker: str,
+    *,
+    jobs: dict[str, object] | None = None,
+    text: str | None = None,
+    tree: str = TREE,
+    current: dict[str, object] | None = None,
+):
     selected_jobs = jobs or (source_jobs() if marker == "source" else exact_jobs())
 
     def request(url: str, token: str) -> dict[str, object]:
@@ -145,6 +177,10 @@ def producer_api(marker: str, *, jobs: dict[str, object] | None = None, text: st
             return run_payload(marker)
         if "/jobs?" in url:
             return selected_jobs
+        if "/git/commits/" in url:
+            return {"tree": {"sha": tree}}
+        if "/pulls/" in url:
+            return current or pull_request()
         if "/contents/" in url:
             return content_payload(marker, text)
         raise AssertionError(f"unexpected API URL: {url}")
@@ -195,9 +231,17 @@ class TrustedReporterTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 MODULE.find_summary(root, link.name)
 
-    def test_checked_in_candidate_workflows_satisfy_read_only_policy(self):
-        MODULE.validate_candidate_workflow_text(workflow_text("source"), "source")
-        MODULE.validate_candidate_workflow_text(workflow_text("exact"), "exact")
+    def test_checked_in_candidate_workflows_match_trusted_policy_and_identity(self):
+        for marker in MODULE.WORKFLOWS:
+            text = workflow_text(marker)
+            MODULE.validate_candidate_workflow_text(text, marker)
+            MODULE.validate_trusted_workflow_identity(text, marker)
+
+    def test_candidate_workflow_drift_from_default_branch_is_rejected(self):
+        with self.assertRaises(ValueError):
+            MODULE.validate_trusted_workflow_identity(
+                workflow_text("source") + "# candidate drift\n", "source"
+            )
 
     def test_candidate_workflow_write_permission_is_rejected(self):
         changed = workflow_text("source").replace(
@@ -208,8 +252,10 @@ class TrustedReporterTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             MODULE.validate_candidate_workflow_text(changed, "source")
 
-    def test_actual_source_run_and_jobs_are_verified(self):
-        with mock.patch.object(MODULE, "request_json", side_effect=producer_api("source")):
+    def test_actual_source_run_jobs_tree_and_workflow_are_verified(self):
+        with mock.patch.object(
+            MODULE, "request_json", side_effect=producer_api("source")
+        ):
             MODULE.validate_producer_run(
                 source_summary(),
                 "source",
@@ -239,8 +285,28 @@ class TrustedReporterTests(unittest.TestCase):
                     "token",
                 )
 
+    def test_substituted_source_tree_is_rejected_against_commit_object(self):
+        with mock.patch.object(
+            MODULE,
+            "request_json",
+            side_effect=producer_api("source", tree="9" * 40),
+        ):
+            with self.assertRaises(ValueError):
+                MODULE.validate_producer_run(
+                    source_summary(),
+                    "source",
+                    REPOSITORY,
+                    RUN_ID,
+                    RUN_ATTEMPT,
+                    SOURCE,
+                    PR_NUMBER,
+                    "token",
+                )
+
     def test_actual_exact_matrix_is_verified(self):
-        with mock.patch.object(MODULE, "request_json", side_effect=producer_api("exact")):
+        with mock.patch.object(
+            MODULE, "request_json", side_effect=producer_api("exact")
+        ):
             MODULE.validate_producer_run(
                 exact_summary(),
                 "exact",
@@ -252,9 +318,49 @@ class TrustedReporterTests(unittest.TestCase):
                 "token",
             )
 
+    def test_stale_base_is_rejected(self):
+        current = pull_request(base="9" * 40)
+        with mock.patch.object(
+            MODULE,
+            "request_json",
+            side_effect=producer_api("exact", current=current),
+        ):
+            with self.assertRaises(ValueError):
+                MODULE.validate_producer_run(
+                    exact_summary(),
+                    "exact",
+                    REPOSITORY,
+                    RUN_ID,
+                    RUN_ATTEMPT,
+                    SOURCE,
+                    PR_NUMBER,
+                    "token",
+                )
+
+    def test_substituted_synthetic_merge_is_rejected(self):
+        current = pull_request(merge="9" * 40)
+        with mock.patch.object(
+            MODULE,
+            "request_json",
+            side_effect=producer_api("exact", current=current),
+        ):
+            with self.assertRaises(ValueError):
+                MODULE.validate_producer_run(
+                    exact_summary(),
+                    "exact",
+                    REPOSITORY,
+                    RUN_ID,
+                    RUN_ATTEMPT,
+                    SOURCE,
+                    PR_NUMBER,
+                    "token",
+                )
+
     def test_stale_workflow_run_cannot_overwrite_newer_pr_head(self):
         with mock.patch.object(
-            MODULE.PR_STATUS, "request_json", return_value=pull_request("8" * 40)
+            MODULE.PR_STATUS,
+            "request_json",
+            return_value=pull_request(head="8" * 40),
         ) as request:
             with self.assertRaises(ValueError):
                 MODULE.update_current_pull_request(
