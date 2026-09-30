@@ -172,3 +172,11 @@ This source change can close repository-controlled implementation gaps only afte
 - independent operational acceptance;
 - production caller/writer composition;
 - activation, promotion or release.
+
+## 9. Executable repository qualification added 2026-09-30
+
+Repository-controlled tests execute the crash matrix for process lease, unified restart record, signed intent and release transaction at file-write, file-sync, rename/hard-link and parent-directory-sync boundaries. Disk-full is represented by the platform `StorageFull` error at the actual writer. Corruption tests truncate each real durable file and require fail-closed decoding. The SIGKILL case uses a separate process, publishes the real four durable records, synchronizes a readiness marker, receives `SIGKILL`, and is inspected by a fresh process.
+
+The 256-Agent test emits one machine-readable JSON line with tick duration, cached status latency, lifecycle-owner latency, mutex wait/hold counters and crash-wave fault counts. Slow-driver and slow-durable-I/O cases deliberately expose serialization. They establish measurable HOL coupling but do not, by themselves, assert a target-host service-level violation. The global lifecycle writer remains until [HOL_REFACTOR_DECISION.md](HOL_REFACTOR_DECISION.md) is satisfied.
+
+The production caller can consume a SHA-256-pinned public authority bundle and the qualification suite covers signer rotation, wrong signer, stale grant, stale daemon-authority epoch and current Fleet revocation. No signing key enters supervisord and no release selection is self-issued. Deployed authority distribution, target-host timing receipts and independent operational acceptance remain external gates.

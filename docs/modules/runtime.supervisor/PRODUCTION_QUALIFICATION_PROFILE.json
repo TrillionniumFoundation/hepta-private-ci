@@ -1,0 +1,98 @@
+{
+  "activation": {
+    "default": false,
+    "requires_all_gates": true,
+    "source_or_repository_ci_is_never_sufficient": true
+  },
+  "artifact_boundary": {
+    "daemon_feature_set": [
+      "production-verifier"
+    ],
+    "forbidden_daemon_binaries": [
+      "hepta-authority-signer",
+      "hepta-final-use-signer",
+      "hepta-final-use-approver",
+      "hepta-final-use-revocation-signer",
+      "hepta-supervisor-authority-bundle"
+    ],
+    "forbidden_daemon_features": [
+      "qualification",
+      "offline-authority-tools"
+    ],
+    "legacy_verifier_tuple_allowed": false
+  },
+  "independent_acceptance": {
+    "distinct_reviewers": true,
+    "required_roles": [
+      "code",
+      "security",
+      "operations"
+    ],
+    "self_approval_allowed": false
+  },
+  "key_custody": {
+    "bundle_pin_required": true,
+    "private_key_in_daemon": false,
+    "required_receipts": [
+      "custody",
+      "rotation",
+      "revocation",
+      "emergency_restore"
+    ]
+  },
+  "module": "runtime.supervisor",
+  "profile_id": "runtime-supervisor-production-qualification-v1",
+  "receipt_validator": "scripts/hepta_supervisor_external_receipt.py",
+  "recovery": {
+    "atomic_recovery_observation_required": true,
+    "operator_drill_required": true,
+    "unknown_outcome_must_not_be_relabelled": true
+  },
+  "required_fault_scenarios": [
+    "stalled_process_driver",
+    "stalled_filesystem",
+    "enospc",
+    "fsync_latency",
+    "hung_child",
+    "daemon_sigkill",
+    "system_manager_restart",
+    "spawn_before_lease_crash",
+    "pid_reuse_exact_identity_rejection",
+    "torn_write",
+    "rename_failure",
+    "directory_fsync_failure",
+    "restart_window_clock_rollback",
+    "stop_original_deadline_restart",
+    "upgrade_each_durable_cut",
+    "rollback_each_durable_cut",
+    "authority_rotation",
+    "authority_revocation"
+  ],
+  "required_receipt_bindings": [
+    "source_sha",
+    "base_sha",
+    "tested_sha",
+    "final_merge_sha",
+    "workflow_sha",
+    "workflow_run_id",
+    "binary_sha256",
+    "cargo_lock_sha256",
+    "feature_set",
+    "target_triple",
+    "runner_image_or_host_fingerprint",
+    "kernel",
+    "filesystem",
+    "profile_sha256",
+    "workload_sha256",
+    "fault_cut",
+    "raw_log_sha256",
+    "durable_snapshot_before_sha256",
+    "durable_snapshot_after_sha256"
+  ],
+  "required_target_hosts": [
+    "linux",
+    "macos"
+  ],
+  "schema_version": 1,
+  "status": "qualification_requirement_not_execution_evidence"
+}

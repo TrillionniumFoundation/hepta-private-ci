@@ -3,6 +3,18 @@ name: Hepta Lane B source closure
 on:
   pull_request:
     paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "docs/modules/runtime.supervisor/**"
+      - "scripts/hepta_supervisor_ci.py"
+      - "scripts/test_hepta_supervisor_ci.py"
+      - ".github/workflows/hepta-supervisor-qualification.yml"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-contracts/**"
@@ -21,6 +33,18 @@ on:
     branches:
       - main
     paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "docs/modules/runtime.supervisor/**"
+      - "scripts/hepta_supervisor_ci.py"
+      - "scripts/test_hepta_supervisor_ci.py"
+      - ".github/workflows/hepta-supervisor-qualification.yml"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-contracts/**"

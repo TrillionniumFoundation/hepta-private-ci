@@ -1,0 +1,251 @@
+name: Hepta supervisor qualification
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/modules/runtime.supervisor/**"
+      - "scripts/hepta_supervisor_*.py"
+      - "scripts/test_hepta_supervisor_*.py"
+      - ".github/workflows/hepta-supervisor-qualification.yml"
+      - ".github/workflows/runtime-supervisor-target-host-qualification.yml"
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  scope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      required: ${{ steps.scope.outputs.required }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Test stable receipt rejection policy
+        run: >-
+          python3 -m unittest -v scripts.test_hepta_supervisor_ci
+          scripts.test_hepta_supervisor_evidence
+      - name: Test current status receipt and workflow policy
+        run: >-
+          python3 -m unittest -v scripts.test_hepta_supervisor_status
+          scripts.test_hepta_supervisor_external_receipt
+          scripts.test_hepta_supervisor_ci_v3
+          scripts.test_hepta_supervisor_workflow
+      - name: Select native and supervisor documentation changes
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PYTHONPATH: scripts
+        run: |
+          python3 - <<'PY'
+          import os
+          from hepta_ci_scope import changed_paths, include_input_scope, select
+          required = True
+          if os.environ["EVENT_NAME"] == "pull_request":
+              base = os.environ["BASE_SHA"]
+              head = os.environ["SOURCE_SHA"]
+              paths = changed_paths(base, head)
+              scope = include_input_scope(select(paths), paths, base, head)
+              required = scope["native"] or scope["full_repo"] or any(
+                  p.startswith("docs/modules/runtime.supervisor/")
+                  or p in {
+                      "scripts/hepta_supervisor_ci.py",
+                      "scripts/hepta_supervisor_ci_v3.py",
+                      "scripts/hepta_supervisor_evidence.py",
+                      "scripts/hepta_supervisor_status.py",
+                      "scripts/hepta_supervisor_external_receipt.py",
+                      "scripts/hepta_supervisor_artifact_gate.py",
+                      "scripts/test_hepta_supervisor_ci.py",
+                      "scripts/test_hepta_supervisor_ci_v3.py",
+                      "scripts/test_hepta_supervisor_evidence.py",
+                      "scripts/test_hepta_supervisor_workflow.py",
+                      "scripts/test_hepta_supervisor_status.py",
+                      "scripts/test_hepta_supervisor_external_receipt.py",
+                  }
+                  for p in paths
+              )
+          with open(os.environ["GITHUB_OUTPUT"], "a") as stream:
+              stream.write(f"required={str(required).lower()}\n")
+          print(f"Supervisor native qualification required: {required}")
+          PY
+
+  qualification:
+    needs: scope
+    if: needs.scope.outputs.required == 'true'
+    name: Supervisor (${{ matrix.os }}, ${{ matrix.lane }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      RUST_BACKTRACE: "1"
+      TMPDIR: /tmp
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct exact prospective merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Bind exact tested candidate
+        env:
+          CANDIDATE: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/hepta-supervisor-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'HEPTA_VERIFIER_TARGET_DIR=%s/hepta-supervisor-verifier-only\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/hepta-supervisor/records"
+          git diff --check
+      - name: Install Linux process prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Install the candidate's exact Rust toolchain
+        run: |
+          set -euo pipefail
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component clippy,rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$channel" >> "$GITHUB_ENV"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Resolve verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Record native prerequisites
+        id: ready
+        run: |
+          set -euo pipefail
+          {
+            rustc --version --verbose
+            cargo --version
+            cargo nextest --version
+            uname -a
+          } > "$RUNNER_TEMP/hepta-supervisor/environment.txt"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      # Every independent suite still runs after another suite fails. Failures
+      # remain failures: no continue-on-error, no retries, no success fallback.
+      - name: Verify generated capability and current status truth
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute status --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Exercise current status and external receipt rejection tests
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute validator-tests --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Build and inspect verifier-only release artifact
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute verifier-artifact --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Check supervisor formatting without mutation
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute format --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Exercise default library lifecycle fixtures
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute default --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Prove default library and daemon refuse production authority
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute default-products --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Exercise production-authority library
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute production --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Exercise qualification-only durability matrix
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute qualification-lib --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Measure 256-Agent lifecycle-writer HOL
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute hol-256 --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Execute actual SIGKILL recovery matrix
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute sigkill --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Exercise authority distribution and product pinning
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute authority-distribution --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Exercise real signer daemon pairs and durable writer handoff
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute products --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Strict default-boundary supervisor lint
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute lint-default --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Strict supervisor lint
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute lint --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Require all records on the same exact candidate
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: >-
+          python3 scripts/hepta_supervisor_ci_v3.py assemble
+          --records "$RUNNER_TEMP/hepta-supervisor/records"
+          --output "$RUNNER_TEMP/hepta-supervisor/qualification.json"
+      - name: Retain raw execution evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-supervisor-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-supervisor/
+          if-no-files-found: error
+          retention-days: 30
+
+  qualification-result:
+    name: Supervisor qualification required
+    if: ${{ always() }}
+    needs: [scope, qualification]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Reject every failed cancelled missing or applicable skipped lane
+        env:
+          SCOPE_RESULT: ${{ needs.scope.result }}
+          REQUIRED: ${{ needs.scope.outputs.required }}
+          RESULT: ${{ needs.qualification.result }}
+        run: |
+          set -euo pipefail
+          test "$SCOPE_RESULT" = success
+          if [ "$REQUIRED" = true ]; then
+            test "$RESULT" = success
+          elif [ "$REQUIRED" = false ]; then
+            test "$RESULT" = skipped
+            echo "No applicable native change; no native execution receipt is asserted."
+          else
+            exit 1
+          fi

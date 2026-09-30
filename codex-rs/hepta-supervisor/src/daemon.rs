@@ -1,16 +1,4 @@
-#[cfg(unix)]
-use std::fs::File;
-#[cfg(unix)]
-use std::fs::OpenOptions;
 use std::io::ErrorKind;
-#[cfg(unix)]
-use std::io::Seek;
-#[cfg(unix)]
-use std::io::SeekFrom;
-#[cfg(unix)]
-use std::io::Write;
-#[cfg(unix)]
-use std::os::fd::AsRawFd;
 #[cfg(unix)]
 use std::path::Path;
 #[cfg(unix)]
@@ -58,9 +46,9 @@ use tokio::io::AsyncWriteExt;
 #[cfg(unix)]
 use tokio::io::BufReader;
 #[cfg(unix)]
-use tokio::sync::Mutex;
-#[cfg(unix)]
 use tokio::sync::Semaphore;
+#[cfg(unix)]
+use tokio::task::JoinSet;
 #[cfg(unix)]
 use tokio::time::MissedTickBehavior;
 #[cfg(unix)]
@@ -121,6 +109,23 @@ use crate::daemon_protocol::SupervisordResponse;
 use crate::signed_authority::authority_epoch_for_supervisor_epoch;
 
 #[cfg(unix)]
+#[path = "daemon_execution.rs"]
+mod execution;
+#[cfg(unix)]
+#[path = "daemon_mutex.rs"]
+mod mutex;
+#[cfg(unix)]
+#[path = "daemon_owner.rs"]
+mod owner;
+#[cfg(unix)]
+#[path = "daemon_read_view.rs"]
+mod read_view;
+#[cfg(unix)]
+use mutex::MeasuredMutex as Mutex;
+#[cfg(unix)]
+use owner::SingleInstanceLock;
+
+#[cfg(unix)]
 const CONNECTION_CAPACITY: usize = 64;
 #[cfg(unix)]
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
@@ -145,6 +150,10 @@ struct DaemonState<D: ProcessDriver> {
     supervisor_epoch: SupervisorEpoch,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     observed_faults: AtomicU64,
+    execution: execution::Execution,
+    // Drop after the writer. Detached or cancelling tasks retain the same guard
+    // through their Arc<DaemonState>; returning from run_supervisord is not a fence.
+    _instance: SingleInstanceLock,
 }
 
 /// Runs the one lifecycle-only supervisor daemon for a fleet.
@@ -184,6 +193,8 @@ async fn run_supervisord_inner(
     cancellation: CancellationToken,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
 ) -> Result<(), SupervisorError> {
+    // Cancelling/dropping the outer future must also stop the ticker and server.
+    let _shutdown = cancellation.clone().drop_guard();
     let registry = FleetRegistry::open_existing(fleet_root)?;
     let snapshot = registry.load()?;
     if snapshot.agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
@@ -193,7 +204,7 @@ async fn run_supervisord_inner(
         )));
     }
     let layout = registry.layout().clone();
-    let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
+    let instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     let (supervisor, recovery) = Supervisor::recover(
@@ -208,7 +219,13 @@ async fn run_supervisord_inner(
         supervisor_epoch: SupervisorEpoch::new(),
         production_grant_verifier,
         observed_faults: AtomicU64::new(recovery.faults.len() as u64),
+        execution: execution::Execution::new(cancellation.clone()),
+        _instance: instance,
     });
+    {
+        let supervisor = state.supervisor.lock().await;
+        execution::refresh(&state, &supervisor);
+    }
     let server = SupervisordServer::bind(
         layout.supervisor_socket().to_path_buf(),
         Arc::clone(&state),
@@ -223,16 +240,20 @@ async fn run_supervisord_inner(
         loop {
             tokio::select! {
                 _ = tick_cancellation.cancelled() => return,
-                _ = interval.tick() => {
-                    let faults = tick_state.supervisor.lock().await.tick(Instant::now()).faults;
-                    tick_state.observed_faults.fetch_add(faults.len() as u64, Ordering::Relaxed);
+                scheduled = interval.tick() => {
+                    execution::tick(Arc::clone(&tick_state), scheduled.into_std()).await;
                 }
             }
         }
     });
     let result = server.run().await;
     cancellation.cancel();
-    let _ = ticker.await;
+    let ticker_result = ticker.await;
+    if ticker_result.is_err() || state.execution.failed() {
+        return Err(SupervisorError::Invalid(
+            "supervisord lifecycle worker failed; durable recovery is required".to_string(),
+        ));
+    }
     result
 }
 
@@ -278,21 +299,50 @@ impl SupervisordServer {
     }
 
     async fn run(mut self) -> Result<(), SupervisorError> {
-        loop {
+        let mut tasks = JoinSet::new();
+        let mut result = loop {
             let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => return Ok(()),
-                accepted = self.listener.accept() => accepted?,
+                _ = self.cancellation.cancelled() => break Ok(()),
+                joined = tasks.join_next(), if !tasks.is_empty() => {
+                    if matches!(joined, Some(Err(_))) {
+                        break Err(SupervisorError::Invalid(
+                            "supervisord connection task failed".to_string(),
+                        ));
+                    }
+                    continue;
+                }
+                accepted = self.listener.accept() => match accepted {
+                    Ok(stream) => stream,
+                    Err(error) => break Err(error.into()),
+                },
             };
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 drop(stream);
                 continue;
             };
             let state = Arc::clone(&self.state);
-            tokio::spawn(async move {
+            tasks.spawn(async move {
                 let _permit = permit;
                 let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
             });
+        };
+        self.cancellation.cancel();
+        if result.is_err() {
+            tasks.abort_all();
         }
+        // Drain already accepted requests before normal shutdown. On future drop,
+        // JoinSet aborts them; a still-running synchronous task retains state/lock.
+        while let Some(joined) = tasks.join_next().await {
+            if let Err(error) = joined
+                && error.is_panic()
+            {
+                self.state.observed_faults.fetch_add(1, Ordering::Relaxed);
+                result = Err(SupervisorError::Invalid(
+                    "supervisord connection task failed during shutdown".to_string(),
+                ));
+            }
+        }
+        result
     }
 }
 
@@ -355,7 +405,7 @@ async fn serve_connection(
         Ok(()) => SupervisordResponse {
             schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
-            payload: handle_request(Arc::clone(&state), request.method).await,
+            payload: execution::handle(Arc::clone(&state), request.method).await,
         },
     };
     write_response(&mut writer, response).await
@@ -1321,52 +1371,6 @@ async fn set_owner_only(path: &Path) -> Result<(), SupervisorError> {
     Ok(())
 }
 
-#[cfg(unix)]
-struct SingleInstanceLock {
-    file: File,
-}
-
-#[cfg(unix)]
-impl SingleInstanceLock {
-    fn acquire(path: &Path) -> Result<Self, SupervisorError> {
-        let mut file = OpenOptions::new()
-            .create(true)
-            .read(true)
-            .write(true)
-            .truncate(false)
-            .open(path)?;
-        set_lock_owner_only(path)?;
-        // SAFETY: flock only operates on this live File descriptor with fixed flags.
-        if unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) } == -1 {
-            let error = std::io::Error::last_os_error();
-            return Err(SupervisorError::Io(std::io::Error::new(
-                ErrorKind::AddrInUse,
-                format!("another supervisord owns {}: {error}", path.display()),
-            )));
-        }
-        file.set_len(0)?;
-        file.seek(SeekFrom::Start(0))?;
-        writeln!(file, "{}", std::process::id())?;
-        file.sync_all()?;
-        Ok(Self { file })
-    }
-}
-
-#[cfg(unix)]
-impl Drop for SingleInstanceLock {
-    fn drop(&mut self) {
-        // SAFETY: unlocks the same live File descriptor acquired above.
-        let _ = unsafe { libc::flock(self.file.as_raw_fd(), libc::LOCK_UN) };
-    }
-}
-
-#[cfg(unix)]
-fn set_lock_owner_only(path: &Path) -> Result<(), SupervisorError> {
-    use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
-    Ok(())
-}
-
 #[cfg(test)]
 mod tests {
     use codex_hepta_contracts::AgentId;
@@ -1755,3 +1759,7 @@ mod tests {
 #[cfg(all(test, not(unix)))]
 #[path = "daemon_platform_tests.rs"]
 mod platform_tests;
+
+#[cfg(all(test, unix))]
+#[path = "daemon_shutdown_tests.rs"]
+mod shutdown_tests;

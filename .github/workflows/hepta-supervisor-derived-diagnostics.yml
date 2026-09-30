@@ -1,0 +1,121 @@
+name: Runtime supervisor derived diagnostics
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/modules/runtime.supervisor/**"
+      - "docs/modules/MODULE_DOCS.json"
+      - "qualification/lane-b/**"
+      - "scripts/hepta-module-docs.py"
+      - "scripts/hepta-lane-b-truth.py"
+      - "scripts/hepta-docs.py"
+      - "scripts/hepta_supervisor_status.py"
+      - "scripts/hepta_supervisor_external_receipt.py"
+      - "scripts/test_hepta_supervisor_status.py"
+      - "scripts/test_hepta_supervisor_external_receipt.py"
+      - ".github/workflows/hepta-supervisor-derived-diagnostics.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-supervisor-derived-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-derived:
+    name: Verify exact-head derived parity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact immutable candidate
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p .hepta-evidence
+          {
+            printf 'tested_sha=%s\n' "$EXPECTED_SHA"
+            printf 'tested_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'parents=%s\n' "$(git show -s --format=%P HEAD)"
+          } > .hepta-evidence/identity.txt
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Test supervisor truth validators
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            scripts.test_hepta_supervisor_status \
+            scripts.test_hepta_supervisor_external_receipt \
+            > .hepta-evidence/supervisor-validator-tests.log 2>&1
+          python3 scripts/hepta_supervisor_status.py check \
+            > .hepta-evidence/supervisor-status.log 2>&1
+
+      - name: Regenerate projections without publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-module-docs.py refresh-derived
+          python3 scripts/hepta-lane-b-truth.py generate
+          python3 scripts/hepta-docs.py generate-status
+          python3 scripts/hepta_supervisor_status.py generate
+          git diff --check
+          git diff --binary -- \
+            docs/modules/MODULE_DOCS.json \
+            docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json \
+            docs/modules/runtime.supervisor/CURRENT_STATUS.md \
+            docs/STATUS.md \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json \
+            > .hepta-evidence/runtime-supervisor-derived.patch
+          git status --short > .hepta-evidence/status.txt
+          sha256sum .hepta-evidence/runtime-supervisor-derived.patch \
+            > .hepta-evidence/runtime-supervisor-derived.patch.sha256
+
+      - name: Verify generated truth and exact clean parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-module-docs.py refresh-derived --check \
+            > .hepta-evidence/module-docs.log 2>&1
+          python3 scripts/hepta-lane-b-truth.py verify \
+            > .hepta-evidence/lane-b.log 2>&1
+          python3 scripts/hepta-docs.py verify \
+            > .hepta-evidence/development-docs.log 2>&1
+          python3 scripts/hepta_supervisor_status.py check \
+            > .hepta-evidence/supervisor-status-after.log 2>&1
+          if ! git diff --quiet -- \
+            docs/modules/MODULE_DOCS.json \
+            docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json \
+            docs/modules/runtime.supervisor/CURRENT_STATUS.md \
+            docs/STATUS.md \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json; then
+            echo "tracked derived truth is stale for the exact candidate" >&2
+            cat .hepta-evidence/status.txt >&2
+            exit 1
+          fi
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+
+      - name: Retain exact parity diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-derived-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/*
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30

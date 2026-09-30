@@ -37,9 +37,24 @@
           "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
           "kind": "native_process_identity",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/launch_failure_tests.rs",
+          "kind": "native_unit_and_launch_faults",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/unpublished_lease_tests.rs",
+          "kind": "native_unit_and_launch_faults",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_containment_tests.rs",
+          "kind": "native_unit_and_launch_faults",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Creates a generation-fenced managed process from a registered release, retains failed lease-publication children under hard-kill quarantine, and recovers exact process identity without PID-only trust.",
+      "sourceSemantics": "Creates a generation-fenced managed process. After the driver returns an owned main or Matrix handle, failed lease publication retains that handle fenced until observed exit and same-owner exact cleanup. Adopted signals use kernel lifetime references on supported Linux/macOS hosts, never a bare-PID fallback. Driver-internal post-spawn failures and daemon death before a recoverable lease remain open; native execution is unverified.",
       "operation": "start_instance",
       "nativeSymbol": "pub fn start(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -64,6 +79,16 @@
         {
           "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
           "kind": "readiness_and_generation_fences",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_lease_removal_tests.rs",
+          "kind": "native_unit_and_launch_faults",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_containment_tests.rs",
+          "kind": "native_unit_and_launch_faults",
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
@@ -95,7 +120,7 @@
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut.",
+      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut. Pending deadlines are preserved within one daemon only; cross-daemon deadline restoration remains open.",
       "operation": "drain",
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -116,9 +141,14 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "graceful_stop",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/control_durable_restart_tests.rs",
+          "kind": "durable_restart_cancellation",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Escalates an already fenced lifecycle through graceful process stop without treating process termination as user-task success.",
+      "sourceSemantics": "Cancels an existing pending main restart through the canonical restart-record writer before companion deferral, lifecycle CAS and graceful signaling; preserves attempts, window origin, eligibility and companion budget. Internal/deferred process stop does not cancel the restart it implements. This is budget cancellation, not a durable Stop operation: no-runtime daemon admission, cross-daemon termination intent/deadlines and release-change supersession remain open. Process termination is not user-task success.",
       "operation": "stop_instance",
       "nativeSymbol": "pub fn stop(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -139,9 +169,24 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "hard_kill_and_fencing",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/unix_process_ref_tests.rs",
+          "kind": "native_process_identity",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_containment_tests.rs",
+          "kind": "native_unit_and_launch_faults",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/control_durable_restart_tests.rs",
+          "kind": "durable_restart_cancellation",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Issues a hard kill only to the exact managed process identity after generation fencing; it is an emergency lifecycle action, not release success.",
+      "sourceSemantics": "Attempts durable pending-main-restart cancellation, then owned main termination before companion control. A failed cancellation is reported and fences the retained main handle but cannot suppress emergency termination attempts. Adopted signals use kernel lifetime references; a signal acknowledgement is not observed exit. Complete cross-daemon Kill intent, release-change supersession and target-host execution remain open.",
       "operation": "kill_instance",
       "nativeSymbol": "pub fn kill(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -162,9 +207,19 @@
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
           "kind": "bounded_restart_budget",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/control_durable_restart_tests.rs",
+          "kind": "durable_restart_cancellation",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/restart_budget_recovery_tests.rs",
+          "kind": "restart_window_and_clock_recovery",
+          "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Restarts the current admitted release under generation fencing; automatic crash restarts are separately bounded by the durable restart window/backoff record.",
+      "sourceSemantics": "Keeps an unresolved restart claim across budget-window rollover without resetting attempts or original eligibility. Admission, preflight and recovery reject wall-clock rollback before the window origin; internal/deferred Stop preserves the pending claim. Predecessor/replacement identity and complete cross-daemon Stop/Kill operation recovery remain open; budget cancellation alone is not full durable control.",
       "operation": "restart_instance",
       "nativeSymbol": "pub fn restart(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -326,7 +381,15 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Native Linux/macOS source-head and deterministic merge-candidate default/production-authority library, product, formatting and strict-lint execution for the exact current candidate.",
+    "Complete durable Stop/Kill intent and release-change supersession, no-runtime cancellation admission, bound predecessor/replacement identity and cross-daemon control deadlines; admitted pending-budget cancellation is source-integrated but does not close these gaps.",
+    "Cross-daemon exit finalization and launch-before-lease crash reconciliation; local same-owner cleanup witnesses are deliberately not reconstructible from absent files.",
+    "Unix driver setup failures after OS spawn, pre-adoption hydration/binding failures, rejected/unproven adoption lease disposition and main release-rejection early return before companion recovery.",
+    "Directory/inode substitution and complete writer API/permission inventory under the target-host security model.",
+    "Per-Agent mutation ownership, short shared registry/release commit boundaries and measured 256-process mixed load; serialized lifecycle work remains.",
+    "Canonical document/projection verification and complete current-source mapping; focused amendment documents and added test sources are not global closure."
+  ],
   "externalEvidenceGates": [
     "exact deployed hepta-supervisord binary, host identity and externally pinned production grant/H7 verifier configuration",
     "target-host startup, watchdog, typed Agentd drain, bounded restart and signed-recovery crash/fault/latency measurements",
@@ -335,9 +398,9 @@
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
-    "repositoryControlledDocumentationGapsClosed": true,
-    "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledDocumentationGapsClosed": false,
+    "repositoryControlledMappingGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -351,7 +414,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_pinned_bundle_not_activated",
   "productionWriterState": "not_established",
   "owner": "runtime-control",
   "deputy": "fleet-runtime",
@@ -372,9 +435,9 @@
     "codex-rs/hepta-supervisor"
   ],
   "observedAtHead": {
-    "commit": "aa68a23f99d8ddf0521c732fed288d9287c30ac4",
-    "tree": "8d7b7fd2dd8e41652f97a1ab2cd938e1cfbed03b",
-    "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+    "commit": "3562f8add133426177574492a9a0dc377e863326",
+    "tree": "f4d66d1fb2358aec45ee02f45ae6f9d85dbe3c0f",
+    "interpretation": "Pinned source observation including durable cancellation of existing pending main restarts, internal/deferred Stop separation, pending-window preservation and clock-validation consistency; see RESTART_CANCELLATION.md. Earlier lifetime/ownership repairs are retained. Eighteen new regression test functions are source only: native compile, format, strict lint, source/merge execution and target-host qualification remain unverified. Full durable controls, restart lineage, deadlines, cross-daemon cleanup and the other listed gates remain open."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }

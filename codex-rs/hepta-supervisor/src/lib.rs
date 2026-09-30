@@ -2,24 +2,34 @@
 //!
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
+mod authority_bundle;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 mod authority_signer;
 mod control;
+mod control_intent;
 mod daemon;
 mod daemon_client;
 mod daemon_protocol;
 mod driver;
+mod durability;
 mod durable_publish;
+#[cfg(all(test, feature = "qualification"))]
+mod durability_qualification_tests;
 mod error;
 mod lease;
 mod matrix;
 mod model;
 mod module_runtime;
 mod process_deadline;
+#[cfg(feature = "qualification")]
+mod qualification_faults;
 mod recovery;
+mod recovery_diagnostics;
 mod release;
 mod release_transaction;
 mod restart_budget;
 mod restart_journal;
+mod restart_lineage;
 mod restart_policy;
 mod restart_state;
 mod result_fence;
@@ -33,17 +43,34 @@ mod supervisor_qualification;
 mod tick;
 mod writer_handoff;
 
+#[cfg(feature = "qualification")]
+#[path = "daemon_mutex.rs"]
+pub mod qualification_mutex;
+
 #[cfg(unix)]
 mod unix;
 
+pub use authority_bundle::PRODUCTION_AUTHORITY_BUNDLE_NAMESPACE;
+pub use authority_bundle::PRODUCTION_AUTHORITY_BUNDLE_SCHEMA_VERSION;
+pub use authority_bundle::ProductionAuthorityBundle;
+pub use authority_bundle::ProductionAuthorityBundleError;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::ExternalSignerError;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::MAX_SIGNING_KEY_INPUT_BYTES;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::MAX_SIGNING_REQUEST_BYTES;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::SignRequest;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::SignResponse;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::load_signing_key_from_fd;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::load_signing_key_from_path;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::read_request;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::sign_request;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
@@ -102,6 +129,20 @@ pub use process_deadline::ProcessDeadlinePolicyV1;
 pub use process_deadline::ProcessTerminationOutcomeV1;
 pub use process_deadline::enforce_process_deadline_v1;
 pub use process_deadline::enforce_process_termination_deadline_v1;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::QualificationCrashProbeError;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::QualificationCrashProbeReceipt;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::inspect_qualification_crash_probe;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::publish_qualification_crash_probe;
+pub use recovery_diagnostics::RecoveryBlockerDiagnostic;
+pub use recovery_diagnostics::RecoveryBlockerKind;
+pub use recovery_diagnostics::RecoveryDiagnostic;
+pub use recovery_diagnostics::RecoveryDiagnosticContext;
+pub use recovery_diagnostics::RecoveryOperatorAction;
+pub use recovery_diagnostics::diagnose_recovery;
 pub use release_transaction::DurableReleaseTransaction;
 pub use release_transaction::ReleaseTransactionKind;
 pub use release_transaction::ReleaseTransactionPhase;
@@ -123,11 +164,13 @@ pub use robrix_protocol::RobrixSupervisordPayload;
 pub use robrix_protocol::RobrixSupervisordRequest;
 pub use robrix_protocol::RobrixSupervisordResponse;
 pub use signed_authority::H7H89ProductionGrant;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use signed_authority::H7H89ProductionGrantSigner;
 pub use signed_authority::H7H89ProductionGrantVerifier;
 pub use signed_authority::H7H89ProductionTransition;
 pub use signed_authority::PRODUCTION_RECOVERY_NAMESPACE;
 pub use signed_authority::PRODUCTION_RECOVERY_SCHEMA_VERSION;
+pub use signed_authority::ProductionAuthorityError;
 pub use signed_authority::ProductionMutationReceipt;
 pub use signed_authority::ProductionMutationState;
 pub use signed_authority::ProductionMutationStatus;
