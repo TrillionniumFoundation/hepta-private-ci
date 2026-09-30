@@ -12,7 +12,7 @@ on:
           - operator-payload
           - verify
       candidate_sha:
-        description: Exact immutable AuthBus candidate SHA
+        description: Exact immutable AuthBus candidate SHA already merged into main
         required: true
         type: string
       target_profile:
@@ -55,13 +55,17 @@ concurrency:
 jobs:
   acceptance:
     name: AuthBus signed production acceptance
+    if: github.ref == 'refs/heads/main'
     environment: authbus-production-acceptance
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
+      CONTROL_SHA: ${{ github.sha }}
       PHASE: ${{ inputs.phase }}
       CANDIDATE_SHA: ${{ inputs.candidate_sha }}
       TARGET_PROFILE: ${{ inputs.target_profile }}
+      AUTHORITY_RUN_ID: ${{ inputs.authority_run_id }}
+      TARGET_RUN_ID: ${{ inputs.target_run_id }}
       SECURITY_REVIEWER_ID: ${{ inputs.security_reviewer_id }}
       OPERATOR_ID: ${{ inputs.operator_id }}
       SECURITY_SIGNATURE_B64: ${{ inputs.security_signature_b64 }}
@@ -69,18 +73,34 @@ jobs:
       SECURITY_PUBKEY_B64: ${{ secrets.AUTHBUS_SECURITY_REVIEWER_PUBKEY_PEM_B64 }}
       OPERATOR_PUBKEY_B64: ${{ secrets.AUTHBUS_OPERATOR_PUBKEY_PEM_B64 }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout trusted acceptance controller
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ env.CANDIDATE_SHA }}
+          ref: ${{ env.CONTROL_SHA }}
 
-      - name: Verify exact source candidate
+      - name: Verify trusted controller and accepted candidate identity
         shell: bash
         run: |
           set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$CONTROL_SHA"
+          [[ "$CONTROL_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          [[ "$TARGET_PROFILE" =~ ^[A-Za-z0-9._-]{1,128}$ ]]
+          [[ "$AUTHORITY_RUN_ID" =~ ^[0-9]{1,20}$ ]]
+          [[ "$TARGET_RUN_ID" =~ ^[0-9]{1,20}$ ]]
+          git cat-file -e "$CANDIDATE_SHA^{commit}"
+          git merge-base --is-ancestor "$CANDIDATE_SHA" "$CONTROL_SHA"
+          control_paths=(
+            .github/workflows/authbus-production-acceptance.yml
+            docs/modules/auth.authbus/PRODUCTION_ACCEPTANCE.json
+            scripts/authbus-production-acceptance.py
+          )
+          for path in "${control_paths[@]}"; do
+            test "$(git rev-parse "$CANDIDATE_SHA:$path")" = "$(git rev-parse "$CONTROL_SHA:$path")"
+          done
           git diff --exit-code
           git diff --cached --exit-code
 
@@ -111,7 +131,7 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ inputs.target_run_id }}
 
-      - name: Build or verify signed acceptance payload
+      - name: Build or verify signed acceptance payload with trusted controller
         shell: bash
         run: |
           set -euo pipefail
@@ -179,11 +199,11 @@ jobs:
               ;;
           esac
 
-      - name: Verify acceptance was read-only
+      - name: Verify acceptance controller remained read-only
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git rev-parse HEAD)" = "$CONTROL_SHA"
           git diff --exit-code
           git diff --cached --exit-code
 
