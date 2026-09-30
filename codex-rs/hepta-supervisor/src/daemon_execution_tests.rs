@@ -45,7 +45,7 @@ async fn cancelled_waiter_retains_writer_and_capacity_until_blocking_work_finish
     )
     .await;
     assert!(
-        matches!(busy, SupervisordPayload::Error { ref code, .. } if code == "control_state_unavailable")
+        matches!(busy, SupervisordPayload::Error { ref code, .. } if code == "not_admitted_busy")
     );
     assert_eq!(state.execution.rejected.load(Ordering::Relaxed), 1);
     // Dropping a JoinHandle is not completion of the underlying synchronous I/O.

@@ -554,6 +554,15 @@ impl<D: ProcessDriver> Supervisor<D> {
             );
         }
 
+        // Close a Stop/Kill intent only after the exact native exit, durable
+        // lease removal and terminal lifecycle are all observed. Otherwise an
+        // ordinary live kill leaves retirement blocked until an owner restart.
+        let terminal = self.record(agent_id)?.lifecycle.lifecycle;
+        if matches!(terminal, AgentLifecycle::Stopped | AgentLifecycle::Failed) {
+            crate::control_intent::reconcile_absent(record.layout.run_root(), agent_id, terminal)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        }
+
         process_exit_witness::consume_process_exit_witness(
             record.layout.run_root(),
             &exit_witness.witness_id,

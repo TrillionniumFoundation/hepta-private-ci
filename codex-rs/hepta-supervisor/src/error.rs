@@ -30,6 +30,10 @@ impl From<serde_json::Error> for ProcessDriverError {
 
 #[derive(Debug, Error)]
 pub enum SupervisorError {
+    #[error("supervisord owner is busy; this request was not admitted")]
+    NotAdmittedBusy,
+    #[error("configuration was not admitted: {0}")]
+    ConfigurationNotReady(String),
     #[error("invalid supervisor value: {0}")]
     Invalid(String),
     #[error("unknown fleet agent {0}")]

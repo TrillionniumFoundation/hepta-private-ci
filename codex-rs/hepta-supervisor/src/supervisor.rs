@@ -51,6 +51,9 @@ pub struct Supervisor<D: ProcessDriver> {
     slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
 }
 
+#[path = "agent_registration.rs"]
+mod agent_registration;
+
 #[cfg(test)]
 #[path = "supervisor_tests.rs"]
 mod tests;

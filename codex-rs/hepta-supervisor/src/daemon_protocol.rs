@@ -2,6 +2,7 @@ use std::fmt;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_memory::H7SignedArtifactEnvelope;
 use serde::Deserialize;
@@ -47,6 +48,8 @@ impl SupervisordRequest {
         }
         match &self.method {
             SupervisordMethod::Health
+            | SupervisordMethod::RegisterAgent { .. }
+            | SupervisordMethod::RetiredAgentStatus { .. }
             | SupervisordMethod::Snapshot { .. }
             | SupervisordMethod::ReleaseSelection { .. }
             | SupervisordMethod::ProductionMutationStatus { .. } => Ok(()),
@@ -72,6 +75,8 @@ impl SupervisordRequest {
                 }
             }
             SupervisordMethod::Start { fence, .. }
+            | SupervisordMethod::AllowInstalledRelease { fence, .. }
+            | SupervisordMethod::RetireAgent { fence }
             | SupervisordMethod::Drain { fence }
             | SupervisordMethod::Stop { fence }
             | SupervisordMethod::Kill { fence }
@@ -109,6 +114,22 @@ pub enum SupervisordRequestValidationError {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SupervisordMethod {
     Health,
+    /// Owner-local registration; executable paths and credentials are absent.
+    RegisterAgent {
+        manifest: AgentManifest,
+    },
+    /// Admission only for an already installed, immutable catalog release.
+    AllowInstalledRelease {
+        fence: SupervisordControlFence,
+        release_id: ReleaseId,
+    },
+    /// Preserve complete private history after exact ownership is resolved.
+    RetireAgent {
+        fence: SupervisordControlFence,
+    },
+    RetiredAgentStatus {
+        agent_id: AgentId,
+    },
     /// Read the current durable serving selection; this cannot activate modules.
     RuntimeModuleSelection {
         module_id: String,
@@ -369,6 +390,20 @@ pub struct SupervisordResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SupervisordPayload {
+    AgentRegistered {
+        agent: SupervisordAgentStatus,
+    },
+    InstalledReleaseAllowed {
+        agent: SupervisordAgentStatus,
+    },
+    AgentRetired {
+        agent_id: AgentId,
+        archived_root: std::path::PathBuf,
+    },
+    RetiredAgentStatus {
+        agent_id: AgentId,
+        archived_root: Option<std::path::PathBuf>,
+    },
     RuntimeModuleSelection {
         selection: codex_hepta_agent_protocol::RuntimeModuleSelectionV1,
     },

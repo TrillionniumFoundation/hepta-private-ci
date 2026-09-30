@@ -120,6 +120,9 @@ mod execution;
 #[path = "daemon_mutation.rs"]
 mod mutation;
 #[cfg(unix)]
+#[path = "daemon_registration.rs"]
+mod registration;
+#[cfg(unix)]
 use mutation::handle_mutation;
 #[cfg(unix)]
 use mutation::ordinary_mutation_status;
@@ -519,6 +522,26 @@ async fn handle_request<D: ProcessDriver>(
     method: SupervisordMethod,
 ) -> SupervisordPayload {
     match method {
+        SupervisordMethod::RegisterAgent { manifest } => {
+            registration::register(state, manifest).await
+        }
+        SupervisordMethod::AllowInstalledRelease { fence, release_id } => {
+            registration::allow(state, fence, release_id).await
+        }
+        SupervisordMethod::RetireAgent { fence } => registration::retire(state, fence).await,
+        SupervisordMethod::RetiredAgentStatus { agent_id } => {
+            match state.registry.retired_agent_path(&agent_id) {
+                Ok(archived_root) => SupervisordPayload::RetiredAgentStatus {
+                    agent_id,
+                    archived_root,
+                },
+                Err(error) => safe_rejection(
+                    error.into(),
+                    /*actual*/ None,
+                    /*mutation_started*/ false,
+                ),
+            }
+        }
         SupervisordMethod::RuntimeModuleSelection { module_id } => {
             match state
                 .runtime_modules
@@ -1219,6 +1242,14 @@ fn safe_rejection(
         );
     }
     match error {
+        SupervisorError::NotAdmittedBusy => error_payload(
+            "not_admitted_busy",
+            "lifecycle owner is busy; no operation was admitted; refresh before retry",
+            actual,
+        ),
+        SupervisorError::ConfigurationNotReady(message) => {
+            error_payload("configuration_not_ready", &message, actual)
+        }
         SupervisorError::UnknownAgent(_) => {
             error_payload(
                 "unknown_agent",

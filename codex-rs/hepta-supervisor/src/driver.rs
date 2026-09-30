@@ -116,6 +116,13 @@ pub enum Adoption<P> {
 pub trait ProcessDriver {
     type Process: ManagedProcess;
 
+    /// Reject retirement while host-owned durable resource claims remain live.
+    /// The Supervisor separately proves exact process and journal absence; an
+    /// external resource owner must not manufacture a terminal receipt here.
+    fn validate_agent_retirement(&mut self, _agent_id: &AgentId) -> Result<(), ProcessDriverError> {
+        Ok(())
+    }
+
     fn spawn(
         &mut self,
         spec: &SpawnSpec,

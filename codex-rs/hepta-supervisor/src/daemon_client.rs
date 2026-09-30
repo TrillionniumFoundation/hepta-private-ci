@@ -85,6 +85,71 @@ impl SupervisordClient {
         }
     }
 
+    pub async fn register_agent(
+        &self,
+        manifest: codex_hepta_fleet::AgentManifest,
+    ) -> Result<SupervisordAgentStatus, SupervisorError> {
+        let agent_id = manifest.agent_id.clone();
+        match self
+            .send(SupervisordMethod::RegisterAgent { manifest })
+            .await?
+        {
+            SupervisordPayload::AgentRegistered { agent } if agent.agent_id == agent_id => {
+                Ok(agent)
+            }
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn allow_installed_release(
+        &self,
+        fence: SupervisordControlFence,
+        release_id: ReleaseId,
+    ) -> Result<SupervisordAgentStatus, SupervisorError> {
+        let agent_id = fence.agent_id.clone();
+        match self
+            .send(SupervisordMethod::AllowInstalledRelease { fence, release_id })
+            .await?
+        {
+            SupervisordPayload::InstalledReleaseAllowed { agent } if agent.agent_id == agent_id => {
+                Ok(agent)
+            }
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn retire_agent(
+        &self,
+        fence: SupervisordControlFence,
+    ) -> Result<PathBuf, SupervisorError> {
+        let expected_agent_id = fence.agent_id.clone();
+        match self.send(SupervisordMethod::RetireAgent { fence }).await? {
+            SupervisordPayload::AgentRetired {
+                agent_id,
+                archived_root,
+            } if agent_id == expected_agent_id => Ok(archived_root),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn retired_agent_status(
+        &self,
+        agent_id: AgentId,
+    ) -> Result<Option<PathBuf>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::RetiredAgentStatus {
+                agent_id: agent_id.clone(),
+            })
+            .await?
+        {
+            SupervisordPayload::RetiredAgentStatus {
+                agent_id: actual,
+                archived_root,
+            } if actual == agent_id => Ok(archived_root),
+            payload => unexpected(payload),
+        }
+    }
+
     /// Bound transport waiting without changing lifecycle or execution budgets.
     /// A timeout after admission still requires a durable status query.
     pub fn with_timeout(mut self, timeout: Duration) -> Result<Self, SupervisorError> {
@@ -350,6 +415,12 @@ impl SupervisordClient {
         request_id: u64,
         method: SupervisordMethod,
     ) -> Result<SupervisordPayload, SupervisorError> {
+        let configuration = matches!(
+            &method,
+            SupervisordMethod::RegisterAgent { .. }
+                | SupervisordMethod::AllowInstalledRelease { .. }
+                | SupervisordMethod::RetireAgent { .. }
+        );
         let request = SupervisordRequest::new(request_id, method);
         request
             .validate()
@@ -393,6 +464,18 @@ impl SupervisordClient {
             ));
         }
         match response.payload {
+            SupervisordPayload::Error { code, .. } if code == "not_admitted_busy" => {
+                Err(SupervisorError::NotAdmittedBusy)
+            }
+            SupervisordPayload::Error { code, message, .. }
+                if configuration
+                    && matches!(
+                        code.as_str(),
+                        "configuration_not_ready" | "stale_control_fence"
+                    ) =>
+            {
+                Err(SupervisorError::ConfigurationNotReady(message))
+            }
             SupervisordPayload::Error {
                 code,
                 message,

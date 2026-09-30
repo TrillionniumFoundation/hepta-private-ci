@@ -27,6 +27,9 @@ const LIFECYCLE_FILE_PREFIX: &str = "lifecycle-";
 const LIFECYCLE_FILE_SUFFIX: &str = ".json";
 static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
+#[path = "registry_retirement.rs"]
+mod retirement;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentRecord {
     pub manifest: AgentManifest,
@@ -118,6 +121,9 @@ impl FleetRegistry {
 
     pub fn register(&self, manifest: AgentManifest) -> Result<AgentRecord, FleetRegistryError> {
         manifest.validate(self.layout.fleet_root())?;
+        if self.retired_agent_path(&manifest.agent_id)?.is_some() {
+            return Err(FleetRegistryError::AlreadyRegistered(manifest.agent_id));
+        }
         let snapshot = self.load()?;
         if snapshot.agent(&manifest.agent_id).is_some() {
             return Err(FleetRegistryError::AlreadyRegistered(manifest.agent_id));
@@ -502,8 +508,9 @@ fn migrate_private_directory(parent: &Path, name: &str) -> Result<(), FleetRegis
                     final_path.display()
                 )));
             }
-            set_private_directory_permissions(&final_path)?;
-            sync_directory(parent)?;
+            if set_private_directory_permissions(&final_path)? {
+                sync_directory(parent)?;
+            }
             return Ok(());
         }
         Err(error) if error.kind() == ErrorKind::NotFound => {}
@@ -535,16 +542,19 @@ fn create_private_directory(path: &Path) -> std::io::Result<()> {
 }
 
 #[cfg(unix)]
-fn set_private_directory_permissions(path: &Path) -> Result<(), FleetRegistryError> {
+fn set_private_directory_permissions(path: &Path) -> Result<bool, FleetRegistryError> {
     use std::os::unix::fs::PermissionsExt;
 
+    if std::fs::symlink_metadata(path)?.permissions().mode() & 0o777 == 0o700 {
+        return Ok(false);
+    }
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
-    Ok(())
+    Ok(true)
 }
 
 #[cfg(not(unix))]
-fn set_private_directory_permissions(_path: &Path) -> Result<(), FleetRegistryError> {
-    Ok(())
+fn set_private_directory_permissions(_path: &Path) -> Result<bool, FleetRegistryError> {
+    Ok(false)
 }
 
 #[cfg(unix)]

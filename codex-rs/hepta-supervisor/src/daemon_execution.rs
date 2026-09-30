@@ -171,7 +171,7 @@ pub(super) async fn handle_with_request_id(
             _ => {
                 state.execution.rejected.fetch_add(1, Ordering::Relaxed);
                 return error_payload(
-                    "control_state_unavailable",
+                    "not_admitted_busy",
                     "lifecycle owner is busy; no operation was admitted; refresh before retry",
                     /*actual*/ None,
                 );
