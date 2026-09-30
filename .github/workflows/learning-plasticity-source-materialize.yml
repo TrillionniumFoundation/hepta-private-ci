@@ -120,3 +120,5 @@ jobs:
           git fetch origin "$TARGET_BRANCH"
           test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
           git push origin "HEAD:${TARGET_BRANCH}"
+
+# Direct remediation trigger: materialize reviewed source and remove this one-shot workflow.
