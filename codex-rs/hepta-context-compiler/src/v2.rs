@@ -20,6 +20,7 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
+use std::sync::Arc;
 
 use codex_hepta_contracts::ProviderInvocationReceipt;
 use codex_hepta_contracts::ProviderTerminal;
@@ -112,7 +113,6 @@ pub trait ContextProviderDeliveryVerifierV2 {
     /// Authenticate provider-owned attempt evidence against this exact
     /// pre-dispatch preparation. The provider witness remains provider-owned;
     /// context.compiler does not reinterpret it as a raw preparation digest.
-
     fn verify_delivery(
         &self,
         receipt: &ProviderInvocationReceipt,
@@ -404,6 +404,7 @@ impl ContextAdmissionSnapshotV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedAdmissionSnapshotV2 {
     snapshot: ContextAdmissionSnapshotV2,
+    revocation_frontier: Arc<[StableId]>,
     verifier_digest: Digest32,
     verification_digest: Digest32,
 }
@@ -461,6 +462,7 @@ fn finish_verified_snapshot(
     push_digest(&mut bytes, snapshot.snapshot_digest);
     push_digest(&mut bytes, verifier_digest);
     VerifiedAdmissionSnapshotV2 {
+        revocation_frontier: Arc::from(snapshot.revoked_admission_ids.clone()),
         snapshot,
         verifier_digest,
         verification_digest: Digest32::of_bytes(&bytes),
@@ -507,27 +509,14 @@ pub fn verify_admission_snapshot_successor_v2(
     {
         return Err(ContextCompilerV2Error::SnapshotDomainMismatch);
     }
-    if snapshot.observed_unix_ms < predecessor.observed_unix_ms()
-        || snapshot.revocation_epoch < predecessor.revocation_epoch()
-    {
-        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
-    }
-    if snapshot.revocation_epoch == predecessor.revocation_epoch()
-        && snapshot.revoked_admission_ids != predecessor.snapshot.revoked_admission_ids
-    {
-        return Err(ContextCompilerV2Error::RevocationFrontierMismatch);
-    }
-    for admission_id in &predecessor.snapshot.revoked_admission_ids {
-        if snapshot
-            .revoked_admission_ids
-            .binary_search(admission_id)
-            .is_err()
-        {
-            return Err(ContextCompilerV2Error::RevocationResurrection(
-                admission_id.to_string(),
-            ));
-        }
-    }
+    validate_revocation_progress(
+        snapshot.observed_unix_ms,
+        snapshot.revocation_epoch,
+        &snapshot.revoked_admission_ids,
+        predecessor.observed_unix_ms(),
+        predecessor.revocation_epoch(),
+        &predecessor.revocation_frontier,
+    )?;
     Ok(finish_verified_snapshot(snapshot, verifier_digest))
 }
 
@@ -547,6 +536,7 @@ pub struct VerifiedAdmissionV2 {
     verified_snapshot_digest: Digest32,
     verified_snapshot_verification_digest: Digest32,
     verified_revocation_epoch: u64,
+    verified_revocation_frontier: Arc<[StableId]>,
     verified_at_unix_ms: u64,
     record_digest: Digest32,
     verification_digest: Digest32,
@@ -720,6 +710,7 @@ pub fn verify_admission_v2(
         verified_snapshot_digest: snapshot.snapshot_digest(),
         verified_snapshot_verification_digest: snapshot.verification_digest(),
         verified_revocation_epoch: snapshot.revocation_epoch(),
+        verified_revocation_frontier: Arc::clone(&snapshot.revocation_frontier),
         verified_at_unix_ms: snapshot.observed_unix_ms(),
         record_digest: record.record_digest,
         verification_digest: Digest32::ZERO,
@@ -1514,6 +1505,7 @@ pub struct ContextAttachmentV2 {
     admission_snapshot_verification_digest: Digest32,
     admission_snapshot_observed_unix_ms: u64,
     revocation_epoch: u64,
+    revocation_frontier: Arc<[StableId]>,
     model_profile_digest: Digest32,
     payload_digest: Digest32,
     selected_item_ids: Vec<StableId>,
@@ -1637,6 +1629,7 @@ pub fn build_attachment(
         admission_snapshot_verification_digest: current_snapshot.verification_digest(),
         admission_snapshot_observed_unix_ms: current_snapshot.observed_unix_ms(),
         revocation_epoch: current_snapshot.revocation_epoch(),
+        revocation_frontier: Arc::clone(&current_snapshot.revocation_frontier),
         model_profile_digest: compiled.receipt.model_profile_digest,
         payload_digest: serialization.receipt.payload_digest,
         selected_item_ids: compiled.receipt.selected_item_ids.clone(),
@@ -1779,12 +1772,15 @@ pub fn prepare_delivery_v2(
     preparation_id: StableId,
 ) -> Result<ContextDeliveryPreparationV2, ContextCompilerV2Error> {
     attachment.validate_for(compiled, serialization, profile)?;
-    if current_snapshot.revocation_epoch() < attachment.revocation_epoch
-        || current_snapshot.observed_unix_ms() < attachment.admission_snapshot_observed_unix_ms
-    {
-        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
-    }
     revalidate_selected_admissions(compiled, current_snapshot)?;
+    validate_revocation_progress(
+        current_snapshot.observed_unix_ms(),
+        current_snapshot.revocation_epoch(),
+        &current_snapshot.revocation_frontier,
+        attachment.admission_snapshot_observed_unix_ms,
+        attachment.revocation_epoch,
+        &attachment.revocation_frontier,
+    )?;
     let actual_payload_digest = Digest32::of_bytes(&serialization.payload);
     if actual_payload_digest != attachment.payload_digest {
         return Err(ContextCompilerV2Error::DeliveryMismatch);
@@ -2007,6 +2003,8 @@ impl ContextDeliveryReceiptV2 {
     }
 }
 
+// Keep the published V2 call shape; each argument binds a distinct evidence owner.
+#[allow(clippy::too_many_arguments)]
 pub fn observe_delivery(
     preparation: &ContextDeliveryPreparationV2,
     attachment: &ContextAttachmentV2,
@@ -2308,17 +2306,66 @@ fn validate_realizations(
     Ok(ordered)
 }
 
+// A separately authenticated root still has to preserve the frontier already
+// consumed by this proof chain. Authentication alone is not continuity.
+fn validate_revocation_progress(
+    observed_unix_ms: u64,
+    revocation_epoch: u64,
+    revoked: &[StableId],
+    previous_observed_unix_ms: u64,
+    previous_revocation_epoch: u64,
+    previous_revoked: &[StableId],
+) -> Result<(), ContextCompilerV2Error> {
+    if observed_unix_ms < previous_observed_unix_ms || revocation_epoch < previous_revocation_epoch
+    {
+        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
+    }
+    if revocation_epoch == previous_revocation_epoch {
+        if revoked != previous_revoked {
+            return Err(ContextCompilerV2Error::RevocationFrontierMismatch);
+        }
+    } else {
+        for admission_id in previous_revoked {
+            if revoked.binary_search(admission_id).is_err() {
+                return Err(ContextCompilerV2Error::RevocationResurrection(
+                    admission_id.to_string(),
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+
 fn revalidate_selected_admissions(
     compiled: &CompiledContextV2,
     current_snapshot: &VerifiedAdmissionSnapshotV2,
 ) -> Result<(), ContextCompilerV2Error> {
+    if current_snapshot.scope_digest() != compiled.receipt.scope_digest
+        || current_snapshot.authority_domain_digest() != compiled.receipt.authority_domain_digest
+    {
+        return Err(ContextCompilerV2Error::SnapshotDomainMismatch);
+    }
     if current_snapshot.verifier_digest() != compiled.receipt.admission_verifier_digest {
         return Err(ContextCompilerV2Error::AdmissionVerifierMismatch(
             "current_snapshot".to_string(),
         ));
     }
+    // Candidates admitted together share one immutable bounded frontier. Check
+    // each baseline once instead of rescanning it for every selected candidate.
+    let mut checked_snapshots = BTreeSet::new();
     for candidate in &compiled.selected_candidates {
         candidate.admission.revalidate(current_snapshot)?;
+        let admission = &candidate.admission;
+        if checked_snapshots.insert(admission.verified_snapshot_digest) {
+            validate_revocation_progress(
+                current_snapshot.observed_unix_ms(),
+                current_snapshot.revocation_epoch(),
+                &current_snapshot.revocation_frontier,
+                admission.verified_at_unix_ms,
+                admission.verified_revocation_epoch,
+                &admission.verified_revocation_frontier,
+            )?;
+        }
     }
     Ok(())
 }

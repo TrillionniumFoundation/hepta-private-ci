@@ -3,6 +3,7 @@ use std::collections::BTreeSet;
 use std::env;
 use std::fmt;
 use std::fs::File;
+#[cfg(not(unix))]
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
@@ -58,6 +59,7 @@ use tokio::process::Command;
 mod framing_json;
 mod lifecycle;
 pub(crate) mod metrics;
+mod storage;
 mod terminal_state;
 mod tokenizer_io;
 
@@ -73,6 +75,8 @@ mod capacity_tests;
 mod registry_race_tests;
 #[cfg(test)]
 mod runtime_tests;
+#[cfg(all(test, unix))]
+mod storage_hardening_tests;
 
 const EXACT_DELIVERY_SCHEMA: u32 = 3;
 const STATE_FILE: &str = "context-delivery-v2.json";
@@ -557,7 +561,8 @@ impl AgentdExactContextDeliveryOwner {
         let mut next = state.durable.clone();
         next.pre_sends.insert(attempt_id.clone(), stored);
         let _persistence_time = self.measure(Phase::PreSendPersistence);
-        self.store.persist_reserving(&next, completion_reserve(&next)?)?;
+        self.store
+            .persist_reserving(&next, completion_reserve(&next)?)?;
         state.durable = next;
         state.active.insert(attempt_id, active);
         Ok(())
@@ -595,7 +600,11 @@ impl AgentdExactContextDeliveryOwner {
         // Nonfinal observations cannot spend space reserved for final receipts.
         // A final consumes its own bounded reservation. Old schema-3 histories
         // without reserved headroom may still reconcile whenever bytes fit.
-        let reserve = if is_final { 0 } else { completion_reserve(&next)? };
+        let reserve = if is_final {
+            0
+        } else {
+            completion_reserve(&next)?
+        };
         self.store.persist_reserving(&next, reserve)?;
         state.durable = next;
         if is_final {
@@ -1363,9 +1372,10 @@ impl StoredTerminal {
 
 struct ExactDeliveryStore {
     root: PathBuf,
+    directory: storage::PrivateDirectory,
     metrics: metrics::Metrics,
     poisoned: AtomicBool,
-    _lock: File,
+    lock: File,
 }
 
 impl ExactDeliveryStore {
@@ -1373,26 +1383,19 @@ impl ExactDeliveryStore {
         directory: &Path,
     ) -> Result<(Self, StoredExactDeliveryState), ExactContextDeliveryError> {
         let opened_at = Instant::now();
-        prepare_directory(directory)?;
-        let lock_path = directory.join(LOCK_FILE);
-        let lock = OpenOptions::new()
-            .create(true)
-            .truncate(false)
-            .read(true)
-            .write(true)
-            .open(&lock_path)
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?;
-        set_private_file_permissions(&lock_path)?;
+        let private_directory = storage::PrivateDirectory::open(directory)?;
+        let lock = private_directory.open_writer(LOCK_FILE)?;
         lock.try_lock()
             .map_err(|_| ExactContextDeliveryError::StateLocked)?;
         let store = Self {
             root: directory.to_path_buf(),
+            directory: private_directory,
             metrics: metrics::Metrics::default(),
             poisoned: AtomicBool::new(false),
-            _lock: lock,
+            lock,
         };
-        let path = directory.join(STATE_FILE);
-        if !path.exists() {
+        let Some(file) = store.directory.read_state()? else {
+            store.ensure_available()?;
             store.metrics.record(Phase::StoreOpen, opened_at.elapsed());
             return Ok((
                 store,
@@ -1401,13 +1404,12 @@ impl ExactDeliveryStore {
                     ..StoredExactDeliveryState::default()
                 },
             ));
-        }
+        };
         let mut bytes = Vec::new();
-        File::open(&path)
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?
-            .take(MAX_DURABLE_STATE_BYTES + 1)
+        file.take(MAX_DURABLE_STATE_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(|_| ExactContextDeliveryError::Unavailable)?;
+        store.ensure_available()?;
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_DURABLE_STATE_BYTES {
             return Err(ExactContextDeliveryError::CorruptState);
         }
@@ -1423,12 +1425,20 @@ impl ExactDeliveryStore {
         if self.poisoned.load(Ordering::Acquire) {
             return Err(ExactContextDeliveryError::ReopenRequired);
         }
+        if self
+            .directory
+            .verify_identity(&self.root, &self.lock)
+            .is_err()
+        {
+            self.poisoned.store(true, Ordering::Release);
+            return Err(ExactContextDeliveryError::ReopenRequired);
+        }
         Ok(())
     }
 
     #[cfg(test)]
     fn persist(&self, state: &StoredExactDeliveryState) -> Result<(), ExactContextDeliveryError> {
-        self.persist_with_sync(state, sync_directory)
+        self.persist_with_sync(state, |_| self.directory.sync())
     }
 
     fn persist_reserving(
@@ -1436,7 +1446,7 @@ impl ExactDeliveryStore {
         state: &StoredExactDeliveryState,
         reserved_bytes: u64,
     ) -> Result<(), ExactContextDeliveryError> {
-        self.persist_with_capacity(state, reserved_bytes, sync_directory)
+        self.persist_with_capacity(state, reserved_bytes, |_| self.directory.sync())
     }
 
     #[cfg(test)]
@@ -1484,22 +1494,19 @@ impl ExactDeliveryStore {
         }
         drop(encoding_time);
         let file_time = self.metrics.measure(Phase::StoreFileSync);
-        let next_path = self.root.join(NEXT_FILE);
-        let mut next = OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(&next_path)
+        self.ensure_available()?;
+        let mut next = self.directory.open_writer(NEXT_FILE)?;
+        next.set_len(0)
             .map_err(|_| ExactContextDeliveryError::Unavailable)?;
-        set_private_file_permissions(&next_path)?;
         next.write_all(&bytes)
             .and_then(|()| next.sync_all())
             .map_err(|_| ExactContextDeliveryError::Unavailable)?;
         drop(file_time);
         let _directory_time = self.metrics.measure(Phase::StoreDirectorySync);
-        std::fs::rename(&next_path, self.root.join(STATE_FILE))
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?;
-        sync(&self.root)
+        self.ensure_available()?;
+        self.directory.publish(&next)?;
+        sync(&self.root)?;
+        self.ensure_available()
     }
 }
 
@@ -1509,6 +1516,7 @@ fn validate_stored_state(
     terminal_state::validate(state)
 }
 
+#[cfg(not(unix))]
 fn prepare_directory(path: &Path) -> Result<(), ExactContextDeliveryError> {
     std::fs::create_dir_all(path).map_err(|_| ExactContextDeliveryError::Unavailable)?;
     let metadata =
@@ -1516,25 +1524,10 @@ fn prepare_directory(path: &Path) -> Result<(), ExactContextDeliveryError> {
     if metadata.file_type().is_symlink() || !metadata.is_dir() {
         return Err(ExactContextDeliveryError::Unavailable);
     }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?;
-    }
     Ok(())
 }
 
-fn set_private_file_permissions(path: &Path) -> Result<(), ExactContextDeliveryError> {
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
-            .map_err(|_| ExactContextDeliveryError::Unavailable)?;
-    }
-    Ok(())
-}
-
+#[cfg(not(unix))]
 fn sync_directory(path: &Path) -> Result<(), ExactContextDeliveryError> {
     File::open(path)
         .and_then(|directory| directory.sync_all())

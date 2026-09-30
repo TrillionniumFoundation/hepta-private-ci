@@ -1427,3 +1427,196 @@ fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
         Err(ContextCompilerV2Error::ModelProfileMismatch)
     );
 }
+
+#[test]
+fn empty_selection_still_requires_the_compilation_snapshot_domain() {
+    let compiled = compile_v2(request(Vec::new(), 100)).expect("empty compilation");
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:empty"),
+        Vec::new(),
+        &FramingSerializer { overhead: 1 },
+        &ByteTokenizer,
+    )
+    .expect("framed empty serialization");
+    for (scope, authority_domain) in [
+        (digest("other-scope"), digest("authority-domain")),
+        (digest("scope"), digest("other-authority-domain")),
+    ] {
+        let raw = ContextAdmissionSnapshotV2::new(
+            id("snapshot:foreign"),
+            scope,
+            authority_domain,
+            10,
+            1,
+            Vec::new(),
+            true,
+            None,
+        )
+        .expect("foreign snapshot shape");
+        let foreign =
+            verify_admission_snapshot_v2(raw, &verifier()).expect("verified foreign snapshot");
+        assert_eq!(
+            build_attachment(
+                &compiled,
+                &serialization,
+                &profile(),
+                &foreign,
+                id("attachment:foreign"),
+            ),
+            Err(ContextCompilerV2Error::SnapshotDomainMismatch)
+        );
+    }
+}
+
+#[test]
+fn attachment_rejects_independently_verified_revocation_frontier_rollback() {
+    let revoked = id("admission:unrelated");
+    let original = verified_snapshot("snapshot:original", 10, 2, vec![revoked.clone()]);
+    let (item, realization) = candidate(
+        "item:live",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &original,
+    );
+    let compiled = compile_v2(request(vec![item], 100)).expect("compilation");
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realization],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .expect("serialization");
+    for epoch in [2, 3] {
+        let rollback = verified_snapshot("snapshot:rollback", 20, epoch, Vec::new());
+        let expected = if epoch == 2 {
+            ContextCompilerV2Error::RevocationFrontierMismatch
+        } else {
+            ContextCompilerV2Error::RevocationResurrection(revoked.to_string())
+        };
+        assert_eq!(
+            build_attachment(
+                &compiled,
+                &serialization,
+                &profile(),
+                &rollback,
+                id("attachment:rollback"),
+            ),
+            Err(expected)
+        );
+    }
+    let refresh = verified_snapshot("snapshot:refresh", 20, 2, vec![revoked.clone()]);
+    assert!(
+        build_attachment(
+            &compiled,
+            &serialization,
+            &profile(),
+            &refresh,
+            id("attachment:refresh")
+        )
+        .is_ok()
+    );
+    let advanced = verified_snapshot(
+        "snapshot:advanced",
+        30,
+        3,
+        vec![revoked, id("admission:another")],
+    );
+    assert!(
+        build_attachment(
+            &compiled,
+            &serialization,
+            &profile(),
+            &advanced,
+            id("attachment:advanced")
+        )
+        .is_ok()
+    );
+}
+
+#[test]
+fn preparation_preserves_the_attachment_revocation_frontier_with_empty_context() {
+    let compiled = compile_v2(request(Vec::new(), 100)).expect("empty compilation");
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:empty"),
+        Vec::new(),
+        &FramingSerializer { overhead: 1 },
+        &ByteTokenizer,
+    )
+    .expect("serialization");
+    let revoked = id("admission:unrelated");
+    let snapshot = verified_snapshot("snapshot:attachment", 20, 2, vec![revoked.clone()]);
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &snapshot,
+        id("attachment:1"),
+    )
+    .expect("attachment");
+    for epoch in [2, 3] {
+        let rollback = verified_snapshot("snapshot:rollback", 30, epoch, Vec::new());
+        let expected = if epoch == 2 {
+            ContextCompilerV2Error::RevocationFrontierMismatch
+        } else {
+            ContextCompilerV2Error::RevocationResurrection(revoked.to_string())
+        };
+        assert_eq!(
+            prepare_delivery_v2(
+                &compiled,
+                &serialization,
+                &attachment,
+                &profile(),
+                &rollback,
+                id("preparation:rollback"),
+            ),
+            Err(expected)
+        );
+    }
+    let raw = ContextAdmissionSnapshotV2::new(
+        id("snapshot:foreign"),
+        digest("foreign-scope"),
+        digest("authority-domain"),
+        30,
+        3,
+        vec![revoked.clone()],
+        true,
+        None,
+    )
+    .expect("snapshot");
+    let foreign = verify_admission_snapshot_v2(raw, &verifier()).expect("verified snapshot");
+    assert_eq!(
+        prepare_delivery_v2(
+            &compiled,
+            &serialization,
+            &attachment,
+            &profile(),
+            &foreign,
+            id("preparation:foreign"),
+        ),
+        Err(ContextCompilerV2Error::SnapshotDomainMismatch)
+    );
+    let advanced = verified_snapshot(
+        "snapshot:advanced",
+        30,
+        3,
+        vec![revoked, id("admission:another")],
+    );
+    assert!(
+        prepare_delivery_v2(
+            &compiled,
+            &serialization,
+            &attachment,
+            &profile(),
+            &advanced,
+            id("preparation:advanced"),
+        )
+        .is_ok()
+    );
+}

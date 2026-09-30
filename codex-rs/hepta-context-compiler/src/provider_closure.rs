@@ -944,7 +944,7 @@ mod tests {
         let payload = b"context-bundle";
         let mut request = vec![b'a'; 1024 * 1024];
         request.extend_from_slice(payload);
-        request.extend(std::iter::repeat(b'z').take(1024 * 1024));
+        request.extend(std::iter::repeat_n(b'z', 1024 * 1024));
         let segments = build_segment_map(&request, payload, digest("payload")).expect("proof");
         assert_eq!(segments.len(), MAX_FINAL_PROVIDER_REQUEST_SEGMENTS_V2);
         validate_segment_coverage(&segments, request.len() as u64).expect("coverage");
@@ -960,7 +960,7 @@ mod tests {
             let payload = format!("CTX::{seed:016x}::END").into_bytes();
             let mut request = vec![b'p'; prefix_len];
             request.extend_from_slice(&payload);
-            request.extend(std::iter::repeat(b's').take(suffix_len));
+            request.extend(std::iter::repeat_n(b's', suffix_len));
             let first = build_segment_map(&request, &payload, digest("generated-payload"))
                 .expect("generated map");
             let second = build_segment_map(&request, &payload, digest("generated-payload"))
@@ -991,7 +991,7 @@ mod tests {
             let payload = format!("UNIQUE-CONTEXT-{seed:08x}").into_bytes();
             let mut request = vec![b'a'; prefix_len];
             request.extend_from_slice(&payload);
-            request.extend(std::iter::repeat(b'z').take(suffix_len));
+            request.extend(std::iter::repeat_n(b'z', suffix_len));
             let valid = build_segment_map(&request, &payload, digest("mutation-payload"))
                 .expect("valid map");
 
