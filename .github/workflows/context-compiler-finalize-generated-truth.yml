@@ -1,0 +1,76 @@
+name: context-compiler-finalize-generated-truth
+
+on:
+  push:
+    branches:
+      - codex/context-compiler-v3-closure-20260928
+    paths:
+      - .github/workflows/context-compiler-finalize-generated-truth.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: context-compiler-finalize-generated-truth-macos
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: macos-15
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: bedf77652f74b62c1e5d6bb3b2119893e581cecc
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+      - name: Generate and verify exact projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          source_sha = os.environ["SOURCE_SHA"]
+          state_path = Path("docs/modules/context.compiler/CURRENT_STATE.json")
+          state = json.loads(state_path.read_text())
+          state["runtimeSourceAnchor"] = source_sha
+          state["runtimeSourceTree"] = subprocess.check_output(
+              ["git", "rev-parse", f"{source_sha}^{{tree}}"], text=True
+          ).strip()
+          for item in state["runtimeSourceFiles"]:
+              source_blob = subprocess.check_output(
+                  ["git", "rev-parse", f"{source_sha}:{item['path']}"], text=True
+              ).strip()
+              head_blob = subprocess.check_output(
+                  ["git", "rev-parse", f"HEAD:{item['path']}"], text=True
+              ).strip()
+              if head_blob != source_blob:
+                  raise SystemExit(f"runtime source changed after anchor: {item['path']}")
+              item["blobSha"] = source_blob
+          state_path.write_text(json.dumps(state, indent=2) + "\n")
+          PY
+          python3 -B scripts/generate_context_compiler_module_docs.py --write
+          python3 -B scripts/generate_context_compiler_module_docs.py --check
+          python3 -B -m unittest discover -s scripts -p 'test_context_compiler_*.py' -q
+      - name: Commit projections and retire this workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git rm .github/workflows/context-compiler-finalize-generated-truth.yml
+          git add \
+            docs/modules/context.compiler/CURRENT_STATE.json \
+            docs/modules/context.compiler/CURRENT_PRODUCT_PATH.md \
+            docs/modules/context.compiler/IMPLEMENTATION_MAP.json \
+            docs/modules/context.compiler/MODULE_MANIFEST.json \
+            docs/modules/context.compiler/TECHNICAL.md \
+            qualification/module-execution-dossiers/detail/context.compiler.md
+          git diff --cached --check
+          git commit -m "docs(context.compiler): bind lifecycle closure truth" \
+            -m "Bind all six generated projections to bedf77652f74b62c1e5d6bb3b2119893e581cecc / 0cf89e840cf882a350376bbab06c8c34e4ea2520 after lifecycle, capacity, metrics, consumer-trace and regression closure. Generator check and all 61 Python regressions pass. This grants no authenticated App Server ingress, external security consumption, independent provider evidence, selected-host acceptance, activation or release."
+          git push origin "HEAD:${GITHUB_REF_NAME}"
