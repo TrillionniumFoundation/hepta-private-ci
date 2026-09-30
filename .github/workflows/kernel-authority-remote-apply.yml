@@ -1,17 +1,17 @@
-name: Kernel authority exact remote apply
+name: Kernel authority exact source remote apply
 
 on:
   push:
     branches: [automation/kernel-authority-remaining-four-20260929]
     paths:
       - '.github/workflows/kernel-authority-remote-apply.yml'
-      - '.kernel-authority-staging/full.part*'
+      - '.kernel-authority-staging/source.part*'
 
 permissions:
   contents: write
 
 concurrency:
-  group: kernel-authority-exact-remote-apply-slim-shallow
+  group: kernel-authority-exact-source-remote-apply
   cancel-in-progress: false
 
 jobs:
@@ -31,32 +31,36 @@ jobs:
           fetch-depth: 1
           path: target
           persist-credentials: true
-      - name: Verify, apply, validate and fast-forward
+      - name: Verify, apply, validate and fast-forward source
         shell: bash
         env:
           EXPECTED_HEAD: 0b4e14d786e962306be424792d15f9d2c2078134
-          PATCH_SHA256: 3f177e1a86f77d0282630d88da77fbb5c9d152b4c6bfb088292768625cda9038
-          PATCH_GZIP_SHA256: a36e308baf5e34ee08ce7063b48e928a24fdcfc7bdf14a6574e9851188186a50
+          SOURCE_PART00_BLOB: 7aaad68b29270c24f885e2964811b621a232108a
+          SOURCE_PART01_BLOB: ed56bd2d1003eae92da2d0d8eb2a64a0bede4f72
           TARGET_BRANCH: work/kernel-authority-convergence-20260925
         run: |
           set -euo pipefail
-          cd "$GITHUB_WORKSPACE"
-          cat staging/.kernel-authority-staging/full.part* | base64 --decode > patch.gz
-          printf '%s  %s\n' "$PATCH_GZIP_SHA256" patch.gz | sha256sum --check --strict
-          gzip --decompress --stdout patch.gz > patch.diff
-          printf '%s  %s\n' "$PATCH_SHA256" patch.diff | sha256sum --check --strict
+          cd "$GITHUB_WORKSPACE/staging"
+          test "$(git hash-object .kernel-authority-staging/source.part00)" = "$SOURCE_PART00_BLOB"
+          test "$(git hash-object .kernel-authority-staging/source.part01)" = "$SOURCE_PART01_BLOB"
+          cat .kernel-authority-staging/source.part00 \
+              .kernel-authority-staging/source.part01 \
+            | base64 --decode > "$GITHUB_WORKSPACE/source.patch.gz"
+          gzip --test "$GITHUB_WORKSPACE/source.patch.gz"
+          gzip --decompress --stdout "$GITHUB_WORKSPACE/source.patch.gz" \
+            > "$GITHUB_WORKSPACE/source.patch"
+          sha256sum "$GITHUB_WORKSPACE/source.patch.gz" "$GITHUB_WORKSPACE/source.patch"
 
-          cd target
+          cd "$GITHUB_WORKSPACE/target"
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           git fetch --no-tags origin "refs/heads/$TARGET_BRANCH"
           test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_HEAD"
           test -z "$(git status --porcelain)"
-          git apply --index --check ../patch.diff
-          git apply --index ../patch.diff
+          git apply --index --check "$GITHUB_WORKSPACE/source.patch"
+          git apply --index "$GITHUB_WORKSPACE/source.patch"
           git diff --cached --check
 
-          cat > ../expected-files <<'EOF'
-          .github/workflows/kernel-authority-production-closure.yml
+          cat > "$GITHUB_WORKSPACE/expected-files" <<'EOF'
           CALLERS.toml
           codex-rs/hepta-agentd/src/authority_feed_clock.rs
           codex-rs/hepta-agentd/src/automation_authority_bootstrap.rs
@@ -75,9 +79,9 @@ jobs:
           qualification/kernel-authority/port_acceptance.py
           qualification/kernel-authority/test_port_acceptance.py
           EOF
-          git diff --cached --name-only | LC_ALL=C sort > ../actual-files
-          LC_ALL=C sort -o ../expected-files ../expected-files
-          cmp ../expected-files ../actual-files
+          git diff --cached --name-only | LC_ALL=C sort > "$GITHUB_WORKSPACE/actual-files"
+          LC_ALL=C sort -o "$GITHUB_WORKSPACE/expected-files" "$GITHUB_WORKSPACE/expected-files"
+          cmp "$GITHUB_WORKSPACE/expected-files" "$GITHUB_WORKSPACE/actual-files"
 
           python3 -B -m unittest discover -s qualification/kernel-authority -p 'test_*.py' -v
           python3 -B -m unittest discover -s qa/b4-no-bypass -p 'test_kernel_authority*.py' -v
