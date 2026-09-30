@@ -358,6 +358,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     healthy: false,
                     fenced: false,
                 });
+                if slot.recovery_blocker.is_some() {
+                    return self.kill_matrix_now(agent_id, slot);
+                }
                 let admission =
                     match slot.matrix.runtime.as_ref().and_then(|runtime| {
                         runtime.process.initialization_failure().map(str::to_owned)

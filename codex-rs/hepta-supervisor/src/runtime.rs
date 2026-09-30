@@ -150,6 +150,10 @@ impl<T> BoundedQueue<T> {
 }
 
 pub(crate) struct AgentSlot<P> {
+    /// Safety denial rebuilt from unreadable or inconsistent durable evidence.
+    /// This is not another durable owner; it retains existing exact handles
+    /// until containment and requires a fresh recovery before ordinary work.
+    pub recovery_blocker: Option<String>,
     pub runtime: Option<AgentRuntime<P>>,
     /// At most one unacknowledged signal, bound to the current spawn generation.
     pub pending_control: Option<crate::control::pending::PendingControl>,
@@ -181,6 +185,7 @@ pub(crate) struct AgentSlot<P> {
 impl<P> AgentSlot<P> {
     pub fn new(config: &SupervisorConfig) -> Self {
         Self {
+            recovery_blocker: None,
             runtime: None,
             pending_control: None,
             exit_lease_removal: None,
@@ -205,6 +210,13 @@ impl<P> AgentSlot<P> {
 
     pub fn event(&mut self, generation: u64, kind: SupervisorEventKind) {
         self.events.push(SupervisorEvent { generation, kind });
+    }
+
+    pub(crate) fn has_recovery_denial(&self) -> bool {
+        self.recovery_blocker.is_some()
+            || self.signed_intent.as_ref().is_some_and(|intent| {
+                intent.status == crate::signed_intent::SignedIntentStatus::RecoveryRequired
+            })
     }
 }
 

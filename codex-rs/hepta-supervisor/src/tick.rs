@@ -66,13 +66,20 @@ impl<D: ProcessDriver> Supervisor<D> {
             match outcome {
                 RuntimeTickOutcome::Keep => slot.runtime = Some(runtime),
                 RuntimeTickOutcome::Exited { restart_fault } => {
-                    let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
                     post_exit_fault = restart_fault;
                 }
             }
         }
+        if slot.has_recovery_denial() {
+            // Corrupt durable recovery evidence permits only containment and
+            // exact exit cleanup. It cannot drive release or restart work.
+            return self.tick_matrix_companion(agent_id, slot, now);
+        }
         if slot.runtime.is_none() {
             slot.pending_control = None;
+            // Exit continuation can fail after ownership was finalized. Keep
+            // retrying its retained release change on later owner ticks.
+            let _ = self.continue_release_change_after_exit(agent_id, slot, now)?;
         }
         if slot.runtime.is_none()
             && slot.release_change.is_none()

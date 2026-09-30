@@ -22,7 +22,6 @@ use crate::SpawnSpec;
 use crate::SpawnedProcess;
 use crate::Supervisor;
 use crate::SupervisorConfig;
-use crate::SupervisorError;
 use crate::restart_budget::RestartBudgetState;
 use crate::restart_journal::DurableRestartWindow;
 use crate::restart_journal::RESTART_JOURNAL_FILE;
@@ -182,15 +181,14 @@ fn foreign_companion_journal_is_a_fatal_startup_error() -> Result<()> {
     )?;
     write_restart_journal(&fixture.run_root, &journal)?;
     let before = std::fs::read(fixture.run_root.join(RESTART_JOURNAL_FILE))?;
-    assert!(matches!(
-        Supervisor::recover(
+    let (supervisor, report) = Supervisor::recover(
             fixture.registry.clone(),
             NoDriver,
             SupervisorConfig::local_default(),
             Instant::now()
-        ),
-        Err(SupervisorError::CorruptLease(_))
-    ));
+        )?;
+    assert!(!report.faults.is_empty());
+    assert!(supervisor.production_recovery_required(&fixture.agent)?);
     assert_eq!(
         std::fs::read(fixture.run_root.join(RESTART_JOURNAL_FILE))?,
         before
