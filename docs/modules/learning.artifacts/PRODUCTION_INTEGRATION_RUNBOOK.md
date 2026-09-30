@@ -208,3 +208,23 @@ fixed or waived by this change. The full daemon/transport/authz, parent-director
 ordering, dirfd backend, power-loss harness, full owner decomposition, storage
 trait, model/concurrency/fuzz qualification, telemetry exporters, measured SLOs,
 complete traceability and stable-version acceptance remain open.
+
+
+## Candidate process qualification added in R5
+
+The dedicated candidate qualification must execute the complete crate inventory
+plus three non-skippable process gates: publication-boundary SIGKILL recovery,
+the real `hepta-learning-artifactd` bootstrap/kill/restart transport test, and
+the independent shadow-product process selection/revocation test. The workflow
+runs exact-head and synthetic-merge lanes across Linux x86_64 stable, the
+declared Rust 1.95 MSRV, Linux ARM64 stable and macOS ARM64 stable.
+
+Every retained run also records source/base identity, runner OS/architecture,
+Rust host triple and version, and the `Cargo.lock` SHA-256. A receipt remains
+non-authoritative unless every required gate executes successfully with no
+skipped critical task.
+
+Target-host physical power-loss qualification, independent operator acceptance,
+production activation, canary/promotion and release remain external gates. They
+must not be inferred from repository CI or from the presence of the deployment
+dashboard and alert files.
