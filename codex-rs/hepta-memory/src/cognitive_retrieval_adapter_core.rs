@@ -26,7 +26,7 @@ use codex_hepta_memory_retrieval::RetrievalPolicyV1;
 use codex_hepta_memory_retrieval::RetrievalSourceCompletenessV1;
 use codex_hepta_memory_retrieval::compile_cue;
 use codex_hepta_memory_retrieval::observe_retrieval_assignment;
-use codex_hepta_memory_retrieval::recall_generated_with_engram;
+use codex_hepta_memory_retrieval::recall_generated_with_engram_controlled;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
@@ -115,6 +115,9 @@ impl RetrievalExecutionContextV1 {
     }
 }
 
+/// Compatibility name retained with a bounded signature. It cannot construct
+/// or renew work control and therefore cannot bypass the product deadline.
+#[deprecated(note = "use execute_owner_observation_controlled")]
 pub fn execute_owner_observation(
     observation: &RetrievalObservation,
     cut: &DurableCognitiveSnapshot,
@@ -122,15 +125,16 @@ pub fn execute_owner_observation(
     request_digest: Digest32,
     acquired_at_unix_ms: u64,
     lease_expires_unix_ms: u64,
+    work: &codex_hepta_memory_retrieval::RecallWorkControlV1,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
-    execute_owner_observation_inner(
+    execute_owner_observation_controlled(
         observation,
         cut,
         context,
         request_digest,
         acquired_at_unix_ms,
         lease_expires_unix_ms,
-        /*work*/ None,
+        work,
     )
 }
 
@@ -144,30 +148,8 @@ pub fn execute_owner_observation_controlled(
     lease_expires_unix_ms: u64,
     work: &codex_hepta_memory_retrieval::RecallWorkControlV1,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
-    execute_owner_observation_inner(
-        observation,
-        cut,
-        context,
-        request_digest,
-        acquired_at_unix_ms,
-        lease_expires_unix_ms,
-        Some(work),
-    )
-}
-
-fn execute_owner_observation_inner(
-    observation: &RetrievalObservation,
-    cut: &DurableCognitiveSnapshot,
-    context: &RetrievalExecutionContextV1,
-    request_digest: Digest32,
-    acquired_at_unix_ms: u64,
-    lease_expires_unix_ms: u64,
-    work: Option<&codex_hepta_memory_retrieval::RecallWorkControlV1>,
-) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
-    if let Some(work) = work {
-        work.checkpoint()
-            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
-    }
+    work.checkpoint()
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     context.validate()?;
     if request_digest.is_zero() {
         return Err(CognitiveStoreError::Invalid(
@@ -200,27 +182,20 @@ fn execute_owner_observation_inner(
         context.cue_profile_digest,
     )
     .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let recall = match work {
-        Some(work) => codex_hepta_memory_retrieval::recall_generated_with_engram_controlled(
-            &cue,
-            &context.retrieval_policy,
-            &generated,
-            &context.engram_snapshot,
-            &context.dynamics_policy,
-            work,
-        ),
-        None => recall_generated_with_engram(
-            &cue,
-            &context.retrieval_policy,
-            &generated,
-            &context.engram_snapshot,
-            &context.dynamics_policy,
-        ),
-    }
+    let recall = recall_generated_with_engram_controlled(
+        &cue,
+        &context.retrieval_policy,
+        &generated,
+        &context.engram_snapshot,
+        &context.dynamics_policy,
+        work,
+    )
     .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
     let assignment =
         observe_retrieval_assignment(&cue, &context.retrieval_policy, &generated, &recall)
             .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+    work.checkpoint()
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     Ok(OwnerRetrievalExecutionV1 { recall, assignment })
 }
 
