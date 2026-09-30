@@ -25,6 +25,7 @@ def verifier(name):
 
 DOCS = verifier("hepta-docs.py")
 MODULES = verifier("hepta-module-docs.py")
+GAP = verifier("hepta-gap-closure.py")
 
 
 class VerificationProfileTests(unittest.TestCase):
@@ -44,6 +45,36 @@ class VerificationProfileTests(unittest.TestCase):
         self.assertEqual(report["externallyAttestedLeaseCount"], 0)
         self.assertFalse(report["leaseActivationEvaluated"])
         self.assertFalse(report["historicalEvidenceRevalidated"])
+
+    def test_gap_owner_development_checks_the_real_tree_without_renewing_stale_maps(
+        self,
+    ):
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(GAP.verify("development"), [])
+
+    def test_gap_profiles_are_forwarded_to_the_document_child(self):
+        for profile in ("development", "qualification"):
+            with (
+                self.subTest(profile=profile),
+                patch.object(GAP.subprocess, "run") as run,
+            ):
+                run.return_value.returncode = 0
+                self.assertEqual(GAP.verify(profile), [])
+                self.assertEqual(
+                    run.call_args.args[0],
+                    [
+                        sys.executable,
+                        str(GAP.ROOT / "scripts/hepta-module-docs.py"),
+                        "verify",
+                        "--profile",
+                        profile,
+                    ],
+                )
+
+    def test_gap_unknown_profile_is_rejected_before_reading_source(self):
+        with patch.object(GAP.CARGO_MANIFEST.__class__, "read_text") as read:
+            self.assertEqual(GAP.verify("permissive"), ["unknown verification profile"])
+        read.assert_not_called()
 
     def test_unknown_profile_is_rejected_before_reading_source(self):
         for module in (DOCS, MODULES):

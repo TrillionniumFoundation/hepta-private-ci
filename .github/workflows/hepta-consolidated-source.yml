@@ -597,7 +597,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-gap-closure.py verify
+          profile=development
+          if [ "$FULL_QUALIFICATION" = true ]; then profile=qualification; fi
+          python3 scripts/hepta-gap-closure.py verify --profile "$profile"
           python3 -m unittest discover -v \
             -s tools/hepta-engineering-control -p 'test_*.py'
       - name: Invoke v2 engineering product caller
