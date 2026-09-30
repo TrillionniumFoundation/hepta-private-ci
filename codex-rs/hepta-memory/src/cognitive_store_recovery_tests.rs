@@ -198,6 +198,63 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
 }
 
 #[tokio::test]
+async fn authority_revoked_during_recovery_cannot_activate_the_candidate() {
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
+
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(92);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current cut");
+    let original = store.path().to_path_buf();
+    store.pool.close().await;
+    drop(store);
+    let original_bytes = std::fs::read(&original).expect("original database bytes");
+    let authority = recovery_authority(&owner);
+    let candidate = original
+        .parent()
+        .expect("cognitive root")
+        .join(recovered_database_filename(
+            &anchor,
+            &authority.fencing_token_digest().expect("recovery fence"),
+        ));
+    let calls = AtomicUsize::new(0);
+    let verifier = |_: &crate::ProductionAuthorityLease, _: &AgentId| {
+        if calls.fetch_add(1, Ordering::SeqCst) == 0 {
+            Ok(())
+        } else {
+            Err("recovery authority revoked after admission".to_string())
+        }
+    };
+    let result = CognitiveStore::open_with_recovery(
+        &layout(&temp, &owner),
+        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+        &authority,
+        &verifier,
+    )
+    .await;
+    assert!(matches!(
+        result,
+        Err(CognitiveRecoveryError::AccessDenied(_))
+    ));
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+    assert_eq!(
+        std::fs::read(&original).expect("retained source bytes"),
+        original_bytes
+    );
+    assert!(!candidate.exists());
+
+    let reopened = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("original generation remains available");
+    assert_eq!(reopened.path(), original.as_path());
+    assert_eq!(
+        reopened.recovery_anchor().await.expect("original cut"),
+        anchor
+    );
+}
+
+#[tokio::test]
 async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate() {
     let temp = TempDir::new().expect("temp");
     let owner = agent_id(78);

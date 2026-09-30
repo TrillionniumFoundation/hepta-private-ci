@@ -1079,7 +1079,7 @@ impl ProductionDurableWriter {
         ))
     }
 
-    async fn verify_authority(&self) -> Result<(), ProductionWriterError> {
+    fn verify_external_authority(&self) -> Result<(), ProductionWriterError> {
         self.authority
             .validate_for_agent(self.store.owner_agent_id())?;
         if let Some(verifier) = &self.live_verifier {
@@ -1087,6 +1087,11 @@ impl ProductionDurableWriter {
                 .verify(&self.authority, self.store.owner_agent_id())
                 .map_err(ProductionWriterError::AuthorityRejected)?;
         }
+        Ok(())
+    }
+
+    async fn verify_authority(&self) -> Result<(), ProductionWriterError> {
+        self.verify_external_authority()?;
         verify_durable_store(&self.store).await?;
         self.lease.verify_current_hot_path().await?;
         Ok(())
@@ -1739,6 +1744,9 @@ impl ProductionCognitiveMutationCapability {
         transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
         prepared: &PreparedProductionCognitiveMutation,
     ) -> Result<QueuedReceipt, ProductionCognitiveMutationError> {
+        // BEGIN IMMEDIATE may wait for another writer. Recheck the external
+        // grant after obtaining the transaction without opening a second one.
+        self.writer.verify_external_authority()?;
         let admission = self
             .writer
             .lease
@@ -1808,6 +1816,9 @@ impl ProductionCognitiveMutationCapability {
             external_effect: false,
         };
         receipt.receipt_sha256 = receipt.compute_receipt_sha256();
+        // All semantic and journal writes still belong to the uncommitted
+        // transaction, so a grant revoked during the mutation rolls them back.
+        self.writer.verify_external_authority()?;
         Ok(receipt)
     }
 }
@@ -2448,6 +2459,10 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
         .map(|duration| duration.as_secs())
         .map_err(|error| ProductionWriterError::Invalid(format!("system clock failed: {error}")))
 }
+
+#[cfg(test)]
+#[path = "production_writer_authority_tests.rs"]
+mod authority_tests;
 
 #[cfg(test)]
 mod tests {
