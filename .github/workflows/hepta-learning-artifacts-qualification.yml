@@ -109,10 +109,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          results="$RUNNER_TEMP/artifact-evidence"
-          mkdir -p "$results"
           test "$(rustc -vV | sed -n 's/^host: //p')" = "$EXPECTED_ARCHITECTURE"
-          export RESULTS_DIR="$results"
+          export IDENTITY_OUT="$RUNNER_TEMP/runner-identity.json"
+          test ! -e "$IDENTITY_OUT"
           python3 - <<'PY'
           import hashlib
           import json
@@ -126,11 +125,13 @@ jobs:
               return hashlib.sha256(path.read_bytes()).hexdigest()
 
           record = {
-              "schema": "hepta.learning-artifacts-runner-identity.v1",
+              "schema": "hepta.learning-artifacts-runner-identity.v2",
               "sourceSha": os.environ["SOURCE_SHA"],
               "baseSha": os.environ["BASE_SHA"],
               "profile": os.environ["PROFILE"],
               "lane": os.environ["LANE"],
+              "eventName": os.environ.get("GITHUB_EVENT_NAME"),
+              "ref": os.environ.get("GITHUB_REF"),
               "expectedArchitecture": os.environ["EXPECTED_ARCHITECTURE"],
               "toolchain": os.environ["TOOLCHAIN"],
               "runnerOs": os.environ.get("RUNNER_OS"),
@@ -142,15 +143,29 @@ jobs:
               "cargoVersion": subprocess.check_output(["cargo", "-V"], text=True).strip(),
               "cargoLockSha256": sha256(root / "codex-rs" / "Cargo.lock"),
               "workflowSha256": sha256(root / ".github" / "workflows" / "hepta-learning-artifacts-qualification.yml"),
+              "testInventoryScriptSha256": sha256(root / "scripts" / "hepta_artifact_test_inventory.py"),
               "implementationMapSha256": sha256(root / "docs" / "modules" / "learning.artifacts" / "IMPLEMENTATION_MAP.json"),
+              "technicalDocumentationSha256": sha256(root / "docs" / "modules" / "learning.artifacts" / "TECHNICAL.md"),
           }
-          out = pathlib.Path(os.environ["RESULTS_DIR"]) / "runner-identity.json"
-          out.write_text(json.dumps(record, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          pathlib.Path(os.environ["IDENTITY_OUT"]).write_text(
+              json.dumps(record, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+          )
           PY
       - name: Evidence verifier regression tests
+        id: verifier_tests
         run: python3 -m unittest discover -s scripts -p 'test_hepta_artifact_*.py' -v
+      - name: Derive and validate Cargo target inventory
+        id: preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_artifact_test_inventory.py \
+            --manifest codex-rs/Cargo.toml \
+            --package codex-hepta-learning-artifacts \
+            --out "$RUNNER_TEMP/cargo-target-inventory.json"
       - name: Execute every native gate and retain each outcome
-        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runner.outcome == 'success' && steps.rust.outcome == 'success' }}
+        id: qualify
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runner.outcome == 'success' && steps.rust.outcome == 'success' && steps.verifier_tests.outcome == 'success' && steps.preflight.outcome == 'success' }}
         env:
           LANE: ${{ matrix.lane }}
         shell: bash
@@ -160,7 +175,8 @@ jobs:
             --source "$SOURCE_SHA" --base "$BASE_SHA" --lane "$LANE" \
             --out "$RUNNER_TEMP/artifact-evidence"
       - name: Recompute receipt claims from independently bound source
-        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runner.outcome == 'success' && steps.rust.outcome == 'success' }}
+        id: receipt_guard
+        if: ${{ !cancelled() && steps.qualify.outcome == 'success' }}
         env:
           LANE: ${{ matrix.lane }}
         shell: bash
@@ -169,6 +185,22 @@ jobs:
           python3 scripts/hepta_artifact_receipt_guard.py \
             --source "$SOURCE_SHA" --base "$BASE_SHA" --lane "$LANE" \
             --out "$RUNNER_TEMP/artifact-evidence"
+      - name: Attach independent runner and Cargo identities
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          results="$RUNNER_TEMP/artifact-evidence"
+          mkdir -p "$results"
+          for name in runner-identity.json cargo-target-inventory.json; do
+            source="$RUNNER_TEMP/$name"
+            if [[ -e "$source" ]]; then
+              test -f "$source"
+              test ! -L "$source"
+              test ! -e "$results/$name"
+              install -m 0600 "$source" "$results/$name"
+            fi
+          done
       - name: Retain failure or success evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
