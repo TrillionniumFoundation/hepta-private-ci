@@ -8,6 +8,9 @@ import re
 from typing import Any
 
 POLICY_RELATIVE_PATH = Path("qualification/memory-retrieval/qualification-policy.json")
+IMPLEMENTATION_MAP_RELATIVE_PATH = Path(
+    "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json"
+)
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -82,8 +85,14 @@ def safe_path(value: Any) -> str:
     if not isinstance(value, str):
         raise PolicyError("repository path must be a string")
     path = PurePosixPath(value)
-    if (not value or path.is_absolute() or ".." in path.parts
-            or value.startswith(":") or "\\" in value or "\x00" in value):
+    if (
+        not value
+        or path.is_absolute()
+        or ".." in path.parts
+        or value.startswith(":")
+        or "\\" in value
+        or "\x00" in value
+    ):
         raise PolicyError(f"unsafe repository path: {value!r}")
     return value
 
@@ -107,6 +116,38 @@ def _validate_external_evidence(value: Any, gate: str) -> None:
         raise PolicyError(f"external gate subjectSha is not exact: {gate}")
     if not SHA256.fullmatch(digest):
         raise PolicyError(f"external gate sha256 is not exact: {gate}")
+
+
+def _frozen_source_identity(root: Path) -> str:
+    path = root / IMPLEMENTATION_MAP_RELATIVE_PATH
+    if not path.is_file():
+        raise PolicyError("satisfied external gates require an implementation map")
+    data = path.read_bytes()
+    if len(data) > 256 * 1024:
+        raise PolicyError("implementation map exceeds 256 KiB")
+    value = json.loads(data, object_pairs_hook=unique_object)
+    if not isinstance(value, dict) or value.get("module") != "memory.retrieval":
+        raise PolicyError("external evidence implementation map is malformed")
+    if value.get("sourceIdentityPolicy") != "candidate_or_exact_observation_v1":
+        raise PolicyError("external evidence requires exact-observation identity")
+    source_base = value.get("sourceBase")
+    observed = value.get("observedAtHead")
+    if not isinstance(source_base, dict) or not isinstance(observed, dict):
+        raise PolicyError("implementation map lacks frozen source identity")
+    source_commit = source_base.get("commit")
+    observed_commit = observed.get("commit")
+    source_tree = source_base.get("tree")
+    observed_tree = observed.get("tree")
+    if (
+        not isinstance(source_commit, str)
+        or not SHA40.fullmatch(source_commit)
+        or source_commit != observed_commit
+        or not isinstance(source_tree, str)
+        or not SHA40.fullmatch(source_tree)
+        or source_tree != observed_tree
+    ):
+        raise PolicyError("implementation map frozen source identity is inconsistent")
+    return source_commit
 
 
 def load_policy(root: Path | str = REPOSITORY_ROOT) -> dict[str, Any]:
@@ -143,7 +184,10 @@ def load_policy(root: Path | str = REPOSITORY_ROOT) -> dict[str, Any]:
     if root_path not in objects:
         raise PolicyError("sourceRoot must be explicitly object-bound")
     for item in objects:
-        if not any(item == parent or item.startswith(parent.rstrip("/") + "/") for parent in inputs):
+        if not any(
+            item == parent or item.startswith(parent.rstrip("/") + "/")
+            for parent in inputs
+        ):
             raise PolicyError(f"source object is outside sourceInputs: {item}")
 
     claims = value.get("promotionClaims")
@@ -186,7 +230,9 @@ def load_policy(root: Path | str = REPOSITORY_ROOT) -> dict[str, Any]:
         if not isinstance(row, dict):
             raise PolicyError("security check rows must be objects")
         name = _nonempty_string(row.get("name"), "security check name")
-        conclusion = _nonempty_string(row.get("requiredConclusion"), "security conclusion")
+        conclusion = _nonempty_string(
+            row.get("requiredConclusion"), "security conclusion"
+        )
         if conclusion not in {"success", "neutral"}:
             raise PolicyError("unsupported security conclusion")
         if name in security_names:
@@ -203,6 +249,7 @@ def load_policy(root: Path | str = REPOSITORY_ROOT) -> dict[str, Any]:
     if not isinstance(external, list) or not external:
         raise PolicyError("externalGates must be a non-empty list")
     external_names: set[str] = set()
+    frozen_source: str | None = None
     for row in external:
         if not isinstance(row, dict):
             raise PolicyError("external gate rows must be objects")
@@ -221,6 +268,12 @@ def load_policy(root: Path | str = REPOSITORY_ROOT) -> dict[str, Any]:
                 )
         else:
             _validate_external_evidence(evidence, name)
+            if frozen_source is None:
+                frozen_source = _frozen_source_identity(root)
+            if evidence["subjectSha"] != frozen_source:
+                raise PolicyError(
+                    f"external gate is not bound to the frozen source: {name}"
+                )
     missing_external = sorted(MANDATORY_EXTERNAL_GATES - external_names)
     if missing_external:
         raise PolicyError(
@@ -235,5 +288,9 @@ ROOT = POLICY["sourceRoot"]
 INPUTS = tuple(POLICY["sourceInputs"])
 OBJECT_INPUTS = tuple(POLICY["sourceObjectInputs"])
 CLAIMS = tuple(POLICY["promotionClaims"])
-REQUIRED_CHECKS = {row["name"]: row["workflow"] for row in POLICY["requiredChecks"]}
-SECURITY_CHECKS = {row["name"]: row["requiredConclusion"] for row in POLICY["securityChecks"]}
+REQUIRED_CHECKS = {
+    row["name"]: row["workflow"] for row in POLICY["requiredChecks"]
+}
+SECURITY_CHECKS = {
+    row["name"]: row["requiredConclusion"] for row in POLICY["securityChecks"]
+}
