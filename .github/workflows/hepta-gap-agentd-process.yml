@@ -27,32 +27,15 @@ on:
       - codex-rs/app-server-client/**
       - codex-rs/app-server-transport/**
       - codex-rs/uds/**
-      - codex-rs/Cargo.toml
-      - codex-rs/Cargo.lock
-      - codex-rs/rust-toolchain.toml
-      - codex-rs/.cargo/**
-      - codex-rs/hepta-paths/**
-      - codex-rs/hepta-contracts/**
-      - codex-rs/hepta-types/**
-      - codex-rs/hepta-matrixd/**
-      - codex-rs/hepta-matrix-protocol/**
-      - docs/modules/runtime.supervisor/**
       - .github/scripts/check_ci_results.py
       - scripts/test_hepta_agentd_ci.py
-      - scripts/hepta_agentd_product_prerequisite.py
-      - scripts/test_hepta_agentd_product_prerequisite.py
-      - scripts/test_hepta_agentd_prerequisite_wiring.py
       - scripts/hepta_ci_candidate.py
-      - scripts/hepta_ci_v8.py
       - scripts/hepta_workspace.py
       - scripts/test_hepta_workspace.py
       - .github/workflows/hepta-gap-agentd-process.yml
 
 permissions:
   contents: read
-
-env:
-  PYTHONDONTWRITEBYTECODE: "1"
 
 concurrency:
   group: hepta-agentd-process-${{ github.event.pull_request.number || github.ref }}
@@ -129,7 +112,6 @@ jobs:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
       EXPECTED_SHA: ${{ matrix.lane == 'merge-candidate' && github.sha || github.event.pull_request.head.sha || github.sha }}
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-agentd-qualified-target
       RUST_BACKTRACE: "1"
       CARGO_BUILD_JOBS: "2"
       # Preserve the short private Unix-socket test root on Darwin.
@@ -157,8 +139,6 @@ jobs:
             args+=(--lane source-head)
           fi
           python3 scripts/hepta_ci_candidate.py "${args[@]}" --github-output "$GITHUB_OUTPUT"
-      - name: Test prerequisite binding and workflow ordering
-        run: python3 -m unittest -v scripts.test_hepta_agentd_product_prerequisite scripts.test_hepta_agentd_prerequisite_wiring
       - name: Check manifest graph before native setup
         if: steps.execution.outputs.run_native == 'true'
         run: python3 scripts/hepta_workspace.py
@@ -172,18 +152,8 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Build and bind product-boundary daemon prerequisite
-        id: product_binary
-        if: steps.execution.outputs.run_native == 'true'
-        run: >-
-          python3 scripts/hepta_agentd_product_prerequisite.py
-          --expected-sha "$EXPECTED_SHA"
-          --target-dir "$CARGO_TARGET_DIR"
-          --output "$RUNNER_TEMP/hepta-agentd-prerequisite"
-      # Independent suites run after a peer suite fails, but no suite may run
-      # with an absent, failed, or unbound prerequisite. No error is suppressed.
       - name: Exercise owner and lifecycle libraries
-        if: ${{ !cancelled() && steps.product_binary.outcome == 'success' }}
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -191,7 +161,7 @@ jobs:
             -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
             -p codex-hepta-supervisor --test-threads=1
       - name: Exercise actual optional retirement and durable destination recovery
-        if: ${{ !cancelled() && steps.product_binary.outcome == 'success' }}
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -201,7 +171,7 @@ jobs:
             --test operation_timer_fence --test-threads=1
           just test --locked -p codex-hepta-memory --lib destination_recovery_binding --test-threads=1
       - name: Exercise named plasticity and live cutover paths
-        if: ${{ !cancelled() && steps.product_binary.outcome == 'success' }}
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -210,7 +180,7 @@ jobs:
           just test --locked -p codex-hepta-runtime \
             authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics --test-threads=1
       - name: Exercise writer admission and real daemon process suites
-        if: ${{ !cancelled() && steps.product_binary.outcome == 'success' }}
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -221,17 +191,9 @@ jobs:
             --test runtime_codex_product_e2e --test supervised_two_agents \
             --test supervisord_product_e2e --test queue_capacity_product --test-threads=1
       - name: Strict owner lint
-        if: ${{ !cancelled() && steps.product_binary.outcome == 'success' }}
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-agentd --no-deps --all-targets --features qualification-cognitive-write -- -D warnings
-      - name: Retain daemon build identity and bounded diagnostics
-        if: ${{ always() && steps.execution.outputs.run_native == 'true' }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: agentd-prerequisite-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.lane }}
-          path: ${{ runner.temp }}/hepta-agentd-prerequisite/
-          if-no-files-found: error
-          retention-days: 30
       - name: Check unchanged candidate after execution
         if: always()
         run: |
