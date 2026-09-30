@@ -7,6 +7,8 @@
 #![forbid(unsafe_code)]
 
 mod model;
+mod outbox_unresolved;
+mod quarantine;
 mod store;
 mod turn_recovery;
 
@@ -44,6 +46,8 @@ pub use model::RoomBinding;
 pub use model::RoomBindingDraft;
 pub use model::RoomThreadBinding;
 pub use model::RoomThreadBindingDraft;
+pub use outbox_unresolved::OutboxUnresolvedRecord;
+pub use quarantine::MatrixRedactionQuarantine;
 pub use store::MatrixDurableError;
 pub use store::MatrixDurableStore;
 // Native channel.matrix owner-local observations, not an inter-module wire API.
