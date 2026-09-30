@@ -222,9 +222,10 @@ measured SLOs, complete traceability and stable-version acceptance remain open.
 The dedicated candidate qualification must execute the complete crate inventory
 plus explicit non-skippable process and operations gates: service publication-boundary
 SIGKILL recovery, lower-level host effect/durable-boundary kill/reopen recovery,
-withdrawal-floor process crash recovery, the real `hepta-learning-artifactd`
-bootstrap/kill/restore/restart transport test, the independent shadow-product
-process selection/revocation test, and deployment dashboard/alert validation. The workflow
+withdrawal-floor process crash recovery, current-head key-rotation semantics,
+the real `hepta-learning-artifactd` bootstrap/kill/restore/restart transport test,
+the independent shadow-product process selection/revocation test, and deployment
+dashboard/alert validation. The workflow
 runs exact-head and synthetic-merge lanes across Linux x86_64 stable, the
 declared Rust 1.95 MSRV, Linux ARM64 stable and macOS ARM64 stable.
 
