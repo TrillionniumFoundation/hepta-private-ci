@@ -161,3 +161,94 @@ fn op_05_tabular_prediction_is_synthetic_and_domain_bounded() {
         Err(LearnedOperatorError::UnsupportedCell)
     );
 }
+
+#[test]
+fn direct_predictions_reject_malformed_and_impossible_statistics() {
+    let mut input = plan(vec![
+        sample("minimum", "sensor-a", "action-a", 0),
+        sample("maximum", "sensor-a", "action-a", 10),
+    ]);
+    input.sensor_ids = vec![id("sensor-a")];
+    input.action_ids = vec![id("action-a")];
+    let valid = fit_tabular_operator(input).expect("valid two-observation fit");
+    let mut zero_count = valid.clone();
+    zero_count.cells[0].sample_count = 0;
+    let mut impossible_mean = valid.clone();
+    impossible_mean.cells[0].mean_target = FixedQ32::ZERO;
+    let mut impossible_singleton = valid.clone();
+    impossible_singleton.cells[0].sample_count = 1;
+    let mut missing_evidence = valid.clone();
+    missing_evidence.cells[0].evidence_digest = Digest32::ZERO;
+    let mut missing_identity = valid;
+    missing_identity.artifact_digest = Digest32::ZERO;
+    for (malformed, payload_error) in [
+        (zero_count, crate::TabularPayloadError::Grid),
+        (impossible_mean, crate::TabularPayloadError::Grid),
+        (impossible_singleton, crate::TabularPayloadError::Grid),
+        (missing_evidence, crate::TabularPayloadError::Grid),
+        (missing_identity, crate::TabularPayloadError::Binding),
+    ] {
+        assert_eq!(
+            predict_tabular_operator(&malformed, &id("sensor-a"), &id("action-a")),
+            Err(LearnedOperatorError::InvalidArtifact)
+        );
+        assert_eq!(
+            crate::predict_tabular_operator_indexed_v2(
+                &malformed,
+                &id("sensor-a"),
+                &id("action-a"),
+            ),
+            Err(crate::StrictLearnedOperatorError::NonCanonicalArtifact)
+        );
+        assert_eq!(
+            crate::encode_tabular_payload_v1(&malformed),
+            Err(payload_error)
+        );
+    }
+}
+
+#[test]
+fn direct_prediction_preserves_full_range_and_ties_even_fits() {
+    for (minimum, maximum, mean) in [(i64::MIN, i64::MAX, 0), (1, 2, 2), (-2, -1, -2)] {
+        let mut input = plan(vec![
+            sample("minimum", "sensor-a", "action-a", minimum),
+            sample("maximum", "sensor-a", "action-a", maximum),
+        ]);
+        input.sensor_ids = vec![id("sensor-a")];
+        input.action_ids = vec![id("action-a")];
+        let artifact = fit_tabular_operator(input).expect("fit representable extrema");
+        let expected = TabularOperatorPredictionV1 {
+            artifact_id: artifact.artifact_id.clone(),
+            sensor_id: id("sensor-a"),
+            action_id: id("action-a"),
+            value: FixedQ32::from_raw(mean),
+            cell_evidence_digest: artifact.cells[0].evidence_digest,
+            learned: true,
+            synthetic: true,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        assert_eq!(
+            predict_tabular_operator(&artifact, &id("sensor-a"), &id("action-a")),
+            Ok(expected.clone())
+        );
+        assert_eq!(
+            crate::predict_tabular_operator_indexed_v2(&artifact, &id("sensor-a"), &id("action-a"),),
+            Ok(expected)
+        );
+    }
+}
+
+#[test]
+fn training_identity_commits_executed_sample_threshold() {
+    let mut input = plan(vec![
+        sample("minimum", "sensor-a", "action-a", 0),
+        sample("maximum", "sensor-a", "action-a", 10),
+    ]);
+    input.sensor_ids = vec![id("sensor-a")];
+    input.action_ids = vec![id("action-a")];
+    let two = fit_tabular_operator(input.clone()).expect("two-sample threshold fits");
+    input.minimum_samples_per_cell = 1;
+    let one = fit_tabular_operator(input).expect("one-sample threshold fits");
+    assert_eq!(one.cells, two.cells);
+    assert_ne!(one.artifact_digest, two.artifact_digest);
+}

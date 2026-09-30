@@ -44,6 +44,11 @@ pub fn verify_tabular_operator_plan_v2(
     receipt: &DatasetSnapshotReceiptV3,
     now: u64,
 ) -> Result<VerifiedTabularOperatorPlanV2, OperatorDatasetBindingError> {
+    if plan.samples.is_empty() || plan.samples.len() > crate::learned::MAX_SAMPLES {
+        return Err(OperatorDatasetBindingError::Learned(
+            crate::LearnedOperatorError::SampleLimit.into(),
+        ));
+    }
     verify_dataset_snapshot_receipt_v3(receipt, now)?;
     if plan.dataset_digest != receipt.snapshot.dataset_digest {
         return Err(OperatorDatasetBindingError::DatasetDigestMismatch);
@@ -70,6 +75,16 @@ pub fn verify_world_model_dataset_v2(
     receipt: &DatasetSnapshotReceiptV3,
     now: u64,
 ) -> Result<VerifiedWorldModelDatasetV2, OperatorDatasetBindingError> {
+    if samples.is_empty() {
+        return Err(OperatorDatasetBindingError::WorldModel(
+            WorldModelError::EmptyDataset,
+        ));
+    }
+    if samples.len() > crate::world_model::MAX_SAMPLES {
+        return Err(OperatorDatasetBindingError::WorldModel(
+            WorldModelError::SampleLimit,
+        ));
+    }
     verify_dataset_snapshot_receipt_v3(receipt, now)?;
     verify_evidence_membership(
         &receipt.snapshot.source_record_digests,
@@ -91,15 +106,16 @@ pub fn fit_transition_model_verified_v2(
 
 fn verify_evidence_membership(
     frozen_records: &[Digest32],
-    actual: impl Iterator<Item = Digest32>,
+    actual: impl ExactSizeIterator<Item = Digest32>,
 ) -> Result<(), OperatorDatasetBindingError> {
-    let frozen = frozen_records
-        .iter()
-        .copied()
-        .collect::<std::collections::BTreeSet<_>>();
-    let actual = actual.collect::<std::collections::BTreeSet<_>>();
-    if actual != frozen {
+    if actual.len() != frozen_records.len() {
         return Err(OperatorDatasetBindingError::EvidenceSetMismatch);
+    }
+    let mut seen = std::collections::BTreeSet::new();
+    for digest in actual {
+        if frozen_records.binary_search(&digest).is_err() || !seen.insert(digest) {
+            return Err(OperatorDatasetBindingError::EvidenceSetMismatch);
+        }
     }
     Ok(())
 }

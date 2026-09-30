@@ -19,7 +19,7 @@ use codex_hepta_types::StableId;
 
 const MAX_ACTIONS: usize = 128;
 const MAX_CELLS: usize = 262_144;
-const MAX_SAMPLES: usize = 1_000_000;
+pub(crate) const MAX_SAMPLES: usize = 1_000_000;
 const MAX_SENSORS: usize = 4_096;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -95,6 +95,7 @@ pub enum LearnedOperatorError {
     MissingCell { sensor: String, action: String },
     InsufficientCellSamples { sensor: String, action: String },
     UnsupportedCell,
+    InvalidArtifact,
     Arithmetic,
 }
 
@@ -262,10 +263,15 @@ pub fn fit_tabular_operator(
     }
 
     let sample_digest = Digest32::of_bytes(&sample_binding);
-    let mut artifact_bytes = b"hepta.bellman-operator.tabular-artifact.v1".to_vec();
+    let mut artifact_bytes = b"hepta.bellman-operator.tabular-artifact.v2".to_vec();
     push_id(&mut artifact_bytes, &plan.artifact_id);
     push_id(&mut artifact_bytes, &plan.producer_id);
     artifact_bytes.extend_from_slice(&plan.generation.get().to_be_bytes());
+    artifact_bytes.extend_from_slice(
+        &u64::try_from(plan.minimum_samples_per_cell)
+            .map_err(|_| LearnedOperatorError::Arithmetic)?
+            .to_be_bytes(),
+    );
     for digest in [
         plan.objective_digest,
         plan.dataset_digest,
@@ -302,6 +308,7 @@ pub fn predict_tabular_operator(
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, LearnedOperatorError> {
+    validate_tabular_artifact(artifact).map_err(|_| LearnedOperatorError::InvalidArtifact)?;
     let cell = artifact
         .cells
         .iter()
@@ -317,6 +324,75 @@ pub fn predict_tabular_operator(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+/// Check the bounded sufficient statistics shared by direct and persisted
+/// inference. This does not authenticate the training digest: persisted use
+/// still requires an independently selected payload pin and current lineage.
+pub(crate) fn validate_tabular_artifact(
+    artifact: &TabularOperatorArtifactV1,
+) -> Result<(), crate::TabularPayloadError> {
+    use crate::TabularPayloadError;
+
+    if artifact.authority.grants_any() {
+        return Err(TabularPayloadError::Authority);
+    }
+    if [
+        artifact.artifact_digest,
+        artifact.objective_digest,
+        artifact.dataset_digest,
+        artifact.sensor_core_digest,
+        artifact.training_profile_digest,
+    ]
+    .into_iter()
+    .any(Digest32::is_zero)
+    {
+        return Err(TabularPayloadError::Binding);
+    }
+    if artifact.cells.is_empty() || artifact.cells.len() > MAX_CELLS {
+        return Err(TabularPayloadError::Bounds);
+    }
+    if artifact.cells.windows(2).any(|pair| {
+        (&pair[0].sensor_id, &pair[0].action_id) >= (&pair[1].sensor_id, &pair[1].action_id)
+    }) {
+        return Err(TabularPayloadError::Grid);
+    }
+    let mut sensors = BTreeMap::<&StableId, usize>::new();
+    let mut actions = BTreeSet::new();
+    let mut evidence = BTreeSet::new();
+    let mut samples = 0_u64;
+    for cell in &artifact.cells {
+        if cell.sample_count == 0
+            || cell.evidence_digest.is_zero()
+            || !evidence.insert(cell.evidence_digest)
+            || cell.minimum_target > cell.mean_target
+            || cell.mean_target > cell.maximum_target
+        {
+            return Err(TabularPayloadError::Grid);
+        }
+        let count = i128::from(cell.sample_count);
+        let minimum = i128::from(cell.minimum_target.raw());
+        let maximum = i128::from(cell.maximum_target.raw());
+        let attainable_minimum = round_ratio((count - 1) * minimum + maximum, count)
+            .map_err(|_| TabularPayloadError::Grid)?;
+        let attainable_maximum = round_ratio(minimum + (count - 1) * maximum, count)
+            .map_err(|_| TabularPayloadError::Grid)?;
+        if !(attainable_minimum..=attainable_maximum).contains(&i128::from(cell.mean_target.raw()))
+        {
+            return Err(TabularPayloadError::Grid);
+        }
+        *sensors.entry(&cell.sensor_id).or_default() += 1;
+        actions.insert(&cell.action_id);
+        samples += u64::from(cell.sample_count);
+    }
+    if sensors.len() > MAX_SENSORS
+        || actions.len() > MAX_ACTIONS
+        || samples > MAX_SAMPLES as u64
+        || sensors.values().any(|count| *count != actions.len())
+    {
+        return Err(TabularPayloadError::Grid);
+    }
+    Ok(())
 }
 
 fn digest_cell(

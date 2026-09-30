@@ -33,7 +33,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 14)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 7)),
     *(f"EVAL-{index:02d}" for index in range(1, 8)),
     *(f"ART-{index:02d}" for index in range(1, 13)),
 }
@@ -88,11 +88,17 @@ EXPECTED_OPERATIONS = {
     "learning.operator": {
         "build_targets",
         "validate_applicability_certificate",
+        "validate_applicability_with_signed_evidence_v2",
         "build_sensor_core",
         "evaluate_bellman_reference",
         "admit_operator_regularity",
+        "admit_operator_regularity_with_signed_evidence_v2",
         "fit_transition_model",
         "predict_transition",
+        "verify_tabular_operator_plan_v2",
+        "fit_tabular_operator_verified_v2",
+        "verify_world_model_dataset_v2",
+        "fit_transition_model_verified_v2",
     },
     "learning.eval": {
         "estimate_ope",
@@ -115,6 +121,16 @@ EXPECTED_CRATES = {
     "codex-hepta-intelligence",
     "codex-hepta-shadow-qualification",
 }
+EXPECTED_OPERATOR_SUPPLEMENTAL_OPERATIONS = {
+    "fit_tabular_operator",
+    "fit_tabular_operator_strict_v2",
+    "predict_tabular_operator",
+    "LoadedTabularOperatorV1::from_pinned_payload",
+    "encode_tabular_payload_v1",
+    "predict_tabular_operator_indexed_v2",
+    "freeze_terminal_cell_from_owner_v1",
+    "fit_terminal_cell_from_owner_v1",
+}
 
 
 @dataclass(frozen=True)
@@ -126,6 +142,7 @@ class Finding:
 class Findings:
     def __init__(self) -> None:
         self.items: list[Finding] = []
+        self.integration_work: dict[str, list[str]] = {}
 
     def add(self, code: str, message: str) -> None:
         self.items.append(Finding(code=code, message=message))
@@ -245,11 +262,24 @@ def verify_matrix(
                     "missing_matrix_path",
                     f"{module}.{key} does not exist: {path.relative_to(ROOT)}",
                 )
-        findings.require(
-            item.get("remainingRepositoryGaps") == [],
-            "repository_gap_open",
-            f"{module} still lists a repository-controlled gap",
-        )
+        # Native source mapping and integration completion are different
+        # claims. Preserve truthful integration work in the verifier output;
+        # requiring [] incentivizes deleting a real blocker from metadata.
+        gaps = item.get("remainingRepositoryGaps")
+        if (
+            not isinstance(gaps, list)
+            or len(gaps) > 128
+            or any(
+                not isinstance(gap, str) or not gap.strip() or len(gap) > 4096
+                for gap in gaps
+            )
+        ):
+            findings.add(
+                "repository_gap_shape",
+                f"{module}.remainingRepositoryGaps must be a bounded string array",
+            )
+        else:
+            findings.integration_work[module] = gaps.copy()
         external = item.get("remainingExternalEvidence")
         findings.require(
             isinstance(external, list) and bool(external),
@@ -274,6 +304,38 @@ def verify_matrix(
             "operation_closed_world",
             f"{module} operation set differs from the required closed world",
         )
+        if module == "learning.operator":
+            supplemental = item.get("supplementalOperations")
+            if not isinstance(supplemental, list):
+                findings.add(
+                    "supplemental_operations_missing",
+                    "operator supplemental operations missing",
+                )
+            else:
+                names: set[str] = set()
+                for operation in supplemental:
+                    if not isinstance(operation, dict) or not isinstance(
+                        operation.get("operation"), str
+                    ):
+                        findings.add(
+                            "invalid_operation",
+                            "operator supplemental operation is invalid",
+                        )
+                        continue
+                    name = operation["operation"]
+                    if name in names or name in operations:
+                        findings.add(
+                            "duplicate_operation",
+                            f"duplicate operator operation: {name}",
+                        )
+                        continue
+                    names.add(name)
+                    operations[name] = operation
+                findings.require(
+                    EXPECTED_OPERATOR_SUPPLEMENTAL_OPERATIONS == names,
+                    "operator_supplemental_missing",
+                    "operator learned/payload/indexed/owner operation set differs from the required closed world",
+                )
         for operation_name, operation in operations.items():
             source_path = relative_path(
                 operation.get("source"), findings, f"{module}.{operation_name}.source"
@@ -907,14 +969,23 @@ def main() -> int:
     args = parser.parse_args()
     if args.command == "self-test":
         findings = run_self_test()
+        integration_work = {}
     else:
-        findings = verify().items
+        result = verify()
+        findings = result.items
+        integration_work = result.integration_work
     output = {
         "schema": "hepta.lane-e-closure-verification.v1",
         "command": args.command,
         "ok": not findings,
         "findingCount": len(findings),
         "findings": [finding.__dict__ for finding in findings],
+        "remainingIntegrationWork": integration_work,
+        "repositoryIntegrationComplete": (
+            args.command == "verify"
+            and not findings
+            and not any(integration_work.values())
+        ),
     }
     print(json.dumps(output, indent=2, sort_keys=True))
     return 0 if not findings else 1

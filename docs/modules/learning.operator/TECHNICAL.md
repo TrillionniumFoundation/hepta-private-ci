@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.operator`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and mapped to the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. Only current execution receipts establish that those checks passed. This status does not activate `learning.operator`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -119,7 +119,8 @@ retain current source, wire and capability states.
 freezes and fits one constant-state terminal-value table from authenticated
 LedgerWriter decisions and terminal outcomes. It resolves the bounded frozen
 source set through the replay-built digest index, preserves source sequence, and
-revalidates correction/revocation before fitting. Mixed state/objective/action
+revalidates correction/revocation before fitting. Future observation/finality
+timestamps and a fit clock earlier than freeze reject. Mixed state/objective/action
 sets, units, incomplete results and insufficient per-action support reject.
 
 The payload uses the existing artifact registry and pinned loader.
@@ -127,6 +128,26 @@ The payload uses the existing artifact registry and pinned loader.
 exercises evidence, freeze, fit, persistence, reload, a later generation and
 withdrawal. This is a deterministic table baseline, not a Laya backend, general
 Bellman solver, causal policy-improvement proof or deployment selection.
+
+### Native profile and evidence boundaries
+
+The implemented learner fits a complete finite sensor/action table; the world
+model fits action-conditioned transition counts. The reference accepts supplied
+reward and continuation cells rather than simulating a diffusion or interpolating
+a continuation function. Neural/tensor fitting, continuous reconstruction and
+automatic training/evaluation/selection are separate integration work.
+
+Sensor fill distance is measured over the supplied finite candidate design. Its
+`hull_digest` commits selected point bytes; it does not certify continuous-domain
+coverage or implement geometric hull containment. Q32 fill distance and mesh ratio
+round upward, separation radius rounds downward, and the manifest commits all
+candidate points. Tabular OOD means an unsupported sensor/action identity.
+
+The generic dataset-verified APIs bind frozen receipt identity and exact evidence
+membership. They do not derive the caller's numeric targets from ledger events;
+the owner-derived terminal profile supplies that narrower provenance path.
+Applicability/regularity signatures authenticate exact attestations; they do not
+measure the declared geometry, rank, calibration or scientific assumptions.
 
 ## 5. Contracts, ports and compatibility
 
@@ -166,7 +187,23 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Canonical wire parity is a target contract requirement. Current native candidate
+structs are not canonical-JSON adapters: native applicability uses profile digests
+and a scalar control interval, while the registered wire schema requires profile
+objects, horizon and jump-policy fields; the native sensor manifest contains
+selected points rather than the wire lifecycle envelope. Wire bounds, unknown
+field rejection and round-trip proof remain adapter work. Native canonical order,
+digest binding and `HEPTTB01` payload validation have their own focused tests.
+No existing V1 wire schema is redefined by these native profiles.
+
+Sensor/reference/legacy target and tabular-training digests now use V2 domains
+to bind complete source inputs or minimum-support policy, and target multiplication
+uses nearest/ties-to-even. Existing V1 struct names and the `train` alias remain;
+new fits/rebuilt references require independent admission under their new exact
+identities. Existing pinned `HEPTTB01` bytes remain readable subject to current
+selection and revocation. World-model V2 digests bind full rows and a private fit-owned seal
+rejects modified models; public field reads remain, external struct literals do
+not. There is no persisted world-model wire migration.
 
 ## 6. Data authority, persistence and migrations
 

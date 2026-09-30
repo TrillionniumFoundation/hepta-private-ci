@@ -243,13 +243,15 @@ pub fn train(request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error>
 
 fn mul_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let product = i128::from(left.raw()) * i128::from(right.raw());
-    let adjusted = if product >= 0 {
-        product + SCALE / 2
+    let quotient = product / SCALE;
+    let twice_remainder = (product % SCALE).abs() * 2;
+    let rounded = if twice_remainder > SCALE || (twice_remainder == SCALE && quotient % 2 != 0) {
+        quotient + product.signum()
     } else {
-        product - SCALE / 2
+        quotient
     };
     Ok(FixedQ32::from_raw(
-        i64::try_from(adjusted / SCALE).map_err(|_| Error::Arithmetic)?,
+        i64::try_from(rounded).map_err(|_| Error::Arithmetic)?,
     ))
 }
 
@@ -285,7 +287,9 @@ fn digest_artifact(
     regularity: &RegularityProfile,
 ) -> Digest32 {
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.bellman-operator.artifact.v1");
+    // V2 identifies the nearest-ties-even arithmetic profile. Rebuild legacy
+    // artifacts rather than treating a V1 digest as a pin for this profile.
+    bytes.extend_from_slice(b"hepta.bellman-operator.artifact.v2");
     push_id(&mut bytes, &request.artifact_id);
     push_id(&mut bytes, &request.producer_id);
     bytes.extend_from_slice(&request.generation.get().to_be_bytes());

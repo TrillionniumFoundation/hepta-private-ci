@@ -4,14 +4,13 @@
 //! verify current lineage/revocations and supply an independently selected pin.
 //! The training digest includes evidence unavailable in these sufficient
 //! statistics: it is retained, not spuriously "recomputed" from the cells.
-use std::collections::BTreeMap;
-use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
 
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorCellV1;
 use crate::TabularOperatorPredictionV1;
+use crate::learned::validate_tabular_artifact;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -64,7 +63,18 @@ impl LoadedTabularOperatorV1 {
         if bytes.len() > MAX_BYTES {
             return Err(TabularPayloadError::Bounds);
         }
-        if pin.payload_digest.is_zero() || Digest32::of_bytes(bytes) != pin.payload_digest {
+        if [
+            pin.payload_digest,
+            pin.artifact_digest,
+            pin.objective_digest,
+            pin.dataset_digest,
+            pin.sensor_core_digest,
+            pin.training_profile_digest,
+        ]
+        .into_iter()
+        .any(Digest32::is_zero)
+            || Digest32::of_bytes(bytes) != pin.payload_digest
+        {
             return Err(TabularPayloadError::Binding);
         }
         let artifact = decode(bytes)?;
@@ -77,7 +87,7 @@ impl LoadedTabularOperatorV1 {
         {
             return Err(TabularPayloadError::Binding);
         }
-        validate(&artifact)?;
+        validate_tabular_artifact(&artifact)?;
         Ok(Self { artifact })
     }
 
@@ -87,7 +97,7 @@ impl LoadedTabularOperatorV1 {
         &self.artifact.artifact_id
     }
 
-    /// The immutable loaded value validates O(n) once, then looks up in O(log n).
+    /// The immutable loaded value validates O(n log n) once, then looks up in O(log n).
     pub fn predict(
         &self,
         sensor: &StableId,
@@ -117,7 +127,7 @@ impl LoadedTabularOperatorV1 {
 pub fn encode_tabular_payload_v1(
     artifact: &TabularOperatorArtifactV1,
 ) -> Result<Vec<u8>, TabularPayloadError> {
-    validate(artifact)?;
+    validate_tabular_artifact(artifact)?;
     let size = 8
         + 2
         + artifact.artifact_id.as_str().len()
@@ -166,55 +176,6 @@ pub fn encode_tabular_payload_v1(
         bytes.extend_from_slice(cell.evidence_digest.as_array());
     }
     Ok(bytes)
-}
-
-fn validate(artifact: &TabularOperatorArtifactV1) -> Result<(), TabularPayloadError> {
-    if artifact.authority.grants_any() {
-        return Err(TabularPayloadError::Authority);
-    }
-    if [
-        artifact.artifact_digest,
-        artifact.objective_digest,
-        artifact.dataset_digest,
-        artifact.sensor_core_digest,
-        artifact.training_profile_digest,
-    ]
-    .into_iter()
-    .any(Digest32::is_zero)
-    {
-        return Err(TabularPayloadError::Binding);
-    }
-    if artifact.cells.is_empty() || artifact.cells.len() > MAX_CELLS {
-        return Err(TabularPayloadError::Bounds);
-    }
-    if artifact.cells.windows(2).any(|pair| {
-        (&pair[0].sensor_id, &pair[0].action_id) >= (&pair[1].sensor_id, &pair[1].action_id)
-    }) {
-        return Err(TabularPayloadError::Grid);
-    }
-    let mut sensors = BTreeMap::<&StableId, usize>::new();
-    let mut actions = BTreeSet::new();
-    let mut samples = 0_u64;
-    for cell in &artifact.cells {
-        if cell.sample_count == 0
-            || cell.evidence_digest.is_zero()
-            || cell.minimum_target > cell.mean_target
-            || cell.mean_target > cell.maximum_target
-        {
-            return Err(TabularPayloadError::Grid);
-        }
-        *sensors.entry(&cell.sensor_id).or_default() += 1;
-        actions.insert(&cell.action_id);
-        samples += u64::from(cell.sample_count);
-    }
-    if sensors.len() > 4096
-        || actions.len() > 128
-        || samples > 1_000_000
-        || sensors.values().any(|count| *count != actions.len())
-    {
-        return Err(TabularPayloadError::Grid);
-    }
-    Ok(())
 }
 
 fn put_id(bytes: &mut Vec<u8>, id: &StableId) {
