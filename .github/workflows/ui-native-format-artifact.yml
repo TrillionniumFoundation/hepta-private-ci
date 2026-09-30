@@ -1,6 +1,12 @@
 name: ui.native formatter artifact
 
 on:
+  pull_request:
+    branches:
+      - work/ui-native-qualified-integration-20260928
+    paths:
+      - apps/hepta-native/**
+      - .github/workflows/ui-native-format-artifact.yml
   push:
     branches:
       - work/ui-native-exact-convergence-20260930
@@ -11,32 +17,26 @@ permissions:
   contents: read
 
 concurrency:
-  group: ui-native-format-artifact-${{ github.ref }}
+  group: ui-native-format-artifact-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
   format-artifact:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Checkout exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
           persist-credentials: false
 
       - name: Install pinned formatter
-        shell: bash
-        run: |
-          set -euo pipefail
-          if ! command -v rustup >/dev/null 2>&1; then
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain 1.95.0
-          fi
-          if [[ -f "$HOME/.cargo/env" ]]; then
-            source "$HOME/.cargo/env"
-          fi
-          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
 
       - name: Materialize formatter-only result
         shell: bash
@@ -58,7 +58,7 @@ jobs:
       - name: Retain formatter result
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ui-native-rustfmt-${{ github.sha }}
+          name: ui-native-rustfmt-${{ github.event.pull_request.head.sha || github.sha }}
           path: ${{ runner.temp }}/ui-native-rustfmt
           if-no-files-found: error
           retention-days: 1
