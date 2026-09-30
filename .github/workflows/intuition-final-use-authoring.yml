@@ -38,7 +38,24 @@ jobs:
           raw = b''.join(path.read_bytes() for path in sorted(Path('.github/intuition-final-use-authoring').glob('part-*')))
           Path(__import__('os').environ['RUNNER_TEMP'], 'transform.py').write_bytes(gzip.decompress(base64.b64decode(raw)))
           PY
+          test "$(shasum -a 256 "$RUNNER_TEMP/transform.py" | awk '{print $1}')" = "ecc77ed897363aa99e2d6d7f406773a0c37d2217fe76c12fee1eeb82e02c85f4"
           python3 "$RUNNER_TEMP/transform.py"
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs')
+          text = path.read_text()
+          text = text.replace(
+              '    fn set(&self, now: u64) {',
+              '    #[allow(dead_code)]\n    fn set(&self, now: u64) {',
+              1,
+          )
+          text = text.replace(
+              '\nfn successor_trust_distribution(',
+              '\n#[allow(dead_code)]\nfn successor_trust_distribution(',
+              1,
+          )
+          path.write_text(text)
+          PY
           git diff --check
           cd codex-rs
           cargo fmt --package codex-hepta-agentd
@@ -57,8 +74,14 @@ jobs:
           assert 'owner_trust_generation' in p and 'OwnedIntuitionQualificationEvidenceV2' in p
           assert 'commit_intuition_policy_v3' not in Path('codex-rs/hepta-agentd/src/intuition_policy_service.rs').read_text()
           assert 'commit_now' not in Path('codex-rs/hepta-agentd/src/intuition_policy_serving.rs').read_text()
+          tests = Path('codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs').read_text()
+          assert 'writer_wait_samples_fresh_clock_and_expires_before_any_ledger_mutation' in tests
+          assert 'rotate to revoked-generator trust generation' in tests
           PY
-          rm -f .github/intuition-final-use-authoring/part-* .github/workflows/intuition-final-use-authoring.yml
+          rm -f .github/intuition-final-use-authoring/part-* \
+                .github/intuition-final-use-authoring/TRIGGER \
+                .github/workflows/intuition-final-use-authoring.yml
+          rmdir .github/intuition-final-use-authoring
           git add -A
           git diff --cached --check
           git config user.name 'github-actions[bot]'
