@@ -414,7 +414,9 @@ async fn revoked_live_frontier_blocks_new_physical_effect() {
         .load_model(&grant, &manifest)
         .await
         .expect("model");
+    clock.0.store(1_001, Ordering::SeqCst);
     authority.update(|snapshot| {
+        snapshot.observed_at_unix_ms = 1_001;
         snapshot.revocation_revision += 1;
         snapshot.revoked_grant_ids.insert(snapshot.grant_id.clone());
     });
@@ -477,7 +479,9 @@ async fn live_revocation_during_hung_run_interrupts_and_holds_capacity() {
     );
     let revoke = async {
         tokio::time::sleep(std::time::Duration::from_millis(125)).await;
+        clock.0.store(1_001, Ordering::SeqCst);
         authority.update(|snapshot| {
+            snapshot.observed_at_unix_ms = 1_001;
             snapshot.revocation_revision += 1;
             snapshot.revoked_grant_ids.insert(snapshot.grant_id.clone());
         });
