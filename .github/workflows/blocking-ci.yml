@@ -185,6 +185,114 @@ jobs:
         if: needs.scope.outputs.derived == 'true'
         run: python3 scripts/hepta-module-docs.py refresh-derived --check
 
+  learning-artifacts-qualification:
+    name: learning.artifacts exact-head qualification
+    needs: scope
+    if: needs.scope.outputs.learning == 'true' || needs.scope.outputs.full_repo == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Verify Lane E closed world
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+
+      - name: Execute non-skippable learning.artifacts qualification tasks
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          results="$RUNNER_TEMP/learning-artifacts-results"
+          mkdir -p "$results"
+          tool=(python3 scripts/hepta-learning-artifacts-qualification.py run-task --source-sha "$SOURCE_SHA")
+
+          "${tool[@]}" --task build --output "$results/build.json" -- \
+            cargo check --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-artifacts --all-targets
+          "${tool[@]}" --task strict_clippy --output "$results/strict_clippy.json" -- \
+            cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+          "${tool[@]}" --task owner_regression --output "$results/owner_regression.json" -- \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-artifacts
+          "${tool[@]}" --task security --output "$results/security.json" -- \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-artifacts \
+              current_head_witness_rejects_stale_or_tampered_receipts -- --test-threads=1
+          "${tool[@]}" --task property --output "$results/property.json" -- \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-artifacts \
+              concurrent_creation_has_exactly_one_winner -- --test-threads=1
+          "${tool[@]}" --task boundary_sequence --output "$results/boundary_sequence.json" -- \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-artifacts \
+              art_07_publication_requires_ordered_durable_phases_before_ack -- --test-threads=1
+          "${tool[@]}" --task service_e2e --output "$results/service_e2e.json" -- \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-artifacts \
+              named_owner_service_publishes_retries_and_reopens_from_current_head -- --test-threads=1
+          "${tool[@]}" --task read_boundary --output "$results/read_boundary.json" -- \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-artifacts \
+              snapshot_reopens_exact_history_and_revoked_ancestors -- --test-threads=1
+          "${tool[@]}" --task write_atomicity --output "$results/write_atomicity.json" -- \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-artifacts \
+              bytes_appearing_after_atomic_creation_are_indeterminate -- --test-threads=1
+          "${tool[@]}" --task snapshot_fallback --output "$results/snapshot_fallback.json" -- \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-learning-artifacts \
+              every_truncation_and_wrong_external_witness_rejects_without_repair -- --test-threads=1
+
+      - name: Emit and verify exact-head qualification receipt
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          results="$RUNNER_TEMP/learning-artifacts-results"
+          receipt="$RUNNER_TEMP/learning-artifacts-exact-head-${SOURCE_SHA}.json"
+          source_tree="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-learning-artifacts-qualification.py emit \
+            --results-dir "$results" \
+            --source-sha "$SOURCE_SHA" \
+            --source-tree "$source_tree" \
+            --base-sha "${BASE_SHA:-}" \
+            --output "$receipt"
+          python3 scripts/hepta-learning-artifacts-qualification.py verify "$receipt"
+
+      - name: Retain exact-head receipt and task logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-artifacts-exact-head-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/learning-artifacts-results/
+            ${{ runner.temp }}/learning-artifacts-exact-head-*.json
+          if-no-files-found: error
+          retention-days: 30
+
   lightweight:
     name: Lightweight prose and derived checks
     needs: scope
@@ -225,6 +333,7 @@ jobs:
       - rust-ci
       - sdk
       - hepta-scoped
+      - learning-artifacts-qualification
       - lightweight
     runs-on: ubuntu-24.04
     steps:
@@ -236,6 +345,7 @@ jobs:
         env:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
+          LEARNING: ${{ needs.scope.outputs.learning }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
         shell: bash
         run: |
@@ -245,6 +355,7 @@ jobs:
           import json
           import os
           native = os.environ["NATIVE"] == "true"
+          learning = os.environ["LEARNING"] == "true"
           full = os.environ["FULL_REPO"] == "true"
           allowed = []
           if not (native or full):
@@ -253,6 +364,8 @@ jobs:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
           if not (native and not full):
               allowed.append("hepta-scoped")
+          if not (learning or full):
+              allowed.append("learning-artifacts-qualification")
           if not (not native and not full):
               allowed.append("lightweight")
           print(json.dumps(allowed))

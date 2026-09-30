@@ -1,0 +1,103 @@
+groups:
+  - name: hepta-learning-artifacts-owner
+    interval: 30s
+    rules:
+      - alert: HeptaLearningArtifactOwnerMetricsStale
+        expr: time() - hepta_learning_artifact_owner_observed_at_seconds > 180
+        for: 2m
+        labels:
+          severity: critical
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts owner metrics are stale
+          description: The authenticated owner metrics snapshot has not advanced for more than three minutes.
+      - alert: HeptaLearningArtifactOwnerPersistenceUnknown
+        expr: increase(hepta_learning_artifact_owner_persistence_unknown_failures_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts persistence outcome is unknown
+          description: Keep publication and final-use activation fenced until exact recovery completes.
+      - alert: HeptaLearningArtifactOwnerRecoveryFailure
+        expr: increase(hepta_learning_artifact_owner_recovery_failures_total[10m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts recovery failed
+          description: A durable publication checkpoint could not be reconciled exactly.
+      - alert: HeptaLearningArtifactOwnerPendingAttemptOld
+        expr: hepta_learning_artifact_owner_oldest_pending_attempt_age_seconds > 300
+        for: 5m
+        labels:
+          severity: warning
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts publication is pending too long
+          description: The oldest pending attempt has exceeded the five-minute operational budget.
+      - alert: HeptaLearningArtifactOwnerDrainStuck
+        expr: hepta_learning_artifact_owner_drain_age_seconds > 900
+        for: 5m
+        labels:
+          severity: warning
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts drain is not converging
+          description: Durable drain has remained active for more than fifteen minutes.
+      - alert: HeptaLearningArtifactOwnerWithdrawalBlocked
+        expr: increase(hepta_learning_artifact_owner_withdrawal_blocks_total[10m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts final use was blocked by withdrawal
+          description: Confirm that no withdrawn artifact is selected or reopened and reconcile the frontier.
+      - alert: HeptaLearningArtifactOwnerIdentityConflict
+        expr: increase(hepta_learning_artifact_owner_identity_conflicts_total[10m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts request identity conflict
+          description: The same operation identity was observed with different canonical request content.
+      - alert: HeptaLearningArtifactOwnerRetentionObservationMissing
+        expr: hepta_learning_artifact_owner_retention_observation_known == 0
+        for: 10m
+        labels:
+          severity: warning
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts retention observation is missing
+          description: Pinned and pending-erasure byte values must remain unknown until a digest-bound owning-system observation is restored.
+      - alert: HeptaLearningArtifactOwnerQuarantineObservationMissing
+        expr: hepta_learning_artifact_owner_quarantine_items_known == 0
+        for: 10m
+        labels:
+          severity: warning
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts quarantine observation is missing
+          description: Quarantine size remains unknown until a fresh digest-bound owning-system observation is supplied.
+      - alert: HeptaLearningArtifactOwnerQuarantineNonEmpty
+        expr: hepta_learning_artifact_owner_quarantine_items > 0
+        for: 0m
+        labels:
+          severity: critical
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts quarantine is non-empty
+          description: Keep affected artifacts unavailable and reconcile the owning-system quarantine before promotion.
+      - alert: HeptaLearningArtifactOwnerPendingErasureHigh
+        expr: hepta_learning_artifact_owner_pending_physical_erasure_bytes > 10737418240
+        for: 30m
+        labels:
+          severity: warning
+          module: learning.artifacts
+        annotations:
+          summary: learning.artifacts pending physical erasure exceeds 10 GiB
+          description: Review retention, withdrawal and erasure-worker progress before increasing capacity.
