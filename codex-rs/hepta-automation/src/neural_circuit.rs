@@ -173,31 +173,7 @@ impl NeuralCircuitCandidateV1 {
         &self,
     ) -> Result<(TaskFlowDefinition, CircuitCompilationReceiptV1), TaskFlowError> {
         self.validate()?;
-        let nodes = self
-            .nodes
-            .iter()
-            .map(taskflow_node)
-            .collect::<Result<Vec<_>, _>>()?;
-        let edges = self
-            .edges
-            .iter()
-            .map(|edge| TaskFlowEdgeSpec::new(&edge.from, &edge.to))
-            .collect();
-        let policy_digest = circuit_policy_digest(
-            &self.route_policy_digest,
-            &self.parameter_bundle_digest,
-            &self.resource_profile_digest,
-            &self.circuit_digest,
-        )?;
-        let definition = TaskFlowDefinition::new(
-            format!("circuit:{}", self.circuit_id),
-            self.version,
-            &self.entry_node,
-            nodes,
-            edges,
-            self.capability_set.clone(),
-            policy_digest,
-        )?;
+        let definition = self.compile_unchecked_taskflow()?;
         let receipt = CircuitCompilationReceiptV1 {
             circuit_id: self.circuit_id.clone(),
             circuit_version: self.version,
@@ -292,7 +268,12 @@ impl NeuralCircuitCandidateV1 {
             nodes,
             edges,
             self.capability_set.clone(),
-            compiled_policy_digest(self)?,
+            circuit_policy_digest(
+                &self.route_policy_digest,
+                &self.parameter_bundle_digest,
+                &self.resource_profile_digest,
+                &self.circuit_digest,
+            )?,
         )
     }
 

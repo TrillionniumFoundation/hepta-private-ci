@@ -42,6 +42,10 @@ struct Fixture {
 }
 
 impl Fixture {
+    #[allow(
+        clippy::expect_used,
+        reason = "fixture setup failures must abort before exercising durable owner behavior"
+    )]
     fn new() -> Self {
         let temp = tempfile::tempdir().expect("temp root");
         let root = temp.path().canonicalize().expect("canonical root");
@@ -96,6 +100,10 @@ impl AutomationTurnQueue for UnknownQueue {
     }
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "test task identifiers are fixed valid fixtures"
+)]
 fn draft(id: &str, schedule: AutomationSchedule, due: u64) -> AutomationTaskDraft {
     let mut draft = AutomationTaskDraft::new(THREAD_ID, "durable causal work", schedule, due, 1);
     draft.task_id = AutomationTaskId::parse(id).expect("task id");

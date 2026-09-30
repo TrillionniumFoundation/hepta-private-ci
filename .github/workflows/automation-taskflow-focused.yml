@@ -37,6 +37,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: automation-taskflow-focused-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   focused:
     name: focused (${{ matrix.lane }})

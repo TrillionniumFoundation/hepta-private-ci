@@ -22,6 +22,10 @@ struct Fixture {
 }
 
 impl Fixture {
+    #[allow(
+        clippy::expect_used,
+        reason = "fixture setup failures must abort before exercising durable owner behavior"
+    )]
     fn new() -> Self {
         let temp = tempfile::tempdir().expect("temp root");
         let root = temp.path().canonicalize().expect("canonical temp root");
@@ -45,6 +49,10 @@ impl Fixture {
     }
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "all generations supplied by these tests are fixed non-zero fixtures"
+)]
 fn generation(value: u64) -> Generation {
     Generation::new(value).expect("generation")
 }

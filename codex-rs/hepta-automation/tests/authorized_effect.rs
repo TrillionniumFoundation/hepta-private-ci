@@ -101,10 +101,6 @@ impl Fixture {
     }
 }
 
-fn definition() -> TaskFlowDefinition {
-    definition_for("effect")
-}
-
 fn definition_for(step_id: &str) -> TaskFlowDefinition {
     TaskFlowDefinition::new(
         "authorized-effect",

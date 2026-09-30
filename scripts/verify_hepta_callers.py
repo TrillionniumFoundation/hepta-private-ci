@@ -121,11 +121,15 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
         self_calls: list[NonBoundarySelfCall] = []
         for scope in scopes:
             if not isinstance(scope, dict) or set(scope) != {
-                "path", "receiver_type", "method"
+                "path",
+                "receiver_type",
+                "method",
             }:
                 raise VerificationFailure(f"{identifier}: invalid self-call scope")
             path, receiver_type, method = (
-                scope["path"], scope["receiver_type"], scope["method"]
+                scope["path"],
+                scope["receiver_type"],
+                scope["method"],
             )
             if (
                 not isinstance(path, str)
@@ -421,18 +425,27 @@ def _is_ignored(relative: str, fragments: tuple[str, ...]) -> bool:
     return any(fragment in normalized for fragment in fragments)
 
 
-def _strip_non_boundary_self_calls(
-    relative: str, code: str, boundary: Boundary
-) -> str:
+def _strip_non_boundary_self_calls(relative: str, code: str, boundary: Boundary) -> str:
     """Disambiguate only literal self calls in a declared other-type impl."""
     output = list(code)
     for scope in boundary.non_boundary_self_calls:
         if scope.path != relative:
             continue
         receiver = re.escape(scope.receiver_type)
-        if re.search(r"\bstruct\s+" + receiver + r"\s*(?:\{|;|\()", code) is None:
+        declarations = tuple(
+            re.finditer(r"\bstruct\s+" + receiver + r"\s*(?:\{|;|\()", code)
+        )
+        if not declarations:
             raise VerificationFailure(
                 f"{boundary.identifier}: self-call receiver struct is missing: {relative}"
+            )
+        if len(declarations) != 1 or any(
+            code[: declarations[0].start()].count(opener)
+            != code[: declarations[0].start()].count(closer)
+            for opener, closer in (("{", "}"), ("(", ")"), ("[", "]"))
+        ):
+            raise VerificationFailure(
+                f"{boundary.identifier}: self-call receiver must be one top-level struct: {relative}"
             )
         blocks = tuple(re.finditer(r"\bimpl\s+" + receiver + r"\s*\{", code))
         if not blocks:
@@ -440,6 +453,14 @@ def _strip_non_boundary_self_calls(
                 f"{boundary.identifier}: self-call receiver inherent impl is missing: {relative}"
             )
         for block in blocks:
+            if any(
+                code[: block.start()].count(opener)
+                != code[: block.start()].count(closer)
+                for opener, closer in (("{", "}"), ("(", ")"), ("[", "]"))
+            ):
+                raise VerificationFailure(
+                    f"{boundary.identifier}: self-call receiver impl must be top-level: {relative}"
+                )
             opener = block.end() - 1
             closer = _matching_delimiter(code, opener, "{", "}")
             if closer is None:
@@ -449,12 +470,42 @@ def _strip_non_boundary_self_calls(
             body = code[opener + 1 : closer]
             # A nested impl can introduce another self type. Fail closed rather
             # than treating that self as the configured outer receiver.
-            if re.search(r"(?m)(?:^|[;{}])\s*impl\b", body):
-                raise VerificationFailure(
-                    f"{boundary.identifier}: nested self-call receiver impl is ambiguous: {relative}"
+            macro_spans = []
+            for macro in re.finditer(
+                r"(?:!\s*|#\s*)([({\[])",
+                body,
+            ):
+                macro_opener = macro.end() - 1
+                macro_closer = _matching_delimiter(
+                    body,
+                    macro_opener,
+                    body[macro_opener],
+                    {"(": ")", "{": "}", "[": "]"}[body[macro_opener]],
                 )
+                if macro_closer is None:
+                    raise VerificationFailure(
+                        f"{boundary.identifier}: self-call receiver macro is unbalanced: {relative}"
+                    )
+                macro_spans.append((macro_opener, macro_closer))
+            if re.search(r"\b(?:trait|macro_rules|macro)\b", body):
+                raise VerificationFailure(
+                    f"{boundary.identifier}: nested self-call receiver item is ambiguous: {relative}"
+                )
+            for token in re.finditer(r"\bimpl\b", body):
+                prefix = body[: token.start()].rstrip()
+                impl_trait = prefix.endswith("->") or (
+                    prefix.endswith(":") and not prefix.endswith("::")
+                )
+                if not impl_trait or any(
+                    start < token.start() < end for start, end in macro_spans
+                ):
+                    raise VerificationFailure(
+                        f"{boundary.identifier}: nested self-call receiver impl is ambiguous: {relative}"
+                    )
             pattern = re.compile(r"\bself\s*\.\s*" + re.escape(scope.method) + r"\s*\(")
             for call in pattern.finditer(body):
+                if any(start < call.start() < end for start, end in macro_spans):
+                    continue
                 start = opener + 1 + call.start()
                 end = opener + 1 + call.end()
                 for offset in range(start, end):
@@ -526,7 +577,11 @@ def _verify_boundary(
         "callPattern": boundary.call_pattern,
         "productCallers": sorted(observed),
         "nonBoundarySelfCalls": [
-            {"path": scope.path, "receiverType": scope.receiver_type, "method": scope.method}
+            {
+                "path": scope.path,
+                "receiverType": scope.receiver_type,
+                "method": scope.method,
+            }
             for scope in boundary.non_boundary_self_calls
         ],
     }
@@ -557,7 +612,8 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
                 )
         patterns = (
             _string_tuple(row, "forbidden_patterns")
-            if "forbidden_patterns" in row else ()
+            if "forbidden_patterns" in row
+            else ()
         )
         for pattern in patterns:
             try:

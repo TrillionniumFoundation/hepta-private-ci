@@ -21,6 +21,10 @@ struct Fixture {
 }
 
 impl Fixture {
+    #[allow(
+        clippy::expect_used,
+        reason = "fixture setup failures must abort before exercising durable owner behavior"
+    )]
     fn new() -> Self {
         let directory = tempfile::tempdir().expect("directory");
         let root = directory.path().canonicalize().expect("root");
