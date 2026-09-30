@@ -859,6 +859,13 @@ async fn handle_signed_mutation<D: ProcessDriver>(
             return safe_rejection(error, Some(actual), /*mutation_started*/ false);
         }
     }
+    if state.recovery_observation_blocked_for(&agent_id) {
+        return error_payload(
+            "recovery_observation_required",
+            "reconcile the owner-bound recovery observation before another signed transition",
+            Some(actual),
+        );
+    }
     let authority_epoch = authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str());
     let receipt = match supervisor.apply_production_grant(
         &agent_id,

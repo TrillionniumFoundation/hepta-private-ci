@@ -22,6 +22,7 @@ mod model;
 mod module_runtime;
 mod module_runtime_store;
 mod mutation_journal;
+mod mutation_journal_slots;
 mod process_deadline;
 mod process_exit_witness;
 #[cfg(feature = "qualification")]

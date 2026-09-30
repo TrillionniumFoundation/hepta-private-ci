@@ -82,26 +82,32 @@ pub fn diagnose_recovery(
         blockers: Vec::new(),
     };
 
-    match crate::read_mutation_status(run_root) {
-        Ok(Some(status)) if status.phase != crate::DurableMutationPhaseV1::Committed => {
-            diagnostic.agent_id = Some(status.agent_id.to_string());
-            diagnostic.recovery_required = true;
-            push_blocker(
-                &mut diagnostic,
-                RecoveryBlockerKind::ProcessAmbiguity,
-                "an ordinary lifecycle mutation has no durable committed outcome",
-                RecoveryOperatorAction::FenceExactProcessAndObserveExit,
-            );
-        }
-        Ok(_) => {}
-        Err(_) => {
-            diagnostic.recovery_required = true;
-            push_blocker(
-                &mut diagnostic,
-                RecoveryBlockerKind::DurabilityFailure,
-                "the ordinary mutation outcome journal cannot be read and validated",
-                RecoveryOperatorAction::PreserveBytesAndRepairDurableStorage,
-            );
+    for outcome in [
+        crate::read_mutation_status(run_root),
+        crate::mutation_journal_slots::read_emergency(run_root)
+            .map(|owned| owned.map(|owned| owned.status)),
+    ] {
+        match outcome {
+            Ok(Some(status)) if status.phase != crate::DurableMutationPhaseV1::Committed => {
+                diagnostic.agent_id = Some(status.agent_id.to_string());
+                diagnostic.recovery_required = true;
+                push_blocker(
+                    &mut diagnostic,
+                    RecoveryBlockerKind::ProcessAmbiguity,
+                    "an ordinary lifecycle mutation has no durable committed outcome",
+                    RecoveryOperatorAction::FenceExactProcessAndObserveExit,
+                );
+            }
+            Ok(_) => {}
+            Err(_) => {
+                diagnostic.recovery_required = true;
+                push_blocker(
+                    &mut diagnostic,
+                    RecoveryBlockerKind::DurabilityFailure,
+                    "the ordinary mutation outcome journal cannot be read and validated",
+                    RecoveryOperatorAction::PreserveBytesAndRepairDurableStorage,
+                );
+            }
         }
     }
 

@@ -20,6 +20,8 @@ use super::control_fence_matches;
 use super::error_payload;
 use super::safe_rejection;
 
+use crate::mutation_journal_slots as journal;
+
 pub(super) async fn handle_mutation<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     request_id: u64,
@@ -137,6 +139,16 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
             return safe_rejection(error, Some(actual), /*mutation_started*/ false);
         }
     };
+    let run_root = match journal::admission_root(&run_root, operation) {
+        Ok(root) => root,
+        Err(error) => {
+            return safe_rejection(
+                SupervisorError::Invalid(error.to_string()),
+                Some(actual),
+                /*mutation_started*/ false,
+            );
+        }
+    };
     let durable = match crate::prepare_mutation(
         &run_root,
         request_id,
@@ -148,6 +160,9 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
     ) {
         Ok(status) => status,
         Err(error) => {
+            if !matches!(error, crate::MutationJournalError::IdentityConflict) {
+                let _ = state.block_recovery_observation(agent_id.clone());
+            }
             return error_payload(
                 "mutation_journal_rejected",
                 &format!("ordinary mutation was not admitted: {error}"),
@@ -167,6 +182,7 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
         crate::DurableMutationPhaseV1::EffectStarted
         | crate::DurableMutationPhaseV1::Ambiguous
         | crate::DurableMutationPhaseV1::RequiresOperator => {
+            let _ = state.block_recovery_observation(agent_id.clone());
             return error_payload(
                 "mutation_reconciliation_required",
                 "this request crossed the effect boundary; query or reconcile its durable status instead of replaying it",
@@ -177,6 +193,7 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
     let durable = match crate::mark_mutation_effect_started(&run_root, &durable.idempotency_key) {
         Ok(status) => status,
         Err(error) => {
+            let _ = state.block_recovery_observation(agent_id.clone());
             return error_payload(
                 "mutation_journal_rejected",
                 &format!("ordinary mutation effect boundary was not persisted: {error}"),
@@ -185,6 +202,7 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
         }
     };
     if let Err(error) = supervisor.set_control_revision(&agent_id, next_revision) {
+        let _ = state.block_recovery_observation(agent_id.clone());
         let observed = agent_status_locked(&state, &supervisor, &agent_id)
             .ok()
             .map(|status| status.control_fence.state_digest);
@@ -210,6 +228,7 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
     };
     let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
     if let Err(error) = mutation {
+        let _ = state.block_recovery_observation(agent_id.clone());
         let _ = crate::mark_mutation_ambiguous(
             &run_root,
             &durable.idempotency_key,
@@ -226,6 +245,7 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
         );
     }
     let Some(agent) = post else {
+        let _ = state.block_recovery_observation(agent_id.clone());
         let _ = crate::mark_mutation_ambiguous(
             &run_root,
             &durable.idempotency_key,
@@ -245,6 +265,7 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
         next_revision,
         agent.control_fence.state_digest.as_str(),
     ) {
+        let _ = state.block_recovery_observation(agent_id.clone());
         let _ = crate::mark_mutation_ambiguous(
             &run_root,
             &durable.idempotency_key,
@@ -300,11 +321,11 @@ pub(super) fn ordinary_mutation_status<D: ProcessDriver>(
             return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
         }
     };
-    match crate::read_mutation_status(&run_root) {
+    match journal::lookup(&run_root, mutation_request_id) {
         Ok(status) => SupervisordPayload::OrdinaryMutationStatus {
-            status: status.filter(|status| {
-                status.agent_id == *agent_id && status.request_id == mutation_request_id
-            }),
+            status: status
+                .map(|owned| owned.status)
+                .filter(|status| status.agent_id == *agent_id),
         },
         Err(error) => safe_rejection(
             SupervisorError::Invalid(error.to_string()),
@@ -340,7 +361,7 @@ pub(super) async fn reconcile_ordinary_mutation<D: ProcessDriver>(
             return safe_rejection(error, Some(actual), /*mutation_started*/ false);
         }
     };
-    let Some(status) = (match crate::read_mutation_status(&run_root) {
+    let Some(owned) = (match journal::lookup(&run_root, mutation_request_id) {
         Ok(status) => status,
         Err(error) => {
             return safe_rejection(
@@ -352,8 +373,15 @@ pub(super) async fn reconcile_ordinary_mutation<D: ProcessDriver>(
     }) else {
         return SupervisordPayload::OrdinaryMutationStatus { status: None };
     };
+    let journal::OwnedStatus {
+        root: run_root,
+        status,
+    } = owned;
     if status.agent_id != agent_id || status.request_id != mutation_request_id {
         return SupervisordPayload::OrdinaryMutationStatus { status: None };
+    }
+    if status.phase != crate::DurableMutationPhaseV1::Committed {
+        let _ = state.block_recovery_observation(agent_id.clone());
     }
     let reconciled = match status.phase {
         crate::DurableMutationPhaseV1::Prepared
