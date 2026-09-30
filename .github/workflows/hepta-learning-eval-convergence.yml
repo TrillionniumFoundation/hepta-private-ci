@@ -8,9 +8,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Every job that executes candidate source is deliberately read-only. PR body
+# updates are performed by the default-branch workflow_run reporter.
 permissions:
   contents: read
-  pull-requests: write
 
 concurrency:
   group: hepta-learning-eval-convergence-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
@@ -25,17 +26,13 @@ jobs:
     name: identity-recorder
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    outputs:
-      tested_sha: ${{ steps.bind.outputs.sha }}
-      tested_tree: ${{ steps.bind.outputs.tree }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ env.SOURCE_SHA }}
-      - id: bind
-        name: Bind immutable candidate
+      - name: Bind immutable candidate
         shell: bash
         run: |
           set -euo pipefail
@@ -45,8 +42,6 @@ jobs:
           test "$sha" = "$SOURCE_SHA"
           test -z "$(git status --porcelain --untracked-files=no)"
           printf 'sha=%s\ntree=%s\n' "$sha" "$tree" | tee "$EVIDENCE_ROOT/identity/source.env"
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
-          echo "tree=$tree" >> "$GITHUB_OUTPUT"
       - name: Test evidence recorders, documentation and source truth
         shell: bash
         run: |
@@ -57,6 +52,7 @@ jobs:
           python3 scripts/test_hepta_learning_eval_compat_fixture.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/compat-fixture-tests.log"
           python3 scripts/test_hepta_learning_eval_evidence.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/evidence-summary-tests.log"
           python3 scripts/test_hepta_learning_eval_doc_contract.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/doc-contract-tests.log"
+          python3 scripts/test_hepta_learning_eval_trusted_report.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/trusted-report-tests.log"
           python3 scripts/hepta-learning-eval-status.py verify 2>&1 | tee "$EVIDENCE_ROOT/identity/status.log"
           python3 scripts/hepta-learning-eval-doc-contract.py 2>&1 | tee "$EVIDENCE_ROOT/identity/doc-contract.log"
           python3 scripts/hepta-learning-eval-compat-fixture.py \
@@ -80,7 +76,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          ref: ${{ needs.identity-recorder.outputs.tested_sha }}
+          ref: ${{ env.SOURCE_SHA }}
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
@@ -113,7 +109,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          ref: ${{ needs.identity-recorder.outputs.tested_sha }}
+          ref: ${{ env.SOURCE_SHA }}
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
@@ -147,7 +143,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          ref: ${{ needs.identity-recorder.outputs.tested_sha }}
+          ref: ${{ env.SOURCE_SHA }}
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: nextest@0.9.103
@@ -190,7 +186,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          ref: ${{ needs.identity-recorder.outputs.tested_sha }}
+          ref: ${{ env.SOURCE_SHA }}
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
@@ -248,7 +244,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          ref: ${{ needs.identity-recorder.outputs.tested_sha }}
+          ref: ${{ env.SOURCE_SHA }}
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
@@ -289,7 +285,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          ref: ${{ needs.identity-recorder.outputs.tested_sha }}
+          ref: ${{ env.SOURCE_SHA }}
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: cargo-llvm-cov@0.9.1
@@ -336,13 +332,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     concurrency:
-      group: learning-eval-pr-status-${{ github.event.pull_request.number || github.ref }}
+      group: learning-eval-source-summary-${{ github.event.pull_request.number || github.ref }}
       cancel-in-progress: false
-    permissions:
-      contents: read
-      pull-requests: write
-      id-token: write
-      attestations: write
     env:
       IDENTITY_RESULT: ${{ needs.identity-recorder.result }}
       DEFAULT_RESULT: ${{ needs.compile-default.result }}
@@ -383,15 +374,6 @@ jobs:
           PY
           )"
           echo "qualified=$qualified" >> "$GITHUB_OUTPUT"
-      - name: Update machine-owned PR source marker
-        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          python3 scripts/hepta-learning-eval-pr-status.py update \
-            --summary "$EVIDENCE_ROOT/aggregate/qualification-summary.json" \
-            --marker source --repository "$GITHUB_REPOSITORY" \
-            --pull-request "${{ github.event.pull_request.number }}"
       - name: Retain aggregate evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -400,11 +382,28 @@ jobs:
           path: .hepta-evidence/learning-eval/aggregate/
           if-no-files-found: error
           retention-days: 30
-      - name: Attest successful immutable source summary
-        if: steps.summary.outputs.qualified == 'true' && github.event_name == 'push'
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
-        with:
-          subject-path: .hepta-evidence/learning-eval/aggregate/qualification-summary.json
       - name: Enforce source qualification result
         if: always()
         run: python3 scripts/hepta-learning-eval-aggregate.py verify "$EVIDENCE_ROOT/aggregate/qualification-summary.json"
+
+  attest-source-summary:
+    name: attest-source-summary
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.aggregate.result == 'success'
+    needs: aggregate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Download immutable source summary
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: learning-eval-aggregate-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-attestation/source
+      - name: Attest successful immutable source summary
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: .hepta-attestation/source/qualification-summary.json

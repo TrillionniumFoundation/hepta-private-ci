@@ -19,6 +19,7 @@ on:
       - 'docs/modules/learning.eval/**'
       - 'qualification/lane-e/**'
       - '.github/workflows/hepta-learning-eval-exact.yml'
+      - '.github/workflows/hepta-learning-eval-trusted-report.yml'
   pull_request:
     paths:
       - 'codex-rs/hepta-intelligence-eval/**'
@@ -34,13 +35,13 @@ on:
       - 'docs/modules/learning.eval/**'
       - 'qualification/lane-e/**'
       - '.github/workflows/hepta-learning-eval-exact.yml'
+      - '.github/workflows/hepta-learning-eval-trusted-report.yml'
   workflow_dispatch:
 
+# Candidate and synthetic-merge code execute with read-only repository access.
+# PR body updates are delegated to the trusted default-branch workflow_run bridge.
 permissions:
   contents: read
-  pull-requests: write
-  id-token: write
-  attestations: write
 
 concurrency:
   group: learning-eval-exact-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
@@ -67,7 +68,7 @@ jobs:
           persist-credentials: false
           ref: ${{ env.TESTED_SHA }}
 
-      - name: Test exact evidence, discovery, fixture and documentation recorders
+      - name: Test exact evidence, discovery, fixture, reporter and documentation recorders
         run: |
           set -euo pipefail
           python3 scripts/test_hepta_learning_eval_exact.py -v
@@ -76,6 +77,7 @@ jobs:
           python3 scripts/test_hepta_learning_eval_compat_fixture.py -v
           python3 scripts/test_hepta_learning_eval_evidence.py -v
           python3 scripts/test_hepta_learning_eval_doc_contract.py -v
+          python3 scripts/test_hepta_learning_eval_trusted_report.py -v
           python3 scripts/hepta-learning-eval-doc-contract.py
 
       - name: Install qualification tools
@@ -108,12 +110,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Attest successful exact-tree evidence
-        if: success() && github.event_name == 'push'
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
-        with:
-          subject-path: .hepta-evidence/learning-eval/${{ matrix.kind }}/convergence.json
-
   exact-summary:
     name: exact-matrix-summary
     if: always()
@@ -121,11 +117,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     concurrency:
-      group: learning-eval-pr-status-${{ github.event.pull_request.number || github.ref }}
+      group: learning-eval-exact-summary-${{ github.event.pull_request.number || github.ref }}
       cancel-in-progress: false
-    permissions:
-      contents: read
-      pull-requests: write
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
@@ -150,15 +143,6 @@ jobs:
             --repository "$GITHUB_REPOSITORY" \
             --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             --output "$EVIDENCE_ROOT"
-      - name: Update machine-owned PR exact marker
-        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          python3 scripts/hepta-learning-eval-pr-status.py update \
-            --summary "$EVIDENCE_ROOT/exact-summary.json" \
-            --marker exact --repository "$GITHUB_REPOSITORY" \
-            --pull-request "${{ github.event.pull_request.number }}"
       - name: Retain exact matrix summary
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -178,3 +162,36 @@ jobs:
           if value['eventName'] == 'pull_request':
               assert claims['orderedParentSyntheticMergeExecuted'] is True
           PY
+
+  attest-exact-summary:
+    name: attest-exact-summary
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.exact-summary.result == 'success'
+    needs: exact-summary
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      attestations: write
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - name: Download exact head evidence
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: learning-eval-exact-head-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-attestation/exact-head
+      - name: Download exact matrix summary
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: learning-eval-exact-summary-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-attestation/exact-summary
+      - name: Attest exact head receipt
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: .hepta-attestation/exact-head/convergence.json
+      - name: Attest exact matrix summary
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: .hepta-attestation/exact-summary/exact-summary.json

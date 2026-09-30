@@ -1,14 +1,15 @@
 # learning.eval developer guide
 
-This is the human-oriented entry point for `learning.eval`. The normative source
-contracts remain in `codex-rs/hepta-intelligence-eval`, while generated inventories,
-status projections, and execution evidence are indexed in
-[`AUDIT_INDEX.md`](AUDIT_INDEX.md). A source-visible implementation is not target-host
-qualification, independent acceptance, activation, promotion, or release authority.
+This is the human-oriented entry point for `learning.eval`. Normative source contracts
+remain in `codex-rs/hepta-intelligence-eval`; generated inventories, status projections,
+and commit-addressed execution evidence are indexed in
+[`AUDIT_INDEX.md`](AUDIT_INDEX.md). Source presence, repository CI, and an eligibility
+receipt are not target-host qualification, independent acceptance, activation,
+promotion, or release authority.
 
 ## 1. Mission and non-goals
 
-`learning.eval` performs deterministic, support-aware, longitudinal and causal
+`learning.eval` performs deterministic, support-aware, longitudinal, and causal
 qualification independently from the production writer. It freezes evaluation plans,
 consumes a final holdout once, verifies signed evidence, persists exact qualification
 artifacts, and emits authority-free receipts for downstream review.
@@ -16,7 +17,8 @@ artifacts, and emits authority-free receipts for downstream review.
 It does **not** write production model state, self-issue acceptance, silently retry an
 unknown effect, convert eligibility into promotion authority, authenticate an arbitrary
 host adapter, or treat a digest commitment as proof that an observation was independently
-measured.
+measured. Repository workflows also do not turn source checks into target-host or release
+claims.
 
 ## 2. Authority model
 
@@ -35,6 +37,11 @@ flowchart LR
     R --> X[External selection / operator review]
     R -. no implicit grant .-> D[Activation or release]
 ```
+
+The repository CI authority model is similarly split. Candidate source executes only in
+read-only workflows. PR-body mutation is delegated to a trusted default-branch
+`workflow_run` reporter that never executes the candidate checkout and never treats an
+artifact as trusted merely because GitHub stored it.
 
 ## 3. Product call path
 
@@ -69,6 +76,10 @@ sequenceDiagram
     Runner-->>Caller: authority-free qualification receipt
 ```
 
+The supported public namespace is `codex_hepta_intelligence_eval::product`. The raw
+`ProductEvaluationRunnerV1`, direct decision primitives, and in-memory attempt journal are
+not part of that canonical product facade.
+
 ## 4. State machine
 
 A new attempt owns one plan digest. Reusing that plan under another attempt conflicts.
@@ -94,6 +105,10 @@ stateDiagram-v2
     Published --> [*]
 ```
 
+Every transition is attempt-, plan-, phase-, predecessor-, and payload-bound. A repeated
+identical transition is idempotent; an identity reused with different semantics is a
+conflict.
+
 ## 5. Persistence and recovery
 
 The file journal uses bounded framed append, checksums, a predecessor/state digest,
@@ -114,7 +129,9 @@ Crash handling is fail-closed:
 | after qualification decision | decision durable | re-verify current trust before publication |
 | after publication pending | effect may be unknown | read publication owner; do not duplicate write |
 | response lost after commit | publication owner is authoritative | observe exact existing result, then append `Published` |
+| old backup restored | local frames may be valid but stale | reject anything behind the independently retained anchor |
 | anchor acknowledgement uncertain | wrapper poisoned | reopen from file plus independent anchor authority |
+| fence issuer restarts | prior fence is durable | resume monotonically above the retained anchor |
 
 A real deployment must additionally qualify directory durability, mount options,
 linearizable lock/CAS semantics, power-loss behavior, and failure-domain independence.
@@ -125,16 +142,20 @@ Plans bind the objective, dataset, folds, estimand, metric roles, support rules,
 windows, cluster assignments, and confidence procedure. Fixed-analysis qualification does
 not import adaptive thresholds after holdout use. Multi-outcome evaluation preserves each
 native measurement channel; renaming a metric cannot substitute for independent measured
-outcomes. Real future-window provenance, power, subgroup, retention, privacy, poisoning,
-negative transfer, and unlearning evidence remain external qualification obligations.
+outcomes.
+
+Repository tests can establish deterministic estimators, digest binding, fold separation,
+capacity, and recovery behavior. Real future-window provenance, statistical power,
+subgroup behavior, retention, change points, privacy, poisoning, negative transfer, and
+unlearning evidence remain external qualification obligations.
 
 ## 7. Failure taxonomy
 
-Operational outcomes preserve rejected, unavailable, indeterminate, poisoned, conflict,
-and terminal failure. Durable product-evaluation failure identity uses the versioned
-`hepta.learning-eval.product-evaluation-failure.v2` class/detail encoding. It does not hash
-Rust `Debug` output. Existing V1 terminal digests remain opaque historical facts and are
-not rewritten during replay.
+Operational outcomes preserve rejected, unavailable, timed out, indeterminate, poisoned,
+conflict, quarantined, and terminal failure. Durable product-evaluation failure identity
+uses the versioned `hepta.learning-eval.product-evaluation-failure.v2` class/detail
+encoding. It does not hash Rust `Debug` output. Existing V1 terminal digests remain opaque
+historical facts and are not rewritten during replay.
 
 Human diagnostics may carry additional bounded context, but the durable preimage contains
 only registered numeric semantics. Unknown diagnostic text maps to an unspecified detail
@@ -155,6 +176,10 @@ adapter identities and host attestations are intentionally `UNBOUND_EXTERNAL` in
 [`QUALIFICATION_MATRIX.json`](QUALIFICATION_MATRIX.json), so `targetHostQualified` remains
 false.
 
+Target-host evidence must bind the exact binary/source candidate, adapter identities,
+namespace and authority epochs, mount and lock semantics, independent anchor failure
+domain, provider provenance, publication store, and the observed host session.
+
 ## 9. Qualification checklist
 
 A reviewable immutable candidate requires all of the following on one SHA:
@@ -162,28 +187,47 @@ A reviewable immutable candidate requires all of the following on one SHA:
 - source identity and implementation-map validation;
 - default API compile plus compile-fail rejection of raw product ingress;
 - isolated compatibility fixture execution;
-- owner, consumer, process-fault, recovery, capacity and checkpoint tests;
+- owner, consumer, process-fault, recovery, capacity, and checkpoint tests;
 - strict Clippy and rustfmt;
 - coverage at or above the registered threshold;
 - exact source-head execution;
 - ordered-parent synthetic-merge execution;
-- retained commit-addressed logs and evidence digests.
+- retained commit-addressed logs and canonical evidence digests.
 
-The exact workflow runs every filtered qualification test through
+Every filtered qualification test is first discovered with
 `scripts/hepta-nextest-require.py`; fewer than the declared minimum matches is a hard
-failure. Source and exact evidence update separate machine-owned PR markers and never set
-external acceptance or release claims.
+failure. Candidate source and exact-tree workflows use read-only repository permissions,
+checkout a literal event-bound SHA, and never receive PR-write or OIDC authority while
+executing candidate code.
+
+PR status is a separate trust boundary. The trusted default-branch
+`workflow_run` reporter downloads `qualification-summary.json` or
+`exact-summary.json` as **untrusted data**, then verifies:
+
+- the exact artifact name and one regular, bounded summary file;
+- schema and canonical SHA-256;
+- producer repository, workflow run ID, and run attempt;
+- candidate commit and tree;
+- allowed job/matrix result vocabulary;
+- current open PR identity, same-repository head, and exact current head SHA.
+
+Only after those checks may it replace the corresponding machine-owned PR marker. A stale
+run cannot overwrite a newer PR head. The reporter checks out the default branch only and
+never executes the producer checkout. Provenance attestation is isolated to successful
+`push` runs on `main`; pull-request candidate jobs have neither `id-token: write` nor
+attestation authority.
 
 ## 10. Known gaps
 
 The repository cannot self-create the remaining external facts. Before production
 acceptance, independently administered infrastructure must provide and sign:
 
-- selected-host, anchor, provider and publication-store identities;
+- selected-host, anchor, provider, and publication-store identities;
 - crash/power-loss and filesystem qualification on the declared topology;
-- sustained capacity, checkpoint rotation, cold-start, backlog and recovery SLO evidence;
+- sustained capacity, checkpoint rotation, cold-start, backlog, and recovery SLO evidence;
 - real future-calendar outcome provenance and statistical operating characteristics;
-- privacy, poisoning, negative-transfer, retention and unlearning evidence;
+- privacy, poisoning, negative-transfer, retention, and unlearning evidence;
 - independent semantic/operator acceptance and separate promotion/release authority.
 
-Until those facts exist, the PR remains Draft and the release posture remains `NO_GO`.
+Until those facts exist and every required source/exact check is green on one immutable
+candidate, the PR remains Draft and the release posture remains `NO_GO`.
