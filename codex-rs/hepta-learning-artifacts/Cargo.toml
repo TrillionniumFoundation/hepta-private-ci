@@ -18,5 +18,8 @@ workspace = true
 codex-hepta-types = { path = "../hepta-types" }
 ed25519-dalek = { workspace = true }
 
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs"] }
+
 [dev-dependencies]
 pretty_assertions = { workspace = true }
