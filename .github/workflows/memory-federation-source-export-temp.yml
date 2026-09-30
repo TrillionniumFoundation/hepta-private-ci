@@ -1,0 +1,67 @@
+name: memory federation source export temp
+
+on:
+  push:
+    branches:
+      - work/memory-federation-source-export-20260930-r2
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Freeze selected source files
+        run: |
+          set -euo pipefail
+          tar -czf "$RUNNER_TEMP/memory-federation-source-export.tar.gz" \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/hepta-memory/Cargo.toml \
+            codex-rs/hepta-memory/src/cognitive_retrieval.rs \
+            codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs \
+            codex-rs/hepta-memory/src/cognitive_retrieval_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_federation.rs \
+            codex-rs/hepta-memory/src/cognitive_federation_tests.rs \
+            codex-rs/hepta-memory/src/cognitive_runtime.rs \
+            codex-rs/hepta-memory/src/cognitive_runtime_tests.rs \
+            codex-rs/hepta-memory/src/lib.rs \
+            codex-rs/ext/hepta-memory/Cargo.toml \
+            codex-rs/ext/hepta-memory/src/cognitive/federation.rs \
+            codex-rs/hepta-memory-federation/Cargo.toml \
+            codex-rs/hepta-memory-federation/src/lib.rs \
+            codex-rs/hepta-memory-federation/src/v2.rs \
+            codex-rs/hepta-memory-federation/src/v2_tests.rs \
+            codex-rs/hepta-memory-federation/src/legacy_v1.rs \
+            docs/modules/memory.federation \
+            qualification/memory-federation \
+            qualification/module-execution-dossiers/detail/memory.federation.md \
+            scripts/memory_federation_attestation.py \
+            scripts/memory_federation_execution_guard.py \
+            scripts/memory_federation_execution_receipt.py \
+            scripts/memory_federation_full_attestation.py \
+            scripts/prepare_memory_federation_observation.py \
+            scripts/run_memory_federation_qualification.sh \
+            scripts/test_memory_federation_entrypoints.py \
+            scripts/test_memory_federation_execution_receipt.py \
+            scripts/verify_memory_federation_implementation.py \
+            scripts/verify_memory_federation_status.py \
+            .github/workflows/memory-federation-v2-final-verify.yml
+          sha256sum "$RUNNER_TEMP/memory-federation-source-export.tar.gz" > "$RUNNER_TEMP/memory-federation-source-export.tar.gz.sha256"
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-source-export-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/memory-federation-source-export.tar.gz
+            ${{ runner.temp }}/memory-federation-source-export.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
