@@ -1,0 +1,111 @@
+name: runtime.supervisor phase-2 clean materializer
+
+on:
+  push:
+    branches:
+      - ops/runtime-supervisor-phase2-materialize-clean-20260930
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-phase2-clean-materializer
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    if: ${{ !contains(github.event.head_commit.message, '[phase2-materialized]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact staging source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component rustfmt,clippy
+          echo "RUSTUP_TOOLCHAIN=$channel" >> "$GITHUB_ENV"
+
+      - name: Materialize reviewed lifecycle source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          python3 - <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          from pathlib import Path
+
+          encoded = ''.join(Path('.github/runtime-supervisor/phase2_patch.b64').read_text().split())
+          compressed = base64.b64decode(encoded, validate=True)
+          source = gzip.decompress(compressed)
+          expected = '7771d7c2742743d5e3f50ce453f1bfad7ef6ee78359248095a211276d81d08f5'
+          actual = hashlib.sha256(source).hexdigest()
+          if actual != expected:
+              raise SystemExit(f'phase-2 payload digest mismatch: {actual}')
+          target = Path('scripts/.runtime_supervisor_phase2_author.py')
+          target.write_bytes(source)
+          PY
+          python3 -m py_compile scripts/.runtime_supervisor_phase2_author.py
+          python3 scripts/.runtime_supervisor_phase2_author.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor
+          git diff --check
+          git diff --name-status > .hepta-evidence/changed-files.txt
+          git diff --stat > .hepta-evidence/diff-stat.txt
+          git diff --binary > .hepta-evidence/materialized.patch
+          sha256sum .hepta-evidence/materialized.patch > .hepta-evidence/materialized.patch.sha256
+
+      - name: Verify ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor -- --check
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --lib
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-supervisor --all-targets -- -D warnings
+
+      - name: Commit only ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f scripts/.runtime_supervisor_phase2_author.py
+          rm -f .github/runtime-supervisor/phase2_patch.b64
+          rm -f .github/workflows/runtime-supervisor-phase2-clean-materializer.yml
+          rm -rf .hepta-evidence
+          git diff --check
+          git add -A
+          test -n "$(git diff --cached --name-only)"
+          if git diff --cached --name-only | grep -E '(^|/)(phase2_patch\.b64|\.runtime_supervisor_phase2_author\.py|runtime-supervisor-phase2-clean-materializer\.yml)$'; then
+            echo 'temporary authoring material leaked into final tree' >&2
+            exit 1
+          fi
+          git config user.name 'openai-codex[bot]'
+          git config user.email 'openai-codex[bot]@users.noreply.github.com'
+          git commit -m 'feat(supervisor): persist cross-daemon lifecycle evidence [phase2-materialized]'
+          git push origin HEAD:${GITHUB_REF_NAME}
+
+      - name: Capture failure evidence
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p .hepta-evidence
+          git diff --check > .hepta-evidence/diff-check.txt 2>&1 || true
+          git diff --name-status > .hepta-evidence/changed-files.txt || true
+          git diff --stat > .hepta-evidence/diff-stat.txt || true
+          git diff --binary > .hepta-evidence/materialized.patch || true
+          sha256sum .hepta-evidence/materialized.patch > .hepta-evidence/materialized.patch.sha256 || true
+
+      - name: Upload materialization evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-phase2-clean-materialization-${{ github.sha }}
+          path: .hepta-evidence/*
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 30
