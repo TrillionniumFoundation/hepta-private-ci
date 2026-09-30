@@ -164,6 +164,18 @@ class ReadinessTests(unittest.TestCase):
         )
         self.assertIs(data["productionActivation"], False)
 
+    def test_generated_document_links_resolve_inside_and_outside_docs(self):
+        import re
+
+        index = self.root / self.spec["paths"]["docsIndex"]
+        targets = re.findall(r"\]\(([^)]+)\)", index.read_text())
+        self.assertEqual(len(targets), len(self.spec["documents"]))
+        for target, item in zip(targets, self.spec["documents"]):
+            self.assertEqual(
+                (index.parent / target).resolve(), (self.root / item["path"]).resolve()
+            )
+            self.assertTrue((index.parent / target).is_file())
+
     def test_render_rejects_missing_bound_document(self):
         (self.root / self.spec["documents"][0]["path"]).unlink()
         with self.assertRaises(readiness.ReadinessError):

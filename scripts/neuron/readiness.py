@@ -182,10 +182,10 @@ def render_docs_index(spec: dict[str, Any], source: str) -> str:
         f"Generated from `{source}`. Do not edit this projection directly.",
         "",
     ]
+    index_parent = (ROOT / spec["paths"]["docsIndex"]).parent
     for item in spec["documents"]:
-        lines.append(
-            f"- [`{item['path']}`](../../{item['path'].removeprefix('docs/')}) — {item['role']}"
-        )
+        target = Path(os.path.relpath(ROOT / item["path"], index_parent)).as_posix()
+        lines.append(f"- [`{item['path']}`]({target}) — {item['role']}")
     lines += [
         "",
         "## Generated control surfaces",
