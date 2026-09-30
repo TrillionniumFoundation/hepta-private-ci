@@ -173,9 +173,6 @@ impl CognitiveStore {
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let authenticated = async {
-                verify_store(&pool, layout.agent_id())
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
                 let mut transaction = pool
                     .begin_with("BEGIN IMMEDIATE")
                     .await
@@ -202,7 +199,11 @@ impl CognitiveStore {
                     .commit()
                     .await
                     .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-
+                // Authenticate the bounded complete cut before startup
+                // verification can materialize owner-controlled histories.
+                verify_store(&pool, layout.agent_id())
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
                 Ok(())
             }
             .await;
@@ -232,9 +233,6 @@ impl CognitiveStore {
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let final_check = async {
-                verify_store(&pool, layout.agent_id())
-                    .await
-                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
                 let mut transaction = pool
                     .begin_with("BEGIN IMMEDIATE")
                     .await
@@ -251,6 +249,18 @@ impl CognitiveStore {
                         "recovered generation changed during checkpoint/reopen".to_string(),
                     ));
                 }
+                verify_store(&pool, layout.agent_id())
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+                // Recovery can span a copy, integrity scan and checkpoint.
+                // Recheck independently current authority at activation, so
+                // a lease revoked or expired during that work cannot publish.
+                verifier
+                    .verify(authority, layout.agent_id())
+                    .map_err(CognitiveRecoveryError::AccessDenied)?;
+                authority
+                    .validate_for_agent(layout.agent_id())
+                    .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
                 Ok(())
             }
             .await;

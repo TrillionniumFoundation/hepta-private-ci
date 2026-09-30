@@ -198,6 +198,112 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
 }
 
 #[tokio::test]
+async fn authority_revoked_during_recovery_cannot_activate_a_generation() {
+    struct RevokedAtActivation(std::sync::atomic::AtomicUsize);
+
+    impl crate::ProductionAuthorityVerifier for RevokedAtActivation {
+        fn verify(
+            &self,
+            authority: &crate::ProductionAuthorityLease,
+            expected_agent: &AgentId,
+        ) -> Result<(), String> {
+            RecoveryVerifier.verify(authority, expected_agent)?;
+            if self.0.fetch_add(1, std::sync::atomic::Ordering::SeqCst) == 0 {
+                Ok(())
+            } else {
+                Err("authority revoked while the candidate was being verified".to_string())
+            }
+        }
+    }
+
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(79);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current cut");
+    let original = store.path().to_path_buf();
+    store.pool.close().await;
+    drop(store);
+    let original_bytes = std::fs::read(&original).expect("original database bytes");
+    let verifier = RevokedAtActivation(std::sync::atomic::AtomicUsize::new(0));
+    let result = CognitiveStore::open_with_recovery(
+        &layout(&temp, &owner),
+        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+        &recovery_authority(&owner),
+        &verifier,
+    )
+    .await;
+    assert!(
+        matches!(result, Err(CognitiveRecoveryError::AccessDenied(message)) if message.contains("revoked"))
+    );
+    assert_eq!(verifier.0.load(std::sync::atomic::Ordering::SeqCst), 2);
+    let root = original.parent().expect("cognitive root");
+    assert_eq!(
+        resolve_active_database_path(root).expect("active path"),
+        original
+    );
+    assert_eq!(
+        std::fs::read(&original).expect("unchanged original"),
+        original_bytes
+    );
+    assert!(
+        std::fs::read_dir(root)
+            .expect("cognitive entries")
+            .all(|entry| !entry
+                .expect("entry")
+                .file_name()
+                .to_string_lossy()
+                .starts_with(super::super::COGNITIVE_RECOVERED_DB_PREFIX)),
+        "revoked activation must remove the unauthorised candidate"
+    );
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn ordinary_open_rejects_database_aliases_before_sqlite_can_mutate_them() {
+    for attack in [
+        IdentityAttack::Symlink,
+        IdentityAttack::Hardlink,
+        IdentityAttack::Mode,
+    ] {
+        let temp = TempDir::new().expect("temp dir");
+        let owner = agent_id(80);
+        let (store, _, _) = seeded(&temp, &owner).await;
+        let database = store.path().to_path_buf();
+        store.pool.close().await;
+        drop(store);
+        install_identity_attack(&database, attack);
+        let root = database.parent().expect("cognitive root");
+        let before = capture_recovery_tree(root).entries;
+        assert!(CognitiveStore::open(&layout(&temp, &owner)).await.is_err());
+        assert_eq!(capture_recovery_tree(root).entries, before);
+    }
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn ordinary_open_rejects_aliased_sidecars_before_sqlite_can_write_through_them() {
+    for suffix in ["-wal", "-shm", "-journal"] {
+        let temp = TempDir::new().expect("temp dir");
+        let owner = agent_id(84);
+        let (store, _, _) = seeded(&temp, &owner).await;
+        let database = store.path().to_path_buf();
+        store.pool.close().await;
+        drop(store);
+        let root = database.parent().expect("cognitive root");
+        let target = root.join("sidecar-target");
+        std::fs::write(&target, b"private data outside SQLite's sidecar identity").expect("target");
+        std::fs::set_permissions(&target, std::fs::Permissions::from_mode(0o600))
+            .expect("private target");
+        let mut name = database.as_os_str().to_os_string();
+        name.push(suffix);
+        symlink(&target, PathBuf::from(name)).expect("aliased sidecar");
+        let before = capture_recovery_tree(root).entries;
+        assert!(CognitiveStore::open(&layout(&temp, &owner)).await.is_err());
+        assert_eq!(capture_recovery_tree(root).entries, before);
+    }
+}
+
+#[tokio::test]
 async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate() {
     let temp = TempDir::new().expect("temp");
     let owner = agent_id(78);

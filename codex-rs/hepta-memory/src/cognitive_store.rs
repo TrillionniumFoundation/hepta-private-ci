@@ -47,6 +47,10 @@ use crate::cognitive_model::SourceRevisionId;
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
+#[path = "cognitive_store_files.rs"]
+mod files;
+#[path = "cognitive_store_integrity.rs"]
+mod integrity;
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
@@ -317,24 +321,33 @@ impl CognitiveStore {
         let root = create_private_directory(layout.cognitive_root())?;
         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
         let path = resolve_active_database_path(&root)?;
+        let database_file = files::DatabaseFileGuard::prepare(&path)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
             .open_durable_evidence_pool(&path)
             .await
             .map_err(unavailable)?;
-        MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
-        protect_database_file(&path)?;
-        sqlx::query(
-            "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
-             VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
-        )
-        .bind(i64::from(COGNITIVE_SCHEMA_VERSION))
-        .bind(layout.agent_id().as_str())
-        .execute(&pool)
-        .await
-        .map_err(unavailable)?;
-        verify_store(&pool, layout.agent_id()).await?;
+        let initialized = async {
+            database_file.verify()?;
+            MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
+            sqlx::query(
+                "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
+                 VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
+            )
+            .bind(i64::from(COGNITIVE_SCHEMA_VERSION))
+            .bind(layout.agent_id().as_str())
+            .execute(&pool)
+            .await
+            .map_err(unavailable)?;
+            verify_store(&pool, layout.agent_id()).await?;
+            database_file.verify()
+        }
+        .await;
+        if let Err(error) = initialized {
+            pool.close().await;
+            return Err(error);
+        }
         Ok(Self {
             pool,
             owner_agent_id: layout.agent_id().clone(),
@@ -493,6 +506,7 @@ pub(crate) async fn open_v2_test_pool(
     let root = layout.cognitive_root();
     create_private_directory(root)?;
     let path = root.join(COGNITIVE_DB_FILENAME);
+    let _database_file = files::DatabaseFileGuard::prepare(&path)?;
     let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
@@ -752,6 +766,7 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
             "memory citation does not match the exact owner and scope".to_string(),
         ));
     }
+    integrity::verify_ledger_contents(pool).await?;
     let incomplete_projection_receipts: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM kg_projection_generation_receipts r
          WHERE NOT EXISTS (
