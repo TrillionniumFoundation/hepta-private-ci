@@ -19,6 +19,8 @@ use crate::EvidenceFrontierBackendIdentityV1;
 use crate::EvidenceFrontierDurableAckV1;
 use crate::EvidenceFrontierHistoryRangeV1;
 use crate::EvidenceRecoveryFrontierV2;
+use crate::FrontierMergeDecision;
+use crate::classify_frontier_merge;
 use crate::evidence_recovery_frontier_v2_sha256;
 use crate::frontier_backend::EVIDENCE_FRONTIER_AUDIT_RECORD_SCHEMA_VERSION;
 use crate::frontier_backend::EVIDENCE_FRONTIER_BACKEND_IDENTITY_FILENAME;
@@ -279,6 +281,14 @@ impl EvidenceFrontierBackend for LockedFileEvidenceFrontierBackend {
             return Err(EvidenceFrontierBackendError::Invalid(format!(
                 "frontier generation must advance exactly to {required_generation}"
             )));
+        }
+        if let Some(current) = records.last() {
+            let decision = classify_frontier_merge(&current.frontier, new_frontier);
+            if decision != FrontierMergeDecision::IncomingWins {
+                return Err(EvidenceFrontierBackendError::Invalid(format!(
+                    "normal frontier CAS requires IncomingWins under the exclusive backend lock; classified {decision:?}"
+                )));
+            }
         }
 
         let audit_sequence = u64::try_from(records.len())
