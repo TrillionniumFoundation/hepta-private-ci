@@ -77,6 +77,7 @@ jobs:
             scripts/runtime-codex-terminal-outbox-migration.py
             scripts/runtime-codex-product-executor-migration.py
             scripts/runtime-codex-product-executor-hardening.py
+            scripts/runtime-codex-effect-guard-fixup.py
             scripts/runtime-codex-structured-sequence-migration.py
             scripts/runtime-codex-process-crash-migration.py
             scripts/runtime-codex-qualification-fixup.py
@@ -146,6 +147,7 @@ jobs:
             .github/workflows/runtime-codex-materialize-once.yml \
             .github/workflows/runtime-codex-maintainer.yml \
             .github/workflows/runtime-codex-fast-feedback.yml \
+            .github/workflows/runtime-codex-candidate-qualification.yml \
             scripts/runtime-codex-maintainer.py \
             scripts/runtime-codex-maintainer-followup.py \
             scripts/runtime-codex-durability-migration.py \
@@ -158,6 +160,7 @@ jobs:
             scripts/runtime-codex-terminal-outbox-migration.py \
             scripts/runtime-codex-product-executor-migration.py \
             scripts/runtime-codex-product-executor-hardening.py \
+            scripts/runtime-codex-effect-guard-fixup.py \
             scripts/runtime-codex-structured-sequence-migration.py \
             scripts/runtime-codex-process-crash-migration.py \
             scripts/runtime-codex-qualification-fixup.py \
