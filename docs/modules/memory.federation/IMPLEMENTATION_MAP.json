@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "62403d13298766f24556ed5072f8ac3b5aa7c4ba",
-    "tree": "f550463ad701307d35de6700dbc09e56d6c6139d"
+    "commit": "db6ad91c9a95dc326e41d601a26e19d9e4c38dad",
+    "tree": "ce7c21e52541f9a04f9a99c5aed4abc2894e4092"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,8 +87,8 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "62403d13298766f24556ed5072f8ac3b5aa7c4ba",
-    "candidateTree": "f550463ad701307d35de6700dbc09e56d6c6139d",
+    "candidateHead": "db6ad91c9a95dc326e41d601a26e19d9e4c38dad",
+    "candidateTree": "ce7c21e52541f9a04f9a99c5aed4abc2894e4092",
     "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed context_self_encoded_attestation_payload nonblocking_owner_backpressure interrupted_qualification_failure_evidence bounded_cleanup_batch_receipt domain_separated_fixture_nonces module_scoped_strict_clippy_dependency_boundary exact_scope_before_ranking owner_exhaustion_completion_witness peer_local_setup_failure_coverage post_io_authority_observation final_use_memory_validity_window separate_wire_map_rebind",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
@@ -223,15 +223,15 @@
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "Author-only observation of the frozen host-product semantics and authenticated-wire map candidate. Exact scope is enforced before owner ranking/top-K, owner completeness is same-snapshot exhaustion-derived, peer-local setup failure is explicit coverage, authority time is sampled after owner observation, and final-use rechecks memory validity. The wire source map is separately rebound without activation. This implementation-map-only commit grants no execution, independent acceptance, activation, promotion, or release claim.",
+    "note": "Author-only observation of the canonically formatted frozen host-product source and separately rebound authenticated-wire map. Exact-scope-before-ranking, same-snapshot owner exhaustion, peer-local failure coverage, post-I/O authority observation, and final-use memory validity remain the candidate semantics. This map-only commit grants no execution, independent acceptance, activation, promotion, or release claim.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "62403d13298766f24556ed5072f8ac3b5aa7c4ba",
-    "tree": "f550463ad701307d35de6700dbc09e56d6c6139d"
+    "commit": "db6ad91c9a95dc326e41d601a26e19d9e4c38dad",
+    "tree": "ce7c21e52541f9a04f9a99c5aed4abc2894e4092"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
@@ -336,7 +336,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation",
-      "object": "55742002e1b8240936a93a36970070e767be1627"
+      "object": "26d3052f75d7857c661ae7170af2d90d7f3be675"
     },
     {
       "path": "codex-rs/hepta-memory-federation-wire",
@@ -412,7 +412,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-federation/src/lib.rs",
-      "object": "4e81c0380a0392f25081b8f5fa3c0c4e8c6d2bb5"
+      "object": "5c2228ad1dd6d5254cab6c8acb7da2d9ae033e5a"
     },
     {
       "path": "codex-rs/hepta-memory-federation/src/v2.rs",
@@ -428,15 +428,15 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
-      "object": "a9c59088f6cd4185e0946c99d6f70308a1c33f38"
+      "object": "c9488e979b089f27bec79da150477a2367709473"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
-      "object": "21e7a62ef0cdd58011f341dd58bb0313502a238a"
+      "object": "6d4e46ad32df8b703c6a39735e891268905f7271"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
-      "object": "183586760f4ff97d4d6775834bb92e67b168a871"
+      "object": "f4c89cc5e6d2728585a9aca6fa24c8a1662213b0"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
@@ -484,7 +484,7 @@
     },
     {
       "path": "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
-      "object": "4dd15e810580a688f4b01417b36889d94b179711"
+      "object": "84c72d16d719cd84f1290dfc0168813659fa1a2b"
     },
     {
       "path": "docs/modules/memory.federation/WIRE_V1.md",
