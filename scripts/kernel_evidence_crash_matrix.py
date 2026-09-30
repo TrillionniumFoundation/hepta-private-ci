@@ -83,6 +83,9 @@ SCENARIOS: dict[str, tuple[TestCommand, ...]] = {
         evidence_lib(
             "qualification_tests::failed_evidence_insert_rolls_back_authbus_replay_advance"
         ),
+        evidence_lib(
+            "frontier_repair::rollback_tests::failed_event_insert_rolls_back_repair_row_and_nonce"
+        ),
     ),
     "fsync_rename_directory_fsync": (
         evidence_lib(
