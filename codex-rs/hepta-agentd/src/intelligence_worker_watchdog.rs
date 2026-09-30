@@ -19,13 +19,14 @@ use crate::AgentdIntelligenceTelemetryV1;
 struct WorkerTimeoutObservationV1 {
     timed_out: Arc<AtomicBool>,
     timeout_counted: Arc<AtomicBool>,
-    finished: Arc<AtomicBool>,
     telemetry: Arc<AgentdIntelligenceTelemetryV1>,
 }
 
 pub(super) struct WorkerCompletionV1 {
     completed: Arc<(Mutex<bool>, Condvar)>,
     observer: Option<JoinHandle<()>>,
+    timeout_counted: Option<Arc<AtomicBool>>,
+    telemetry: Option<Arc<AgentdIntelligenceTelemetryV1>>,
 }
 
 impl WorkerCompletionV1 {
@@ -33,30 +34,32 @@ impl WorkerCompletionV1 {
         budget: Duration,
         hard_grace: Option<Duration>,
         timed_out: Arc<AtomicBool>,
-        timeout_counted: Arc<AtomicBool>,
-        finished: Arc<AtomicBool>,
         telemetry: Arc<AgentdIntelligenceTelemetryV1>,
     ) -> std::io::Result<Self> {
+        let timeout_counted = Arc::new(AtomicBool::new(false));
         Self::supervise_inner(
             budget,
             hard_grace,
             Some(WorkerTimeoutObservationV1 {
                 timed_out,
-                timeout_counted,
-                finished,
-                telemetry,
+                timeout_counted: Arc::clone(&timeout_counted),
+                telemetry: Arc::clone(&telemetry),
             }),
+            Some(timeout_counted),
+            Some(telemetry),
         )
     }
 
     fn supervise_unobserved(budget: Duration, hard_grace: Duration) -> std::io::Result<Self> {
-        Self::supervise_inner(budget, Some(hard_grace), None)
+        Self::supervise_inner(budget, Some(hard_grace), None, None, None)
     }
 
     fn supervise_inner(
         budget: Duration,
         hard_grace: Option<Duration>,
         observation: Option<WorkerTimeoutObservationV1>,
+        timeout_counted: Option<Arc<AtomicBool>>,
+        telemetry: Option<Arc<AgentdIntelligenceTelemetryV1>>,
     ) -> std::io::Result<Self> {
         if budget.is_zero() || hard_grace.is_some_and(|grace| grace.is_zero()) {
             return Err(std::io::Error::new(
@@ -76,12 +79,11 @@ impl WorkerCompletionV1 {
                     return;
                 }
                 if let Some(observation) = observation.as_ref()
-                    && observation.telemetry.mark_worker_timed_out(
-                        &observation.timed_out,
-                        &observation.timeout_counted,
-                        &observation.finished,
-                    )
+                    && !observation.timed_out.swap(true, Ordering::AcqRel)
                 {
+                    observation
+                        .telemetry
+                        .record_external_timeout_started(&observation.timeout_counted);
                     observation.telemetry.record_request_timeout();
                 }
                 let Some(grace) = hard_grace else {
@@ -105,6 +107,8 @@ impl WorkerCompletionV1 {
         Ok(Self {
             completed,
             observer: Some(observer),
+            timeout_counted,
+            telemetry,
         })
     }
 }
@@ -120,6 +124,11 @@ impl Drop for WorkerCompletionV1 {
         drop(state);
         if let Some(observer) = self.observer.take() {
             let _ = observer.join();
+        }
+        if let (Some(telemetry), Some(timeout_counted)) =
+            (self.telemetry.as_ref(), self.timeout_counted.as_ref())
+        {
+            telemetry.record_external_timeout_finished(timeout_counted);
         }
     }
 }
@@ -170,24 +179,14 @@ fn wait_until_complete(completed: &(Mutex<bool>, Condvar), deadline: Instant) ->
 mod tests {
     use super::*;
 
-    fn observed_flags() -> (Arc<AtomicBool>, Arc<AtomicBool>, Arc<AtomicBool>) {
-        (
-            Arc::new(AtomicBool::new(false)),
-            Arc::new(AtomicBool::new(false)),
-            Arc::new(AtomicBool::new(false)),
-        )
-    }
-
     #[test]
     fn completion_disarms_and_joins_watchdog() {
         let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
-        let (flag, counted, finished) = observed_flags();
+        let flag = Arc::new(AtomicBool::new(false));
         let completion = WorkerCompletionV1::supervise(
             Duration::from_secs(2),
             None,
             Arc::clone(&flag),
-            counted,
-            finished,
             Arc::clone(&telemetry),
         )
         .expect("watchdog");
@@ -199,13 +198,11 @@ mod tests {
     #[test]
     fn independent_watchdog_observes_detached_work() {
         let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
-        let (flag, counted, finished) = observed_flags();
+        let flag = Arc::new(AtomicBool::new(false));
         let completion = WorkerCompletionV1::supervise(
             Duration::from_millis(10),
             None,
             Arc::clone(&flag),
-            counted,
-            finished,
             Arc::clone(&telemetry),
         )
         .expect("watchdog");
@@ -225,6 +222,7 @@ mod tests {
         assert!(observed);
         assert_eq!(snapshot.request_timeouts, 1);
         assert_eq!(snapshot.timed_out_active_workers, 1);
+        assert_eq!(telemetry.snapshot().timed_out_active_workers, 0);
     }
 
     #[test]
@@ -234,13 +232,10 @@ mod tests {
         const OUTPUT: &str = "HEPTA_INTELLIGENCE_HARD_KILL_OUTPUT";
         if std::env::var_os(CHILD).is_some() {
             let telemetry = Arc::new(AgentdIntelligenceTelemetryV1::new(1));
-            let (flag, counted, finished) = observed_flags();
             let completion = WorkerCompletionV1::supervise(
                 Duration::from_millis(20),
                 Some(Duration::from_millis(20)),
-                flag,
-                counted,
-                finished,
+                Arc::new(AtomicBool::new(false)),
                 telemetry,
             )
             .expect("watchdog");
