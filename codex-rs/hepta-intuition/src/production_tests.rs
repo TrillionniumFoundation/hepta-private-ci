@@ -4,6 +4,7 @@ use crate::calibrated::CandidateSetCompletenessBindingV1;
 use crate::calibrated::OodArtifactV1;
 use crate::calibrated::canonical_candidate_order_digest_v1;
 use crate::calibrated::canonical_candidate_set_digest_v1;
+use crate::qualified::canonical_completeness_evidence_payload_v1;
 use crate::qualified::LearnedScorerContractV1;
 use codex_hepta_types::FixedQ32;
 
@@ -354,6 +355,80 @@ fn ppm_overflow_is_rejected_before_policy_admission() {
     request.maximum_ece_ppm = PPM_SCALE + 1;
     let error = decide_calibrated_v4(request, &profile).expect_err("overflow must fail");
     assert_eq!(error.code(), "intuition.policy.bound.ppm_out_of_range");
+}
+
+#[test]
+fn commitment_encoders_reject_empty_and_oversized_sets_before_other_validation() {
+    let (base, profile) = fixture(RiskClass::Low, CanonicalRiskRuleV1::HighOnlySlowPath);
+    let (scoring, assignment) = commitments(&base, &profile);
+
+    for count in [0, crate::MAX_CANDIDATES + 1] {
+        let mut request = base.clone();
+        request.candidates = vec![base.candidates[0].clone(); count];
+        // Other invalid data must not delay the cardinality preflight.
+        request.policy_generation = 0;
+        for result in [
+            canonical_candidate_set_digest_v1(&request.candidates).map(|_| ()),
+            canonical_candidate_order_digest_v1(&request.candidates).map(|_| ()),
+            canonical_calibrated_request_digest_v1(&request).map(|_| ()),
+        ] {
+            assert_eq!(result, Err(crate::CalibratedError::CandidateCountOutOfRange));
+        }
+        assert_eq!(
+            canonical_completeness_evidence_payload_v1(&request),
+            Err(QualifiedCalibratedError::Policy(
+                crate::CalibratedError::CandidateCountOutOfRange
+            ))
+        );
+        for result in [
+            canonical_candidate_identity_digest_v2(&request.candidates).map(|_| ()),
+            canonical_scored_outputs_digest_v2(&request).map(|_| ()),
+            canonical_assignment_distribution_digest_v2(&request).map(|_| ()),
+            canonical_assignment_commitment_digest_v2(&request, &assignment).map(|_| ()),
+            canonical_runtime_commitment_payload_v2(&request, &profile, &scoring, &assignment)
+                .map(|_| ()),
+            decide_calibrated_v4(request.clone(), &profile).map(|_| ()),
+        ] {
+            assert_eq!(
+                result,
+                Err(ProductionPolicyError::Qualified(
+                    QualifiedCalibratedError::Policy(
+                        crate::CalibratedError::CandidateCountOutOfRange
+                    )
+                ))
+            );
+        }
+    }
+}
+
+#[test]
+fn maximum_candidate_set_remains_accepted_by_all_commitment_boundaries() {
+    let (mut request, profile) = fixture(RiskClass::Low, CanonicalRiskRuleV1::HighOnlySlowPath);
+    request.candidates = (0..crate::MAX_CANDIDATES)
+        .map(|index| {
+            let mut candidate = request.candidates[0].clone();
+            candidate.candidate_id = id(&format!("candidate:{index:03}"));
+            candidate
+        })
+        .collect();
+    request.completeness.candidate_count = crate::MAX_CANDIDATES as u32;
+    request.completeness.candidate_set_digest =
+        canonical_candidate_set_digest_v1(&request.candidates).expect("maximum set");
+    request.completeness.canonical_order_digest =
+        canonical_candidate_order_digest_v1(&request.candidates).expect("maximum order");
+    let (scoring, assignment) = commitments(&request, &profile);
+
+    canonical_calibrated_request_digest_v1(&request).expect("maximum request");
+    canonical_completeness_evidence_payload_v1(&request).expect("maximum completeness");
+    canonical_assignment_commitment_digest_v2(&request, &assignment).expect("maximum assignment");
+    canonical_runtime_commitment_payload_v2(&request, &profile, &scoring, &assignment)
+        .expect("maximum runtime");
+    let receipt = decide_calibrated_v4(request, &profile).expect("maximum decision");
+    assert_eq!(
+        receipt.disposition,
+        ProductionDispositionV1::Selected(id("candidate:000"))
+    );
+    assert_eq!(receipt.propensities.len(), crate::MAX_CANDIDATES);
 }
 
 #[test]

@@ -23,7 +23,7 @@ pub use binding::canonical_calibrated_request_digest_v1;
 pub(crate) use binding::canonical_request_digest_with_risk;
 pub use binding::decide_calibrated_v2;
 
-const MAX_CANDIDATES: usize = 128;
+use crate::MAX_CANDIDATES;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RiskClass {
@@ -266,9 +266,7 @@ pub(crate) fn decide_calibrated_with_routing(
 }
 
 fn validate_request(request: &CalibratedDecisionRequestV1) -> Result<(), CalibratedError> {
-    if !(1..=MAX_CANDIDATES).contains(&request.candidates.len()) {
-        return Err(CalibratedError::CandidateCountOutOfRange);
-    }
+    validate_candidate_count(request.candidates.len())?;
     for (name, digest) in [
         ("objective", request.objective_digest),
         ("objective class", request.objective_class_digest),
@@ -513,6 +511,7 @@ fn output_distribution(
 pub fn canonical_candidate_set_digest_v1(
     candidates: &[CalibratedActionCandidateV1],
 ) -> Result<Digest32, CalibratedError> {
+    validate_candidate_count(candidates.len())?;
     let mut bytes = b"hepta.intuition.calibrated-candidate-set.v1".to_vec();
     push_len(&mut bytes, candidates.len())?;
     for candidate in candidates {
@@ -533,12 +532,20 @@ pub fn canonical_candidate_set_digest_v1(
 pub fn canonical_candidate_order_digest_v1(
     candidates: &[CalibratedActionCandidateV1],
 ) -> Result<Digest32, CalibratedError> {
+    validate_candidate_count(candidates.len())?;
     let mut bytes = b"hepta.intuition.calibrated-candidate-order.v1".to_vec();
     push_len(&mut bytes, candidates.len())?;
     for candidate in candidates {
         push_id(&mut bytes, &candidate.candidate_id)?;
     }
     Ok(Digest32::of_bytes(&bytes))
+}
+
+pub(crate) fn validate_candidate_count(count: usize) -> Result<(), CalibratedError> {
+    if !(1..=MAX_CANDIDATES).contains(&count) {
+        return Err(CalibratedError::CandidateCountOutOfRange);
+    }
+    Ok(())
 }
 
 fn digest_receipt(

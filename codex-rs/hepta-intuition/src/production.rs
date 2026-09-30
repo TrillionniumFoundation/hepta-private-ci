@@ -297,6 +297,8 @@ pub fn decide_calibrated_v4(
 pub fn canonical_candidate_identity_digest_v2(
     candidates: &[CalibratedActionCandidateV1],
 ) -> Result<Digest32, ProductionPolicyError> {
+    crate::calibrated::validate_candidate_count(candidates.len())
+        .map_err(QualifiedCalibratedError::Policy)?;
     let mut bytes = b"hepta.intuition.candidate-identity.v2\0".to_vec();
     push_len(&mut bytes, candidates.len())?;
     for candidate in candidates {
@@ -453,6 +455,8 @@ fn validate_bounded_request(
     request: &CalibratedDecisionRequestV1,
     profile: &CanonicalPolicyProfileV1,
 ) -> Result<(), ProductionPolicyError> {
+    crate::calibrated::validate_candidate_count(request.candidates.len())
+        .map_err(QualifiedCalibratedError::Policy)?;
     bounded_generation("request policy generation", request.policy_generation)?;
     bounded_generation("calibration generation", request.calibration.generation)?;
     bounded_generation("ood generation", request.ood.generation)?;

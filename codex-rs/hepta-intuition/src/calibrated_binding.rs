@@ -23,9 +23,7 @@ pub(crate) fn canonical_request_digest_with_risk(
     request: &CalibratedDecisionRequestV1,
     encoded_risk: RiskClass,
 ) -> Result<Digest32, CalibratedError> {
-    if !(1..=MAX_CANDIDATES).contains(&request.candidates.len()) {
-        return Err(CalibratedError::CandidateCountOutOfRange);
-    }
+    validate_candidate_count(request.candidates.len())?;
     let mut bytes = b"hepta.intuition.calibrated-request.v1".to_vec();
     push_id(&mut bytes, &request.decision_id)?;
     for digest in [
