@@ -209,6 +209,17 @@ pub struct CurrentOwnerStateV1 {
 }
 
 pub trait CanonicalFreshnessOracleV1 {
+    /// Begin one currentness fence. Implementations backed by a signed aggregate
+    /// manifest may read, parse and verify the complete owner universe once and
+    /// serve all `current` calls in this fence from that immutable snapshot.
+    /// The default preserves compatibility for per-owner oracles.
+    fn refresh_snapshot(
+        &mut self,
+        _owner_id: &StableId,
+    ) -> Result<(), CanonicalIntelligenceError> {
+        Ok(())
+    }
+
     fn current(
         &mut self,
         owner_id: &StableId,
@@ -689,8 +700,12 @@ pub fn validate_current_snapshot<O: CanonicalFreshnessOracleV1>(
     snapshot: &CanonicalIntelligenceSnapshotV1,
     oracle: &mut O,
 ) -> Result<(), CanonicalIntelligenceError> {
+    let first = snapshot.binding(REQUIRED_OWNERS[0])?;
+    oracle
+        .refresh_snapshot(&first.owner_id)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(first.owner_id.clone()))?;
     for owner in REQUIRED_OWNERS {
-        require_current(snapshot, oracle, owner)?;
+        require_current_from_snapshot(snapshot, oracle, owner)?;
     }
     Ok(())
 }
@@ -786,10 +801,9 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
 
     // Revalidate every owner once more at the product handoff boundary. A
     // revocation, key rotation or owner generation change after its own stage
-    // but before Agentd use must fail closed.
-    for owner in REQUIRED_OWNERS {
-        require_current(&request.snapshot, oracle, owner)?;
-    }
+    // but before Agentd use must fail closed. The aggregate oracle refreshes
+    // once for this fence and serves all seven reads from one signed snapshot.
+    validate_current_snapshot(&request.snapshot, oracle)?;
 
     let trace_digest = digest_trace(
         &request.run_id,
@@ -918,6 +932,18 @@ fn validate_port_receipt(
 }
 
 fn require_current<O: CanonicalFreshnessOracleV1>(
+    snapshot: &CanonicalIntelligenceSnapshotV1,
+    oracle: &mut O,
+    owner: &'static str,
+) -> Result<(), CanonicalIntelligenceError> {
+    let expected = snapshot.binding(owner)?;
+    oracle
+        .refresh_snapshot(&expected.owner_id)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(expected.owner_id.clone()))?;
+    require_current_from_snapshot(snapshot, oracle, owner)
+}
+
+fn require_current_from_snapshot<O: CanonicalFreshnessOracleV1>(
     snapshot: &CanonicalIntelligenceSnapshotV1,
     oracle: &mut O,
     owner: &'static str,
