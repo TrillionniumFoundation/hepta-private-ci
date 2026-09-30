@@ -28,6 +28,8 @@ pub struct NativeIntelligenceRunBinding {
     pub expected_revision: u64,
     pub context_digest: String,
     pub envelope_digest: String,
+    /// SHA-256 of the exact UTF-8 prompt bytes authorized by the host.
+    pub prompt_digest: String,
 }
 
 impl AppServerModelDriver {
@@ -92,6 +94,14 @@ impl AppServerModelDriver {
             .is_some_and(|query| query.is_empty() || query.len() > 2048)
         {
             return Err("context query must contain 1..2048 bytes".into());
+        }
+        if let Some(binding) = intelligence {
+            let expected: codex_hepta_types::Digest32 = binding.prompt_digest.parse()?;
+            if expected.is_zero()
+                || expected != codex_hepta_types::Digest32::of_bytes(prompt.as_bytes())
+            {
+                return Err("physical prompt bytes do not match the intelligence handoff".into());
+            }
         }
         let request = NativeRequest {
             request_id: admission.request_id,
@@ -219,6 +229,7 @@ fn native_source_payload_digest(
             binding.expected_revision,
             &binding.context_digest,
             &binding.envelope_digest,
+            &binding.prompt_digest,
         ))?,
     };
     Ok(digest(&bytes))

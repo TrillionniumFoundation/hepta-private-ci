@@ -47,6 +47,10 @@ pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
 pub use evaluator::canonical_utility_profile_digest;
+// Retain the established compatibility export without letting the legacy
+// wrapper weaken strict lint for product callers. New code uses the policy-bound
+// V2 entry point below.
+#[allow(deprecated)]
 pub use evaluator::evaluate_candidates;
 pub use evaluator::evaluate_candidates_with_policy;
 pub use evaluator::legacy_evaluation_policy;

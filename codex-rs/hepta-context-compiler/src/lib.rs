@@ -15,6 +15,9 @@ use codex_hepta_types::StableId;
 
 mod candidate_bound;
 mod requirements;
+// V2 exposes stable cross-owner boundaries with complete typed tuples. Keep those
+// authority-bearing inputs explicit instead of hiding them in generic parameter bags.
+#[allow(clippy::empty_line_after_doc_comments, clippy::too_many_arguments)]
 mod v2;
 mod wire;
 

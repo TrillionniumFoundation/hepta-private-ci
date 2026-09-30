@@ -116,6 +116,7 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
@@ -131,9 +132,17 @@ impl CognitiveTestHost {
         )
         .await?;
         let control_task = tokio::spawn(control.run());
+        // The in-process App Server validates that a stable Codex executable
+        // path exists even when this qualification never launches a tool or
+        // sandbox helper. The unit-test harness itself is an existing, stable
+        // executable for that no-child-process profile.
+        let arg0_paths = Arg0DispatchPaths {
+            codex_self_exe: Some(std::env::current_exe()?),
+            ..Arg0DispatchPaths::default()
+        };
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            arg0_paths,
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,

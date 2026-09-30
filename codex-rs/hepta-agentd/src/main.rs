@@ -1,13 +1,10 @@
 use std::path::PathBuf;
 
 use codex_hepta_agentd::AgentdConfig;
-use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
-use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
 use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::ffi::OsString;
-use std::sync::Arc;
 
 fn main() -> anyhow::Result<()> {
     let mut config = AgentdConfig::from_process_environment()?;
@@ -117,15 +114,10 @@ fn main() -> anyhow::Result<()> {
             intelligence_authority_verifying_key,
         ) {
             (None, None, None) => {}
-            (Some(path), Some(signer_id), Some(verifying_key)) => {
-                let runner = AgentdIntelligenceProductRunnerV1::new(
-                    path,
-                    IntelligenceAuthorityVerifierV1 {
-                        signer_id,
-                        verifying_key,
-                    },
-                )?;
-                config = config.with_intelligence_product_runner(Arc::new(runner))?;
+            (Some(_), Some(_), Some(_)) => {
+                anyhow::bail!(
+                    "authority material alone cannot compose canonical intelligence in the standalone Agentd binary; the product embedding must install the guarded runner and host-owned seven-owner provider atomically with AgentdConfig::with_canonical_intelligence_profile"
+                );
             }
             _ => {
                 return Err(anyhow::anyhow!(

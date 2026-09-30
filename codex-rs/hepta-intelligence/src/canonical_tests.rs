@@ -85,6 +85,7 @@ struct Oracle {
     states: BTreeMap<StableId, CurrentOwnerStateV1>,
     drift_after_first: Option<StableId>,
     calls: BTreeMap<StableId, usize>,
+    refreshes: usize,
 }
 
 impl Oracle {
@@ -108,11 +109,20 @@ impl Oracle {
             states,
             drift_after_first: None,
             calls: BTreeMap::new(),
+            refreshes: 0,
         }
     }
 }
 
 impl CanonicalFreshnessOracleV1 for Oracle {
+    fn refresh_snapshot(
+        &mut self,
+        _owner_id: &StableId,
+    ) -> Result<(), CanonicalIntelligenceError> {
+        self.refreshes += 1;
+        Ok(())
+    }
+
     fn current(
         &mut self,
         owner_id: &StableId,
@@ -260,6 +270,15 @@ fn canonical_selected_path_has_first_class_ndu_and_all_seven_owners() {
 }
 
 #[test]
+fn aggregate_currentness_fence_refreshes_once_for_seven_owner_reads() {
+    let snapshot = snapshot();
+    let mut oracle = Oracle::new(&snapshot);
+    validate_current_snapshot(&snapshot, &mut oracle).expect("current snapshot");
+    assert_eq!(oracle.refreshes, 1);
+    assert_eq!(oracle.calls.values().sum::<usize>(), 7);
+}
+
+#[test]
 fn abstention_stops_before_context_and_evaluation() {
     let request = request();
     let mut oracle = Oracle::new(&request.snapshot);
@@ -323,6 +342,42 @@ fn key_rotation_and_wrong_owner_receipt_fail_closed() {
     assert_eq!(
         prepare_intelligence_run(request, &mut ports, &mut oracle).expect_err("wrong owner"),
         CanonicalIntelligenceError::ProducerMismatch
+    );
+}
+
+#[test]
+fn candidate_digest_is_permutation_invariant_and_count_is_bounded() {
+    let mut first = request().legal_candidates;
+    first.candidates.push(LegalActionCandidateV1 {
+        candidate_id: id("action:two"),
+        support_digest: digest("action:two:support"),
+    });
+    let mut second = first.clone();
+    second.candidates.reverse();
+    assert_eq!(
+        build_legal_candidates(first)
+            .expect("first")
+            .candidate_set_digest,
+        build_legal_candidates(second)
+            .expect("second")
+            .candidate_set_digest
+    );
+
+    let mut boundary = request().legal_candidates;
+    boundary.candidates = (0..128)
+        .map(|index| LegalActionCandidateV1 {
+            candidate_id: id(&format!("action:{index:03}")),
+            support_digest: digest(&format!("action:{index:03}:support")),
+        })
+        .collect();
+    assert!(build_legal_candidates(boundary.clone()).is_ok());
+    boundary.candidates.push(LegalActionCandidateV1 {
+        candidate_id: id("action:128"),
+        support_digest: digest("action:128:support"),
+    });
+    assert_eq!(
+        build_legal_candidates(boundary).expect_err("129 must reject"),
+        CanonicalIntelligenceError::InvalidCandidateSet("candidate count")
     );
 }
 

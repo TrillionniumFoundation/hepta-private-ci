@@ -209,6 +209,17 @@ pub struct CurrentOwnerStateV1 {
 }
 
 pub trait CanonicalFreshnessOracleV1 {
+    /// Begin one currentness fence. Implementations backed by a signed aggregate
+    /// manifest may read, parse and verify the complete owner universe once and
+    /// serve all `current` calls in this fence from that immutable snapshot.
+    /// The default preserves compatibility for per-owner oracles.
+    fn refresh_snapshot(
+        &mut self,
+        _owner_id: &StableId,
+    ) -> Result<(), CanonicalIntelligenceError> {
+        Ok(())
+    }
+
     fn current(
         &mut self,
         owner_id: &StableId,
@@ -560,9 +571,28 @@ pub fn build_legal_candidates(
 
 pub fn decide_boundary(
     run_id: &StableId,
-    candidate_set_digest: Digest32,
+    legal: &LegalActionCandidateSetV1,
     intuition: &CanonicalPortReceiptV1,
 ) -> Result<AdvisoryDecisionReceiptV1, CanonicalIntelligenceError> {
+    // The DTO is public and mutable. Recompute its canonical digest before use;
+    // possession of a digest alone is not proof of candidate membership.
+    let rebuilt = build_legal_candidates(LegalActionCandidateSetRequestV1 {
+        candidate_set_id: legal.candidate_set_id.clone(),
+        state_digest: legal.state_digest,
+        generator_id: legal.generator_id.clone(),
+        grammar_digest: legal.grammar_digest,
+        candidates: legal.candidates.clone(),
+        support_floor_ppm: legal.support_floor_ppm,
+    })?;
+    if legal.authority.grants_any() {
+        return Err(CanonicalIntelligenceError::AuthorityWidening);
+    }
+    if rebuilt.candidate_set_digest != legal.candidate_set_digest {
+        return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+            "digest mismatch",
+        ));
+    }
+    let candidate_set_digest = rebuilt.candidate_set_digest;
     if intuition.stage != CanonicalStageV1::IntuitionDecided {
         return Err(CanonicalIntelligenceError::StageMismatch);
     }
@@ -579,10 +609,26 @@ pub fn decide_boundary(
         CanonicalPortDecisionV1::Selected {
             candidate_id,
             propensity,
-        } => AdvisoryDecisionV1::Selected {
-            candidate_id: candidate_id.clone(),
-            propensity: *propensity,
-        },
+        } => {
+            if !rebuilt
+                .candidates
+                .iter()
+                .any(|candidate| &candidate.candidate_id == candidate_id)
+            {
+                return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                    "selected candidate absent",
+                ));
+            }
+            if propensity.raw() == 0 {
+                return Err(CanonicalIntelligenceError::InvalidCandidateSet(
+                    "selected propensity is zero",
+                ));
+            }
+            AdvisoryDecisionV1::Selected {
+                candidate_id: candidate_id.clone(),
+                propensity: *propensity,
+            }
+        }
         CanonicalPortDecisionV1::Abstained => AdvisoryDecisionV1::Abstained,
         CanonicalPortDecisionV1::SlowPath => AdvisoryDecisionV1::SlowPath,
         CanonicalPortDecisionV1::Continue => {
@@ -628,7 +674,10 @@ pub fn assemble_context(
     if context.output_digest.is_zero() || decision.decision_digest.is_zero() {
         return Err(CanonicalIntelligenceError::EmptyDigest("context"));
     }
-    if context.authority.grants_any() {
+    if context.predecessor_digest != decision.intuition_receipt_digest {
+        return Err(CanonicalIntelligenceError::PredecessorMismatch);
+    }
+    if context.authority.grants_any() || decision.authority.grants_any() {
         return Err(CanonicalIntelligenceError::AuthorityWidening);
     }
     if !matches!(decision.decision, AdvisoryDecisionV1::Selected { .. }) {
@@ -651,8 +700,12 @@ pub fn validate_current_snapshot<O: CanonicalFreshnessOracleV1>(
     snapshot: &CanonicalIntelligenceSnapshotV1,
     oracle: &mut O,
 ) -> Result<(), CanonicalIntelligenceError> {
+    let first = snapshot.binding(REQUIRED_OWNERS[0])?;
+    oracle
+        .refresh_snapshot(&first.owner_id)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(first.owner_id.clone()))?;
     for owner in REQUIRED_OWNERS {
-        require_current(snapshot, oracle, owner)?;
+        require_current_from_snapshot(snapshot, oracle, owner)?;
     }
     Ok(())
 }
@@ -709,10 +762,11 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
         CanonicalStageV1::IntuitionDecided,
         |ports: &mut P, input| ports.decide_intuition(input)
     );
-    let decision = decide_boundary(&request.run_id, legal.candidate_set_digest, &intuition)?;
+    let decision = decide_boundary(&request.run_id, &legal, &intuition)?;
 
     match decision.decision {
         AdvisoryDecisionV1::Abstained | AdvisoryDecisionV1::SlowPath => {
+            validate_current_snapshot(&request.snapshot, oracle)?;
             let trace_digest = digest_trace(
                 &request.run_id,
                 snapshot_digest,
@@ -747,10 +801,9 @@ pub fn prepare_intelligence_run<P: CanonicalOwnerPortsV1, O: CanonicalFreshnessO
 
     // Revalidate every owner once more at the product handoff boundary. A
     // revocation, key rotation or owner generation change after its own stage
-    // but before Agentd use must fail closed.
-    for owner in REQUIRED_OWNERS {
-        require_current(&request.snapshot, oracle, owner)?;
-    }
+    // but before Agentd use must fail closed. The aggregate oracle refreshes
+    // once for this fence and serves all seven reads from one signed snapshot.
+    validate_current_snapshot(&request.snapshot, oracle)?;
 
     let trace_digest = digest_trace(
         &request.run_id,
@@ -879,6 +932,18 @@ fn validate_port_receipt(
 }
 
 fn require_current<O: CanonicalFreshnessOracleV1>(
+    snapshot: &CanonicalIntelligenceSnapshotV1,
+    oracle: &mut O,
+    owner: &'static str,
+) -> Result<(), CanonicalIntelligenceError> {
+    let expected = snapshot.binding(owner)?;
+    oracle
+        .refresh_snapshot(&expected.owner_id)
+        .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(expected.owner_id.clone()))?;
+    require_current_from_snapshot(snapshot, oracle, owner)
+}
+
+fn require_current_from_snapshot<O: CanonicalFreshnessOracleV1>(
     snapshot: &CanonicalIntelligenceSnapshotV1,
     oracle: &mut O,
     owner: &'static str,

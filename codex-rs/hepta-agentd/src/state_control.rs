@@ -468,6 +468,7 @@ impl AgentdState {
                         internal_context_attachment(attachment),
                     )
                     .map_err(run_error)?;
+                self.record_intelligence_run_receipt(&receipt, false);
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunMarkDispatched {
@@ -481,6 +482,7 @@ impl AgentdState {
                     .map_err(poisoned_state)?
                     .mark_dispatched(now_ms()?, &run_id, expected_revision)
                     .map_err(run_error)?;
+                self.record_intelligence_run_receipt(&receipt, false);
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunCancel {
@@ -495,6 +497,7 @@ impl AgentdState {
                     .map_err(poisoned_state)?
                     .cancel_run(now_ms()?, &run_id, expected_revision, &reason)
                     .map_err(run_error)?;
+                self.record_intelligence_run_receipt(&receipt, false);
                 AgentdPayload::RunCancellation(crate::AgentRunCancellation {
                     disposition: wire_cancellation_disposition(disposition),
                     receipt: wire_run_receipt(receipt),
@@ -518,6 +521,7 @@ impl AgentdState {
                         terminal_observed,
                     )
                     .map_err(run_error)?;
+                self.record_intelligence_run_receipt(&receipt, false);
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunStatus { run_id } => {

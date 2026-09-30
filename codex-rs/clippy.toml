@@ -27,6 +27,11 @@ disallowed-methods = [
     { path = "sqlx::migrate::MigrateDatabase::create_database", reason = "Create SQLite databases through codex-state's sqlite shim." },
 ]
 
+# Transaction-owner internals include `self`, one SQLite transaction and up to
+# six frozen semantic inputs. Keep the threshold bounded at eight; larger
+# surfaces must still introduce a typed request object.
+too-many-arguments-threshold = 8
+
 # Increase the size threshold for result_large_err to accommodate
 # richer error variants.
 large-error-threshold = 256
