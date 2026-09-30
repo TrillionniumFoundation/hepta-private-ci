@@ -1,0 +1,48 @@
+{
+  "authority": "DENY_ALL",
+  "deploymentCapabilities": {
+    "attemptAnchorAuthority": {
+      "adapterIdentity": "UNBOUND_EXTERNAL",
+      "contract": "ProductEvaluationAttemptAnchorStoreV1",
+      "targetHostQualified": false
+    },
+    "outcomeProvider": {
+      "adapterIdentity": "UNBOUND_EXTERNAL",
+      "contract": "FinalOutcomeHoldoutProviderV1 / FinalHoldoutProviderV1",
+      "targetHostQualified": false
+    },
+    "publicationOwner": {
+      "adapterIdentity": "UNBOUND_EXTERNAL",
+      "contract": "ProductQualificationPublicationStoreV1",
+      "targetHostQualified": false
+    },
+    "selectedHost": {
+      "attestationIdentity": "UNBOUND_EXTERNAL",
+      "targetHostQualified": false
+    }
+  },
+  "externalClaims": {
+    "activationAuthorized": false,
+    "independentAcceptanceIssued": false,
+    "releaseAuthorized": false,
+    "targetHostQualified": false
+  },
+  "module": "learning.eval",
+  "releasePosture": "NO_GO",
+  "schema": "hepta.learning-eval.qualification-matrix.v1",
+  "sourceFacts": {
+    "canonicalProductFacadeSourcePresent": true,
+    "compatibilityFixtureIsolationSourcePresent": true,
+    "defaultRawRunnerCompileRejectionSourcePresent": true,
+    "exactFilteredTestDiscoveryGuardSourcePresent": true,
+    "humanDeveloperGuidePresent": true,
+    "machineAuditIndexPresent": true,
+    "recordedProductFacadeSourcePresent": true,
+    "typedFailureEncodingV2SourcePresent": true
+  },
+  "workflowClaims": {
+    "exactHeadExecuted": false,
+    "orderedParentSyntheticMergeExecuted": false,
+    "sourceQualifiedByThisRun": false
+  }
+}

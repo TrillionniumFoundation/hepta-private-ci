@@ -38,6 +38,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
   id-token: write
   attestations: write
 
@@ -66,12 +67,16 @@ jobs:
           persist-credentials: false
           ref: ${{ env.TESTED_SHA }}
 
-      - name: Test exact-evidence and required-filter recorders
+      - name: Test exact evidence, discovery, fixture and documentation recorders
         run: |
           set -euo pipefail
           python3 scripts/test_hepta_learning_eval_exact.py -v
           python3 scripts/test_hepta_nextest_require.py -v
           python3 scripts/test_hepta_learning_eval_exact_entry.py -v
+          python3 scripts/test_hepta_learning_eval_compat_fixture.py -v
+          python3 scripts/test_hepta_learning_eval_evidence.py -v
+          python3 scripts/test_hepta_learning_eval_doc_contract.py -v
+          python3 scripts/hepta-learning-eval-doc-contract.py
 
       - name: Install qualification tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -108,3 +113,68 @@ jobs:
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
         with:
           subject-path: .hepta-evidence/learning-eval/${{ matrix.kind }}/convergence.json
+
+  exact-summary:
+    name: exact-matrix-summary
+    if: always()
+    needs: qualify-exact
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    concurrency:
+      group: learning-eval-pr-status-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      MERGE_SHA: ${{ github.event_name == 'pull_request' && github.sha || '' }}
+      MATRIX_RESULT: ${{ needs.qualify-exact.result }}
+      EVIDENCE_ROOT: .hepta-evidence/learning-eval/exact-summary
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+      - name: Emit scoped exact matrix summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          tree="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-learning-eval-exact-summary.py \
+            --source-commit "$SOURCE_SHA" --source-tree "$tree" \
+            --base-commit "$BASE_SHA" --merge-commit "$MERGE_SHA" \
+            --event-name "${{ github.event_name }}" --matrix-result "$MATRIX_RESULT" \
+            --repository "$GITHUB_REPOSITORY" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --output "$EVIDENCE_ROOT"
+      - name: Update machine-owned PR exact marker
+        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/hepta-learning-eval-pr-status.py update \
+            --summary "$EVIDENCE_ROOT/exact-summary.json" \
+            --marker exact --repository "$GITHUB_REPOSITORY" \
+            --pull-request "${{ github.event.pull_request.number }}"
+      - name: Retain exact matrix summary
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-exact-summary-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval/exact-summary/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Enforce exact matrix result
+        if: always()
+        run: |
+          python3 - "$EVIDENCE_ROOT/exact-summary.json" <<'PY'
+          import json, pathlib, sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          claims = value['claims']
+          assert claims['exactHeadExecuted'] is True
+          if value['eventName'] == 'pull_request':
+              assert claims['orderedParentSyntheticMergeExecuted'] is True
+          PY

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Discover and run one required nextest filter with fail-closed evidence.
 
-The command refuses to treat a successful build with zero selected tests as a
-qualification result. It records the discovery and execution transcript without
-issuing target-host, operator, activation, promotion, or release authority.
+The command refuses to treat a successful build with fewer than the required
+number of selected tests as a qualification result. It records discovery and
+execution transcripts without issuing target-host, operator, activation,
+promotion, or release authority.
 """
 from __future__ import annotations
 
@@ -16,7 +17,7 @@ import subprocess
 import sys
 from typing import Any, Sequence
 
-SCHEMA = "hepta.nextest-required-filter.v1"
+SCHEMA = "hepta.nextest-required-filter.v2"
 ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 
 
@@ -51,6 +52,8 @@ def command_base(args: argparse.Namespace, subcommand: str) -> list[str]:
         command.append("--all-features")
     if args.no_default_features:
         command.append("--no-default-features")
+    for target in args.test_targets:
+        command.extend(["--test", target])
     command.append(args.filter)
     return command
 
@@ -77,6 +80,13 @@ def write_evidence(path: Path | None, value: dict[str, Any]) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def positive(value: str) -> int:
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("value must be at least one")
+    return parsed
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest-path", required=True)
@@ -88,9 +98,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--features")
     parser.add_argument("--all-features", action="store_true")
     parser.add_argument("--no-default-features", action="store_true")
+    parser.add_argument("--test", dest="test_targets", action="append", default=[])
+    parser.add_argument("--minimum-matches", type=positive, default=1)
     parser.add_argument("--list-only", action="store_true")
     parser.add_argument("--locked", action=argparse.BooleanOptionalAction, default=True)
     args = parser.parse_args(argv)
+    if args.features and args.all_features:
+        parser.error("--features and --all-features are mutually exclusive")
 
     cwd = Path(args.cwd).resolve()
     evidence_path = Path(args.evidence).resolve() if args.evidence else None
@@ -102,6 +116,8 @@ def main(argv: list[str] | None = None) -> int:
         "manifestPath": args.manifest_path,
         "package": args.package,
         "requiredFilter": args.filter,
+        "testTargets": args.test_targets,
+        "minimumMatches": args.minimum_matches,
         "cwd": str(cwd),
         "authority": "DENY_ALL",
         "claims": {
@@ -130,11 +146,13 @@ def main(argv: list[str] | None = None) -> int:
         value["failure"] = "nextest_list_failed"
         write_evidence(evidence_path, value)
         return listed.returncode or 1
-    if not matches:
-        value["failure"] = "required_filter_matched_zero_tests"
+    if len(matches) < args.minimum_matches:
+        value["failure"] = "required_filter_below_minimum_matches"
         write_evidence(evidence_path, value)
         print(
-            f"required nextest filter matched zero tests: package={args.package} filter={args.filter}",
+            "required nextest filter matched too few tests: "
+            f"package={args.package} filter={args.filter} "
+            f"matched={len(matches)} required={args.minimum_matches}",
             file=sys.stderr,
         )
         return 4

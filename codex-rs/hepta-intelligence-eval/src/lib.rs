@@ -58,6 +58,7 @@ pub use fenced_holdout_file::LockedFileCasCompactionReceiptV1;
 pub use fenced_holdout_file::LockedFileCasErrorV1;
 pub use fenced_holdout_file::LockedFileFinalHoldoutCasStoreV1;
 mod ope;
+pub mod product;
 mod product_runner;
 mod reconciled_sink;
 mod recorded_publication;

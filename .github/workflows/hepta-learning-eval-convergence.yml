@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 concurrency:
   group: hepta-learning-eval-convergence-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
@@ -23,7 +24,7 @@ jobs:
   identity-recorder:
     name: identity-recorder
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     outputs:
       tested_sha: ${{ steps.bind.outputs.sha }}
       tested_tree: ${{ steps.bind.outputs.tree }}
@@ -46,14 +47,20 @@ jobs:
           printf 'sha=%s\ntree=%s\n' "$sha" "$tree" | tee "$EVIDENCE_ROOT/identity/source.env"
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
           echo "tree=$tree" >> "$GITHUB_OUTPUT"
-      - name: Test evidence recorders and source truth
+      - name: Test evidence recorders, documentation and source truth
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/test_hepta_learning_eval_exact.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/exact-recorder-tests.log"
           python3 scripts/test_hepta_nextest_require.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/nextest-recorder-tests.log"
           python3 scripts/test_hepta_learning_eval_exact_entry.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/exact-entry-tests.log"
+          python3 scripts/test_hepta_learning_eval_compat_fixture.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/compat-fixture-tests.log"
+          python3 scripts/test_hepta_learning_eval_evidence.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/evidence-summary-tests.log"
+          python3 scripts/test_hepta_learning_eval_doc_contract.py -v 2>&1 | tee "$EVIDENCE_ROOT/identity/doc-contract-tests.log"
           python3 scripts/hepta-learning-eval-status.py verify 2>&1 | tee "$EVIDENCE_ROOT/identity/status.log"
+          python3 scripts/hepta-learning-eval-doc-contract.py 2>&1 | tee "$EVIDENCE_ROOT/identity/doc-contract.log"
+          python3 scripts/hepta-learning-eval-compat-fixture.py \
+            --check-only --evidence "$EVIDENCE_ROOT/identity/compat-fixture.json"
           python3 scripts/hepta-learning-eval-target-host.py self-test 2>&1 | tee "$EVIDENCE_ROOT/identity/target-host-verifier.log"
       - name: Retain identity evidence
         if: always()
@@ -101,7 +108,7 @@ jobs:
     name: compile-compatibility
     needs: identity-recorder
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -110,7 +117,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
-      - name: Compile explicit trusted fixture surface
+      - name: Compile owning crate and execute isolated trusted fixture
         shell: bash
         run: |
           set -euo pipefail
@@ -119,6 +126,9 @@ jobs:
             -p codex-hepta-intelligence-eval --all-targets \
             --features trusted-inprocess-eval \
             2>&1 | tee "$EVIDENCE_ROOT/compile-compatibility/cargo-check.log"
+          python3 scripts/hepta-learning-eval-compat-fixture.py \
+            --evidence "$EVIDENCE_ROOT/compile-compatibility/fixture.json" \
+            2>&1 | tee "$EVIDENCE_ROOT/compile-compatibility/fixture.log"
       - name: Retain compatibility compile evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -195,8 +205,13 @@ jobs:
           mkdir -p "$out"
           (cd codex-rs && just test --locked -p codex-hepta-intelligence-eval --test-threads=1) \
             2>&1 | tee "$out/owner-tests.log"
-          cargo nextest run --manifest-path codex-rs/Cargo.toml --locked \
-            -p codex-hepta-intelligence-eval --test cold_recovery_e2e \
+          python3 scripts/hepta-nextest-require.py \
+            --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-intelligence-eval \
+            --test cold_recovery_e2e \
+            --filter cold_process_recovery_uses_only_persisted_inputs_and_current_trust \
+            --label cold-process-persisted-inputs-current-trust \
+            --evidence "$out/cold-recovery-e2e.json" \
             2>&1 | tee "$out/cold-recovery-e2e.log"
           bash scripts/hepta-learning-eval-faults.sh \
             --json "$out/faults.json" --log "$out/faults.log"
@@ -319,14 +334,16 @@ jobs:
       - format-lint
       - coverage
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
+    concurrency:
+      group: learning-eval-pr-status-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: false
     permissions:
       contents: read
+      pull-requests: write
       id-token: write
       attestations: write
     env:
-      TESTED_SHA: ${{ needs.identity-recorder.outputs.tested_sha }}
-      TESTED_TREE: ${{ needs.identity-recorder.outputs.tested_tree }}
       IDENTITY_RESULT: ${{ needs.identity-recorder.result }}
       DEFAULT_RESULT: ${{ needs.compile-default.result }}
       COMPAT_RESULT: ${{ needs.compile-compatibility.result }}
@@ -337,66 +354,44 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          fetch-depth: 0
           persist-credentials: false
           ref: ${{ env.SOURCE_SHA }}
-      - name: Emit commit-addressed NO_GO or source-qualified summary
+      - id: summary
+        name: Emit scoped commit-addressed source summary
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$EVIDENCE_ROOT/aggregate"
-          python3 - <<'PY'
-          import hashlib, json, os, pathlib
-          jobs = {
-              'identityRecorder': os.environ['IDENTITY_RESULT'],
-              'compileDefault': os.environ['DEFAULT_RESULT'],
-              'compileCompatibility': os.environ['COMPAT_RESULT'],
-              'consumerTests': os.environ['CONSUMER_RESULT'],
-              'faultRecoveryTests': os.environ['RECOVERY_RESULT'],
-              'formatLint': os.environ['LINT_RESULT'],
-              'coverage': os.environ['COVERAGE_RESULT'],
-          }
-          passed = bool(os.environ.get('TESTED_SHA')) and all(value == 'success' for value in jobs.values())
-          value = {
-              'schema': 'hepta.learning-eval.immutable-qualification-summary.v1',
-              'source': {'commit': os.environ.get('TESTED_SHA'), 'tree': os.environ.get('TESTED_TREE')},
-              'workflow': {
-                  'repository': os.environ['GITHUB_REPOSITORY'],
-                  'runId': os.environ['GITHUB_RUN_ID'],
-                  'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
-              },
-              'jobs': jobs,
-              'authority': 'DENY_ALL',
-              'releasePosture': 'NO_GO',
-              'claims': {
-                  'sourceQualifiedByThisRun': passed,
-                  'exactHeadExecuted': False,
-                  'orderedParentSyntheticMergeExecuted': False,
-                  'targetHostQualified': False,
-                  'independentAcceptanceIssued': False,
-                  'activationAuthorized': False,
-                  'releaseAuthorized': False,
-              },
-          }
-          canonical = json.dumps(value, sort_keys=True, separators=(',', ':')).encode()
-          value['evidenceSha256'] = hashlib.sha256(canonical).hexdigest()
-          root = pathlib.Path(os.environ['EVIDENCE_ROOT']) / 'aggregate'
-          (root / 'qualification-summary.json').write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
-          (root / 'pr-status.md').write_text(
-              '<!-- learning.eval qualification:start -->\n'
-              '## learning.eval immutable qualification\n\n'
-              f"- Exact source SHA: `{value['source']['commit'] or 'unavailable'}`\n"
-              f"- Exact tree: `{value['source']['tree'] or 'unavailable'}`\n"
-              f"- Evidence SHA-256: `{value['evidenceSha256']}`\n"
-              f"- Source gates in this workflow: `{'PASS' if passed else 'FAIL'}`\n"
-              '- Release posture: **NO_GO**\n'
-              '- Target-host qualification: **not established**\n'
-              '- Independent acceptance: **not issued**\n'
-              '<!-- learning.eval qualification:end -->\n'
-          )
-          print(json.dumps(value, indent=2, sort_keys=True))
-          if not passed:
-              raise SystemExit(1)
+          out="$EVIDENCE_ROOT/aggregate"
+          tree="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-learning-eval-aggregate.py write \
+            --source-commit "$SOURCE_SHA" --source-tree "$tree" \
+            --repository "$GITHUB_REPOSITORY" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --job "identityRecorder=$IDENTITY_RESULT" \
+            --job "compileDefault=$DEFAULT_RESULT" \
+            --job "compileCompatibility=$COMPAT_RESULT" \
+            --job "consumerTests=$CONSUMER_RESULT" \
+            --job "faultRecoveryTests=$RECOVERY_RESULT" \
+            --job "formatLint=$LINT_RESULT" \
+            --job "coverage=$COVERAGE_RESULT" \
+            --output "$out"
+          qualified="$(python3 - "$out/qualification-summary.json" <<'PY'
+          import json, pathlib, sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          print(str(value['claims']['sourceQualifiedByThisRun']).lower())
           PY
+          )"
+          echo "qualified=$qualified" >> "$GITHUB_OUTPUT"
+      - name: Update machine-owned PR source marker
+        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/hepta-learning-eval-pr-status.py update \
+            --summary "$EVIDENCE_ROOT/aggregate/qualification-summary.json" \
+            --marker source --repository "$GITHUB_REPOSITORY" \
+            --pull-request "${{ github.event.pull_request.number }}"
       - name: Retain aggregate evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -405,8 +400,11 @@ jobs:
           path: .hepta-evidence/learning-eval/aggregate/
           if-no-files-found: error
           retention-days: 30
-      - name: Attest successful immutable qualification summary
-        if: success() && github.event_name == 'push'
+      - name: Attest successful immutable source summary
+        if: steps.summary.outputs.qualified == 'true' && github.event_name == 'push'
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
         with:
           subject-path: .hepta-evidence/learning-eval/aggregate/qualification-summary.json
+      - name: Enforce source qualification result
+        if: always()
+        run: python3 scripts/hepta-learning-eval-aggregate.py verify "$EVIDENCE_ROOT/aggregate/qualification-summary.json"

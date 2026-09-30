@@ -37,6 +37,8 @@ use crate::TemporalComparisonInputsV1;
 use crate::TemporalEvaluationPlan;
 use crate::recorded_publication::RecordedPublicationSinkV1;
 
+#[path = "recorded_failure.rs"]
+mod failure;
 #[path = "outcome_runner.rs"]
 mod outcomes;
 
@@ -277,9 +279,7 @@ fn map_journal_to_provider(error: ProductEvaluationAttemptJournalErrorV1) -> Pro
 }
 
 fn evaluation_failure_digest(error: &ProductEvaluationError) -> Digest32 {
-    let mut bytes = b"hepta.learning-eval.product-evaluation-failure.v1".to_vec();
-    bytes.extend_from_slice(format!("{error:?}").as_bytes());
-    Digest32::of_bytes(&bytes)
+    failure::product_evaluation_failure_digest_v2(error)
 }
 
 #[derive(Debug)]
