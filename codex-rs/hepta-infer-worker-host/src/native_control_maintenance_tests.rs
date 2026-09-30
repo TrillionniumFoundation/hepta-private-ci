@@ -24,19 +24,20 @@ use tokio::net::UnixListener;
 
 const AGENT: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
-fn prepare_dispatch(control: &mut DurableInferenceControl, id: &str) -> NativePreEffectAbortToken {
-    control
-        .reserve_native(
-            NativeRequest {
-                request_id: id.to_string(),
-                principal_id: AGENT.to_string(),
-                worker_generation: 1,
-                model: "test-model".to_string(),
-                payload_digest: "a".repeat(64),
-            },
-            2,
-        )
-        .unwrap();
+fn prepare_dispatch(
+    control: &mut DurableInferenceControl,
+    id: &str,
+) -> Result<NativePreEffectAbortToken> {
+    control.reserve_native(
+        NativeRequest {
+            request_id: id.to_string(),
+            principal_id: AGENT.to_string(),
+            worker_generation: 1,
+            model: "test-model".to_string(),
+            payload_digest: "a".repeat(64),
+        },
+        2,
+    )?;
     let dispatch = NativeDispatch {
         thread_id: format!("thread-{id}"),
         model_provider: "test-provider".to_string(),
@@ -56,64 +57,61 @@ fn prepare_dispatch(control: &mut DurableInferenceControl, id: &str) -> NativePr
         codex_revocation_head_sha256: None,
         codex_authority_witness_sha256: None,
     };
-    let (_, token) = control
-        .dispatch_native_with_pre_effect_abort_bound(
-            id,
-            dispatch,
-            NativeTerminalOwnerBinding {
-                run_id: format!("owner-{id}"),
-                owner_dispatch_revision: 4,
-                context_digest: "b".repeat(64),
-                envelope_digest: "c".repeat(64),
-            },
-        )
-        .unwrap();
-    token
+    let (_, token) = control.dispatch_native_with_pre_effect_abort_bound(
+        id,
+        dispatch,
+        NativeTerminalOwnerBinding {
+            run_id: format!("owner-{id}"),
+            owner_dispatch_revision: 4,
+            context_digest: "b".repeat(64),
+            envelope_digest: "c".repeat(64),
+        },
+    )?;
+    Ok(token)
 }
 
-fn prepare(control: &mut DurableInferenceControl, id: &str) -> NativeRunRecord {
-    let token = prepare_dispatch(control, id);
-    control
-        .prepare_native_abort_before_effect(
-            token,
-            format!("owner-{id}"),
-            4,
-            "d".repeat(64),
-            "final authorization refused".to_string(),
-        )
-        .unwrap()
+fn prepare(control: &mut DurableInferenceControl, id: &str) -> Result<NativeRunRecord> {
+    let token = prepare_dispatch(control, id)?;
+    Ok(control.prepare_native_abort_before_effect(
+        token,
+        format!("owner-{id}"),
+        4,
+        "d".repeat(64),
+        "final authorization refused".to_string(),
+    )?)
 }
 
-fn prepare_terminal(control: &mut DurableInferenceControl, id: &str) -> NativeRunRecord {
-    drop(prepare_dispatch(control, id));
-    control.native_started(id, "turn-1".to_string()).unwrap();
-    control
-        .settle_native(
-            id,
-            NativeRunOutput {
-                thread_id: format!("thread-{id}"),
-                turn_id: "turn-1".to_string(),
-                model: "test-model".to_string(),
-                model_provider: "test-provider".to_string(),
-                status: NativeRunStatus::Failed,
-                boundary_status: NativeBoundaryStatus::Failed,
-                output: String::new(),
-                observed_output_tokens: Some(3),
-                terminal_observed: true,
-                stop_reason: Some("provider failed".to_string()),
-                owner_authority: NativeOwnerAuthority::ObservedReady,
-                codex_terminal_correlation_digest: None,
-            },
-        )
-        .unwrap()
+fn prepare_terminal(control: &mut DurableInferenceControl, id: &str) -> Result<NativeRunRecord> {
+    drop(prepare_dispatch(control, id)?);
+    control.native_started(id, "turn-1".to_string())?;
+    Ok(control.settle_native(
+        id,
+        NativeRunOutput {
+            thread_id: format!("thread-{id}"),
+            turn_id: "turn-1".to_string(),
+            model: "test-model".to_string(),
+            model_provider: "test-provider".to_string(),
+            status: NativeRunStatus::Failed,
+            boundary_status: NativeBoundaryStatus::Failed,
+            output: String::new(),
+            observed_output_tokens: Some(3),
+            terminal_observed: true,
+            stop_reason: Some("provider failed".to_string()),
+            owner_authority: NativeOwnerAuthority::ObservedReady,
+            codex_terminal_correlation_digest: None,
+        },
+    )?)
 }
 
 async fn serve_terminal(
     listener: &UnixListener,
     expected: &NativeRunRecord,
     owner_phase: AgentRunPhase,
-) {
-    let owner = expected.terminal_owner.as_ref().unwrap();
+) -> Result<()> {
+    let owner = expected
+        .terminal_owner
+        .as_ref()
+        .ok_or("terminal owner missing")?;
     let mut receipt = AgentRunReceipt {
         run_id: owner.run_id.clone(),
         revision: owner.owner_dispatch_revision,
@@ -137,11 +135,11 @@ async fn serve_terminal(
         receipt.phase = AgentRunPhase::Failed;
         receipt.terminal_observed = true;
     }
-    let (stream, _) = listener.accept().await.unwrap();
+    let (stream, _) = listener.accept().await?;
     let (reader, mut writer) = stream.into_split();
     let mut bytes = String::new();
-    BufReader::new(reader).read_line(&mut bytes).await.unwrap();
-    let request: AgentdRequest = serde_json::from_str(&bytes).unwrap();
+    BufReader::new(reader).read_line(&mut bytes).await?;
+    let request: AgentdRequest = serde_json::from_str(&bytes)?;
     match request.method {
         AgentdMethod::RunStatus { run_id } => assert_eq!(run_id, owner.run_id),
         other => panic!("terminal reconciliation issued an unexpected query: {other:?}"),
@@ -149,22 +147,22 @@ async fn serve_terminal(
     let response = AgentdResponse {
         schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
         request_id: request.request_id,
-        agent_id: AgentId::parse(AGENT).unwrap(),
+        agent_id: AgentId::parse(AGENT)?,
         spawn_generation: 1,
         current_generation: 1,
         payload: AgentdPayload::RunStatus { run: Some(receipt) },
     };
-    let mut bytes = serde_json::to_vec(&response).unwrap();
+    let mut bytes = serde_json::to_vec(&response)?;
     bytes.push(b'\n');
-    writer.write_all(&bytes).await.unwrap();
+    writer.write_all(&bytes).await?;
     if owner_phase == AgentRunPhase::Failed {
-        return;
+        return Ok(());
     }
     // Simulate Agentd committing the exact publication then losing its reply.
-    let (stream, _) = listener.accept().await.unwrap();
+    let (stream, _) = listener.accept().await?;
     let mut bytes = String::new();
-    BufReader::new(stream).read_line(&mut bytes).await.unwrap();
-    let request: AgentdRequest = serde_json::from_str(&bytes).unwrap();
+    BufReader::new(stream).read_line(&mut bytes).await?;
+    let request: AgentdRequest = serde_json::from_str(&bytes)?;
     match request.method {
         AgentdMethod::RunObserveTerminal {
             run_id,
@@ -184,11 +182,15 @@ async fn serve_terminal(
         }
         other => panic!("terminal reconciliation issued an unexpected mutation: {other:?}"),
     }
+    Ok(())
 }
 
-fn acknowledgement(record: &NativeRunRecord) -> AgentRunReceipt {
-    let abort = record.pre_effect_abort.as_ref().unwrap();
-    AgentRunReceipt {
+fn acknowledgement(record: &NativeRunRecord) -> Result<AgentRunReceipt> {
+    let abort = record
+        .pre_effect_abort
+        .as_ref()
+        .ok_or("abort proof missing")?;
+    Ok(AgentRunReceipt {
         run_id: abort.owner_run_id.clone(),
         revision: abort.owner_dispatch_revision + 1,
         phase: AgentRunPhase::AbortedBeforeEffect,
@@ -205,20 +207,23 @@ fn acknowledgement(record: &NativeRunRecord) -> AgentRunReceipt {
         cancel_ack_deadline_ms: None,
         terminal_observed: false,
         idempotent: true,
-    }
+    })
 }
 
 async fn serve_abort(
     listener: &UnixListener,
     expected: &NativeRunRecord,
     receipt: Option<AgentRunReceipt>,
-) {
-    let (stream, _) = listener.accept().await.unwrap();
+) -> Result<()> {
+    let (stream, _) = listener.accept().await?;
     let (reader, mut writer) = stream.into_split();
     let mut bytes = String::new();
-    BufReader::new(reader).read_line(&mut bytes).await.unwrap();
-    let request: AgentdRequest = serde_json::from_str(&bytes).unwrap();
-    let abort = expected.pre_effect_abort.as_ref().unwrap();
+    BufReader::new(reader).read_line(&mut bytes).await?;
+    let request: AgentdRequest = serde_json::from_str(&bytes)?;
+    let abort = expected
+        .pre_effect_abort
+        .as_ref()
+        .ok_or("abort proof missing")?;
     match request.method {
         AgentdMethod::RunAbortBeforeEffect {
             run_id,
@@ -253,43 +258,46 @@ async fn serve_abort(
         let response = AgentdResponse {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
-            agent_id: AgentId::parse(AGENT).unwrap(),
+            agent_id: AgentId::parse(AGENT)?,
             spawn_generation: 1,
             current_generation: 1,
             payload: AgentdPayload::RunReceipt(receipt),
         };
-        let mut bytes = serde_json::to_vec(&response).unwrap();
+        let mut bytes = serde_json::to_vec(&response)?;
         bytes.push(b'\n');
-        writer.write_all(&bytes).await.unwrap();
+        writer.write_all(&bytes).await?;
     }
+    Ok(())
 }
 
-fn driver(socket: std::path::PathBuf) -> AppServerModelDriver {
-    AppServerModelDriver::new(super::super::NativeWorkerConfig {
-        agentd_socket: socket,
-        agent_id: AgentId::parse(AGENT).unwrap(),
-        generation: 1,
-        model: "test-model".to_string(),
-        timeout: Duration::from_secs(1),
-    })
-    .unwrap()
+fn driver(socket: std::path::PathBuf) -> Result<AppServerModelDriver> {
+    Ok(AppServerModelDriver::new(
+        super::super::NativeWorkerConfig {
+            agentd_socket: socket,
+            agent_id: AgentId::parse(AGENT)?,
+            generation: 1,
+            model: "test-model".to_string(),
+            timeout: Duration::from_secs(1),
+        },
+    )?)
 }
 
 #[tokio::test]
-async fn lost_abort_ack_reopens_original_proof_and_retires_only_after_exact_ack() {
-    let directory = tempfile::tempdir().unwrap();
+async fn lost_abort_ack_reopens_original_proof_and_retires_only_after_exact_ack() -> Result<()> {
+    let directory = tempfile::tempdir()?;
     let socket = directory.path().join("agentd.sock");
-    let listener = UnixListener::bind(&socket).unwrap();
+    let listener = UnixListener::bind(&socket)?;
     let path = directory.path().join("control.journal");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    let pending = prepare(&mut control, "lost-ack");
-    let mut driver = driver(socket);
+    let mut control = DurableInferenceControl::open(&path, 8)?;
+    let pending = prepare(&mut control, "lost-ack")?;
+    let mut driver = driver(socket)?;
     let server = serve_abort(&listener, &pending, None);
-    let (receipt, ()) = tokio::join!(
+    let (receipt, served) = tokio::join!(
         driver.maintain_native_control(&mut control, Duration::from_secs(5)),
         server
     );
-    let receipt = receipt.unwrap();
+    served?;
+    let receipt = receipt?;
     assert_eq!(
         (
             receipt.aborts_attempted,
@@ -300,16 +308,17 @@ async fn lost_abort_ack_reopens_original_proof_and_retires_only_after_exact_ack(
     );
     assert_eq!(control.native_record("lost-ack"), Some(&pending));
     drop(control);
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut control = DurableInferenceControl::open(&path, 8)?;
     // An operator-selected provider model can change without granting a replay
     // of this old request or stranding its already persisted abort proof.
     driver.config.model = "new-provider-model".to_string();
-    let server = serve_abort(&listener, &pending, Some(acknowledgement(&pending)));
-    let (receipt, ()) = tokio::join!(
+    let server = serve_abort(&listener, &pending, Some(acknowledgement(&pending)?));
+    let (receipt, served) = tokio::join!(
         driver.maintain_native_control(&mut control, Duration::from_secs(5)),
         server
     );
-    let receipt = receipt.unwrap();
+    served?;
+    let receipt = receipt?;
     assert_eq!(
         (
             receipt.aborts_attempted,
@@ -318,34 +327,39 @@ async fn lost_abort_ack_reopens_original_proof_and_retires_only_after_exact_ack(
         ),
         (1, 1, 0)
     );
-    assert_eq!(receipt.history.unwrap().archived_records, 1);
-    let settled = control.native_record_resolved("lost-ack").unwrap().unwrap();
+    assert_eq!(
+        receipt
+            .history
+            .ok_or("maintenance history omitted")?
+            .archived_records,
+        1
+    );
+    let settled = control
+        .native_record_resolved("lost-ack")?
+        .ok_or("resolved native record missing")?;
     assert_eq!(settled.state, NativeReservationState::Released);
     assert_eq!(settled.pre_effect_abort, pending.pre_effect_abort);
     assert!(settled.observation.is_none());
     assert!(settled.turn_id.is_none());
     assert!(control.native_record("lost-ack").is_none());
-    assert_eq!(
-        control.reserve_native(pending.request.clone(), 2).unwrap(),
-        settled
-    );
+    assert_eq!(control.reserve_native(pending.request.clone(), 2)?, settled);
     drop(control);
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    assert_eq!(control.reserve_native(pending.request, 2).unwrap(), settled);
-    prepare(&mut control, "new-work");
+    let mut control = DurableInferenceControl::open(&path, 8)?;
+    assert_eq!(control.reserve_native(pending.request, 2)?, settled);
+    prepare(&mut control, "new-work")?;
+    Ok(())
 }
 
 #[tokio::test]
-async fn mismatched_abort_receipts_never_release_or_fabricate_an_observation() {
-    let directory = tempfile::tempdir().unwrap();
+async fn mismatched_abort_receipts_never_release_or_fabricate_an_observation() -> Result<()> {
+    let directory = tempfile::tempdir()?;
     let socket = directory.path().join("agentd.sock");
-    let listener = UnixListener::bind(&socket).unwrap();
-    let mut control =
-        DurableInferenceControl::open(directory.path().join("control.journal"), 8).unwrap();
-    let pending = prepare(&mut control, "mismatch");
-    let mut driver = driver(socket);
+    let listener = UnixListener::bind(&socket)?;
+    let mut control = DurableInferenceControl::open(directory.path().join("control.journal"), 8)?;
+    let pending = prepare(&mut control, "mismatch")?;
+    let mut driver = driver(socket)?;
     for change in 0..8 {
-        let mut ack = acknowledgement(&pending);
+        let mut ack = acknowledgement(&pending)?;
         match change {
             0 => ack.run_id = "different-owner".to_string(),
             1 => ack.generation += 1,
@@ -357,11 +371,12 @@ async fn mismatched_abort_receipts_never_release_or_fabricate_an_observation() {
             7 => ack.terminal_observed = true,
             _ => unreachable!(),
         }
-        let (receipt, ()) = tokio::join!(
+        let (receipt, served) = tokio::join!(
             driver.maintain_native_control(&mut control, Duration::from_secs(5)),
             serve_abort(&listener, &pending, Some(ack))
         );
-        let receipt = receipt.unwrap();
+        served?;
+        let receipt = receipt?;
         assert_eq!(
             (
                 receipt.aborts_attempted,
@@ -371,59 +386,72 @@ async fn mismatched_abort_receipts_never_release_or_fabricate_an_observation() {
             (1, 0, 1)
         );
         assert_eq!(control.native_record("mismatch"), Some(&pending));
-        assert_eq!(receipt.history.unwrap().archived_records, 0);
+        assert_eq!(
+            receipt
+                .history
+                .ok_or("maintenance history omitted")?
+                .archived_records,
+            0
+        );
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn acknowledged_history_retires_while_corrupt_cleanup_remains_unavailable() {
-    let directory = tempfile::tempdir().unwrap();
+async fn acknowledged_history_retires_while_corrupt_cleanup_remains_unavailable() -> Result<()> {
+    let directory = tempfile::tempdir()?;
     let socket = directory.path().join("agentd.sock");
-    let listener = UnixListener::bind(&socket).unwrap();
+    let listener = UnixListener::bind(&socket)?;
     std::fs::write(
         directory.path().join("runtime-codex-cleanup-v1.sqlite3"),
         b"corrupted independent cleanup store",
-    )
-    .unwrap();
-    let mut control =
-        DurableInferenceControl::open(directory.path().join("control.journal"), 8).unwrap();
-    let pending = prepare(&mut control, "original-ack");
-    let mut driver = driver(socket);
-    let (receipt, ()) = tokio::join!(
+    )?;
+    let mut control = DurableInferenceControl::open(directory.path().join("control.journal"), 8)?;
+    let pending = prepare(&mut control, "original-ack")?;
+    let mut driver = driver(socket)?;
+    let (receipt, served) = tokio::join!(
         driver.maintain_native_control(&mut control, Duration::from_secs(5)),
-        serve_abort(&listener, &pending, Some(acknowledgement(&pending)))
+        serve_abort(&listener, &pending, Some(acknowledgement(&pending)?))
     );
-    let receipt = receipt.unwrap();
+    served?;
+    let receipt = receipt?;
     assert_eq!(receipt.aborts_confirmed, 1);
-    assert_eq!(receipt.history.unwrap().archived_records, 1);
+    assert_eq!(
+        receipt
+            .history
+            .ok_or("maintenance history omitted")?
+            .archived_records,
+        1
+    );
     assert!(receipt.cleanup.is_none());
     assert!(receipt.cleanup_error.is_some());
     assert!(driver.cleanup_owner.get().await.is_err());
     assert_eq!(
         control
-            .native_record_resolved("original-ack")
-            .unwrap()
-            .unwrap()
+            .native_record_resolved("original-ack")?
+            .ok_or("resolved native record missing")?
             .state,
         NativeReservationState::Released
     );
+    Ok(())
 }
 
 #[tokio::test]
 async fn idle_owner_recovers_lost_terminal_publication_ack_then_archives_without_replaying_effect()
-{
-    let directory = tempfile::tempdir().unwrap();
+-> Result<()> {
+    let directory = tempfile::tempdir()?;
     let socket = directory.path().join("agentd.sock");
-    let listener = UnixListener::bind(&socket).unwrap();
+    let listener = UnixListener::bind(&socket)?;
     let path = directory.path().join("control.journal");
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    let settled = prepare_terminal(&mut control, "terminal");
-    let mut driver = driver(socket);
-    let (receipt, ()) = tokio::join!(
+    let mut control = DurableInferenceControl::open(&path, 8)?;
+    let settled = prepare_terminal(&mut control, "terminal")?;
+    let mut driver = driver(socket)?;
+    let (receipt, served) = tokio::join!(
         driver.maintain_native_control(&mut control, Duration::from_secs(5)),
         serve_terminal(&listener, &settled, AgentRunPhase::Dispatched)
     );
-    let receipt = receipt.unwrap();
+    served?;
+    let receipt = receipt?;
     assert_eq!(
         (
             receipt.terminal_publications_attempted,
@@ -432,17 +460,33 @@ async fn idle_owner_recovers_lost_terminal_publication_ack_then_archives_without
         ),
         (1, 0, 1)
     );
-    assert_eq!(receipt.history.unwrap().archived_records, 0);
-    let pending = control.native_record("terminal").unwrap().clone();
-    assert!(pending.terminal_publication.as_ref().unwrap().pending());
+    assert_eq!(
+        receipt
+            .history
+            .ok_or("maintenance history omitted")?
+            .archived_records,
+        0
+    );
+    let pending = control
+        .native_record("terminal")
+        .ok_or("native terminal record missing")?
+        .clone();
+    assert!(
+        pending
+            .terminal_publication
+            .as_ref()
+            .ok_or("terminal publication missing")?
+            .pending()
+    );
     assert_eq!(pending.observation, settled.observation);
     drop(control);
-    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
-    let (receipt, ()) = tokio::join!(
+    let mut control = DurableInferenceControl::open(&path, 8)?;
+    let (receipt, served) = tokio::join!(
         driver.maintain_native_control(&mut control, Duration::from_secs(5)),
         serve_terminal(&listener, &pending, AgentRunPhase::Failed)
     );
-    let receipt = receipt.unwrap();
+    served?;
+    let receipt = receipt?;
     assert_eq!(
         (
             receipt.terminal_publications_attempted,
@@ -451,13 +495,25 @@ async fn idle_owner_recovers_lost_terminal_publication_ack_then_archives_without
         ),
         (1, 1, 0)
     );
-    assert_eq!(receipt.history.unwrap().archived_records, 1);
-    assert!(control.native_record("terminal").is_none());
-    let archived = control.native_record_resolved("terminal").unwrap().unwrap();
-    assert_eq!(archived.observation, settled.observation);
-    assert!(!archived.terminal_publication.as_ref().unwrap().pending());
     assert_eq!(
-        control.reserve_native(settled.request, 2).unwrap(),
-        archived
+        receipt
+            .history
+            .ok_or("maintenance history omitted")?
+            .archived_records,
+        1
     );
+    assert!(control.native_record("terminal").is_none());
+    let archived = control
+        .native_record_resolved("terminal")?
+        .ok_or("resolved native record missing")?;
+    assert_eq!(archived.observation, settled.observation);
+    assert!(
+        !archived
+            .terminal_publication
+            .as_ref()
+            .ok_or("terminal publication missing")?
+            .pending()
+    );
+    assert_eq!(control.reserve_native(settled.request, 2)?, archived);
+    Ok(())
 }

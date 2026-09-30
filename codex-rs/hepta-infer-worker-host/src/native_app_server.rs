@@ -452,7 +452,6 @@ impl AppServerModelDriver {
 
     /// Execute once. Transport loss after turn/start remains indeterminate and
     /// must never be automatically replayed as a fresh request.
-
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
