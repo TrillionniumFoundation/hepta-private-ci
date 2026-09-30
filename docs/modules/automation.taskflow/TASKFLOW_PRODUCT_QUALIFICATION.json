@@ -4,8 +4,8 @@
   "module": "automation.taskflow",
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "sourceCandidate": {
-    "commit": "fe8413a3189867be7763d91caa3835d9776c6b47",
-    "tree": "aee5e79e282ccf8f46ad46a189a5db97a37ce494",
+    "commit": "95ffdf1718f0b18b22c2d1dc357fa670f66c6818",
+    "tree": "2c5986d4aa34f69b9950b1b32444c73a56e2fb5a",
     "cargoLockBlob": "cd6650b68a815d69038166b7de50c2857f358641",
     "sourceObjects": [
       {
@@ -28,7 +28,8 @@
         "path": "codex-rs/hepta-automation/migrations/0020_neural_circuit_runtime.sql",
         "blob": "1b2eb7be051c269b40d3e6a6a29c9292774419f2"
       }
-    ]
+    ],
+    "semantics": "last source/test-changing candidate; later metadata-only commits do not change the bound runtime objects"
   },
   "sourceComposition": {
     "namedProductHost": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
