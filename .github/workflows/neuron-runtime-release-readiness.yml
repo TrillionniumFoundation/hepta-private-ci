@@ -1,6 +1,18 @@
 name: Neuron runtime release readiness
 
 on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/neuron.runtime/**"
+      - "scripts/neuron/**"
+      - ".github/workflows/neuron-runtime-*.yml"
+      - ".github/workflows/blocking-ci.yml"
   workflow_run:
     workflows:
       - Neuron runtime unified readiness
@@ -32,21 +44,22 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: neuron-runtime-release-readiness-${{ github.event.workflow_run.head_sha || inputs.source_sha }}
+  group: neuron-runtime-release-readiness-${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || inputs.source_sha }}
   cancel-in-progress: false
 
 jobs:
   finalize:
     name: Neuron release readiness
     if: >-
+      github.event_name == 'pull_request' ||
       github.event_name == 'workflow_dispatch' ||
       github.event.workflow_run.event == 'pull_request'
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 50
     env:
       GH_TOKEN: ${{ github.token }}
-      SOURCE_SHA: ${{ github.event.workflow_run.head_sha || inputs.source_sha }}
-      INPUT_BASE_SHA: ${{ inputs.base_sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha || inputs.source_sha }}
+      INPUT_BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha }}
       INPUT_READINESS_RUN_ID: ${{ inputs.readiness_run_id }}
       INPUT_BLOCKING_RUN_ID: ${{ inputs.blocking_run_id }}
       PYTHONDONTWRITEBYTECODE: "1"
@@ -111,7 +124,7 @@ jobs:
               return
             fi
 
-            for attempt in $(seq 1 30); do
+            for attempt in $(seq 1 70); do
               payload="$(gh api --method GET \
                 -H 'Accept: application/vnd.github+json' \
                 -H 'X-GitHub-Api-Version: 2022-11-28' \
@@ -139,7 +152,7 @@ jobs:
                 printf '%s\n' "$selected"
                 return
               fi
-              if [ "$attempt" -lt 30 ]; then
+              if [ "$attempt" -lt 70 ]; then
                 sleep 30
               fi
             done
