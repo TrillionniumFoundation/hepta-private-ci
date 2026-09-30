@@ -115,17 +115,34 @@ def strict_regular_file(
     allowed_root: Path | None = None,
 ) -> Path:
     root = records_root.resolve(strict=True)
+    boundary_path = _lexical_absolute(allowed_root or root)
+    try:
+        boundary_relative = boundary_path.relative_to(root)
+    except ValueError as error:
+        raise ValueError(f"{label} boundary escapes the retained-artifact root") from error
+    current = root
+    for component in boundary_relative.parts:
+        current = current / component
+        try:
+            mode = os.lstat(current).st_mode
+        except FileNotFoundError as error:
+            raise ValueError(f"{label} boundary is absent: {current}") from error
+        if stat.S_ISLNK(mode):
+            raise ValueError(f"{label} boundary must not traverse a symlink: {current}")
+    if not boundary_path.is_dir():
+        raise ValueError(f"{label} boundary must be a directory")
+    boundary = boundary_path.resolve(strict=True)
+
     candidate = Path(raw_path)
     if not candidate.is_absolute():
         candidate = root / candidate
     candidate = _lexical_absolute(candidate)
-    boundary = (allowed_root or root).resolve(strict=True)
     try:
-        relative = candidate.relative_to(boundary)
+        relative = candidate.relative_to(boundary_path)
     except ValueError as error:
         raise ValueError(f"{label} escapes its retained-artifact boundary") from error
 
-    current = boundary
+    current = boundary_path
     for component in relative.parts:
         current = current / component
         try:
@@ -560,8 +577,6 @@ def build_audit(records_root: Path, identity: dict[str, Any]) -> dict[str, Any]:
         }
         crash = {"passed": False, "errors": ["records root is unavailable"]}
 
-    # Prefix-free deduplication retains deterministic ordering without hiding
-    # repeated failures from individual receipt detail objects.
     unique_errors = list(dict.fromkeys(errors))
     passed = (
         not unique_errors
@@ -608,7 +623,7 @@ def main() -> int:
     identity = identity_from_args(args)
     try:
         audit = build_audit(args.records_root, identity)
-    except Exception as error:  # Keep a retained fail-closed object for diagnostics.
+    except Exception as error:
         audit = {
             "schemaVersion": 1,
             "module": "kernel.evidence",

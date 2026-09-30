@@ -206,6 +206,25 @@ class ReceiptAuditTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertTrue(any("sha256" in error for error in result["errors"]))
 
+    def test_symlink_scenario_directory_is_rejected(self) -> None:
+        scenario = audit.REQUIRED_CRASH_SCENARIOS[0]
+        original = self.root / "crash" / scenario
+        with tempfile.TemporaryDirectory() as external_temp:
+            external = Path(external_temp) / scenario
+            original.rename(external)
+            try:
+                os.symlink(external, original, target_is_directory=True)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"directory symlink unavailable: {error}")
+            result = audit.build_audit(self.root, dict(IDENTITY))
+            self.assertFalse(result["passed"])
+            self.assertTrue(
+                any(
+                    "boundary" in error and "symlink" in error
+                    for error in result["errors"]
+                )
+            )
+
     def test_symlink_log_is_rejected(self) -> None:
         source = self.root / "source" / "tests.log"
         replacement = self.root / "source" / "actual.log"

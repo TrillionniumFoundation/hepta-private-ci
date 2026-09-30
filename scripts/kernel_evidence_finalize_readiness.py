@@ -18,6 +18,28 @@ import tempfile
 from typing import Any
 
 
+QUALIFICATION_KINDS = (
+    "exact_source",
+    "deterministic_merge",
+    "metadata",
+    "publication_diagnostics",
+)
+REQUIRED_CRASH_SCENARIOS = (
+    "sqlite_process_kill",
+    "wal_rollback_journal",
+    "fsync_rename_directory_fsync",
+    "disk_full",
+    "damaged_frontier",
+    "damaged_database",
+    "stale_valid_frontier",
+    "legacy_import",
+    "simultaneous_database_frontier_rollback",
+    "backup_restore",
+    "multi_process_contention",
+    "repair_append_concurrency",
+)
+
+
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -48,6 +70,51 @@ def atomic_json(path: Path, value: dict[str, Any]) -> None:
         os.replace(temporary, path)
     finally:
         temporary.unlink(missing_ok=True)
+
+
+def audit_structure_errors(audit: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    authority = audit.get("authority")
+    required_authority = (
+        "qualificationGranted",
+        "independentAcceptanceGranted",
+        "targetHostAcceptanceGranted",
+        "productionActivationGranted",
+        "promotionGranted",
+        "releaseGranted",
+    )
+    if not isinstance(authority, dict):
+        errors.append("receipt audit authority boundary is absent")
+    else:
+        for key in required_authority:
+            if authority.get(key) is not False:
+                errors.append(f"receipt audit authority.{key} must be exactly false")
+
+    qualifications = audit.get("qualificationReceipts")
+    if not isinstance(qualifications, dict) or set(qualifications) != set(QUALIFICATION_KINDS):
+        errors.append("receipt audit qualification inventory is not closed-world")
+    else:
+        for kind in QUALIFICATION_KINDS:
+            entry = qualifications.get(kind)
+            if not isinstance(entry, dict) or entry.get("passed") is not True:
+                errors.append(f"receipt audit qualification {kind} did not pass")
+
+    crash = audit.get("crashConsistency")
+    if not isinstance(crash, dict) or crash.get("passed") is not True:
+        errors.append("receipt audit crash matrix did not pass")
+        return errors
+    summary = crash.get("summary")
+    if not isinstance(summary, dict) or summary.get("passed") is not True:
+        errors.append("receipt audit crash summary did not pass")
+    scenarios = crash.get("scenarios")
+    if not isinstance(scenarios, dict) or set(scenarios) != set(REQUIRED_CRASH_SCENARIOS):
+        errors.append("receipt audit crash scenario inventory is not closed-world")
+    else:
+        for scenario in REQUIRED_CRASH_SCENARIOS:
+            entry = scenarios.get(scenario)
+            if not isinstance(entry, dict) or entry.get("passed") is not True:
+                errors.append(f"receipt audit crash scenario {scenario} did not pass")
+    return errors
 
 
 def audit_identity_errors(manifest: dict[str, Any], audit: dict[str, Any]) -> list[str]:
@@ -116,6 +183,8 @@ def finalize(
         errors.append("receipt audit module is incorrect")
     if audit.get("receiptKind") != "readiness_receipt_audit":
         errors.append("receipt audit kind is incorrect")
+    if receipt_audit_path.is_symlink() or not receipt_audit_path.is_file():
+        errors.append("receipt audit must be a regular non-symlink file")
     if audit.get("passed") is not True:
         errors.append("receipt audit did not reach terminal success")
     audit_errors = audit.get("errors")
@@ -123,6 +192,7 @@ def finalize(
         errors.append("receipt audit errors field is invalid")
     elif audit_errors:
         errors.append("receipt audit retained one or more validation errors")
+    errors.extend(audit_structure_errors(audit))
     errors.extend(audit_identity_errors(manifest, audit))
     errors.extend(runtime_identity_errors(manifest, runtime))
 

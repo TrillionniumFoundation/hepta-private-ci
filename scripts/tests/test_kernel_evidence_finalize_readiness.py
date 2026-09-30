@@ -92,13 +92,34 @@ class FinalizeReadinessTests(unittest.TestCase):
             "runnerImage": self.identity["runner_image"],
             "targetTriple": self.identity["target_triple"],
         }
+        qualification_receipts = {
+            kind: {"passed": True} for kind in finalize.QUALIFICATION_KINDS
+        }
+        crash_scenarios = {
+            scenario: {"passed": True}
+            for scenario in finalize.REQUIRED_CRASH_SCENARIOS
+        }
         audit = {
             "schemaVersion": 1,
             "module": "kernel.evidence",
             "receiptKind": "readiness_receipt_audit",
             "identity": audit_identity,
             "passed": audit_passed,
+            "qualificationReceipts": qualification_receipts,
+            "crashConsistency": {
+                "passed": True,
+                "summary": {"passed": True},
+                "scenarios": crash_scenarios,
+            },
             "errors": [] if audit_passed else ["tampered log"],
+            "authority": {
+                "qualificationGranted": False,
+                "independentAcceptanceGranted": False,
+                "targetHostAcceptanceGranted": False,
+                "productionActivationGranted": False,
+                "promotionGranted": False,
+                "releaseGranted": False,
+            },
         }
         write_json(self.manifest_path, manifest)
         write_json(self.runtime_path, runtime)
@@ -130,6 +151,37 @@ class FinalizeReadinessTests(unittest.TestCase):
         self.assertFalse(runtime["repositoryControlledReady"])
         self.assertFalse(runtime["authenticatedFrontierProtocolQualified"])
 
+    def test_forged_top_level_success_without_details_fails_closed(self) -> None:
+        audit = json.loads(self.audit_path.read_text(encoding="utf-8"))
+        audit["qualificationReceipts"] = {}
+        audit["crashConsistency"] = {"passed": True}
+        write_json(self.audit_path, audit)
+        result = finalize.finalize(
+            self.manifest_path, self.runtime_path, self.audit_path, self.output_path
+        )
+        self.assertFalse(result["readiness"]["receipt_audit_qualified"])
+        self.assertTrue(
+            any(
+                "inventory" in error or "summary" in error
+                for error in result["receipt_audit"]["errors"]
+            )
+        )
+
+    def test_audit_authority_true_fails_closed(self) -> None:
+        audit = json.loads(self.audit_path.read_text(encoding="utf-8"))
+        audit["authority"]["releaseGranted"] = True
+        write_json(self.audit_path, audit)
+        result = finalize.finalize(
+            self.manifest_path, self.runtime_path, self.audit_path, self.output_path
+        )
+        self.assertFalse(result["readiness"]["receipt_audit_qualified"])
+        self.assertTrue(
+            any(
+                "releaseGranted" in error
+                for error in result["receipt_audit"]["errors"]
+            )
+        )
+
     def test_identity_mismatch_fails_closed(self) -> None:
         audit = json.loads(self.audit_path.read_text(encoding="utf-8"))
         audit["identity"]["workflowRunAttempt"] = "2"
@@ -139,7 +191,10 @@ class FinalizeReadinessTests(unittest.TestCase):
         )
         self.assertFalse(result["readiness"]["receipt_audit_qualified"])
         self.assertTrue(
-            any("workflowRunAttempt" in error for error in result["receipt_audit"]["errors"])
+            any(
+                "workflowRunAttempt" in error
+                for error in result["receipt_audit"]["errors"]
+            )
         )
 
 
