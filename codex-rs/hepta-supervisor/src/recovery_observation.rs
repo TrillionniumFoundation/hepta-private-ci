@@ -88,6 +88,32 @@ pub enum RecoveryObservationError {
     Serialization(#[from] serde_json::Error),
 }
 
+// A derived tuple struct retains the canonical JSON array and nested field
+// order without serde's sixteen-element anonymous-tuple implementation limit.
+#[derive(Serialize)]
+struct ObservationIdentityPayloadV1<'a>(
+    u32,
+    &'a AgentId,
+    &'a str,
+    AgentLifecycle,
+    u64,
+    u64,
+    u64,
+    bool,
+    bool,
+    Option<u64>,
+    Option<u64>,
+    Option<u64>,
+    &'a Option<String>,
+    bool,
+    bool,
+    &'a Option<ProcessExitWitnessV1>,
+    bool,
+    &'a [RecoveryBlockerKind],
+    u64,
+    u32,
+);
+
 impl ProductionRecoveryObservationV1 {
     fn validate(&self) -> Result<(), RecoveryObservationError> {
         if self.schema_version != PRODUCTION_RECOVERY_OBSERVATION_SCHEMA_VERSION
@@ -117,7 +143,7 @@ impl ProductionRecoveryObservationV1 {
     }
 
     fn compute_observation_id(&self) -> Result<Sha256Digest, RecoveryObservationError> {
-        let payload = serde_json::to_vec(&(
+        let payload = serde_json::to_vec(&ObservationIdentityPayloadV1(
             self.schema_version,
             &self.agent_id,
             &self.supervisor_epoch,
