@@ -448,6 +448,8 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
