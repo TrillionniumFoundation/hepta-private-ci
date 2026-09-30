@@ -71,8 +71,7 @@ failures. `diagnostics()` reports state/recovery counts, pending quota, encoded
 and reserved bytes, writer fencing, commit bytes and bounded latency percentiles.
 
 The operation and production-store gates are specified in
-`docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md`. A production SQLite
-owner is still target-only: no truncated staging payload or SQLite-wrapped JSON
+`docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md`. The transactional SQLite owner/runtime source is present but remains unqualified and uncomposed: no truncated staging payload or SQLite-wrapped JSON
 blob is treated as implementation. Production activation remains false until a
 complete transactional owner, external monotonic checkpoint, target-host
 qualification and nonblocking host integration exist.
@@ -121,3 +120,17 @@ Source composition is not a selected Agentd/App Server bootstrap. Test keys are
 synthetic. External trusted time, settlement signing, key rotation, revocation
 distribution, backup anti-rollback, operator acceptance, canary, promotion and
 release remain independently owned gates.
+
+<!-- secrets-heptabao-sqlite-source-status:v1 -->
+## SQLite source and qualification status
+
+The current source candidate contains `SqliteBaoOwnerV1` and
+`SqliteBaoProductRuntimeV1`, including revision-CAS transitions, generation-
+fenced recovery claims, schema-4 reference import, immutable terminal archive
+and external-checkpoint hashing/publication hooks. This is a **source-presence**
+fact only. Exact-head compilation/qualification, storage-profile qualification,
+a named product caller, target-host qualification, activation, operator
+acceptance and release remain false until independently proved for one exact
+SHA. The fixed provider remains KV-v2-read-only; generic dynamic issue, renew
+and revoke remain fail-closed.
+<!-- /secrets-heptabao-sqlite-source-status:v1 -->

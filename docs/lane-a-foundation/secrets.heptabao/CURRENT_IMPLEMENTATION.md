@@ -112,3 +112,17 @@ See [lease owner V3](../../modules/secrets.heptabao/LEASE_OWNER_V3.md) for the
 schema-1/2 migration boundary, single-writer protocol, immutable operation results,
 registered consumer profile and restart reconciliation. Historical fixtures do
 not qualify these changes; use exact-candidate independent native feedback.
+
+<!-- secrets-heptabao-sqlite-source-status:v1 -->
+## SQLite source and qualification status
+
+The current source candidate contains `SqliteBaoOwnerV1` and
+`SqliteBaoProductRuntimeV1`, including revision-CAS transitions, generation-
+fenced recovery claims, schema-4 reference import, immutable terminal archive
+and external-checkpoint hashing/publication hooks. This is a **source-presence**
+fact only. Exact-head compilation/qualification, storage-profile qualification,
+a named product caller, target-host qualification, activation, operator
+acceptance and release remain false until independently proved for one exact
+SHA. The fixed provider remains KV-v2-read-only; generic dynamic issue, renew
+and revoke remain fail-closed.
+<!-- /secrets-heptabao-sqlite-source-status:v1 -->

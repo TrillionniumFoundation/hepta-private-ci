@@ -93,7 +93,7 @@ recovery operations rather than isolated SQL statements. At minimum, retain:
 
 ## 5. Production-store replacement gate
 
-A production SQLite owner remains target-only. Merely storing one JSON blob in a
+A transactional SQLite owner/runtime source is present, but exact-head, storage-profile, target-host and product-composition qualification remain open. Merely storing one JSON blob in a
 SQLite row does not satisfy this gate. A replacement must preserve:
 
 - exact operation deduplication and semantic-conflict rejection;
@@ -129,3 +129,17 @@ The recovery oracle proves more than the absence of a duplicate receipt:
 
 The fixture uses synthetic loopback TLS and process termination. It is not an
 external HeptaBao dynamic-lease test or storage-device power-loss qualification.
+
+<!-- secrets-heptabao-sqlite-source-status:v1 -->
+## SQLite source and qualification status
+
+The current source candidate contains `SqliteBaoOwnerV1` and
+`SqliteBaoProductRuntimeV1`, including revision-CAS transitions, generation-
+fenced recovery claims, schema-4 reference import, immutable terminal archive
+and external-checkpoint hashing/publication hooks. This is a **source-presence**
+fact only. Exact-head compilation/qualification, storage-profile qualification,
+a named product caller, target-host qualification, activation, operator
+acceptance and release remain false until independently proved for one exact
+SHA. The fixed provider remains KV-v2-read-only; generic dynamic issue, renew
+and revoke remain fail-closed.
+<!-- /secrets-heptabao-sqlite-source-status:v1 -->

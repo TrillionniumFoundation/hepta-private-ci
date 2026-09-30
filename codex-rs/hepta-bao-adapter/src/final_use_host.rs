@@ -567,9 +567,9 @@ impl BaoFinalUseHost {
                         ))
                     }
                     BaoConsumptionRecoveryActionV1::ReturnHistoricalFailure => {
-                        Err(BaoProductHostError::TerminalFailure(existing))
+                        Err(BaoProductHostError::TerminalFailure(Box::new(existing)))
                     }
-                    _ => Err(BaoProductHostError::OutcomePending(existing)),
+                    _ => Err(BaoProductHostError::OutcomePending(Box::new(existing))),
                 };
             }
 
@@ -694,12 +694,12 @@ impl BaoFinalUseHost {
                             .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
                             .settle_consumption_failure(operation_id)
                             .map_err(BaoProductHostError::Store)?;
-                        Err(BaoProductHostError::TerminalFailure(row))
+                        Err(BaoProductHostError::TerminalFailure(Box::new(row)))
                     } else if let Some(terminal) = self
                         .close_unreserved_failure_if_proved(authbus, registry, operation_id, &error)
                         .await?
                     {
-                        Err(BaoProductHostError::TerminalFailure(terminal))
+                        Err(BaoProductHostError::TerminalFailure(Box::new(terminal)))
                     } else {
                         Err(BaoProductHostError::AuthBus(error))
                     }
@@ -715,7 +715,7 @@ impl BaoFinalUseHost {
                         .close_unreserved_failure_if_proved(authbus, registry, operation_id, &error)
                         .await?
                     {
-                        Err(BaoProductHostError::TerminalFailure(terminal))
+                        Err(BaoProductHostError::TerminalFailure(Box::new(terminal)))
                     } else {
                         Err(BaoProductHostError::AuthBus(error))
                     }
@@ -790,7 +790,7 @@ impl BaoFinalUseHost {
                 ));
             }
             if row.state == BaoConsumptionStateV1::Failed {
-                return Err(BaoProductHostError::TerminalFailure(row));
+                return Err(BaoProductHostError::TerminalFailure(Box::new(row)));
             }
             let registration = self
                 .consumers
@@ -832,9 +832,9 @@ impl BaoFinalUseHost {
                         .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
                         .record_consumption_abort(operation_id, false, "no_reservation", terminal)
                         .map_err(BaoProductHostError::Store)?;
-                    return Err(BaoProductHostError::TerminalFailure(terminal));
+                    return Err(BaoProductHostError::TerminalFailure(Box::new(terminal)));
                 }
-                return Err(BaoProductHostError::OutcomePending(row));
+                return Err(BaoProductHostError::OutcomePending(Box::new(row)));
             };
             validate_reservation(&row, &reservation).map_err(BaoProductHostError::Store)?;
             {
@@ -927,7 +927,7 @@ impl BaoFinalUseHost {
                         .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
                         .record_consumption_abort(operation_id, true, code, terminal)
                         .map_err(BaoProductHostError::Store)?;
-                    return Err(BaoProductHostError::TerminalFailure(terminal));
+                    return Err(BaoProductHostError::TerminalFailure(Box::new(terminal)));
                 }
                 ReservationState::Cancelled | ReservationState::Expired => {
                     if matches!(
@@ -945,7 +945,7 @@ impl BaoFinalUseHost {
                             .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
                             .record_consumption_abort(operation_id, true, code, terminal)
                             .map_err(BaoProductHostError::Store)?;
-                        return Err(BaoProductHostError::TerminalFailure(terminal));
+                        return Err(BaoProductHostError::TerminalFailure(Box::new(terminal)));
                     }
                 }
                 ReservationState::Released => {
@@ -965,7 +965,7 @@ impl BaoFinalUseHost {
                                 terminal,
                             )
                             .map_err(BaoProductHostError::Store)?;
-                        return Err(BaoProductHostError::TerminalFailure(terminal));
+                        return Err(BaoProductHostError::TerminalFailure(Box::new(terminal)));
                     }
                 }
                 ReservationState::DispatchAttempted
@@ -1003,7 +1003,7 @@ impl BaoFinalUseHost {
                     Ok(
                         BaoConsumerObservationV1::NotApplied | BaoConsumerObservationV1::Unknown,
                     )
-                    | Err(()) => return Err(BaoProductHostError::OutcomePending(row)),
+                    | Err(()) => return Err(BaoProductHostError::OutcomePending(Box::new(row))),
                 }
             }
 
@@ -1021,8 +1021,10 @@ impl BaoFinalUseHost {
                 BaoConsumptionStateV1::Succeeded => row.receipt.ok_or(BaoProductHostError::Store(
                     LeaseRegistryErrorV1::CorruptState,
                 )),
-                BaoConsumptionStateV1::Failed => Err(BaoProductHostError::TerminalFailure(row)),
-                _ => Err(BaoProductHostError::OutcomePending(row)),
+                BaoConsumptionStateV1::Failed => {
+                    Err(BaoProductHostError::TerminalFailure(Box::new(row)))
+                }
+                _ => Err(BaoProductHostError::OutcomePending(Box::new(row))),
             }
         }
         .await;
@@ -1079,7 +1081,7 @@ async fn settle_terminal_row<E: BaoAuthBusEvidenceProvider>(
             reservation.state,
             ReservationState::DispatchAttempted | ReservationState::Indeterminate
         ) {
-            return Err(BaoProductHostError::OutcomePending(row));
+            return Err(BaoProductHostError::OutcomePending(Box::new(row)));
         }
         crate::https_consumer::settle_observed(
             authbus,
@@ -1104,7 +1106,7 @@ async fn settle_terminal_row<E: BaoAuthBusEvidenceProvider>(
         let terminal = owner
             .settle_consumption_failure(&row.operation_id)
             .map_err(BaoProductHostError::Store)?;
-        Err(BaoProductHostError::TerminalFailure(terminal))
+        Err(BaoProductHostError::TerminalFailure(Box::new(terminal)))
     }
 }
 
@@ -1228,8 +1230,8 @@ pub enum BaoProductHostError {
     Store(LeaseRegistryErrorV1),
     SqliteStore(crate::SqliteBaoOwnerErrorV1),
     ConsumerProfileRequired,
-    OutcomePending(BaoConsumptionOperationV1),
-    TerminalFailure(BaoConsumptionOperationV1),
+    OutcomePending(Box<BaoConsumptionOperationV1>),
+    TerminalFailure(Box<BaoConsumptionOperationV1>),
 }
 
 impl BaoProductHostError {

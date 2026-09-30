@@ -1,6 +1,7 @@
 {
   "aggregationRule": "one workflow run and one attempt; cross-SHA and cross-attempt stitching forbidden",
   "buildSurface": "single_complete",
+  "cargoFeatures": [],
   "identityRule": "candidateSha == testedSha == documentedSha == artifactSourceSha == qualificationSha",
   "materializationAuthority": "separate_development_workflow",
   "mergeReady": false,

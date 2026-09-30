@@ -1,68 +1,45 @@
-# `secrets.heptabao` production readiness boundary
+# `secrets.heptabao` production-readiness boundary
 
-This file is the human-readable companion to `READINESS_POLICY_V1.json` and the
+This document accompanies `READINESS_POLICY_V1.json` and the read-only
 CI-generated `hepta.secrets-heptabao-readiness.v2` receipt.
 
-## Exact candidate rule
+## Exact-candidate rule
 
-A qualification result is valid only when the candidate, tested source,
-documentation, source artifact and qualification result refer to one Git object
-and one workflow attempt. Results from different SHAs or attempts are never
-combined. The development materializer may create a new commit, but only the
-subsequent read-only qualification of that commit is evidence.
-
-Qualification workflows use `contents: read`, disable checkout credentials,
-perform full tracked and untracked cleanliness checks before and after execution,
-and never invoke a generator, commit or push operation.
+Source, tests, documentation, artifacts and qualification must refer to one Git
+commit and one workflow attempt. Results from another SHA or attempt cannot be
+combined. Qualification checks out the exact review object with persisted Git
+credentials disabled and must leave the complete worktree unchanged.
 
 ## Build surface
 
-`codex-hepta-bao-adapter` is one complete Cargo build surface. The SQLite owner,
-AuthBus admission, durable operations and registered final-use host are
-unconditional parts of that surface. Historical undeclared feature names are
-not a product boundary and are rejected by `validate_build_contract.py`.
-Qualification records `cargo metadata --locked` before native execution.
+`codex-hepta-bao-adapter` is one complete Cargo build surface. SQLite, AuthBus,
+HTTPS and registered-host code are not represented by undeclared synthetic
+feature names. The qualifier runs `cargo metadata --locked --no-deps` and the
+normal full package targets.
 
-## Independent readiness dimensions
+## Current source truth
 
-The module reports the following dimensions independently:
+`SqliteBaoOwnerV1` and `SqliteBaoProductRuntimeV1` are source-present. The owner
+contains revision CAS, append-only transitions, bounded generation-fenced
+recovery claims, schema-4 import, immutable terminal archival and checkpoint
+hashing/publication hooks. No non-test Agentd or App Server binary currently
+selects this runtime.
 
-| Dimension | Current state |
-|---|---|
-| sourcePresent | true |
-| sourceCompiled | unproved until exact-head CI succeeds |
-| sourceQualified | false until source and deterministic merge both succeed |
-| storageProfileQualified | false |
-| productComposed | false |
-| targetHostQualified | false |
-| activated | false |
-| operatorAccepted | false |
-| released | false |
+Consequently source presence is true while source qualification,
+storage-profile qualification, product composition, target-host qualification,
+activation, operator acceptance and release remain false until independently
+proved for one exact SHA.
 
-SQLite owner/runtime source presence is recorded without claiming product
-composition or deployment qualification.
+## Deployment topology
 
-## Current composition boundary
-
-The library contains `SqliteBaoOwnerV1` and `SqliteBaoProductRuntimeV1`, but the
-candidate contains no named non-test Agentd or App Server process that owns their
-lifecycle. A future product caller must declare the binary, database identity,
-startup import policy, forward and recovery worker identities, shutdown drain,
-protected provider and trust configuration, checkpoint service, metrics sink,
-rollback procedure and supported topology.
-
-## Durable-writer deployment support
-
-| Deployment | State | Required proof |
+| Deployment | Current state | Required proof |
 |---|---|---|
-| One process, local filesystem | source candidate | exact-head tests, owner file checks and checkpoint operation |
-| Multiple processes, one host | qualification required | stale-writer exclusion and crash takeover |
-| Multiple pods sharing one volume | denied by default | certified lock semantics and fencing |
-| Multiple hosts or network filesystem | denied by default | independent storage qualification |
+| One process, local filesystem | source candidate | exact-head tests, schema verification, anti-rollback operation |
+| Multiple processes, one host | unqualified | writer exclusion, stale-claim takeover and shutdown drain |
+| Multiple pods on one volume | denied by default | independently qualified filesystem lock and fencing semantics |
+| Multiple hosts/network filesystem | denied | independent storage qualification |
 | Active/passive failover | target-only | owner epoch and stale-writer rejection |
-| Restored database copy | target-only | anti-rollback and explicit identity recovery |
+| Restored database copy | target-only | checkpoint CAS, rollback detection and explicit recovery ceremony |
 
-Runtime diagnostics must remain non-secret and include database identity,
-checkpoint generation, writer identity and whether the storage profile was
-independently qualified. Secret bytes, provider tokens and authorization headers
-never enter diagnostics or evidence.
+The fixed HeptaBao provider remains qualified only for exact KV-v2 reads.
+Generic dynamic issue, renew and revoke remain fail-closed.

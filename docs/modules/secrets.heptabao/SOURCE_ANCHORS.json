@@ -1,5 +1,5 @@
 {
-  "schema": "hepta.module-source-anchors.v1",
+  "schema": "hepta.module-source-anchors.v2",
   "module": "secrets.heptabao",
   "generatedFrom": "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
   "operations": [
@@ -56,6 +56,42 @@
       "symbol": "registered_saga_sigkill_matrix",
       "path": "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs",
       "class": "synthetic_unix_crash_recovery_qualification_fixture"
+    },
+    {
+      "operation": "sqlite_owner_open_and_verify",
+      "symbol": "SqliteBaoOwnerV1::open",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "sqlite_owner_source_present_unqualified"
+    },
+    {
+      "operation": "sqlite_reference_import",
+      "symbol": "SqliteBaoOwnerV1::import_reference_snapshot",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "schema4_reference_import_source_present"
+    },
+    {
+      "operation": "sqlite_reconciliation_claims",
+      "symbol": "SqliteBaoOwnerV1::claim_due_reconciliation",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "bounded_generation_fenced_recovery_claims"
+    },
+    {
+      "operation": "sqlite_checkpoint_publication",
+      "symbol": "SqliteBaoOwnerV1::publish_checkpoint_with",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "caller_owned_external_checkpoint_boundary"
+    },
+    {
+      "operation": "sqlite_terminal_archive",
+      "symbol": "SqliteBaoOwnerV1::archive_terminal_before",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "bounded_immutable_terminal_archive"
+    },
+    {
+      "operation": "sqlite_product_runtime",
+      "symbol": "SqliteBaoProductRuntimeV1",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
+      "class": "product_runtime_source_present_not_composed"
     }
   ],
   "sourceAnchors": [
@@ -124,6 +160,52 @@
         "registered_saga_sigkill_matrix",
         "post_dispatch_without_receipt",
         "recovery reentered consumer"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "mustContain": [
+        "pub struct SqliteBaoOwnerV1",
+        "pub async fn import_reference_snapshot",
+        "pub async fn claim_due_reconciliation",
+        "pub async fn publish_checkpoint_with",
+        "pub async fn archive_terminal_before",
+        "BEGIN IMMEDIATE"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
+      "mustContain": [
+        "pub struct SqliteBaoProductRuntimeV1",
+        "claim_consumption_for_execution",
+        "reconcile_due",
+        "record_claimed_reconciliation_failure"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/migrations/0001_bao_owner_v1.sql",
+      "mustContain": [
+        "CREATE TABLE bao_operation",
+        "CREATE TABLE bao_consumption",
+        "CREATE TABLE bao_transition",
+        "CREATE TABLE bao_terminal_archive"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/migrations/0002_reconciliation_claims.sql",
+      "mustContain": [
+        "claim_owner",
+        "claim_until_unix_ms",
+        "claim_generation",
+        "bao_reference_import"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs",
+      "mustContain": [
+        "private_owner_opens_reopens_and_binds_external_checkpoint",
+        "success_path_reopens_archives_and_preserves_exact_retry_identity",
+        "concurrent_cas_allows_only_one_changed_reservation_identity"
       ]
     }
   ]

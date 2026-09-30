@@ -21,14 +21,16 @@
     "jsonReferenceOwner": "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
     "legacyRawRead": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
     "evidenceHistory": "docs/modules/secrets.heptabao/evidence/HISTORY.md",
-    "operationsAndCapacity": "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md"
+    "operationsAndCapacity": "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md",
+    "productionReadiness": "docs/modules/secrets.heptabao/PRODUCTION_READINESS.md",
+    "readinessPolicy": "docs/modules/secrets.heptabao/READINESS_POLICY_V1.json"
   },
   "states": {
     "source": "implemented_candidate",
-    "implementation": "registered_read_saga_schema4_json_reference_owner",
-    "durability": "json_reference_owner_sqlite_production_owner_pending",
-    "qualification": "exact_source_and_synthetic_merge_required",
-    "activation": "not_product_activated",
+    "implementation": "registered_read_saga_with_sqlite_owner_source_present",
+    "durability": "sqlite_owner_source_present_unqualified",
+    "qualification": "exact_source_and_deterministic_merge_required",
+    "activation": "not_product_composed",
     "acceptance": "not_granted"
   },
   "currentCapabilities": [
@@ -46,17 +48,19 @@
     "secret-free state recovery capacity and commit-cost diagnostics",
     "bounded full-forward and recovery latency/error-class metrics",
     "26-cut Unix SIGKILL restart-reconciliation qualification fixture",
-    "redacted Debug surfaces for secret paths and secret-related digests"
+    "redacted Debug surfaces for secret paths and secret-related digests",
+    "transactional SQLite metadata-owner source with revision CAS, append-only transitions, reconciliation claims, terminal archive and checkpoint hashing",
+    "SQLite product-runtime source with atomic forward execution leases, bounded recovery claims and secret-free metrics",
+    "schema-4 JSON reference-owner import into the SQLite owner with an immutable import receipt"
   ],
   "targetOnlyCapabilities": [
-    "transactional SQLite production owner with migration from the schema-4 JSON reference model",
     "selected Agentd or App Server production bootstrap",
     "independently operated trusted-time settlement and key-rotation services",
     "external anti-rollback checkpoint service and disaster-recovery ceremony",
     "target-host power-loss and long-history archival qualification",
-    "bounded fair recovery worker and nonblocking async-host storage integration",
     "selected-host metrics export alerting and retention policy",
-    "independent operator acceptance promotion and release"
+    "independent operator acceptance promotion and release",
+    "exact-head and deterministic-merge qualification of the SQLite owner/runtime source"
   ],
   "nonclaims": [
     "The current fixed HeptaBao provider does not expose qualified generic dynamic issue renew or revoke endpoints.",
@@ -67,7 +71,10 @@
     "Source tests and receipts do not grant independent acceptance promotion or release authority.",
     "Process-local latency and commit metrics are diagnostics, not durable audit evidence or target-host qualification.",
     "The truncated phase-three staging payload is not an executable SQLite production owner.",
-    "Debug redaction does not make secret digests or size/version metadata non-sensitive."
+    "Debug redaction does not make secret digests or size/version metadata non-sensitive.",
+    "SQLite owner and runtime source presence is not exact-head qualification, product composition, activation or deployment.",
+    "Qualification workflows are read-only and never materialize, commit or push source.",
+    "The adapter intentionally has one complete Cargo build surface; undeclared feature names are not a product boundary."
   ],
   "provider": {
     "name": "HeptaBao",
@@ -188,6 +195,42 @@
       "symbol": "registered_saga_sigkill_matrix",
       "path": "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs",
       "class": "synthetic_unix_crash_recovery_qualification_fixture"
+    },
+    {
+      "operation": "sqlite_owner_open_and_verify",
+      "symbol": "SqliteBaoOwnerV1::open",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "sqlite_owner_source_present_unqualified"
+    },
+    {
+      "operation": "sqlite_reference_import",
+      "symbol": "SqliteBaoOwnerV1::import_reference_snapshot",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "schema4_reference_import_source_present"
+    },
+    {
+      "operation": "sqlite_reconciliation_claims",
+      "symbol": "SqliteBaoOwnerV1::claim_due_reconciliation",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "bounded_generation_fenced_recovery_claims"
+    },
+    {
+      "operation": "sqlite_checkpoint_publication",
+      "symbol": "SqliteBaoOwnerV1::publish_checkpoint_with",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "caller_owned_external_checkpoint_boundary"
+    },
+    {
+      "operation": "sqlite_terminal_archive",
+      "symbol": "SqliteBaoOwnerV1::archive_terminal_before",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "bounded_immutable_terminal_archive"
+    },
+    {
+      "operation": "sqlite_product_runtime",
+      "symbol": "SqliteBaoProductRuntimeV1",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
+      "class": "product_runtime_source_present_not_composed"
     }
   ],
   "sourceAnchors": [
@@ -257,22 +300,90 @@
         "post_dispatch_without_receipt",
         "recovery reentered consumer"
       ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "mustContain": [
+        "pub struct SqliteBaoOwnerV1",
+        "pub async fn import_reference_snapshot",
+        "pub async fn claim_due_reconciliation",
+        "pub async fn publish_checkpoint_with",
+        "pub async fn archive_terminal_before",
+        "BEGIN IMMEDIATE"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
+      "mustContain": [
+        "pub struct SqliteBaoProductRuntimeV1",
+        "claim_consumption_for_execution",
+        "reconcile_due",
+        "record_claimed_reconciliation_failure"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/migrations/0001_bao_owner_v1.sql",
+      "mustContain": [
+        "CREATE TABLE bao_operation",
+        "CREATE TABLE bao_consumption",
+        "CREATE TABLE bao_transition",
+        "CREATE TABLE bao_terminal_archive"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/migrations/0002_reconciliation_claims.sql",
+      "mustContain": [
+        "claim_owner",
+        "claim_until_unix_ms",
+        "claim_generation",
+        "bao_reference_import"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs",
+      "mustContain": [
+        "private_owner_opens_reopens_and_binds_external_checkpoint",
+        "success_path_reopens_archives_and_preserves_exact_retry_identity",
+        "concurrent_cas_allows_only_one_changed_reservation_identity"
+      ]
     }
   ],
   "candidateIdentity": {
-    "binding": "external_ci_attestation",
+    "binding": "external_read_only_ci_attestation",
     "requiredFields": [
       "sourceCommitSha",
       "sourceTreeSha",
-      "syntheticMergeSha",
-      "syntheticMergeTreeSha",
-      "toolchain",
-      "os",
-      "architecture",
+      "baseSha",
+      "deterministicMergeSha",
+      "workflowSha",
+      "workflowRunId",
+      "workflowAttempt",
+      "rustToolchain",
+      "targetTriple",
       "dependencyLockSha256",
-      "providerBinarySha256",
-      "manifestSha256"
+      "migrationSha256",
+      "schemaSha256",
+      "testSetSha256",
+      "documentationSha256",
+      "artifactHashes"
     ],
-    "selfReferentialCommitInDocument": false
+    "selfReferentialCommitInDocument": false,
+    "identityRule": "candidateSha == testedSha == documentedSha == artifactSourceSha == qualificationSha"
+  },
+  "buildSurface": {
+    "kind": "single_complete",
+    "cargoFeatures": [],
+    "statement": "The adapter is one complete Cargo build surface. Qualification must not pass undeclared synthetic feature names."
+  },
+  "readinessDimensions": {
+    "sourcePresent": true,
+    "sourceCompiled": "unproved_for_exact_head",
+    "sourceQualified": false,
+    "storageProfileQualified": false,
+    "productComposed": false,
+    "targetHostQualified": false,
+    "activated": false,
+    "operatorAccepted": false,
+    "released": false
   }
 }

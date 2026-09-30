@@ -315,7 +315,7 @@ impl SqliteBaoProductRuntimeV1 {
             self.host.record_recovery_metric(started, &result);
             match &result {
                 Ok(_) => report.succeeded = report.succeeded.saturating_add(1),
-                Err(BaoProductHostError::TerminalFailure(_)) => {
+                Err(BaoProductHostError::TerminalFailure(Box::new(_))) => {
                     report.terminal_failed = report.terminal_failed.saturating_add(1);
                     classes.push(BaoProductErrorClassV1::HistoricalTerminalFailure);
                 }
@@ -689,7 +689,9 @@ impl BaoFinalUseHost {
                         )
                         .await
                         .map_err(BaoProductHostError::SqliteStore)?;
-                    Err(BaoProductHostError::TerminalFailure(terminal.operation))
+                    Err(BaoProductHostError::TerminalFailure(Box::new(
+                        terminal.operation,
+                    )))
                 } else {
                     Err(BaoProductHostError::AuthBus(error))
                 }
@@ -704,7 +706,7 @@ impl BaoFinalUseHost {
                     .close_unreserved_sqlite_failure(authbus, owner, operation_id, &error)
                     .await?
                 {
-                    Err(BaoProductHostError::TerminalFailure(terminal))
+                    Err(BaoProductHostError::TerminalFailure(Box::new(terminal)))
                 } else {
                     Err(BaoProductHostError::AuthBus(error))
                 }
@@ -850,9 +852,11 @@ impl BaoFinalUseHost {
                     )
                     .await
                     .map_err(BaoProductHostError::SqliteStore)?;
-                return Err(BaoProductHostError::TerminalFailure(terminal.operation));
+                return Err(BaoProductHostError::TerminalFailure(Box::new(
+                    terminal.operation,
+                )));
             }
-            return Err(BaoProductHostError::OutcomePending(row.operation));
+            return Err(BaoProductHostError::OutcomePending(Box::new(row.operation)));
         };
         validate_sqlite_reservation(&row.operation, &reservation)?;
 
@@ -956,7 +960,9 @@ impl BaoFinalUseHost {
                     )
                     .await
                     .map_err(BaoProductHostError::SqliteStore)?;
-                return Err(BaoProductHostError::TerminalFailure(terminal.operation));
+                return Err(BaoProductHostError::TerminalFailure(Box::new(
+                    terminal.operation,
+                )));
             }
             ReservationState::Cancelled
             | ReservationState::Expired
@@ -978,7 +984,9 @@ impl BaoFinalUseHost {
                         )
                         .await
                         .map_err(BaoProductHostError::SqliteStore)?;
-                    return Err(BaoProductHostError::TerminalFailure(terminal.operation));
+                    return Err(BaoProductHostError::TerminalFailure(Box::new(
+                        terminal.operation,
+                    )));
                 }
             }
             ReservationState::DispatchAttempted
@@ -1018,7 +1026,9 @@ impl BaoFinalUseHost {
                         .map_err(BaoProductHostError::SqliteStore)?;
                 }
                 Ok(BaoConsumerObservationV1::NotApplied | BaoConsumerObservationV1::Unknown)
-                | Err(()) => return Err(BaoProductHostError::OutcomePending(row.operation)),
+                | Err(()) => {
+                    return Err(BaoProductHostError::OutcomePending(Box::new(row.operation)));
+                }
             }
         }
 
@@ -1035,10 +1045,10 @@ impl BaoFinalUseHost {
                         SqliteBaoOwnerErrorV1::CorruptState("successful operation has no receipt"),
                     ))
             }
-            BaoConsumptionStateV1::Failed => {
-                Err(BaoProductHostError::TerminalFailure(row.operation))
-            }
-            _ => Err(BaoProductHostError::OutcomePending(row.operation)),
+            BaoConsumptionStateV1::Failed => Err(BaoProductHostError::TerminalFailure(Box::new(
+                row.operation,
+            ))),
+            _ => Err(BaoProductHostError::OutcomePending(Box::new(row.operation))),
         }
     }
 }
@@ -1097,7 +1107,7 @@ async fn settle_sqlite_terminal_row<E: BaoAuthBusEvidenceProvider>(
             reservation.state,
             ReservationState::DispatchAttempted | ReservationState::Indeterminate
         ) {
-            return Err(BaoProductHostError::OutcomePending(row.operation));
+            return Err(BaoProductHostError::OutcomePending(Box::new(row.operation)));
         }
         crate::https_consumer::settle_observed(
             authbus,
@@ -1131,7 +1141,9 @@ async fn settle_sqlite_terminal_row<E: BaoAuthBusEvidenceProvider>(
                 SqliteBaoOwnerErrorV1::CorruptState("successful operation has no receipt"),
             ))
     } else {
-        Err(BaoProductHostError::TerminalFailure(terminal_row.operation))
+        Err(BaoProductHostError::TerminalFailure(Box::new(
+            terminal_row.operation,
+        )))
     }
 }
 
@@ -1144,9 +1156,9 @@ fn historical_result(
                 SqliteBaoOwnerErrorV1::CorruptState("successful operation has no receipt"),
             )))
         }
-        BaoConsumptionRecoveryActionV1::ReturnHistoricalFailure => {
-            Some(Err(BaoProductHostError::TerminalFailure(operation)))
-        }
+        BaoConsumptionRecoveryActionV1::ReturnHistoricalFailure => Some(Err(
+            BaoProductHostError::TerminalFailure(Box::new(operation)),
+        )),
         BaoConsumptionRecoveryActionV1::SealOrBindReservation
         | BaoConsumptionRecoveryActionV1::CancelOrExpireReservation
         | BaoConsumptionRecoveryActionV1::BindLegacyReservation
@@ -1159,7 +1171,7 @@ fn historical_result_or_pending(
     operation: BaoConsumptionOperationV1,
 ) -> Result<BaoSecretReceipt, BaoProductHostError> {
     historical_result(operation.clone())
-        .unwrap_or_else(|| Err(BaoProductHostError::OutcomePending(operation)))
+        .unwrap_or_else(|| Err(BaoProductHostError::OutcomePending(Box::new(operation))))
 }
 
 async fn release_execution_claim_if_pending(

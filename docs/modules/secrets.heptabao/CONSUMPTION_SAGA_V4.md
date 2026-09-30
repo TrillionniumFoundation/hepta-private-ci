@@ -144,7 +144,7 @@ byte counters. `BaoFinalUseHost` separately measures complete forward and
 recovery calls. See `OPERATIONS_AND_CAPACITY_V1.md` for the exact surfaces and
 production replacement gate.
 
-A production SQLite replacement is still pending in this source candidate.
+A transactional SQLite owner/runtime source is present in this candidate but remains exact-head and storage-profile unqualified.
 Staged, truncated or partially recovered patches are not an executable owner.
 Migration, independently retained anti-rollback state, bounded archival,
 nonblocking writer integration and target-host power-loss qualification remain
@@ -157,3 +157,17 @@ Generic provider-native dynamic issue, renew and revoke remain blocked and
 fail-closed. Source composition, synthetic tests and CI receipts do not activate
 a normal Agentd/App Server process, grant independent acceptance, or authorize
 promotion or release.
+
+<!-- secrets-heptabao-sqlite-source-status:v1 -->
+## SQLite source and qualification status
+
+The current source candidate contains `SqliteBaoOwnerV1` and
+`SqliteBaoProductRuntimeV1`, including revision-CAS transitions, generation-
+fenced recovery claims, schema-4 reference import, immutable terminal archive
+and external-checkpoint hashing/publication hooks. This is a **source-presence**
+fact only. Exact-head compilation/qualification, storage-profile qualification,
+a named product caller, target-host qualification, activation, operator
+acceptance and release remain false until independently proved for one exact
+SHA. The fixed provider remains KV-v2-read-only; generic dynamic issue, renew
+and revoke remain fail-closed.
+<!-- /secrets-heptabao-sqlite-source-status:v1 -->

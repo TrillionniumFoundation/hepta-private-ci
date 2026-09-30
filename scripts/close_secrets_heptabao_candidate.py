@@ -79,7 +79,7 @@ def box_product_errors() -> None:
         )
         if re.search(
             r"BaoProductHostError::(?:OutcomePending|TerminalFailure)"
-            r"\((?!Box::new\()",
+            r"\((?!Box(?:::new\(|<))",
             text,
         ):
             raise SystemExit(f"unboxed product-error constructor remains in {relative}")

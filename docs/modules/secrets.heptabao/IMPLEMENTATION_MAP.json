@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
-  "schemaVersion": 3,
+  "schema": "hepta.module-implementation-map.v4",
+  "schemaVersion": 4,
   "sourceBase": {
-    "commit": "d341c86c238e578b37077feb93fae8dfe36a76a8",
-    "tree": "64b77db3a3d3b9c32af1c15773101a33537cf0f2"
+    "commit": "b881b5f99e13c8c47ce374158b5258e02fe2202f",
+    "tree": "69b214a8bb62497ac877d0c8158b6d186fc334ef"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -20,8 +20,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "registered_host_source_composed_not_activated",
-  "productionWriterState": "sqlite_owner_pending_json_reference_only",
+  "productCallerState": "not_composed",
+  "productionWriterState": "sqlite_owner_source_present_unqualified",
   "operations": [
     {
       "operation": "consume_kv_v2",
@@ -151,28 +151,118 @@
       "designOperation": "registered_saga_sigkill_matrix",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_owner_open_and_verify",
+      "nativeSymbol": "SqliteBaoOwnerV1::open",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "state": "sqlite_owner_source_present_unqualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_owner_open_and_verify",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_reference_import",
+      "nativeSymbol": "SqliteBaoOwnerV1::import_reference_snapshot",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "state": "schema4_reference_import_source_present",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_reference_import",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_reconciliation_claims",
+      "nativeSymbol": "SqliteBaoOwnerV1::claim_due_reconciliation",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "state": "bounded_generation_fenced_recovery_claims",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_reconciliation_claims",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_checkpoint_publication",
+      "nativeSymbol": "SqliteBaoOwnerV1::publish_checkpoint_with",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "state": "caller_owned_external_checkpoint_boundary",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_checkpoint_publication",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_terminal_archive",
+      "nativeSymbol": "SqliteBaoOwnerV1::archive_terminal_before",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "state": "bounded_immutable_terminal_archive",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_terminal_archive",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_product_runtime",
+      "nativeSymbol": "SqliteBaoProductRuntimeV1",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
+      "state": "product_runtime_source_present_not_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_product_runtime",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "transactional SQLite production owner with migration from the schema-4 JSON reference model",
     "selected Agentd or App Server production bootstrap",
     "independently operated trusted-time settlement and key-rotation services",
     "external anti-rollback checkpoint service and disaster-recovery ceremony",
     "target-host power-loss and long-history archival qualification",
-    "bounded fair recovery worker and nonblocking async-host storage integration",
     "selected-host metrics export alerting and retention policy",
-    "independent operator acceptance promotion and release"
+    "independent operator acceptance promotion and release",
+    "exact-head and deterministic-merge qualification of the SQLite owner/runtime source"
   ],
   "externalEvidenceGates": [
-    "exact-candidate native qualification",
-    "target-host product execution",
+    "exact-candidate source and deterministic-merge qualification",
+    "storage-profile and target-host qualification",
+    "named product execution",
     "independent operator acceptance promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "sourceCompiled": "unproved_for_exact_head",
+    "sourceQualified": false,
+    "storageProfileQualified": false,
     "productionImplementation": false,
     "productExecutionProved": false,
+    "productComposed": false,
+    "targetHostQualified": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false,
@@ -183,18 +273,26 @@
     "codex-rs/hepta-bao-adapter"
   ],
   "currentImplementationGuide": "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v2",
   "observedAtHead": {
-    "commit": "d341c86c238e578b37077feb93fae8dfe36a76a8",
-    "tree": "64b77db3a3d3b9c32af1c15773101a33537cf0f2"
+    "commit": "b881b5f99e13c8c47ce374158b5258e02fe2202f",
+    "tree": "69b214a8bb62497ac877d0c8158b6d186fc334ef"
   },
   "observedSourcePaths": [
     ".github/workflows/lane-a-foundation.yml",
+    ".github/workflows/secrets-heptabao-candidate-attestation.yml",
+    ".github/workflows/secrets-heptabao-five-closure-qualified.yml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-bao-adapter",
+    "codex-rs/hepta-bao-adapter/migrations/0001_bao_owner_v1.sql",
+    "codex-rs/hepta-bao-adapter/migrations/0002_reconciliation_claims.sql",
     "codex-rs/hepta-bao-adapter/qa/evidence/dynamic-contract-probe-20260925.json",
+    "codex-rs/hepta-bao-adapter/qa/validate_build_contract.py",
+    "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+    "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs",
+    "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-types",
     "codex-rs/http-client",
@@ -204,12 +302,31 @@
     "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
     "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
     "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md",
+    "docs/modules/secrets.heptabao/PRODUCTION_READINESS.md",
+    "docs/modules/secrets.heptabao/READINESS_POLICY_V1.json",
     "docs/modules/secrets.heptabao/TECHNICAL.md",
     "external/HeptaBao",
     "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
     "qualification/module-execution-dossiers/detail/secrets.heptabao.md",
+    "scripts/close_secrets_heptabao_candidate.py",
     "scripts/generate_secrets_heptabao_module.py",
     "scripts/hepta-implementation-maps.py"
   ],
-  "canonicalManifest": "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json"
+  "canonicalManifest": "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
+  "buildSurface": {
+    "kind": "single_complete",
+    "cargoFeatures": [],
+    "statement": "The adapter is one complete Cargo build surface. Qualification must not pass undeclared synthetic feature names."
+  },
+  "readinessDimensions": {
+    "sourcePresent": true,
+    "sourceCompiled": "unproved_for_exact_head",
+    "sourceQualified": false,
+    "storageProfileQualified": false,
+    "productComposed": false,
+    "targetHostQualified": false,
+    "activated": false,
+    "operatorAccepted": false,
+    "released": false
+  }
 }
