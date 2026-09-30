@@ -505,9 +505,11 @@ mod tests {
         command.env("HEPTA_UNTRUSTED_TEST_VALUE", "must-not-survive");
         restrict_launcher_environment(&mut command);
         assert!(Path::new(command.get_program()).is_absolute());
-        assert!(command
-            .get_envs()
-            .all(|(key, _)| key != "HEPTA_UNTRUSTED_TEST_VALUE"));
+        assert!(
+            command
+                .get_envs()
+                .all(|(key, _)| key != "HEPTA_UNTRUSTED_TEST_VALUE")
+        );
     }
 }
 
