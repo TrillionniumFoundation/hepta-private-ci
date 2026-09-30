@@ -1,8 +1,8 @@
 //! Default shadow-only learning.operator coordination.
 //!
 //! This coordinator composes existing owners but owns no ledger, evaluator,
-//! selector, artifact store, registry, deployment, or release authority.  It
-//! deliberately has no publish, canary, activation, or promotion port.  Every
+//! selector, artifact store, registry, deployment, or release authority. It
+//! deliberately has no publish, canary, activation, or promotion port. Every
 //! persisted candidate is loaded in a fresh process, observed in shadow mode,
 //! revalidated for currentness/revocation, and then rolled back to the exact
 //! predecessor before the run can terminate.
@@ -70,7 +70,9 @@ pub struct LearningOperatorShadowRequestV1 {
     pub predecessor_generation: Generation,
     pub expected_authority_epoch: u64,
     pub expected_stop_epoch: u64,
+    /// Trusted host time at coordinator admission.
     pub now_unix_micros: u64,
+    /// Absolute host deadline shared by every stage receipt.
     pub deadline_unix_micros: u64,
 }
 
@@ -340,6 +342,7 @@ pub fn coordinate_learning_operator_shadow_v1<P: LearningOperatorShadowPortsV1>(
         &request,
         &training,
         request.training_source_digest,
+        request.now_unix_micros,
         LearningOperatorShadowStageV1::FreezeTraining,
     )?;
 
@@ -389,6 +392,7 @@ pub fn coordinate_learning_operator_shadow_v1<P: LearningOperatorShadowPortsV1>(
         &request,
         &evaluation_dataset,
         request.evaluation_source_digest,
+        training.frozen_at,
         LearningOperatorShadowStageV1::FreezeEvaluation,
     )?;
     if evaluation_dataset.receipt_id == training.receipt_id
@@ -413,7 +417,12 @@ pub fn coordinate_learning_operator_shadow_v1<P: LearningOperatorShadowPortsV1>(
         || evaluation.trust_digest.is_zero()
         || evaluation.authority_epoch != request.expected_authority_epoch
         || evaluation.stop_epoch != request.expected_stop_epoch
-        || !valid_window(&request, evaluation.observed_at, evaluation.expires_at)
+        || !valid_window(
+            &request,
+            evaluation.observed_at,
+            evaluation.expires_at,
+            evaluation_dataset.frozen_at,
+        )
     {
         return invariant(
             LearningOperatorShadowStageV1::Evaluate,
@@ -470,7 +479,7 @@ pub fn coordinate_learning_operator_shadow_v1<P: LearningOperatorShadowPortsV1>(
             );
         }
     };
-    if !valid_fresh_load(&request, &persisted, &loaded) {
+    if !valid_fresh_load(&request, &persisted, &loaded, evaluation.observed_at) {
         return rollback_outcome(
             ports,
             &request,
@@ -500,7 +509,15 @@ pub fn coordinate_learning_operator_shadow_v1<P: LearningOperatorShadowPortsV1>(
             );
         }
     };
-    if !valid_shadow(&request, &candidate, &selection, &loaded, &shadow) || !shadow.passed {
+    if !valid_shadow(
+        &request,
+        &candidate,
+        &selection,
+        &loaded,
+        &shadow,
+        loaded.loaded_at,
+    ) || !shadow.passed
+    {
         return rollback_outcome(
             ports,
             &request,
@@ -530,7 +547,13 @@ pub fn coordinate_learning_operator_shadow_v1<P: LearningOperatorShadowPortsV1>(
             );
         }
     };
-    if !valid_currentness(&request, &candidate, &selection, &currentness) {
+    if !valid_currentness(
+        &request,
+        &candidate,
+        &selection,
+        &currentness,
+        shadow.observed_at,
+    ) {
         return rollback_outcome(
             ports,
             &request,
@@ -659,6 +682,10 @@ fn validate_request(
             "trusted epochs and an unexpired absolute deadline are mandatory",
         ));
     }
+    request
+        .predecessor_generation
+        .next()
+        .map_err(|_| LearningOperatorShadowErrorV1::InvalidRequest("generation overflow"))?;
     Ok(())
 }
 
@@ -666,6 +693,7 @@ fn validate_frozen(
     request: &LearningOperatorShadowRequestV1,
     value: &FrozenOperatorDatasetV1,
     expected_source: Digest32,
+    not_before: u64,
     stage: LearningOperatorShadowStageV1,
 ) -> Result<(), LearningOperatorShadowErrorV1> {
     if value.owner_id != request.owner_id
@@ -675,11 +703,11 @@ fn validate_frozen(
         || value.ledger_head_digest.is_zero()
         || value.dataset_digest.is_zero()
         || value.row_commitment_digest.is_zero()
-        || !valid_window(request, value.frozen_at, value.expires_at)
+        || !valid_window(request, value.frozen_at, value.expires_at, not_before)
     {
         return invariant(
             stage,
-            "frozen dataset is stale or not bound to owner, epochs, source, and rows",
+            "frozen dataset is stale or not bound to owner, epochs, source, rows, and timeline",
         );
     }
     Ok(())
@@ -689,6 +717,7 @@ fn valid_fresh_load(
     request: &LearningOperatorShadowRequestV1,
     persisted: &PersistedOperatorCandidateV1,
     loaded: &FreshProcessLoadedOperatorV1,
+    not_before: u64,
 ) -> bool {
     loaded.artifact_digest == persisted.artifact_digest
         && loaded.payload_digest == persisted.payload_digest
@@ -696,15 +725,17 @@ fn valid_fresh_load(
         && loaded.storage_receipt_digest == persisted.storage_receipt_digest
         && !loaded.boot_nonce_digest.is_zero()
         && !loaded.loaded_digest.is_zero()
-        && valid_window(request, loaded.loaded_at, loaded.expires_at)
+        && valid_window(request, loaded.loaded_at, loaded.expires_at, not_before)
 }
 
+#[allow(clippy::too_many_arguments)]
 fn valid_shadow(
     request: &LearningOperatorShadowRequestV1,
     candidate: &FittedOperatorCandidateV1,
     selection: &SelectedOperatorCandidateV1,
     loaded: &FreshProcessLoadedOperatorV1,
     shadow: &OperatorShadowReceiptV1,
+    not_before: u64,
 ) -> bool {
     shadow.process_id == loaded.process_id
         && shadow.loaded_digest == loaded.loaded_digest
@@ -712,7 +743,7 @@ fn valid_shadow(
         && shadow.selection_digest == selection.selection_digest
         && !shadow.shadow_digest.is_zero()
         && shadow.observation_count > 0
-        && valid_window(request, shadow.observed_at, shadow.expires_at)
+        && valid_window(request, shadow.observed_at, shadow.expires_at, not_before)
 }
 
 fn valid_currentness(
@@ -720,6 +751,7 @@ fn valid_currentness(
     candidate: &FittedOperatorCandidateV1,
     selection: &SelectedOperatorCandidateV1,
     currentness: &OperatorCurrentnessReceiptV1,
+    not_before: u64,
 ) -> bool {
     currentness.artifact_digest == candidate.artifact_digest
         && currentness.selection_digest == selection.selection_digest
@@ -728,14 +760,25 @@ fn valid_currentness(
         && currentness.authority_epoch == request.expected_authority_epoch
         && currentness.stop_epoch == request.expected_stop_epoch
         && !currentness.currentness_digest.is_zero()
-        && valid_window(request, currentness.observed_at, currentness.expires_at)
+        && valid_window(
+            request,
+            currentness.observed_at,
+            currentness.expires_at,
+            not_before,
+        )
 }
 
-fn valid_window(request: &LearningOperatorShadowRequestV1, issued_at: u64, expires_at: u64) -> bool {
-    issued_at != 0
-        && issued_at <= request.now_unix_micros
-        && request.now_unix_micros < expires_at
-        && request.now_unix_micros < request.deadline_unix_micros
+fn valid_window(
+    request: &LearningOperatorShadowRequestV1,
+    issued_at: u64,
+    expires_at: u64,
+    not_before: u64,
+) -> bool {
+    issued_at >= request.now_unix_micros
+        && issued_at >= not_before
+        && issued_at < expires_at
+        && issued_at < request.deadline_unix_micros
+        && expires_at <= request.deadline_unix_micros
 }
 
 fn port<T>(
@@ -784,6 +827,8 @@ fn audit_digest(
     }
     bytes.extend_from_slice(&request.expected_authority_epoch.to_be_bytes());
     bytes.extend_from_slice(&request.expected_stop_epoch.to_be_bytes());
+    bytes.extend_from_slice(&request.now_unix_micros.to_be_bytes());
+    bytes.extend_from_slice(&request.deadline_unix_micros.to_be_bytes());
     bytes.push(rollback_trigger_code(trigger));
     if let Some(message) = port_message {
         bytes.extend_from_slice(Digest32::of_bytes(message.as_bytes()).as_array());
@@ -812,11 +857,21 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 mod tests {
     use super::*;
 
+    const TRAINING_AT: u64 = 110;
+    const EVALUATION_FREEZE_AT: u64 = 200;
+    const EVALUATION_AT: u64 = 250;
+    const LOAD_AT: u64 = 300;
+    const SHADOW_AT: u64 = 400;
+    const CURRENTNESS_AT: u64 = 500;
+    const EXPIRES_AT: u64 = 900;
+
     #[derive(Clone, Copy, Debug, Eq, PartialEq)]
     enum Fault {
         None,
         LoadPayloadMismatch,
+        LoadAfterDeadline,
         ShadowRejected,
+        CurrentnessClockRegression,
     }
 
     struct Fixture {
@@ -864,6 +919,7 @@ mod tests {
         request: &LearningOperatorShadowRequestV1,
         name: &str,
         source: Digest32,
+        frozen_at: u64,
     ) -> FrozenOperatorDatasetV1 {
         FrozenOperatorDatasetV1 {
             receipt_id: id(&format!("{name}-receipt")),
@@ -874,8 +930,8 @@ mod tests {
             ledger_head_digest: digest(&format!("{name}-ledger")),
             dataset_digest: digest(&format!("{name}-dataset")),
             row_commitment_digest: digest(&format!("{name}-rows")),
-            frozen_at: request.now_unix_micros,
-            expires_at: request.deadline_unix_micros,
+            frozen_at,
+            expires_at: EXPIRES_AT,
         }
     }
 
@@ -884,7 +940,12 @@ mod tests {
             &mut self,
             request: &LearningOperatorShadowRequestV1,
         ) -> Result<FrozenOperatorDatasetV1, String> {
-            Ok(frozen(request, "training", request.training_source_digest))
+            Ok(frozen(
+                request,
+                "training",
+                request.training_source_digest,
+                TRAINING_AT,
+            ))
         }
 
         fn derive(
@@ -927,6 +988,7 @@ mod tests {
                 request,
                 "evaluation",
                 request.evaluation_source_digest,
+                EVALUATION_FREEZE_AT,
             ))
         }
 
@@ -946,8 +1008,8 @@ mod tests {
                 trust_digest: digest("evaluation-trust"),
                 authority_epoch: request.expected_authority_epoch,
                 stop_epoch: request.expected_stop_epoch,
-                observed_at: request.now_unix_micros,
-                expires_at: request.deadline_unix_micros,
+                observed_at: EVALUATION_AT,
+                expires_at: EXPIRES_AT,
             })
         }
 
@@ -995,6 +1057,11 @@ mod tests {
             } else {
                 persisted.payload_digest
             };
+            let loaded_at = if self.fault == Fault::LoadAfterDeadline {
+                request.deadline_unix_micros
+            } else {
+                LOAD_AT
+            };
             Ok(FreshProcessLoadedOperatorV1 {
                 process_id: id("fresh-process"),
                 boot_nonce_digest: digest("boot-nonce"),
@@ -1003,14 +1070,14 @@ mod tests {
                 selection_digest: persisted.selection_digest,
                 storage_receipt_digest: persisted.storage_receipt_digest,
                 loaded_digest: digest("loaded"),
-                loaded_at: request.now_unix_micros,
-                expires_at: request.deadline_unix_micros,
+                loaded_at,
+                expires_at: EXPIRES_AT,
             })
         }
 
         fn shadow(
             &mut self,
-            request: &LearningOperatorShadowRequestV1,
+            _request: &LearningOperatorShadowRequestV1,
             loaded: &FreshProcessLoadedOperatorV1,
         ) -> Result<OperatorShadowReceiptV1, String> {
             Ok(OperatorShadowReceiptV1 {
@@ -1021,8 +1088,8 @@ mod tests {
                 shadow_digest: digest("shadow"),
                 passed: self.fault != Fault::ShadowRejected,
                 observation_count: 64,
-                observed_at: request.now_unix_micros,
-                expires_at: request.deadline_unix_micros,
+                observed_at: SHADOW_AT,
+                expires_at: EXPIRES_AT,
             })
         }
 
@@ -1033,6 +1100,11 @@ mod tests {
             selection: &SelectedOperatorCandidateV1,
             _shadow: &OperatorShadowReceiptV1,
         ) -> Result<OperatorCurrentnessReceiptV1, String> {
+            let observed_at = if self.fault == Fault::CurrentnessClockRegression {
+                SHADOW_AT - 1
+            } else {
+                CURRENTNESS_AT
+            };
             Ok(OperatorCurrentnessReceiptV1 {
                 artifact_digest: candidate.artifact_digest,
                 selection_digest: selection.selection_digest,
@@ -1041,8 +1113,8 @@ mod tests {
                 authority_epoch: request.expected_authority_epoch,
                 stop_epoch: request.expected_stop_epoch,
                 state: self.currentness,
-                observed_at: request.now_unix_micros,
-                expires_at: request.deadline_unix_micros,
+                observed_at,
+                expires_at: EXPIRES_AT,
                 currentness_digest: digest("currentness"),
             })
         }
@@ -1071,7 +1143,7 @@ mod tests {
     }
 
     #[test]
-    fn current_shadow_candidate_is_qualified_then_rolled_back() {
+    fn realistic_monotonic_shadow_timeline_is_qualified_then_rolled_back() {
         let mut fixture = Fixture::new();
         let outcome = coordinate_learning_operator_shadow_v1(&mut fixture, request()).unwrap();
         assert!(matches!(
@@ -1116,6 +1188,21 @@ mod tests {
     }
 
     #[test]
+    fn fresh_process_load_at_deadline_is_rejected_and_rolled_back() {
+        let mut fixture = Fixture::new();
+        fixture.fault = Fault::LoadAfterDeadline;
+        let outcome = coordinate_learning_operator_shadow_v1(&mut fixture, request()).unwrap();
+        assert!(matches!(
+            outcome.terminal,
+            LearningOperatorShadowTerminalV1::RejectedAndRolledBack(_)
+        ));
+        assert_eq!(
+            fixture.last_trigger,
+            Some(LearningOperatorShadowRollbackTriggerV1::FreshProcessLoadMismatch)
+        );
+    }
+
+    #[test]
     fn shadow_rejection_rolls_back_and_never_reaches_currentness() {
         let mut fixture = Fixture::new();
         fixture.fault = Fault::ShadowRejected;
@@ -1127,6 +1214,21 @@ mod tests {
         assert_eq!(
             fixture.last_trigger,
             Some(LearningOperatorShadowRollbackTriggerV1::ShadowRejected)
+        );
+    }
+
+    #[test]
+    fn currentness_clock_regression_is_rejected_and_rolled_back() {
+        let mut fixture = Fixture::new();
+        fixture.fault = Fault::CurrentnessClockRegression;
+        let outcome = coordinate_learning_operator_shadow_v1(&mut fixture, request()).unwrap();
+        assert!(matches!(
+            outcome.terminal,
+            LearningOperatorShadowTerminalV1::RejectedAndRolledBack(_)
+        ));
+        assert_eq!(
+            fixture.last_trigger,
+            Some(LearningOperatorShadowRollbackTriggerV1::CurrentnessMismatch)
         );
     }
 }
