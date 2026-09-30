@@ -277,10 +277,10 @@ mod tests {
             consumer_timeout_ms: config.forward_execution_lease_ms,
             ..BaoExecutionDeadlineContractV1::default()
         };
-        assert_eq!(
+        assert!(matches!(
             invalid.validate(&config),
             Err(BaoFinalUseHostError::InvalidRuntimeConfiguration)
-        );
+        ));
     }
 
     #[test]
