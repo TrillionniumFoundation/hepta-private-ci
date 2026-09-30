@@ -1,0 +1,154 @@
+name: Prompt registry phase 2 governed surface slim
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - ops/prompt-registry-phase2-slim-executor-20260930
+    paths:
+      - ops/trigger-prompt-registry-phase2-slim
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: prompt-registry-phase2-governed-surface-slim
+  cancel-in-progress: false
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-slim
+    timeout-minutes: 90
+    env:
+      TARGET_BRANCH: codex/prompt-registry-full-closeout-20260929
+      TARGET_SHA: 8825996f927ca1cb3e1271ffcce0261ce25b398e
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout reviewed authoring scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: authoring
+          persist-credentials: false
+
+      - name: Checkout exact delivery predecessor
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          path: target
+          fetch-depth: 0
+          token: ${{ github.token }}
+
+      - name: Bind exact predecessor and apply reviewed source transformation
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$TARGET_SHA"
+          test -z "$(find .github/workflows -maxdepth 1 -name 'zz-prompt-registry-*' -print)"
+          python3 ../authoring/.github/scripts/prompt_registry_phase2_20260930.py
+          python3 ../authoring/.github/scripts/prompt_registry_phase2_fixups_20260930.py
+          git diff --check
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+
+      - name: Prepare native dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          CODEX_REPO_ROOT="$GITHUB_WORKSPACE/target" PYTHONPATH="$GITHUB_WORKSPACE/target/scripts" \
+            python3 target/scripts/hepta_ci_v8.py
+
+      - name: Format all affected crates
+        working-directory: target/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-prompt-extension
+          cargo fmt \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-prompt-extension \
+            -- --check
+
+      - name: Execute owner and product regressions
+        working-directory: target/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-prompt-registry
+          cargo test --locked -p codex-hepta-prompt-extension --lib
+          cargo test --locked -p codex-hepta-agentd --lib prompt_
+
+      - name: Compile and strict-lint the full affected surface
+        working-directory: target/codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-prompt-extension \
+            --all-targets
+          cargo clippy --locked \
+            -p codex-hepta-prompt-registry \
+            -p codex-hepta-prompt-optimizer \
+            -p codex-hepta-agentd \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-prompt-extension \
+            --all-targets --no-deps -- -D warnings
+
+      - name: Commit only conventional source and exact generated truth
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'OpenAI Codex'
+          git config user.email 'codex@openai.com'
+          git add \
+            codex-rs/hepta-prompt-registry/src/durable.rs \
+            codex-rs/hepta-agentd/src/lib.rs \
+            codex-rs/hepta-agentd/src/app_runtime.rs \
+            codex-rs/hepta-agentd/src/prompt_runtime.rs \
+            codex-rs/hepta-agentd/src/prompt_runtime_tests.rs \
+            scripts/hepta-prompt-registry-map.py
+          test -n "$(git diff --cached --name-only)"
+          git commit -m 'refactor(prompt.registry): close raw capability surface'
+
+          python3 scripts/hepta-prompt-registry-map.py --write
+          git add docs/modules/prompt.registry/IMPLEMENTATION_MAP.json \
+                  docs/modules/prompt.registry/QUALIFICATION_STATUS.md
+          if test -n "$(git diff --cached --name-only)"; then
+            git commit -m 'docs(prompt.registry): bind closed-world capability truth'
+          fi
+          python3 scripts/hepta-prompt-registry-map.py --check
+          git diff --check
+          test -z "$(git status --porcelain)"
+
+      - name: Publish only as exact fast-forward
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$TARGET_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
