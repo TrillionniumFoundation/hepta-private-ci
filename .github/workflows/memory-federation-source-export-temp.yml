@@ -1,4 +1,4 @@
-name: memory federation source export temp
+name: memory federation semantic patch validate temp
 
 on:
   push:
@@ -8,60 +8,84 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: memory-federation-semantic-patch-temp
+  cancel-in-progress: true
+
 jobs:
-  export:
+  validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 60
     steps:
       - name: Check out exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ecb502a7a1435d84441a74cb8c3159e76f9b8a69
           fetch-depth: 0
           persist-credentials: false
-      - name: Freeze selected source files
+
+      - name: Apply reviewed semantic patch
         run: |
           set -euo pipefail
-          tar -czf "$RUNNER_TEMP/memory-federation-source-export.tar.gz" \
-            codex-rs/Cargo.toml \
-            codex-rs/Cargo.lock \
-            codex-rs/hepta-memory/Cargo.toml \
+          cat > "$RUNNER_TEMP/memory-federation-semantic.patch.gz.b64" <<'PATCH_B64'
+          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
+          PATCH_B64
+          sed -i 's/^          //' "$RUNNER_TEMP/memory-federation-semantic.patch.gz.b64"
+          base64 --decode "$RUNNER_TEMP/memory-federation-semantic.patch.gz.b64" | gzip --decompress > "$RUNNER_TEMP/memory-federation-semantic.patch"
+          echo "7ac42725dd1bab195cb5ad2c5a46a9aa6f95dab137e8f26b06aef1430e7f6424  $RUNNER_TEMP/memory-federation-semantic.patch" | sha256sum --check --strict
+          git apply --check "$RUNNER_TEMP/memory-federation-semantic.patch"
+          git apply "$RUNNER_TEMP/memory-federation-semantic.patch"
+
+      - name: Format patched source and retain exact bytes
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all
+          cd ..
+          git diff --check
+          git diff --binary ecb502a7a1435d84441a74cb8c3159e76f9b8a69 > "$RUNNER_TEMP/memory-federation-formatted.patch"
+          mkdir -p "$RUNNER_TEMP/memory-federation-formatted-source"
+          cp --parents \
             codex-rs/hepta-memory/src/cognitive_retrieval.rs \
             codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs \
-            codex-rs/hepta-memory/src/cognitive_retrieval_tests.rs \
-            codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs \
             codex-rs/hepta-memory/src/cognitive_federation.rs \
-            codex-rs/hepta-memory/src/cognitive_federation_tests.rs \
             codex-rs/hepta-memory/src/cognitive_runtime.rs \
-            codex-rs/hepta-memory/src/cognitive_runtime_tests.rs \
-            codex-rs/hepta-memory/src/lib.rs \
-            codex-rs/ext/hepta-memory/Cargo.toml \
+            codex-rs/hepta-memory/src/memory_federation_convergence_tests.rs \
             codex-rs/ext/hepta-memory/src/cognitive/federation.rs \
-            codex-rs/hepta-memory-federation/Cargo.toml \
-            codex-rs/hepta-memory-federation/src/lib.rs \
-            codex-rs/hepta-memory-federation/src/v2.rs \
-            codex-rs/hepta-memory-federation/src/v2_tests.rs \
-            codex-rs/hepta-memory-federation/src/legacy_v1.rs \
-            docs/modules/memory.federation \
-            qualification/memory-federation \
-            qualification/module-execution-dossiers/detail/memory.federation.md \
-            scripts/memory_federation_attestation.py \
-            scripts/memory_federation_execution_guard.py \
-            scripts/memory_federation_execution_receipt.py \
-            scripts/memory_federation_full_attestation.py \
-            scripts/prepare_memory_federation_observation.py \
-            scripts/run_memory_federation_qualification.sh \
-            scripts/test_memory_federation_entrypoints.py \
-            scripts/test_memory_federation_execution_receipt.py \
-            scripts/verify_memory_federation_implementation.py \
-            scripts/verify_memory_federation_status.py \
-            .github/workflows/memory-federation-v2-final-verify.yml
-          sha256sum "$RUNNER_TEMP/memory-federation-source-export.tar.gz" > "$RUNNER_TEMP/memory-federation-source-export.tar.gz.sha256"
-      - name: Upload source snapshot
+            "$RUNNER_TEMP/memory-federation-formatted-source"
+          sha256sum \
+            codex-rs/hepta-memory/src/cognitive_retrieval.rs \
+            codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs \
+            codex-rs/hepta-memory/src/cognitive_federation.rs \
+            codex-rs/hepta-memory/src/cognitive_runtime.rs \
+            codex-rs/hepta-memory/src/memory_federation_convergence_tests.rs \
+            codex-rs/ext/hepta-memory/src/cognitive/federation.rs \
+            > "$RUNNER_TEMP/memory-federation-formatted-source/SHA256SUMS"
+
+      - name: Run affected Rust matrix
+        id: rust
+        run: |
+          set -euo pipefail
+          exec > >(tee "$RUNNER_TEMP/memory-federation-rust.log") 2>&1
+          cd codex-rs
+          cargo check -p codex-hepta-memory --all-targets
+          cargo test -p codex-hepta-memory --lib -- --nocapture
+          cargo test -p codex-hepta-memory-federation --lib -- --nocapture
+          cargo test -p codex-hepta-memory-federation --features legacy-v1 --lib -- --nocapture
+          cargo test -p codex-hepta-memory-extension --lib -- --nocapture
+          cargo clippy -p codex-hepta-memory --all-targets -- -D warnings
+          cargo clippy -p codex-hepta-memory-federation --all-targets -- -D warnings
+          cargo clippy -p codex-hepta-memory-federation --all-targets --features legacy-v1 -- -D warnings
+          cargo clippy -p codex-hepta-memory-extension --all-targets -- -D warnings
+
+      - name: Upload formatted source and diagnostics
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: memory-federation-source-export-${{ github.run_id }}-${{ github.run_attempt }}
+          name: memory-federation-semantic-validation-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            ${{ runner.temp }}/memory-federation-source-export.tar.gz
-            ${{ runner.temp }}/memory-federation-source-export.tar.gz.sha256
-          if-no-files-found: error
-          retention-days: 1
+            ${{ runner.temp }}/memory-federation-formatted.patch
+            ${{ runner.temp }}/memory-federation-formatted-source
+            ${{ runner.temp }}/memory-federation-rust.log
+          if-no-files-found: warn
+          retention-days: 7
