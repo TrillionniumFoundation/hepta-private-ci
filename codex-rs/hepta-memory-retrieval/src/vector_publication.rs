@@ -68,9 +68,7 @@ impl EncoderReleaseIdentityV1 {
             return Err(VectorPublicationErrorV1::InvalidDimensions);
         }
         if self.release_digest != self.compute_digest() {
-            return Err(VectorPublicationErrorV1::DigestMismatch(
-                "encoder release",
-            ));
+            return Err(VectorPublicationErrorV1::DigestMismatch("encoder release"));
         }
         Ok(())
     }
@@ -186,7 +184,10 @@ impl VectorIndexPublicationV1 {
             return Err(VectorPublicationErrorV1::EncoderSnapshotMismatch);
         }
         if self.withdrawn_record_digests.len() > MAX_VECTOR_WITHDRAWALS
-            || self.withdrawn_record_digests.iter().any(|digest| digest.is_zero())
+            || self
+                .withdrawn_record_digests
+                .iter()
+                .any(|digest| digest.is_zero())
             || !strictly_sorted_unique(&self.withdrawn_record_digests)
         {
             return Err(VectorPublicationErrorV1::InvalidWithdrawalSet);
@@ -215,10 +216,7 @@ impl VectorIndexPublicationV1 {
     /// Validate an atomic successor. Index or encoder changes require a strict
     /// generation increment; policy-only frontier changes may remain within the
     /// same generation but still advance the durable sequence.
-    pub fn validate_successor(
-        &self,
-        next: &Self,
-    ) -> Result<(), VectorPublicationErrorV1> {
+    pub fn validate_successor(&self, next: &Self) -> Result<(), VectorPublicationErrorV1> {
         self.validate()?;
         next.validate()?;
         let expected_sequence = self

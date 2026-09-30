@@ -162,7 +162,10 @@ impl RetrievalExecutor {
             RetrievalBlockingKind::Ranker => Some(Arc::clone(&self.ranker)),
             RetrievalBlockingKind::Ledger => Some(Arc::clone(&self.ledger)),
         }
-        .map(|pool| pool.try_acquire_owned().map_err(|_| "retrieval auxiliary capacity exhausted".to_string()))
+        .map(|pool| {
+            pool.try_acquire_owned()
+                .map_err(|_| "retrieval auxiliary capacity exhausted".to_string())
+        })
         .transpose()?;
 
         let slots = match request.class {

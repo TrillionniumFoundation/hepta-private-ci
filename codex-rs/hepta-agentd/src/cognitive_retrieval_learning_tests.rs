@@ -458,13 +458,34 @@ fn busy_product_writer_fails_before_another_append_can_wait() {
 fn expired_or_wrong_owner_host_admission_never_appends() {
     let (_temp, mut sink) = sink();
     sink.admission = Some(RetrievalLearningAdmission {
-        owner: owner(), body_generation: 3, expires_at_unix_s: 0,
+        owner: owner(),
+        body_generation: 3,
+        expires_at_unix_s: 0,
         expires_at: std::time::Instant::now() + std::time::Duration::from_secs(60),
     });
-    assert!(sink.append(&owner(), 3, 92, &observation("expired")).is_err());
-    sink.admission.as_mut().expect("admission").expires_at_unix_s = u64::MAX;
-    assert!(sink.append(&owner(), 4, 92, &observation("wrong-body")).is_err());
+    assert!(
+        sink.append(&owner(), 3, 92, &observation("expired"))
+            .is_err()
+    );
+    sink.admission
+        .as_mut()
+        .expect("admission")
+        .expires_at_unix_s = u64::MAX;
+    assert!(
+        sink.append(&owner(), 4, 92, &observation("wrong-body"))
+            .is_err()
+    );
     sink.admission.as_mut().expect("admission").expires_at = std::time::Instant::now();
-    assert!(sink.append(&owner(), 3, 92, &observation("monotonic-expiry")).is_err());
-    assert!(sink.writer.lock().expect("writer").records().expect("records").is_empty());
+    assert!(
+        sink.append(&owner(), 3, 92, &observation("monotonic-expiry"))
+            .is_err()
+    );
+    assert!(
+        sink.writer
+            .lock()
+            .expect("writer")
+            .records()
+            .expect("records")
+            .is_empty()
+    );
 }

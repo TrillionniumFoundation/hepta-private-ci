@@ -78,13 +78,21 @@ fn main() -> anyhow::Result<()> {
                         anyhow::anyhow!("invalid retrieval descriptor digest: {error}")
                     })?);
             } else if flag == "--retrieval-learning-descriptor" {
-                anyhow::ensure!(retrieval_learning_descriptor.is_none(), "duplicate --retrieval-learning-descriptor");
+                anyhow::ensure!(
+                    retrieval_learning_descriptor.is_none(),
+                    "duplicate --retrieval-learning-descriptor"
+                );
                 retrieval_learning_descriptor = Some(path.into());
             } else if flag == "--retrieval-learning-descriptor-digest" {
-                anyhow::ensure!(retrieval_learning_descriptor_digest.is_none(), "duplicate --retrieval-learning-descriptor-digest");
-                retrieval_learning_descriptor_digest = Some(path.into_string()
-                    .map_err(|_| anyhow::anyhow!("retrieval learning digest must be UTF-8"))?
-                    .parse::<Digest32>()?);
+                anyhow::ensure!(
+                    retrieval_learning_descriptor_digest.is_none(),
+                    "duplicate --retrieval-learning-descriptor-digest"
+                );
+                retrieval_learning_descriptor_digest = Some(
+                    path.into_string()
+                        .map_err(|_| anyhow::anyhow!("retrieval learning digest must be UTF-8"))?
+                        .parse::<Digest32>()?,
+                );
             } else if flag == "--intelligence-authority-file" {
                 anyhow::ensure!(
                     intelligence_authority_file.is_none(),
@@ -231,14 +239,19 @@ fn main() -> anyhow::Result<()> {
             ),
         }
 
-        match (retrieval_learning_descriptor, retrieval_learning_descriptor_digest) {
+        match (
+            retrieval_learning_descriptor,
+            retrieval_learning_descriptor_digest,
+        ) {
             (Some(path), Some(pin)) => {
                 let sink = load_retrieval_learning_bootstrap_v1(&path, pin, config.identity())
                     .map_err(anyhow::Error::msg)?;
                 config = config.with_cognitive_retrieval_learning(sink)?;
             }
             (None, None) => {}
-            _ => anyhow::bail!("--retrieval-learning-descriptor and its digest must be supplied together"),
+            _ => anyhow::bail!(
+                "--retrieval-learning-descriptor and its digest must be supplied together"
+            ),
         }
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())

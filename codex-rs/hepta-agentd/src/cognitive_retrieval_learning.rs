@@ -38,20 +38,34 @@ impl CognitiveRetrievalLearningSink {
         }
     }
 
-    pub(crate) fn with_admission(writer: LedgerWriter, admission: RetrievalLearningAdmission) -> Self {
-        Self { writer: Mutex::new(writer), admission: Some(admission) }
+    pub(crate) fn with_admission(
+        writer: LedgerWriter,
+        admission: RetrievalLearningAdmission,
+    ) -> Self {
+        Self {
+            writer: Mutex::new(writer),
+            admission: Some(admission),
+        }
     }
 
-    fn require_current_admission(&self, owner: &AgentId, body_generation: u64) -> Result<(), String> {
+    fn require_current_admission(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<(), String> {
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map_err(|error| error.to_string())?
             .as_secs();
         if self.admission.as_ref().is_some_and(|admission| {
-            admission.owner != *owner || admission.body_generation != body_generation
-                || now > admission.expires_at_unix_s || std::time::Instant::now() >= admission.expires_at
+            admission.owner != *owner
+                || admission.body_generation != body_generation
+                || now > admission.expires_at_unix_s
+                || std::time::Instant::now() >= admission.expires_at
         }) {
-            return Err("retrieval learning host admission expired or identity changed".to_string());
+            return Err(
+                "retrieval learning host admission expired or identity changed".to_string(),
+            );
         }
         Ok(())
     }
@@ -212,10 +226,9 @@ impl CognitiveRetrievalLearningSink {
             delivery_propensity,
         )
         .map_err(|error| error.to_string())?;
-        let mut writer = self
-            .writer
-            .try_lock()
-            .map_err(|_| "retrieval learning ledger busy or poisoned; retry only while current".to_string())?;
+        let mut writer = self.writer.try_lock().map_err(|_| {
+            "retrieval learning ledger busy or poisoned; retry only while current".to_string()
+        })?;
         self.require_current_admission(owner, body_generation)?;
         let LedgerEvent::RetrievalPrepared(assignment) = event else {
             return Err("retrieval assignment bridge emitted wrong event kind".to_string());

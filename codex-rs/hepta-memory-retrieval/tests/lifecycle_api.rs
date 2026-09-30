@@ -144,9 +144,7 @@ fn external_api_rejects_cross_identity_transition() {
 fn durable_port_contract_compiles_and_fences_replay() {
     let identity = identity();
     let mut port = MemoryDecisionPort::default();
-    let writer_fence = port
-        .acquire_writer_fence("writer-a")
-        .expect("writer fence");
+    let writer_fence = port.acquire_writer_fence("writer-a").expect("writer fence");
     let record = DurableDecisionRecordV1 {
         identity: identity.clone(),
         phase: RetrievalLifecyclePhaseV1::PublishedRetrieval,
@@ -154,9 +152,7 @@ fn durable_port_contract_compiles_and_fences_replay() {
         frontier: 0,
         payload_digest: "payload-37".to_string(),
     };
-    let frontier = port
-        .compare_and_append(0, &record)
-        .expect("first append");
+    let frontier = port.compare_and_append(0, &record).expect("first append");
     assert_eq!(frontier, 1);
     assert!(port.compare_and_append(0, &record).is_err());
     assert_eq!(
@@ -179,5 +175,9 @@ fn durable_port_contract_compiles_and_fences_replay() {
         2
     );
     assert_eq!(port.retire_before_frontier(3).expect("retire"), 1);
-    assert!(port.load_latest(&identity).expect("load after retire").is_none());
+    assert!(
+        port.load_latest(&identity)
+            .expect("load after retire")
+            .is_none()
+    );
 }

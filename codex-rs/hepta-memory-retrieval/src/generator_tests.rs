@@ -560,10 +560,9 @@ fn product_generation_construction_is_confined_to_owner_adapter() {
         .expect("memory.retrieval must live inside the codex-rs workspace");
     // The core is a private submodule of the same SQLite owner, not a second
     // product construction surface. Keep the exception at exact file scope.
-    let adapter = std::fs::read_to_string(
-        workspace.join("hepta-memory/src/cognitive_retrieval_adapter.rs"),
-    )
-    .expect("SQLite owner adapter");
+    let adapter =
+        std::fs::read_to_string(workspace.join("hepta-memory/src/cognitive_retrieval_adapter.rs"))
+            .expect("SQLite owner adapter");
     assert!(adapter.contains("#[path = \"cognitive_retrieval_adapter_core.rs\"]\nmod core;"));
     let mut violations = Vec::new();
     scan(

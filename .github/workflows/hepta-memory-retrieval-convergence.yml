@@ -4,7 +4,6 @@ on:
   pull_request: {}
   push:
     branches: [main]
-  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -45,6 +44,8 @@ jobs:
           mkdir -p "$RUNNER_TEMP/retrieval-source"
           python3 scripts/hepta_memory_retrieval_candidate.py refs --source "$SOURCE_SHA" \
             | tee "$RUNNER_TEMP/retrieval-source/refs.env" >> "$GITHUB_OUTPUT"
+          RESOLVED_SOURCE_SHA="$(sed -n 's/^source_sha=//p' "$RUNNER_TEMP/retrieval-source/refs.env")"
+          test "$RESOLVED_SOURCE_SHA" = "$SOURCE_SHA"
           BASE_SHA="$(sed -n 's/^base_sha=//p' "$RUNNER_TEMP/retrieval-source/refs.env")"
           MAIN_SHA="$(sed -n 's/^main_sha=//p' "$RUNNER_TEMP/retrieval-source/refs.env")"
           git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/retrieval-source/identity.txt"
@@ -141,6 +142,10 @@ jobs:
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.8.22"
+          enable-cache: false
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
@@ -232,3 +237,23 @@ jobs:
           path: ${{ runner.temp }}/retrieval-manifest/
           retention-days: 90
           if-no-files-found: error
+
+
+  verdict:
+    name: Memory retrieval aggregate verdict
+    needs: [identity, qualify, manifest]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every qualification lane
+        shell: bash
+        env:
+          IDENTITY_RESULT: ${{ needs.identity.result }}
+          QUALIFY_RESULT: ${{ needs.qualify.result }}
+          MANIFEST_RESULT: ${{ needs.manifest.result }}
+        run: |
+          set -euo pipefail
+          test "$IDENTITY_RESULT" = success
+          test "$QUALIFY_RESULT" = success
+          test "$MANIFEST_RESULT" = success

@@ -72,7 +72,7 @@ impl RetrievalCompletenessPolicyV1 {
             .map(|row| (row.generator, row))
             .collect::<BTreeMap<_, _>>();
         let mut incomplete_sources = Vec::new();
-        let mut decision = None;
+        let mut decision: Option<IncompleteSourceActionV1> = None;
         for batch in &input.batches {
             let row = policy.get(&batch.receipt.generator).ok_or(
                 ProductRecallErrorV1::MissingCompletenessPolicy(batch.receipt.generator),
@@ -197,9 +197,7 @@ pub fn recall_product_with_engram_v1(
 ) -> Result<ProductGeneratedRecallV1, ProductRecallErrorV1> {
     match candidates.completeness() {
         RetrievalCompletenessDecisionV1::FailClosed { incomplete_sources } => {
-            return Err(ProductRecallErrorV1::FailClosed(
-                incomplete_sources.clone(),
-            ));
+            return Err(ProductRecallErrorV1::FailClosed(incomplete_sources.clone()));
         }
         RetrievalCompletenessDecisionV1::Abstain { .. } => {
             work.checkpoint().map_err(|error| {

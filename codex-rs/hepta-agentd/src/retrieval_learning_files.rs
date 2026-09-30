@@ -19,12 +19,7 @@ pub(super) fn read(path: &Path, home: &Path, maximum: usize) -> Result<Vec<u8>, 
 }
 
 #[cfg(unix)]
-pub(super) fn open(
-    path: &Path,
-    home: &Path,
-    maximum: u64,
-    writable: bool,
-) -> Result<File, String> {
+pub(super) fn open(path: &Path, home: &Path, maximum: u64, writable: bool) -> Result<File, String> {
     use std::fs::OpenOptions;
     use std::os::unix::fs::MetadataExt;
     if !path.is_absolute()
@@ -33,7 +28,9 @@ pub(super) fn open(
     {
         return Err("retrieval learning requires canonical paths outside Agent home".to_string());
     }
-    let parent = path.parent().ok_or("retrieval learning file has no parent")?;
+    let parent = path
+        .parent()
+        .ok_or("retrieval learning file has no parent")?;
     for ancestor in parent.ancestors() {
         let metadata = ancestor.metadata().map_err(|error| error.to_string())?;
         let mode = metadata.mode();
@@ -43,7 +40,11 @@ pub(super) fn open(
     }
     let before = std::fs::symlink_metadata(path).map_err(|error| error.to_string())?;
     let denied = if writable { 0o077 } else { 0o022 };
-    if !before.is_file() || before.nlink() != 1 || before.len() > maximum || before.mode() & denied != 0 {
+    if !before.is_file()
+        || before.nlink() != 1
+        || before.len() > maximum
+        || before.mode() & denied != 0
+    {
         return Err("retrieval learning requires a protected bounded single-link file".to_string());
     }
     // Never create, truncate, repair by replacement, or retry without an anchor.

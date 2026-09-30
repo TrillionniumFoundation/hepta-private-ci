@@ -150,7 +150,10 @@ pub struct QualifiedDecisionV1 {
 }
 
 impl QualifiedDecisionV1 {
-    pub fn publish(self, publication_digest: String) -> Result<PublishedRetrievalV1, LifecycleErrorV1> {
+    pub fn publish(
+        self,
+        publication_digest: String,
+    ) -> Result<PublishedRetrievalV1, LifecycleErrorV1> {
         validate_identity_part("publication_digest", &publication_digest)?;
         Ok(PublishedRetrievalV1 {
             identity: self.identity,
@@ -339,10 +342,7 @@ impl fmt::Display for LifecycleErrorV1 {
 
 impl StdError for LifecycleErrorV1 {}
 
-fn validate_identity_part(
-    name: &'static str,
-    value: &str,
-) -> Result<(), LifecycleErrorV1> {
+fn validate_identity_part(name: &'static str, value: &str) -> Result<(), LifecycleErrorV1> {
     if value.is_empty() {
         return Err(LifecycleErrorV1::EmptyIdentityPart(name));
     }

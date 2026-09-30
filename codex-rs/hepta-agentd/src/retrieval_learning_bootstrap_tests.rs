@@ -59,7 +59,8 @@ impl Fixture {
             agent_id.clone(),
             WorkspaceBinding::new(&workspace, &fleet_root).unwrap(),
             ResourceBudget::local_default(),
-        ).unwrap();
+        )
+        .unwrap();
         let record = registry.register(manifest).unwrap();
         let identity = AgentdIdentity {
             agent_id,
@@ -80,10 +81,21 @@ impl Fixture {
             fs::set_permissions(&directory, fs::Permissions::from_mode(0o700)).unwrap();
             paths.push(directory.join("state"));
         }
-        let create = |path: &Path| OpenOptions::new().create_new(true).read(true).write(true).mode(0o600).open(path).unwrap();
+        let create = |path: &Path| {
+            OpenOptions::new()
+                .create_new(true)
+                .read(true)
+                .write(true)
+                .mode(0o600)
+                .open(path)
+                .unwrap()
+        };
         drop(DurableLedger::create(create(&paths[0]), digest("binding"), 64).unwrap());
         drop(LedgerWitnessStore::create(create(&paths[1]), digest("binding")).unwrap());
-        let now = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
         let root_key = SigningKey::from_bytes(&[99; 32]);
         let signer_key = SigningKey::from_bytes(&[7; 32]);
         let signer = ledger::TrustedLearningSignerV1 {
@@ -107,11 +119,16 @@ impl Fixture {
                 generation: 1,
                 effective_at: now - 10,
                 trust: ledger::LearningEvidenceTrustV1 {
-                    scope_digest: digest("scope"), objective_digest: digest("objective"),
-                    authority_epoch: 7, signers: vec![signer],
+                    scope_digest: digest("scope"),
+                    objective_digest: digest("objective"),
+                    authority_epoch: 7,
+                    signers: vec![signer],
                 },
             },
-            root_id: id("root"), issued_at: now - 20, expires_at: now + 3600, signature: [0; 64],
+            root_id: id("root"),
+            issued_at: now - 20,
+            expires_at: now + 3600,
+            signature: [0; 64],
         };
         signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
         let descriptor = json!({
@@ -136,7 +153,13 @@ impl Fixture {
                     "revoked_at_unix_s": null, "roles": ["generator"]}]
             }
         });
-        Self { _temp: temp, identity, path: root.join("bootstrap.json"), descriptor, now }
+        Self {
+            _temp: temp,
+            identity,
+            path: root.join("bootstrap.json"),
+            descriptor,
+            now,
+        }
     }
 
     fn write(&self, descriptor: &Value) -> Digest32 {
@@ -153,32 +176,56 @@ fn ordinary_bootstrap_reopens_the_real_writer_and_keeps_preparation_idempotent()
     let pin = fixture.write(&fixture.descriptor);
     let sink = load_retrieval_learning_bootstrap_v1(&fixture.path, pin, &fixture.identity).unwrap();
     let candidate = RetrievalCandidateIdentityV1 {
-        record_id: id("memory:1"), record_revision: Revision::new(1).unwrap(), record_digest: digest("record"),
+        record_id: id("memory:1"),
+        record_revision: Revision::new(1).unwrap(),
+        record_digest: digest("record"),
     };
     let mut observation = RetrievalAssignmentObservationV1 {
-        cue_digest: digest("cue"), policy_digest: digest("policy"),
-        source_completeness_digest: digest("complete"), candidate_union_digest: digest("union"),
-        recall_packet_digest: digest("packet"), enumerated_candidates: vec![candidate.clone()],
-        legal_candidates: vec![candidate.clone()], selected_candidates: vec![candidate],
-        omitted_by_policy_limits: 0, completeness: RetrievalAssignmentCompletenessV1::Complete,
-        assignment_propensity: ProbabilityQ32::ONE, observation_digest: Digest32::ZERO,
+        cue_digest: digest("cue"),
+        policy_digest: digest("policy"),
+        source_completeness_digest: digest("complete"),
+        candidate_union_digest: digest("union"),
+        recall_packet_digest: digest("packet"),
+        enumerated_candidates: vec![candidate.clone()],
+        legal_candidates: vec![candidate.clone()],
+        selected_candidates: vec![candidate],
+        omitted_by_policy_limits: 0,
+        completeness: RetrievalAssignmentCompletenessV1::Complete,
+        assignment_propensity: ProbabilityQ32::ONE,
+        observation_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };
     observation.observation_digest = observation.compute_observation_digest();
-    let append = |sink: &CognitiveRetrievalLearningSink| sink.append_preparation(
-        &fixture.identity.agent_id, 1, 77, &observation, &observation.selected_candidates,
-        Some(digest("exact-context")), None, ProbabilityQ32::ONE,
-    ).unwrap();
+    let append = |sink: &CognitiveRetrievalLearningSink| {
+        sink.append_preparation(
+            &fixture.identity.agent_id,
+            1,
+            77,
+            &observation,
+            &observation.selected_candidates,
+            Some(digest("exact-context")),
+            None,
+            ProbabilityQ32::ONE,
+        )
+        .unwrap()
+    };
     let first = append(&sink);
     assert!(load_at(&fixture.path, pin, &fixture.identity, fixture.now).is_err());
     drop(sink);
     let sink = load_at(&fixture.path, pin, &fixture.identity, fixture.now).unwrap();
     let replay = append(&sink);
     assert_eq!(replay.event_digest, first.event_digest);
-    assert_eq!(replay.disposition, ledger::AppendDisposition::IdempotentReplay);
+    assert_eq!(
+        replay.disposition,
+        ledger::AppendDisposition::IdempotentReplay
+    );
     drop(sink);
     let witness_path = Path::new(fixture.descriptor["witness_path"].as_str().unwrap());
-    let witness = LedgerWitnessStore::recover(files::open(witness_path, &fixture.identity.home_root, 1_000_000, true).unwrap(), digest("binding")).unwrap();
+    let witness = LedgerWitnessStore::recover(
+        files::open(witness_path, &fixture.identity.home_root, 1_000_000, true).unwrap(),
+        digest("binding"),
+    )
+    .unwrap();
     assert_eq!(witness.frontier().unwrap().anchor.sequence, 1);
 }
 
@@ -186,10 +233,19 @@ fn ordinary_bootstrap_reopens_the_real_writer_and_keeps_preparation_idempotent()
 fn bootstrap_rejects_wrong_pin_identity_signature_stale_anchor_and_expired_trust() {
     let fixture = Fixture::new();
     let pin = fixture.write(&fixture.descriptor);
-    assert!(load_at(&fixture.path, digest("wrong-pin"), &fixture.identity, fixture.now).is_err());
+    assert!(
+        load_at(
+            &fixture.path,
+            digest("wrong-pin"),
+            &fixture.identity,
+            fixture.now
+        )
+        .is_err()
+    );
     assert!(load_at(&fixture.path, pin, &fixture.identity, fixture.now + 3601).is_err());
     let mutations = [
-        ("body_generation", json!(2)), ("maximum_records", json!(true)),
+        ("body_generation", json!(2)),
+        ("maximum_records", json!(true)),
         ("allow_unsigned", json!(true)),
     ];
     for (field, value) in mutations {
