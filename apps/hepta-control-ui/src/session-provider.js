@@ -25,6 +25,7 @@ export class SessionProvider {
   #epoch = 0;
   #startPromise = null;
   #refreshPromise = null;
+  #refreshFailures = 0;
 
   constructor({ client, endpointManifest, clock = () => Date.now(), refreshSkewMs = 60_000 }) {
     const requiredMethods = [
@@ -66,6 +67,7 @@ export class SessionProvider {
     }
 
     this.#active = true;
+    this.#refreshFailures = 0;
     const epoch = ++this.#epoch;
     this.#clearTimer();
     const startPromise = this.#startOnce(epoch, signal);
@@ -139,6 +141,7 @@ export class SessionProvider {
           { retryable: true, details: { requestDispatched: true } },
         );
       }
+      this.#refreshFailures = 0;
       this.#emit("refreshed");
       this.#schedule(epoch);
       return this.#client.readView();
@@ -158,6 +161,9 @@ export class SessionProvider {
           // Local authority is already removed by RuntimeClient.close().
         }
         this.#emit("revoked", error);
+      } else if (this.#active && epoch === this.#epoch) {
+        this.#refreshFailures += 1;
+        this.#schedule(epoch);
       }
       throw error;
     }
@@ -185,7 +191,12 @@ export class SessionProvider {
     if (!this.#active || epoch !== this.#epoch) return;
     const view = this.#client.readView();
     if (!view.connected || !view.expiresAt) return;
-    const desiredDelay = Math.max(0, view.expiresAt - this.#clock() - this.#refreshSkewMs);
+    const remaining = Math.max(0, view.expiresAt - this.#clock());
+    const backoff = Math.min(60_000, 1_000 * (2 ** Math.min(this.#refreshFailures - 1, 6)));
+    // Bound transient retries by expiry. Unchanged short-lived sessions must
+    // not turn refresh skew into an immediate successful-refresh busy loop.
+    const desiredDelay = Math.min(remaining, this.#refreshFailures > 0
+      ? backoff : Math.max(1_000, remaining - this.#refreshSkewMs));
     const delay = Math.min(desiredDelay, MAX_TIMER_DELAY_MS);
     this.#timer = setTimeout(() => {
       this.#timer = null;

@@ -4,6 +4,7 @@ import {
   assertSha256,
   assertStableIdentifier,
   constantTimeEqual,
+  canonicalJson,
 } from "./canonical.js";
 import {
   UI_CONTROL_ERROR_CODES,
@@ -70,6 +71,10 @@ function normalizePermissions(value) {
   if (!Array.isArray(value) || value.length === 0 || value.length > KNOWN_PERMISSIONS.size) {
     throw invalid("session.permissions must be a non-empty bounded array");
   }
+  value = JSON.parse(canonicalJson(value, {
+    maxArrayLength: KNOWN_PERMISSIONS.size, maxEntries: KNOWN_PERMISSIONS.size,
+    maxStringBytes: 256, maxEncodedBytes: 2048,
+  }));
   const permissions = [];
   const seen = new Set();
   for (const [index, permission] of value.entries()) {
@@ -177,6 +182,15 @@ export function operationMatches(entry, request) {
     entry.displayedRevision === request.displayedRevision &&
     constantTimeEqual(entry.snapshotDigest, request.snapshotDigest)
   );
+}
+
+export function validateAuditTrace(entry, value) {
+  if (typeof value !== "string" || (entry.auditTraceId !== null && value !== entry.auditTraceId)) {
+    throw uiControlError(UI_CONTROL_ERROR_CODES.ACK_MISMATCH,
+      "backend observation changed or omitted the operation audit identity",
+      { retryable: true, details: { operationId: entry.operationId } });
+  }
+  return assertStableIdentifier(value, "auditTraceId");
 }
 
 export function validateAcknowledgement(entry, acknowledgement) {

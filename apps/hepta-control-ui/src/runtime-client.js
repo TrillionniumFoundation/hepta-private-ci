@@ -27,6 +27,7 @@ import {
   invalid,
   normalizeSession,
   publicOperation,
+  validateAuditTrace,
 } from "./runtime-contract.js";
 import {
   normalizeSnapshot,
@@ -56,6 +57,7 @@ export class RuntimeClient {
   #protocolVersion;
   #session = null;
   #snapshot = null;
+  #lastSnapshot = null;
   #ledger;
   #connectPromise = null;
   #connectionEpoch = 0;
@@ -152,6 +154,7 @@ export class RuntimeClient {
 
     this.#session = normalized;
     this.#snapshot = null;
+    this.#lastSnapshot = null;
     return this.readView();
   }
 
@@ -283,6 +286,7 @@ export class RuntimeClient {
       );
     } catch (error) {
       this.#invalidateSessionForError(error, session);
+      if (this.#session === session) this.#snapshot = null;
       throw error;
     }
     if (this.#session !== session) {
@@ -311,7 +315,8 @@ export class RuntimeClient {
           { retryable: true },
         );
       }
-      this.#snapshot = validateSnapshotTransition(this.#snapshot, normalized);
+      this.#snapshot = validateSnapshotTransition(this.#lastSnapshot, normalized);
+      this.#lastSnapshot = this.#snapshot;
       this.#snapshotObservedAt = this.#clock();
       return this.readView();
     } catch (error) {
@@ -330,6 +335,9 @@ export class RuntimeClient {
   }
 
   readView() {
+    if (this.#session && this.#session.expiresAt <= this.#clock()) {
+      this.#invalidateSession(this.#session);
+    }
     const pending = this.#ledger.views();
     const completed = this.#ledger.completedViews();
     return Object.freeze({
@@ -614,9 +622,7 @@ export class RuntimeClient {
     const status = assertCanonicalText(observation.status, "operation observation.status", {
       maxBytes: 32,
     });
-    const auditTraceId = observation.auditTraceId === undefined
-      ? entry.auditTraceId
-      : assertStableIdentifier(observation.auditTraceId, "operation observation.auditTraceId");
+    const auditTraceId = validateAuditTrace(entry, observation.auditTraceId);
     if (TERMINAL_STATUSES.has(status)) {
       return this.reconcile({
         operationId: entry.operationId,
@@ -705,6 +711,7 @@ export class RuntimeClient {
     if (this.#session === expectedSession) {
       this.#session = null;
       this.#snapshot = null;
+      this.#lastSnapshot = null;
     }
   }
 

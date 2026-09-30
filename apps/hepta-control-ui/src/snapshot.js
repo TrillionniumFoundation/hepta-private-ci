@@ -9,22 +9,20 @@ import {
   UI_CONTROL_ERROR_CODES,
   uiControlError,
 } from "./errors.js";
-import { projectRuntime } from "./control.js";
+import { projectRuntime, RUNTIME_CANONICAL_LIMITS } from "./control.js";
+import { assertPlainObject } from "./runtime-contract.js";
 
 function invalid(message, details) {
   return uiControlError(UI_CONTROL_ERROR_CODES.INVALID_INPUT, message, { details });
 }
 
-function assertPlainObject(value, label) {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    throw invalid(`${label} must be an object`, { label });
-  }
-  return value;
-}
-
 export async function normalizeSnapshot(snapshot, session) {
   assertPlainObject(snapshot, "snapshot");
   assertPlainObject(session, "session");
+  canonicalJson(snapshot, RUNTIME_CANONICAL_LIMITS);
+  // Capture optional fields before hashing yields control to other callbacks.
+  const suppliedDigest = snapshot.semanticDigest;
+  const observedAt = typeof snapshot.observedAt === "string" ? snapshot.observedAt : null;
 
   const sessionId = assertStableIdentifier(snapshot.sessionId, "snapshot.sessionId");
   const expectedSessionId = assertStableIdentifier(session.sessionId, "session.sessionId");
@@ -68,10 +66,11 @@ export async function normalizeSnapshot(snapshot, session) {
       revision: runtime.revision,
       modules: runtime.modules,
     },
+    RUNTIME_CANONICAL_LIMITS,
   );
-  const declaredDigest = snapshot.semanticDigest === undefined
+  const declaredDigest = suppliedDigest === undefined
     ? computedDigest
-    : assertSha256(snapshot.semanticDigest, "snapshot.semanticDigest");
+    : assertSha256(suppliedDigest, "snapshot.semanticDigest");
   if (declaredDigest !== computedDigest) {
     throw uiControlError(
       UI_CONTROL_ERROR_CODES.SNAPSHOT_DRIFT,
@@ -89,9 +88,9 @@ export async function normalizeSnapshot(snapshot, session) {
     revision: runtime.revision,
     semanticDigest: computedDigest,
     modules: runtime.modules,
-    observedAt: typeof snapshot.observedAt === "string" ? snapshot.observedAt : null,
+    observedAt,
   });
-  canonicalJson(normalized);
+  canonicalJson(normalized, RUNTIME_CANONICAL_LIMITS);
   return normalized;
 }
 

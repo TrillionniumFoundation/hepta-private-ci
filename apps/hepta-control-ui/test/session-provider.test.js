@@ -201,3 +201,63 @@ test("revoke emits local revocation even when transport cleanup fails", async ()
     error => error instanceof UiControlError && error.code === UI_CONTROL_ERROR_CODES.NOT_CONNECTED,
   );
 });
+
+test("transient refresh failure retries with bounded backoff and stops at expiry", async t => {
+  t.mock.timers.enable({ apis: ["setTimeout", "Date"], now: 1000 });
+  const events = [];
+  let expiry = 11000;
+  const client = fakeClient({
+    readView: () => ({ connected: client.state.connected, expiresAt: expiry }),
+    async refreshSession() {
+      client.state.refreshCount += 1;
+      if (Date.now() >= expiry) {
+        client.state.connected = false;
+        throw new UiControlError(UI_CONTROL_ERROR_CODES.SESSION_EXPIRED, "Session expired.");
+      }
+      if (client.state.refreshCount < 3) throw new Error("Temporary outage.");
+      expiry = Date.now() + 60000;
+    },
+  });
+  const provider = new SessionProvider({ client, endpointManifest: {}, refreshSkewMs: 5000 });
+  provider.subscribe(event => events.push(event.type));
+  await provider.start();
+  try {
+    const tick = async ms => { t.mock.timers.tick(ms); for (let i = 0; i < 10; i += 1) await Promise.resolve(); };
+    await tick(5000);
+    assert.equal(client.state.refreshCount, 1);
+    await tick(999);
+    assert.equal(client.state.refreshCount, 1);
+    await tick(1);
+    assert.equal(client.state.refreshCount, 2);
+    await tick(1999);
+    assert.equal(client.state.refreshCount, 2);
+    await tick(1);
+    assert.equal(client.state.refreshCount, 3);
+    assert.deepEqual(events, ["connected", "refresh-failed", "refresh-failed", "refreshed"]);
+    // Force the next scheduled attempt to observe expiry, then verify no retry.
+    expiry = Date.now();
+    await tick(55000);
+    const count = client.state.refreshCount;
+    assert.equal(events.at(-1), "revoked");
+    await tick(120000);
+    assert.equal(client.state.refreshCount, count);
+  } finally { provider.stop(); }
+});
+
+test("an unchanged near-expiry session cannot spin in a zero-delay refresh loop", async t => {
+  t.mock.timers.enable({ apis: ["setTimeout", "Date"], now: 1000 });
+  const client = fakeClient({ readView: () => ({ connected: client.state.connected, expiresAt: 6000 }) });
+  const provider = new SessionProvider({ client, endpointManifest: {}, refreshSkewMs: 5000 });
+  await provider.start();
+  try {
+    t.mock.timers.tick(0);
+    for (let i = 0; i < 10; i += 1) await Promise.resolve();
+    assert.equal(client.state.refreshCount, 0);
+    t.mock.timers.tick(1000);
+    for (let i = 0; i < 10; i += 1) await Promise.resolve();
+    assert.equal(client.state.refreshCount, 1);
+    t.mock.timers.tick(0);
+    for (let i = 0; i < 10; i += 1) await Promise.resolve();
+    assert.equal(client.state.refreshCount, 1);
+  } finally { provider.stop(); }
+});

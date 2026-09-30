@@ -76,16 +76,16 @@ test("actual dispatch sees the recovery record already persisted, before any ack
   response.resolve(); await pending;
 });
 
-test("authenticated found:false resolves a pre-dispatch crash as not accepted", async () => {
+test("authenticated found:false retains an unresolved pre-dispatch crash without replay", async () => {
   let lookups = 0; const recovery = await store(); await recovery.prepare(recoveryRecord());
   const { client, state } = await setup({ async lookup() { lookups += 1; return { found: false }; } });
   client.restoreRecoveryState(recovery.load());
   const resolved = await client.recoverOperation("operation-1");
-  assert.equal(resolved.state, "terminal"); assert.equal(resolved.terminalStatus, "not_accepted");
-  assert.equal(client.readView().pendingCount, 0); assert.equal(state.calls, 0); assert.equal(lookups, 1);
-  await recovery.complete(resolved); assert.equal(recovery.load().operations.length, 0);
-  assert.equal((await client.requestStop(input("operation-2"))).operationId, "operation-2");
-  assert.equal(state.calls, 1);
+  assert.equal(resolved.state, "indeterminate"); assert.equal(resolved.terminalStatus, null);
+  assert.equal(client.readView().pendingCount, 1); assert.equal(state.calls, 0); assert.equal(lookups, 1);
+  assert.equal(await recovery.complete(resolved), false);
+  assert.equal(recovery.load().operations.length, 1);
+  assert.equal(state.calls, 0);
 });
 
 test("found:false after an accepted acknowledgement remains unresolved", async () => {
@@ -144,7 +144,7 @@ test("RuntimeClient fair recovery reaches beyond the first 32 and isolates a poi
 test("simultaneous recovery of one identity shares one lookup", async () => {
   const gate = deferred(); let lookups = 0; const { client } = await setup({ async lookup(request) {
     lookups += 1; await gate.promise;
-    return { found: true, ...request, status: "succeeded", auditTraceId: "audit-final" };
+    return { found: true, ...request, status: "succeeded", auditTraceId: `audit-${request.operationId}` };
   } });
   await client.requestStop(input());
   const one = client.recoverOperation("operation-1"); const two = client.recoverOperation("operation-1");

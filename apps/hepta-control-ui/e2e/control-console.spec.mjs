@@ -137,3 +137,20 @@ test("local recovery storage denial prevents dispatch without wedging read-only 
   await expect(page.getByRole("button", { name: "Refresh runtime view" })).toBeEnabled();
   const state = await (await request.get("/__test__/state")).json(); expect(state.requestCount).toBe(0);
 });
+
+test("lost runtime refresh marks the product stale and disables controls until recovery", async ({ page, request }) => {
+  await loadConsole(page);
+  await page.route("**/api/ui-control/v1/view", route => route.abort("connectionfailed"));
+  await page.getByRole("button", { name: "Refresh runtime view" }).click();
+  await expect(page.locator("#stale-banner")).toBeVisible();
+  for (const name of ["Request start", "Request reconcile", "Request stop"]) {
+    await expect(page.getByRole("button", { name })).toBeDisabled();
+  }
+  await expect(page.getByRole("alert")).toContainText("UI_CONTROL_TRANSPORT");
+  expect((await (await request.get("/__test__/state")).json()).requestCount).toBe(0);
+  await page.unroute("**/api/ui-control/v1/view");
+  await page.getByRole("button", { name: "Refresh runtime view" }).click();
+  await expect(page.locator("#stale-banner")).toBeHidden();
+  await expect(page.getByRole("button", { name: "Request start" })).toBeEnabled();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});

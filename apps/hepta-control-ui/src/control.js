@@ -33,6 +33,8 @@ const STATUS_SET = new Set(RUNTIME_STATUSES);
 const ACTION_SET = new Set(OPERATION_ACTIONS);
 const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 const MAX_MODULES = 1000;
+// Array entries plus four fields per module and bounded envelope fields.
+export const RUNTIME_CANONICAL_LIMITS = Object.freeze({ maxEntries: 5 * MAX_MODULES + 16 });
 
 function invalid(message, details) {
   return uiControlError(UI_CONTROL_ERROR_CODES.INVALID_INPUT, message, {
@@ -111,6 +113,7 @@ export function projectRuntime(runtime) {
   if (!Array.isArray(runtime.modules) || runtime.modules.length > MAX_MODULES) {
     throw invalid(`runtime.modules must be an array of at most ${MAX_MODULES} entries`);
   }
+  runtime = JSON.parse(canonicalJson(runtime, RUNTIME_CANONICAL_LIMITS));
   const seen = new Set();
   const modules = runtime.modules.map(normalizeModule).sort((left, right) =>
     compareAscii(left.id, right.id),
@@ -122,12 +125,11 @@ export function projectRuntime(runtime) {
     seen.add(module.id);
   }
   const projection = Object.freeze({ generation, revision, modules: Object.freeze(modules) });
-  canonicalJson(projection);
   return projection;
 }
 
 export async function digestRuntimeProjection(runtime) {
-  return digestCanonical("hepta.ui-control.runtime-projection.v1", projectRuntime(runtime));
+  return digestCanonical("hepta.ui-control.runtime-projection.v1", projectRuntime(runtime), RUNTIME_CANONICAL_LIMITS);
 }
 
 export function buildOperationIntent({
@@ -172,7 +174,7 @@ export function projectRuntimeFromLocalCanonicalJson(text) {
     parseCanonicalJson(text, {
       label: "runtime fixture",
       maxDepth: 8,
-      maxEntries: 4096,
+      ...RUNTIME_CANONICAL_LIMITS,
       maxArrayLength: MAX_MODULES,
       maxStringBytes: 4096,
       maxEncodedBytes: 1024 * 1024,

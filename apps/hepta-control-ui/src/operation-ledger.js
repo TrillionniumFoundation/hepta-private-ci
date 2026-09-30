@@ -19,6 +19,7 @@ import {
   operationMatches,
   publicOperation,
   validateAcknowledgement,
+  validateAuditTrace,
 } from "./runtime-contract.js";
 
 const MAX_COMPLETED = 1024;
@@ -167,16 +168,12 @@ export class OperationLedger {
         },
       );
     }
-    // `found:false` is authoritative non-admission for an unacknowledged
-    // attempt. It is not a runtime-owner terminal outcome.
-    entry.state = "terminal";
-    entry.terminalStatus = "not_accepted";
-    entry.auditTraceId = null;
-    entry.outcomeDigest = null;
+    // Absence is a point-in-time observation: a dispatched request can still
+    // commit after this lookup, including from another tab. Only backend-owned
+    // admission fencing/tombstones can make non-admission final.
+    entry.state = "indeterminate";
     entry.updatedAt = this.#clock();
     entry.promise = Promise.resolve(publicOperation(entry));
-    this.#pending.delete(entry.operationId);
-    this.#rememberCompleted(entry);
     return publicOperation(entry);
   }
 
@@ -184,7 +181,7 @@ export class OperationLedger {
     if (!ACTIVE_STATUSES.has(status)) {
       throw invalid("operation lookup returned an unknown status", { status });
     }
-    entry.auditTraceId = auditTraceId ?? entry.auditTraceId;
+    entry.auditTraceId = validateAuditTrace(entry, auditTraceId);
     entry.updatedAt = this.#clock();
     entry.state = status === "accepted" ? "pending" : status;
     entry.promise = Promise.resolve(publicOperation(entry));
@@ -235,6 +232,7 @@ export class OperationLedger {
         { details: { operationId } },
       );
     }
+    validateAuditTrace(entry, auditTraceId);
     entry.state = "terminal";
     entry.terminalStatus = observation.status;
     entry.auditTraceId = auditTraceId ?? entry.auditTraceId;
@@ -326,7 +324,19 @@ export class OperationLedger {
       entry.promise = Promise.resolve(publicOperation(entry));
       restored.set(operationId, entry);
     }
-    this.#pending = restored;
+    // Import is monotone: a browser restart/retry must not erase reservations,
+    // detach a live dispatch promise, or resurrect an already observed terminal.
+    const merged = new Map(this.#pending);
+    for (const [operationId, entry] of restored) {
+      const prior = this.#pending.get(operationId) ?? this.#completed.get(operationId);
+      if (prior) this.#assertMatching(prior, entry, "retained");
+      else merged.set(operationId, entry);
+    }
+    if (merged.size > this.#maxPending) {
+      throw uiControlError(UI_CONTROL_ERROR_CODES.PENDING_LIMIT,
+        "combined recovery state exceeds pending operation capacity");
+    }
+    this.#pending = merged;
   }
 
   #assertMatching(entry, request, disposition) {
