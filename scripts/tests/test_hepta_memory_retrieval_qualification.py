@@ -13,6 +13,73 @@ def execute(root, *args):
     return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
 
 
+def write_json(root: Path, relative: str, value) -> None:
+    path = root / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2) + "\n")
+
+
+def recovery_matrix_fixture():
+    states = []
+    for name, (phase, action, learning) in q.REQUIRED_RECOVERY_STATES.items():
+        row = {
+            "deliveryStage": name,
+            "lifecyclePhase": phase,
+            "effectMayBeReplayed": False,
+            "recovery": action,
+            "learningPermitted": learning,
+        }
+        if name == "OutcomeObserved":
+            row["learningRequiresFreshCurrentUse"] = True
+        states.append(row)
+    return {
+        "schema": "hepta.memory-retrieval.recovery-matrix.v1",
+        "module": "memory.retrieval",
+        "authority": q.RECOVERY_GUIDE,
+        "durableOwners": {
+            "preparation": "codex-hepta-learning-ledger:RetrievalPrepared/tag-10",
+            "nativeOperation": "codex-hepta-infer-core:NativeRunRecord",
+            "lifecycleAppend": "codex-hepta-memory-retrieval:DurableDecisionPortV1",
+            "secondOwnerIntroduced": False,
+        },
+        "states": states,
+        "crashPoints": [
+            {"id": identity, "requiredResult": result}
+            for identity, result in q.REQUIRED_CRASH_POINTS.items()
+        ],
+        "identity": {
+            "principalMustMatchNativePrincipal": True,
+            "requestMustMatchNativeRequest": True,
+            "decisionMustMatchAssignmentRecord": True,
+            "payloadIsDeliveryReceiptDigest": True,
+            "writerFenceRequired": True,
+            "compareAndAppendRequired": True,
+        },
+        "claimBoundary": {claim: False for claim in q.RECOVERY_CLAIMS},
+    }
+
+
+def product_composition_fixture():
+    return {
+        "schema": "hepta.memory-retrieval.product-composition.v1",
+        "module": "memory.retrieval",
+        "activationMode": "compatibility",
+        "productionEnabled": False,
+        "recovery": {
+            "state": "source-contract-not-product-qualified",
+            "matrix": q.RECOVERY_MATRIX,
+            "documentation": q.RECOVERY_GUIDE,
+            "preparationOwner": "codex-hepta-learning-ledger:RetrievalPrepared/tag-10",
+            "nativeOperationOwner": "codex-hepta-infer-core:NativeRunRecord",
+            "lifecyclePort": "codex-hepta-memory-retrieval:DurableDecisionPortV1",
+            "dispatchUnknownStage": "DispatchOutcomeUnknown",
+            "unknownOutcomePolicy": "exact-operation-reconciliation-only",
+            "blindReplayAllowed": False,
+            "secondDurableOwnerIntroduced": False,
+        },
+    }
+
+
 class SourceBindingTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -24,6 +91,18 @@ class SourceBindingTests(unittest.TestCase):
         self.source = self.root / q.ROOT / "src/lib.rs"
         self.source.parent.mkdir(parents=True)
         self.source.write_text("pub fn fixture() {}\n")
+        self.delivery_source = self.root / q.RECOVERY_SOURCE
+        self.delivery_source.parent.mkdir(parents=True, exist_ok=True)
+        self.delivery_source.write_text(
+            "\n".join(q.REQUIRED_RECOVERY_SOURCE_MARKERS) + "\n"
+        )
+        self.recovery_guide = self.root / q.RECOVERY_GUIDE
+        self.recovery_guide.parent.mkdir(parents=True, exist_ok=True)
+        self.recovery_guide.write_text(
+            "\n".join(q.REQUIRED_RECOVERY_GUIDE_MARKERS) + "\n"
+        )
+        write_json(self.root, q.RECOVERY_MATRIX, recovery_matrix_fixture())
+        write_json(self.root, q.PRODUCT_COMPOSITION, product_composition_fixture())
         self.commit()
         observed = execute(self.root, "rev-parse", "HEAD")
         self.mapping = {
@@ -62,6 +141,14 @@ class SourceBindingTests(unittest.TestCase):
         self.assertFalse(result["testExecutionProved"])
         self.assertFalse(result["productionImplementation"])
         self.assertEqual(result["observedAtHead"], self.mapping["observedAtHead"])
+        self.assertEqual(
+            result["recoveryContract"]["stateCount"],
+            len(q.REQUIRED_RECOVERY_STATES),
+        )
+        self.assertEqual(
+            result["recoveryContract"]["crashPointCount"],
+            len(q.REQUIRED_CRASH_POINTS),
+        )
 
     def test_wrong_head_fails(self):
         with self.assertRaises(q.QualificationError):
@@ -120,6 +207,38 @@ class SourceBindingTests(unittest.TestCase):
         self.save_map()
         with self.assertRaises(q.QualificationError):
             q.source_observation(self.root, self.head)
+
+    def test_recovery_matrix_forbids_blind_replay(self):
+        matrix = recovery_matrix_fixture()
+        state = next(
+            row for row in matrix["states"]
+            if row["deliveryStage"] == "DispatchOutcomeUnknown"
+        )
+        state["effectMayBeReplayed"] = True
+        write_json(self.root, q.RECOVERY_MATRIX, matrix)
+        with self.assertRaises(q.QualificationError):
+            q.validate_recovery_contract(self.root)
+
+    def test_product_composition_cannot_promote_recovery(self):
+        composition = product_composition_fixture()
+        composition["recovery"]["blindReplayAllowed"] = True
+        write_json(self.root, q.PRODUCT_COMPOSITION, composition)
+        with self.assertRaises(q.QualificationError):
+            q.validate_recovery_contract(self.root)
+
+    def test_recovery_source_markers_are_required(self):
+        self.delivery_source.write_text("DispatchOutcomeUnknown\n")
+        with self.assertRaises(q.QualificationError):
+            q.validate_recovery_contract(self.root)
+
+    def test_recovery_crash_inventory_is_closed(self):
+        matrix = recovery_matrix_fixture()
+        matrix["crashPoints"].append(
+            {"id": "invented", "requiredResult": "unsafe_expansion"}
+        )
+        write_json(self.root, q.RECOVERY_MATRIX, matrix)
+        with self.assertRaises(q.QualificationError):
+            q.validate_recovery_contract(self.root)
 
 
 class ApprovalTests(unittest.TestCase):

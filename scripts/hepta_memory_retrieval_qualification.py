@@ -41,6 +41,75 @@ except ModuleNotFoundError:  # direct script execution from scripts/
     )
 
 SHA = re.compile(r"[0-9a-f]{40}\Z")
+RECOVERY_MATRIX = "qualification/memory-retrieval/recovery-matrix.json"
+PRODUCT_COMPOSITION = "qualification/memory-retrieval/product-composition.json"
+RECOVERY_GUIDE = "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md"
+RECOVERY_SOURCE = "codex-rs/hepta-agentd/src/retrieval_delivery.rs"
+RECOVERY_CLAIMS = (
+    "productionImplementation",
+    "productExecutionProved",
+    "independentAcceptance",
+    "activation",
+    "release",
+)
+REQUIRED_RECOVERY_STATES = {
+    "AssignmentPrepared": (
+        "QualifiedDecision",
+        "revalidate_current_fences_before_new_admission",
+        False,
+    ),
+    "DispatchOutcomeUnknown": (
+        "QuarantinedUnknownOutcome",
+        "exact_operation_reconciliation_only",
+        False,
+    ),
+    "Published": (
+        "PublishedRetrieval",
+        "preserve_typed_response_and_reconcile_named_request",
+        False,
+    ),
+    "NativeStarted": (
+        "ConsumedRetrieval",
+        "reconcile_exact_turn_identity",
+        False,
+    ),
+    "OutcomeObserved": (
+        "AcknowledgedRetrieval",
+        "idempotent_exact_payload_append",
+        True,
+    ),
+    "OutcomeObserved:Indeterminate": (
+        "QuarantinedUnknownOutcome",
+        "exact_operation_reconciliation_only",
+        False,
+    ),
+}
+REQUIRED_CRASH_POINTS = {
+    "before-preparation-append": "no_lifecycle_fact_no_effect_assumption",
+    "after-preparation-before-dispatch": "recover_preparation_and_revalidate_current_fences",
+    "after-dispatch-before-response": "quarantine_no_blind_replay",
+    "after-response-before-turn": "preserve_publication_without_native_start_claim",
+    "after-turn-before-terminal": "reconcile_exact_turn",
+    "after-terminal-before-lifecycle-append": "recompute_same_digest_and_append_idempotently",
+    "after-append-before-ack": "same_payload_idempotent_different_payload_conflict",
+    "late-result-after-deadline-or-cancel": "retain_truth_withhold_delivery_cache_and_learning",
+    "generation-or-revocation-advanced": "retain_history_fail_current_use_closed",
+}
+REQUIRED_RECOVERY_SOURCE_MARKERS = (
+    "DispatchOutcomeUnknown",
+    "requires_exact_operation_reconciliation",
+    "project_retrieval_delivery_lifecycle_v1",
+    "append_retrieval_lifecycle_projection_v1",
+    "quarantine_unknown_outcome",
+    "compare_and_append",
+)
+REQUIRED_RECOVERY_GUIDE_MARKERS = (
+    "DispatchOutcomeUnknown",
+    "exact-operation reconciliation",
+    "blind retry is forbidden",
+    "DurableDecisionPortV1",
+    "branch-head artifacts cannot be relabelled as merge evidence",
+)
 
 
 class QualificationError(ValueError):
@@ -90,6 +159,161 @@ def safe_path(value: str) -> str:
     return value
 
 
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _rows_by_key(rows: Any, key: str, label: str) -> dict[str, dict[str, Any]]:
+    if not isinstance(rows, list):
+        raise QualificationError(f"{label} must be a list")
+    result: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            raise QualificationError(f"{label} rows must be objects")
+        identity = row.get(key)
+        if not isinstance(identity, str) or not identity:
+            raise QualificationError(f"{label} row has no {key}")
+        if identity in result:
+            raise QualificationError(f"duplicate {label} identity: {identity}")
+        result[identity] = row
+    return result
+
+
+def validate_recovery_contract(root: Path) -> dict[str, Any]:
+    """Validate one fail-closed crash/replay contract against source and docs."""
+    paths = {
+        "matrix": root / safe_path(RECOVERY_MATRIX),
+        "composition": root / safe_path(PRODUCT_COMPOSITION),
+        "guide": root / safe_path(RECOVERY_GUIDE),
+        "source": root / safe_path(RECOVERY_SOURCE),
+    }
+    for label, path in paths.items():
+        if not path.is_file():
+            raise QualificationError(f"missing recovery {label}: {path}")
+
+    matrix = load_json(paths["matrix"])
+    if matrix.get("schema") != "hepta.memory-retrieval.recovery-matrix.v1":
+        raise QualificationError("unsupported recovery matrix schema")
+    if matrix.get("module") != "memory.retrieval":
+        raise QualificationError("recovery matrix targets the wrong module")
+    if matrix.get("authority") != RECOVERY_GUIDE:
+        raise QualificationError("recovery matrix authority does not name the guide")
+
+    owners = matrix.get("durableOwners")
+    if not isinstance(owners, dict):
+        raise QualificationError("recovery durableOwners must be an object")
+    expected_owners = {
+        "preparation": "codex-hepta-learning-ledger:RetrievalPrepared/tag-10",
+        "nativeOperation": "codex-hepta-infer-core:NativeRunRecord",
+        "lifecycleAppend": "codex-hepta-memory-retrieval:DurableDecisionPortV1",
+    }
+    for field, expected in expected_owners.items():
+        if owners.get(field) != expected:
+            raise QualificationError(f"unexpected recovery durable owner: {field}")
+    if owners.get("secondOwnerIntroduced") is not False:
+        raise QualificationError("recovery contract must not introduce a second owner")
+
+    states = _rows_by_key(matrix.get("states"), "deliveryStage", "recovery state")
+    if set(states) != set(REQUIRED_RECOVERY_STATES):
+        raise QualificationError("recovery state inventory is incomplete or expanded")
+    for name, (phase, action, learning) in REQUIRED_RECOVERY_STATES.items():
+        row = states[name]
+        if row.get("lifecyclePhase") != phase or row.get("recovery") != action:
+            raise QualificationError(f"recovery state semantics drifted: {name}")
+        if row.get("effectMayBeReplayed") is not False:
+            raise QualificationError(f"effect replay must remain forbidden: {name}")
+        if row.get("learningPermitted") is not learning:
+            raise QualificationError(f"learning policy drifted: {name}")
+        fresh = row.get("learningRequiresFreshCurrentUse", False)
+        if name == "OutcomeObserved":
+            if fresh is not True:
+                raise QualificationError("terminal learning requires fresh current use")
+        elif fresh is not False:
+            raise QualificationError(f"unexpected fresh-use promotion: {name}")
+
+    crashes = _rows_by_key(matrix.get("crashPoints"), "id", "recovery crash point")
+    if set(crashes) != set(REQUIRED_CRASH_POINTS):
+        raise QualificationError("recovery crash-point inventory is incomplete or expanded")
+    for identity, required in REQUIRED_CRASH_POINTS.items():
+        if crashes[identity].get("requiredResult") != required:
+            raise QualificationError(f"recovery crash result drifted: {identity}")
+
+    identity = matrix.get("identity")
+    if not isinstance(identity, dict):
+        raise QualificationError("recovery identity policy must be an object")
+    for field in (
+        "principalMustMatchNativePrincipal",
+        "requestMustMatchNativeRequest",
+        "decisionMustMatchAssignmentRecord",
+        "payloadIsDeliveryReceiptDigest",
+        "writerFenceRequired",
+        "compareAndAppendRequired",
+    ):
+        if identity.get(field) is not True:
+            raise QualificationError(f"recovery identity fence missing: {field}")
+
+    boundary = matrix.get("claimBoundary")
+    if not isinstance(boundary, dict):
+        raise QualificationError("recovery claim boundary must be an object")
+    for claim in RECOVERY_CLAIMS:
+        if boundary.get(claim) is not False:
+            raise QualificationError(f"recovery contract promoted forbidden claim: {claim}")
+
+    composition = load_json(paths["composition"])
+    if composition.get("schema") != "hepta.memory-retrieval.product-composition.v1":
+        raise QualificationError("unsupported product composition schema")
+    if composition.get("module") != "memory.retrieval":
+        raise QualificationError("product composition targets the wrong module")
+    if composition.get("productionEnabled") is not False:
+        raise QualificationError("recovery source cannot enable production")
+    if composition.get("activationMode") != "compatibility":
+        raise QualificationError("recovery source cannot change activation mode")
+    recovery = composition.get("recovery")
+    if not isinstance(recovery, dict):
+        raise QualificationError("product composition recovery binding is absent")
+    expected_recovery = {
+        "state": "source-contract-not-product-qualified",
+        "matrix": RECOVERY_MATRIX,
+        "documentation": RECOVERY_GUIDE,
+        "preparationOwner": expected_owners["preparation"],
+        "nativeOperationOwner": expected_owners["nativeOperation"],
+        "lifecyclePort": expected_owners["lifecycleAppend"],
+        "dispatchUnknownStage": "DispatchOutcomeUnknown",
+        "unknownOutcomePolicy": "exact-operation-reconciliation-only",
+        "blindReplayAllowed": False,
+        "secondDurableOwnerIntroduced": False,
+    }
+    for field, expected in expected_recovery.items():
+        if recovery.get(field) != expected:
+            raise QualificationError(f"product recovery binding drifted: {field}")
+
+    guide = paths["guide"].read_text(encoding="utf-8")
+    source = paths["source"].read_text(encoding="utf-8")
+    for marker in REQUIRED_RECOVERY_GUIDE_MARKERS:
+        if marker not in guide:
+            raise QualificationError(f"recovery guide marker missing: {marker}")
+    for marker in REQUIRED_RECOVERY_SOURCE_MARKERS:
+        if marker not in source:
+            raise QualificationError(f"recovery source marker missing: {marker}")
+
+    return {
+        "schema": matrix["schema"],
+        "matrixPath": RECOVERY_MATRIX,
+        "matrixSha256": _sha256(paths["matrix"]),
+        "compositionPath": PRODUCT_COMPOSITION,
+        "compositionSha256": _sha256(paths["composition"]),
+        "guidePath": RECOVERY_GUIDE,
+        "guideSha256": _sha256(paths["guide"]),
+        "sourcePath": RECOVERY_SOURCE,
+        "sourceSha256": _sha256(paths["source"]),
+        "stateCount": len(states),
+        "crashPointCount": len(crashes),
+        "blindReplayAllowed": False,
+        "secondDurableOwnerIntroduced": False,
+        "productionImplementation": False,
+    }
+
+
 def source_observation(root: Path, head: str) -> dict[str, Any]:
     head = exact_sha(head)
     if git(root, "rev-parse", "HEAD") != head:
@@ -127,6 +351,7 @@ def source_observation(root: Path, head: str) -> dict[str, Any]:
         raise QualificationError("source object inventory differs from canonical policy")
     if ROOT not in objects:
         raise QualificationError("full retrieval source tree must be bound")
+    recovery = validate_recovery_contract(root)
     inventory = git(root, "ls-tree", "-r", "--full-tree", head, "--", *declared)
     parents = git(root, "show", "-s", "--format=%P", head).split()
     return {
@@ -137,6 +362,7 @@ def source_observation(root: Path, head: str) -> dict[str, Any]:
         "observedAtHead": observation,
         "sourceClosureSha256": hashlib.sha256(inventory.encode()).hexdigest(),
         "sourceObjects": objects,
+        "recoveryContract": recovery,
         "testExecutionProved": False,
         "productionImplementation": False,
         "activation": False,
@@ -207,7 +433,7 @@ def independent_approval(
 
 def api_json(repository: str, suffix: str) -> Any:
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
-        raise QualificationError("invalid repository identity")
+        raise QualificationError("invalid GitHub repository identity")
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
         raise QualificationError("live GitHub observations require a read-only token")
