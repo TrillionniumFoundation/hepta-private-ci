@@ -66,6 +66,7 @@ fn snapshot(owner_generation: &str) -> VectorIndexSnapshotV1 {
 fn exhausted_sequence_has_no_valid_successor() {
     let current = VectorIndexPublicationV1::new(
         digest("tenant"),
+        7,
         u64::MAX,
         9,
         Some(digest("previous")),
@@ -79,6 +80,7 @@ fn exhausted_sequence_has_no_valid_successor() {
     .expect("current publication");
     let candidate = VectorIndexPublicationV1::new(
         digest("tenant"),
+        current.writer_fence(),
         2,
         9,
         Some(current.publication_digest()),
