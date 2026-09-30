@@ -438,13 +438,10 @@ impl PromptRegistry {
             .realization_bindings
             .values()
             .filter(|binding| {
-                let factor_valid = self
-                    .factors
-                    .get(&binding.factor_id)
-                    .is_some_and(|factor| {
-                        factor.source == crate::FactorSource::GovernedInternal
-                            && factor.lifecycle == Lifecycle::Admitted
-                    });
+                let factor_valid = self.factors.get(&binding.factor_id).is_some_and(|factor| {
+                    factor.source == crate::FactorSource::GovernedInternal
+                        && factor.lifecycle == Lifecycle::Admitted
+                });
                 let realization_active = self
                     .realizations
                     .get(&binding.realization_id)

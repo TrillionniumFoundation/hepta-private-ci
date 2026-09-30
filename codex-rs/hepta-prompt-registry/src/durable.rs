@@ -669,7 +669,12 @@ fn restore_v2(
     if stored.maximum_records != configured_maximum {
         return Err(DurableRegistryError::ConfigurationMismatch);
     }
-    if stored.factors.len().saturating_add(stored.realizations.len()) > configured_maximum {
+    if stored
+        .factors
+        .len()
+        .saturating_add(stored.realizations.len())
+        > configured_maximum
+    {
         return Err(DurableRegistryError::CapacityExceeded);
     }
     if stored.bindings.len() > stored.realizations.len()
@@ -924,10 +929,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
         {
             return Err(DurableRegistryError::Corrupt);
         }
-        lifecycle_validation::validate_event(
-            event,
-            &registry.factors[&event.factor_id],
-        )?;
+        lifecycle_validation::validate_event(event, &registry.factors[&event.factor_id])?;
         if let Some(grant_id) = &event.admission_grant_id
             && !admission_grants.insert(grant_id.clone())
         {
@@ -1298,7 +1300,8 @@ impl Store {
         // The descriptor retains this lock for the owner's complete lifetime.
         root.try_lock()
             .map_err(|_| DurableRegistryError::StateLocked)?;
-        let (lock, new_owner_marker) = match open_private(&root, "registry.lock", Access::CreateNew) {
+        let (lock, new_owner_marker) = match open_private(&root, "registry.lock", Access::CreateNew)
+        {
             Ok(lock) => (lock, true),
             Err(error) => {
                 if !entry_exists(&root, "registry.lock")? {

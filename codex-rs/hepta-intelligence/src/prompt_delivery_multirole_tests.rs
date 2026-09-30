@@ -97,10 +97,7 @@ fn cheaper_selected_role_is_preserved_when_another_role_sorts_first() {
             /*maximum_results*/ 1,
         )
         .expect("bounded compatible read");
-    assert_eq!(
-        truncated.bindings[0].realization_id,
-        id("realization:aaa")
-    );
+    assert_eq!(truncated.bindings[0].realization_id, id("realization:aaa"));
 
     let output = compile_prompt_registry_v2(
         &registry,

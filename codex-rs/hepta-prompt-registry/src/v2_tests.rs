@@ -424,7 +424,10 @@ fn compatible_set_rejects_invalid_bindings_even_with_recomputed_digest() {
     cases.push((zero_payload, PromptRegistryV2Error::EmptyDigest("payload")));
     let mut oversized_version = original.clone();
     oversized_version.bindings[0].model_version = "x".repeat(257);
-    cases.push((oversized_version, PromptRegistryV2Error::InvalidModelVersion));
+    cases.push((
+        oversized_version,
+        PromptRegistryV2Error::InvalidModelVersion,
+    ));
     let mut invalid_expiry = original;
     invalid_expiry.bindings[0].expires_unix_ms = Some(0);
     cases.push((invalid_expiry, PromptRegistryV2Error::InvalidExpiry));
@@ -512,11 +515,7 @@ fn required_factor_filters_are_bounded_before_selection() {
     let snapshot = registry.snapshot_v2(vector, &tuple).must("snapshot");
     assert_eq!(
         registry.read_compatible_v2(
-            &snapshot,
-            vector,
-            &tuple,
-            /*now_unix_ms*/ 10,
-            required,
+            &snapshot, vector, &tuple, /*now_unix_ms*/ 10, required,
             /*maximum_results*/ 128,
         ),
         Err(PromptRegistryV2Error::ReadLimitExceeded)

@@ -28,7 +28,10 @@ fn factor(index: usize) -> PromptFactor {
     }
 }
 
-pub(super) fn add_payload(core: &mut PromptRegistry, index: usize) -> Result<RegistryReceipt, Error> {
+pub(super) fn add_payload(
+    core: &mut PromptRegistry,
+    index: usize,
+) -> Result<RegistryReceipt, Error> {
     let factor = factor(index);
     let factor_id = factor.factor_id.clone();
     core.register_factor(factor)?;

@@ -153,10 +153,15 @@ fn repeated_json_members_are_rejected_at_every_storage_level() {
             "top-level" => text.replacen("\"schema\":3", "\"schema\":3,\"schema\":3", 1),
             "state" => text.replacen("\"revision\":4", "\"revision\":4,\"revision\":4", 1),
             "factor" => text.replacen("\"source\":0", "\"source\":0,\"source\":0", 1),
-            "reference" => text.replacen("\"length\":16384", "\"length\":16384,\"length\":16384", 1),
+            "reference" => {
+                text.replacen("\"length\":16384", "\"length\":16384,\"length\":16384", 1)
+            }
             _ => unreachable!(),
         };
-        assert_ne!(malformed, text, "fixture must introduce {fault} duplication");
+        assert_ne!(
+            malformed, text,
+            "fixture must introduce {fault} duplication"
+        );
         std::fs::write(&manifest, malformed.as_bytes()).must("ambiguous manifest");
         let payload_path = path.join(payloads::FILE_NAME);
         let original_payloads = std::fs::read(&payload_path).must("payloads");
@@ -164,8 +169,14 @@ fn repeated_json_members_are_rejected_at_every_storage_level() {
             DurablePromptRegistry::open_state_dir(&path, 64),
             Err(DurableRegistryError::Corrupt)
         ));
-        assert_eq!(std::fs::read(&manifest).must("manifest"), malformed.as_bytes());
-        assert_eq!(std::fs::read(&payload_path).must("payloads"), original_payloads);
+        assert_eq!(
+            std::fs::read(&manifest).must("manifest"),
+            malformed.as_bytes()
+        );
+        assert_eq!(
+            std::fs::read(&payload_path).must("payloads"),
+            original_payloads
+        );
     }
 }
 
@@ -177,10 +188,13 @@ fn active_profiles_with_distinct_model_names_or_versions_survive_restart() {
     owner
         .commit(|core| {
             registered_and_admitted(core, 0);
-            for (index, (model_name, model_version)) in
-                [("model:primary", "v1"), ("model:primary", "v2"), ("model:alias", "v1")]
-                    .into_iter()
-                    .enumerate()
+            for (index, (model_name, model_version)) in [
+                ("model:primary", "v1"),
+                ("model:primary", "v2"),
+                ("model:alias", "v1"),
+            ]
+            .into_iter()
+            .enumerate()
             {
                 let payload = format!("profile {index}").into_bytes();
                 core.register_realization_payload_v2(
@@ -236,8 +250,10 @@ fn checksummed_lifecycle_images_cannot_bypass_historical_owner_rules() {
         match fault {
             "self-review" => core.lifecycle_events[1].actor_id = factor(0).proposer_id,
             "external-history" => {
-                core.factors.get_mut(&factor(0).factor_id).must("factor").source =
-                    FactorSource::ExternalUntrusted;
+                core.factors
+                    .get_mut(&factor(0).factor_id)
+                    .must("factor")
+                    .source = FactorSource::ExternalUntrusted;
             }
             "registered-actor" => core.lifecycle_events[0].actor_id = id("other-proposer"),
             "registered-evidence" => core.lifecycle_events[0].evidence_digest = digest("other"),
@@ -249,8 +265,10 @@ fn checksummed_lifecycle_images_cannot_bypass_historical_owner_rules() {
             "admission-reason" => core.lifecycle_events[1].reason_digest = Some(digest("reason")),
             "revocation-without-cutoff" => core.lifecycle_events[2].cutoff_unix_ms = None,
             "zero-content" => {
-                core.factors.get_mut(&factor(0).factor_id).must("factor").content_digest =
-                    Digest32::ZERO;
+                core.factors
+                    .get_mut(&factor(0).factor_id)
+                    .must("factor")
+                    .content_digest = Digest32::ZERO;
                 core.lifecycle_events[0].evidence_digest = Digest32::ZERO;
                 core.lifecycle_events[2].evidence_digest = Digest32::ZERO;
             }
@@ -279,7 +297,10 @@ fn checksummed_lifecycle_images_cannot_bypass_historical_owner_rules() {
             event.event_digest = event.compute_digest();
         }
         assert!(
-            matches!(restore_v2(stored_v2(&core), 64), Err(DurableRegistryError::Corrupt)),
+            matches!(
+                restore_v2(stored_v2(&core), 64),
+                Err(DurableRegistryError::Corrupt)
+            ),
             "{fault}"
         );
     }
@@ -290,7 +311,9 @@ fn unrepresentable_relation_state_is_rejected_before_any_publication() {
     let temp = tempfile::tempdir().must("temp");
     let path = temp.path().join("owner");
     let mut owner = DurablePromptRegistry::open_state_dir(&path, 64).must("owner");
-    owner.commit(|core| super::payload_tests::add_payload(core, 0)).must("initial");
+    owner
+        .commit(|core| super::payload_tests::add_payload(core, 0))
+        .must("initial");
     let before = std::fs::read(path.join("registry.json")).must("manifest");
     let expected = owner.registry().must("registry").clone();
     assert!(matches!(
@@ -307,7 +330,10 @@ fn unrepresentable_relation_state_is_rejected_before_any_publication() {
         Err(DurableRegistryError::Corrupt)
     ));
     assert_eq!(owner.registry().must("registry"), &expected);
-    assert_eq!(std::fs::read(path.join("registry.json")).must("manifest"), before);
+    assert_eq!(
+        std::fs::read(path.join("registry.json")).must("manifest"),
+        before
+    );
 }
 
 #[test]
@@ -327,10 +353,16 @@ fn long_supersession_lineage_restores_and_a_checksummed_cycle_is_rejected() {
             .must("supersede immutable realization");
         previous = next;
     }
-    assert_eq!(restore_v2(stored_v2(&core), 1024).must("long lineage"), core);
+    assert_eq!(
+        restore_v2(stored_v2(&core), 1024).must("long lineage"),
+        core
+    );
     core.retire_factor_governed(&id("factor:0"), &id("operator"), digest("retirement"))
         .must("deactivate terminal realization");
-    assert_eq!(restore_v2(stored_v2(&core), 1024).must("retired lineage"), core);
+    assert_eq!(
+        restore_v2(stored_v2(&core), 1024).must("retired lineage"),
+        core
+    );
     // Every predecessor is now inactive and unique, so only graph traversal can
     // distinguish this forged, self-consistently checksummed image from history.
     core.realization_supersessions.insert(initial, previous);

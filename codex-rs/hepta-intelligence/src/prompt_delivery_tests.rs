@@ -504,8 +504,7 @@ fn recomputed_delivery_digests_cannot_replace_compiled_instructions() {
 
     let mut forged = output.clone();
     forged.selected_deliveries[0].snapshot_digest = digest("unrelated-snapshot");
-    forged.selected_deliveries[0].delivery_digest =
-        forged.selected_deliveries[0].compute_digest();
+    forged.selected_deliveries[0].delivery_digest = forged.selected_deliveries[0].compute_digest();
     forged.delivery_set_digest = forged.compute_delivery_set_digest();
     assert!(matches!(
         forged.validate(),
@@ -514,8 +513,7 @@ fn recomputed_delivery_digests_cannot_replace_compiled_instructions() {
 
     let mut forged = output;
     forged.selected_deliveries[0].binding.role = PromptRoleV2::SystemInstruction;
-    forged.selected_deliveries[0].delivery_digest =
-        forged.selected_deliveries[0].compute_digest();
+    forged.selected_deliveries[0].delivery_digest = forged.selected_deliveries[0].compute_digest();
     forged.compatible.bindings[0] = forged.selected_deliveries[0].binding.clone();
     forged.compatible.set_digest = forged.compatible.compute_set_digest();
     forged.delivery_set_digest = forged.compute_delivery_set_digest();

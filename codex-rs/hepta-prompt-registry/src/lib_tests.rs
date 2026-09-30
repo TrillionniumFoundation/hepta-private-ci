@@ -561,7 +561,8 @@ fn admission_grant_retry_requires_identical_recorded_semantics() {
     registry.register_factor(factor.clone()).must("factor");
     let scope = digest(b"scope");
     let evidence = digest(b"evidence");
-    let original = verified_admission_for(&factor, "admission:retry", "reviewer:1", scope, evidence);
+    let original =
+        verified_admission_for(&factor, "admission:retry", "reviewer:1", scope, evidence);
     registry
         .admit_factor_verified(original, /*now_unix_ms*/ 20)
         .must("admit");
@@ -601,10 +602,13 @@ fn admission_grant_identity_cannot_be_reused_for_another_factor() {
     second.factor_id = id("factor:2");
     second.content_digest = digest(b"factor:2");
     registry.register_factor(first.clone()).must("first factor");
-    registry.register_factor(second.clone()).must("second factor");
+    registry
+        .register_factor(second.clone())
+        .must("second factor");
     let scope = digest(b"scope");
     let evidence = digest(b"evidence");
-    let admission = verified_admission_for(&first, "admission:shared", "reviewer:1", scope, evidence);
+    let admission =
+        verified_admission_for(&first, "admission:shared", "reviewer:1", scope, evidence);
     registry
         .admit_factor_verified(admission, /*now_unix_ms*/ 20)
         .must("first admission");

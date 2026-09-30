@@ -483,9 +483,11 @@ impl PromptRegistry {
         if factor.content_digest != admission.factor_content_digest() {
             return Err(Error::FactorConflict(admission.factor_id().to_string()));
         }
-        if let Some(event) = self.lifecycle_events.iter().find(|event| {
-            event.admission_grant_id.as_ref() == Some(admission.grant_id())
-        }) {
+        if let Some(event) = self
+            .lifecycle_events
+            .iter()
+            .find(|event| event.admission_grant_id.as_ref() == Some(admission.grant_id()))
+        {
             if factor.lifecycle == Lifecycle::Admitted
                 && event.kind == LifecycleEventKind::Admitted
                 && event.factor_id == *admission.factor_id()
