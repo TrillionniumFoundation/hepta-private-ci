@@ -123,6 +123,53 @@ fn frontier(
     }
 }
 
+fn assert_repair_required_transition_is_side_effect_free(
+    mutate: impl FnOnce(&mut EvidenceRecoveryFrontierV2),
+) {
+    let fixture = Fixture::new();
+    let mut backend = fixture.open();
+    let first = frontier(1, fixture.identity_sha256.clone());
+    backend
+        .compare_and_swap("store:kernel-evidence", None, &first)
+        .expect("publish first frontier");
+
+    let mut rejected = frontier(2, fixture.identity_sha256.clone());
+    mutate(&mut rejected);
+    assert!(matches!(
+        backend.compare_and_swap("store:kernel-evidence", Some(1), &rejected),
+        Err(EvidenceFrontierBackendError::Invalid(message))
+            if message.contains("IncomingWins") && message.contains("RepairRequired")
+    ));
+    assert_eq!(
+        backend.get_latest("store:kernel-evidence").unwrap(),
+        Some(first.clone())
+    );
+    assert_eq!(
+        backend
+            .get_history(
+                "store:kernel-evidence",
+                EvidenceFrontierHistoryRangeV1::new(1, 2).unwrap(),
+            )
+            .unwrap(),
+        vec![first.clone()]
+    );
+
+    let valid = frontier(2, fixture.identity_sha256.clone());
+    let acknowledgement = backend
+        .compare_and_swap("store:kernel-evidence", Some(1), &valid)
+        .expect("rejected transition must not consume an audit sequence");
+    assert_eq!(acknowledgement.audit_sequence, 2);
+    assert_eq!(
+        backend
+            .get_history(
+                "store:kernel-evidence",
+                EvidenceFrontierHistoryRangeV1::new(1, 2).unwrap(),
+            )
+            .unwrap(),
+        vec![first, valid]
+    );
+}
+
 #[test]
 fn append_capacity_is_rejected_before_a_write_starts() {
     assert_eq!(
@@ -220,6 +267,20 @@ fn locked_backend_rejects_stale_or_skipped_generations() {
         ),
         Err(EvidenceFrontierBackendError::Invalid(_))
     ));
+}
+
+#[test]
+fn locked_backend_reclassifies_repair_required_successors_under_the_lock() {
+    assert_repair_required_transition_is_side_effect_free(|frontier| {
+        frontier.source_commit = "c".repeat(40);
+    });
+    assert_repair_required_transition_is_side_effect_free(|frontier| {
+        frontier.issuer_trust_registry_sha256 = Sha256Digest::for_bytes(b"changed-issuer-trust");
+    });
+    assert_repair_required_transition_is_side_effect_free(|frontier| {
+        frontier.snapshot.migration_set_sha256 = Sha256Digest::for_bytes(b"changed-migrations");
+        frontier.ledger_root_sha256 = evidence_recovery_ledger_root_v2(&frontier.snapshot);
+    });
 }
 
 #[test]
