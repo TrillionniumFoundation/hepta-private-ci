@@ -1,3 +1,4 @@
+use std::cell::Cell;
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -108,6 +109,7 @@ fn successor(current: &VectorIndexPublicationV1) -> VectorIndexPublicationV1 {
 enum PortError {
     CompareAndPublish,
     LostAcknowledgement,
+    Load,
 }
 
 impl fmt::Display for PortError {
@@ -122,7 +124,9 @@ impl StdError for PortError {}
 struct Port {
     current: Option<VectorIndexPublicationV1>,
     writes: usize,
+    fail_before_commit_once: bool,
     fail_after_commit_once: bool,
+    fail_confirmation_once: Cell<bool>,
     replacement: Option<VectorIndexPublicationV1>,
 }
 
@@ -141,6 +145,9 @@ impl DurableVectorPublicationPortV1 for Port {
         &self,
         tenant_digest: Digest32,
     ) -> Result<Option<VectorIndexPublicationV1>, Self::Error> {
+        if self.writes > 0 && self.fail_confirmation_once.replace(false) {
+            return Err(PortError::Load);
+        }
         Ok(self
             .current
             .as_ref()
@@ -159,7 +166,8 @@ impl DurableVectorPublicationPortV1 for Port {
             .as_ref()
             .filter(|publication| publication.tenant_digest() == tenant_digest)
             .map(VectorIndexPublicationV1::publication_digest);
-        if actual != expected_current {
+        if actual != expected_current || self.fail_before_commit_once {
+            self.fail_before_commit_once = false;
             return Err(PortError::CompareAndPublish);
         }
         self.writes = self.writes.checked_add(1).expect("write count capacity");
@@ -228,6 +236,67 @@ fn lost_acknowledgement_is_reconciled_without_a_second_write() {
         &publication,
     )
     .expect("exact replay is idempotent");
+    assert_eq!(port.writes, 1);
+}
+
+#[test]
+fn compare_failure_without_exact_current_is_outcome_unknown() {
+    let publication = genesis("owner-generation-1");
+    let mut port = Port {
+        fail_before_commit_once: true,
+        ..Port::default()
+    };
+
+    let error = append_vector_publication_checked_v1(
+        &mut port,
+        publication.tenant_digest(),
+        None,
+        &publication,
+    )
+    .expect_err("failed publish without exact reconciliation must be unknown");
+    assert!(matches!(
+        error,
+        DurableVectorPublicationAppendErrorV1::CommitOutcomeUnknown {
+            publish_error: Some(PortError::CompareAndPublish),
+            reconciliation_error: None,
+            observed: None,
+        }
+    ));
+    assert_eq!(port.writes, 0);
+}
+
+#[test]
+fn successful_publish_with_failed_confirmation_is_outcome_unknown() {
+    let publication = genesis("owner-generation-1");
+    let mut port = Port {
+        fail_confirmation_once: Cell::new(true),
+        ..Port::default()
+    };
+
+    let error = append_vector_publication_checked_v1(
+        &mut port,
+        publication.tenant_digest(),
+        None,
+        &publication,
+    )
+    .expect_err("successful publish without confirmation must be unknown");
+    assert!(matches!(
+        error,
+        DurableVectorPublicationAppendErrorV1::CommitOutcomeUnknown {
+            publish_error: None,
+            reconciliation_error: Some(PortError::Load),
+            observed: None,
+        }
+    ));
+    assert_eq!(port.writes, 1);
+
+    append_vector_publication_checked_v1(
+        &mut port,
+        publication.tenant_digest(),
+        None,
+        &publication,
+    )
+    .expect("later exact reload recognizes the committed object");
     assert_eq!(port.writes, 1);
 }
 
