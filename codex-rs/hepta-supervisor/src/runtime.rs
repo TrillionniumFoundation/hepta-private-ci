@@ -126,6 +126,10 @@ pub(crate) struct ReleaseChange {
     pub prior_previous: Option<AgentRelease>,
     pub phase: ReleaseChangePhase,
     pub explicit_rollback: bool,
+    /// Same-owner proof of the exact healthy lifecycle boundary. Outcome
+    /// publication may fail after this observation; a later process exit
+    /// must retry publication instead of treating the target as never healthy.
+    pub healthy_generation: Option<u64>,
 }
 
 pub(crate) struct BoundedQueue<T> {

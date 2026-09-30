@@ -48,14 +48,18 @@ impl LockTelemetrySnapshot {
             wait_us: self.wait_us.saturating_sub(earlier.wait_us),
             // Maxima are cumulative counters. Do not attribute an older
             // scenario's record to the current measurement window.
-            wait_max_us: (self.wait_max_us > earlier.wait_max_us)
-                .then_some(self.wait_max_us)
-                .unwrap_or(0),
+            wait_max_us: if self.wait_max_us > earlier.wait_max_us {
+                self.wait_max_us
+            } else {
+                0
+            },
             slow_waits: self.slow_waits.saturating_sub(earlier.slow_waits),
             hold_us: self.hold_us.saturating_sub(earlier.hold_us),
-            hold_max_us: (self.hold_max_us > earlier.hold_max_us)
-                .then_some(self.hold_max_us)
-                .unwrap_or(0),
+            hold_max_us: if self.hold_max_us > earlier.hold_max_us {
+                self.hold_max_us
+            } else {
+                0
+            },
             slow_holds: self.slow_holds.saturating_sub(earlier.slow_holds),
         }
     }

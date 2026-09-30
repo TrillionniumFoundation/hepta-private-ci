@@ -17,6 +17,7 @@ use crate::release_transaction::write_release_transaction;
 use crate::runtime::AgentSlot;
 use crate::runtime::ReleaseChange;
 use crate::runtime::ReleaseChangePhase;
+use crate::runtime::bounded_message;
 
 impl<D: ProcessDriver> Supervisor<D> {
     /// Re-admit a release at the final-use boundary. Product/catalog releases
@@ -112,9 +113,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             kind,
             source.identity(),
             target.identity(),
-            slot.previous_release
+            record
+                .release_state
+                .previous
                 .as_ref()
-                .map(|release| release.identity().to_string()),
+                .map(ToString::to_string),
             self.release_binding_for_transition(agent_id, source)?,
             self.release_binding_for_transition(agent_id, target)?,
             record.release_state.generation,
@@ -137,6 +140,14 @@ impl<D: ProcessDriver> Supervisor<D> {
         let transaction = slot.release_transaction.clone().ok_or_else(|| {
             SupervisorError::Invalid("release transaction is not prepared".to_string())
         })?;
+        if transaction.source_binding.is_none()
+            || transaction.target_binding.is_none()
+            || transaction.compatibility_binding_sha256.is_none()
+        {
+            return Err(SupervisorError::ProductionAuthority(
+                "production release authority requires both catalog admission bindings".to_string(),
+            ));
+        }
         let transaction = transaction
             .with_authority(grant_sha256, authority_epoch)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -163,6 +174,20 @@ impl<D: ProcessDriver> Supervisor<D> {
         write_release_transaction(record.layout.run_root(), &transaction)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.release_transaction = Some(transaction);
+        if phase == ReleaseTransactionPhase::RecoveryRequired
+            && let Some(intent) = slot.signed_intent.as_ref()
+            && matches!(
+                intent.status,
+                crate::SignedIntentStatus::Prepared | crate::SignedIntentStatus::Queued
+            )
+        {
+            let recovery = intent
+                .with_status(crate::SignedIntentStatus::RecoveryRequired)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            crate::signed_intent::write_intent(record.layout.run_root(), &recovery)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.signed_intent = Some(recovery);
+        }
         Ok(())
     }
 
@@ -206,6 +231,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             })
         } else if allow_source_abort
             && current == Some(transaction.source_release.as_str())
+            && previous == transaction.rollback_predecessor.as_deref()
             && record.release_state.generation == transaction.expected_release_state_generation
             && slot.runtime.as_ref().is_none_or(|runtime| {
                 runtime.fenced || runtime.release_id.as_str() == transaction.source_release
@@ -297,6 +323,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             prior_previous,
             phase: ReleaseChangePhase::WaitingForTargetExit,
             explicit_rollback,
+            healthy_generation: None,
         });
         if let Err(error) = self.drain_slot(agent_id, slot, now) {
             let _ = self.enter_unsigned_release_recovery(agent_id, slot);
@@ -331,15 +358,38 @@ impl<D: ProcessDriver> Supervisor<D> {
         generation: u64,
     ) -> Result<(), SupervisorError> {
         let mut terminal_transaction_phase = None;
-        if let Some(change) = slot.release_change.take() {
+        if let Some(change) = slot.release_change.as_mut() {
             match change.phase {
                 ReleaseChangePhase::TargetStarting => {
+                    change.healthy_generation = Some(generation);
                     slot.previous_release = Some(change.origin.clone());
                     terminal_transaction_phase = Some(if change.explicit_rollback {
                         ReleaseTransactionPhase::RolledBack
                     } else {
                         ReleaseTransactionPhase::Committed
                     });
+                }
+                ReleaseChangePhase::AutomaticRollbackStarting => {
+                    change.healthy_generation = Some(generation);
+                    slot.previous_release = change.prior_previous.clone();
+                    terminal_transaction_phase = Some(ReleaseTransactionPhase::RolledBack);
+                }
+                ReleaseChangePhase::WaitingForTargetExit => {}
+            }
+        }
+        // Retain the transition until every outcome writer acknowledges its
+        // durability boundary. A healthy Running process retries this path
+        // after a failed CAS, journal write, or signed-intent publication.
+        self.persist_release_state(agent_id, slot)?;
+        if let Some(phase) = terminal_transaction_phase {
+            self.advance_release_transaction(agent_id, slot, phase)?;
+        }
+        self.commit_signed_intent_if_target(agent_id, slot)?;
+        if terminal_transaction_phase.is_some()
+            && let Some(change) = slot.release_change.take()
+        {
+            match change.phase {
+                ReleaseChangePhase::TargetStarting => {
                     let kind = if change.explicit_rollback {
                         SupervisorEventKind::ExplicitRollbackCommitted {
                             previous: change.origin.identity().to_string(),
@@ -354,8 +404,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                     slot.event(generation, kind);
                 }
                 ReleaseChangePhase::AutomaticRollbackStarting => {
-                    slot.previous_release = change.prior_previous;
-                    terminal_transaction_phase = Some(ReleaseTransactionPhase::RolledBack);
                     slot.event(
                         generation,
                         SupervisorEventKind::AutomaticRollbackCommitted {
@@ -369,11 +417,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
             }
         }
-        self.persist_release_state(agent_id, slot)?;
-        if let Some(phase) = terminal_transaction_phase {
-            self.advance_release_transaction(agent_id, slot, phase)?;
-        }
-        self.commit_signed_intent_if_target(agent_id, slot)
+        Ok(())
     }
 
     pub(crate) fn persist_release_state(
@@ -385,7 +429,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .active_release
             .as_ref()
             .map(|release| release.release_id().clone());
-        let previous = slot
+        let mut previous = slot
             .previous_release
             .as_ref()
             .map(|release| release.release_id().clone());
@@ -396,16 +440,77 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(());
         }
         let actual = self.record(agent_id)?.release_state;
-        slot.release_state_generation = actual.generation;
-        if actual.current == current && actual.previous == previous {
+        if slot.release_change.is_none() && actual.current == current {
+            // An unavailable/revoked rollback executable hydrates as None.
+            // Its durable predecessor identity remains historical evidence;
+            // ordinary health observations must not erase that evidence.
+            slot.release_state_generation = actual.generation;
             return Ok(());
         }
-        let next = self.registry.compare_and_set_release_state(
-            agent_id,
-            actual.generation,
-            current,
-            previous,
-        )?;
+        if slot.release_change.is_some() {
+            let transaction = slot.release_transaction.as_ref().ok_or_else(|| {
+                SupervisorError::Invalid("release transition has no prepared journal".to_string())
+            })?;
+            if slot
+                .release_change
+                .as_ref()
+                .is_some_and(|change| change.phase == ReleaseChangePhase::AutomaticRollbackStarting)
+            {
+                previous = transaction
+                    .rollback_predecessor
+                    .as_ref()
+                    .map(|value| codex_hepta_fleet::ReleaseId::parse(value.clone()))
+                    .transpose()?;
+            }
+            let source_pair = actual
+                .current
+                .as_ref()
+                .map(codex_hepta_fleet::ReleaseId::as_str)
+                == Some(transaction.source_release.as_str())
+                && actual
+                    .previous
+                    .as_ref()
+                    .map(codex_hepta_fleet::ReleaseId::as_str)
+                    == transaction.rollback_predecessor.as_deref();
+            let target_pair = actual
+                .current
+                .as_ref()
+                .map(codex_hepta_fleet::ReleaseId::as_str)
+                == Some(transaction.target_release.as_str())
+                && actual
+                    .previous
+                    .as_ref()
+                    .map(codex_hepta_fleet::ReleaseId::as_str)
+                    == Some(transaction.source_release.as_str());
+            let expected = transaction.expected_release_state_generation;
+            let source_frontier = source_pair && actual.generation == expected;
+            let target_frontier = target_pair && expected.checked_add(1) == Some(actual.generation);
+            if !source_frontier && !target_frontier {
+                return Err(SupervisorError::Invalid(
+                    "release state moved outside the prepared transition frontier".to_string(),
+                ));
+            }
+            // Only exact desired publication is idempotent at the advanced
+            // frontier. Never rebase a source restoration over target commit.
+            if target_frontier && (actual.current != current || actual.previous != previous) {
+                return Err(SupervisorError::Invalid(
+                    "release state already committed another transition outcome".to_string(),
+                ));
+            }
+        }
+        if actual.current == current && actual.previous == previous {
+            slot.release_state_generation = actual.generation;
+            return Ok(());
+        }
+        let expected = slot
+            .release_transaction
+            .as_ref()
+            .filter(|_| slot.release_change.is_some())
+            .map(|transaction| transaction.expected_release_state_generation)
+            .unwrap_or(slot.release_state_generation);
+        let next = self
+            .registry
+            .compare_and_set_release_state(agent_id, expected, current, previous)?;
         slot.release_state_generation = next.generation;
         Ok(())
     }
@@ -416,6 +521,22 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<bool, SupervisorError> {
+        if slot.release_change.is_none() {
+            return Ok(false);
+        }
+        if let Some(generation) = slot
+            .release_change
+            .as_ref()
+            .and_then(|change| change.healthy_generation)
+        {
+            // The process may exit after the release outcome was durably
+            // committed but before its signed receipt was acknowledged. The
+            // retained same-owner witness proves the earlier healthy boundary,
+            // even if a write failed before publishing the terminal journal.
+            self.release_became_healthy(agent_id, slot, generation)?;
+            return Ok(true);
+        }
+        let generation = self.record(agent_id)?.lifecycle.generation;
         let Some(mut change) = slot.release_change.take() else {
             return Ok(false);
         };
@@ -438,11 +559,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                     return self.start_automatic_rollback(agent_id, slot, now);
                 }
                 change.target = target.clone();
-                self.advance_release_transaction(
+                if let Err(error) = self.advance_release_transaction(
                     agent_id,
                     slot,
                     ReleaseTransactionPhase::TargetStarting,
-                )?;
+                ) {
+                    slot.release_change = Some(change);
+                    return Err(error);
+                }
                 change.phase = ReleaseChangePhase::TargetStarting;
                 slot.release_change = Some(change);
                 slot.active_release = None;
@@ -456,7 +580,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                 self.start_automatic_rollback(agent_id, slot, now)
             }
             ReleaseChangePhase::AutomaticRollbackStarting => {
-                let generation = self.record(agent_id)?.lifecycle.generation;
+                if let Err(error) = self.advance_release_transaction(
+                    agent_id,
+                    slot,
+                    ReleaseTransactionPhase::RecoveryRequired,
+                ) {
+                    slot.release_change = Some(change);
+                    return Err(error);
+                }
                 slot.active_release = None;
                 slot.event(
                     generation,
@@ -564,10 +695,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             .as_ref()
             .map(|value| codex_hepta_fleet::ReleaseId::parse(value.clone()))
             .transpose()?
-            .map(|release_id| self.registry.resolve_release(agent_id, &release_id))
+            .map(|release_id| self.resolve_persisted_release(agent_id, &release_id))
             .transpose()?
-            .map(AgentRelease::try_from)
-            .transpose()?;
+            .flatten();
         let explicit_rollback = transaction.kind == ReleaseTransactionKind::ExplicitRollback;
 
         match transaction.phase {
@@ -578,6 +708,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     prior_previous,
                     phase: ReleaseChangePhase::WaitingForTargetExit,
                     explicit_rollback,
+                    healthy_generation: None,
                 });
                 match record.lifecycle.lifecycle {
                     AgentLifecycle::Running => {
@@ -602,6 +733,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     prior_previous,
                     phase: ReleaseChangePhase::TargetStarting,
                     explicit_rollback,
+                    healthy_generation: None,
                 });
                 if slot.runtime.is_none() {
                     let _ = self.start_automatic_rollback(agent_id, slot, now)?;
@@ -614,6 +746,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     prior_previous,
                     phase: ReleaseChangePhase::AutomaticRollbackStarting,
                     explicit_rollback,
+                    healthy_generation: None,
                 });
                 if slot.runtime.is_none()
                     && matches!(
@@ -639,17 +772,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<bool, SupervisorError> {
+        let generation = self.record(agent_id)?.lifecycle.generation;
         let Some(mut change) = slot.release_change.take() else {
             return Ok(false);
         };
-        let generation = self.record(agent_id)?.lifecycle.generation;
-        slot.event(
-            generation,
-            SupervisorEventKind::AutomaticRollbackQueued {
-                failed: change.target.identity().to_string(),
-                target: change.origin.identity().to_string(),
-            },
-        );
         let rollback = match self.refresh_release_for_transition(agent_id, &change.origin) {
             Ok(rollback) => rollback,
             Err(error) => {
@@ -666,16 +792,42 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Err(error);
         }
         change.origin = rollback.clone();
-        self.advance_release_transaction(
+        if let Err(error) = self.advance_release_transaction(
             agent_id,
             slot,
             ReleaseTransactionPhase::AutomaticRollbackStarting,
-        )?;
+        ) {
+            slot.release_change = Some(change);
+            return Err(error);
+        }
+        slot.event(
+            generation,
+            SupervisorEventKind::AutomaticRollbackQueued {
+                failed: change.target.identity().to_string(),
+                target: change.origin.identity().to_string(),
+            },
+        );
         change.phase = ReleaseChangePhase::AutomaticRollbackStarting;
         slot.release_change = Some(change);
         slot.active_release = None;
         if let Err(error) = self.start_release_slot(agent_id, slot, rollback, now) {
-            let failed_generation = self.record(agent_id)?.lifecycle.generation;
+            if let Err(publication) = self.advance_release_transaction(
+                agent_id,
+                slot,
+                ReleaseTransactionPhase::RecoveryRequired,
+            ) {
+                // Preserve the pending restoration until a later empty-runtime
+                // or fenced-exit tick can acknowledge its failed outcome.
+                slot.event(
+                    generation,
+                    SupervisorEventKind::DriverFault(bounded_message(publication.to_string())),
+                );
+                return Err(error);
+            }
+            let failed_generation = self
+                .record(agent_id)
+                .map(|record| record.lifecycle.generation)
+                .unwrap_or(generation);
             if let Some(change) = slot.release_change.take() {
                 slot.event(
                     failed_generation,
@@ -685,11 +837,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                     },
                 );
             }
-            let _ = self.advance_release_transaction(
-                agent_id,
-                slot,
-                ReleaseTransactionPhase::RecoveryRequired,
-            );
             return Err(error);
         }
         Ok(true)

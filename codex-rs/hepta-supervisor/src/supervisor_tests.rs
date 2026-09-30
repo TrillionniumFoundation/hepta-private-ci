@@ -136,13 +136,6 @@ fn command() -> Result<AgentCommand, SupervisorError> {
     AgentCommand::new(fake_program("hepta-agentd"), Vec::new())
 }
 
-fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorError> {
-    AgentRelease::new(
-        identity,
-        AgentCommand::new(fake_program(program), Vec::new())?,
-    )
-}
-
 fn config() -> SupervisorConfig {
     SupervisorConfig {
         health_timeout: Duration::from_millis(10),
@@ -945,7 +938,7 @@ fn recovery_closes_running_release_state_crash_window() -> Result<(), Supervisor
     )?;
     drop(first_supervisor);
 
-    let (recovered, report) =
+    let (mut recovered, report) =
         Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
     assert_eq!(report, TickReport::default());
     let snapshot = recovered.snapshot(&fleet.first).expect("recovered slot");
@@ -954,6 +947,7 @@ fn recovery_closes_running_release_state_crash_window() -> Result<(), Supervisor
         snapshot.active_release.as_deref(),
         Some(release_id.as_str())
     );
+    assert_eq!(recovered.tick(now), TickReport::default());
     let durable = fleet.registry.load()?;
     let release_state = &durable
         .agent(&fleet.first)
