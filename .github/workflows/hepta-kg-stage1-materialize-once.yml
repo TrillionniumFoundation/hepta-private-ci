@@ -1,0 +1,84 @@
+name: Hepta knowledge.graph one-shot stage-one materialization
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-kg-stage1-materialize-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Configure repository author
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "ChatGPT"
+          git config user.email "noreply@openai.com"
+
+      - name: Extract, verify, and apply reviewed patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - ".github/patches/hepta-kg-stage1.patch-source.yml" "$RUNNER_TEMP/kg-stage1.patch" <<'PY'
+          import base64
+          import gzip
+          import hashlib
+          import re
+          import sys
+          from pathlib import Path
+
+          source = Path(sys.argv[1]).read_text(encoding="utf-8")
+          match = re.search(
+              r"cat > .*?kg\.patch\.gz\.b64.*?<<'PATCH'\n(.*?)\n\s*PATCH\n",
+              source,
+              flags=re.DOTALL,
+          )
+          if match is None:
+              raise SystemExit("embedded reviewed patch was not found")
+          payload = "".join(line.strip() for line in match.group(1).splitlines())
+          patch = gzip.decompress(base64.b64decode(payload, validate=True))
+          expected_size = 123137
+          expected_sha = "e93965647d4b020591588528413db1230559790a3ad57c462d98613e03a86c6b"
+          if len(patch) != expected_size:
+              raise SystemExit(f"unexpected patch size: {len(patch)}")
+          observed = hashlib.sha256(patch).hexdigest()
+          if observed != expected_sha:
+              raise SystemExit(f"unexpected patch digest: {observed}")
+          Path(sys.argv[2]).write_bytes(patch)
+          print(f"verified reviewed patch: {len(patch)} bytes sha256={observed}")
+          PY
+          git apply --stat "$RUNNER_TEMP/kg-stage1.patch"
+          git apply --3way --index "$RUNNER_TEMP/kg-stage1.patch"
+
+      - name: Run stage-one preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f scripts/hepta_kg_stage1_preflight.py
+          python3 scripts/hepta_kg_stage1_preflight.py
+          git diff --check --cached
+          git status --short
+
+      - name: Commit and push ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --cached --quiet; then
+            echo "reviewed stage-one patch produced no changes" >&2
+            exit 1
+          fi
+          git commit -s -m "feat(knowledge.graph): materialize stage-one resource correctness"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
