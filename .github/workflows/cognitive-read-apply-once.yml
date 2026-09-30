@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 180
     env:
       EXPECTED_BASE: 04086c75a48130421196391b6b3e4cc9932b2ed9
-      EXPECTED_TRIGGER_PARENT: 96281fc48cda69af617ea0e5d7f7d7de6c957d1c
+      EXPECTED_TRIGGER_PARENT: 962aa5f0f817b95c9361f8a0d1b76318db320d27
       SOURCE_BRANCH: work/cognitive-read-production-convergence-20260927
     steps:
       - name: Check out the exact one-time authoring trigger
