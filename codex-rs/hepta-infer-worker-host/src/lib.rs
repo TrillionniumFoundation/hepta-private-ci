@@ -7,11 +7,36 @@
 
 #![forbid(unsafe_code)]
 
+mod actor_latency;
+mod actor_mailbox;
+mod actor_observation;
+mod actor_policy;
+pub mod control_actor;
+pub mod control_port;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+pub use actor_latency::NativeLatencySummary;
+pub use control_actor::DispatchedNativeEffect;
+pub use control_actor::NativeControlActorError;
+pub use control_actor::NativeJournalWriterActor;
+pub use control_actor::NativeJournalWriterHandle;
+pub use control_actor::NativePublishedMetrics;
+pub use control_actor::NativeReconcilerActor;
+pub use control_actor::NativeWriterLimits;
+pub use control_actor::PreparedNativeEffect;
+pub use control_port::NativeControlPort;
+pub use control_port::NativeControlPortError;
+
 pub mod final_use_authorizer;
 pub mod native_app_server;
+pub mod output_protection;
+pub mod unix_output_protector;
+
+pub use output_protection::NativeOutputProtectionFuture;
+pub use output_protection::NativeOutputProtector;
+pub use unix_output_protector::UnixOutputProtector;
+pub use unix_output_protector::UnixOutputProtectorConfig;
 
 use std::error::Error as StdError;
 use std::fmt;

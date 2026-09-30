@@ -396,3 +396,9 @@ The bootstrap source-location obligation for `inference.control` is implemented 
 - `codex-rs/hepta-inferd`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Current writer boundary and capacity revision
+
+See [WRITER_BOUNDARIES.md](WRITER_BOUNDARIES.md) for the actual single-FIFO owner,
+independent completion quota, admitted-response uncertainty, immutable metrics,
+CLI limits, capacity calculations and explicitly scoped regression evidence.

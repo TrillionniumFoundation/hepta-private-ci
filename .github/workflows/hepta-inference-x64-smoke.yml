@@ -1,0 +1,84 @@
+name: Hepta inference x64 smoke
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'docs/modules/inference.control/**'
+      - 'qualification/module-execution-dossiers/detail/inference.control*'
+      - 'scripts/hepta-inference-control-current-state.py'
+      - 'scripts/hepta-inference-control-actor-migrate.py'
+      - '.github/workflows/hepta-inference-x64-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-inference-x64-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  x64-smoke:
+    name: Inference x64 smoke
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@5d458579430fc14a04a08a1e7d3694f545e91ce6
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16
+        with:
+          workspaces: |
+            codex-rs -> target
+          key: inference-x64-smoke
+
+      - name: Verify generated state and unique-writer migration
+        run: |
+          python3 scripts/hepta-inference-control-current-state.py check
+          python3 scripts/hepta-inference-control-actor-migrate.py check
+
+      - name: Verify pinned dependency graph
+        run: cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 >/dev/null
+
+      - name: Check formatting
+        run: |
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-infer-core \
+            --package codex-hepta-infer-worker-host \
+            --package codex-hepta-types \
+            -- --check
+
+      - name: Compile and test exact inference surface
+        run: |
+          cargo test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-types
+
+      - name: Strict lint exact inference surface
+        run: |
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-types \
+            --all-targets --all-features -- -D warnings

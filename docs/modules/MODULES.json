@@ -597,6 +597,10 @@
           "mode": "exclusive"
         },
         {
+          "path": "codex-rs/hepta-infer-worker-host",
+          "mode": "exclusive"
+        },
+        {
           "path": "codex-rs/hepta-inferd",
           "mode": "exclusive"
         }
@@ -616,6 +620,7 @@
       "production_implementation": false,
       "sourceEvidenceRoots": [
         "codex-rs/hepta-infer-core",
+        "codex-rs/hepta-infer-worker-host",
         "codex-rs/hepta-inferd"
       ],
       "missingDeclaredRoots": [],
