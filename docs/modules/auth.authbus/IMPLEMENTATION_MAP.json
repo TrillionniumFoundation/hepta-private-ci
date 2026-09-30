@@ -22,7 +22,8 @@
     "scripts/authbus-evidence-projection.py",
     "scripts/authbus-exact-head-evidence.py",
     "scripts/check-authbus-closed-world.py",
-    "scripts/authbus-performance-evidence.py"
+    "scripts/authbus-performance-evidence.py",
+    "scripts/authbus-production-acceptance.py"
   ],
   "laneId": "LANE-A-FOUNDATION",
   "module": "auth.authbus",
@@ -414,11 +415,29 @@
         "docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.md"
       ],
       "sourcePathExists": true
+    },
+    {
+      "operation": "production_acceptance_validation",
+      "designOperation": "production_acceptance_validation",
+      "nativeSymbol": "authbus-production-acceptance.py",
+      "sourcePath": "scripts/authbus-production-acceptance.py",
+      "state": "source_implemented_external_signatures_and_drills_pending",
+      "authority": "independent_security_and_operator_signatures",
+      "tests": [
+        "docs/modules/auth.authbus/PRODUCTION_ACCEPTANCE.json",
+        ".github/workflows/authbus-production-acceptance.yml"
+      ],
+      "mappingClass": "qualification_adapter",
+      "delegatedCallees": [
+        "docs/modules/auth.authbus/PRODUCTION_ACCEPTANCE.md",
+        ".github/workflows/authbus-target-host-qualification.yml"
+      ],
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
     "Obtain terminal-success exact-head and deterministic synthetic-merge receipts for the final unchanged candidate SHA.",
-    "Execute the protected self-hosted crash-consistency and end-to-end performance harnesses and retain their raw immutable receipts.",
+    "Execute the protected self-hosted crash-consistency, end-to-end performance, KMS/HSM, rotation/revocation, backup/restore and dual-owner/mount harnesses and retain their raw immutable receipts.",
     "Integrate a selected durable kernel.operations owner as the production source of operation identity; the current Bao path requires a host-supplied durable StableId."
   ],
   "externalEvidenceGates": [
@@ -430,10 +449,13 @@
   "qualificationEntrypoints": [
     ".github/workflows/authbus-authority-qualification.yml",
     ".github/workflows/authbus-target-host-qualification.yml",
+    ".github/workflows/authbus-production-acceptance.yml",
     "scripts/authbus-evidence-projection.py",
     "scripts/authbus-exact-head-evidence.py",
     "scripts/authbus-target-host-evidence.py",
     "scripts/authbus-performance-evidence.py",
-    "scripts/check-authbus-closed-world.py"
-  ]
+    "scripts/check-authbus-closed-world.py",
+    "scripts/authbus-production-acceptance.py"
+  ],
+  "productionAcceptanceContract": "docs/modules/auth.authbus/PRODUCTION_ACCEPTANCE.json"
 }
