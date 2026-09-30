@@ -29,7 +29,7 @@ only for the isolated compatibility fixture and must not appear in a product dep
 manifest.
 
 ```mermaid
-flowchart LR
+flowchart TD
     P[Producer evidence] --> V[Signature and current-trust verification]
     V --> E[Independent evaluation]
     E --> C[Consumer-bound admission]
@@ -54,13 +54,11 @@ external publication owner is read back and the exact nonzero result is observed
 
 ```mermaid
 sequenceDiagram
-    participant Caller
     participant Runner
     participant AttemptJournal
     participant HoldoutOwner
     participant Provider
     participant PublicationOwner
-    Caller->>Runner: frozen plan + attempt identity
     Runner->>AttemptJournal: IntentPersisted
     Runner->>HoldoutOwner: fenced consume
     HoldoutOwner-->>Runner: durable consumption receipt
@@ -73,7 +71,6 @@ sequenceDiagram
     Runner->>PublicationOwner: create-or-read exact publication
     PublicationOwner-->>Runner: read-verified durable result
     Runner->>AttemptJournal: Published
-    Runner-->>Caller: authority-free qualification receipt
 ```
 
 The supported public namespace is `codex_hepta_intelligence_eval::product`. The raw
@@ -95,7 +92,6 @@ stateDiagram-v2
     HoldoutConsumed --> ComparisonSealed
     ComparisonSealed --> Failed
     ComparisonSealed --> QualificationArtifactsPersisted
-    ComparisonSealed --> QualificationDecided
     QualificationArtifactsPersisted --> Failed
     QualificationArtifactsPersisted --> QualificationDecided
     QualificationDecided --> PublicationPending
@@ -107,7 +103,9 @@ stateDiagram-v2
 
 Every transition is attempt-, plan-, phase-, predecessor-, and payload-bound. A repeated
 identical transition is idempotent; an identity reused with different semantics is a
-conflict.
+conflict. Public product qualification always passes through
+`QualificationArtifactsPersisted`; readable historical compatibility records do not
+authorize a new product attempt to skip archive persistence.
 
 ## 5. Persistence and recovery
 
@@ -231,3 +229,44 @@ acceptance, independently administered infrastructure must provide and sign:
 
 Until those facts exist and every required source/exact check is green on one immutable
 candidate, the PR remains Draft and the release posture remains `NO_GO`.
+
+## 11. Adversarial review invariants
+
+The evaluator sits in the qualification plane between authenticated learning
+observations/artifacts and the intelligence or plasticity consumers. It emits
+evidence with `DENY_ALL`; it does not select artifacts, mutate production learning
+state, activate a runtime, or authorize effects. Source implementation, developer
+verification, target-host qualification, independent acceptance and release are
+separate completion dimensions.
+
+The detailed development material covers the frozen analysis contract, estimator
+assumptions, metric roles, signed independence, holdout consumption, seven-phase
+attempt lifecycle, typed archives, recovery, capacity, consumers and qualification.
+Review that material against the actual executable source; a generated source
+inventory is not a test receipt.
+
+The following failure cases must remain regression obligations:
+
+| Failure case | Required behavior |
+| --- | --- |
+| An exact propensity ratio exceeds the cumulative ceiling but rounds down into it | Admission uses a conservative upper bound independent of point-estimate rounding. |
+| Observed returns look bounded while an unobserved admissible trajectory has greater weighted return | Confidence envelopes cover the complete plan-level estimator range, including nuisance predictions and numerical error. A sample maximum cannot establish a Hoeffding range. |
+| Subject signatures outlive the root-signed trust distribution | Agentd rejects the expired activation even when the underlying signatures still verify. |
+| Archive or journal work advances time after ingress verification | Selected-host publication rechecks the clock, activation and original signed archive at the actual sink boundary. Expiry preserves unresolved history without publishing. |
+| A publicly constructible CAS record encodes a noncanonical journal state | The exact state reproduced by the proposed persisted event must equal the entire candidate record before writing. |
+| A valid checkpoint is paired with a different same-length journal prefix | Recovery verifies the original framed prefix digest, event count and byte frontier before restoring reducer state. |
+| Complete post-anchor frames remain readable after an unknown sync result | Recovery synchronizes the locked journal before acknowledging its recovered frontier or advancing the independent anchor. |
+| A deterministic rejection occurs before any write | The owner remains usable and its durable state is unchanged; accepted-or-unknown writes require reopen and reconciliation. |
+
+API narrowing, parser/identity validation and trusted reporting checks must fail
+for the intended reason. Missing imports, stale test expectations, undiscovered
+filters, pending workflows and unrelated compiler errors cannot count as passing
+qualification.
+
+Performance claims also require the appropriate workload. Checkpoint recovery
+still streams and hashes the original prefix; only reducer execution is limited
+to the tail. Nonempty holdout histories must be measured independently of
+empty-journal fence takeover. The retained v2 registry digest requires whole-set
+work, so current wire-compatible recovery is not constant time in record count.
+These limits belong in the selected-host capacity evidence and must not be
+concealed by small fixtures or renamed as production completion.

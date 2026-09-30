@@ -79,8 +79,8 @@ capability.
 
 The anchored wrapper acknowledges only after file sync and independent anchor
 CAS. An uncertain anchor write poisons the handle. Recovery may adopt a complete
-post-anchor tail only after proving the retained prefix and advancing the
-authority to the exact recovered history. It never truncates an uncertain tail or
+post-anchor tail only after proving the retained prefix, syncing the recovered
+file and advancing the authority to the exact recovered history. It never truncates an uncertain tail or
 lowers an anchor.
 
 The anchor authority must be authenticated and outside the journal's rollback and
@@ -105,9 +105,21 @@ anchor and containing-directory update are durable.
 `recover_with_checkpoint` requires the normal journal anchor, the derived
 checkpoint anchor, the checkpoint file and original append-only journal. It
 verifies checkpoint identity and integrity, rejects a checkpoint newer than the
-normal anchor, reconstructs histories, capacity reservations and the unresolved
-index, seeks to the exact byte frontier and replays only later complete frames.
-The resulting rolling state must encounter the normal retained anchor.
+normal anchor and verifies the original journal prefix through the checkpoint's
+exact byte frontier. This bounded streaming pass checks frame checksums, event
+count and the same rolling state digest used by ordinary journal replay; an
+authentic snapshot cannot authorize a different same-length journal prefix.
+Recovery reconstructs histories, capacity reservations and the unresolved index
+from the snapshot and replays only later complete frames through the reducer.
+The resulting rolling state must encounter the normal retained anchor, and the
+file is synced before a recovered frontier can be acknowledged.
+
+Tail-only refers to reducer replay, not journal I/O. Prefix verification reads
+and hashes the original prefix in `O(B_prefix)` time with one bounded frame
+buffer; with tail validation, journal reads and hashing remain `O(B)` in total.
+Checkpoint snapshot loading and restored reducer state require their own bounded
+memory. Checkpoint recovery does not provide tail-only reads or erase the
+original journal's authority.
 
 Checkpoint substitution, stale journal restore, conflicting tail, truncation or
 anchor mismatch fails closed. A checkpoint checksum without an independent anchor
@@ -154,6 +166,40 @@ journal. One bounded iteration loads unresolved identities and routes by phase:
 The cursor advances past unresolved attempts so one permanently unresolved item
 cannot starve later identities. The selected host must serialize recovery against
 live work for the same attempt and durably retain cursor updates.
+
+## Canonical holdout CAS recovery and cost
+
+The locked-file holdout backend retains one semantic journal during replay.
+Before a live CAS append it replays the proposed transition against a cloned
+journal and compares the complete canonical result with the supplied record.
+Self-consistent metadata digests cannot admit invented journal heads, altered
+record fields or histories that disk replay would reconstruct differently.
+Only an exact transition is synced and installed in the live cache; rejected
+transitions leave both file and cache unchanged. Recovery also syncs the file
+before exposing its authoritative state.
+
+For `N` plan records, `F` fence events and `B` file bytes, recovery has worst-case
+source cost `O(B + N² + F(N + 1))` and memory `O(B + N)` under the backend's hard
+ceilings. It no longer reconstructs every earlier semantic prefix per frame.
+The wire-compatible v2 registry still hashes its complete sorted binding table
+for each new plan, and snapshots still copy retained records.
+
+The optional `FinalHoldoutCasStoreV1::canonical_journal_cache` preserves a native
+journal already produced by canonical replay. Owner recovery uses it only after
+normal record validation and complete snapshot equality, then restores the new
+owner's record-limit policy. A cache mismatch fails closed. The locked-file
+backend supplies this capability, so an in-process takeover of `N` retained
+records costs `O(N)` cloning/comparison instead of replaying every prefix again.
+A workload with `N` new plans and `F` such cached takeovers remains bounded by
+`O(N² + F(N + 1))`, excluding storage synchronization latency.
+
+Stores whose default cache method returns `None` retain strict public snapshot
+replay, including recomputation of every historical registry-prefix digest.
+Their recovery costs `O(N²)` per call, and repeatedly recovering between new
+plans can still produce cubic total work. No public or generic snapshot decoder
+accepts caller-supplied registry digests as proof of their earlier prefixes.
+These boundaries do not establish linear scaling, a full-capacity service
+objective or target-host latency guarantees.
 
 ## Holdout and publication reconciliation
 
@@ -226,6 +272,15 @@ checkpoint newer than the normal anchor. Capacity tests cover complete-lifecycle
 reservation and indexed unresolved lookup. The sustained source profile creates a
 checkpoint 64 attempts before each 128-attempt restart, exercising nonempty tail
 replay over 4,096 attempts and 28,672 lifecycle events.
+
+The `learning_eval_storage_profile` binary additionally consumes one distinct
+synthetic frozen plan per fence generation within the existing `--fences` budget
+(default 512). It reopens the nonempty source history, compacts it, reopens the
+compacted history and checks an exact retry cannot add bytes or consume again.
+Schema v1 retains its original measurements and adds `planRecords`,
+`sourceRecoveryMicros` and `retryPreserved`; `writeMicros` covers plan freezing,
+consumption and fence takeover. These same-host fixture measurements exercise
+multiple plan histories, not full-capacity or real deployment performance.
 
 These remain source fixtures until one immutable exact tree and its ordered-parent
 merge produce passing retained artifacts.

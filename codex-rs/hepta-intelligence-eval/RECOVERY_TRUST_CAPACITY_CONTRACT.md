@@ -28,6 +28,19 @@ authorized root-rotation ceremony. A previously activated distribution that has
 expired at final use is rejected even if its embedded evidence signatures would
 otherwise remain structurally valid.
 
+Ingress verification does not survive an arbitrarily delayed archive or journal
+write. After `PublicationPending` is durable, the selected-host final-use guard
+loads the original typed archive, resamples the same host clock, checks clock
+identity and monotonicity, verifies the current activation and original V2/V3
+evidence, and compares the exact decision immediately before invoking the
+publication owner. Both distribution expiry and signature expiry can independently
+reject this boundary. Rejection creates no publication and retains Pending for
+read-only reconciliation; it is not permission to retry an unknown write.
+
+Agentd consumers also check activation currentness independently of subject
+signature validity. The verifier embedded in an activation does not itself
+retain the root distribution's expiry.
+
 Owner-local generic evaluator helpers may still receive an already host-owned
 verifier beneath the selected-host adapter. Their existence does not permit a
 selected-host caller to bypass root activation, and it does not authenticate a
@@ -56,6 +69,10 @@ Within one page, `learning.eval` enforces all of the following:
 - one generation cannot silently change distribution digest;
 - the archive is re-decoded and V2/V3 evidence is reverified with that attempt's
   active verifier before any first publication write.
+
+The final-use clock sample becomes the page's monotonic time frontier. A late
+clock or activation failure aborts before advancing the rejected attempt's
+persistent cursor.
 
 An independently authorized root-rotation ceremony starts a new recovery page;
 it is never inferred inside an in-flight page. A trust-provider, cursor or

@@ -156,28 +156,27 @@ external gates.
 ### Current candidate source inventory
 
 Canonical inventory: `docs/modules/learning.eval/CURRENT_STATUS.json`.
-This block records lexical source facts only; compilation, product invocation and
-current-tree execution remain separate evidence.
+Inventory SHA-256: `75e4ad3b446a79674d258401ef2da2cd0de9e5512ce4c8b2f555e6ae7624ecf9`.
 
-- Default ingress uses `RecordedProductEvaluationRunnerV1` with the independently
-  anchored durable journal capability. Public qualification persists the typed
-  archive before decision; the unarchived helper, raw runner and direct decision
-  surfaces remain crate-internal or compatibility-only.
-- The successful attempt lifecycle contains seven durable events, including
-  `QualificationArtifactsPersisted`; the 4,096-attempt sustained source profile
-  therefore contains 28,672 events.
-- New intents reserve their complete remaining lifecycle; unresolved discovery
-  uses a rebuildable ordered index.
-- Independently retained checkpoints bind a canonical reducer snapshot and exact
-  journal frontier; recovery restores the snapshot and replays only the later
-  append-only tail without truncating or replacing the journal anchor.
-- Single- and multi-outcome recovery use one canonical typed archive and perform
-  current V2/V3 verification inside `learning.eval`; the persistent controller
-  advances a durable cursor past unresolved attempts.
-- Temporal cross-fit execution and fixed-analysis clustered sequential intervals
-  are present as authority-free source operations.
+This block is generated from lexical source facts, not test results.
+Default ingress: recorded runner with independently anchored journal capability.
+Raw runner: explicit `trusted-inprocess-eval` compatibility feature only.
+Recovery: durable intent, independently anchored full-history validation, bounded
+cursor reconciliation and complete typed qualification artifacts.
+Selected-host single- and multi-outcome artifact recovery and publication resume
+are present in source, with signatures reverified before final use.
+Process-kill fixture cuts: `7`; their execution is separately qualified.
+Outcome source: at most `32` preregistered channels and
+`100000` batch rows, with separate measured estimates.
+A request-bound Agentd multi-outcome receipt consumer is present in source;
+deployed execution, authenticated target-host qualification and measurement
+provenance are not established by this source inventory.
+Sustained profile source: `4096` attempts,
+`28672` lifecycle events and anchored
+restart every `128` attempts; a passing
+exact-source artifact is still required.
 
-Exact-head, ordered-parent merge, coverage, strict lint, selected-host topology,
-real future observations and independent acceptance require separate evidence.
-Production, activation and release claims remain false.
+Exact-head, ordered-parent merge, coverage and strict lint require immutable
+execution artifacts. Real target-host, future-window and independent acceptance
+evidence remain external. Production, activation and release claims remain false.
 <!-- END GENERATED LEARNING.EVAL SOURCE STATUS -->

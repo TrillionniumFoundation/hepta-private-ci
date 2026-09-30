@@ -62,7 +62,22 @@ synthetic fixtures into real future-calendar efficacy evidence.
 `SequentialPlan::estimate_cluster_intervals_v1` layers conservative fixed-analysis
 cluster intervals over finite-horizon PDIS/DR. The confidence plan, minimum
 cluster count and absolute trajectory-return envelope are preregistered. Too few
-clusters or an observed estimate outside the envelope is a typed evidence gap.
+clusters, an observed estimate outside the envelope, or a declaration below the
+plan-level contribution bound is a typed evidence gap. Observed sample maxima,
+including observed nuisance predictions or discounts, cannot establish the
+range required by the concentration bound.
+
+Let `H` be the frozen horizon, `W` the cumulative importance-weight ceiling and
+`T` be one for a separate terminal value and zero otherwise. The validator uses
+the global reward/terminal range `[-1, 1]`, prediction range `[-129, 129]` and
+discount range `[0, 1]` to bound PDIS by `(H + T) W` and DR by
+`129 + 130 H W + 129 (H - 1) W + T W`, plus conservative Q32 rounding error.
+Both exact propensity products and the products of numerically rounded ratios
+use outward admission bounds. A declared envelope must cover the larger bound;
+it may exceed the old unweighted-return ceiling of 129. Nonrepresentable bounds
+fail closed. These deliberately conservative intervals require adequate
+independent sample size; tightening them needs a preregistered, justified global
+model/range contract, rather than an estimate inferred from the same sample.
 
 Cluster labels remain supplied evidence requiring independent provenance. This
 surface does not provide anytime-valid confidence sequences, adaptive-stopping
@@ -136,6 +151,28 @@ anchor. Cross-host deployment additionally requires external evidence that the
 actual shared storage provides linearizable lock/CAS/fsync and directory
 semantics.
 
+The concrete backend accepts a live CAS transition only when its complete
+canonical replay equals the supplied record. Recovery retains one semantic
+journal and syncs the recovered file before returning. For `N` plan records,
+`F` fence events and `B` file bytes, its current worst-case source cost is
+`O(B + N² + F(N + 1))`, with `O(B + N)` memory under fixed backend ceilings.
+The v2 registry's full sorted-table digest and snapshot copying still contribute
+quadratic cost as plan history grows.
+
+The optional native canonical-journal cache is an optimization capability, not
+an unchecked snapshot constructor. Owner recovery still validates the loaded
+record and compares its complete snapshot with the cache before restoring the
+owner's admission limit. The locked-file backend supplies this cache, making
+repeated in-process takeovers `O(N)` each for `N` retained records. Across `N`
+new plans and `F` cached takeovers, source work remains `O(N² + F(N + 1))`, apart
+from storage synchronization latency. The default `None` cache implementation
+continues strict `O(N²)` snapshot replay per recovery; generic stores repeatedly
+recovering between plans may still incur cubic total work. Every historical
+registry-prefix digest remains strictly verified on that fallback path.
+Source profiles with multiple synthetic plans and reopen/compaction checks
+establish fixture behavior, not linear scaling, full-capacity service objectives
+or target-host latency qualification.
+
 ### Verified compaction
 
 `LockedFileFinalHoldoutCasStoreV1::compact_into` writes a new target and replays
@@ -185,9 +222,18 @@ independent anchor authority.
 
 `recover_with_checkpoint` requires the normal journal anchor, the derived
 checkpoint anchor, the checkpoint file and the original append-only journal. It
-restores reducer state and replays only complete later frames. It rejects
-checkpoint substitution, a checkpoint newer than the normal anchor, stale
-journal restore, conflicting tail or truncation.
+first streams the original prefix and verifies checksums, the exact byte/event
+frontier and rolling journal digest against the authenticated checkpoint. It
+then restores reducer state and replays only complete later frames. It rejects
+checkpoint substitution, a checkpoint newer than the normal anchor, same-length
+divergent prefixes, stale journal restore, conflicting tail or truncation.
+The recovered file is synced before any frontier acknowledgement.
+
+Tail-only describes reducer replay. Prefix verification reads and hashes
+`O(B_prefix)` source bytes with a bounded frame buffer; total source-journal reads
+and hashing remain `O(B)` including the tail. Snapshot loading and restored
+reducer state retain their separate bounded memory costs. This contract does
+not promise tail-only I/O.
 
 Checkpointing never truncates or replaces the source journal and never lowers the
 normal anti-rollback anchor. A same-process fixture or trait implementation is

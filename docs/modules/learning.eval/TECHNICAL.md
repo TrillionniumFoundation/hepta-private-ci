@@ -208,13 +208,13 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The default product composition is `RecordedProductEvaluationRunnerV1` with `DurableProductEvaluationAttemptJournalV1`. It persists `IntentPersisted` before provider manifest lookup or final-holdout CAS, consumes through `FencedFinalHoldoutOwnerV1`, acknowledges `HoldoutConsumed`, and only then releases observations. Candidate and baseline intervals come from sealed temporal/cluster estimator receipts; product callers do not submit final `MetricGateV1` values. `ComparisonSealed` binds the complete execution before return.
 
-Qualification verifies V2/V3 signed evidence and persists `QualificationDecided` and `PublicationPending` before publication. It records `Published` only after observing the exact durable nonzero publication result. The raw `ProductEvaluationRunnerV1` is not a default public alternative; its explicit compatibility feature must be absent from the selected production build.
+Public qualification first persists the canonical typed archive and acknowledges `QualificationArtifactsPersisted`, then verifies current V2/V3 signed evidence and persists `QualificationDecided` and `PublicationPending` before publication. It records `Published` only after observing the exact durable nonzero publication result. The raw `ProductEvaluationRunnerV1` and the unarchived recorded qualification helper are not default public alternatives; the raw runner's explicit compatibility feature must be absent from the selected production build.
 
 `LockedFileFinalHoldoutCasStoreV1` is the repository concrete cross-process CAS/replay backend. Recovery is bounded by an independently retained `FinalHoldoutCasAnchorV1`; `HoldoutFenceIssuerV1` resumes monotonic fence generation from that anchor. Cross-host deployment additionally requires a shared filesystem with qualified linearizable lock and fsync semantics.
 
 `AnchoredProductEvaluationAttemptJournalV1` separately binds the complete attempt history to an independent anchor authority. An old complete backup is rejected, not accepted merely because its frame checksums are valid. Uncertain file or anchor acknowledgements poison the handle; recovery validates the retained prefix before adopting a committed tail. It never erases final-holdout use.
 
-For the single-outcome receipt, `qualify_and_persist_with_artifacts` create-only persists the complete temporal receipt, qualification context, signed evidence and timing evidence before the durable `QualificationDecided` transition. `qualify_and_persist_on_selected_host` binds the artifact and publication namespaces to one host identity. Recovery rejects a substituted host identity, reloads exact bytes, re-verifies current trust and performs the first write only from the preregistered decided phase. `reconcile_selected_host_publication` reads and validates an existing publication without repeating a writer call. These source APIs and their fixture do not authenticate a real anchor authority or qualify a deployment topology.
+For the single-outcome receipt, `qualify_and_persist_with_artifacts` create-only persists the complete temporal receipt, qualification context, signed evidence and timing evidence before the durable `QualificationArtifactsPersisted` transition. The selected-host single- and multi-outcome methods share the module-owned canonical archive codec and bind the artifact and publication namespaces to one host identity. Public selected-host final use requires root-issued `ActivatedLearningTrustV1` and a host-sampled clock; recovery resolves current trust for each attempt. Recovery rejects a substituted host identity, reloads exact bytes, re-verifies current V2/V3 evidence and performs the first publication write only from the exact archived prewrite state. `reconcile_selected_host_publication` reads and validates an existing publication without repeating a writer call. These source APIs and their fixtures do not authenticate a real anchor authority or qualify a deployment topology.
 
 The evaluated-shadow caller consumes the sealed `ProductQualificationReceiptV1`, rechecks current trust/dataset/candidate bindings and does not rerun low-level signed admission. Agentd also contains a request-bound consumer of the additive `ProductOutcomeQualificationReceiptV1`. Both are source compositions, not demonstrated deployment or activation.
 
@@ -224,7 +224,7 @@ The evaluated-shadow caller consumes the sealed `ProductQualificationReceiptV1`,
 
 `FinalOutcomeHoldoutProviderV1` releases one complete channel batch after the same single authoritative final-holdout consumption. `evaluate_outcome_comparison` checks each payload and paired logged measurements, estimates channels separately, and seals the multi-outcome execution. A renamed metric cannot substitute for a new measured channel. Missing, duplicate or swapped payloads do not yield a partial qualified result. The internal carrier is not publicly extractable.
 
-`qualify_outcomes_and_persist` derives and verifies the full outcome bundle and uses the same durable publication lifecycle. The signed E2E binds multi-outcome, privacy, retention and unlearning evidence; Agentd consumes the resulting sealed receipt with request context. A schema/provenance digest is still only a commitment, not proof of independent observation or correct normalization. Complete selected-host artifact persistence and restart recovery for `ProductOutcomeEvaluationReceiptV1`, authenticating the real measurement custodian and executing the path on the selected host remain separate obligations.
+The public `qualify_outcomes_and_persist_on_selected_host` path archives the complete outcome receipt and signed context before deriving and verifying the full outcome bundle; `qualify_outcomes_and_persist` is a crate-internal composition helper. Both receipt families use the same archive and durable publication lifecycle. The signed E2E binds multi-outcome, privacy, retention and unlearning evidence; Agentd consumes the resulting sealed receipt with current owner state and signed exact-use context. A schema/provenance digest is still only a commitment, not proof of independent observation or correct normalization. Complete single- and multi-outcome selected-host archive/restart recovery is present in source. Authenticating the real measurement custodian and executing and qualifying that path on the declared target host remain separate obligations.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -232,7 +232,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
-`reconcile_pending_page` supplies bounded lexicographic discovery and advances past unresolved attempts. It does not own a background scheduling service. The selected host must persist the cursor, bound retries, preserve fairness across sweeps and exclude concurrent recovery of a live attempt. An indeterminate journal stops the sweep rather than continuing to mutate a poisoned handle.
+`reconcile_pending_page` supplies bounded lexicographic discovery and advances past unresolved attempts. `recover_selected_host_pending_page` adds the persistent bounded controller and host-bound cursor; it resolves current root-activated trust and host time for each attempt. These source operations do not supply a background scheduling service or prove deployed invocation. The selected host must bind the cursor store, schedule bounded sweeps, preserve fairness and exclude concurrent recovery of a live attempt. An indeterminate journal or trust/cursor failure stops the sweep rather than continuing to mutate a poisoned handle.
 
 ## 8. Failure semantics, recovery and rollback
 
@@ -242,9 +242,9 @@ Use the [recovery contract](../../../codex-rs/hepta-intelligence-eval/RECOVERY_C
 
 Recovery validates the complete per-attempt history, including identity, sequence, legal phases, predecessor digests, plan/holdout binding and the latest pointer. It reads authoritative holdout/publication records and mutates only the attempt journal. These operations are external-owner-read-only reconciliation, not literally read-only diagnostics.
 
-A `QualificationDecided` attempt can resume its first publication through `resume_decided_qualification` or `resume_decided_outcome_qualification` only when its original sealed receipt and signed evidence are recoverable. Current trust, expiry, revocation and scope are reverified; the canonical request must match preregistration exactly. The raw publication helper stays crate-private. Pending or Published is never retried through this path. A missing Pending record may represent an unknown write and remains unresolved until authoritative submission state is known.
+A `QualificationArtifactsPersisted` or `QualificationDecided` attempt can resume through `recover_selected_host_qualification` or `recover_selected_host_outcome_qualification` only when its original canonical archive is recoverable. The module reconstructs the exact bundle and re-verifies current trust, expiry, revocation, scope and V3 timing before deriving the canonical publication request. A recorded decision/request must match that request exactly. The generic typed `resume_decided_qualification` and `resume_decided_outcome_qualification` methods also reverify the original receipt and signed evidence with host-owned trust; they do not authenticate a selected host or replace its root-activated clock/archive boundary. The raw post-verification publication helper stays crate-private. `PublicationPending` or `Published` is never submitted again through this path. A missing publication record for a Pending attempt may represent an unknown write and remains unresolved until authoritative submission state is known.
 
-The attempt journal intentionally stores digests and transitions rather than duplicating large sealed objects. For the single-outcome path, the host-bound artifact store now persists the exact sealed objects needed after `ComparisonSealed` and before publication. The selected-host restart fixture injects acknowledgement loss after the journal file contains `QualificationDecided`, restarts from the independent anchor, rejects a wrong host binding, re-verifies signed evidence, publishes once, performs read-only reconciliation and restarts again to validate the six-phase history. This fixture is not a production codec, a target-host qualification result, or a replacement for multi-outcome artifact recovery. Recovery after computation but before a recoverable artifact has been durably sealed still cannot invent a result or re-release final-holdout data.
+The attempt journal stores digests and transitions rather than duplicating large sealed objects. The host-bound artifact store persists canonical typed archives for both single- and multi-outcome receipts after `ComparisonSealed` and before decision. The selected-host restart fixtures inject acknowledgement loss, restart from the independent anchor, reject wrong host bindings, re-verify signed evidence, publish once, perform read-only publication reconciliation and restart again to validate the seven-phase history. The module-owned archive codec and cold recovery paths are source implementations; fixture presence does not establish target-host qualification or execution on the final candidate. Recovery after computation but before a recoverable archive has been durably sealed still cannot invent a result or re-release final-holdout data.
 
 ## 9. Security, privacy and threat controls
 
@@ -263,7 +263,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
-Attempt append updates only the addressed history; replay is streaming within configured event/file limits. The repository includes the earlier 1,024-attempt/512-fence storage profile and a sustained source profile configured for 4,096 attempts, 24,576 lifecycle events and anchored close-and-reopen recovery every 128 attempts. Neither source fixture is a measured qualification until it passes on the exact candidate and its logs, exit status, manifest digest, runner/toolchain identity and selected storage topology are retained. Holdout copy-compaction does not imply attempt-journal checkpoint/rotation. Selected-host startup, backlog, fsync latency, memory and recovery measurements remain required on the declared topology.
+Attempt append updates only the addressed history; replay is streaming within configured event/file limits. The repository includes the earlier 1,024-attempt/512-fence storage profile and a sustained source profile configured for 4,096 attempts, 28,672 lifecycle events and anchored close-and-reopen recovery every 128 attempts. The profile writes a checkpoint 64 attempts before each restart so recovery includes a nonempty append-only tail. Attempt checkpoint/tail recovery and holdout copy-compaction are distinct source operations and preserve their independently retained anchors. Neither source fixture is a measured qualification until it passes on the exact candidate and its logs, exit status, manifest digest and runner/toolchain identity are retained. Selected-host startup, backlog, fsync latency, memory and recovery measurements remain required on the declared topology.
 
 ## 11. Observability and operations
 
@@ -636,22 +636,23 @@ The configured source checks include `.github/workflows/hepta-consolidated-sourc
 ### Current candidate source inventory
 
 Canonical inventory: `docs/modules/learning.eval/CURRENT_STATUS.json`.
-Inventory SHA-256: `6dda3b25574e8c8e754c5a59e47799adc72bffbd4b42494b5dc6b8461b0f8f7a`.
+Inventory SHA-256: `75e4ad3b446a79674d258401ef2da2cd0de9e5512ce4c8b2f555e6ae7624ecf9`.
 
 This block is generated from lexical source facts, not test results.
 Default ingress: recorded runner with independently anchored journal capability.
 Raw runner: explicit `trusted-inprocess-eval` compatibility feature only.
 Recovery: durable intent, independently anchored full-history validation, bounded
-cursor reconciliation, complete single-outcome qualification artifacts and
-signature-reverified selected-host publication resume.
+cursor reconciliation and complete typed qualification artifacts.
+Selected-host single- and multi-outcome artifact recovery and publication resume
+are present in source, with signatures reverified before final use.
 Process-kill fixture cuts: `7`; their execution is separately qualified.
 Outcome source: at most `32` preregistered channels and
 `100000` batch rows, with separate measured estimates.
 A request-bound Agentd multi-outcome receipt consumer is present in source;
-deployed execution, selected-host multi-outcome artifact recovery and authenticated
-measurement provenance are not established by this source inventory.
+deployed execution, authenticated target-host qualification and measurement
+provenance are not established by this source inventory.
 Sustained profile source: `4096` attempts,
-`24576` lifecycle events and anchored
+`28672` lifecycle events and anchored
 restart every `128` attempts; a passing
 exact-source artifact is still required.
 

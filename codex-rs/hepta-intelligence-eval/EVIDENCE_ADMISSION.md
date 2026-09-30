@@ -1,10 +1,12 @@
 # Learning evaluation admission after consolidation
 
-The restored Lane E source includes strict learned-operator fitting, immutable
-dataset/admission receipts, and replayable final-holdout/lifecycle journals. The
-journals implement semantic replay and expected-head checks; the host still owns
-exclusive writing, fsync, crash recovery and a trusted persisted head. Their
-existence is not evidence of a running long-term learner.
+The Lane E source includes strict learned-operator fitting, immutable
+dataset/admission receipts, replayable final-holdout/lifecycle journals, and
+module-owned typed qualification archives. Concrete file adapters implement
+locking, synchronous append and bounded recovery; independently anchored
+wrappers reject rollback behind an authoritative retained prefix. The host must
+bind and qualify the actual namespaces, anchor authority and storage topology.
+Their source presence is not evidence of a running long-term learner.
 
 The normative production surface is [`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md). When this note and compatibility examples are read together, that contract controls which API may be exposed to external callers and which holdout owner is required for multi-writer deployments.
 
@@ -16,10 +18,32 @@ external caller or prove that an estimate was produced by an independent actor.
 They are available only through the explicit `trusted-inprocess-eval`
 compatibility feature. Default builds do not expose direct evaluator entrypoints.
 
-Qualification-scoped product evaluation enters through `ProductEvaluationRunnerV1::qualify_and_persist`. The runner derives the exact bundle from sealed estimator receipts and invokes signed V2 verification internally. A `SystemLongitudinal` request uses the same runner with V3 observed-time evidence. The low-level `decide_with_signed_evidence_v2` and `decide_with_signed_longitudinal_evidence_v3` functions are crate-internal verification primitives, not default cross-crate ingress; signed window names alone are insufficient. V1/V2 authenticate the submitted bytes, then reject that stronger
-claim with `MissingLongitudinalTiming`. The host constructs `LearningEvidenceVerifierV1`
-from its authority store and distributes the resulting trust digest to signers.
-Never construct that verifier from the same remote request being evaluated.
+Default product evaluation enters through `RecordedProductEvaluationRunnerV1`
+with a `DurableProductEvaluationAttemptJournalV1`. Public qualification uses
+`qualify_and_persist_with_artifacts` or the selected-host single- and multi-outcome
+methods. These entrypoints persist the canonical typed archive and acknowledge
+`QualificationArtifactsPersisted` before deciding and publishing. The raw
+`ProductEvaluationRunnerV1` is crate-private by default; the unarchived recorded
+qualification helper is also crate-internal. Neither is an alternative public
+product ingress.
+
+The runner derives the exact bundle from sealed estimator receipts and invokes
+signed V2 verification internally. A `SystemLongitudinal` request instead
+requires V3 observed-time evidence. The low-level
+`decide_with_signed_evidence_v2` and
+`decide_with_signed_longitudinal_evidence_v3` functions are crate-internal
+verification primitives; signed window names alone are insufficient. V1/V2
+authenticate the submitted bytes, then reject that stronger claim with
+`MissingLongitudinalTiming`.
+
+Selected-host final use requires `ActivatedLearningTrustV1` issued by
+`learning.ledger` from a pinned root and its signed trust distribution, together
+with the host-sampled clock. Recovery resolves current activated trust for each
+attempt and re-verifies the decoded archive inside `learning.eval`. Owner-local
+helpers may receive a host-owned `LearningEvidenceVerifierV1`; never construct
+that verifier from the remote evaluation request. The additional final-use and
+capacity rules are normative in
+[`RECOVERY_TRUST_CAPACITY_CONTRACT.md`](RECOVERY_TRUST_CAPACITY_CONTRACT.md).
 
 1. Register scoped Ed25519 public keys, role assignments, controlling authorities,
    credential lifetimes, objective and authority epoch in host-owned trust state.

@@ -31,6 +31,7 @@ or release authority.
 
 ## Closeout and historical audit material
 
+- [ADVERSARIAL_AUDIT_20260930.md](ADVERSARIAL_AUDIT_20260930.md) — 本轮中文对抗审计、修复、分层完成度、本地验证和仍未闭合的最终候选/外部证据。
 - [`SOURCE_CLOSEOUT_20260928.md`](SOURCE_CLOSEOUT_20260928.md)
 - [`SOURCE_CLOSEOUT_20260928.json`](SOURCE_CLOSEOUT_20260928.json)
 - [`EXECUTION_CLOSEOUT.md`](EXECUTION_CLOSEOUT.md)
@@ -56,3 +57,9 @@ Every summary has a canonical SHA-256, `authority: DENY_ALL`, and
 `releasePosture: NO_GO`. Target-host, independent-acceptance, activation and release facts
 must come from separately administered evidence and are never upgraded by repository CI
 or by a local deterministic run.
+
+The trusted default-branch `workflow_run` reporter treats downloaded summaries as
+**untrusted data**. Before updating a machine-owned PR marker, it verifies the bounded
+artifact inventory, canonical digest, producer run and attempt, exact commit/tree,
+current PR head/base and qualification-control-plane byte identity. Candidate source
+workflows remain read-only; the reporter never executes the candidate checkout.
