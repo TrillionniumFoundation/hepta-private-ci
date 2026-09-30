@@ -15,6 +15,13 @@ impl QualifiedCompactionCandidateV2 {
         if total > MAX_QUALIFIED_COMPACTION_INPUTS {
             return Err(QualifiedCompactionError::InputLimitExceeded);
         }
+        let digest_references = self
+            .omitted_record_digests
+            .len()
+            .checked_add(self.deleted_record_digests.len())
+            .ok_or(QualifiedCompactionError::InputLimitExceeded)?;
+        preflight_records(&self.retained_records, digest_references)
+            .map_err(QualifiedCompactionError::ResourceBudgetExceeded)?;
         self.source_snapshot
             .validate()
             .map_err(QualifiedCompactionError::Contract)?;
@@ -125,6 +132,9 @@ impl QualifiedCompactionCandidateV2 {
         Ok(())
     }
 
+    /// Canonical hash helper for bounded data, including construction before
+    /// the candidate digest is assigned. Use `validate` as the admission boundary
+    /// for imported candidates; this helper does not enforce resource limits.
     #[must_use]
     pub fn compute_candidate_digest(&self) -> Digest32 {
         let mut bytes = Vec::new();

@@ -5,6 +5,8 @@ use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Revision;
 
+use crate::MAX_COMPACTION_CITATIONS;
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
 }
@@ -638,5 +640,197 @@ fn frozen_validation_accepts_semantically_identical_citation_order() {
     assert_eq!(
         candidate.validate_against_inputs(&frozen_policy, vec![source_input]),
         Ok(())
+    );
+}
+
+fn citation_budget_inputs(count: usize) -> Vec<CompactionInputRecordV2> {
+    let citations = (0..64)
+        .map(|value| Citation {
+            source_id: id(&format!("source:{value}")),
+            source_digest: digest("source-support"),
+        })
+        .collect::<Vec<_>>();
+    (0..count)
+        .map(|value| {
+            let mut record = record(&format!("memory:{value}"), 1, None, RecordState::Live);
+            record.citations = citations.clone();
+            input(record, 1)
+        })
+        .collect()
+}
+
+fn encoded_byte_boundary_inputs() -> Vec<CompactionInputRecordV2> {
+    let full_id = |prefix: String| {
+        let suffix = "x".repeat(128 - prefix.len());
+        id(&format!("{prefix}{suffix}"))
+    };
+    let citations = (0..64)
+        .map(|value| Citation {
+            source_id: full_id(format!("source:{value}")),
+            source_digest: digest("source-support"),
+        })
+        .collect::<Vec<_>>();
+    let mut inputs = (0..30_146)
+        .map(|value| {
+            let mut record = record("memory:temporary", 1, None, RecordState::Live);
+            record.record_id = full_id(format!("memory:{value}"));
+            if value < 1_024 {
+                record.citations = citations.clone();
+            }
+            input(record, 1)
+        })
+        .collect::<Vec<_>>();
+    // V1 records with a 128-byte ID and no predecessor encode to 200 bytes;
+    // each 128-byte citation ID adds 164 bytes. The final 40-byte ID adds 112:
+    // 30,146*200 + 1,024*64*164 + 112 = 16,777,216, exactly 16 MiB.
+    inputs.push(input(
+        record(
+            "memory:extraXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            1,
+            None,
+            RecordState::Live,
+        ),
+        1,
+    ));
+    inputs
+}
+
+#[test]
+fn both_builders_accept_the_aggregate_citation_boundary() {
+    let inputs = citation_budget_inputs(MAX_COMPACTION_CITATIONS / 64);
+    assert!(
+        crate::compact(
+            generation(2),
+            digest("snapshot"),
+            inputs.iter().map(|input| input.record.clone()).collect(),
+        )
+        .is_ok()
+    );
+    let candidate = build_qualified_candidate(
+        snapshot_key(),
+        generation(2),
+        Some(digest("predecessor-checkpoint")),
+        &policy(2_048, Vec::new()),
+        inputs,
+    )
+    .unwrap_or_else(|error| panic!("citation boundary must succeed: {error}"));
+    assert!(candidate.validate().is_ok());
+}
+
+#[test]
+fn aggregate_citation_overflow_is_rejected_before_record_validation() {
+    let mut inputs = citation_budget_inputs(MAX_COMPACTION_CITATIONS / 64 + 1);
+    inputs[0].record.content_digest = Digest32::ZERO;
+    let expected = CompactionResourceError::CitationLimitExceeded;
+    assert_eq!(
+        crate::compact(
+            generation(2),
+            digest("snapshot"),
+            inputs.iter().map(|input| input.record.clone()).collect(),
+        ),
+        Err(crate::Error::ResourceBudgetExceeded(expected))
+    );
+    assert_eq!(
+        build_qualified_candidate(
+            snapshot_key(),
+            generation(2),
+            Some(digest("predecessor-checkpoint")),
+            &policy(2_048, Vec::new()),
+            inputs,
+        ),
+        Err(QualifiedCompactionError::ResourceBudgetExceeded(expected))
+    );
+}
+
+#[test]
+fn both_builders_accept_exactly_the_encoded_byte_boundary() {
+    let inputs = encoded_byte_boundary_inputs();
+    assert!(
+        crate::compact(
+            generation(2),
+            digest("snapshot"),
+            inputs.iter().map(|input| input.record.clone()).collect(),
+        )
+        .is_ok()
+    );
+    let candidate = build_qualified_candidate(
+        snapshot_key(),
+        generation(2),
+        Some(digest("predecessor-checkpoint")),
+        &policy(32_768, Vec::new()),
+        inputs,
+    )
+    .unwrap_or_else(|error| panic!("encoded byte boundary must succeed: {error}"));
+    assert!(candidate.validate().is_ok());
+}
+
+#[test]
+fn both_builders_reject_one_byte_over_the_encoded_boundary() {
+    let mut inputs = encoded_byte_boundary_inputs();
+    let last = inputs
+        .last_mut()
+        .unwrap_or_else(|| panic!("boundary has a final record"));
+    last.record.record_id = id("memory:extraXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    let expected = CompactionResourceError::EncodedByteLimitExceeded;
+    assert_eq!(
+        crate::compact(
+            generation(2),
+            digest("snapshot"),
+            inputs.iter().map(|input| input.record.clone()).collect(),
+        ),
+        Err(crate::Error::ResourceBudgetExceeded(expected))
+    );
+    assert_eq!(
+        build_qualified_candidate(
+            snapshot_key(),
+            generation(2),
+            Some(digest("predecessor-checkpoint")),
+            &policy(32_768, Vec::new()),
+            inputs,
+        ),
+        Err(QualifiedCompactionError::ResourceBudgetExceeded(expected))
+    );
+}
+
+#[test]
+fn imported_candidate_citation_budget_precedes_loss_and_digest_checks() {
+    let mut candidate = two_record_candidate();
+    candidate.retained_records = citation_budget_inputs(MAX_COMPACTION_CITATIONS / 64 + 1)
+        .into_iter()
+        .map(|input| input.record)
+        .collect();
+    assert_eq!(
+        candidate.validate(),
+        Err(QualifiedCompactionError::ResourceBudgetExceeded(
+            CompactionResourceError::CitationLimitExceeded
+        ))
+    );
+}
+
+#[test]
+fn imported_candidate_counts_digest_references_in_its_byte_budget() {
+    let mut candidate = two_record_candidate();
+    candidate.retained_records = encoded_byte_boundary_inputs()
+        .into_iter()
+        .map(|input| input.record)
+        .collect();
+    // The retained payload is exactly 16 MiB; the existing omitted reference
+    // contributes another 32 bytes before any loss accounting or rehashing.
+    assert_eq!(
+        candidate.validate(),
+        Err(QualifiedCompactionError::ResourceBudgetExceeded(
+            CompactionResourceError::EncodedByteLimitExceeded
+        ))
+    );
+}
+
+#[test]
+fn omitted_and_deleted_vectors_share_one_head_budget() {
+    let mut candidate = two_record_candidate();
+    candidate.omitted_record_digests = vec![Digest32::ZERO; MAX_QUALIFIED_COMPACTION_INPUTS / 2];
+    candidate.deleted_record_digests = vec![Digest32::ZERO; MAX_QUALIFIED_COMPACTION_INPUTS / 2];
+    assert_eq!(
+        candidate.validate(),
+        Err(QualifiedCompactionError::InputLimitExceeded)
     );
 }

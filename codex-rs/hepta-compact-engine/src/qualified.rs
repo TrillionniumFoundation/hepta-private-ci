@@ -26,6 +26,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+use crate::CompactionResourceError;
+use crate::resources::preflight_records;
+
 pub const MAX_QUALIFIED_COMPACTION_INPUTS: usize = 65_536;
 pub const MAX_PROTECTED_COMPACTION_REFS: usize = 4_096;
 const POLICY_DOMAIN: &[u8] = b"hepta.compaction-policy.v2";
@@ -60,6 +63,8 @@ impl CompactionPolicyV2 {
         Ok(())
     }
 
+    /// Canonical hash helper for a bounded policy. Call `validate` before
+    /// hashing caller-controlled protected IDs; this method does not admit them.
     #[must_use]
     pub fn digest(&self) -> Digest32 {
         let mut protected = self.protected_record_ids.iter().collect::<Vec<_>>();
@@ -189,14 +194,18 @@ pub fn build_qualified_candidate(
     policy: &CompactionPolicyV2,
     inputs: Vec<CompactionInputRecordV2>,
 ) -> Result<QualifiedCompactionCandidateV2, QualifiedCompactionError> {
+    if inputs.len() > MAX_QUALIFIED_COMPACTION_INPUTS {
+        return Err(QualifiedCompactionError::InputLimitExceeded);
+    }
+    preflight_records(
+        inputs.iter().map(|input| &input.record),
+        /*digest_references*/ 0,
+    )
+    .map_err(QualifiedCompactionError::ResourceBudgetExceeded)?;
     source_snapshot
         .validate()
         .map_err(QualifiedCompactionError::Contract)?;
     policy.validate()?;
-    if inputs.len() > MAX_QUALIFIED_COMPACTION_INPUTS {
-        return Err(QualifiedCompactionError::InputLimitExceeded);
-    }
-
     let mut by_record = BTreeMap::<StableId, Vec<CompactionInputRecordV2>>::new();
     for input in inputs {
         input
@@ -483,6 +492,7 @@ pub enum QualifiedCompactionError {
     DigestMismatch(&'static str),
     InvalidRetentionLimit,
     InputLimitExceeded,
+    ResourceBudgetExceeded(CompactionResourceError),
     ProtectedReferenceLimitExceeded,
     DuplicateProtectedReference(String),
     MissingProtectedReference(String),

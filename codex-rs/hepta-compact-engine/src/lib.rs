@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 
 mod qualified;
+mod resources;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -25,6 +26,9 @@ pub use qualified::QualifiedCompactionCandidateV2;
 pub use qualified::QualifiedCompactionError;
 pub use qualified::build_qualified_candidate;
 pub use qualified::prove_compaction;
+pub use resources::CompactionResourceError;
+pub use resources::MAX_COMPACTION_CITATIONS;
+pub use resources::MAX_COMPACTION_ENCODED_BYTES;
 
 const MAX_INPUT_RECORDS: usize = 65_536;
 
@@ -41,6 +45,7 @@ pub struct CompactCheckpoint {
 pub enum Error {
     EmptySourceSnapshot,
     InputLimitExceeded,
+    ResourceBudgetExceeded(CompactionResourceError),
     InvalidRecord(String),
     DuplicateRevision(String),
     BrokenLineage(String),
@@ -60,11 +65,13 @@ pub fn compact(
     source_snapshot_digest: Digest32,
     mut records: Vec<MemoryRecord>,
 ) -> Result<CompactCheckpoint, Error> {
-    if source_snapshot_digest.is_zero() {
-        return Err(Error::EmptySourceSnapshot);
-    }
     if records.len() > MAX_INPUT_RECORDS {
         return Err(Error::InputLimitExceeded);
+    }
+    resources::preflight_records(&records, /*digest_references*/ 0)
+        .map_err(Error::ResourceBudgetExceeded)?;
+    if source_snapshot_digest.is_zero() {
+        return Err(Error::EmptySourceSnapshot);
     }
     records.sort_by(|left, right| {
         left.record_id
