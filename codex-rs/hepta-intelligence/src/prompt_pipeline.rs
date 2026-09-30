@@ -488,7 +488,7 @@ pub fn prepare_prompt_delivery_v1(
         now_unix_ms.max(1),
         prepared.admission_snapshot.revocation_epoch(),
         Vec::new(),
-        true,
+        /*revocation_set_complete*/ true,
         Some(prepared.admission_snapshot.snapshot_digest()),
     )
     .and_then(|snapshot| {

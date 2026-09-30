@@ -1473,18 +1473,18 @@ fn empty_context_attachment_still_requires_request_snapshot_domains() {
 fn attachment_preserves_each_candidates_authenticated_revocation_frontier() {
     let initial = verified_snapshot(
         "snapshot:initial-frontier",
-        10,
-        2,
+        /*observed_unix_ms*/ 10,
+        /*revocation_epoch*/ 2,
         vec![id("admission:other")],
     );
     let (trusted, realized) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
-        20,
+        /*token_count*/ 20,
         FixedQ32::ONE,
         &initial,
     );
-    let compiled = compile_v2(request(vec![trusted], 100)).expect("compilation");
+    let compiled = compile_v2(request(vec![trusted], /*token_budget*/ 100)).expect("compilation");
     let serialization = record_serialization(
         &compiled,
         &profile(),
@@ -1511,7 +1511,12 @@ fn attachment_preserves_each_candidates_authenticated_revocation_frontier() {
             ContextCompilerV2Error::RevocationResurrection("admission:other".to_string()),
         ),
     ] {
-        let current = verified_snapshot("snapshot:attachment-fork", 20, epoch, revoked);
+        let current = verified_snapshot(
+            "snapshot:attachment-fork",
+            /*observed_unix_ms*/ 20,
+            epoch,
+            revoked,
+        );
         assert_eq!(
             build_attachment(
                 &compiled,
@@ -1525,8 +1530,8 @@ fn attachment_preserves_each_candidates_authenticated_revocation_frontier() {
     }
     let current = verified_successor_snapshot(
         "snapshot:attachment-successor",
-        20,
-        3,
+        /*observed_unix_ms*/ 20,
+        /*revocation_epoch*/ 3,
         vec![id("admission:other"), id("admission:new")],
         &initial,
     )
