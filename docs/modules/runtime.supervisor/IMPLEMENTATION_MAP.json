@@ -511,9 +511,9 @@
     "codex-rs/hepta-supervisor"
   ],
   "observedAtHead": {
-    "commit": "348b24673c3f2f7e5d3e8d3bd5229620e170b0f5",
-    "tree": "d1bb7f6eeff365eed351a931d088351fcf7b9dec",
-    "interpretation": "Pinned source observation after the 2026-10-01 adversarial repairs. Local default native library regression: 287 selected tests passed; 8 Unix-socket tests were externally excluded after confirmed environment EPERM failures. Seven Python suites: 84 passed. Final all-target, qualification-feature, strict-lint and unfiltered source/merge CI qualification remain pending. This source observation does not establish target-host acceptance, independent review, activation or release; see qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001.md."
+    "commit": "f8f8d7dfc6cac59215323b14bb3df765ac3496c2",
+    "tree": "af5ec8b5930768fefb577f9b3f4ecf79cd4a85b2",
+    "interpretation": "Pinned source observation after adversarial recovery, release, daemon and evidence repairs, plus strict-lint and qualification measurement cleanup. At native source 348b24673, 287 selected default library tests passed; 8 socket tests were externally excluded after confirmed environment EPERM. Later changes are equivalent lifecycle/CLI lint cleanup, function-local test fixture expectations and releasing the qualification read guard before owner awaits. Final scoped default and qualification,offline-authority-tools all-target strict lint passed on this source tree. Seven Python suites: 84 passed. Unfiltered source/merge and target-host qualification and independent acceptance remain unestablished; activation and release remain false. See qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001.md."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "productCallers": [
@@ -552,7 +552,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "39a3f8d57fb6b45a5c27625036adceddbd4c34ce"
+      "object": "1c1331df14b2ae712a546ec285df20ddb1107d7f"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/constructor_recovery_tests.rs",

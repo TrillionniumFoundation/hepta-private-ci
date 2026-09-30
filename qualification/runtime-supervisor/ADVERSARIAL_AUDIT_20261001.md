@@ -1,4 +1,4 @@
-# runtime.supervisor adversarial audit — 2026-10-01
+# runtime.supervisor adversarial audit — 2026-09-30 (UTC)
 
 ## Candidate and scope
 
@@ -15,8 +15,8 @@ durable writes, retry after filesystem failure, blocking-pool exhaustion, a full
 256-Agent response and substitution of historical evidence for a current build.
 
 The repaired native source is pinned to
-`348b24673c3f2f7e5d3e8d3bd5229620e170b0f5`, tree
-`d1bb7f6eeff365eed351a931d088351fcf7b9dec`. Subsequent audit/map metadata
+`f8f8d7dfc6cac59215323b14bb3df765ac3496c2`, tree
+`af5ec8b5930768fefb577f9b3f4ecf79cd4a85b2`. Subsequent audit/map metadata
 commits preserve those observed source blobs.
 
 This is a repository audit and repair record. It does not provide independent
@@ -67,6 +67,7 @@ Fleet/CAS ordering; source-level throughput speculation is insufficient.
 | P1 | A well-formed historical target receipt passes without matching the current checkout, workflow run or built binary. | Compare receipt identities to requested Git/run/OS/lockfile/artifact values at the workflow boundary. |
 | P1 | Source materialization edits files before a later exact-marker failure; its followup does not match the generated indentation, and generated status overclaims unfinished capabilities. | Validate main and followup changes together before publication, support exact whitespace-aware blocks, preserve partial status and regenerate the status projection. |
 | P2 | Every 40 Hz no-Matrix tick publishes an already empty Matrix restart budget, creating avoidable filesystem writes and surfacing irrelevant write faults. | Skip empty-budget publication; restore the exact prior budget/backoff state if a nonempty cleanup write fails and retry without changing the main claim. |
+| P2 | HOL qualification holds a read projection guard while awaiting owner snapshots, introducing a read-to-owner lock dependency into the measured scenario; all-target strict lint also fails in valid fixture helpers and redundant CLI clones. | Copy the selected 64 IDs and release the read guard before owner awaits; document only function-local fixture panic expectations and remove equivalent redundant copies. |
 | P2 | Implementation-map callers point to obsolete functions, source objects omit active modules, and stale observations describe already repaired behavior. | Bind real product entry points and exact candidate blobs while retaining the historical provenance anchor and all unestablished production gates. |
 | P2 | Product qualification still requires CLI test names removed by the pinned-bundle interface; suite enumeration omits `hol-256`. | Use current test identities in every lane and recognize numeric suite names. |
 | P2 | Status validation accepts an overall implemented claim with unfinished capability rows or dormant source modules. | Reject contradictory claims and require the relevant implementation to be connected to the crate graph. |
@@ -107,14 +108,24 @@ production acceptance must bind the digest of each host artifact.
 Local verification completed:
 
 - Mandatory `just fmt`: passed; unrelated formatting was excluded from the audit commits.
-- `just fix -p codex-hepta-supervisor`: passed before the final lifecycle and
-  Matrix cleanup changes. It is not a strict `-D warnings` result.
+- `just fix -p codex-hepta-supervisor --locked`: passed at the final cleanup
+  checkpoint; the qualification/offline feature variant also passed. These
+  auto-fix commands are distinct from the strict results below.
+- Final strict Clippy: default and `qualification,offline-authority-tools`
+  configurations both passed with `--locked --all-targets --no-deps -- -D warnings`.
+  This includes compilation of the configured library, daemon, recovery CLIs and
+  integration-test targets. An existing dependency deprecation warning in
+  `hepta-ndu` remains outside the scoped lint result.
 - Default and `qualification,offline-authority-tools` all-target checks passed
   at earlier repair checkpoints. These checks do not qualify later changes.
-- Final default native library regression: **287/287 selected tests passed**
+- Last executed default native library regression at source
+  `348b24673c3f2f7e5d3e8d3bd5229620e170b0f5`: **287/287 selected tests passed**
   from a 295-test inventory. Eight Unix-socket tests were externally excluded
   by the nextest expression after this environment returned `EPERM` for socket
   creation. The tests themselves were not disabled or rewritten to skip.
+  Subsequent equivalent lifecycle/CLI lint cleanup, fixture expectations and
+  qualification read-guard cleanup were validated by both strict all-target
+  checks; they do not create new native execution evidence.
 - Seven Python suites (receipt, evidence, status, workflow, CI and transactional
   materializer): **84 tests passed**. `hepta_supervisor_status.py check` passed.
 - Isolated materialization from the immutable base and repeat execution:
@@ -148,9 +159,9 @@ were built and run through `just test`/nextest. The first executed suite exposed
 failures were repaired and the final selected suite passed. Failed or excluded
 attempts are not pass evidence.
 
-Final strict lint, all-target feature builds, the complete unfiltered Linux/macOS
-product suite and exact source/merge qualification must come from the published
-candidate's CI. Source-head execution does not substitute for the frozen
+The complete unfiltered Linux/macOS product suite and exact source/merge
+qualification still require the published candidate's CI. At the last remote
+observation, the PR jobs were queued and had no execution result. Source-head execution does not substitute for the frozen
 real-process target-host matrix or independent acceptance. A pending, skipped
 or failed CI step is not qualified execution.
 
