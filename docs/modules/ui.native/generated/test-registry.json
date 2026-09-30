@@ -10,8 +10,8 @@
       "codex-rs/hepta-private-state/src",
       "codex-rs/utils/private-state/src"
     ],
-    "fileCount": 73,
-    "manifestDigest": "51d34c2e9c0f7e009580ac1f01ffb2f4f72fc1a099fae0f758307469075d3b74"
+    "fileCount": 74,
+    "manifestDigest": "8b4f461351f2dceb6c5b6a816885fdd8cfc55acdb862f97e9303108d93d58319"
   },
   "files": [
     {
@@ -56,6 +56,11 @@
     },
     {
       "path": "apps/hepta-native/src/retirement_membership_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/retirement_rebuild_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },

@@ -22,6 +22,7 @@ old `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52` freeze and
 | reconcile retirement in bounded validated prefix batches | `dbde0b4fc00b1d9bdc434dcd78cee30d0823fafd` |
 | qualify combined storage using the product release profile | `d6502257d890b915d2287cfc188509d8f18bdd6b` |
 | bind WAL regression imports to the journal owner | `21cbe83cf85994bcbfd29666b5acd9d82cc15294` |
+| rebuild mixed retirement histories with bounded authenticated spools; bind real first-migration samples and qualification boundaries | `ed5fd2229502099addd6bedec2fae18783d5c162` |
 
 Later review commits update validators, source anchors, technical/development
 documentation and evidence navigation. Product edits require a new freeze;

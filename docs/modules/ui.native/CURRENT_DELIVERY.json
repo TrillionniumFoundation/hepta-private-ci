@@ -2,8 +2,8 @@
   "schema": "hepta.ui.native.delivery.v4",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
   "convergenceBranch": "work/ui-native-adversarial-audit-20261001",
-  "implementationSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
-  "implementationSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
+  "implementationSourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+  "implementationSourceTree": "4641d2abbf7db038404863b2f6a7975c28977fe1",
   "ordinarySourceHistory": {
     "baseline": "6f145464d9d58233c59aafe262a1250a5ea873a8",
     "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
@@ -11,7 +11,8 @@
     "lanesAndPaging": "172fb1edaa5471c7cb28e14582c2b2a2dc1ff6f3",
     "packageClosure": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
     "auditBaseline": "9be52d267d02a76f73e8a94fd086191c351d1c70",
-    "adversarialAudit": "21cbe83cf85994bcbfd29666b5acd9d82cc15294"
+    "adversarialAudit": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+    "adversarialAuditFollowup": "ed5fd2229502099addd6bedec2fae18783d5c162"
   },
   "implemented": {
     "exactActiveOperationIndex": true,
@@ -105,10 +106,10 @@
   "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261001.md",
   "localAuditVerification": {
     "scope": "shared Linux container diagnostics, not seven-subject or physical-platform qualification",
-    "implementationSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
-    "implementationSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
+    "implementationSourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+    "implementationSourceTree": "4641d2abbf7db038404863b2f6a7975c28977fe1",
     "applicationTests": {
-      "passed": 205,
+      "passed": 212,
       "failed": 0,
       "ignoredScaleSubjectsAndWorker": 3
     },
@@ -120,46 +121,223 @@
         "codex-hepta-contracts",
         "codex-hepta-private-state",
         "codex-utils-private-state"
-      ]
+      ],
+      "executedSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+      "executedSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
+      "rerunForCurrentImplementation": false,
+      "currentOwnerSourceObjectsUnchanged": true,
+      "sourceComparison": "ownerSourceComparison"
     },
     "strictClippy": {
       "applicationPassed": true,
+      "applicationSourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+      "applicationSourceTree": "4641d2abbf7db038404863b2f6a7975c28977fe1",
       "ownerPassed": true,
+      "ownerExecutedSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+      "ownerExecutedSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
+      "ownerRerunForCurrentImplementation": false,
+      "currentOwnerSourceObjectsUnchanged": true,
       "warningPolicy": "deny-warnings"
+    },
+    "ownerSourceComparison": {
+      "executedSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+      "currentSourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+      "allObjectsUnchanged": true,
+      "objects": {
+        ".cargo": {
+          "objectKind": "absent",
+          "executedSourceObjectSha": null,
+          "currentSourceObjectSha": null
+        },
+        "codex-rs": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "968eee918142dca931fedbc3482cde628067f9bb",
+          "currentSourceObjectSha": "968eee918142dca931fedbc3482cde628067f9bb"
+        },
+        "codex-rs/.cargo": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "b4b28cca20c34953dbecd5187dd7f3153a085ab7",
+          "currentSourceObjectSha": "b4b28cca20c34953dbecd5187dd7f3153a085ab7"
+        },
+        "codex-rs/Cargo.lock": {
+          "objectKind": "blob",
+          "executedSourceObjectSha": "96cd0783ba713f50c40968eee97fb8925dea70ad",
+          "currentSourceObjectSha": "96cd0783ba713f50c40968eee97fb8925dea70ad"
+        },
+        "codex-rs/Cargo.toml": {
+          "objectKind": "blob",
+          "executedSourceObjectSha": "6134c87fba905909425cec7e5aae6138e9a56538",
+          "currentSourceObjectSha": "6134c87fba905909425cec7e5aae6138e9a56538"
+        },
+        "codex-rs/hepta-contracts": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "f6598be8edbf0cf1e2485fd1e140c8d6bc1f117a",
+          "currentSourceObjectSha": "f6598be8edbf0cf1e2485fd1e140c8d6bc1f117a"
+        },
+        "codex-rs/hepta-control-plane": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "38956c12b68efcb0234fb318eb21a945d196294e",
+          "currentSourceObjectSha": "38956c12b68efcb0234fb318eb21a945d196294e"
+        },
+        "codex-rs/hepta-native-gateway": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "b453cb2e481951cd486c3f6cc92960d7104ce28e",
+          "currentSourceObjectSha": "b453cb2e481951cd486c3f6cc92960d7104ce28e"
+        },
+        "codex-rs/hepta-ndu": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "6dd23fe103026e424a6795f87a799b3dfb92f76b",
+          "currentSourceObjectSha": "6dd23fe103026e424a6795f87a799b3dfb92f76b"
+        },
+        "codex-rs/hepta-paths": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "b4e38001e7b68dd047c59d59b02b0b716ecda633",
+          "currentSourceObjectSha": "b4e38001e7b68dd047c59d59b02b0b716ecda633"
+        },
+        "codex-rs/hepta-plasticity": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "3fed6654770ebd7d81ee9605eab4854eb5354702",
+          "currentSourceObjectSha": "3fed6654770ebd7d81ee9605eab4854eb5354702"
+        },
+        "codex-rs/hepta-private-state": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "193d112b22257ac52abe0c81b94bc959d1b8a9c3",
+          "currentSourceObjectSha": "193d112b22257ac52abe0c81b94bc959d1b8a9c3"
+        },
+        "codex-rs/hepta-runtime": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "b8c2d3fd9ca13a1af82c8f316363c2e47b280711",
+          "currentSourceObjectSha": "b8c2d3fd9ca13a1af82c8f316363c2e47b280711"
+        },
+        "codex-rs/hepta-types": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "ee71d3c1aa9bceae6bab9f304fc75e115dc49297",
+          "currentSourceObjectSha": "ee71d3c1aa9bceae6bab9f304fc75e115dc49297"
+        },
+        "codex-rs/hepta-wire": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "d8f26171ef868d94485175b6761d185074a38e74",
+          "currentSourceObjectSha": "d8f26171ef868d94485175b6761d185074a38e74"
+        },
+        "codex-rs/keyring-store": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "4b8861f529417dc0771070129f3fe88909fac187",
+          "currentSourceObjectSha": "4b8861f529417dc0771070129f3fe88909fac187"
+        },
+        "codex-rs/rust-toolchain.toml": {
+          "objectKind": "blob",
+          "executedSourceObjectSha": "910c65114ec128a8317ee8257428451f3cd28230",
+          "currentSourceObjectSha": "910c65114ec128a8317ee8257428451f3cd28230"
+        },
+        "codex-rs/third_party/matrix-sdk-sqlite-0.18.0": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "30b3c99dd46f39070912154817ab294d8d467bd1",
+          "currentSourceObjectSha": "30b3c99dd46f39070912154817ab294d8d467bd1"
+        },
+        "codex-rs/utils/cargo-bin": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "2643c9a44de0a306af07cbed68f8845a87b1b2c8",
+          "currentSourceObjectSha": "2643c9a44de0a306af07cbed68f8845a87b1b2c8"
+        },
+        "codex-rs/utils/private-state": {
+          "objectKind": "tree",
+          "executedSourceObjectSha": "24cc5cbacca28c36ee70033686249806d5738f0c",
+          "currentSourceObjectSha": "24cc5cbacca28c36ee70033686249806d5738f0c"
+        }
+      },
+      "claim": "Owner tests and owner Clippy ran at the executed source; matching owner roots, transitive local dependencies, Cargo lock and configuration are source continuity observations, not a rerun."
     },
     "pythonTests": {
       "status": "passed",
-      "passed": 176,
+      "planned": 223,
+      "passed": 223,
       "failed": 0,
       "command": "python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v"
     },
-    "releaseStorageDiagnostics": {
-      "status": "pending-execution",
-      "acceptedQualification": false
+    "releaseMixedStorageDiagnostics": {
+      "status": "local-diagnostic-passed",
+      "acceptedQualification": false,
+      "implementationSourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+      "implementationSourceTree": "4641d2abbf7db038404863b2f6a7975c28977fe1",
+      "buildProfile": "release",
+      "freshProcessesPerPopulation": 20,
+      "measurementScope": {
+        "authoritySegments": "mixed-prefix-chronological-legacy-identity-batches",
+        "rebuild": "fresh-process-mixed-prefix-authority-chain-with-no-derived-assets",
+        "operatingSystemPageCache": "uncontrolled"
+      },
+      "authorityBatchSize": 1024,
+      "expectedRetirementSegments": 977,
+      "requiredBeforeDerivedIndexAssets": 0,
+      "hardBudgetCeilingsUnchanged": true,
+      "rawPercentilesRecomputed": true,
+      "measurements": {
+        "active": {
+          "activeRecords": 4096,
+          "transitions": 12288,
+          "freshProcessOpenP95Milliseconds": 25.115076,
+          "mutationP50Milliseconds": 0.022022,
+          "mutationP95Milliseconds": 0.044515000000000006,
+          "mutationP99Milliseconds": 0.296215,
+          "historyPageP95Milliseconds": 0.040018000000000005,
+          "historyPageMaxRetainedJsonBytes": 28417,
+          "peakRssMiB": 22,
+          "snapshotBytes": 2608315,
+          "walBytes": 0,
+          "totalStorageBytes": 5207798
+        },
+        "retired": {
+          "retiredIdentities": 1000000,
+          "retirementSegments": 977,
+          "freshProcessOpenP95Milliseconds": 0.399275,
+          "freshProcessIndexRebuildP95Milliseconds": 1461.650395,
+          "peakRssMiB": 31,
+          "totalStorageBytes": 144415688,
+          "deterministicRebuild": true,
+          "authorityFixtureBuildMilliseconds": 2192.080028
+        },
+        "combinedJournal": {
+          "activeRecords": 4096,
+          "retiredIdentities": 1000000,
+          "freshProcessOpenP95Milliseconds": 447.80991,
+          "historyPageP95Milliseconds": 0.059657,
+          "historyPageMaxRetainedJsonBytes": 28417,
+          "peakRssMiB": 31
+        }
+      },
+      "durabilitySyscallCaptureAvailable": false,
+      "authorityMinimumPrefixesPerSegment": 228,
+      "authorityMixedPrefixSegments": 977,
+      "expectedIndexedHeadSha256": "a437b567ef1c9757305487f41331d5beb33ad2c19155ff11d0e675ce3fd7e44a",
+      "rawEvidenceSha256": {
+        "active": "69bbb49eafb9d7dc80bcb191b2780a87c2fb9f2961b82da8c677e656dc0ba0e7",
+        "retired": "82f496354cb0faf05c09f7529c67f6ef5ed5d65543b06a0ea333165ac2bc2c4f"
+      },
+      "limitations": [
+        "shared container; operating-system page cache uncontrolled",
+        "metadata continuation was pending; not a clean seven-subject CI head",
+        "one million legacy identity-only tombstones; not one million full archived receipts",
+        "authority fixture construction is not measured RetirementStore append performance",
+        "strace PTRACE_TRACEME denied; durability and write amplification remain unqualified"
+      ]
     },
     "durabilitySyscallCaptureAvailable": false,
     "ciQualificationPassed": false,
     "physicalPlatformAcceptanceComplete": false,
-    "workspaceGraph": {
-      "localManifests": 195,
-      "errors": 0,
-      "testsPassed": 53,
-      "boundaryRulesWeakened": false
+    "releaseBinaries": {
+      "status": "local-diagnostic-passed",
+      "sourceSha": "ed5fd2229502099addd6bedec2fae18783d5c162",
+      "buildProfile": "release",
+      "binaryCount": 3,
+      "selfTestPassed": true,
+      "actualChildFaultQualificationE2ePassed": true,
+      "acceptedQualification": false
     },
-    "projectionTests": {
-      "passed": 7,
-      "failed": 0,
-      "reproducibilityVerified": true
-    },
-    "moduleRegistryTests": {
-      "passed": 4,
-      "failed": 0
-    },
-    "bazelLockChecks": {
-      "updatePassed": true,
-      "checkPassed": true,
-      "lockChanged": false,
-      "bazelVersion": "9.0.0"
+    "projectionVerification": {
+      "passed": true,
+      "testsPassed": 7,
+      "registeredTestFiles": 74,
+      "lintPassed": true
     }
   },
   "historicalLocalAuditVerification": [
@@ -198,6 +376,125 @@
       "durabilitySyscallCaptureAvailable": false,
       "ciQualificationPassed": false,
       "claim": "historical diagnostics retained with their recorded source identity; not evidence for the latest frozen implementation"
+    }
+  ],
+  "historicalLocalAuditDiagnostics": [
+    {
+      "scope": "shared Linux container diagnostics, not seven-subject or physical-platform qualification",
+      "implementationSourceSha": "21cbe83cf85994bcbfd29666b5acd9d82cc15294",
+      "implementationSourceTree": "c8af0ffedc680889f1b6ef0fbdda923e172ce435",
+      "applicationTests": {
+        "passed": 205,
+        "failed": 0,
+        "ignoredScaleSubjectsAndWorker": 3
+      },
+      "ownerTests": {
+        "passed": 210,
+        "failed": 0,
+        "qualifiedPackages": [
+          "codex-hepta-native-gateway",
+          "codex-hepta-contracts",
+          "codex-hepta-private-state",
+          "codex-utils-private-state"
+        ]
+      },
+      "strictClippy": {
+        "applicationPassed": true,
+        "ownerPassed": true,
+        "warningPolicy": "deny-warnings"
+      },
+      "pythonTests": {
+        "status": "passed",
+        "passed": 176,
+        "failed": 0,
+        "command": "python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v"
+      },
+      "releaseStorageDiagnostics": {
+        "status": "local-diagnostic-passed",
+        "acceptedQualification": false,
+        "buildProfile": "release",
+        "freshProcessesPerPopulation": 20,
+        "active": {
+          "records": 4096,
+          "transitions": 12288,
+          "openP95Milliseconds": 28.658269,
+          "mutationP50Milliseconds": 0.022253,
+          "mutationP95Milliseconds": 0.037445,
+          "mutationP99Milliseconds": 0.175958,
+          "historyPageP95Milliseconds": 0.047931,
+          "peakRssMiB": 21
+        },
+        "retired": {
+          "identities": 1000000,
+          "segments": 1024,
+          "indexedOpenP95Milliseconds": 0.448568,
+          "indexRebuildP95Milliseconds": 1922.28797,
+          "deterministicRebuild": true
+        },
+        "combined": {
+          "activeRecords": 4096,
+          "retiredIdentities": 1000000,
+          "openP95Milliseconds": 434.261593,
+          "historyPageP95Milliseconds": 0.08194,
+          "retainedPageJsonBytes": 28417,
+          "peakRssMiB": 112
+        },
+        "rawPercentilesRecomputed": true,
+        "limitations": [
+          "shared Linux container; OS page cache uncontrolled",
+          "metadata continuation was pending; no clean CI review head",
+          "PTRACE_TRACEME denied; no syscall write-amplification qualification",
+          "historical fixture clustered the full retired lifetime by prefix instead of chronological mixed-prefix 1024-identity batches",
+          "historical rebuild samples reused existing derived index assets; the 1922.28797 ms p95 is not first-migration evidence"
+        ],
+        "measurementScope": {
+          "authoritySegments": "historical-prefix-clustered-legacy-identity-segments",
+          "rebuild": "historical-fresh-process-rebuild-with-reused-derived-index-assets"
+        }
+      },
+      "durabilitySyscallCaptureAvailable": false,
+      "ciQualificationPassed": false,
+      "physicalPlatformAcceptanceComplete": false,
+      "workspaceGraph": {
+        "localManifests": 195,
+        "errors": 0,
+        "testsPassed": 53,
+        "boundaryRulesWeakened": false
+      },
+      "projectionTests": {
+        "passed": 7,
+        "failed": 0,
+        "reproducibilityVerified": true
+      },
+      "moduleRegistryTests": {
+        "passed": 4,
+        "failed": 0
+      },
+      "bazelLockChecks": {
+        "updatePassed": true,
+        "checkPassed": true,
+        "lockChanged": false,
+        "bazelVersion": "9.0.0"
+      },
+      "releaseBinaries": {
+        "built": 3,
+        "selfTestPassed": true,
+        "realChildFaultQualificationPassed": true,
+        "physicalGuiAcceptance": false
+      },
+      "unsignedLinuxPackage": {
+        "builtFromReleaseBinaries": true,
+        "reproducibleAcrossTwoOutputs": true,
+        "archiveSha256": "4c8cc41eb120d7b860ce926036c18412bda784f42f4e312ffdf73d64605444b9",
+        "packagedSelfTestPassed": true,
+        "packagedFaultQualificationPassed": true,
+        "supplyChainAccepted": false,
+        "signingAccepted": false
+      },
+      "releaseBinarySelfTestPassed": true,
+      "releaseBinaryFaultQualificationPassed": true,
+      "unsignedPackageQualificationPassed": false,
+      "claim": "Historical local diagnostics for the recorded source only; no pass applies to the current mixed-prefix first-migration workload."
     }
   ]
 }

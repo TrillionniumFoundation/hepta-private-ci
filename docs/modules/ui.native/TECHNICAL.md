@@ -4,8 +4,8 @@
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`
 **Convergence branch:** `work/ui-native-adversarial-audit-20261001`
-**Immutable implementation source:** `21cbe83cf85994bcbfd29666b5acd9d82cc15294`
-**Implementation tree:** `c8af0ffedc680889f1b6ef0fbdda923e172ce435`
+**Immutable implementation source:** `ed5fd2229502099addd6bedec2fae18783d5c162`
+**Implementation tree:** `4641d2abbf7db038404863b2f6a7975c28977fe1`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The product source is frozen at the
@@ -48,7 +48,7 @@ The convergence chain is a normal Git history:
 4. UI lane split and durable paging `172fb1edaa5471c7cb28e14582c2b2a2dc1ff6f3`;
 5. historical closed unsigned package inventory `bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52`;
 6. audit base `9be52d267d02a76f73e8a94fd086191c351d1c70`;
-7. adversarial audit source `21cbe83cf85994bcbfd29666b5acd9d82cc15294` (this immutable candidate).
+7. adversarial audit source `ed5fd2229502099addd6bedec2fae18783d5c162` (this immutable candidate).
 
 Patch capsules, apply-once workflows and CI-created product commits are not
 source delivery. The sole module workflow has `contents: read`, checks explicit
@@ -262,6 +262,27 @@ cold open and requires deterministic legacy-index rebuild. It also measures
 identities, followed by history pages spread across all 64 active-history pages.
 The same open, history and RSS ceilings apply to this combined population.
 
+Legacy rebuild validates every immutable segment and committed archive before
+promoting the indexed head. `retirement_rebuild.rs` writes identities to private
+rooted, no-follow CreateNew spools, validates the held handle against its write
+checksum and constructs each final prefix bucket once. Spool entry and byte ceilings apply before each append. Serialized final buckets
+are checked against their byte ceiling before publication. Only current-attempt owned spools are cleaned.
+The deterministic complete-authority-chain namespace prevents crash retries from
+creating additional spool sets. A collision preserves the existing file and
+fails closed; an operator must preserve and explicitly move crash remnants before
+retrying. Pre-publication failures leave the old head; failure after atomic head
+publication and during synchronization means the commit outcome is uncertain.
+
+`retirement_qualification_fixture.rs` is test support, not an executable test.
+It constructs 977 canonical mixed-prefix segments in chronological 1024-identity
+batches. The million subject is legacy identity-only tombstones, not a capacity
+measurement of one million full archived receipts. Each of 20 first-migration
+workers starts in a distinct private root with zero derived assets, hardlinks
+only immutable authority segments and copies the v2 head. Every worker verifies
+actual segment shape and its rebuilt head digest; old prefix-clustered or
+reused-asset measurements are rejected as qualification evidence.
+
+
 Declared budgets remain `provisional-unqualified` until the immutable workflow
 artifact passes every ceiling and is independently reviewed.
 
@@ -289,7 +310,7 @@ acceptance or release authorization.
 
 ## 13. Remaining gates
 
-The audit revision has passed 205 local application regressions, 210 related
+The audit revision has passed 212 local application regressions, 210 related
 owner regressions and strict application/owner Clippy. These Linux container
 checks do not establish the complete same-source CI or target-platform result.
 Equivalent verified-resource Open/Reveal adapters on macOS and Windows remain

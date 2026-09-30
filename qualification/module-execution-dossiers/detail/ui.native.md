@@ -46,7 +46,11 @@ disk index. Segments and archived records retain authority. Missing or corrupt
 acceleration rejects or rebuilds; it cannot authorize a retired operation.
 4096 active records, 8 MiB snapshots, 4 MiB WALs and bounded index buckets are
 source ceilings. One-million-retirement performance is a qualification target,
-not a demonstrated capacity claim. Hard budgets are in `STORAGE_BUDGETS.json`.
+not a demonstrated capacity claim. The scale fixture contains legacy identity-only
+tombstones in mixed 1024-identity chronological batches. First-migration workers
+start from zero derived assets; production migration uses bounded authenticated
+spools and constructs each final bucket once. Crash remnants fail closed and
+require explicit operator recovery. Hard budgets are in `STORAGE_BUDGETS.json`.
 
 ## Platform and presentation contract
 

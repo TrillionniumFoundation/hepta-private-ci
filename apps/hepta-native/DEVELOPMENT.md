@@ -1,8 +1,8 @@
 # hepta-native developer guide
 
 This guide applies to immutable implementation source
-`21cbe83cf85994bcbfd29666b5acd9d82cc15294`, tree
-`c8af0ffedc680889f1b6ef0fbdda923e172ce435`. The source is an implementation
+`ed5fd2229502099addd6bedec2fae18783d5c162`, tree
+`4641d2abbf7db038404863b2f6a7975c28977fe1`. The source is an implementation
 candidate; production, deployment and release flags remain false.
 
 ## Toolchain and source identity
@@ -220,3 +220,14 @@ Storage probes run in 20 fresh processes per population; OS page cache is
 uncontrolled. The page metric is exact serialized receipt bytes, not an
 allocation profiler. Local manual measurements cannot promote the workflow
 manifest. Explicit staged cleanup removes only digest-bound owned packages.
+
+
+The million legacy fixture uses mixed chronological batches and 20 distinct
+roots without derived index assets. Its support builder is
+`src/retirement_qualification_fixture.rs`; it measures identity-only tombstones,
+while archive-content integrity is exercised by the rebuild regressions.
+`src/retirement_rebuild.rs` uses deterministic private spools. A crash remnant
+blocks migration instead of allocating another spool set: preserve the old head
+and affected files, stop all writers, and explicitly move remnants for recovery.
+Do not delete unknown files automatically. Synchronization failure after head
+publication leaves a commit-uncertain result and requires inspection.
