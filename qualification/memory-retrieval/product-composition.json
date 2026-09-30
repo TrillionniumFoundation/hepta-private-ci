@@ -7,6 +7,14 @@
   "productionEnabled": false,
   "sourceIdentityPolicy": "runtime-exact-head-and-tree",
   "executionIdentitySchema": "hepta.memory-retrieval.execution-identity.v1",
+  "controlledApi": {
+    "documentation": "docs/modules/memory.retrieval/CONTROLLED_API.md",
+    "defaultFeatures": [],
+    "legacyFeature": "legacy-uncontrolled-retrieval",
+    "legacyFeatureProductionAllowed": false,
+    "workControlRequired": true,
+    "absoluteDeadlineForwardingRequired": true
+  },
   "identityFields": [
     "tenant",
     "principal",
