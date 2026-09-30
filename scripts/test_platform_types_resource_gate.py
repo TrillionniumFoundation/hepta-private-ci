@@ -4,6 +4,7 @@ import unittest
 
 from platform_types_resource_gate import (
     CASES,
+    COMPLEXITY_NOISE_FLOORS_NS,
     COMPLEXITY_THRESHOLDS,
     METHODOLOGY_PATHS,
     evaluate,
@@ -47,6 +48,7 @@ class ResourceGateTests(unittest.TestCase):
         self.assertEqual(report["allocationGate"], "passed")
         self.assertEqual(report["complexityGate"], "passed")
         self.assertEqual(report["complexityThresholds"], COMPLEXITY_THRESHOLDS)
+        self.assertEqual(report["complexityNoiseFloorsNs"], COMPLEXITY_NOISE_FLOORS_NS)
         self.assertEqual(report["latencyGate"], "not_requested")
         self.assertFalse(report["targetHostQualified"])
         self.assertFalse(report["productActivation"])
@@ -86,6 +88,17 @@ class ResourceGateTests(unittest.TestCase):
                 row["elapsedNs"] *= 8
         with self.assertRaisesRegex(ValueError, "complexity regression: registry-identity"):
             check(raw)
+
+    def test_constant_time_noise_floor_ignores_submicrosecond_ratio_jitter(self):
+        raw = fixture()
+        for row in raw["rows"]:
+            if row["case"] == "registry-identity-8":
+                row["elapsedNs"] = 64
+            elif row["case"] == "registry-identity-256":
+                row["elapsedNs"] = 640
+        report = check(raw)
+        self.assertEqual(report["complexityGate"], "passed")
+
 
     def test_latency_requires_context_methodology_and_explicit_threshold(self):
         baseline = check(fixture())
