@@ -53,7 +53,7 @@ def execute(arguments: Sequence[str]) -> int:
 def main() -> int:
     # Execute both suites even when one fails so the retained command log
     # contains the complete repository-controlled diagnosis for this exact SHA.
-    rust_status = execute(RUST_COMAND)
+    rust_status = execute(RUST_COMMAND)
     repository_status = execute(REPOSITORY_COMMAND)
     return 0 if rust_status == 0 and repository_status == 0 else 1
 
