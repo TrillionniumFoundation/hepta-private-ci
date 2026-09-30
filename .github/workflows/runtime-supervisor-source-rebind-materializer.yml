@@ -3,6 +3,7 @@ name: Runtime supervisor exact-source rebind materializer
 on:
   push:
     branches:
+      - codex/runtime-supervisor-full-qualification-20260930
       - codex/runtime-supervisor-six-phase-closure-20260930-r3
     paths:
       - .github/workflows/runtime-supervisor-source-rebind-materializer.yml
