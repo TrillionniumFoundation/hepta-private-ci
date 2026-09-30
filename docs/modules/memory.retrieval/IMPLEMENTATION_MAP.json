@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "77a929b9aa2c81c9d9b6e3a1ec8c66b824cc298c",
+    "tree": "d603382353bfebae8295c614fb51e7a8615831b1"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -252,25 +252,125 @@
       "state": "explicit_authenticated_retrieval_profile"
     }
   ],
-  "sourceIdentityPolicy": "coherent_workflow_run_attempt_plus_runtime_manifest_v2",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "dfbeab5fde0bff1aae724315dceafac25b54fe07",
-    "tree": "92631e0ac940cd206c151689f22ee78e27185fe9"
+    "commit": "77a929b9aa2c81c9d9b6e3a1ec8c66b824cc298c",
+    "tree": "d603382353bfebae8295c614fb51e7a8615831b1"
   },
   "observedSourcePaths": [
     ".github/workflows",
     "MODULE.bazel",
     "MODULE.bazel.lock",
     "codex-rs",
-    "docs/modules/memory.retrieval",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-memory-retrieval",
+    "docs/modules/memory.retrieval/ADR",
+    "docs/modules/memory.retrieval/API.md",
+    "docs/modules/memory.retrieval/A_E_CLOSURE.md",
+    "docs/modules/memory.retrieval/CALIBRATION_AND_ABLATIONS.md",
+    "docs/modules/memory.retrieval/CANARY_AND_ROLLBACK.md",
+    "docs/modules/memory.retrieval/CONTROLLED_API.md",
+    "docs/modules/memory.retrieval/E2E_MEASUREMENT.md",
+    "docs/modules/memory.retrieval/FULL_CLOSURE.md",
+    "docs/modules/memory.retrieval/OPERATIONS.md",
+    "docs/modules/memory.retrieval/OWNER_PROPOSITIONS.md",
+    "docs/modules/memory.retrieval/POLICY_REFERENCE.md",
+    "docs/modules/memory.retrieval/PROCESS_BOOTSTRAP.md",
+    "docs/modules/memory.retrieval/PRODUCT_ADMISSION.md",
+    "docs/modules/memory.retrieval/QUALIFICATION_IDENTITY.md",
+    "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
+    "docs/modules/memory.retrieval/ROLLOUT_POLICY.md",
+    "docs/modules/memory.retrieval/STATUS.md",
+    "docs/modules/memory.retrieval/TECHNICAL.md",
+    "docs/modules/memory.retrieval/TECHNICAL_BASELINE.md",
+    "docs/modules/memory.retrieval/THREAT_MODEL.md",
+    "docs/modules/memory.retrieval/VECTOR_OWNER.md",
+    "docs/modules/memory.retrieval/receipts",
     "justfile",
     "qualification/memory-retrieval",
     "scripts"
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "object": "60643fd78acc383703606d34d7f70be9f952a67d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
+      "object": "ce5a4f07763908a4f947b5ee90c63dbd053f07af"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs",
+      "object": "0f26c6af1771978681738a0ceb0ab0758f4c0a58"
+    },
+    {
       "path": "codex-rs/hepta-memory-retrieval",
       "object": "0853646e8310fd33c1bf0408f8a9fe7afaaa8a33"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/decision.rs",
+      "object": "7d701b3a4db8820a962cd9174ffd6ce9e41f12e1"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/decision_tests.rs",
+      "object": "913279edc53383c07fbb66ac283b127bc1b4a22d"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/engram.rs",
+      "object": "12da9d38b21e922bf3f8cb2b403247627d6ba3ee"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/engram_tests.rs",
+      "object": "b87318ada8fe56aa720661cd77b79399885417f2"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+      "object": "3ff702fa6c71505bda6cb4055220245e3f93f1d9"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
+      "object": "344e9707aaafd0fa2290a0de55b2e487291d2adb"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+      "object": "da63cc243a0a78df93a9502ed2cdf689215bacf1"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
+      "object": "f94d1ce6d22415f5033e661f9a7a858c1a0f2c47"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/product.rs",
+      "object": "fb8097f3463edc7a1926c5becac2f184dd31ded7"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/product_tests.rs",
+      "object": "7f45125ca055634087607747df72a7128e0b53ff"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/v2.rs",
+      "object": "40f8cbb4bd96c840b117f5dedace3ffc9fef3d69"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
+      "object": "b7106760e9a336177b4b05973ba9e52ada3d13f7"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/vector_owner.rs",
+      "object": "1daf74e21d34dfc91f52140b6fb545f50109a4f8"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/vector_owner_tests.rs",
+      "object": "740355a90857638609ef26bb413e96c89ea01cf9"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/tests/controlled_api.rs",
+      "object": "80c01252b87a73b64ae393b8d27bdb0edc87cc00"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/TECHNICAL.md",
+      "object": "14c128c2391ef4d11513c6eac65b81a061111632"
     }
   ],
   "observedMissingPaths": []
