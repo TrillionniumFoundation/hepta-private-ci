@@ -144,19 +144,26 @@ Signing private keys require a separate secret-management recovery process.
 
 ## 8. Telemetry contract for the embedding host
 
-The following are proposed metric/event names, not installed exporters:
-`artifact_publish_total{outcome}`, `artifact_recovery_required`,
-`artifact_checkpoint_read_errors_total`, `artifact_request_drift_total`,
-`artifact_writer_fence_busy_total`, `artifact_current_view_rejections_total`,
-`artifact_phase_duration_seconds{phase}`, and
-`artifact_ranker_abstentions_total{reason}`. Use bounded labels; do not label metrics
-with operation IDs, raw digests, payloads or caller-supplied strings.
+`ArtifactOwnerOperationalMetricsV1::prometheus_text` is the canonical bounded
+Prometheus export surface for the owner process. The authenticated daemon exposes
+that surface through its metrics action; repository-owned deployment examples live
+under `deploy/learning-artifacts/` with a Grafana dashboard and Prometheus alert
+rules. The repository qualification validates that these assets remain parseable
+and reference the required owner metrics. This is source/deployment composition,
+not proof that a production scraper, dashboard installation or paging route is live.
+
+The required operational series include oldest pending attempt age, drain age,
+recovery reconciliation failures, withdrawal blocks, identity conflicts,
+persistence-unknown outcomes, pinned bytes and pending physical-erasure bytes.
+Owner-supplied retention values remain absent rather than becoming false zeroes
+until a digest-bound observation is installed. Use bounded labels; do not label
+metrics with operation IDs, raw digests, payloads or caller-supplied strings.
 
 Structured events should bind schema version, process/release identity, scope,
 operation digest, phase, current-head digest, stable error code and outcome. Never
-log key bytes, artifact contents or authorization bearer credentials. Alert on a
-new recovery fence, signature failure, checkpoint corruption or sustained ranker
-abstention. Numeric SLOs and alert thresholds require target-host measurements.
+log key bytes, artifact contents or authorization bearer credentials. Numeric SLOs,
+alert thresholds and paging policy require target-host measurements and independent
+operator acceptance.
 
 ## 9. Capacity and compatibility
 
@@ -206,16 +213,18 @@ The baseline Lane E log reported 11 cross-family findings: operator/case invento
 a signed evaluator export and legacy Agentd ledger entry points. They are not
 fixed or waived by this change. The full daemon/transport/authz, parent-directory
 ordering, dirfd backend, power-loss harness, full owner decomposition, storage
-trait, model/concurrency/fuzz qualification, telemetry exporters, measured SLOs,
-complete traceability and stable-version acceptance remain open.
+trait, model/concurrency/fuzz qualification, live scraper/paging installation,
+measured SLOs, complete traceability and stable-version acceptance remain open.
 
 
 ## Candidate process qualification added in R5
 
 The dedicated candidate qualification must execute the complete crate inventory
-plus three non-skippable process gates: publication-boundary SIGKILL recovery,
-the real `hepta-learning-artifactd` bootstrap/kill/restart transport test, and
-the independent shadow-product process selection/revocation test. The workflow
+plus explicit non-skippable process and operations gates: service publication-boundary
+SIGKILL recovery, lower-level host effect/durable-boundary kill/reopen recovery,
+withdrawal-floor process crash recovery, the real `hepta-learning-artifactd`
+bootstrap/kill/restore/restart transport test, the independent shadow-product
+process selection/revocation test, and deployment dashboard/alert validation. The workflow
 runs exact-head and synthetic-merge lanes across Linux x86_64 stable, the
 declared Rust 1.95 MSRV, Linux ARM64 stable and macOS ARM64 stable.
 
