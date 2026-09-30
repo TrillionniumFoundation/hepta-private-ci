@@ -23,6 +23,10 @@ notes are retained and classified by
 [`HISTORICAL_DOCUMENTS.json`](HISTORICAL_DOCUMENTS.json); they do not override
 this guide or the current capability matrix.
 
+The current adversarial repair record is
+[`ADVERSARIAL_AUDIT_20261001.md`](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001.md).
+It records concrete failure traces, regression evidence and unresolved gates.
+
 ## 1. Mission and authority
 
 The module owns process and Agent lifecycle state while remaining unable to call
@@ -189,9 +193,15 @@ and target, control revision, lifecycle generation, expiry, digests and current
 Fleet policy. The daemon cannot issue its own grant.
 
 Ambiguous signed transitions enter `recovery_required`. Read-only status and the
-signed recovery ceremony remain available, but ordinary mutation of that Agent
-is denied except the bounded emergency-kill path. A decision may terminalize
+signed recovery ceremony remain available; Start, Restart and release changes
+are denied while Stop and Kill retain their containment role. A decision may terminalize
 only an observed committed or rolled-back state and cannot move release bytes.
+
+Production Start may restart the durable currently selected release. Selecting
+a different release requires the signed transition path, even after Stop or
+revocation. Signed transitions require a catalog-admitted source whose main and
+Matrix commands match the canonical release. A local fixture cannot gain
+production authority through a release identifier alone.
 
 ## 8. Production verifier and offline signer build boundary
 
@@ -239,6 +249,12 @@ Agents. Encoding happens outside the projection lock; a view older than two
 seconds, future-dated or invalidated fails closed. Mutations, release selection
 and production status always consult the live owner state.
 
+Requests are bounded to 64 KiB and replies to 1 MiB; the separate reply ceiling
+supports the complete roster. Diagnostic display text is bounded and strips
+control and bidirectional formatting characters; the underlying state digest
+still binds the original error. Fleet resolution runs inside the existing
+blocking owner task, avoiding a second blocking-pool dependency.
+
 The authoritative lifecycle tick remains 25 ms. Tick-only whole-fleet projection
 rebuilds are coalesced to a 100 ms interval, while a live owner request publishes
 immediately after it executes. This removes the unconditional 40-Hz full Fleet
@@ -262,6 +278,21 @@ classified according to whether the outcome is known absent, known present or
 ambiguous. Ambiguity quarantines rather than reporting success. Truncated or
 identity-conflicting process leases, restart records, control intents and release
 transactions fail closed.
+
+Constructor recovery isolates damaged evidence per Agent. It retains any exact
+main and Matrix process owners, fences serving, and retries containment until
+observed exit permits lease cleanup. Other Agents retain their owners. Damaged
+restart, release or signed evidence denies mutation and signed recovery while
+emergency Kill remains available. There is no in-place corrupt-codec repair API.
+Do not edit or delete journals to make readiness pass; restoration of independently
+validated durable evidence requires operational recovery, followed by a fresh
+Supervisor recovery. No ordinary API clears this denial.
+
+Healthy restart and release completion retains its continuation until the
+lineage, budget, release CAS and terminal signed receipt are durable. Recovery
+retries from the exact replacement generation, preserves historical predecessor
+identities even when executable admission is revoked, and rejects external CAS
+drift. Absence alone does not substitute for an exact process-exit witness.
 
 Recovery diagnostics classify process ambiguity, release-state ambiguity,
 intent mismatch, admission-frontier drift, authority-epoch change and durability

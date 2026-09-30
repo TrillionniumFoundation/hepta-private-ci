@@ -97,6 +97,12 @@ latency/watchdog SLOs. Target-host receipts are validated by
 `scripts/hepta_supervisor_external_receipt.py target` and remain distinct from
 repository CI.
 
+Production receipts may provide `target_binary_sha256`, a closed map from each
+required host name to that host's daemon digest. Linux and macOS native binaries
+have separate artifact identities. Each target receipt must match its mapped
+digest; the primary `binary_sha256` binds the first required host. Legacy
+receipts without the map retain the stricter common-digest rule.
+
 [`PRODUCTION_QUALIFICATION_PROFILE.json`](PRODUCTION_QUALIFICATION_PROFILE.json)
 requires final-merge target-host receipts for Linux and macOS, key-custody
 receipts, the atomic recovery observation, an independent operator recovery
@@ -108,3 +114,8 @@ Every fault result binds the final binary digest, source/base/merge identities,
 workflow identity, host/kernel/filesystem, feature set, profile and workload
 digests, fault cut, raw log digest, and durable snapshots before and after the
 cut. Missing, queued, skipped or stale evidence is not a passing result.
+
+Reviewer names, roles and receipt digests do not independently authenticate
+reviewer identity or prove that a reviewer did not author the change. Trusted
+external review and custody records must establish those facts before accepting
+the production ceremony.

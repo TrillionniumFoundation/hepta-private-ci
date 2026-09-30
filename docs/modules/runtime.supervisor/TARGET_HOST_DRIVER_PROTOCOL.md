@@ -22,6 +22,7 @@ DRIVER execute \
   [--final-merge-sha SHA] \
   --workflow-sha SHA \
   --workflow-run-id DECIMAL \
+  --workflow-run-attempt DECIMAL \
   --cargo-lock-sha256 SHA256
 ```
 
@@ -36,3 +37,11 @@ The receipt is closed-world. Every frozen scenario and SLO is mandatory. A
 driver may report a failure, but may not turn an unavailable facility into a
 passing skip. The workflow validates the receipt, checks a clean checkout and
 uploads all raw material even when validation fails.
+
+The workflow validates with `target --bind-current-run --binary ABSOLUTE_BINARY`.
+It compares source/base/tested/merge identities, workflow SHA, run and attempt,
+actual host OS/architecture, Cargo.lock digest and the daemon digest captured
+before fault injection. A previous run or an earlier attempt is not evidence
+for the current invocation. Replacing the daemon during the driver run fails
+validation. Operator drivers must emit `workflow_run_attempt` and support its
+argument; an older driver that omits this binding cannot pass the current lane.
