@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "5b629e4c362a599c2609f0e7a80e8e2c4d5088a7",
-    "tree": "f36b50df208685691d97bd16bdc74d626c6c63db"
+    "commit": "8ce4e61a77ad6e459056bdbd23078f350d06553f",
+    "tree": "f80bd1354790b999df33f2dc51d0bccb38540036"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -194,6 +194,16 @@
       ]
     },
     {
+      "operation": "append_vector_publication_checked_v1",
+      "nativeSymbol": "append_vector_publication_checked_v1",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/vector_publication_append.rs",
+      "state": "source_implemented_checked_compare_publish_reconciliation_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/tests/vector_publication_append_api.rs"
+      ]
+    },
+    {
       "operation": "verify_retrieval_delivery_v1",
       "nativeSymbol": "verify_retrieval_delivery_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
@@ -240,7 +250,7 @@
     "Qualify Agentd on a named protected host. Durable external frontier recovery, protected launcher isolation and real-process lifecycle kill-point tests remain external gates.",
     "Bind the checked lifecycle append to the selected durable backend and prove uncertain-commit reconciliation; repository source now enforces exact committed-record idempotency plus monotonic identity, frontier, fence, terminal and quarantine transitions.",
     "Prove a killable worker boundary with enforced CPU, RSS, allocation and wall-time limits; cooperative cancellation and bounded permits are not hard isolation.",
-    "Compose and qualify a real text encoder plus durable vector-index publisher before enabling Vector; compatibility remains the only activation mode.",
+    "Compose and qualify a real text encoder plus a selected durable vector-index port backend and deployed store; repository source now enforces checked CAS, exact replay, uncertain-commit reload and post-commit confirmation, but compatibility remains the only activation mode.",
     "Execute the recovery matrix and nine-stage E2E matrix with real processes, at least 100 samples per case, and actual allocation, SQLite, CPU/RSS, contention and worker-exit counters against approved SLOs.",
     "Retain exact-head raw evidence in independently governed immutable storage; Git and 90-day artifacts are not external WORM evidence."
   ],
@@ -321,8 +331,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "5b629e4c362a599c2609f0e7a80e8e2c4d5088a7",
-    "tree": "f36b50df208685691d97bd16bdc74d626c6c63db"
+    "commit": "8ce4e61a77ad6e459056bdbd23078f350d06553f",
+    "tree": "f80bd1354790b999df33f2dc51d0bccb38540036"
   },
   "observedSourcePaths": [
     ".github/workflows",
@@ -421,7 +431,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-retrieval",
-      "object": "3753ba286b70e2180277d146c0b4b6bd6a38badf"
+      "object": "29f4b2bfae360a16541e472e8294655e7bdbe408"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/Cargo.toml",
@@ -461,7 +471,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/lib.rs",
-      "object": "9b0c69e1eb378254179f3900f9d497ccd8a5126c"
+      "object": "c39e10ae6bfddd53696b3e141d1a76881a428534"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/lifecycle.rs",
@@ -561,7 +571,7 @@
     },
     {
       "path": "qualification/memory-retrieval/product-composition.json",
-      "object": "db0327077c0d66cf70d964e7ef97fd25fa1c9578"
+      "object": "61c16f910cbd11ae81a183aef494d3472431e89e"
     },
     {
       "path": "qualification/memory-retrieval/production-qualification.json",
