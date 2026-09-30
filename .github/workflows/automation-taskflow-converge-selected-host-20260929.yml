@@ -1,8 +1,7 @@
-name: Automation TaskFlow schema-22 self-hosted convergence
+name: Automation TaskFlow schema-22 source materialization
 
-# This source-only convergence consumes no deployment secrets. Any online
-# self-hosted runner may execute it; exact-SHA checkout and remote-CAS push keep
-# the candidate immutable and prevent a stale job from overwriting the branch.
+# One-time source materialization only. This workflow is deleted by the resulting
+# ordinary commits and is never accepted as exact-head or release qualification.
 on:
   push:
     branches:
@@ -15,15 +14,15 @@ permissions:
   contents: write
 
 concurrency:
-  group: automation-taskflow-schema22-self-hosted-finalize-20260929
+  group: automation-taskflow-schema22-source-materialization-20260929
   cancel-in-progress: true
 
 jobs:
-  converge:
-    runs-on: self-hosted
+  materialize:
+    runs-on: ubuntu-24.04
     timeout-minutes: 150
     steps:
-      - name: Check out exact isolated candidate
+      - name: Check out exact isolated source seed
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
@@ -44,6 +43,6 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
-      - name: Execute exact convergence, qualification and guarded push
+      - name: Materialize reviewed ordinary commits and remove bootstrap machinery
         shell: bash
         run: bash scripts/automation_taskflow_selected_host_finalize_20260929.sh
