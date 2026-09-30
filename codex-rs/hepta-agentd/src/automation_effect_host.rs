@@ -37,6 +37,7 @@ use serde::Deserialize;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+use crate::automation_effect_file::read_protected_file;
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
@@ -227,8 +228,11 @@ impl AgentdAutomationEffectHost {
             Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
             Err(error) => return Err(error.into()),
         }
-        if read_protected_file(&profile_pin, 64, "automation provider profile pin")?
-            != profile_digest.as_str().as_bytes()
+        if read_protected_file(
+            &profile_pin,
+            /*max_bytes*/ 64,
+            "automation provider profile pin",
+        )? != profile_digest.as_str().as_bytes()
         {
             return Err(AgentdError::GenerationFenced(
                 "automation effect provider profile differs from its durable pin".to_string(),
@@ -343,7 +347,10 @@ impl AgentdAutomationEffectHost {
             .ok_or_else(|| {
                 AgentdError::Invalid("effect TaskFlow run does not exist".to_string())
             })?;
-        let fence = self.current_fence(&run, now_ms)?;
+        // Lookup and settlement consume persisted provider evidence, not a
+        // new dispatch permission. The durable owner still checks this exact
+        // tuple; an expired lease must not strand an indeterminate attempt.
+        let fence = self.stored_fence(&run)?;
         if let Some(local) = store
             .settle_authorized_taskflow_effect_observation(run_id, step_id, attempt, &fence)
             .await
@@ -490,17 +497,24 @@ impl AgentdAutomationEffectHost {
         run: &codex_hepta_automation::TaskFlowRun,
         now_ms: u64,
     ) -> Result<TaskFlowFence, AgentdError> {
-        if run.owner_agent_id != self.agent_id {
-            return Err(AgentdError::GenerationFenced(
-                "TaskFlow run is owned by a different Agent".to_string(),
-            ));
-        }
         if run
             .lease_expires_at_ms
             .is_none_or(|expires_at| expires_at <= now_ms)
         {
             return Err(AgentdError::Protocol(
                 "TaskFlow owner lease is not current".to_string(),
+            ));
+        }
+        self.stored_fence(run)
+    }
+
+    fn stored_fence(
+        &self,
+        run: &codex_hepta_automation::TaskFlowRun,
+    ) -> Result<TaskFlowFence, AgentdError> {
+        if run.owner_agent_id != self.agent_id {
+            return Err(AgentdError::GenerationFenced(
+                "TaskFlow run is owned by a different Agent".to_string(),
             ));
         }
         TaskFlowFence::new(
@@ -538,39 +552,6 @@ fn read_revocations_file(path: &Path) -> Result<FinalUseRevocations, AgentdError
         "automation effect revocations file",
     )?;
     Ok(serde_json::from_slice(&bytes)?)
-}
-
-fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
-    if !path.is_absolute() {
-        return Err(AgentdError::Invalid(format!("{label} must be absolute")));
-    }
-    let canonical = path.canonicalize()?;
-    if canonical != path {
-        return Err(AgentdError::Invalid(format!(
-            "{label} must be canonical and symlink-free"
-        )));
-    }
-    let metadata = fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return Err(AgentdError::Invalid(format!(
-            "{label} must be a regular non-symlink file"
-        )));
-    }
-    if metadata.len() == 0 || metadata.len() > max_bytes {
-        return Err(AgentdError::Invalid(format!(
-            "{label} is empty or too large"
-        )));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
-            return Err(AgentdError::Invalid(format!(
-                "{label} must not be group/world accessible"
-            )));
-        }
-    }
-    Ok(fs::read(path)?)
 }
 
 fn validate_host_identifier(label: &str, value: &str) -> Result<(), AgentdError> {
@@ -829,8 +810,8 @@ mod tests {
             schema_version: 1,
             signer_id: "automation-security-owner".to_string(),
             authority_epoch: 9,
-            grant_id: "agentd-product-effect-grant".to_string(),
-            nonce: digest_bytes_for_test(&Sha256Digest::for_bytes(b"agentd-product-effect-nonce")),
+            grant_id: format!("agentd-product-effect-grant:{}", intent.run_id),
+            nonce: digest_bytes_for_test(&intent.digest().expect("fixture intent digest")),
             binding,
             not_before_unix_ms: now_ms.saturating_sub(1_000),
             expires_at_unix_ms: now_ms + 30_000,
@@ -1094,6 +1075,71 @@ mod tests {
         server.verify().await;
 
         drop(host);
+        // A lost dispatch response must remain recoverable after both lease
+        // and grant expiry, using lookup only and the original persisted key.
+        server.reset().await;
+        let mut late_intent = intent.clone();
+        late_intent.run_id.push_str("-expired-recovery");
+        late_intent.operation_id.push_str("-expired-recovery");
+        prepare_effect(&fixture, now_ms, &late_intent).await;
+        Mock::given(method("POST"))
+            .and(path("/dispatch"))
+            .respond_with(ResponseTemplate::new(500))
+            .expect(1)
+            .mount(&server)
+            .await;
+        let late_host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+            .expect("effect host for lost acknowledgement");
+        let late_grant = signed_final_use(&late_intent, now_ms, &final_use_signer);
+        let uncertain = late_host
+            .execute(
+                &fixture.store,
+                &late_intent,
+                WIRE,
+                &late_grant,
+                "lost-ack-dispatch",
+                now_ms + 5,
+            )
+            .await
+            .expect("indeterminate dispatch");
+        assert_eq!(
+            uncertain.observation,
+            Some(TaskFlowStepObservation::Indeterminate)
+        );
+        let late_pending = fixture
+            .store
+            .authorized_taskflow_effect_attempt(
+                &late_intent.run_id,
+                &late_intent.step_id,
+                /*attempt*/ 1,
+            )
+            .await
+            .expect("pending read")
+            .expect("pending effect");
+        let late_key = late_pending.provider_effect_key.expect("persisted key");
+        Mock::given(method("GET"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "effect_key": late_key.as_str(),
+                "payload_sha256": late_intent.payload_digest.as_str(),
+                "provider_operation_id_sha256": provider_operation.as_str(),
+                "status": "completed"
+            })))
+            .expect(1)
+            .mount(&server)
+            .await;
+        drop(late_host);
+        let recovered_host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+            .expect("restart effect host");
+        assert!(matches!(recovered_host.reconcile(
+            &fixture.store, &late_intent.run_id, &late_intent.step_id,
+            /*attempt*/ 1, now_ms + 120_000,
+        ).await.expect("recover after lease expiry"),
+            AgentdAutomationEffectReconcileOutcome::Observed(receipt)
+                if receipt.final_outcome == Some(codex_hepta_automation::TaskFlowReconcileOutcome::Succeeded)
+        ));
+        assert_eq!(server.received_requests().await.expect("requests").len(), 2);
+        server.verify().await;
+        drop(recovered_host);
         AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
             .expect("same profile reopens");
         let rebound = HttpProviderEffectConfig {

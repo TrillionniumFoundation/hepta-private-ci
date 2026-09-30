@@ -425,14 +425,20 @@ Provision these fields through the existing host/provider/authority owners:
 
 The host file must contain 1..=65536 bytes; the revocations file must contain
 1..=4194304 bytes. Both paths must be absolute and canonical and identify regular,
-non-symlink files. On Unix neither file may be group/world accessible. Header
+non-symlink files. Metadata and bytes are read from the same opened handle;
+on Unix its device/inode must still match the path and neither file may be
+group/world accessible. Reads enforce the byte cap even if a file grows after
+its metadata is checked. Header
 values can contain credentials, so retain the private configuration through its
 owner and publish only safe identities/digests in qualification receipts.
 
 Consumed-nonce and revocation state is durably opened under
 `AgentLayout::automation_root()/final-use-authority`; the host creates that
-directory with Unix mode 0700. Each execute/reconcile call refreshes the external
-revocation head and rejects a rolled-back epoch/revision. Preserve this directory
+directory with Unix mode 0700. Each execute call refreshes the external
+revocation head and rejects a rolled-back epoch/revision. Reconciliation uses
+the exact stored owner/epoch/generation/token fence for the prior attempt,
+including after its lease expires; it only looks up provider evidence and does
+not authorize a new dispatch. Preserve this directory
 when restarting or restoring the owner; deleting it is not a supported retry.
 The same directory retains the immutable `provider-profile.sha256` pin. The host
 binds its Agent, destination, independently attested provider contract, final-use
