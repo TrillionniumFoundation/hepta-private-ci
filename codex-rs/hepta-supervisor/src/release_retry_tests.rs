@@ -954,13 +954,39 @@ fn failed_restart_dispatch_retries_cancellation_without_redispatch() -> Result<(
         control.set_exit(&fleet.first);
         assert_eq!(supervisor.tick(now), TickReport::default());
         control.reject_spawn_program(source_program);
+        let record = supervisor.record(&fleet.first)?;
+        let dispatch_claim = crate::restart_budget::pending_restart(
+            record.layout.run_root(),
+            config().restart_max_attempts,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        .expect("charged dispatch");
+        let operation = (
+            dispatch_claim.window_started_unix_ms,
+            dispatch_claim.attempt,
+        );
         let now = now + config().restart_backoff_base;
-        let failed = with_qualification_fault(point, ErrorKind::Other, || supervisor.tick(now));
+        // Before dispatch, the companion poll writes its empty companion
+        // domain to the shared journal. Pass that known write so a budget
+        // injection lands on failed-dispatch cancellation, not that poll.
+        let successful_occurrences = u32::from(point.starts_with("restart_journal."));
+        let failed =
+            with_qualification_fault_after(point, ErrorKind::Other, successful_occurrences, || {
+                supervisor.tick(now)
+            });
         assert_eq!(failed.faults.len(), 1);
         assert_eq!(control.spawn_count(&fleet.first), 1);
         let snapshot = supervisor.snapshot(&fleet.first).expect("failed dispatch");
         assert!(!snapshot.active);
         assert!(snapshot.restart_pending, "{point}: {:?}", failed.faults);
+        let retained_operation = supervisor.with_slot(&fleet.first, |_supervisor, slot| {
+            Ok(slot
+                .failed_restart_spawn
+                .as_ref()
+                .map(|claim| (claim.window_started_unix_ms, claim.attempt)))
+        })?;
+        assert_eq!(retained_operation, Some(operation), "{point}");
+        assert_eq!(snapshot.restart_attempt, operation.1);
         // An overriding idle Stop keeps containment available, but a failed
         // cancellation receipt must continue to exclude another Start/Restart
         // even after Stop cleared the ordinary restart_pending flag.
