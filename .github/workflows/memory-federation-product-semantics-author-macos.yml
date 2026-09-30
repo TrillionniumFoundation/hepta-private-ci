@@ -1,0 +1,69 @@
+name: memory federation product semantics author macos
+
+on:
+  push:
+    branches:
+      - work/memory-federation-product-semantics-20260930
+    paths:
+      - .github/workflows/memory-federation-product-semantics-author-macos.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: memory-federation-product-semantics-author-macos
+  cancel-in-progress: false
+
+jobs:
+  author:
+    if: ${{ contains(github.event.head_commit.message, '[author-memory-federation-semantics-macos]') }}
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - name: Check out authoring branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/memory-federation-product-semantics-20260930
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply product semantic fixes
+        run: |
+          python3 scripts/apply_memory_federation_product_semantics.py
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('codex-rs/hepta-memory/src/cognitive_retrieval_tests.rs')
+          text = path.read_text(encoding='utf-8')
+          marker = 'use crate::MAX_RETRIEVAL_CHANNEL_CANDIDATES;\n'
+          addition = marker + 'use crate::MAX_RETRIEVAL_RESULTS;\n'
+          if 'use crate::MAX_RETRIEVAL_RESULTS;\n' not in text:
+              if text.count(marker) != 1:
+                  raise SystemExit('retrieval test import marker changed')
+              path.write_text(text.replace(marker, addition, 1), encoding='utf-8')
+          PY
+
+      - name: Format and test changed crates
+        working-directory: codex-rs
+        env:
+          CARGO_INCREMENTAL: "0"
+        run: |
+          cargo fmt --all
+          cargo test -p codex-hepta-memory --lib
+          cargo test -p codex-hepta-memory-extension --lib
+          cargo clippy -p codex-hepta-memory --all-targets -- -D warnings
+          cargo clippy -p codex-hepta-memory-extension --all-targets -- -D warnings
+
+      - name: Commit verified source
+        run: |
+          set -euo pipefail
+          rm scripts/apply_memory_federation_product_semantics.py
+          rm .github/workflows/memory-federation-product-semantics-author.yml
+          rm .github/workflows/memory-federation-product-semantics-author-macos.yml
+          git diff --check
+          git fetch --no-tags origin refs/heads/work/memory-federation-product-semantics-20260930
+          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          git config user.name "Hepta Memory Federation Author"
+          git config user.email "hepta-memory-federation-author@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(memory.federation): close host-local product semantics"
+          git push origin HEAD:work/memory-federation-product-semantics-20260930
