@@ -13,6 +13,7 @@ use codex_hepta_paths::HeptaAgentLayout;
 use matrix_sdk::Client;
 use matrix_sdk::Error as MatrixSdkTransportError;
 use matrix_sdk::HttpError;
+use matrix_sdk::config::RequestConfig;
 use matrix_sdk::config::SyncSettings;
 use matrix_sdk::config::SyncToken;
 use matrix_sdk::ruma::OwnedRoomId;
@@ -43,6 +44,8 @@ const MATRIX_ROOM_ENCRYPTED_EVENT_TYPE: &str = "m.room.encrypted";
 // individual timeouts before matrixd can bind its control socket.
 const MATRIX_STARTUP_REQUEST_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
 const MATRIX_SESSION_MAX_BYTES: u64 = 16 * 1024;
+const MATRIX_MIN_SUCCESSFUL_SYNC_INTERVAL: std::time::Duration =
+    std::time::Duration::from_millis(100);
 
 pub struct MatrixSdkClient {
     client: Client,
@@ -248,9 +251,27 @@ impl MatrixSdkClient {
             if cancel.is_cancelled() {
                 return Ok(MatrixSyncExit::Cancelled);
             }
-            self.sync_durable_once(store, ingress).await?;
+            let started = tokio::time::Instant::now();
+            tokio::select! {
+                biased;
+                _ = cancel.cancelled() => {
+                    // The SDK may have advanced its private cursor before
+                    // the owner commit completed. Never reuse a cancelled client.
+                    self.sync_fenced.store(true, Ordering::Release);
+                    ingress.fence();
+                    return Ok(MatrixSyncExit::Cancelled);
+                }
+                result = self.sync_durable_once(store, ingress) => result?,
+            }
             if cancel.is_cancelled() {
                 return Ok(MatrixSyncExit::Cancelled);
+            }
+            // A homeserver may return an immediate empty response despite the
+            // requested long-poll timeout. Bound local successful-sync churn.
+            tokio::select! {
+                biased;
+                _ = cancel.cancelled() => return Ok(MatrixSyncExit::Cancelled),
+                _ = tokio::time::sleep_until(started + MATRIX_MIN_SUCCESSFUL_SYNC_INTERVAL) => {}
             }
         }
     }
@@ -368,10 +389,13 @@ impl MatrixOutboundTransport for MatrixSdkClient {
             let response = room
                 .send_raw(MATRIX_ROOM_MESSAGE_EVENT_TYPE, content)
                 .with_transaction_id(&txn_id)
+                // The durable owner counts attempts. SDK-hidden HTTP retries
+                // would make a final rejection ambiguous within one attempt.
+                .with_request_config(RequestConfig::new().disable_retry())
                 .await
                 .map_err(|error| classify_sdk_send_error(&error))?;
             let event_id = MatrixEventId::parse(response.response.event_id.as_str())
-                .map_err(|_| MatrixTransportError::Permanent)?;
+                .map_err(|_| MatrixTransportError::Retryable)?;
             #[cfg(feature = "qualification-failpoints")]
             if crate::qualification::consume_post_send_pre_mark_ack_drop(
                 self.paths.root(),
@@ -428,7 +452,9 @@ fn classify_http_error(error: &HttpError) -> MatrixTransportError {
         HttpError::Api(_) => error
             .as_client_api_error()
             .map(|error| classify_http_status(error.status_code.as_u16()))
-            .unwrap_or(MatrixTransportError::Permanent),
+            // An unparsable ACK can follow an accepted send. It supplies no
+            // proof of server rejection and must retain the stable transaction.
+            .unwrap_or(MatrixTransportError::Retryable),
         HttpError::Cached(error) => classify_http_error(error),
         HttpError::IntoHttp(_) | HttpError::RefreshToken(_) => MatrixTransportError::Permanent,
         #[cfg(target_os = "android")]
@@ -649,6 +675,29 @@ mod tests {
         assert_eq!(classify_http_status(429), MatrixTransportError::Retryable);
         assert_eq!(classify_http_status(500), MatrixTransportError::Retryable);
         assert_eq!(classify_http_status(503), MatrixTransportError::Retryable);
+    }
+
+    #[test]
+    fn malformed_http_acknowledgement_cannot_prove_a_permanent_send_failure() {
+        use matrix_sdk::ruma::api::error::FromHttpResponseError;
+
+        let malformed = serde_json::from_str::<Value>(r#"{"event_id":}"#)
+            .expect_err("a truncated send acknowledgement must fail decoding");
+        let error = HttpError::Api(Box::new(FromHttpResponseError::Deserialization(
+            malformed.into(),
+        )));
+        let direct = classify_http_error(&error);
+        let cached = HttpError::Cached(std::sync::Arc::new(error));
+        assert_eq!(
+            [
+                direct,
+                classify_sdk_send_error(&MatrixSdkTransportError::Http(cached))
+            ],
+            [
+                MatrixTransportError::Retryable,
+                MatrixTransportError::Retryable
+            ]
+        );
     }
 
     #[test]

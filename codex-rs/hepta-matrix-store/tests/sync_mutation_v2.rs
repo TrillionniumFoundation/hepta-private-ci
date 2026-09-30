@@ -12,6 +12,8 @@ use codex_hepta_matrix_protocol::MatrixSyncResultV2;
 use codex_hepta_matrix_protocol::room_project_idempotency_key;
 use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_matrix_store::ChangeKind;
+use codex_hepta_matrix_store::InboxAdmissionDraft;
+use codex_hepta_matrix_store::InboxDispatchState;
 use codex_hepta_matrix_store::InboxDraft;
 use codex_hepta_matrix_store::InboxQueuedDraft;
 use codex_hepta_matrix_store::InboxState;
@@ -19,6 +21,7 @@ use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::MatrixEventId;
+use codex_hepta_matrix_store::MatrixRedactionQuarantine;
 use codex_hepta_matrix_store::MatrixRoomId;
 use codex_hepta_matrix_store::MatrixUserId;
 use codex_hepta_matrix_store::OutboxDisposition;
@@ -1371,7 +1374,7 @@ async fn failed_mutation_rolls_back_prior_mutations_and_cursor() -> TestResult {
 }
 
 #[tokio::test]
-async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {
+async fn active_redaction_commits_and_quarantines_without_settling_the_dispatch() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent()?;
     let room_id = room("!active-dispatch:example.test")?;
@@ -1404,7 +1407,7 @@ async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {
             vec![timeline],
         ))
         .await?;
-    store
+    let begun = store
         .begin_inbox_dispatch(&target, /*begun_at_ms*/ 12)
         .await?;
     let redaction_source = event("$active-redaction")?;
@@ -1416,20 +1419,26 @@ async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {
         },
         /*at_ms*/ 13,
     )?;
+    let decision = commit(
+        Some("s1"),
+        "s2",
+        /*observed_at_ms*/ 14,
+        vec![redaction],
+    );
+    let result = store.apply_sync_decision_v2(&decision).await?;
+    assert_eq!(
+        dispositions(result.clone())?,
+        vec![MatrixSyncMutationDispositionV2::Applied]
+    );
+    assert_eq!(store.apply_sync_decision_v2(&decision).await?, result);
+    assert!(store.inbox(&target).await?.is_none());
+    assert!(store.pending_dispatches(/*limit*/ 10).await?.is_empty());
+    assert_eq!(store.inbox_dispatch(&target).await?, Some(begun.clone()));
     assert_eq!(
         store
-            .apply_sync_decision_v2(&commit(
-                Some("s1"),
-                "s2",
-                /*observed_at_ms*/ 14,
-                vec![redaction],
-            ))
+            .begin_inbox_dispatch(&target, /*begun_at_ms*/ 15)
             .await,
-        Err(MatrixDurableError::Conflict)
-    );
-    assert_eq!(
-        store.inbox(&target).await?.ok_or("inbox")?.state,
-        InboxState::Pending
+        Err(MatrixDurableError::AccessDenied)
     );
     assert_eq!(
         store
@@ -1437,16 +1446,298 @@ async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {
             .await?
             .ok_or("checkpoint")?
             .next_batch,
-        "s1"
+        "s2"
     );
-    store
-        .ingest_inbox(&inbox_draft(
-            redaction_source,
-            room_id,
-            b"failed decision left no ledger",
-            /*at_ms*/ 15,
-        )?)
+    let expected_quarantine = MatrixRedactionQuarantine {
+        room_id: room_id.clone(),
+        binding_revision: 1,
+        generation: 1,
+        source_redaction_event_id: redaction_source,
+        target_event_id: target.clone(),
+        quarantined_at_ms: 14,
+    };
+    assert_eq!(
+        store.redaction_quarantines(/*limit*/ 10).await?,
+        vec![expected_quarantine.clone()]
+    );
+    assert!(
+        store
+            .is_scope_quarantined(&room_id, /*binding_revision*/ 1, /*generation*/ 1)
+            .await?
+    );
+    assert!(
+        !store
+            .is_scope_quarantined(&room_id, /*binding_revision*/ 2, /*generation*/ 2)
+            .await?
+    );
+    store.close().await;
+    let reopened =
+        MatrixDurableStore::open(&layout(&temp, &agent_id)?, MatrixDurableConfig::default())
+            .await?;
+    assert_eq!(
+        reopened.redaction_quarantines(/*limit*/ 10).await?,
+        vec![expected_quarantine]
+    );
+    assert_eq!(reopened.inbox_dispatch(&target).await?, Some(begun));
+    assert!(reopened.pending_inbox(/*limit*/ 10).await?.is_empty());
+    assert!(reopened.read_control_events(/*after_cursor*/ 0, /*limit*/ 10).await?.batch.events.iter().any(|event| matches!(&event.kind, codex_hepta_matrix_protocol::MatrixdEventKind::ResyncRequired { reason_code } if reason_code == "dispatched_redaction_quarantine")));
+    Ok(())
+}
+
+#[tokio::test]
+async fn queued_and_completed_redaction_stops_scope_sends_while_other_rooms_progress() -> TestResult
+{
+    for state in [
+        InboxDispatchState::Queued,
+        InboxDispatchState::Admitted,
+        InboxDispatchState::Completed,
+    ] {
+        let temp = TempDir::new()?;
+        let agent_id = agent()?;
+        let quarantined_room = room("!quarantined:example.test")?;
+        let healthy_room = room("!healthy:example.test")?;
+        let store = store_and_room(&temp, &quarantined_room).await?;
+        store
+            .bind_room(&RoomBindingDraft {
+                room_id: healthy_room.clone(),
+                agent_user_id: user(AGENT_USER_ID)?,
+                expected_revision: None,
+                generation: 1,
+                changed_at_ms: 2,
+            })
+            .await?;
+        store
+            .bind_room_thread(&RoomThreadBindingDraft {
+                room_id: quarantined_room.clone(),
+                binding_revision: 1,
+                generation: 1,
+                project_id: room_project_idempotency_key(&agent_id, &quarantined_room),
+                thread_id: Some("thread-quarantined".to_string()),
+                changed_at_ms: 3,
+            })
+            .await?;
+        let target = event("$quarantine-target")?;
+        let known = event("$known-v1-in-quarantine")?;
+        for source in [&target, &known] {
+            store
+                .ingest_inbox(&inbox_draft(
+                    source.clone(),
+                    quarantined_room.clone(),
+                    b"original",
+                    /*at_ms*/ 10,
+                )?)
+                .await?;
+        }
+        let begun = store
+            .begin_inbox_dispatch(&target, /*begun_at_ms*/ 12)
+            .await?;
+        let queued = store
+            .record_inbox_queued(&InboxQueuedDraft {
+                event_id: target.clone(),
+                client_user_message_id: begun.client_user_message_id,
+                project_id: begun.project_id,
+                thread_id: "thread-quarantined".to_string(),
+                queued_submission_id: "queue-retained".to_string(),
+                queued_at_ms: 13,
+            })
+            .await?;
+        let admission = InboxAdmissionDraft {
+            event_id: target.clone(),
+            client_user_message_id: queued.client_user_message_id.clone(),
+            project_id: queued.project_id.clone(),
+            thread_id: "thread-quarantined".to_string(),
+            queued_submission_id: queued.queued_submission_id.clone(),
+            turn_id: "turn-completed-before-redaction".to_string(),
+            admitted_at_ms: 13,
+        };
+        let retained_dispatch = match state {
+            InboxDispatchState::Admitted => store.record_inbox_admitted(&admission).await?,
+            InboxDispatchState::Completed => {
+                store.record_inbox_admitted(&admission).await?;
+                store
+                    .complete_inbox_dispatch(&admission, /*completed_at_ms*/ 14)
+                    .await?
+            }
+            _ => queued,
+        };
+        let mut drafts = Vec::new();
+        for (name, destination) in [
+            ("quarantine-in-flight", &quarantined_room),
+            ("quarantine-pending", &quarantined_room),
+            ("healthy-pending", &healthy_room),
+        ] {
+            let draft = OutboxDraft {
+                logical_outbox_id: name.to_string(),
+                revision: 1,
+                txn_id: transaction_id(name, /*revision*/ 1)?,
+                room_id: destination.clone(),
+                kind: OutboxKind::Final,
+                payload: name.as_bytes().to_vec(),
+                binding_revision: 1,
+                generation: 1,
+                created_at_ms: 14,
+            };
+            store.enqueue_outbox(&draft).await?;
+            drafts.push(draft);
+        }
+        let in_flight = store
+            .claim_outbox(/*now_ms*/ 15, /*lease_ms*/ 100, /*limit*/ 1)
+            .await?
+            .pop()
+            .ok_or("in-flight")?;
+        store
+            .apply_sync_decision_v2(&commit(
+                /*expected*/ None,
+                "quarantined",
+                /*observed_at_ms*/ 21,
+                vec![mutation(
+                    event("$redact-queued")?,
+                    quarantined_room.clone(),
+                    MatrixSyncMutationBodyV2::Redaction {
+                        target_event_id: target.clone(),
+                    },
+                    /*at_ms*/ 20,
+                )?],
+            ))
+            .await?;
+        assert_eq!(
+            store.inbox_dispatch(&target).await?,
+            Some(retained_dispatch.clone())
+        );
+        assert_eq!(
+            store.begin_inbox_dispatch(&known, /*begun_at_ms*/ 22).await,
+            Err(MatrixDurableError::AccessDenied)
+        );
+        match state {
+            InboxDispatchState::Admitted => assert_eq!(
+                store
+                    .complete_inbox_dispatch(&admission, /*completed_at_ms*/ 22)
+                    .await,
+                Err(MatrixDurableError::AccessDenied)
+            ),
+            InboxDispatchState::Completed => assert_eq!(
+                store
+                    .complete_inbox_dispatch(&admission, /*completed_at_ms*/ 22)
+                    .await?,
+                retained_dispatch
+            ),
+            _ => {}
+        }
+        assert_eq!(
+            store
+                .outbox_for_txn(&drafts[1].txn_id)
+                .await?
+                .ok_or("pending")?
+                .state,
+            codex_hepta_matrix_store::OutboxState::Pending
+        );
+        let healthy_claim = store
+            .claim_outbox(/*now_ms*/ 22, /*lease_ms*/ 100, /*limit*/ 10)
+            .await?;
+        assert_eq!(
+            healthy_claim
+                .iter()
+                .map(|record| &record.room_id)
+                .collect::<Vec<_>>(),
+            vec![&healthy_room]
+        );
+        let late = OutboxDraft {
+            logical_outbox_id: "late-quarantine-output".to_string(),
+            txn_id: transaction_id("late-quarantine-output", /*revision*/ 1)?,
+            ..drafts[1].clone()
+        };
+        assert_eq!(
+            store.enqueue_outbox(&late).await,
+            Err(MatrixDurableError::AccessDenied)
+        );
+        let sent = store
+            .mark_outbox_sent(
+                &in_flight.stable_txn_id,
+                in_flight.attempts,
+                &event("$observed-prior-attempt")?,
+                /*now_ms*/ 23,
+            )
+            .await?;
+        assert_eq!(sent.state, codex_hepta_matrix_store::OutboxState::Sent);
+        let known_mutation = mutation(
+            known,
+            quarantined_room.clone(),
+            MatrixSyncMutationBodyV2::Timeline {
+                event_type: "m.room.message".to_string(),
+                payload: b"original".to_vec(),
+            },
+            /*at_ms*/ 10,
+        )?;
+        assert_eq!(
+            dispositions(
+                store
+                    .apply_sync_decision_v2(&commit(
+                        Some("quarantined"),
+                        "suppressed",
+                        /*observed_at_ms*/ 31,
+                        vec![
+                            known_mutation,
+                            mutation(
+                                event("$new-suppressed")?,
+                                quarantined_room.clone(),
+                                MatrixSyncMutationBodyV2::Timeline {
+                                    event_type: "m.room.message".to_string(),
+                                    payload: b"new sensitive payload".to_vec()
+                                },
+                                /*at_ms*/ 30
+                            )?,
+                            mutation(
+                                event("$new-healthy")?,
+                                healthy_room.clone(),
+                                MatrixSyncMutationBodyV2::Timeline {
+                                    event_type: "m.room.message".to_string(),
+                                    payload: b"healthy input".to_vec()
+                                },
+                                /*at_ms*/ 30
+                            )?,
+                        ]
+                    ))
+                    .await?
+            )?,
+            vec![
+                MatrixSyncMutationDispositionV2::Tombstoned,
+                MatrixSyncMutationDispositionV2::Tombstoned,
+                MatrixSyncMutationDispositionV2::Applied
+            ]
+        );
+        assert!(store.inbox(&event("$new-suppressed")?).await?.is_none());
+        assert_eq!(
+            store
+                .pending_inbox(/*limit*/ 10)
+                .await?
+                .iter()
+                .map(|record| &record.room_id)
+                .collect::<Vec<_>>(),
+            vec![&healthy_room]
+        );
+        store.close().await;
+        let pool = open_hostile_fixture_pool(
+            &layout(&temp, &agent_id)?
+                .matrix_root()
+                .join("matrix_1.sqlite3"),
+        )
         .await?;
+        assert_eq!(
+            sqlx::query_scalar::<_, i64>(
+                "SELECT COUNT(*) FROM inbox_events WHERE event_id = '$new-suppressed'"
+            )
+            .fetch_one(&pool)
+            .await?,
+            0
+        );
+        assert!(
+            sqlx::query("DELETE FROM matrix_redaction_quarantines")
+                .execute(&pool)
+                .await
+                .is_err()
+        );
+        pool.close().await;
+    }
     Ok(())
 }
 
