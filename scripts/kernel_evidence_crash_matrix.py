@@ -15,10 +15,9 @@ import shlex
 import subprocess
 import tempfile
 import time
-from typing import Iterable, Sequence
+from typing import Sequence
 
 OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
-SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
 @dataclass(frozen=True)
@@ -124,6 +123,12 @@ SCENARIOS: dict[str, tuple[TestCommand, ...]] = {
             (
                 "frontier_backend_file::tests::locked_backend_rejects_"
                 "rehashed_non_automatic_history_on_reopen"
+            )
+        ),
+        evidence_lib(
+            (
+                "frontier_backend_file::segmented::tests::"
+                "rehashed_archive_to_active_repair_transition_fails_reopen"
             )
         ),
     ),
