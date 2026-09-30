@@ -32,13 +32,16 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 use crate::engram::EngramRecallReceiptV1;
+use crate::semantics::ContradictionEvidenceV2;
+use crate::semantics::contradiction_population_count;
+use crate::semantics::policy_admitted_union;
 
 pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 512;
 pub const MAX_GENERATION_BOUND_RESULTS: usize = 16;
 const CUE_DOMAIN: &[u8] = b"hepta.memory-cue.v1";
-const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v1";
-const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v1";
-const RECALL_PACKET_DOMAIN: &[u8] = b"hepta.recall-packet.v1";
+const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v2";
+const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v2";
+const RECALL_PACKET_DOMAIN: &[u8] = b"hepta.recall-packet.v2";
 const RETRIEVAL_CHANNEL_COUNT: u32 = 8;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -177,7 +180,8 @@ pub struct RetrievalChannelCandidateV1 {
     pub normalized_score: FixedQ32,
     pub ood: ProbabilityQ32,
     pub support_digest: Digest32,
-    pub contradiction_group_digest: Option<Digest32>,
+    /// Legacy field name; the value now binds proposition, polarity and generation.
+    pub contradiction_group_digest: Option<ContradictionEvidenceV2>,
     pub generation_vector_digest: Digest32,
 }
 
@@ -198,8 +202,8 @@ impl RetrievalChannelCandidateV1 {
             return Err(RecallErrorV1::ScoreOutOfRange("candidate_score"));
         }
         ensure_digest("candidate_support", self.support_digest)?;
-        if let Some(group) = self.contradiction_group_digest {
-            ensure_digest("contradiction_group", group)?;
+        if let Some(claim) = self.contradiction_group_digest {
+            claim.validate(expected_generation_vector_digest)?;
         }
         ensure_digest("candidate_generation_vector", self.generation_vector_digest)?;
         if self.generation_vector_digest != expected_generation_vector_digest {
@@ -218,7 +222,7 @@ pub struct CandidateUnionEntryV1 {
     pub weighted_score: FixedQ32,
     pub maximum_ood: ProbabilityQ32,
     pub support_digests: Vec<Digest32>,
-    pub contradiction_group_digests: Vec<Digest32>,
+    pub contradiction_group_digests: Vec<ContradictionEvidenceV2>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -283,15 +287,13 @@ impl CandidateUnionV1 {
             {
                 return Err(RecallErrorV1::NonCanonicalCollection("union_support"));
             }
-            if !is_strictly_sorted_unique(&entry.contradiction_group_digests)
-                || entry
-                    .contradiction_group_digests
-                    .iter()
-                    .any(|digest| digest.is_zero())
-            {
+            if !is_strictly_sorted_unique(&entry.contradiction_group_digests) {
                 return Err(RecallErrorV1::NonCanonicalCollection(
                     "union_contradiction_groups",
                 ));
+            }
+            for claim in &entry.contradiction_group_digests {
+                claim.validate(self.generation_vector_digest)?;
             }
             observed_channels.extend(entry.channels.iter().copied());
             if let Some(left) = previous {
@@ -340,8 +342,8 @@ impl CandidateUnionV1 {
                 push_digest(&mut bytes, *digest);
             }
             push_len(&mut bytes, entry.contradiction_group_digests.len());
-            for digest in &entry.contradiction_group_digests {
-                push_digest(&mut bytes, *digest);
+            for claim in &entry.contradiction_group_digests {
+                push_digest(&mut bytes, claim.digest());
             }
         }
         Digest32::of_bytes(&bytes)
@@ -372,7 +374,7 @@ pub struct RecallSelectionV1 {
     pub maximum_ood: ProbabilityQ32,
     pub channels: Vec<RetrievalChannelV1>,
     pub support_digests: Vec<Digest32>,
-    pub contradiction_group_digests: Vec<Digest32>,
+    pub contradiction_group_digests: Vec<ContradictionEvidenceV2>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -472,12 +474,11 @@ impl RecallPacketV1 {
                     .iter()
                     .any(|digest| digest.is_zero())
                 || !is_strictly_sorted_unique(&selection.contradiction_group_digests)
-                || selection
-                    .contradiction_group_digests
-                    .iter()
-                    .any(|digest| digest.is_zero())
             {
                 return Err(RecallErrorV1::NonCanonicalCollection("recall_selection"));
+            }
+            for claim in &selection.contradiction_group_digests {
+                claim.validate(self.generation_vector_digest)?;
             }
             if !identities.insert((selection.record_id.clone(), selection.record_revision)) {
                 return Err(RecallErrorV1::DuplicateRecallSelection(
@@ -576,8 +577,8 @@ impl RecallPacketV1 {
                 push_digest(&mut bytes, *digest);
             }
             push_len(&mut bytes, selection.contradiction_group_digests.len());
-            for digest in &selection.contradiction_group_digests {
-                push_digest(&mut bytes, *digest);
+            for claim in &selection.contradiction_group_digests {
+                push_digest(&mut bytes, claim.digest());
             }
         }
         Digest32::of_bytes(&bytes)
@@ -791,11 +792,16 @@ pub fn build_candidate_union(
         if policy_row.weight == FixedQ32::ZERO {
             continue;
         }
-        distinct_channels.insert(candidate.channel);
         let weighted = candidate
             .normalized_score
             .checked_mul(policy_row.weight)
             .map_err(|_| RecallErrorV1::Arithmetic)?;
+        // A zero contribution cannot provide support, channel coverage, OOD or
+        // contradiction evidence, including when Q32 multiplication rounds down.
+        if weighted == FixedQ32::ZERO {
+            continue;
+        }
+        distinct_channels.insert(candidate.channel);
         let builder = union.entry(identity).or_insert_with(|| UnionBuilder {
             record: candidate.record.clone(),
             channels: BTreeSet::new(),
@@ -820,8 +826,8 @@ pub fn build_candidate_union(
             builder.maximum_ood = candidate.ood;
         }
         builder.support_digests.insert(candidate.support_digest);
-        if let Some(group) = candidate.contradiction_group_digest {
-            builder.contradiction_group_digests.insert(group);
+        if let Some(claim) = candidate.contradiction_group_digest {
+            builder.contradiction_group_digests.insert(claim);
         }
     }
 
@@ -857,10 +863,11 @@ pub fn recall(
     candidates: Vec<RetrievalChannelCandidateV1>,
 ) -> Result<RecallPacketV1, RecallErrorV1> {
     let union = build_candidate_union(cue, policy, candidates)?;
+    let admitted = policy_admitted_union(&union, policy)?;
     let minimum_channels = usize::try_from(policy.minimum_distinct_channels).unwrap_or(usize::MAX);
-    let observed_channels = usize::try_from(union.distinct_channels).unwrap_or(0);
-    let contradiction_count = contradiction_population_count(&union.entries);
-    let maximum_ood = union
+    let observed_channels = usize::try_from(admitted.distinct_channels).unwrap_or(0);
+    let contradiction_count = contradiction_population_count(&admitted.entries);
+    let maximum_ood = admitted
         .entries
         .iter()
         .map(|entry| entry.maximum_ood)
@@ -868,18 +875,14 @@ pub fn recall(
         .unwrap_or(ProbabilityQ32::ZERO);
     let reason = if union.entries.is_empty() {
         Some(RecallAbstentionReasonV1::NoCandidate)
+    } else if admitted.entries.is_empty() {
+        Some(RecallAbstentionReasonV1::ScoreBelowFloor)
     } else if observed_channels < minimum_channels {
         Some(RecallAbstentionReasonV1::InsufficientChannelCoverage)
     } else if policy.abstain_on_contradiction && contradiction_count > 0 {
         Some(RecallAbstentionReasonV1::ContradictoryEvidence)
     } else if maximum_ood > policy.maximum_ood {
         Some(RecallAbstentionReasonV1::OutOfDistribution)
-    } else if !union
-        .entries
-        .iter()
-        .any(|entry| entry.weighted_score >= policy.minimum_total_score)
-    {
-        Some(RecallAbstentionReasonV1::ScoreBelowFloor)
     } else {
         None
     };
@@ -888,10 +891,9 @@ pub fn recall(
     let (disposition, selections, omitted_count) = match reason {
         Some(reason) => (RecallDispositionV1::Abstained(reason), Vec::new(), 0),
         None => {
-            let selections = union
+            let selections = admitted
                 .entries
                 .iter()
-                .filter(|entry| entry.weighted_score >= policy.minimum_total_score)
                 .take(maximum_results)
                 .map(|entry| RecallSelectionV1 {
                     record_id: entry.record.record_id.clone(),
@@ -920,7 +922,7 @@ pub fn recall(
         disposition,
         selections,
         omitted_count,
-        distinct_channels: union.distinct_channels,
+        distinct_channels: admitted.distinct_channels,
         engram: None,
         packet_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
@@ -936,7 +938,7 @@ struct UnionBuilder {
     weighted_score: FixedQ32,
     maximum_ood: ProbabilityQ32,
     support_digests: BTreeSet<Digest32>,
-    contradiction_group_digests: BTreeSet<Digest32>,
+    contradiction_group_digests: BTreeSet<ContradictionEvidenceV2>,
 }
 
 impl UnionBuilder {
@@ -952,18 +954,9 @@ impl UnionBuilder {
     }
 }
 
-fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
-    let mut populations = BTreeMap::<Digest32, usize>::new();
-    for entry in entries {
-        for group in &entry.contradiction_group_digests {
-            *populations.entry(*group).or_insert(0) += 1;
-        }
-    }
-    populations.values().filter(|count| **count > 1).count()
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RecallErrorV1 {
+    Interrupted(crate::RecallInterruptionV1),
     Contract(LaneCContractError),
     CanonicalContract(HnmfContractError),
     CanonicalAdapter(&'static str),

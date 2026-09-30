@@ -4,8 +4,10 @@ use codex_hepta_agent_components::types::Digest32;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::CanonicalIntelligenceProviderProfileV1;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
+use codex_hepta_agentd::LeasedMemoryRetrievalProviderV1;
 use codex_hepta_agentd::compose_durable_abstain_intelligence_profile_v1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
+use codex_hepta_agentd::load_retrieval_learning_bootstrap_v1;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::ffi::OsString;
 
@@ -24,6 +26,10 @@ fn main() -> anyhow::Result<()> {
         let mut canonical_intelligence_provider_profile = None;
         let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
         let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
+        let mut retrieval_bootstrap_descriptor: Option<PathBuf> = None;
+        let mut retrieval_bootstrap_descriptor_digest: Option<Digest32> = None;
+        let mut retrieval_learning_descriptor: Option<PathBuf> = None;
+        let mut retrieval_learning_descriptor_digest: Option<Digest32> = None;
         let mut objective_profile = None;
         let mut authbus_checkpoint = None;
         let mut evidence_trust = None;
@@ -65,6 +71,40 @@ fn main() -> anyhow::Result<()> {
                     Some(value.parse::<Digest32>().map_err(|error| {
                         anyhow::anyhow!("invalid plasticity descriptor digest: {error}")
                     })?);
+            } else if flag == "--retrieval-bootstrap-descriptor" {
+                anyhow::ensure!(
+                    retrieval_bootstrap_descriptor.is_none(),
+                    "duplicate --retrieval-bootstrap-descriptor"
+                );
+                retrieval_bootstrap_descriptor = Some(path.into());
+            } else if flag == "--retrieval-bootstrap-descriptor-digest" {
+                anyhow::ensure!(
+                    retrieval_bootstrap_descriptor_digest.is_none(),
+                    "duplicate --retrieval-bootstrap-descriptor-digest"
+                );
+                let value = path
+                    .into_string()
+                    .map_err(|_| anyhow::anyhow!("retrieval descriptor digest must be UTF-8"))?;
+                retrieval_bootstrap_descriptor_digest =
+                    Some(value.parse::<Digest32>().map_err(|error| {
+                        anyhow::anyhow!("invalid retrieval descriptor digest: {error}")
+                    })?);
+            } else if flag == "--retrieval-learning-descriptor" {
+                anyhow::ensure!(
+                    retrieval_learning_descriptor.is_none(),
+                    "duplicate --retrieval-learning-descriptor"
+                );
+                retrieval_learning_descriptor = Some(path.into());
+            } else if flag == "--retrieval-learning-descriptor-digest" {
+                anyhow::ensure!(
+                    retrieval_learning_descriptor_digest.is_none(),
+                    "duplicate --retrieval-learning-descriptor-digest"
+                );
+                retrieval_learning_descriptor_digest = Some(
+                    path.into_string()
+                        .map_err(|_| anyhow::anyhow!("retrieval learning digest must be UTF-8"))?
+                        .parse::<Digest32>()?,
+                );
             } else if flag == "--intelligence-authority-file" {
                 anyhow::ensure!(
                     intelligence_authority_file.is_none(),
@@ -219,6 +259,39 @@ fn main() -> anyhow::Result<()> {
             ),
         }
 
+        match (
+            retrieval_bootstrap_descriptor,
+            retrieval_bootstrap_descriptor_digest,
+        ) {
+            (Some(path), Some(expected_digest)) => {
+                let provider = LeasedMemoryRetrievalProviderV1::load_process_bootstrap(
+                    &path,
+                    expected_digest,
+                    config.identity(),
+                )
+                .map_err(anyhow::Error::msg)?;
+                config = config.with_cognitive_retrieval_context(provider)?;
+            }
+            (None, None) => {}
+            _ => anyhow::bail!(
+                "--retrieval-bootstrap-descriptor and its digest must be supplied together"
+            ),
+        }
+
+        match (
+            retrieval_learning_descriptor,
+            retrieval_learning_descriptor_digest,
+        ) {
+            (Some(path), Some(pin)) => {
+                let sink = load_retrieval_learning_bootstrap_v1(&path, pin, config.identity())
+                    .map_err(anyhow::Error::msg)?;
+                config = config.with_cognitive_retrieval_learning(sink)?;
+            }
+            (None, None) => {}
+            _ => anyhow::bail!(
+                "--retrieval-learning-descriptor and its digest must be supplied together"
+            ),
+        }
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())
     })

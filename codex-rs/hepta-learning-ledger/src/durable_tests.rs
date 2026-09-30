@@ -716,3 +716,36 @@ fn current_head_matches_history_after_retry_recovery_and_poison() {
         Err(DurableLedgerError::Poisoned)
     ));
 }
+
+#[test]
+fn preparation_reopen_and_torn_append_never_produce_exposure() {
+    let LedgerEvent::RetrievalAssignment(assignment) = retrieval_assignment() else {
+        panic!("retrieval fixture kind");
+    };
+    let event = LedgerEvent::RetrievalPrepared(
+        crate::RetrievalPreparationFactV1::from_wire_assignment(assignment),
+    );
+    let fixture = Fixture::new();
+    let snapshot = fixture.write_events(vec![event]);
+    let bytes = must(fs::read(fixture.path()));
+    let reopened = must(fixture.recover(anchored(&snapshot)));
+    let restored = must(reopened.snapshot());
+    assert_eq!(restored, snapshot);
+    let LedgerEvent::RetrievalPrepared(prepared) = &restored.records()[0].event else {
+        panic!("recovery reclassified a preparation");
+    };
+    assert!(!prepared.assignment.context_exposed);
+    assert!(prepared.assignment.delivered_candidate_indices.is_empty());
+    assert!(prepared.assignment.published_context_digest.is_none());
+    assert_eq!(prepared.prepared_candidate_indices.len(), 1);
+    assert!(prepared.prepared_context_digest.is_some());
+    drop(reopened);
+    for missing in 1..=32 {
+        must(fs::write(fixture.path(), &bytes[..bytes.len() - missing]));
+        assert!(
+            fixture.recover(anchored(&snapshot)).is_err(),
+            "acknowledged truncated preparation recovered with {missing} bytes missing"
+        );
+    }
+    must(fs::write(fixture.path(), bytes));
+}

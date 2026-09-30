@@ -131,20 +131,22 @@ fn cognitive_retrieval_process_profile_is_explicit_and_fail_closed() {
         parse_cognitive_retrieval_mode(None).expect("default profile"),
         CognitiveRetrievalMode::Compatibility
     );
-    assert_eq!(
-        parse_cognitive_retrieval_mode(Some(OsString::from("compatibility")))
-            .expect("compatibility profile"),
-        CognitiveRetrievalMode::Compatibility
-    );
-    assert_eq!(
-        parse_cognitive_retrieval_mode(Some(OsString::from("hnmf-required")))
-            .expect("HNMF profile"),
-        CognitiveRetrievalMode::HnmfRequired
-    );
+    for (value, expected) in [
+        ("compatibility", CognitiveRetrievalMode::Compatibility),
+        ("hnmf-shadow", CognitiveRetrievalMode::HnmfShadow),
+        ("hnmf-canary", CognitiveRetrievalMode::HnmfCanary),
+        ("hnmf-required", CognitiveRetrievalMode::HnmfRequired),
+    ] {
+        assert_eq!(
+            parse_cognitive_retrieval_mode(Some(OsString::from(value)))
+                .expect("explicit supported profile"),
+            expected
+        );
+    }
     assert!(matches!(
         parse_cognitive_retrieval_mode(Some(OsString::from("auto"))),
         Err(AgentdError::Invalid(message))
-            if message.contains("compatibility or hnmf-required")
+            if message.contains("compatibility, hnmf-shadow, hnmf-canary or hnmf-required")
     ));
 }
 

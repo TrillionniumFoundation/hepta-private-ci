@@ -4,6 +4,11 @@
 
 use super::*;
 
+#[path = "cognitive_retrieval_proposition.rs"]
+mod proposition;
+#[path = "cognitive_retrieval_proposition_read.rs"]
+mod proposition_read;
+
 /// Whether the executed channel queries and generator exhausted their input.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 pub enum RetrievalLimitObservation {
@@ -54,14 +59,16 @@ pub struct RetrievalObservation {
     candidates: Vec<ObservedRetrievalCandidate>,
     channels: Vec<RetrievalChannelObservation>,
     observation_sha256: Sha256Digest,
+    proposition_claims: Vec<proposition::OwnerProposition>,
+    observed_at: i64,
 }
 
 impl RetrievalObservation {
     pub fn batch(&self) -> &RetrievalBatch {
         &self.batch
     }
-    /// Every eligible, revalidated output of the bounded generator, ordered by
-    /// memory identity, including those omitted from the legacy top-four batch.
+    /// Every eligible, revalidated output of the bounded generator, including
+    /// those omitted from the legacy top-four batch.
     pub fn candidates(&self) -> &[ObservedRetrievalCandidate] {
         &self.candidates
     }
@@ -75,17 +82,40 @@ impl RetrievalObservation {
     pub fn observation_sha256(&self) -> &Sha256Digest {
         &self.observation_sha256
     }
+
+    /// Digest-only audit surface for the complete owner-observed assertion set.
+    pub fn proposition_evidence_digests(&self) -> Vec<codex_hepta_types::Digest32> {
+        self.proposition_claims
+            .iter()
+            .map(proposition::OwnerProposition::evidence_digest)
+            .collect()
+    }
+
+    pub(crate) fn admitted_proposition_conflicts(
+        &self,
+        admitted: &BTreeSet<(codex_hepta_types::StableId, codex_hepta_types::Revision)>,
+    ) -> Result<BTreeSet<codex_hepta_types::Digest32>, CognitiveStoreError> {
+        proposition::admitted_conflicts(&self.proposition_claims, admitted, self.observed_at)
+            .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))
+    }
 }
 
 pub(super) struct GeneratedRetrieval {
     pub(super) ranked: Vec<(MemoryKey, AggregatedRank)>,
-    channels: Vec<RetrievalChannelObservation>,
+    pub(super) channels: Vec<RetrievalChannelObservation>,
+}
+
+impl GeneratedRetrieval {
+    pub(super) fn exhausted(&self) -> bool {
+        self.channels
+            .iter()
+            .all(|channel| channel.limit == RetrievalLimitObservation::Exhausted)
+    }
 }
 
 impl CognitiveStore {
     /// Observe all bounded generator outputs before final top-four truncation.
-    /// This optional slow read validates up to 7 * 32 candidate explanations in
-    /// one snapshot. It never expands per-channel limits or changes legacy top-four ranking.
+    /// Assertions and their exact sources are read in this same transaction.
     pub async fn observe_memory_retrieval(
         &self,
         access: &CognitiveAccess,
@@ -126,12 +156,15 @@ impl CognitiveStore {
                         .cmp(&right.revalidation.memory.revision)
                 })
         });
+        let proposition_claims =
+            proposition_read::read_assertions(&mut transaction, &self.owner_agent_id, &observed)
+                .await?;
         candidates.truncate(MAX_RETRIEVAL_RESULTS);
         let batch = RetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query.as_bytes()),
             candidates,
         };
-        let bytes = serde_json::to_vec(&(
+        let legacy_bytes = serde_json::to_vec(&(
             "hepta:cognitive:retrieval-observation:v1",
             &self.owner_agent_id,
             access.workspace_sha256(),
@@ -145,11 +178,29 @@ impl CognitiveStore {
             observed.len() - batch.candidates.len(),
         ))
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        // Preserve existing no-assertion observation bytes. A v2 observation
+        // binds the predecessor facts and *all* assertions, not only conflicts.
+        let bytes = if proposition_claims.is_empty() {
+            legacy_bytes
+        } else {
+            let evidence = proposition_claims
+                .iter()
+                .map(|claim| claim.evidence_digest().to_string())
+                .collect::<Vec<_>>();
+            serde_json::to_vec(&(
+                "hepta:cognitive:retrieval-observation:v2",
+                Sha256Digest::for_bytes(&legacy_bytes),
+                evidence,
+            ))
+            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?
+        };
         let observation = RetrievalObservation {
             batch,
             candidates: observed,
             channels: generated.channels,
             observation_sha256: Sha256Digest::for_bytes(&bytes),
+            proposition_claims,
+            observed_at: request.now_unix_seconds,
         };
         transaction.commit().await.map_err(unavailable)?;
         Ok(observation)
@@ -178,12 +229,36 @@ impl CognitiveStore {
         request: &RetrievalRequest,
         fts_query: &str,
     ) -> Result<GeneratedRetrieval, CognitiveStoreError> {
+        self.generate_retrieval_scoped_tx(transaction, access, request, fts_query, None)
+            .await
+    }
+
+    pub(super) async fn generate_retrieval_for_scope_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        request: &RetrievalRequest,
+        fts_query: &str,
+    ) -> Result<GeneratedRetrieval, CognitiveStoreError> {
+        self.generate_retrieval_scoped_tx(transaction, access, request, fts_query, Some(scope))
+            .await
+    }
+
+    async fn generate_retrieval_scoped_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        request: &RetrievalRequest,
+        fts_query: &str,
+        exact_scope: Option<&CognitiveScope>,
+    ) -> Result<GeneratedRetrieval, CognitiveStoreError> {
         let now = request.now_unix_seconds;
         let memory = self
-            .memory_fts_channel_tx(transaction, access, fts_query, now)
+            .memory_fts_channel_scoped_tx(transaction, access, fts_query, now, exact_scope)
             .await?;
         let seeds = self
-            .entity_fts_channel_tx(transaction, access, fts_query, now)
+            .entity_fts_channel_scoped_tx(transaction, access, fts_query, now, exact_scope)
             .await?;
         let entity = seeds
             .values
@@ -222,10 +297,11 @@ impl CognitiveStore {
             )
             .await?;
         let recency = self
-            .recency_channel_tx(
+            .recency_channel_scoped_tx(
                 transaction,
                 access.workspace_sha256().map(Sha256Digest::as_str),
                 now,
+                exact_scope,
             )
             .await?;
         let mut ranked = BTreeMap::new();

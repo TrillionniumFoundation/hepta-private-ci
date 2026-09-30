@@ -577,6 +577,25 @@ impl LedgerWriter {
         self.append_retrieval_assignment(predecessor, assignment)
     }
 
+    /// Append an unexposed preparation using the existing writer/witness CAS.
+    pub fn append_retrieval_preparation_current(
+        &mut self,
+        assignment: crate::RetrievalPreparationFactV1,
+    ) -> Result<AppendReceipt, ProductionLedgerError> {
+        let core = self.backend.core()?;
+        let predecessor = core
+            .record_by_id(&assignment.assignment.record_id)?
+            .map_or_else(
+                || {
+                    core.records()
+                        .last()
+                        .map_or(Digest32::ZERO, |record| record.chain_digest)
+                },
+                |record| record.predecessor_chain_digest,
+            );
+        self.commit(predecessor, LedgerEvent::RetrievalPrepared(assignment))
+    }
+
     /// Revalidate a frozen dataset immediately before final artifact use.
     ///
     /// The receipt first verifies its own immutable identity, then every frozen

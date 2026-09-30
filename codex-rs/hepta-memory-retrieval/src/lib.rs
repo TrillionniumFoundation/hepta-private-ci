@@ -1,4 +1,8 @@
 //! Explainable, snapshot-revalidated local memory retrieval.
+//!
+//! Historical recall helpers that synthesize unlimited work control are hidden
+//! unless the migration-only `legacy-uncontrolled-retrieval` feature is enabled.
+//! Product callers use the controlled APIs or [`product`] facade.
 
 #![forbid(unsafe_code)]
 
@@ -6,7 +10,17 @@ mod decision;
 mod engram;
 mod generation_bound;
 mod generator;
+mod lifecycle;
+mod lifecycle_append;
+pub mod product;
+mod semantics;
 mod v2;
+mod vector_owner;
+pub mod vector_publication;
+mod vector_publication_append;
+mod work;
+pub use work::RecallInterruptionV1;
+pub use work::RecallWorkControlV1;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -44,8 +58,12 @@ pub use engram::MAX_ENGRAM_SETTLING_STEPS;
 pub use engram::MAX_ENGRAM_SYNAPSES;
 pub use engram::SynapseRelationV1;
 pub use engram::SynapseV1;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub use engram::recall_with_engram;
+pub use engram::recall_with_engram_controlled;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub use engram::settle_engram;
+pub use engram::settle_engram_controlled;
 pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
 pub use generation_bound::CanonicalRecallSelectionBindingV1;
@@ -64,7 +82,8 @@ pub use generation_bound::RetrievalChannelWeightV1;
 pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::adapt_generation_bound_recall_to_canonical_shadow_v1;
 pub use generation_bound::build_candidate_union;
-pub use generation_bound::recall;
+#[cfg(not(any(test, feature = "legacy-uncontrolled-retrieval")))]
+use generation_bound::recall;
 pub use generator::GeneratedCandidateInputV1;
 pub use generator::GeneratedCandidateUnionV1;
 pub use generator::GeneratedRecallV1;
@@ -76,10 +95,44 @@ pub use generator::RetrievalGeneratorReceiptV1;
 pub use generator::RetrievalSourceCompletenessV1;
 pub use generator::build_candidate_union_from_generated;
 pub use generator::compile_cue;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub use generator::recall_generated;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub use generator::recall_generated_with_engram;
+pub use generator::recall_generated_with_engram_controlled;
+pub use lifecycle::AcknowledgedRetrievalV1;
+pub use lifecycle::ConsumedRetrievalV1;
+pub use lifecycle::DurableDecisionPortV1;
+pub use lifecycle::DurableDecisionRecordV1;
+pub use lifecycle::LifecycleErrorV1;
+pub use lifecycle::PublishedRetrievalV1;
+pub use lifecycle::QualifiedDecisionV1;
+pub use lifecycle::QuarantinedUnknownOutcomeV1;
+pub use lifecycle::RetrievalExecutionIdentityPartsV1;
+pub use lifecycle::RetrievalExecutionIdentityV1;
+pub use lifecycle::RetrievalLifecyclePhaseV1;
+pub use lifecycle::SealedSnapshotV1;
+pub use lifecycle::TenantBoundExecutionV1;
+pub use lifecycle::ValidatedRequestV1;
+pub use lifecycle_append::DurableDecisionAppendErrorV1;
+pub use lifecycle_append::DurableDecisionTransitionErrorV1;
+pub use lifecycle_append::append_durable_decision_checked_v1;
+pub use lifecycle_append::validate_durable_decision_append_v1;
+pub use semantics::ContradictionEvidenceV2;
+pub use semantics::PropositionPolarityV2;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
+pub use vector_owner::GenerationBoundVectorOwnerV1;
+pub use vector_owner::MAX_VECTOR_DIMENSIONS;
+pub use vector_owner::MAX_VECTOR_INDEX_RECORDS;
+pub use vector_owner::VectorEmbeddingV1;
+pub use vector_owner::VectorIndexRecordV1;
+pub use vector_owner::VectorIndexSnapshotV1;
+pub use vector_owner::VectorOwnerErrorV1;
+pub use vector_owner::VectorQueryV1;
+pub use vector_owner::generate_vector_batch_v1;
+pub use vector_publication_append::DurableVectorPublicationAppendErrorV1;
+pub use vector_publication_append::append_vector_publication_checked_v1;
 
 const MAX_CANDIDATES: usize = 16_384;
 const MAX_RESULTS: usize = 256;
@@ -142,6 +195,7 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
     retrieve_request(&request)
 }
@@ -242,3 +296,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "semantics_tests.rs"]
+mod semantics_tests;

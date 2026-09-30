@@ -90,3 +90,10 @@ pub mod paths {
 pub mod plasticity {
     pub use codex_hepta_plasticity::*;
 }
+
+pub mod cognitive_types {
+    pub use codex_hepta_cognitive_types::*;
+}
+pub mod infer_core {
+    pub use codex_hepta_infer_core::*;
+}

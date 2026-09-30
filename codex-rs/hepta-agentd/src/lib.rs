@@ -34,6 +34,8 @@ mod cognitive_retrieval_context;
 #[cfg(feature = "server")]
 mod cognitive_retrieval_learning;
 #[cfg(feature = "server")]
+mod cognitive_retrieval_provider;
+#[cfg(feature = "server")]
 mod config;
 #[cfg(feature = "server")]
 mod control;
@@ -78,6 +80,16 @@ mod production_writer_host;
 mod prompt_runtime;
 #[cfg(feature = "server")]
 mod qualification_writer;
+#[cfg(feature = "server")]
+pub mod retrieval_delivery;
+#[cfg(feature = "server")]
+mod retrieval_delivery_append;
+#[cfg(feature = "server")]
+mod retrieval_executor;
+#[cfg(feature = "server")]
+mod retrieval_learning_bootstrap;
+#[cfg(feature = "server")]
+mod retrieval_product_mode;
 #[cfg(feature = "server")]
 mod runtime;
 #[cfg(feature = "server")]
@@ -223,6 +235,14 @@ pub use cognitive_ranker::cognitive_sensor_id;
 pub use cognitive_retrieval_context::CurrentMemoryRetrievalContext;
 #[cfg(feature = "server")]
 pub use cognitive_retrieval_learning::CognitiveRetrievalLearningSink;
+#[cfg(feature = "server")]
+pub use cognitive_retrieval_provider::LeasedMemoryRetrievalProviderV1;
+#[cfg(feature = "server")]
+pub use cognitive_retrieval_provider::MemoryRetrievalFrontierOwnerV1;
+#[cfg(feature = "server")]
+pub use cognitive_retrieval_provider::MemoryRetrievalFrontierV1;
+#[cfg(feature = "server")]
+pub use cognitive_retrieval_provider::SignedMemoryRetrievalContextV1;
 #[cfg(feature = "server")]
 pub use config::AgentdConfig;
 #[cfg(feature = "server")]
@@ -390,6 +410,10 @@ pub use prompt_runtime::AgentdPromptRuntimeError;
 pub use prompt_runtime::AgentdPromptRuntimeOwner;
 #[cfg(feature = "server")]
 pub use prompt_runtime::PromptRuntimeStageDisposition;
+#[cfg(feature = "server")]
+pub use retrieval_delivery_append::append_retrieval_lifecycle_projection_checked_v1;
+#[cfg(feature = "server")]
+pub use retrieval_learning_bootstrap::load_retrieval_learning_bootstrap_v1;
 #[cfg(feature = "server")]
 pub use runtime::run;
 #[cfg(feature = "server")]

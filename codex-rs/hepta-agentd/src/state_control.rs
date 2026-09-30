@@ -280,7 +280,7 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
-                let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
+                let result = crate::cognitive_context::read_with_retrieval_executor(
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
@@ -290,6 +290,7 @@ impl AgentdState {
                     self.cognitive_retrieval_context.get(),
                     self.cognitive_retrieval_learning.get(),
                     Some(request_id),
+                    &self.retrieval_executor,
                 )
                 .await;
                 self.refresh_generation()?;
@@ -360,7 +361,7 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
-                let result = crate::cognitive_context::revalidate_with_retrieval_context(
+                let result = crate::cognitive_context::revalidate_with_retrieval_executor(
                     store.as_ref(),
                     &self.identity.agent_id,
                     &snapshot_digest,
@@ -371,6 +372,7 @@ impl AgentdState {
                     self.cognitive_ranker.get(),
                     self.identity.spawn_generation,
                     self.cognitive_retrieval_context.get(),
+                    &self.retrieval_executor,
                 )
                 .await;
                 self.refresh_generation()?;

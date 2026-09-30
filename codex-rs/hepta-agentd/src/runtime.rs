@@ -77,6 +77,8 @@ pub async fn run(
     let retrieval_context = config.cognitive_retrieval_context();
     let retrieval_learning = config.cognitive_retrieval_learning();
     require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
+    let retrieval_context = retrieval_context
+        .map(|reader| crate::retrieval_product_mode::route(retrieval_mode, reader));
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
@@ -309,18 +311,15 @@ fn require_cognitive_retrieval_context_for_mode(
     mode: CognitiveRetrievalMode,
     configured: bool,
 ) -> Result<(), AgentdError> {
-    match (mode, configured) {
-        (CognitiveRetrievalMode::Compatibility, false)
-        | (CognitiveRetrievalMode::HnmfRequired, true) => Ok(()),
-        (CognitiveRetrievalMode::Compatibility, true) => Err(AgentdError::Invalid(
-            "compatibility retrieval profile forbids an HNMF current context; select HnmfRequired explicitly"
-                .to_string(),
-        )),
-        (CognitiveRetrievalMode::HnmfRequired, false) => Err(AgentdError::Invalid(
-            "HNMF-required retrieval profile requires a current authenticated retrieval context"
-                .to_string(),
-        )),
+    if mode.requires_current_context() == configured {
+        return Ok(());
     }
+    let message = if mode.requires_current_context() {
+        "HNMF-required retrieval profile (including shadow/canary composition) requires a current authenticated retrieval context"
+    } else {
+        "compatibility retrieval profile cannot attach an HNMF context"
+    };
+    Err(AgentdError::Invalid(message.to_string()))
 }
 
 #[cfg(feature = "production-cognitive-write")]
