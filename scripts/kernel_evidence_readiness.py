@@ -52,10 +52,11 @@ def sha256_file(path: Path) -> str:
 
 
 def inventory_hash(root: Path, paths: Iterable[Path]) -> str:
+    root = root.resolve()
     digest = hashlib.sha256()
     selected = sorted({path.resolve() for path in paths if path.is_file()})
     for path in selected:
-        relative = path.relative_to(root.resolve()).as_posix().encode("utf-8")
+        relative = path.relative_to(root).as_posix().encode("utf-8")
         payload = path.read_bytes()
         digest.update(len(relative).to_bytes(8, "big"))
         digest.update(relative)
@@ -72,7 +73,7 @@ def parse_named_paths(values: list[str]) -> dict[str, Path]:
     parsed: dict[str, Path] = {}
     for value in values:
         name, separator, raw_path = value.partition("=")
-        if not separator or not name or name in parsed:
+        if not separator or not name or not raw_path or name in parsed:
             raise ValueError(f"expected one unique NAME=PATH value, got {value!r}")
         parsed[name] = Path(raw_path)
     return parsed
@@ -96,8 +97,8 @@ def valid_timestamp_range(value: dict[str, Any]) -> bool:
     started = value.get("startedAtUnixMs")
     finished = value.get("finishedAtUnixMs")
     return (
-        isinstance(started, int)
-        and isinstance(finished, int)
+        type(started) is int
+        and type(finished) is int
         and started > 0
         and finished >= started
     )
@@ -124,9 +125,11 @@ def qualification_receipt_status(
     if path is None or not path.is_file():
         entry["error"] = "receipt is absent"
         return entry
+
     try:
         value = load_json(path)
-        tested_object = (
+        expected_merge = deterministic_merge_sha if kind == "deterministic_merge" else None
+        expected_tested_object = (
             deterministic_merge_sha if kind == "deterministic_merge" else source_head_sha
         )
         passed = (
@@ -137,9 +140,8 @@ def qualification_receipt_status(
             and value.get("sourceHeadSha") == source_head_sha
             and value.get("sourceHeadTree") == source_head_tree
             and value.get("baseSha") == base_sha
-            and value.get("deterministicMergeSha")
-            == (deterministic_merge_sha if kind == "deterministic_merge" else None)
-            and value.get("testedObjectSha") == tested_object
+            and value.get("deterministicMergeSha") == expected_merge
+            and value.get("testedObjectSha") == expected_tested_object
             and value.get("workflowSha") == workflow_sha
             and value.get("workflowRunId") == workflow_run_id
             and value.get("workflowRunAttempt") == workflow_run_attempt
@@ -301,6 +303,24 @@ def validate_runtime_status(
     }
 
 
+def artifact_inventory(artifacts: dict[str, Path]) -> tuple[dict[str, Any], bool]:
+    inventory: dict[str, Any] = {}
+    ready = True
+    for name, path in sorted(artifacts.items()):
+        present = path.is_file()
+        entry: dict[str, Any] = {
+            "path": str(path),
+            "present": present,
+        }
+        if present:
+            entry.update({"sha256": sha256_file(path), "bytes": path.stat().st_size})
+        else:
+            entry["error"] = "artifact is absent"
+            ready = False
+        inventory[name] = entry
+    return inventory, ready
+
+
 def build_manifest(
     *,
     root: Path,
@@ -336,6 +356,7 @@ def build_manifest(
         require_oid(oid, label, optional=True)
     if not workflow_run_id or not workflow_run_attempt or not runner_image or not target_triple:
         raise ValueError("workflow, runner, and target identity must be non-empty")
+
     root = root.resolve()
     checked_status = load_json(checked_in_status_source)
     require_oid(checked_status.get("asOfCommit"), "checked-in status anchor")
@@ -382,15 +403,7 @@ def build_manifest(
         runner_image=runner_image,
         target_triple=target_triple,
     )
-    artifact_hashes = {
-        name: {
-            "path": str(path),
-            "sha256": sha256_file(path),
-            "bytes": path.stat().st_size,
-        }
-        for name, path in sorted(artifacts.items())
-        if path.is_file()
-    }
+    artifact_hashes, artifacts_ready = artifact_inventory(artifacts)
 
     test_paths = [
         path
@@ -410,12 +423,12 @@ def build_manifest(
     implementation_map = root / "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json"
     cargo_lock = root / "codex-rs/Cargo.lock"
 
-    exact_source = qualification["exact_source"]["passed"]
-    deterministic_merge = qualification["deterministic_merge"]["passed"]
-    metadata = qualification["metadata"]["passed"]
-    publication = qualification["publication_diagnostics"]["passed"]
-    crash_ready = all(entry["passed"] for entry in crash.values())
-    runtime_status_exact = runtime_status["exact"]
+    exact_source = bool(qualification["exact_source"]["passed"])
+    deterministic_merge = bool(qualification["deterministic_merge"]["passed"])
+    metadata = bool(qualification["metadata"]["passed"])
+    publication = bool(qualification["publication_diagnostics"]["passed"])
+    crash_ready = all(bool(entry["passed"]) for entry in crash.values())
+    runtime_status_exact = bool(runtime_status["exact"])
     repository_controlled_ready = bool(
         exact_source
         and deterministic_merge
@@ -423,6 +436,7 @@ def build_manifest(
         and publication
         and crash_ready
         and runtime_status_exact
+        and artifacts_ready
     )
     final_merge_requalified = bool(
         final_merge_sha
@@ -438,6 +452,8 @@ def build_manifest(
         blockers.append("runtime_status_source_identity")
     if not crash_ready:
         blockers.append("crash_matrix")
+    if not artifacts_ready:
+        blockers.append("artifact_inventory")
     if not final_merge_requalified:
         blockers.append("real_merge_sha_not_requalified")
     blockers.extend(
@@ -473,7 +489,7 @@ def build_manifest(
         "status_identity": {
             "runtime": {
                 key: value
-                for key, value in runtime_status, items()
+                for key, value in runtime_status.items()
                 if key != "value"
             },
             "checked_in_implementation_source": {
@@ -494,6 +510,7 @@ def build_manifest(
             "external_rollback_anchor_ready": False,
             "crash_matrix_ready": crash_ready,
             "runtime_status_exact": runtime_status_exact,
+            "artifact_inventory_ready": artifacts_ready,
             "exact_source_qualified": exact_source,
             "deterministic_merge_qualified": deterministic_merge,
             "metadata_qualified": metadata,
@@ -558,6 +575,7 @@ def main() -> int:
     parser.add_argument("--crash-receipts", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+
     try:
         root = args.root.resolve()
         checked_in_status = (
@@ -576,7 +594,7 @@ def main() -> int:
             final_merge_sha=args.final_merge_sha or None,
             workflow_run_id=args.workflow_run_id,
             workflow_run_attempt=args.workflow_run_attempt,
-            runner_image=args.runner_imae,
+            runner_image=args.runner_image,
             target_triple=args.target_triple,
             runtime_status_source=args.runtime_status_source,
             checked_in_status_source=checked_in_status,
