@@ -1,0 +1,52 @@
+name: compact.engine contract qualification
+
+on:
+  push:
+    branches: [fix/compact-engine-contract-hardening-20260930]
+    paths:
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-agentd/**"
+      - ".github/workflows/compact-engine-contract-qualification.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compact-engine-contract-qualification
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Bind exact source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - name: Check compact.engine and Agentd
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets
+      - name: Test compact.engine
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-compact-engine --all-targets
+      - name: Strict Clippy
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-compact-engine -p codex-hepta-agentd --all-targets -- -D warnings
+      - name: Format and clean tree
+        working-directory: codex-rs
+        run: |
+          cargo fmt --all -- --check
+          git diff --exit-code
