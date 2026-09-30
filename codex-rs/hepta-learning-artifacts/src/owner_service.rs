@@ -56,6 +56,34 @@ pub struct LearningArtifactOwnerServiceConfigV1 {
     pub now: u64,
 }
 
+/// Opaque current durable withdrawal-frontier capability.
+///
+/// The service issues this only after the locally retained monotonic floor has
+/// been durably reconciled. A bare DatasetWithdrawalRegistry is not this proof.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CurrentWithdrawalFrontierV1 {
+    scope_digest: Digest32,
+    head_digest: Digest32,
+    records: usize,
+}
+
+impl CurrentWithdrawalFrontierV1 {
+    #[must_use]
+    pub const fn scope_digest(&self) -> Digest32 {
+        self.scope_digest
+    }
+
+    #[must_use]
+    pub const fn head_digest(&self) -> Digest32 {
+        self.head_digest
+    }
+
+    #[must_use]
+    pub const fn records(&self) -> usize {
+        self.records
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct LearningArtifactPublishRequestV1 {
     pub operation_id: StableId,
@@ -206,6 +234,23 @@ impl LearningArtifactOwnerService {
     #[must_use]
     pub fn withdrawal_registry(&self) -> &DatasetWithdrawalRegistry {
         &self.withdrawal_registry
+    }
+
+    /// Issue an opaque capability for the exact durable withdrawal frontier.
+    pub fn current_withdrawal_frontier(
+        &self,
+    ) -> Result<CurrentWithdrawalFrontierV1, LearningArtifactOwnerServiceError> {
+        self.require_durable_withdrawals()?;
+        let snapshot = self.withdrawal_registry.snapshot();
+        let scope_digest = self
+            .withdrawal_registry
+            .scope_digest()
+            .ok_or(LearningArtifactOwnerServiceError::InvalidConfiguration)?;
+        Ok(CurrentWithdrawalFrontierV1 {
+            scope_digest,
+            head_digest: self.withdrawal_registry.head_digest(),
+            records: snapshot.records().len(),
+        })
     }
 
     #[must_use]
