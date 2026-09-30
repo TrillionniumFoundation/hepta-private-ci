@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "fca52075211f0b64292391fda0ad5db40e6c1b30",
-    "tree": "1d2c594e4d449216e79ce94601fad00a7832db12"
+    "commit": "33befb3d67b1ec32f6d9411e1a2d9660133f92a1",
+    "tree": "5c454be7447c059d5bbb95690d124ecd05d95022"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -336,11 +336,13 @@
       "operation": "issue_tabular_final_use_capability_v1",
       "designOperation": "issue_tabular_final_use_capability_v1",
       "nativeSymbol": "issue_tabular_final_use_capability_v1",
-      "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use.rs",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "tests": [],
-      "state": "authoritative_single_use_final_use_implemented",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::tests::capability_issue_at_deadline_fails_closed"
+      ],
+      "state": "authoritative_single_use_issuance_clock_and_exclusive_deadline_implemented",
       "authority": "owner_borrow_only",
       "sourcePathExists": true
     },
@@ -348,11 +350,15 @@
       "operation": "fit_tabular_final_use_v1",
       "designOperation": "fit_tabular_final_use_v1",
       "nativeSymbol": "fit_tabular_final_use_v1",
-      "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use.rs",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "tests": [],
-      "state": "authoritative_pre_and_post_fit_currentness_implemented",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::tests::use_at_deadline_fails_closed",
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::tests::use_before_capability_issue_is_clock_regression",
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::tests::publish_before_use_is_clock_regression"
+      ],
+      "state": "authoritative_pre_and_post_fit_currentness_with_exclusive_deadline_implemented",
       "authority": "owner_borrow_only",
       "sourcePathExists": true
     },
@@ -360,11 +366,13 @@
       "operation": "issue_world_model_final_use_capability_v1",
       "designOperation": "issue_world_model_final_use_capability_v1",
       "nativeSymbol": "issue_world_model_final_use_capability_v1",
-      "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use.rs",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "tests": [],
-      "state": "authoritative_single_use_final_use_implemented",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::tests::capability_issue_at_deadline_fails_closed"
+      ],
+      "state": "authoritative_single_use_issuance_clock_and_exclusive_deadline_implemented",
       "authority": "owner_borrow_only",
       "sourcePathExists": true
     },
@@ -372,11 +380,15 @@
       "operation": "fit_world_model_final_use_v1",
       "designOperation": "fit_world_model_final_use_v1",
       "nativeSymbol": "fit_world_model_final_use_v1",
-      "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use.rs",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "tests": [],
-      "state": "authoritative_pre_and_post_fit_currentness_implemented",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::tests::use_at_deadline_fails_closed",
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::tests::use_before_capability_issue_is_clock_regression",
+        "codex-rs/hepta-bellman-operator/src/final_use_hardening.rs::tests::publish_before_use_is_clock_regression"
+      ],
+      "state": "authoritative_pre_and_post_fit_currentness_with_exclusive_deadline_implemented",
       "authority": "owner_borrow_only",
       "sourcePathExists": true
     },
@@ -421,8 +433,15 @@
       "sourcePath": "scripts/hepta-learning-operator-mutation.py",
       "mappingClass": "qualification_evidence",
       "delegatedCallees": [],
-      "tests": [],
-      "state": "executed_source_mutation_gate_defined",
+      "tests": [
+        "omit-training-error-budget-from-profile-digest",
+        "omit-runtime-profile-from-training-profile-digest",
+        "omit-world-model-sensor-from-profile-digest",
+        "disable-cooperative-cancellation",
+        "relax-exclusive-final-use-deadline",
+        "disable-final-use-issuance-clock-fence"
+      ],
+      "state": "executed_source_mutation_gate_with_identity_time_and_cancellation_mutants_defined",
       "authority": "none",
       "sourcePathExists": true
     },
@@ -498,6 +517,7 @@
     "defaultProductLoopWired": true,
     "implementedOperationMappingComplete": true,
     "singleUseFinalUseCapabilities": true,
+    "exclusiveFinalUseDeadline": true,
     "defaultShadowOnlyCoordinator": true,
     "selfModifyingQualificationRemoved": true,
     "protectedFanInRequiresQualification": true,
@@ -513,8 +533,8 @@
   ],
   "sourceIdentityPolicy": "exact_observation_with_map_only_successor_v2",
   "observedAtHead": {
-    "commit": "fca52075211f0b64292391fda0ad5db40e6c1b30",
-    "tree": "1d2c594e4d449216e79ce94601fad00a7832db12"
+    "commit": "33befb3d67b1ec32f6d9411e1a2d9660133f92a1",
+    "tree": "5c454be7447c059d5bbb95690d124ecd05d95022"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
