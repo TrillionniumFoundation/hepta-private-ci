@@ -278,3 +278,6 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(feature = "agentd-host")]
+pub mod evolving_agentd;

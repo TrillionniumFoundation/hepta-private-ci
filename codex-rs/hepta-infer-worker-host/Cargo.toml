@@ -7,6 +7,7 @@ publish = false
 
 [features]
 default = []
+agentd-host = ["codex-hepta-agentd/server", "codex-hepta-agentd/production-cognitive-write", "dep:anyhow"]
 test-support = []
 
 [lib]
@@ -18,6 +19,7 @@ doctest = false
 workspace = true
 
 [dependencies]
+anyhow = { workspace = true, optional = true }
 codex-hepta-types = { path = "../hepta-types" }
 codex-app-server-client = { workspace = true }
 codex-app-server-protocol = { workspace = true }
@@ -45,3 +47,9 @@ core_test_support = { workspace = true }
 
 tempfile = { workspace = true }
 codex-app-server-client = { workspace = true, features = ["test-support"] }
+
+[[bin]]
+name = "hepta-evolving-agentd"
+path = "src/bin/hepta-evolving-agentd.rs"
+required-features = ["agentd-host"]
+test = false
