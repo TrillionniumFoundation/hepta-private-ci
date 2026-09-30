@@ -151,6 +151,7 @@ class LocalDeterministicVerifierTests(unittest.TestCase):
                 "test_hepta_learning_eval_local_verify.py",
                 "test_hepta_learning_eval_trusted_report.py",
                 "test_hepta_learning_eval_trusted_report_base.py",
+                "test_hepta_learning_eval_status.py",
             )
             for name in required:
                 (scripts / name).write_text("# fixture\n", encoding="utf-8")
@@ -159,9 +160,17 @@ class LocalDeterministicVerifierTests(unittest.TestCase):
             inventory = MODULE.python_sources(root)
             for name in required:
                 self.assertIn(f"scripts/{name}", inventory)
-            (scripts / required[0]).unlink()
-            with self.assertRaisesRegex(ValueError, "incomplete"):
-                MODULE.python_sources(root)
+            commands = MODULE.command_inventory(root, root / "output")
+            names = [name for name, _ in commands]
+            self.assertLess(names.index("source-status-tests"), names.index("source-status"))
+            status_test = dict(commands)["source-status-tests"]
+            self.assertEqual(status_test[1:], ["scripts/test_hepta_learning_eval_status.py", "-v"])
+            for name in (required[0], "test_hepta_learning_eval_status.py"):
+                with self.subTest(name=name):
+                    (scripts / name).unlink()
+                    with self.assertRaisesRegex(ValueError, "incomplete"):
+                        MODULE.python_sources(root)
+                    (scripts / name).write_text("# fixture\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

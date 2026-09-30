@@ -8,7 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from hepta_rust_identifiers import contains_rust_identifier
+from hepta_rust_identifiers import contains_rust_identifier, rust_code_tokens
 
 ROOT = Path(__file__).resolve().parents[1]
 STATUS = ROOT / "docs/modules/learning.eval/CURRENT_STATUS.json"
@@ -67,13 +67,11 @@ REQUIRED_TOKENS = {
     "codex-rs/hepta-intelligence-eval/src/qualification_archive.rs": [
         "No decoder callback",
         "QualificationArtifactsPersisted",
-        "archive.verify(verifier, now)",
     ],
     "codex-rs/hepta-intelligence-eval/src/selected_host_recovery_controller.rs": [
         "recover_selected_host_pending_page",
         "ActivatedLearningTrustV1",
         "selected-host recovery trust regressed",
-        "cursor.save(Some(&id))",
         "PublicationPending",
     ],
     "codex-rs/hepta-intelligence-eval/src/attempt_capacity.rs": [
@@ -142,6 +140,14 @@ REQUIRED_TOKENS = {
         "External gates remain false",
     ],
 }
+REQUIRED_CODE_CALLS = {
+    "codex-rs/hepta-intelligence-eval/src/qualification_archive.rs": [
+        "archive.verify(verifier, now)",
+    ],
+    "codex-rs/hepta-intelligence-eval/src/selected_host_recovery_controller.rs": [
+        "cursor.save(Some(&id))",
+    ],
+}
 
 
 def canonical(value: object) -> str:
@@ -167,6 +173,19 @@ def require_tokens() -> None:
         for token in tokens:
             if token not in text:
                 raise SystemExit(f"{relative}: missing {token!r}")
+    for relative, calls in REQUIRED_CODE_CALLS.items():
+        path = ROOT / relative
+        if not path.is_file():
+            raise SystemExit(f"missing required path: {relative}")
+        tokens = rust_code_tokens(path.read_text(encoding="utf-8"))
+        for call in calls:
+            expected = rust_code_tokens(call)
+            if not any(
+                tokens[index:index + len(expected)] == expected
+                and (index == 0 or tokens[index - 1] not in (".", ":"))
+                for index in range(len(tokens) - len(expected) + 1)
+            ):
+                raise SystemExit(f"{relative}: missing code call {call!r}")
 
 
 def external_references(symbol: str) -> list[str]:

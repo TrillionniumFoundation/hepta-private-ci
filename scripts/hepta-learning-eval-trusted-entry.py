@@ -74,6 +74,7 @@ TRUSTED_CONTROL_PLANE_PATHS = (
     "scripts/test_hepta_learning_eval_trusted_report_base.py",
     "scripts/test_hepta_learning_eval_trusted_entry.py",
     "scripts/test_hepta_learning_eval_local_verify.py",
+    "scripts/test_hepta_learning_eval_status.py",
     "scripts/test_hepta_nextest_require.py",
     "scripts/test_hepta_rust_identifiers.py",
 )

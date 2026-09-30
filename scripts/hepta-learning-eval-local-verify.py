@@ -147,6 +147,7 @@ def python_sources(root: Path) -> list[str]:
         "scripts/test_hepta_learning_eval_local_verify.py",
         "scripts/test_hepta_learning_eval_trusted_report.py",
         "scripts/test_hepta_learning_eval_trusted_report_base.py",
+        "scripts/test_hepta_learning_eval_status.py",
     }
     missing = sorted(required - set(unique))
     if missing:
@@ -186,6 +187,10 @@ def command_inventory(root: Path, output: Path) -> list[tuple[str, list[str]]]:
         (
             "trusted-reporter-tests",
             [python, "scripts/test_hepta_learning_eval_trusted_report.py", "-v"],
+        ),
+        (
+            "source-status-tests",
+            [python, "scripts/test_hepta_learning_eval_status.py", "-v"],
         ),
         (
             "source-status",
