@@ -20,18 +20,19 @@ interpreted as the Hölder/operator qualification profile.
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
+| classify admission stage and recovery action | `OperatorAdmissionStageV1` / `ClassifyOperatorAdmissionFailure::disposition` | `src/admission.rs` | implemented; no new authority |
 | build deterministic Bellman targets | `build_targets` (`train` compatibility alias) | `src/lib.rs` | implemented |
 | validate structural smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | compatibility implemented |
 | authenticate applicability for qualification | `validate_applicability_with_signed_evidence_v2` | `src/authenticated.rs` | implemented |
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
 | fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented; evidence uniqueness canonical |
-| bind frozen dataset to tabular training | `verify_tabular_operator_plan_v2` / `fit_tabular_operator_verified_v2` | `src/dataset_bound.rs` | implemented |
+| bind frozen dataset to tabular training | `verify_tabular_operator_plan_v3` / `fit_tabular_operator_verified_v3` | `src/dataset_bound.rs` | owner-bound qualification implemented; V2 compatibility only |
 | predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
 | validate rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | compatibility implemented |
 | authenticate regularity for qualification | `admit_operator_regularity_with_signed_evidence_v2` | `src/authenticated.rs` | implemented |
 | fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented; evidence uniqueness canonical |
-| bind frozen dataset to world-model training | `verify_world_model_dataset_v2` / `fit_transition_model_verified_v2` | `src/dataset_bound.rs` | implemented |
+| bind frozen dataset to world-model training | `verify_world_model_dataset_v3` / `fit_transition_model_verified_v3` | `src/dataset_bound.rs` | owner-bound qualification implemented; V2 compatibility only |
 | predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
 
 ## Applicability and sensor core
@@ -58,7 +59,7 @@ canonical action ID. This reference is the oracle for any later learned model.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile. Duplicate underlying `evidence_digest` values are rejected by the canonical fit itself, so relabelling one observation cannot increase a cell count. `fit_tabular_operator_strict_v2` remains an additive compatibility/error surface rather than a stronger hidden trust boundary.
 
-`verify_tabular_operator_plan_v2` is the qualification ingress: it independently verifies a `DatasetSnapshotReceiptV3`, requires objective/dataset identity equality, and requires the sorted training evidence set to equal the frozen dataset's canonical `source_record_digests` exactly. Only its opaque `VerifiedTabularOperatorPlanV2` can enter `fit_tabular_operator_verified_v2`.
+`verify_tabular_operator_plan_v3` is the qualification ingress: it borrows the actual durable `LedgerWriter`, verifies the `DatasetSnapshotReceiptV3`, requires objective/dataset identity equality and the exact frozen source-record set, authenticates canonical row semantics, and returns a single-use opaque value. `fit_tabular_operator_verified_v3` repeats current-owner, expiry, revocation, and signer checks immediately before fitting. V2 wrappers remain structural compatibility inputs.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
@@ -91,7 +92,7 @@ profile.
 
 ## World-model baseline
 
-`verify_world_model_dataset_v2` applies the same frozen-receipt and exact evidence-set rule to world-model rows. The compatibility `fit_transition_model` also rejects duplicate evidence globally, so a relabelled observation cannot alter transition counts, probabilities or mean outcome.
+`verify_world_model_dataset_v3` applies the owner-bound frozen-receipt, exact evidence-set, signed-row, and final-use revalidation rules to world-model rows. The compatibility `fit_transition_model` also rejects duplicate evidence globally, so a relabelled observation cannot alter transition counts, probabilities or mean outcome.
 
 `fit_transition_model` builds a deterministic action-conditioned tabular model
 from an immutable dataset. For every supported `(state, action)` it records the
@@ -127,7 +128,9 @@ Focused tests live in:
 - `src/lib_tests.rs`;
 - `src/reference_tests.rs`;
 - `src/learned_tests.rs`;
-- `src/world_model_tests.rs`.
+- `src/world_model_tests.rs`;
+- `src/owner_dataset_tests.rs` (owner-bound V3 admission and full-path profile);
+- `src/loaded_tests.rs` (immutable load and process rollback).
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
@@ -142,8 +145,9 @@ existing `learning.artifacts` create-only storage APIs. It does not open another
 store. The format contains model identity, generation, five digests and canonical
 sensor/action cells with sample counts, Q32 means/minima/maxima and evidence.
 All integers are big-endian; counts are bounded before allocation. The payload
-ceiling is 64 MiB, the grid is at most 262,144 cells and the existing sensor,
-action and sample bounds apply. Unknown versions, trailing/truncated bytes,
+ceiling is 64 MiB, the compatibility grid is at most 262,144 cells and can
+represent up to 1,000,000 samples. Owner-authenticated V3 admission is separately
+bounded to 4,096 signed rows and requires `sensors × actions × minimum_samples_per_cell ≤ 4096`. Unknown versions, trailing/truncated bytes,
 noncanonical or incomplete grids and invalid statistics reject.
 
 A host-selected `TabularPayloadPinV1` binds payload, original training-artifact,
