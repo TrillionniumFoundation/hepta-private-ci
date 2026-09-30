@@ -33,6 +33,18 @@ Production admission uses V2 signatures and an independently identified backend.
 - Local database and frontier rollback together are detected only when the
   independently retained monotonic anchor is available.
 
+The external backend classifies a proposal only after acquiring its exclusive
+store/journal lock. The current durable frontier used by the classifier is read
+under that same lock. Reopen verification repeats the state-machine decision for
+every journal transition. The segmented backend walks sealed segments from
+genesis and then validates the archive-to-active boundary; it does not trust a
+self-consistent latest index as semantic proof. Therefore a party that merely
+rewrites bytes and recomputes local SHA-256 fields cannot convert a source,
+migration or issuer-trust transition into `IncomingWins`. A party controlling
+the independent signing and monotonic-anchor authorities remains outside the
+local-integrity threat boundary and is governed by the next two readiness
+dimensions.
+
 ## Key lifecycle
 
 Every production signer record carries principal ID, key ID/epoch, validity
@@ -50,8 +62,18 @@ Ed25519 authority record. Invalid current state, invalid target state, stale
 input, exact duplicates and same-generation identity splits are not converted
 into ordinary repair writes.
 
+The checked-in verifier establishes authorization authenticity and exact scope.
+The normal external CAS APIs deliberately reject `RepairRequired`, even when a
+caller possesses a signed document. A production repair service must add a
+separate durable one-time-nonce ledger and audit record that retains the exact
+authorization and current/target digests before performing that one transition.
+That service and ceremony are not source-composed in Agentd today, so repair
+publication remains an activation gate rather than a repository-issued
+capability.
+
 ## Non-claims
 
 Repository workflows do not prove target-host filesystem semantics, independent
-operator control, external service deployment, canary acceptance or release.
-These require separate receipts bound to the same immutable candidate.
+operator control, external service deployment, repair-service activation,
+canary acceptance or release. These require separate receipts bound to the same
+immutable candidate.
