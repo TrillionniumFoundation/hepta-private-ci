@@ -62,6 +62,9 @@ const CURRENT_HEAD_MAGIC: &str = "HEPTA-ARTIFACT-CURRENT-HEAD-V1";
 #[path = "owner_records.rs"]
 mod records;
 
+#[path = "owner_admissions.rs"]
+mod admissions;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedArtifactSignerV1 {
     pub signer_id: StableId,
@@ -421,6 +424,7 @@ impl LearningArtifactOwnerHost {
             "registries",
             "witnesses",
             "heads",
+            "admissions",
         ] {
             ensure_real_directory(&root, directory)?;
         }
@@ -502,6 +506,12 @@ impl LearningArtifactOwnerHost {
             expected_registry_predecessor_head,
             now,
         )?;
+        self.validate_parent_provenance(&transaction.intent().admission, registry)?;
+        // Reject invalid projection, predecessor or exhausted registry capacity
+        // before creating an admission or a durable Prepared operation.
+        let mut prospective_registry = registry.clone();
+        self.stage_compatibility_registration(&transaction, &mut prospective_registry, now)?;
+        self.persist_admission(&transaction.intent().admission)?;
         self.persist_checkpoint(&transaction)?;
         Ok(transaction)
     }
@@ -525,6 +535,7 @@ impl LearningArtifactOwnerHost {
         {
             return Err(ArtifactOwnerHostError::RegistryPredecessorMismatch);
         }
+        self.validate_parent_provenance(admission, registry)?;
         let event_id = StableId::new(format!(
             "artifact-publication:{}",
             transaction.intent().intent_digest
@@ -935,6 +946,7 @@ impl LearningArtifactOwnerHost {
                 return Err(ArtifactOwnerHostError::CheckpointMismatch);
             }
             invariant = Some(key);
+            self.validate_checkpoint_admission(&checkpoint)?;
             latest = Some(checkpoint);
         }
         Ok(latest.map(|checkpoint| ArtifactOwnerRecoveryV1 {
@@ -1566,6 +1578,7 @@ pub enum ArtifactOwnerHostError {
     CheckpointMissing,
     CheckpointGap,
     CheckpointMismatch,
+    ProvenanceMismatch,
     IdentityConflict,
     PathBoundary,
     Capacity,
@@ -2304,7 +2317,6 @@ mod tests {
         ));
     }
 }
-
 
 #[cfg(test)]
 #[path = "owner_host_adversarial_tests.rs"]

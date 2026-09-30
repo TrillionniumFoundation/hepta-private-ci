@@ -1,9 +1,61 @@
 use super::tests::*;
 use super::*;
+use std::fs;
 
 use crate::admit_manifest_at_withdrawal_head_v3;
 use crate::test_support::FixtureValue;
 use pretty_assertions::assert_eq;
+
+#[test]
+fn recovery_read_failure_keeps_unrelated_operations_fenced() {
+    let directory = TestDir::new();
+    let key = key();
+    let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+    let scope_digest = withdrawals.scope_digest().fixture("scope");
+    let mut service = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+        root: directory.0.clone(),
+        trust: trust(&key, scope_digest),
+        writer_lease: lease(&key, scope_digest),
+        required_current_head: None,
+        withdrawal_registry: withdrawals.clone(),
+        storage_binding: digest("binding"),
+        now: 20,
+    })
+    .fixture("service");
+    let request = publish_request(&key, &withdrawals, Digest32::ZERO, digest("pending-head"));
+    // Simulate a durable Prepared publication whose admission storage becomes
+    // unavailable before the live service can reconcile its result.
+    service
+        .host
+        .begin_publication(
+            request.operation_id.clone(),
+            request.admission.clone(),
+            &withdrawals,
+            &ArtifactRegistry::new(),
+            Digest32::ZERO,
+            20,
+        )
+        .fixture("durable prepared effect");
+    let admission_path = directory
+        .0
+        .join("admissions")
+        .join(format!("{}.bin", request.admission.admission_digest));
+    fs::remove_file(admission_path).fixture("fault admission storage");
+    assert!(service.recovery_required().is_none());
+    assert!(matches!(
+        service.publish(request.clone()),
+        Err(LearningArtifactOwnerServiceError::Host(
+            ArtifactOwnerHostError::Io(std::io::ErrorKind::NotFound)
+        ))
+    ));
+    assert_eq!(service.recovery_required(), Some(&request.operation_id));
+    let mut unrelated = request.clone();
+    unrelated.operation_id = id("unrelated-operation");
+    assert!(matches!(
+        service.publish(unrelated),
+        Err(LearningArtifactOwnerServiceError::RecoveryRequired(blocked)) if blocked == request.operation_id
+    ));
+}
 
 #[test]
 fn terminal_retry_requires_exact_request_and_restart_requires_anchor() {
