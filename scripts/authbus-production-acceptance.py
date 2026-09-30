@@ -69,9 +69,9 @@ def exact_int(value: Any, label: str, minimum: int = 0, maximum: int | None = No
     return value
 
 
-def require_candidate(candidate_sha: str) -> None:
-    if len(candidate_sha) != 40 or any(character not in HEX for character in candidate_sha):
-        raise ValueError("candidate SHA must be a lowercase 40-character SHA-1")
+def require_sha1(value: str, label: str) -> None:
+    if len(value) != 40 or any(character not in HEX for character in value):
+        raise ValueError(f"{label} must be a lowercase 40-character SHA-1")
 
 
 def validate_exact_receipt(path: Path, candidate_sha: str, kind: str) -> dict[str, Any]:
@@ -96,12 +96,18 @@ def validate_exact_receipt(path: Path, candidate_sha: str, kind: str) -> dict[st
     return value
 
 
-def validate_target(path: Path, candidate_sha: str) -> tuple[dict[str, Any], str]:
+def validate_target(
+    path: Path,
+    candidate_sha: str,
+    control_sha: str,
+) -> tuple[dict[str, Any], str]:
     value = load_json(path)
     if value.get("schema") != "hepta.authbus.target-host-qualification.v2":
         raise ValueError("target-host manifest schema mismatch")
     if value.get("candidateSha") != candidate_sha:
         raise ValueError("target-host candidate drift")
+    if value.get("controlSha") != control_sha:
+        raise ValueError("target-host trusted-controller drift")
     target_identity = bounded_string(value.get("targetIdentity"), "targetIdentity")
     exact_int(value.get("scenarioCount"), "target scenarioCount", 11)
     if value.get("operatorActivation") is not False or value.get("release") is not False:
@@ -112,6 +118,7 @@ def validate_target(path: Path, candidate_sha: str) -> tuple[dict[str, Any], str
 def validate_performance(
     path: Path,
     candidate_sha: str,
+    control_sha: str,
     target_identity: str,
 ) -> dict[str, Any]:
     value = load_json(path)
@@ -119,6 +126,8 @@ def validate_performance(
         raise ValueError("performance manifest schema mismatch")
     if value.get("candidateSha") != candidate_sha:
         raise ValueError("performance candidate drift")
+    if value.get("controlSha") != control_sha:
+        raise ValueError("performance trusted-controller drift")
     if value.get("targetIdentity") != target_identity:
         raise ValueError("performance target identity drift")
     exact_int(value.get("caseCount"), "performance caseCount", 16)
@@ -130,6 +139,7 @@ def validate_performance(
 def validate_drill(
     path: Path,
     candidate_sha: str,
+    control_sha: str,
     target_identity: str,
     expected_drill: str,
 ) -> dict[str, Any]:
@@ -140,6 +150,8 @@ def validate_drill(
         raise ValueError(f"{path}: external drill substitution")
     if value.get("candidateSha") != candidate_sha:
         raise ValueError(f"{path}: candidate drift")
+    if value.get("controlSha") != control_sha:
+        raise ValueError(f"{path}: trusted-controller drift")
     if value.get("targetIdentity") != target_identity:
         raise ValueError(f"{path}: target identity drift")
     if value.get("passed") is not True:
@@ -155,13 +167,18 @@ def validate_drill(
 def validate_activation_plan(
     path: Path,
     candidate_sha: str,
+    control_sha: str,
     target_identity: str,
 ) -> dict[str, Any]:
     value = load_json(path)
     if value.get("schema") != "hepta.authbus.activation-plan.v1":
         raise ValueError("activation plan schema mismatch")
-    if value.get("candidateSha") != candidate_sha or value.get("targetIdentity") != target_identity:
-        raise ValueError("activation plan identity drift")
+    if value.get("candidateSha") != candidate_sha:
+        raise ValueError("activation plan candidate drift")
+    if value.get("controlSha") != control_sha:
+        raise ValueError("activation plan trusted-controller drift")
+    if value.get("targetIdentity") != target_identity:
+        raise ValueError("activation plan target identity drift")
     exact_int(value.get("canaryPercent"), "activation canaryPercent", 1, 10)
     exact_int(value.get("observationWindowMinutes"), "activation observationWindowMinutes", 30)
     sha256_string(value.get("sloPolicySha256"), "activation sloPolicySha256")
@@ -176,13 +193,18 @@ def validate_activation_plan(
 def validate_rollback_plan(
     path: Path,
     candidate_sha: str,
+    control_sha: str,
     target_identity: str,
 ) -> dict[str, Any]:
     value = load_json(path)
     if value.get("schema") != "hepta.authbus.rollback-plan.v1":
         raise ValueError("rollback plan schema mismatch")
-    if value.get("candidateSha") != candidate_sha or value.get("targetIdentity") != target_identity:
-        raise ValueError("rollback plan identity drift")
+    if value.get("candidateSha") != candidate_sha:
+        raise ValueError("rollback plan candidate drift")
+    if value.get("controlSha") != control_sha:
+        raise ValueError("rollback plan trusted-controller drift")
+    if value.get("targetIdentity") != target_identity:
+        raise ValueError("rollback plan target identity drift")
     exact_int(value.get("rollbackWindowMinutes"), "rollback rollbackWindowMinutes", 30)
     sha256_string(value.get("commandsSha256"), "rollback commandsSha256")
     sha256_string(value.get("testReceiptSha256"), "rollback testReceiptSha256")
@@ -240,10 +262,15 @@ def build_payloads(args: argparse.Namespace) -> tuple[
         raise ValueError("production acceptance contract schema mismatch")
     exact = validate_exact_receipt(args.exact_receipt, args.candidate_sha, "exact_head")
     merge = validate_exact_receipt(args.merge_receipt, args.candidate_sha, "synthetic_merge")
-    target, target_identity = validate_target(args.target_manifest, args.candidate_sha)
+    target, target_identity = validate_target(
+        args.target_manifest,
+        args.candidate_sha,
+        args.control_sha,
+    )
     performance = validate_performance(
         args.performance_manifest,
         args.candidate_sha,
+        args.control_sha,
         target_identity,
     )
     drills = {
@@ -256,11 +283,27 @@ def build_payloads(args: argparse.Namespace) -> tuple[
         "dualOwnerMount": (args.owner_mount, "dual_owner_and_mount"),
     }
     drill_values = {
-        name: validate_drill(path, args.candidate_sha, target_identity, drill)
+        name: validate_drill(
+            path,
+            args.candidate_sha,
+            args.control_sha,
+            target_identity,
+            drill,
+        )
         for name, (path, drill) in drills.items()
     }
-    validate_activation_plan(args.activation_plan, args.candidate_sha, target_identity)
-    validate_rollback_plan(args.rollback_plan, args.candidate_sha, target_identity)
+    validate_activation_plan(
+        args.activation_plan,
+        args.candidate_sha,
+        args.control_sha,
+        target_identity,
+    )
+    validate_rollback_plan(
+        args.rollback_plan,
+        args.candidate_sha,
+        args.control_sha,
+        target_identity,
+    )
 
     evidence_digests = {
         "exactHead": sha256(args.exact_receipt),
@@ -277,6 +320,7 @@ def build_payloads(args: argparse.Namespace) -> tuple[
     security_payload = {
         "schema": "hepta.authbus.security-acceptance-payload.v1",
         "candidateSha": args.candidate_sha,
+        "controlSha": args.control_sha,
         "candidateTree": exact["candidate"]["tree"],
         "syntheticMergeTree": merge["candidate"]["tree"],
         "targetIdentity": target_identity,
@@ -296,6 +340,7 @@ def build_payloads(args: argparse.Namespace) -> tuple[
     operator_payload = {
         "schema": "hepta.authbus.operator-acceptance-payload.v1",
         "candidateSha": args.candidate_sha,
+        "controlSha": args.control_sha,
         "targetIdentity": target_identity,
         "securityPayloadSha256": security_payload_sha,
         "securitySignatureSha256": (
@@ -316,6 +361,7 @@ def main() -> None:
         choices=("security-payload", "operator-payload", "verify"),
     )
     parser.add_argument("--candidate-sha", required=True)
+    parser.add_argument("--control-sha", required=True)
     parser.add_argument("--exact-receipt", required=True, type=Path)
     parser.add_argument("--merge-receipt", required=True, type=Path)
     parser.add_argument("--target-manifest", required=True, type=Path)
@@ -336,7 +382,8 @@ def main() -> None:
     args = parser.parse_args()
 
     try:
-        require_candidate(args.candidate_sha)
+        require_sha1(args.candidate_sha, "candidate SHA")
+        require_sha1(args.control_sha, "control SHA")
         security_payload, operator_payload, evidence_digests, target_identity = (
             build_payloads(args)
         )
@@ -384,6 +431,7 @@ def main() -> None:
     output = {
         "schema": "hepta.authbus.production-acceptance.v1",
         "candidateSha": args.candidate_sha,
+        "controlSha": args.control_sha,
         "targetIdentity": target_identity,
         "contractSha256": sha256(CONTRACT_PATH),
         "evidenceSha256": evidence_digests,
