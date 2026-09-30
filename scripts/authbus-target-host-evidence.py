@@ -26,6 +26,7 @@ SCENARIOS = {
     "checkpoint-corruption": "checkpoint-content-corruption",
 }
 SCHEMA = "hepta.authbus.target-host-scenario.v2"
+HEX = set("0123456789abcdef")
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -64,6 +65,10 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def valid_sha1(value: str) -> bool:
+    return len(value) == 40 and all(character in HEX for character in value)
+
+
 def matrix_rows() -> dict[str, dict[str, Any]]:
     matrix = load_json(MATRIX_PATH)
     if matrix.get("schema") != "hepta.authbus.crash-consistency-matrix.v2":
@@ -88,6 +93,7 @@ def validate_receipt(
     matrix_id: str,
     matrix: dict[str, dict[str, Any]],
     candidate_sha: str,
+    control_sha: str,
     target_profile: str,
 ) -> dict[str, Any]:
     row = load_json(path)
@@ -99,6 +105,8 @@ def validate_receipt(
         raise ValueError(f"{path}: crash-matrix scenario substitution")
     if row.get("candidateSha") != candidate_sha:
         raise ValueError(f"{path}: candidate SHA drift")
+    if row.get("controlSha") != control_sha:
+        raise ValueError(f"{path}: trusted controller SHA drift")
     if row.get("targetProfile") != target_profile:
         raise ValueError(f"{path}: target profile drift")
     if row.get("passed") is not True:
@@ -158,15 +166,16 @@ def validate_receipt(
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidate-sha", required=True)
+    parser.add_argument("--control-sha", required=True)
     parser.add_argument("--target-profile", required=True)
     parser.add_argument("--receipt-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
-    if len(args.candidate_sha) != 40 or any(
-        character not in "0123456789abcdef" for character in args.candidate_sha
-    ):
+    if not valid_sha1(args.candidate_sha):
         raise SystemExit("candidate SHA must be a lowercase 40-character SHA-1")
+    if not valid_sha1(args.control_sha):
+        raise SystemExit("control SHA must be a lowercase 40-character SHA-1")
     if (
         not args.target_profile
         or len(args.target_profile) > 128
@@ -188,6 +197,7 @@ def main() -> None:
                 matrix_id,
                 matrix,
                 args.candidate_sha,
+                args.control_sha,
                 args.target_profile,
             )
             for scenario, matrix_id in SCENARIOS.items()
@@ -205,6 +215,7 @@ def main() -> None:
     manifest = {
         "schema": "hepta.authbus.target-host-qualification.v2",
         "candidateSha": args.candidate_sha,
+        "controlSha": args.control_sha,
         "targetProfile": args.target_profile,
         "targetIdentity": receipts[0]["targetIdentity"],
         "generatedAt": dt.datetime.now(dt.timezone.utc)
