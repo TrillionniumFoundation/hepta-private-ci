@@ -96,11 +96,13 @@ pub use legacy::verify_world_model_dataset_v3;
 pub use legacy::world_model_training_signing_payload_v2;
 
 mod budget;
+pub use budget::FitContextV1;
 pub use budget::OperatorResourceBudgetV1;
 pub use budget::OperatorResourceKindV1;
 pub use budget::OperatorWorkErrorV1;
 pub use budget::OperatorWorkSnapshotV1;
 pub use budget::WorkControlV1;
+pub use budget::with_fit_context_v1;
 pub use budget::with_work_control_v1;
 pub(crate) use budget::OperatorWorkMeter;
 pub(crate) use budget::checked_add;
