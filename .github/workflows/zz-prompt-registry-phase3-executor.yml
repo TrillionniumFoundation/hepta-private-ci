@@ -1,7 +1,7 @@
 name: Prompt registry phase 3 durable pipeline intent
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
     branches:
       - ops/prompt-registry-phase3-executor-20260930
