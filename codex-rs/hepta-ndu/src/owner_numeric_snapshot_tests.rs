@@ -61,7 +61,7 @@ fn unique_test_nonce(label: &str) -> TestResult<[u8; 32]> {
     let sequence =
         SEQUENCE.fetch_add(/*value*/ 1, std::sync::atomic::Ordering::Relaxed);
     let material = format!("{label}:{}:{elapsed}:{sequence}", std::process::id());
-    Ok(*Digest32::of_bytes(material.as_bytes()).as_bytes())
+    Ok(*Digest32::of_bytes(material.as_bytes()).as_array())
 }
 
 struct Fixture {

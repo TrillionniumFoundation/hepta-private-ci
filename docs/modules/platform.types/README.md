@@ -1,70 +1,66 @@
 # platform.types
 
-This directory is the single documentation entry point for `platform.types`.
-Start with [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md) for current
-source and claim boundaries. The [technical guide](TECHNICAL.md) retains the
-architecture, ownership and work-package history. Read the
-[protocol contract](PROTOCOL_AND_QUALIFICATION_V1.md) for versioned identities,
-transport and owner-pinned verification, and the
-[2026-09-29 closure](OPTIMIZATION_CLOSURE_20260929.md) for Prompt capacity,
-streaming/capacity optimizations, tests, performance methodology and acceptance.
+`platform.types` is the bounded, canonical, versioned type foundation for platform identities, digests, registries, numeric profiles, protocol descriptors, and strict wire exchange. Types represent validated data; they do not grant authority.
 
-Native Rust contracts and the compiled catalog govern protocol semantics.
-Generated inventories are navigation; successful candidate receipts and eligible
-independent review are separate evidence. Source existence is not activation.
+## Current authoritative entry points
 
-## Version and compatibility status
+There are exactly three current human-readable entry points:
 
-| Contract | Current status | Identity and compatibility rule |
-|---|---|---|
-| `PromptDeliveryObservationV1` | Frozen, supported compatibility contract | Retains its original custom domain-separated commitment. It is not relabeled as HPTC and existing bytes are never reinterpreted. |
-| `PromptDeliveryObservationV2` | Current versioned contract | Private-field HPTC schema 2 with an optional exact V1-digest migration witness. Migration rejects unsupported capacity instead of truncating. |
-| `RuntimeTopologyCandidateV1` | Current supported contract | Native construction, canonical delta order and full safety-relevant semantic commitment are required before the strict wire codec returns a validated candidate. |
-| `RegisteredNumericConversionReceiptV1` | Supported compatibility contract | Preserved for existing callers; it does not substitute for the generation-bound V2 witness. |
-| `RegisteredNumericConversionReceiptV2` | Current generation-bound contract | Binds registry generation/content, profile definitions, normalization definition and the base conversion receipt; final owners reverify against an independently pinned snapshot. |
-| `RandomStreamManifestV1`, `ExternalSystemManifestV1`, `SensorCalibrationManifestV1` | Current supported contracts | Native private-field validation, strict product JSON codecs, HPTC identity and named owner admission are required. |
+1. [`SPEC_V2.md`](./SPEC_V2.md) — branch-independent normative contract: types, canonical bytes, digest domains, wire schema, bounds, protocol catalog, compatibility, and errors.
+2. [`IMPLEMENTATION_STATUS.md`](./IMPLEMENTATION_STATUS.md) — fail-closed implementation, qualification, approval, merge, and activation state model.
+3. [`MIGRATION_V1_TO_V2.md`](./MIGRATION_V1_TO_V2.md) — API mapping, shim policy, mandatory consumer ledger, and wire migration scope.
 
-No contract in this table grants execution, registry publication, activation,
-promotion or release authority. Compatibility status means the bytes and
-verification behavior remain supported; it does not mean every product caller
-has migrated to the newest version.
+No amendment, closure report, generated JSON file, workflow log, or archived evidence bundle is a fourth current authority. When supporting prose conflicts with these entry points, treat the claim as unresolved and fail closed until the source and generated evidence agree.
 
-## Exact candidate evidence
+## Generated contract artifacts
 
-The committed public inventory and detailed implementation map are content-derived
-source documents. The inventory is closed over both exact top-level `pub use`
-exports and exact public `pub mod` declarations; the normalized rustdoc snapshot
-remains the complete nested API and signature evidence. A committed file cannot
-safely claim its own final Git commit hash, because changing that file changes the
-commit. Therefore final qualification does not treat a historical `sourceBase`
-or `observedAtHead` field as the candidate receipt.
+These files are machine-readable derivatives and must be regenerated or validated in CI:
 
-For every source-head and deterministic synthetic-merge run,
-`scripts/platform_types_implementation_map.py` emits a candidate artifact that
-binds the exact checked-out commit and tree plus the SHA-256 digests of the
-committed public inventory and detailed implementation map. The property report
-repeats that binding, and the final qualification receipt rejects any mismatch
-with its own exact candidate identity. This is the authoritative exact-head
-binding used by qualification.
+- [`PUBLIC_API_INVENTORY_V1.json`](./PUBLIC_API_INVENTORY_V1.json)
+- [`COMPATIBILITY_MATRIX_V1.json`](./COMPATIBILITY_MATRIX_V1.json)
+- [`IMPLEMENTATION_MAP.json`](./IMPLEMENTATION_MAP.json)
 
-Qualification workflows are event-bound and do not expose manual dispatch.
-Executable bytes come only from immutable pull-request or push event SHAs;
-resolved full object IDs are then frozen and reused by both source-head and
-synthetic-merge jobs.
+A generated file does not independently establish qualification. Its source SHA and clean-worktree proof must be present in the exact-source evidence bundle.
 
-## Current boundary
+## Supporting normative detail
 
-The supported foundation remains authority-free and stateless. Prompt V1 bytes
-remain frozen. Prompt V2 now admits only values within its frozen HPTC array
-capacity; larger V1 observations are retained as V1, never silently truncated.
+The following files retain detailed design material referenced by `SPEC_V2.md`:
 
-The [qualification integrity continuation](QUALIFICATION_INTEGRITY_20260929.md)
-defines resource-attempt publication, stale-report rejection, independently
-recomputed consumer test counts, candidate-bound implementation-map evidence and
-the existing-lane guard regressions.
+- [`TECHNICAL.md`](./TECHNICAL.md)
+- [`NORMATIVE_PROTOCOL_SOURCE_V2.md`](./NORMATIVE_PROTOCOL_SOURCE_V2.md)
+- [`PROTOCOL_AND_QUALIFICATION_V1.md`](./PROTOCOL_AND_QUALIFICATION_V1.md)
 
-Completion still requires successful exact source-head and synthetic-merge
-receipts for the same final source SHA, zero generated-file drift, current-head
-eligible independent approval and the applicable owner/target-host evidence.
-Those gates cannot be replaced by hand-edited lifecycle booleans or retained
-failure diagnostics.
+They remain reviewable source material, but current interpretation starts from `SPEC_V2.md`.
+
+## Historical and qualification records
+
+The following files are retained for provenance and audit continuity. They are non-authoritative for current status and must not be quoted alone as proof that the current head is qualified or activated:
+
+- [`CURRENT_IMPLEMENTATION.md`](./CURRENT_IMPLEMENTATION.md)
+- [`TECHNICAL_CURRENT_AMENDMENT_V2.md`](./TECHNICAL_CURRENT_AMENDMENT_V2.md)
+- [`DEEP_QUALIFICATION_V1.md`](./DEEP_QUALIFICATION_V1.md)
+- [`QUALIFICATION_HARDENING_20260928.md`](./QUALIFICATION_HARDENING_20260928.md)
+- [`QUALIFICATION_INTEGRITY_20260929.md`](./QUALIFICATION_INTEGRITY_20260929.md)
+- [`NDU_SNAPSHOT_INTEGRATION_20260929.md`](./NDU_SNAPSHOT_INTEGRATION_20260929.md)
+- [`REMAINING_GAPS_CLOSURE_20260929.md`](./REMAINING_GAPS_CLOSURE_20260929.md)
+- [`OPTIMIZATION_CLOSURE_20260929.md`](./OPTIMIZATION_CLOSURE_20260929.md)
+
+Their effective metadata is:
+
+```yaml
+status: superseded-or-supporting
+superseded_by:
+  - SPEC_V2.md
+  - IMPLEMENTATION_STATUS.md
+  - MIGRATION_V1_TO_V2.md
+source_sha: recorded-inside-each-artifact-or-associated-evidence
+valid_until: superseded-on-adoption-of-three-entry-contract
+```
+
+The files are intentionally not moved yet because existing evidence links and qualification tooling may address their current paths. A later mechanical archive move is safe only after all path consumers are generated from the documentation manifest.
+
+## Qualification rule
+
+The module is qualified only when one immutable source SHA has a complete green exact-source record, a fixed synthetic-merge record, self-contained evidence, mandatory consumer closure, and independent same-head approval; the reviewed candidate must then be merged, verified post-merge, and explicitly activated. Missing or mixed-SHA evidence is failure, not “unknown success.”
+
+CI enforces the three-entry documentation contract and removed-API scan through `scripts/check_platform_types_documentation_contract.py` and `scripts/check_platform_types_legacy_api_usage.py`.

@@ -1,0 +1,116 @@
+name: platform.types convergence gates
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/platform-types-convergence-gates.yml"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/hepta-ndu/**"
+      - "docs/modules/platform.types/**"
+      - "scripts/check_platform_types_documentation_contract.py"
+      - "scripts/check_platform_types_legacy_api_usage.py"
+      - "scripts/test_platform_types_convergence_gates.py"
+  merge_group:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-types-convergence-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  PLATFORM_TYPES_MSRV: "1.96.0"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  contract-and-migration:
+    name: Exact-head documentation and legacy API contract
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify immutable checkout identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+      - name: Test gate diagnostics
+        run: python3 scripts/test_platform_types_convergence_gates.py
+      - name: Verify documentation authority contract
+        run: python3 scripts/check_platform_types_documentation_contract.py
+      - name: Reject removed platform.types APIs
+        run: python3 scripts/check_platform_types_legacy_api_usage.py
+      - name: Preserve read-only worktree
+        shell: bash
+        run: git diff --exit-code && test -z "$(git status --porcelain)"
+
+  cross-platform-smoke:
+    name: Cross-platform smoke (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - macos-14
+          - windows-2022
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Install pinned MSRV toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$PLATFORM_TYPES_MSRV" --profile minimal --no-self-update
+          rustup default "$PLATFORM_TYPES_MSRV"
+          rustc --version
+          cargo --version
+      - name: Check platform type and wire crates
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-types \
+            -p codex-hepta-wire
+      - name: Preserve read-only worktree
+        shell: bash
+        run: git diff --exit-code && test -z "$(git status --porcelain)"
+
+  mandatory-consumer:
+    name: Mandatory NDU consumer
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Install pinned MSRV toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$PLATFORM_TYPES_MSRV" --profile minimal --no-self-update
+          rustup default "$PLATFORM_TYPES_MSRV"
+      - name: Compile and test mandatory NDU consumer
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-ndu \
+            --lib
+      - name: Preserve read-only worktree
+        shell: bash
+        run: git diff --exit-code && test -z "$(git status --porcelain)"

@@ -1,0 +1,93 @@
+# platform.types Implementation Status
+
+Status schema: `platform.types/implementation-status/v1`  
+Specification: [`SPEC_V2.md`](./SPEC_V2.md)
+
+This is the single current entry point for implementation and qualification status. It is deliberately fail-closed. A checked-in Markdown file cannot attest to the commit that contains itself, so exact source SHA, workflow run IDs, timestamps, and tool versions are emitted by CI as evidence artifacts. The checked-in state below describes the repository posture until those exact-source artifacts, independent approval, merge, post-merge verification, and activation all exist.
+
+## Current checked-in posture
+
+```yaml
+spec_version: platform.types/v2
+source_sha: generated-by-ci
+main_sha: generated-by-ci
+owner_migration: in_progress
+required_workflow_runs: generated-by-ci
+qualification: unqualified
+approval_sha: null
+activation: false
+generated_at: generated-by-ci
+generator_version: generated-by-ci
+```
+
+`generated-by-ci` is not a wildcard and must never be interpreted as satisfied. Missing, stale, mixed-SHA, or unverifiable evidence leaves the module unqualified.
+
+## State model
+
+The lifecycle is monotone and fail-closed:
+
+1. **Source candidate** — source and generated artifacts exist, but no qualification claim is made.
+2. **Exact-source verified** — required checks passed against one immutable candidate SHA.
+3. **Synthetic-merge verified** — required checks passed against a fixed merge of that candidate and the recorded base SHA.
+4. **Independently approved** — a non-author approval targets the same immutable candidate SHA.
+5. **Merged** — the reviewed candidate is in `main`.
+6. **Post-merge verified** — required checks passed against the immutable merge SHA.
+7. **Activated** — the activation pointer names that verified merge SHA.
+
+Failure or absence at any stage prevents all later status claims. A workflow-generated future tree, local dirty tree, author self-approval, approval of an older SHA, or archived probe cannot satisfy a stage.
+
+## Required exact-source evidence
+
+For one immutable candidate SHA, CI must record at least:
+
+- source lock and clean checkout;
+- formatting and lint checks;
+- `hepta-types` unit and documentation tests;
+- strict wire and canonical round-trip tests;
+- mandatory consumer compile/tests, including `hepta-ndu` numeric snapshot ownership;
+- public API inventory and compatibility matrix regeneration with a clean worktree;
+- protocol/catalog code generation and vector verification;
+- resource/boundary and negative fixtures;
+- MSRV verification;
+- native-platform smoke checks;
+- Miri and fuzz targets where designated;
+- provenance/evidence bundle validation;
+- legacy API and documentation-contract gates.
+
+Every evidence record must carry the source SHA, base/main SHA where relevant, workflow/run identity, toolchain versions, and artifact digests. Evidence from different source SHAs cannot be combined into a green result.
+
+## Owner migration
+
+Owner migration is complete only when all mandatory consumers use the current typed APIs and protocol/catalog contracts without compatibility-only fallbacks. The consumer ledger is maintained in [`MIGRATION_V1_TO_V2.md`](./MIGRATION_V1_TO_V2.md). A green core crate with a failing mandatory consumer is not a qualified module.
+
+## Approval and activation
+
+Approval must be supplied by an independent reviewer and must target the exact candidate SHA after the final code change. Automation may verify the approval; it may not manufacture or substitute for it.
+
+Activation remains `false` until the reviewed candidate is merged, the merge SHA passes post-merge qualification, and the activation pointer is updated to that SHA. Documentation edits alone cannot activate the module.
+
+## Generated status artifact
+
+CI should emit a machine-readable status record equivalent to:
+
+```json
+{
+  "schema": "platform.types/implementation-status/v1",
+  "spec_version": "platform.types/v2",
+  "source_sha": "<40-hex exact candidate or merge SHA>",
+  "main_sha": "<40-hex base/main SHA>",
+  "owner_migration": "complete|in_progress|blocked",
+  "required_workflow_runs": [{"name": "...", "run_id": 0, "conclusion": "success"}],
+  "qualification": "qualified|unqualified",
+  "approval_sha": "<40-hex SHA or null>",
+  "activation": false,
+  "generated_at": "<RFC3339 UTC>",
+  "generator_version": "<tool name and version>"
+}
+```
+
+The generator must validate consistency rather than copying optimistic prose. If any required field is unavailable, it emits an unqualified result or fails.
+
+## Supporting evidence
+
+Detailed qualification design and historical results remain available in the supporting files listed by [`README.md`](./README.md). They are evidence inputs and historical records, not parallel current-status authorities.
