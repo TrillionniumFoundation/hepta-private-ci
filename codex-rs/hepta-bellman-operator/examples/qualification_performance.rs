@@ -63,9 +63,13 @@ fn sensor_design(candidate_count: usize, requested_count: usize) -> SensorCoreDe
 
 fn run_sensor(candidate_count: usize, requested_count: usize) -> Duration {
     let design = sensor_design(candidate_count, requested_count);
-    let max_operations = u64::try_from(candidate_count)
-        .expect("candidate count")
-        .saturating_mul(u64::try_from(requested_count + 2).expect("requested count"));
+    let candidates = u64::try_from(candidate_count).expect("candidate count");
+    let requested = u64::try_from(requested_count).expect("requested count");
+    // Validation + initial distances + winner and update scans for each selected
+    // point + the selected-point separation matrix, with explicit headroom.
+    let max_operations = candidates
+        .saturating_mul(requested.saturating_mul(3).saturating_add(16))
+        .saturating_add(requested.saturating_mul(requested));
     let (control, _) = WorkControlV1::new(120_000, max_operations.max(10_000)).unwrap();
     let started = Instant::now();
     let manifest = build_sensor_core_controlled_v2(design, &control)
@@ -78,17 +82,20 @@ fn run_tabular(sample_count: usize, iteration: usize) -> Duration {
     let started = Instant::now();
     let sensor = id("qualification-sensor");
     let action = id("qualification-action");
+    let iteration_u64 = u64::try_from(iteration).expect("iteration");
+    let sample_count_u64 = u64::try_from(sample_count).expect("sample count");
     let samples = (0..sample_count)
         .map(|index| {
+            let index_u64 = u64::try_from(index).expect("sample index");
             let mut evidence = [0_u8; 24];
-            evidence[..8].copy_from_slice(&(iteration as u64).to_be_bytes());
-            evidence[8..16].copy_from_slice(&(index as u64).to_be_bytes());
-            evidence[16..].copy_from_slice(&(sample_count as u64).to_be_bytes());
+            evidence[..8].copy_from_slice(&iteration_u64.to_be_bytes());
+            evidence[8..16].copy_from_slice(&index_u64.to_be_bytes());
+            evidence[16..].copy_from_slice(&sample_count_u64.to_be_bytes());
             TabularOperatorSampleV1 {
                 sample_id: id(format!("qualification-sample-{iteration:02}-{index:07}")),
                 sensor_id: sensor.clone(),
                 action_id: action.clone(),
-                target: FixedQ32::from_raw((index % 17) as i64),
+                target: FixedQ32::from_raw(i64::try_from(index % 17).expect("target")),
                 evidence_digest: digest(evidence),
             }
         })
@@ -107,14 +114,15 @@ fn run_tabular(sample_count: usize, iteration: usize) -> Duration {
         action_ids: vec![action],
         samples,
     };
-    let max_operations = u64::try_from(sample_count)
-        .expect("sample count")
-        .saturating_add(4_096);
+    let max_operations = sample_count_u64.saturating_add(4_096);
     let (control, _) = WorkControlV1::new(300_000, max_operations).unwrap();
     let artifact = fit_tabular_operator_strict_controlled_v3(plan, &control)
         .expect("tabular qualification");
     assert_eq!(artifact.cells.len(), 1);
-    assert_eq!(artifact.cells[0].sample_count as usize, sample_count);
+    assert_eq!(
+        usize::try_from(artifact.cells[0].sample_count).expect("cell count"),
+        sample_count
+    );
     started.elapsed()
 }
 
