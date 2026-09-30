@@ -236,7 +236,6 @@ impl SegmentedFileEvidenceFrontierBackend {
         Ok(SegmentedState {
             index,
             latest_segment_metadata,
-            archived_latest_record,
             active_records,
             active_bytes,
             active_sha256,
