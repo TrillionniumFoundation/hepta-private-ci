@@ -17,7 +17,7 @@ concurrency:
 jobs:
   export-exact-workspace:
     name: Export exact candidate workspace without credentials
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 15
     steps:
       - name: Check out immutable candidate
@@ -39,7 +39,7 @@ jobs:
           mkdir -p "$output"
           git archive --format=tar.gz --prefix=hepta-private-ci/ \
             -o "$output/hepta-private-ci-$EXPECTED_SHA.tar.gz" "$EXPECTED_SHA"
-          sha256sum "$output/hepta-private-ci-$EXPECTED_SHA.tar.gz" \
+          shasum -a 256 "$output/hepta-private-ci-$EXPECTED_SHA.tar.gz" \
             > "$output/hepta-private-ci-$EXPECTED_SHA.tar.gz.sha256"
           printf 'source_commit=%s\nsource_tree=%s\n' \
             "$EXPECTED_SHA" "$(git rev-parse "$EXPECTED_SHA^{tree}")" \
