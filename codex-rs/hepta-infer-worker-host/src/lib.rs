@@ -24,6 +24,8 @@ pub use local_cpu_generation::CpuNeuronGenerationOpenModeV1;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_generation::CpuNeuronGenerationPlanV1;
 #[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::bootstrap_installed_cpu_neuron_v1;
+#[cfg(feature = "agentd-host")]
 pub use local_cpu_generation::open_installed_cpu_neuron_generation_v1;
 
 pub mod final_use_authorizer;

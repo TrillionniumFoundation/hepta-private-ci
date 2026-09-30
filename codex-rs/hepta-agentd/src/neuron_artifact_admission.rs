@@ -52,6 +52,31 @@ pub struct AgentdNeuronArtifactAdmissionV1 {
 }
 
 impl AgentdNeuronArtifactAdmissionV1 {
+    /// Admit an initial runtime only from three genuine first-generation
+    /// selections. An evaluation comparator is not a runtime predecessor.
+    /// This retains CURRENT, exact payload, expiry and independent-selector
+    /// checks; empty runtime state is never a substitute for qualified artifacts.
+    pub fn validate_initial_generation(
+        &mut self,
+        configuration: &NeuronRuntimeConfigV1,
+    ) -> Result<(), NeuronAdmissionError> {
+        if configuration.generation.get() != 1
+            || [
+                &self.selections.model,
+                &self.selections.calibration,
+                &self.selections.ood,
+            ]
+            .iter()
+            .any(|selection| {
+                selection.artifact_generation.get() != 1 || selection.predecessor_id.is_some()
+            })
+        {
+            self.closed = true;
+            return Err(NeuronAdmissionError::BindingMismatch);
+        }
+        self.validate_current(configuration, PayloadCheck::Required)
+    }
+
     /// Resolve and authenticate all three real payloads while holding the named
     /// artifact owner.  A copied byte-identical immutable payload is harmless;
     /// selection and revocation authority still come only from the verified

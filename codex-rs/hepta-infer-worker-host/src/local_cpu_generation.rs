@@ -30,6 +30,7 @@ pub enum CpuNeuronGenerationOpenModeV1 {
     Recover,
 }
 
+#[derive(Clone)]
 pub struct CpuNeuronGenerationPlanV1 {
     pub model_manifest: PathBuf,
     pub model_manifest_digest: Digest32,
@@ -43,6 +44,30 @@ pub struct CpuNeuronGenerationPlanV1 {
     pub store_context: NeuronGenerationStoreContextV2,
     pub index_context: NeuronRuntimeIndexContextV2,
     pub witness_context: NeuronWitnessContextV2,
+}
+
+/// Bootstrap a new Agent from admitted generation-one artifacts and empty
+/// physical stores. No selected predecessor or checkpoint is manufactured.
+pub fn bootstrap_installed_cpu_neuron_v1(
+    plan: CpuNeuronGenerationPlanV1,
+    control: Arc<Mutex<DurableInferenceControl>>,
+    clock: Arc<dyn AuthorityClock>,
+    worker: CpuNeuronControlConfigV1,
+    mut admission: AgentdNeuronArtifactAdmissionV1,
+) -> Result<AgentdNeuronHandleV2, AgentdError> {
+    admission
+        .validate_initial_generation(&plan.runtime)
+        .map_err(|error| {
+            AgentdError::Invalid(format!("initial Neuron artifact admission: {error:?}"))
+        })?;
+    open_installed_cpu_neuron_generation_v1(
+        plan,
+        CpuNeuronGenerationOpenModeV1::Create,
+        control,
+        clock,
+        worker,
+        admission,
+    )
 }
 
 pub fn open_installed_cpu_neuron_generation_v1(
