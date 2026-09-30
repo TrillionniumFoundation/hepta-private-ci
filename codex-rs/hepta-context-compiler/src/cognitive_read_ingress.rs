@@ -26,8 +26,7 @@ use crate::ContextRoleV2;
 use crate::MAX_CONTEXT_CANDIDATES_V2;
 use crate::compile_v2;
 
-const COGNITIVE_READ_INGRESS_ROW_DOMAIN: &[u8] =
-    b"hepta.context.cognitive-read-ingress-row.v2";
+const COGNITIVE_READ_INGRESS_ROW_DOMAIN: &[u8] = b"hepta.context.cognitive-read-ingress-row.v2";
 const COGNITIVE_READ_INGRESS_DOMAIN: &[u8] = b"hepta.context.cognitive-read-ingress.v2";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -218,7 +217,9 @@ impl From<ContextCompilerV2Error> for CognitiveReadIngressError {
 pub fn verify_cognitive_read_ingress_v2(
     shadow: &CanonicalAuthoritativeReadShadowV2,
 ) -> Result<VerifiedCognitiveReadIngressV2, CognitiveReadIngressError> {
-    shadow.validate()?;
+    // Reject unusable source envelopes before shadow validation traverses and
+    // canonicalizes their caller-owned rows. Valid envelopes still receive
+    // every existing source, event and binding integrity check below.
     if shadow.omitted_count != 0 {
         return Err(CognitiveReadIngressError::IncompleteSourceRead {
             omitted: shadow.omitted_count,
@@ -227,6 +228,7 @@ pub fn verify_cognitive_read_ingress_v2(
     if shadow.rows.is_empty() || shadow.rows.len() > MAX_CONTEXT_CANDIDATES_V2 {
         return Err(CognitiveReadIngressError::InvalidRowCount);
     }
+    shadow.validate()?;
 
     let mut rows = Vec::with_capacity(shadow.rows.len());
     for row in &shadow.rows {

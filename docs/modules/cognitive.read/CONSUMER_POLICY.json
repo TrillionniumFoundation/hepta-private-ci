@@ -3,16 +3,17 @@
   "consumers": [
     {
       "consumer": "compact.engine",
-      "expectedProductCallerState": "exact_owner_read_compaction_candidate_composed_product_qualification_pending",
-      "minimumMappedProductCallers": 1,
-      "migrationClass": "source_composed_product_qualification_pending",
-      "adoptedReadBoundary": "existing_sqlite_owner_exact_id_read_to_deny_all_compaction_candidate",
-      "finalUseResponsibility": "The existing SQLite owner reacquires the exact selected cut before candidate publication; checkpoint persistence and any later mutation remain with the existing compact owner.",
+      "expectedProductCallerState": "not_composed",
+      "minimumMappedProductCallers": 0,
+      "migrationClass": "registered_not_composed",
+      "adoptedReadBoundary": "existing_sqlite_owner_exact_id_read_compaction_candidate_source_only",
+      "finalUseResponsibility": "The source-only SQLite owner candidate API reacquires the exact selected cut before returning; no normal product caller is composed, and checkpoint persistence and any later mutation remain with the existing compact owner.",
       "errorMappingRequirement": "Differentiate missing or stale source rows, invalid retention metadata, construction-budget failure and owner unavailability; a candidate never grants checkpoint-write authority.",
       "requiredExecutionEvidence": [
-        "normal SQLite owner product caller",
+        "named authenticated normal product caller to the existing owner candidate surface",
         "complete-lineage exact-read binding",
-        "concurrent correction rejection before publication",
+        "concurrent correction rejection before candidate return",
+        "checkpoint owner publication and reload",
         "exact-head and fixed-merge execution"
       ]
     },

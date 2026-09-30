@@ -7,14 +7,14 @@
   "consumers": [
     {
       "module": "compact.engine",
-      "migration_class": "exact_owner_read_compaction_candidate_composed_qualification_pending",
+      "migration_class": "existing_owner_exact_read_candidate_source_implemented_not_product_composed",
       "required_gates": [
         "consumer-compact-tests",
         "compact-product-e2e"
       ],
       "normal_product_path_exercised": false,
-      "final_use_owner": "existing SQLite owner before candidate publication; existing compact checkpoint owner before persistence",
-      "evidence_interpretation": "Source composition uses the normal SQLite owner, exact all-or-error read, complete lineage and a final selected-cut reacquisition. The exact product gate must pass on source and merge candidates before execution is claimed; the candidate remains deny-all."
+      "final_use_owner": "source-only existing SQLite candidate API before return; existing compact checkpoint owner before future persistence",
+      "evidence_interpretation": "The existing SQLite owner candidate API and its qualification fixtures bind an exact all-or-error read, complete lineage and final selected-cut reacquisition. The API has no normal product caller and does not persist a checkpoint. The compact-product-e2e gate exercises those candidate fixtures only; even successful exact source and merge runs cannot establish normal product composition or checkpoint publication. The candidate remains deny-all."
     },
     {
       "module": "context.compiler",

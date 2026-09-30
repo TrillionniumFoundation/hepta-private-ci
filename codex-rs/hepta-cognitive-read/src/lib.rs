@@ -130,7 +130,13 @@ pub(crate) fn current_records(
     Ok(current)
 }
 
-pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadReceipt, Error> {
+// Share the validated, borrowed selection with V2 so result and byte limits
+// apply before cloning records and their citations. BTreeMap values already
+// have the same unique-record-ID order as the canonical V1 result.
+fn select_current_records<'snapshot>(
+    snapshot: &'snapshot CognitiveSnapshot,
+    request: &ReadRequest,
+) -> Result<(Vec<&'snapshot MemoryRecord>, usize), Error> {
     if request.snapshot_digest != snapshot.snapshot_digest {
         return Err(Error::SnapshotMismatch);
     }
@@ -138,33 +144,36 @@ pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadRe
         return Err(Error::InvalidMaximumResults);
     }
     let mut allowed = BTreeSet::new();
-    for kind in request.allowed_kinds {
-        if !allowed.insert(kind) {
+    for kind in &request.allowed_kinds {
+        if !allowed.insert(*kind) {
             return Err(Error::DuplicateKind);
         }
     }
 
     let current = current_records(snapshot, request.snapshot_digest)?;
-    let mut eligible = current
-        .into_values()
-        .filter(|record| {
-            (allowed.is_empty() || allowed.contains(&record.kind))
-                && (request.include_tombstones || record.state == RecordState::Live)
-        })
-        .cloned()
-        .collect::<Vec<_>>();
-    eligible.sort_by(|left, right| {
-        left.record_id
-            .cmp(&right.record_id)
-            .then_with(|| left.revision.cmp(&right.revision))
-    });
-    let omitted_count = eligible.len().saturating_sub(request.maximum_results);
-    eligible.truncate(request.maximum_results);
+    let mut selected = Vec::with_capacity(request.maximum_results.min(current.len()));
+    let mut omitted_count = 0;
+    for record in current.into_values().filter(|record| {
+        (allowed.is_empty() || allowed.contains(&record.kind))
+            && (request.include_tombstones || record.state == RecordState::Live)
+    }) {
+        if selected.len() < request.maximum_results {
+            selected.push(record);
+        } else {
+            omitted_count += 1;
+        }
+    }
+    Ok((selected, omitted_count))
+}
+
+pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadReceipt, Error> {
+    let (selected, omitted_count) = select_current_records(snapshot, &request)?;
+    let records = selected.into_iter().cloned().collect::<Vec<_>>();
 
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.cognitive.read.v1");
     bytes.extend_from_slice(snapshot.snapshot_digest.as_array());
-    for record in &eligible {
+    for record in &records {
         bytes.extend_from_slice(record.record_digest().as_array());
     }
     bytes.extend_from_slice(
@@ -175,7 +184,7 @@ pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadRe
 
     Ok(ReadReceipt {
         snapshot_digest: snapshot.snapshot_digest,
-        records: eligible,
+        records,
         omitted_count,
         receipt_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,

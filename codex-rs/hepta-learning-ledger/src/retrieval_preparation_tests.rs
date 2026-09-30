@@ -185,6 +185,10 @@ fn witness_lag_and_revocation_never_become_delivery_preparation() {
         writer.read_current_retrieval_assignment(&value.record_id, &value.episode_id),
         Err(ProductionLedgerError::WitnessLag)
     ));
+    assert!(matches!(
+        writer.append_retrieval_assignment_preparation(value.clone()),
+        Err(ProductionLedgerError::WitnessLag)
+    ));
     // Only exact idempotent recovery may close the witness gap.
     let repaired = writer
         .append_retrieval_assignment_current(value.clone())
@@ -210,4 +214,72 @@ fn witness_lag_and_revocation_never_become_delivery_preparation() {
             .read_current_retrieval_assignment(&value.record_id, &value.episode_id)
             .is_err()
     );
+}
+
+#[test]
+fn preparation_identity_advances_with_the_durable_owner_after_reopen() {
+    let fixture = Fixture::new();
+    let mut writer = writer(&fixture.0);
+    let explicit = assignment(id("assignment"), id("episode"));
+    let first = writer
+        .append_retrieval_assignment_preparation(explicit.clone())
+        .unwrap();
+    let anchor = writer.witness_frontier().unwrap().anchor;
+    let binding = writer.backend.binding();
+    let trust = writer.trust.clone();
+    drop(writer);
+    let file = |name: &str| {
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(fixture.0.join(name))
+            .unwrap()
+    };
+    let durable = ledger::DurableLedger::recover(
+        file("learning.journal"),
+        binding,
+        /*max_records*/ 64,
+        ledger::LedgerRecovery::Acknowledged(anchor),
+    )
+    .unwrap();
+    let witness = ledger::LedgerWitnessStore::recover(file("learning.witness"), binding).unwrap();
+    let directory = File::open(&fixture.0).unwrap();
+    let mut writer =
+        ledger::LedgerWriter::from_durable(durable, witness, trust, &directory, &directory)
+            .unwrap();
+    let second = writer
+        .append_retrieval_assignment_preparation(explicit.clone())
+        .unwrap();
+    assert_eq!(second.sequence.get(), first.sequence.get() + 1);
+    assert_eq!(second.disposition, ledger::AppendDisposition::Appended);
+    let snapshot = writer.snapshot().unwrap();
+    let events = snapshot
+        .records()
+        .iter()
+        .map(|record| match &record.event {
+            ledger::LedgerEvent::RetrievalAssignment(value) => value,
+            _ => panic!("unexpected event"),
+        })
+        .collect::<Vec<_>>();
+    assert_ne!(events[0].record_id, events[1].record_id);
+    assert_ne!(events[0].episode_id, events[1].episode_id);
+    assert_eq!(events[0].support_digest, events[1].support_digest);
+    assert!(
+        writer
+            .read_current_retrieval_assignment(&explicit.record_id, &explicit.episode_id)
+            .is_err()
+    );
+    // Explicit stable-operation retries retain their distinct existing API.
+    let stable = writer
+        .append_retrieval_assignment_current(explicit.clone())
+        .unwrap();
+    let replay = writer
+        .append_retrieval_assignment_current(explicit)
+        .unwrap();
+    assert_eq!(
+        replay.disposition,
+        ledger::AppendDisposition::IdempotentReplay
+    );
+    assert_eq!(replay.sequence, stable.sequence);
+    assert_eq!(replay.event_digest, stable.event_digest);
 }

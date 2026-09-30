@@ -1,97 +1,101 @@
 # Selected-ID durable owner cuts
 
-Status: source implementation and ordinary product integration materialized in
-`fb6d8dc76579ac2b00e23c15cc4508e684c335b8`; regression tests are authored, while
-exact source and deterministic merge execution remain pending. No activation,
-independent acceptance, target-host performance or complete consumer migration
-is claimed by this supplement.
+Status: revised source candidate. Exact source/merge qualification, target-host
+acceptance and independent review remain separate. The current source identity is
+bound by `IMPLEMENTATION_MAP.json`; older supplement hashes are historical only.
 
-This extends the correctness work in `FINAL_USE_CLOSURE.md` with a bounded owner
-materialization path. It does not add a store, schema migration, background
-worker, authorization cache, mutable read index or durable read-owned facts.
+This extends `FINAL_USE_CLOSURE.md` with bounded owner materialization. All SQL,
+witness maintenance and migrations belong to the existing `CognitiveStore` owner.
+The stateless read port owns no database, cache, background worker or authority.
 
-## One existing owner and one ancestry implementation
+## One existing durable owner
 
-`CognitiveStore::lane_c_snapshot_ids` accepts at most 512 unique IDs, authorizes
-the principal/scope, and delegates to the existing page transaction and
-ancestry/citation reconstruction in `lane_c_snapshot.rs`. The same code checks
+`CognitiveStore::lane_c_snapshot_ids` authorizes the principal and scope before
+accepting at most 512 unique IDs. Its ordinary selected path materializes only
+requested ancestry and citations inside one SQLite read transaction. It validates
 contiguous ancestry, terminal tombstones, current head pointers, citations,
-verification and validity. The whole-scope historical count is a frontier,
-not a reason to materialize every historical record.
+verification and validity before returning immutable values.
 
-Selected histories still have a 16,384-revision ceiling and 65,536-citation
-ceiling. An oversized selected history fails the entire request. The result
-never silently drops requested IDs or returns an incomplete ancestry prefix.
-Missing IDs remain explicitly detectable through `read_ids_v1`.
+Selected histories retain the 16,384-revision and 65,536-citation ceilings.
+Oversized selected history fails the whole request. There is no silent missing
+ancestry prefix; `read_ids_v1` also reports absent requested IDs explicitly.
+The legacy whole-scope and page APIs keep their own documented semantics and
+resource limits.
 
-The legacy whole-scope snapshot and public page APIs remain available; their
-limits and canonical page digest are not silently redefined. The private page
-implementation additionally accepts a bounded exact-ID set for the normal
-Agentd consumer. There is no alternate test-only reader.
+## Currentness beyond selected records
 
-## Currentness beyond the selected record
+The same physical owner transaction reads `lane_c_scope_witness`, maintained by
+source/revision/citation/fact/head mutation triggers. Its state revision and
+frontier counts detect mutations outside the selected set. Indexed
+`lane_c_head_validity` queries obtain validity regime boundaries, so an unselected
+verified head entering or leaving eligibility also invalidates a prior cut.
 
-`DurableCognitiveSelectionSnapshot` carries the bounded record view, sorted
-requested IDs (including missing IDs), global existing owner frontiers and a
-supplementary ordered head-state digest observed in the same transaction.
-The supplementary digest includes head ID/revision/content digest,
-verification/lifecycle, validity interval and eligibility at observation time.
-Thus an unselected head's validity transition, a source/tombstone frontier
-change, correction or head-pointer change still invalidates the selected cut.
+The exact-cut digest uses `hepta.sqlite.lane-c.exact-cut.v1` and binds the selected
+snapshot, owner witness and sorted requested ID set, including missing IDs.
+Revalidation rejects clock regression, reacquires the same requested set and
+compares the complete cut. A selected subcut cannot add an ID absent from its
+original acquisition. A historical receipt is an observation, not a mutation
+lease or a cached authorization decision.
 
-The exact-cut digest uses `hepta.sqlite.lane-c.exact-cut.v1` and binds the
-underlying selected snapshot, supplementary owner witness and requested ID set.
-The owner revalidation method rejects clock regression and reacquires the same
-requested set. It compares the complete cut and structural snapshot. Historical
-read receipts are not leases and do not suppress a current owner check.
+## Schema, recovery and derived-state admission
 
-The transaction still relies on the existing physical owner's immutable-ledger
-and recovery invariants. This change is not a substitute for descriptor-safe
-recovery admission or a proof against arbitrary offline database forgery.
+The owner authenticates the definitions of witness tables, indexes, views and
+triggers using its canonical schema oracle. Startup/recovery additionally compares
+witness counters and head validity with the authoritative rows through independent
+audit views. This full recomputation belongs to startup, not each exact-ID read.
+
+Migration 0018 rejects witness identity changes, non-increasing revisions and
+replacement of an existing witness identity. Maintenance uses update-then-conditional-
+insert in the same SQLite statement transaction, preserving normal increments
+without admitting `INSERT OR REPLACE` through SQLite's default non-recursive
+trigger behavior. Head and validity-row memory identities are immutable as well, preventing a same-revision identity update from bypassing witness maintenance. Historical migrations remain unchanged.
+
+Recovery anchors bind the schema oracle. An anchor from an older oracle is
+rejected; this revision does not silently rebind an old anchor to a newly opened
+cut. Re-establishing a current independent recovery witness belongs to the owner
+recovery process. Exact schema/content validation is not a proof against arbitrary
+offline database forgery or a substitute for independently retained rollback
+witnesses.
 
 ## Ordinary product composition
 
-The existing Agentd handler now uses this sequence:
+The existing Agentd handler:
 
-1. observe the owner's bounded retrieval candidates;
-2. acquire their exact-ID owner cut;
-3. perform exact revision/digest admission using `OwnerCutReadView`;
-4. retain existing HNMF observation, optional ranking and complete JSON budget;
-5. derive an immutable selected-ID subcut for the final bounded item set;
-6. bind that subcut and the publication plan, then revalidate with the owner;
-7. on the existing worker final-use request, reacquire the exact selected IDs,
-   verify the entire binding, recheck dependent owners and evaluate a fresh plan.
+1. observes bounded retrieval candidates and acquires their exact-ID cut;
+2. admits exact revision/digest matches using `OwnerCutReadView`;
+3. preserves HNMF observations, optional ranking and the complete JSON budget;
+4. derives the final selected subcut and binds the publication plan;
+5. records preparation through the existing learning owner, when configured;
+6. rechecks dependencies and the memory owner after awaited work before publication;
+7. reacquires selected IDs, dependencies and a fresh plan at worker final use,
+   immediately before physical `TurnStart`.
 
-The HNMF adapter borrows the inner structural snapshot only; the final-use read
-binding includes the outer selection witness. A subset cannot add an ID absent
-from the original acquired request. The worker need not retain the discarded
-retrieval candidates to reacquire the final item set. The existing native
-worker and uncertain-send reconciliation path are unchanged.
+The HNMF adapter borrows the inner structural snapshot. Final-use binding includes
+the outer owner witness. The native worker's unknown-send reconciliation remains
+separate from preparation and does not infer safe replay.
 
 ## Capacity and remaining cost
 
-This removes whole-scope history materialization from the selected product path,
-not all size-dependent work. Every acquisition still counts owner ledgers and
-streams the complete head metadata in bounded batches to construct the witness.
-The legacy page caller still repeats its global metadata work on each page.
-No constant-time lookup, O(selected IDs) total complexity, production p99 or
-cross-request witness cache is claimed. Replacing that pass requires an
-owner-maintained, transactionally verified root/checkpoint with explicit
-migration and recovery qualification; it must not become a second authority.
+The selected hot path avoids whole-scope ancestry materialization and repeated
+whole-scope counts/head streaming. It still validates all selected ancestry and
+citations, and the read port validates the complete structural input it receives.
+The legacy full-scope/page paths retain their broader construction cost.
 
-## Regression cases
+The exact scope witness is derived state, not a second authority. Its write guards
+perform canonical counter audits, and startup performs a full content audit.
+Migration 0019 adds exact-scope expression indexes and replaces the unexpected-scope audit branch with indexed existence probes, preserving the canonical counter audit. Cross-scope history no longer dominates this branch; same-scope counts still scale with that scope. These costs must be included in owner workload measurements. Indexed reads do not
+establish constant-time total acquisition, constant-time writes or production p99.
 
-The real SQLite-owner tests cover exact missing IDs, subset/reacquisition
-parity, duplicate/oversize/wrong-principal rejection, unselected-head expiry,
-source frontier drift, clock regression, correction, tombstone and head-pointer
-rollback. The large-history fixture creates 17,000 valid contiguous revisions
-for an unselected record in the same physical schema, verifies the legacy full
-snapshot refuses its global ceiling, and verifies the exact small selection can
-be read and revalidated. Requesting the 17,000-deep record itself must still
-fail the bounded selected-ancestry gate.
+## Regression evidence
 
-These are authored test expectations, not observed Rust test passes. The local
-fixture SQL check and its narrower interpretation are recorded in `README.md`.
-Existing Agentd and physical native worker cases must execute against this
-ordinary integration on both exact source and deterministic merge candidates.
-Acceptance flags remain false.
+Owner tests cover missing IDs, subset/reacquisition parity, malformed and unauthorized
+requests, validity transitions, source changes, clock regression, correction,
+tombstone and head-pointer rollback. The large-history fixture puts 17,000 revisions
+on an unselected record: selecting a small unrelated record remains bounded, while
+requesting the oversized ancestry itself fails the declared ceiling.
+
+Witness integration tests separately cover migration from a populated older store,
+pre-existing drift, reopen schema weakening/removal, content drift with restored
+schema, recovery-anchor capture and unselected-head mutation followed by attempted
+frontier reset or replacement. Test presence is not a pass receipt; the audit
+records executed checks and current qualification limitations.

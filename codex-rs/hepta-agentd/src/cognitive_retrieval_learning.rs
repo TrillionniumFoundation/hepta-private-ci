@@ -23,6 +23,12 @@ pub struct CognitiveRetrievalLearningSink {
     writer: Mutex<LedgerWriter>,
 }
 
+enum AssignmentIdentity {
+    #[cfg(test)]
+    ExplicitRpc,
+    OwnerIssuedPreparation,
+}
+
 impl CognitiveRetrievalLearningSink {
     #[must_use]
     pub fn new(writer: LedgerWriter) -> Self {
@@ -35,6 +41,9 @@ impl CognitiveRetrievalLearningSink {
     ///
     /// The host supplies its authenticated owner/generation and the exact read
     /// RPC identity; a context digest alone cannot select a different episode.
+    /// This compatibility lookup only resolves explicit-RPC assignments. Fresh
+    /// normal read preparations use a disjoint owner-issued namespace and need
+    /// a separately persisted operation handoff before delivery can be joined.
     /// The callback must not re-enter this sink or perform external effects.
     /// It may synchronously correlate an existing native-journal observation.
     /// No callback result is a training grant, a lease, or proof of socket
@@ -70,6 +79,7 @@ impl CognitiveRetrievalLearningSink {
         inspect(assignment, record)
     }
 
+    #[cfg(test)]
     pub(crate) fn append(
         &self,
         owner: &AgentId,
@@ -90,7 +100,9 @@ impl CognitiveRetrievalLearningSink {
         )
     }
 
-    pub(crate) fn append_with_delivery(
+    #[cfg(test)]
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn append_with_delivery_policy(
         &self,
         owner: &AgentId,
         body_generation: u64,
@@ -99,8 +111,11 @@ impl CognitiveRetrievalLearningSink {
         delivered_candidates: &[RetrievalCandidateIdentityV1],
         context_exposed: bool,
         published_context_digest: Option<Digest32>,
+        downstream_policy_digest: Option<Digest32>,
+        delivery_propensity: ProbabilityQ32,
     ) -> Result<AppendReceipt, String> {
-        self.append_with_delivery_policy(
+        self.append_assignment(
+            AssignmentIdentity::ExplicitRpc,
             owner,
             body_generation,
             request_id,
@@ -108,14 +123,44 @@ impl CognitiveRetrievalLearningSink {
             delivered_candidates,
             context_exposed,
             published_context_digest,
-            None,
-            ProbabilityQ32::ONE,
+            downstream_policy_digest,
+            delivery_propensity,
+        )
+    }
+
+    /// Prepare one fresh ordinary read under the existing durable owner. A
+    /// client-local RPC ID is namespace material, never a durable retry key.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn append_preparation_with_delivery_policy(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        request_id: u64,
+        observation: &RetrievalAssignmentObservationV1,
+        delivered_candidates: &[RetrievalCandidateIdentityV1],
+        context_exposed: bool,
+        published_context_digest: Option<Digest32>,
+        downstream_policy_digest: Option<Digest32>,
+        delivery_propensity: ProbabilityQ32,
+    ) -> Result<AppendReceipt, String> {
+        self.append_assignment(
+            AssignmentIdentity::OwnerIssuedPreparation,
+            owner,
+            body_generation,
+            request_id,
+            observation,
+            delivered_candidates,
+            context_exposed,
+            published_context_digest,
+            downstream_policy_digest,
+            delivery_propensity,
         )
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub(crate) fn append_with_delivery_policy(
+    fn append_assignment(
         &self,
+        identity: AssignmentIdentity,
         owner: &AgentId,
         body_generation: u64,
         request_id: u64,
@@ -145,9 +190,16 @@ impl CognitiveRetrievalLearningSink {
         let LedgerEvent::RetrievalAssignment(assignment) = event else {
             return Err("retrieval assignment bridge emitted wrong event kind".to_string());
         };
-        writer
-            .append_retrieval_assignment_current(assignment)
-            .map_err(|error| error.to_string())
+        match identity {
+            #[cfg(test)]
+            AssignmentIdentity::ExplicitRpc => {
+                writer.append_retrieval_assignment_current(assignment)
+            }
+            AssignmentIdentity::OwnerIssuedPreparation => {
+                writer.append_retrieval_assignment_preparation(assignment)
+            }
+        }
+        .map_err(|error| error.to_string())
     }
 }
 

@@ -20,8 +20,9 @@ cache or execution capability. No journal schema or wire format is changed here.
 its existing replay-built active index. It requires a current independent witness,
 rejects revoked/inactive rows and borrows the record without copying the whole history.
 `CognitiveRetrievalLearningSink::with_prepared_assignment` retains that owner lock during
-a synchronous, non-reentrant inspection. It binds owner, generation, exact read RPC ID
-and exact serialized context digest. The caller must already be an authorized host;
+a synchronous, non-reentrant inspection. The historical explicit operation API binds
+owner, generation, exact read RPC ID and exact serialized context digest. The caller
+must already be an authorized host;
 this local API does not authenticate arbitrary external callers or grant training access.
 
 The native owner provides `cognitive_context_delivery`, an opaque borrow-scoped,
@@ -53,11 +54,21 @@ native evidence into an authority-free inspection result. It neither sends a req
 nor appends a second event. Both read-RPC identity and native-attempt identity must be
 independently pinned by the trusted host: matching a content digest alone is insufficient.
 
+Ordinary cognitive reads use the existing ledger owner to issue an independent
+preparation identity under its writer lock. The identity binds the durable owner,
+current chain frontier and checked next sequence. Connection-local RPC counters
+are correlation IDs and cannot identify durable operations across fresh clients.
+The explicit replay API retains its separate namespace and identity-conflict
+semantics; its inspection lookup cannot match an ordinary preparation by accident.
+
 This is an implemented local inspection surface, not automatic product learning ingestion.
-The current normal read client does not by itself supply a persisted read-RPC-to-native-run
-handoff for every learning consumer. That explicit product composition, its revalidation
+The current normal read client does not return or persist the owner-issued preparation
+identity alongside a native-attempt identity. That explicit product handoff, its revalidation
 at training admission and actual physical-worker evidence remain required. An inspection
 fixture is not a replacement for a real model/provider boundary test.
+
+An ordinary read preparation is not an idempotent operation inferred from its RPC
+number. An unknown response does not authorize replay or establish zero exposure.
 
 ## Publication after awaited dependencies
 

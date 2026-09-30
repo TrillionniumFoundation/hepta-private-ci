@@ -16,8 +16,8 @@ activation.
 
 | Consumer | Declared product caller state | Current read boundary | Normal product caller(s) recorded by the consumer map | Migration assessment |
 |---|---|---|---|---|
-| `compact.engine` | `not_composed` | Registered contract only; no adopted read entry is claimed | None | Registered, not composed |
-| `context.compiler` | `legacy_v1_read_only_source_composed_verified_v2_not_composed` | Legacy V1 read-only owner adapter | `hepta-agentd/src/intelligence_product.rs::comple_context` | Legacy source composition exists; verified V2 ingress remains pending |
+| `compact.engine` | `not_composed` | Exact-owner candidate API and fixtures exist; no normal caller or checkpoint publication is claimed | None | Candidate source implemented; product composition pending |
+| `context.compiler` | `legacy_v1_composed_revision_bound_v2_ingress_source_implemented_product_use_pending` | Legacy V1 product adapter plus local revision-bound V2 ingress | `hepta-agentd/src/intelligence_product.rs::compile_context` | Legacy source composition exists; V2 provider-bound product use remains pending |
 | `memory.federation` | `composed_candidate_pending_execution` | Registered local-owner composition | `hepta-agentd/src/runtime.rs::attach_federation_after_generation_fence`; `ext/hepta-memory/src/cognitive/federation.rs::CombinedCognitiveEphemeralContributor` | Source composed; exact product execution remains pending |
 | `memory.retrieval` | `source_composed_explicit_profile_not_product_qualified` | Exact owner cut through Agentd cognitive context | `hepta-agentd/src/cognitive_context.rs::read_with_retrieval_context_and_learning` | Normal source path exists; product qualification remains pending |
 | `neuron.runtime` | `agentd_owner_source_compiled_not_daemon_lifecycle_composed` | Registered context input; no direct cognitive.read migration is claimed | `hepta-agentd/src/neuron_runtime.rs::AgentdNeuronOwner`; `hepta-intelligence/src/neuron_runtime.rs::run_neuron_tick_v1` | Owner source compiles; daemon lifecycle composition remains pending |
@@ -88,7 +88,9 @@ collapse distinct migration states:
   not claim cross-host authentication;
 - the retrieval row additionally requires owner expiry/rollback, stale host-generation, read
   replay and the physical worker final-use case; and
-- `compact.engine` remains uncomposed even when its package gate passes.
+- `compact.engine` remains uncomposed even when its package and candidate API
+  fixture gates pass. `build_cognitive_read_compaction_candidate` constructs
+  deny-all evidence; it does not publish or persist a checkpoint.
 
 The qualification receipt explicitly writes `v2_migration_proved=false` for all seven rows.
 Advancing a row requires a new normal-product caller state, reviewed policy change and a fresh

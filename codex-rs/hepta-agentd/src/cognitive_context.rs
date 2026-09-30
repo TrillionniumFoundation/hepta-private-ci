@@ -527,7 +527,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         let sink = std::sync::Arc::clone(sink);
         let owner = owner.clone();
         tokio::task::spawn_blocking(move || {
-            sink.append_with_delivery_policy(
+            sink.append_preparation_with_delivery_policy(
                 &owner,
                 body_generation,
                 request_id,

@@ -3525,6 +3525,7 @@ dependencies = [
  "thiserror 2.0.18",
  "tokio",
  "tokio-util",
+ "tracing",
  "wiremock",
 ]
 
@@ -3659,6 +3660,8 @@ dependencies = [
 name = "codex-hepta-context-compiler"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-cognitive-read",
+ "codex-hepta-cognitive-types",
  "codex-hepta-contracts",
  "codex-hepta-types",
  "codex-hepta-wire",
@@ -3945,6 +3948,7 @@ dependencies = [
  "base64 0.22.1",
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-types",
+ "codex-hepta-compact-engine",
  "codex-hepta-contracts",
  "codex-hepta-kg",
  "codex-hepta-memory-federation",

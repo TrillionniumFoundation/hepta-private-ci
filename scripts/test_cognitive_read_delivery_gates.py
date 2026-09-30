@@ -18,11 +18,11 @@ def example_log(label: str) -> str:
 
 
 class CognitiveDeliveryGateTests(unittest.TestCase):
-    def test_four_gates_cover_eleven_distinct_cases(self) -> None:
+    def test_four_gates_cover_thirteen_distinct_cases(self) -> None:
         self.assertEqual(len(DELIVERY_GATES), 4)
         cases = [case for spec in DELIVERY_GATES.values() for case in spec[3]]
-        self.assertEqual(len(cases), 11)
-        self.assertEqual(len(set(cases)), 11)
+        self.assertEqual(len(cases), 13)
+        self.assertEqual(len(set(cases)), 13)
 
     def test_commands_are_exact_locked_and_read_only(self) -> None:
         for label, command in delivery_commands().items():
@@ -38,19 +38,29 @@ class CognitiveDeliveryGateTests(unittest.TestCase):
         for label in DELIVERY_GATES:
             self.assertEqual(delivery_log_problems(label, example_log(label)), [])
             self.assertTrue(delivery_log_problems(label, ""))
-            self.assertTrue(delivery_log_problems(label, "\n".join(DELIVERY_GATES[label][3])))
+            self.assertTrue(
+                delivery_log_problems(label, "\n".join(DELIVERY_GATES[label][3]))
+            )
 
     def test_wrong_binary_and_leaf_name_do_not_prove_case(self) -> None:
         for label, spec in DELIVERY_GATES.items():
             body = example_log(label)
-            self.assertTrue(delivery_log_problems(label, body.replace(spec[2], "wrong-binary")))
-            self.assertTrue(delivery_log_problems(label, body.replace(spec[3][0], spec[3][0].split("::")[-1])))
+            self.assertTrue(
+                delivery_log_problems(label, body.replace(spec[2], "wrong-binary"))
+            )
+            self.assertTrue(
+                delivery_log_problems(
+                    label, body.replace(spec[3][0], spec[3][0].split("::")[-1])
+                )
+            )
 
     def test_zero_or_extra_summary_count_is_rejected(self) -> None:
         for label, spec in DELIVERY_GATES.items():
             body = example_log(label)
             for count in (0, len(spec[3]) + 1):
-                changed = body.replace(f"{len(spec[3])} tests run", f"{count} tests run")
+                changed = body.replace(
+                    f"{len(spec[3])} tests run", f"{count} tests run"
+                )
                 self.assertTrue(delivery_log_problems(label, changed))
 
     def test_ansi_and_rust_library_binary_spelling_are_supported(self) -> None:
@@ -70,7 +80,9 @@ class CognitiveDeliveryGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             self.assertFalse(delivery_gate_passed(root, label))
-            (root / f"{label}.command.json").write_text(json.dumps(delivery_commands()[label]))
+            (root / f"{label}.command.json").write_text(
+                json.dumps(delivery_commands()[label])
+            )
             (root / f"{label}.log").write_text(example_log(label))
             code = root / f"{label}.exit-code"
             code.write_text("1\n")
@@ -96,7 +108,9 @@ class CognitiveDeliveryGateTests(unittest.TestCase):
         label = "delivery-preparation-tests"
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            (root / f"{label}.command.json").write_text(json.dumps(delivery_commands()[label]))
+            (root / f"{label}.command.json").write_text(
+                json.dumps(delivery_commands()[label])
+            )
             (root / f"{label}.exit-code").write_text("0\n")
             target = root / "another-candidate.log"
             target.write_text(example_log(label))

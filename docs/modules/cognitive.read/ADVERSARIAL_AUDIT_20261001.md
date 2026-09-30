@@ -1,0 +1,45 @@
+# cognitive.read adversarial audit and completion review
+
+Audit baseline: production-convergence branch `work/cognitive-read-production-convergence-20260927`, commit `8a2f9256102a7bf36fbab4f22152573ba8fb91ad` (2026-09-30). This is newer than main and the separately named development branch. Revised exact source identity is recorded by the accompanying implementation map. Date in this artifact is the audit branch identifier; it is not a target-host execution timestamp.
+
+## Documentation and project placement
+
+Detailed developer documentation exists: `TECHNICAL.md` has 17 sections covering the stateless read port, owner boundary, APIs, authorization, failures and qualification. Its supplements document limits, canonical bytes, owner cuts, final use, delivery, consumers and operations. These are technical development documents, but the existence of documents and source APIs does not establish normal product composition or acceptance. This audit corrects stale source identities, selected-path descriptions and consumer declarations rather than elevating completion flags.
+
+The module sits between the durable CognitiveStore owner and retrieval consumers. It projects bounded immutable records with no write authority. Agentd composes retrieval, HNMF, optional ranking, learning preparation and publication; the native worker reacquires dependencies and an exact owner cut immediately before physical TurnStart. Memory and learning remain existing durable owners. Optimizations therefore belong at projection construction, owner witness admission, product handoffs and executable qualification boundaries; adding a separate cache or owner would weaken this placement.
+
+## Reproducible findings and repairs
+
+| Finding | Impact | Repair and regression |
+| --- | --- | --- |
+| V1 cloned all eligible heads/citations before truncation; V2 cloned/sorted arbitrary allowed-kind input before rejecting duplicates and cloned records before frame rejection. | Avoidable allocation from adversarial input; result limits did not bound result construction. | Borrow canonical current-head prefix; validate request first; count complete V2 frames before cloning. Golden/domain compatibility preserved; first oversized record is not silently skipped. |
+| Fresh Agentd clients start their RPC counter at one; durable learning assignment identity reused that counter. | Distinct ordinary reads collided with an earlier durable preparation and became unavailable. | Existing learning owner issues disjoint preparation identities under its exclusive writer and witness checks. Explicit stable replay retains the previous semantics. Added ledger reopen and two fresh-client socket cases. |
+| Context ingress validated a shadow before checking cheap row/omission bounds. | Expensive traversal on an envelope that must be rejected. | Bound envelope first, then full shadow validation; dedicated ordering regression. |
+| Witness schema objects were missing from the owner's canonical schema inventory; existing v17 derived content was not independently re-audited on reopen. | Schema weakening or persisted witness drift escaped admission; schema oracle/recovery capture diverged from compiled schema. | Authenticate all witness objects; independently audit derived content at startup/recovery. Tests cover missing/weakened objects, content drift with restored schema and recovery capture. |
+| Default non-recursive SQLite triggers admitted replacement of an existing witness identity; non-increasing frontier and same-revision head identity updates could evade expected maintenance. | An unselected mutation could be hidden from a prior cut by restoring frontier/identity state. | Migration 0018 rejects identity mutation, replacement and non-increasing frontier; maintenance uses update plus conditional insert. Head/validity identities are immutable. Independent tests run with recursive_triggers OFF. |
+| Canonical scope audit materialized all expected scopes on every append. | Cross-scope history amplified write cost. | Migration 0019 adds scope expression indexes and uses indexed existence probes for unexpected scopes; old/new audit results match clean, counter-drift, missing and unexpected states. Same-scope counts remain linear. |
+| Qualification accepted leaf-name filters, unrelated binary PASS output, inaccurate totals, partial receipt files and candidate tree disagreement. | A passing gate could fail to prove the declared cases or candidate. | Require exact qualified cases, binary, PASS inventory, exact totals and complete semantic receipts; reject symlinks and mismatched candidate commit/tree. Capacity executes the repository nextest gate. |
+| Consumer maps described compaction/context ingress beyond actual callers and held stale blobs. | Source APIs could be mistaken for product completion. | Compaction remains registered/not composed; context V2 ingress remains source implemented/product pending; legacy caller is retained. Refresh exact source identities. |
+
+## Verification actually executed
+
+- `just test --locked -p codex-hepta-cognitive-read -p codex-hepta-context-compiler -p codex-hepta-learning-ledger`: 226 passed, one explicitly ignored target-host signed writer growth test. Counts are 56/49/121. Original tested blobs and log are retained in `qualification/cognitive-read/audit-20261001/LOCAL_REGRESSION.json`; this is a working-tree observation, not a qualification rebound to the final commit.
+- Scoped `just fix` and strict clippy (`-D warnings`) passed for those three packages. Repository `just fmt` completed; unrelated baseline formatter churn was restored. Formatting changes do not imply a new execution receipt.
+- Independent Python/SQLite adversarial suite: 79 passed. Compiled migrations match the canonical schema digest, weak definitions change the digest, legitimate maintenance remains audit-clean, replacement and identity attacks fail, and old/new audit drift categories match.
+- SQLite 3.53.1 in-memory fixture, 2,000 sources across 20 scopes: target append approximate VM instructions 240,900 before migration 0019 versus 8,000 after (about 30 times fewer). Observed elapsed times 4.65 ms versus 1.14 ms. This is an illustrative fixture, not Rust owner latency, production p99 or a general constant-time claim. Machine-readable observation is retained beside the local regression record.
+- Allocation probe: 4,096 heads with 64 citations, max_results=1: cumulative allocated bytes 120,811,008 to 102,158,547. V2 256-byte cap: 131,709,281 to 102,152,073 with unchanged result bytes. One million duplicate allowed kinds: 6,225,912 to 24. Full snapshot integrity validation still has a separate cost; these are cumulative allocations, not peak RSS.
+- Full memory/Agentd/native builds and Bazel lock refresh were attempted but exhausted the shared 32 GB filesystem before completion. They are not recorded as passing. Internal Cargo lock edges were repaired; MODULE.bazel.lock was not manually fabricated.
+
+## Completion assessment and remaining work
+
+| Layer | Assessment | Required closure |
+| --- | --- | --- |
+| Stateless projection and context/ledger focused behavior | Implemented and focused regressions passing | Exact committed source and synthetic merge gates. |
+| SQLite witness and indexed owner admission | Source repaired; independent SQL adversarial checks passing | Execute Rust owner migration/recovery tests and workload gates on a host with enough disk. Oracle changes reject older recovery anchors; independently re-establish recovery through the owner process. |
+| Agentd publication and native final use | Source composed, fresh observations retained | Complete ordinary product/native qualification, including unknown-send behavior. Observation remains distinct from a mutation lease. |
+| Learning preparation | Durable identity collision repaired | Persist owner-issued preparation identity through ordinary response/native attempt and automatic delivery-to-learning ingestion. Explicit inspection is not that handoff. |
+| Compaction | Authority-free candidate owner API | Integrate a normal product caller and existing-owner checkpoint publication with independent evidence. |
+| Context compiler V2 | Local revision-bound ingress | Compose the provider-bound ordinary product path and prove physical use; legacy composition alone does not satisfy this. |
+| Acceptance and release | Pending | Target-host measurements, signed independent evidence, external acceptance and governed activation/release. |
+
+No numeric completion percentage is justified without an agreed acceptance denominator. All production implementation, product execution proof, independent acceptance, activation and release claims stay false where previously pending. The repeated audit converged on the reproduced source defects above; it does not establish that no future optimization or undiscovered issue exists. The remaining product handoffs are substantive development work, not documentation-only gaps, and require ordinary product contracts plus execution evidence.

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Read-only exact-candidate qualification. No source mutation or release authority."""
+
 from __future__ import annotations
 
 import argparse
@@ -42,9 +43,7 @@ BENCHMARK_SCHEMAS = {
 
 
 def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
-    packages = [
-        argument for package in PACKAGES for argument in ("-p", package)
-    ]
+    packages = [argument for package in PACKAGES for argument in ("-p", package)]
     cargo = ["cargo", "--manifest-path", "codex-rs/Cargo.toml"]
     result = {
         "test-runner": ["cargo", "nextest", "--version"],
@@ -233,10 +232,7 @@ def digest(path: Path) -> str:
 
 
 def validate_measurement(label: str, value: object) -> list[str]:
-    if (
-        not isinstance(value, dict)
-        or value.get("schema") != BENCHMARK_SCHEMAS[label]
-    ):
+    if not isinstance(value, dict) or value.get("schema") != BENCHMARK_SCHEMAS[label]:
         return [f"{label}: wrong measurement schema"]
     problems = []
     if type(value.get("iterations")) is not int or value["iterations"] < 32:
@@ -245,13 +241,10 @@ def validate_measurement(label: str, value: object) -> list[str]:
     def distribution(row: object, unit: str) -> bool:
         if not isinstance(row, dict):
             return False
-        fields = [
-            row.get(f"p{level}_{unit}") for level in (50, 95, 99)
-        ]
-        return (
-            all(type(item) is int and item >= 0 for item in fields)
-            and fields == sorted(fields)
-        )
+        fields = [row.get(f"p{level}_{unit}") for level in (50, 95, 99)]
+        return all(
+            type(item) is int and item >= 0 for item in fields
+        ) and fields == sorted(fields)
 
     if label == "benchmark":
         if (
@@ -259,9 +252,7 @@ def validate_measurement(label: str, value: object) -> list[str]:
             or value.get("requested_ids") != 512
             or not distribution(value, "us")
         ):
-            problems.append(
-                f"{label}: missing workload or latency distribution"
-            )
+            problems.append(f"{label}: missing workload or latency distribution")
     else:
         cases = value.get("cases")
         expected = {
@@ -291,9 +282,7 @@ def validate_measurement(label: str, value: object) -> list[str]:
                 "projection_only",
             ):
                 if not distribution(row.get(mode), "ns"):
-                    problems.append(
-                        f"{label}: invalid distribution for {mode}"
-                    )
+                    problems.append(f"{label}: invalid distribution for {mode}")
         if observed != expected:
             problems.append(f"{label}: workload matrix identity mismatch")
     return problems
@@ -324,11 +313,26 @@ def validate_nextest_version(log: str) -> list[str]:
     assert first is not None
     assert commit is not None
     assert commit_date is not None
-    if (
-        first.group(1) != commit.group(1)[:9]
-        or first.group(2) != commit_date.group(1)
-    ):
+    if first.group(1) != commit.group(1)[:9] or first.group(2) != commit_date.group(1):
         return ["test-runner: inconsistent pinned nextest metadata"]
+    return []
+
+
+def nextest_log_problems(
+    label: str, log: str, expected_count: int | None = None
+) -> list[str]:
+    """Require a successful nextest summary, optionally for an exact case set."""
+    summaries = re.findall(
+        r"(?m)^\s*Summary\s+\[[^]\r\n]+\]\s+(\d+) tests? run:\s+(\d+) passed\b[^\r\n]*$",
+        re.sub(r"\x1b\[[0-9;]*m", "", log),
+    )
+    if not summaries:
+        return [f"{label}: no successful nextest execution summary"]
+    executed, passed = (int(value) for value in summaries[-1])
+    if executed <= 0 or passed != executed:
+        return [f"{label}: no successful nextest execution summary"]
+    if expected_count is not None and executed != expected_count:
+        return [f"{label}: expected exactly {expected_count} executed cases"]
     return []
 
 
@@ -341,38 +345,25 @@ def validate_evidence(
         record = evidence / f"{label}.command.json"
         log = evidence / f"{label}.log"
         code = evidence / f"{label}.exit-code"
-        if any(
-            not path.is_file() or path.is_symlink()
-            for path in (record, log, code)
-        ):
+        if any(not path.is_file() or path.is_symlink() for path in (record, log, code)):
             problems.append(f"{label}: missing command/log/exit code")
             continue
         try:
             if json.loads(record.read_text()) != argv:
-                problems.append(
-                    f"{label}: command differs from the required gate"
-                )
+                problems.append(f"{label}: command differs from the required gate")
             if code.read_text().strip() != "0":
                 problems.append(f"{label}: unsuccessful command")
         except (ValueError, OSError) as error:
             problems.append(f"{label}: invalid command record: {error}")
         if label == "test-runner":
-            problems.extend(
-                validate_nextest_version(
-                    log.read_text(errors="replace")
-                )
-            )
+            problems.extend(validate_nextest_version(log.read_text(errors="replace")))
         if label in TEST_GATES:
             body = re.sub(
                 r"\x1b\[[0-9;]*m",
                 "",
                 log.read_text(errors="replace"),
             )
-            counts = re.findall(r"\b(\d+) tests? run\b", body)
-            if not counts or int(counts[-1]) == 0:
-                problems.append(
-                    f"{label}: no positive nextest execution summary"
-                )
+            problems.extend(nextest_log_problems(label, body))
             if label == "native-final-use-e2e":
                 # Ignore summaries or test-name strings printed by other tests.
                 # Require the actual nextest PASS row for the one exact case.
@@ -382,14 +373,9 @@ def validate_evidence(
                     rf"{re.escape(NATIVE_FINAL_USE_TEST)}\s*$",
                     body,
                 )
-                if (
-                    not counts
-                    or int(counts[-1]) != 1
-                    or passed_case is None
-                ):
+                if nextest_log_problems(label, body, 1) or passed_case is None:
                     problems.append(
-                        "native-final-use-e2e: "
-                        "exact physical worker case not proved"
+                        "native-final-use-e2e: exact physical worker case not proved"
                     )
         if label in BENCHMARK_SCHEMAS:
             path = evidence / f"{label}.json"
@@ -402,17 +388,13 @@ def validate_evidence(
                 AttributeError,
                 TypeError,
             ) as error:
-                problems.append(
-                    f"{label}: missing or invalid measurement: {error}"
-                )
+                problems.append(f"{label}: missing or invalid measurement: {error}")
     return problems
 
 
 def git(root: Path, *args: str) -> str:
     env = {
-        key: value
-        for key, value in os.environ.items()
-        if not key.startswith("GIT_")
+        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
     }
     env.update(
         GIT_NO_REPLACE_OBJECTS="1",
@@ -439,33 +421,22 @@ def validate_candidate_claims(
         if isinstance(value, dict):
             direct = [value["activation"]] if "activation" in value else []
             return direct + [
-                flag
-                for child in value.values()
-                for flag in activations(child)
+                flag for child in value.values() for flag in activations(child)
             ]
         if isinstance(value, list):
-            return [
-                flag
-                for child in value
-                for flag in activations(child)
-            ]
+            return [flag for child in value for flag in activations(child)]
         return []
 
     problems = []
     flags = activations(mapping)
     if not flags or any(flag is not False for flag in flags):
-        problems.append(
-            "candidate implementation map must remain explicitly inactive"
-        )
+        problems.append("candidate implementation map must remain explicitly inactive")
     if kind == "source-head" and source and candidate != source:
-        problems.append(
-            "source-head receipt does not match the frozen source input"
-        )
+        problems.append("source-head receipt does not match the frozen source input")
     if kind == "merge-candidate":
         if not source or not base or parents != [base, source]:
             problems.append(
-                "merge receipt must bind the exact ordered "
-                "base/source parents"
+                "merge receipt must bind the exact ordered base/source parents"
             )
     return problems
 
@@ -484,24 +455,18 @@ def emit(
         raise ValueError("exact candidate identity mismatch")
     if kind not in {"source-head", "merge-candidate"}:
         raise ValueError("unknown qualification kind")
-    if (
-        not evidence.resolve().is_relative_to(
-            root.resolve() / ".hepta-evidence"
-        )
-        or not output.resolve().is_relative_to(evidence.resolve())
-    ):
+    if not evidence.resolve().is_relative_to(
+        root.resolve() / ".hepta-evidence"
+    ) or not output.resolve().is_relative_to(evidence.resolve()):
         raise ValueError(
-            "evidence must stay under the repository "
-            ".hepta-evidence directory"
+            "evidence must stay under the repository .hepta-evidence directory"
         )
     problems = validate_evidence(
         evidence,
         commands(candidate, evidence),
     )
     if git(root, "status", "--porcelain", "--untracked-files=no"):
-        problems.append(
-            "candidate tracked worktree changed during qualification"
-        )
+        problems.append("candidate tracked worktree changed during qualification")
     parents = git(
         root,
         "show",
@@ -513,8 +478,7 @@ def emit(
         git(
             root,
             "show",
-            f"{candidate}:docs/modules/cognitive.read/"
-            "IMPLEMENTATION_MAP.json",
+            f"{candidate}:docs/modules/cognitive.read/IMPLEMENTATION_MAP.json",
         )
     )
     event = (
@@ -523,14 +487,12 @@ def emit(
         else {}
     )
     pull_request = event.get("pull_request", {})
-    source = (
-        os.environ.get("COGNITIVE_READ_SOURCE_SHA")
-        or pull_request.get("head", {}).get("sha")
-    )
-    base = (
-        os.environ.get("COGNITIVE_READ_BASE_SHA")
-        or pull_request.get("base", {}).get("sha")
-    )
+    source = os.environ.get("COGNITIVE_READ_SOURCE_SHA") or pull_request.get(
+        "head", {}
+    ).get("sha")
+    base = os.environ.get("COGNITIVE_READ_BASE_SHA") or pull_request.get(
+        "base", {}
+    ).get("sha")
     problems.extend(
         validate_candidate_claims(
             candidate,
@@ -545,11 +507,7 @@ def emit(
     for path in sorted(evidence.rglob("*")):
         if path.is_symlink():
             raise ValueError("evidence symlinks are not accepted")
-        if (
-            path.is_file()
-            and path != output
-            and path.name != "SHA256SUMS"
-        ):
+        if path.is_file() and path != output and path.name != "SHA256SUMS":
             inventory.append(
                 {
                     "path": path.relative_to(evidence).as_posix(),
@@ -608,9 +566,7 @@ def emit(
             "host or deployment acceptance."
         ),
     }
-    output.write_text(
-        json.dumps(receipt, indent=2, sort_keys=True) + "\n"
-    )
+    output.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
     return not problems
 
 
@@ -626,19 +582,13 @@ def run(
         ("merge-candidate", "merge-candidate"),
     }:
         raise ValueError("kind/profile mismatch")
-    if (
-        git(root, "rev-parse", "HEAD") != candidate
-        or git(root, "status", "--porcelain", "--untracked-files=no")
+    if git(root, "rev-parse", "HEAD") != candidate or git(
+        root, "status", "--porcelain", "--untracked-files=no"
     ):
         raise ValueError("candidate mismatch or dirty tracked source")
     evidence = (root / relative_evidence).resolve()
-    if (
-        not evidence.is_relative_to(root / ".hepta-evidence")
-        or evidence.exists()
-    ):
-        raise ValueError(
-            "require a new evidence directory below .hepta-evidence"
-        )
+    if not evidence.is_relative_to(root / ".hepta-evidence") or evidence.exists():
+        raise ValueError("require a new evidence directory below .hepta-evidence")
     evidence.mkdir(parents=True)
     env = dict(
         os.environ,
@@ -660,21 +610,15 @@ def run(
             )
         except (OSError, subprocess.CalledProcessError) as error:
             versions.append(f"{tool}: unavailable: {error}")
-    (evidence / "toolchain.txt").write_text(
-        "\n".join(versions) + "\n"
-    )
+    (evidence / "toolchain.txt").write_text("\n".join(versions) + "\n")
     for label, argv in commands(candidate, evidence).items():
-        (evidence / f"{label}.command.json").write_text(
-            json.dumps(argv) + "\n"
-        )
+        (evidence / f"{label}.command.json").write_text(json.dumps(argv) + "\n")
         print(f"[{label}] {argv}", flush=True)
         start = time.monotonic_ns()
         with (evidence / f"{label}.log").open("w") as log:
             try:
                 if label in BENCHMARK_SCHEMAS:
-                    with (
-                        evidence / f"{label}.json"
-                    ).open("w") as measurement:
+                    with (evidence / f"{label}.json").open("w") as measurement:
                         code = subprocess.run(
                             argv,
                             cwd=root,
@@ -695,9 +639,7 @@ def run(
             except OSError as error:
                 log.write(str(error) + "\n")
                 code = 127
-        (evidence / f"{label}.exit-code").write_text(
-            f"{code}\n"
-        )
+        (evidence / f"{label}.exit-code").write_text(f"{code}\n")
         (evidence / f"{label}.elapsed-ns").write_text(
             f"{time.monotonic_ns() - start}\n"
         )
@@ -713,14 +655,14 @@ def run(
     files = [path for path in files if path.is_file()]
     (evidence / "SHA256SUMS").write_text(
         "".join(
-            f"{digest(path)}  "
-            f"{path.relative_to(evidence).as_posix()}\n"
+            f"{digest(path)}  {path.relative_to(evidence).as_posix()}\n"
             for path in files
         )
     )
-    bundle = Path(
-        os.environ.get("RUNNER_TEMP", str(evidence.parent))
-    ) / f"cognitive-read-{kind}-{candidate}.tar"
+    bundle = (
+        Path(os.environ.get("RUNNER_TEMP", str(evidence.parent)))
+        / f"cognitive-read-{kind}-{candidate}.tar"
+    )
     with tarfile.open(bundle, "w") as archive:
         for path in sorted(evidence.rglob("*")):
             if path.is_file():
@@ -733,15 +675,11 @@ def run(
                 with path.open("rb") as handle:
                     archive.addfile(info, handle)
     bundle_sha = Path(str(bundle) + ".sha256")
-    bundle_sha.write_text(
-        f"{digest(bundle)}  {bundle.name}\n"
-    )
+    bundle_sha.write_text(f"{digest(bundle)}  {bundle.name}\n")
     if "GITHUB_OUTPUT" in os.environ:
         with Path(os.environ["GITHUB_OUTPUT"]).open("a") as handle:
             handle.write(
-                f"failed={int(not passed)}\n"
-                f"bundle={bundle}\n"
-                f"bundle_sha={bundle_sha}\n"
+                f"failed={int(not passed)}\nbundle={bundle}\nbundle_sha={bundle_sha}\n"
             )
     print(
         json.dumps(
