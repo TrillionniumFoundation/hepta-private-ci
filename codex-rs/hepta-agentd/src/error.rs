@@ -5,7 +5,11 @@ use std::path::PathBuf;
 
 use codex_hepta_automation::AutomationError;
 use codex_hepta_cognitive_store::DurableCognitiveStoreError;
-use codex_hepta_compact_engine::CompactionCoordinatorErrorV2;
+use codex_hepta_compact_engine::{
+    CompactionCoordinatorErrorV2, CompactionErrorClassV1,
+    CompactionErrorSemanticsV1, CompactionRecoveryDirectiveV1,
+    CurrentSourceValidatedRecoveryErrorV1,
+};
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_memory::ProductionCognitiveMutationError;
 use codex_hepta_memory::ProductionWriterError;
@@ -25,6 +29,8 @@ pub enum AgentdError {
     #[error(transparent)]
     Compaction(#[from] CompactionCoordinatorErrorV2),
     #[error(transparent)]
+    CompactionSourceUse(#[from] CurrentSourceValidatedRecoveryErrorV1),
+    #[error(transparent)]
     Fleet(#[from] FleetRegistryError),
     #[error(transparent)]
     Automation(#[from] AutomationError),
@@ -38,6 +44,34 @@ pub enum AgentdError {
     ProductionCognitiveMutation(#[from] ProductionCognitiveMutationError),
     #[error(transparent)]
     CognitiveStore(#[from] DurableCognitiveStoreError),
+}
+
+impl AgentdError {
+    /// Preserve compact.engine's stable machine-readable error family through
+    /// the Agentd product adapter. Non-compaction errors intentionally return
+    /// `None` rather than being forced into a compaction recovery policy.
+    #[must_use]
+    pub fn compaction_error_class(&self) -> Option<CompactionErrorClassV1> {
+        match self {
+            Self::Compaction(error) => Some(error.error_class()),
+            Self::CompactionSourceUse(error) => Some(error.error_class()),
+            _ => None,
+        }
+    }
+
+    /// Recovery action paired with `compaction_error_class`.
+    #[must_use]
+    pub fn compaction_recovery_directive(
+        &self,
+    ) -> Option<CompactionRecoveryDirectiveV1> {
+        match self {
+            Self::Compaction(error) => Some(error.recovery_directive()),
+            Self::CompactionSourceUse(error) => {
+                Some(error.recovery_directive())
+            }
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug)]
