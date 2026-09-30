@@ -28,7 +28,7 @@ FAMILIES = (
     "pinned", "closure_v2", "admission_v3", "dataset_revocation",
     "lifecycle_journal", "selection",
 )
-GATES = ("closure", "build", "clippy", "format", "inventory", "tests")
+GATES = ("closure", "build", "clippy", "format", "inventory", "tests", "process_crash", "daemon_process", "product_process")
 MAX_REPORT = 16 * 1024 * 1024
 MAX_OUTPUT = 64 * 1024 * 1024
 RUNNER_KEYS = ("GITHUB_REPOSITORY", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB", "RUNNER_OS")
@@ -286,6 +286,22 @@ def qualify(root: Path, out: Path, source: str, base: str, lane: str) -> int:
         "format": ["cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml", "-p", PACKAGE, "--", "--check"],
         "inventory": ["cargo", "nextest", "list", *package, "--ignore-default-filter", "--message-format", "json"],
         "tests": ["just", "test", "--locked", "-p", PACKAGE, "--ignore-default-filter", "--run-ignored", "all", "--retries", "0", "--no-fail-fast"],
+        "process_crash": [
+            "cargo", "test", *package,
+            "sigkill_every_durable_phase_reconciles_exactly_and_preserves_writer_exclusion",
+            "--", "--exact", "--test-threads=1",
+        ],
+        "daemon_process": [
+            "cargo", "test", *package,
+            "--test", "artifactd_process",
+            "--", "--test-threads=1",
+        ],
+        "product_process": [
+            "cargo", "test", "--manifest-path", "codex-rs/Cargo.toml", "--locked",
+            "-p", "codex-hepta-shadow-qualification",
+            "existing_artifact_owner_new_process_predictions_and_revoked_rollback",
+            "--", "--exact", "--test-threads=1",
+        ],
     }
     gates = {}
     for name, argv in commands.items():
