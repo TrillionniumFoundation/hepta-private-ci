@@ -29,7 +29,11 @@ use crate::recovery::{
     RecoveryStoreV1,
 };
 use crate::{
-    VerifiedCompactionPublicationV1, VerifiedCompactionTrustRegistryV1,
+    CompactionErrorClassV1, CompactionErrorSemanticsV1,
+    CompactionRecoveryDirectiveV1, CurrentSourceUseBindingV1,
+    CurrentSourceUseErrorV1, CurrentSourceUseReceiptV1,
+    CurrentSourceUseValidatorV1, VerifiedCompactionPublicationV1,
+    VerifiedCompactionTrustRegistryV1,
 };
 
 pub const MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2: &str =
@@ -39,10 +43,80 @@ const DEFAULT_RECOVERY_BATCH: u32 = 256;
 const LEGACY_OUTBOX_CLAIM_SECONDS: u64 = 300;
 const LEGACY_OUTBOX_WORKER_ID: &str = "legacy-product-worker";
 
+#[derive(Debug, thiserror::Error)]
+pub enum CurrentSourceValidatedRecoveryErrorV1 {
+    #[error(transparent)]
+    Coordinator(#[from] CompactionCoordinatorErrorV2),
+    #[error(transparent)]
+    CurrentSource(#[from] CurrentSourceUseErrorV1),
+}
+
+impl CompactionErrorSemanticsV1 for CurrentSourceValidatedRecoveryErrorV1 {
+    fn error_class(&self) -> CompactionErrorClassV1 {
+        match self {
+            Self::Coordinator(error) => error.error_class(),
+            Self::CurrentSource(CurrentSourceUseErrorV1::InvalidBinding) => {
+                CompactionErrorClassV1::InvalidInput
+            }
+            Self::CurrentSource(CurrentSourceUseErrorV1::Unavailable) => {
+                CompactionErrorClassV1::RecoveryRequired
+            }
+            Self::CurrentSource(
+                CurrentSourceUseErrorV1::Rejected | CurrentSourceUseErrorV1::Stale,
+            ) => CompactionErrorClassV1::TrustRejected,
+        }
+    }
+
+    fn recovery_directive(&self) -> CompactionRecoveryDirectiveV1 {
+        match self {
+            Self::Coordinator(error) => error.recovery_directive(),
+            Self::CurrentSource(CurrentSourceUseErrorV1::InvalidBinding) => {
+                CompactionRecoveryDirectiveV1::DoNotRetry
+            }
+            Self::CurrentSource(CurrentSourceUseErrorV1::Unavailable) => {
+                CompactionRecoveryDirectiveV1::RunReconciler
+            }
+            Self::CurrentSource(
+                CurrentSourceUseErrorV1::Rejected | CurrentSourceUseErrorV1::Stale,
+            ) => CompactionRecoveryDirectiveV1::AwaitManifestOrOperator,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct CurrentSourceValidatedSelectionV1 {
+    selection: VerifiedCompactionSelectionV2,
+    binding: CurrentSourceUseBindingV1,
+    receipt: CurrentSourceUseReceiptV1,
+}
+
+impl CurrentSourceValidatedSelectionV1 {
+    #[must_use]
+    pub fn selection(&self) -> &VerifiedCompactionSelectionV2 {
+        &self.selection
+    }
+
+    #[must_use]
+    pub fn binding(&self) -> &CurrentSourceUseBindingV1 {
+        &self.binding
+    }
+
+    #[must_use]
+    pub fn receipt(&self) -> &CurrentSourceUseReceiptV1 {
+        &self.receipt
+    }
+
+    #[must_use]
+    pub fn into_selection(self) -> VerifiedCompactionSelectionV2 {
+        self.selection
+    }
+}
+
 #[derive(Clone)]
 pub struct MemoryCheckpointCoordinatorV2 {
     inner: guarded::MemoryCheckpointCoordinatorV2,
     recovery: RecoveryStoreV1,
+    lease_epoch: u64,
 }
 
 impl MemoryCheckpointCoordinatorV2 {
@@ -130,7 +204,11 @@ impl MemoryCheckpointCoordinatorV2 {
             .await?;
         require_safe_startup(startup)?;
 
-        Ok(Self { inner, recovery })
+        Ok(Self {
+            inner,
+            recovery,
+            lease_epoch,
+        })
     }
 
     #[must_use]
@@ -141,6 +219,11 @@ impl MemoryCheckpointCoordinatorV2 {
     #[must_use]
     pub fn active_registry_digest(&self) -> Digest32 {
         self.inner.active_registry_digest()
+    }
+
+    #[must_use]
+    pub const fn lease_epoch(&self) -> u64 {
+        self.lease_epoch
     }
 
     pub async fn renew_lease(
@@ -192,6 +275,8 @@ impl MemoryCheckpointCoordinatorV2 {
         Ok(receipt)
     }
 
+    /// Low-level reconstruction used by recovery qualification. Product hosts
+    /// must call `recover_current_checkpoint_validated` before exposing payload.
     pub async fn recover_current_checkpoint(
         &self,
         scope_id: &str,
@@ -211,6 +296,52 @@ impl MemoryCheckpointCoordinatorV2 {
         self.inner
             .recover_current_checkpoint(scope_id, purpose_id, now_unix_seconds)
             .await
+    }
+
+    pub async fn recover_current_checkpoint_validated(
+        &self,
+        scope_id: &str,
+        purpose_id: &str,
+        now_unix_seconds: u64,
+        validator: &dyn CurrentSourceUseValidatorV1,
+    ) -> Result<Option<CurrentSourceValidatedSelectionV1>, CurrentSourceValidatedRecoveryErrorV1>
+    {
+        let Some(initial) = self
+            .recover_current_checkpoint(scope_id, purpose_id, now_unix_seconds)
+            .await?
+        else {
+            return Ok(None);
+        };
+        let binding = current_source_binding(&initial, self.lease_epoch);
+        binding.validate()?;
+        let receipt = validator
+            .validate_current_use(&binding, now_unix_seconds)
+            .await?;
+        receipt.validate_for(&binding, now_unix_seconds)?;
+
+        // The source-owner call may wait on I/O. Recheck the exact durable
+        // owner/manifest/lease and current head afterwards so the receipt cannot
+        // authorize a different checkpoint selected during that wait.
+        self.verify_integrity(now_unix_seconds).await?;
+        let Some(rechecked) = self
+            .recover_current_checkpoint(scope_id, purpose_id, now_unix_seconds)
+            .await?
+        else {
+            return Err(CurrentSourceUseErrorV1::Stale.into());
+        };
+        let rechecked_binding = current_source_binding(&rechecked, self.lease_epoch);
+        if rechecked.checkpoint_digest() != initial.checkpoint_digest()
+            || rechecked.publication_digest() != initial.publication_digest()
+            || rechecked_binding != binding
+        {
+            return Err(CurrentSourceUseErrorV1::Stale.into());
+        }
+        receipt.validate_for(&rechecked_binding, now_unix_seconds)?;
+        Ok(Some(CurrentSourceValidatedSelectionV1 {
+            selection: rechecked,
+            binding: rechecked_binding,
+            receipt,
+        }))
     }
 
     pub async fn revoke_checkpoint(
@@ -365,6 +496,23 @@ impl MemoryCheckpointCoordinatorV2 {
     ) -> Result<(), CompactionCoordinatorErrorV2> {
         self.inner.verify_integrity(now_unix_seconds).await?;
         self.recovery.verify_local_state(now_unix_seconds).await
+    }
+}
+
+fn current_source_binding(
+    selection: &VerifiedCompactionSelectionV2,
+    owner_generation: u64,
+) -> CurrentSourceUseBindingV1 {
+    let candidate = selection.publication().candidate();
+    CurrentSourceUseBindingV1 {
+        owner_id: selection.owner_id().to_string(),
+        owner_generation,
+        source_snapshot_digest: candidate.source_snapshot().vector_digest,
+        source_memory_snapshot_digest: candidate.source_memory_snapshot_digest(),
+        scope_id: selection.scope_id().to_string(),
+        purpose_id: selection.purpose_id().to_string(),
+        checkpoint_digest: selection.checkpoint_digest(),
+        payload_digest: candidate.semantic_payload().payload_digest,
     }
 }
 
