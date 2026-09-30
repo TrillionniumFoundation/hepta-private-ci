@@ -21,10 +21,46 @@ PROFILES = {
     "qualification": ["--features", "qualification-cognitive-write"],
 }
 PROBES = {
-    "reader": ("pub fn reader(v: store::DurableCognitiveReadStore) -> store::DurableCognitiveReadStore { v }", None, ""),
-    "raw-owner": ("use store::DurableCognitiveStore; pub fn owner(_: Option<DurableCognitiveStore>) {}", "E0432", "DurableCognitiveStore"),
-    "private-backend": ("pub fn owner(v: &store::DurableCognitiveReadStore) { let _ = &v.backend; }", "E0616", "backend"),
-    "read-cannot-write": ("pub fn write(v: &store::DurableCognitiveReadStore) { let _ = v.remember_with_kg(); }", "E0599", "remember_with_kg"),
+    "reader": (
+        "pub fn reader(v: store::DurableCognitiveReadCapability) -> store::DurableCognitiveReadCapability { v }",
+        None,
+        "",
+    ),
+    "reader-compat": (
+        "pub fn reader(v: store::DurableCognitiveReadStore) -> store::DurableCognitiveReadStore { v }",
+        None,
+        "",
+    ),
+    "federation-policy": (
+        "use store::FederationPolicyCapability; pub fn policy(v: FederationPolicyCapability) -> FederationPolicyCapability { v }",
+        "E0432",
+        "FederationPolicyCapability",
+    ),
+    "raw-owner": (
+        "use store::DurableCognitiveStore; pub fn owner(_: Option<DurableCognitiveStore>) {}",
+        "E0432",
+        "DurableCognitiveStore",
+    ),
+    "private-backend": (
+        "pub fn owner(v: &store::DurableCognitiveReadCapability) { let _ = &v.backend; }",
+        "E0616",
+        "backend",
+    ),
+    "read-cannot-write": (
+        "pub fn write(v: &store::DurableCognitiveReadCapability) { let _ = v.remember_with_kg(); }",
+        "E0599",
+        "remember_with_kg",
+    ),
+    "read-cannot-grant": (
+        "pub fn grant(v: &store::DurableCognitiveReadCapability) { let _ = v.grant_federated_recall(); }",
+        "E0599",
+        "grant_federated_recall",
+    ),
+    "read-cannot-revoke": (
+        "pub fn revoke(v: &store::DurableCognitiveReadCapability) { let _ = v.revoke_federated_recall_by_id(); }",
+        "E0599",
+        "revoke_federated_recall_by_id",
+    ),
 }
 
 
@@ -80,6 +116,8 @@ def run(profile: str, directory: Path) -> dict:
     results = []
     for name, (source, code, symbol) in PROBES.items():
         if name == "raw-owner" and profile == "qualification":
+            code = None
+        if name == "federation-policy" and profile != "default":
             code = None
         path = directory / f"{profile.replace('-', '_')}_{name.replace('-', '_')}.rs"
         path.write_text(source + "\n", encoding="utf-8")

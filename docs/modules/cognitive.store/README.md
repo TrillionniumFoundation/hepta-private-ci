@@ -4,14 +4,20 @@ This directory is the canonical entry point for the `cognitive.store` source can
 
 ## Current truth
 
-The machine-readable state is [CURRENT_STATE.json](CURRENT_STATE.json). Its generated [CURRENT_STATUS.md](CURRENT_STATUS.md) maps recovery, witness, publication, revocation, rollback, lifecycle and evidence invariants to exact sources and regression tests. [EXECUTION_DOSSIER.md](EXECUTION_DOSSIER.md) is generated from that state and the committed [QUALIFICATION_PLAN.json](QUALIFICATION_PLAN.json); neither generated document is a pass receipt.
+Start with [ARCHITECTURE_CURRENT.md](ARCHITECTURE_CURRENT.md), the sole short-form description of the current implementation. [READINESS.json](READINESS.json) is the machine-readable capability matrix and fail-closed qualification policy. [OPERATION_STATUS.json](OPERATION_STATUS.json) records every mapped operation with the five independent dimensions `source_present`, `compiled`, `repository_qualified`, `target_host_qualified`, and `released`.
+
+The invariant state remains [CURRENT_STATE.json](CURRENT_STATE.json). Its generated [CURRENT_STATUS.md](CURRENT_STATUS.md) maps recovery, witness, publication, revocation, rollback, lifecycle and evidence invariants to exact sources and regression tests. [EXECUTION_DOSSIER.md](EXECUTION_DOSSIER.md) is generated from that state and the committed [QUALIFICATION_PLAN.json](QUALIFICATION_PLAN.json); neither generated document is a pass receipt.
 
 The [September 28 implementation note](IMPLEMENTATION_UPDATE_20260928.md) describes the current ordinary-host read capability, three-profile API probes, optimized recovery measurements and externally signed per-storage-owner lifecycle reconciliation. It distinguishes those implementations from still-required destructive pruning, genuine host evidence and actual physical erasure.
 
 | Question | Current answer |
 |---|---|
 | Semantic owner | `codex-hepta-cognitive-store` |
+| In-memory qualification model | `InMemoryCognitiveModel`; `CognitiveStore` is a compatibility spelling |
 | Physical durable owner | `codex_hepta_memory::CognitiveStore` over `cognitive_1.sqlite3` |
+| Durable read surface | `DurableCognitiveReadCapability`; no grant/revoke or semantic mutation methods |
+| Federation policy surface | `FederationPolicyCapability`, available only to named host/qualification features |
+| Production mutation surface | Sealed `ProductionMutationCapability` |
 | Only production write facade | `codex_hepta_agentd::AgentdProductionWriterHost` |
 | Default runtime write authority | None; read-only unless trusted-host bootstrap is supplied |
 | Raw mutable facade alias | Qualification-only, absent from default and normal host profiles |
@@ -44,6 +50,9 @@ No second database, dual writer or shadow authority is permitted.
 
 ## Documents
 
+- [ARCHITECTURE_CURRENT.md](ARCHITECTURE_CURRENT.md): concise current implementation, capability boundaries, qualification truth and matrix.
+- [READINESS.json](READINESS.json): fail-closed candidate, workflow and capability state.
+- [OPERATION_STATUS.json](OPERATION_STATUS.json): enforced five-dimensional status for every implementation-map operation.
 - [TECHNICAL.md](TECHNICAL.md): module architecture and implementation guide.
 - [IMPLEMENTATION_UPDATE_20260928.md](IMPLEMENTATION_UPDATE_20260928.md): normal read API, deployed source binding, release recovery profile, lifecycle receipt schemas and exact execution boundaries.
 - [QUALIFICATION_AND_OBSERVATION_BINDING.md](QUALIFICATION_AND_OBSERVATION_BINDING.md): committed command/workload binding, independent log counters and descriptor-retained publication observation.

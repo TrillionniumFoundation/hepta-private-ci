@@ -12,6 +12,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DIRECTORY = ROOT / "docs/modules/cognitive.store"
+OPERATION_STATUS = DIRECTORY / "OPERATION_STATUS.json"
+READINESS = DIRECTORY / "READINESS.json"
 
 
 def render(state: dict, plan: dict) -> dict[str, str]:
@@ -55,6 +57,45 @@ def render(state: dict, plan: dict) -> dict[str, str]:
     return {"CURRENT_STATUS.md": "\n".join(lines), "EXECUTION_DOSSIER.md": "\n".join(dossier)}
 
 
+def validate_operation_status(mapping: dict) -> int:
+    status = json.loads(OPERATION_STATUS.read_text(encoding="utf-8"))
+    readiness = json.loads(READINESS.read_text(encoding="utf-8"))
+    if status.get("schema") != "hepta.cognitive-store-operation-status.v1":
+        raise SystemExit("unknown cognitive operation-status schema")
+    if readiness.get("schema") != "hepta.cognitive-store-readiness.v1":
+        raise SystemExit("unknown cognitive readiness schema")
+    expected = {row["operation"] for row in mapping["operations"]}
+    observed = set(status.get("operations", {}))
+    if observed != expected:
+        missing = sorted(expected - observed)
+        extra = sorted(observed - expected)
+        raise SystemExit(f"operation-status coverage drift: missing={missing}, extra={extra}")
+    known = {row["id"] for row in readiness.get("knownRegressions", [])}
+    dimensions = (
+        "source_present",
+        "compiled",
+        "repository_qualified",
+        "target_host_qualified",
+        "released",
+    )
+    for name, row in status["operations"].items():
+        if set(dimensions) - set(row):
+            raise SystemExit("operation-status dimensions missing: " + name)
+        if not all(isinstance(row[field], bool) for field in dimensions):
+            raise SystemExit("operation-status dimension is not boolean: " + name)
+        if not row["source_present"]:
+            raise SystemExit("mapped source operation cannot be marked absent: " + name)
+        if any(row[field] for field in dimensions[1:]):
+            raise SystemExit("source documents cannot self-certify operation execution: " + name)
+        regression = row.get("known_regression")
+        if regression is not None and regression not in known:
+            raise SystemExit("operation names an unknown regression: " + name)
+        for field in ("last_tested_sha", "last_successful_run_id", "evidence_digest"):
+            if row.get(field) is not None:
+                raise SystemExit("unqualified operation embeds execution evidence: " + name)
+    return len(observed)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     mode = parser.add_mutually_exclusive_group(required=True)
@@ -91,10 +132,12 @@ def main() -> int:
                     raise SystemExit("invariant symbol is absent: " + value)
         if not set(row["records"]).issubset(commands):
             raise SystemExit("invariant names a missing qualification command")
+    operation_count = validate_operation_status(mapping)
     for name in ("productionImplementation", "productExecutionProved", "independentAcceptance", "activation", "release"):
         if state["gates"].get(name) is not False or mapping["claimBoundary"].get(name) is not False:
             raise SystemExit("source documents cannot self-certify execution or acceptance")
-    print(json.dumps({"status": "passed", "invariants": len(ids), "executionClaim": False}))
+    print(json.dumps({"status": "passed", "invariants": len(ids),
+                      "operations": operation_count, "executionClaim": False}))
     return 0
 
 

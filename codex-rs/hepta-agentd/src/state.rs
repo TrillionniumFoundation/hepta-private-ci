@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::SystemTime;
@@ -8,7 +9,8 @@ use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_automation::AutomationStore;
-use codex_hepta_cognitive_store::DurableCognitiveReadStore as CognitiveStore;
+use codex_hepta_cognitive_store::DurableCognitiveReadCapability;
+use codex_hepta_cognitive_store::FederationPolicyCapability;
 #[cfg(test)]
 use codex_hepta_cognitive_store::DurableCognitiveStore as RawCognitiveStore;
 use codex_hepta_contracts::Sha256Digest;
@@ -32,6 +34,67 @@ use crate::RuntimeComposition;
 
 #[path = "state_control.rs"]
 mod control;
+
+/// Private Agentd composition of two least-privilege capabilities over the
+/// same already-open owner. `Deref` exposes only the read surface to ordinary
+/// state paths; federation mutations are explicit methods on this private host
+/// composition and never appear on the public read capability.
+struct CognitiveStore {
+    read: DurableCognitiveReadCapability,
+    federation_policy: FederationPolicyCapability,
+}
+
+impl CognitiveStore {
+    fn from_runtime(runtime: &CognitiveRuntime) -> Option<Self> {
+        Some(Self {
+            read: DurableCognitiveReadCapability::from_runtime(runtime)?,
+            federation_policy: FederationPolicyCapability::from_runtime(runtime)?,
+        })
+    }
+
+    fn owner_agent_id(&self) -> &codex_hepta_contracts::AgentId {
+        self.read.owner_agent_id()
+    }
+
+    async fn grant_federated_recall(
+        &self,
+        owner_access: &codex_hepta_cognitive_store::CognitiveAccess,
+        request: &codex_hepta_cognitive_store::FederationGrantRequest,
+    ) -> Result<
+        codex_hepta_cognitive_store::FederationCapability,
+        codex_hepta_cognitive_store::DurableCognitiveStoreError,
+    > {
+        self.federation_policy
+            .grant_federated_recall(owner_access, request)
+            .await
+    }
+
+    async fn revoke_federated_recall_by_id(
+        &self,
+        owner_access: &codex_hepta_cognitive_store::CognitiveAccess,
+        capability_id: &codex_hepta_cognitive_store::FederationCapabilityId,
+        revoked_at_unix_seconds: i64,
+    ) -> Result<
+        codex_hepta_cognitive_store::FederationRevocation,
+        codex_hepta_cognitive_store::DurableCognitiveStoreError,
+    > {
+        self.federation_policy
+            .revoke_federated_recall_by_id(
+                owner_access,
+                capability_id,
+                revoked_at_unix_seconds,
+            )
+            .await
+    }
+}
+
+impl Deref for CognitiveStore {
+    type Target = DurableCognitiveReadCapability;
+
+    fn deref(&self) -> &Self::Target {
+        &self.read
+    }
+}
 
 pub(crate) struct AgentdState {
     pub(crate) intelligence_product:
@@ -210,8 +273,9 @@ impl AgentdState {
         producer.submit_topology(request, now).await
     }
 
-    /// Attach only the read capability derived from the already composed
-    /// runtime.  The state object never retains a raw mutable store handle.
+    /// Attach separate read and federation-policy capabilities derived from the
+    /// same already composed runtime. The state object never retains a raw
+    /// mutable store handle and never manufactures a second owner.
     pub(crate) fn attach_cognitive_runtime(
         &self,
         runtime: &CognitiveRuntime,
@@ -234,7 +298,7 @@ impl AgentdState {
         Ok(())
     }
 
-    /// Unit-test-only adapter for legacy fixtures.  Product code cannot call
+    /// Unit-test-only adapter for legacy fixtures. Product code cannot call
     /// this method because it is absent from non-test builds.
     #[cfg(test)]
     pub(crate) fn attach_cognitive_store(

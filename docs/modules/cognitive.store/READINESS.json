@@ -14,6 +14,14 @@
       "regression": "codex-rs/hepta-cognitive-store/tests/production_writer_admission_fence.rs"
     }
   ],
+  "sourceMaterializationPolicy": {
+    "ordinaryGitDiffOnly": true,
+    "workflowReadOnly": true,
+    "workflowMayDeleteItself": false,
+    "workflowMayCommit": false,
+    "workflowMayPush": false,
+    "qualificationTargetsFinalSourceSha": true
+  },
   "qualificationPolicy": {
     "oneCoherentAttempt": true,
     "terminalSuccessOnly": true,
@@ -50,9 +58,12 @@
   "capabilities": {
     "semanticMutation": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
     "writableRecovery": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": "CS-REC-FENCE-001", "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "durableReadCapability": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "federationPolicyCapability": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
     "liveRevocation": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
     "archiveRestore": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
-    "physicalDeletion": {"source_present": false, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null}
+    "physicalDeletion": {"source_present": false, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "compileTimeOwnerIsolation": {"source_present": false, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null}
   },
   "externalGates": [
     "independent signer governance",

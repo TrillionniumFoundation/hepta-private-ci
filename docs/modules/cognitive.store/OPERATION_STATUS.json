@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.cognitive-store-operation-status.v1",
+  "module": "cognitive.store",
+  "statusSemantics": {
+    "source_present": "the bound source path exists in the source snapshot",
+    "compiled": "the exact candidate compiled in a retained terminal-success attempt",
+    "repository_qualified": "all required exact-head and deterministic-merge records passed in one coherent attempt",
+    "target_host_qualified": "selected-host fault, restart, rollback and SLO evidence passed",
+    "released": "independent acceptance and release approval were recorded"
+  },
+  "operations": {
+    "semantic_revision_ledger": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "durable_owner_and_snapshot": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "capability_partitioning": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "writable_recovery": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": "CS-REC-FENCE-001", "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "product_writer_host": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": "CS-REC-FENCE-001", "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "signed_bootstrap_and_rotation": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "canonical_event_durable_bridge": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "recovery_error_boundary": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "exact_candidate_qualification_and_status": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "long_history_capacity_profile": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "shared_experience_policy": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "normal_host_read_pages": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "external_consumer_api_profiles": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "release_recovery_measurement": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "storage_owner_lifecycle_reconciliation": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "expired_operational_evidence": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "encrypted_cold_archive_and_owner_restore_oracle": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "archive_publication_observation": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "bounded_current_signed_file": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "selected_host_evidence_verification": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "retention_checkpoint_readiness": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null},
+    "independent_acceptance_governance": {"source_present": true, "compiled": false, "repository_qualified": false, "target_host_qualified": false, "released": false, "known_regression": null, "last_tested_sha": null, "last_successful_run_id": null, "evidence_digest": null}
+  }
+}

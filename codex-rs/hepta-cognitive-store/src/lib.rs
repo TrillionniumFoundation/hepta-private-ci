@@ -1,7 +1,9 @@
 //! Append-only cognitive ledger with correction and tombstone lineage.
 //!
-//! The store is the only writer of its in-memory qualification ledger. It does
-//! not perform federation, model calls, learning-policy writes or effects.
+//! [`InMemoryCognitiveModel`] is the only writer of its in-memory qualification
+//! ledger. It does not perform federation, model calls, learning-policy writes
+//! or effects. Durable production ownership is exposed only through explicit
+//! read, federation-policy, and sealed mutation capabilities.
 
 #![forbid(unsafe_code)]
 
@@ -33,6 +35,7 @@ pub use durable::CognitiveWriteReceipt;
 pub use durable::DURABLE_BACKEND_ID;
 pub use durable::DURABLE_DATABASE_BASENAME;
 pub use durable::DURABLE_SINGLE_WRITER;
+pub use durable::DurableCognitiveReadCapability;
 pub use durable::DurableCognitiveReadStore;
 pub use durable::DurableCognitiveSnapshot;
 pub use durable::DurableCognitiveSnapshotCursor;
@@ -40,6 +43,16 @@ pub use durable::DurableCognitiveSnapshotPage;
 #[cfg(feature = "qualification-cognitive-write")]
 pub use durable::DurableCognitiveStore;
 pub use durable::DurableCognitiveStoreError;
+pub use durable::FederationCapability;
+pub use durable::FederationCapabilityId;
+pub use durable::FederationCapabilityStatus;
+pub use durable::FederationGrantRequest;
+#[cfg(any(
+    feature = "agentd-production-host",
+    feature = "qualification-cognitive-write"
+))]
+pub use durable::FederationPolicyCapability;
+pub use durable::FederationRevocation;
 pub use durable::ForgetMemoryDraft;
 pub use durable::KgFactSetDraft;
 pub use durable::LedgerSourceKind;
@@ -206,13 +219,18 @@ pub use v2::StoreSnapshotPageV2;
 pub use v2::StoreSnapshotV2;
 pub use v2::bind_canonical_event_to_durable_receipt;
 
-/// Unambiguous name for the in-memory semantic/qualification model.
+/// Compatibility spelling for the in-memory qualification model.
 ///
-/// The physical production owner remains `codex_hepta_memory::CognitiveStore`.
-pub type InMemoryCognitiveModel = CognitiveStore;
+/// New code should use [`InMemoryCognitiveModel`] or
+/// [`QualificationCognitiveStore`] so logs and reviews cannot confuse this
+/// value with the physical SQLite owner.
+pub type CognitiveStore = InMemoryCognitiveModel;
 
-/// Capability-oriented name for the bounded durable read surface.
-pub type DurableCognitiveReadCapability = DurableCognitiveReadStore;
+/// Explicit qualification-oriented spelling for the in-memory model.
+pub type QualificationCognitiveStore = InMemoryCognitiveModel;
+
+/// Concise capability-oriented spelling for the sealed semantic mutation API.
+pub type ProductionMutationCapability = ProductionCognitiveMutationCapability;
 
 const MAX_RECORDS: usize = 16_384;
 
@@ -258,14 +276,17 @@ struct StoredRecord {
     sequence: LogicalSequence,
 }
 
+/// In-memory semantic model used by qualification and pure ledger tests.
+///
+/// This is not the durable SQLite owner and carries no production authority.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct CognitiveStore {
+pub struct InMemoryCognitiveModel {
     records: BTreeMap<StableId, StoredRecord>,
     sequence: LogicalSequence,
     maximum_records: usize,
 }
 
-impl CognitiveStore {
+impl InMemoryCognitiveModel {
     pub fn new(maximum_records: usize) -> Result<Self, Error> {
         if maximum_records == 0 {
             return Err(Error::ZeroCapacity);
