@@ -1,0 +1,58 @@
+name: control.engineering branch convergence
+
+on:
+  push:
+    branches:
+      - codex/control-engineering-readiness-convergence-20260930
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-engineering-branch-convergence-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh-map-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Refresh exact implementation map
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py migrate --module control.engineering
+          git diff --check
+          if ! git diff --quiet; then
+            git config user.name "Hepta Control Engineering CI"
+            git config user.email "hepta-control-engineering-ci@users.noreply.github.com"
+            git add docs/modules/control.engineering/IMPLEMENTATION_MAP.json
+            git commit -s -m "docs(control.engineering): refresh exact implementation map"
+          fi
+      - name: Run control.engineering unit suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -v \
+            -s tools/hepta-engineering-control -p 'test_*.py'
+      - name: Verify repository source and documentation closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-gap-closure.py verify
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Publish validated implementation-map commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:${GITHUB_REF_NAME}"
