@@ -1,0 +1,43 @@
+name: cognitive-types-one-shot-export
+
+on:
+  push:
+    branches: ['codex/cognitive-types-export-once-20260930']
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SOURCE_SHA: 3e3a1237491d40289b058418b2d0fbd014a7ebe1
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          out="$RUNNER_TEMP/cognitive-types-source"
+          mkdir -p "$out"
+          git rev-parse HEAD > "$out/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$out/source-tree.txt"
+          git archive --format=tar HEAD > "$out/source.tar"
+          git bundle create "$out/source.bundle" HEAD
+          (cd "$out" && sha256sum source.tar source.bundle source-sha.txt source-tree.txt > SHA256SUMS)
+      - name: Upload exact source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-source-3e3a1237491d40289b058418b2d0fbd014a7ebe1
+          path: ${{ runner.temp }}/cognitive-types-source
+          if-no-files-found: error
+          retention-days: 3
