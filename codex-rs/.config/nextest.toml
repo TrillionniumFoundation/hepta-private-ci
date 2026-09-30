@@ -137,7 +137,7 @@ retries = 0
 # per-operation and per-child deadlines. Preserve all cuts and serialize fsync
 # contention between the experiments on shared CI disks.
 [[profile.default.overrides]]
-filter = 'package(codex-hepta-neuron) & (test(every_partial_frame_boundary_recovers_only_the_predecessor) | test(durable_process_crash_matrix_v2))'
+filter = 'package(codex-hepta-neuron) & (test(every_partial_frame_boundary_recovers_only_the_predecessor) | test(durable_process_crash_matrix_v2) | test(complete_segment_recovery_never_repairs_a_missing_acknowledged_frame) | test(intermediate_successor_recovery_preserves_every_incomplete_boundary))'
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
