@@ -57,7 +57,7 @@ pub(crate) struct AgentdAutomationEffectHost {
     final_use_scope_digest: Sha256Digest,
     authority: FinalUseAuthority,
     revocations_file: PathBuf,
-    revocation_frontier: Arc<Mutex<(u64, u64)>>,
+    revocation_frontier: Arc<Mutex<FinalUseRevocations>>,
     adapter: HttpProviderEffectAdapter,
 }
 
@@ -168,10 +168,7 @@ impl AgentdAutomationEffectHost {
             ));
         }
         let initial_revocations = read_revocations_file(&config.final_use_revocations_file)?;
-        let frontier = (
-            initial_revocations.authority_epoch,
-            initial_revocations.revision,
-        );
+        let frontier = initial_revocations.clone();
 
         let authority_root = identity
             .layout
@@ -380,20 +377,30 @@ impl AgentdAutomationEffectHost {
             )
         })?;
         let observed = (head.authority_epoch, head.revision);
-        if observed == *frontier {
-            return Ok(());
+        let previous = (frontier.authority_epoch, frontier.revision);
+        if observed == previous {
+            return if head == *frontier {
+                Ok(())
+            } else {
+                Err(AgentdError::GenerationFenced(
+                    "automation effect revocation frontier changed without advancing revision"
+                        .to_string(),
+                ))
+            };
         }
-        if observed.0 < frontier.0 || (observed.0 == frontier.0 && observed.1 < frontier.1) {
+        if observed.0 < previous.0 || (observed.0 == previous.0 && observed.1 < previous.1) {
             return Err(AgentdError::GenerationFenced(
                 "automation effect revocation frontier rolled back".to_string(),
             ));
         }
-        self.authority.update_revocations(head).map_err(|error| {
-            AgentdError::GenerationFenced(format!(
-                "automation effect revocation refresh rejected: {error}"
-            ))
-        })?;
-        *frontier = observed;
+        self.authority
+            .update_revocations(head.clone())
+            .map_err(|error| {
+                AgentdError::GenerationFenced(format!(
+                    "automation effect revocation refresh rejected: {error}"
+                ))
+            })?;
+        *frontier = head;
         Ok(())
     }
 
@@ -459,7 +466,6 @@ impl AgentdAutomationEffectHost {
         )
         .map_err(|error| AgentdError::Protocol(format!("rebuild TaskFlow fence: {error}")))
     }
-
 }
 
 fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV1, AgentdError> {
@@ -570,7 +576,6 @@ mod tests {
     use codex_hepta_automation::TaskFlowStepObservation;
     use codex_hepta_automation::TaskFlowTransition;
     use codex_hepta_contracts::FinalUseGrant;
-    use codex_hepta_contracts::ProviderEffectKey;
     use codex_hepta_contracts::SignedFinalUseGrant;
     use codex_hepta_fleet::AgentManifest;
     use codex_hepta_fleet::FleetRegistry;
@@ -584,7 +589,6 @@ mod tests {
     use wiremock::MockServer;
     use wiremock::ResponseTemplate;
     use wiremock::matchers::body_bytes;
-    use wiremock::matchers::header;
     use wiremock::matchers::method;
     use wiremock::matchers::path;
 
@@ -813,26 +817,25 @@ mod tests {
         prepare_effect(&fixture, now_ms, &intent).await;
 
         let server = MockServer::start().await;
-        let provider_key = ProviderEffectKey::for_logical_effect(
-            &intent.destination_id,
-            &format!("taskflow:{}:{}", intent.run_id, intent.step_id),
-        )
-        .expect("provider key");
         let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
-        let ack = serde_json::json!({
-            "effect_key": provider_key.as_str(),
-            "payload_sha256": intent.payload_digest.as_str(),
-            "provider_operation_id_sha256": provider_operation.as_str(),
-            "status": "completed"
-        });
+        let payload_digest = intent.payload_digest.clone();
         Mock::given(method("POST"))
             .and(path("/dispatch"))
-            .and(header(
-                PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
-                provider_key.as_str(),
-            ))
             .and(body_bytes(WIRE.to_vec()))
-            .respond_with(ResponseTemplate::new(200).set_body_json(ack))
+            .respond_with(move |request: &wiremock::Request| {
+                let key = request
+                    .headers
+                    .get(PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER)
+                    .expect("provider occurrence header")
+                    .to_str()
+                    .expect("key header");
+                ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                    "effect_key": key,
+                    "payload_sha256": payload_digest.as_str(),
+                    "provider_operation_id_sha256": provider_operation.as_str(),
+                    "status": "completed"
+                }))
+            })
             .expect(1)
             .mount(&server)
             .await;
@@ -908,6 +911,44 @@ mod tests {
         let host =
             AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
         let grant = signed_final_use(&intent, now_ms, &final_use_signer);
+        // A different revocation set under the same monotonic frontier is
+        // inconsistent evidence and must reject before provider contact.
+        let mut changed_head = read_revocations_file(&revocations_file).expect("revocation head");
+        changed_head
+            .revoked_grant_ids
+            .insert(grant.grant.grant_id.clone());
+        fs::write(
+            &revocations_file,
+            serde_json::to_vec(&changed_head).expect("head json"),
+        )
+        .expect("equivocated frontier");
+        assert!(matches!(
+            host.execute(
+                &fixture.store,
+                &intent,
+                WIRE,
+                &grant,
+                "agentd-product-effect-dispatch",
+                now_ms + 4,
+            )
+            .await,
+            Err(AgentdError::GenerationFenced(_))
+        ));
+        changed_head.revoked_grant_ids.clear();
+        fs::write(
+            &revocations_file,
+            serde_json::to_vec(&changed_head).expect("head json"),
+        )
+        .expect("restore unchanged head");
+
+        assert!(
+            server
+                .received_requests()
+                .await
+                .expect("requests")
+                .is_empty()
+        );
+
         let receipt = host
             .execute(
                 &fixture.store,
@@ -922,6 +963,26 @@ mod tests {
         assert_eq!(
             receipt.observation,
             Some(TaskFlowStepObservation::Succeeded)
+        );
+        let pending = fixture
+            .store
+            .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, 1)
+            .await
+            .expect("durable provider identity")
+            .expect("attempt");
+        let requests = server.received_requests().await.expect("provider requests");
+        assert_eq!(requests.len(), 1);
+        assert_eq!(
+            requests[0]
+                .headers
+                .get(PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER)
+                .expect("key header")
+                .to_str()
+                .expect("key value"),
+            pending
+                .provider_effect_key
+                .expect("owner-scoped key")
+                .as_str()
         );
 
         let replay = host

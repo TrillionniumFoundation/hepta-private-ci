@@ -6,6 +6,7 @@
 //! fact. Keeping both immutable lets recovery repair the TaskFlow step without
 //! ever inferring terminality from process-local control flow.
 
+use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::Sha256Digest;
 use sqlx::Row;
 
@@ -64,6 +65,7 @@ pub(crate) struct EffectDispatchAttempt {
     pub(crate) grant_nonce_digest: Sha256Digest,
     pub(crate) record_command_id: String,
     pub(crate) started_at_ms: u64,
+    pub(crate) provider_effect_key: Option<ProviderEffectKey>,
     pub(crate) observation: Option<EffectDispatchObservation>,
 }
 
@@ -73,7 +75,54 @@ pub(crate) enum EffectDispatchStart {
     Existing(EffectDispatchAttempt),
 }
 
+pub(crate) enum EffectProviderIdentity {
+    New,
+    OwnerScoped(ProviderEffectKey),
+    LegacyUnscoped,
+}
+
 impl AutomationStore {
+    pub(crate) async fn effect_provider_identity(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        destination_id: &str,
+    ) -> Result<EffectProviderIdentity, TaskFlowError> {
+        let row = sqlx::query(
+            "SELECT destination_id, provider_effect_key
+             FROM taskflow_effect_dispatch_attempts
+             WHERE owner_agent_id = ? AND run_id = ? AND step_id = ?
+             ORDER BY attempt LIMIT 1",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(step_id)
+        .fetch_optional(self.taskflow_pool())
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        let Some(row) = row else {
+            return Ok(EffectProviderIdentity::New);
+        };
+        let destination: String = row
+            .try_get("destination_id")
+            .map_err(|_| TaskFlowError::Corrupt("effect destination".to_string()))?;
+        if destination != destination_id {
+            return Err(TaskFlowError::Conflict(
+                "logical effect destination differs from its original provider identity"
+                    .to_string(),
+            ));
+        }
+        match row
+            .try_get::<Option<String>, _>("provider_effect_key")
+            .map_err(|_| TaskFlowError::Corrupt("effect provider key".to_string()))?
+        {
+            Some(key) => ProviderEffectKey::parse(key)
+                .map(EffectProviderIdentity::OwnerScoped)
+                .map_err(|_| TaskFlowError::Corrupt("effect provider key".to_string())),
+            None => Ok(EffectProviderIdentity::LegacyUnscoped),
+        }
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub(crate) async fn begin_effect_dispatch_attempt(
         &self,
@@ -88,14 +137,15 @@ impl AutomationStore {
         grant_id: &str,
         grant_nonce_digest: &Sha256Digest,
         record_command_id: &str,
+        provider_effect_key: Option<&ProviderEffectKey>,
         started_at_ms: u64,
     ) -> Result<EffectDispatchStart, TaskFlowError> {
         let inserted = sqlx::query(
             "INSERT INTO taskflow_effect_dispatch_attempts (
                 owner_agent_id, run_id, step_id, attempt, intent_digest,
                 payload_digest, binding_digest, destination_id, authority_epoch,
-                grant_id, grant_nonce_digest, record_command_id, started_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                grant_id, grant_nonce_digest, record_command_id, provider_effect_key, started_at_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         )
         .bind(self.taskflow_owner_agent_id().as_str())
         .bind(run_id)
@@ -109,6 +159,7 @@ impl AutomationStore {
         .bind(grant_id)
         .bind(grant_nonce_digest.as_str())
         .bind(record_command_id)
+        .bind(provider_effect_key.map(ProviderEffectKey::as_str))
         .bind(to_i64(started_at_ms)?)
         .execute(self.taskflow_pool())
         .await;
@@ -139,6 +190,7 @@ impl AutomationStore {
                     || existing.binding_digest != *binding_digest
                     || existing.destination_id != destination_id
                     || existing.record_command_id != record_command_id
+                    || existing.provider_effect_key.as_ref() != provider_effect_key
                 {
                     return Err(TaskFlowError::Conflict(
                         "effect dispatch attempt is bound to different bytes".to_string(),
@@ -418,6 +470,12 @@ fn effect_attempt_from_row(
             row.try_get("started_at_ms")
                 .map_err(|_| TaskFlowError::Corrupt("effect start timestamp".to_string()))?,
         )?,
+        provider_effect_key: row
+            .try_get::<Option<String>, _>("provider_effect_key")
+            .map_err(|_| TaskFlowError::Corrupt("effect provider key".to_string()))?
+            .map(ProviderEffectKey::parse)
+            .transpose()
+            .map_err(|_| TaskFlowError::Corrupt("effect provider key".to_string()))?,
         observation,
     })
 }
@@ -546,6 +604,7 @@ mod tests {
                 "grant-1",
                 &nonce,
                 "record-effect",
+                /*provider_effect_key*/ None,
                 21,
             )
             .await
