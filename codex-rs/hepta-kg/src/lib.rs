@@ -7,6 +7,7 @@ mod guarded_query;
 mod incremental;
 #[cfg(feature = "legacy-v1")]
 mod legacy_v1;
+mod local_incremental;
 mod prompt_factor;
 mod publication;
 mod resource;
@@ -65,6 +66,12 @@ pub use legacy_v1::KnowledgeProjection;
 #[cfg(feature = "legacy-v1")]
 #[allow(deprecated)]
 pub use legacy_v1::rebuild;
+pub use local_incremental::KnowledgeLocalIncrementalErrorV3;
+pub use local_incremental::KnowledgeLocalIncrementalStateV3;
+pub use local_incremental::KnowledgeLocalMutationReceiptV3;
+pub use local_incremental::KnowledgeLocalMutationWorkV3;
+pub use local_incremental::KnowledgeLocalStorageDeltaV3;
+pub use local_incremental::KnowledgeProjectionDeltaV3;
 pub use prompt_factor::PromptFactorProjectionErrorV1;
 pub use prompt_factor::PromptFactorProjectionV1;
 pub use prompt_factor::build_prompt_factor_projection_v1;
