@@ -1,11 +1,11 @@
 //! Bounded, deterministic Bellman/operator candidates for qualification space.
 //!
-//! The legacy target builder remains available as `train`, while
-//! `build_targets` makes its actual scope explicit. Applicability admission,
-//! sensor geometry, tabular Bellman reference, simplest-sufficient tabular
-//! learning, regularity/error-budget checks and an action-conditioned tabular
-//! world model are separate bounded surfaces. None can mutate an online policy,
-//! activate an artifact, select itself, or write production state.
+//! Compatibility target builders and generic V2 verification are available only
+//! through the non-default `compatibility-api` feature. The default public
+//! surface exposes owner-final-use training, canonical profiles, bounded work
+//! control, deterministic reference qualification and opaque pinned loading.
+//! None can mutate an online policy, activate an artifact, select itself, or
+//! write production state.
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeSet;
@@ -16,6 +16,17 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+
+mod work_control;
+pub use work_control::WorkCancellationV1;
+pub use work_control::WorkControlError;
+pub use work_control::WorkControlV1;
+
+mod profiles;
+pub use profiles::ProfileError;
+pub use profiles::RuntimeLimitsV1;
+pub use profiles::TrainingProfileV1;
+pub use profiles::WorldModelProfileV1;
 
 mod authenticated;
 mod dataset_bound;
@@ -33,7 +44,9 @@ pub use loaded::TabularPayloadPinV1;
 pub use loaded::encode_tabular_payload_v1;
 mod learned_strict;
 mod reference;
+mod sensor_core_controlled;
 mod world_model;
+mod final_use;
 
 pub use authenticated::AuthenticatedApplicabilityAdmissionV2;
 pub use authenticated::AuthenticatedOperatorError;
@@ -41,24 +54,40 @@ pub use authenticated::AuthenticatedOperatorRegularityAdmissionV2;
 pub use authenticated::SignedOperatorEvidenceV2;
 pub use authenticated::admit_operator_regularity_with_signed_evidence_v2;
 pub use authenticated::validate_applicability_with_signed_evidence_v2;
+
 pub use dataset_bound::OperatorDatasetBindingError;
+#[cfg(feature = "compatibility-api")]
 pub use dataset_bound::VerifiedTabularOperatorPlanV2;
+#[cfg(feature = "compatibility-api")]
 pub use dataset_bound::VerifiedWorldModelDatasetV2;
+#[cfg(feature = "compatibility-api")]
 pub use dataset_bound::fit_tabular_operator_verified_v2;
+#[cfg(feature = "compatibility-api")]
 pub use dataset_bound::fit_transition_model_verified_v2;
+#[cfg(feature = "compatibility-api")]
 pub use dataset_bound::verify_tabular_operator_plan_v2;
+#[cfg(feature = "compatibility-api")]
 pub use dataset_bound::verify_world_model_dataset_v2;
+
 pub use learned::LearnedOperatorError;
 pub use learned::TabularOperatorArtifactV1;
 pub use learned::TabularOperatorCellV1;
 pub use learned::TabularOperatorPlanV1;
 pub use learned::TabularOperatorPredictionV1;
 pub use learned::TabularOperatorSampleV1;
+pub use learned::fit_tabular_operator_controlled_v3;
+#[cfg(feature = "compatibility-api")]
 pub use learned::fit_tabular_operator;
+#[cfg(not(feature = "compatibility-api"))]
+pub(crate) use learned::fit_tabular_operator;
+#[cfg(feature = "compatibility-api")]
 pub use learned::predict_tabular_operator;
+
 pub use learned_strict::StrictLearnedOperatorError;
+pub use learned_strict::fit_tabular_operator_strict_controlled_v3;
 pub use learned_strict::fit_tabular_operator_strict_v2;
 pub use learned_strict::predict_tabular_operator_indexed_v2;
+
 pub use reference::ApplicabilityDecisionV1;
 pub use reference::BellmanReferenceCellV1;
 pub use reference::BellmanReferencePlanV1;
@@ -77,14 +106,38 @@ pub use reference::admit_operator_regularity;
 pub use reference::build_sensor_core;
 pub use reference::evaluate_bellman_reference;
 pub use reference::validate_applicability_certificate;
+pub use sensor_core_controlled::ControlledSensorCoreError;
+pub use sensor_core_controlled::build_sensor_core_controlled_v2;
+
 pub use world_model::TabularWorldModelV1;
 pub use world_model::TransitionBranchV1;
 pub use world_model::TransitionEstimateV1;
 pub use world_model::WorldModelError;
 pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
+#[cfg(feature = "compatibility-api")]
 pub use world_model::fit_transition_model;
+#[cfg(not(feature = "compatibility-api"))]
+pub(crate) use world_model::fit_transition_model;
+#[cfg(feature = "compatibility-api")]
 pub use world_model::predict_transition;
+
+pub use final_use::FinalUseError;
+pub use final_use::FittedTabularCandidateV3;
+pub use final_use::FittedWorldModelCandidateV3;
+pub use final_use::PreparedTabularPayloadV3;
+pub use final_use::PublicationReadyTabularCandidateV3;
+pub use final_use::PublicationReadyWorldModelCandidateV3;
+pub use final_use::UnboundTabularOperatorPlanV3;
+pub use final_use::UnboundWorldModelDatasetV3;
+pub use final_use::VerifiedTabularOperatorPlanV3;
+pub use final_use::VerifiedWorldModelDatasetV3;
+pub use final_use::fit_tabular_operator_verified_v3;
+pub use final_use::fit_transition_model_verified_v3;
+pub use final_use::revalidate_tabular_candidate_for_publication_v3;
+pub use final_use::revalidate_world_model_candidate_for_publication_v3;
+pub use final_use::verify_tabular_operator_plan_v3;
+pub use final_use::verify_world_model_dataset_v3;
 
 const MAX_SAMPLES: usize = 16_384;
 const SCALE: i128 = 1_i128 << 32;
@@ -163,7 +216,8 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 /// Build deterministic Bellman targets from already supplied continuation
-/// values. This is not model fitting, sensor construction or policy training.
+/// values. This compatibility path does not fit a model or authorize a policy.
+#[cfg(any(test, feature = "compatibility-api"))]
 pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error> {
     if request.dataset.transitions.is_empty() {
         return Err(Error::EmptyDataset);
@@ -235,12 +289,13 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
     })
 }
 
-/// Compatibility alias for the original API. The implementation remains a
-/// deterministic target builder and does not imply a learned operator.
+/// Compatibility alias for the original API.
+#[cfg(any(test, feature = "compatibility-api"))]
 pub fn train(request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error> {
     build_targets(request)
 }
 
+#[cfg(any(test, feature = "compatibility-api"))]
 fn mul_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let product = i128::from(left.raw()) * i128::from(right.raw());
     let adjusted = if product >= 0 {
@@ -253,6 +308,7 @@ fn mul_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     ))
 }
 
+#[cfg(any(test, feature = "compatibility-api"))]
 fn add_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let raw = i128::from(left.raw()) + i128::from(right.raw());
     Ok(FixedQ32::from_raw(
@@ -260,6 +316,7 @@ fn add_q32(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     ))
 }
 
+#[cfg(any(test, feature = "compatibility-api"))]
 fn digest_dataset(dataset: &DatasetSnapshot) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.bellman.dataset.v1");
@@ -278,6 +335,7 @@ fn digest_dataset(dataset: &DatasetSnapshot) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+#[cfg(any(test, feature = "compatibility-api"))]
 fn digest_artifact(
     request: &TrainingRequest,
     dataset: Digest32,
@@ -301,6 +359,7 @@ fn digest_artifact(
     Digest32::of_bytes(&bytes)
 }
 
+#[cfg(any(test, feature = "compatibility-api"))]
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     let length = u32::try_from(raw.len()).unwrap_or(u32::MAX);
