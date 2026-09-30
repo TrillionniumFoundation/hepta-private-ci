@@ -123,9 +123,13 @@ pub fn admit_external_system_manifest_v1(
     policy: &ExternalSystemAdmissionPolicyV1,
     manifest: &ExternalSystemManifestV1,
 ) -> Result<ExternalSystemAdmissionV1, PlatformManifestAdmissionErrorV1> {
-    manifest.validate().map_err(PlatformManifestAdmissionErrorV1::Manifest)?;
+    manifest
+        .validate()
+        .map_err(PlatformManifestAdmissionErrorV1::Manifest)?;
     if manifest.system_id() != &policy.system_id {
-        return Err(PlatformManifestAdmissionErrorV1::PolicyMismatch("system id"));
+        return Err(PlatformManifestAdmissionErrorV1::PolicyMismatch(
+            "system id",
+        ));
     }
     if manifest.system_class() != policy.system_class {
         return Err(PlatformManifestAdmissionErrorV1::PolicyMismatch(
@@ -280,9 +284,13 @@ pub fn admit_sensor_calibration_manifest_v1(
     policy: &SensorCalibrationAdmissionPolicyV1,
     manifest: &SensorCalibrationManifestV1,
 ) -> Result<SensorCalibrationAdmissionV1, PlatformManifestAdmissionErrorV1> {
-    manifest.validate().map_err(PlatformManifestAdmissionErrorV1::Manifest)?;
+    manifest
+        .validate()
+        .map_err(PlatformManifestAdmissionErrorV1::Manifest)?;
     if manifest.sensor_id() != &policy.sensor_id {
-        return Err(PlatformManifestAdmissionErrorV1::PolicyMismatch("sensor id"));
+        return Err(PlatformManifestAdmissionErrorV1::PolicyMismatch(
+            "sensor id",
+        ));
     }
     if manifest.sensor_class() != policy.sensor_class {
         return Err(PlatformManifestAdmissionErrorV1::PolicyMismatch(
@@ -393,9 +401,11 @@ mod tests {
             digest("authorization"),
         )
         .expect("manifest");
-        let receipt = admit_external_system_manifest_v1(&policy, &manifest)
-            .expect("admission");
-        assert_eq!(receipt.manifest_digest(), manifest.semantic_digest().expect("digest"));
+        let receipt = admit_external_system_manifest_v1(&policy, &manifest).expect("admission");
+        assert_eq!(
+            receipt.manifest_digest(),
+            manifest.semantic_digest().expect("digest")
+        );
         assert_eq!(receipt.authority(), NonAuthorizingPosture::DENY_ALL);
     }
 
@@ -430,10 +440,12 @@ mod tests {
             SensorFailurePolicyV1::Abstain,
         )
         .expect("manifest");
-        let receipt = admit_sensor_calibration_manifest_v1(&policy, &manifest)
-            .expect("admission");
+        let receipt = admit_sensor_calibration_manifest_v1(&policy, &manifest).expect("admission");
         assert_eq!(receipt.calibration_generation(), generation);
-        assert_eq!(receipt.manifest_digest(), manifest.semantic_digest().expect("digest"));
+        assert_eq!(
+            receipt.manifest_digest(),
+            manifest.semantic_digest().expect("digest")
+        );
     }
 
     #[test]

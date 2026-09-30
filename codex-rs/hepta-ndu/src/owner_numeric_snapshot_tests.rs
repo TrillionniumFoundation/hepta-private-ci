@@ -53,13 +53,11 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn unique_test_nonce(label: &str) -> TestResult<[u8; 32]> {
-    static SEQUENCE: std::sync::atomic::AtomicU64 =
-        std::sync::atomic::AtomicU64::new(0);
+    static SEQUENCE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
     let elapsed = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)?
         .as_nanos();
-    let sequence =
-        SEQUENCE.fetch_add(/*value*/ 1, std::sync::atomic::Ordering::Relaxed);
+    let sequence = SEQUENCE.fetch_add(/*value*/ 1, std::sync::atomic::Ordering::Relaxed);
     let material = format!("{label}:{}:{elapsed}:{sequence}", std::process::id());
     Ok(*Digest32::of_bytes(material.as_bytes()).as_array())
 }

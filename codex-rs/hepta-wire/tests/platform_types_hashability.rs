@@ -13,7 +13,10 @@ fn prompt_wire_boundaries_preserve_hashability_and_roundtrip() {
         let input = format!(
             r#"{{"kind":"prompt_delivery_observation_v2","compilation_id":"compilation-1","provider_request_digest":"{provider}","delivered":true,"rejected_reason":null,"observed_token_positions":[{positions}],"truncation_observed":false,"legacy_v1_digest":null}}"#
         );
-        assert!(input.len() < 65_536, "boundary must reach native validation");
+        assert!(
+            input.len() < 65_536,
+            "boundary must reach native validation"
+        );
         let decoded = decode_prompt_delivery_v2_json(input.as_bytes());
         if count <= 4_096 {
             let value = decoded.expect("accepted boundary");
