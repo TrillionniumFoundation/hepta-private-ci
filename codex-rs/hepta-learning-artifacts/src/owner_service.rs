@@ -1,9 +1,8 @@
 //! Named product writer service for the immutable learning-artifact store.
 //!
-//! This is the single product caller of LearningArtifactOwnerHost. The service
-//! serializes publications under one writer fence, owns the in-process artifact
-//! registry and current withdrawal frontier, and blocks unrelated work while a
-//! prior operation has a non-terminal durable checkpoint.
+//! Request/current-authority validation, publication-state coordination,
+//! durable storage, and recovery are separate boundaries. The service owns no
+//! filesystem layout and may be composed with independently qualified stores.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -14,18 +13,23 @@ use codex_hepta_types::StableId;
 
 use crate::ArtifactOwnerHostError;
 use crate::ArtifactOwnerTrustV1;
+use crate::ArtifactOwnerVerifierV1;
 use crate::ArtifactPublicationError;
 use crate::ArtifactPublicationPhaseV1;
 use crate::ArtifactPublicationReceiptV1;
 use crate::ArtifactPublicationTransactionV1;
 use crate::ArtifactRegistry;
+use crate::CurrentArtifactUseErrorV1;
+use crate::CurrentArtifactUseViewV1;
 use crate::DatasetWithdrawalRegistry;
-use crate::LearningArtifactOwnerHost;
+use crate::RegistryHeadRequirementV1;
 use crate::SignedArtifactWriterLeaseV1;
 use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 
+#[path = "owner/control_store.rs"]
+mod control_store;
 #[path = "owner/durable_control.rs"]
 mod durable_control;
 #[path = "owner/durable_inputs.rs"]
@@ -34,12 +38,18 @@ mod durable_inputs;
 mod durable_withdrawals;
 #[path = "owner/publication_recovery.rs"]
 mod publication_recovery;
+#[path = "owner/publication_store.rs"]
+mod publication_store;
 #[path = "owner/request_identity.rs"]
 mod request_identity;
 
-use durable_control::DurableDrain;
-use durable_inputs::verify_durable_inputs;
-use durable_withdrawals::DurableWithdrawalFloor;
+pub use control_store::FsOwnerControlStoreV1;
+pub use control_store::OwnerControlStoreIdentityV1;
+pub use control_store::OwnerControlStoreV1;
+pub use publication_store::FsOwnerPublicationStoreV1;
+pub use publication_store::OwnerPublicationStoreIdentityV1;
+pub use publication_store::OwnerPublicationStoreV1;
+
 use publication_recovery::rebuild_transaction;
 use publication_recovery::receipt_from_checkpoint;
 use publication_recovery::validate_request_against_checkpoint;
@@ -67,10 +77,10 @@ pub struct LearningArtifactPublishRequestV1 {
 }
 
 pub struct LearningArtifactOwnerService {
-    host: LearningArtifactOwnerHost,
-    root: PathBuf,
-    durable_drain: DurableDrain,
-    durable_withdrawals: DurableWithdrawalFloor,
+    // The legacy field name is retained for source-compatible internal tests;
+    // its type is now the narrow injectable publication-store port.
+    host: Box<dyn OwnerPublicationStoreV1>,
+    control_store: Box<dyn OwnerControlStoreV1>,
     withdrawal_persistence_uncertain: bool,
     withdrawal_registry: DatasetWithdrawalRegistry,
     registry: ArtifactRegistry,
@@ -86,7 +96,8 @@ impl fmt::Debug for LearningArtifactOwnerService {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
             .debug_struct("LearningArtifactOwnerService")
-            .field("host", &self.host)
+            .field("publication_store", self.host.identity())
+            .field("control_store", self.control_store.identity())
             .field("registry_head", &self.registry.snapshot().head_digest)
             .field("withdrawal_head", &self.withdrawal_registry.head_digest())
             .field("storage_binding", &self.storage_binding)
@@ -109,40 +120,65 @@ impl LearningArtifactOwnerService {
     pub fn open(
         config: LearningArtifactOwnerServiceConfigV1,
     ) -> Result<Self, LearningArtifactOwnerServiceError> {
-        if config.storage_binding.is_zero()
-            || config.withdrawal_registry.scope_digest() != Some(config.trust.withdrawal_scope_digest)
-        {
-            return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
-        }
-        let request_identity = RequestIdentityVerifier::new(&config.trust);
-        let registry_id = config.trust.registry_id.clone();
-        let scope = config.trust.withdrawal_scope_digest;
-        let host = match config.required_current_head {
-            Some(current) => LearningArtifactOwnerHost::open_with_required_current_head(
-                &config.root,
-                config.trust,
-                config.writer_lease,
-                current,
-                config.now,
-            )?,
-            None => LearningArtifactOwnerHost::open(
-                &config.root,
-                config.trust,
-                config.writer_lease,
-                config.now,
-            )?,
-        };
-        let root = std::fs::canonicalize(&config.root)
+        Self::validate_config(&config)?;
+        let publication_store = FsOwnerPublicationStoreV1::open(&config)?;
+        let root = publication_store.identity().root().to_path_buf();
+        let control_store = FsOwnerControlStoreV1::new(
+            root,
+            config.trust.registry_id.clone(),
+            config.trust.withdrawal_scope_digest,
+            config.storage_binding,
+        );
+        Self::open_with_stores(
+            config,
+            Box::new(publication_store),
+            Box::new(control_store),
+        )
+    }
+
+    /// Compose the service over independently provided durable ports.
+    ///
+    /// The publication store must already hold its exclusive writer fence and
+    /// enforce the required CURRENT restart anchor. Both immutable identities
+    /// are checked against the supplied trust/configuration before recovery.
+    pub fn open_with_stores(
+        config: LearningArtifactOwnerServiceConfigV1,
+        host: Box<dyn OwnerPublicationStoreV1>,
+        control_store: Box<dyn OwnerControlStoreV1>,
+    ) -> Result<Self, LearningArtifactOwnerServiceError> {
+        Self::validate_config(&config)?;
+        let canonical_root = std::fs::canonicalize(&config.root)
             .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
-        let durable_drain = DurableDrain::new(&root, &registry_id, scope, config.storage_binding);
-        let draining = durable_drain
-            .requested()
+        let expected_trust_digest =
+            ArtifactOwnerVerifierV1::new(config.trust.clone())?.trust_digest();
+        let publication_identity = host.identity();
+        if publication_identity.root() != canonical_root
+            || publication_identity.registry_id() != &config.trust.registry_id
+            || publication_identity.withdrawal_scope_digest()
+                != config.trust.withdrawal_scope_digest
+            || publication_identity.trust_digest() != expected_trust_digest
+        {
+            return Err(LearningArtifactOwnerServiceError::StoreIdentityMismatch);
+        }
+        let control_identity = control_store.identity();
+        if control_identity.root() != canonical_root
+            || control_identity.registry_id() != &config.trust.registry_id
+            || control_identity.withdrawal_scope_digest()
+                != config.trust.withdrawal_scope_digest
+            || control_identity.storage_binding() != config.storage_binding
+        {
+            return Err(LearningArtifactOwnerServiceError::StoreIdentityMismatch);
+        }
+
+        let request_identity = RequestIdentityVerifier::new(&config.trust);
+        let draining = control_store
+            .drain_requested()
             .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
         if draining {
             // Existing bytes may come from a write whose sync outcome was unknown.
             // Re-establish durability under the retained writer fence on reopen.
-            durable_drain
-                .persist()
+            control_store
+                .persist_drain()
                 .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
         }
         if let Some(current) = host.discover_current_head(config.now)?
@@ -158,18 +194,14 @@ impl LearningArtifactOwnerService {
         let recovery_required = recovery
             .first()
             .map(|checkpoint| checkpoint.operation_id.clone());
-        let durable_withdrawals =
-            DurableWithdrawalFloor::new(&root, &registry_id, scope, config.storage_binding);
         // The writer fence is already held. Stored bytes may only constrain
         // (never replace) the independently authenticated startup frontier.
-        durable_withdrawals
-            .persist(&config.withdrawal_registry)
+        control_store
+            .persist_withdrawal_frontier(&config.withdrawal_registry)
             .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
         Ok(Self {
             host,
-            root,
-            durable_drain,
-            durable_withdrawals,
+            control_store,
             withdrawal_persistence_uncertain: false,
             withdrawal_registry: config.withdrawal_registry,
             registry,
@@ -182,25 +214,65 @@ impl LearningArtifactOwnerService {
         })
     }
 
+    fn validate_config(
+        config: &LearningArtifactOwnerServiceConfigV1,
+    ) -> Result<(), LearningArtifactOwnerServiceError> {
+        if config.storage_binding.is_zero()
+            || config.withdrawal_registry.scope_digest()
+                != Some(config.trust.withdrawal_scope_digest)
+        {
+            return Err(LearningArtifactOwnerServiceError::InvalidConfiguration);
+        }
+        Ok(())
+    }
+
     #[must_use]
     pub fn registry(&self) -> &ArtifactRegistry {
         &self.registry
     }
 
-    /// Return the exact authenticated CURRENT registry view for read-only
-    /// product consumers. Current-head discovery, signature validation and
-    /// snapshot binding remain owned by the fenced artifact owner.
+    /// Return the exact authenticated CURRENT registry view for compatibility
+    /// consumers. New long-lived consumers should use `current_artifact_use_view`.
     pub fn current_registry_view(
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
         self.require_durable_withdrawals()?;
-        if let Some(operation_id) = &self.recovery_required {
-            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
-                operation_id.clone(),
-            ));
-        }
+        self.require_recovered()?;
         Ok(self.host.current_registry_view(now)?)
+    }
+
+    /// Return a final-use view that binds CURRENT registry state to the exact
+    /// durable withdrawal frontier, authority epoch, head generation and expiry.
+    pub fn current_artifact_use_view(
+        &self,
+        now: u64,
+    ) -> Result<CurrentArtifactUseViewV1, LearningArtifactOwnerServiceError> {
+        self.require_durable_withdrawals()?;
+        self.require_recovered()?;
+        let current_head = self
+            .host
+            .discover_current_head(now)?
+            .ok_or(LearningArtifactOwnerServiceError::CurrentHeadUnavailable)?;
+        let current = self.host.current_registry_view(now)?;
+        let requirement = RegistryHeadRequirementV1 {
+            registry_id: current_head.signed.witness.registry_id.clone(),
+            minimum_generation: current_head.signed.witness.generation,
+            expected_predecessor_head_digest: current_head
+                .signed
+                .witness
+                .predecessor_head_digest,
+            minimum_authority_epoch: current_head.signed.witness.authority_epoch,
+            now,
+        };
+        CurrentArtifactUseViewV1::bind(
+            current,
+            &current_head.signed,
+            &requirement,
+            &self.withdrawal_registry,
+            now,
+        )
+        .map_err(LearningArtifactOwnerServiceError::CurrentUse)
     }
 
     #[must_use]
@@ -213,27 +285,15 @@ impl LearningArtifactOwnerService {
         self.recovery_required.as_ref()
     }
 
-    /// Stop admitting new publications for this process lifetime.
-    ///
-    /// Exact terminal retries and reconciliation of an existing operation remain
-    /// available. Use begin_drain_durable before acknowledging an operator stop
-    /// that must survive restart. Neither method releases the writer fence.
     pub fn begin_drain(&mut self) {
         self.draining = true;
     }
 
-    /// Durably stop new admission, including after reopening this store.
-    ///
-    /// Requires the embedding host's action authorization. The local marker is
-    /// create-only, scope-bound and synced with its containing directories. An
-    /// I/O error keeps admission closed and cannot become successful drain.
-    /// No online clear/resume API exists. Restoring a pre-stop backup still
-    /// requires an independently retained operator stop floor.
     pub fn begin_drain_durable(&mut self) -> Result<(), LearningArtifactOwnerServiceError> {
         self.draining = true;
         self.drain_persistence_uncertain = true;
-        self.durable_drain
-            .persist()
+        self.control_store
+            .persist_drain()
             .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
         self.drain_durable = true;
         self.drain_persistence_uncertain = false;
@@ -245,8 +305,6 @@ impl LearningArtifactOwnerService {
         self.drain_durable && !self.drain_persistence_uncertain
     }
 
-    /// No uncertain publication or drain write remains. Process termination and
-    /// deployment acceptance are separate; this method does not release a lock.
     #[must_use]
     pub fn is_drained(&self) -> bool {
         self.draining
@@ -255,11 +313,6 @@ impl LearningArtifactOwnerService {
             && self.recovery_required.is_none()
     }
 
-    /// Install an authenticated newer withdrawal frontier. The service accepts
-    /// only an exact monotonic prefix extension in the same scope. The local
-    /// floor is durable before success. A failed write keeps the newer in-memory
-    /// frontier, fences use, and requires exact reconciliation or a newer prefix.
-    /// The caller still authenticates withdrawal actors and external freshness.
     pub fn install_withdrawal_frontier(
         &mut self,
         next: DatasetWithdrawalRegistry,
@@ -276,14 +329,13 @@ impl LearningArtifactOwnerService {
         }
         self.withdrawal_registry = next;
         self.withdrawal_persistence_uncertain = true;
-        self.durable_withdrawals
-            .persist(&self.withdrawal_registry)
+        self.control_store
+            .persist_withdrawal_frontier(&self.withdrawal_registry)
             .map_err(LearningArtifactOwnerServiceError::ControlIo)?;
         self.withdrawal_persistence_uncertain = false;
         Ok(())
     }
 
-    /// Storage acknowledgement only, not actor authentication or runtime use.
     #[must_use]
     pub fn withdrawal_frontier_is_durable(&self) -> bool {
         !self.withdrawal_persistence_uncertain
@@ -296,11 +348,15 @@ impl LearningArtifactOwnerService {
         Ok(())
     }
 
-    /// Execute or reconcile one complete immutable publication.
-    ///
-    /// Exact retries of an acknowledged operation return the same historical
-    /// receipt. A non-terminal retry verifies actual durable objects before
-    /// reconstructing the transaction and continuing. Callers supply trusted time.
+    fn require_recovered(&self) -> Result<(), LearningArtifactOwnerServiceError> {
+        if let Some(operation_id) = &self.recovery_required {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                operation_id.clone(),
+            ));
+        }
+        Ok(())
+    }
+
     pub fn publish(
         &mut self,
         request: LearningArtifactPublishRequestV1,
@@ -329,8 +385,6 @@ impl LearningArtifactOwnerService {
                     }
                     Ok(_) => {}
                     Err(recovery_error) => {
-                        // An unreadable checkpoint is uncertainty, never proof
-                        // that a write did not happen. Fence reads and writes.
                         self.recovery_required = Some(operation_id);
                         return Err(recovery_error.into());
                     }
@@ -360,8 +414,6 @@ impl LearningArtifactOwnerService {
                 return receipt_from_checkpoint(&recovery.checkpoint);
             }
         }
-        // Historical terminal receipts remain readable, but a new or pending
-        // DAG must not lose ancestry in the single-parent compatibility store.
         if request.admission.validated_manifest.manifest.predecessor_ids.len() > 1 {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);
         }
@@ -378,7 +430,6 @@ impl LearningArtifactOwnerService {
             .host
             .recover_registry_by_head(request.expected_registry_predecessor_head)?;
         let mut staged = predecessor.clone();
-        // Preview deterministic registry projection before writing Prepared.
         let preview = ArtifactPublicationTransactionV1::begin(
             request.operation_id.clone(),
             request.admission.clone(),
@@ -393,7 +444,8 @@ impl LearningArtifactOwnerService {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);
         }
         if let Some(recovery) = checkpoint.as_ref() {
-            verify_durable_inputs(&self.root, &staged, request, &recovery.checkpoint)?;
+            self.host
+                .verify_recovery_inputs(&staged, request, &recovery.checkpoint)?;
         }
         let mut transaction = self.host.begin_publication(
             request.operation_id.clone(),
@@ -455,8 +507,11 @@ impl LearningArtifactOwnerService {
 pub enum LearningArtifactOwnerServiceError {
     Host(ArtifactOwnerHostError),
     Publication(ArtifactPublicationError),
+    CurrentUse(CurrentArtifactUseErrorV1),
     ControlIo(std::io::Error),
     InvalidConfiguration,
+    StoreIdentityMismatch,
+    CurrentHeadUnavailable,
     WithdrawalFrontierConflict,
     WithdrawalDurabilityUnknown,
     RecoveryConflict,
@@ -474,7 +529,28 @@ impl fmt::Display for LearningArtifactOwnerServiceError {
     }
 }
 
-impl StdError for LearningArtifactOwnerServiceError {}
+impl StdError for LearningArtifactOwnerServiceError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::Host(error) => Some(error),
+            Self::Publication(error) => Some(error),
+            Self::CurrentUse(error) => Some(error),
+            Self::ControlIo(error) => Some(error),
+            Self::InvalidConfiguration
+            | Self::StoreIdentityMismatch
+            | Self::CurrentHeadUnavailable
+            | Self::WithdrawalFrontierConflict
+            | Self::WithdrawalDurabilityUnknown
+            | Self::RecoveryConflict
+            | Self::RecoveryRequired(_)
+            | Self::RequestMismatch
+            | Self::CheckpointShape
+            | Self::CheckpointMismatch
+            | Self::UnexpectedPhase
+            | Self::Draining => None,
+        }
+    }
+}
 
 impl From<ArtifactOwnerHostError> for LearningArtifactOwnerServiceError {
     fn from(value: ArtifactOwnerHostError) -> Self {
