@@ -25,7 +25,7 @@ use crate::WorldModelProfileV1;
 use crate::WorldModelSampleV1;
 use crate::encode_tabular_payload_v1;
 use crate::fit_tabular_operator_strict_controlled_v3;
-use crate::fit_transition_model;
+use crate::fit_transition_model_controlled_v3;
 
 /// Caller-supplied values that are not themselves identity claims. Objective,
 /// dataset, generation, profile digest, sensor-core digest and limits are all
@@ -59,6 +59,8 @@ pub struct PublicationReadyTabularCandidateV3 {
     artifact: TabularOperatorArtifactV1,
 }
 
+/// Product handoff contains bytes and their exact pin, never a mutable or
+/// independently constructible raw artifact.
 #[must_use]
 pub struct PreparedTabularPayloadV3 {
     bytes: Vec<u8>,
@@ -295,9 +297,14 @@ pub fn fit_transition_model_verified_v3(
     control.checkpoint(0)?;
     owner.revalidate_dataset_snapshot(&dataset, now)?;
     let operations = u64::try_from(input.samples.len()).map_err(|_| FinalUseError::Arithmetic)?;
-    let model = fit_transition_model(input.model_id, dataset.snapshot.dataset_digest, input.samples)?;
+    let model = fit_transition_model_controlled_v3(
+        input.model_id,
+        dataset.snapshot.dataset_digest,
+        input.samples,
+        &control,
+    )?;
     if model.estimates.iter().any(|estimate| {
-        estimate.sample_count as usize  < profile.minimum_support_per_state_action()
+        (estimate.sample_count as usize) < profile.minimum_support_per_state_action()
     }) {
         return Err(FinalUseError::Binding("world minimum support"));
     }
