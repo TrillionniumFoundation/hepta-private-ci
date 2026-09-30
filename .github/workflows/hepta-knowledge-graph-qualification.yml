@@ -6,11 +6,13 @@ on:
       - "codex-rs/hepta-kg/**"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/ext/hepta-memory/**"
       - "codex-rs/app-server/**"
       - "docs/modules/knowledge.graph/**"
+      - "docs/modules/prompt.registry/**"
       - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
@@ -22,11 +24,13 @@ on:
       - "codex-rs/hepta-kg/**"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/hepta-intelligence/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/ext/hepta-memory/**"
       - "codex-rs/app-server/**"
       - "docs/modules/knowledge.graph/**"
+      - "docs/modules/prompt.registry/**"
       - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
@@ -97,12 +101,6 @@ jobs:
           git diff --cached --quiet
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Verify knowledge.graph closed-world truth
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py verify
-
       - name: Observe repository-wide detailed-design health
         continue-on-error: true
         shell: bash
@@ -120,7 +118,12 @@ jobs:
           set -euo pipefail
           cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
             --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
-            --package codex-hepta-agentd -- --check
+            --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
 
       - name: Prepare native test prerequisites
         shell: bash
@@ -139,16 +142,32 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Test canonical KG kernel
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-kg -- --nocapture
-
       - name: Test prompt-factor owner, projection and real consumer
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture
-          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
+          just test --locked -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer
+
+      - name: Test sealed prompt compilation and Agentd staging
+        working-directory: codex-rs
+        env:
+          CARGO_BUILD_JOBS: "1"
+        run: |
+          set -euo pipefail
+          just test --locked --lib -p codex-hepta-intelligence -E 'test(prompt_)'
+          just test --locked --lib -p codex-hepta-agentd -E 'test(prompt_)'
+
+      - name: Verify knowledge.graph closed-world truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Preserve this blocking gate while allowing exact-candidate prompt
+          # regression evidence to run before unrelated map-anchor failures.
+          python3 scripts/hepta-implementation-maps.py verify
+
+      - name: Test canonical KG kernel
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-kg -- --nocapture
 
       - name: Test durable cognitive KG owner and recovery
         working-directory: codex-rs

@@ -76,6 +76,12 @@ None of these is replaced by a unit test or an internally generated digest.
 `CALLERS.toml` now inventories the four registry mutation boundaries with empty
 product callers, and reconciles five already-declared boundaries missing from its
 closed inventory. It does not invent a production consumer.
+The caller scanner also retains production-possible conditional code, excludes
+build outputs before reading, rejects source aliases outside scanned roots or
+into ignored directories, and compares markers at identifier boundaries.
+Adversarial wrapper tests prevent an autodereferenced registry call from being
+hidden by another type's conditional, associated or typed-receiver method.
+This remains lexical source inventory with `authorityGranted=false`.
 
 ## Validation
 
@@ -87,8 +93,15 @@ compiler output and the multiple-role selection regression. Scoped registry
 `just fix` and the dossier verifier passed. Intelligence `just fix` also passed.
 Agentd's focused test build stopped in the existing `codex-core` dependency with
 SIGKILL under shared memory pressure, including a retry with one build job; no
-Agentd tests executed. Final formatting and Agentd metadata-lint status are
-recorded in the pull request. Build-resource failures are not test passes.
+Agentd tests executed. Its metadata-only lint retry was also interrupted by
+SIGKILL in `codex-app-server-protocol` after an initial capacity failure. There
+was no consumer source diagnostic and no Agentd test or lint pass is claimed.
+
+Repository `just fmt`, scoped Rust formatting for registry/intelligence/Agentd,
+changed Python formatting and `git diff --check` passed. Unrelated baseline
+Python formatter churn was restored. The adversarial caller self-test and full
+caller proof passed for 49 boundaries, 27 protected files and 2,865 Rust source
+files, with `authorityGranted=false`. Build-resource failures are not test passes.
 
 Test source locations and commands are listed in the technical guide and
 implementation dossier; stored navigation is not a pass receipt. CI now includes
