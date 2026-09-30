@@ -69,6 +69,7 @@ jobs:
             scripts/hepta-implementation-maps.py \
             scripts/hepta-objective-current-state.py \
             scripts/hepta-objective-evidence-project.py \
+            scripts/hepta-objective-map-convergence.py \
             scripts/hepta-objective-qualify-exact.py \
             scripts/hepta-objective-release-gate.py \
             scripts/hepta-objective-spec-consistency.py \
@@ -83,14 +84,17 @@ jobs:
           sha256sum "$RUNNER_TEMP/objective-authoring/repository.tgz" \
             > "$RUNNER_TEMP/objective-authoring/repository.tgz.sha256"
 
-      - name: Regenerate objective source map and static state projections
+      - name: Regenerate objective semantic map and static state projections
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py migrate --module objective.compiler \
-            2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-migrate.log"
           python3 scripts/hepta-objective-current-state.py sync \
             2>&1 | tee "$RUNNER_TEMP/objective-authoring/current-state-sync.log"
+          python3 scripts/hepta-objective-map-convergence.py sync \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-convergence.log"
+          python3 scripts/hepta-implementation-maps.py migrate --module objective.compiler \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-migrate.log"
+          python3 scripts/hepta-objective-map-convergence.py verify
           cp docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
             "$RUNNER_TEMP/objective-authoring/IMPLEMENTATION_MAP.json"
           cp docs/modules/objective.compiler/TECHNICAL.md \
