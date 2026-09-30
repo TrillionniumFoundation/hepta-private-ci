@@ -23,9 +23,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .codex/intelligence-hardening.patch.gz.b64.part-* \
-            | base64 --decode \
-            | gzip --decompress \
+          base64 --decode .codex/intelligence-hardening.patch.xz.b64 \
+            | xz --decompress \
             > "$RUNNER_TEMP/intelligence-hardening.patch"
           git apply --index "$RUNNER_TEMP/intelligence-hardening.patch"
           git rm -r .codex
