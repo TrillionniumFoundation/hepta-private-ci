@@ -6,6 +6,7 @@ on:
       - 'apps/hepta-browser/**'
       - 'codex-rs/hepta-agentd/**'
       - 'docs/modules/browser.servo/**'
+      - 'qualification/browser-servo/**'
       - 'third_party/servo-patches/**'
       - '.github/actions/hepta-synthetic-merge/**'
       - '.github/workflows/hepta-browser-servo-qualification.yml'
@@ -15,6 +16,7 @@ on:
       - 'apps/hepta-browser/**'
       - 'codex-rs/hepta-agentd/**'
       - 'docs/modules/browser.servo/**'
+      - 'qualification/browser-servo/**'
       - 'third_party/servo-patches/**'
       - '.github/actions/hepta-synthetic-merge/**'
       - '.github/workflows/hepta-browser-servo-qualification.yml'
@@ -68,8 +70,11 @@ jobs:
             test "$(git rev-list --parents -n1 HEAD | awk '{print $3}')" = "$SOURCE_SHA"
           fi
           printf 'EFFECTIVE_SOURCE_SHA=%s\nEFFECTIVE_SOURCE_TREE=%s\n' "$sha" "$tree" >> "$GITHUB_ENV"
+          mkdir -p qualification-evidence
+          printf '%s\n%s\n' "$sha" "$tree" > qualification-evidence/source.txt
       - name: Verify canonical truth and source registry
         run: |
+          node --check qualification/browser-servo/strict-agentd-clippy.mjs
           node apps/hepta-browser/scripts/qualification-state.mjs --check
           npm --prefix apps/hepta-browser run verify:registry
       - name: Run complete Browser suite
@@ -77,28 +82,44 @@ jobs:
       - name: Verify Agentd formatting
         run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
       - name: Test Agentd Browser owners
-        working-directory: codex-rs
         run: |
-          cargo test --locked -p codex-hepta-agentd browser_servo --lib
-          cargo test --locked -p codex-hepta-agentd --bin hepta-agentd-browser-service
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd browser_servo --lib
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd --bin hepta-agentd-browser-service
       - name: Check and lint Agentd Browser callers
-        working-directory: codex-rs
+        shell: bash
         run: |
-          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser --bin hepta-agentd-browser-service
-          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --bin hepta-agentd-browser-service --no-deps -- -D warnings
+          set -euo pipefail
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd \
+            --bin hepta-agentd-browser --bin hepta-agentd-browser-service \
+            2>&1 | tee qualification-evidence/agentd-check.log
+          messages=qualification-evidence/agentd-clippy.messages.jsonl
+          stderr=qualification-evidence/agentd-clippy.stderr.log
+          set +e
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd \
+            --lib --bin hepta-agentd-browser --bin hepta-agentd-browser-service \
+            --no-deps --message-format=json \
+            >"$messages" 2>"$stderr"
+          status=$?
+          set -e
+          cat "$stderr"
+          node qualification/browser-servo/strict-agentd-clippy.mjs \
+            --input "$messages" --stderr "$stderr" \
+            --cargo-status "$status" --expected-sha "$EFFECTIVE_SOURCE_SHA" \
+            --output qualification-evidence/agentd-clippy-receipt.json
       - name: Check and test locked Servo worker
         run: |
-          cargo check --locked --manifest-path apps/hepta-browser/servo-worker/Cargo.toml
-          cargo test --locked --manifest-path apps/hepta-browser/servo-worker/Cargo.toml
+          cargo check --locked --manifest-path apps/hepta-browser/servo-worker/Cargo.toml \
+            2>&1 | tee qualification-evidence/worker-check.log
+          cargo test --locked --manifest-path apps/hepta-browser/servo-worker/Cargo.toml \
+            2>&1 | tee qualification-evidence/worker-tests.log
       - name: Emit source-bound receipt
         env:
           QUALIFICATION_LANE: ${{ matrix.lane }}
         run: |
-          mkdir -p qualification-evidence
           node apps/hepta-browser/scripts/qualification-state.mjs --receipt qualification-evidence/receipt.json
-          git rev-parse HEAD HEAD^{tree} > qualification-evidence/source.txt
           sha256sum qualification-evidence/receipt.json > qualification-evidence/receipt.sha256
       - name: Preserve qualification receipt
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: browser-servo-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
@@ -142,8 +163,7 @@ jobs:
           echo "EFFECTIVE_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
           echo "EFFECTIVE_SOURCE_TREE=$(git rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
       - name: Full locked workspace check
-        working-directory: codex-rs
-        run: cargo check --locked --workspace --all-targets
+        run: cargo check --manifest-path codex-rs/Cargo.toml --locked --workspace --all-targets
       - name: Require unchanged source
         if: always()
         run: |
