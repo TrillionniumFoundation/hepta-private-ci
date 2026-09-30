@@ -12,12 +12,16 @@ mod daemon_protocol;
 mod driver;
 mod durability;
 mod durable_publish;
+#[cfg(all(test, feature = "qualification"))]
+mod durability_qualification_tests;
 mod error;
 mod lease;
 mod matrix;
 mod model;
 mod module_runtime;
 mod process_deadline;
+#[cfg(feature = "qualification")]
+mod qualification_faults;
 mod recovery;
 mod recovery_diagnostics;
 mod release;
@@ -115,6 +119,14 @@ pub use process_deadline::ProcessDeadlinePolicyV1;
 pub use process_deadline::ProcessTerminationOutcomeV1;
 pub use process_deadline::enforce_process_deadline_v1;
 pub use process_deadline::enforce_process_termination_deadline_v1;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::QualificationCrashProbeError;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::QualificationCrashProbeReceipt;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::inspect_qualification_crash_probe;
+#[cfg(feature = "qualification")]
+pub use qualification_faults::publish_qualification_crash_probe;
 pub use recovery_diagnostics::RecoveryBlockerDiagnostic;
 pub use recovery_diagnostics::RecoveryBlockerKind;
 pub use recovery_diagnostics::RecoveryDiagnostic;
