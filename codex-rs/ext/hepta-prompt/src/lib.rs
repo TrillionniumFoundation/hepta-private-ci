@@ -14,6 +14,8 @@ use std::future::Future;
 use std::pin::Pin;
 use std::str::FromStr;
 use std::sync::Arc;
+use std::sync::Mutex as StdMutex;
+use std::sync::PoisonError;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::SystemTime;
@@ -38,7 +40,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::PromptDeliveryObservationV1;
 use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
-use tokio::sync::Mutex;
+use tokio::sync::oneshot;
 
 const ATTACHMENT_DOMAIN: &[u8] = b"hepta.runtime-codex.prompt-attachment.v1";
 const MAX_DEVELOPER_FRAGMENTS: usize = 128;
@@ -478,8 +480,18 @@ enum ResolvedAttachment {
 }
 
 #[derive(Default)]
+enum AttachmentResolutionState {
+    #[default]
+    Vacant,
+    Stable(ResolvedAttachment),
+    Resolving {
+        waiters: Vec<oneshot::Sender<ResolvedAttachment>>,
+    },
+}
+
+#[derive(Default)]
 struct PromptRuntimeTurnState {
-    resolved: Mutex<Option<ResolvedAttachment>>,
+    resolution: StdMutex<AttachmentResolutionState>,
     injected: AtomicBool,
 }
 
@@ -497,51 +509,113 @@ impl PromptRuntimeExtension {
         turn_store: &ExtensionData,
     ) -> ResolvedAttachment {
         let state = turn_store.get_or_init(PromptRuntimeTurnState::default);
-        let mut resolved = state.resolved.lock().await;
-        let previous = resolved.as_ref().cloned();
-        if let Some(value) = previous.as_ref()
-            && !matches!(value, ResolvedAttachment::Ready(_))
-        {
-            return value.clone();
+        let (receiver, previous) = {
+            let mut resolution = state
+                .resolution
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner);
+            match &mut *resolution {
+                AttachmentResolutionState::Stable(value)
+                    if !matches!(value, ResolvedAttachment::Ready(_)) =>
+                {
+                    return value.clone();
+                }
+                AttachmentResolutionState::Resolving { waiters } => {
+                    let (sender, receiver) = oneshot::channel();
+                    waiters.push(sender);
+                    (receiver, None)
+                }
+                AttachmentResolutionState::Vacant
+                | AttachmentResolutionState::Stable(ResolvedAttachment::Ready(_)) => {
+                    let previous = match &*resolution {
+                        AttachmentResolutionState::Stable(ResolvedAttachment::Ready(value)) => {
+                            Some(value.clone())
+                        }
+                        _ => None,
+                    };
+                    let (sender, receiver) = oneshot::channel();
+                    *resolution = AttachmentResolutionState::Resolving {
+                        waiters: vec![sender],
+                    };
+                    (receiver, Some(previous))
+                }
+                AttachmentResolutionState::Stable(_) => {
+                    unreachable!("terminal attachment states returned above")
+                }
+            }
+        };
+
+        if let Some(previous) = previous {
+            Self::spawn_resolution(
+                self.host.clone(),
+                Arc::clone(&state),
+                PromptRuntimePrepareRequest {
+                    thread_id,
+                    turn_id,
+                    model_context_window,
+                },
+                previous,
+            );
         }
-        let value = match self
-            .host
-            .prepare(PromptRuntimePrepareRequest {
-                thread_id,
-                turn_id,
-                model_context_window,
-            })
-            .await
-        {
-            Ok(Some(attachment)) => match attachment.validate() {
-                Ok(()) => ResolvedAttachment::Ready(attachment),
-                Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
-                    "prompt_runtime_attachment_invalid",
-                    error.to_string(),
-                )),
-            },
-            Ok(None) => ResolvedAttachment::None,
-            Err(error) => ResolvedAttachment::Failed(error),
-        };
-        let value = match (previous, value) {
-            (Some(ResolvedAttachment::Ready(previous)), ResolvedAttachment::Ready(current))
-                if previous != current =>
-            {
-                ResolvedAttachment::Failed(PromptRuntimeHostError::new(
-                    "prompt_runtime_cached_binding_changed",
-                    "an injected attachment changed; recompile in a fresh turn",
-                ))
+
+        receiver.await.unwrap_or_else(|_| {
+            ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                "prompt_runtime_resolution_cancelled",
+                "prompt attachment resolution did not reach a terminal state",
+            ))
+        })
+    }
+
+    fn spawn_resolution(
+        host: PromptRuntimeHost,
+        state: Arc<PromptRuntimeTurnState>,
+        request: PromptRuntimePrepareRequest,
+        previous: Option<PromptRuntimeAttachmentV1>,
+    ) {
+        tokio::spawn(async move {
+            let prepared = match host.prepare(request).await {
+                Ok(Some(attachment)) => match attachment.validate() {
+                    Ok(()) => ResolvedAttachment::Ready(attachment),
+                    Err(error) => ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                        "prompt_runtime_attachment_invalid",
+                        error.to_string(),
+                    )),
+                },
+                Ok(None) => ResolvedAttachment::None,
+                Err(error) => ResolvedAttachment::Failed(error),
+            };
+            let value = match (previous, prepared) {
+                (Some(previous), ResolvedAttachment::Ready(current)) if previous != current => {
+                    ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                        "prompt_runtime_cached_binding_changed",
+                        "an injected attachment changed; recompile in a fresh turn",
+                    ))
+                }
+                (Some(_), ResolvedAttachment::None) => {
+                    ResolvedAttachment::Failed(PromptRuntimeHostError::new(
+                        "prompt_runtime_cached_attachment_removed",
+                        "the owner no longer exposes the injected attachment",
+                    ))
+                }
+                (_, value) => value,
+            };
+            let waiters = {
+                let mut resolution = state
+                    .resolution
+                    .lock()
+                    .unwrap_or_else(PoisonError::into_inner);
+                let AttachmentResolutionState::Resolving { waiters } = std::mem::replace(
+                    &mut *resolution,
+                    AttachmentResolutionState::Stable(value.clone()),
+                ) else {
+                    unreachable!("only the active resolver may publish its result");
+                };
+                waiters
+            };
+            for waiter in waiters {
+                let _ = waiter.send(value.clone());
             }
-            (Some(ResolvedAttachment::Ready(_)), ResolvedAttachment::None) => {
-                ResolvedAttachment::Failed(PromptRuntimeHostError::new(
-                    "prompt_runtime_cached_attachment_removed",
-                    "the owner no longer exposes the injected attachment",
-                ))
-            }
-            (_, value) => value,
-        };
-        *resolved = Some(value.clone());
-        value
+        });
     }
 }
 
@@ -719,8 +793,7 @@ impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
     ) -> ModelProviderPolicyFuture<'static, ()> {
         Box::pin(async move {
             let observed_unix_ms = current_unix_ms().map_err(runtime_policy_error)?;
-            let (outcome, terminal_reason_code, end_turn, delivery_observation) =
-                self.map_terminal(terminal).map_err(runtime_policy_error)?;
+            let resolution = self.map_terminal(terminal).map_err(runtime_policy_error)?;
             let record = PromptRuntimeTerminalRecordV1 {
                 compilation_id: self.attachment.compilation_id.clone(),
                 context_attachment_digest: self.attachment.context_attachment_digest,
@@ -731,10 +804,10 @@ impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
                 attempt_id: self.attempt_id,
                 request_binding_id: self.request_binding_id,
                 provider_request_digest: self.provider_request_digest,
-                outcome,
-                end_turn,
-                terminal_reason_code,
-                delivery_observation,
+                outcome: resolution.outcome,
+                end_turn: resolution.end_turn,
+                terminal_reason_code: resolution.terminal_reason_code,
+                delivery_observation: resolution.delivery_observation,
                 observed_unix_ms,
             };
             record.validate().map_err(runtime_policy_error)?;
@@ -746,6 +819,13 @@ impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
             })
         })
     }
+}
+
+struct PromptRuntimeTerminalResolution {
+    outcome: PromptRuntimeTerminalOutcomeV1,
+    terminal_reason_code: Option<String>,
+    end_turn: Option<bool>,
+    delivery_observation: Option<PromptDeliveryObservationV1>,
 }
 
 impl PromptRuntimeAttemptLease {
@@ -777,54 +857,49 @@ impl PromptRuntimeAttemptLease {
     fn map_terminal(
         &self,
         terminal: ModelProviderTerminal,
-    ) -> Result<
-        (
-            PromptRuntimeTerminalOutcomeV1,
-            Option<String>,
-            Option<bool>,
-            Option<PromptDeliveryObservationV1>,
-        ),
-        PromptRuntimeError,
-    > {
-        match terminal {
-            ModelProviderTerminal::Completed { end_turn, .. } => {
-                let observation = self.delivery_observation(true, None)?;
-                Ok((
-                    PromptRuntimeTerminalOutcomeV1::Delivered,
-                    None,
-                    end_turn,
-                    Some(observation),
-                ))
-            }
+    ) -> Result<PromptRuntimeTerminalResolution, PromptRuntimeError> {
+        let resolution = match terminal {
+            ModelProviderTerminal::Completed { end_turn, .. } => PromptRuntimeTerminalResolution {
+                outcome: PromptRuntimeTerminalOutcomeV1::Delivered,
+                terminal_reason_code: None,
+                end_turn,
+                delivery_observation: Some(self.delivery_observation(true, None)?),
+            },
             ModelProviderTerminal::Rejected { reason_code } => {
                 let rejection_reason = rejection_reason(&reason_code)?;
-                let observation = self.delivery_observation(false, Some(rejection_reason))?;
-                Ok((
-                    PromptRuntimeTerminalOutcomeV1::Rejected,
-                    Some(reason_code),
-                    None,
-                    Some(observation),
-                ))
+                PromptRuntimeTerminalResolution {
+                    outcome: PromptRuntimeTerminalOutcomeV1::Rejected,
+                    terminal_reason_code: Some(reason_code),
+                    end_turn: None,
+                    delivery_observation: Some(
+                        self.delivery_observation(false, Some(rejection_reason))?,
+                    ),
+                }
             }
-            ModelProviderTerminal::NotDispatched { reason_code } => Ok((
-                PromptRuntimeTerminalOutcomeV1::NotDispatched,
-                Some(reason_code),
-                None,
-                None,
-            )),
-            ModelProviderTerminal::Indeterminate { reason_code, .. } => Ok((
-                PromptRuntimeTerminalOutcomeV1::Indeterminate,
-                Some(reason_code),
-                None,
-                None,
-            )),
-            ModelProviderTerminal::CompletedUnary { .. } => Ok((
-                PromptRuntimeTerminalOutcomeV1::Indeterminate,
-                Some("unexpected_unary_terminal_for_turn".to_owned()),
-                None,
-                None,
-            )),
-        }
+            ModelProviderTerminal::NotDispatched { reason_code } => {
+                PromptRuntimeTerminalResolution {
+                    outcome: PromptRuntimeTerminalOutcomeV1::NotDispatched,
+                    terminal_reason_code: Some(reason_code),
+                    end_turn: None,
+                    delivery_observation: None,
+                }
+            }
+            ModelProviderTerminal::Indeterminate { reason_code, .. } => {
+                PromptRuntimeTerminalResolution {
+                    outcome: PromptRuntimeTerminalOutcomeV1::Indeterminate,
+                    terminal_reason_code: Some(reason_code),
+                    end_turn: None,
+                    delivery_observation: None,
+                }
+            }
+            ModelProviderTerminal::CompletedUnary { .. } => PromptRuntimeTerminalResolution {
+                outcome: PromptRuntimeTerminalOutcomeV1::Indeterminate,
+                terminal_reason_code: Some("unexpected_unary_terminal_for_turn".to_owned()),
+                end_turn: None,
+                delivery_observation: None,
+            },
+        };
+        Ok(resolution)
     }
 }
 

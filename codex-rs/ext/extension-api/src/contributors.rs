@@ -46,6 +46,8 @@ pub use model_provider_input::EphemeralModelInputSource;
 pub use model_provider_policy::MODEL_PROVIDER_POLICY_INPUT_SCHEMA_VERSION;
 pub use model_provider_policy::ModelProviderAttemptLease;
 pub use model_provider_policy::ModelProviderInvocationInput;
+pub use model_provider_policy::ModelProviderOutputBatch;
+pub use model_provider_policy::ModelProviderOutputDecision;
 pub use model_provider_policy::ModelProviderPolicyDecision;
 pub use model_provider_policy::ModelProviderPolicyError;
 pub use model_provider_policy::ModelProviderPolicyFuture;

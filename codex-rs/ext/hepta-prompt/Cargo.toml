@@ -16,7 +16,7 @@ workspace = true
 [dependencies]
 codex-extension-api = { workspace = true }
 codex-hepta-types = { path = "../../hepta-types" }
-tokio = { workspace = true, features = ["sync"] }
+tokio = { workspace = true, features = ["rt", "sync"] }
 
 [dev-dependencies]
 codex-protocol = { workspace = true }

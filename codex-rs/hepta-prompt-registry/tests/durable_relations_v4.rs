@@ -32,11 +32,9 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-
 fn test_nonce(label: &str) -> [u8; 32] {
-    let value = Digest32::of_bytes(
-        format!("hepta.prompt-registry.test-nonce.v1:{label}").as_bytes(),
-    );
+    let value =
+        Digest32::of_bytes(format!("hepta.prompt-registry.test-nonce.v1:{label}").as_bytes());
     *value.as_array()
 }
 

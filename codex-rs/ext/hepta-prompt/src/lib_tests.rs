@@ -402,3 +402,42 @@ async fn cached_prompt_never_silently_switches_injected_payload() {
         _ => panic!("cached identity drift must fail closed"),
     }
 }
+
+#[tokio::test]
+async fn concurrent_initial_resolution_is_single_flight() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let counter = Arc::clone(&calls);
+    let prepared = attachment();
+    let host = PromptRuntimeHost::new(
+        "prompt-runtime-single-flight",
+        move |_| {
+            counter.fetch_add(1, Ordering::AcqRel);
+            let prepared = prepared.clone();
+            Box::pin(async move {
+                tokio::task::yield_now().await;
+                Ok(Some(prepared))
+            })
+        },
+        |_| Box::pin(std::future::ready(Ok(()))),
+        |_| Box::pin(std::future::ready(Ok(()))),
+    )
+    .unwrap_or_else(|error| panic!("host: {error}"));
+    let extension = PromptRuntimeExtension { host };
+    let (_, thread_store, turn_store) = stores();
+    let first = extension.resolve(
+        thread_store.level_id().to_owned(),
+        turn_store.level_id().to_owned(),
+        None,
+        &turn_store,
+    );
+    let second = extension.resolve(
+        thread_store.level_id().to_owned(),
+        turn_store.level_id().to_owned(),
+        None,
+        &turn_store,
+    );
+    let (first, second) = tokio::join!(first, second);
+    assert!(matches!(first, ResolvedAttachment::Ready(_)));
+    assert!(matches!(second, ResolvedAttachment::Ready(_)));
+    assert_eq!(calls.load(Ordering::Acquire), 1);
+}

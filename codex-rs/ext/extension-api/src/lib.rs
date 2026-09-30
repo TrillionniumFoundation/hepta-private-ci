@@ -61,6 +61,8 @@ pub use contributors::McpServerContributionContext;
 pub use contributors::McpServerContributor;
 pub use contributors::ModelProviderAttemptLease;
 pub use contributors::ModelProviderInvocationInput;
+pub use contributors::ModelProviderOutputBatch;
+pub use contributors::ModelProviderOutputDecision;
 pub use contributors::ModelProviderPolicyContributor;
 pub use contributors::ModelProviderPolicyDecision;
 pub use contributors::ModelProviderPolicyError;
