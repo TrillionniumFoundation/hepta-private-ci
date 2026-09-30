@@ -119,9 +119,7 @@ fn render_json() -> String {
                 if field.required { "true" } else { "false" }
             ));
             if let Some(maximum) = field.maximum_encoded_bytes {
-                output.push_str(&format!(
-                    "          \"maximumEncodedBytes\": {maximum},\n"
-                ));
+                output.push_str(&format!("          \"maximumEncodedBytes\": {maximum},\n"));
             }
             match identity_profile_for_protocol_field_v2(protocol.id, field.name) {
                 Some(profile) => push_json_string(
