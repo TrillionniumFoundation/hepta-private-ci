@@ -20,6 +20,7 @@ env:
   TARGET_BRANCH: codex/inference-worker-authoritative-20260929
   EXPECTED_TARGET_SHA: 3a4d0e6bb7018c77e9443a38855d69146542febe
   STAGING_BRANCH: automation/inference-worker-materialize-final-20260930
+  TRANSFER_BRANCH: automation/inference-worker-materialized-output-20260930
   PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
@@ -43,6 +44,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain --untracked-files=normal)"
           test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$EXPECTED_TARGET_SHA"
+          test -z "$(git ls-remote origin "refs/heads/$TRANSFER_BRANCH" | awk '{print $1}')"
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
@@ -79,15 +81,19 @@ jobs:
           rm -f .github/workflows/inference-worker-qualification.yml
           grep -Fq 'contents: read' .github/workflows/inference-worker-authoritative-qualification.yml
           ! grep -Eq 'git push|contents: write|apply\.py' .github/workflows/inference-worker-authoritative-qualification.yml
+          test ! -e .github/materialization/inference-worker-runtime-closure
+          test ! -e .github/materialization/inference-worker-stage1
+          test ! -e .github/materialization/inference-worker-stage2
           git diff --check
 
-      - name: Commit ordinary source to authoritative branch
+      - name: Commit ordinary source to transfer branch
         shell: bash
         run: |
           set -euo pipefail
           test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$EXPECTED_TARGET_SHA"
+          test -z "$(git ls-remote origin "refs/heads/$TRANSFER_BRANCH" | awk '{print $1}')"
           git config user.name hepta-inference-materializer
           git config user.email hepta-inference-materializer@users.noreply.github.com
           git add -A
           git commit -m 'inference.worker: materialize runtime closure as ordinary source'
-          git push origin "HEAD:$TARGET_BRANCH"
+          git push origin "HEAD:refs/heads/$TRANSFER_BRANCH"
