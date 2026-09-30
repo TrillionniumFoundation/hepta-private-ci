@@ -25,7 +25,10 @@ impl ProcessDriver for ConstructorDriver {
         }
     }
 
-    fn adopt_matrixd(&mut self, spec: &MatrixAdoptSpec) -> Result<Adoption<Process>, ProcessDriverError> {
+    fn adopt_matrixd(
+        &mut self,
+        spec: &MatrixAdoptSpec,
+    ) -> Result<Adoption<Process>, ProcessDriverError> {
         self.primary.adopt_matrixd(spec)
     }
 }
@@ -45,16 +48,22 @@ fn corrupt_constructor_keeps_all_owned_processes(file: &str) -> Result<()> {
     )?)?;
     let other_record = f.registry.load_agent(&other_id)?;
     let starting = f.registry.compare_and_transition(
-        &other_id, other_record.lifecycle.generation, AgentLifecycle::Starting,
+        &other_id,
+        other_record.lifecycle.generation,
+        AgentLifecycle::Starting,
     )?;
-    f.registry.compare_and_transition(&other_id, starting.generation, AgentLifecycle::Running)?;
-    write_lease(other_record.layout.run_root(), &ProcessLease {
-        schema_version: PROCESS_LEASE_SCHEMA_VERSION,
-        agent_id: other_id.clone(),
-        spawn_generation: starting.generation,
-        release_id: ReleaseId::parse("unversioned")?,
-        identity: ProcessIdentity::new(/*system_id*/ 77, "unrelated-owned-main")?,
-    })?;
+    f.registry
+        .compare_and_transition(&other_id, starting.generation, AgentLifecycle::Running)?;
+    write_lease(
+        other_record.layout.run_root(),
+        &ProcessLease {
+            schema_version: PROCESS_LEASE_SCHEMA_VERSION,
+            agent_id: other_id.clone(),
+            spawn_generation: starting.generation,
+            release_id: ReleaseId::parse("unversioned")?,
+            identity: ProcessIdentity::new(/*system_id*/ 77, "unrelated-owned-main")?,
+        },
+    )?;
     let other = Arc::new(Mutex::new(ProcessStateFixture::default()));
     f.driver.main.lock().expect("main state").fail_kill = true;
     f.driver.matrix.lock().expect("matrix state").fail_kill = true;
@@ -64,7 +73,11 @@ fn corrupt_constructor_keeps_all_owned_processes(file: &str) -> Result<()> {
     let release_state_before = f.record()?.release_state;
     let (mut recovered, report) = Supervisor::recover(
         f.registry.clone(),
-        ConstructorDriver { primary: f.driver.clone(), other_id: other_id.clone(), other: Arc::clone(&other) },
+        ConstructorDriver {
+            primary: f.driver.clone(),
+            other_id: other_id.clone(),
+            other: Arc::clone(&other),
+        },
         SupervisorConfig::local_default(),
         f.now,
     )?;
@@ -80,12 +93,20 @@ fn corrupt_constructor_keeps_all_owned_processes(file: &str) -> Result<()> {
     assert_eq!(f.driver.main.lock().expect("main state").drops, 0);
     assert_eq!(f.driver.matrix.lock().expect("matrix state").drops, 0);
     assert_eq!(other.lock().expect("other state").drops, 0);
-    assert!(f.driver.main.lock().expect("main state").signals > 0);
-    assert!(f.driver.matrix.lock().expect("matrix state").signals > 0);
+    assert_eq!(f.driver.main.lock().expect("main state").signals, 1);
+    assert_eq!(f.driver.matrix.lock().expect("matrix state").signals, 1);
+    assert!(snapshot.events.iter().all(|event| !matches!(
+        event.kind,
+        SupervisorEventKind::KillRequested | SupervisorEventKind::MatrixKillRequested
+    )));
     let command = AgentCommand::new(f._temp.path().join("unused-agentd"), Vec::new())?;
     assert!(recovered.start(&f.agent, command.clone(), f.now).is_err());
     let denied_release = crate::AgentRelease::new("denied", command)?;
-    assert!(recovered.start_release(&f.agent, denied_release.clone(), f.now).is_err());
+    assert!(
+        recovered
+            .start_release(&f.agent, denied_release.clone(), f.now)
+            .is_err()
+    );
     assert!(recovered.upgrade(&f.agent, denied_release, f.now).is_err());
     assert!(recovered.drain(&f.agent, f.now).is_err());
     assert!(recovered.stop(&f.agent, f.now).is_err());
@@ -128,7 +149,9 @@ fn constructor_retains_main_matrix_and_unrelated_owner_with_corrupt_restart_reco
 
 #[test]
 fn constructor_retains_main_matrix_and_unrelated_owner_with_corrupt_release_record() -> Result<()> {
-    corrupt_constructor_keeps_all_owned_processes(crate::release_transaction::RELEASE_TRANSACTION_FILE)
+    corrupt_constructor_keeps_all_owned_processes(
+        crate::release_transaction::RELEASE_TRANSACTION_FILE,
+    )
 }
 
 #[test]

@@ -29,7 +29,6 @@ use crate::restart_lineage::RestartProcessWitness;
 use crate::restart_lineage::RestartRecoveryRole;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
-use crate::runtime::MatrixRuntimePhase;
 use crate::runtime::RuntimePhase;
 use crate::runtime::bounded_message;
 use crate::runtime::deadline;
@@ -479,14 +478,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         // Acquire the main owner first. Then attempt semantic hydration, but do
         // not propagate its failure before the independent Matrix acquisition.
         let main = self.recover_main_slot(agent_id, slot, record, now);
+        if let Err(error) = &main {
+            if !Self::recovery_control_fault_is_retryable(slot, error) {
+                slot.recovery_blocker = Some(bounded_message(error.to_string()));
+            }
+        }
         let hydration = if slot.recovery_blocker.is_some() {
             Ok(())
         } else {
             self.record(agent_id)
                 .and_then(|fresh| self.hydrate_release_state(agent_id, slot, &fresh))
         };
+        if let Err(error) = &hydration {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
+        }
         let companion = self.recover_matrix_companion(agent_id, slot, record, now);
         if let Err(error) = &companion {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
             slot.event(
                 record.lifecycle.generation,
                 SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
@@ -507,15 +515,16 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
         error: &SupervisorError,
     ) {
-        admission::reject_owned(agent_id, slot, now);
-        if let Some(runtime) = slot.matrix.runtime.as_mut() {
-            runtime.healthy = false;
-            runtime.fenced = true;
-            if !matches!(runtime.phase, MatrixRuntimePhase::Killing) {
-                runtime.phase = MatrixRuntimePhase::Stopping { deadline: now };
-            }
+        if slot.runtime.as_ref().is_some_and(|runtime| !runtime.fenced) {
+            admission::reject_owned(agent_id, slot, now);
         }
-        if let Err(signal) = self.kill_matrix_now(agent_id, slot) {
+        if slot
+            .matrix
+            .runtime
+            .as_ref()
+            .is_some_and(|runtime| !runtime.fenced)
+            && let Err(signal) = self.kill_matrix_now(agent_id, slot)
+        {
             slot.event(
                 0,
                 SupervisorEventKind::DriverFault(bounded_message(signal.to_string())),

@@ -96,16 +96,34 @@ impl<D: ProcessDriver> Supervisor<D> {
                 if let Err(error) = supervisor.recover_slot(&agent_id, slot, &record, now) {
                     faults.push(error);
                 }
-                if faults.is_empty() {
-                    let restoration = supervisor
-                        .recover_restart_budget(&agent_id, slot, now)
-                        .and_then(|()| supervisor.recover_release_transaction(&agent_id, slot, now))
-                        .and_then(|()| supervisor.recover_signed_intent(&agent_id, slot, &record));
-                    if let Err(error) = restoration {
+                // A failed signal on an admitted, exact owned incarnation is
+                // a control retry, not corrupt durable recovery evidence.
+                // recover_slot marks all admission/hydration failures itself.
+                for restore in [
+                    Self::recover_restart_budget,
+                    Self::recover_release_transaction,
+                ] {
+                    if slot.recovery_blocker.is_some() {
+                        break;
+                    }
+                    if let Err(error) = restore(supervisor, &agent_id, slot, now) {
+                        if !Self::recovery_control_fault_is_retryable(slot, &error) {
+                            slot.recovery_blocker = Some(bounded_message(error.to_string()));
+                        }
                         faults.push(error);
                     }
                 }
-                if let Some(error) = faults.first() {
+                // A retryable release Drain must not hide independent signed
+                // authority recovery. Its exact staged control remains owned.
+                if slot.recovery_blocker.is_none()
+                    && let Err(error) = supervisor.recover_signed_intent(&agent_id, slot, &record)
+                {
+                    slot.recovery_blocker = Some(bounded_message(error.to_string()));
+                    faults.push(error);
+                }
+                if slot.recovery_blocker.is_some()
+                    && let Some(error) = faults.first()
+                {
                     supervisor.deny_failed_recovery(&agent_id, slot, error, now);
                 }
                 Ok(faults)
@@ -306,9 +324,26 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
+    fn ensure_start_admitted(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+        self.ensure_mutation_admitted(agent_id)?;
+        let slot = self
+            .slots
+            .get(agent_id)
+            .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        if slot.release_change.is_some()
+            || slot.restart_pending
+            || slot.failed_restart_spawn.is_some()
+        {
+            return Err(SupervisorError::Invalid(format!(
+                "agent {agent_id} has an in-flight release change or restart"
+            )));
+        }
+        Ok(())
+    }
+
     #[cfg(unix)]
     pub(crate) fn preflight_start(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
-        self.ensure_mutation_admitted(agent_id)?;
+        self.ensure_start_admitted(agent_id)?;
         let record = self.record(agent_id)?;
         let slot = self
             .slots
@@ -317,7 +352,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
         }
-        if crate::lease::read_lease(record.layout.run_root())?.is_some() {
+        if crate::lease::read_lease(record.layout.run_root())?.is_some()
+            || slot.matrix.runtime.is_some()
+            || crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
+        {
             return Err(SupervisorError::UnresolvedLease(agent_id.clone()));
         }
         if !matches!(
@@ -370,7 +408,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        if slot.release_change.is_some() || slot.restart_pending {
+        if slot.release_change.is_some()
+            || slot.restart_pending
+            || slot.failed_restart_spawn.is_some()
+        {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
         if slot.active_release.is_none() && slot.last_command.is_none() {
@@ -490,7 +531,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         command: AgentCommand,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        self.ensure_mutation_admitted(agent_id)?;
+        self.ensure_start_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_slot(agent_id, slot, command, now)
         })
@@ -502,7 +543,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        self.ensure_mutation_admitted(agent_id)?;
+        self.ensure_start_admitted(agent_id)?;
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_release_slot(agent_id, slot, release, now)
         })
@@ -620,16 +661,21 @@ impl<D: ProcessDriver> Supervisor<D> {
                     now_unix_seconds,
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
-            let admitted_source = supervisor.registry.resolve_release(agent_id, current.release_id())
-                .map_err(|error| SupervisorError::ProductionAuthority(format!(
-                    "production source release must remain catalog-admitted: {error}"
-                )))?;
+            let admitted_source = supervisor
+                .registry
+                .resolve_release(agent_id, current.release_id())
+                .map_err(|error| {
+                    SupervisorError::ProductionAuthority(format!(
+                        "production source release must remain catalog-admitted: {error}"
+                    ))
+                })?;
             let admitted_source = AgentRelease::try_from(admitted_source)?;
             if current.command() != admitted_source.command()
                 || current.matrixd_command() != admitted_source.matrixd_command()
             {
                 return Err(SupervisorError::ProductionAuthority(
-                    "active source commands do not match the canonical admitted release".to_string(),
+                    "active source commands do not match the canonical admitted release"
+                        .to_string(),
                 ));
             }
             // with_slot temporarily removes this Agent from the map. Use the
@@ -915,17 +961,20 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        Ok(slot.recovery_blocker.is_some() || slot
-            .signed_intent
-            .as_ref()
-            .is_some_and(|intent| intent.status == SignedIntentStatus::RecoveryRequired))
+        Ok(slot.recovery_blocker.is_some()
+            || slot
+                .signed_intent
+                .as_ref()
+                .is_some_and(|intent| intent.status == SignedIntentStatus::RecoveryRequired))
     }
 
     pub fn any_production_recovery_required(&self) -> bool {
         self.slots.values().any(|slot| {
-            slot.recovery_blocker.is_some() || slot.signed_intent
-                .as_ref()
-                .is_some_and(|intent| intent.status == SignedIntentStatus::RecoveryRequired)
+            slot.recovery_blocker.is_some()
+                || slot
+                    .signed_intent
+                    .as_ref()
+                    .is_some_and(|intent| intent.status == SignedIntentStatus::RecoveryRequired)
         })
     }
 

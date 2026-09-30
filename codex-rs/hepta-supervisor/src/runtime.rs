@@ -169,6 +169,9 @@ pub(crate) struct AgentSlot<P> {
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
     pub restart_pending: bool,
+    /// Same-owner failed dispatch with no acquired process. Keep its exact
+    /// charged operation while durable cancellation is retried.
+    pub failed_restart_spawn: Option<crate::restart_budget::RestartClaim>,
     pub restart_not_before: Option<Instant>,
     pub restart_attempt: u32,
     pub active_release: Option<AgentRelease>,
@@ -198,6 +201,7 @@ impl<P> AgentSlot<P> {
             deferred_agent_action: None,
             last_command: None,
             restart_pending: false,
+            failed_restart_spawn: None,
             restart_not_before: None,
             restart_attempt: 0,
             active_release: None,

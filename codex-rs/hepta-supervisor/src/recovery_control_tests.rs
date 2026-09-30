@@ -223,6 +223,57 @@ impl Fixture {
         )?)
     }
 
+    fn prepare_release_change(&self) -> Result<()> {
+        let program = self._temp.path().join("installed-agentd");
+        for release in ["recovery-source", "recovery-target"] {
+            std::fs::write(&program, format!("#!/bin/sh\n# {release}\nexit 0\n"))?;
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                std::fs::set_permissions(
+                    &program,
+                    std::fs::Permissions::from_mode(/*mode*/ 0o700),
+                )?;
+            }
+            let release_id = ReleaseId::parse(release)?;
+            self.registry
+                .install_release(release_id.clone(), &program, Vec::new())?;
+            self.registry.allow_release(&self.agent, &release_id)?;
+        }
+        let source = ReleaseId::parse("recovery-source")?;
+        let target = ReleaseId::parse("recovery-target")?;
+        let before = self.registry.load_agent(&self.agent)?;
+        self.registry.compare_and_set_release_state(
+            &self.agent,
+            before.release_state.generation,
+            Some(source.clone()),
+            /*previous*/ None,
+        )?;
+        let record = self.registry.load_agent(&self.agent)?;
+        let transaction = crate::release_transaction::DurableReleaseTransaction::new(
+            self.agent.to_string(),
+            crate::ReleaseTransactionKind::Upgrade,
+            source.to_string(),
+            target.to_string(),
+            /*rollback_predecessor*/ None,
+            Some(
+                self.registry
+                    .resolve_release_binding(&self.agent, &source)?,
+            ),
+            Some(
+                self.registry
+                    .resolve_release_binding(&self.agent, &target)?,
+            ),
+            record.release_state.generation,
+            record.lifecycle.generation,
+        )?;
+        crate::release_transaction::write_release_transaction(
+            record.layout.run_root(),
+            &transaction,
+        )?;
+        Ok(())
+    }
+
     fn assert_owned(&self, supervisor: &Supervisor<Driver>) {
         let snapshot = supervisor.snapshot(&self.agent).expect("agent snapshot");
         assert!(snapshot.active);
@@ -256,6 +307,7 @@ fn failed_recovery_stop_retains_exact_handle_and_retries() -> Result<()> {
     let f = Fixture::new(AgentLifecycle::Failed, "unversioned", Some(Signal::Stop))?;
     let (mut supervisor, report) = f.recover()?;
     assert!(!report.faults.is_empty());
+    assert!(!supervisor.production_recovery_required(&f.agent)?);
     f.assert_owned(&supervisor);
     assert!(f.control_events(&supervisor).is_empty());
     assert!(!supervisor.tick(f.now).faults.is_empty());
@@ -282,6 +334,7 @@ fn failed_recovery_kill_retains_exact_handle_and_retries() -> Result<()> {
     let f = Fixture::new(AgentLifecycle::Stopped, "unversioned", Some(Signal::Kill))?;
     let (mut supervisor, report) = f.recover()?;
     assert!(!report.faults.is_empty());
+    assert!(!supervisor.production_recovery_required(&f.agent)?);
     f.assert_owned(&supervisor);
     assert!(f.control_events(&supervisor).is_empty());
     f.process.lock().expect("process state").fail = None;
@@ -299,6 +352,7 @@ fn recovered_draining_state_does_not_fabricate_a_drain_acknowledgement() -> Resu
     let f = Fixture::new(AgentLifecycle::Draining, "unversioned", Some(Signal::Drain))?;
     let (mut supervisor, report) = f.recover()?;
     assert!(!report.faults.is_empty());
+    assert!(!supervisor.production_recovery_required(&f.agent)?);
     f.assert_owned(&supervisor);
     assert!(f.control_events(&supervisor).is_empty());
     f.process.lock().expect("process state").fail = None;
@@ -308,6 +362,82 @@ fn recovered_draining_state_does_not_fabricate_a_drain_acknowledgement() -> Resu
         f.control_events(&supervisor),
         vec![SupervisorEventKind::DrainRequested]
     );
+    Ok(())
+}
+
+#[test]
+fn prepared_release_recovery_drain_failure_retains_original_control_deadline() -> Result<()> {
+    let f = Fixture::new(
+        AgentLifecycle::Running,
+        "recovery-source",
+        Some(Signal::Drain),
+    )?;
+    f.prepare_release_change()?;
+    let (mut supervisor, report) = f.recover()?;
+    assert_eq!(report.faults.len(), 1);
+    assert!(!supervisor.production_recovery_required(&f.agent)?);
+    f.assert_owned(&supervisor);
+    assert!(f.control_events(&supervisor).is_empty());
+    assert!(
+        supervisor
+            .snapshot(&f.agent)
+            .expect("snapshot")
+            .release_change_pending
+    );
+    f.process.lock().expect("process state").fail = None;
+    assert!(
+        supervisor
+            .tick(f.now + Duration::from_secs(2))
+            .faults
+            .is_empty()
+    );
+    assert_eq!(f.process.lock().expect("process state").signals, [1, 1, 0]);
+    assert_eq!(
+        f.control_events(&supervisor),
+        vec![SupervisorEventKind::StopRequested]
+    );
+    f.assert_owned(&supervisor);
+    Ok(())
+}
+
+#[test]
+fn transient_release_recovery_fault_does_not_skip_signed_intent_recovery() -> Result<()> {
+    let f = Fixture::new(
+        AgentLifecycle::Running,
+        "recovery-source",
+        Some(Signal::Drain),
+    )?;
+    f.prepare_release_change()?;
+    let record = f.registry.load_agent(&f.agent)?;
+    let intent = crate::SignedSupervisorIntent::new(
+        codex_hepta_contracts::Sha256Digest::for_bytes(b"independent-recovery-intent"),
+        f.agent.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        "recovery-source",
+        "recovery-target",
+        /*expected_control_revision*/ 0,
+        record.lifecycle.generation,
+        /*authority_epoch*/ 7,
+        crate::SignedIntentStatus::Queued,
+    )?;
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)?;
+    let (supervisor, report) = f.recover()?;
+    assert_eq!(report.faults.len(), 1);
+    assert!(supervisor.production_recovery_required(&f.agent)?);
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())?
+            .expect("recovered intent")
+            .status,
+        crate::SignedIntentStatus::RecoveryRequired,
+    );
+    assert!(
+        supervisor
+            .snapshot(&f.agent)
+            .expect("snapshot")
+            .runtime_fenced
+    );
+    assert_eq!(f.process.lock().expect("process state").signals, [1, 0, 1]);
+    f.assert_owned(&supervisor);
     Ok(())
 }
 

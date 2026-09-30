@@ -362,7 +362,19 @@ fn main_control_parse_fault_cannot_skip_matrix_ownership() -> Result<()> {
     )?;
     f.driver.matrix.lock().expect("matrix state").fail_kill = true;
     assert!(f.recover().is_err());
-    assert_eq!(f.driver.main.lock().expect("main state").adoption_count, 0);
+    let runtime = f.slot.runtime.as_ref().expect("retained main owner");
+    assert!(runtime.fenced && !runtime.healthy);
+    assert_eq!(runtime.identity, main.identity);
+    let main_state = f.driver.main.lock().expect("main state");
+    assert_eq!(
+        (
+            main_state.adoption_count,
+            main_state.signals,
+            main_state.drops
+        ),
+        (1, 1, 0)
+    );
+    drop(main_state);
     assert_eq!(
         f.driver.matrix.lock().expect("matrix state").adoption_count,
         1
