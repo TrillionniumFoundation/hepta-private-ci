@@ -11,13 +11,13 @@ permissions:
 
 concurrency:
   group: platform-wire-convergence-materializer-20260930
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize:
     name: Validate and fast-forward exact convergence
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 90
     env:
       EXPECTED_SOURCE_SHA: 4a76055219065fd9db2010e24e2cac34908f659c
       TARGET_BRANCH: codex/platform-wire-final-convergence-20260925
@@ -27,6 +27,14 @@ jobs:
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
     steps:
+      - name: Bind generic materializer runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RUNNER_NAME" = "rog"
+          test "$RUNNER_OS" = "Linux"
+          test "$RUNNER_ARCH" = "X64"
+
       - name: Check out immutable materializer payload
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -83,6 +91,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          command -v rustup
           rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --component rustfmt,clippy
           rustc +"$RUST_TOOLCHAIN" --version --verbose
 
