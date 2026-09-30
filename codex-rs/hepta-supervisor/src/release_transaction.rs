@@ -7,6 +7,7 @@
 //! keep those bindings absent and never acquire production authority.
 
 use std::io::ErrorKind;
+use std::io::Read;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -24,7 +25,12 @@ pub const RELEASE_TRANSACTION_SCHEMA_VERSION: u32 = 3;
 pub const RELEASE_TRANSACTION_FILE: &str = "supervisor-release-transaction.json";
 const TRANSACTION_DOMAIN: &[u8] = b"hepta-supervisor:release-transaction:v3";
 const COMPATIBILITY_DOMAIN: &[u8] = b"hepta-supervisor:release-compatibility-binding:v1";
+pub(crate) const MAX_RELEASE_JOURNAL_BYTES: usize = 32_768;
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+#[cfg(test)]
+#[path = "release_journal_tests.rs"]
+mod journal_read_tests;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -324,10 +330,8 @@ fn compatibility_binding_digest(
 pub fn read_release_transaction(
     run_root: &Path,
 ) -> Result<Option<DurableReleaseTransaction>, ReleaseTransactionError> {
-    let bytes = match std::fs::read(run_root.join(RELEASE_TRANSACTION_FILE)) {
-        Ok(bytes) => bytes,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) = read_release_journal(&run_root.join(RELEASE_TRANSACTION_FILE))? else {
+        return Ok(None);
     };
     let value: DurableReleaseTransaction = serde_json::from_slice(&bytes)?;
     value.validate()?;
@@ -352,7 +356,103 @@ pub fn write_release_transaction(
     ));
     let final_path = run_root.join(RELEASE_TRANSACTION_FILE);
     let bytes = serde_json::to_vec(transaction)?;
+    if bytes.len() > MAX_RELEASE_JOURNAL_BYTES {
+        return Err(ReleaseTransactionError::Invalid(
+            "release transaction exceeds its file bound".to_string(),
+        ));
+    }
     crate::durable_publish::write_atomic(&temp, &final_path, &bytes, "release_transaction")?;
+    Ok(())
+}
+
+/// Read the small release/intent journals without following links or blocking
+/// on special files. Check the named and opened identities before and after
+/// the bounded read, using the same ownership contract as lifecycle journals.
+pub(crate) fn read_release_journal(path: &Path) -> std::io::Result<Option<Vec<u8>>> {
+    let mut options = std::fs::OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK | libc::O_CLOEXEC);
+    }
+    let mut file = match options.open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error),
+    };
+    let opened = file.metadata()?;
+    let named = std::fs::symlink_metadata(path)?;
+    validate_release_journal_metadata(&opened)?;
+    validate_release_journal_metadata(&named)?;
+    same_release_journal_file(&opened, &named)?;
+    let mut bytes = Vec::new();
+    (&mut file)
+        .take((MAX_RELEASE_JOURNAL_BYTES + 1) as u64)
+        .read_to_end(&mut bytes)?;
+    if bytes.len() > MAX_RELEASE_JOURNAL_BYTES || bytes.len() as u64 != opened.len() {
+        return Err(std::io::Error::new(
+            ErrorKind::InvalidData,
+            "release journal changed during read or exceeds its file bound",
+        ));
+    }
+    let after = file.metadata()?;
+    let named_after = std::fs::symlink_metadata(path)?;
+    validate_release_journal_metadata(&after)?;
+    validate_release_journal_metadata(&named_after)?;
+    same_release_journal_file(&opened, &after)?;
+    same_release_journal_file(&after, &named_after)?;
+    Ok(Some(bytes))
+}
+
+fn validate_release_journal_metadata(metadata: &std::fs::Metadata) -> std::io::Result<()> {
+    if !metadata.file_type().is_file() || metadata.len() > MAX_RELEASE_JOURNAL_BYTES as u64 {
+        return Err(std::io::Error::new(
+            ErrorKind::InvalidData,
+            "release journal is not a bounded regular file",
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        // SAFETY: geteuid takes no arguments and has no memory-safety preconditions.
+        let owner = unsafe { libc::geteuid() };
+        if metadata.uid() != owner || metadata.nlink() != 1 || metadata.mode() & 0o022 != 0 {
+            return Err(std::io::Error::new(
+                ErrorKind::InvalidData,
+                "release journal ownership, links, or permissions are unsafe",
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn same_release_journal_file(
+    before: &std::fs::Metadata,
+    after: &std::fs::Metadata,
+) -> std::io::Result<()> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if before.dev() != after.dev()
+            || before.ino() != after.ino()
+            || before.mtime() != after.mtime()
+            || before.mtime_nsec() != after.mtime_nsec()
+            || before.ctime() != after.ctime()
+            || before.ctime_nsec() != after.ctime_nsec()
+        {
+            return Err(std::io::Error::new(
+                ErrorKind::InvalidData,
+                "release journal identity changed during open/read",
+            ));
+        }
+    }
+    if before.len() != after.len() || before.modified()? != after.modified()? {
+        return Err(std::io::Error::new(
+            ErrorKind::InvalidData,
+            "release journal changed during open/read",
+        ));
+    }
     Ok(())
 }
 

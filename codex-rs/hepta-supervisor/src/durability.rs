@@ -17,6 +17,7 @@ struct QualificationFault {
     point: String,
     kind: io::ErrorKind,
     remaining: u32,
+    successful_occurrences: u32,
 }
 
 #[cfg(any(test, feature = "qualification"))]
@@ -38,10 +39,20 @@ pub(crate) fn check(component: &str, operation: &str) -> io::Result<()> {
     maybe_fail(&format!("{component}.{operation}"))
 }
 
-#[cfg(any(test, feature = "qualification"))]
+#[cfg(test)]
 pub(crate) fn with_qualification_fault<R>(
     point: impl Into<String>,
     kind: io::ErrorKind,
+    action: impl FnOnce() -> R,
+) -> R {
+    with_qualification_fault_after(point, kind, /*successful_occurrences*/ 0, action)
+}
+
+#[cfg(test)]
+pub(crate) fn with_qualification_fault_after<R>(
+    point: impl Into<String>,
+    kind: io::ErrorKind,
+    successful_occurrences: u32,
     action: impl FnOnce() -> R,
 ) -> R {
     struct Reset;
@@ -58,6 +69,7 @@ pub(crate) fn with_qualification_fault<R>(
             point: point.into(),
             kind,
             remaining: 1,
+            successful_occurrences,
         }));
         assert!(previous.is_none(), "nested durability fault injection");
     });
@@ -73,6 +85,10 @@ fn maybe_fail(point: &str) -> io::Result<()> {
             return Ok(());
         };
         if fault.point != point || fault.remaining == 0 {
+            return Ok(());
+        }
+        if fault.successful_occurrences > 0 {
+            fault.successful_occurrences -= 1;
             return Ok(());
         }
         fault.remaining -= 1;

@@ -20,7 +20,7 @@ fn main() -> anyhow::Result<()> {
             .map_err(|_| anyhow::anyhow!("H7 verifier key is malformed"))?,
     )?;
     write_new_file(&options.output, &bundle.to_json_bytes()?)?;
-    println!("{}", bundle.bundle_sha256);
+    println!("{}", bundle.bundle_sha256.as_str());
     Ok(())
 }
 

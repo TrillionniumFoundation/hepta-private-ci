@@ -113,9 +113,11 @@ use crate::signed_authority::authority_epoch_for_supervisor_epoch;
 #[cfg(unix)]
 #[path = "daemon_execution.rs"]
 mod execution;
-#[cfg(unix)]
+#[cfg(all(unix, not(feature = "qualification")))]
 #[path = "daemon_mutex.rs"]
 mod mutex;
+#[cfg(all(unix, feature = "qualification"))]
+use crate::qualification_mutex as mutex;
 #[cfg(unix)]
 #[path = "daemon_owner.rs"]
 mod owner;

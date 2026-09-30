@@ -6,7 +6,6 @@
 //! an in-flight operation and can fail closed instead of guessing.
 
 use std::fs::OpenOptions;
-use std::io::ErrorKind;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -216,10 +215,8 @@ impl SignedIntentRecoveryDirective {
 
 pub fn read_intent(run_root: &Path) -> Result<Option<SignedSupervisorIntent>, SignedIntentError> {
     let path = run_root.join(SIGNED_INTENT_FILE);
-    let bytes = match std::fs::read(path) {
-        Ok(bytes) => bytes,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) = crate::release_transaction::read_release_journal(&path)? else {
+        return Ok(None);
     };
     let intent: SignedSupervisorIntent = serde_json::from_slice(&bytes)?;
     intent.validate()?;
@@ -230,10 +227,8 @@ pub fn read_recovery_directive(
     run_root: &Path,
 ) -> Result<Option<SignedIntentRecoveryDirective>, SignedIntentError> {
     let path = run_root.join(SIGNED_INTENT_RECOVERY_FILE);
-    let bytes = match std::fs::read(path) {
-        Ok(bytes) => bytes,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) = crate::release_transaction::read_release_journal(&path)? else {
+        return Ok(None);
     };
     let directive: SignedIntentRecoveryDirective = serde_json::from_slice(&bytes)?;
     directive.validate()?;
@@ -289,6 +284,11 @@ fn write_atomic_json<T: Serialize>(
     let temp = run_root.join(format!(".{file_name}.{nanos}.{sequence}.tmp"));
     let final_path = run_root.join(file_name);
     let bytes = serde_json::to_vec(value)?;
+    if bytes.len() > crate::release_transaction::MAX_RELEASE_JOURNAL_BYTES {
+        return Err(SignedIntentError::Invalid(
+            "signed intent journal exceeds its file bound".to_string(),
+        ));
+    }
     let mut options = OpenOptions::new();
     options.write(true).create_new(true);
     #[cfg(unix)]

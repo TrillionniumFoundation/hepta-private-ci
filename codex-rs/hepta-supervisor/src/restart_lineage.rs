@@ -185,16 +185,14 @@ impl DurableRestartLineage {
                 "restart operation identity or phase is outside its bounds".to_string(),
             ));
         }
-        if let (Some(predecessor), Some(replacement)) = (&self.predecessor, &self.replacement) {
-            if predecessor == replacement
+        if let (Some(predecessor), Some(replacement)) = (&self.predecessor, &self.replacement)
+            && (predecessor == replacement
                 || replacement.spawn_generation <= predecessor.spawn_generation
-                || replacement.release_id != predecessor.release_id
-            {
-                return Err(RestartLineageError::Invalid(
-                    "restart replacement does not prove a fresh same-release generation"
-                        .to_string(),
-                ));
-            }
+                || replacement.release_id != predecessor.release_id)
+        {
+            return Err(RestartLineageError::Invalid(
+                "restart replacement does not prove a fresh same-release generation".to_string(),
+            ));
         }
         if self.record_sha256 != self.compute_digest()? {
             return Err(RestartLineageError::DigestMismatch);
@@ -439,6 +437,43 @@ pub(crate) fn complete(
     )
 }
 
+/// Failed startup is terminal for this exact replacement attempt. Preserve the
+/// consumed budget, and never let an unrelated process cancel its owner record.
+pub(crate) fn cancel_exited_replacement(
+    run_root: &Path,
+    agent_id: &AgentId,
+    replacement: &RestartProcessWitness,
+) -> Result<bool, RestartLineageError> {
+    let Some(lineage) = read(run_root)? else {
+        return Ok(false);
+    };
+    if lineage.agent_id != *agent_id {
+        return Err(RestartLineageError::Invalid(
+            "restart lineage belongs to another Agent".to_string(),
+        ));
+    }
+    if lineage.replacement.as_ref() != Some(replacement) {
+        return Ok(false);
+    }
+    match lineage.phase {
+        RestartLineagePhase::ReplacementStarted => {
+            write(
+                run_root,
+                &lineage.with_state(
+                    lineage.predecessor_exit_observed,
+                    lineage.replacement.clone(),
+                    RestartLineagePhase::Cancelled,
+                )?,
+            )?;
+            Ok(true)
+        }
+        RestartLineagePhase::Cancelled => Ok(true),
+        RestartLineagePhase::PredecessorOwned
+        | RestartLineagePhase::ReplacementPending
+        | RestartLineagePhase::Completed => Ok(false),
+    }
+}
+
 pub(crate) fn cancel(run_root: &Path, agent_id: &AgentId) -> Result<(), RestartLineageError> {
     let Some(lineage) = read(run_root)? else {
         return Ok(());
@@ -466,6 +501,20 @@ pub(crate) fn cancel_if_budget_absent(
     agent_id: &AgentId,
 ) -> Result<(), RestartLineageError> {
     cancel(run_root, agent_id)
+}
+
+pub(crate) fn validate_recovery(
+    run_root: &Path,
+    agent_id: &AgentId,
+) -> Result<(), RestartLineageError> {
+    if let Some(lineage) = read(run_root)?
+        && lineage.agent_id != *agent_id
+    {
+        return Err(RestartLineageError::Invalid(
+            "restart lineage belongs to another Agent".to_string(),
+        ));
+    }
+    Ok(())
 }
 
 fn read(run_root: &Path) -> Result<Option<DurableRestartLineage>, RestartLineageError> {
@@ -690,6 +739,41 @@ mod tests {
                 true,
             )
             .is_err()
+        );
+    }
+
+    #[test]
+    fn only_the_exact_unhealthy_replacement_can_cancel_its_attempt_after_exit() {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let predecessor = witness(11, "predecessor");
+        let replacement = witness(12, "replacement");
+        begin(
+            directory.path(),
+            &agent(),
+            100,
+            1,
+            Some(predecessor.clone()),
+        )
+        .expect("begin");
+        mark_predecessor_exited(directory.path(), &agent(), &predecessor)
+            .expect("predecessor exit");
+        bind_replacement(directory.path(), &agent(), 100, 1, replacement.clone())
+            .expect("replacement");
+        assert!(
+            !cancel_exited_replacement(directory.path(), &agent(), &predecessor)
+                .expect("unrelated exit")
+        );
+        assert!(
+            cancel_exited_replacement(directory.path(), &agent(), &replacement)
+                .expect("exact exit")
+        );
+        assert!(
+            cancel_exited_replacement(directory.path(), &agent(), &replacement)
+                .expect("replayed exact exit")
+        );
+        assert_eq!(
+            reconcile_pending(directory.path(), &agent(), 100, 1, None, false).expect("recover"),
+            RestartRecoveryRole::Cancelled
         );
     }
 }
