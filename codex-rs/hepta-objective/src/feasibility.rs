@@ -45,7 +45,10 @@ pub fn check_feasibility_v1(
     // supplies the global 257-call ceiling for a smaller input. Additional
     // batching work is opt-in through the explicit deterministic API.
     let linear_calls = u16::try_from(atoms.len().saturating_add(1)).unwrap_or(u16::MAX);
-    let max_calls = budget.max_calls.min(LEGACY_MAX_ORACLE_CALLS).min(linear_calls);
+    let max_calls = budget
+        .max_calls
+        .min(LEGACY_MAX_ORACLE_CALLS)
+        .min(linear_calls);
     let deterministic_budget = DeterministicOracleBudgetV1 {
         max_calls,
         max_work_units: u64::from(max_calls).saturating_mul(MAX_ATOMS as u64),

@@ -68,8 +68,8 @@ pub(crate) fn scalar_conflict(
     // scheduling or wall-clock load change a valid objective into Exhausted.
     // Callers of the explicit feasibility API may still supply a real-time
     // availability budget of their own.
-    let max_calls = u16::try_from(atoms.len().saturating_add(1))
-        .map_err(|_| ObjectiveError::Arithmetic)?;
+    let max_calls =
+        u16::try_from(atoms.len().saturating_add(1)).map_err(|_| ObjectiveError::Arithmetic)?;
     let budget = DeterministicOracleBudgetV1 {
         max_calls,
         max_work_units: u64::from(max_calls) * 256,
