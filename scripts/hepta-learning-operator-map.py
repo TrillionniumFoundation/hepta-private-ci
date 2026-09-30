@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Generate and verify the exact-source learning.operator implementation map.
 
-The checked-in implementation map is a navigation/provenance document. This
-qualification projection is generated *after* the source candidate commit, so
-it can bind that exact commit/tree and every mapped source object without a
-cryptographic self-reference.
+The checked-in implementation map is a navigation document. The qualification
+projection is generated from the exact candidate and binds every mapped source,
+status, document and qualification-control object without a self-reference.
 """
 
 from __future__ import annotations
@@ -19,15 +18,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CANONICAL_MAP = ROOT / "docs/modules/learning.operator/IMPLEMENTATION_MAP.json"
-DEFAULT_OUTPUT = (
-    ROOT / "qualification/lane-e/learning-operator-current-implementation-map.json"
-)
+DEFAULT_OUTPUT = ROOT / "qualification/lane-e/learning-operator-current-implementation-map.json"
 
 
 def git(*args: str) -> str:
-    env = {
-        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
-    }
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
     env.update(
         GIT_CONFIG_NOSYSTEM="1",
         GIT_CONFIG_GLOBAL=os.devnull,
@@ -51,9 +46,7 @@ def sha256_bytes(value: bytes) -> str:
 
 
 def canonical_bytes(value: object) -> bytes:
-    return json.dumps(
-        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode("utf-8")
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
 
 
 def reject_legacy_source_commit(value: object, path: str = "$") -> None:
@@ -80,15 +73,31 @@ def mapped_paths(row: dict[str, object]) -> list[str]:
     paths: set[str] = {
         "codex-rs/Cargo.toml",
         "codex-rs/Cargo.lock",
+        "codex-rs/hepta-bellman-operator/Cargo.toml",
+        "codex-rs/hepta-bellman-operator/src/authoritative_lib.rs",
+        "codex-rs/hepta-bellman-operator/src/sensor_core_qualification.rs",
+        "docs/modules/learning.operator/STATUS.json",
+        "docs/modules/learning.operator/TECHNICAL.md",
+        "docs/modules/learning.operator/ADMISSION_CONTRACT.md",
+        "docs/modules/learning.operator/SCHEMA_COMPATIBILITY.json",
+        "docs/modules/learning.operator/COMPATIBILITY_RESOURCE_AND_SHADOW_POLICY.md",
+        "docs/modules/learning.operator/OPERATIONS_RUNBOOK.md",
+        "qualification/module-execution-dossiers/detail/learning.operator.md",
+        ".github/workflows/learning-operator-authoritative.yml",
+        ".github/workflows/blocking-ci.yml",
+        "scripts/hepta-learning-operator-api-surface.py",
+        "scripts/hepta-learning-operator-authoritative.sh",
         "scripts/hepta-learning-operator-contract.py",
         "scripts/hepta-learning-operator-evidence.py",
         "scripts/hepta-learning-operator-map.py",
+        "scripts/hepta-learning-operator-mutation.py",
+        "scripts/hepta-learning-operator-readiness.py",
         "scripts/hepta-learning-operator-receipt.py",
+        "scripts/hepta-learning-operator-stage.py",
     }
-    for key in ("technicalGuide",):
-        value = row.get(key)
-        if isinstance(value, str) and value:
-            paths.add(value)
+    value = row.get("technicalGuide")
+    if isinstance(value, str) and value:
+        paths.add(value)
     for key in ("declaredRoots", "resolvedRoots", "sourceRoot"):
         values = row.get(key, [])
         if isinstance(values, str):
@@ -142,12 +151,16 @@ def generate(source_sha: str, source_tree: str, output: Path) -> None:
     paths = mapped_paths(row)
     objects = [source_object(source_sha, path) for path in paths]
     payload: dict[str, object] = {
-        "schema": "hepta.learning-operator-current-implementation-map.v1",
-        "schemaVersion": 1,
+        "schema": "hepta.learning-operator-current-implementation-map.v2",
+        "schemaVersion": 2,
         "module": "learning.operator",
         "generatedFrom": str(CANONICAL_MAP.relative_to(ROOT)),
+        "canonicalStatus": "docs/modules/learning.operator/STATUS.json",
         "source": {"sha": source_sha, "tree": source_tree},
         "canonicalMapSha256": sha256_bytes(CANONICAL_MAP.read_bytes()),
+        "canonicalStatusSha256": sha256_bytes(
+            (ROOT / "docs/modules/learning.operator/STATUS.json").read_bytes()
+        ),
         "claimBoundary": row.get("claimBoundary"),
         "productCallerState": row.get("productCallerState"),
         "productionWriterState": row.get("productionWriterState"),
@@ -164,15 +177,10 @@ def generate(source_sha: str, source_tree: str, output: Path) -> None:
     verify(output, expected_sha=source_sha, expected_tree=source_tree)
 
 
-def verify(
-    path: Path,
-    *,
-    expected_sha: str | None = None,
-    expected_tree: str | None = None,
-) -> None:
+def verify(path: Path, *, expected_sha: str | None = None, expected_tree: str | None = None) -> None:
     value = json.loads(path.read_text(encoding="utf-8"))
     reject_legacy_source_commit(value)
-    if value.get("schemaVersion") != 1 or value.get("module") != "learning.operator":
+    if value.get("schemaVersion") != 2 or value.get("module") != "learning.operator":
         raise ValueError("implementation projection schema or module mismatch")
     source = value.get("source")
     if not isinstance(source, dict):
@@ -193,6 +201,9 @@ def verify(
     canonical_map_digest = sha256_bytes(CANONICAL_MAP.read_bytes())
     if value.get("canonicalMapSha256") != canonical_map_digest:
         raise ValueError("canonical implementation map digest drift")
+    status = ROOT / "docs/modules/learning.operator/STATUS.json"
+    if value.get("canonicalStatusSha256") != sha256_bytes(status.read_bytes()):
+        raise ValueError("canonical status digest drift")
     canonical = json.loads(CANONICAL_MAP.read_text(encoding="utf-8"))
     if value.get("operations") != canonical.get("operations"):
         raise ValueError("implementation operation inventory drift")
@@ -210,11 +221,7 @@ def verify(
         object_path = entry.get("path")
         object_sha = entry.get("object")
         kind = entry.get("kind")
-        if (
-            not isinstance(object_path, str)
-            or not isinstance(object_sha, str)
-            or kind not in {"blob", "tree"}
-        ):
+        if not isinstance(object_path, str) or not isinstance(object_sha, str) or kind not in {"blob", "tree"}:
             raise ValueError("source object entry malformed")
         if object_path in by_path:
             raise ValueError(f"duplicate source object path: {object_path}")
@@ -243,15 +250,10 @@ def main() -> None:
     check.add_argument("--expected-sha")
     check.add_argument("--expected-tree")
     args = parser.parse_args()
-
     if args.command == "emit":
         generate(args.source_sha, args.source_tree, ROOT / args.output)
     else:
-        verify(
-            ROOT / args.path,
-            expected_sha=args.expected_sha,
-            expected_tree=args.expected_tree,
-        )
+        verify(ROOT / args.path, expected_sha=args.expected_sha, expected_tree=args.expected_tree)
 
 
 if __name__ == "__main__":
