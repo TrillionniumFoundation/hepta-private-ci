@@ -55,6 +55,8 @@ CHECKS = [
             "codex-hepta-authbus",
             "-p",
             "codex-state-sqlite",
+            "-p",
+            "codex-hepta-types",
             "--",
             "--check",
         ],
@@ -70,6 +72,8 @@ CHECKS = [
             "codex-hepta-bao-adapter",
             "-p",
             "codex-state-sqlite",
+            "-p",
+            "codex-hepta-types",
             "--all-targets",
         ],
     ),
@@ -84,6 +88,8 @@ CHECKS = [
             "codex-hepta-bao-adapter",
             "-p",
             "codex-state-sqlite",
+            "-p",
+            "codex-hepta-types",
             "--all-targets",
             "--",
             "--test-threads=2",
@@ -100,6 +106,8 @@ CHECKS = [
             "codex-hepta-bao-adapter",
             "-p",
             "codex-state-sqlite",
+            "-p",
+            "codex-hepta-types",
             "--all-targets",
             "--",
             "-D",
@@ -171,6 +179,12 @@ def main() -> int:
     environment.setdefault("CARGO_BUILD_JOBS", "2")
     environment.setdefault("CARGO_PROFILE_DEV_DEBUG", "0")
     environment.setdefault("CARGO_PROFILE_TEST_DEBUG", "0")
+    try:
+        rust_toolchain = subprocess.check_output(
+            ["rustc", "--version", "--verbose"], cwd=RUST, env=environment, text=True
+        ).strip()
+    except (OSError, subprocess.CalledProcessError) as error:
+        rust_toolchain = f"unavailable: {error}"
 
     for name, cwd, command in CHECKS:
         start = time.monotonic()
@@ -227,7 +241,7 @@ def main() -> int:
         and diff_check_after.returncode == 0
         and head == git("rev-parse", "HEAD")
     )
-    passed = identity_ok and all(
+    passed = identity_ok and rust_toolchain.startswith("rustc ") and all(
         row["exitCode"] == 0 for row in results
     )
     receipt = {
@@ -236,6 +250,10 @@ def main() -> int:
         "tree": tree,
         "expectedSha": args.expected_sha,
         "candidateRole": args.candidate_role,
+        "workflowRunId": environment.get("GITHUB_RUN_ID", "local"),
+        "workflowAttempt": environment.get("GITHUB_RUN_ATTEMPT", "local-1"),
+        "workflowSha": environment.get("GITHUB_WORKFLOW_SHA", head),
+        "rustToolchain": rust_toolchain,
         "buildSurface": "single_complete",
         "identityClean": identity_ok,
         "trackedAndUntrackedBefore": before,
