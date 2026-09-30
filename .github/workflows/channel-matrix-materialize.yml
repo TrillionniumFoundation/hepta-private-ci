@@ -1,0 +1,41 @@
+name: channel.matrix documentation and workflow consistency
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/channel-matrix-*.yml'
+      - 'docs/modules/channel.matrix/**'
+      - 'codex-rs/hepta-matrix-store/migrations/**'
+      - 'scripts/channel_matrix_production_bundle.py'
+      - 'scripts/channel_matrix_workflow_policy.py'
+      - 'scripts/tests/test_channel_matrix_documentation.py'
+      - 'scripts/tests/test_channel_matrix_production_bundle.py'
+      - 'scripts/tests/test_channel_matrix_workflow_policy.py'
+      - '.github/workflows/channel-matrix-materialize.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: channel-matrix-docs-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Matrix documentation and read-only workflow consistency
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Verify migration floor, production evidence, and workflow policy
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          set -euo pipefail
+          python3 scripts/channel_matrix_workflow_policy.py --check
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_documentation.py' -v
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_production_bundle.py' -v
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix_workflow_policy.py' -v

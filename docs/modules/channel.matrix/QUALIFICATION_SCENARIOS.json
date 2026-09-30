@@ -1,0 +1,385 @@
+{
+  "schema": "hepta.channel-matrix-scenarios.v1",
+  "semantics": "Native fixture evidence is narrower than the full scenario; unresolved target, missing fixture and independent acceptance gates cannot be inferred from JUnit.",
+  "scenarios": [
+    {
+      "id": "MATRIX-Q01",
+      "scenario": "normal send",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::final_poll_regressions",
+          "test": "transport_acceptance_alone_never_counts_as_confirmed_delivery",
+          "source": "codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs"
+        },
+        {
+          "binary": "codex-hepta-matrix-sdk::final_poll_regressions",
+          "test": "normal_send_confirms_only_after_sync_and_survives_reopen",
+          "source": "codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q02",
+      "scenario": "ACK loss",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::durable_transport",
+          "test": "post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id",
+          "source": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs"
+        }
+      ],
+      "external_gates": [
+        "hermetic_homeserver_ack_loss"
+      ]
+    },
+    {
+      "id": "MATRIX-Q03",
+      "scenario": "rate limiting",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::durable_transport",
+          "test": "transient_failures_use_bounded_backoff_and_then_park_for_reconciliation",
+          "source": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs"
+        }
+      ],
+      "external_gates": [
+        "target_rate_limit_retry_after"
+      ]
+    },
+    {
+      "id": "MATRIX-Q04",
+      "scenario": "accepted then disconnect",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::durable_transport",
+          "test": "later_permanent_rejection_cannot_erase_prior_transport_acceptance",
+          "source": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs"
+        }
+      ],
+      "external_gates": [
+        "target_connection_drop"
+      ]
+    },
+    {
+      "id": "MATRIX-Q05",
+      "scenario": "revocation before entry",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::durable_transport",
+          "test": "revocation_after_claim_before_adapter_entry_never_crosses_network",
+          "source": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q06",
+      "scenario": "remote acceptance crash",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-store::dispatch_recovery_regressions",
+          "test": "ack_loss_survives_retry_rejection_and_reopen",
+          "source": "codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs"
+        }
+      ],
+      "external_gates": [
+        "hermetic_process_crash"
+      ]
+    },
+    {
+      "id": "MATRIX-Q07",
+      "scenario": "matrixd restart",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-store::durable_core",
+          "test": "crash_reopen_reconciles_dispatch_and_expired_outbox_lease",
+          "source": "codex-rs/hepta-matrix-store/tests/durable_core.rs"
+        }
+      ],
+      "external_gates": [
+        "target_process_restart"
+      ]
+    },
+    {
+      "id": "MATRIX-Q08",
+      "scenario": "supervisor orphan",
+      "tests": [],
+      "external_gates": [
+        "supervisor_lifecycle_target"
+      ]
+    },
+    {
+      "id": "MATRIX-Q09",
+      "scenario": "redaction",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-store::sync_mutation_v2",
+          "test": "dispatch_observation_survives_reopen_and_redaction_preserves_send_evidence",
+          "source": "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs"
+        }
+      ],
+      "external_gates": [
+        "target_redaction"
+      ]
+    },
+    {
+      "id": "MATRIX-Q10",
+      "scenario": "sync gap",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-store::durable_core",
+          "test": "cursor_gap_requires_snapshot_then_resumes_exactly",
+          "source": "codex-rs/hepta-matrix-store/tests/durable_core.rs"
+        }
+      ],
+      "external_gates": [
+        "target_reconnect"
+      ]
+    },
+    {
+      "id": "MATRIX-Q11",
+      "scenario": "session identity change",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::final_poll_regressions",
+          "test": "identity_rotation_during_authorization_prevents_adapter_entry",
+          "source": "codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs"
+        },
+        {
+          "binary": "codex-hepta-matrix-sdk::pending_poll_regressions",
+          "test": "device_change_while_pending_preserves_unknown_effect",
+          "source": "codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs"
+        }
+      ],
+      "external_gates": [
+        "authenticated_session_domain"
+      ]
+    },
+    {
+      "id": "MATRIX-Q12",
+      "scenario": "encrypted rotation",
+      "tests": [],
+      "external_gates": [
+        "encrypted_homeserver_device_rotation"
+      ]
+    },
+    {
+      "id": "MATRIX-Q13",
+      "scenario": "protected restore",
+      "tests": [],
+      "external_gates": [
+        "authenticated_backup_restore"
+      ]
+    },
+    {
+      "id": "MATRIX-Q14",
+      "scenario": "rejection after unknown",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::durable_transport",
+          "test": "later_permanent_rejection_cannot_erase_prior_transport_acceptance",
+          "source": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q15",
+      "scenario": "capacity shutdown",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::durable_transport",
+          "test": "retry_preserves_stable_transaction_and_shutdown_is_bounded",
+          "source": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs"
+        }
+      ],
+      "external_gates": [
+        "sustained_capacity"
+      ]
+    },
+    {
+      "id": "MATRIX-Q16",
+      "scenario": "stale capability",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-store::dispatch_recovery_regressions",
+          "test": "post_expiry_old_token_cannot_finalize_the_new_owner",
+          "source": "codex-rs/hepta-matrix-store/tests/dispatch_recovery_regressions.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q17",
+      "scenario": "network failures",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::final_poll_regressions",
+          "test": "read_timeout_parks_the_same_transaction_and_retains_the_error_class",
+          "source": "codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs"
+        }
+      ],
+      "external_gates": [
+        "platform_dns_tls_connect_reset"
+      ]
+    },
+    {
+      "id": "MATRIX-Q18",
+      "scenario": "canonical content drift",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-store::content_binding",
+          "test": "pin_survives_reopen_and_rejects_content_scope_and_old_claim_drift",
+          "source": "codex-rs/hepta-matrix-store/tests/content_binding.rs"
+        }
+      ],
+      "external_gates": [
+        "edit_target_negative_fixture"
+      ]
+    },
+    {
+      "id": "MATRIX-Q19",
+      "scenario": "raw SDK bypass",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::pending_poll_regressions",
+          "test": "revocation_during_future_construction_blocks_first_transport_poll",
+          "source": "codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs"
+        }
+      ],
+      "external_gates": [
+        "compile_fail_and_transport_negative"
+      ]
+    },
+    {
+      "id": "MATRIX-Q20",
+      "scenario": "prepin cancellation",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-store::content_binding",
+          "test": "new_pre_pin_cancellation_survives_reopen_and_keeps_transaction_identity",
+          "source": "codex-rs/hepta-matrix-store/tests/content_binding.rs"
+        }
+      ],
+      "external_gates": [
+        "legacy_hold_native_migration"
+      ]
+    },
+    {
+      "id": "MATRIX-Q21",
+      "scenario": "counterfeit schema",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-store::sync_mutation_v2",
+          "test": "startup_rejects_same_name_weakened_entered_use_guard",
+          "source": "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q22",
+      "scenario": "late echo across attempts",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::durable_transport",
+          "test": "sync_echo_after_retry_claim_uses_prior_entered_proof",
+          "source": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q23",
+      "scenario": "postentry freshness",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrix-sdk::final_poll_regressions",
+          "test": "revocation_after_entered_use_is_indeterminate_and_never_released_as_pre_entry",
+          "source": "codex-rs/hepta-matrix-sdk/tests/final_poll_regressions.rs"
+        },
+        {
+          "binary": "codex-hepta-matrix-sdk::pending_poll_regressions",
+          "test": "epoch_change_while_pending_preserves_unknown_effect",
+          "source": "codex-rs/hepta-matrix-sdk/tests/pending_poll_regressions.rs"
+        }
+      ],
+      "external_gates": [
+        "absolute_expiry_persistence_fault"
+      ]
+    },
+    {
+      "id": "MATRIX-Q24",
+      "scenario": "presentation_extensions_reach_agent_as_plain_text_only",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrixd",
+          "test": "runtime::tests::recovery_tests::presentation_extensions_reach_agent_as_plain_text_only",
+          "source": "codex-rs/hepta-matrixd/src/runtime/recovery_tests.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q25",
+      "scenario": "bad_event_is_delayed_durably_while_next_event_progresses",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrixd",
+          "test": "runtime::tests::recovery_tests::bad_event_is_delayed_durably_while_next_event_progresses",
+          "source": "codex-rs/hepta-matrixd/src/runtime/recovery_tests.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q26",
+      "scenario": "budget_yields_without_canceling_or_reordering_identity",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrixd",
+          "test": "runtime::tests::recovery_tests::budget_yields_without_canceling_or_reordering_identity",
+          "source": "codex-rs/hepta-matrixd/src/runtime/recovery_tests.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q27",
+      "scenario": "known_turn_projection_does_not_wait_for_slow_admission",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrixd",
+          "test": "runtime::tests::recovery_tests::known_turn_projection_does_not_wait_for_slow_admission",
+          "source": "codex-rs/hepta-matrixd/src/runtime/recovery_tests.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q28",
+      "scenario": "missing_turn_lookup_reconciles_only_its_existing_thread",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrixd",
+          "test": "runtime::tests::recovery_tests::missing_turn_lookup_reconciles_only_its_existing_thread",
+          "source": "codex-rs/hepta-matrixd/src/runtime/recovery_tests.rs"
+        }
+      ],
+      "external_gates": []
+    },
+    {
+      "id": "MATRIX-Q29",
+      "scenario": "missing_core_identity_quarantines_without_losing_output_silently",
+      "tests": [
+        {
+          "binary": "codex-hepta-matrixd",
+          "test": "runtime::tests::recovery_tests::missing_core_identity_quarantines_without_losing_output_silently",
+          "source": "codex-rs/hepta-matrixd/src/runtime/recovery_tests.rs"
+        }
+      ],
+      "external_gates": []
+    }
+  ]
+}

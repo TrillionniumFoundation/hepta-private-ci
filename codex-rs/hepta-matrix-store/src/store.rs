@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
@@ -58,6 +59,10 @@ use crate::RoomThreadBindingDraft;
 use crate::model::MAX_PAGE_ITEMS;
 use crate::model::MAX_PAYLOAD_BYTES;
 
+#[path = "recovery.rs"]
+mod recovery;
+pub use recovery::{MatrixRecoveryDisposition, MatrixRecoveryFailure, MatrixRecoveryPurpose};
+
 #[path = "sync_observation.rs"]
 mod sync_observation;
 #[path = "sync_v2.rs"]
@@ -73,6 +78,16 @@ const MATRIX_DB_FILENAME: &str = "matrix_1.sqlite3";
 const MATRIX_V2_SCHEMA_FINGERPRINT: &str =
     "53a59efa865437f08e2bc84b6b44c133b53dc7f40f485ec1dc6200876d221fd1";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
+const MATRIX_DISPATCH_SCHEMA_SOURCES: &[&str] = &[
+    include_str!("../migrations/0006_matrix_dispatch_ledger.sql"),
+    include_str!("../migrations/0007_matrix_claim_fencing.sql"),
+    include_str!("../migrations/0008_matrix_content_binding.sql"),
+    include_str!("../migrations/0009_matrix_legacy_content_holds.sql"),
+    include_str!("../migrations/0010_matrix_entered_use_proofs.sql"),
+    include_str!("../migrations/0011_matrix_legacy_hold_remediation.sql"),
+    include_str!("../migrations/0012_matrix_terminal_any_entered_attempt.sql"),
+    include_str!("../migrations/0013_matrix_inbox_recovery.sql"),
+];
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum MatrixDurableError {
@@ -1621,11 +1636,17 @@ impl MatrixDurableStore {
                     payload, payload_sha256, logical_txn_count,
                     binding_revision, generation, state, attempts, next_attempt_at_ms,
                     lease_until_ms, created_at_ms, updated_at_ms, sent_event_id
-             FROM matrix_sendable_outbox_v2
-             WHERE (
-                    state IN ('pending', 'retry_scheduled') AND next_attempt_at_ms <= ?
-                   ) OR (
-                    state = 'in_flight' AND lease_until_ms <= ?
+             FROM matrix_sendable_outbox_v2 AS outbox
+             WHERE NOT EXISTS (
+                    SELECT 1 FROM matrix_dispatch_legacy_content_holds AS hold
+                    WHERE hold.stable_txn_id = outbox.stable_txn_id
+                   )
+               AND (
+                    (
+                     state IN ('pending', 'retry_scheduled') AND next_attempt_at_ms <= ?
+                    ) OR (
+                     state = 'in_flight' AND lease_until_ms <= ?
+                    )
                    )
              ORDER BY next_attempt_at_ms, outbox_id LIMIT ?",
         )
@@ -3606,6 +3627,92 @@ async fn verify_matrix_v2_schema(pool: &SqlitePool) -> Result<(), MatrixDurableE
     Ok(())
 }
 
+async fn verify_matrix_dispatch_schema(pool: &SqlitePool) -> Result<(), MatrixDurableError> {
+    let expected = matrix_dispatch_schema_objects()?;
+    for (name, (object_type, expected_sql)) in expected {
+        let row = sqlx::query("SELECT type, sql FROM sqlite_schema WHERE name = ?")
+            .bind(&name)
+            .fetch_optional(pool)
+            .await
+            .map_err(unavailable)?
+            .ok_or(MatrixDurableError::Corrupt)?;
+        let actual_type: String = row.try_get("type").map_err(unavailable)?;
+        let actual_sql: String = row.try_get("sql").map_err(unavailable)?;
+        if actual_type != object_type
+            || normalized_schema_sql(&actual_sql) != normalized_schema_sql(&expected_sql)
+        {
+            return Err(MatrixDurableError::Corrupt);
+        }
+    }
+    Ok(())
+}
+
+fn matrix_dispatch_schema_objects() -> Result<BTreeMap<String, (String, String)>, MatrixDurableError>
+{
+    let mut objects = BTreeMap::new();
+    for source in MATRIX_DISPATCH_SCHEMA_SOURCES {
+        let mut statement = String::new();
+        let mut trigger = false;
+        for line in source.lines() {
+            let trimmed = line.trim();
+            if statement.is_empty() {
+                if !(trimmed.starts_with("CREATE TABLE ")
+                    || trimmed.starts_with("CREATE INDEX ")
+                    || trimmed.starts_with("CREATE UNIQUE INDEX ")
+                    || trimmed.starts_with("CREATE TRIGGER ")
+                    || trimmed.starts_with("CREATE VIEW "))
+                {
+                    continue;
+                }
+                trigger = trimmed.starts_with("CREATE TRIGGER ");
+            }
+            if !statement.is_empty() {
+                statement.push('\n');
+            }
+            statement.push_str(line);
+            let complete = if trigger {
+                trimmed == "END;"
+            } else {
+                trimmed.ends_with(';')
+            };
+            if !complete {
+                continue;
+            }
+            let words = statement.split_whitespace().collect::<Vec<_>>();
+            let (object_type, name_index) = match words.as_slice() {
+                ["CREATE", "UNIQUE", "INDEX", ..] => ("index", 3),
+                ["CREATE", "INDEX", ..] => ("index", 2),
+                ["CREATE", "TABLE", ..] => ("table", 2),
+                ["CREATE", "TRIGGER", ..] => ("trigger", 2),
+                ["CREATE", "VIEW", ..] => ("view", 2),
+                _ => return Err(MatrixDurableError::Corrupt),
+            };
+            let name = words
+                .get(name_index)
+                .ok_or(MatrixDurableError::Corrupt)?
+                .trim_matches('`')
+                .trim_matches('"')
+                .to_string();
+            objects.insert(name, (object_type.to_string(), statement.clone()));
+            statement.clear();
+            trigger = false;
+        }
+        if !statement.is_empty() {
+            return Err(MatrixDurableError::Corrupt);
+        }
+    }
+    Ok(objects)
+}
+
+fn normalized_schema_sql(value: &str) -> String {
+    value
+        .trim()
+        .trim_end_matches(';')
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 async fn verify_store(
     pool: &SqlitePool,
     owner_agent_id: &AgentId,
@@ -3650,7 +3757,52 @@ async fn verify_store(
             ('outbox_messages_by_room_active', 'index'),
             ('matrix_visible_inbox_events_v2', 'view'),
             ('matrix_actionable_inbox_dispatches_v2', 'view'),
-            ('matrix_sendable_outbox_v2', 'view')
+            ('matrix_sendable_outbox_v2', 'view'),
+            ('matrix_dispatch_ledger', 'table'),
+            ('matrix_dispatch_unresolved', 'index'),
+            ('matrix_dispatch_accepted_event_unique', 'index'),
+            ('matrix_dispatch_terminal_event_unique', 'index'),
+            ('matrix_dispatch_observations', 'table'),
+            ('matrix_dispatch_observations_by_txn', 'index'),
+            ('matrix_dispatch_authority_claims', 'table'),
+            ('matrix_dispatch_authority_claims_by_txn', 'index'),
+            ('matrix_dispatch_authority_claims_no_update', 'trigger'),
+            ('matrix_dispatch_authority_claims_no_delete', 'trigger'),
+            ('matrix_dispatch_succeeded_requires_authority_claim', 'trigger'),
+            ('matrix_dispatch_redacted_requires_authority_claim', 'trigger'),
+            ('matrix_dispatch_ledger_identity_immutable', 'trigger'),
+            ('matrix_dispatch_ledger_no_delete', 'trigger'),
+            ('matrix_dispatch_observations_no_update', 'trigger'),
+            ('matrix_dispatch_observations_no_delete', 'trigger'),
+            ('matrix_dispatch_attempt_claims', 'table'),
+            ('matrix_dispatch_attempt_claims_by_token', 'index'),
+            ('matrix_dispatch_attempt_claims_no_update', 'trigger'),
+            ('matrix_dispatch_attempt_claims_no_delete', 'trigger'),
+            ('matrix_dispatch_active_claims', 'table'),
+            ('matrix_dispatch_active_claims_by_lease', 'index'),
+            ('matrix_dispatch_active_claim_identity_immutable', 'trigger'),
+            ('matrix_dispatch_authority_witnesses', 'table'),
+            ('matrix_dispatch_authority_witnesses_no_update', 'trigger'),
+            ('matrix_dispatch_authority_witnesses_no_delete', 'trigger'),
+            ('matrix_dispatch_attempt_events', 'table'),
+            ('matrix_dispatch_attempt_events_by_txn', 'index'),
+            ('matrix_dispatch_attempt_events_no_update', 'trigger'),
+            ('matrix_dispatch_attempt_events_no_delete', 'trigger'),
+            ('matrix_dispatch_attempt_confirmed', 'trigger'),
+            ('matrix_dispatch_attempt_redacted', 'trigger'),
+            ('matrix_dispatch_content_bindings', 'table'),
+            ('matrix_dispatch_content_bindings_no_update', 'trigger'),
+            ('matrix_dispatch_content_bindings_no_delete', 'trigger'),
+            ('matrix_dispatch_legacy_content_holds', 'table'),
+            ('matrix_dispatch_legacy_content_holds_no_insert', 'trigger'),
+            ('matrix_dispatch_legacy_content_holds_no_update', 'trigger'),
+            ('matrix_dispatch_legacy_content_holds_no_delete', 'trigger'),
+            ('matrix_dispatch_legacy_hold_no_reactivate', 'trigger'),
+            ('matrix_dispatch_use_entries', 'table'),
+            ('matrix_dispatch_use_entries_by_witness', 'index'),
+            ('matrix_dispatch_use_entries_guard_insert', 'trigger'),
+            ('matrix_dispatch_use_entries_no_update', 'trigger'),
+            ('matrix_dispatch_use_entries_no_delete', 'trigger')
          )
          SELECT COUNT(*) FROM required
          JOIN sqlite_schema USING (name) WHERE sqlite_schema.type = required.type",
@@ -3658,10 +3810,11 @@ async fn verify_store(
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 31 {
+    if required_objects != 76 {
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
+    verify_matrix_dispatch_schema(pool).await?;
     let row =
         sqlx::query("SELECT schema_version, owner_agent_id FROM matrix_meta WHERE singleton = 1")
             .fetch_one(pool)
@@ -3688,6 +3841,206 @@ async fn verify_store(
     .await
     .map_err(unavailable)?;
     if invalid_logical_streams != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_dispatch_identities: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_ledger AS dispatch
+         JOIN outbox_messages AS message
+           ON message.stable_txn_id = dispatch.stable_txn_id
+         WHERE dispatch.logical_outbox_id != message.logical_outbox_id
+            OR dispatch.room_id != message.room_id
+            OR dispatch.binding_revision != message.binding_revision
+            OR dispatch.generation != message.generation
+            OR dispatch.payload_sha256 != message.payload_sha256
+            OR (
+                dispatch.grant_payload_sha256 IS NOT NULL
+                AND dispatch.grant_payload_sha256 != dispatch.payload_sha256
+            )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_dispatch_identities != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_authority_claims: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_authority_claims AS claim
+         JOIN matrix_dispatch_ledger AS dispatch
+           ON dispatch.stable_txn_id = claim.stable_txn_id
+         WHERE claim.subject_id != ?
+            OR claim.operation_id != dispatch.operation_id
+            OR claim.payload_sha256 != dispatch.payload_sha256",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_authority_claims != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_claim_fences: i64 = sqlx::query_scalar(
+        "SELECT
+            (SELECT COUNT(*) FROM matrix_dispatch_active_claims AS active
+             LEFT JOIN matrix_dispatch_attempt_claims AS claimed
+               ON claimed.stable_txn_id = active.stable_txn_id
+              AND claimed.attempt = active.attempt
+              AND claimed.lease_epoch = active.lease_epoch
+              AND claimed.claim_token_sha256 = active.claim_token_sha256
+             LEFT JOIN outbox_messages AS message
+               ON message.stable_txn_id = active.stable_txn_id
+             WHERE claimed.stable_txn_id IS NULL
+                OR message.stable_txn_id IS NULL
+                OR message.state != 'in_flight'
+                OR message.attempts != active.attempt
+                OR active.lease_epoch != active.attempt)
+          + (SELECT COUNT(*) FROM matrix_dispatch_authority_witnesses AS witness
+             LEFT JOIN matrix_dispatch_attempt_claims AS claimed
+               ON claimed.stable_txn_id = witness.stable_txn_id
+              AND claimed.attempt = witness.attempt
+              AND claimed.lease_epoch = witness.lease_epoch
+              AND claimed.claim_token_sha256 = witness.claim_token_sha256
+             LEFT JOIN matrix_dispatch_authority_claims AS authority_claim
+               ON authority_claim.stable_txn_id = witness.stable_txn_id
+              AND authority_claim.attempt = witness.attempt
+             WHERE claimed.stable_txn_id IS NULL
+                OR authority_claim.stable_txn_id IS NULL
+                OR witness.authority_epoch != authority_claim.authority_epoch
+                OR witness.revocation_revision != authority_claim.revocation_revision
+                OR witness.grant_id != authority_claim.grant_id)",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_claim_fences != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_content_bindings: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_content_bindings AS content
+         JOIN matrix_dispatch_ledger AS dispatch USING (stable_txn_id)
+         JOIN outbox_messages AS message USING (stable_txn_id)
+         WHERE content.source_payload_sha256 != dispatch.payload_sha256
+            OR content.source_payload_sha256 != message.payload_sha256",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_content_bindings != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_use_entries: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_use_entries AS entry
+         LEFT JOIN matrix_dispatch_attempt_claims AS claimed
+           ON claimed.stable_txn_id = entry.stable_txn_id
+          AND claimed.attempt = entry.attempt
+          AND claimed.lease_epoch = entry.lease_epoch
+          AND claimed.claim_token_sha256 = entry.claim_token_sha256
+         LEFT JOIN matrix_dispatch_ledger AS dispatch
+           ON dispatch.stable_txn_id = entry.stable_txn_id
+         LEFT JOIN matrix_dispatch_authority_claims AS authority_claim
+           ON authority_claim.stable_txn_id = entry.stable_txn_id
+          AND authority_claim.attempt = entry.attempt
+         LEFT JOIN matrix_dispatch_authority_witnesses AS authority_witness
+           ON authority_witness.stable_txn_id = entry.stable_txn_id
+          AND authority_witness.attempt = entry.attempt
+         LEFT JOIN matrix_dispatch_content_bindings AS content
+           ON content.stable_txn_id = entry.stable_txn_id
+         WHERE claimed.stable_txn_id IS NULL
+            OR dispatch.stable_txn_id IS NULL
+            OR authority_claim.stable_txn_id IS NULL
+            OR authority_witness.stable_txn_id IS NULL
+            OR content.stable_txn_id IS NULL
+            OR entry.attempt != entry.lease_epoch
+            OR entry.operation_id != dispatch.operation_id
+            OR authority_claim.operation_id != entry.operation_id
+            OR authority_claim.subject_id != entry.subject_id
+            OR authority_claim.destination_id != entry.destination_id
+            OR authority_claim.request_sha256 != entry.request_sha256
+            OR authority_claim.scope_sha256 != entry.scope_sha256
+            OR authority_claim.payload_sha256 != dispatch.payload_sha256
+            OR authority_witness.authority_epoch != authority_claim.authority_epoch
+            OR authority_witness.revocation_revision != authority_claim.revocation_revision
+            OR authority_witness.grant_id != authority_claim.grant_id
+            OR authority_witness.verified_use_witness_sha256 != entry.entered_use_witness_sha256
+            OR content.scope_sha256 != entry.scope_sha256
+            OR content.canonical_content_sha256 != entry.canonical_payload_sha256",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_use_entries != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_legacy_holds: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_legacy_content_holds AS hold
+         JOIN outbox_messages AS message USING (stable_txn_id)
+         JOIN matrix_dispatch_ledger AS dispatch USING (stable_txn_id)
+         LEFT JOIN matrix_dispatch_content_bindings AS content USING (stable_txn_id)
+         LEFT JOIN matrix_dispatch_active_claims AS active USING (stable_txn_id)
+         WHERE hold.inherited_attempts > message.attempts
+            OR dispatch.attempts != message.attempts
+            OR content.stable_txn_id IS NOT NULL
+            OR active.stable_txn_id IS NOT NULL
+            OR (
+                message.sent_event_id IS NOT NULL
+                AND dispatch.accepted_event_id IS NOT NULL
+                AND message.sent_event_id != dispatch.accepted_event_id
+            )
+            OR (
+                message.state IN ('pending', 'in_flight', 'retry_scheduled')
+                AND (
+                    message.state != 'retry_scheduled'
+                    OR message.next_attempt_at_ms != 9223372036854775807
+                    OR message.lease_until_ms IS NOT NULL
+                )
+            )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_legacy_holds != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_qualified_successes: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_ledger AS dispatch
+         WHERE dispatch.state IN ('succeeded', 'redacted')
+           AND NOT EXISTS (
+               SELECT 1
+               FROM matrix_dispatch_use_entries AS entry
+               JOIN matrix_dispatch_authority_claims AS authority_claim
+                 ON authority_claim.stable_txn_id = entry.stable_txn_id
+                AND authority_claim.attempt = entry.attempt
+               JOIN matrix_dispatch_authority_witnesses AS authority_witness
+                 ON authority_witness.stable_txn_id = entry.stable_txn_id
+                AND authority_witness.attempt = entry.attempt
+               JOIN matrix_dispatch_content_bindings AS content
+                 ON content.stable_txn_id = entry.stable_txn_id
+               WHERE entry.stable_txn_id = dispatch.stable_txn_id
+                 AND entry.attempt <= dispatch.attempts
+                 AND entry.operation_id = dispatch.operation_id
+                 AND authority_claim.operation_id = dispatch.operation_id
+                 AND authority_claim.subject_id = entry.subject_id
+                 AND authority_claim.destination_id = entry.destination_id
+                 AND authority_claim.request_sha256 = entry.request_sha256
+                 AND authority_claim.scope_sha256 = entry.scope_sha256
+                 AND authority_claim.payload_sha256 = dispatch.payload_sha256
+                 AND authority_witness.authority_epoch = authority_claim.authority_epoch
+                 AND authority_witness.revocation_revision = authority_claim.revocation_revision
+                 AND authority_witness.grant_id = authority_claim.grant_id
+                 AND authority_witness.verified_use_witness_sha256 = entry.entered_use_witness_sha256
+                 AND content.scope_sha256 = entry.scope_sha256
+                 AND content.canonical_content_sha256 = entry.canonical_payload_sha256
+           )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_qualified_successes != 0 {
         return Err(MatrixDurableError::Corrupt);
     }
     let foreign_checkpoint: i64 =

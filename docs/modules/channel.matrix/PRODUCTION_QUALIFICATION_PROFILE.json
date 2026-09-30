@@ -1,0 +1,42 @@
+{
+  "independentAcceptance": [
+    "evidence_reproduction",
+    "operator_runbook_review",
+    "release_boundary_review",
+    "restore_rollback_drill_review",
+    "security_threat_review"
+  ],
+  "schema": "hepta.channel-matrix-production-qualification-profile.v1",
+  "schemaVersion": 1,
+  "targetQualification": [
+    "ack_response_loss",
+    "concurrent_retry",
+    "credential_session_continuity",
+    "delayed_echo_after_retry_claim",
+    "disconnect_reconnect",
+    "encrypted_room_rotation",
+    "enospc_recovery",
+    "exact_candidate_deterministic_merge",
+    "exact_candidate_source_head",
+    "long_unknown_effect",
+    "multi_device_session_rotation",
+    "owner_fencing",
+    "permission_loss_recovery",
+    "process_fault_matrix",
+    "production_resource_limits",
+    "protected_backup_restore",
+    "rate_limit_429",
+    "real_enrolled_homeserver",
+    "redaction_propagation",
+    "signed_final_use_broker_rotation",
+    "slow_homeserver",
+    "stale_authority_fencing",
+    "stale_claim_fencing",
+    "stale_session_fencing",
+    "stale_snapshot_recovery",
+    "stale_supervisor_generation_fencing",
+    "sustained_capacity",
+    "sync_transaction_rollback",
+    "wal_shm_corruption_recovery"
+  ]
+}

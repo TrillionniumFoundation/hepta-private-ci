@@ -11,6 +11,12 @@ path = "junit.xml"
 [profile.local]
 inherits = "default"
 
+# nextest 0.9.103 is pinned by the exact-candidate workflow. Declare the local
+# report explicitly rather than depending on newer nested-profile inheritance,
+# so scenario receipts always bind the testcases that actually ran.
+[profile.local.junit]
+path = "junit.xml"
+
 [test-groups.app_server_protocol_codegen]
 max-threads = 1
 
@@ -64,7 +70,7 @@ test-group = 'core_apply_patch_cli_integration'
 
 [[profile.default.overrides]]
 # These tests create restricted-token Windows child processes and private desktops.
-# Serialize them to avoid exhausting Windows session/global desktop resources in CI.
+# Serialize them to avoid exhausting Windows session/global desktop resources.
 filter = 'package(codex-windows-sandbox) & test(legacy_)'
 test-group = 'windows_sandbox_legacy_sessions'
 

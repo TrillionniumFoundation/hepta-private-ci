@@ -6,13 +6,26 @@
 
 #![forbid(unsafe_code)]
 
+mod claim;
+mod dispatch;
 mod model;
+mod rand;
 mod store;
 
+pub use claim::MatrixAttemptFailureClass;
+pub use claim::MatrixDispatchAttemptEvent;
+pub use claim::MatrixDispatchAttemptEventKind;
+pub use claim::MatrixFencedOutboxClaim;
+pub use claim::MatrixOutboxAuthorityWitness;
 pub use codex_hepta_matrix_protocol::MatrixEventId;
 pub use codex_hepta_matrix_protocol::MatrixRoomId;
 pub use codex_hepta_matrix_protocol::MatrixTransactionId;
 pub use codex_hepta_matrix_protocol::MatrixUserId;
+pub use dispatch::MAX_UNRESOLVED_MATRIX_DISPATCHES;
+pub use dispatch::MatrixDispatchAuthority;
+pub use dispatch::MatrixDispatchAuthorityClaim;
+pub use dispatch::MatrixDispatchRecord;
+pub use dispatch::MatrixDispatchState;
 pub use model::ChangeEvent;
 pub use model::ChangeKind;
 pub use model::ChangePage;
@@ -45,6 +58,9 @@ pub use model::RoomThreadBinding;
 pub use model::RoomThreadBindingDraft;
 pub use store::MatrixDurableError;
 pub use store::MatrixDurableStore;
+pub use store::MatrixRecoveryDisposition;
+pub use store::MatrixRecoveryFailure;
+pub use store::MatrixRecoveryPurpose;
 // Native channel.matrix owner-local observations, not an inter-module wire API.
 #[doc(hidden)]
 pub use store::MatrixSyncUnchangedRequestV1;

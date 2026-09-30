@@ -1,0 +1,35 @@
+{
+  "generatedDocuments": {
+    "docs/modules/channel.matrix/CURRENT_STATUS.md": [
+      "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json",
+      "docs/modules/channel.matrix/MODULE_STATUS.json"
+    ],
+    "docs/modules/channel.matrix/QUALIFICATION_SUMMARY.md": [
+      "docs/modules/channel.matrix/MODULE_STATUS.json",
+      "docs/modules/channel.matrix/PROCESS_FAULT_MATRIX.json",
+      "docs/modules/channel.matrix/PRODUCTION_QUALIFICATION_PROFILE.json",
+      "docs/modules/channel.matrix/QUALIFICATION_SCENARIOS.json",
+      "docs/modules/channel.matrix/TRANSPORT_TCB.json"
+    ],
+    "docs/modules/channel.matrix/REVIEW_GUIDE.md": [
+      "docs/modules/channel.matrix/MODULE_STATUS.json",
+      "docs/modules/channel.matrix/REVIEW_SLICES.json"
+    ]
+  },
+  "generator": "scripts/channel_matrix_docs.py",
+  "handWrittenPurpose": "architecture_rationale_security_operations_recovery_only",
+  "machineSources": [
+    "docs/modules/channel.matrix/DOCUMENT_SOURCES.json",
+    "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json",
+    "docs/modules/channel.matrix/MODULE_STATUS.json",
+    "docs/modules/channel.matrix/PROCESS_FAULT_MATRIX.json",
+    "docs/modules/channel.matrix/PRODUCTION_QUALIFICATION_PROFILE.json",
+    "docs/modules/channel.matrix/QUALIFICATION_SCENARIOS.json",
+    "docs/modules/channel.matrix/REVIEW_SLICES.json",
+    "docs/modules/channel.matrix/TRANSPORT_TCB.json"
+  ],
+  "module": "channel.matrix",
+  "policy": "machine_sources_canonical_generated_markdown_read_only",
+  "schema": "hepta.channel-matrix-document-sources.v1",
+  "schemaVersion": 1
+}
