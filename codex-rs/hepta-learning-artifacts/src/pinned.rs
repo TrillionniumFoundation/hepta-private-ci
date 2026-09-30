@@ -5,11 +5,13 @@
 //! prove that the supplied snapshot is the latest revocation view. See
 //! `../PINNED_LOAD.md` for the host obligations.
 
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 use crate::ArtifactManifest;
 use crate::ArtifactRegistry;
@@ -139,6 +141,7 @@ pub struct VerifiedCurrentRegistryViewV1 {
     registry: ArtifactRegistry,
     witness_digest: Digest32,
     trust_digest: Digest32,
+    ineligible_artifacts: BTreeSet<StableId>,
 }
 
 impl VerifiedCurrentRegistryViewV1 {
@@ -153,7 +156,19 @@ impl VerifiedCurrentRegistryViewV1 {
             registry,
             witness_digest,
             trust_digest,
+            ineligible_artifacts: BTreeSet::new(),
         }
+    }
+
+    /// Current eligibility includes any additional expiry/withdrawal exclusions
+    /// validated by the owner service without mutating signed registry history.
+    #[must_use]
+    pub fn is_eligible(&self, artifact_id: &StableId) -> bool {
+        !self.ineligible_artifacts.contains(artifact_id) && self.registry.is_eligible(artifact_id)
+    }
+
+    pub(crate) fn restrict_eligibility(&mut self, ineligible: BTreeSet<StableId>) {
+        self.ineligible_artifacts.extend(ineligible);
     }
 
     #[must_use]
@@ -191,8 +206,10 @@ impl fmt::Debug for VerifiedCurrentRegistryViewV1 {
 /// registry views. This is not selection authority. A trusted artifact CURRENT
 /// service must issue a verified view before *each* use.
 ///
-/// Any refresh failure permanently closes this consumer, including I/O errors.
-/// The host must explicitly reload; an old backup cannot revive the cache.
+/// Any failed check in [`Self::with_current`] permanently closes this consumer.
+/// If acquiring the authenticated current view fails (including I/O errors),
+/// the host must discard this consumer before returning that error. The host
+/// must explicitly reload; an old backup cannot revive the cache.
 #[derive(Debug)]
 pub struct RevalidatingCandidate {
     candidate: LoadedPinnedCandidate,
@@ -223,6 +240,13 @@ impl RevalidatingCandidate {
         current: VerifiedCurrentRegistryViewV1,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        if !current.is_eligible(&self.candidate.spec.manifest.artifact_id) {
+            self.unavailable = true;
+            return Err(PinnedCandidateLoadError::Ineligible);
+        }
         self.with_verified_registry(current.receipt, current.registry, consume)
     }
 
@@ -273,7 +297,18 @@ impl RevalidatingCandidate {
         current: RegistrySnapshotReceipt,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        let registry = read_registry_snapshot(snapshot, current)?;
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        // Mirror a host that removes its cache before acquiring the verified
+        // current view: acquisition errors must not leave a usable backup.
+        let registry = match read_registry_snapshot(snapshot, current) {
+            Ok(registry) => registry,
+            Err(error) => {
+                self.unavailable = true;
+                return Err(error.into());
+            }
+        };
         self.with_verified_registry(current, registry, consume)
     }
 }

@@ -1,5 +1,10 @@
 //! Create-only snapshots and candidate payloads over host-authorized targets.
 //! The host authenticates target paths, receipts, current revocations and selection.
+//!
+//! Read handles must be independently opened and initially unlocked. Passing a
+//! prelocked handle or a clone of a host fence can alter that fence's lock on
+//! platforms where locks belong to the shared open-file description. The host
+//! must also exclude concurrent access through handles sharing the read cursor.
 
 use std::error::Error;
 use std::fmt;
@@ -300,6 +305,8 @@ pub fn write_registry_head_witness(
 /// Read and revalidate a distributed current-head witness.  The caller must
 /// retain the receipt independently of the file and provide the current
 /// requirement; an old self-consistent file is rejected by that requirement.
+/// Supply an independently opened, initially unlocked handle; it must not be a
+/// clone of a host writer fence or share a cursor with concurrent operations.
 pub fn read_registry_head_witness(
     file: File,
     expected: RegistryHeadWitnessReceipt,
@@ -336,6 +343,8 @@ pub fn read_registry_head_witness(
 /// Rebuild the same canonical registry and revocation lineage from exact bytes.
 /// Accepts a read-only file and uses a shared lock, never a writer recovery path.
 /// There is no repair, initialization, old-snapshot fallback or selected pointer.
+/// Supply an independently opened, initially unlocked handle; it must not be a
+/// clone of a host writer fence or share a cursor with concurrent operations.
 pub fn read_registry_snapshot(
     file: File,
     expected: RegistrySnapshotReceipt,
@@ -403,6 +412,8 @@ pub fn write_candidate_payload(
 /// Load candidate bytes using a CURRENT host-authenticated registry snapshot.
 /// A read-only handle is sufficient. Successful loading is not authority to
 /// execute, install or select the bytes, nor proof of continued revocation freshness.
+/// Supply an independently opened, initially unlocked handle; it must not be a
+/// clone of a host writer fence or share a cursor with concurrent operations.
 pub fn read_candidate_payload(
     file: File,
     registry: &ArtifactRegistry,
@@ -453,7 +464,8 @@ struct LockedFile(File);
 impl Drop for LockedFile {
     fn drop(&mut self) {
         // Normal close alone can leave a lock on a transient inherited open
-        // description. Release only the lock this guard successfully acquired.
+        // description. The caller contract excludes prelocked handles, so this
+        // guard releases only a lock acquired by this operation.
         // This is not a commit acknowledgement or a forced-exit guarantee.
         let _ = self.0.unlock();
     }

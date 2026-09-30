@@ -211,6 +211,14 @@ impl ArtifactSelectionVerifierV1 {
                 .writer_signers
                 .iter()
                 .chain(artifact_owner_trust.head_signers.iter())
+                .any(|owner| owner.signer_id == selector.selector_id)
+            {
+                return Err(ArtifactSelectionError::RoleCollision);
+            }
+            if artifact_owner_trust
+                .writer_signers
+                .iter()
+                .chain(artifact_owner_trust.head_signers.iter())
                 .any(|owner| Digest32::of_bytes(&owner.verifying_key) == selector_key_digest)
             {
                 return Err(ArtifactSelectionError::AuthorityKeyCollision);
@@ -293,7 +301,7 @@ impl ArtifactSelectionVerifierV1 {
             .registry()
             .manifest(&signed.artifact_id)
             .ok_or(ArtifactSelectionError::ArtifactUnavailable)?;
-        if !current.registry().is_eligible(&signed.artifact_id) {
+        if !current.is_eligible(&signed.artifact_id) {
             return Err(ArtifactSelectionError::ArtifactUnavailable);
         }
         validate_manifest_binding(signed, manifest)?;
@@ -330,6 +338,13 @@ impl ArtifactSelectionVerifierV1 {
 
         let mut digest_bytes = signed.signing_bytes();
         digest_bytes.extend_from_slice(&signed.signature);
+        // A signed selection cannot extend the independently provisioned
+        // selector's validity or its known revocation frontier.
+        let expires_at = signed.expires_at.min(selector.expires_at).min(
+            selector
+                .revoked_at
+                .map_or(u64::MAX, |at| at.saturating_sub(1)),
+        );
         Ok(VerifiedArtifactSelectionV1 {
             pin: PinnedCandidateSpec {
                 registry_receipt: current.receipt(),
@@ -340,7 +355,7 @@ impl ArtifactSelectionVerifierV1 {
             selector_credential_digest: signed.selector_credential_digest,
             authority_epoch: signed.authority_epoch,
             issued_at: signed.issued_at,
-            expires_at: signed.expires_at,
+            expires_at,
             trust_digest: self.trust_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
@@ -679,6 +694,52 @@ mod tests {
             verifier.verify(&signed, &current, 30),
             Err(ArtifactSelectionError::SelectorRevoked)
         ));
+    }
+
+    #[test]
+    fn selector_cannot_reuse_owner_identity_with_a_different_key() {
+        let owner_key = SigningKey::from_bytes(&[13; 32]);
+        let selector_key = SigningKey::from_bytes(&[44; 32]);
+        assert!(matches!(
+            ArtifactSelectionVerifierV1::new(
+                trust(&selector_key, id("artifact-owner")),
+                &owner_trust(&owner_key),
+            ),
+            Err(ArtifactSelectionError::RoleCollision)
+        ));
+    }
+
+    #[test]
+    fn verified_selection_cannot_outlive_selector_validity_or_revocation() {
+        let owner_key = SigningKey::from_bytes(&[13; 32]);
+        let owner_trust = owner_trust(&owner_key);
+        let selector_key = SigningKey::from_bytes(&[45; 32]);
+        let manifest = manifest(id("producer"));
+        let current = current_view(&manifest, &owner_trust);
+        for (expires_at, revoked_at, rejected_at) in [(40, None, 41), (100, Some(40), 40)] {
+            let mut selector_trust = trust(&selector_key, id("selector"));
+            selector_trust.selectors[0].expires_at = expires_at;
+            selector_trust.selectors[0].revoked_at = revoked_at;
+            let verifier = must(ArtifactSelectionVerifierV1::new(
+                selector_trust,
+                &owner_trust,
+            ));
+            let signed = signed_selection(&selector_key, id("selector"), &manifest, &current);
+            let verified = must(verifier.verify(&signed, &current, 30));
+            let mut journal = ArtifactLifecycleJournalV2::new();
+            assert!(matches!(
+                record_verified_selection(
+                    &mut journal,
+                    Digest32::ZERO,
+                    &id("producer"),
+                    &verified,
+                    id("expired-selection-event"),
+                    rejected_at,
+                ),
+                Err(ArtifactSelectionError::SelectionContext)
+            ));
+            assert!(journal.records().is_empty());
+        }
     }
 
     #[test]

@@ -282,6 +282,74 @@ fn write_view(
     (must(File::open(directory.path(name))), receipt)
 }
 
+fn verified_view(
+    directory: &TestDirectory,
+    registry: &ArtifactRegistry,
+    name: &str,
+) -> VerifiedCurrentRegistryViewV1 {
+    let (file, receipt) = write_view(directory, registry, name);
+    // These crate-private fixtures exercise consumer checks. Signed issuance
+    // of this opaque view is covered independently by owner-host tests.
+    VerifiedCurrentRegistryViewV1::new(
+        receipt,
+        must(read_registry_snapshot(file, receipt)),
+        Digest32::of_bytes(b"verified-current-witness"),
+        Digest32::of_bytes(b"verified-current-trust"),
+    )
+}
+
+#[test]
+fn panicking_verified_consumer_permanently_closes_cache() {
+    let directory = TestDirectory::new("cached-panic");
+    let bytes = b"value";
+    let selected = manifest("policy", 1, None, bytes);
+    let mut registry = ArtifactRegistry::new();
+    register(&mut registry, "register", selected.clone());
+    write_payload(&directory, &registry, &selected, bytes);
+    let original = write_snapshot(&directory, &registry);
+    let mut cached = RevalidatingCandidate::new(must(load(&directory, original, selected)));
+    let current = verified_view(&directory, &registry, "current");
+
+    let panic = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let _ = cached.with_current::<()>(current, |_| panic!("consumer failed"));
+    }));
+    assert!(panic.is_err());
+    assert_eq!(
+        cached.with_current(verified_view(&directory, &registry, "backup"), |_| panic!(
+            "panicked consumer was revived"
+        )),
+        Err::<(), _>(PinnedCandidateLoadError::Unavailable)
+    );
+}
+
+#[test]
+fn verified_equal_length_fork_closes_cache_without_consuming_bytes() {
+    let directory = TestDirectory::new("cached-equal-fork");
+    let bytes = b"value";
+    let selected = manifest("policy", 1, None, bytes);
+    let mut original_registry = ArtifactRegistry::new();
+    register(&mut original_registry, "register", selected.clone());
+    write_payload(&directory, &original_registry, &selected, bytes);
+    let original = write_snapshot(&directory, &original_registry);
+    let mut cached = RevalidatingCandidate::new(must(load(&directory, original, selected.clone())));
+    let mut forked = ArtifactRegistry::new();
+    register(&mut forked, "different-event", selected);
+
+    assert_eq!(
+        cached.with_current(verified_view(&directory, &forked, "fork"), |_| {
+            panic!("forked view reached consumer")
+        }),
+        Err::<(), _>(PinnedCandidateLoadError::FrontierMismatch)
+    );
+    assert_eq!(
+        cached.with_current(
+            verified_view(&directory, &original_registry, "backup"),
+            |_| panic!("forked consumer was revived")
+        ),
+        Err::<(), _>(PinnedCandidateLoadError::Unavailable)
+    );
+}
+
 #[test]
 fn cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup() {
     let directory = TestDirectory::new("cached-revoke");
