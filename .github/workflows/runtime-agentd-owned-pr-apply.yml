@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write
+  statuses: write
 
 concurrency:
   group: runtime-agentd-owned-carrier-pr-apply
@@ -19,7 +20,7 @@ env:
   TARGET_BRANCH: work/runtime-agentd-production-closure-20260928
   EXPECTED_TARGET_HEAD: 2f1705384e1ea5d1dbf1e76e1dcf4bf0e2882515
   MAIN_PATCH_SHA256: ca3d6b6550ec64fcfb9e1b376952edd6eae275cd11126a27ab5e5aa6c6011785
-  AMENDMENT_SHA256: 06acddfa8baf2df088c789484c9dc9537095061d5062d3d0a1ad82df2043e938
+  AMENDMENT_SHA256: 08b5fc4cb970c609c97afa2e9255084bc5404e489ad7404243c8ccf62c608172
   CARGO_INCREMENTAL: '0'
   CARGO_PROFILE_DEV_DEBUG: '0'
   CARGO_PROFILE_TEST_DEBUG: '0'
@@ -63,11 +64,44 @@ jobs:
           python-version: '3.12'
       - name: Reconstruct exact candidate
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATUS_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          set -euo pipefail
+          set +e
           test "${{ github.event.pull_request.base.ref }}" = work/runtime-agentd-owned-qualification-and-maintenance-20260929
-          cp .github/runtime-agentd-owned-apply/apply-verified-20260930.sh "$RUNNER_TEMP/apply-verified.sh"
-          bash "$RUNNER_TEMP/apply-verified.sh"
+          preflight_rc=$?
+          log="$RUNNER_TEMP/runtime-agentd-carrier-reconstruct.log"
+          if [[ "$preflight_rc" -eq 0 ]]; then
+            cp .github/runtime-agentd-owned-apply/apply-verified-20260930.sh "$RUNNER_TEMP/apply-verified.sh"
+            bash "$RUNNER_TEMP/apply-verified.sh" >"$log" 2>&1
+            rc=$?
+          else
+            printf '%s\n' 'carrier base-ref preflight failed' >"$log"
+            rc="$preflight_rc"
+          fi
+          cat "$log"
+          context="runtime-agentd/carrier-reconstruct-${RUNNER_OS,,}"
+          if [[ "$rc" -ne 0 ]]; then
+            description="$(
+              grep -E '^::error|mismatch|drifted|failed|error:' "$log" |
+                tail -n 1 |
+                tr '\n' ' ' |
+                LC_ALL=C cut -c1-140
+            )"
+            if [[ -z "$description" ]]; then
+              description="$(tail -n 1 "$log" | tr '\n' ' ' | LC_ALL=C cut -c1-140)"
+            fi
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/statuses/${STATUS_SHA}" \
+              -f state=failure \
+              -f context="$context" \
+              -f description="$description" >/dev/null
+            exit "$rc"
+          fi
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/statuses/${STATUS_SHA}" \
+            -f state=success \
+            -f context="$context" \
+            -f description='exact content-addressed candidate reconstructed' >/dev/null
       - name: Run qualification and boundary contracts
         shell: bash
         run: |
