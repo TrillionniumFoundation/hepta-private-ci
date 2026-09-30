@@ -2,6 +2,10 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-fleet",
-    compile_data = ["//:docs/modules/MODULES.json"],
+    compile_data = [
+        "//:docs/modules/MODULES.json",
+        "src/durable_execution_schema.sql",
+        "src/durable_schema.sql",
+    ],
     crate_name = "codex_hepta_fleet",
 )
