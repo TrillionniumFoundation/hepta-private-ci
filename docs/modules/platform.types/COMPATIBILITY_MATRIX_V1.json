@@ -285,10 +285,8 @@
           ]
         },
         "staleStateRejection": {
-          "status": "evidenced",
-          "consumers": [
-            "runtime.supervisor.manifest-admission"
-          ]
+          "status": "not_applicable",
+          "reason": "The current Supervisor owner binds identity and authorization but has no trusted-clock freshness input; final-use freshness must fail closed until that owner boundary is added."
         },
         "mixedVersionRollback": {
           "status": "evidenced",
@@ -343,10 +341,8 @@
           ]
         },
         "staleStateRejection": {
-          "status": "evidenced",
-          "consumers": [
-            "runtime.supervisor.manifest-admission"
-          ]
+          "status": "not_applicable",
+          "reason": "The current Supervisor owner pins calibration generation and clock domain but does not compare validity against a trusted-clock snapshot; runtime validity remains an explicit owner gap."
         },
         "mixedVersionRollback": {
           "status": "evidenced",
