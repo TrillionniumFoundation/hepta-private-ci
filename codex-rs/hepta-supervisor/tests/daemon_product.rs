@@ -104,7 +104,7 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
             == 0o600
     );
 
-    let second = Command::new(env!("CARGO_BIN_EXE_hepta-supervisord"))
+    let second = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-supervisord")?)
         .arg("--fleet-root")
         .arg(fleet_root.as_path())
         .output()?;
@@ -247,7 +247,7 @@ struct DaemonChild(Child);
 
 impl DaemonChild {
     fn spawn(fleet_root: &std::path::Path) -> Result<Self> {
-        let child = Command::new(env!("CARGO_BIN_EXE_hepta-supervisord"))
+        let child = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-supervisord")?)
             .arg("--fleet-root")
             .arg(fleet_root)
             .stdin(Stdio::null())

@@ -231,11 +231,14 @@ fn aborted_signed_intent_remains_terminal_across_recovery() -> Result<(), Superv
 #[test]
 fn legacy_abort_cli_fails_without_writing_a_recovery_directive() -> Result<(), SupervisorError> {
     let (_fleet, record, intent) = persisted_intent(SignedIntentStatus::RecoveryRequired)?;
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_hepta-supervisor-intent-recovery"))
-        .arg("abort")
-        .arg(record.layout.run_root())
-        .arg(intent.intent_sha256.as_str())
-        .output()?;
+    let output = std::process::Command::new(
+        codex_utils_cargo_bin::cargo_bin("hepta-supervisor-intent-recovery")
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?,
+    )
+    .arg("abort")
+    .arg(record.layout.run_root())
+    .arg(intent.intent_sha256.as_str())
+    .output()?;
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("independently signed recovery"));
     assert!(
