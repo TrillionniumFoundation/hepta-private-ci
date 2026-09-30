@@ -2,6 +2,7 @@
   "auditIndex": "docs/modules/learning.eval/AUDIT_INDEX.md",
   "claimBoundary": {
     "activation": false,
+    "candidateExecutionReadOnlyWorkflowSourcePresent": true,
     "canonicalProductFacadeSourcePresent": true,
     "checkpointTailRecoveryImplemented": true,
     "consumerBoundAdmissionComposed": true,
@@ -10,6 +11,7 @@
     "independentAcceptance": false,
     "isolatedTrustedCompatibilityFixtureSourcePresent": true,
     "lifecycleCapacityReservationImplemented": true,
+    "mainOnlyAttestationIsolationSourcePresent": true,
     "multiOutcomeTypedArchiveImplemented": true,
     "nearCapacityFileRegressionImplemented": true,
     "productionImplementation": false,
@@ -17,10 +19,13 @@
     "release": false,
     "rootActivatedRecoveryTrustImplemented": true,
     "sequentialClusterConfidenceImplemented": true,
+    "stalePrHeadReportRejectionSourcePresent": true,
     "targetHostQualified": false,
     "temporalCrossFitExecutorImplemented": true,
+    "trustedDefaultBranchWorkflowRunReporterSourcePresent": true,
     "typedArchiveInternalReverificationImplemented": true,
     "typedFailureEncodingV2SourcePresent": true,
+    "untrustedArtifactValidationSourcePresent": true,
     "verifiedCompactionImplemented": true
   },
   "contractAddenda": [
@@ -238,6 +243,14 @@
         "codex-rs/hepta-intelligence-eval/tests/product_facade_compile.rs",
         "scripts/hepta-learning-eval-api-surface.sh"
       ]
+    },
+    {
+      "nativeSymbol": "trusted_workflow_run_report",
+      "sourcePath": "scripts/hepta-learning-eval-trusted-report.py",
+      "tests": [
+        "scripts/test_hepta_learning_eval_trusted_report.py",
+        "scripts/hepta-learning-eval-doc-contract.py"
+      ]
     }
   ],
   "owner": "learning-platform",
@@ -277,10 +290,10 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "51f3b9d53f71f10303f66be8cb0abd553adffec2",
-    "tree": "8d05ca8f572a2aefb0cf191e8cec0e59f41208eb"
+    "commit": "74182248424db5da4cc8a5b9f4092d9f8a0d6ac3",
+    "tree": "8e35b84028a896c0bd5ef8d0bab3d403161b1477"
   },
-  "sourceBaseSemantics": "Exact source, CI, recovery, API-surface and documentation observation immediately preceding this map-only rebind. It includes fail-closed nextest discovery, isolated compatibility execution, a canonical authority-free product facade, versioned typed failure identity, scoped commit-addressed evidence, and human/audit documentation separation. This observation is not a target-host qualification, independent acceptance, activation, promotion or release authority.",
+  "sourceBaseSemantics": "Exact source, CI, recovery, API-surface and documentation observation immediately preceding this map-only rebind. It includes fail-closed nextest discovery, isolated compatibility execution, a canonical authority-free product facade, versioned typed failure identity, read-only candidate execution, a trusted default-branch workflow_run reporter that validates artifacts as untrusted data and rejects stale PR heads, main-only attestation isolation, scoped commit-addressed evidence, and human/audit documentation separation. This observation is not a target-host qualification, independent acceptance, activation, promotion or release authority.",
   "sourceIdentityPolicy": "exact_observation_plus_candidate_unchanged_v2",
   "sourceRootPresent": true,
   "technicalGuide": "docs/modules/learning.eval/TECHNICAL.md"
