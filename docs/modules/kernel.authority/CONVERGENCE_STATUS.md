@@ -1,8 +1,10 @@
 # kernel.authority convergence status
 
 **Status date:** 2026-09-30  
-**Immutable source anchor:** `be80239ab17b041e357a5aa2161c9b023f8b563c`  
-**Source tree:** `ed49fe9c56c266f80e99316e9112e3dc000bab08`  
+**Immutable source anchor:** `a4f2dc6601e1251b6a3fa09eda76f5796c01334e`
+
+**Source tree:** `08b45dbc9a0467a6595e20cdf5ef54ce9a80edca`
+
 **Machine manifest:** `qualification/kernel-authority/convergence_manifest.json`  
 **Validator:** `qualification/kernel-authority/convergence_acceptance.py`
 
@@ -164,3 +166,21 @@ At this source anchor:
 This is deliberate. The remaining work is execution and external provider/host
 qualification, not an invitation to weaken the owner, clock, persistence or
 recovery contracts.
+
+## Adversarial audit verification
+
+The source anchor includes the storage FIFO denial-of-service fix, checked
+revocation-retry lineage at revision exhaustion, bounded recovery regressions,
+strict lint repairs and Rust formatting. See [the detailed audit](AUDIT_20261001.md).
+
+Local development validation passed 217 `codex-hepta-contracts` tests with zero
+skips, strict all-target contracts Clippy, 97 qualification/evidence Python
+tests, eight kernel-authority B4 tests, the source convergence validator,
+status projection freshness and contracts/Agentd/Fleet Rust format checks.
+These are local development results, not hosted or production receipts.
+
+The Agentd two-product-process recovery test could not reach execution locally:
+its dependency build exhausted the shared workspace disk. Exact-candidate
+hosted compilation/recovery and selected production-provider/target-host
+qualification remain required. No production, activation or release claim
+changes as a result of this audit.

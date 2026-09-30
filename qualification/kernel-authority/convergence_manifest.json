@@ -3,8 +3,8 @@
   "schemaVersion": 1,
   "module": "kernel.authority",
   "sourceAnchor": {
-    "commit": "be80239ab17b041e357a5aa2161c9b023f8b563c",
-    "tree": "ed49fe9c56c266f80e99316e9112e3dc000bab08"
+    "commit": "a4f2dc6601e1251b6a3fa09eda76f5796c01334e",
+    "tree": "08b45dbc9a0467a6595e20cdf5ef54ce9a80edca"
   },
   "preservedInvariants": [
     "one-authoritative-lease-and-final-use-owner",
@@ -52,7 +52,9 @@
     "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
     "docs/modules/kernel.authority/HOT_PATH_DECISION.md",
     "docs/modules/kernel.authority/PRODUCTION_TRUST_PROFILE.md",
-    "docs/modules/kernel.authority/PRODUCTION_CLOSURE.md"
+    "docs/modules/kernel.authority/PRODUCTION_CLOSURE.md",
+    "codex-rs/hepta-contracts/src/authority_lease_storage_tests.rs",
+    "docs/modules/kernel.authority/AUDIT_20261001.md"
   ],
   "closures": {
     "trustedClockOwnership": {
