@@ -10,6 +10,15 @@ name = "codex_hepta_learning_artifacts"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = ["product-api", "operator-api", "native-host"]
+product-api = []
+operator-api = ["native-host"]
+native-host = []
+production = ["product-api", "operator-api", "native-host"]
+test-fixtures = []
+fault-injection = []
+
 [lints]
 workspace = true
 
