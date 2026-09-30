@@ -623,6 +623,9 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
+# bitmap import and patched chunk dependency without changing their public API.
+imbl = { path = "third_party/imbl-6.1.0" }
 # Matrix SDK 0.18.0 pins rusqlite 0.37/libsqlite3-sys 0.35. Hepta's SQLx 0.9
 # deliberately uses libsqlite3-sys 0.37 for the WAL-reset corruption fix, and
 # Cargo permits only one native SQLite `links` crate in a graph. The vendored
