@@ -1,31 +1,46 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
-  "schemaVersion": 3,
-  "module": "channel.matrix",
-  "laneId": "LANE-B-RUNTIME",
-  "sourceBase": {
-    "commit": "714ef9e73b141ad5a09471d1ef007de15ebe402b",
-    "tree": "b9269e35306d094bbdf61fa6723f13d6ede75c79"
-  },
-  "observedAtHead": {
-    "commit": "32656ca556a11a0bcfd1e62dc7b4dd3a5bdb5fb4",
-    "tree": "ee0e65127881b3d502e91f2b2454b50ccfff1d63"
-  },
   "candidateBindingPolicy": "immutable_source_anchor_plus_exact_head_receipt",
-  "mappingSourceIdentityMode": "exact_blob",
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
-  "sourceMaturity": "native_durable_channel_runtime_typed_entered_faults_closed_source_receipts_source_composed_unqualified",
+  "claimBoundary": {
+    "activation": false,
+    "deploymentQualificationComplete": false,
+    "implementedOperationMappingComplete": true,
+    "independentAcceptance": false,
+    "independentAcceptanceComplete": false,
+    "nativeSourceMappingComplete": true,
+    "productExecutionComplete": false,
+    "productExecutionProved": false,
+    "productionImplementation": false,
+    "release": false,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "sourceRootPresent": true
+  },
   "declaredRoots": [
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
   ],
-  "resolvedRoots": [
-    "codex-rs/hepta-matrix-sdk",
-    "codex-rs/hepta-matrixd"
+  "deputy": "security-authority",
+  "evidenceDisposition": "Frozen ordinary source is 2dcf4538708a9a271d06eb48356dab2c201e9edc / c39603fab28b00366ec13ca953ea4f5f2460339c. Read-only source-head and deterministic-merge lanes bind one transitive source inventory, five canonical command receipts including API compile-fail doctests, Q01-Q29 and one paired receipt.",
+  "externalEvidenceGates": [
+    "real enrolled homeserver, encrypted room and multi-device/session rotation",
+    "protected restore, ENOSPC, permission loss, WAL/SHM corruption and stale snapshot recovery",
+    "sustained capacity, 429/reconnect/slow-server pressure and long unknown effects",
+    "distinct governed target and independent security/operator attestations",
+    "canary, activation, promotion and release"
   ],
+  "laneId": "LANE-B-RUNTIME",
+  "mappingSourceIdentityMode": "exact_blob",
+  "module": "channel.matrix",
+  "observedAtHead": {
+    "commit": "2dcf4538708a9a271d06eb48356dab2c201e9edc",
+    "tree": "c39603fab28b00366ec13ca953ea4f5f2460339c"
+  },
   "observedSourcePaths": [
     ".github/workflows/channel-matrix-preserve-unknown.yml",
     ".github/workflows/channel-matrix-materialize.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-matrix-protocol",
     "codex-rs/hepta-matrix-store",
@@ -39,139 +54,170 @@
     "scripts/channel_matrix_evidence_v2.py",
     "scripts/channel_matrix_pair_acceptance_v2.py",
     "scripts/channel_matrix_production_qualification.py",
+    "scripts/tests/test_channel_matrix_closure_workflow.py",
+    "scripts/tests/test_channel_matrix_evidence_v2.py",
+    "scripts/tests/test_channel_matrix_pair_acceptance_v2.py",
     "scripts/verify_channel_matrix_candidate.py",
     "tests/fixtures/run-hermetic-synapse.sh"
   ],
-  "stateOwnerDisposition": "MatrixDurableStore remains the sole durable Matrix writer; evidence tooling introduces no runtime state owner.",
-  "terminalObserverDisposition": "Authenticated sync owns terminal truth. Transport acceptance and every typed post-entry fault remain nonterminal and cannot authorize retry, release or success.",
-  "evidenceDisposition": "Frozen ordinary source is 32656ca556a11a0bcfd1e62dc7b4dd3a5bdb5fb4 / ee0e65127881b3d502e91f2b2454b50ccfff1d63. Read-only source-head and deterministic-merge lanes bind one transitive source inventory, five canonical command receipts including API compile-fail doctests, Q01-Q29 and one paired receipt.",
-  "productCallers": [
-    {
-      "role": "lifecycle_product_caller",
-      "sourcePath": "codex-rs/hepta-supervisor/src/matrix.rs",
-      "nativeSymbol": "pub(crate) fn start_matrix_companion("
-    },
-    {
-      "role": "runtime_product_composition",
-      "sourcePath": "codex-rs/hepta-matrixd/src/runner.rs",
-      "nativeSymbol": "pub async fn run("
-    }
-  ],
   "operations": [
     {
-      "designOperation": "admit_event",
-      "operation": "admit_event",
-      "mappingClass": "owner_native",
-      "sourcePath": "codex-rs/hepta-matrixd/src/runtime.rs",
-      "nativeSymbol": "pub async fn process_event(",
-      "sourceBlob": "e695364eebb02a9e557f928e86634d47b7d036b8",
-      "sourcePathExists": true,
       "delegatedCallees": [
         {
-          "role": "runtime_recovery_caller",
           "path": "codex-rs/hepta-matrixd/src/runner.rs",
+          "role": "runtime_recovery_caller",
           "symbol": ".recover_pending(INBOX_RECOVERY_LIMIT"
         }
-      ]
+      ],
+      "designOperation": "admit_event",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "pub async fn process_event(",
+      "operation": "admit_event",
+      "sourceBlob": "e695364eebb02a9e557f928e86634d47b7d036b8",
+      "sourcePath": "codex-rs/hepta-matrixd/src/runtime.rs",
+      "sourcePathExists": true
     },
     {
-      "designOperation": "prepare_send",
-      "operation": "prepare_send",
-      "mappingClass": "owner_native",
-      "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
-      "nativeSymbol": "pub async fn prepare_outbox_dispatch(",
-      "sourceBlob": "b88d2016c39c6c0a8ee0d8e226583660a2c09c76",
-      "sourcePathExists": true,
       "delegatedCallees": [
         {
-          "role": "fenced_sender",
           "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs",
+          "role": "fenced_sender",
           "symbol": "prepare_outbox_dispatch(record, prepared_at_ms)"
         },
         {
-          "role": "content_pin",
           "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/admission.rs",
+          "role": "content_pin",
           "symbol": ".pin_outbox_content("
         },
         {
-          "role": "physical_entry",
           "path": "codex-rs/hepta-matrix-sdk/src/outbound_v2/gate.rs",
+          "role": "physical_entry",
           "symbol": "send_authorized(self.record, permit)"
         }
-      ]
+      ],
+      "designOperation": "prepare_send",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "pub async fn prepare_outbox_dispatch(",
+      "operation": "prepare_send",
+      "sourceBlob": "b88d2016c39c6c0a8ee0d8e226583660a2c09c76",
+      "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+      "sourcePathExists": true
     },
     {
-      "designOperation": "observe_send",
-      "operation": "observe_send",
-      "mappingClass": "owner_native",
-      "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
-      "nativeSymbol": "pub(crate) async fn observe_outbound_event_tx(",
-      "sourceBlob": "b88d2016c39c6c0a8ee0d8e226583660a2c09c76",
-      "sourcePathExists": true,
       "delegatedCallees": [
         {
-          "role": "sync_reconciliation",
           "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+          "role": "sync_reconciliation",
           "symbol": "observe_outbound_event_tx("
         },
         {
-          "role": "redaction_reconciliation",
           "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+          "role": "redaction_reconciliation",
           "symbol": "apply_dispatch_redaction_tx("
         }
-      ]
+      ],
+      "designOperation": "observe_send",
+      "mappingClass": "owner_native",
+      "nativeSymbol": "pub(crate) async fn observe_outbound_event_tx(",
+      "operation": "observe_send",
+      "sourceBlob": "b88d2016c39c6c0a8ee0d8e226583660a2c09c76",
+      "sourcePath": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+      "sourcePathExists": true
     }
   ],
+  "owner": "channels-platform",
+  "productCallerState": "source_composed_unqualified",
+  "productCallers": [
+    {
+      "nativeSymbol": "pub(crate) fn start_matrix_companion(",
+      "role": "lifecycle_product_caller",
+      "sourcePath": "codex-rs/hepta-supervisor/src/matrix.rs"
+    },
+    {
+      "nativeSymbol": "pub async fn run(",
+      "role": "runtime_product_composition",
+      "sourcePath": "codex-rs/hepta-matrixd/src/runner.rs"
+    }
+  ],
+  "productionImplementation": false,
+  "productionWriterState": "durable_store_established_unqualified",
   "repositoryControlledGaps": [
-    "Obtain terminal-success source-head, deterministic-merge and paired receipts on the current metadata candidate.",
+    "Obtain terminal-success source-head, deterministic-merge and paired receipts on the metadata candidate that binds this source snapshot.",
     "Execute the checked-in process/Synapse fault matrix and target-host concurrency/fairness profiles with exact receipts.",
     "Provide durable deferred-output replay and authenticated sustained-retention target profiles."
   ],
-  "externalEvidenceGates": [
-    "complete PRODUCTION_QUALIFICATION_PROFILE on a real enrolled homeserver and identified host",
-    "encrypted rotation, protected restore, storage corruption/capacity/network pressure and stale-owner fencing",
-    "distinct governed target and independent security/operator attestations",
-    "canary, activation, promotion and release"
+  "resolvedRoots": [
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrixd"
   ],
-  "claimBoundary": {
-    "nativeSourceMappingComplete": true,
-    "repositoryControlledDocumentationGapsClosed": true,
-    "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
-    "implementedOperationMappingComplete": true,
-    "sourceRootPresent": true,
-    "productExecutionComplete": false,
-    "deploymentQualificationComplete": false,
-    "independentAcceptanceComplete": false,
-    "productionImplementation": false,
-    "productExecutionProved": false,
-    "independentAcceptance": false,
-    "activation": false,
-    "release": false
+  "schema": "hepta.module-implementation-map.v3",
+  "schemaVersion": 3,
+  "sourceBase": {
+    "commit": "714ef9e73b141ad5a09471d1ef007de15ebe402b",
+    "tree": "b9269e35306d094bbdf61fa6723f13d6ede75c79"
   },
-  "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "source_composed_unqualified",
-  "productionWriterState": "durable_store_established_unqualified",
-  "owner": "channels-platform",
-  "deputy": "security-authority",
-  "technicalGuide": "docs/modules/channel.matrix/TECHNICAL.md",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "sourceMaturity": "native_durable_channel_runtime_typed_entered_faults_closed_source_and_command_receipts_source_composed_unqualified",
+  "sourceObjects": [
+    {
+      "object": "b0bd2a74a5697762f35f73880d9da42a93167de8",
+      "path": ".github/workflows/channel-matrix-preserve-unknown.yml"
+    },
+    {
+      "object": "c7e20edc5d56e8140db232ea9030f93a6cf60704",
+      "path": "codex-rs/hepta-matrix-sdk/src/lib.rs"
+    },
+    {
+      "object": "b88d2016c39c6c0a8ee0d8e226583660a2c09c76",
+      "path": "codex-rs/hepta-matrix-store/src/dispatch.rs"
+    },
+    {
+      "object": "e80de4e48af6db18576e2b5166005faba4c0728a",
+      "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs"
+    },
+    {
+      "object": "e695364eebb02a9e557f928e86634d47b7d036b8",
+      "path": "codex-rs/hepta-matrixd/src/runtime.rs"
+    },
+    {
+      "object": "603e8d6d21c87edaae88edc0b3539680404d575b",
+      "path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs"
+    },
+    {
+      "object": "fc5b9709041c5070820d52702d795038e37158df",
+      "path": "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh"
+    },
+    {
+      "object": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs"
+    },
+    {
+      "object": "d6cf8c9affa8d2855464fc8e08bcad5c0e27b113",
+      "path": "docs/modules/channel.matrix/EXACT_CANDIDATE_EVIDENCE.md"
+    },
+    {
+      "object": "eb476587532cfce3b27927483a63d9ac5d4bcfc2",
+      "path": "scripts/channel_matrix_evidence_v2.py"
+    },
+    {
+      "object": "ae2a2977f98a55272e77464c270c2465cb181c22",
+      "path": "scripts/channel_matrix_pair_acceptance_v2.py"
+    },
+    {
+      "object": "4d33e8f264be10f36e68ec84a21e549c41e36863",
+      "path": "scripts/tests/test_channel_matrix_closure_workflow.py"
+    },
+    {
+      "object": "8d105508661abf938358144fb12926924804af8b",
+      "path": "tests/fixtures/run-hermetic-synapse.sh"
+    }
+  ],
   "sourceRoot": [
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
   ],
-  "sourceObjects": [
-    {"path": ".github/workflows/channel-matrix-preserve-unknown.yml", "object": "b0bd2a74a5697762f35f73880d9da42a93167de8"},
-    {"path": "codex-rs/hepta-matrix-sdk/src/lib.rs", "object": "c7e20edc5d56e8140db232ea9030f93a6cf60704"},
-    {"path": "codex-rs/hepta-matrix-store/src/dispatch.rs", "object": "b88d2016c39c6c0a8ee0d8e226583660a2c09c76"},
-    {"path": "codex-rs/hepta-matrix-store/src/sync_v2.rs", "object": "e80de4e48af6db18576e2b5166005faba4c0728a"},
-    {"path": "codex-rs/hepta-matrixd/src/runtime.rs", "object": "e695364eebb02a9e557f928e86634d47b7d036b8"},
-    {"path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs", "object": "603e8d6d21c87edaae88edc0b3539680404d575b"},
-    {"path": "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh", "object": "fc5b9709041c5070820d52702d795038e37158df"},
-    {"path": "codex-rs/hepta-supervisor/src/matrix.rs", "object": "58f0ac9ef340c5253b56e22a5baef969a941055f"},
-    {"path": "docs/modules/channel.matrix/EXACT_CANDIDATE_EVIDENCE.md", "object": "d6cf8c9affa8d2855464fc8e08bcad5c0e27b113"},
-    {"path": "scripts/channel_matrix_evidence_v2.py", "object": "eb476587532cfce3b27927483a63d9ac5d4bcfc2"},
-    {"path": "scripts/channel_matrix_pair_acceptance_v2.py", "object": "ae2a2977f98a55272e77464c270c2465cb181c22"},
-    {"path": "tests/fixtures/run-hermetic-synapse.sh", "object": "8d105508661abf938358144fb12926924804af8b"}
-  ]
+  "sourceRootPresent": true,
+  "stateOwnerDisposition": "MatrixDurableStore remains the sole durable Matrix writer; evidence tooling introduces no runtime state owner.",
+  "technicalGuide": "docs/modules/channel.matrix/TECHNICAL.md",
+  "terminalObserverDisposition": "Authenticated sync owns terminal truth. Transport acceptance and every typed post-entry fault remain nonterminal and cannot authorize retry, release or success."
 }
