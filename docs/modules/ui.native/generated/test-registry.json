@@ -2,8 +2,8 @@
   "schema": "hepta.ui.native.test-registry.v1",
   "sourceDiscovery": {
     "root": "apps/hepta-native/tests",
-    "fileCount": 18,
-    "manifestDigest": "25ab482df19e91a94e3852cb050931e6b9a537c8c143e635d6a1c0968eb84dfc"
+    "fileCount": 19,
+    "manifestDigest": "24fd82110bd75d5dea15ea07ab4a2d7ddba0cf8c28654f178865852787dfbf86"
   },
   "files": [
     {
@@ -16,6 +16,10 @@
     },
     {
       "path": "apps/hepta-native/tests/common/mod.rs",
+      "role": "support"
+    },
+    {
+      "path": "apps/hepta-native/tests/common/snapshot.rs",
       "role": "support"
     },
     {

@@ -5,6 +5,7 @@ import os from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
+import { verifyGenerated } from "./generate.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, "../..");
@@ -42,9 +43,9 @@ const generated = [
 for (const path of generated) {
   if (!existsSync(join(ROOT, path))) throw new Error(`missing generated artifact: ${path}`);
 }
+verifyGenerated(ROOT);
 
-const workflowPath = ".github/workflows/hepta-ui-native-current-source.yml";
-const projectionWorkflowPath = ".github/workflows/hepta-ui-native-projections.yml";
+const workflowPath = ".github/workflows/ui-native-qualification.yml";
 const lockPaths = [
   "apps/hepta-native/Cargo.lock",
   "codex-rs/Cargo.lock",
@@ -52,13 +53,18 @@ const lockPaths = [
 ];
 
 const receipt = {
-  schema: "hepta.ui.native.qualification-receipt.v1",
+  schema: "hepta.ui.native.projection-receipt.v2",
   sourceSha: git("rev-parse", "HEAD"),
   sourceTree: git("rev-parse", "HEAD^{tree}"),
-  workflowSha256: {
-    native: sha256File(join(ROOT, workflowPath)),
-    projections: sha256File(join(ROOT, projectionWorkflowPath)),
+  workingTreeClean: git("status", "--porcelain").length === 0,
+  qualificationWorkflow: {
+    path: workflowPath,
+    sha256: sha256File(join(ROOT, workflowPath)),
   },
+  projectionToolingDigest: sha256Parts([
+    "tools/ui-native-projections/generate.mjs",
+    "tools/ui-native-projections/receipt.mjs",
+  ]),
   dependencyLockDigest: sha256Parts(lockPaths),
   toolchain: {
     node: process.version,
@@ -76,7 +82,9 @@ const receipt = {
   artifactDigest: sha256Parts(generated),
   timestamp: new Date().toISOString(),
   claims: {
-    exactHeadOrSyntheticMerge: process.env.HEPTA_SOURCE_KIND ?? "local",
+    sourceKind: process.env.HEPTA_SOURCE_KIND ?? "local",
+    workflowExecutionObserved: false,
+    automatedKeyboardFocusAccepted: false,
     productionSigningObserved: false,
     physicalAccessibilityAccepted: false,
     releaseAuthorized: false,

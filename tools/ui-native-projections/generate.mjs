@@ -41,7 +41,7 @@ const API_OPERATIONS = [
   },
   {
     id: "confirm_running_update",
-    path: "apps/hepta-native/src/updater.rs",
+    path: "apps/hepta-native/src/update_confirmation.rs",
     symbol: "pub(crate) fn confirm_running_process(",
     visibility: "crate",
     boundary: "active_digest_and_runtime_health_confirmation",
@@ -158,7 +158,7 @@ export function stableJson(value) {
 
 export function buildProjections(root = REPO_ROOT) {
   const runtime = read(root, "apps/hepta-native/src/runtime.rs");
-  const updater = read(root, "apps/hepta-native/src/updater.rs");
+  const updateConfirmation = read(root, "apps/hepta-native/src/update_confirmation.rs");
   const model = read(root, "apps/hepta-native/src/model.rs");
   const cargo = read(root, "apps/hepta-native/Cargo.toml");
   const mac = read(root, "apps/hepta-native/packaging/macos/Info.plist");
@@ -194,7 +194,7 @@ export function buildProjections(root = REPO_ROOT) {
   if (!main.includes("fn run(")) {
     throw new Error("production bootstrap marker fn run( is missing");
   }
-  if (!updater.includes("pub(crate) fn confirm_running_process(")) {
+  if (!updateConfirmation.includes("pub(crate) fn confirm_running_process(")) {
     throw new Error("runtime update confirmation is missing");
   }
 
@@ -290,8 +290,8 @@ export function buildProjections(root = REPO_ROOT) {
       "binding_digest",
       "grant_digest",
     ],
-    durablePhases: ["prepared", "invoking", "indeterminate", "terminal"],
-    terminalStatuses: ["succeeded", "failed", "rejected", "quarantined"],
+    durablePhases: enumVariants(journal, "OperationPhase").map(toSnake),
+    terminalStatuses: enumVariants(model, "TerminalStatus").map(toSnake),
   };
 
   for (const feature of ["accesskit", "wayland", "x11"]) {
@@ -360,10 +360,10 @@ export function buildProjections(root = REPO_ROOT) {
       },
     ],
     automatedAccessibility: [
-      "AccessKit adapter compiled in",
-      "keyboard and focus paths covered by product qualification fixtures",
+      "AccessKit feature required by the Rust manifest",
       "generated source projection rejects missing accessibility feature",
     ],
+    keyboardAndFocusAcceptance: "pending executed behavioral and physical evidence",
     physicalAcceptanceGates: [
       "screen_reader",
       "chinese_ime",

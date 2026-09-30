@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "check_hepta_ui_native_convergence.py"
-SPEC = importlib.util.spec_from_file_location("check_hepta_ui_native_convergence", SCRIPT)
+SPEC = importlib.util.spec_from_file_location(
+    "check_hepta_ui_native_convergence", SCRIPT
+)
 assert SPEC is not None and SPEC.loader is not None
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
@@ -26,6 +31,146 @@ class UiNativeConvergenceTests(unittest.TestCase):
             "release flags remain false pending independent review",
             evidence["limitations"],
         )
+
+
+class FrozenImplementationTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.git("init", "--quiet")
+        self.git("config", "user.email", "fixture@example.invalid")
+        self.git("config", "user.name", "fixture")
+        self.path = self.root / "apps/hepta-native/portal/file_chooser.py"
+        self.path.parent.mkdir(parents=True)
+        self.path.write_text("original\n", encoding="utf-8")
+        self.git("add", ".")
+        self.git("commit", "--quiet", "-m", "frozen implementation")
+        self.implementation = self.git("rev-parse", "HEAD").strip()
+
+    def git(self, *args: str) -> str:
+        return subprocess.check_output(["git", *args], cwd=self.root, text=True)
+
+    def check(self) -> None:
+        with patch.object(MODULE, "ROOT", self.root):
+            MODULE.check_frozen_implementation(self.implementation)
+
+    def test_unchanged_source_and_metadata_only_commit_pass(self) -> None:
+        (self.root / "review.json").write_text("{}\n", encoding="utf-8")
+        self.git("add", ".")
+        self.git("commit", "--quiet", "-m", "review metadata")
+        self.check()
+
+    def test_committed_portal_drift_rejects(self) -> None:
+        self.path.write_text("changed\n", encoding="utf-8")
+        self.git("add", ".")
+        self.git("commit", "--quiet", "-m", "changed product adapter")
+        with self.assertRaisesRegex(RuntimeError, "after the frozen source"):
+            self.check()
+
+    def test_worktree_and_staged_drift_reject(self) -> None:
+        self.path.write_text("changed\n", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "working-tree drift"):
+            self.check()
+        self.git("add", ".")
+        with self.assertRaisesRegex(RuntimeError, "working-tree drift"):
+            self.check()
+
+    def test_untracked_product_source_rejects(self) -> None:
+        self.path.with_name("extra.py").write_text("extra\n", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "untracked source"):
+            self.check()
+
+
+class LocalCargoDependencyTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.git("init", "--quiet")
+        self.git("config", "user.email", "fixture@example.invalid")
+        self.git("config", "user.name", "fixture")
+        self.write("codex-rs/Cargo.toml", '''[workspace]
+members = ["hepta-native-gateway", "hepta-runtime", "leaf", "windows", "build-tool", "test-helper", "unbuilt-dev", "patched"]
+[workspace.dependencies]
+runtime-alias = { package = "real-runtime", path = "hepta-runtime" }
+leaf = { path = "leaf" }
+[patch.crates-io]
+patched = { path = "patched" }
+''')
+        self.crate("apps/hepta-native", '[dependencies]\ngateway = { path = "../../codex-rs/hepta-native-gateway" }\n')
+        self.crate("codex-rs/hepta-native-gateway", '''[dependencies]
+runtime-alias = { workspace = true }
+[target.'cfg(windows)'.dependencies]
+windows = { path = "../windows", optional = true }
+[build-dependencies]
+build-tool = { path = "../build-tool" }
+[dev-dependencies]
+test-helper = { path = "../test-helper" }
+''')
+        self.crate("codex-rs/hepta-runtime", '''[dependencies]
+leaf = { workspace = true }
+[dev-dependencies]
+unbuilt-dev = { path = "../unbuilt-dev" }
+''')
+        for name in ("leaf", "windows", "build-tool", "test-helper", "unbuilt-dev", "patched"):
+            self.crate("codex-rs/" + name)
+        self.git("add", ".")
+        self.git("commit", "--quiet", "-m", "frozen dependency graph")
+        self.implementation = self.git("rev-parse", "HEAD").strip()
+
+    def write(self, relative, text):
+        path = self.root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+
+    def crate(self, relative, dependencies=""):
+        name = Path(relative).name
+        self.write(relative + "/Cargo.toml", f'[package]\nname = "{name}"\nversion = "0.1.0"\nedition = "2024"\n' + dependencies)
+        self.write(relative + "/src/lib.rs", "pub fn original() {}\n")
+
+    def git(self, *args):
+        return subprocess.check_output(["git", *args], cwd=self.root, text=True)
+
+    def test_workspace_alias_target_build_and_root_dev_dependencies_are_frozen(self):
+        with patch.object(MODULE, "ROOT", self.root):
+            paths = MODULE.local_cargo_dependency_paths()
+        for name in ("hepta-runtime", "leaf", "windows", "build-tool", "test-helper", "patched"):
+            self.assertIn("codex-rs/" + name, paths)
+        self.assertNotIn("codex-rs/unbuilt-dev", paths)
+
+    def test_actual_committed_transitive_runtime_change_is_rejected(self):
+        self.write("codex-rs/hepta-runtime/src/lib.rs", "pub fn changed() {}\n")
+        self.git("add", ".")
+        self.git("commit", "--quiet", "-m", "mutated transitive runtime")
+        with patch.object(MODULE, "ROOT", self.root), self.assertRaisesRegex(RuntimeError, "after the frozen source"):
+            MODULE.check_frozen_implementation(self.implementation)
+
+    def test_actual_untracked_transitive_source_is_rejected(self):
+        self.write("codex-rs/leaf/src/injected.rs", "pub fn injected() {}\n")
+        with patch.object(MODULE, "ROOT", self.root), self.assertRaisesRegex(RuntimeError, "untracked source"):
+            MODULE.check_frozen_implementation(self.implementation)
+
+    def test_standalone_app_evidence_metadata_can_continue(self):
+        self.write("apps/hepta-native/CANDIDATE.json", "{}\n")
+        self.git("add", ".")
+        self.git("commit", "--quiet", "-m", "candidate evidence metadata")
+        with patch.object(MODULE, "ROOT", self.root):
+            MODULE.check_frozen_implementation(self.implementation)
+
+    def test_workflow_missing_transitive_trigger_is_rejected(self):
+        workflow = "    paths:\n      - apps/hepta-native/**\n      - codex-rs/hepta-native-gateway/**\n  workflow_dispatch:\n"
+        with patch.object(MODULE, "ROOT", self.root), self.assertRaisesRegex(RuntimeError, "does not trigger"):
+            MODULE.check_dependency_workflow_filters(workflow)
+
+    def test_workflow_complete_dependency_and_projection_triggers_pass(self):
+        with patch.object(MODULE, "ROOT", self.root):
+            paths = (*MODULE.local_cargo_dependency_paths(), "tools/ui-native-projections", ".cargo", "codex-rs/.cargo")
+            workflow = "    paths:\n" + "".join(
+                "      - " + (path if path.endswith("Cargo.toml") else path + "/**") + "\n"
+                for path in paths
+            ) + "  workflow_dispatch:\n"
+            MODULE.check_dependency_workflow_filters(workflow)
 
 
 if __name__ == "__main__":
