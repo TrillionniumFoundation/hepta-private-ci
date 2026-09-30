@@ -754,3 +754,11 @@ mod compatibility_tests;
 #[cfg(test)]
 #[path = "control_actor_boundary_tests.rs"]
 mod boundary_tests;
+
+#[cfg(test)]
+#[path = "control_actor_recovery_tests.rs"]
+mod recovery_tests;
+
+#[cfg(test)]
+#[path = "control_actor_signed_fixture.rs"]
+mod signed_fixture;

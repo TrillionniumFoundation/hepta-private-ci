@@ -196,8 +196,7 @@ async fn dropped_accepted_sender_is_not_pre_admission_closed() {
     );
 }
 
-#[path = "control_actor_signed_fixture.rs"]
-mod signed;
+use super::signed_fixture as signed;
 
 #[tokio::test]
 async fn signed_post_effect_terminal_reply_loss_keeps_exact_durable_result() {
