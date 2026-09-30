@@ -1,6 +1,11 @@
 name: Hepta knowledge.graph one-shot stage-one materialization
 
 on:
+  push:
+    branches:
+      - work/kg-abc-evidence-hardening-20260928
+    paths:
+      - .github/workflows/hepta-kg-stage1-materialize-once.yml
   workflow_dispatch:
 
 permissions:
