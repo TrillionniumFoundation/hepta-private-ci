@@ -10,6 +10,7 @@ use super::PlannerJournalError;
 use super::PlannerJournalKindV1;
 use super::PlannerJournalV1;
 use crate::FeasiblePlanReceiptV1;
+use crate::GlobalStateSnapshotV1;
 use crate::NduPlanEvaluationInputV1;
 use crate::OwnerReadinessV1;
 use crate::OwnerSummaryV1;
@@ -73,6 +74,10 @@ fn snapshot_request() -> SnapshotRequestV1 {
     }
 }
 
+fn snapshot() -> GlobalStateSnapshotV1 {
+    must(collect_snapshot(snapshot_request(), vec![summary()]))
+}
+
 fn candidate(name: &str) -> PlanCandidateV1 {
     PlanCandidateV1 {
         candidate_id: id(name),
@@ -130,21 +135,44 @@ fn evaluation(prepared: &PreparedPlanInputV1) -> crate::NduPlanEvaluationV1 {
 }
 
 fn receipt() -> FeasiblePlanReceiptV1 {
-    let snapshot = must(collect_snapshot(snapshot_request(), vec![summary()]));
+    let snapshot = snapshot();
     let prepared = must(prepare_plan(&snapshot, planning_request()));
     let evaluation = evaluation(&prepared);
     must(finalize_plan(&snapshot, &prepared, &evaluation, 110))
 }
 
+fn serialized_journal(
+    records: &[(PlannerJournalKindV1, Digest32, Digest32)],
+) -> Vec<u8> {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(super::MAGIC);
+    bytes.extend_from_slice(
+        &u32::try_from(records.len())
+            .expect("record count")
+            .to_be_bytes(),
+    );
+    let mut predecessor = Digest32::ZERO;
+    for (index, (kind, identity, payload)) in records.iter().enumerate() {
+        let sequence = u64::try_from(index + 1).expect("sequence");
+        let entry_digest =
+            super::digest_entry(sequence, *kind, *identity, *payload, predecessor);
+        bytes.extend_from_slice(&sequence.to_be_bytes());
+        bytes.push(kind.tag());
+        bytes.extend_from_slice(identity.as_array());
+        bytes.extend_from_slice(payload.as_array());
+        bytes.extend_from_slice(predecessor.as_array());
+        bytes.extend_from_slice(entry_digest.as_array());
+        predecessor = entry_digest;
+    }
+    bytes
+}
+
 #[test]
 fn hash_chain_round_trips_and_preserves_selected_pointer() {
     let mut journal = PlannerJournalV1::new();
+    let snapshot = snapshot();
     let receipt = receipt();
-    must(journal.append(
-        PlannerJournalKindV1::Snapshot,
-        digest("snapshot-identity"),
-        digest("snapshot"),
-    ));
+    must(journal.record_snapshot(&snapshot));
     must(journal.record_decision(&receipt));
     must(journal.select_plan(digest("selection-operation"), &receipt));
     let bytes = journal.export_bytes();
@@ -160,18 +188,17 @@ fn hash_chain_round_trips_and_preserves_selected_pointer() {
 #[test]
 fn identical_identity_is_idempotent_but_payload_drift_conflicts() {
     let mut journal = PlannerJournalV1::new();
-    let identity = digest("identity");
-    let payload = digest("payload");
-    let first = must(journal.append(PlannerJournalKindV1::Decision, identity, payload));
-    let replay = must(journal.append(PlannerJournalKindV1::Decision, identity, payload));
+    let receipt = receipt();
+    let first = must(journal.record_decision(&receipt));
+    let replay = must(journal.record_decision(&receipt));
     assert_eq!(first, replay);
     assert_eq!(journal.entries().len(), 1);
 
     assert_eq!(
         journal
-            .append(
+            .append_record(
                 PlannerJournalKindV1::Decision,
-                identity,
+                receipt.receipt_digest(),
                 digest("different-payload"),
             )
             .expect_err("payload drift must conflict"),
@@ -182,11 +209,7 @@ fn identical_identity_is_idempotent_but_payload_drift_conflicts() {
 #[test]
 fn truncation_and_tampering_fail_closed() {
     let mut journal = PlannerJournalV1::new();
-    must(journal.append(
-        PlannerJournalKindV1::Snapshot,
-        digest("identity"),
-        digest("payload"),
-    ));
+    must(journal.record_decision(&receipt()));
     let bytes = journal.export_bytes();
     assert_eq!(
         PlannerJournalV1::reopen(&bytes[..bytes.len() - 1])
@@ -216,5 +239,86 @@ fn revocation_clears_selection_and_prevents_reselection() {
             .select_plan(digest("select-2"), &receipt)
             .expect_err("revoked plan must not be reselected"),
         PlannerJournalError::RevokedPlan
+    );
+}
+
+#[test]
+fn a_second_active_selection_requires_the_first_to_be_revoked() {
+    let mut journal = PlannerJournalV1::new();
+    let first = receipt();
+    let second_digest = digest("second-decision");
+    must(journal.record_decision(&first));
+    must(journal.append_record(
+        PlannerJournalKindV1::Decision,
+        second_digest,
+        second_digest,
+    ));
+    must(journal.select_plan(digest("select-first"), &first));
+    assert_eq!(
+        journal
+            .append_record(
+                PlannerJournalKindV1::SelectedPlan,
+                digest("select-second"),
+                second_digest,
+            )
+            .expect_err("two active selections must reject"),
+        PlannerJournalError::PlanAlreadySelected
+    );
+}
+
+#[test]
+fn reopen_rejects_selection_without_a_recorded_decision() {
+    let target = digest("unrecorded-decision");
+    let bytes = serialized_journal(&[(
+        PlannerJournalKindV1::SelectedPlan,
+        digest("selection"),
+        target,
+    )]);
+    assert_eq!(
+        PlannerJournalV1::reopen(&bytes)
+            .expect_err("serialized semantic bypass must reject"),
+        PlannerJournalError::DecisionNotRecorded
+    );
+}
+
+#[test]
+fn reopen_rejects_reselection_after_revocation() {
+    let target = digest("decision");
+    let bytes = serialized_journal(&[
+        (PlannerJournalKindV1::Decision, target, target),
+        (
+            PlannerJournalKindV1::SelectedPlan,
+            digest("selection-1"),
+            target,
+        ),
+        (
+            PlannerJournalKindV1::Revocation,
+            digest("revocation"),
+            target,
+        ),
+        (
+            PlannerJournalKindV1::SelectedPlan,
+            digest("selection-2"),
+            target,
+        ),
+    ]);
+    assert_eq!(
+        PlannerJournalV1::reopen(&bytes)
+            .expect_err("revoked decision must not resurrect"),
+        PlannerJournalError::RevokedPlan
+    );
+}
+
+#[test]
+fn reopen_rejects_revocation_of_an_unknown_decision() {
+    let bytes = serialized_journal(&[(
+        PlannerJournalKindV1::Revocation,
+        digest("revocation"),
+        digest("unknown-decision"),
+    )]);
+    assert_eq!(
+        PlannerJournalV1::reopen(&bytes)
+            .expect_err("unknown revocation target must reject"),
+        PlannerJournalError::DecisionNotRecorded
     );
 }
