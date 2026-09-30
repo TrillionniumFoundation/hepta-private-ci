@@ -1,0 +1,171 @@
+name: compact.engine P0 remediation bootstrap
+
+on:
+  push:
+    branches:
+      - automation/compact-engine-p0-bootstrap-20260930
+    paths:
+      - ".github/workflows/compact-engine-p0-bootstrap.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: compact-engine-p0-remediation-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      REPOSITORY: TrillionniumFoundation/hepta-private-ci
+      TARGET_BRANCH: fix/compact-engine-current-main-convergence-20260925
+      BOOTSTRAP_BRANCH: automation/compact-engine-p0-bootstrap-20260930
+      EXPECTED_HEAD: aed7069b690c6c1492493a5914d899966d6ac0fc
+      PAYLOAD_SHA256: 39009bd9d232abc933bffe34c893c49cc547fcdbfb31cc76ab4620eb878e357c
+    steps:
+      - name: Checkout bootstrap payload
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: bootstrap
+          persist-credentials: false
+
+      - name: Checkout target branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          path: target
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply, verify, and publish
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat bootstrap/.hepta-bootstrap/compact-engine/payload.part* \
+            | base64 --decode > "$RUNNER_TEMP/compact-engine-remediation.tar.gz"
+          echo "$PAYLOAD_SHA256  $RUNNER_TEMP/compact-engine-remediation.tar.gz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/compact-engine-remediation"
+          tar -C "$RUNNER_TEMP/compact-engine-remediation" \
+            -xzf "$RUNNER_TEMP/compact-engine-remediation.tar.gz"
+
+          cd target
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git status --porcelain)"
+
+          git config user.name "OpenAI ChatGPT"
+          git config user.email "noreply@openai.com"
+
+          cp -a "$RUNNER_TEMP/compact-engine-remediation/commit1/." .
+          chmod 0755 scripts/compact_engine_qualification.py
+          chmod 0644 scripts/test_compact_engine_qualification.py
+          python3 -m py_compile \
+            scripts/compact_engine_qualification.py \
+            scripts/test_compact_engine_qualification.py
+          python3 -m unittest -v scripts.test_compact_engine_qualification
+          git diff --check
+          git add \
+            .github/workflows/compact-engine-qualification.yml \
+            codex-rs/hepta-compact-engine/src/durable.rs \
+            codex-rs/hepta-compact-engine/src/mutation_guard.rs \
+            codex-rs/hepta-compact-engine/src/recovery.rs \
+            docs/modules/compact.engine/RECOVERY_PROTOCOL_V2.md \
+            docs/modules/compact.engine/REMEDIATION_20260928.md \
+            docs/modules/compact.engine/TECHNICAL.md \
+            qualification/module-execution-dossiers/detail/compact.engine.md \
+            scripts/compact_engine_qualification.py \
+            scripts/test_compact_engine_qualification.py
+          git diff --cached --check
+          git commit -m "fix(compact.engine): close qualification identity blockers" \
+            -m "Repair SQLx transaction execution, wire durable fence tests, consolidate one-run qualification evidence, and correct the implementation/documentation boundary." \
+            -m "Signed-off-by: OpenAI ChatGPT <noreply@openai.com>"
+
+          C1_SHA="$(git rev-parse HEAD)"
+          C1_TREE="$(git rev-parse HEAD^{tree})"
+
+          cp "$RUNNER_TEMP/compact-engine-remediation/commit2/docs/modules/compact.engine/IMPLEMENTATION_MAP.json" \
+            docs/modules/compact.engine/IMPLEMENTATION_MAP.json
+
+          C1_SHA="$C1_SHA" C1_TREE="$C1_TREE" python3 - <<'PY'
+          import importlib.util
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          map_path = Path("docs/modules/compact.engine/IMPLEMENTATION_MAP.json")
+          row = json.loads(map_path.read_text(encoding="utf-8"))
+          identity = {"commit": os.environ["C1_SHA"], "tree": os.environ["C1_TREE"]}
+          row["sourceBase"] = identity
+          row["observedAtHead"] = identity
+          row["mappingSourceIdentityMode"] = "exact_blob"
+
+          spec = importlib.util.spec_from_file_location(
+              "hepta_implementation_maps", "scripts/hepta-implementation-maps.py"
+          )
+          module = importlib.util.module_from_spec(spec)
+          assert spec.loader is not None
+          spec.loader.exec_module(module)
+
+          row["sourceObjects"] = module.current_source_objects(row)
+          entries = []
+          for source_path in module.tracked_source_paths(row):
+              kind = subprocess.check_output(
+                  ["git", "cat-file", "-t", f"HEAD:{source_path}"],
+                  text=True,
+              ).strip()
+              if kind == "blob":
+                  blob = subprocess.check_output(
+                      ["git", "rev-parse", f"HEAD:{source_path}"],
+                      text=True,
+                  ).strip()
+                  entries.append({"path": source_path, "blobSha": blob})
+          row["exactSourceEvidence"] = {
+              "kind": "path_blob_manifest_v1",
+              "entries": sorted(entries, key=lambda item: item["path"]),
+          }
+          row["exactSourceEvidenceStatus"] = (
+              "exact_candidate_paths_bound_pending_terminal_qualification"
+          )
+          row["repositoryControlledGaps"] = [
+              gap
+              for gap in row.get("repositoryControlledGaps", [])
+              if "Populate exactSourceEvidence" not in gap
+          ]
+          map_path.write_text(
+              json.dumps(row, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          git add docs/modules/compact.engine/IMPLEMENTATION_MAP.json
+          git diff --cached --check
+          git commit -m "docs(compact.engine): bind exact implementation evidence" \
+            -m "Bind the implementation map to the immutable source commit and tree with exact source-object and path-blob evidence." \
+            -m "Signed-off-by: OpenAI ChatGPT <noreply@openai.com>"
+
+          C2_SHA="$(git rev-parse HEAD)"
+          C2_TREE="$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain)"
+          python3 scripts/hepta-implementation-maps.py verify \
+            --expected-sha "$C2_SHA" \
+            --expected-tree "$C2_TREE"
+          python3 scripts/compact_engine_qualification.py verify-map --root .
+          git diff "$EXPECTED_HEAD..$C2_SHA" --check
+
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse "origin/$TARGET_BRANCH")" = "$EXPECTED_HEAD"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          printf 'commit1=%s\ncommit2=%s\n' "$C1_SHA" "$C2_SHA" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove bootstrap branch
+        if: success()
+        shell: bash
+        working-directory: target
+        run: |
+          set -euo pipefail
+          git push origin --delete "$BOOTSTRAP_BRANCH" || true
