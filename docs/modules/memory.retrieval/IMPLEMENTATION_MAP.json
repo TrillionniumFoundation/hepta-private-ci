@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "f92423d129473ee526945ab7cde015408eee65c0",
-    "tree": "f4d313329a0e32e8f6220bde0586082ec1bb836a"
+    "commit": "4875f4940c7158ff302d540e227ea821fd526304",
+    "tree": "9d4d6ea472bea631ba6658bcd14e051bc88a20db"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -153,6 +153,26 @@
       ]
     },
     {
+      "operation": "retrieval_lifecycle_transition_contract_v1",
+      "nativeSymbol": "DurableDecisionPortV1",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/lifecycle.rs",
+      "state": "source_implemented_typed_lifecycle_and_durable_port_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/tests/lifecycle_api.rs"
+      ]
+    },
+    {
+      "operation": "validate_vector_publication_successor_v1",
+      "nativeSymbol": "VectorIndexPublicationV1::validate_successor",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/vector_publication.rs",
+      "state": "source_implemented_durable_publication_contract_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/vector_publication_tests.rs"
+      ]
+    },
+    {
       "operation": "verify_retrieval_delivery_v1",
       "nativeSymbol": "verify_retrieval_delivery_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
@@ -184,7 +204,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain green exact-head, current-main and ordered-parent synthetic-merge receipts for the final source snapshot, including package tests, all-target Clippy, formatting, clean source and CodeQL.",
+    "Obtain green exact-head, current-main and ordered-parent synthetic-merge receipts for the final source snapshot, including blocking CI, Agentd process qualification, repository integrity, package tests, all-target Clippy, formatting, clean source and CodeQL.",
     "Qualify Agentd on a named protected host. Durable external frontier recovery, protected launcher isolation and real-process lifecycle kill-point tests remain external gates.",
     "Prove a killable worker boundary with enforced CPU, RSS, allocation and wall-time limits; cooperative cancellation and bounded permits are not hard isolation.",
     "Compose and qualify a real text encoder plus durable vector-index publisher before enabling Vector; compatibility remains the only activation mode.",
@@ -192,12 +212,19 @@
     "Retain exact-head raw evidence in independently governed immutable storage; Git and 90-day artifacts are not external WORM evidence."
   ],
   "externalEvidenceGates": [
-    "independent human semantic review and exact-head acceptance",
-    "approved named target-host latency, throughput, CPU, RSS, allocation and SQLite measurements",
-    "actual text encoder and durable vector-index publication qualification",
-    "protected killable worker and hard resource isolation qualification",
+    "Memory retrieval target-host full-chain E2E",
+    "production text encoder release",
+    "durable vector-index publisher and store",
+    "external frontier capability revocation authority",
+    "tenant withdrawal revocation deletion qualification",
+    "durable lifecycle outbox and real-process recovery",
+    "held-out quality calibration and ablations",
+    "exact binary source-tree receipt",
+    "protected killable worker and hard resource isolation",
     "external immutable raw-evidence retention",
-    "operator acceptance, canary, promotion and release"
+    "independent human exact-head acceptance and signature",
+    "canary activation and automatic rollback",
+    "operator security release approval and signed evidence"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -254,8 +281,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "f92423d129473ee526945ab7cde015408eee65c0",
-    "tree": "f4d313329a0e32e8f6220bde0586082ec1bb836a"
+    "commit": "4875f4940c7158ff302d540e227ea821fd526304",
+    "tree": "9d4d6ea472bea631ba6658bcd14e051bc88a20db"
   },
   "observedSourcePaths": [
     ".github/workflows",
