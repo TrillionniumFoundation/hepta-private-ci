@@ -15,7 +15,12 @@ concurrency:
 
 jobs:
   migrate:
-    runs-on: macos-15
+    name: migrate (${{ matrix.runner }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 90
     env:
       CARGO_INCREMENTAL: "0"
