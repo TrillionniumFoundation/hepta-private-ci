@@ -6,6 +6,7 @@ registration, bounded replay and V3 benchmark are actual committed source.
 This command NEVER edits files, formats source, commits, pushes or emits approval.
 Marker presence is deliberately not described as compilation or product execution.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -28,11 +29,18 @@ CHECKS = {
     "codex-rs/hepta-agentd/src/intuition_policy.rs": [
         "pub struct AgentdIntuitionPolicyPinsV2",
         "pub fn prepare_v3(",
-        "pub fn commit_v3(",
+        "pub fn commit_v4(",
+        "qualification: OwnedIntuitionQualificationEvidenceV2",
+        "mod final_use;",
+    ],
+    "codex-rs/hepta-agentd/src/intuition_policy_final_use.rs": [
         "if current_binding != prepared.host_binding_digest",
         "validate_prepared_time(prepared.prepared_at, prepared.qualification_expires_at, now)?;",
         "fn preserve_known_commit<T, E>",
         "let mut writer = self",
+        "let now = self.clock.now()?;",
+        ".revalidate_trust(now)",
+        "prepared.qualification.as_borrowed()",
     ],
     "codex-rs/hepta-agentd/src/intuition_policy_service.rs": [
         "retain_committed_receipt(self.automation_admission_ready(), receipt)",
@@ -40,7 +48,7 @@ CHECKS = {
     ],
     "codex-rs/hepta-agentd/src/intuition_policy_serving.rs": [
         "pub(crate) fn authenticate_canonical_intuition(",
-        "let commit_now = crate::authbus_ingress::now_ms()?;",
+        ".commit_intuition_policy_v4(",
         ".map_err(AgentdError::from)?",
     ],
     "codex-rs/hepta-agentd/src/error.rs": [
@@ -62,6 +70,8 @@ CHECKS = {
         "prepared_decision_rejects_every_changed_host_pin_before_writing",
         "PreparedEvidenceExpired",
         "PreparedClockReversed",
+        "writer_wait_samples_fresh_clock_and_expires_before_any_ledger_mutation",
+        "final_use_revalidates_scheduled_signer_revocation_and_distribution_expiry",
     ],
 }
 
@@ -83,12 +93,16 @@ def main() -> int:
         missing = [marker for marker in markers if marker not in text]
         if missing:
             failures.append({"path": relative, "missingMarkers": missing})
-        rows.append({
-            "path": relative,
-            "gitBlob": hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest(),
-            "sha256": hashlib.sha256(raw).hexdigest(),
-            "sourceMarkersPresent": not missing,
-        })
+        rows.append(
+            {
+                "path": relative,
+                "gitBlob": hashlib.sha1(
+                    b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
+                ).hexdigest(),
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "sourceMarkersPresent": not missing,
+            }
+        )
     dirty = git("status", "--porcelain", "--untracked-files=no")
     # A caller may invoke this during an explicitly separate formatting task.
     # The exact qualifier, not this inventory, enforces a clean tested tree.

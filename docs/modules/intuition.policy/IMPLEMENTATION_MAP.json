@@ -235,7 +235,7 @@
       "operation": "AgentdIntuitionPolicyHostV1::prepare_v3",
       "nativeSymbol": "prepare_v3",
       "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy.rs",
-      "state": "source_implemented_complete_pins_and_qualification_lifetime_execution_unverified",
+      "state": "source_implemented_retained_qualification_and_trust_generation_execution_unverified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-agentd/tests/intuition_policy_product.rs",
@@ -243,17 +243,17 @@
         "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "exact-generation authenticated policy preparation",
+      "designOperation": "exact-generation preparation retaining signed qualification and admitted trust distribution",
       "mappingClass": "product_caller",
       "delegatedCallees": [
         "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs"
       ]
     },
     {
-      "operation": "AgentdIntuitionPolicyHostV1::commit_v3",
-      "nativeSymbol": "commit_v3",
+      "operation": "AgentdIntuitionPolicyHostV1::commit_v4",
+      "nativeSymbol": "commit_v4",
       "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy.rs",
-      "state": "source_implemented_pin_revalidation_and_durable_append_execution_unverified",
+      "state": "source_implemented_lock_owned_final_use_revalidation_execution_unverified",
       "authority": "learning_ledger_writer_only",
       "tests": [
         "codex-rs/hepta-agentd/tests/intuition_policy_product.rs",
@@ -261,9 +261,10 @@
         "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "complete prepared binding, lifetime fence and selected-only append",
+      "designOperation": "fresh clock, current trust, full signed qualification and selected-only append under sole writer lock",
       "mappingClass": "product_caller",
       "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/intuition_policy_final_use.rs",
         "codex-rs/hepta-learning-ledger/src/production.rs"
       ]
     },
@@ -299,6 +300,24 @@
       "delegatedCallees": [
         "codex-rs/hepta-agentd/src/intuition_policy.rs"
       ]
+    },
+    {
+      "operation": "IntuitionPolicyLearningSink::commit_prepared",
+      "nativeSymbol": "commit_prepared",
+      "sourcePath": "codex-rs/hepta-agentd/src/intuition_policy_final_use.rs",
+      "state": "source_implemented_writer_owned_time_trust_and_final_use_serialization_execution_unverified",
+      "authority": "learning_ledger_writer_only",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs",
+        "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "serialized final-use revalidation and exact known-commit reconciliation",
+      "mappingClass": "product_caller",
+      "delegatedCallees": [
+        "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs",
+        "codex-rs/hepta-learning-ledger/src/production.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
@@ -329,11 +348,11 @@
   ],
   "sourceStateProjection": {
     "source": "docs/modules/intuition.policy/CURRENT_STATE.json",
-    "contentSha256": "4e17e4e55c4e3666223b0c538c4480849cdfbf8ac8615b279cfe792b23f0aca6",
+    "contentSha256": "3a0d58990630a292528d601f645ebe14f35777ae141d671fe61c945bb7a1c962",
     "facts": [
       {
         "id": "native_policy",
-        "summary": "Explicit native profile risk routing; read-only historical encoding preserves prior receipt digests.",
+        "summary": "Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests.",
         "state": "source_present",
         "source": "codex-rs/hepta-intuition/src/production_native.rs",
         "symbol": "native_profile_decision",
@@ -355,15 +374,16 @@
       },
       {
         "id": "host_commit",
-        "summary": "Complete immutable host pins and selected-only commit through the existing LedgerWriter and witness.",
+        "summary": "At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock.",
         "state": "source_present",
         "source": "codex-rs/hepta-agentd/src/intuition_policy.rs",
-        "symbol": "commit_v3",
+        "symbol": "commit_v4",
         "tests": [
           "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs",
-          "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs"
+          "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs",
+          "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs"
         ],
-        "evidence": "Exact-source and merge ledger/product command logs; process interruption remains separately required."
+        "evidence": "Exact-source, merge and independent boundary/trust logs for writer-wait expiry, scheduled revocation, distribution expiry, trust rotation and append; process interruption remains required."
       },
       {
         "id": "admission_receipt",
@@ -372,7 +392,9 @@
         "source": "codex-rs/hepta-agentd/src/intuition_policy_admission.rs",
         "symbol": "finish_canonical_admission",
         "tests": [
-          "codex-rs/hepta-agentd/src/intuition_policy_admission_tests.rs"
+          "codex-rs/hepta-agentd/src/intuition_policy_admission_tests.rs",
+          "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+          "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs"
         ],
         "evidence": "Agentd receipt-propagation tests plus separately required real request, durable recovery and delivery evidence."
       },
@@ -383,7 +405,8 @@
         "source": "codex-rs/hepta-agentd/src/state.rs",
         "symbol": "new_with_intuition_profile",
         "tests": [
-          "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
+          "codex-rs/hepta-agentd/src/intuition_policy_serving.rs",
+          "codex-rs/hepta-agentd/src/intelligence_product_tests.rs"
         ],
         "evidence": "Default Production and explicit development tests; real process startup and restart qualification."
       },
@@ -400,7 +423,7 @@
       },
       {
         "id": "source_qualification",
-        "summary": "Read-only exact-source, synthetic-merge, independent and ledger workflows; source authoring cannot issue acceptance.",
+        "summary": "Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests.",
         "state": "source_present",
         "source": ".github/workflows/hepta-intuition-qualification.yml",
         "symbol": "Intuition required",

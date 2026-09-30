@@ -3,20 +3,20 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `4e17e4e55c4e3666223b0c538c4480849cdfbf8ac8615b279cfe792b23f0aca6`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `3a0d58990630a292528d601f645ebe14f35777ae141d671fe61c945bb7a1c962`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
 
 | Requirement | Source state | Scope |
 | --- | --- | --- |
-| `native_policy` | `source_present` | Explicit native profile risk routing; read-only historical encoding preserves prior receipt digests. |
+| `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
-| `host_commit` | `source_present` | Complete immutable host pins and selected-only commit through the existing LedgerWriter and witness. |
+| `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
 | `admission_receipt` | `source_partial` | Complete policy receipt and typed causes survive in-process run/context admission; V1 transport remains unchanged. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
-| `source_qualification` | `source_present` | Read-only exact-source, synthetic-merge, independent and ledger workflows; source authoring cannot issue acceptance. |
+| `source_qualification` | `source_present` | Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests. |
 | `source_projection` | `source_present` | Canonical source state generates document blocks, implementation-map projection and contract/requirement traceability. |
 
 Remaining closure requirements:
@@ -49,7 +49,7 @@ Version and requirement-to-test/artifact mappings: `docs/modules/intuition.polic
 
 This stable document is the implementation guide for `intuition.policy`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
-**Current evidence boundary (2026-09-27):** V4 product semantics, V2 owner-separated commitments, authenticated V3 admission, complete Agentd pins, prepare/commit fencing and durable host tests exist in source. A pending composition script is not proof that the canonical serving hook is committed. A workflow definition or a queued run is not a passing execution receipt. Use the current implementation dossier and exact command artifacts to distinguish these states; no production acceptance or promotion is asserted here.
+**Current source boundary:** V4 product semantics, V2 owner-separated commitments, authenticated V3 admission, complete Agentd pins, the canonical serving hook and in-process receipt binding exist in source. Final-use `commit_v4` retains the original signed qualification and samples the owner clock only after acquiring the sole learning-writer lock; it revalidates the root-signed trust lease, current trust generation, signatures, controller separation, lifetime and host pins before append. A workflow definition or a queued run is not a passing execution receipt. Use the current implementation dossier and exact command artifacts to distinguish source, execution and production acceptance; no production acceptance or promotion is asserted here.
 
 ## 1. Identity, mission and ownership
 
@@ -153,6 +153,7 @@ Produced contracts:
 
 Consumed contracts:
 
+- `CandidateSetCompletenessReceiptV1`
 - `DomainRead::eligibility_trace_checkpointV1`
 - `DomainRead::learning_artifact_registryV1`
 - `DomainRead::ndu_preference_projectionV1`
@@ -165,20 +166,31 @@ Consumed contracts:
 - `ModulePort::platform.types::intuition.policy`
 - `ModulePort::utility.ndu::intuition.policy`
 - `NduPreferenceStateV1`
+- `NeuronCheckpointV1`
 - `NeuronSignalReceiptV1`
 - `ObjectiveFunctionV1`
+- `OperatorApplicabilityCertificateV1`
+- `OperatorSensorCoreManifestV1`
+- `RegularityProfileV1`
 - `RunStartSnapshotV1`
 
 Critical protocol schemas:
 
+- `CandidateSetCompletenessReceiptV1`
 - `IntuitionDecisionReceiptV1`
 - `LegalActionCandidateSetV1`
 - `NduPreferenceStateV1`
+- `NeuronCheckpointV1`
 - `NeuronSignalReceiptV1`
 - `ObjectiveFunctionV1`
+- `OperatorApplicabilityCertificateV1`
+- `OperatorSensorCoreManifestV1`
+- `RegularityProfileV1`
 - `RunStartSnapshotV1`
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+
+The V2 scorer and assignment commitment payloads have separate fields, but the historical generator completeness signing payload V1 includes the V1 candidate-set digest, which also binds utility, confidence, OOD and assignment probability. Generator completeness is therefore still coupled to those values at this compatibility boundary. Keep historical signed bytes stable; fully separating that signing contract requires a new version and qualified producer/consumer migration.
 
 Rust types and canonical JSON must represent identical semantics. Required tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes. The current deterministic V2 commitment fixture additionally has an independently implemented Python encoder; it does not establish coverage for every protocol or assignment mode.
 
@@ -190,12 +202,17 @@ None.
 
 Read-only data dependencies:
 
+- `candidate_set_completeness_receipt_v1`
 - `eligibility_trace_checkpoint`
 - `learning_artifact_registry`
 - `ndu_preference_projection`
 - `ndu_utility_projection`
+- `neuron_checkpoint_v1`
 - `neuron_state_checkpoint`
+- `operator_applicability_certificate_v1`
+- `operator_sensor_core_manifest_v1`
 - `operator_sensor_core_registry`
+- `regularity_profile_v1`
 
 For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
@@ -230,6 +247,8 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-intuition/src/lib.rs](../../../codex-rs/hepta-intuition/src/lib.rs) and the linked implementation components.
 
+The pure policy kernel and candidate commitment encoders admit 1..128 real candidates. The Agentd product host admits at most 127 real candidates because its learning Decision includes the reserved abstain entry within the existing 128-entry ledger bound. `prepare_v3` rejects larger product sets with `agentd.intuition.product_candidate_limit` before hashing, cloning or signature verification. It neither truncates the legal set nor changes the ledger bound. The product fixture exercises 127 real candidates plus abstain and rejects 128 real candidates at that boundary.
+
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
@@ -240,7 +259,7 @@ Current operating and state-format references:
 
 - [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs).
 - `codex-rs/hepta-intuition/src/production.rs` for bounded product semantics and stable error codes.
-- `codex-rs/hepta-agentd/src/intuition_policy.rs` for prepared profile/time fencing and the sole writer boundary.
+- `codex-rs/hepta-agentd/src/intuition_policy.rs` for retained three-party qualification, prepared profile/time/trust fences and final-use `commit_v4` under the sole writer boundary.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -251,7 +270,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs); named case: `v2_binds_same_outcome_to_its_actual_assignment_and_artifact_metadata`.
 - [codex-rs/hepta-intuition/src/lib_tests.rs](../../../codex-rs/hepta-intuition/src/lib_tests.rs); named case: `hard_veto_cannot_be_overridden`.
 - `codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs`: signed host append, idempotent replay and durable reopen.
-- `codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs`: cross-profile prepared values, evidence expiry and clock rollback before append.
+- `codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs`: cross-profile prepared values, evidence expiry, clock rollback, writer-wait expiry, concurrent attempts and current-trust rotation fences before append.
 - `scripts/intuition_golden_vectors.py`: five independent Python digest encodings and 512 seeded owner-separation mutations over the deterministic fixture.
 
 In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.
@@ -356,7 +375,7 @@ Updated on 2026-09-27 without discarding the target design above. The current pr
 
 `Ppm` admits only `[0, 1_000_000]`; `PolicyGeneration` is nonzero. Product receipts retain original risk and an explicit profile-rule reason. Candidate identity, scored outputs and assignment distribution have separate V2 encodings; scoring and assignment commitments compose those owner-bound digests rather than mixing assignment probabilities into scorer output.
 
-Generator evidence binds completeness; evaluator evidence binds profile/calibration/OOD qualification; observer evidence binds scoring and assignment. `AgentdIntuitionPolicyPinsV2` fixes the full profile, policy, generation, objective class, model, scorer, artifacts, risk rule and optional RNG owner. `commit_v3` recomputes the current complete host binding before append, including when two hosts share Agent ID, spawn generation and trust. It rejects prepared time rollback and the earliest original qualification expiry, even when a later Decision signature remains valid. The prepared digest now uses the V2 domain and includes its preparation/expiry times; historical durable Decision encodings are unchanged.
+Generator evidence binds completeness; evaluator evidence binds profile/calibration/OOD qualification; observer evidence binds scoring and assignment. `AgentdIntuitionPolicyPinsV2` fixes the full profile, policy, generation, objective class, model, scorer, artifacts, risk rule and optional RNG owner. `commit_v4` revalidates the complete original request and signed generator/evaluator/observer records against writer-owned current trust while holding the sole writer lock. It recomputes the full host binding, rejects changed trust distribution/generation and pin drift, and samples a fresh clock after lock acquisition. Prepared time rollback or the earliest original qualification expiry rejects, even when a later Decision signature remains valid. The prepared digest uses `hepta.agentd.prepared-intuition.v3` and includes its preparation/expiry times and trust generation/distribution; the service digest uses `hepta.agentd.committed-intuition.v2` and binds final-use time. Historical durable Decision encodings are unchanged. The deprecated `commit_v3` name preserves its historical call signature but ignores its time argument and delegates to this boundary.
 
 The service preserves its durable receipt when the post-commit admission check returns either `false` or an error. A committed Decision is not execution authorization. The selected host delegates persistence to one `IntuitionPolicyLearningSink`/`LedgerWriter`; exact replay must retain the original record, signed evidence and predecessor. An indeterminate result cannot be downgraded to an uncommitted failure or interpreted as permission to dispatch.
 

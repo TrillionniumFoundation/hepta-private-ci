@@ -5,6 +5,7 @@
 --expected-sha/--source-sha/--base-sha/--lane interface remains supported.
 Independent execution is not semantic evaluator acceptance or release approval.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -30,6 +31,8 @@ PACKAGES = [
     "codex-hepta-intelligence",
     "-p",
     "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger",
 ]
 
 
@@ -38,6 +41,10 @@ def cargo_test(package: str, *args: str) -> list[str]:
 
 
 COMMANDS = [
+    (
+        "source-state-projection",
+        ["python3", "../scripts/intuition_state.py", "--check"],
+    ),
     (
         "golden-vectors-python",
         [
@@ -78,17 +85,23 @@ COMMANDS = [
     ),
     (
         "agentd-commit-boundary-tests",
-        cargo_test(
-            "codex-hepta-agentd", "--test", "intuition_policy_commit_boundary"
-        ),
+        cargo_test("codex-hepta-agentd", "--test", "intuition_policy_commit_boundary"),
     ),
     (
         "agentd-serving-runtime-tests",
         cargo_test("codex-hepta-agentd", "--lib", "intuition_policy_serving"),
     ),
     (
+        "agentd-canonical-product-tests",
+        cargo_test("codex-hepta-agentd", "--lib", "intelligence_product"),
+    ),
+    (
         "ledger-production-tests",
         cargo_test("codex-hepta-learning-ledger", "production"),
+    ),
+    (
+        "ledger-trust-tests",
+        cargo_test("codex-hepta-learning-ledger", "--lib", "trust_distribution"),
     ),
     (
         "kernel-fast-gate",
@@ -132,6 +145,10 @@ COMMANDS = [
     ),
 ]
 INDEPENDENT_COMMANDS = [
+    (
+        "independent-source-state",
+        ["python3", "../scripts/intuition_state.py", "--check"],
+    ),
     ("independent-policy", cargo_test("codex-hepta-intuition")),
     ("independent-qualification", cargo_test("codex-hepta-intelligence")),
     (
@@ -140,17 +157,23 @@ INDEPENDENT_COMMANDS = [
     ),
     (
         "independent-boundary",
-        cargo_test(
-            "codex-hepta-agentd", "--test", "intuition_policy_commit_boundary"
-        ),
+        cargo_test("codex-hepta-agentd", "--test", "intuition_policy_commit_boundary"),
     ),
     (
         "independent-serving-runtime",
         cargo_test("codex-hepta-agentd", "--lib", "intuition_policy_serving"),
     ),
     (
+        "independent-canonical-product",
+        cargo_test("codex-hepta-agentd", "--lib", "intelligence_product"),
+    ),
+    (
         "independent-ledger",
         cargo_test("codex-hepta-learning-ledger", "production"),
+    ),
+    (
+        "independent-ledger-trust",
+        cargo_test("codex-hepta-learning-ledger", "--lib", "trust_distribution"),
     ),
 ]
 
@@ -245,16 +268,13 @@ def execute(command: list[str], log: Path, cwd: Path, timeout: int) -> int:
 def log_summary(path: Path) -> str:
     with path.open("rb") as stream:
         stream.seek(max(0, path.stat().st_size - 16384))
-        return "\n".join(
-            stream.read().decode("utf-8", "replace").splitlines()[-60:]
-        )
+        return "\n".join(stream.read().decode("utf-8", "replace").splitlines()[-60:])
 
 
 def nonzero_tests(path: Path) -> bool:
     with path.open(encoding="utf-8", errors="replace") as stream:
         return any(
-            re.search(r"test result: ok\. [1-9][0-9]* passed;", line)
-            for line in stream
+            re.search(r"test result: ok\. [1-9][0-9]* passed;", line) for line in stream
         )
 
 
@@ -518,9 +538,7 @@ def main(argv: list[str] | None = None) -> int:
                 "sourceSha": source,
                 "testedSha": head,
                 "status": record["status"],
-                "artifactManifestSha256": sha256(
-                    evidence / "artifact-manifest.json"
-                ),
+                "artifactManifestSha256": sha256(evidence / "artifact-manifest.json"),
             }
         )
     )

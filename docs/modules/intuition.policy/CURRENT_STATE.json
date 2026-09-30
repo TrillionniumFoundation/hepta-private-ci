@@ -11,11 +11,13 @@
   "facts": [
     {
       "id": "native_policy",
-      "summary": "Explicit native profile risk routing; read-only historical encoding preserves prior receipt digests.",
+      "summary": "Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests.",
       "state": "source_present",
       "source": "codex-rs/hepta-intuition/src/production_native.rs",
       "symbol": "native_profile_decision",
-      "tests": ["codex-rs/hepta-intuition/src/production_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-intuition/src/production_tests.rs"
+      ],
       "evidence": "Fixed-tree kernel tests, risk-rule matrix and golden vectors."
     },
     {
@@ -24,17 +26,23 @@
       "state": "source_present",
       "source": "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs",
       "symbol": "verify_verified_role_separation",
-      "tests": ["codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs"],
+      "tests": [
+        "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs"
+      ],
       "evidence": "Signed product tests including distinct principals sharing one evaluator/observer controller."
     },
     {
       "id": "host_commit",
-      "summary": "Complete immutable host pins and selected-only commit through the existing LedgerWriter and witness.",
+      "summary": "At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock.",
       "state": "source_present",
       "source": "codex-rs/hepta-agentd/src/intuition_policy.rs",
-      "symbol": "commit_v3",
-      "tests": ["codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs", "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs"],
-      "evidence": "Exact-source and merge ledger/product command logs; process interruption remains separately required."
+      "symbol": "commit_v4",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs",
+        "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs",
+        "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs"
+      ],
+      "evidence": "Exact-source, merge and independent boundary/trust logs for writer-wait expiry, scheduled revocation, distribution expiry, trust rotation and append; process interruption remains required."
     },
     {
       "id": "admission_receipt",
@@ -42,7 +50,11 @@
       "state": "source_partial",
       "source": "codex-rs/hepta-agentd/src/intuition_policy_admission.rs",
       "symbol": "finish_canonical_admission",
-      "tests": ["codex-rs/hepta-agentd/src/intuition_policy_admission_tests.rs"],
+      "tests": [
+        "codex-rs/hepta-agentd/src/intuition_policy_admission_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs"
+      ],
       "evidence": "Agentd receipt-propagation tests plus separately required real request, durable recovery and delivery evidence."
     },
     {
@@ -51,7 +63,10 @@
       "state": "source_present",
       "source": "codex-rs/hepta-agentd/src/state.rs",
       "symbol": "new_with_intuition_profile",
-      "tests": ["codex-rs/hepta-agentd/src/intuition_policy_serving.rs"],
+      "tests": [
+        "codex-rs/hepta-agentd/src/intuition_policy_serving.rs",
+        "codex-rs/hepta-agentd/src/intelligence_product_tests.rs"
+      ],
       "evidence": "Default Production and explicit development tests; real process startup and restart qualification."
     },
     {
@@ -60,16 +75,20 @@
       "state": "source_partial",
       "source": "codex-rs/hepta-agentd/src/intuition_policy_serving.rs",
       "symbol": "agentd_error_reason",
-      "tests": ["codex-rs/hepta-agentd/src/intuition_policy_serving.rs"],
+      "tests": [
+        "codex-rs/hepta-agentd/src/intuition_policy_serving.rs"
+      ],
       "evidence": "Source tests plus actual target-host exporter, audit delivery and alert observations."
     },
     {
       "id": "source_qualification",
-      "summary": "Read-only exact-source, synthetic-merge, independent and ledger workflows; source authoring cannot issue acceptance.",
+      "summary": "Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests.",
       "state": "source_present",
       "source": ".github/workflows/hepta-intuition-qualification.yml",
       "symbol": "Intuition required",
-      "tests": ["scripts/tests/test_intuition_exact.py"],
+      "tests": [
+        "scripts/tests/test_intuition_exact.py"
+      ],
       "evidence": "Current same-run command records, nonzero test execution, retained binaries and agreement artifacts."
     },
     {
@@ -78,28 +97,87 @@
       "state": "source_present",
       "source": "scripts/intuition_state.py",
       "symbol": "def project",
-      "tests": ["scripts/tests/test_intuition_state.py"],
+      "tests": [
+        "scripts/tests/test_intuition_state.py"
+      ],
       "evidence": "Read-only projection check and adversarial generator tests on the exact candidate."
     }
   ],
   "gaps": [
-    {"id": "durable_handoff", "required": "Persist prepare, policy commit, run start, context attachment and delivery progress through the Agentd owner; tracing and an in-process receipt are not a durable transaction journal."},
-    {"id": "transport_receipt", "required": "Introduce and migrate a versioned outward admission/acknowledgement contract that binds the policy receipt; do not silently redefine ObjectiveRunAdmission V1."},
-    {"id": "generation_recovery", "required": "Implement and execute restart reconciliation, current-authority revalidation, monotonic generation fences and process-kill/concurrent/disk/corruption cases."},
-    {"id": "typed_domains", "required": "Complete distinct sequence, wall-clock, assignment-counter and generation types at all owner boundaries without changing historical wire meanings."},
-    {"id": "legacy_consumers", "required": "Migrate and qualify remaining V1/V2 advisory consumers; native V4 routing does not itself retire them."},
-    {"id": "exact_execution", "required": "Obtain complete real source-head, deterministic merge, independent and ledger passes and current artifact agreement; a source-authoring or portability run is insufficient."},
-    {"id": "operator_acceptance", "required": "Exercise real identity/entitlement, audit/exporter delivery, combined request p50/p95/p99/capacity/witness lag and backup/restore/rotation/rollout/rollback; obtain external evaluator and operator approval."}
+    {
+      "id": "durable_handoff",
+      "required": "Persist prepare, policy commit, run start, context attachment and delivery progress through the Agentd owner; tracing and an in-process receipt are not a durable transaction journal."
+    },
+    {
+      "id": "transport_receipt",
+      "required": "Introduce and migrate a versioned outward admission/acknowledgement contract that binds the policy receipt; do not silently redefine ObjectiveRunAdmission V1."
+    },
+    {
+      "id": "generation_recovery",
+      "required": "Implement and execute restart reconciliation, current-authority revalidation, monotonic generation fences and process-kill/concurrent/disk/corruption cases."
+    },
+    {
+      "id": "typed_domains",
+      "required": "Complete distinct sequence, wall-clock, assignment-counter and generation types at all owner boundaries without changing historical wire meanings."
+    },
+    {
+      "id": "legacy_consumers",
+      "required": "Migrate and qualify remaining V1/V2 advisory consumers; native V4 routing does not itself retire them."
+    },
+    {
+      "id": "exact_execution",
+      "required": "Obtain complete real source-head, deterministic merge, independent and ledger passes and current artifact agreement; a source-authoring or portability run is insufficient."
+    },
+    {
+      "id": "operator_acceptance",
+      "required": "Exercise real identity/entitlement, audit/exporter delivery, combined request p50/p95/p99/capacity/witness lag and backup/restore/rotation/rollout/rollback; obtain external evaluator and operator approval."
+    }
   ],
   "contracts": [
-    {"name": "CalibratedDecisionRequestV1", "layer": "Historical request shape", "status": "Still decoded; bounded and authenticated at the current product boundary."},
-    {"name": "CalibratedIntuitionReceiptV1 / decide_calibrated_v2 / decide_calibrated_v3", "layer": "Compatibility receipt and entry points", "status": "Historical encodings preserved; downstream retirement remains open."},
-    {"name": "ProductionIntuitionReceiptV1 / decide_calibrated_v4", "layer": "Native product risk routing", "status": "Explicit risk rule and original request; legacy digest reproduced only for compatibility."},
-    {"name": "ScoringCommitmentV2 / AssignmentCommitmentV2", "layer": "Owner-separated commitments", "status": "Candidate identity, score output and assignment distribution have distinct ownership."},
-    {"name": "AuthenticatedIntuitionDecisionV3", "layer": "Three-party admission", "status": "Signed generator/evaluator/observer evidence and pairwise controller separation."},
-    {"name": "PreparedAgentdIntuitionDecisionV3", "layer": "Host preparation", "status": "Private in-memory binding; not a durable handoff journal."},
-    {"name": "AgentdIntuitionDecisionReceiptV2", "layer": "Host policy commit", "status": "Selected outcomes include the existing authoritative ledger append receipt."},
-    {"name": "CanonicalIntuitionAdmissionV2", "layer": "Internal Agentd result envelope", "status": "Binds policy, run and context in process; not a new wire contract or delivery acknowledgement."},
-    {"name": "ObjectiveRunAdmission V1", "layer": "Existing outward transport", "status": "Unchanged; policy-receipt transport migration remains required."}
+    {
+      "name": "CalibratedDecisionRequestV1",
+      "layer": "Historical request shape",
+      "status": "Still decoded; bounded and authenticated at the current product boundary."
+    },
+    {
+      "name": "CalibratedIntuitionReceiptV1 / decide_calibrated_v2 / decide_calibrated_v3",
+      "layer": "Compatibility receipt and entry points",
+      "status": "Historical encodings preserved; downstream retirement remains open."
+    },
+    {
+      "name": "ProductionIntuitionReceiptV1 / decide_calibrated_v4",
+      "layer": "Native product risk routing",
+      "status": "Explicit risk rule and original request; legacy digest reproduced only for compatibility."
+    },
+    {
+      "name": "ScoringCommitmentV2 / AssignmentCommitmentV2",
+      "layer": "Owner-separated commitments",
+      "status": "Candidate identity, score output and assignment distribution have distinct ownership."
+    },
+    {
+      "name": "AuthenticatedIntuitionDecisionV3",
+      "layer": "Three-party admission",
+      "status": "Signed generator/evaluator/observer evidence and pairwise controller separation."
+    },
+    {
+      "name": "PreparedAgentdIntuitionDecisionV3",
+      "layer": "Host preparation",
+      "status": "Private in-memory original request and signed qualification with trust generation/distribution binding; not a durable handoff journal."
+    },
+    {
+      "name": "AgentdIntuitionDecisionReceiptV2",
+      "layer": "Host policy commit",
+      "status": "Selected outcomes include the existing authoritative ledger append receipt."
+    },
+    {
+      "name": "CanonicalIntuitionAdmissionV2",
+      "layer": "Internal Agentd result envelope",
+      "status": "Binds policy, run and context in process; not a new wire contract or delivery acknowledgement."
+    },
+    {
+      "name": "ObjectiveRunAdmission V1",
+      "layer": "Existing outward transport",
+      "status": "Unchanged; policy-receipt transport migration remains required."
+    }
   ]
 }

@@ -11,7 +11,7 @@ Generated from CURRENT_STATE.json by scripts/intuition_state.py. Source referenc
 | `ProductionIntuitionReceiptV1 / decide_calibrated_v4` | Native product risk routing | Explicit risk rule and original request; legacy digest reproduced only for compatibility. |
 | `ScoringCommitmentV2 / AssignmentCommitmentV2` | Owner-separated commitments | Candidate identity, score output and assignment distribution have distinct ownership. |
 | `AuthenticatedIntuitionDecisionV3` | Three-party admission | Signed generator/evaluator/observer evidence and pairwise controller separation. |
-| `PreparedAgentdIntuitionDecisionV3` | Host preparation | Private in-memory binding; not a durable handoff journal. |
+| `PreparedAgentdIntuitionDecisionV3` | Host preparation | Private in-memory original request and signed qualification with trust generation/distribution binding; not a durable handoff journal. |
 | `AgentdIntuitionDecisionReceiptV2` | Host policy commit | Selected outcomes include the existing authoritative ledger append receipt. |
 | `CanonicalIntuitionAdmissionV2` | Internal Agentd result envelope | Binds policy, run and context in process; not a new wire contract or delivery acknowledgement. |
 | `ObjectiveRunAdmission V1` | Existing outward transport | Unchanged; policy-receipt transport migration remains required. |
@@ -23,6 +23,7 @@ Immutable startup profile / current signed ObjectiveStart
   -> existing canonical seven-owner preparation
   -> authenticated generator/evaluator/observer evidence
   -> native explicit risk routing / immutable host pins
+  -> sole writer lock / fresh owner clock / current trust and three-role revalidation
   -> selected-only LedgerWriter commit with independent witness
   -> final run/context admission with retained policy receipt
   -> in-process bound outcome (not a wire or durable delivery acknowledgement)
@@ -48,9 +49,9 @@ Do not treat tracing output, a clean drop/reopen, or a digest-only record as dur
 | --- | --- | --- | --- |
 | `native_policy` | `codex-rs/hepta-intuition/src/production_native.rs` / `native_profile_decision` | `codex-rs/hepta-intuition/src/production_tests.rs` | Fixed-tree kernel tests, risk-rule matrix and golden vectors. |
 | `authenticated_roles` | `codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs` / `verify_verified_role_separation` | `codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs` | Signed product tests including distinct principals sharing one evaluator/observer controller. |
-| `host_commit` | `codex-rs/hepta-agentd/src/intuition_policy.rs` / `commit_v3` | `codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs`; `codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs` | Exact-source and merge ledger/product command logs; process interruption remains separately required. |
-| `admission_receipt` | `codex-rs/hepta-agentd/src/intuition_policy_admission.rs` / `finish_canonical_admission` | `codex-rs/hepta-agentd/src/intuition_policy_admission_tests.rs` | Agentd receipt-propagation tests plus separately required real request, durable recovery and delivery evidence. |
-| `startup_profile` | `codex-rs/hepta-agentd/src/state.rs` / `new_with_intuition_profile` | `codex-rs/hepta-agentd/src/intuition_policy_serving.rs` | Default Production and explicit development tests; real process startup and restart qualification. |
+| `host_commit` | `codex-rs/hepta-agentd/src/intuition_policy.rs` / `commit_v4` | `codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs`; `codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs`; `codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs` | Exact-source, merge and independent boundary/trust logs for writer-wait expiry, scheduled revocation, distribution expiry, trust rotation and append; process interruption remains required. |
+| `admission_receipt` | `codex-rs/hepta-agentd/src/intuition_policy_admission.rs` / `finish_canonical_admission` | `codex-rs/hepta-agentd/src/intuition_policy_admission_tests.rs`; `codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs`; `codex-rs/hepta-agentd/src/intelligence_evaluation_tests.rs` | Agentd receipt-propagation tests plus separately required real request, durable recovery and delivery evidence. |
+| `startup_profile` | `codex-rs/hepta-agentd/src/state.rs` / `new_with_intuition_profile` | `codex-rs/hepta-agentd/src/intuition_policy_serving.rs`; `codex-rs/hepta-agentd/src/intelligence_product_tests.rs` | Default Production and explicit development tests; real process startup and restart qualification. |
 | `telemetry` | `codex-rs/hepta-agentd/src/intuition_policy_serving.rs` / `agentd_error_reason` | `codex-rs/hepta-agentd/src/intuition_policy_serving.rs` | Source tests plus actual target-host exporter, audit delivery and alert observations. |
 | `source_qualification` | `.github/workflows/hepta-intuition-qualification.yml` / `Intuition required` | `scripts/tests/test_intuition_exact.py` | Current same-run command records, nonzero test execution, retained binaries and agreement artifacts. |
 | `source_projection` | `scripts/intuition_state.py` / `def project` | `scripts/tests/test_intuition_state.py` | Read-only projection check and adversarial generator tests on the exact candidate. |
@@ -60,5 +61,9 @@ Qualification requires the fixed source commit/tree, fixed base and recomputed m
 ## Digest boundaries
 
 Generator identity/order, scorer outputs and assignment distribution remain separately committed. Product receipts bind original risk, matched profile rule, full propensities and disposition. Historical risk encoding is a read-only compatibility view; it cannot alter the request used by the native kernel.
+
+Historical generator completeness evidence V1 still binds the V1 candidate-set digest, including utility, confidence, OOD and assignment probability. V2 scorer/distribution separation does not remove that compatibility signing coupling; uncoupling it requires a new signed payload version and consumer migration.
+
+The private prepared digest uses hepta.agentd.prepared-intuition.v3 and binds qualification lifetime plus admitted trust generation/distribution. The committed service digest uses hepta.agentd.committed-intuition.v2 and additionally binds final-use time and current trust distribution. Historical durable ProductionDecisionV2 encodings remain unchanged.
 
 The in-process admission digest binds the service receipt, authenticated decision, host binding, dispatch proposal, immutable run snapshot, context attachment and observed run revision. It does not redefine the V1 transport or claim remote delivery.

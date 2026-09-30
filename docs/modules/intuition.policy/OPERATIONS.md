@@ -3,20 +3,20 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `4e17e4e55c4e3666223b0c538c4480849cdfbf8ac8615b279cfe792b23f0aca6`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `3a0d58990630a292528d601f645ebe14f35777ae141d671fe61c945bb7a1c962`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
 
 | Requirement | Source state | Scope |
 | --- | --- | --- |
-| `native_policy` | `source_present` | Explicit native profile risk routing; read-only historical encoding preserves prior receipt digests. |
+| `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
-| `host_commit` | `source_present` | Complete immutable host pins and selected-only commit through the existing LedgerWriter and witness. |
+| `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
 | `admission_receipt` | `source_partial` | Complete policy receipt and typed causes survive in-process run/context admission; V1 transport remains unchanged. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
-| `source_qualification` | `source_present` | Read-only exact-source, synthetic-merge, independent and ledger workflows; source authoring cannot issue acceptance. |
+| `source_qualification` | `source_present` | Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests. |
 | `source_projection` | `source_present` | Canonical source state generates document blocks, implementation-map projection and contract/requirement traceability. |
 
 Remaining closure requirements:
@@ -45,6 +45,10 @@ Compatibility migration: an intentionally unconfigured local development process
 
 The product host consumes complete immutable policy pins and the existing root-authenticated `LedgerWriter`. That writer owns a durable or segmented backend plus a separate durable witness. Do not replace it with an in-memory writer, diagnostic JSONL, or a second policy-owned authoritative store. The current typed canonical invocation replaces neither the identity authority nor the generator/evaluator/observer roles.
 
+Agentd product preparation admits at most 127 real candidates; the reserved abstain entry occupies the ledger's 128th slot. The pure kernel remains bounded at 128. An oversized product request returns `agentd.intuition.product_candidate_limit` before expensive commitment work and cannot be repaired by silently truncating the complete legal set.
+
+The product commit entry point is `commit_v4`. Its sink acquires the sole writer lock, samples the owner clock, checks the root-signed distribution lease and current trust digest/generation/distribution, and reauthenticates the retained generator/evaluator/observer qualification before append. The deprecated `commit_v3` name preserves its historical signature while ignoring its time argument and forwards to this entry point. A trust rotation invalidates prepared values from its predecessor generation; restart with a newly admitted host/verifier before preparing under the successor. An injected clock is an explicit host dependency for qualification; the system default detects backward wall time only within the current process.
+
 The canonical serving gate now emits bounded OpenTelemetry metrics and a tracing span through the process-global Codex telemetry clients. That source integration does not by itself establish deployed entitlement integration, a configured exporter endpoint, dashboard delivery, alert routing, diagnostic audit delivery or operator acceptance. Those remain separate release gates.
 
 ## 2. Exact-source qualification
@@ -69,7 +73,7 @@ python3 scripts/intuition_qualify_exact.py \
 
 The recorder rejects a dirty checkout, a mismatched source SHA, an output directory inside the checkout, and a nonempty output directory. It records commands before starting them, retains logs and actual exit codes on failure, kills timed-out subprocess groups, rejects zero-test Cargo results, hashes output files, and checks that HEAD/tree/worktree remain unchanged after execution.
 
-The full plan includes golden vectors, format checking, all-target compilation, strict Clippy, kernel and qualification tests, Agentd product and commit-boundary tests, ledger tests, fast gates, and release-binary compilation with binary digests. A compiled binary is not evidence that it was deployed or that its real process entry point completed an authenticated request.
+The full plan includes read-only source-state projection validation, golden vectors, format checking, all-target compilation, strict Clippy, kernel and qualification tests, Agentd product and commit-boundary tests, ledger production and trust-distribution tests, fast gates, and release-binary compilation with binary digests. The independent plan also validates source-state projection and executes the same commit-boundary target; final-use tests are part of that existing target. Both plans execute the canonical `intelligence_product` profile/evaluation/signature regressions, including distribution-lease revalidation. A compiled binary is not evidence that it was deployed or that its real process entry point completed an authenticated request.
 
 Synthetic-merge qualification additionally binds the actual two parents, source/base commits and resulting tree. A source-head pass is not a merge-tree pass. A new code, dependency, test, workflow or merge change invalidates an earlier exact-tree claim.
 
@@ -106,7 +110,7 @@ python3 scripts/intuition_ledger_exact.py \
   --evidence /absolute/path/outside/checkout/ledger
 ```
 
-The resulting bundle includes selected-only host tests, the historical product test, V3 product/replay/reopen tests, commit-boundary tests, ledger production tests, and the existing durable-ledger benchmark. Every command has its actual outcome and a hash-bound log. Failed compilations remain failures even when a later command succeeds. Artifacts are retained by CI under the exact source SHA and run attempt, including failures.
+The resulting bundle includes selected-only host tests, the historical product test, V3 product/replay/reopen tests, commit-boundary tests, ledger production and trust-distribution tests, and the existing durable-ledger benchmark. Every command has its actual outcome and a hash-bound log. Failed compilations remain failures even when a later command succeeds. Artifacts are retained by CI under the exact source SHA and run attempt, including failures.
 
 The benchmark is explicitly durable-ledger-only. Do not label its throughput or latency as combined Agentd request latency. A production baseline must additionally measure the real authenticated request path, signature verification, selected Decision persistence, witness advancement, final admission, concurrency and tail latency on the identified deployment host. No measured p50/p95/p99 or production capacity is asserted by this runbook.
 

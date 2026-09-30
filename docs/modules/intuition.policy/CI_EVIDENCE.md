@@ -3,20 +3,20 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `4e17e4e55c4e3666223b0c538c4480849cdfbf8ac8615b279cfe792b23f0aca6`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `3a0d58990630a292528d601f645ebe14f35777ae141d671fe61c945bb7a1c962`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
 
 | Requirement | Source state | Scope |
 | --- | --- | --- |
-| `native_policy` | `source_present` | Explicit native profile risk routing; read-only historical encoding preserves prior receipt digests. |
+| `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
-| `host_commit` | `source_present` | Complete immutable host pins and selected-only commit through the existing LedgerWriter and witness. |
+| `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
 | `admission_receipt` | `source_partial` | Complete policy receipt and typed causes survive in-process run/context admission; V1 transport remains unchanged. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
-| `source_qualification` | `source_present` | Read-only exact-source, synthetic-merge, independent and ledger workflows; source authoring cannot issue acceptance. |
+| `source_qualification` | `source_present` | Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests. |
 | `source_projection` | `source_present` | Canonical source state generates document blocks, implementation-map projection and contract/requirement traceability. |
 
 Remaining closure requirements:
@@ -113,10 +113,14 @@ changed run attempt rejects agreement. A source-only push can receive source-onl
 agreement, but its `mergeTreeVerified` remains false and cannot replace PR merge
 qualification.
 
-The historical autoformat/source-apply/serving-compose workflows are retired:
-manual-only, read-only permission, no checkout and an explicit rejecting exit.
-Their old implementation remains in Git history. All future source edits must be
-ordinary reviewed commits followed by new immutable qualification runs.
+Source-authoring workflows and encoded source transports are removed from this
+candidate. Retained historical autoformat/source-apply/serving-compose stubs are
+manual-only, read-only and reject execution; their old implementations remain in
+Git history. Source edits are ordinary reviewed commits followed by new immutable
+qualification runs. The full and independent command plans both run the read-only
+source-state projection check. Final-use races execute through the existing
+mandatory `intuition_policy_commit_boundary` target; no absent test target is
+substituted for that evidence.
 
 ## Release gates deliberately not minted by CI
 

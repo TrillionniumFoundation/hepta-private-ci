@@ -108,7 +108,7 @@ pub fn decide_authenticated_intuition_v3(
     now: u64,
 ) -> Result<AuthenticatedIntuitionDecisionV3, IntuitionQualificationErrorV3> {
     let completeness_payload = canonical_completeness_evidence_payload_v1(&request)
-        .map_err(|source| ProductionPolicyError::Qualified(source))?;
+        .map_err(ProductionPolicyError::Qualified)?;
     let profile_qualification_payload = canonical_profile_qualification_payload_v1(&profile)
         .map_err(|source| match source {
             codex_hepta_intuition::RuntimeCommitmentError::Profile(inner) => {

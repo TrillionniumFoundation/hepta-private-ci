@@ -3,20 +3,20 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `4e17e4e55c4e3666223b0c538c4480849cdfbf8ac8615b279cfe792b23f0aca6`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `3a0d58990630a292528d601f645ebe14f35777ae141d671fe61c945bb7a1c962`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
 
 | Requirement | Source state | Scope |
 | --- | --- | --- |
-| `native_policy` | `source_present` | Explicit native profile risk routing; read-only historical encoding preserves prior receipt digests. |
+| `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
-| `host_commit` | `source_present` | Complete immutable host pins and selected-only commit through the existing LedgerWriter and witness. |
+| `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
 | `admission_receipt` | `source_partial` | Complete policy receipt and typed causes survive in-process run/context admission; V1 transport remains unchanged. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
-| `source_qualification` | `source_present` | Read-only exact-source, synthetic-merge, independent and ledger workflows; source authoring cannot issue acceptance. |
+| `source_qualification` | `source_present` | Read-only qualification workflows; source/merge/independent lanes validate source-state and all plans retain final-use and trust-distribution tests. |
 | `source_projection` | `source_present` | Canonical source state generates document blocks, implementation-map projection and contract/requirement traceability. |
 
 Remaining closure requirements:
@@ -62,7 +62,7 @@ Current source operations are:
 - `canonical_assignment_distribution_digest_v2` and `canonical_assignment_commitment_digest_v2` for assignment mass, stream, counter, draw, and RNG owner;
 - `canonical_runtime_commitment_payload_v2` for the exact anti-substitution envelope;
 - `decide_authenticated_intuition_v3` for generator/evaluator/observer authenticated admission;
-- `AgentdIntuitionPolicyHostV1::{prepare_v3,commit_v3}` for identity/generation/profile/time binding and durable Decision append.
+- `AgentdIntuitionPolicyHostV1::{prepare_v3,commit_v4}` for retained qualification, identity/generation/profile/trust binding and final-use durable Decision append; the deprecated `commit_v3` name preserves its historical call signature while ignoring its time argument.
 
 `AgentdState::start_canonical_intelligence` is the intended ObjectiveStart composition point. Its authenticated hook must be inspected in committed source and exercised through the actual process; a separate unreferenced module or pending finalizer is insufficient.
 
@@ -83,7 +83,9 @@ The policy kernel is pure. Authoritative mutable state stays with its registered
 
 The selected Decision must be durably committed and witnessed before product success is returned. Identity/generation/trust are checked during preparation and commit. Commit additionally recomputes the full host binding: hosts with the same Agent ID, generation and trust but different profile pins cannot consume each other's prepared values.
 
-Preparation captures its time and the earliest expiration of the three qualification evidence envelopes. Commit rejects clock reversal and an expired qualification even when the separate Decision signature has a later expiration. These bounds are included in the `hepta.agentd.prepared-intuition.v2` digest. Existing durable Decision encodings are unchanged.
+Preparation retains the original request, profile, scorer and assignment commitments and all three signed qualification envelopes. It captures the preparation time, earliest qualification expiration and writer-owned admitted trust generation/distribution. These bounds are included in the `hepta.agentd.prepared-intuition.v3` digest.
+
+Final-use `commit_v4` acquires the sole writer lock before sampling `IntuitionPolicyClock`. It checks the admitted root-signed distribution lease, expiry and scheduled root revocation, then current trust digest/generation/distribution, reauthenticates generator/evaluator/observer signatures and controller separation, recomputes the exact decision and complete host pins, and rejects lifetime or clock drift before append. Writer trust rotation shares this lock and samples the same owner clock. A waiting request cannot reuse its pre-lock time or a retired trust snapshot. The `hepta.agentd.committed-intuition.v2` service digest binds final-use time and trust; existing durable Decision encodings are unchanged. The system clock detects backwards wall time within its process; this does not establish durable monotonic state or cross-process rollback protection.
 
 The service retains a committed receipt if the final admission check returns either `false` or an error. That result is indeterminate for downstream admission, not evidence that the ledger append never occurred. The canonical run/context boundary now retains the complete policy receipt and typed downstream cause in process. Durable restart reconciliation and outward transport of that receipt remain separate unclosed requirements.
 
@@ -97,9 +99,15 @@ The product receipt preserves original request risk and distinguishes request-hi
 
 Randomized assignment requires a separately owned RNG identity, stream, exact counter, exact draw, and complete distribution commitment. Deterministic assignment has no ambient draw. Assignment probabilities are excluded from scorer outputs. The scorer and assignment commitments deliberately share a generator identity digest while keeping their owned payload fields separate.
 
+Historical generator completeness evidence V1 still signs a candidate-set digest containing utility, confidence, OOD and assignment probability. V2 scorer/distribution separation does not remove that V1 signing coupling. A future uncoupled generator payload needs a versioned producer/consumer migration; changing existing signed V1 bytes in place would invalidate historical verification.
+
 ## 5. Capacity and performance profile
 
 The kernel admits at most 128 ordered candidates. Digests and scalar encodings are fixed-width or length-prefixed and deterministic. The policy crate introduces no network RPC or hidden mutable scoring state.
+
+The Agentd product host separately limits preparation to 127 real candidates plus the reserved abstain option within the existing 128-entry learning-ledger limit. It rejects 128 real candidates before hashing, cloning or cryptographic verification and never truncates the complete set. `intuition_policy_product_v3.rs` exercises the 127-real-candidate durable round trip and early 128-candidate rejection.
+
+Candidate-set commitment entry points enforce the shared 1..128 bound before allocating or hashing candidate contents. This rejects oversized authenticated completeness/scorer/assignment inputs before the expensive digest boundary while preserving every admitted historical encoding. Wire decoding and selected-host request/queue capacity remain separate resource boundaries requiring their own evidence.
 
 Qualification definitions:
 
@@ -124,7 +132,9 @@ Existing test sources specify hard veto, legality, complete-set/count/order bind
 Additional committed test sources include:
 
 - `intuition_policy_product_v3.rs`: real signed qualification fixtures, durable writer append, exact idempotent replay and clean reopen;
-- `intuition_policy_commit_boundary.rs`: ten changed complete-host pins under the same identity/generation/trust, qualification expiry despite a later-valid Decision signature, clock rollback, and a final sequence-one append proving rejected cases did not write;
+- `intuition_policy_commit_boundary.rs`: ten changed complete-host pins under the same identity/generation/trust, qualification expiry despite a later-valid Decision signature, clock rollback, trust-rotation rejection, scheduled signer revocation and root-signed distribution expiry, and a lock-owned fresh-clock race proving waiting expired attempts did not write;
+- `trust_distribution_tests.rs`: admitted distribution expiry and scheduled root revocation remain checked at use;
+- `intelligence_product_tests.rs`, `intelligence_product_signed_tests.rs` and `intelligence_evaluation_tests.rs`: canonical default-production profile routing, signed product and evaluation distribution-lifetime regressions;
 - host unit tests: eleven pin-binding mutations and prepared-time edge cases;
 - service unit tests: preserve the exact committed token after final-gate false/error, and retain it on success;
 - serving-profile tests: missing configuration defaults to Production, missing/legacy-only product hosts fail, non-production compatibility is explicit, invalid values reject, and a product build cannot select the test profile;
@@ -134,7 +144,7 @@ Additional committed test sources include:
 
 The Python encoder was exercised locally during the 2026-09-27 change with five matching digests and 512 passing owner-separation mutations. The later recorder hardening ran 26 Python unit tests successfully in the local working environment. These are narrow tool-level results; the recorder tests use explicitly labelled subprocess fixtures where applicable. They do not establish a Rust build, final-SHA workflow success, randomized golden coverage, a real process E2E, or external acceptance.
 
-Required remaining cases include actual process/request E2E, crash-at-boundary recovery, signed revocation and rollback across generation changes, late qualifier/principal expiration, concurrent append/retry failures, and combined target-host latency. Every claimed execution must identify its tested commit/tree and actual command outcome. V3 product and commit-boundary test targets are mandatory in ledger qualification; missing files no longer cause a silent skip.
+Required remaining cases include actual process/request E2E, crash-at-boundary recovery, deployed signed revocation and rollback across generation changes, remaining late qualifier/principal expiration scenarios, concurrent append/retry failures, and combined target-host latency. Source tests for trust rotation and writer-wait expiry do not certify a live authority controller or restart recovery. Every claimed execution must identify its tested commit/tree and actual command outcome. V3 product and commit-boundary test targets are mandatory in source, independent and ledger qualification; missing files cause a failure.
 
 ## 7. Integration, rollback and capability ceiling
 
@@ -171,7 +181,8 @@ Separate current states are:
 | Fact | State |
 | --- | --- |
 | Product policy/commitment/authentication/host source exists | implemented source |
-| Complete prepared profile and evidence-lifetime fences | implemented source; Rust execution unverified |
+| Complete prepared profile and evidence-lifetime fences | implemented source; current Rust execution artifacts required |
+| Fresh final-use clock, current trust and three-party signature revalidation under sole writer lock | implemented source; current Rust execution artifacts required |
 | Sole host-held writer and direct durable fixture | implemented source; Rust execution unverified |
 | Default Production profile and no missing-host bypass | implemented source; Rust execution unverified |
 | Canonical ObjectiveStart hook and bound receipt | directly committed source; compile and real-process evidence still required |

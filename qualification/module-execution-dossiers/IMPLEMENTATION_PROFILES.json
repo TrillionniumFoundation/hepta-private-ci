@@ -2023,7 +2023,7 @@
       ],
       "guide": "docs/modules/intuition.policy/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/intuition.policy.md",
-      "implementationState": "specified_not_product_evidence",
+      "implementationState": "source_implemented_product_composed_requires_candidate_evidence",
       "apiContract": "score_legal_set(objective,candidates,ndu,signals,evidence); calibrate(scores,profile,support); choose(distribution,randomStream,risk). Output action,propensity,OOD,confidence,abstain/ask/slow-path; never executes.",
       "stateAndEncoding": "No fact or current-weight writer. Immutable policy/calibration artifacts and ephemeral approved features bind full run tuple. Decision/exposure/outcome go through ledger owner.",
       "linearizationAndRecovery": "Hard legality and support precede scores. Independent outcomes train calibration on disjoint data. Actual sampled propensity is logged before outcome observation; random stream is reproducible and scoped.",
@@ -2041,18 +2041,42 @@
           {
             "path": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
             "symbol": "decide_calibrated_v2"
+          },
+          {
+            "path": "codex-rs/hepta-intuition/src/production.rs",
+            "symbol": "decide_calibrated_v4"
+          },
+          {
+            "path": "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs",
+            "symbol": "decide_authenticated_intuition_v3"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/intuition_policy.rs",
+            "symbol": "prepare_v3"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/intuition_policy.rs",
+            "symbol": "commit_v4"
           }
         ],
-        "stateAndRecovery": "Pure receipts retain action propensities and explicit abstain/slow-path mass; hard veto, OOD, confidence and risk checks precede selection over the supplied candidate set. Calibration, completeness and provenance are input evidence, not learned here.",
+        "stateAndRecovery": "Pure V4 policy preserves complete propensities and explicit abstain/slow-path mass. Agentd retains signed generator/evaluator/observer qualification and revalidates current trust, host pins and fresh owner time under the sole learning writer lock before selected-only witnessed append. Durable cross-owner handoff, outward receipt transport and process restart reconciliation remain unclosed. Pure kernel/encoders bound 128 real candidates; Agentd product preparation bounds 127 plus ledger abstain with early rejection, never truncation.",
         "testFiles": [
-          "codex-rs/hepta-intuition/src/calibrated_tests.rs"
+          "codex-rs/hepta-intuition/src/calibrated_tests.rs",
+          "codex-rs/hepta-intuition/src/production_tests.rs",
+          "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs",
+          "codex-rs/hepta-agentd/tests/intuition_policy_commit_boundary.rs"
         ],
         "runtimeDocuments": [
           "docs/modules/intuition.policy/TECHNICAL.md",
+          "docs/modules/intuition.policy/CONTRACTS.md",
+          "docs/modules/intuition.policy/OPERATIONS.md",
+          "qualification/module-execution-dossiers/detail/intuition.policy.md",
           "codex-rs/hepta-intelligence/EVALUATED_SHADOW.md"
         ],
         "remainingWork": [
-          "Bind authenticated current calibration/OOD/completeness artifacts and an owner-supplied assignment draw; real calibration quality and consumer execution require independent evidence."
+          "Qualify current source, independent and synthetic-merge final-use behavior with immutable command artifacts; source existence and historical focused passes do not establish current qualification.",
+          "Implement durable Agentd handoff/restart reconciliation and versioned outward policy receipt transport; migrate typed domains and inventory remaining legacy consumers.",
+          "Obtain independent calibration/efficacy evidence, real process/target-host recovery and combined request measurements, then independent evaluator/operator acceptance."
         ]
       }
     },
