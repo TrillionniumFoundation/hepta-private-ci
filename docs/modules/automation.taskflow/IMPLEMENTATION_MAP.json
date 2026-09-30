@@ -261,8 +261,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "95ffdf1718f0b18b22c2d1dc357fa670f66c6818",
+    "tree": "2c5986d4aa34f69b9950b1b32444c73a56e2fb5a"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -453,10 +453,11 @@
   ],
   "sourceBaseSemantics": "historical provenance base; not required to equal repository current head",
   "lastExactSourceObservation": {
-    "commit": "fe8413a3189867be7763d91caa3835d9776c6b47",
-    "tree": "aee5e79e282ccf8f46ad46a189a5db97a37ce494",
-    "semantics": "exact source candidate for the automation.taskflow code closure before documentation/workflow-only follow-up commits"
+    "commit": "95ffdf1718f0b18b22c2d1dc357fa670f66c6818",
+    "tree": "2c5986d4aa34f69b9950b1b32444c73a56e2fb5a",
+    "semantics": "source/test candidate; sourceBase remains historical provenance"
   },
   "productQualification": "docs/modules/automation.taskflow/TASKFLOW_PRODUCT_QUALIFICATION.json",
-  "calendarV2FaultMatrix": "docs/modules/automation.taskflow/CALENDAR_V2_FAULT_MATRIX.md"
+  "calendarV2FaultMatrix": "docs/modules/automation.taskflow/CALENDAR_V2_FAULT_MATRIX.md",
+  "observedAtHeadSemantics": "last exact repository observation containing automation.taskflow source/test changes; later branch commits are documentation/projection/caller-manifest updates"
 }
