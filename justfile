@@ -44,7 +44,7 @@ assemble-codex-package *args:
 # Build the CLI and run the app-server test client
 app-server-test-client *args:
     cargo build -p codex-cli
-    cargo run -p codex-app-server-test-client --bin codex-app-server-test-client -- {args}
+    cargo run -p codex-app-server-test-client -- --codex-bin ./target/debug/codex {args}
 
 # Format the justfile, Rust, Bazel/Starlark, Python SDK code, and Python scripts.
 fmt:
@@ -124,6 +124,8 @@ bench-e2e-smoke:
     bazel test --compilation_mode=fastbuild --@rules_rust//rust/settings:extra_rustc_flag=-Cdebug-assertions=no --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebug-assertions=no --cache_test_results=no --test_output=streamed --test_arg=--test //codex-rs:e2e-benchmarks
 
 # Build and run Codex from source using Bazel.
+# On Unix, use `[no-cd]` and `--run_under="cd $PWD &&"` to ensure Bazel runs
+# the command in the current working directory.
 [no-cd]
 [unix]
 bazel-codex *args:
@@ -182,11 +184,25 @@ write-config-schema:
 
 # Regenerate vendored app-server protocol schema artifacts.
 write-app-server-schema *args:
-    cargo run -p codex-app-server-protocol --bin export -- {args}
+    {{ python }} app-server-protocol/scripts/write_schema_fixtures.py {{ args }}
 
 [no-cd]
 write-hooks-schema:
     cargo run --manifest-path {{ justfile_directory() }}/codex-rs/Cargo.toml -p codex-hooks --bin write_hooks_schema_fixtures
+
+# Run the argument-comment Dylint checks across codex-rs.
+[no-cd]
+[unix]
+argument-comment-lint *args:
+    if [ "$#" -eq 0 ]; then \
+      bazel build --config=argument-comment-lint -- $({{ justfile_directory() }}/tools/argument-comment-lint/list-bazel-targets.sh); \
+    else \
+      {{ justfile_directory() }}/tools/argument-comment-lint/run-prebuilt-linter.py "$@"; \
+    fi
+
+[no-cd]
+argument-comment-lint-from-source *args:
+    {{ python }} {{ justfile_directory() }}/tools/argument-comment-lint/run.py {args}
 
 # Tail logs from the state SQLite database
 [unix]
