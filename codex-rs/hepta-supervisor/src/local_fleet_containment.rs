@@ -232,7 +232,18 @@ fn protect_tree(path: &Path, gid: u32, executable: bool) -> Result<(), ProcessDr
         ));
     }
     if metadata.is_dir() {
-        set_owner(path, 0, gid, 0o750)?;
+        // Immutable catalog subdirectories must keep every write bit absent;
+        // the existing release verifier treats writability as tampering.
+        set_owner(
+            path,
+            0,
+            gid,
+            if metadata.mode() & 0o200 == 0 {
+                0o550
+            } else {
+                0o750
+            },
+        )?;
         for entry in std::fs::read_dir(path)? {
             protect_tree(&entry?.path(), gid, executable)?;
         }
@@ -243,6 +254,8 @@ fn protect_tree(path: &Path, gid: u32, executable: bool) -> Result<(), ProcessDr
             gid,
             if executable && metadata.mode() & 0o111 != 0 {
                 0o550
+            } else if metadata.mode() & 0o200 == 0 {
+                0o440
             } else {
                 0o640
             },
@@ -285,6 +298,10 @@ fn workload_tree(
 }
 
 fn set_owner(path: &Path, uid: u32, gid: u32, mode: u32) -> Result<(), ProcessDriverError> {
+    let metadata = std::fs::symlink_metadata(path)?;
+    if metadata.uid() == uid && metadata.gid() == gid && metadata.mode() & 0o7777 == mode {
+        return Ok(());
+    }
     let path_bytes =
         std::ffi::CString::new(path.as_os_str().as_encoded_bytes()).map_err(host_error)?;
     if unsafe { libc::chown(path_bytes.as_ptr(), uid, gid) } != 0 {
