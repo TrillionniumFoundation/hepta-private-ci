@@ -4,9 +4,9 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::fs;
 use std::fs::File;
+use std::net::SocketAddr;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
-use std::net::SocketAddr;
 use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -245,7 +245,7 @@ fn parse_signers(
         });
     }
     if signers.is_empty() {
-        return Err(ArtifactOwnerConfigError::InvalidValue(prefix));
+        return Err(ArtifactOwnerConfigError::InvalidEntry(prefix.to_owned()));
     }
     Ok(signers)
 }
