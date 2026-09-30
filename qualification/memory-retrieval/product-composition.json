@@ -1,0 +1,172 @@
+{
+  "schema": "hepta.memory-retrieval.product-composition.v1",
+  "module": "memory.retrieval",
+  "manifestVersion": 1,
+  "authority": "qualification/memory-retrieval/product-composition.json",
+  "activationMode": "compatibility",
+  "productionEnabled": false,
+  "sourceIdentityPolicy": "runtime-exact-head-and-tree",
+  "executionIdentitySchema": "hepta.memory-retrieval.execution-identity.v1",
+  "controlledApi": {
+    "documentation": "docs/modules/memory.retrieval/CONTROLLED_API.md",
+    "defaultFeatures": [],
+    "legacyFeature": "legacy-uncontrolled-retrieval",
+    "legacyFeatureProductionAllowed": false,
+    "workControlRequired": true,
+    "absoluteDeadlineForwardingRequired": true
+  },
+  "completenessAdmission": {
+    "documentation": "docs/modules/memory.retrieval/PRODUCT_ADMISSION.md",
+    "expectedOwnerInventoryRequired": true,
+    "missingOwnerState": "Unavailable",
+    "missingOwnerCanBeComplete": false,
+    "typedOutcomes": [
+      "Complete",
+      "Degraded",
+      "Abstain",
+      "FailClosed"
+    ],
+    "sqliteOwnerProfile": {
+      "ordinaryLimitAction": "Degrade",
+      "contradictionLimitAction": "FailClosed",
+      "allUnavailableAction": "FailClosed"
+    }
+  },
+  "identityFields": [
+    "tenant",
+    "principal",
+    "request",
+    "query_digest",
+    "policy_generation",
+    "encoder_identity",
+    "snapshot_identity",
+    "decision_identity"
+  ],
+  "chunker": {
+    "state": "qualified-for-presegmented-input-only",
+    "name": "presegmented-memory-record-v1",
+    "version": "1",
+    "configurationDigest": "2926120013154169a14ec2fbb815e899771f1eabfb3378f33c5dcaabfc8ffbd0"
+  },
+  "encoder": {
+    "state": "not-established",
+    "modelDigest": null,
+    "dimensions": null,
+    "normalization": null
+  },
+  "quantization": {
+    "state": "source-capability-only",
+    "schema": "hepta.vector.quantized.v1",
+    "allowedBits": [
+      8,
+      16
+    ],
+    "productionSelection": null
+  },
+  "index": {
+    "state": "not-product-qualified",
+    "schema": "hepta.memory-retrieval.vector-index.v2",
+    "version": 2,
+    "writerFenceRequired": true,
+    "staleWriterRejected": true,
+    "checkedPublish": "codex-hepta-memory-retrieval:append_vector_publication_checked_v1",
+    "uncertainCommitPolicy": "reload-exact-current-no-blind-republish",
+    "exactReplayIdempotent": true,
+    "postCommitReloadRequired": true,
+    "publisher": null,
+    "durableStore": null
+  },
+  "security": {
+    "tenantPrincipalBinding": "required",
+    "transport": null,
+    "endpoint": null,
+    "mtlsProfile": null,
+    "authScopes": []
+  },
+  "consumer": {
+    "state": "source-composed-not-product-qualified",
+    "component": "codex-hepta-agentd",
+    "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "consumerShaPolicy": "runtime-exact-binary-and-source"
+  },
+  "policy": {
+    "generation": "compatibility-v1",
+    "publicationState": "not-production-approved"
+  },
+  "recovery": {
+    "state": "source-contract-not-product-qualified",
+    "matrix": "qualification/memory-retrieval/recovery-matrix.json",
+    "documentation": "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
+    "preparationOwner": "codex-hepta-learning-ledger:RetrievalPrepared/tag-10",
+    "nativeOperationOwner": "codex-hepta-infer-core:NativeRunRecord",
+    "lifecyclePort": "codex-hepta-memory-retrieval:DurableDecisionPortV1",
+    "checkedAppend": "codex-hepta-agentd:append_retrieval_lifecycle_projection_checked_v1",
+    "transitionValidator": "codex-hepta-memory-retrieval:validate_durable_decision_append_v1",
+    "rawAppendProductAllowed": false,
+    "globalFrontierMustAdvanceExactlyOne": true,
+    "writerFenceMayNotRegress": true,
+    "quarantineMayRegressToPrepared": false,
+    "dispatchUnknownStage": "DispatchOutcomeUnknown",
+    "unknownOutcomePolicy": "exact-operation-reconciliation-only",
+    "blindReplayAllowed": false,
+    "secondDurableOwnerIntroduced": false
+  },
+  "stages": [
+    {
+      "ordinal": 1,
+      "name": "prepare",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": false
+    },
+    {
+      "ordinal": 2,
+      "name": "durable_publish",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    },
+    {
+      "ordinal": 3,
+      "name": "restart_recover",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    },
+    {
+      "ordinal": 4,
+      "name": "query",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": false
+    },
+    {
+      "ordinal": 5,
+      "name": "decision",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    },
+    {
+      "ordinal": 6,
+      "name": "native_consume",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    },
+    {
+      "ordinal": 7,
+      "name": "downstream_effect",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    },
+    {
+      "ordinal": 8,
+      "name": "acknowledgement",
+      "identityField": "execution_identity_v1",
+      "durabilityRequired": true
+    }
+  ],
+  "promotionBlockers": [
+    "qualified text encoder identity is absent",
+    "selected durable vector-index port backend and deployed store are absent",
+    "transport, endpoint, mTLS profile and scopes are absent",
+    "native consumer exact binary receipt is absent",
+    "durable lifecycle port backend and end-to-end lifecycle receipt are absent",
+    "real-process retrieval kill-point and late-result qualification are absent"
+  ]
+}

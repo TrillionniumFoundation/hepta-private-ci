@@ -10,6 +10,12 @@ name = "codex_hepta_memory_retrieval"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Migration-only access to historical recall helpers that synthesize an
+# unlimited work-control token. Product crates must remain on default features.
+legacy-uncontrolled-retrieval = []
+
 [lints]
 workspace = true
 

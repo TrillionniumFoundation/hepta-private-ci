@@ -1,0 +1,113 @@
+name: Hepta memory retrieval maintenance
+
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-retrieval-maintenance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  maintenance:
+    name: Memory retrieval maintenance tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Run policy, qualification, vector-contract, status, SLO, archive, source-refresh and feature regressions
+        run: >-
+          python3 -m unittest -v
+          scripts.tests.test_hepta_memory_retrieval_policy
+          scripts.tests.test_hepta_memory_retrieval_qualification
+          scripts.tests.test_hepta_memory_retrieval_vector_contract
+          scripts.tests.test_hepta_memory_retrieval_status
+          scripts.tests.test_hepta_memory_retrieval_workflow_policy
+          scripts.tests.test_hepta_memory_retrieval_feature_policy
+          scripts.tests.test_hepta_memory_retrieval_slo
+          scripts.tests.test_hepta_memory_retrieval_archive
+          scripts.tests.test_hepta_memory_retrieval_refresh_map
+      - name: Validate source-only vector publication contract
+        run: python3 scripts/hepta_memory_retrieval_vector_contract.py
+      - name: Enforce read-only retrieval workflows
+        run: python3 scripts/hepta_memory_retrieval_workflow_policy.py
+      - name: Enforce default-controlled feature policy
+        run: python3 scripts/hepta_memory_retrieval_feature_policy.py
+      - name: Compile controlled API, lifecycle contracts and explicit migration feature
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo check --locked -p codex-hepta-memory-retrieval --no-default-features
+          cargo test --locked -p codex-hepta-memory-retrieval \
+            --no-default-features --test controlled_api
+          cargo test --locked -p codex-hepta-memory-retrieval \
+            --no-default-features \
+            --test lifecycle_api \
+            --test lifecycle_append_api \
+            --test lifecycle_append_reconciliation_api
+          cargo check --locked -p codex-hepta-memory-retrieval \
+            --no-default-features --features legacy-uncontrolled-retrieval
+          cargo test --locked -p codex-hepta-memory-retrieval \
+            --no-default-features --features legacy-uncontrolled-retrieval \
+            --test controlled_api
+      - name: Reject legacy feature unification in the default workspace graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo tree --locked -e features -i codex-hepta-memory-retrieval \
+            > "$RUNNER_TEMP/memory-retrieval-default-feature-tree.txt"
+          if grep -F 'legacy-uncontrolled-retrieval' \
+            "$RUNNER_TEMP/memory-retrieval-default-feature-tree.txt"; then
+            cat "$RUNNER_TEMP/memory-retrieval-default-feature-tree.txt"
+            exit 1
+          fi
+      - name: Verify retained original historical archive and canonical manifest
+        run: >-
+          python3 scripts/hepta_memory_retrieval_archive.py verify
+          qualification/memory-retrieval/BASELINES/808b68350dc4f9d1b542803ac75a8d7e255ee836dd95de2255ad42a57b23b212/receipt.json
+      - name: Generate exact candidate seal without mutating source
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="$RUNNER_TEMP/memory-retrieval-candidate"
+          mkdir -p "$destination"
+          python3 scripts/hepta_memory_retrieval_refresh_map.py \
+            --head "$CANDIDATE_SHA" \
+            --output "$destination/IMPLEMENTATION_MAP.json" \
+            --identity-output "$destination/candidate-identity.json" \
+            --projection-output "$destination/pr-identity.md"
+          (
+            cd "$destination"
+            sha256sum \
+              IMPLEMENTATION_MAP.json \
+              candidate-identity.json \
+              pr-identity.md \
+              > SHA256SUMS
+          )
+      - name: Upload exact candidate seal
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-retrieval-candidate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-retrieval-candidate/
+          retention-days: 90
+          if-no-files-found: error
+      - name: Preserve clean source
+        run: |
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=normal)"

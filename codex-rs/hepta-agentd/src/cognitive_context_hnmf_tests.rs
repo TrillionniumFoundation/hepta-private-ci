@@ -204,13 +204,14 @@ async fn current_hnmf_context_filters_owner_candidates_before_delivery() {
         .record_id
         .as_str()
         .to_string();
+    let calls = Arc::new(AtomicUsize::new(0));
     let provider: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(SwitchingContext {
         owner: owner.clone(),
         generation: 1,
         first: context.clone(),
         later: context,
         switch_after_first: false,
-        calls: Arc::new(AtomicUsize::new(0)),
+        calls: Arc::clone(&calls),
     });
     let result = read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&provider))
         .await
@@ -218,6 +219,9 @@ async fn current_hnmf_context_filters_owner_candidates_before_delivery() {
     assert_eq!(result.items.len(), 1);
     assert_eq!(result.items[0].memory_id, expected_id);
     assert_ne!(result.items[0].memory_id, excluded_id);
+    // One acquisition binds execution and one final acquisition fences
+    // AssignmentPrepared. No fallible provider call follows the append.
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
 }
 
 #[tokio::test]

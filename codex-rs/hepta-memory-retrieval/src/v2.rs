@@ -34,8 +34,9 @@ impl RetrievalRequest {
     /// Validate and bind the full supplied query, limits, candidates and scores.
     ///
     /// Candidate order and citation order are canonicalized. This checks the
-    /// same bounded, live-record and scoring invariants as [`crate::retrieve`];
-    /// no source authentication or external freshness is established.
+    /// same bounded, live-record and scoring invariants as the migration-only
+    /// V1 retrieval core; no source authentication or external freshness is
+    /// established.
     pub fn binding_digest_v2(&self) -> Result<Digest32, Error> {
         retrieve_request(self)?;
         Ok(digest_request(self))

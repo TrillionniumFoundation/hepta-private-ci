@@ -2,6 +2,8 @@ name: blocking-ci
 
 on:
   pull_request: {}
+  pull_request_review:
+    types: [submitted, dismissed]
   push:
     branches: [main]
 
@@ -11,6 +13,9 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: read
+  checks: read
+  actions: read
 
 jobs:
   scope:
@@ -34,6 +39,22 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Require fresh retrieval source and independent promotion evidence
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            scripts.tests.test_hepta_memory_retrieval_qualification \
+            scripts.tests.test_hepta_memory_retrieval_slo
+          python3 scripts/hepta_memory_retrieval_qualification.py source \
+            --head "$HEAD_SHA" --output "$RUNNER_TEMP/memory-retrieval-source.json"
+          python3 scripts/hepta_memory_retrieval_qualification.py promotion \
+            --head "$HEAD_SHA" --output "$RUNNER_TEMP/memory-retrieval-promotion.json"
+
       - name: Select dependency impact
         id: scope
         env:
@@ -46,7 +67,7 @@ jobs:
           python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
-          if [ "$EVENT_NAME" = "pull_request" ]; then
+          if [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "pull_request_review" ]; then
             args+=(--base "$BASE_SHA")
           else
             args+=(--full)

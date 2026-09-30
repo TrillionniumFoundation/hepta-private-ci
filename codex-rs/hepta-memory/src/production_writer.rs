@@ -36,6 +36,7 @@ use crate::CognitiveStoreError;
 use crate::CognitiveWriteReceipt;
 use crate::ForgetMemoryDraft;
 use crate::KgFactSetDraft;
+use crate::KgRelationFactDraft;
 use crate::LocalAdmission;
 use crate::LocalLease;
 use crate::LocalLeaseHeadDisposition;
@@ -373,6 +374,27 @@ pub trait ProductionCognitiveMutation:
         source: &'a SourceDraft,
         draft: &'a MemoryRevisionDraft,
         facts: &'a KgFactSetDraft,
+    ) -> ProductionCognitiveMutationFuture<'a>;
+
+    fn remember_with_assertions<'a>(
+        &'a self,
+        access: &'a CognitiveAccess,
+        source: &'a SourceDraft,
+        draft: &'a MemoryDraft,
+        affirmed: &'a KgFactSetDraft,
+        denied: &'a [KgRelationFactDraft],
+    ) -> ProductionCognitiveMutationFuture<'a>;
+
+    #[allow(clippy::too_many_arguments)]
+    fn correct_with_assertions<'a>(
+        &'a self,
+        access: &'a CognitiveAccess,
+        memory_id: &'a StableMemoryId,
+        expected_revision: u64,
+        source: &'a SourceDraft,
+        draft: &'a MemoryRevisionDraft,
+        affirmed: &'a KgFactSetDraft,
+        denied: &'a [KgRelationFactDraft],
     ) -> ProductionCognitiveMutationFuture<'a>;
 
     fn forget_with_kg<'a>(
@@ -1627,6 +1649,111 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
         })
     }
 
+    fn remember_with_assertions<'a>(
+        &'a self,
+        access: &'a CognitiveAccess,
+        source: &'a SourceDraft,
+        draft: &'a MemoryDraft,
+        affirmed: &'a KgFactSetDraft,
+        denied: &'a [KgRelationFactDraft],
+    ) -> ProductionCognitiveMutationFuture<'a> {
+        Box::pin(async move {
+            self.writer.verify_current_authority().await?;
+            let prepared = self.prepare_semantic_mutation(
+                "remember_assertions",
+                source,
+                None,
+                &(draft, affirmed, denied),
+            )?;
+            let mut transaction = self
+                .writer
+                .store()
+                .pool
+                .begin_with("BEGIN IMMEDIATE")
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            let queued = self
+                .admit_prepared_mutation(&mut transaction, &prepared)
+                .await?;
+            let write = self
+                .writer
+                .store()
+                .remember_with_assertions_tx(
+                    &mut transaction,
+                    access,
+                    source,
+                    draft,
+                    affirmed,
+                    denied,
+                )
+                .await?;
+            let receipt = self
+                .finish_prepared_mutation(&mut transaction, prepared, queued, write)
+                .await?;
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            receipt.validate()?;
+            Ok(receipt)
+        })
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn correct_with_assertions<'a>(
+        &'a self,
+        access: &'a CognitiveAccess,
+        memory_id: &'a StableMemoryId,
+        expected_revision: u64,
+        source: &'a SourceDraft,
+        draft: &'a MemoryRevisionDraft,
+        affirmed: &'a KgFactSetDraft,
+        denied: &'a [KgRelationFactDraft],
+    ) -> ProductionCognitiveMutationFuture<'a> {
+        Box::pin(async move {
+            self.writer.verify_current_authority().await?;
+            let prepared = self.prepare_semantic_mutation(
+                "correct_assertions",
+                source,
+                Some(expected_revision),
+                &(memory_id.as_str(), draft, affirmed, denied),
+            )?;
+            let mut transaction = self
+                .writer
+                .store()
+                .pool
+                .begin_with("BEGIN IMMEDIATE")
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            let queued = self
+                .admit_prepared_mutation(&mut transaction, &prepared)
+                .await?;
+            let write = self
+                .writer
+                .store()
+                .correct_with_assertions_tx(
+                    &mut transaction,
+                    access,
+                    memory_id,
+                    expected_revision,
+                    source,
+                    draft,
+                    affirmed,
+                    denied,
+                )
+                .await?;
+            let receipt = self
+                .finish_prepared_mutation(&mut transaction, prepared, queued, write)
+                .await?;
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            receipt.validate()?;
+            Ok(receipt)
+        })
+    }
+
     fn forget_with_kg<'a>(
         &'a self,
         access: &'a CognitiveAccess,
@@ -2453,6 +2580,9 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
 mod tests {
     use super::*;
     use crate::CognitiveScope;
+    use crate::KgEntityFactDraft;
+    use crate::KgRelationFactDraft;
+    use crate::RetrievalRequest;
     use codex_hepta_paths::HeptaFleetRoot;
     use codex_utils_absolute_path::AbsolutePathBuf;
     use std::sync::atomic::AtomicBool;
@@ -2617,6 +2747,135 @@ mod tests {
             .cognitive_mutation_capability()
             .expect("live-verified writer mints semantic capability");
         assert_eq!(capability.owner_agent_id(), &owner);
+    }
+
+    #[tokio::test]
+    async fn production_assertion_mutations_preserve_polarity_and_provenance() {
+        let temp = TempDir::new().unwrap();
+        let store = store(&temp).await;
+        let owner = store.owner_agent_id().clone();
+        let auth = authority(owner.clone());
+        let verifier: Arc<dyn ProductionAuthorityVerifier> = Arc::new(AllowVerifier);
+        let writer = Arc::new(
+            ProductionDurableWriter::open_with_live_verifier(
+                store.clone(),
+                auth,
+                verifier,
+                "production:h4:assertion-mutation",
+                1,
+            )
+            .await
+            .unwrap(),
+        );
+        let capability = writer
+            .cognitive_mutation_capability()
+            .expect("live verifier mints assertion capability");
+        let access = CognitiveAccess::agent_private(owner);
+        let now = i64::try_from(now_unix_seconds().unwrap()).unwrap();
+        let relation = KgRelationFactDraft {
+            key: "assertion".to_string(),
+            from_entity_key: "alpha".to_string(),
+            to_entity_key: "beta".to_string(),
+            relation: "supports".to_string(),
+        };
+        let entities = ["alpha", "beta"]
+            .into_iter()
+            .map(|key| KgEntityFactDraft {
+                key: key.to_string(),
+                entity_type: "concept".to_string(),
+                label: key.to_string(),
+            })
+            .collect::<Vec<_>>();
+        let affirmed = KgFactSetDraft {
+            entities: entities.clone(),
+            relations: vec![relation.clone()],
+        };
+        let denied_owner = KgFactSetDraft {
+            entities,
+            relations: Vec::new(),
+        };
+        let revision = |content: &str| MemoryRevisionDraft {
+            scope: CognitiveScope::AgentPrivate,
+            content: content.to_string(),
+            verification: crate::MemoryVerification::Verified,
+            lifecycle: crate::MemoryLifecycleState::Active,
+            valid_from_unix_seconds: now,
+            valid_to_unix_seconds: None,
+            citations: Vec::new(),
+        };
+        let source = |event_key: &str, content: &str| SourceDraft {
+            scope: CognitiveScope::AgentPrivate,
+            kind: crate::LedgerSourceKind::ExplicitMemoryDirective,
+            event_key: event_key.to_string(),
+            content: content.as_bytes().to_vec(),
+            observed_at_unix_seconds: now,
+        };
+
+        let positive_content = "Beacon production affirmative assertion.";
+        let positive = capability
+            .remember_with_assertions(
+                &access,
+                &source("assertion-positive", positive_content),
+                &MemoryDraft {
+                    stable_key: "assertion-positive".to_string(),
+                    revision: revision(positive_content),
+                },
+                &affirmed,
+                &[],
+            )
+            .await
+            .expect("production affirmative assertion");
+        positive.validate().expect("positive receipt");
+        assert_eq!(positive.mutation_kind, "remember_assertions");
+        assert!(!positive.external_effect);
+
+        let negative_content = "Beacon production denied assertion.";
+        let negative = capability
+            .remember_with_assertions(
+                &access,
+                &source("assertion-negative", negative_content),
+                &MemoryDraft {
+                    stable_key: "assertion-negative".to_string(),
+                    revision: revision(negative_content),
+                },
+                &denied_owner,
+                std::slice::from_ref(&relation),
+            )
+            .await
+            .expect("production denied assertion");
+        negative.validate().expect("negative receipt");
+        assert_eq!(negative.mutation_kind, "remember_assertions");
+
+        let observation = store
+            .observe_memory_retrieval(&access, &RetrievalRequest::new("Beacon", now + 1))
+            .await
+            .expect("owner observation");
+        assert_eq!(observation.proposition_evidence_digests().len(), 2);
+
+        let corrected_content = "Beacon corrected affirmative assertion.";
+        let corrected = capability
+            .correct_with_assertions(
+                &access,
+                &negative.write.memory.id.memory_id,
+                1,
+                &source("assertion-corrected", corrected_content),
+                &revision(corrected_content),
+                &affirmed,
+                &[],
+            )
+            .await
+            .expect("production assertion correction");
+        corrected.validate().expect("corrected receipt");
+        assert_eq!(corrected.mutation_kind, "correct_assertions");
+        assert_eq!(corrected.expected_predecessor_revision, Some(1));
+
+        for receipt in [&positive, &negative, &corrected] {
+            let occurrence = format!("cognitive-mutation:{}", receipt.operation_digest.as_str());
+            assert_eq!(
+                writer.status(&occurrence).await.expect("durable status"),
+                LocalOutcomeState::Committed
+            );
+        }
     }
 
     #[tokio::test]

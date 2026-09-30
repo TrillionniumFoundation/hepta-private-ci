@@ -1,0 +1,272 @@
+{
+  "schema": "hepta.memory-retrieval.qualification-policy.v1",
+  "module": "memory.retrieval",
+  "implementationMap": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+  "sourceRoot": "codex-rs/hepta-memory-retrieval",
+  "activationMode": "compatibility",
+  "sourceInputs": [
+    ".github/workflows",
+    "MODULE.bazel",
+    "MODULE.bazel.lock",
+    "codex-rs",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-memory-retrieval",
+    "docs/modules/memory.retrieval/ADR",
+    "docs/modules/memory.retrieval/API.md",
+    "docs/modules/memory.retrieval/A_E_CLOSURE.md",
+    "docs/modules/memory.retrieval/CALIBRATION_AND_ABLATIONS.md",
+    "docs/modules/memory.retrieval/CANARY_AND_ROLLBACK.md",
+    "docs/modules/memory.retrieval/CONTROLLED_API.md",
+    "docs/modules/memory.retrieval/E2E_MEASUREMENT.md",
+    "docs/modules/memory.retrieval/FULL_CLOSURE.md",
+    "docs/modules/memory.retrieval/OPERATIONS.md",
+    "docs/modules/memory.retrieval/OWNER_PROPOSITIONS.md",
+    "docs/modules/memory.retrieval/POLICY_REFERENCE.md",
+    "docs/modules/memory.retrieval/PROCESS_BOOTSTRAP.md",
+    "docs/modules/memory.retrieval/PRODUCT_ADMISSION.md",
+    "docs/modules/memory.retrieval/QUALIFICATION_IDENTITY.md",
+    "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
+    "docs/modules/memory.retrieval/ROLLOUT_POLICY.md",
+    "docs/modules/memory.retrieval/STATUS.md",
+    "docs/modules/memory.retrieval/TECHNICAL.md",
+    "docs/modules/memory.retrieval/TECHNICAL_BASELINE.md",
+    "docs/modules/memory.retrieval/THREAT_MODEL.md",
+    "docs/modules/memory.retrieval/VECTOR_OWNER.md",
+    "docs/modules/memory.retrieval/receipts",
+    "justfile",
+    "qualification/memory-retrieval",
+    "scripts"
+  ],
+  "sourceObjectInputs": [
+    ".github/workflows/blocking-ci.yml",
+    ".github/workflows/hepta-gap-agentd-process.yml",
+    ".github/workflows/hepta-memory-retrieval-calibration.yml",
+    ".github/workflows/hepta-memory-retrieval-convergence.yml",
+    ".github/workflows/hepta-memory-retrieval-maintenance.yml",
+    ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+    ".github/workflows/hepta-repository-integrity.yml",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
+    "codex-rs/hepta-agentd/src/retrieval_delivery_append.rs",
+    "codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs",
+    "codex-rs/hepta-agentd/src/retrieval_executor.rs",
+    "codex-rs/hepta-agentd/src/retrieval_product_mode.rs",
+    "codex-rs/hepta-memory-retrieval",
+    "codex-rs/hepta-memory-retrieval/Cargo.toml",
+    "codex-rs/hepta-memory-retrieval/src/decision.rs",
+    "codex-rs/hepta-memory-retrieval/src/decision_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/engram.rs",
+    "codex-rs/hepta-memory-retrieval/src/engram_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+    "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/generator.rs",
+    "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/lib.rs",
+    "codex-rs/hepta-memory-retrieval/src/lifecycle.rs",
+    "codex-rs/hepta-memory-retrieval/src/lifecycle_append.rs",
+    "codex-rs/hepta-memory-retrieval/src/product.rs",
+    "codex-rs/hepta-memory-retrieval/src/product_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/semantics.rs",
+    "codex-rs/hepta-memory-retrieval/src/semantics_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/v2.rs",
+    "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/vector_owner.rs",
+    "codex-rs/hepta-memory-retrieval/src/vector_owner_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/vector_publication.rs",
+    "codex-rs/hepta-memory-retrieval/src/vector_publication_append.rs",
+    "codex-rs/hepta-memory-retrieval/src/vector_publication_tests.rs",
+    "codex-rs/hepta-memory-retrieval/src/work.rs",
+    "codex-rs/hepta-memory-retrieval/src/work_tests.rs",
+    "codex-rs/hepta-memory-retrieval/tests/controlled_api.rs",
+    "codex-rs/hepta-memory-retrieval/tests/lifecycle_api.rs",
+    "codex-rs/hepta-memory-retrieval/tests/lifecycle_append_api.rs",
+    "codex-rs/hepta-memory-retrieval/tests/proposition_api.rs",
+    "codex-rs/hepta-memory-retrieval/tests/vector_publication_append_api.rs",
+    "codex-rs/hepta-memory-retrieval/tests/vector_publication_sequence.rs",
+    "docs/modules/memory.retrieval/CONTROLLED_API.md",
+    "docs/modules/memory.retrieval/PRODUCT_ADMISSION.md",
+    "docs/modules/memory.retrieval/QUALIFICATION_IDENTITY.md",
+    "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
+    "docs/modules/memory.retrieval/TECHNICAL.md",
+    "docs/modules/memory.retrieval/VECTOR_OWNER.md",
+    "qualification/memory-retrieval/product-composition.json",
+    "qualification/memory-retrieval/production-qualification.json",
+    "qualification/memory-retrieval/qualification-policy.json",
+    "qualification/memory-retrieval/recovery-matrix.json",
+    "scripts/hepta_memory_retrieval_policy.py",
+    "scripts/hepta_memory_retrieval_qualification.py",
+    "scripts/hepta_memory_retrieval_refresh_map.py",
+    "scripts/hepta_memory_retrieval_status.py",
+    "scripts/hepta_memory_retrieval_vector_contract.py",
+    "scripts/tests/test_hepta_memory_retrieval_policy.py",
+    "scripts/tests/test_hepta_memory_retrieval_qualification.py",
+    "scripts/tests/test_hepta_memory_retrieval_refresh_map.py",
+    "scripts/tests/test_hepta_memory_retrieval_status.py",
+    "scripts/tests/test_hepta_memory_retrieval_vector_contract.py"
+  ],
+  "promotionClaims": [
+    "productionImplementation",
+    "productExecutionProved",
+    "independentAcceptance",
+    "activation",
+    "release"
+  ],
+  "requiredChecks": [
+    {
+      "name": "Memory retrieval exact source",
+      "workflow": ".github/workflows/hepta-memory-retrieval-convergence.yml"
+    },
+    {
+      "name": "Memory retrieval source-head",
+      "workflow": ".github/workflows/hepta-memory-retrieval-convergence.yml"
+    },
+    {
+      "name": "Memory retrieval base-merge",
+      "workflow": ".github/workflows/hepta-memory-retrieval-convergence.yml"
+    },
+    {
+      "name": "Memory retrieval current-main",
+      "workflow": ".github/workflows/hepta-memory-retrieval-convergence.yml"
+    },
+    {
+      "name": "Memory retrieval structural probes",
+      "workflow": ".github/workflows/hepta-memory-retrieval-qualification-host.yml"
+    },
+    {
+      "name": "Memory retrieval maintenance tests",
+      "workflow": ".github/workflows/hepta-memory-retrieval-maintenance.yml"
+    },
+    {
+      "name": "Memory retrieval calibration contract",
+      "workflow": ".github/workflows/hepta-memory-retrieval-calibration.yml"
+    },
+    {
+      "name": "CI required",
+      "workflow": ".github/workflows/blocking-ci.yml"
+    },
+    {
+      "name": "Agentd process qualification result",
+      "workflow": ".github/workflows/hepta-gap-agentd-process.yml"
+    },
+    {
+      "name": "Cargo workspace preflight",
+      "workflow": ".github/workflows/hepta-repository-integrity.yml"
+    },
+    {
+      "name": "Verify ordinary read-only candidate source",
+      "workflow": ".github/workflows/hepta-repository-integrity.yml"
+    }
+  ],
+  "securityChecks": [
+    {
+      "name": "CodeQL",
+      "requiredConclusion": "success"
+    }
+  ],
+  "evidencePolicy": {
+    "artifactRetentionDays": 90,
+    "contentHashesRequired": true,
+    "externalImmutableRetentionRequiredForProduction": true
+  },
+  "e2eEvidence": {
+    "state": "missing_target_host",
+    "minimumSamplesPerCase": 100,
+    "requiredMetrics": [
+      "p50",
+      "p95",
+      "p99",
+      "max",
+      "cpu_time",
+      "peak_rss",
+      "allocation_count",
+      "allocated_bytes",
+      "sqlite_reads",
+      "sqlite_writes",
+      "sqlite_syncs",
+      "delivery_shadow_contention",
+      "worker_exit_latency"
+    ]
+  },
+  "calibrationEvidence": {
+    "state": "contract_only",
+    "requiresHeldOutQuality": true,
+    "requiresAblations": true
+  },
+  "externalGates": [
+    {
+      "name": "Memory retrieval target-host full-chain E2E",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "production text encoder release",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "durable vector-index publisher and store",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "external frontier capability revocation authority",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "tenant withdrawal revocation deletion qualification",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "durable lifecycle outbox and real-process recovery",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "held-out quality calibration and ablations",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "exact binary source-tree receipt",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "protected killable worker and hard resource isolation",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "external immutable raw-evidence retention",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "independent human exact-head acceptance and signature",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "canary activation and automatic rollback",
+      "state": "missing_external",
+      "evidence": null
+    },
+    {
+      "name": "operator security release approval and signed evidence",
+      "state": "missing_external",
+      "evidence": null
+    }
+  ],
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.memory-retrieval.production-qualification.v1",
+  "module": "memory.retrieval",
+  "releaseEligible": false,
+  "activationMode": "compatibility",
+  "gates": [
+    {"id": "named-protected-host", "passed": false, "evidence": null},
+    {"id": "exact-binary-source-tree", "passed": false, "evidence": null},
+    {"id": "process-tree-cpu-rss-wall-isolation", "passed": false, "evidence": null},
+    {"id": "kill-points-and-host-survival", "passed": false, "evidence": null},
+    {"id": "external-immutable-raw-evidence", "passed": false, "evidence": null},
+    {"id": "independent-identity-signature", "passed": false, "evidence": null},
+    {"id": "operator-security-release-acceptance", "passed": false, "evidence": null},
+    {"id": "canary", "passed": false, "evidence": null},
+    {"id": "rollback-rehearsal", "passed": false, "evidence": null},
+    {"id": "approved-slo-and-automatic-fallback", "passed": false, "evidence": null}
+  ],
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}
