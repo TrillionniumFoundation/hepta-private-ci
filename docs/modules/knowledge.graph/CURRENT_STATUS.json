@@ -1,0 +1,48 @@
+{
+  "failClosed": true,
+  "implementationMapBlob": "5977539fa730c017b5694fe112294abc45e0e402",
+  "module": "knowledge.graph",
+  "notes": [
+    "Implementation, testing, integration, evidence, acceptance, activation and release are independent states.",
+    "Only immutable execution artifacts and an independently verified acceptance signature may advance external gates."
+  ],
+  "schema": "hepta.knowledge-graph.current-status.v1",
+  "singleCompletionPercentage": null,
+  "sourceObservation": {
+    "commit": "50b70c8885c1f4db1ef0bd8036d47da8323e0126",
+    "tree": "fcf82be222fa3000b54519c81efeedfd8e9450f6"
+  },
+  "states": {
+    "activation": {
+      "enabled": false,
+      "state": "disabled"
+    },
+    "evidence": {
+      "executionEvidenceEmbeddedInSource": false,
+      "sourceNavigationBound": true,
+      "state": "pending_current_head_execution_and_target_host_receipts"
+    },
+    "implementation": {
+      "productionImplementationProved": false,
+      "sourceMapped": true,
+      "state": "candidate_source_implemented"
+    },
+    "integration": {
+      "productExecutionProved": false,
+      "state": "composed_cognitive_read_default_agentd_write_and_prompt_optimizer_pending_exact_head"
+    },
+    "operatorAcceptance": {
+      "accepted": false,
+      "state": "not_accepted"
+    },
+    "release": {
+      "eligible": false,
+      "state": "not_eligible"
+    },
+    "testing": {
+      "qualified": false,
+      "reason": "tracked source cannot substitute for current-head execution artifacts",
+      "state": "pending_exact_head_immutable_receipts"
+    }
+  }
+}

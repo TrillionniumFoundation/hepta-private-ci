@@ -10,6 +10,10 @@ name = "codex_hepta_prompt_registry"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+fixture = []
+
 [lints]
 workspace = true
 

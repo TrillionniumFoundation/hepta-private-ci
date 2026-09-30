@@ -12,9 +12,24 @@ on:
       - "codex-rs/app-server/**"
       - "docs/modules/knowledge.graph/**"
       - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
+      - "qualification/knowledge-graph/**"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-knowledge-graph-budget-check.py"
+      - "scripts/hepta-knowledge-graph-target-measure.py"
+      - "scripts/hepta_knowledge_graph_map_verify.py"
+      - "scripts/hepta_kg_acceptance_manifest.py"
+      - "scripts/hepta_kg_current_candidate_runner.py"
+      - "scripts/hepta_kg_contract_evidence.py"
+      - "scripts/hepta_kg_documentation_sync.py"
+      - "scripts/hepta_kg_evidence.py"
+      - "scripts/hepta_kg_execution_audit.py"
+      - "scripts/hepta_kg_legacy_guard.py"
+      - "scripts/hepta_kg_qualification_lane.sh"
+      - "scripts/hepta_kg_status.py"
+      - "scripts/test_hepta_kg_*.py"
       - ".github/actions/hepta-synthetic-merge/**"
+      - ".github/workflows/hepta-kg-abc-execution.yml"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
   push:
     branches: [main]
@@ -28,9 +43,23 @@ on:
       - "codex-rs/app-server/**"
       - "docs/modules/knowledge.graph/**"
       - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
+      - "qualification/knowledge-graph/**"
       - "qualification/module-execution-dossiers/DETAILS.json"
       - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta-knowledge-graph-budget-check.py"
+      - "scripts/hepta-knowledge-graph-target-measure.py"
+      - "scripts/hepta_knowledge_graph_map_verify.py"
+      - "scripts/hepta_kg_acceptance_manifest.py"
+      - "scripts/hepta_kg_contract_evidence.py"
+      - "scripts/hepta_kg_documentation_sync.py"
+      - "scripts/hepta_kg_execution_audit.py"
+      - "scripts/hepta_kg_legacy_guard.py"
+      - "scripts/hepta_kg_qualification_lane.sh"
+      - "scripts/hepta_kg_status.py"
+      - "scripts/test_hepta_kg_*.py"
+      - ".github/workflows/hepta-kg-abc-execution.yml"
       - ".github/workflows/hepta-knowledge-graph-qualification.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -41,23 +70,18 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
-  qualification:
-    name: knowledge.graph (${{ matrix.lane }})
+  metadata:
+    name: knowledge.graph metadata and claim boundary
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    strategy:
-      fail-fast: false
-      matrix:
-        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
-    env:
-      CARGO_INCREMENTAL: "0"
-      CARGO_BUILD_JOBS: "2"
-      CARGO_PROFILE_TEST_DEBUG: "0"
-      CARGO_PROFILE_DEV_DEBUG: "0"
-      PYTHONDONTWRITEBYTECODE: "1"
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -65,23 +89,151 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Bind exact source identity
+      - name: Execute every metadata check and preserve failures
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence="$RUNNER_TEMP/knowledge-graph-metadata"
+          mkdir -p "$evidence"
+          : > "$evidence/results.tsv"
+          failures=0
+
+          run_check() {
+            local name="$1"
+            shift
+            local log="$evidence/${name}.log"
+            set +e
+            "$@" > >(tee "$log") 2>&1
+            local code=$?
+            set -e
+            if [[ $code -eq 0 ]]; then
+              printf '%s\tpassed\t0\n' "$name" >> "$evidence/results.tsv"
+            else
+              printf '%s\tfailed\t%s\n' "$name" "$code" >> "$evidence/results.tsv"
+              failures=$((failures + 1))
+            fi
+          }
+
+          run_check split_status \
+            python3 scripts/hepta_kg_status.py --check
+          run_check documentation_sync \
+            python3 scripts/hepta_kg_documentation_sync.py --check
+          run_check implementation_map \
+            python3 scripts/hepta_knowledge_graph_map_verify.py \
+              --expected-sha "$(git rev-parse HEAD)" \
+              --expected-tree "$(git rev-parse HEAD^{tree})"
+          run_check target_measure_self_test \
+            python3 scripts/hepta-knowledge-graph-target-measure.py --self-test
+          run_check legacy_production_guard \
+            python3 scripts/hepta_kg_legacy_guard.py
+          run_check evidence_tooling \
+            bash -lc 'python3 -m unittest discover -s scripts -p "test_hepta_kg_*.py" -v'
+          run_check tracked_source_clean \
+            bash -lc 'git diff --exit-code && git diff --cached --exit-code && test -z "$(git status --porcelain --untracked-files=no)"'
+
+          if [[ $failures -ne 0 ]]; then
+            printf '%s metadata check(s) failed; all checks were still executed.\n' "$failures" >&2
+            exit 1
+          fi
+
+      - name: Preserve metadata evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-metadata-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/knowledge-graph-metadata
+          if-no-files-found: error
+          retention-days: 30
+
+  formatting:
+    name: knowledge.graph scoped formatting
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check KG-owned Rust formatting
+        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git diff --quiet
-          git diff --cached --quiet
-          git rev-parse HEAD HEAD^{tree}
+          mkdir -p "$RUNNER_TEMP/knowledge-graph-formatting"
+          cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
+            --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
+            --package codex-hepta-agentd -- --check \
+            2>&1 | tee "$RUNNER_TEMP/knowledge-graph-formatting/cargo-fmt.log"
+
+      - name: Preserve formatting evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-formatting-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/knowledge-graph-formatting
+          if-no-files-found: error
+          retention-days: 30
+
+  qualification:
+    name: knowledge.graph (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'push' && '["source-head"]' || '["source-head","main-head","base-merge"]') }}
+    env:
+      KG_QUALIFICATION_LANE: ${{ matrix.lane }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Resolve immutable source and base identities
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="$SOURCE_SHA"
+          base_sha="$BASE_SHA"
+          if [[ "${{ github.event_name }}" == workflow_dispatch ]]; then
+            git fetch --no-tags origin "+refs/heads/${{ github.event.repository.default_branch }}:refs/remotes/origin/${{ github.event.repository.default_branch }}"
+            base_sha="$(git rev-parse 'refs/remotes/origin/${{ github.event.repository.default_branch }}')"
+          fi
+          test -n "$source_sha"
+          test -n "$base_sha"
+          echo "source=$source_sha" >> "$GITHUB_OUTPUT"
+          echo "base=$base_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Preserve candidate qualification harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/hepta_kg_qualification_lane.sh \
+            "$RUNNER_TEMP/hepta_kg_qualification_lane.sh"
+          chmod +x "$RUNNER_TEMP/hepta_kg_qualification_lane.sh"
+
+      - name: Select current main baseline
+        if: matrix.lane == 'main-head'
+        shell: bash
+        env:
+          RESOLVED_BASE_SHA: ${{ steps.identity.outputs.base }}
+        run: |
+          set -euo pipefail
+          git checkout --detach "$RESOLVED_BASE_SHA"
 
       - name: Construct deterministic synthetic merge
         id: synthetic
         if: matrix.lane == 'base-merge'
         uses: ./.github/actions/hepta-synthetic-merge
         with:
-          base-sha: ${{ env.BASE_SHA }}
-          source-sha: ${{ env.SOURCE_SHA }}
-          pr-number: ${{ github.event.pull_request.number }}
+          base-sha: ${{ steps.identity.outputs.base }}
+          source-sha: ${{ steps.identity.outputs.source }}
+          pr-number: ${{ github.event.pull_request.number || '0' }}
           author-name: Hepta KG CI
           author-email: hepta-kg-ci@users.noreply.github.com
           message: Synthetic merge
@@ -89,45 +241,37 @@ jobs:
       - name: Bind tested candidate identity
         shell: bash
         env:
-          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          RESOLVED_SOURCE_SHA: ${{ steps.identity.outputs.source }}
+          RESOLVED_BASE_SHA: ${{ steps.identity.outputs.base }}
+          SYNTHETIC_SHA: ${{ steps.synthetic.outputs.sha }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          case "${{ matrix.lane }}" in
+            source-head) expected="$RESOLVED_SOURCE_SHA" ;;
+            main-head) expected="$RESOLVED_BASE_SHA" ;;
+            base-merge) expected="$SYNTHETIC_SHA" ;;
+            *) exit 2 ;;
+          esac
+          test "$(git rev-parse HEAD)" = "$expected"
           git diff --quiet
           git diff --cached --quiet
-          git rev-parse HEAD HEAD^{tree}
-
-      - name: Verify knowledge.graph closed-world truth
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py verify
-
-      - name: Observe repository-wide detailed-design health
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Global design health is still visible and remains enforced by its
-          # owning workflows. Unrelated module drift must not suppress the
-          # exact-candidate knowledge.graph executable evidence below.
-          python3 scripts/hepta-technical-closure.py verify
-
-      - name: Check KG-owned Rust formatting
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
-            --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
-            --package codex-hepta-agentd -- --check
+          {
+            echo "lane=${{ matrix.lane }}"
+            echo "tested_sha=$(git rev-parse HEAD)"
+            echo "tested_tree=$(git rev-parse HEAD^{tree})"
+            echo "source_sha=$RESOLVED_SOURCE_SHA"
+            echo "base_sha=$RESOLVED_BASE_SHA"
+          } | tee "$RUNNER_TEMP/knowledge-graph-binding.txt"
 
       - name: Prepare native test prerequisites
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo apt-get install -y \
+            build-essential bubblewrap libcap-dev pkg-config protobuf-compiler
+          command -v protoc
+          protoc --version
           sudo sysctl -w kernel.unprivileged_userns_clone=1
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
@@ -139,62 +283,15 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Test canonical KG kernel
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-kg -- --nocapture
-
-      - name: Test prompt-factor owner, projection and real consumer
-        working-directory: codex-rs
+      - name: Execute full lane and preserve all results
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.identity.outputs.source }}
+          BASE_SHA: ${{ steps.identity.outputs.base }}
+          KG_EVIDENCE_DIR: ${{ runner.temp }}/knowledge-graph-${{ matrix.lane }}
         run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture
-          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
-
-      - name: Test durable cognitive KG owner and recovery
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
-
-      - name: Crash/reopen KG transaction windows
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-memory --lib \
-            cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor \
-            -- --ignored --exact --nocapture --test-threads=1
-
-      - name: Measure PERF-LIBRARY pilot capacity
-        if: matrix.lane == 'source-head'
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-memory --lib \
-            cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt \
-            -- --ignored --exact --nocapture --test-threads=1
-
-      - name: Test default Agentd production cognitive-writer profile
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd \
-            --test cognitive_product_e2e -- --nocapture --test-threads=1
-
-      - name: Test qualification witness on top of product writer
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd \
-            --features qualification-cognitive-write \
-            --test cognitive_product_e2e -- --nocapture --test-threads=1
-
-      - name: Strict KG lint
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo clippy --locked \
-            -p codex-hepta-kg -p codex-hepta-prompt-registry \
-            -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd \
-            --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write \
-            -- -D warnings
+          set -o pipefail
+          "$RUNNER_TEMP/hepta_kg_qualification_lane.sh" "$GITHUB_WORKSPACE"
 
       - name: Preserve exact tracked source
         if: always()
@@ -203,4 +300,107 @@ jobs:
           set -euo pipefail
           git diff --check
           git diff --exit-code
+          git diff --cached --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Upload immutable lane evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/knowledge-graph-${{ matrix.lane }}
+            ${{ runner.temp }}/knowledge-graph-binding.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  acceptance-request:
+    name: unsigned independent-acceptance request
+    if: ${{ github.event_name != 'push' && needs.metadata.result == 'success' && needs.formatting.result == 'success' && needs.qualification.result == 'success' }}
+    needs: [metadata, formatting, qualification]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download exact lane receipts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: knowledge-graph-*-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/knowledge-graph-receipts
+
+      - name: Build unsigned fail-closed request
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/knowledge-graph-acceptance"
+          mapfile -d '' receipts < <(
+            find "$RUNNER_TEMP/knowledge-graph-receipts" -type f -name receipt.json -print0 | sort -z
+          )
+          test "${#receipts[@]}" -eq 3
+          arguments=()
+          for receipt in "${receipts[@]}"; do
+            arguments+=(--receipt "$receipt")
+          done
+          python3 scripts/hepta_kg_acceptance_manifest.py request \
+            "${arguments[@]}" \
+            --output "$RUNNER_TEMP/knowledge-graph-acceptance/request.json"
+          python3 - "$RUNNER_TEMP/knowledge-graph-acceptance/request.json" <<'PY'
+          import importlib.util
+          import json
+          import sys
+          from pathlib import Path
+
+          spec = importlib.util.spec_from_file_location(
+              "kg_acceptance", "scripts/hepta_kg_acceptance_manifest.py"
+          )
+          if spec is None or spec.loader is None:
+              raise SystemExit("cannot load acceptance verifier")
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          request = json.loads(Path(sys.argv[1]).read_text())
+          module.require_lane_receipts(request, request["candidate"])
+          assert request["acceptance"]["status"] == "pending_independent_signature"
+          assert request["activation"] is False
+          assert request["release"] is False
+          PY
+          sha256sum "$RUNNER_TEMP/knowledge-graph-acceptance/request.json" \
+            > "$RUNNER_TEMP/knowledge-graph-acceptance/request.sha256"
+
+      - name: Upload unsigned request
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-acceptance-request-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/knowledge-graph-acceptance
+          if-no-files-found: error
+          retention-days: 30
+
+  qualification-gate:
+    name: knowledge.graph qualification gate
+    if: always()
+    needs: [metadata, formatting, qualification, acceptance-request]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require independent source checks and every applicable lane
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          METADATA_RESULT: ${{ needs.metadata.result }}
+          FORMATTING_RESULT: ${{ needs.formatting.result }}
+          QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+          ACCEPTANCE_REQUEST_RESULT: ${{ needs.acceptance-request.result }}
+        run: |
+          set -euo pipefail
+          test "$METADATA_RESULT" = success
+          test "$FORMATTING_RESULT" = success
+          test "$QUALIFICATION_RESULT" = success
+          if [[ "$EVENT_NAME" == push ]]; then
+            test "$ACCEPTANCE_REQUEST_RESULT" = skipped
+          else
+            test "$ACCEPTANCE_REQUEST_RESULT" = success
+          fi
+          printf '%s\n' \
+            'Execution evidence passed. Independent signed operator acceptance, activation, and release remain separate fail-closed gates.'

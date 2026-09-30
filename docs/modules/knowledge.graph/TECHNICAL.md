@@ -151,7 +151,7 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
-For the cognitive knowledge projection, the existing `cognitive_1.sqlite3` owner remains the only durable store. The adapter derives canonical `KnowledgeGenerationV2` values from immutable/current cognitive facts, invokes `build_complete_generation`, validates predecessor-bound `publish_generation`, writes physical projection rows plus `kg_projection_generation_semantics`, and only then advances the selected generation in the same SQLite transaction. Reopen recomputes the physical output digest, canonical generation digest and predecessor-bound publication digest. Pre-`0011` legacy generations may remain readable history but cannot drive digest-bound graph expansion without a canonical V2 semantic receipt.
+For the cognitive knowledge projection, the existing `cognitive_1.sqlite3` owner remains the only durable store. Immutable cognitive revision-fact tables remain the physical fact history. The adapter derives canonical `KnowledgeGenerationV2` values from the exact current source cut, invokes `build_complete_generation`, validates predecessor-bound `publish_generation`, writes generation/publication receipts plus `kg_projection_generation_semantics` and `kg_projection_generation_storage`, and only then advances the selected generation in the same SQLite transaction. A fresh `revision_facts_v1` generation does not copy a complete set of `kg_nodes` or `kg_edges`; historical source cuts are reconstructed from immutable revision facts. Reopen recomputes the physical output digest, canonical generation digest and predecessor-bound publication digest. Pre-`0011` legacy generations may remain readable history but cannot drive digest-bound graph expansion without a canonical V2 semantic receipt.
 
 Canonical cognitive entity identity is `owner + scope + entity_key`; `entity_type` and `label` are shape fields, not identity fields. All simultaneously live supports for one canonical key must agree on those shape fields or the product mutation fails closed. A correction may change shape only after the predecessor support leaves the current active cut. A rename or alias that must coexist uses a distinct entity key plus an explicit owner-governed custom relation such as `alias_of`; the KG kernel does not silently merge display labels or infer aliases.
 
@@ -159,9 +159,9 @@ For prompt factors, `prompt.registry` remains the fact/lifecycle owner. It store
 
 ## 7. Runtime, concurrency and transaction model
 
-For the cognitive knowledge projection, `CognitiveStore::refresh_scope_projection_tx` is the durable mutation boundary. One SQLite transaction observes the exact current source cut, derives the canonical V2 generation, reconstructs the exact predecessor, validates `publish_generation`, persists physical rows and semantic receipts, and CAS-advances `kg_projection.generation`. The selected pointer therefore cannot name a generation whose canonical receipt was not durably inserted first.
+For the cognitive knowledge projection, `CognitiveStore::refresh_scope_projection_tx` is the durable mutation boundary. One SQLite transaction observes the exact current source cut, derives the canonical V2 generation, reconstructs the exact predecessor, validates `publish_generation`, persists immutable generation, semantic and storage-mode receipts, and CAS-advances `kg_projection.generation`. The selected pointer therefore cannot name a generation whose canonical receipt was not durably inserted first. The revision facts and generation receipts remain append-only evidence; the selected pointer is the only current-generation selector.
 
-The product GraphOneHop read path loads the persisted generation through `load_canonical_generation_tx`, requires the persisted `generation_sha256` to match the reconstructed V2 digest, and delegates relation selection, temporal visibility and truncation to `hepta_kg::query_relations`. SQL after that point only maps kernel-selected support identities back to their physical memory occurrences. `apply_incremental_delta` is retained as an equivalence oracle/reference path; the current durable product writer deliberately rebuilds the bounded complete generation on each logical mutation.
+The product GraphOneHop read path loads the persisted generation through `load_canonical_generation_tx`, requires the persisted `generation_sha256` to match the reconstructed V2 digest, wraps it in `VerifiedKnowledgeGenerationV2`, and builds immutable node, incident-edge and relation indexes once per `(projection_scope, generation)` inside one retrieval transaction. The same transaction caches the compact support mapping beside the verified generation. Repeated seeds and relation channels therefore do not revalidate the complete generation or reload the full support index. `VerifiedKnowledgeGenerationV2::query_relations` preserves canonical edge order and exact request/result digests, evaluates temporal visibility on every request, scans only seed-incident edges, computes exact omission counts and clones only selected edges and supports. SQL then maps selected support identities back to their immutable memory occurrences. `apply_incremental_delta` is retained as an equivalence oracle/reference path; the current durable product writer deliberately rebuilds the bounded complete generation on each logical mutation.
 
 The prompt path is `PromptRegistry::factor_graph_source_v1 -> build_prompt_factor_projection_v1 -> optimize_with_factor_graph`. The registry view is sealed outside the owner crate. The optimizer requires every candidate factor to exist in the complete generation and queries complements/substitutes/conflicts against the exact generation digest. `PromptConflicts` are hard co-selection exclusions; `PromptSubstitutes` are hard redundancy exclusions; `PromptComplements` are observed and receipt-bound but do not manufacture a numeric bonus because the relation record carries no calibrated marginal magnitude. Any positive complement utility must come from independently supported causal interaction evidence. The complete canonical query request and result digests are both bound into the graph portfolio receipt. The optimizer remains read-only and `DENY_ALL`.
 
@@ -171,7 +171,7 @@ The prompt path is `PromptRegistry::factor_graph_source_v1 -> build_prompt_facto
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
-The cognitive projection transaction has test-only process-crash rendezvous before the canonical semantic receipt and after the semantic receipt/physical rows but before current-generation CAS. The qualification child publishes an fsynced marker, is killed by its parent, and the reopened store must expose only the exact predecessor generation with no tentative source, memory revision, generation receipt or semantic receipt. This is a process-crash/SQLite-WAL test, not a physical power-loss claim. Independent `lane_c` cut-witness tests separately detect restoration of an older internally valid SQLite backup; the stronger descriptor-safe writer `open_with_recovery` contract remains owned by `cognitive.store` and is not implied by this module.
+The cognitive projection transaction has test-only process-crash rendezvous before the canonical semantic receipt and after the semantic and storage-mode receipts but before current-generation CAS. The qualification child publishes an fsynced marker, is killed by its parent, and the reopened store must expose only the exact predecessor generation with no tentative source, memory revision, generation receipt or semantic receipt. This is a process-crash/SQLite-WAL test, not a physical power-loss claim. Independent `lane_c` cut-witness tests separately detect restoration of an older internally valid SQLite backup; the stronger descriptor-safe writer `open_with_recovery` contract remains owned by `cognitive.store` and is not implied by this module.
 
 Ordinary product reopen intentionally verifies the current generation plus the exact predecessor needed to reconstruct its publication receipt; it does not perform an unbounded O(history) forensic replay on every startup. Because the graph is rebuildable and current reads are fenced by current source truth, a full historical publication-chain audit is a qualification/forensic operation rather than a product-startup dependency. The cognitive KG oracle now walks every persisted semantic generation and reconstructs each predecessor-bound publication digest, while product startup remains bounded. This keeps startup bounded without weakening current-generation safety.
 
@@ -191,7 +191,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) specifies this module's algorithm and pilot ceilings. The current durable writer deliberately performs one bounded complete-generation rebuild for each logical mutation; `apply_incremental_delta` remains the independent equivalence/reference path until measurements justify selecting it as the durable runtime algorithm.
 
-[codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs) is the PERF-LIBRARY qualification probe. Its default fixture performs 256 real `remember_with_kg` transactions with 16 entities and 128 relations each, reaching 4,096 physical nodes and 32,768 physical edges, then samples product retrieval/GraphOneHop and ordinary reopen. It emits mutation/query/reopen p50/p95/p99, integer throughput, database/WAL bytes, RSS and Linux CPU ticks. The repository defines no host-independent millisecond threshold for PERF-LIBRARY, so this receipt is measurement evidence only; target-host/release qualification must supply the actual acceptance budget before full-generation versus durable-incremental selection changes.
+[codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs) is the PERF-LIBRARY qualification probe. Its default fixture performs 256 real `remember_with_kg` transactions with 16 entities and 128 relations each, reaching 4,096 logical nodes and 32,768 logical edges. It asserts `revision_facts_v1` storage and zero fresh legacy full-generation node/edge copies, samples product retrieval, records bounded-query work, runs ten rounds with four concurrent readers and one writer, and measures ordinary reopen. It emits mutation/query/contention/reopen p50/p95/p99, integer throughput, database/WAL bytes, RSS, Linux CPU ticks and exact query work counters. The separate bounded history probe performs 128 corrections by default, reopens at growing frontiers, forgets the fact and proves repeated reopen cannot resurrect it. The repository defines no host-independent millisecond threshold for PERF-LIBRARY, so these receipts are measurement evidence only; a named target-host profile and preselected acceptance budget are required before full-generation versus durable-incremental selection changes.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -202,7 +202,8 @@ Projection builder library over owner-approved facts. Publish only complete vali
 Current operating and state-format references:
 
 - [codex-rs/hepta-kg/src/lib.rs](../../../codex-rs/hepta-kg/src/lib.rs).
-- [codex-rs/hepta-kg/src/generation.rs](../../../codex-rs/hepta-kg/src/generation.rs).
+- [codex-rs/hepta-kg/src/generation.rs](../../../codex-rs/hepta-kg/src/generation.rs) for canonical generation, publication, reference-query and work-accounting semantics.
+- [codex-rs/hepta-kg/src/indexed_query.rs](../../../codex-rs/hepta-kg/src/indexed_query.rs) for the sealed validated generation view and canonical incident-edge indexes.
 - [codex-rs/hepta-memory/src/cognitive_kg_store.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_store.rs) for the cognitive source adapter and same-transaction durable publication.
 - [codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql](../../../codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql) for immutable semantic receipts and current-generation fencing.
 - [codex-rs/hepta-memory/src/cognitive_retrieval.rs](../../../codex-rs/hepta-memory/src/cognitive_retrieval.rs) for the digest-bound product GraphOneHop consumer.
@@ -217,11 +218,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-kg/src/generation_tests.rs](../../../codex-rs/hepta-kg/src/generation_tests.rs); cases cover full/incremental equivalence, predecessor-bound publication, support/tombstone behavior, custom relation identities and temporal visibility.
+- [codex-rs/hepta-kg/src/generation_tests.rs](../../../codex-rs/hepta-kg/src/generation_tests.rs) and [codex-rs/hepta-kg/src/query_closure_tests.rs](../../../codex-rs/hepta-kg/src/query_closure_tests.rs); cases cover full/incremental equivalence, predecessor-bound publication, duplicate support identity, canonical ordering, atomic revocation, indexed/reference receipt equality, temporal visibility and sparse-query work bounds.
 - [codex-rs/hepta-kg/src/lib_tests.rs](../../../codex-rs/hepta-kg/src/lib_tests.rs); named case: `rebuild_is_canonical_and_authority_free`.
 - [codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs); the canonical oracle drives the same source cut through full V2 rebuild, incremental V2 rebuild, SQLite materialization, reopen, query, correction and tombstone, compares physical/canonical digests plus visible query behavior, walks the complete persisted publication chain, and verifies the canonical entity shape-evolution contract.
 - [codex-rs/hepta-memory/src/cognitive_store_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_store_tests.rs); reopen integrity includes fail-closed generation/publication receipt tamper cases plus the ignored child-process crash-window matrix.
-- [codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs); ignored PERF-LIBRARY probe reaches the 4,096-node/32,768-edge pilot fixture and emits mutation/query/reopen/storage/process measurements.
+- [codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs) and [codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs); ignored qualification probes cover the 4,096-node/32,768-edge logical fixture, compact-storage assertions, query work, concurrent readers/writer, reopen, long correction history and deletion non-resurrection.
 - [codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs); the named Agentd product profile exercises real App Server remember, restart/recall, correction and forget while checking persisted KG receipts and product-visible retrieval. The additional `qualification-cognitive-write` feature only attaches the qualification turn-witness seam; it is not the mutation authority.
 - [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs), [codex-rs/hepta-kg/src/prompt_factor_tests.rs](../../../codex-rs/hepta-kg/src/prompt_factor_tests.rs), and [codex-rs/hepta-prompt-optimizer/src/graph_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/graph_tests.rs) cover owner-bound relation admission, revocation/rebuild, V2 projection/query and graph-conflict enforcement in the read-only optimizer.
 
@@ -312,3 +313,36 @@ The bootstrap source-location obligation for `knowledge.graph` is implemented by
 - `codex-rs/hepta-kg`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The cross-owner cognitive integration additionally depends on the `codex-hepta-memory` oracle/store tests and the Agentd product qualification suite; prompt-factor composition additionally depends on prompt.registry, the prompt-factor adapter tests and prompt.optimizer graph-consumer tests. These are source/test identities until an exact-candidate run records a passing receipt. The default Agentd crate profile now selects the scoped cognitive writer and fails closed when its store is unavailable, while ordinary Codex/App Server remains default-off. This receipt grants no model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## Query closure candidate — 2026-09-27
+
+The durable writer still computes a complete bounded canonical generation per
+logical mutation. G14 storage is `revision_facts_v1`: immutable revision facts and
+generation receipts reconstruct each historical cut; new generations do not copy
+all `kg_nodes`/`kg_edges` rows. Storage compaction is not incremental computation.
+
+`VerifiedKnowledgeGenerationV2` validates an owned immutable generation once and
+indexes incident edges in original canonical order. The cognitive read adapter
+caches this view and the compact edge-support index once per scope/generation per
+owner SQLite transaction, across seeds and relation channels. It caches no
+cross-request authorization/currentness result. Temporal visibility is computed
+per query, and the persisted generation digest is checked on every seed use.
+
+The indexed path is compared against the independent full-scan selection path:
+complete request/result digests, edge order, selected supports and exact omission
+counts must agree. Unrelated edges are not scanned; only returned live supports
+are cloned. Exact omission counts still require visiting all incident matches.
+Validation and selection work counters distinguish one-time preparation from
+query work. Input seed/filter lengths are bounded by kernel limits; output-edge
+bounds do not imply a byte budget or a host-independent latency SLO.
+
+Generation validators reject duplicate `(source_id, source_revision)` supports,
+noncanonical node/edge order, digest drift and live dangling edges. Simultaneous
+revocation of an endpoint and its final edge support removes both atomically.
+
+See `qualification/knowledge-graph/QUERY_CLOSURE_20260927.md` for the candidate
+scope, executable checks, capacity layers, history probe and acceptance boundary.
+Source composition is not execution proof. All production/activation/acceptance
+claims remain false until exact-head and pinned-base candidate checks and the
+separate target-host/independent gates have succeeded.

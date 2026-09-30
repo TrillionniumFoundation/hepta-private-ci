@@ -10,9 +10,17 @@ name = "codex_hepta_kg"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+legacy-v1 = []
+fixture = ["legacy-v1"]
+
 [lints]
 workspace = true
 
 [dependencies]
 codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
 codex-hepta-types = { path = "../hepta-types" }
+
+[dev-dependencies]
+codex-hepta-prompt-registry = { path = "../hepta-prompt-registry", features = ["fixture"] }

@@ -2345,18 +2345,62 @@ async fn read_kg_sqlite_evidence(
         "SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
                 s.generation_sha256, s.publication_sha256,
                 r.entity_count, r.relation_count, r.node_count, r.edge_count,
-                (SELECT COUNT(*) FROM kg_nodes AS n
-                 WHERE n.projection_scope = r.projection_scope
-                   AND n.generation = r.generation
-                   AND n.memory_id = r.trigger_memory_id
-                   AND n.memory_revision = r.trigger_memory_revision
-                   AND n.source_id = ? AND n.source_revision = 1),
-                (SELECT COUNT(*) FROM kg_edges AS e
-                 WHERE e.projection_scope = r.projection_scope
-                   AND e.generation = r.generation
-                   AND e.memory_id = r.trigger_memory_id
-                   AND e.memory_revision = r.trigger_memory_revision
-                   AND e.source_id = ? AND e.source_revision = 1)
+                CASE WHEN EXISTS (
+                    SELECT 1 FROM kg_projection_generation_storage AS st
+                    WHERE st.projection_scope = r.projection_scope
+                      AND st.generation = r.generation
+                      AND st.storage_mode = 'revision_facts_v1'
+                ) THEN (
+                    SELECT COUNT(*)
+                    FROM kg_revision_entities AS e
+                    JOIN kg_projection_generation_receipts AS h
+                      ON h.projection_scope = r.projection_scope
+                     AND h.trigger_memory_id = e.memory_id
+                     AND h.trigger_memory_revision = e.memory_revision
+                     AND h.generation = (
+                         SELECT MAX(x.generation)
+                         FROM kg_projection_generation_receipts AS x
+                         WHERE x.projection_scope = r.projection_scope
+                           AND x.trigger_memory_id = e.memory_id
+                           AND x.generation <= r.generation
+                     )
+                    JOIN memory_revisions AS m
+                      ON m.memory_id = h.trigger_memory_id
+                     AND m.revision = h.trigger_memory_revision
+                    WHERE m.verification = 'verified' AND m.lifecycle = 'active'
+                ) ELSE (
+                    SELECT COUNT(*) FROM kg_nodes AS n
+                    WHERE n.projection_scope = r.projection_scope
+                      AND n.generation = r.generation
+                ) END,
+                CASE WHEN EXISTS (
+                    SELECT 1 FROM kg_projection_generation_storage AS st
+                    WHERE st.projection_scope = r.projection_scope
+                      AND st.generation = r.generation
+                      AND st.storage_mode = 'revision_facts_v1'
+                ) THEN (
+                    SELECT COUNT(*)
+                    FROM kg_revision_relations AS q
+                    JOIN kg_projection_generation_receipts AS h
+                      ON h.projection_scope = r.projection_scope
+                     AND h.trigger_memory_id = q.memory_id
+                     AND h.trigger_memory_revision = q.memory_revision
+                     AND h.generation = (
+                         SELECT MAX(x.generation)
+                         FROM kg_projection_generation_receipts AS x
+                         WHERE x.projection_scope = r.projection_scope
+                           AND x.trigger_memory_id = q.memory_id
+                           AND x.generation <= r.generation
+                     )
+                    JOIN memory_revisions AS m
+                      ON m.memory_id = h.trigger_memory_id
+                     AND m.revision = h.trigger_memory_revision
+                    WHERE m.verification = 'verified' AND m.lifecycle = 'active'
+                ) ELSE (
+                    SELECT COUNT(*) FROM kg_edges AS e
+                    WHERE e.projection_scope = r.projection_scope
+                      AND e.generation = r.generation
+                ) END
          FROM kg_projection_generation_receipts AS r
          JOIN kg_projection_generation_semantics AS s
            ON s.projection_scope = r.projection_scope AND s.generation = r.generation
@@ -2364,8 +2408,6 @@ async fn read_kg_sqlite_evidence(
            ON p.projection_scope = r.projection_scope AND p.generation = r.generation
          WHERE r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
     )
-    .bind(expected_source_id)
-    .bind(expected_source_id)
     .bind(memory_id)
     .bind(memory_revision)
     .fetch_one(&pool)

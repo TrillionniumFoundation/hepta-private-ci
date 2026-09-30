@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "50b70c8885c1f4db1ef0bd8036d47da8323e0126",
+    "tree": "fcf82be222fa3000b54519c81efeedfd8e9450f6"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -101,7 +101,8 @@
           "symbol": "qualification_knowledge_graph_capacity_receipt"
         },
         "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
-        "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs"
+        "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
+        "codex-rs/hepta-kg/src/query_closure_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "query_relations",
@@ -204,10 +205,11 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "50b70c8885c1f4db1ef0bd8036d47da8323e0126",
+    "tree": "fcf82be222fa3000b54519c81efeedfd8e9450f6"
   },
   "observedSourcePaths": [
+    ".github/workflows/hepta-kg-abc-execution.yml",
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
@@ -223,9 +225,19 @@
     "codex-rs/hepta-contracts/CALLERS.toml",
     "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
     "codex-rs/hepta-kg",
+    "codex-rs/hepta-kg/src/generation.rs",
+    "codex-rs/hepta-kg/src/generation_tests.rs",
+    "codex-rs/hepta-kg/src/indexed_query.rs",
+    "codex-rs/hepta-kg/src/prompt_factor.rs",
+    "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
+    "codex-rs/hepta-kg/src/query_closure_tests.rs",
+    "codex-rs/hepta-kg/tests/operation_measurement.rs",
+    "codex-rs/hepta-kg/tests/query_acceptance.rs",
+    "codex-rs/hepta-kg/tests/query_resource_contract.rs",
     "codex-rs/hepta-memory/Cargo.toml",
     "codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql",
     "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
     "codex-rs/hepta-memory/src/cognitive_model.rs",
@@ -233,13 +245,32 @@
     "codex-rs/hepta-memory/src/cognitive_store.rs",
     "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
     "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/hepta-memory/tests/kg_delivery_consistency.rs",
     "codex-rs/hepta-prompt-optimizer/Cargo.toml",
     "codex-rs/hepta-prompt-optimizer/src/graph.rs",
     "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
     "codex-rs/hepta-prompt-optimizer/src/lib.rs",
     "codex-rs/hepta-prompt-registry/Cargo.toml",
     "codex-rs/hepta-prompt-registry/src/lib.rs",
-    "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+    "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+    "docs/modules/knowledge.graph/ACCEPTANCE_EXTENSION_20260928.md",
+    "docs/modules/knowledge.graph/QUERY_BUDGET_20260928.md",
+    "docs/modules/knowledge.graph/TECHNICAL.md",
+    "qualification/knowledge-graph/EXECUTION_20260927.md",
+    "qualification/knowledge-graph/EXECUTION_POSTFLIGHT_20260927.md",
+    "qualification/knowledge-graph/QUERY_CLOSURE_20260927.md",
+    "qualification/knowledge-graph/TARGET_HOST.md",
+    "scripts/hepta-knowledge-graph-budget-check.py",
+    "scripts/hepta-knowledge-graph-target-measure.py",
+    "scripts/hepta_kg_contract_evidence.py",
+    "scripts/hepta_kg_current_candidate_runner.py",
+    "scripts/hepta_kg_evidence.py",
+    "scripts/hepta_kg_execution_audit.py",
+    "scripts/hepta_knowledge_graph_map_verify.py",
+    "scripts/test_hepta_kg_contract_evidence.py",
+    "scripts/test_hepta_kg_execution_audit.py",
+    "scripts/test_hepta_kg_measurement.py",
+    "scripts/test_hepta_knowledge_graph_budget.py"
   ],
   "productCallers": [
     {
@@ -255,32 +286,108 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-kg-abc-execution.yml",
+      "object": "f0bec14a99e5211a84198618c11e6d5ecc7a3acc"
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "object": "0d8501ec74aff1f9f5896d4436dce09d200e3d2d"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "cd6650b68a815d69038166b7de50c2857f358641"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "object": "61b143142015b17924d9f2804714fb9968b2e9a6"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "object": "9114a6184e7793e907cc316fa4327348e107d143"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
+      "object": "5e38587ea8d0a41e936f6d4e771abc151571981c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "object": "5d13cd8f355bab3ecb95f8c068517de200dd143f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "object": "b25375be9219be18baba2ab4d3488658d0040897"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/error.rs",
+      "object": "2b8c8a85bcae1d91bc3f10a6bf8b468dbf55abdf"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+    },
+    {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
-      "object": "3d6c567a32cb8486702690778f9afdb292a3bda0"
+      "object": "9ba23b710fdd1d78d984b77f938427c46b1cbe2d"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/CALLERS.toml",
+      "object": "e09190e6bd64e48ba254c5aa00cacbe8c86fb9c4"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
+      "object": "70254349e2cbb25597f4fdbca50e3e7ae001d94d"
     },
     {
       "path": "codex-rs/hepta-kg",
-      "object": "ba06adbdcdbd9f0994a702ec3285fdda63862ba6"
+      "object": "fa9b6edda0360061ca817db4ea264b31b14f87ac"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation.rs",
-      "object": "ee013b4cf115c3efd75ce3d67a6d042bbdb36142"
+      "object": "746d1daff7ca722ead8915cfc66cfcb1a9be47fe"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation_tests.rs",
-      "object": "312dd1134da0847337219f950e34dfb96b3c66aa"
+      "object": "602c24997709dea26c97f3b0053d48776b4c3516"
+    },
+    {
+      "path": "codex-rs/hepta-kg/src/indexed_query.rs",
+      "object": "06badb5f7245e11a28b77be21e4629ef8a7e98c5"
     },
     {
       "path": "codex-rs/hepta-kg/src/prompt_factor.rs",
-      "object": "7b2b4468dc1095a257d2d910569d12c9d282d420"
+      "object": "8c4fe003c073db9802697d5699cfa533aa03cd42"
     },
     {
       "path": "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
-      "object": "017fe5d9983a0e7a984948d66ac2c91a16b26279"
+      "object": "f02e99a7445bb28a96996cf99710b9d069fca86e"
+    },
+    {
+      "path": "codex-rs/hepta-kg/src/query_closure_tests.rs",
+      "object": "a7d164af232b6b13442c7e0fddd8522212968bfd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "object": "6ba04f39f78e7d6295c9922d279e37e0492180f2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0013_kg_generation_semantics.sql",
+      "object": "17fb37aafb2d8576a1d298b1ee6b43c29d94ebc1"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
-      "object": "cfb84c235e1c98a5b968db12009ef5d5e5e6d24c"
+      "object": "396a5683e0dc5362ca0cb781dcb71780f53ac93b"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_history_tests.rs",
+      "object": "80b04a7d809f369959323347258ed404a76018e4"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
@@ -291,24 +398,48 @@
       "object": "14702d68d7f9e5c25ac76d2605bdb958cecc0803"
     },
     {
+      "path": "codex-rs/hepta-memory/src/cognitive_model.rs",
+      "object": "38f87484a8e07da934ceb429ff73f9104d9241a0"
+    },
+    {
       "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
-      "object": "dfc79598fc33fef2a7c9228037d39179b05310ec"
+      "object": "9f40cb54988485eb7a754f876b218b4f9cc47a8d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "object": "b52e3a1aa275c178a075677f5df9faa832173b41"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "b5462745d335c2115144ddc161d242b3205fdc06"
+      "object": "1cea70562c9be88d7d0dd03b72d584af9490facc"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "object": "8d70d05e03095908d324be4bdac396ec681991b4"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+      "object": "0791a9538115df6058b98b34a6d4ede2e312ef59"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
-      "object": "ead1df5ef6ec164fdeb4815694a7fdf690b3ddc5"
+      "object": "1287b9ce3f2333725a9003719eeeabc142d4c5de"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/src/graph_tests.rs",
-      "object": "5092031531b4a035cefed0c55955c57abdb8fc4a"
+      "object": "35a6f33e92841c6ad97960e812dea9cd8cb5cb8a"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
+      "object": "7499644defef2a1ffea3659a693e32f0ccd374db"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/Cargo.toml",
+      "object": "1650d2238f53396da104641f5e91a2835c2164d6"
     },
     {
       "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
-      "object": "dcad4ab66bc88db8b7afc3a34fcab7946be9425f"
+      "object": "300124ba8c417bc8e8b819e9a8a1f27c3756b8cd"
     },
     {
       "path": "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
@@ -316,7 +447,59 @@
     },
     {
       "path": "docs/modules/knowledge.graph/TECHNICAL.md",
-      "object": "2e65ace60cd8f19c28b3b77605d7d5cbf7c75fbd"
+      "object": "b844a3512c4f294a303add19857cc99fbfdc9fdf"
+    },
+    {
+      "path": "qualification/knowledge-graph/EXECUTION_20260927.md",
+      "object": "4403c0d422b4a87f242cf905177586634be812db"
+    },
+    {
+      "path": "qualification/knowledge-graph/EXECUTION_POSTFLIGHT_20260927.md",
+      "object": "719586cb5b9727aaa1a09dce48f62352c187ed30"
+    },
+    {
+      "path": "qualification/knowledge-graph/QUERY_CLOSURE_20260927.md",
+      "object": "261d18a4c74335a074ad00500da6e5b02cbdaa9c"
+    },
+    {
+      "path": "qualification/knowledge-graph/TARGET_HOST.md",
+      "object": "a74ccb4f1f2efaa6e2f1d4d4eca862b7e3e2a528"
+    },
+    {
+      "path": "scripts/hepta-knowledge-graph-budget-check.py",
+      "object": "adcb895344d83193191080921dc51244f0cf9efd"
+    },
+    {
+      "path": "scripts/hepta-knowledge-graph-target-measure.py",
+      "object": "a4b820fb4abb49629951171bc53804dbf24f6497"
+    },
+    {
+      "path": "scripts/hepta_kg_current_candidate_runner.py",
+      "object": "e1fc2e2deb33a1eb5e595fb0e6fb4f4db9da54fb"
+    },
+    {
+      "path": "scripts/hepta_kg_evidence.py",
+      "object": "57f267d5e6f25571918d746a740d3bc2cc62e6b7"
+    },
+    {
+      "path": "scripts/hepta_kg_execution_audit.py",
+      "object": "825a7f2635e36a8fb4378e8cbca876a93de9efd5"
+    },
+    {
+      "path": "scripts/hepta_knowledge_graph_map_verify.py",
+      "object": "0fe3776232e373547d3f55ffb49477aa725196b8"
+    },
+    {
+      "path": "scripts/test_hepta_kg_execution_audit.py",
+      "object": "b7eb3cff04504b6bd22ebfacf8c81429682f847a"
+    },
+    {
+      "path": "scripts/test_hepta_kg_measurement.py",
+      "object": "070fd11c4c93ae45d59b8f1742debe8ffd86c3d4"
+    },
+    {
+      "path": "scripts/test_hepta_knowledge_graph_budget.py",
+      "object": "1d21fa453788950e57a6f7aa95a55c1640231bb7"
     }
   ]
 }

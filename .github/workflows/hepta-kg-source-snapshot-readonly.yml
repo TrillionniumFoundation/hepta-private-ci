@@ -1,0 +1,204 @@
+name: knowledge.graph read-only development verification
+
+on:
+  push:
+    branches:
+      - work/kg-abc-evidence-hardening-20260928
+    paths:
+      - ".github/workflows/hepta-kg-source-snapshot-readonly.yml"
+      - "codex-rs/hepta-kg/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - "docs/modules/knowledge.graph/**"
+      - "qualification/knowledge-graph/**"
+      - "qualification/module-execution-dossiers/detail/knowledge.graph.md"
+      - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta_knowledge_graph_map_verify.py"
+      - "scripts/hepta_kg_documentation_sync.py"
+      - "scripts/hepta_kg_status.py"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kg-readonly-development-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind immutable source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+          artifact_dir="$RUNNER_TEMP/kg-development-artifact"
+          mkdir -p "$artifact_dir"
+          printf 'source_sha=%s\nsource_tree=%s\n' \
+            "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" \
+            | tee "$artifact_dir/source-identity.txt"
+
+      - name: Preserve exact tracked development source
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact_dir="$RUNNER_TEMP/kg-development-artifact"
+          git archive --format=tar.gz \
+            --output="$artifact_dir/kg-tracked-source.tar.gz" \
+            HEAD -- \
+            .github/kg-run-finalize.sh \
+            .github/workflows/hepta-kg-abc-execution.yml \
+            .github/workflows/hepta-knowledge-graph-qualification.yml \
+            .github/workflows/hepta-kg-remaining-four-closure.yml \
+            .github/workflows/hepta-kg-source-snapshot-readonly.yml \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/rust-toolchain.toml \
+            codex-rs/hepta-kg \
+            codex-rs/hepta-memory \
+            codex-rs/hepta-types \
+            codex-rs/hepta-contracts \
+            codex-rs/hepta-prompt-registry \
+            codex-rs/hepta-prompt-optimizer \
+            codex-rs/hepta-agentd \
+            docs/modules/knowledge.graph \
+            qualification/knowledge-graph \
+            qualification/module-execution-dossiers/detail/knowledge.graph.md \
+            scripts
+          sha256sum "$artifact_dir/kg-tracked-source.tar.gz" \
+            > "$artifact_dir/kg-tracked-source.sha256"
+
+      - name: Check patch cleanliness
+        shell: bash
+        run: git diff --check
+
+      - name: Check KG-owned Rust formatting and preserve exact diagnostics
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact_dir="$RUNNER_TEMP/kg-development-artifact"
+          if cargo fmt --all -- --check; then
+            printf 'rustfmt_status=clean\n' > "$artifact_dir/rustfmt-status.txt"
+            exit 0
+          fi
+
+          cargo fmt --all
+          git -C .. diff --binary -- . > "$artifact_dir/rustfmt.patch"
+          git -C .. diff --name-only -- . > "$artifact_dir/rustfmt-paths.txt"
+          while IFS= read -r path; do
+            test -n "$path" || continue
+            mkdir -p "$artifact_dir/formatted/$(dirname "$path")"
+            cp "../$path" "$artifact_dir/formatted/$path"
+          done < "$artifact_dir/rustfmt-paths.txt"
+          tar -C "$artifact_dir" -czf "$artifact_dir/rustfmt-files.tar.gz" formatted
+          printf 'rustfmt_status=dirty\n' > "$artifact_dir/rustfmt-status.txt"
+          git -C .. reset --hard "$GITHUB_SHA"
+          exit 1
+
+      - name: Check exact metadata and preserve deterministic regeneration
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact_dir="$RUNNER_TEMP/kg-development-artifact"
+          metadata_log="$artifact_dir/metadata-checks.log"
+          failures=0
+          run_check() {
+            printf '== %s ==\n' "$1" | tee -a "$metadata_log"
+            shift
+            if "$@" 2>&1 | tee -a "$metadata_log"; then
+              printf 'PASS\n' | tee -a "$metadata_log"
+            else
+              failures=$((failures + 1))
+              printf 'FAIL\n' | tee -a "$metadata_log"
+            fi
+          }
+
+          run_check split_status python3 scripts/hepta_kg_status.py --check
+          run_check documentation_sync python3 scripts/hepta_kg_documentation_sync.py --check
+          run_check implementation_map python3 scripts/hepta_knowledge_graph_map_verify.py \
+            --expected-sha "$(git rev-parse HEAD)" \
+            --expected-tree "$(git rev-parse HEAD^{tree})"
+
+          if [[ "$failures" -eq 0 ]]; then
+            printf 'metadata_status=clean\n' > "$artifact_dir/metadata-status.txt"
+            exit 0
+          fi
+
+          python3 scripts/hepta-implementation-maps.py migrate --module knowledge.graph
+          python3 scripts/hepta_kg_documentation_sync.py --apply
+          python3 scripts/hepta_kg_status.py --apply
+          git diff --binary -- \
+            docs/modules/knowledge.graph \
+            qualification/knowledge-graph \
+            qualification/module-execution-dossiers/detail/knowledge.graph.md \
+            > "$artifact_dir/metadata.patch"
+          git diff --name-only -- \
+            docs/modules/knowledge.graph \
+            qualification/knowledge-graph \
+            qualification/module-execution-dossiers/detail/knowledge.graph.md \
+            > "$artifact_dir/metadata-paths.txt"
+          while IFS= read -r path; do
+            test -n "$path" || continue
+            mkdir -p "$artifact_dir/generated/$(dirname "$path")"
+            cp "$path" "$artifact_dir/generated/$path"
+          done < "$artifact_dir/metadata-paths.txt"
+          tar -C "$artifact_dir" -czf "$artifact_dir/metadata-files.tar.gz" generated
+          printf 'metadata_status=dirty\n' > "$artifact_dir/metadata-status.txt"
+          git reset --hard "$GITHUB_SHA"
+          exit 1
+
+      - name: Check KG package and all targets
+        working-directory: codex-rs
+        shell: bash
+        run: cargo check --locked -p codex-hepta-kg --all-targets
+
+      - name: Run strict KG Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: cargo clippy --locked -p codex-hepta-kg --all-targets -- -D warnings
+
+      - name: Run KG package tests
+        working-directory: codex-rs
+        shell: bash
+        run: cargo test --locked -p codex-hepta-kg
+
+      - name: Run prompt-factor graph tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          cargo test --locked -p codex-hepta-prompt-registry
+          cargo test --locked -p codex-hepta-prompt-optimizer graph
+
+      - name: Prove clean tracked state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Upload immutable development evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kg-development-evidence-${{ github.sha }}
+          path: ${{ runner.temp }}/kg-development-artifact
+          if-no-files-found: error
+          retention-days: 1

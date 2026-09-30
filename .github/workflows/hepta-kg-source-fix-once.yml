@@ -1,0 +1,113 @@
+name: Hepta knowledge.graph one-shot ordinary source fix
+
+on:
+  push:
+    branches:
+      - work/kg-abc-evidence-hardening-20260928
+    paths:
+      - .github/workflows/hepta-kg-source-fix-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hepta-kg-source-fix-once-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install repository Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          channel="$(sed -n 's/^channel *= *"\([^"]*\)".*/\1/p' codex-rs/rust-toolchain.toml)"
+          test -n "$channel"
+          rustup toolchain install "$channel" --profile minimal --component rustfmt --component clippy
+          rustup override set "$channel"
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+
+      - name: Materialize reviewed source fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              if text.count(old) != 1:
+                  raise SystemExit(f"expected exactly one source match in {path!r}")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "codex-rs/hepta-kg/src/local_incremental/tests/scale.rs",
+              "assert_eq!(prepared.work.predecessor_nodes_read, 0);",
+              "assert_eq!(prepared.work.predecessor_nodes_read, 1);",
+          )
+          replace_once(
+              "codex-rs/hepta-memory/src/cognitive_kg_prepared.rs",
+              ".parse()\n            .map_err(CognitiveStoreError::Corrupt)?;",
+              ".parse()\n            .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;",
+          )
+          replace_once(
+              "codex-rs/hepta-kg/src/local_incremental/commitment.rs",
+              "const MAX_DEPTH: usize = 512;\n",
+              "const MAX_DEPTH: usize = 512;\n\ntype LocalTreapSplitV3 = (\n    Option<Arc<LocalTreapNodeV3>>,\n    Option<Arc<LocalTreapNodeV3>>,\n);\n",
+          )
+          replace_once(
+              "codex-rs/hepta-kg/src/local_incremental/commitment.rs",
+              ") -> Result<\n    (Option<Arc<LocalTreapNodeV3>>, Option<Arc<LocalTreapNodeV3>>),\n    KnowledgeLocalIncrementalErrorV3,\n> {",
+              ") -> Result<LocalTreapSplitV3, KnowledgeLocalIncrementalErrorV3> {",
+          )
+          replace_once(
+              "codex-rs/hepta-kg/src/local_incremental/state/apply.rs",
+              "use crate::local_incremental::state::prepare::resulting_node_count;\n",
+              "use crate::local_incremental::state::prepare::resulting_node_count;\n\ntype SimulatedTreeDeltaV3 = (\n    Option<Arc<LocalTreapNodeV3>>,\n    BTreeMap<[u8; 32], Option<LocalEntryIdentityV3>>,\n    KnowledgeLocalMutationWorkV3,\n);\n",
+          )
+          replace_once(
+              "codex-rs/hepta-kg/src/local_incremental/state/apply.rs",
+              "    ) -> Result<\n        (\n            Option<Arc<LocalTreapNodeV3>>,\n            BTreeMap<[u8; 32], Option<LocalEntryIdentityV3>>,\n            KnowledgeLocalMutationWorkV3,\n        ),\n        KnowledgeLocalIncrementalErrorV3,\n    > {",
+              "    ) -> Result<SimulatedTreeDeltaV3, KnowledgeLocalIncrementalErrorV3> {",
+          )
+          replace_once(
+              ".github/workflows/hepta-kg-abc-execution.yml",
+              "            printf 'lane=%s\\nprofile=%s\\n' '${{ matrix.lane }}' '${{ matrix.profile }}'\n            git rev-parse HEAD HEAD^{tree}\n            git rev-list --parents -n 1 HEAD\n",
+              "            git rev-parse HEAD HEAD^{tree}\n",
+          )
+          PY
+
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+
+      - name: Run focused source preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all --check
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-kg --lib
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-kg --all-targets -- -D warnings
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-memory --lib
+          python3 -m unittest scripts/test_hepta_kg_execution_audit.py
+
+      - name: Commit ordinary source and remove authoring workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/hepta-kg-source-fix-once.yml
+          git diff --check
+          git config user.name "ChatGPT"
+          git config user.email "noreply@openai.com"
+          git add -A
+          test -n "$(git diff --cached --name-only)"
+          git commit -s -m "fix(knowledge.graph): close source and execution gates"
+          git push origin HEAD:work/kg-abc-evidence-hardening-20260928
