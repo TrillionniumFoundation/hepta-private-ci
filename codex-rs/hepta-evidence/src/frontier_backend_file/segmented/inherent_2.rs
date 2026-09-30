@@ -4,6 +4,7 @@ impl SegmentedFileEvidenceFrontierBackend {
         paths: &StorePaths,
         store_id: &str,
     ) -> Result<Option<EvidenceRecoveryFrontierV2>, EvidenceFrontierBackendError> {
+        let _active_length = self.current_active_length(paths)?;
         let mut active = self.open_active_existing(paths)?;
         if let Some(file) = active.as_ref() {
             file.lock_shared().map_err(unavailable)?;
