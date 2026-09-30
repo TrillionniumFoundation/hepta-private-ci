@@ -1,0 +1,42 @@
+name: prompt.registry exact-head source snapshot
+
+on:
+  push:
+    branches:
+      - codex/prompt-registry-source-snapshot-20260930
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact pushed head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify exact identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git status --porcelain=v1 --untracked-files=all | test ! -s /dev/stdin
+      - name: Package checked-out repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar --exclude='./target' --exclude='./codex-rs/target' -czf /tmp/hepta-private-ci-exact-head.tgz .
+          sha256sum /tmp/hepta-private-ci-exact-head.tgz | tee /tmp/hepta-private-ci-exact-head.tgz.sha256
+      - name: Upload exact-head snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: prompt-registry-exact-head-source-${{ github.sha }}
+          path: |
+            /tmp/hepta-private-ci-exact-head.tgz
+            /tmp/hepta-private-ci-exact-head.tgz.sha256
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
