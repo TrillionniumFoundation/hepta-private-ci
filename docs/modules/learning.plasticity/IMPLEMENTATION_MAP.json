@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "d848329396f7f3dfcb25902bf90865d1b67060f0",
+    "tree": "5b4dc9b3adadc838124b071c2b7e600bcbb5bac7"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "learning.plasticity",
@@ -42,7 +42,8 @@
       "state": "source_implemented_product_and_agentd_host_composed_not_target_host_qualified",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-plasticity/src/lib_tests.rs::read_validation_rejects_tampered_metrics_digest_and_profile"
+        "codex-rs/hepta-plasticity/src/lib_tests.rs::read_validation_rejects_tampered_metrics_digest_and_profile",
+        "codex-rs/hepta-plasticity/src/lib_tests.rs::parameter_verifier_rejects_norm_capacity_before_layer_validation"
       ],
       "sourcePathExists": true,
       "designOperation": "verify_parameter_proposal_v2",
@@ -56,7 +57,8 @@
       "state": "source_implemented_agentd_host_composed_not_target_host_qualified",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-plasticity/src/generator_v3.rs::tests::generator_is_deterministic_complete_and_content_identified"
+        "codex-rs/hepta-plasticity/src/generator_v3.rs::tests::generator_is_deterministic_complete_and_content_identified",
+        "codex-rs/hepta-plasticity/src/generator_v3.rs::tests::generator_authorizes_the_maximum_bounded_signal_set"
       ],
       "sourcePathExists": true,
       "designOperation": "generate_parameter_candidates_v3",
@@ -113,7 +115,8 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::append_reopen_and_anchor_preserve_exact_record",
-        "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state"
+        "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state",
+        "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::resume_repairs_every_exact_partial_enrollment_header"
       ],
       "sourcePathExists": true,
       "designOperation": "durableproposalregistry",
@@ -173,7 +176,8 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs::tests::protected_surface_fails_closed",
-        "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs::tests::canonical_mutation_grammar_digest_is_mandatory_and_bound"
+        "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs::tests::canonical_mutation_grammar_digest_is_mandatory_and_bound",
+        "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs::tests::authorization_rejects_inverted_request_bounds_inside_the_allowlist"
       ],
       "sourcePathExists": true,
       "designOperation": "parameter_mutation_policy",
@@ -225,7 +229,10 @@
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_queue_capacity_is_bounded",
-        "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
+        "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_clock_tests.rs::parameter_owner_receipt_that_expires_during_preparation_cannot_be_appended",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_clock_tests.rs::parameter_signature_that_expires_during_preparation_cannot_be_appended",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_clock_tests.rs::final_clock_failure_or_regression_rejects_without_durable_effects"
       ],
       "sourcePathExists": true,
       "designOperation": "agentd_plasticity_runtime_owner",
@@ -510,7 +517,9 @@
         "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::any_safety_violation_aborts_terminally",
         "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::receipt_binds_the_full_plan_and_observation_history",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs::pls3_governed_topology_persists_then_accepts_bounded_canary",
-        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs::pls3_safety_violation_aborts_after_durable_admission"
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs::pls3_safety_violation_aborts_after_durable_admission",
+        "codex-rs/hepta-plasticity/src/topology_alternative_tests.rs::canary_plan_and_receipts_bind_the_registry_scope_and_writer_generation",
+        "codex-rs/hepta-plasticity/src/topology_alternative_tests.rs::canary_cumulative_regressions_cannot_decrease_or_advance_rejected_observation"
       ],
       "sourcePathExists": true,
       "designOperation": "structural_canary_controller",
@@ -571,7 +580,8 @@
       "state": "source_implemented_external_recovery_final_use_exact_handoff_migration_owner_and_stopped_quarantined_forward_recovery_not_target_host_qualified",
       "authority": "external_recovery_final_use_required",
       "tests": [
-        "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics"
+        "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics",
+        "codex-rs/hepta-runtime/src/organs_tests.rs::same_module_alternative_uses_exact_nonfirst_handoff_for_apply_and_fault_recovery"
       ],
       "sourcePathExists": true,
       "designOperation": "runtime_topology_recovery",
@@ -660,15 +670,15 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs",
-      "object": "cb2c3ae9bbb75c067c7745e82c33cded0e241baa"
+      "object": "cd30bcc5f9884f88dabbbc4d0b646ca674c055ed"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_host.rs",
-      "object": "085d85fde32b89d59eb3169d8d8f6e7f005c2ac5"
+      "object": "2fd070240e9471af07ed5e9fcf4eca46fe095dfb"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
-      "object": "507dc9a4e89399a3a67dc48c8f8b12f2a1a46a67"
+      "object": "2069def4c4587dd8b517b41d4fbff2784237256d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
@@ -680,19 +690,23 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
-      "object": "d1c57448d9c344171ae85d0abe888fe990e7a021"
+      "object": "795654ad1c234307f24669e7f32e5ca62fd3ceff"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_runtime_clock_tests.rs",
+      "object": "f0a61038416b013ed2bb3249ff2690ae89bbdc8f"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs",
-      "object": "6fb6e22b86638b60871696a691db12baf16a1347"
+      "object": "5dd8b49de3806ca3cb12be381f8bbf9a6812d080"
     },
     {
       "path": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
-      "object": "a21aeb28e95cfaf19c1440ee4f32584f07c6ce36"
+      "object": "471612f72636830a7a3e085d64601c9a2059f31a"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
-      "object": "8b7a329216db2cd56d3c104214414dc0ffc61c47"
+      "object": "4c29bd344b7727be19dcd76d419f0278fdd489eb"
     },
     {
       "path": "codex-rs/hepta-contracts",
@@ -712,7 +726,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "object": "128016bddabb5bdb6a0262d07c7b9327ffb7a8ee"
+      "object": "1e938afa500cd5dd9c6ba1d512a31df1dadfd900"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
@@ -724,7 +738,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/topology_product.rs",
-      "object": "e4d71ed863344823e5dcf4522375ad4cf1f1dd38"
+      "object": "0c50357e0f3015cb70b5472189d18500a624ceaf"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
@@ -732,11 +746,11 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger",
-      "object": "e0413c9f6eecfd1665bafb7a1673c9726a9f71fa"
+      "object": "a895efbe7bc10e348b9f3ba1a9ef1a75fd5c46a0"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/signed_evidence_tests.rs",
-      "object": "de3f456a9efd19a928924f94dcf0a9811e87d9c8"
+      "object": "0032e732b73bed881f8aebbaf0bd17299fe33848"
     },
     {
       "path": "codex-rs/hepta-ndu",
@@ -748,47 +762,51 @@
     },
     {
       "path": "codex-rs/hepta-plasticity",
-      "object": "3fed6654770ebd7d81ee9605eab4854eb5354702"
+      "object": "751d468f0bc7a7056077407a0dff35b29c20e088"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/durable_registry.rs",
-      "object": "867fc7ee755b11819566afc369a03bc88d47023a"
+      "object": "0a91bb605bc6213abdaf0574a85ed4982d705bf9"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/durable_registry_tests.rs",
-      "object": "4e7db94da274ccb1b73bddec399c96485f2df58e"
+      "object": "0c46b15ae9a45d364eca314482bf2817319a7a91"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/generator_v3.rs",
-      "object": "c201c954f302cc21fd82ae265cbf012debd57902"
+      "object": "4ea22a5d63a76b94936969443a66cf28149e9f45"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/lib_tests.rs",
-      "object": "4d70719a24b10a088273dcb65e41e9f8f9293860"
+      "object": "8e75b610cb4a9650e27eb3cef7fa61595958f880"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs",
-      "object": "faedfdd2e5ebe46e0227fb0cdd3b8b52a652b32a"
+      "object": "20624a464eff9de71ea0f2c3e35e597b7a5f50f2"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/parameter_v2.rs",
-      "object": "bfbfc27f8f4210ced8eee4210c6120e7cb8a2d00"
+      "object": "f567f4ab60f687848876c75805fd1a90dd6b6412"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/topology_alternative_tests.rs",
+      "object": "d804f3ea61c49d2ec84f63f6c15d72ba4014c410"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/topology_canary.rs",
-      "object": "b7f02f34ff58006ba4e73afcf400c1cb27ed0d4e"
+      "object": "331db9f5d8c7344ad4649f6f4021ad85cba834d2"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/topology_governance.rs",
-      "object": "67293895c1de5d3edac98afcd1b8835317e3f656"
+      "object": "286edbd536cd6b4f6e78056d91d5ef5c9c18288b"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/topology_registry.rs",
-      "object": "2c2de97583e2924b500edcb63b2e3b020165f81a"
+      "object": "eb94dfcb99d0554d29c74573435acafe1c43ab74"
     },
     {
       "path": "codex-rs/hepta-plasticity/src/topology_v2.rs",
-      "object": "07f89aed5d9c0162ed29f4b5feae6798883db6e2"
+      "object": "6f897c12ca2782dce2b80060deafd31c14cf3be3"
     },
     {
       "path": "codex-rs/hepta-runtime/src/lib.rs",
@@ -796,11 +814,11 @@
     },
     {
       "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
-      "object": "8d9b121c9e3c703c8ebd0412ca7487b3748c441b"
+      "object": "b96f5ac5a69da201aabdc5d3b0426b826c2352c4"
     },
     {
       "path": "docs/modules/learning.plasticity/TECHNICAL.md",
-      "object": "9c3376c89cca430ad6e1a7a232b281cd5a168835"
+      "object": "000b6746d93917c616a78007c6c5dd59e60bc0d4"
     },
     {
       "path": "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs",

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "d848329396f7f3dfcb25902bf90865d1b67060f0",
+    "tree": "5b4dc9b3adadc838124b071c2b7e600bcbb5bac7"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -231,8 +231,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "d848329396f7f3dfcb25902bf90865d1b67060f0",
+    "tree": "5b4dc9b3adadc838124b071c2b7e600bcbb5bac7"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -361,6 +361,40 @@
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
       "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+    }
+  ],
+  "priorNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "reason": "Retained historical navigation only: this pre-merge branch commit is not an ancestor of the audited main candidate; it does not qualify current source or execution. Current navigation is explicitly rebound below.",
+      "reviewRecord": "docs/modules/learning.plasticity/ADVERSARIAL_AUDIT_20260930.md",
+      "observedAtHead": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "observedSourcePaths": [
+        "CALLERS.toml",
+        "codex-rs/Cargo.lock",
+        "codex-rs/Cargo.toml",
+        "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
+        "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "codex-rs/hepta-agent-protocol",
+        "codex-rs/hepta-agentd/src/automation.rs",
+        "codex-rs/hepta-agentd/src/automation_recovery.rs",
+        "codex-rs/hepta-agentd/src/client.rs",
+        "codex-rs/hepta-agentd/src/lib.rs",
+        "codex-rs/hepta-agentd/src/runtime.rs",
+        "codex-rs/hepta-agentd/src/runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/state_control.rs",
+        "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+        "codex-rs/hepta-automation",
+        "codex-rs/hepta-contracts",
+        "codex-rs/hepta-operations",
+        "codex-rs/hepta-types"
+      ]
     }
   ]
 }
