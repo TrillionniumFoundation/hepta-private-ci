@@ -75,7 +75,7 @@ fn candidate() -> QualifiedCompactionCandidateV2 {
     .expect("valid candidate")
 }
 
-fn trust(binding: &CompactionSourceAuthorityBindingV1) -> LearningEvidenceTrustV1 {
+pub(crate) fn trust(binding: &CompactionSourceAuthorityBindingV1) -> LearningEvidenceTrustV1 {
     let signer = |name: &str, controller: &str, seed, role| {
         let verifying_key = SigningKey::from_bytes(&[seed; 32])
             .verifying_key()
@@ -143,7 +143,10 @@ fn signed(
     signed
 }
 
-fn evidence(verifier: &LearningEvidenceVerifierV1, payload: &[u8]) -> SignedCompactionEvidenceV1 {
+pub(crate) fn evidence(
+    verifier: &LearningEvidenceVerifierV1,
+    payload: &[u8],
+) -> SignedCompactionEvidenceV1 {
     SignedCompactionEvidenceV1 {
         generator: signed(
             verifier,
@@ -162,15 +165,15 @@ fn evidence(verifier: &LearningEvidenceVerifierV1, payload: &[u8]) -> SignedComp
     }
 }
 
-struct Fixture {
-    candidate: QualifiedCompactionCandidateV2,
-    binding: CompactionSourceAuthorityBindingV1,
-    qualification: CompactionQualificationV2,
-    verifier: LearningEvidenceVerifierV1,
-    evidence: SignedCompactionEvidenceV1,
+pub(crate) struct Fixture {
+    pub(crate) candidate: QualifiedCompactionCandidateV2,
+    pub(crate) binding: CompactionSourceAuthorityBindingV1,
+    pub(crate) qualification: CompactionQualificationV2,
+    pub(crate) verifier: LearningEvidenceVerifierV1,
+    pub(crate) evidence: SignedCompactionEvidenceV1,
 }
 
-fn fixture() -> Fixture {
+pub(crate) fn fixture() -> Fixture {
     let candidate = candidate();
     let binding = CompactionSourceAuthorityBindingV1 {
         source_cut_digest: digest("owner-source-cut"),

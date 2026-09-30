@@ -336,4 +336,4 @@ impl From<SignedEvidenceError> for AuthenticatedCompactionError {
 
 #[cfg(test)]
 #[path = "authenticated_tests.rs"]
-mod tests;
+pub(crate) mod tests;
