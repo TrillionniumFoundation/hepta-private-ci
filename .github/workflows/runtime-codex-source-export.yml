@@ -27,7 +27,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Export immutable source snapshot
+      - name: Export immutable runtime.codex source snapshot
         env:
           EXPECTED_SHA: ${{ github.sha }}
         shell: bash
@@ -35,9 +35,29 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test -z "$(git status --porcelain=v1)"
+          paths="$RUNNER_TEMP/runtime-codex-source-paths.txt"
+          git ls-files \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            rust-toolchain.toml \
+            codex-rs/hepta-agent-protocol \
+            codex-rs/hepta-agentd \
+            codex-rs/hepta-infer-core \
+            codex-rs/hepta-infer-worker-host \
+            docs/modules/runtime.codex \
+            'scripts/runtime-codex-*' \
+            scripts/check-runtime-codex-fault-matrix.py \
+            scripts/hepta-lane-b-truth.py \
+            '.github/workflows/runtime-codex-*' \
+            .github/actions/setup-ci \
+            .github/actions/setup-rusty-v8 \
+            qualification/runtime-codex-materialize-debug \
+            | sort -u > "$paths"
+          test -s "$paths"
           archive="$RUNNER_TEMP/runtime-codex-source-$EXPECTED_SHA.tar.gz"
-          tar --exclude=.git --exclude=.hepta-evidence --exclude=.hepta-diagnostics -czf "$archive" .
+          tar -czf "$archive" -T "$paths"
           sha256sum "$archive" > "$archive.sha256"
+          cp "$paths" "$archive.paths"
           printf 'archive=%s\n' "$archive" >> "$GITHUB_ENV"
 
       - name: Retain exact source snapshot
@@ -47,5 +67,6 @@ jobs:
           path: |
             ${{ env.archive }}
             ${{ env.archive }}.sha256
+            ${{ env.archive }}.paths
           if-no-files-found: error
           retention-days: 1
