@@ -11,12 +11,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: memory-federation-source-export-20260930-${{ github.sha }}
-  cancel-in-progress: false
+  group: memory-federation-source-export-20260930
+  cancel-in-progress: true
 
 jobs:
   export:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - name: Check out exact source
