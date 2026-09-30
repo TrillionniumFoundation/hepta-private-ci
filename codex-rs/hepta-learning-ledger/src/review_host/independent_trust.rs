@@ -40,6 +40,19 @@ pub(super) struct IndependentTrustConfig {
     pub authority_epoch: u64,
     pub valid_from: u64,
     pub expires_at: u64,
+    #[serde(default)]
+    pub independent_reviewer: Option<IndependentReviewerConfig>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct IndependentReviewerConfig {
+    pub public_key_path: PathBuf,
+    pub program_path: PathBuf,
+    pub program_digest: String,
+    pub uid: u32,
+    pub gid: u32,
+    pub publication_directory: PathBuf,
 }
 pub(super) struct IndependentTrust {
     pub config: IndependentTrustConfig,
@@ -53,6 +66,8 @@ pub(super) struct IndependentTrust {
     pub evaluator_program: Digest32,
     pub generator_controller: StableId,
     pub evaluator_controller: StableId,
+    pub root: LearningTrustRootV1,
+    pub distribution: SignedLearningTrustDistributionV1,
     keys: [SigningKey; 2],
 }
 impl IndependentTrust {
@@ -155,6 +170,46 @@ impl IndependentTrust {
                 revoked_at: None,
             });
         }
+        if let Some(reviewer) = &config.independent_reviewer {
+            if reviewer.uid == 0
+                || reviewer.uid == config.generator_uid
+                || reviewer.gid == 0
+                || program_digest(&reviewer.program_path)?
+                    != reviewer.program_digest.parse::<Digest32>()?
+            {
+                return Err("independent reviewer UID/program binding".into());
+            }
+            let reviewer_program: Digest32 = reviewer.program_digest.parse()?;
+            if reviewer_program == evaluator_program || reviewer_program == generator_program {
+                return Err("reviewer must execute a distinct fixed program".into());
+            }
+            let public: [u8; 32] = read_root(&reviewer.public_key_path, 32, Access::Immutable)?
+                .try_into()
+                .map_err(|_| "reviewer public key width")?;
+            let controller=StableId::new(format!("fixed-no-custody-reviewer.{}",Digest32::of_bytes(&[reviewer_program.as_array().as_slice(),reviewer.uid.to_be_bytes().as_slice(),reviewer.gid.to_be_bytes().as_slice(),launcher.as_array(),manager.as_array(),b"no-sudo;no-caps;no-groups;no-new-privileges;read-only-anchored-cut;denied-gold-and-other-keys"].concat())))?;
+            signers.push(TrustedLearningSignerV1 {
+                principal: AuthenticatedPrincipalV1 {
+                    principal_id: StableId::new("fixed-no-custody-reviewer")?,
+                    credential_chain_digest: Digest32::of_bytes(
+                        &[
+                            root_key.verifying_key().as_bytes().as_slice(),
+                            public.as_slice(),
+                            controller.as_str().as_bytes(),
+                        ]
+                        .concat(),
+                    ),
+                    signing_key_digest: Digest32::of_bytes(&public),
+                    scope_digest: scope,
+                    authority_epoch: config.authority_epoch,
+                    authenticated_at: config.valid_from,
+                    expires_at: config.expires_at,
+                },
+                controller_id: controller,
+                verifying_key: public,
+                roles: vec![LearningEvidenceRoleV1::Evaluator],
+                revoked_at: None,
+            });
+        }
         let root = LearningTrustRootV1 {
             root_id: StableId::new("fixed-custody-learning-root")?,
             scope_digest: scope,
@@ -181,8 +236,10 @@ impl IndependentTrust {
             signature: [0; 64],
         };
         distribution.signature = root_key.sign(&distribution.signing_bytes()?).to_bytes();
-        let activated = activate_learning_trust(&root, distribution, None, now)?;
+        let activated = activate_learning_trust(&root, distribution.clone(), None, now)?;
         Ok(Self {
+            root,
+            distribution,
             config,
             config_digest,
             activated,

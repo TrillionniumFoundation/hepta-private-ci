@@ -10,6 +10,13 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+mod calibration_preflight;
+pub use calibration_preflight::CalibrationPreflightDispositionV1;
+pub use calibration_preflight::CalibrationPreflightError;
+pub use calibration_preflight::SignedCalibrationPreflightDecisionV1;
+pub use calibration_preflight::SignedCalibrationPreflightRequestV1;
+pub use calibration_preflight::calibration_preflight_signing_payload_v1;
+pub use calibration_preflight::decide_with_signed_calibration_preflight_v1;
 mod closure;
 mod durable_holdout;
 mod fenced_holdout;
@@ -381,3 +388,10 @@ pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
 #[cfg(test)]
 #[path = "signed_qualification_e2e_tests.rs"]
 mod signed_qualification_e2e_tests;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_calibration_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_host::initialize_fixed_evaluator_key;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_host::run_fixed_calibration_evaluator;

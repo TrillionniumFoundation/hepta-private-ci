@@ -11,7 +11,16 @@ mod independent;
 mod independent_trust;
 mod native_generator;
 mod observations;
+mod transfer;
 mod trust;
+pub use generator_wire::PrincipalWire;
+pub use transfer::FixedCalibrationCutV1;
+pub use transfer::FixedCalibrationPublicationV1;
+pub use transfer::ReviewDatasetWireV1;
+pub use transfer::ReviewEvidenceWireV1;
+pub use transfer::ReviewSignerWireV1;
+pub use transfer::ReviewTrustWireV1;
+pub use transfer::decode_review_payload_hex;
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -416,4 +425,13 @@ pub fn initialize_native_generator_key(path: &Path, uid: u32) -> ReviewResult<()
 }
 pub fn run_fixed_custody_evaluator(request: &Path) -> ReviewResult<()> {
     independent::run(request)
+}
+
+/// Open an immutable root-owned review input for a read-only consumer.
+pub fn open_root_review_input(path: &Path) -> ReviewResult<std::fs::File> {
+    files::root_file(path, Access::Immutable)
+}
+/// Read a bounded immutable root-owned review input.
+pub fn read_root_review_input(path: &Path, maximum: u64) -> ReviewResult<Vec<u8>> {
+    files::read_root(path, maximum, Access::Immutable)
 }

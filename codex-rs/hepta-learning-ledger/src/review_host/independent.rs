@@ -422,6 +422,89 @@ pub(super) fn run(path: &Path) -> ReviewResult<()> {
     )?;
     let dataset = writer.freeze_dataset(plan, &evidence, now_ms()?)?;
     verify_dataset_snapshot_receipt_against_ledger_v3(&dataset, &snapshot, now_ms()?)?;
+    if let Some(reviewer) = &trust.config.independent_reviewer {
+        use super::generator_wire::encode_hex;
+        use super::transfer::FixedCalibrationCutV1;
+        use super::transfer::FixedCalibrationPublicationV1;
+        use super::transfer::ReviewDatasetWireV1;
+        use super::transfer::ReviewEvidenceWireV1;
+        use super::transfer::ReviewTrustWireV1;
+        let row = &batch.rows[0];
+        let execution = &executions[0];
+        let generated: NativeObservation = serde_json::from_str(&row.observation_line)?;
+        let fact = decision(
+            &bindings,
+            audit,
+            0,
+            ExecutedPolicy {
+                label: "candidate",
+                observation: &generated,
+                selected: execution.candidate_class,
+                model: &candidate,
+                support: Digest32::of_bytes(row.observation_line.as_bytes()),
+            },
+            execution.source_digest,
+        )?;
+        let generator_evidence = generator_evidence(&contract, row, batch.issued_at_ms)?;
+        let ledger_bytes = read_root(&ledger_path, 8 * 1024 * 1024, Access::Private)?;
+        let cut = FixedCalibrationCutV1 {
+            schema: "hepta.signed-calibration-cut.v1".to_owned(),
+            observer_program_digest: trust.evaluator_program.to_string(),
+            ledger_binding_digest: binding.to_string(),
+            ledger_file_digest: Digest32::of_bytes(&ledger_bytes).to_string(),
+            acknowledged_sequence: snapshot
+                .records()
+                .last()
+                .ok_or("empty calibration ledger")?
+                .sequence
+                .get(),
+            acknowledged_head: snapshot.head_digest.to_string(),
+            candidate_manifest_digest: candidate.manifest.to_string(),
+            baseline_manifest_digest: baseline.manifest.to_string(),
+            candidate_weights_digest: candidate.weights.to_string(),
+            baseline_weights_digest: baseline.weights.to_string(),
+            audit_digest: audit.to_string(),
+            dataset: ReviewDatasetWireV1::from_native(&dataset),
+            generator_payload_hex: encode_hex(&decision_signing_payload_v2(&fact)?),
+            generator_evidence: ReviewEvidenceWireV1::from_native(&generator_evidence),
+            freeze_evidence: ReviewEvidenceWireV1::from_native(&evidence),
+        };
+        let cut_bytes = cut.signing_payload()?;
+        let observer_evidence = trust.sign(
+            LearningEvidenceRoleV1::Observer,
+            StableId::new(format!("calibration.cut.{audit}"))?,
+            &cut_bytes,
+            signing_time,
+            now_ms()?,
+        )?;
+        let publication = FixedCalibrationPublicationV1 {
+            cut,
+            observer_evidence: ReviewEvidenceWireV1::from_native(&observer_evidence),
+            trust: ReviewTrustWireV1::from_native(&trust.root, &trust.distribution),
+        };
+        let directory = root_directory(&reviewer.publication_directory)?;
+        for (name, bytes) in [
+            ("ledger-readonly.bin", ledger_bytes),
+            (
+                "signed-calibration-cut.json",
+                serde_json::to_vec(&publication)?,
+            ),
+        ] {
+            let path = reviewer.publication_directory.join(name);
+            if path.exists() {
+                if read_root(&path, 8 * 1024 * 1024, Access::Immutable)? != bytes {
+                    return Err("existing signed calibration publication changed".into());
+                }
+            } else {
+                let file = create_private(&path, &bytes)?;
+                std::os::unix::fs::chown(&path, Some(0), Some(reviewer.gid))?;
+                use std::os::unix::fs::PermissionsExt;
+                file.set_permissions(std::fs::Permissions::from_mode(0o640))?;
+                file.sync_all()?;
+                directory.sync_all()?;
+            }
+        }
+    }
     let predecessor_after = request
         .predecessor_descriptor_path
         .as_ref()

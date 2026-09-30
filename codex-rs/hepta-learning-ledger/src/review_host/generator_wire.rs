@@ -11,7 +11,7 @@ use std::path::PathBuf;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct PrincipalWire {
+pub struct PrincipalWire {
     pub principal_id: String,
     pub credential_chain_digest: String,
     pub signing_key_digest: String,
@@ -21,7 +21,7 @@ pub(super) struct PrincipalWire {
     pub expires_at: u64,
 }
 impl PrincipalWire {
-    pub(super) fn from_principal(p: &AuthenticatedPrincipalV1) -> Self {
+    pub fn from_principal(p: &AuthenticatedPrincipalV1) -> Self {
         Self {
             principal_id: p.principal_id.to_string(),
             credential_chain_digest: p.credential_chain_digest.to_string(),
@@ -32,7 +32,7 @@ impl PrincipalWire {
             expires_at: p.expires_at,
         }
     }
-    pub(super) fn principal(&self) -> ReviewResult<AuthenticatedPrincipalV1> {
+    pub fn principal(&self) -> ReviewResult<AuthenticatedPrincipalV1> {
         Ok(AuthenticatedPrincipalV1 {
             principal_id: StableId::new(self.principal_id.clone())?,
             credential_chain_digest: self.credential_chain_digest.parse()?,

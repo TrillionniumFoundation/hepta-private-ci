@@ -190,3 +190,29 @@ pub use review_host::initialize_native_generator_key;
 pub use review_host::run_fixed_custody_evaluator;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::run_native_generator;
+
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::FixedCalibrationCutV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::FixedCalibrationPublicationV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::PrincipalWire;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::ReviewDatasetWireV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::ReviewEvidenceWireV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::ReviewSignerWireV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::ReviewTrustWireV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::decode_review_payload_hex;
+
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::open_root_review_input;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::read_root_review_input;
+
+mod calibration_cut;
+pub use calibration_cut::CalibrationCutBindingV1;
+pub use calibration_cut::calibration_cut_signing_payload_v1;
