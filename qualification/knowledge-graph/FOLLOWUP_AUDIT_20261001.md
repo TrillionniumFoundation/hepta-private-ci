@@ -20,6 +20,7 @@ without repeating the first audit's implementation or capacity analysis.
 | KG qualification trigger paths omitted composition dependencies | Include Cargo manifests/lock and shared type/authority dependencies in the dedicated qualification workflow |
 | KG mapping claimed current exact observations with path-only identity semantics | Make exact-blob observation explicit while retaining the immutable source base and ancestry requirements |
 | Dedicated KG qualification was blocked by unrelated non-ancestor module anchors | Add explicit owner-module selection; preserve default global verification, selected-source checks, repository cleanliness and hidden-index checks |
+| KG workflow used `runner.temp` in job-level env, where runner context is unavailable | Initialize the evidence directory in the first runner step and export its path through GITHUB_ENV; the previous invalid workflow created no executable jobs |
 
 The registered HNMF event, engram, synapse, cross-modal and forget contracts do not
 prove native adapters or learned dynamics. Existing KG kernels project supported
@@ -60,6 +61,11 @@ evidence-backed recovery design.
 | Derived indexes and detailed-design companions | Checks passed; 49 analytic fixture tests passed |
 | Cognitive-owner native test build | Two attempts exhausted the shared disk before tests executed; a third attempt was prevented by the free-space guard |
 | Ignored crash/history tests, Agentd integration and remote exact-head/synthetic-merge qualification | Not executed locally; require dedicated CI evidence |
+
+Remote publication additionally exposed a pre-existing Actions context error in
+the dedicated workflow. GitHub rejected its job-level `runner.temp` expression
+before creating jobs. The directory now uses RUNNER_TEMP in a runner step;
+ordinary YAML parsing alone cannot establish GitHub expression-context validity.
 
 The [core JUnit receipt](evidence/core-tests-junit.xml) records executed tests.
 The tested core source blobs remained unchanged through formatting, scoped fixes

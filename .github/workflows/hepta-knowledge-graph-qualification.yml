@@ -84,8 +84,17 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      KG_EVIDENCE_DIR: ${{ runner.temp }}/kg-qualification-${{ matrix.lane }}
     steps:
+      - name: Prepare qualification evidence directory
+        shell: bash
+        env:
+          KG_LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          EVIDENCE_DIR="$RUNNER_TEMP/kg-qualification-$KG_LANE"
+          mkdir -p "$EVIDENCE_DIR"
+          printf 'KG_EVIDENCE_DIR=%s\n' "$EVIDENCE_DIR" >> "$GITHUB_ENV"
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
