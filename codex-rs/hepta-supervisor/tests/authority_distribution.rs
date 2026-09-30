@@ -39,6 +39,12 @@ fn pinned_bundle_rotation_rejects_predecessor_and_accepts_current_signer() {
     let dir = tempfile::tempdir().expect("temporary directory");
     let path = dir.path().join("authority-bundle.json");
     std::fs::write(&path, bundle.to_json_bytes().expect("bundle JSON")).expect("write bundle");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))
+            .expect("owner-only bundle");
+    }
     let (_, verifier) = ProductionAuthorityBundle::load_pinned(&path, &bundle.bundle_sha256)
         .expect("load pinned bundle");
 
