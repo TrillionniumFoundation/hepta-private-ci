@@ -11,7 +11,7 @@ set -euo pipefail
 : "${TARGET_TRIPLE:?}"
 : "${READINESS_RECORDS:?}"
 
-mkdir -p "$READINESS_RECORDS/merge"
+mkdir -p "$READINESS_RECORDS/merge" "$READINESS_RECORDS/merge-metadata/metadata"
 test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
 construction_log="$READINESS_RECORDS/merge/construction.log"
@@ -51,7 +51,7 @@ printf 'MERGE_SHA=%s\nMERGE_TREE=%s\n' "$MERGE_SHA" "$MERGE_TREE" >>"$GITHUB_ENV
 printf 'merge_sha=%s\nmerge_tree=%s\n' "$MERGE_SHA" "$MERGE_TREE" >>"$construction_log"
 
 git checkout --detach "$MERGE_SHA" >>"$construction_log" 2>&1
-command='set -euo pipefail; test "$(git rev-parse HEAD)" = "$MERGE_SHA"; test "$(git rev-parse HEAD^{tree})" = "$MERGE_TREE"; cd codex-rs; cargo test --locked -p codex-hepta-evidence; cargo test --locked -p codex-hepta-agentd --lib --test kernel_evidence_product --test kernel_evidence_profile --test kernel_evidence_paging_product --test kernel_evidence_publication_cli'
+command='set -euo pipefail; test "$(git rev-parse HEAD)" = "$MERGE_SHA"; test "$(git rev-parse HEAD^{tree})" = "$MERGE_TREE"; cd codex-rs; cargo test --locked -p codex-hepta-evidence; cargo test --locked -p codex-hepta-agentd --lib --test kernel_evidence_product --test kernel_evidence_profile --test kernel_evidence_paging_product --test kernel_evidence_publication_cli; cd "$GITHUB_WORKSPACE"; SOURCE_SHA="$MERGE_SHA" SOURCE_TREE="$MERGE_TREE" READINESS_RECORDS="$READINESS_RECORDS/merge-metadata" bash scripts/kernel_evidence_validate_metadata.sh >"$READINESS_RECORDS/merge-metadata/metadata/metadata.log" 2>&1'
 started="$(date +%s%3N)"
 set +e
 timeout --signal=TERM --kill-after=30s 5400s \

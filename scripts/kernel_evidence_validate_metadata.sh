@@ -12,10 +12,27 @@ test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
 test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
-python3 -m unittest \
-  scripts.tests.test_kernel_evidence_readiness \
-  scripts.tests.test_kernel_evidence_runtime_status \
-  scripts.tests.test_kernel_evidence_crash_matrix
+python3 - <<'PY'
+import unittest
+
+suite = unittest.defaultTestLoader.discover(
+    "scripts/tests", pattern="test_kernel_evidence*.py"
+)
+discovered = suite.countTestCases()
+result = unittest.TextTestRunner(verbosity=2).run(suite)
+passed = (
+    discovered > 0
+    and result.testsRun == discovered
+    and result.wasSuccessful()
+    and not result.skipped
+)
+print(
+    f"kernel_evidence_python_tests discovered={discovered} "
+    f"executed={result.testsRun} failures={len(result.failures)} "
+    f"errors={len(result.errors)} skipped={len(result.skipped)}"
+)
+raise SystemExit(0 if passed else 1)
+PY
 python3 scripts/kernel_evidence_status.py verify
 python3 scripts/hepta-docs.py verify
 

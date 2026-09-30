@@ -31,6 +31,20 @@ receipts=(
   --qualification-receipt "publication_diagnostics=$READINESS_RECORDS/publication_diagnostics.json"
 )
 
+# Receipt metadata is not trusted until it is rebound to the retained bytes.
+# The audit always emits a diagnostic object; a non-zero result is converted
+# into fail-closed final readiness rather than losing the evidence artifact.
+set +e
+python3 scripts/kernel_evidence_receipt_audit.py \
+  --records-root "$READINESS_RECORDS" \
+  "${common[@]}" \
+  --output "$READINESS_RECORDS/RECEIPT_AUDIT.json" \
+  >"$READINESS_RECORDS/receipt-audit.log" 2>&1
+receipt_audit_code=$?
+set -e
+printf 'receipt_audit_exit_code=%s\n' "$receipt_audit_code" \
+  >>"$READINESS_RECORDS/receipt-audit.log"
+
 python3 scripts/kernel_evidence_runtime_status.py \
   "${common[@]}" \
   --checked-in-status-source qualification/kernel-evidence/STATUS_SOURCE.json \
@@ -66,15 +80,27 @@ python3 scripts/kernel_evidence_readiness.py \
   --artifact "metadata_log=$READINESS_RECORDS/metadata/metadata.log" \
   --artifact "implementation_map_current=$current_map" \
   --artifact "implementation_map_binding=$READINESS_RECORDS/metadata/implementation-map-binding.txt" \
+  --artifact "merge_metadata_log=$READINESS_RECORDS/merge-metadata/metadata/metadata.log" \
+  --artifact "merge_implementation_map_current=$READINESS_RECORDS/merge-metadata/metadata/IMPLEMENTATION_MAP.current.json" \
+  --artifact "merge_implementation_map_binding=$READINESS_RECORDS/merge-metadata/metadata/implementation-map-binding.txt" \
   --artifact "publication_log=$READINESS_RECORDS/publication/publication.log" \
   --artifact "crash_summary=$READINESS_RECORDS/crash/SUMMARY.json" \
+  --artifact "receipt_audit=$READINESS_RECORDS/RECEIPT_AUDIT.json" \
+  --artifact "receipt_audit_log=$READINESS_RECORDS/receipt-audit.log" \
+  --artifact "runtime_status=$READINESS_RECORDS/STATUS_SOURCE.json" \
   --crash-receipts "$READINESS_RECORDS/crash" \
-  --output "$READINESS_RECORDS/READINESS_MANIFEST.json"
+  --output "$READINESS_RECORDS/READINESS_MANIFEST.preliminary.json"
 
 restore_map
 test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
 test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+python3 scripts/kernel_evidence_finalize_readiness.py \
+  --preliminary-manifest "$READINESS_RECORDS/READINESS_MANIFEST.preliminary.json" \
+  --runtime-status "$READINESS_RECORDS/STATUS_SOURCE.json" \
+  --receipt-audit "$READINESS_RECORDS/RECEIPT_AUDIT.json" \
+  --output "$READINESS_RECORDS/READINESS_MANIFEST.json"
 
 python3 - "$READINESS_RECORDS/READINESS_MANIFEST.json" "${IS_MAIN:-false}" <<'PY'
 import json, pathlib, sys
@@ -86,6 +112,8 @@ required = (
     "authenticated_frontier_protocol_ready",
     "crash_matrix_ready",
     "runtime_status_exact",
+    "artifact_inventory_ready",
+    "receipt_audit_qualified",
     "exact_source_qualified",
     "deterministic_merge_qualified",
     "metadata_qualified",
