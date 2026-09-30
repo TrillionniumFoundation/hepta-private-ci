@@ -17,8 +17,11 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
 
       - name: Verify codex-rs Cargo manifests inherit workspace settings
         run: python3 .github/scripts/verify_cargo_workspace_manifests.py
@@ -76,7 +79,17 @@ jobs:
         with:
           version: "0.11.3"
       - name: Check formatting (run `just fmt` to fix)
-        run: just fmt-check
+        id: changed_format
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            python3 scripts/format.py --check --all
+          else
+            python3 scripts/format.py --check --base "$BASE_SHA"
+          fi
 
       - name: Prettier (run `pnpm run format:fix` to fix)
         run: pnpm run format

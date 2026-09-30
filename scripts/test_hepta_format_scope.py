@@ -354,5 +354,55 @@ class FormatterScopeTests(unittest.TestCase):
             FMT.rust_file_command("codex-rs/member/src/lib.rs", check=True)
 
 
+class WorkflowFormatExecutionTests(unittest.TestCase):
+    def test_clean_ci_checkout_checks_commit_range_and_propagates_failures(self):
+        import json
+        from hepta_workflow_commands import (
+            load_workflow,
+            workflow_step_by_id,
+            workflow_run,
+        )
+
+        source = Path(__file__).resolve().parents[1]
+        workflow = load_workflow(
+            (source / ".github/workflows/repo-checks.yml").read_text()
+        )
+        step = workflow_step_by_id(workflow, "build-test", "changed_format")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            tool = root / "python3"
+            output = root / "args.json"
+            tool.write_text(
+                f"#!{sys.executable}\nimport json,os,sys\nfrom pathlib import Path\nPath(os.environ['FORMAT_PROBE']).write_text(json.dumps(sys.argv[1:]))\nsys.exit(int(os.environ['FORMAT_EXIT']))\n"
+            )
+            tool.chmod(0o755)
+            for base, scope in (
+                ("", ["--all"]),
+                ("0" * 40, ["--all"]),
+                ("a" * 40, ["--base", "a" * 40]),
+            ):
+                for exit_code in (0, 1):
+                    with self.subTest(base=base, exit_code=exit_code):
+                        env = dict(
+                            os.environ,
+                            PATH=str(root) + os.pathsep + os.environ["PATH"],
+                            BASE_SHA=base,
+                            FORMAT_PROBE=str(output),
+                            FORMAT_EXIT=str(exit_code),
+                        )
+                        done = subprocess.run(
+                            ["bash", "-c", workflow_run(step)],
+                            cwd=root,
+                            env=env,
+                            capture_output=True,
+                            text=True,
+                        )
+                        self.assertEqual(done.returncode, exit_code)
+                        self.assertEqual(
+                            json.loads(output.read_text()),
+                            ["scripts/format.py", "--check", *scope],
+                        )
+
+
 if __name__ == "__main__":
     unittest.main()
