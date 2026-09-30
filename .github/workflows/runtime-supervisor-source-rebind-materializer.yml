@@ -1,0 +1,107 @@
+name: Runtime supervisor exact-source rebind materializer
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-six-phase-closure-20260930-r3
+    paths:
+      - .github/workflows/runtime-supervisor-source-rebind-materializer.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-source-rebind-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  rebind:
+    name: Rebind runtime.supervisor source truth
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Rebind implementation map to the last source-bearing commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          anchor="$(git rev-list -1 HEAD -- \
+            codex-rs/Cargo.lock \
+            codex-rs/Cargo.toml \
+            codex-rs/app-server \
+            codex-rs/hepta-agent-protocol \
+            codex-rs/hepta-agentd \
+            codex-rs/hepta-automation \
+            codex-rs/hepta-fleet \
+            codex-rs/hepta-supervisor)"
+          test -n "$anchor"
+          tree="$(git rev-parse "${anchor}^{tree}")"
+          ANCHOR="$anchor" TREE="$tree" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path("docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          previous = data.get("historicalSourceBase", data.get("sourceBase"))
+          data["historicalSourceBase"] = previous
+          data["sourceBase"] = {
+              "commit": os.environ["ANCHOR"],
+              "tree": os.environ["TREE"],
+          }
+          data["sourceBaseSemantics"] = (
+              "exact last source-bearing candidate anchor; historicalSourceBase preserves provenance"
+          )
+          data["candidateIdentity"] = (
+              "derived from the clean Git candidate at verification time; never copied from an obsolete workflow run"
+          )
+          data["observedAtHead"] = {
+              "commit": os.environ["ANCHOR"],
+              "tree": os.environ["TREE"],
+              "interpretation": (
+                  "Exact mapped-source observation after containment-test compilation repair. "
+                  "The observation is an ancestor of the documentation-only rebind commit; "
+                  "verification rejects any mapped source or workspace-input drift. Target-host, "
+                  "independent-operator, activation and release evidence remain external and open."
+              ),
+          }
+          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          PY
+
+      - name: Regenerate and verify all bound projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-module-docs.py refresh-derived
+          python3 scripts/hepta-lane-b-truth.py generate
+          python3 scripts/hepta-docs.py generate-status
+          python3 scripts/hepta_supervisor_status.py generate
+          python3 scripts/hepta-lane-b-truth.py verify
+          python3 scripts/hepta_supervisor_status.py check
+          git diff --check
+
+      - name: Commit generated source truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add \
+            docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json \
+            docs/modules/runtime.supervisor/CURRENT_STATUS.md \
+            docs/modules/MODULE_DOCS.json \
+            docs/STATUS.md \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json
+          if git diff --cached --quiet; then
+            echo "No source-truth rebind was required."
+            exit 0
+          fi
+          git commit -m "docs(supervisor): bind source truth to exact candidate"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
