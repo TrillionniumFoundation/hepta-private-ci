@@ -224,3 +224,6 @@ pub(super) fn validate_generation_plan(
     Ok(())
 }
 
+#[cfg(test)]
+#[path = "local_cpu_parameter_validation_tests.rs"]
+mod tests;
