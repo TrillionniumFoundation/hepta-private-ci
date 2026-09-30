@@ -209,7 +209,7 @@ where
     }
 }
 
-fn envelope_digest(envelope: &IterationEnvelopeV1) -> Digest32 {
+pub(super) fn envelope_digest(envelope: &IterationEnvelopeV1) -> Digest32 {
     let mut bytes = b"hepta.self-iteration.envelope.v1\0".to_vec();
     bytes.extend_from_slice(envelope.envelope_id.as_str().as_bytes());
     for digest in [
@@ -232,7 +232,7 @@ fn envelope_digest(envelope: &IterationEnvelopeV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn now_ms() -> Result<u64, AgentdError> {
+pub(super) fn now_ms() -> Result<u64, AgentdError> {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_err(|_| invalid("iteration clock"))?

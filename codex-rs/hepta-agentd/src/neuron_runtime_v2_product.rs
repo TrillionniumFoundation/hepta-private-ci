@@ -179,6 +179,16 @@ impl Drop for AgentdNeuronRuntimeV2Host {
 }
 
 fn neuron_product_error(operation: &str, error: AgentdNeuronControlErrorV2) -> crate::AgentdError {
+    if matches!(
+        error,
+        AgentdNeuronControlErrorV2::OwnerBusy
+            | AgentdNeuronControlErrorV2::ControllerBusy
+            | AgentdNeuronControlErrorV2::PendingRecovery
+    ) {
+        return crate::AgentdError::Overloaded {
+            retry_after_ms: 1_000,
+        };
+    }
     crate::AgentdError::Protocol(format!(
         "Neuron V2 {operation} failed [{}]: {error}",
         error.stable_code()
@@ -212,7 +222,9 @@ impl AgentdNeuronRuntimeV2Host {
         let _lifecycle = self
             .lifecycle
             .try_lock()
-            .map_err(|_| crate::AgentdError::Protocol("iteration lifecycle busy".into()))?;
+            .map_err(|_| crate::AgentdError::Overloaded {
+                retry_after_ms: 1_000,
+            })?;
         if self.stopped.load(Ordering::Acquire)
             || !self.iteration_quarantine.load(Ordering::Acquire)
         {

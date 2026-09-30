@@ -513,6 +513,14 @@ pub use self_iteration::AgentdGovernedParameterCandidateAssemblerV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdGovernedParameterGenerationCompilerV1;
 #[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationArtifactFileV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationArtifactKindV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationArtifactManifestV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationArtifactReadinessV1;
+#[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationCanaryObservationV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationCanaryVerdictV1;
@@ -529,6 +537,8 @@ pub use self_iteration::AgentdSelfIterationLocalSignerV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationModelCycleV1;
 #[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationPendingProposalV1;
+#[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationPhaseV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationPhysicalMeasurementV1;
@@ -538,6 +548,10 @@ pub use self_iteration::AgentdSelfIterationQualificationCaseV1;
 pub use self_iteration::AgentdSelfIterationRecordV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationRuntimeConfigV1;
+#[cfg(feature = "server")]
+pub use self_iteration::assess_self_iteration_pending_inputs_v1;
+#[cfg(feature = "server")]
+pub use self_iteration::inspect_self_iteration_artifacts_v1;
 #[cfg(feature = "server")]
 pub use self_iteration::measure_self_iteration_qualification_v1;
 #[cfg(feature = "server")]

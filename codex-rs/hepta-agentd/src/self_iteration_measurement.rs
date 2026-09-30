@@ -94,13 +94,21 @@ pub fn measure_self_iteration_qualification_v1(
         let mut baseline_guard = MeasurementGuard {
             objective,
             generation: baseline.generation().map_err(control_error)?,
-            deadline,
+            deadline: deadline.min(
+                Instant::now()
+                    .checked_add(Duration::from_micros(case.baseline_port.budget_micros))
+                    .ok_or_else(|| invalid("baseline measurement deadline"))?,
+            ),
             cancellation,
         };
         let mut candidate_guard = MeasurementGuard {
             objective,
             generation: candidate.generation().map_err(control_error)?,
-            deadline,
+            deadline: deadline.min(
+                Instant::now()
+                    .checked_add(Duration::from_micros(case.candidate_port.budget_micros))
+                    .ok_or_else(|| invalid("candidate measurement deadline"))?,
+            ),
             cancellation,
         };
         let baseline_previous = baseline

@@ -20,6 +20,19 @@ use crate::AgentdSignedEvaluationV1;
 #[path = "self_iteration_codec.rs"]
 mod codec;
 
+#[path = "self_iteration_artifacts.rs"]
+mod artifacts;
+pub use artifacts::AgentdSelfIterationArtifactFileV1;
+pub use artifacts::AgentdSelfIterationArtifactKindV1;
+pub use artifacts::AgentdSelfIterationArtifactManifestV1;
+pub use artifacts::AgentdSelfIterationArtifactReadinessV1;
+pub use artifacts::inspect_self_iteration_artifacts_v1;
+
+#[path = "self_iteration_pending_model.rs"]
+mod pending_model;
+pub use pending_model::AgentdSelfIterationPendingProposalV1;
+pub use pending_model::assess_self_iteration_pending_inputs_v1;
+
 #[path = "self_iteration_measurement.rs"]
 mod measurement;
 pub use measurement::AgentdSelfIterationPhysicalMeasurementV1;
@@ -319,5 +332,15 @@ fn invalid(message: impl Into<String>) -> AgentdError {
     AgentdError::Invalid(message.into())
 }
 fn control_error(error: crate::AgentdNeuronControlErrorV2) -> AgentdError {
+    if matches!(
+        error,
+        crate::AgentdNeuronControlErrorV2::OwnerBusy
+            | crate::AgentdNeuronControlErrorV2::ControllerBusy
+            | crate::AgentdNeuronControlErrorV2::PendingRecovery
+    ) {
+        return AgentdError::Overloaded {
+            retry_after_ms: 1_000,
+        };
+    }
     AgentdError::Protocol(format!("self-iteration runtime: {error}"))
 }
