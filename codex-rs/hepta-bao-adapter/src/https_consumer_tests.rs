@@ -29,13 +29,40 @@ use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
 use tokio_rustls::TlsAcceptor;
 
+#[path = "sqlite_recovery_runtime_tests.rs"]
+mod sqlite_recovery_runtime_tests;
+
 type TestError = Box<dyn std::error::Error + Send + Sync>;
 
 const SECRET: &str = "fixture-only-consumer-secret";
 
+enum BodyFraming {
+    ContentLength,
+    Chunked,
+}
+
 async fn server<F>(
     status: u16,
     body: String,
+    before_response: impl FnOnce() -> F + Send + 'static,
+) -> Result<
+    (
+        String,
+        String,
+        tokio::task::JoinHandle<Result<String, TestError>>,
+    ),
+    TestError,
+>
+where
+    F: std::future::Future<Output = ()> + Send + 'static,
+{
+    server_with_framing(status, body, BodyFraming::ContentLength, before_response).await
+}
+
+async fn server_with_framing<F>(
+    status: u16,
+    body: String,
+    framing: BodyFraming,
     before_response: impl FnOnce() -> F + Send + 'static,
 ) -> Result<
     (
@@ -70,15 +97,36 @@ where
         while !bytes.ends_with(b"\r\n\r\n") && bytes.len() < 16 * 1024 {
             bytes.push(stream.read_u8().await?);
         }
+        let length_header = match framing {
+            BodyFraming::ContentLength => format!("Content-Length: {}", body.len()),
+            BodyFraming::Chunked => "Transfer-Encoding: chunked".to_owned(),
+        };
         let headers = format!(
-            "HTTP/1.1 {status} Test\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
-            body.len()
+            "HTTP/1.1 {status} Test\r\nContent-Type: application/json\r\n{length_header}\r\nConnection: close\r\n\r\n",
         );
         let _ = stream.write_all(headers.as_bytes()).await;
         // Delay/revocation happens after headers, exercising the response-body deadline and
         // the delivery fence rather than only the connection/header timeout.
         before_response().await;
-        let _ = stream.write_all(body.as_bytes()).await;
+        match framing {
+            BodyFraming::ContentLength => {
+                let _ = stream.write_all(body.as_bytes()).await;
+            }
+            BodyFraming::Chunked => {
+                for chunk in body.as_bytes().chunks(8192) {
+                    if stream
+                        .write_all(format!("{:x}\r\n", chunk.len()).as_bytes())
+                        .await
+                        .is_err()
+                        || stream.write_all(chunk).await.is_err()
+                        || stream.write_all(b"\r\n").await.is_err()
+                    {
+                        break;
+                    }
+                }
+                let _ = stream.write_all(b"0\r\n\r\n").await;
+            }
+        }
         Ok::<String, TestError>(String::from_utf8(bytes)?)
     });
     Ok((endpoint, pem, task))
@@ -140,6 +188,26 @@ fn body() -> String {
 
 fn body_for(version: u64, secret: &str) -> String {
     serde_json::json!({"data":{"data":{"value":secret},"metadata":{"version":version}}}).to_string()
+}
+
+#[test]
+fn token_rejects_header_injection_and_keeps_compatible_header_values() {
+    for value in [
+        String::new(),
+        "fixture\r\nX-Injected: yes".to_owned(),
+        "fixture\0suffix".to_owned(),
+        "fixture\u{7f}suffix".to_owned(),
+        "x".repeat(8193),
+    ] {
+        assert!(matches!(
+            BaoToken::new(value),
+            Err(BaoClientError::InvalidConfiguration)
+        ));
+    }
+    for value in ["fixture-token", "fixture\ttoken", "fixture-\u{a3}"] {
+        assert!(HeaderValue::from_str(value).is_ok());
+        assert!(BaoToken::new(value.to_owned()).is_ok());
+    }
 }
 
 #[tokio::test]
@@ -475,6 +543,72 @@ async fn root_namespace_omits_namespace_header() {
     assert!(!observed.contains("x-vault-namespace:"));
 }
 
+#[tokio::test]
+async fn duplicate_secret_fields_including_escaped_aliases_never_deliver() {
+    for fields in [
+        format!(r#""value":"conflicting","value":"{SECRET}""#),
+        format!(r#""value":"{SECRET}","v\u0061lue":"{SECRET}""#),
+        format!(r#""value":"{SECRET}","extra":"first","extra":"second""#),
+    ] {
+        let body = format!(r#"{{"data":{{"data":{{{fields}}},"metadata":{{"version":2}}}}}}"#);
+        let (endpoint, ca, task) = server(200, body, || async {}).await.unwrap();
+        let client = BaoClient::new(
+            &endpoint,
+            ca.as_bytes(),
+            BaoToken::new("fixture".into()).unwrap(),
+            Duration::from_secs(2),
+        )
+        .unwrap();
+        let request = read_request();
+        let (authority, signed, _directory) = grant(&client, &request).unwrap();
+        assert_eq!(
+            client
+                .consume_kv_v2(&authority, &signed, &request, |_| panic!(
+                    "ambiguous secret object must never deliver"
+                ))
+                .await,
+            Err(BaoClientError::InvalidResponse)
+        );
+        task.await.unwrap().unwrap();
+    }
+}
+
+#[tokio::test]
+async fn chunked_provider_body_obeys_the_cap_without_a_content_length() {
+    for size in [MAX_RESPONSE_BYTES, MAX_RESPONSE_BYTES + 1] {
+        let mut padded = body();
+        padded.extend(std::iter::repeat_n(' ', size - padded.len()));
+        let (endpoint, ca, task) =
+            server_with_framing(200, padded, BodyFraming::Chunked, || async {})
+                .await
+                .unwrap();
+        let client = BaoClient::new(
+            &endpoint,
+            ca.as_bytes(),
+            BaoToken::new("fixture".into()).unwrap(),
+            Duration::from_secs(10),
+        )
+        .unwrap();
+        let request = read_request();
+        let (authority, signed, _directory) = grant(&client, &request).unwrap();
+        let mut calls = 0;
+        let result = client
+            .consume_kv_v2(&authority, &signed, &request, |_| {
+                calls += 1;
+                Ok(())
+            })
+            .await;
+        if size == MAX_RESPONSE_BYTES {
+            assert!(result.is_ok());
+            assert_eq!(calls, 1);
+        } else {
+            assert_eq!(result, Err(BaoClientError::ResponseTooLarge));
+            assert_eq!(calls, 0);
+        }
+        task.await.unwrap().unwrap();
+    }
+}
+
 struct AuthBusEvidence {
     time_key: SigningKey,
     settlement_key: SigningKey,
@@ -793,11 +927,13 @@ fn registered_product_host(
     ),
     TestError,
 > {
-    use codex_hepta_contracts::{
-        FinalUseApproval, FinalUseApprovalVerifier, FinalUseRevocationFeedVerifier,
-        FinalUseRevocationUpdate, SignedFinalUseApproval, SignedFinalUseRevocationUpdate,
-        SystemAuthorityClock,
-    };
+    use codex_hepta_contracts::FinalUseApproval;
+    use codex_hepta_contracts::FinalUseApprovalVerifier;
+    use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
+    use codex_hepta_contracts::FinalUseRevocationUpdate;
+    use codex_hepta_contracts::SignedFinalUseApproval;
+    use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
+    use codex_hepta_contracts::SystemAuthorityClock;
     let approver = SigningKey::from_bytes(&[91; 32]);
     let distributor = SigningKey::from_bytes(&[92; 32]);
     let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
@@ -863,7 +999,8 @@ fn product_registry() -> Result<
 
 #[tokio::test]
 async fn registered_product_persists_result_and_never_redispatches_after_restart() {
-    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
     let (endpoint, ca, server_task) = server(200, body(), || async {}).await.unwrap();
     let client = BaoClient::new(
         &endpoint,
@@ -972,6 +1109,259 @@ struct FailSettlementOnce {
     inner: AuthBusEvidence,
     fail: bool,
 }
+
+struct FailTrustedTimeOnce {
+    inner: AuthBusEvidence,
+    calls: usize,
+    fail_at: usize,
+}
+
+impl BaoAuthBusEvidenceProvider for FailTrustedTimeOnce {
+    fn trusted_time(&mut self) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError> {
+        self.calls += 1;
+        if self.calls == self.fail_at {
+            return Err(BaoAuthBusError::Evidence("synthetic time outage"));
+        }
+        self.inner.trusted_time()
+    }
+
+    fn settlement_evidence(
+        &mut self,
+        reservation: &QuotaReservation,
+        status: SettlementStatus,
+        observed_cost: u64,
+        terminal: Digest32,
+        at: u64,
+    ) -> Result<SignedSettlementEvidence, BaoAuthBusError> {
+        self.inner
+            .settlement_evidence(reservation, status, observed_cost, terminal, at)
+    }
+}
+
+#[tokio::test]
+async fn completed_provider_retains_receipt_when_settlement_evidence_is_unavailable() {
+    for fail_time in [true, false] {
+        let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
+        let client = BaoClient::new(
+            &endpoint,
+            ca.as_bytes(),
+            BaoToken::new("fixture".into()).unwrap(),
+            Duration::from_secs(2),
+        )
+        .unwrap();
+        let request = read_request();
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64;
+        let (_db, _checkpoint, authbus, evidence, admission) =
+            authbus_host(&client, &request, now).await.unwrap();
+        let (authority, signed, _directory) = grant(&client, &request).unwrap();
+        let read = BaoAuthorizedReadV1 {
+            admission: &admission,
+            authority: &authority,
+            grant: &signed,
+            request: &request,
+        };
+        let mut calls = 0;
+        let consumer = |bytes: &[u8]| {
+            assert_eq!(bytes, SECRET.as_bytes());
+            calls += 1;
+            Ok(())
+        };
+        let result = if fail_time {
+            client
+                .consume_kv_v2_with_authbus(
+                    &authbus,
+                    read,
+                    &mut FailTrustedTimeOnce {
+                        inner: evidence,
+                        calls: 0,
+                        fail_at: 3,
+                    },
+                    consumer,
+                )
+                .await
+        } else {
+            client
+                .consume_kv_v2_with_authbus(
+                    &authbus,
+                    read,
+                    &mut FailSettlementOnce {
+                        inner: evidence,
+                        fail: true,
+                    },
+                    consumer,
+                )
+                .await
+        };
+        let Err(BaoAuthBusError::SettlementPending {
+            reservation_id,
+            receipt: Some(receipt),
+            ..
+        }) = result
+        else {
+            panic!("observed completion must preserve settlement identity and receipt");
+        };
+        assert_eq!(receipt.secret_sha256, request.expected_secret_sha256);
+        assert_eq!(calls, 1);
+        let reservation = authbus.reservation(&reservation_id).await.unwrap();
+        assert_eq!(reservation.operation_id, admission.operation_id);
+        let quota = authbus.quota_snapshot(&admission.quota_key).await.unwrap();
+        assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 1, 0));
+        task.await.unwrap().unwrap();
+    }
+}
+
+enum TimeoutConsumerPath {
+    LowLevel,
+    Registered,
+}
+
+async fn check_time_outage_after_provider_timeout(
+    path: TimeoutConsumerPath,
+) -> Result<(), TestError> {
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
+
+    let (endpoint, ca, task) = server(200, body(), || async {
+        tokio::time::sleep(Duration::from_millis(150)).await;
+    })
+    .await?;
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into())?,
+        Duration::from_millis(50),
+    )?;
+    let mut request = read_request();
+    request.consumer_configuration_sha256 = Some([93; 32]);
+    let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
+    let (_db, _checkpoint, authbus, inner, admission) =
+        authbus_host_with_lifetime(180_000, &client, &request, now).await?;
+    let mut evidence = FailTrustedTimeOnce {
+        inner,
+        calls: 0,
+        fail_at: 3,
+    };
+    let (authority, signed, _directory) = product_grant(&client, &request)?;
+    let calls = Arc::new(AtomicUsize::new(0));
+    let counter = Arc::clone(&calls);
+    let (host, approval) = registered_product_host(
+        authority.clone(),
+        &signed,
+        Arc::new(move |_, _, _| {
+            counter.fetch_add(1, Ordering::SeqCst);
+            Ok(())
+        }),
+        Arc::new(|_, _| Ok(crate::BaoConsumerObservationV1::Unknown)),
+        [93; 32],
+    )?;
+    let (_owner_root, registry) = product_registry()?;
+    let result = match path {
+        TimeoutConsumerPath::LowLevel => {
+            client
+                .consume_kv_v2_with_authbus(
+                    &authbus,
+                    BaoAuthorizedReadV1 {
+                        admission: &admission,
+                        authority: &authority,
+                        grant: &signed,
+                        request: &request,
+                    },
+                    &mut evidence,
+                    |_| {
+                        calls.fetch_add(1, Ordering::SeqCst);
+                        Ok(())
+                    },
+                )
+                .await
+        }
+        TimeoutConsumerPath::Registered => host
+            .consume_kv_v2_with_authbus(
+                &client,
+                &authbus,
+                &registry,
+                crate::BaoApprovedReadV1 {
+                    admission: &admission,
+                    grant: &signed,
+                    approval: &approval,
+                    request: &request,
+                },
+                &mut evidence,
+            )
+            .await
+            .map_err(|error| match error {
+                crate::BaoProductHostError::AuthBus(error) => error,
+                _ => panic!("registered timeout must preserve the AuthBus uncertainty"),
+            }),
+    };
+    let Err(BaoAuthBusError::Indeterminate {
+        reservation_id,
+        provider_error,
+    }) = result
+    else {
+        panic!("time outage must preserve the original dispatch uncertainty");
+    };
+    assert_eq!(provider_error, BaoClientError::TimedOut);
+    assert_eq!(
+        authbus.reservation(&reservation_id).await?.operation_id,
+        admission.operation_id
+    );
+    assert_eq!(evidence.calls, 3);
+    if let TimeoutConsumerPath::Registered = path {
+        let row = registry
+            .lock()
+            .map_err(|_| std::io::Error::other("fixture registry must not be poisoned"))?
+            .consumption_result(admission.operation_id.as_str())?;
+        assert_eq!(
+            (
+                row.state,
+                row.reservation_id.as_deref(),
+                row.receipt.as_ref(),
+                row.terminal_code.as_deref()
+            ),
+            (
+                crate::BaoConsumptionStateV1::Indeterminate,
+                Some(reservation_id.as_str()),
+                None,
+                None
+            ),
+        );
+        assert!(matches!(
+            host.consume_kv_v2_with_authbus(
+                &client,
+                &authbus,
+                &registry,
+                crate::BaoApprovedReadV1 {
+                    admission: &admission,
+                    grant: &signed,
+                    approval: &approval,
+                    request: &request,
+                },
+                &mut evidence,
+            )
+            .await,
+            Err(crate::BaoProductHostError::OutcomePending(_)),
+        ));
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    let quota = authbus.quota_snapshot(&admission.quota_key).await?;
+    assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 1, 0));
+    task.abort();
+    let _ = task.await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn low_level_timeout_preserves_uncertainty_during_time_outage() -> Result<(), TestError> {
+    check_time_outage_after_provider_timeout(TimeoutConsumerPath::LowLevel).await
+}
+
+#[tokio::test]
+async fn registered_timeout_preserves_uncertainty_during_time_outage() -> Result<(), TestError> {
+    check_time_outage_after_provider_timeout(TimeoutConsumerPath::Registered).await
+}
 impl BaoAuthBusEvidenceProvider for FailSettlementOnce {
     fn trusted_time(&mut self) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError> {
         self.inner.trusted_time()
@@ -994,7 +1384,8 @@ impl BaoAuthBusEvidenceProvider for FailSettlementOnce {
 
 #[tokio::test]
 async fn registered_product_recovers_settlement_without_reentering_consumer() {
-    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
     let (endpoint, ca, server_task) = server(200, body(), || async {}).await.unwrap();
     let client = BaoClient::new(
         &endpoint,
@@ -1082,7 +1473,8 @@ async fn registered_product_recovers_settlement_without_reentering_consumer() {
 async fn registered_product_queries_durable_consumer_after_lost_ack() {
     use std::io::Write;
     use std::os::unix::fs::OpenOptionsExt;
-    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
     let (endpoint, ca, server_task) = server(200, body(), || async {}).await.unwrap();
     let client = BaoClient::new(
         &endpoint,
