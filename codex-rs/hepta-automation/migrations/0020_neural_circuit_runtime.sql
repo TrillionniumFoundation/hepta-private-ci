@@ -11,6 +11,9 @@ CREATE TABLE taskflow_circuit_activations (
     circuit_digest TEXT NOT NULL CHECK (
         length(circuit_digest) = 64 AND circuit_digest NOT GLOB '*[^0-9a-f]*'
     ),
+    taskflow_definition_digest TEXT NOT NULL CHECK (
+        length(taskflow_definition_digest) = 64 AND taskflow_definition_digest NOT GLOB '*[^0-9a-f]*'
+    ),
     causal_event_digest TEXT NOT NULL CHECK (
         length(causal_event_digest) = 64 AND causal_event_digest NOT GLOB '*[^0-9a-f]*'
     ),
