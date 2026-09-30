@@ -133,12 +133,11 @@ impl LearningArtifactOwnerService {
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
         let mut view = self.host.current_registry_view(now)?;
-        let ineligible = self.host.current_provenance_exclusions(
-            view.registry(),
-            &self.withdrawal_registry,
-            now,
-        )?;
-        view.restrict_eligibility(ineligible);
+        let provenance =
+            self.host
+                .current_provenance(view.registry(), &self.withdrawal_registry, now)?;
+        view.restrict_eligibility(provenance.ineligible);
+        view.bind_source_datasets(provenance.source_datasets);
         Ok(view)
     }
 

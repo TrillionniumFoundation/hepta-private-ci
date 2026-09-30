@@ -338,8 +338,9 @@ fn current_provenance_excludes_withdrawn_expired_artifacts_and_descendants() {
     );
     assert!(
         owner
-            .current_provenance_exclusions(&registry, &withdrawals, /*now*/ 20)
+            .current_provenance(&registry, &withdrawals, /*now*/ 20)
             .fixture("valid inherited provenance")
+            .ineligible
             .is_empty()
     );
     withdrawals
@@ -354,11 +355,11 @@ fn current_provenance_excludes_withdrawn_expired_artifacts_and_descendants() {
             issued_at: 25,
         })
         .fixture("dataset withdrawal");
-    let excluded = owner
-        .current_provenance_exclusions(&registry, &withdrawals, /*now*/ 31)
+    let provenance = owner
+        .current_provenance(&registry, &withdrawals, /*now*/ 31)
         .fixture("current exclusions");
     assert_eq!(
-        excluded,
+        provenance.ineligible,
         BTreeSet::from([
             id("candidate"),
             id("withdrawn-child"),
@@ -398,9 +399,21 @@ fn current_provenance_excludes_withdrawn_expired_artifacts_and_descendants() {
         digest("witness"),
         digest("trust"),
     );
-    view.restrict_eligibility(excluded);
+    view.restrict_eligibility(provenance.ineligible);
+    view.bind_source_datasets(provenance.source_datasets);
     assert!(view.is_eligible(&id("clean")));
     assert!(!view.is_eligible(&id("expired-child")));
+    let clean_manifest = registry.manifest(&id("clean")).fixture("clean manifest");
+    assert!(view.supports_dataset(clean_manifest, digest("clean-dataset")));
+    assert!(!view.supports_dataset(clean_manifest, clean_manifest.support_digest));
+    assert!(
+        !view.supports_dataset(
+            registry
+                .manifest(&id("withdrawn-child"))
+                .fixture("withdrawn child"),
+            digest("dataset"),
+        )
+    );
     let consumed = std::cell::Cell::new(false);
     let mut cached = RevalidatingCandidate::new(loaded);
     assert_eq!(

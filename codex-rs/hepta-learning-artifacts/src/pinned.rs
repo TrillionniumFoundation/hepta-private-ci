@@ -5,6 +5,7 @@
 //! prove that the supplied snapshot is the latest revocation view. See
 //! `../PINNED_LOAD.md` for the host obligations.
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
@@ -142,6 +143,13 @@ pub struct VerifiedCurrentRegistryViewV1 {
     witness_digest: Digest32,
     trust_digest: Digest32,
     ineligible_artifacts: BTreeSet<StableId>,
+    source_datasets: BTreeMap<StableId, BTreeSet<Digest32>>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum CurrentProvenanceRequirement {
+    V1Compatible,
+    Complete,
 }
 
 impl VerifiedCurrentRegistryViewV1 {
@@ -157,6 +165,7 @@ impl VerifiedCurrentRegistryViewV1 {
             witness_digest,
             trust_digest,
             ineligible_artifacts: BTreeSet::new(),
+            source_datasets: BTreeMap::new(),
         }
     }
 
@@ -169,6 +178,39 @@ impl VerifiedCurrentRegistryViewV1 {
 
     pub(crate) fn restrict_eligibility(&mut self, ineligible: BTreeSet<StableId>) {
         self.ineligible_artifacts.extend(ineligible);
+    }
+
+    /// Check an exact eligible manifest's dataset binding. Owner-service views
+    /// use complete V2 source membership, including an explicitly empty set for
+    /// dataset-independent artifacts. Raw V1 views retain the historical direct
+    /// support-digest binding and cannot supply full V2 provenance.
+    #[must_use]
+    pub fn supports_dataset(&self, manifest: &ArtifactManifest, dataset: Digest32) -> bool {
+        !dataset.is_zero()
+            && self.registry.manifest(&manifest.artifact_id) == Some(manifest)
+            && self.is_eligible(&manifest.artifact_id)
+            && self.source_datasets.get(&manifest.artifact_id).map_or_else(
+                || manifest.support_digest == dataset,
+                |datasets| datasets.contains(&dataset),
+            )
+    }
+
+    pub(crate) fn bind_source_datasets(
+        &mut self,
+        datasets: BTreeMap<StableId, BTreeSet<Digest32>>,
+    ) {
+        self.source_datasets = datasets;
+    }
+
+    pub(crate) fn provenance_requirement(
+        &self,
+        artifact: &StableId,
+    ) -> CurrentProvenanceRequirement {
+        if self.source_datasets.contains_key(artifact) {
+            CurrentProvenanceRequirement::Complete
+        } else {
+            CurrentProvenanceRequirement::V1Compatible
+        }
     }
 
     #[must_use]
@@ -214,6 +256,8 @@ impl fmt::Debug for VerifiedCurrentRegistryViewV1 {
 pub struct RevalidatingCandidate {
     candidate: LoadedPinnedCandidate,
     unavailable: bool,
+    expected_trust_digest: Option<Digest32>,
+    provenance_requirement: CurrentProvenanceRequirement,
 }
 
 impl RevalidatingCandidate {
@@ -222,6 +266,21 @@ impl RevalidatingCandidate {
         Self {
             candidate,
             unavailable: false,
+            expected_trust_digest: None,
+            provenance_requirement: CurrentProvenanceRequirement::V1Compatible,
+        }
+    }
+
+    pub(crate) const fn new_with_current_trust(
+        candidate: LoadedPinnedCandidate,
+        expected_trust_digest: Digest32,
+        provenance_requirement: CurrentProvenanceRequirement,
+    ) -> Self {
+        Self {
+            candidate,
+            unavailable: false,
+            expected_trust_digest: Some(expected_trust_digest),
+            provenance_requirement,
         }
     }
 
@@ -243,10 +302,30 @@ impl RevalidatingCandidate {
         if self.unavailable {
             return Err(PinnedCandidateLoadError::Unavailable);
         }
+        if self
+            .expected_trust_digest
+            .is_some_and(|expected| expected != current.trust_digest())
+        {
+            self.unavailable = true;
+            return Err(PinnedCandidateLoadError::FrontierMismatch);
+        }
         if !current.is_eligible(&self.candidate.spec.manifest.artifact_id) {
             self.unavailable = true;
             return Err(PinnedCandidateLoadError::Ineligible);
         }
+        let provenance_requirement =
+            current.provenance_requirement(&self.candidate.spec.manifest.artifact_id);
+        if self.provenance_requirement == CurrentProvenanceRequirement::Complete
+            && provenance_requirement != CurrentProvenanceRequirement::Complete
+        {
+            self.unavailable = true;
+            return Err(PinnedCandidateLoadError::FrontierMismatch);
+        }
+        // Selected consumers carry their independently verified owner trust;
+        // explicitly host-pinned consumers bind the first accepted authority.
+        // Trust rotation requires a new admission rather than cache migration.
+        self.expected_trust_digest = Some(current.trust_digest());
+        self.provenance_requirement = provenance_requirement;
         self.with_verified_registry(current.receipt, current.registry, consume)
     }
 

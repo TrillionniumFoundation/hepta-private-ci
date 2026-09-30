@@ -8,7 +8,13 @@ use crate::admission_storage::MAX_ARTIFACT_ADMISSION_BYTES;
 use crate::admission_storage::encode_artifact_admission;
 use crate::read_artifact_admission_by_digest;
 use crate::read_artifact_admission_by_manifest_digest;
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
+
+pub(crate) struct CurrentArtifactProvenance {
+    pub(crate) ineligible: BTreeSet<StableId>,
+    pub(crate) source_datasets: BTreeMap<StableId, BTreeSet<Digest32>>,
+}
 
 impl LearningArtifactOwnerHost {
     pub(super) fn persist_admission(
@@ -45,7 +51,7 @@ impl LearningArtifactOwnerHost {
     pub(super) fn validate_checkpoint_admission(
         &self,
         checkpoint: &ArtifactOwnerPublicationCheckpointV1,
-    ) -> Result<(), ArtifactOwnerHostError> {
+    ) -> Result<WithdrawalBoundArtifactAdmissionV3, ArtifactOwnerHostError> {
         let path = self
             .root
             .join("admissions")
@@ -66,7 +72,7 @@ impl LearningArtifactOwnerHost {
         {
             return Err(ArtifactOwnerHostError::ProvenanceMismatch);
         }
-        Ok(())
+        Ok(admission)
     }
 
     pub(super) fn validate_parent_provenance(
@@ -101,16 +107,17 @@ impl LearningArtifactOwnerHost {
         Ok(())
     }
 
-    pub(crate) fn current_provenance_exclusions(
+    pub(crate) fn current_provenance(
         &self,
         registry: &ArtifactRegistry,
         withdrawals: &DatasetWithdrawalRegistry,
         now: u64,
-    ) -> Result<BTreeSet<StableId>, ArtifactOwnerHostError> {
+    ) -> Result<CurrentArtifactProvenance, ArtifactOwnerHostError> {
         if withdrawals.scope_digest() != Some(self.verifier.trust.withdrawal_scope_digest) {
             return Err(ArtifactOwnerHostError::ProvenanceMismatch);
         }
         let mut ineligible = BTreeSet::new();
+        let mut source_datasets = BTreeMap::new();
         for record in registry.records() {
             let ArtifactEvent::Register { manifest, .. } = &record.event else {
                 continue;
@@ -129,6 +136,15 @@ impl LearningArtifactOwnerHost {
                 ineligible.insert(manifest.artifact_id.clone());
             }
             self.validate_parent_provenance(&admission, registry)?;
+            source_datasets.insert(
+                manifest.artifact_id.clone(),
+                admission
+                    .validated_manifest
+                    .manifest
+                    .source_dataset_digests
+                    .into_iter()
+                    .collect(),
+            );
         }
         // Registration is append ordered, so an ancestor's current exclusions
         // can be carried forward without changing the registry digest chain.
@@ -142,7 +158,10 @@ impl LearningArtifactOwnerHost {
                 ineligible.insert(manifest.artifact_id.clone());
             }
         }
-        Ok(ineligible)
+        Ok(CurrentArtifactProvenance {
+            ineligible,
+            source_datasets,
+        })
     }
 
     fn read_manifest_admission(

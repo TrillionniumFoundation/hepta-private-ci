@@ -163,10 +163,13 @@ impl PinnedCognitiveRanker {
             || body_generation == 0
             || selected.manifest.content_digest != model_pin.payload_digest
             || selected.manifest.objective_digest != model_pin.objective_digest
-            || selected.manifest.support_digest != model_pin.dataset_digest
             || selected.manifest.generation != model_pin.generation
         {
             return Err("ranker owner/model pin binding mismatch".to_string());
+        }
+        let initial_current = current.current()?;
+        if !initial_current.supports_dataset(&selected.manifest, model_pin.dataset_digest) {
+            return Err("ranker dataset differs from current artifact provenance".to_string());
         }
         let candidate = load_pinned_candidate(snapshot, payload, selected)
             .map_err(|error| error.to_string())?;
@@ -175,15 +178,18 @@ impl PinnedCognitiveRanker {
         if model.artifact_id() != &candidate.spec().manifest.artifact_id {
             return Err("model identity differs from selected registry artifact".to_string());
         }
+        let mut candidate = RevalidatingCandidate::new(candidate);
+        candidate
+            .with_current(initial_current, |_| ())
+            .map_err(|error| error.to_string())?;
         let value = Self {
             owner,
             body_generation,
             policy_digest: model_pin.payload_digest,
             model,
             current,
-            cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
+            cache: Mutex::new(Some(candidate)),
         };
-        value.revalidate()?;
         Ok(value)
     }
 
@@ -207,7 +213,7 @@ impl PinnedCognitiveRanker {
             || selected.manifest.generation != receipt.candidate_generation
             || selected.manifest.content_digest != receipt.candidate_artifact_digest
             || selected.manifest.objective_digest != receipt.objective_digest
-            || selected.manifest.support_digest != receipt.dataset_digest
+            || model_pin.dataset_digest != receipt.dataset_digest
         {
             return Err(
                 "selected ranker does not match independently admitted candidate".to_string(),

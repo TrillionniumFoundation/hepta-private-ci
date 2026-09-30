@@ -34,6 +34,7 @@ use crate::PinnedCandidateSpec;
 use crate::RevalidatingCandidate;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::load_pinned_candidate;
+use crate::pinned::CurrentProvenanceRequirement;
 
 const MAX_TRUSTED_SELECTORS: usize = 32;
 
@@ -131,6 +132,8 @@ pub struct VerifiedArtifactSelectionV1 {
     issued_at: u64,
     expires_at: u64,
     trust_digest: Digest32,
+    artifact_owner_trust_digest: Digest32,
+    provenance_requirement: CurrentProvenanceRequirement,
     authority: AuthorityPosture,
 }
 
@@ -357,6 +360,8 @@ impl ArtifactSelectionVerifierV1 {
             issued_at: signed.issued_at,
             expires_at,
             trust_digest: self.trust_digest,
+            artifact_owner_trust_digest: self.artifact_owner_trust_digest,
+            provenance_requirement: current.provenance_requirement(&signed.artifact_id),
             authority: AuthorityPosture::DENY_ALL,
         })
     }
@@ -408,7 +413,11 @@ pub fn load_selected_candidate(
 ) -> Result<RevalidatingCandidate, ArtifactSelectionError> {
     let loaded = load_pinned_candidate(snapshot_file, payload_file, selection.pin)
         .map_err(ArtifactSelectionError::Load)?;
-    Ok(RevalidatingCandidate::new(loaded))
+    Ok(RevalidatingCandidate::new_with_current_trust(
+        loaded,
+        selection.artifact_owner_trust_digest,
+        selection.provenance_requirement,
+    ))
 }
 
 fn validate_manifest_binding(
@@ -739,6 +748,84 @@ mod tests {
                 Err(ArtifactSelectionError::SelectionContext)
             ));
             assert!(journal.records().is_empty());
+        }
+    }
+
+    #[test]
+    fn selected_load_keeps_owner_trust_and_full_provenance_for_first_use() {
+        use crate::CreateOnlyArtifactFile;
+        use crate::write_candidate_payload;
+        use crate::write_registry_snapshot;
+
+        for fault in ["owner-trust", "provenance"] {
+            let directory = std::env::temp_dir().join(format!(
+                "hepta-selected-owner-trust-{fault}-{}",
+                std::process::id(),
+            ));
+            let _ = std::fs::remove_dir_all(&directory);
+            must(std::fs::create_dir(&directory));
+            let owner_key = SigningKey::from_bytes(&[13; 32]);
+            let owner_trust = owner_trust(&owner_key);
+            let selector_key = SigningKey::from_bytes(&[46; 32]);
+            let manifest = manifest(id("producer"));
+            let mut registry = ArtifactRegistry::new();
+            must(registry.append(ArtifactEvent::Register {
+                event_id: id("register"),
+                manifest: manifest.clone(),
+            }));
+            let snapshot = directory.join("snapshot");
+            let payload = directory.join("payload");
+            let receipt = must(write_registry_snapshot(
+                must(CreateOnlyArtifactFile::create(&snapshot)),
+                &registry,
+                digest("binding"),
+            ));
+            must(write_candidate_payload(
+                must(CreateOnlyArtifactFile::create(&payload)),
+                &registry,
+                &manifest.artifact_id,
+                b"payload",
+            ));
+            let verifier = must(ArtifactSelectionVerifierV1::new(
+                trust(&selector_key, id("selector")),
+                &owner_trust,
+            ));
+            let mut current = VerifiedCurrentRegistryViewV1::new(
+                receipt,
+                registry.clone(),
+                digest("witness"),
+                verifier.artifact_owner_trust_digest,
+            );
+            current.bind_source_datasets(std::collections::BTreeMap::from([(
+                manifest.artifact_id.clone(),
+                std::collections::BTreeSet::from([digest("source-dataset")]),
+            )]));
+            let signed = signed_selection(&selector_key, id("selector"), &manifest, &current);
+            let selection = must(verifier.verify(&signed, &current, 30));
+            let mut consumer = must(load_selected_candidate(
+                must(File::open(&snapshot)),
+                must(File::open(&payload)),
+                selection,
+            ));
+            let foreign = VerifiedCurrentRegistryViewV1::new(
+                receipt,
+                registry.clone(),
+                digest("foreign-witness"),
+                match fault {
+                    "owner-trust" => digest("foreign-owner-trust"),
+                    "provenance" => verifier.artifact_owner_trust_digest,
+                    _ => unreachable!(),
+                },
+            );
+            assert!(matches!(
+                consumer.with_current(foreign, |_| panic!("different owner trust cannot consume")),
+                Err(PinnedCandidateLoadError::FrontierMismatch),
+            ));
+            assert!(matches!(
+                consumer.with_current(current, |_| ()),
+                Err(PinnedCandidateLoadError::Unavailable),
+            ));
+            must(std::fs::remove_dir_all(directory));
         }
     }
 
