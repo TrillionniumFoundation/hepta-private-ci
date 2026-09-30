@@ -11,6 +11,7 @@ use sqlx::Row;
 
 use crate::AutomationStore;
 use crate::TaskFlowError;
+use crate::TaskFlowFence;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum EffectDispatchObservationKind {
@@ -88,8 +89,29 @@ impl AutomationStore {
         grant_id: &str,
         grant_nonce_digest: &Sha256Digest,
         record_command_id: &str,
+        fence: &TaskFlowFence,
         started_at_ms: u64,
     ) -> Result<EffectDispatchStart, TaskFlowError> {
+        let mut transaction = self
+            .taskflow_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        let step = self
+            .verify_taskflow_effect_dispatch_tx(
+                &mut transaction,
+                run_id,
+                step_id,
+                attempt,
+                fence,
+                started_at_ms,
+            )
+            .await?;
+        if step.intent_digest != *intent_digest || step.payload_digest != *payload_digest {
+            return Err(TaskFlowError::Conflict(
+                "effect barrier differs from claimed step bytes".to_string(),
+            ));
+        }
         let inserted = sqlx::query(
             "INSERT INTO taskflow_effect_dispatch_attempts (
                 owner_agent_id, run_id, step_id, attempt, intent_digest,
@@ -110,8 +132,12 @@ impl AutomationStore {
         .bind(grant_nonce_digest.as_str())
         .bind(record_command_id)
         .bind(to_i64(started_at_ms)?)
-        .execute(self.taskflow_pool())
+        .execute(&mut *transaction)
         .await;
+        transaction
+            .commit()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
 
         match inserted {
             Ok(_) => {
@@ -211,8 +237,13 @@ impl AutomationStore {
               AND r.step_id = a.step_id
               AND r.attempt = a.attempt
              WHERE a.owner_agent_id = ?
-               AND r.run_id IS NULL
-               AND (o.run_id IS NULL OR o.observation = 'indeterminate')
+               AND NOT EXISTS (
+                   SELECT 1 FROM taskflow_effect_projection_receipts p
+                   WHERE p.owner_agent_id = a.owner_agent_id
+                     AND p.run_id = a.run_id AND p.step_id = a.step_id AND p.attempt = a.attempt
+                     AND p.observation = COALESCE(r.observation, o.observation)
+                     AND p.evidence_digest = COALESCE(r.evidence_digest, o.evidence_digest)
+               )
              ORDER BY a.started_at_ms, a.run_id, a.step_id, a.attempt
              LIMIT ?",
         )
@@ -343,7 +374,7 @@ impl AutomationStore {
     }
 }
 
-fn effect_attempt_from_row(
+pub(crate) fn effect_attempt_from_row(
     row: sqlx::sqlite::SqliteRow,
 ) -> Result<EffectDispatchAttempt, TaskFlowError> {
     let observation_kind: Option<String> = row
@@ -445,11 +476,13 @@ mod tests {
     use codex_hepta_paths::HeptaFleetRoot;
 
     use super::*;
+    use crate::TaskFlowCommand;
     use crate::TaskFlowDefinition;
     use crate::TaskFlowEdgeSpec;
     use crate::TaskFlowFence;
     use crate::TaskFlowNodeKind;
     use crate::TaskFlowNodeSpec;
+    use crate::TaskFlowTransition;
 
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
@@ -519,16 +552,58 @@ mod tests {
             )
             .await
             .expect("create run");
-        store
+        let claimed = store
             .claim_taskflow_run("effect-run", &fence, 20, 10_000)
             .await
             .expect("claim run");
+        store
+            .apply_taskflow_command(
+                &TaskFlowCommand::new(
+                    "effect-run",
+                    "start-effect-run",
+                    fence.clone(),
+                    claimed.revision,
+                    TaskFlowTransition::Start,
+                    /*now_ms*/ 20,
+                )
+                .expect("start command"),
+            )
+            .await
+            .expect("start run");
+        let intent = Sha256Digest::for_bytes(b"effect-intent");
+        let payload = Sha256Digest::for_bytes(b"effect-payload");
+        store
+            .prepare_taskflow_step(
+                "effect-run",
+                "work",
+                /*attempt*/ 1,
+                &fence,
+                &intent,
+                &payload,
+                "prepare-effect",
+                /*now_ms*/ 20,
+            )
+            .await
+            .expect("prepare effect");
+        store
+            .claim_taskflow_step(
+                "effect-run",
+                "work",
+                /*attempt*/ 1,
+                &fence,
+                &intent,
+                &payload,
+                "claim-effect",
+                /*now_ms*/ 20,
+            )
+            .await
+            .expect("claim effect");
         (temp, layout, store, fence)
     }
 
     #[tokio::test]
     async fn indeterminate_provider_evidence_reconciles_after_reopen_without_redispatch() {
-        let (_temp, layout, store, _fence) = prepared_store().await;
+        let (_temp, layout, store, fence) = prepared_store().await;
         let intent = Sha256Digest::for_bytes(b"effect-intent");
         let payload = Sha256Digest::for_bytes(b"effect-payload");
         let binding = Sha256Digest::for_bytes(b"effect-binding");
@@ -546,6 +621,7 @@ mod tests {
                 "grant-1",
                 &nonce,
                 "record-effect",
+                &fence,
                 21,
             )
             .await
@@ -609,12 +685,13 @@ mod tests {
                 .map(|value| value.evidence_digest.clone()),
             Some(terminal.clone())
         );
-        assert!(
+        assert_eq!(
             reopened
                 .pending_effect_dispatch_attempts(10)
                 .await
-                .expect("no pending after terminal")
-                .is_empty()
+                .expect("terminal evidence still needs step/run projection")
+                .len(),
+            1
         );
 
         let replay = reopened

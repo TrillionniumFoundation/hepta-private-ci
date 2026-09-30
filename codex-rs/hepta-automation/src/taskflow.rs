@@ -593,6 +593,11 @@ pub enum TaskFlowTransition {
     Cancel {
         reason: String,
     },
+    /// Owner-normalized cancellation with a durable provider-contact barrier.
+    /// Preserves sticky cancel intent while the effect must still reconcile.
+    CancelPendingEffect {
+        reason: String,
+    },
     Succeed {
         output_digest: Sha256Digest,
     },
@@ -1107,9 +1112,10 @@ impl AutomationStore {
             &command.transition,
             TaskFlowTransition::RequeueProvenAbsent { .. }
                 | TaskFlowTransition::CancelProvenAbsent { .. }
+                | TaskFlowTransition::CancelPendingEffect { .. }
         ) {
             return Err(invalid(
-                "provider-absence transitions are restricted to automation recovery",
+                "provider-evidence transitions are restricted to the automation owner",
             ));
         }
         self.apply_taskflow_command_inner(command, false, false)
@@ -1173,10 +1179,11 @@ impl AutomationStore {
         validate_text(&command.run_id, "run_id", MAX_ID_BYTES)?;
         validate_text(&command.command_id, "command_id", MAX_ID_BYTES)?;
         self.validate_taskflow_fence(&command.fence)?;
-        let command_digest = command.digest()?;
+        let mut command = command.clone();
+        let mut command_digest = command.digest()?;
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         let row =
@@ -1208,7 +1215,7 @@ impl AutomationStore {
             ));
         }
         if let Some(previous) = sqlx::query(
-            "SELECT command_digest, revision, event_seq FROM taskflow_events
+            "SELECT command_digest, revision, event_seq, payload_json FROM taskflow_events
              WHERE owner_agent_id = ? AND run_id = ? AND command_id = ?",
         )
         .bind(self.taskflow_owner_agent_id().as_str())
@@ -1218,6 +1225,24 @@ impl AutomationStore {
         .await
         .map_err(|_| TaskFlowError::Unavailable)?
         {
+            // The original Cancel may have been safely normalized while a
+            // provider barrier existed. Replay that exact recorded choice,
+            // even when the effect has since reached a terminal observation.
+            if let TaskFlowTransition::Cancel { reason } = &command.transition {
+                let payload: String = previous
+                    .try_get("payload_json")
+                    .map_err(|_| corrupt("command payload column"))?;
+                if let Ok(TaskFlowTransition::CancelPendingEffect {
+                    reason: stored_reason,
+                }) = serde_json::from_str::<TaskFlowTransition>(&payload)
+                    && *reason == stored_reason
+                {
+                    command.transition = TaskFlowTransition::CancelPendingEffect {
+                        reason: stored_reason,
+                    };
+                    command_digest = command.digest()?;
+                }
+            }
             let digest: String = previous
                 .try_get("command_digest")
                 .map_err(|_| TaskFlowError::Corrupt("command digest column".to_string()))?;
@@ -1244,6 +1269,17 @@ impl AutomationStore {
                 state: run.state,
                 state_digest: run.state_digest,
             });
+        }
+        if let TaskFlowTransition::Cancel { reason } = &command.transition {
+            if self
+                .has_pending_effect_projection_tx(&mut tx, &command.run_id)
+                .await?
+            {
+                command.transition = TaskFlowTransition::CancelPendingEffect {
+                    reason: reason.clone(),
+                };
+                command_digest = command.digest()?;
+            }
         }
         let explicit_reconcile = run.state == TaskFlowRunState::Indeterminate
             && matches!(&command.transition, TaskFlowTransition::Reconcile { .. });
@@ -1531,6 +1567,19 @@ fn apply_transition(
             run.terminal_reason = Some(reason.clone());
             clear_lease(run);
         }
+        TaskFlowTransition::CancelPendingEffect { reason } => {
+            if run.state.terminal() {
+                return Err(invalid_transition(
+                    "terminal run cannot accept pending cancellation",
+                ));
+            }
+            validate_text(reason, "cancel reason", MAX_ID_BYTES)?;
+            run.cancel_requested = true;
+            run.state = TaskFlowRunState::Indeterminate;
+            run.terminal_reason = Some(reason.clone());
+            run.wait_token = None;
+            run.retry_at_ms = None;
+        }
         TaskFlowTransition::Succeed { output_digest } => {
             if !matches!(
                 run.state,
@@ -1614,6 +1663,7 @@ fn transition_name(transition: &TaskFlowTransition) -> &'static str {
         TaskFlowTransition::RequeueProvenAbsent { .. } => "requeued_proven_absent",
         TaskFlowTransition::CancelProvenAbsent { .. } => "cancelled_proven_absent",
         TaskFlowTransition::Cancel { .. } => "cancelled",
+        TaskFlowTransition::CancelPendingEffect { .. } => "cancel_pending_effect",
         TaskFlowTransition::Succeed { .. } => "succeeded",
         TaskFlowTransition::Fail { .. } => "failed",
         TaskFlowTransition::Indeterminate { .. } => "indeterminate",
