@@ -14,6 +14,7 @@ use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_learning_artifacts::owner::ArtifactOwnerActionV1;
 use codex_hepta_learning_artifacts::owner::ArtifactOwnerBootstrapConfigV1;
 use codex_hepta_learning_artifacts::owner::ArtifactOwnerBootstrapV1;
 use codex_hepta_learning_artifacts::owner::DurableInstrumentedLearningArtifactReferenceHostV1;
@@ -63,10 +64,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 continue;
             }
         };
-        let result = host.handle(request, unix_seconds()?);
+        let action = request.action;
+        let now = unix_seconds()?;
+        let result = host.handle(request, now);
         match result {
             Ok(result) => {
-                write_response(&mut stream, &result.response)?;
+                if action == ArtifactOwnerActionV1::Metrics {
+                    let metrics = host.operational_metrics(now)?.prometheus_text();
+                    write_response(&mut stream, metrics.as_bytes())?;
+                } else {
+                    write_response(&mut stream, &result.response)?;
+                }
                 if result.should_shutdown {
                     host.mark_stopped(unix_seconds()?)?;
                     break;
