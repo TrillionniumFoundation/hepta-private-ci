@@ -1222,14 +1222,9 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     verify_taskflow_store(pool, owner_agent_id)
         .await
         .map_err(map_taskflow_verify_error)?;
-    crate::neural_circuit_runtime::verify_circuit_runtime_store(&AutomationStore {
-        pool: pool.clone(),
-        owner_agent_id: owner_agent_id.clone(),
-        path: PathBuf::new(),
-        timer_epoch: 1,
-    })
-    .await
-    .map_err(map_taskflow_verify_error)?;
+    crate::neural_circuit_runtime::verify_circuit_runtime_store(pool, owner_agent_id)
+        .await
+        .map_err(map_taskflow_verify_error)?;
     Ok(())
 }
 
