@@ -12,12 +12,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: hepta-kg-stage1-materialize-${{ github.ref }}
+  group: hepta-kg-stage1-materialize-macos-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   materialize:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
