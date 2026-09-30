@@ -38,6 +38,7 @@
 | --- | --- |
 | kernel 37/37；intelligence／ledger 201/201，另有 1 个 ignored | 已执行的对应包测试；ignored 不计为通过，不能替代完整 Agentd 产品执行。 |
 | 67 个 Python 回归通过；规范状态与只读源码 inventory 检查通过 | 证据脚本、拒绝规则、投影一致性及源码标记；部分测试使用明确标注的合成工件。 |
+| intuition／intelligence／ledger 三包 all-targets 严格 Clippy 通过，执行 `--no-deps -- -D warnings`；`just fmt` 完成 | 对应三包及其测试、示例的检查；固定夹具的 panic lint 例外限定在有原因说明的函数内。完整 Agentd 检查仍待精确 CI。 |
 | 最终本地性能 gates 通过；曾发生并发执行失败并保留失败记录 | 对应环境下的 V4 内核 gate 观测；不代表组合请求、writer／witness、目标机容量或稳定 SLO。 |
 | 256 次普通 fuzz smoke 与 1024 个 seeded cases | 有限输入烟测；不是 sanitizer 检测、长时间 fuzz 或完整覆盖证明。 |
 | 完整 Agentd 本地执行遭 SIGKILL；磁盘 ENOSPC 后已释放空间 | 这些运行不能计为通过；清理空间不产生执行成功证据。 |
