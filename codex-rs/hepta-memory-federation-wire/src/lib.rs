@@ -1,9 +1,13 @@
-//! Authenticated memory-federation wire protocol with durable host/client recovery.
+//! Versioned, authenticated cross-host contracts for memory federation.
 //!
-//! This layer adds restart-surviving replay and attempt state, correlated
-//! outbound client admission, a two-stage read-only host, and an owner-only Unix
-//! snapshot backend. It still owns no canonical V2 product packet adapter,
-//! selected network transport, Agentd serving, activation, or release authority.
+//! This crate is transport-neutral. It provides registered canonical encoding,
+//! directional peer credentials, bounded replay protection, authenticated
+//! frontier witnesses, restart-surviving replay/attempt recovery, a two-stage
+//! read-only host admission boundary, cancellation acknowledgement, and a
+//! canonical V2 product-transport bridge. A selected product transport must
+//! still provide mutually authenticated TLS (or an equivalent independently
+//! reviewed secure channel), peer routing, secure
+//! credential storage, and target-host qualification.
 
 #![forbid(unsafe_code)]
 
@@ -14,6 +18,7 @@ mod credential;
 #[cfg(unix)]
 mod file_store;
 mod host;
+mod product;
 mod protocol;
 mod recovery;
 mod replay;
@@ -48,6 +53,31 @@ pub use host::FederationHostQueryResultV1;
 pub use host::FederationOutboundCredentialV1;
 pub use host::FederationWireHostV1;
 pub use host::MAX_FEDERATION_HOST_PEERS;
+pub use product::AdmittedFederationProductQueryV1;
+pub use product::FEDERATION_TRANSPORT_CONTEXT_KEY_BYTES;
+pub use product::FederationAuthenticatedTransportV1;
+pub use product::FederationProductClientV1;
+pub use product::FederationProductClockV1;
+pub use product::FederationProductErrorV1;
+pub use product::FederationProductExchangeErrorV1;
+pub use product::FederationProductExchangeFutureV1;
+pub use product::FederationProductExchangeResponseV1;
+pub use product::FederationProductExchangeV1;
+pub use product::FederationProductHostAdmissionV1;
+pub use product::FederationProductHostV1;
+pub use product::FederationProductPacketV1;
+pub use product::FederationProductProfileV1;
+pub use product::FederationTransportContextIssuerV1;
+pub use product::FederationTransportContextVerifierV1;
+pub use product::FederationWireTransportV2;
+pub use product::MAX_FEDERATION_PRODUCT_BODY_BYTES;
+pub use product::MAX_FEDERATION_PRODUCT_FRAME_BYTES;
+pub use product::MAX_FEDERATION_PRODUCT_PACKET_BYTES;
+pub use product::SystemFederationProductClockV1;
+pub use product::decode_query_v2;
+pub use product::decode_response_v2;
+pub use product::encode_query_v2;
+pub use product::encode_response_v2;
 pub use protocol::AuthenticatedFederationFrameV1;
 pub use protocol::AuthenticatedFrontierV1;
 pub use protocol::FEDERATION_MAC_BYTES;
@@ -88,5 +118,7 @@ mod host_atomicity_tests;
 mod host_terminal_tests;
 #[cfg(test)]
 mod host_tests;
+#[cfg(test)]
+mod product_tests;
 #[cfg(test)]
 mod tests;

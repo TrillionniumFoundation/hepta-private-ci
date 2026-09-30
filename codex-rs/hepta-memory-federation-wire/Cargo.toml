@@ -6,6 +6,7 @@ version = "0.0.0"
 publish = false
 
 [dependencies]
+codex-hepta-memory-federation = { path = "../hepta-memory-federation" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-wire = { path = "../hepta-wire" }
 hmac = "0.12.1"
@@ -13,8 +14,10 @@ rand = "0.9"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.10"
+thiserror = "2.0.17"
 zeroize = "1.8.2"
 
-# Recovery/host delivery remains independently buildable and owns no product
-# packet adapter, selected network transport, Agentd activation, or release.
+# Keep the authenticated cross-host protocol and its canonical V2 bridge
+# independently buildable. Adding this source does not select a network
+# transport, configure Agentd serving, or widen activation/release claims.
 [workspace]

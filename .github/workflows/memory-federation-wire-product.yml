@@ -1,0 +1,36 @@
+name: memory federation canonical V2 product adapter
+
+on:
+  push:
+    branches:
+      - feat/memory-federation-wire-product-adapter-20260930
+    paths:
+      - codex-rs/hepta-memory-federation-wire/**
+      - docs/modules/memory.federation/WIRE_PRODUCT_LAYER.md
+      - .github/workflows/memory-federation-wire-product.yml
+  pull_request:
+    paths:
+      - codex-rs/hepta-memory-federation-wire/**
+      - docs/modules/memory.federation/WIRE_PRODUCT_LAYER.md
+      - .github/workflows/memory-federation-wire-product.yml
+
+permissions:
+  contents: read
+
+jobs:
+  product-adapter:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Verify canonical V2 product adapter
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml -- --check
+          cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --lib
+          cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --doc
+          cargo clippy --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --all-targets -- -D warnings
+          cargo run --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --bin memory_federation_capacity_probe -- --output "$RUNNER_TEMP/memory-federation-capacity.json"
+          test -s "$RUNNER_TEMP/memory-federation-capacity.json"
