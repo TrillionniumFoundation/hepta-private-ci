@@ -13,6 +13,7 @@ on:
       - docs/modules/objective.compiler/**
       - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
       - docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md
+      - qualification/module-execution-dossiers/detail/objective.compiler.md
       - scripts/hepta-objective-*.py
       - scripts/test_hepta_objective_*.py
       - scripts/hepta-implementation-maps.py
@@ -64,12 +65,15 @@ jobs:
             docs/modules/objective.compiler \
             docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md \
             docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md \
+            qualification/module-execution-dossiers/detail/objective.compiler.md \
             scripts/hepta-implementation-maps.py \
             scripts/hepta-objective-current-state.py \
             scripts/hepta-objective-evidence-project.py \
             scripts/hepta-objective-qualify-exact.py \
             scripts/hepta-objective-release-gate.py \
+            scripts/hepta-objective-spec-consistency.py \
             scripts/hepta-objective-target-measure.py \
+            scripts/test_hepta_objective_spec_consistency.py \
             .github/workflows/hepta-objective-admission.yml \
             .github/workflows/hepta-objective-authoring-validation.yml \
             .github/workflows/hepta-objective-exact-execution.yml \
@@ -79,17 +83,34 @@ jobs:
           sha256sum "$RUNNER_TEMP/objective-authoring/repository.tgz" \
             > "$RUNNER_TEMP/objective-authoring/repository.tgz.sha256"
 
-      - name: Regenerate objective implementation map without repository credentials
+      - name: Regenerate objective source map and static state projections
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta-implementation-maps.py migrate --module objective.compiler \
             2>&1 | tee "$RUNNER_TEMP/objective-authoring/map-migrate.log"
+          python3 scripts/hepta-objective-current-state.py sync \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/current-state-sync.log"
           cp docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
             "$RUNNER_TEMP/objective-authoring/IMPLEMENTATION_MAP.json"
+          cp docs/modules/objective.compiler/TECHNICAL.md \
+            "$RUNNER_TEMP/objective-authoring/TECHNICAL.md"
+          cp qualification/module-execution-dossiers/detail/objective.compiler.md \
+            "$RUNNER_TEMP/objective-authoring/objective.compiler.dossier.md"
           git diff -- docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
-            > "$RUNNER_TEMP/objective-authoring/implementation-map.patch"
+            docs/modules/objective.compiler/TECHNICAL.md \
+            qualification/module-execution-dossiers/detail/objective.compiler.md \
+            > "$RUNNER_TEMP/objective-authoring/generated-state.patch"
           git diff --check
+
+      - name: Verify normative source and document consistency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.test_hepta_objective_spec_consistency \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/spec-consistency-tests.log"
+          python3 scripts/hepta-objective-spec-consistency.py verify \
+            2>&1 | tee "$RUNNER_TEMP/objective-authoring/spec-consistency.log"
 
       - name: Objective compile, tests and strict lint
         working-directory: codex-rs
@@ -129,10 +150,19 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Confirm authoring job had no write path
+      - name: Confirm the unprivileged job changed only generated projections
         if: always()
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git ls-files --others --exclude-standard)"
+          git diff --name-only | sort > "$RUNNER_TEMP/objective-authoring/changed-paths.txt"
+          comm -23 \
+            "$RUNNER_TEMP/objective-authoring/changed-paths.txt" \
+            <(printf '%s\n' \
+              docs/modules/objective.compiler/IMPLEMENTATION_MAP.json \
+              docs/modules/objective.compiler/TECHNICAL.md \
+              qualification/module-execution-dossiers/detail/objective.compiler.md | sort) \
+            | tee "$RUNNER_TEMP/objective-authoring/unexpected-changes.txt"
+          test ! -s "$RUNNER_TEMP/objective-authoring/unexpected-changes.txt"
