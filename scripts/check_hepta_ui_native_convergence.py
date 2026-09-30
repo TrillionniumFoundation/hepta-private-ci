@@ -36,6 +36,7 @@ ALLOWED_WORKFLOW = "ui-native-qualification.yml"
 STATE_FILES = (
     "apps/hepta-native/CURRENT_SOURCE.json",
     "apps/hepta-native/CANDIDATE.json",
+    "apps/hepta-native/STORAGE_BUDGETS.json",
     "docs/modules/ui.native/CURRENT_SOURCE.json",
     "docs/modules/ui.native/CURRENT_DELIVERY.json",
     "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
