@@ -54,11 +54,11 @@ jobs:
           actual = hashlib.sha256(source).hexdigest()
           if actual != expected:
               raise SystemExit(f'phase-2 payload digest mismatch: {actual}')
-          target = Path('/tmp/patch_runtime_supervisor_phase2.py')
+          target = Path('scripts/.runtime_supervisor_phase2_author.py')
           target.write_bytes(source)
           PY
-          python3 -m py_compile /tmp/patch_runtime_supervisor_phase2.py
-          python3 /tmp/patch_runtime_supervisor_phase2.py
+          python3 -m py_compile scripts/.runtime_supervisor_phase2_author.py
+          python3 scripts/.runtime_supervisor_phase2_author.py
 
       - name: Format and verify supervisor source
         shell: bash
@@ -74,6 +74,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -f \
+            scripts/.runtime_supervisor_phase2_author.py \
             .github/runtime-supervisor/phase2_patch.b64 \
             .github/workflows/runtime-supervisor-phase2-author.yml \
             .github/workflows/runtime-supervisor-phase2-author-selfhosted.yml \
