@@ -109,3 +109,6 @@ replace_once(
         }
 ''',
 )
+
+# This file is intentionally changed after the workflow exists so GitHub runs
+# the isolated validation/publish job from a parent that already contains it.
