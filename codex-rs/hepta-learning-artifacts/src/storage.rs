@@ -13,6 +13,14 @@ use std::io::SeekFrom;
 use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
+#[cfg(unix)]
+use rustix::fs::Mode;
+#[cfg(unix)]
+use rustix::fs::OFlags;
+#[cfg(unix)]
+use rustix::fs::open;
+#[cfg(unix)]
+use rustix::fs::openat;
 use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
@@ -69,25 +77,82 @@ impl CreateOnlyArtifactFile {
 
     /// Create a new final component beneath a host-designated trusted root.
     ///
-    /// The relative path must contain only normal components. Every existing
-    /// ancestor below the canonical root must be a real directory rather than a
-    /// symlink. This closes lexical escape and ordinary symlink traversal. The
-    /// host must still prevent concurrent hostile replacement of trusted
-    /// ancestors; the Rust standard library does not expose an openat2-style
-    /// directory capability under this crate's unsafe-code prohibition.
+    /// On Unix this holds a directory capability for every traversal step and
+    /// opens the final component relative to that capability with NOFOLLOW and
+    /// EXCL. Concurrent renames of path names therefore cannot redirect the
+    /// create outside the opened root. Other platforms retain the conservative
+    /// lexical/symlink validation path until an equivalent safe directory API is
+    /// qualified there.
     pub fn create_beneath_trusted_root(
         root: impl AsRef<Path>,
         relative: impl AsRef<Path>,
     ) -> Result<Self, ArtifactStorageError> {
-        Self::create(resolve_beneath_trusted_root(root, relative)?)
+        #[cfg(unix)]
+        {
+            return create_beneath_directory_capability(root.as_ref(), relative.as_ref())
+                .map(Self);
+        }
+        #[cfg(not(unix))]
+        {
+            Self::create(resolve_beneath_trusted_root(root, relative)?)
+        }
     }
 }
 
-pub(crate) fn resolve_beneath_trusted_root(
-    root: impl AsRef<Path>,
-    relative: impl AsRef<Path>,
-) -> Result<PathBuf, ArtifactStorageError> {
-    let relative = relative.as_ref();
+#[cfg(unix)]
+fn create_beneath_directory_capability(
+    root: &Path,
+    relative: &Path,
+) -> Result<File, ArtifactStorageError> {
+    validate_relative_artifact_path(relative)?;
+    let mut directory = open(
+        root,
+        OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+        Mode::empty(),
+    )
+    .map_err(|error| ArtifactStorageError::from(io::Error::from(error)))?;
+
+    let mut components = relative.components().peekable();
+    while let Some(component) = components.next() {
+        let Component::Normal(name) = component else {
+            return Err(ArtifactStorageError::InvalidPath);
+        };
+        if components.peek().is_some() {
+            directory = openat(
+                &directory,
+                name,
+                OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+                Mode::empty(),
+            )
+            .map_err(|error| ArtifactStorageError::from(io::Error::from(error)))?;
+            continue;
+        }
+        let opened = openat(
+            &directory,
+            name,
+            OFlags::RDWR
+                | OFlags::CREATE
+                | OFlags::EXCL
+                | OFlags::NOFOLLOW
+                | OFlags::CLOEXEC,
+            Mode::RUSR | Mode::WUSR,
+        );
+        return match opened {
+            Ok(file) => Ok(File::from(file)),
+            Err(error) => {
+                let error = io::Error::from(error);
+                if error.kind() == io::ErrorKind::AlreadyExists {
+                    Err(ArtifactStorageError::AlreadyExists)
+                } else {
+                    Err(ArtifactStorageError::from(error))
+                }
+            }
+        };
+    }
+    Err(ArtifactStorageError::InvalidPath)
+}
+
+fn validate_relative_artifact_path(relative: &Path) -> Result<(), ArtifactStorageError> {
     if relative.as_os_str().is_empty()
         || relative.is_absolute()
         || relative
@@ -96,6 +161,15 @@ pub(crate) fn resolve_beneath_trusted_root(
     {
         return Err(ArtifactStorageError::InvalidPath);
     }
+    Ok(())
+}
+
+pub(crate) fn resolve_beneath_trusted_root(
+    root: impl AsRef<Path>,
+    relative: impl AsRef<Path>,
+) -> Result<PathBuf, ArtifactStorageError> {
+    let relative = relative.as_ref();
+    validate_relative_artifact_path(relative)?;
 
     let canonical_root = std::fs::canonicalize(root).map_err(ArtifactStorageError::from)?;
     if !canonical_root.metadata()?.is_dir() {
