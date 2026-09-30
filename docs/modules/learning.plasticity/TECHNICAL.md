@@ -258,7 +258,7 @@ The `State` values below are canonical delivery/work-package states projected fr
 
 #### `PLS-1-PARAMETER-PLASTICITY`
 
-- State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `3`; parallel class: `contract_coordinated`.
 - Owner/deputy: `learning-platform` / `architecture`.
 - Allowed write paths:
 - `codex-rs/hepta-plasticity/**`

@@ -251,7 +251,7 @@ For `neuron.runtime`, this document grants no runtime, production, model, provid
 
 #### `BIO-0-NEURON-INTUITION-CONTRACTS`
 
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `learning-platform` / `inference-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-neuron/**`

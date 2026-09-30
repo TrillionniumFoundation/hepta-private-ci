@@ -189,7 +189,7 @@ For `ui.control`, this document grants no runtime, production, model, provider, 
 
 #### `UI-V5`
 
-- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `independent_source_preparation`.
+- State: `source_implemented`; priority: `2`; parallel class: `independent_source_preparation`.
 - Owner/deputy: `ui-platform` / `accessibility`.
 - Allowed write paths:
 - `apps/hepta-control-ui/**`

@@ -261,7 +261,7 @@ For `utility.ndu`, this document grants no runtime, production, model, provider,
 
 #### `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `learning-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-ndu/**`

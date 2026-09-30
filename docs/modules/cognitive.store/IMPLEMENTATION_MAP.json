@@ -120,7 +120,15 @@
       "tests": [
         "codex-rs/hepta-memory/src/production_writer.rs",
         "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
-        "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs"
+        "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer_authority_tests.rs",
+          "kind": "semantic_authority_currentness_before_commit",
+          "command": "just test -p codex-hepta-memory --lib",
+          "testNames": [
+            "revoked_semantic_authority_rolls_back_remember_correct_and_forget"
+          ]
+        }
       ],
       "sourcePathExists": true,
       "designOperation": "remember_correct_forget_with_atomic_authority_and_operation_provenance",

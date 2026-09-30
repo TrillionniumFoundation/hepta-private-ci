@@ -243,7 +243,7 @@ For `intuition.policy`, this document grants no runtime, production, model, prov
 
 #### `BIO-0-NEURON-INTUITION-CONTRACTS`
 
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `learning-platform` / `inference-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-neuron/**`
@@ -277,7 +277,7 @@ For `intuition.policy`, this document grants no runtime, production, model, prov
 
 #### `INT-1-CALIBRATED-INTUITION-POLICY`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `learning-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-intuition/**`

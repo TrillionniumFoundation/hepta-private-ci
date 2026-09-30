@@ -28,12 +28,26 @@
         "symbol": "pub async fn process_event(",
         "buildTarget": "codex-hepta-matrixd"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/store.rs",
+          "symbol": "pub async fn begin_inbox_dispatch(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "MatrixRuntime ingress delegates exact event/owner dispatch admission to its one durable store."
+        }
+      ],
       "tests": [
         {
           "path": "codex-rs/hepta-matrixd/src/tests.rs",
           "kind": "runtime_ingress",
           "command": "just test -p codex-hepta-matrixd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/durable_core.rs",
+          "kind": "durable_ingress_and_owner_identity",
+          "command": "just test -p codex-hepta-matrix-store --test durable_core"
         }
       ],
       "sourceSemantics": "Deduplicates enrolled-room events and advances the durable sync frontier with correction/redaction handling.",
@@ -51,12 +65,76 @@
         "symbol": "pub fn prepare_send(",
         "buildTarget": "codex-hepta-matrixd::send_observer"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+          "symbol": "pub async fn project_app_server_event(",
+          "buildTarget": "codex-hepta-matrixd",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "Existing MatrixRuntime/SDK durable-owner path for this design operation; MatrixSendObserver remains a separate bounded mechanism and this evidence does not claim observer-to-store product composition."
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/store.rs",
+          "symbol": "pub async fn enqueue_outbox(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "Existing MatrixRuntime/SDK durable-owner path for this design operation; MatrixSendObserver remains a separate bounded mechanism and this evidence does not claim observer-to-store product composition. Enqueue preserves one transaction identity and validates the rendered prefix before coalescing."
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/store.rs",
+          "symbol": "async fn coalesce_candidate(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "Existing MatrixRuntime/SDK durable-owner path for this design operation; MatrixSendObserver remains a separate bounded mechanism and this evidence does not claim observer-to-store product composition. The enqueue path selects only the bounded pending coalescing candidate."
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
+          "symbol": "pub async fn dispatch_outbox_once",
+          "buildTarget": "codex-hepta-matrix-sdk",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "Existing MatrixRuntime/SDK durable-owner path for this design operation; MatrixSendObserver remains a separate bounded mechanism and this evidence does not claim observer-to-store product composition."
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/store.rs",
+          "symbol": "pub async fn claim_outbox(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "Existing MatrixRuntime/SDK durable-owner path for this design operation; MatrixSendObserver remains a separate bounded mechanism and this evidence does not claim observer-to-store product composition. The SDK sender claims due durable rows and filters Waiting roots before LIMIT."
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/store.rs",
+          "symbol": "fn outbox_from_row(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "Existing MatrixRuntime/SDK durable-owner path for this design operation; MatrixSendObserver remains a separate bounded mechanism and this evidence does not claim observer-to-store product composition. Every stored/read/claimed payload is decoded with the shared nonempty 1 MiB limit."
+        }
+      ],
       "tests": [
         {
           "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
           "kind": "send_identity",
           "command": "just test -p codex-hepta-matrixd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/durable_core.rs",
+          "kind": "durable_outbox_transaction_and_coalescing",
+          "command": "just test -p codex-hepta-matrix-store --test durable_core"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/durable_core/outbox_adversarial.rs",
+          "kind": "claim_coalescing_and_stored_payload_adversarial",
+          "command": "just test -p codex-hepta-matrix-store --test durable_core",
+          "testNames": [
+            "waiting_stream_replacement_cannot_starve_another_room_with_claim_limit_one",
+            "coalescing_full_stream_prefix_rejects_one_byte_over_cap_without_mutation",
+            "legacy_oversize_or_empty_outbox_payload_cannot_be_read_or_claimed"
+          ]
         }
       ],
       "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch.",
@@ -74,12 +152,58 @@
         "symbol": "pub fn observe_send(",
         "buildTarget": "codex-hepta-matrixd::send_observer"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
+          "symbol": "pub async fn dispatch_outbox_once",
+          "buildTarget": "codex-hepta-matrix-sdk",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "Existing MatrixRuntime/SDK durable-owner path for this design operation; MatrixSendObserver remains a separate bounded mechanism and this evidence does not claim observer-to-store product composition."
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/store.rs",
+          "symbol": "pub async fn mark_outbox_sent(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "Existing MatrixRuntime/SDK durable-owner path for this design operation; MatrixSendObserver remains a separate bounded mechanism and this evidence does not claim observer-to-store product composition. Sender observation updates the exact stable transaction/attempt rather than a second sender."
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/store.rs",
+          "symbol": "pub async fn outbox_for_txn(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "Existing MatrixRuntime/SDK durable-owner path for this design operation; MatrixSendObserver remains a separate bounded mechanism and this evidence does not claim observer-to-store product composition. Reconciliation reads the same durable transaction identity."
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/store.rs",
+          "symbol": "fn outbox_from_row(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix",
+          "sourceSemantics": "Existing MatrixRuntime/SDK durable-owner path for this design operation; MatrixSendObserver remains a separate bounded mechanism and this evidence does not claim observer-to-store product composition. Read-side decoding rejects corrupt legacy oversize/empty payloads before claim mutation."
+        }
+      ],
       "tests": [
         {
           "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
           "kind": "acknowledgement_and_reconciliation",
           "command": "just test -p codex-hepta-matrixd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/durable_core.rs",
+          "kind": "durable_acknowledgement_retry_and_reconciliation",
+          "command": "just test -p codex-hepta-matrix-store --test durable_core"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/durable_core/outbox_adversarial.rs",
+          "kind": "stored_payload_read_and_claim_rejection",
+          "command": "just test -p codex-hepta-matrix-store --test durable_core",
+          "testNames": [
+            "legacy_oversize_or_empty_outbox_payload_cannot_be_read_or_claimed"
+          ]
         }
       ],
       "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation.",

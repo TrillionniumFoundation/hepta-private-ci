@@ -304,7 +304,7 @@ For `learning.eval`, this document grants no runtime, production, model, provide
 
 #### `LRN-2-CAUSAL-EVALUATION`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `learning-platform` / `qualification-plane`.
 - Allowed write paths:
 - `codex-rs/hepta-intelligence-eval/**`

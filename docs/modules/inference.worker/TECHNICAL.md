@@ -205,7 +205,7 @@ For `inference.worker`, this document grants no runtime, production, model, prov
 
 #### `INFER-V4-T4`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `inference-platform` / `security-authority`.
 - Allowed write paths:
 - `codex-rs/hepta-infer-worker-host/**`
