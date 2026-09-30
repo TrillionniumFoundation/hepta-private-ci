@@ -13,6 +13,8 @@ on:
       - 'codex-rs/hepta-learning-ledger/**'
       - 'codex-rs/Cargo.*'
       - 'scripts/*learning*eval*'
+      - 'scripts/hepta-nextest-require.py'
+      - 'scripts/test_hepta_nextest_require.py'
       - 'scripts/*rust_identifiers*'
       - 'docs/modules/learning.eval/**'
       - 'qualification/lane-e/**'
@@ -26,6 +28,8 @@ on:
       - 'codex-rs/hepta-learning-ledger/**'
       - 'codex-rs/Cargo.*'
       - 'scripts/*learning*eval*'
+      - 'scripts/hepta-nextest-require.py'
+      - 'scripts/test_hepta_nextest_require.py'
       - 'scripts/*rust_identifiers*'
       - 'docs/modules/learning.eval/**'
       - 'qualification/lane-e/**'
@@ -62,8 +66,12 @@ jobs:
           persist-credentials: false
           ref: ${{ env.TESTED_SHA }}
 
-      - name: Test exact-evidence recorder
-        run: python3 scripts/test_hepta_learning_eval_exact.py -v
+      - name: Test exact-evidence and required-filter recorders
+        run: |
+          set -euo pipefail
+          python3 scripts/test_hepta_learning_eval_exact.py -v
+          python3 scripts/test_hepta_nextest_require.py -v
+          python3 scripts/test_hepta_learning_eval_exact_entry.py -v
 
       - name: Install qualification tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -84,7 +92,7 @@ jobs:
           if [[ -n "$BASE_SHA" ]]; then
             args+=(--base-commit "$BASE_SHA")
           fi
-          python3 scripts/hepta-learning-eval-exact.py "${args[@]}"
+          python3 scripts/hepta-learning-eval-exact-entry.py "${args[@]}"
 
       - name: Retain passed or failed exact-tree evidence
         if: always()
