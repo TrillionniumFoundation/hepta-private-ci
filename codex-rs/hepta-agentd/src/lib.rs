@@ -560,3 +560,11 @@ pub use self_iteration::self_iteration_canary_payload_v1;
 pub use self_iteration::self_iteration_candidate_payload_v1;
 #[cfg(feature = "server")]
 pub use self_iteration::self_iteration_stage_payload_v1;
+
+#[cfg(feature = "server")]
+mod process_configuration;
+#[cfg(feature = "server")]
+pub use process_configuration::run_with_process_configuration;
+
+#[cfg(feature = "server")]
+pub use codex_hepta_agent_components::learning_artifacts::IterationEnvelopeV1;

@@ -79,6 +79,7 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
 }
 
 pub struct AgentdConfig {
+    self_iteration_model_owner: Option<SelfIterationModelOwner>,
     self_iteration_runtime: Option<crate::AgentdSelfIterationRuntimeConfigV1>,
     neuron_runtime_v2: Option<crate::AgentdNeuronRuntimeV2Config>,
     identity: AgentdIdentity,
@@ -237,6 +238,7 @@ impl AgentdConfig {
             intelligence_product_runner: None,
             neuron_runtime_v2: None,
             self_iteration_runtime: None,
+            self_iteration_model_owner: None,
             intelligence_invocation_provider: None,
         })
     }
@@ -672,3 +674,32 @@ fn require_exact_path(actual: &Path, expected: &Path, label: &str) -> Result<(),
 #[cfg(test)]
 #[path = "config_tests.rs"]
 mod tests;
+
+// Host composition supplies the real model owner future; the Agentd lifecycle
+// supervises it alongside the canonical generation and control owners.
+type SelfIterationModelOwner = Box<
+    dyn FnOnce(
+            tokio_util::sync::CancellationToken,
+        ) -> std::pin::Pin<
+            Box<dyn std::future::Future<Output = Result<(), AgentdError>> + Send>,
+        > + Send,
+>;
+impl AgentdConfig {
+    pub fn with_self_iteration_model_owner<F, Fut>(mut self, owner: F) -> Result<Self, AgentdError>
+    where
+        F: FnOnce(tokio_util::sync::CancellationToken) -> Fut + Send + 'static,
+        Fut: std::future::Future<Output = Result<(), AgentdError>> + Send + 'static,
+    {
+        if self.self_iteration_model_owner.is_some() {
+            return Err(AgentdError::Invalid(
+                "self-iteration model owner is already configured".into(),
+            ));
+        }
+        self.self_iteration_model_owner =
+            Some(Box::new(move |cancellation| Box::pin(owner(cancellation))));
+        Ok(self)
+    }
+    pub(crate) fn take_self_iteration_model_owner(&mut self) -> Option<SelfIterationModelOwner> {
+        self.self_iteration_model_owner.take()
+    }
+}

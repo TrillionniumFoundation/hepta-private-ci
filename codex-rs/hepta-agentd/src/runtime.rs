@@ -95,6 +95,7 @@ pub async fn run(
         ));
     }
     let self_iteration_config = config.take_self_iteration_runtime();
+    let self_iteration_model_owner = config.take_self_iteration_model_owner();
     let iteration_recovery = self_iteration_config
         .as_ref()
         .is_some_and(crate::AgentdSelfIterationRuntimeConfigV1::unresolved_apply);
@@ -303,6 +304,9 @@ pub async fn run(
             )?;
         }
         tasks.spawn_required("control-server", control.run())?;
+        if let Some(owner) = self_iteration_model_owner {
+            tasks.spawn_required("self-iteration-model-owner", owner(cancellation.clone()))?;
+        }
         let app_identity = identity.clone();
         let app_state = Arc::clone(&state);
         let app_drain = state.app_server_drain_handle();
