@@ -93,7 +93,11 @@ that lacks the anchor is rejected. Losing the external floor requires an
 independent recovery decision; choosing an older local head is not recovery.
 
 CURRENT discovery validates a single signed predecessor chain from the trusted
-genesis, non-regressing generations/authority epochs and signer context. Valid
+genesis, strictly increasing generations, non-regressing authority epochs and
+issue times, and each enrolled key's original signature/epoch/time context. Global trust
+generation/epoch floors apply to the newest CURRENT, not every historical link
+or retained restart anchor. Publish a valid replacement CURRENT before raising
+those floors; an old latest head still fails the advanced floor. Valid
 historical heads may remain replayable after signer rotation/revocation, while
 the newest head requires a currently admissible signer and unexpired witness.
 CURRENT is a verified chain over immutable `.head` records, not a mutable file
@@ -180,6 +184,17 @@ power-loss qualification or a multi-file atomic transaction. Root/ancestor
 protection, filesystem-specific durability and external head distribution remain
 deployment obligations.
 
+Owner-host payload, registry, witness, admission, signed-head and checkpoint
+publication uses a new temporary record, file synchronization, a no-replace
+hard link to the final name, and containing-directory synchronization on Unix.
+Incomplete temporary records do not reserve final names; ignored pending records
+never establish CURRENT or a durable phase. An existing final record is accepted
+only after exact expected-byte verification and synchronization. Phase semantics
+are validated before final-name publication, and the in-memory transaction
+advances after its corresponding complete file becomes durable. This owner path
+is stronger than the retained low-level final-path capability writer, whose
+indeterminate failures still require orphan reconciliation.
+
 ## 5. Reconciliation and failures
 
 `publish` validates or recreates the exact operation's checkpoint sequence,
@@ -188,6 +203,15 @@ and continues from the last proven phase. Existing immutable files can satisfy
 retry only after exact expected-content verification. Preserve the operation's
 original lease commitment during recovery; a new valid lease authorizes present
 work but does not rewrite historical phase identity.
+
+Recovery verifies every checkpoint's canonical bytes, phase shape, complete
+transaction intent/state digests, nonzero receipt commitments and common storage
+binding. A later phase must retain the exact registry/witness receipts introduced
+by an earlier phase. Terminal acknowledgement is checked at its historical time,
+so subsequent source withdrawal blocks current use without destroying a valid
+historical acknowledgement. CURRENT reads and registry-by-head recovery validate
+the same complete checkpoint inventory; an acknowledged label cannot bypass
+semantic replay. Corrupt terminal retries close the service's recovery gate.
 
 | Observation | Required behavior |
 |---|---|
@@ -284,6 +308,22 @@ configuration. These library seams and qualification tests exist. The repository
 does not yet supply a normal executable bootstrap connecting the owner service,
 current-view provider, independent selected ranker and route policy. All such
 composition must preserve the separate evaluator/selector/producer authorities.
+
+The V1 support digest of an owner-published candidate commits the complete V2
+manifest; it is not its training dataset digest. The ranker uses
+`VerifiedCurrentRegistryViewV1::supports_dataset` to bind its evaluation/model
+dataset to the exact eligible manifest's retained full source membership. An
+explicitly empty dataset set remains empty. Raw V1 views support only the legacy
+direct support-digest profile and cannot establish the owner's complete V2
+binding. Owner-published rankers therefore require full service views.
+
+Selected cached consumers inherit the selection's owner-trust digest and full
+provenance requirement. Other explicitly host-pinned consumers bind the first
+accepted view. Once complete provenance is accepted, a same-trust raw V1 view
+cannot downgrade that consumer. Trust substitution or provenance downgrade
+permanently closes it; trusted configuration rotation requires a new explicit
+admission. These checks preserve provider obligations to acquire the latest
+authenticated view and installed withdrawal frontier for every use.
 
 ## 8. Bounded qualification and operating evidence
 

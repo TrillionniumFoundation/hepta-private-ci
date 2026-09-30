@@ -33,6 +33,10 @@ New/hardened operations include:
 - `DatasetWithdrawalRegistry::new_scoped`, `append` and `admit_manifest`;
 - `admit_manifest_at_withdrawal_head_v3`,
   `verify_artifact_admission_v3` and `validate_artifact_publication_v3`;
+- `write_artifact_admission_beneath`, `read_artifact_admission`,
+  `read_artifact_admission_by_digest` and
+  `read_artifact_admission_by_manifest_digest`; the full canonical V3 sidecar
+  requires an independently retained file receipt or semantic commitment;
 - `ArtifactPublicationTransactionV1::{begin, record_payload_durable,
   record_registry_durable, record_witness_durable, acknowledge, status, snapshot,
   from_snapshot}`;
@@ -43,6 +47,9 @@ New/hardened operations include:
 - `validate_iteration_transition` and
   `IterationLedgerV1::{append_candidate, transition, snapshot, from_snapshot}`.
 - `ArtifactSelectionVerifierV1::verify`, `record_verified_selection` and `load_selected_candidate`; selector trust is bound to the artifact-owner trust snapshot but uses a disjoint selector key set.
+- `VerifiedCurrentRegistryViewV1::supports_dataset`; owner-service views check
+  complete retained source membership, while raw V1 views preserve only the
+  explicit legacy direct support-digest profile.
 
 Candidate registration or admission is not selection. A successful read is not
 execution or activation. Iteration records do not run a sandbox, merge source,
@@ -124,7 +131,8 @@ registry could accept more records than the durable snapshot format.
 Candidate payloads are bounded at 64 MiB; V1/auxiliary snapshots are bounded.
 V2 manifests bound datasets, lineage and predecessor vectors. Iteration
 envelopes separately cap candidates, files, semantic diff bytes and named
-parallel sandboxes.
+parallel sandboxes. Iteration snapshot replay checks candidate and event counts
+before cloning candidate states or rebuilding the event ledger.
 
 For new path-based host integration, use the `*_beneath` writers. They validate
 before final-path creation and reject absolute paths, `..`, non-normal
@@ -187,12 +195,26 @@ Every canonical Lane E case remains mapped in
 `../../lane-e/TEST_TRACEABILITY.json`. Source test identity is not an execution
 receipt.
 
+Supplementary references under the existing ART cases cover the complete
+admission codec, exact projection, rejected-CURRENT side effects, partial-record
+recovery, lease rotation, terminal retry identity, inherited source closure,
+expiry/withdrawal exclusions and selector credential limits. They preserve the
+canonical case inventory and do not convert test source into a pass receipt.
+Checkpoint tests additionally prove complete intent/state replay, immutable
+receipt progression and rejection of terminal corruption by startup, current
+reads and retry. Later source withdrawal preserves valid historical terminal
+recovery while closing affected current eligibility.
+
 ## 7. Integration, rollback and capability ceiling
 
 `RevalidatingCandidate::with_current` guards cached consumption with a
 monotonic current registry prefix and exact lineage eligibility. Any failed
 refresh closes the consumer. A valid old snapshot cannot be substituted to
 resurrect a revoked candidate.
+Selected consumers retain their verified owner trust and provenance requirement;
+generic pinned consumers bind the first accepted trust. Once complete provenance
+is accepted, even a same-trust raw V1 view is a rejected downgrade. Trust changes
+and provenance downgrades require explicit new admission.
 
 The persistent scoped withdrawal registry closes future admission of withdrawn
 datasets. Snapshot-local `prepare_dataset_revocation` remains the batch that
@@ -207,6 +229,9 @@ authenticated and fenced host operation.
 ## 8. Current native implementation
 
 Authenticated CURRENT discovery supports bounded signer rotation: historical pre-revocation heads remain replayable, while the newest head requires a currently valid signer and non-regressing authority epoch.
+Live global generation/epoch floors apply to the newest CURRENT. Historical
+heads and anchors retain original enrolled per-key signature/epoch/time checks,
+with strictly increasing generations and non-regressing epochs/issue times.
 
 `ArtifactOwnerVerifierV1::verify_current_registry_view` and
 `LearningArtifactOwnerHost::current_registry_view` issue the same opaque

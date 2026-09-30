@@ -175,7 +175,7 @@
       "stableGuide": "docs/modules/learning.artifacts/TECHNICAL.md",
       "dossier": "qualification/module-execution-dossiers/detail/learning.artifacts.md",
       "nativeMapping": "codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md",
-      "implementationState": "source_implemented_ci_pending",
+      "implementationState": "source_implemented_repository_integration_and_exact_candidate_qualification_pending",
       "compatibility": "stable_v1_registry_retained_v2_manifest_scoped_v3_admission_fenced_owner_service_publication_lifecycle_iteration_and_sensor_core_additive",
       "operations": [
         {
@@ -339,6 +339,41 @@
           "nativeSymbol": "codex_hepta_learning_artifacts::load_selected_candidate",
           "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
           "status": "implemented"
+        },
+        {
+          "operation": "write_artifact_admission_beneath",
+          "nativeSymbol": "codex_hepta_learning_artifacts::write_artifact_admission_beneath",
+          "source": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+          "status": "implemented",
+          "notes": "Complete canonical V3 admission; receipt or semantic digest must be independently retained."
+        },
+        {
+          "operation": "read_artifact_admission",
+          "nativeSymbol": "codex_hepta_learning_artifacts::read_artifact_admission",
+          "source": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+          "status": "implemented",
+          "notes": "Complete canonical V3 admission; receipt or semantic digest must be independently retained."
+        },
+        {
+          "operation": "read_artifact_admission_by_digest",
+          "nativeSymbol": "codex_hepta_learning_artifacts::read_artifact_admission_by_digest",
+          "source": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+          "status": "implemented",
+          "notes": "Complete canonical V3 admission; receipt or semantic digest must be independently retained."
+        },
+        {
+          "operation": "read_artifact_admission_by_manifest_digest",
+          "nativeSymbol": "codex_hepta_learning_artifacts::read_artifact_admission_by_manifest_digest",
+          "source": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+          "status": "implemented",
+          "notes": "Complete canonical V3 admission; receipt or semantic digest must be independently retained."
+        },
+        {
+          "operation": "VerifiedCurrentRegistryViewV1::supports_dataset",
+          "nativeSymbol": "codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1::supports_dataset",
+          "source": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+          "status": "implemented",
+          "notes": "Exact eligible manifest plus complete V2 source membership for owner-service views; raw V1 retains only the explicit legacy direct support-digest profile."
         }
       ],
       "tests": [
@@ -366,15 +401,60 @@
         "art_12_independent_selector_binds_exact_current_and_manifest",
         "art_12_selection_rejects_self_selection_and_revoked_selector",
         "art_12_verified_selection_records_only_selected_transition",
-        "existing_artifact_owner_new_process_predictions_and_revoked_rollback"
+        "existing_artifact_owner_new_process_predictions_and_revoked_rollback",
+        "entire_normalized_admission_round_trips_with_each_independent_pin",
+        "every_receipt_field_and_independent_semantic_commitment_is_checked",
+        "malformed_and_noncanonical_bytes_reject_even_with_recomputed_file_hash",
+        "producer_binding_cannot_be_changed_to_enable_self_evaluation",
+        "prepared_checkpoint_recovers_the_complete_durable_admission",
+        "missing_or_corrupt_admission_sidecars_fail_checkpoint_recovery",
+        "registry_projection_binds_objective_and_complete_manifest_support",
+        "raw_transaction_and_snapshot_recovery_reject_multiple_predecessors",
+        "rejected_signed_witness_never_becomes_current",
+        "pending_partial_record_never_becomes_a_checkpoint_or_current_head",
+        "rotated_writer_lease_preserves_original_checkpoint_identity",
+        "recovery_read_failure_keeps_unrelated_operations_fenced",
+        "terminal_retry_requires_exact_request_and_restart_requires_anchor",
+        "dataset_independent_child_cannot_erase_parent_provenance_before_checkpoint",
+        "current_provenance_excludes_withdrawn_expired_artifacts_and_descendants",
+        "selector_cannot_reuse_owner_identity_with_a_different_key",
+        "verified_selection_cannot_outlive_selector_validity_or_revocation",
+        "oversized_candidate_snapshot_is_rejected_before_candidate_replay",
+        "oversized_event_snapshot_is_rejected_before_event_replay",
+        "terminal_checkpoint_corruption_rejects_recovery_and_service_startup",
+        "self_consistent_terminal_state_cannot_replace_prior_phase_receipts",
+        "corrupt_terminal_retry_closes_the_service_recovery_gate",
+        "historical_terminal_recovery_survives_a_later_source_withdrawal",
+        "interrupted_large_record_never_reserves_the_final_path",
+        "rejected_registry_frontier_leaves_no_snapshot_or_phase_change",
+        "advanced_current_floors_preserve_signed_history_and_old_restart_anchor",
+        "each_advanced_floor_rejects_a_still_old_current_head",
+        "historical_replay_retains_key_epoch_and_signature_checks",
+        "signed_chain_cannot_hide_future_or_backwards_historical_issuance",
+        "owner_published_ranker_binds_full_dataset_provenance_and_closes_on_withdrawal",
+        "owner_published_ranker_rejects_payload_dataset_outside_full_provenance",
+        "dataset_bindings_require_exact_eligible_manifest_and_preserve_empty_provenance",
+        "changing_current_trust_closes_host_pinned_and_selected_consumers",
+        "complete_current_provenance_cannot_be_replaced_with_same_trust_raw_v1_view",
+        "selected_load_keeps_owner_trust_and_full_provenance_for_first_use"
       ],
-      "remainingRepositoryGaps": [],
+      "remainingRepositoryGaps": [
+        "Compose the owner service, authenticated current withdrawal frontier, independently governed selector and Agentd ranker in a named executable bootstrap with product integration tests.",
+        "Introduce a versioned registry/reader capable of full multi-parent final-use ancestry before enabling multi-parent publication.",
+        "Provide trusted legacy full-admission backfill and an authorized durable withdrawal-to-artifact revocation/retention integration; V1 projections cannot reconstruct missing V2 provenance."
+      ],
       "remainingExternalEvidence": [
         "target-host trusted-ancestor and containing-directory durability plus real power-loss qualification",
         "production artifact-owner and selector trust/signing-key provisioning plus independently retained CURRENT anchor operations",
         "live product selector/operator enrollment, target-host load/revocation/rollback measurements and operational orphan reconciliation",
         "independent canary, operator acceptance, promotion and release"
-      ]
+      ],
+      "statusDimensions": {
+        "source": "compatibility_storage_scoped_admission_fenced_publication_and_current_use_guards_implemented",
+        "composition": "owner_service_and_optional_agentd_read_library_seams_executable_bootstrap_pending",
+        "qualification": "current_candidate_exact_head_and_actual_base_synthetic_merge_required",
+        "liveProduct": "independent_trust_and_target_host_execution_not_established"
+      }
     },
     {
       "module": "learning.operator",

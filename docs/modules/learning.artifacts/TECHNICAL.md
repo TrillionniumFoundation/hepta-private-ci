@@ -209,6 +209,16 @@ Low-level signed V1 current-view verification alone does not prove these V2 use 
 embedding authenticates and durably retains the current withdrawal input across
 restart. Logical withdrawal/revocation is not physical erasure or backup deletion.
 
+`VerifiedCurrentRegistryViewV1::supports_dataset` checks the exact eligible
+manifest against its retained V2 source membership. This is the Agentd
+evaluation/model dataset binding; the owner's V1 support field commits the full
+manifest and is not a dataset digest. Raw V1 views retain only the explicit
+legacy direct support-digest profile. Selected consumers inherit their verified
+owner trust and provenance requirement; generic pinned consumers bind the first
+accepted trust. A complete-provenance consumer cannot later accept a same-trust
+raw V1 view. Either trust substitution or provenance downgrade closes cached use
+and requires explicit new admission.
+
 Withdrawal and lifecycle state both have canonical create-only durable snapshot adapters with independently retained receipts binding namespace/scope, chain head, file digest, record count and encoded byte count. Recovery rebuilds the semantic state and rejects non-canonical bytes, digest mismatch, scope mismatch, record-count mismatch or chain mismatch.
 
 Historical lifecycle replay validates actor evidence at `event.occurred_at`. Recovery time is not reused as mutation authorization time: an actor credential that expired after a valid historical append does not make the journal unrecoverable, while a new mutation after expiry still fails.
@@ -246,6 +256,21 @@ retention, authenticated withdrawal delivery, the executable process and final
 route changes. These boundaries are detailed in
 [`OWNER_SERVICE.md`](../../../codex-rs/hepta-learning-artifacts/OWNER_SERVICE.md);
 source durability ordering does not prove target-filesystem power-loss behavior.
+
+Owner publication validates the next transaction state before writing final
+payload, snapshot or witness names. Those files, complete admissions, signed
+heads and checkpoints use synchronized temporary records and no-replace hard
+links, with containing-directory synchronization on Unix. Interrupted temporary
+writes cannot reserve their final names; exact existing bytes permit bounded
+reconciliation. Complete canonical checkpoint replay validates intent/state
+digests, phase shape and unchanged earlier receipt commitments even for terminal
+records. CURRENT and registry-by-head reads use the same validated inventory.
+
+Global generation/authority-epoch floors govern the newest CURRENT. Historical
+links and retained restart anchors keep their enrolled per-key signature, epoch
+and time constraints; generations strictly increase and authority epochs and
+issue times never regress. Raising a live floor therefore follows publication
+of a replacement CURRENT and does not invalidate otherwise valid old history.
 
 Reader handles must be independently opened and initially unlocked, without
 concurrent descriptor aliases. A cloned Linux descriptor can share lock state

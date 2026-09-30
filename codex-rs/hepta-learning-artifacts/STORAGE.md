@@ -118,6 +118,16 @@ under its writer fence before treating the phase as durable. A crash before
 witness publication may leave durable bytes or a registry generation, but never
 a valid acknowledged publication.
 
+The composed owner-host path validates the next phase before final-file
+publication and uses synchronized temporary records plus no-replace hard links
+for payloads, snapshots, witnesses, complete admissions, signed heads and
+checkpoints. On Unix it synchronizes the containing directory before the next
+phase checkpoint. An interrupted temporary write leaves the final name available
+for exact reconciliation; existing final bytes must match completely. This does
+not change the retained capability APIs' indeterminate/orphan behavior above or
+establish target-host power-loss qualification. See
+[`OWNER_SERVICE.md`](OWNER_SERVICE.md) for the full protocol.
+
 `create_new` protects the final path component from an existence-check race.
 `create_beneath_trusted_root` additionally rejects lexical escape and symlink
 ancestors under a canonical trusted root. Neither API is an `openat2`-style

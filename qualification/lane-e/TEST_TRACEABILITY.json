@@ -210,6 +210,10 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
           "function": "loads_exact_pinned_manifest_and_payload"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_atomic_storage_tests.rs",
+          "function": "interrupted_large_record_never_reserves_the_final_path"
         }
       ],
       "status": "native_test_mapped"
@@ -562,6 +566,82 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
           "function": "current_head_rotation_preserves_history_and_requires_current_key_epoch"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs",
+          "function": "rejected_signed_witness_never_becomes_current"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs",
+          "function": "pending_partial_record_never_becomes_a_checkpoint_or_current_head"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs",
+          "function": "rotated_writer_lease_preserves_original_checkpoint_identity"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service_adversarial_tests.rs",
+          "function": "recovery_read_failure_keeps_unrelated_operations_fenced"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_service_adversarial_tests.rs",
+          "function": "terminal_retry_requires_exact_request_and_restart_requires_anchor"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_admissions_tests.rs",
+          "function": "dataset_independent_child_cannot_erase_parent_provenance_before_checkpoint"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_admissions_tests.rs",
+          "function": "current_provenance_excludes_withdrawn_expired_artifacts_and_descendants"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_checkpoint_tests.rs",
+          "function": "terminal_checkpoint_corruption_rejects_recovery_and_service_startup"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_checkpoint_tests.rs",
+          "function": "self_consistent_terminal_state_cannot_replace_prior_phase_receipts"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_checkpoint_tests.rs",
+          "function": "corrupt_terminal_retry_closes_the_service_recovery_gate"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_checkpoint_tests.rs",
+          "function": "historical_terminal_recovery_survives_a_later_source_withdrawal"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_rotation_tests.rs",
+          "function": "advanced_current_floors_preserve_signed_history_and_old_restart_anchor"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_rotation_tests.rs",
+          "function": "each_advanced_floor_rejects_a_still_old_current_head"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_rotation_tests.rs",
+          "function": "historical_replay_retains_key_epoch_and_signature_checks"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_rotation_tests.rs",
+          "function": "signed_chain_cannot_hide_future_or_backwards_historical_issuance"
+        },
+        {
+          "source": "codex-rs/hepta-agentd/src/cognitive_ranker_owner_tests.rs",
+          "function": "owner_published_ranker_binds_full_dataset_provenance_and_closes_on_withdrawal"
+        },
+        {
+          "source": "codex-rs/hepta-agentd/src/cognitive_ranker_owner_tests.rs",
+          "function": "owner_published_ranker_rejects_payload_dataset_outside_full_provenance"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_rotation_tests.rs",
+          "function": "backwards_signed_successor_rejects_before_publishing_a_witness_or_head"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_rotation_tests.rs",
+          "function": "uncertain_current_retry_requires_the_exact_already_published_signed_head"
         }
       ],
       "status": "native_test_mapped"
@@ -586,6 +666,30 @@
         {
           "source": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
           "function": "existing_artifact_owner_new_process_predictions_and_revoked_rollback"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "function": "selector_cannot_reuse_owner_identity_with_a_different_key"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "function": "verified_selection_cannot_outlive_selector_validity_or_revocation"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
+          "function": "dataset_bindings_require_exact_eligible_manifest_and_preserve_empty_provenance"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
+          "function": "changing_current_trust_closes_host_pinned_and_selected_consumers"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
+          "function": "complete_current_provenance_cannot_be_replaced_with_same_trust_raw_v1_view"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "function": "selected_load_keeps_owner_trust_and_full_provenance_for_first_use"
         }
       ],
       "status": "native_test_mapped"
@@ -602,6 +706,18 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
           "function": "art_05_withdrawal_race_invalidates_admission"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs",
+          "function": "entire_normalized_admission_round_trips_with_each_independent_pin"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs",
+          "function": "every_receipt_field_and_independent_semantic_commitment_is_checked"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs",
+          "function": "malformed_and_noncanonical_bytes_reject_even_with_recomputed_file_hash"
         }
       ],
       "status": "native_test_mapped"
@@ -618,6 +734,10 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
           "function": "art_06_lifecycle_snapshot_replay_survives_actor_expiry"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
+          "function": "producer_binding_cannot_be_changed_to_enable_self_evaluation"
         }
       ],
       "status": "native_test_mapped"
@@ -638,6 +758,26 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/publication.rs",
           "function": "art_07_withdrawal_advance_blocks_recovered_publication"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_admissions_tests.rs",
+          "function": "prepared_checkpoint_recovers_the_complete_durable_admission"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_admissions_tests.rs",
+          "function": "missing_or_corrupt_admission_sidecars_fail_checkpoint_recovery"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/publication_adversarial_tests.rs",
+          "function": "registry_projection_binds_objective_and_complete_manifest_support"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/publication_adversarial_tests.rs",
+          "function": "raw_transaction_and_snapshot_recovery_reject_multiple_predecessors"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/owner_atomic_storage_tests.rs",
+          "function": "rejected_registry_frontier_leaves_no_snapshot_or_phase_change"
         }
       ],
       "status": "native_test_mapped"
@@ -694,6 +834,14 @@
         {
           "source": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
           "function": "snapshot_replay_is_exact_and_duplicate_receipts_fail"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/iteration_ledger_capacity_tests.rs",
+          "function": "oversized_candidate_snapshot_is_rejected_before_candidate_replay"
+        },
+        {
+          "source": "codex-rs/hepta-learning-artifacts/src/iteration_ledger_capacity_tests.rs",
+          "function": "oversized_event_snapshot_is_rejected_before_event_replay"
         }
       ],
       "status": "native_test_mapped"

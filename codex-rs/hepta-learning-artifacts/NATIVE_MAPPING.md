@@ -49,6 +49,7 @@ flattened into one V1 predecessor.
 | validate-before-create current-head witness | `write_registry_head_witness_beneath` | `src/storage.rs` | implemented |
 | read exact pinned candidate | `load_pinned_candidate` | `src/pinned.rs` | retained |
 | revalidate cached consumer at a newer head | `RevalidatingCandidate::with_current` | `src/pinned.rs` | retained |
+| bind exact eligible manifest to model/evaluation dataset | `VerifiedCurrentRegistryViewV1::supports_dataset` | `src/pinned.rs` | implemented full service provenance; explicit legacy V1 fallback |
 | issue opaque authenticated V1 CURRENT registry view | `ArtifactOwnerVerifierV1::verify_current_registry_view` / `LearningArtifactOwnerHost::current_registry_view` | `src/owner_host.rs` | implemented compatibility view; full V2 service guard is separate |
 | named CURRENT/publication library service | `LearningArtifactOwnerService::current_registry_view` / `publish` | `src/owner_service.rs` | source service seam; executable bootstrap absent |
 | verify selector trust independently of artifact-owner keys | `ArtifactSelectionVerifierV1::verify` | `src/selection.rs` | implemented |
@@ -107,10 +108,11 @@ The owner atomically persists the complete canonical V3 admission as an
 authoritative V2 sidecar before Prepared durability, and retains an immutable
 manifest-digest index for inherited parent provenance. Recovery verifies the
 sidecar against its independently retained checkpoint commitment. When the
-V1 registry becomes durable, the transaction verifies only fields that V1 can
-faithfully represent: artifact identity, kind, generation, payload digest,
-producer, compatibility digest and exact byte count. Multiple V2 datasets,
-lineage digests and predecessor IDs are **not** collapsed into V1 fields.
+V1 registry becomes durable, the transaction verifies the exact compatibility
+projection: artifact identity, kind, generation, sole predecessor, payload
+digest, producer, objective digest, complete manifest support commitment,
+compatibility digest and exact byte count. Multiple V2 datasets, lineage digests
+and predecessor IDs are **not** collapsed into V1 component fields.
 
 The owner publication's V1 projection binds objective digest to the V2
 objective-class digest and support digest to the complete validated V2 manifest
@@ -137,6 +139,12 @@ history. Missing/corrupt provenance closes acquisition. Selector verification an
 cached consumption honor the overlay; durable quarantine/revocation remains
 separately authorized. Low-level signed V1 current-view verification remains a
 compatibility surface and does not replace this full V2 final-use boundary.
+`supports_dataset` binds owner-published rankers to retained V2 source membership
+rather than comparing the full-manifest support commitment to a dataset digest.
+Selected consumers carry the verified owner trust and provenance requirement;
+other pinned consumers bind their first accepted trust. Complete provenance
+cannot later be downgraded to a same-trust raw V1 view. Either trust substitution
+or provenance downgrade closes the consumer and requires explicit re-admission.
 
 Pre-sidecar owner checkpoints do not transparently reopen under the new service.
 Upgrade needs an independently authenticated full original admission and trusted
@@ -210,13 +218,32 @@ Focused coverage includes:
 - `src/dataset_revocation_tests.rs`;
 - `src/closure_v2_tests.rs`;
 - `src/admission_v3.rs` tests;
+- `src/admission_storage_tests.rs`, including full canonical admission recovery,
+  independent pins and malformed/oversized input rejection;
 - `src/lifecycle_journal.rs` tests;
 - `src/durable_snapshots.rs` tests;
 - `src/publication.rs` tests;
+- `src/publication_adversarial_tests.rs`;
+- `src/owner_host_adversarial_tests.rs` and
+  `src/owner_service_adversarial_tests.rs`, including trust floors, rejected
+  witnesses, partial records, stable retry identity and anchored restart;
+- `src/owner_admissions_tests.rs`, including complete durable recovery,
+  inherited source closure and per-artifact expiry/withdrawal exclusions;
+- `src/owner_checkpoint_tests.rs`, including canonical semantic replay, exact
+  receipt progression, terminal corruption and historical withdrawal recovery;
+- `src/owner_rotation_tests.rs`, including live-only global floors, retained
+  signed history and original per-key epoch/signature checks;
+- `src/owner_atomic_storage_tests.rs`, including pre-publication rejection and
+  interruption before final-name creation;
 - `src/sensor_core_registry.rs` tests, including single-physical-owner and revocation projection;
 - `src/iteration.rs` and `src/iteration_ledger.rs` tests.
+- `src/iteration_ledger_capacity_tests.rs`, including snapshot capacity rejection
+  before candidate-state allocation or event replay.
 
 Cross-crate Lane E composition remains in
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. The exact
 candidate is qualified only by the corresponding GitHub workflow execution;
 source files and this mapping are not pass receipts.
+Agentd's `../hepta-agentd/src/cognitive_ranker_owner_tests.rs` additionally loads
+a real owner-published ranker through full source membership, rejects a dataset
+outside that provenance and closes cached use after withdrawal.

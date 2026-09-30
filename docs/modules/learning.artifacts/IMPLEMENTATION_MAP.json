@@ -352,9 +352,89 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
+    },
+    {
+      "operation": "write_artifact_admission_beneath",
+      "nativeSymbol": "write_artifact_admission_beneath",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::entire_normalized_admission_round_trips_with_each_independent_pin",
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::every_receipt_field_and_independent_semantic_commitment_is_checked"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "write_artifact_admission_beneath",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "69ab1954b820da922b385179b8fc875fad0e4b65"
+    },
+    {
+      "operation": "read_artifact_admission",
+      "nativeSymbol": "read_artifact_admission",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::entire_normalized_admission_round_trips_with_each_independent_pin",
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::every_receipt_field_and_independent_semantic_commitment_is_checked"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_artifact_admission",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "69ab1954b820da922b385179b8fc875fad0e4b65"
+    },
+    {
+      "operation": "read_artifact_admission_by_digest",
+      "nativeSymbol": "read_artifact_admission_by_digest",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::entire_normalized_admission_round_trips_with_each_independent_pin",
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::every_receipt_field_and_independent_semantic_commitment_is_checked"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_artifact_admission_by_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "69ab1954b820da922b385179b8fc875fad0e4b65"
+    },
+    {
+      "operation": "read_artifact_admission_by_manifest_digest",
+      "nativeSymbol": "read_artifact_admission_by_manifest_digest",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::entire_normalized_admission_round_trips_with_each_independent_pin",
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::every_receipt_field_and_independent_semantic_commitment_is_checked"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_artifact_admission_by_manifest_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "69ab1954b820da922b385179b8fc875fad0e4b65"
+    },
+    {
+      "operation": "current_artifact_dataset_binding",
+      "nativeSymbol": "VerifiedCurrentRegistryViewV1::supports_dataset",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+      "state": "source_implemented_qualification_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::dataset_bindings_require_exact_eligible_manifest_and_preserve_empty_provenance",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_owner_tests.rs::owner_published_ranker_binds_full_dataset_provenance_and_closes_on_withdrawal",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_owner_tests.rs::owner_published_ranker_rejects_payload_dataset_outside_full_provenance"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "current_artifact_dataset_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
-  "currentNativeState": "Immutable V1 compatibility registry; full canonical V2/V3 admission sidecars before Prepared; fenced serial owner publication with atomic checkpoints, current trust floors, independent restart anchors and lease-rotation recovery; exact projection and single-parent inherited dataset provenance; service current-view expiry/withdrawal exclusions honored by selectors and cached consumers; bounded lifecycle and iteration evidence. Raw owner/verifier views prove V1 current history only. Normal executable writer/current-provider/selected-ranker bootstrap, multi-parent final-use ancestry, independent acceptance and target-host execution remain incomplete.",
+  "currentNativeState": "Immutable V1 compatibility registry; full canonical V2/V3 admission sidecars before Prepared; fenced serial owner publication with atomic checkpoints, current trust floors, independent restart anchors and lease-rotation recovery; exact projection and single-parent inherited dataset provenance; service current-view full source membership and expiry/withdrawal exclusions honored by selectors and cached consumers, with owner-trust and full-provenance downgrade guards; bounded lifecycle and iteration evidence. Raw owner/verifier views prove V1 current history only. Normal executable writer/current-provider/selected-ranker bootstrap, multi-parent final-use ancestry, independent acceptance and target-host execution remain incomplete.",
   "repositoryControlledGaps": [
     "Compose the owner service, authenticated current withdrawal frontier, independently governed selector and Agentd ranker in a named executable bootstrap with product integration tests.",
     "Introduce a versioned registry/reader capable of full multi-parent final-use ancestry before enabling multi-parent publication.",
