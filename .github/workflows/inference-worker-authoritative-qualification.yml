@@ -21,8 +21,8 @@ env:
 jobs:
   materialize:
     name: Materialize reviewed inference.worker source
-    runs-on: [self-hosted, macOS, ARM64, macbook]
-    timeout-minutes: 20
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
     steps:
       - name: Check out exact setup commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -107,20 +107,22 @@ jobs:
           path.write_text(text.replace(old, new, 1), encoding="utf-8")
           PY
 
-      - name: Format and refresh derived documentation
+      - name: Refresh derived documentation and validate patch shape
         shell: bash
         run: |
           set -euo pipefail
-          rustfmt --edition 2024 \
-            codex-rs/hepta-infer-core/src/native_control.rs \
-            codex-rs/hepta-infer-core/src/native_control_tests.rs \
-            codex-rs/hepta-infer-worker-host/src/experimental_local.rs \
-            codex-rs/hepta-infer-worker-host/src/experimental_local/driver.rs \
-            codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs \
-            codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs \
-            codex-rs/hepta-infer-worker-host/src/native_recovery.rs \
-            codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
           python3 scripts/hepta-module-docs.py refresh-derived
+          if command -v rustfmt >/dev/null 2>&1; then
+            rustfmt --edition 2024 \
+              codex-rs/hepta-infer-core/src/native_control.rs \
+              codex-rs/hepta-infer-core/src/native_control_tests.rs \
+              codex-rs/hepta-infer-worker-host/src/experimental_local.rs \
+              codex-rs/hepta-infer-worker-host/src/experimental_local/driver.rs \
+              codex-rs/hepta-infer-worker-host/src/experimental_local/durable.rs \
+              codex-rs/hepta-infer-worker-host/src/experimental_local_tests.rs \
+              codex-rs/hepta-infer-worker-host/src/native_recovery.rs \
+              codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs
+          fi
           git diff --check
 
       - name: Install read-only qualification and remove materializers
