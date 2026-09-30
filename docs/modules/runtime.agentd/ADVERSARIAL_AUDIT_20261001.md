@@ -90,11 +90,12 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 | `python3 scripts/hepta_workspace.py` | 通过：193 local manifests，0 errors | 工作区 manifest / 结构校验，未执行 Rust |
 | `python3 -m unittest discover -v -s scripts -p test_hepta_agentd_ci.py` | 通过：15 tests | Agentd CI 脚本行为 |
 | `just fmt` | 执行成功；无关 Python formatter 变更已恢复原字节 | Rust 候选格式化；不包含无关脚本重排 |
-| `CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 just fix --locked -p codex-hepta-agent-protocol -p codex-hepta-agentd --profile dev-small` | 较早候选通过，退出 0；使用独立 target cache；不包含最后 Plasticity RW mode/link 两文件补丁 | 当时协议与 Agentd production、lib tests 和 integration tests 的编译 / Clippy 检查；不是最终候选检查或测试执行通过 |
-| 新测试编译修正 | 大型 fixture `json!` 已拆分；三处不存在的 `pretty_assertions` 导入已去除；较早候选原生检查通过 | 未提高 crate recursion limit、未新增依赖或改 Bazel lock；不包含最后 RW 补丁及其两项回归 |
-| 最后 Plasticity RW 补丁 | `plasticity_process_file.rs` 与其测试局部 rustfmt、`git diff --check` 通过 | 最终候选 production / tests 编译、Clippy 和原生测试执行仍待 CI；不能复用较早候选的成功结果 |
+| `CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 just fix --locked -p codex-hepta-agent-protocol -p codex-hepta-agentd --profile dev-small` | 最后 RW 补丁落盘后重新执行通过，退出 0，用时 36.87 秒；复用独立 target cache | 最终源候选的协议与 Agentd production、lib tests 和 integration tests 编译 / Clippy 检查；不是测试执行通过 |
+| 新测试编译修正 | 大型 fixture `json!` 已拆分；三处不存在的 `pretty_assertions` 导入已去除；最终源候选原生编译 / Clippy 检查通过 | 未提高 crate recursion limit、未新增依赖或改 Bazel lock |
+| 最后 Plasticity RW 补丁 | 局部 rustfmt、`git diff --check` 通过；上述最终源候选 Clippy 已包含其两项新回归 | Agentd 行为回归执行仍待结果；编译不能代替执行 |
 | 原生测试构建前几次尝试 | 初次多依赖 SIGKILL；两次低资源构建遇到磁盘不足；一次 Clippy 依赖 core 因内存被终止 | 资源失败记录保留，不能据此声称测试通过或推断测试逻辑失败 |
-| Scoped nextest execution | Protocol nextest 构建在最终链接失败（退出 101），当时共享磁盘 100% 满；没有进入测试运行。Agentd 全模块尚未取得成功执行证据 | Linux 行为 / process 回归仍须实际运行；macOS / Windows 未在本地执行 |
+| 较早 scoped nextest 尝试 | Protocol 构建在最终链接失败（退出 101），当时共享磁盘 100% 满；该次没有进入测试运行 | 历史资源失败；后续成功执行另列，不能把失败当作已运行 |
+| 最终 Protocol scoped nextest | 清理本任务不用的旧 debug cache 释放资源后，`just test` 成功执行 13/13，无 skip，退出 0；日志 `agentd-protocol-final-tests.log` | 仅协议 package 原生测试通过；Agentd lib 原生测试仍在运行，全模块及目标平台验收未由此成立 |
 | `git diff --check` | 通过 | 补丁 whitespace 检查 |
 | 初审 / 整改 / 独立再审 | 源码检查已实际完成，多轮局部缺陷修复后收口 | 在明示的 trusted operator-UID/root 边界内，不能证明不存在所有未来问题 |
 | ingress 独立 baseline / fixed 小实验 | 0666 checkpoint 从允许读取转为拒绝；外部 symlink target mode 从被改写转为保留 | 局部边界观察，不能代替正式 crate 测试或产品资格 |
@@ -117,7 +118,7 @@ Agentd 是一个 Fleet Agent 的进程宿主与组成边界。Supervisor/Fleet �
 
 ## 9. 收口标准
 
-本次已完成多个独立领域的初审、整改与再审。较早候选的 production / tests 编译与 Clippy、格式及结构校验已通过；最后 Plasticity RW mode/link 补丁仅有局部 rustfmt 与 whitespace 检查，最终候选的编译、Clippy 和原生测试执行仍待 CI。原生测试运行曾受资源失败限制。在本轮已审阅的本地边界内，再审未发现新的可独立修补缺陷；第 8 节跨 owner 与部署资格项仍开放，不能由此声称整个模块已完成或永无新问题。
+本次已完成多个独立领域的初审、整改与再审。包含最后 Plasticity RW mode/link 补丁的最终源候选已重新通过 production / tests 编译与 Clippy；格式及结构检查通过。Protocol 原生测试已成功执行 13/13，无 skip；Agentd lib 原生测试仍待运行结果，全模块执行和部署资格尚未完成。此前资源失败记录保留。在本轮已审阅的本地边界内，再审未发现新的可独立修补缺陷；第 8 节跨 owner 与部署资格项仍开放，不能由此声称整个模块已完成或永无新问题。
 
 审阅阶段按依赖拆分为：控制与监督、共享文件 namespace 与启动边界、canonical 身份、effect / admission / drain 组成、Browser / Prompt 可选 profile、文档及派生绑定。最先可独立落地的是接收目标绑定与监督修复；组成层必须连同实际调用方和回归一起审阅。
 

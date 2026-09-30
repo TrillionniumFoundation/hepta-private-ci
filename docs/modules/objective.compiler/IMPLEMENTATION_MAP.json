@@ -349,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -361,7 +361,7 @@
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
-  "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+  "sourceBaseRole": "current_source_observation_after_squash",
   "exactHeadQualificationPolicy": {
     "state": "external_exact_candidate_receipt_required",
     "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <checkout> --expected-tree <checkout-tree>",
@@ -390,8 +390,8 @@
     }
   ],
   "exactSourceCandidate": {
-    "commit": "e946a7ed08814881f9986d813c5b8cd821241f99",
-    "tree": "5c62cf98768ee7f99c55e80c3b4430bcfddd41e7",
+    "commit": "1188cc96057beef5fe9e5dace6ba25324e9835a8",
+    "tree": "cbf15e4c8e7ee455e600657a63219ba466ca0872",
     "roots": [
       "codex-rs/hepta-objective"
     ],
@@ -402,8 +402,8 @@
     "RunStartSnapshotV1"
   ],
   "productCompositionSourceCandidate": {
-    "commit": "e603e7ac675843e69f6cfd741e42180b2d5437ed",
-    "tree": "6de843d2ddf162869e4aff0ebb84642d4b2c26c3",
+    "commit": "eb6a5e53753fd065b831438d496324ed698c24cf",
+    "tree": "80b8609794335f8eb3210bea4210ee54d1c4f09f",
     "paths": [
       "codex-rs/hepta-agentd/src/objective_runtime.rs",
       "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
@@ -498,5 +498,14 @@
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
       "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
     }
-  ]
+  ],
+  "historicalSourceOrigin": {
+    "path": "qualification/module-source-origins/20261001/objective.compiler.json",
+    "archiveBlobSha": "e2dca3f3426eb8c447e11004dfe0428b0048603b",
+    "snapshotCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+    "snapshotTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
+    "originalMapPath": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+    "originalMapBlobSha": "5212e5e03ce34032542dd2987e42427c903113fc",
+    "role": "historical_only_no_execution_authority"
+  }
 }

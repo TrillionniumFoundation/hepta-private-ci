@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "0625d1a21d921752c09d4050bc110ba2ed995fec",
+    "tree": "067ec48f79e6ae51f4c99897ba25b6824e525921"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -676,19 +676,39 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "e868d53d0ba5e58c0f4a3fef5f302ab1d564ad84"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "a33205f632671e9750feadc69e8a39f430c6602b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_worker_tests.rs",
+      "object": "738d2e91bd003c14dfd6d05660d92898d6a8e12f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_objective_ingress_tests.rs",
+      "object": "31858807dd5fdba5f7f70815231f54573cad8910"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "object": "55a31a8f0ec23f28caec6aefe6ffd0ad36eab46d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "object": "1b46de250b17e1580c48d0e356f999fa075ec139"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "object": "dfba6f9599d2736f977a84ad36482f8a0319935b"
+      "object": "369bf201e4ae49aacac11da5aa8069aea9c1c3a5"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
-      "object": "aed29fe2689084b405dba3864dfcc3375bbf6708"
+      "object": "fb09e1e7f0e10a1f940e76c28159df7d25bbaa27"
     },
     {
       "path": "codex-rs/hepta-agentd/src/main.rs",
-      "object": "60595420f4bf42089b5745830ac611df1c7ec2c2"
+      "object": "1d9cba7d74bb2a651c039d8fa80e7fb5a9be1dac"
     },
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
@@ -697,6 +717,14 @@
     {
       "path": "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
       "object": "c7f7d080ac94724ad8625d0e5d9287df94af2abe"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "object": "7d63ee4bb4863a9c637d39c6237b30b602bd4333"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "object": "f4f88127c490405d8f4a956308531840ea280207"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
@@ -708,15 +736,15 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+      "object": "c26d92a4e2b1258f149487dc4d9bb9c54d4d7850"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "24941f58885fda05b1bad52ebf75dbab94da2057"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "8c7eee5f3c0ed17def4b820e47a614cfbce329b2"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
@@ -736,7 +764,7 @@
     },
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
-      "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
+      "object": "c379e66139398b40f85423e2ae668dbe37963cdb"
     }
   ],
   "mappingInventoryScope": {
