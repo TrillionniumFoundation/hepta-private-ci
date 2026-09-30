@@ -79,6 +79,34 @@ class DocumentationContractTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "outside the repository"):
                 MARKDOWN.validate_markdown_links([source], root)
 
+    def test_markdown_symlink_target_fails_closed_before_resolution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / "target.md"
+            target.write_text("# Real target\n", encoding="utf-8")
+            linked = root / "linked.md"
+            try:
+                linked.symlink_to(target.name)
+            except OSError as error:
+                self.skipTest(f"symlink fixture is unavailable: {error}")
+            source = root / "source.md"
+            source.write_text("[linked](linked.md#real-target)\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "contains symlink"):
+                MARKDOWN.validate_markdown_links([source, target], root)
+
+    def test_markdown_source_symlink_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / "target.md"
+            target.write_text("# Target\n", encoding="utf-8")
+            linked = root / "linked-source.md"
+            try:
+                linked.symlink_to(target.name)
+            except OSError as error:
+                self.skipTest(f"symlink fixture is unavailable: {error}")
+            with self.assertRaisesRegex(ValueError, "source is a symlink"):
+                MARKDOWN.validate_markdown_links([linked], root)
+
     def test_repository_learning_eval_markdown_graph_is_closed(self):
         documents = MARKDOWN.markdown_documents()
         self.assertTrue(documents, "repository Markdown inventory must not be empty")
