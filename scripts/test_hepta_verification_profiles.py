@@ -4,6 +4,7 @@ import contextlib
 import copy
 import importlib.util
 import io
+import json
 from pathlib import Path
 import sys
 import unittest
@@ -27,6 +28,23 @@ MODULES = verifier("hepta-module-docs.py")
 
 
 class VerificationProfileTests(unittest.TestCase):
+    def test_real_development_tree_reports_a_shared_path_touch_without_activating_the_lease(
+        self,
+    ):
+        lease = DOCS.load(DOCS.FILES["paths"])["activeLeases"][0]
+        changed = {lease["normalizedExactPaths"][0]}
+        output = io.StringIO()
+        with (
+            patch.object(DOCS, "pull_request_changed_paths", return_value=changed),
+            contextlib.redirect_stdout(output),
+        ):
+            self.assertEqual(DOCS.verify("development"), 0)
+        report = json.loads(output.getvalue().splitlines()[-1])
+        self.assertEqual(report["touchedLeaseCount"], 1)
+        self.assertEqual(report["externallyAttestedLeaseCount"], 0)
+        self.assertFalse(report["leaseActivationEvaluated"])
+        self.assertFalse(report["historicalEvidenceRevalidated"])
+
     def test_unknown_profile_is_rejected_before_reading_source(self):
         for module in (DOCS, MODULES):
             with (

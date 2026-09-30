@@ -451,7 +451,10 @@ def lease_path_set_sha(paths):
     return hashlib.sha256(("\n".join(paths) + "\n").encode()).hexdigest()
 
 
-def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
+def validate_path_leases(
+    path_registry, packages, dev, act, changed_paths=None, *, profile="qualification"
+):
+    need(profile in {"development", "qualification"}, "path lease verification profile")
     need(
         path_registry.get("schema") == "hepta.path-ownership.v3"
         and has_schema_version(path_registry, 3),
@@ -590,10 +593,15 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
     for pair, paths in required.items():
         need(declared[pair] == paths, "lease path mismatch " + "/".join(pair))
 
+    touched_leases = 0
     if changed_paths is not None:
         changed = {canonical_exact_path(path, "changed path") for path in changed_paths}
         for pair, paths in declared.items():
             path_set = set(paths)
+            if changed & path_set:
+                touched_leases += 1
+            if profile == "development":
+                continue
             prefix_aliases = {
                 path
                 for path in changed
@@ -610,8 +618,9 @@ def validate_path_leases(path_registry, packages, dev, act, changed_paths=None):
     return {
         "declaredLeaseCount": len(declared),
         "leasedPathCount": len(lease_paths),
-        "touchedLeaseCount": 0,
+        "touchedLeaseCount": touched_leases,
         "externallyAttestedLeaseCount": 0,
+        "leaseActivationEvaluated": profile == "qualification",
     }
 
 
@@ -1325,7 +1334,7 @@ def verify(profile="qualification") -> int:
     dev = reach(d["development"]["nodes"], d["development"]["edges"])
     act = reach(d["activation"]["nodes"], d["activation"]["edges"])
     lease_summary = validate_path_leases(
-        d["paths"], packages, dev, act, pull_request_changed_paths()
+        d["paths"], packages, dev, act, pull_request_changed_paths(), profile=profile
     )
     evid = {x["id"] for x in d["evidence"]["evidenceTypes"]}
     for ladder in d["claims"]["ladders"]:
@@ -1905,10 +1914,26 @@ def self_test():
             "leasedPathCount": 1,
             "touchedLeaseCount": 0,
             "externallyAttestedLeaseCount": 0,
+            "leaseActivationEvaluated": True,
         },
         "valid static exact path lease request",
     )
     cases.append("static_exact_path_lease_request")
+    ordinary = validate_path_leases(
+        fixture_registry,
+        fixture_packages,
+        fixture_reach,
+        fixture_reach,
+        {fixture_path},
+        profile="development",
+    )
+    need(
+        ordinary["touchedLeaseCount"] == 1
+        and ordinary["externallyAttestedLeaseCount"] == 0
+        and ordinary["leaseActivationEvaluated"] is False,
+        "ordinary development does not activate a historical external lease",
+    )
+    cases.append("ordinary_development_reports_touch_without_lease_activation")
 
     def cloned(value):
         return json.loads(json.dumps(value))
