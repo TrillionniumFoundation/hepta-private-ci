@@ -19,6 +19,8 @@ mod limits;
 mod model;
 pub mod owner;
 mod owner_host;
+#[cfg(test)]
+mod owner_operational_tests;
 mod owner_service;
 mod pinned;
 mod publication;
@@ -29,8 +31,6 @@ mod storage;
 mod storage_hygiene;
 #[cfg(test)]
 mod test_support;
-#[cfg(test)]
-mod owner_operational_tests;
 
 pub use admin::ArtifactOwnerStatusV1;
 pub use admin::inspect_artifact_owner_status_v1;
