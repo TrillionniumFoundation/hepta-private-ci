@@ -491,26 +491,7 @@ fn staging_root(agents_root: &Path, agent_id: &AgentId) -> PathBuf {
 fn write_new_file(path: &Path, contents: &[u8]) -> Result<(), FleetRegistryError> {
     let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
     file.write_all(contents)?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::MetadataExt;
-        use std::os::unix::fs::PermissionsExt;
-        // Installed workload readers need later lifecycle generations as well
-        // as the Starting record prepared before spawn. Inherit only the
-        // protected owner's explicit read group, before the existing fsync.
-        let parent = path
-            .parent()
-            .ok_or_else(|| FleetRegistryError::Invalid("record has no parent".into()))?;
-        let metadata = std::fs::symlink_metadata(parent)?;
-        if metadata.is_dir()
-            && metadata.uid() == 0
-            && metadata.mode() & 0o050 == 0o050
-            && metadata.mode() & 0o022 == 0
-        {
-            std::os::unix::fs::fchown(&file, /*uid*/ None, Some(metadata.gid()))?;
-            file.set_permissions(std::fs::Permissions::from_mode(0o640))?;
-        }
-    }
+    crate::registry_metadata::inherit_protected_read_group(&file, path)?;
     file.sync_all()?;
     Ok(())
 }

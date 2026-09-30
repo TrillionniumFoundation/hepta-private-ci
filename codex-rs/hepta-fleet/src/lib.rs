@@ -47,6 +47,7 @@ mod lease_model;
 mod model;
 mod module_catalog;
 mod registry;
+mod registry_metadata;
 mod release;
 mod resource;
 

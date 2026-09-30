@@ -894,6 +894,7 @@ fn write_new_json<T: Serialize>(path: &Path, value: &T) -> Result<(), FleetRegis
     bytes.push(b'\n');
     let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
     file.write_all(&bytes)?;
+    crate::registry_metadata::inherit_protected_read_group(&file, path)?;
     file.sync_all()?;
     Ok(())
 }
