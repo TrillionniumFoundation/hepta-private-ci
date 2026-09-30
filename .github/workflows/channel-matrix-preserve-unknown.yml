@@ -33,7 +33,9 @@ permissions:
 
 concurrency:
   group: channel-matrix-exact-candidate-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: false
+  # Only the newest immutable SHA can be the current candidate. Cancel stale
+  # queued/in-progress executions so they cannot starve the exact head.
+  cancel-in-progress: true
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
