@@ -55,6 +55,7 @@ jobs:
       - name: Regression-test candidate, workflow and evidence binding
         run: |
           python3 -m unittest discover -s scripts -p 'test_platform_types_candidate_binding.py' -v
+          python3 -m unittest discover -s scripts -p 'test_platform_types_candidate_support.py' -v
           python3 scripts/test_platform_types_workflow_security.py
           python3 scripts/test_platform_types_ci_gate.py -v
       - id: bind

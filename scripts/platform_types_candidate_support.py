@@ -99,20 +99,37 @@ def require_outcome_set(outcomes: dict[str, str]) -> None:
         raise CandidateBundleError(f"outcome set mismatch; missing={missing}, extra={extra}")
 
 
-def evidence_records(values: list[str], *, require_existing: bool) -> dict[str, Any]:
+def _contained_evidence_path(supplied: str, *, root: Path) -> tuple[Path, str]:
+    root = root.resolve()
+    path = Path(supplied)
+    candidate = path if path.is_absolute() else root / path
+    try:
+        resolved = candidate.resolve(strict=False)
+        relative = resolved.relative_to(root)
+    except (OSError, ValueError) as error:
+        raise CandidateBundleError(
+            f"evidence path must remain inside the repository root: {supplied!r}"
+        ) from error
+    if candidate.is_symlink():
+        raise CandidateBundleError(
+            f"evidence path must be a regular repository-contained file, not a symlink: {supplied!r}"
+        )
+    return resolved, relative.as_posix()
+
+
+def evidence_records(
+    values: list[str],
+    *,
+    require_existing: bool,
+    root: Path = ROOT,
+) -> dict[str, Any]:
     named = parse_named_values(values, outcomes=False)
     records: dict[str, Any] = {}
     for name, supplied in named.items():
-        path = Path(supplied)
-        if not path.is_absolute():
-            path = ROOT / path
+        path, shown = _contained_evidence_path(supplied, root=root)
         exists = path.is_file()
         if require_existing and not exists:
-            raise CandidateBundleError(f"required evidence is missing: {name}={path}")
-        try:
-            shown = str(path.relative_to(ROOT))
-        except ValueError:
-            shown = str(path)
+            raise CandidateBundleError(f"required evidence is missing: {name}={shown}")
         record: dict[str, Any] = {"path": shown, "exists": exists}
         if exists:
             record.update({"sha256": sha256_file(path), "bytes": path.stat().st_size})
@@ -120,6 +137,9 @@ def evidence_records(values: list[str], *, require_existing: bool) -> dict[str, 
     return records
 
 
-def resolve_record_path(record: dict[str, Any]) -> Path:
-    path = Path(str(record["path"]))
-    return path if path.is_absolute() else ROOT / path
+def resolve_record_path(record: dict[str, Any], *, root: Path = ROOT) -> Path:
+    supplied = str(record["path"])
+    if Path(supplied).is_absolute():
+        raise CandidateBundleError("evidence record paths must be repository-relative")
+    path, _ = _contained_evidence_path(supplied, root=root)
+    return path

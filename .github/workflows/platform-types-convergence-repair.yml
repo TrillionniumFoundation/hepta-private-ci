@@ -85,7 +85,8 @@ jobs:
           python3 -m unittest \
             scripts/test_platform_types_rama_lock_guard.py \
             scripts/test_platform_types_rustdoc_api.py \
-            scripts/test_platform_types_implementation_map_binding.py
+            scripts/test_platform_types_implementation_map_binding.py \
+            scripts/test_platform_types_candidate_support.py
           python3 scripts/platform_types_public_api.py
           python3 scripts/platform_types_implementation_map.py --expected-sha "${{ github.event.pull_request.head.sha || github.sha }}"
           cargo "+$PLATFORM_TYPES_RUSTFMT" fmt --manifest-path codex-rs/Cargo.toml --all -- --check

@@ -46,6 +46,8 @@ The exact list is generated from the workspace and implementation map. At minimu
 
 “Implemented” does not mean “qualified.” The generated exact-source status artifact is authoritative for pass/fail.
 
+Candidate evidence is self-contained by construction. Qualification evidence paths must resolve to regular files inside the checked-out repository tree; absolute paths outside that tree, parent traversal, and symlink evidence are rejected before a receipt can be emitted. This prevents a runner-local path from becoming part of a supposedly portable positive fixture.
+
 ## Consumer migration procedure
 
 For each public API or wire change:
