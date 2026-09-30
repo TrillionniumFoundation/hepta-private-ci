@@ -1,0 +1,414 @@
+{
+  "schema": "hepta.platform-types.compatibility-matrix.v1",
+  "schemaVersion": 1,
+  "module": "platform.types",
+  "normativeCatalog": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
+  "consumerMatrix": "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json",
+  "claimBoundary": "version, migration, owner, mandatory-consumer and rollback evidence; not activation, promotion or release authority",
+  "mandatoryConsumers": [
+    "generated.python",
+    "generated.javascript",
+    "canonical.python-node",
+    "manifest.python",
+    "manifest.javascript",
+    "manifest.rust-public-api",
+    "wire.python",
+    "wire.javascript",
+    "wire.rust-product-codec",
+    "wire.rust-manifest-codec",
+    "utility.ndu.registered-numeric",
+    "utility.ndu.pinned-numeric-v2",
+    "utility.ndu.random-stream-owner",
+    "runtime.codex.prompt-delivery",
+    "learning.ledger.prompt-delivery",
+    "runtime.supervisor.topology",
+    "runtime.supervisor.manifest-admission"
+  ],
+  "optionalConsumers": [],
+  "requiredAssurances": [
+    "decoder",
+    "validatedBoundary",
+    "ownerRevalidation",
+    "staleStateRejection",
+    "mixedVersionRollback"
+  ],
+  "protocols": [
+    {
+      "id": "PromptDeliveryObservationV1",
+      "wireVersion": 1,
+      "semanticVersion": 1,
+      "semanticTypeId": "legacy:hepta.prompt-delivery-observation.v1",
+      "codecOwner": "runtime.codex/learning.ledger compatibility",
+      "compatibility": "frozen_read_compatible_no_reinterpretation",
+      "migration": "Readable indefinitely as V1; V2 migration carries the exact V1 digest and never relabels these bytes.",
+      "rollbackStrategy": "Retain and replay the frozen V1 observation; never reinterpret it as HPTC.",
+      "consumers": [
+        "canonical.python-node",
+        "runtime.codex.prompt-delivery",
+        "learning.ledger.prompt-delivery"
+      ],
+      "goldenVectors": [
+        "codex-rs/hepta-types/src/prompt_delivery_tests.rs"
+      ],
+      "assurances": {
+        "decoder": {
+          "status": "not_applicable",
+          "reason": "V1 is a native compatibility observation and has no product JSON transport schema."
+        },
+        "validatedBoundary": {
+          "status": "evidenced",
+          "consumers": [
+            "runtime.codex.prompt-delivery",
+            "learning.ledger.prompt-delivery"
+          ]
+        },
+        "ownerRevalidation": {
+          "status": "not_applicable",
+          "reason": "The observation grants no authority; effect owners validate their own final-use grants."
+        },
+        "staleStateRejection": {
+          "status": "not_applicable",
+          "reason": "The value is immutable and stateless; freshness belongs to the observing runtime owner."
+        },
+        "mixedVersionRollback": {
+          "status": "evidenced",
+          "consumers": [
+            "runtime.codex.prompt-delivery",
+            "learning.ledger.prompt-delivery"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PromptDeliveryObservationV2",
+      "wireVersion": 2,
+      "semanticVersion": 2,
+      "semanticTypeId": "platform.types:prompt-delivery-observation-v2",
+      "codecOwner": "platform.wire",
+      "compatibility": "additive_v2_with_explicit_v1_migration_witness",
+      "migration": "Construct V2 only when the V1 payload fits V2 capacity and bind the exact legacy V1 digest.",
+      "rollbackStrategy": "Persist the original V1 value alongside migration evidence; reject unsupported capacity instead of truncating.",
+      "consumers": [
+        "generated.python",
+        "generated.javascript",
+        "wire.python",
+        "wire.javascript",
+        "wire.rust-product-codec"
+      ],
+      "goldenVectors": [
+        "codex-rs/hepta-types/PLATFORM_TYPES_WIRE_CONFORMANCE_V1.json",
+        "codex-rs/hepta-types/tests/prompt_v2_hashability.rs"
+      ],
+      "assurances": {
+        "decoder": {
+          "status": "evidenced",
+          "consumers": [
+            "wire.python",
+            "wire.javascript",
+            "wire.rust-product-codec"
+          ]
+        },
+        "validatedBoundary": {
+          "status": "evidenced",
+          "consumers": [
+            "wire.rust-product-codec"
+          ]
+        },
+        "ownerRevalidation": {
+          "status": "not_applicable",
+          "reason": "Delivery observations remain non-authorizing evidence, not final-use grants."
+        },
+        "staleStateRejection": {
+          "status": "not_applicable",
+          "reason": "The observation is immutable; consumers bind it to their own candidate and owner context."
+        },
+        "mixedVersionRollback": {
+          "status": "evidenced",
+          "consumers": [
+            "generated.python",
+            "generated.javascript",
+            "wire.rust-product-codec"
+          ]
+        }
+      }
+    },
+    {
+      "id": "RuntimeTopologyCandidateV1",
+      "wireVersion": 1,
+      "semanticVersion": 1,
+      "semanticTypeId": "platform.types:runtime-topology-candidate-v1",
+      "codecOwner": "platform.wire",
+      "compatibility": "v1_frozen_semantics_validated_wrapper_required_at_product_boundary",
+      "migration": "No in-place migration; product transport returns a validated V1 wrapper and any successor requires a new version.",
+      "rollbackStrategy": "Retain the rollback predecessor digest and reject candidates whose generation or canonical delta order is stale.",
+      "consumers": [
+        "wire.python",
+        "wire.javascript",
+        "wire.rust-product-codec",
+        "runtime.supervisor.topology"
+      ],
+      "goldenVectors": [
+        "codex-rs/hepta-types/PLATFORM_TYPES_WIRE_CONFORMANCE_V1.json"
+      ],
+      "assurances": {
+        "decoder": {
+          "status": "evidenced",
+          "consumers": [
+            "wire.python",
+            "wire.javascript",
+            "wire.rust-product-codec"
+          ]
+        },
+        "validatedBoundary": {
+          "status": "evidenced",
+          "consumers": [
+            "wire.rust-product-codec",
+            "runtime.supervisor.topology"
+          ]
+        },
+        "ownerRevalidation": {
+          "status": "evidenced",
+          "consumers": [
+            "runtime.supervisor.topology"
+          ]
+        },
+        "staleStateRejection": {
+          "status": "evidenced",
+          "consumers": [
+            "runtime.supervisor.topology"
+          ]
+        },
+        "mixedVersionRollback": {
+          "status": "evidenced",
+          "consumers": [
+            "runtime.supervisor.topology"
+          ]
+        }
+      }
+    },
+    {
+      "id": "RandomStreamManifestV1",
+      "wireVersion": 1,
+      "semanticVersion": 1,
+      "semanticTypeId": "platform.types:random-stream-manifest-v1",
+      "codecOwner": "platform.wire",
+      "compatibility": "v1_frozen_semantics",
+      "migration": "No in-place migration; a changed generator or identity contract requires a new manifest version.",
+      "rollbackStrategy": "Retain the manifest and owner receipt; execution owners reject seed, namespace, generator, decision, or counter-window substitution.",
+      "consumers": [
+        "manifest.python",
+        "manifest.javascript",
+        "manifest.rust-public-api",
+        "wire.rust-manifest-codec",
+        "utility.ndu.random-stream-owner"
+      ],
+      "goldenVectors": [
+        "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json"
+      ],
+      "assurances": {
+        "decoder": {
+          "status": "evidenced",
+          "consumers": [
+            "manifest.python",
+            "manifest.javascript",
+            "manifest.rust-public-api",
+            "wire.rust-manifest-codec"
+          ]
+        },
+        "validatedBoundary": {
+          "status": "evidenced",
+          "consumers": [
+            "manifest.rust-public-api",
+            "wire.rust-manifest-codec"
+          ]
+        },
+        "ownerRevalidation": {
+          "status": "evidenced",
+          "consumers": [
+            "utility.ndu.random-stream-owner"
+          ]
+        },
+        "staleStateRejection": {
+          "status": "not_applicable",
+          "reason": "Mutable counter consumption and reuse protection belong to the execution owner, not platform.types."
+        },
+        "mixedVersionRollback": {
+          "status": "evidenced",
+          "consumers": [
+            "manifest.python",
+            "manifest.javascript",
+            "utility.ndu.random-stream-owner"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ExternalSystemManifestV1",
+      "wireVersion": 1,
+      "semanticVersion": 1,
+      "semanticTypeId": "platform.types:external-system-manifest-v1",
+      "codecOwner": "platform.wire",
+      "compatibility": "v1_frozen_semantics",
+      "migration": "No in-place migration; changed host inventory semantics require a new manifest version.",
+      "rollbackStrategy": "Retain the previous admitted host snapshot and require a fresh authorization witness before replacement.",
+      "consumers": [
+        "manifest.python",
+        "manifest.javascript",
+        "manifest.rust-public-api",
+        "wire.rust-manifest-codec",
+        "runtime.supervisor.manifest-admission"
+      ],
+      "goldenVectors": [
+        "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json"
+      ],
+      "assurances": {
+        "decoder": {
+          "status": "evidenced",
+          "consumers": [
+            "manifest.python",
+            "manifest.javascript",
+            "manifest.rust-public-api",
+            "wire.rust-manifest-codec"
+          ]
+        },
+        "validatedBoundary": {
+          "status": "evidenced",
+          "consumers": [
+            "manifest.rust-public-api",
+            "wire.rust-manifest-codec"
+          ]
+        },
+        "ownerRevalidation": {
+          "status": "evidenced",
+          "consumers": [
+            "runtime.supervisor.manifest-admission"
+          ]
+        },
+        "staleStateRejection": {
+          "status": "evidenced",
+          "consumers": [
+            "runtime.supervisor.manifest-admission"
+          ]
+        },
+        "mixedVersionRollback": {
+          "status": "evidenced",
+          "consumers": [
+            "manifest.python",
+            "manifest.javascript",
+            "runtime.supervisor.manifest-admission"
+          ]
+        }
+      }
+    },
+    {
+      "id": "SensorCalibrationManifestV1",
+      "wireVersion": 1,
+      "semanticVersion": 1,
+      "semanticTypeId": "platform.types:sensor-calibration-manifest-v1",
+      "codecOwner": "platform.wire",
+      "compatibility": "v1_frozen_semantics",
+      "migration": "No in-place migration; changed calibration semantics require a new manifest version.",
+      "rollbackStrategy": "Retain the prior admitted calibration and fail closed when generation, clock domain, validity, hardware, or failure policy differs.",
+      "consumers": [
+        "manifest.python",
+        "manifest.javascript",
+        "manifest.rust-public-api",
+        "wire.rust-manifest-codec",
+        "runtime.supervisor.manifest-admission"
+      ],
+      "goldenVectors": [
+        "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json"
+      ],
+      "assurances": {
+        "decoder": {
+          "status": "evidenced",
+          "consumers": [
+            "manifest.python",
+            "manifest.javascript",
+            "manifest.rust-public-api",
+            "wire.rust-manifest-codec"
+          ]
+        },
+        "validatedBoundary": {
+          "status": "evidenced",
+          "consumers": [
+            "manifest.rust-public-api",
+            "wire.rust-manifest-codec"
+          ]
+        },
+        "ownerRevalidation": {
+          "status": "evidenced",
+          "consumers": [
+            "runtime.supervisor.manifest-admission"
+          ]
+        },
+        "staleStateRejection": {
+          "status": "evidenced",
+          "consumers": [
+            "runtime.supervisor.manifest-admission"
+          ]
+        },
+        "mixedVersionRollback": {
+          "status": "evidenced",
+          "consumers": [
+            "manifest.python",
+            "manifest.javascript",
+            "runtime.supervisor.manifest-admission"
+          ]
+        }
+      }
+    },
+    {
+      "id": "RegisteredNumericConversionReceiptV2",
+      "wireVersion": 2,
+      "semanticVersion": 2,
+      "semanticTypeId": "platform.types:numeric-registry-admission-v2",
+      "codecOwner": "platform.types/native",
+      "compatibility": "additive_v2_v1_receipt_remains_readable",
+      "migration": "Keep V1 receipts readable; use V2 for generation-sensitive admission with a pinned registry snapshot.",
+      "rollbackStrategy": "Recompute from source against the independently pinned generation and reject stale generation or registry content instead of downgrading.",
+      "consumers": [
+        "generated.python",
+        "generated.javascript",
+        "utility.ndu.registered-numeric",
+        "utility.ndu.pinned-numeric-v2"
+      ],
+      "goldenVectors": [
+        "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+        "codex-rs/hepta-ndu/src/owner_numeric_snapshot_tests.rs"
+      ],
+      "assurances": {
+        "decoder": {
+          "status": "not_applicable",
+          "reason": "The V2 receipt is native-only and intentionally has no product JSON transport schema."
+        },
+        "validatedBoundary": {
+          "status": "evidenced",
+          "consumers": [
+            "utility.ndu.registered-numeric",
+            "utility.ndu.pinned-numeric-v2"
+          ]
+        },
+        "ownerRevalidation": {
+          "status": "evidenced",
+          "consumers": [
+            "utility.ndu.pinned-numeric-v2"
+          ]
+        },
+        "staleStateRejection": {
+          "status": "evidenced",
+          "consumers": [
+            "utility.ndu.pinned-numeric-v2"
+          ]
+        },
+        "mixedVersionRollback": {
+          "status": "evidenced",
+          "consumers": [
+            "utility.ndu.registered-numeric",
+            "utility.ndu.pinned-numeric-v2"
+          ]
+        }
+      }
+    }
+  ]
+}

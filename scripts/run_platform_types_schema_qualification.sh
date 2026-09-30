@@ -26,6 +26,7 @@ test -z "$INITIAL_STATUS"
   for pattern in test_platform_types_consumer\*.py test_platform_types_nonempty_tests.py test_platform_types_resource\*.py; do
     python3 -m unittest discover -s scripts -p "$pattern" -v
   done
+  python3 -m unittest discover -s scripts -p test_platform_types_compatibility.py -v
 ) 2>&1 | tee "$OUT/qualification-guards.log"
 
 CARGO_TARGET_DIR="$OUT/target" \
@@ -48,6 +49,11 @@ python3 "$ROOT/scripts/verify_platform_types_semantic_bounds.py" \
 (cd "$ROOT" && python3 -m unittest discover -s scripts \
   -p test_platform_types_semantic_bounds.py -v) \
   2>&1 | tee "$OUT/semantic-bounds-tests.log"
+
+python3 "$ROOT/scripts/verify_platform_types_compatibility.py" \
+  --catalog "$OUT/protocol-catalog.json" \
+  --report "$OUT/compatibility-report.json" \
+  2>&1 | tee "$OUT/compatibility.log"
 
 FINAL_SHA="$(git -C "$ROOT" rev-parse HEAD)"
 FINAL_TREE="$(git -C "$ROOT" rev-parse HEAD^{tree})"
@@ -73,6 +79,8 @@ for name in (
     "semantic-bounds-report.json",
     "semantic-bounds.log",
     "semantic-bounds-tests.log",
+    "compatibility-report.json",
+    "compatibility.log",
     "qualification-guards.log",
 ):
     path = out / name
@@ -89,8 +97,9 @@ receipt = {
     "artifacts": artifacts,
     "status": "passed",
     "claimBoundary": (
-        "same-candidate Rust catalog/schema structural and Prompt capacity parity; "
-        "not activation, external acceptance, promotion, or release"
+        "same-candidate Rust catalog/schema structural, Prompt capacity, "
+        "compatibility and mandatory-consumer parity; not activation, external "
+        "acceptance, promotion, or release"
     ),
 }
 (out / "receipt.json").write_text(
