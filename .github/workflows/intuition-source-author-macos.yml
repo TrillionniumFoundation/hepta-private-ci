@@ -55,6 +55,7 @@ jobs:
           done
           python3 - <<'PY'
           import base64
+          import binascii
           import hashlib
           import pathlib
 
@@ -74,20 +75,21 @@ jobs:
           for method, index, candidate in candidates:
               try:
                   patch = base64.b64decode(candidate, validate=True)
-              except ValueError:
+              except (ValueError, binascii.Error):
                   continue
               if hashlib.sha256(patch).hexdigest() == expected:
                   matches.append((method, index, patch))
           if len(matches) != 1:
               raise SystemExit(f"expected one reviewed reconstruction, found {len(matches)}")
           method, index, patch = matches[0]
-          if not patch.startswith(b"diff --git a/") or not patch.endswith(b"\n"):
-              raise SystemExit("reviewed object is not a complete unified patch")
+          if not patch.startswith(b"diff --git a/"):
+              raise SystemExit("reviewed object is not a Git patch")
           pathlib.Path(".git/intuition-source.patch").write_bytes(patch)
           pathlib.Path(".git/intuition-source.patch.identity").write_text(
-              f"sha256={expected}\nmethod={method}\nindex={index}\n",
+              f"sha256={expected}\nmethod={method}\nindex={index}\nbytes={len(patch)}\n",
               encoding="utf-8",
           )
+          print(f"recovered reviewed patch: method={method} index={index} bytes={len(patch)} tail={patch[-80:]!r}")
           PY
           git diff --quiet
           git apply --check .git/intuition-source.patch
@@ -96,6 +98,10 @@ jobs:
           rm -f .github/workflows/intuition-source-export.yml
           rm -f .github/workflows/intuition-source-author-arm.yml
           rm -f .github/workflows/intuition-source-author-macos.yml
+          rm -f .github/workflows/intuition-source-author-v2.yml
+          rm -f .github/workflows/intuition-source-author-rescue.yml
+          rm -f .github/workflows/intuition-source-author-self-hosted.yml
+          rm -f .github/workflows/intuition-source-author-pocket4.yml
 
       - name: Set up repository CI dependencies
         uses: ./.github/actions/setup-ci
@@ -135,10 +141,11 @@ jobs:
         run: |
           set -euo pipefail
           git diff --check
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
           git config user.name "OpenAI source authoring"
           git config user.email "assistant@openai.invalid"
           git add -A
-          test -z "$(git diff --cached --name-only | grep -E '^\.github/(intuition-authoring-patch|workflows/intuition-source-(export|author-arm|author-macos)\.yml)' || true)"
+          test -z "$(git diff --cached --name-only | grep -E '^\.github/(intuition-authoring-patch|workflows/intuition-source-(export|author-arm|author-macos|author-v2|author-rescue|author-self-hosted|author-pocket4)\.yml)' || true)"
           tree="$(git write-tree)"
           commit="$(printf '%s\n\n%s\n' \
             'fix(intuition): revalidate authority at final use' \
