@@ -22,6 +22,7 @@ mod journal_lock;
 mod plasticity;
 mod population_v2;
 mod protocol;
+mod protocol_timestamp;
 mod qualification;
 mod runtime;
 mod runtime_types;
