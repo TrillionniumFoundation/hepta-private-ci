@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "897520b7541376e466e00ba3c6d622ec3f4f357f",
+    "tree": "bab4148f938dd450b31d485f834ad654bf12e4be"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -67,7 +67,12 @@
       "sourcePathExists": true,
       "designOperation": "open_snapshot",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "symbol": "CognitiveStore::lane_c_snapshot_ids",
+          "path": "codex-rs/hepta-memory/src/lane_c_snapshot_selected.rs"
+        }
+      ]
     },
     {
       "operation": "writable_recovery",
@@ -305,7 +310,7 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-store",
-      "object": "b321d1157ea310845ed7642e2692ef829ee3e0f8"
+      "object": "7df7adc05e772645512710b35613f3fa6e1e083f"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/durable.rs",
@@ -313,23 +318,35 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2.rs",
-      "object": "e9ec79e983aa4a125536f688e480293c8b7d3131"
+      "object": "36a5348c3312108e536f3fcd59e26fdc4040a14d"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
-      "object": "d5c8aa47d3c9dfb86b9022ba786ae7b09cdea5c8"
+      "object": "4d068c69ae81be56c08c82d70cb83b4afb0c6872"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "object": "b52e3a1aa275c178a075677f5df9faa832173b41"
+      "object": "e9277004aeea725a024df5e64ca820e3f537d5ab"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_files.rs",
+      "object": "753c35d7903f9d791d319d3cb2bb869b21a55326"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_integrity.rs",
+      "object": "14e9d1de8303a15a9accf7e87b06ae80d0ae7686"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_integrity_tests.rs",
+      "object": "92da527898eecc70f09f805cc983f07803689d33"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
-      "object": "b04217a0de797501c61262b20b8c52d2bd1b1822"
+      "object": "d97facb0b2c7ef324eb09dbd005268b99c693b40"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
-      "object": "72eaa499826321a2564614706a38d91dff149b72"
+      "object": "8128b1f8d00a74bcbb05d6587fac4737af563647"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
@@ -337,15 +354,39 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "object": "af66a5195f8a65635abe6c2abaf7b8e265bb6e9d"
+      "object": "d1de339a828b9fa15b81a99344ff5763a5b3c2fa"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_snapshot_selected.rs",
+      "object": "4580b07340e95ca60dcd10557f9e7e6f9d063507"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
-      "object": "94422ac7f6ac92064608f178d4a6b7879bd8c9ba"
+      "object": "8990b2c5a2ed397cf14c4102983ac2b280bb1909"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+      "object": "52a76929f15c6a283398eefd22efa265b4955353"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+      "object": "22d82383ebf094fcecc92e1a0e6dc98bb75f8c6c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_reconciliation.rs",
+      "object": "5c9d15a1ffe4938c4cf814b678d520a1c83844f4"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_reconciliation_tests.rs",
+      "object": "60341aaeda0f7b07772856daa0c008b43ebc5586"
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+      "object": "90956875e7470d64f10b877daea786063cc3bb8c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer_authority_tests.rs",
+      "object": "5457fb31762d989a883365bbdc11ff159956ef02"
     },
     {
       "path": "codex-rs/hepta-memory/src/shared_experience.rs",
@@ -361,7 +402,7 @@
     },
     {
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
-      "object": "df2b85789980b950511d8d7ac3ff56403095fe79"
+      "object": "d5340ff5753cea74930611f2f26fde903940f897"
     }
   ]
 }
