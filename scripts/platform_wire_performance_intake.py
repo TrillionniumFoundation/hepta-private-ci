@@ -75,6 +75,80 @@ def download(repository: str, token: str, artifact_id: int, maximum: int) -> byt
     return b"".join(chunks)
 
 
+def verified_archive(
+    repository: str,
+    token: str,
+    artifact_id: int,
+    expected_digest: str,
+    maximum: int,
+) -> bytes:
+    """Bound the downloaded bytes and match the selected GitHub artifact digest."""
+    if (
+        not isinstance(expected_digest, str)
+        or SHA256.fullmatch(expected_digest) is None
+    ):
+        raise SystemExit("artifact SHA-256 digest is malformed")
+    archive = download(repository, token, artifact_id, maximum)
+    if hashlib.sha256(archive).hexdigest() != expected_digest:
+        raise SystemExit("downloaded artifact archive digest mismatch")
+    return archive
+
+
+def extract_archive(
+    archive: bytes,
+    destination: Path,
+    limits: dict[str, int],
+    maximum: int,
+) -> None:
+    """Inspect every closed root entry before decompressing any observation.
+
+    Metadata bounds compressed archives only. Each uncompressed entry must
+    independently fit its parser limit, including highly compressible inputs.
+    """
+    if not archive or len(archive) > maximum:
+        raise SystemExit("artifact archive exceeds its download byte limit")
+    with zipfile.ZipFile(BytesIO(archive)) as package:
+        entries = package.infolist()
+        names = [entry.filename for entry in entries]
+        if sorted(names) != sorted(limits) or len(entries) != len(limits):
+            raise SystemExit(
+                "artifact archive must contain exactly the closed root files"
+            )
+        for entry in entries:
+            if entry.is_dir() or entry.flag_bits & 0x1:
+                raise SystemExit(
+                    "artifact archive contains a directory or encrypted entry"
+                )
+            if Path(entry.filename).name != entry.filename:
+                raise SystemExit("artifact archive contains a non-root path")
+            mode = (entry.external_attr >> 16) & 0o170000
+            if mode not in (0, stat.S_IFREG):
+                raise SystemExit("artifact archive contains a non-regular entry")
+            if (
+                not 0 < entry.file_size <= limits[entry.filename]
+                or entry.compress_size > maximum
+            ):
+                raise SystemExit("artifact archive entry exceeds its byte limit")
+            if entry.compress_type not in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED):
+                raise SystemExit(
+                    "artifact archive uses an unsupported compression method"
+                )
+        if destination.is_symlink():
+            raise SystemExit("artifact destination is symlinked")
+        destination.mkdir(parents=True, exist_ok=True)
+        for entry in entries:
+            limit = limits[entry.filename]
+            with package.open(entry, "r") as stream:
+                content = stream.read(limit + 1)
+            if len(content) != entry.file_size or len(content) > limit:
+                raise SystemExit("artifact archive entry size is inconsistent")
+            target = destination / entry.filename
+            if target.is_symlink():
+                raise SystemExit("artifact destination entry is symlinked")
+            target.write_bytes(content)
+            target.chmod(0o600)
+
+
 def write_json(path: Path, value: object) -> None:
     path.write_text(
         json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
@@ -147,46 +221,17 @@ def intake() -> None:
     if artifact.get("workflow_run", {}).get("head_sha") != source:
         raise SystemExit("measurement artifact source differs from the selected source")
 
-    archive = download(repository, token, artifact_id, maximum)
+    archive = verified_archive(
+        repository, token, artifact_id, digest_match.group(1), maximum
+    )
     actual_digest = hashlib.sha256(archive).hexdigest()
-    if actual_digest != digest_match.group(1):
-        raise SystemExit("downloaded measurement archive digest mismatch")
 
     limits = {
         "performance-plan.json": 256 * 1024,
         "paired-measurements.json": 16 * 1024 * 1024,
     }
     records.mkdir(parents=True, exist_ok=True)
-    destination.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(BytesIO(archive)) as package:
-        entries = package.infolist()
-        names = [entry.filename for entry in entries]
-        if sorted(names) != sorted(limits) or len(entries) != len(limits):
-            raise SystemExit("measurement archive must contain exactly two root files")
-        for entry in entries:
-            if entry.is_dir() or entry.flag_bits & 0x1:
-                raise SystemExit(
-                    "measurement archive contains a directory or encrypted entry"
-                )
-            if Path(entry.filename).name != entry.filename:
-                raise SystemExit("measurement archive contains a non-root path")
-            mode = (entry.external_attr >> 16) & 0o170000
-            if mode not in (0, stat.S_IFREG):
-                raise SystemExit("measurement archive contains a non-regular entry")
-            limit = limits[entry.filename]
-            if not 0 < entry.file_size <= limit or entry.compress_size > maximum:
-                raise SystemExit("measurement archive entry exceeds its byte limit")
-            if entry.compress_type not in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED):
-                raise SystemExit(
-                    "measurement archive uses an unsupported compression method"
-                )
-            with package.open(entry, "r") as stream:
-                content = stream.read(limit + 1)
-            if len(content) != entry.file_size or len(content) > limit:
-                raise SystemExit("measurement archive entry size is inconsistent")
-            target = destination / entry.filename
-            target.write_bytes(content)
-            target.chmod(0o600)
+    extract_archive(archive, destination, limits, maximum)
 
     write_json(
         records / "measurement-run.json",
