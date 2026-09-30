@@ -236,3 +236,6 @@ impl CognitiveStore {
     }
 }
 
+#[cfg(test)]
+#[path = "lane_c_lineage_tests.rs"]
+mod tests;
