@@ -94,7 +94,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .hepta-evidence/learning-eval
-          just test --locked             -p codex-hepta-intelligence             evaluated_shadow             --test-threads=1             2>&1 | tee .hepta-evidence/learning-eval/runtime-e2e.log
+          just test --locked \
+            -p codex-hepta-intelligence \
+            evaluated_shadow \
+            --test-threads=1 \
+            2>&1 | tee .hepta-evidence/learning-eval/runtime-e2e.log
 
       - name: Adversarial qualification stress
         shell: bash
@@ -106,7 +110,10 @@ jobs:
             printf 'iteration=%s\n' "$iteration" >> .hepta-evidence/learning-eval/stress.log
             (
               cd codex-rs
-              just test --locked                 -p codex-hepta-intelligence-eval                 signed_qualification_e2e                 --test-threads=1
+              just test --locked \
+                -p codex-hepta-intelligence-eval \
+                signed_qualification_e2e \
+                --test-threads=1
             ) >> .hepta-evidence/learning-eval/stress.log 2>&1
           done
           python3 - <<'PY'
@@ -131,7 +138,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked             -p codex-hepta-intelligence-eval             --all-features             --fail-under-lines 85             --json             --output-path .hepta-evidence/learning-eval/coverage.json
+          cargo llvm-cov --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            --all-features \
+            --fail-under-lines 85 \
+            --json \
+            --output-path .hepta-evidence/learning-eval/coverage.json
 
       - name: Trusted-only compatibility surface remains explicit
         working-directory: codex-rs
@@ -401,7 +413,7 @@ jobs:
       - name: Install qualification tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.1
+          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.0
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -414,7 +426,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
-          ! grep -Eq '^pub fn evaluate\\(' codex-rs/hepta-intelligence-eval/src/lib.rs
+          ! grep -Eq '^pub fn evaluate\(' codex-rs/hepta-intelligence-eval/src/lib.rs
           ! grep -Eq '^pub use closure::decide_independently' codex-rs/hepta-intelligence-eval/src/lib.rs
           ! grep -Eq '^pub use signed_evaluation::decide_with_signed_evidence_v2' codex-rs/hepta-intelligence-eval/src/lib.rs
           ! grep -Eq '^pub use longitudinal_time::decide_with_signed_longitudinal_evidence_v3' codex-rs/hepta-intelligence-eval/src/lib.rs
@@ -545,7 +557,7 @@ jobs:
                   "traceabilitySha256": sha256("qualification/lane-e/TEST_TRACEABILITY.json"),
               },
               "tooling": {
-                  "cargoLlvmCov": "0.9.1",
+                  "cargoLlvmCov": "0.9.0",
                   "rust": "1.95.0",
               },
               "coverage": {

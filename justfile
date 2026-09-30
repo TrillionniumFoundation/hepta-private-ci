@@ -78,18 +78,19 @@ install:
     cargo fetch
     exit $LASTEXITCODE
 
-# Run nextest with --no-fail-fast so all tests are run.
+# Run nextest with --no-fail-fast so all tests are run. Callers may also pass
+# the flag explicitly; normalize it here so qualification commands stay valid.
 #
 # Run `cargo install --locked cargo-nextest` if you don't have it installed.
 # Prefer this for routine local runs. Workspace crate features are banned, so
 # there should be no need to add `--all-features`.
 [unix]
 test *args:
-    RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+    case " $* " in *" --no-fail-fast "*) extra=;; *) extra=--no-fail-fast;; esac; RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local cargo nextest run ${extra:+$extra} "$@"
 
 [windows]
 test *args:
-    $env:RUST_MIN_STACK = "{{ rust_min_stack }}"; $env:NEXTEST_PROFILE = "local"; cargo nextest run --no-fail-fast @($args | Select-Object -Skip 1)
+    $forwarded = @($args | Select-Object -Skip 1); if ($forwarded -notcontains "--no-fail-fast") { $forwarded = @("--no-fail-fast") + $forwarded }; $env:RUST_MIN_STACK = "{{ rust_min_stack }}"; $env:NEXTEST_PROFILE = "local"; cargo nextest run @forwarded
 
 # Run from the repository root so scripts that resolve paths from `cwd` see
 # the same layout they use in GitHub Actions.
