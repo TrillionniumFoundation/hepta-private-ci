@@ -545,4 +545,165 @@ mod tests {
             choice.digest().expect("choice digest")
         );
     }
+
+    #[tokio::test]
+    async fn durable_activation_and_choice_replay_without_redeciding() {
+        use std::fs;
+
+        use codex_hepta_fleet::AgentManifest;
+        use codex_hepta_fleet::FleetRegistry;
+        use codex_hepta_fleet::ResourceBudget;
+        use codex_hepta_fleet::WorkspaceBinding;
+        use codex_hepta_paths::HeptaFleetRoot;
+
+        use crate::CircuitEdgeV1;
+        use crate::CircuitNodeRoleV1;
+        use crate::CircuitNodeV1;
+        use crate::NeuralCircuitCandidateV1;
+        use crate::TaskFlowCommand;
+        use crate::TaskFlowTransition;
+
+        let temp = tempfile::tempdir().expect("temp root");
+        let root = temp.path().canonicalize().expect("canonical temp root");
+        let fleet_path = root.join("fleet");
+        let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet root");
+        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+        let workspace = root.join("workspace");
+        fs::create_dir(&workspace).expect("workspace");
+        let workspace = workspace.canonicalize().expect("canonical workspace");
+        let agent_id =
+            codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c52")
+                .expect("agent id");
+        let resources = ResourceBudget::local_default();
+        let manifest = AgentManifest::new(
+            agent_id.clone(),
+            WorkspaceBinding::new(workspace, &fleet_root).expect("workspace binding"),
+            resources,
+        )
+        .expect("manifest");
+        let layout = registry.register(manifest).expect("register agent").layout;
+        let store = AutomationStore::open(&layout).await.expect("automation store");
+
+        let circuit = NeuralCircuitCandidateV1::new(
+            "runtime-test",
+            1,
+            None,
+            "observe",
+            vec![
+                CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
+                CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
+                CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
+                CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
+            ],
+            vec![
+                CircuitEdgeV1::new("observe", "decide"),
+                CircuitEdgeV1::new("decide", "success"),
+                CircuitEdgeV1::new("decide", "failure"),
+            ],
+            vec![],
+            digest("route"),
+            digest("bundle"),
+            digest("resource-profile"),
+        )
+        .expect("circuit");
+        let (definition, compilation) = circuit.compile_taskflow().expect("compile");
+        let fence = TaskFlowFence::new(
+            agent_id,
+            "circuit-owner",
+            1,
+            1,
+            "circuit-fence",
+        )
+        .expect("fence");
+        store
+            .register_taskflow_definition(&definition, &fence, 10)
+            .await
+            .expect("register");
+        store
+            .create_taskflow_run(
+                "circuit-run",
+                &definition.workflow_id,
+                definition.version,
+                definition.definition_digest(),
+                "thread-circuit",
+                11,
+            )
+            .await
+            .expect("run");
+        let claimed = store
+            .claim_taskflow_run("circuit-run", &fence, 12, 60_000)
+            .await
+            .expect("claim");
+        store
+            .apply_taskflow_command(
+                &TaskFlowCommand::new(
+                    "circuit-run",
+                    "circuit-start",
+                    fence.clone(),
+                    claimed.revision,
+                    TaskFlowTransition::Start,
+                    13,
+                )
+                .expect("command"),
+            )
+            .await
+            .expect("start");
+
+        let activation = CircuitActivationV1 {
+            run_id: "circuit-run".to_string(),
+            activation_id: "round-1-decide".to_string(),
+            round: 1,
+            node_id: "decide".to_string(),
+            circuit_digest: circuit.circuit_digest.clone(),
+            taskflow_definition_digest: compilation.taskflow_definition_digest,
+            causal_event_digest: digest("event-1"),
+            route_policy_digest: circuit.route_policy_digest.clone(),
+            parameter_bundle_digest: circuit.parameter_bundle_digest.clone(),
+            budget: CircuitBudgetReservationRefV1 {
+                resource_profile_digest: circuit.resource_profile_digest.clone(),
+                ..budget()
+            },
+        };
+        let first = store
+            .record_circuit_activation_v1(&activation, &fence, "activation-command", 14)
+            .await
+            .expect("activation");
+        assert!(first.inserted);
+        let replay = store
+            .record_circuit_activation_v1(&activation, &fence, "activation-command", 15)
+            .await
+            .expect("activation replay");
+        assert!(!replay.inserted);
+        assert_eq!(replay.activation_digest, first.activation_digest);
+
+        let choice = CircuitChoiceV1 {
+            run_id: activation.run_id.clone(),
+            activation_id: activation.activation_id.clone(),
+            selected_port: "success".to_string(),
+            candidate_set_digest: digest("candidate-set"),
+            behavior_policy_digest: digest("behavior"),
+            decision_receipt_digest: digest("decision-owner-receipt"),
+        };
+        let recorded = store
+            .record_circuit_choice_v1(&choice, &fence, "choice-command", 16)
+            .await
+            .expect("choice");
+        assert!(recorded.inserted);
+        let replayed = store
+            .record_circuit_choice_v1(&choice, &fence, "choice-command", 17)
+            .await
+            .expect("choice replay");
+        assert!(!replayed.inserted);
+        assert_eq!(replayed.choice_digest, recorded.choice_digest);
+
+        let mut changed = choice;
+        changed.selected_port = "failure".to_string();
+        assert!(
+            store
+                .record_circuit_choice_v1(&changed, &fence, "choice-command", 18)
+                .await
+                .is_err()
+        );
+    }
 }
+
