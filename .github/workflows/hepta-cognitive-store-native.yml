@@ -1,0 +1,209 @@
+name: Hepta cognitive store native owner qualification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-memory-federation/**"
+      - "codex-rs/hepta-kg/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-paths/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/state/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".cargo/**"
+      - "codex-rs/.cargo/**"
+      - "rust-toolchain"
+      - "rust-toolchain.toml"
+      - "codex-rs/rust-toolchain"
+      - "codex-rs/rust-toolchain.toml"
+      - "justfile"
+      - "codex-rs/justfile"
+      - "scripts/hepta_ci_exec.py"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - ".github/workflows/hepta-cognitive-store-native.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cognitive-store-native-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  HEPTA_CI_LANE: source-head
+
+jobs:
+  cognitive-owners:
+    name: Cognitive store and physical owner (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-cognitive-native-target
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve current pull-request base
+        id: current-base
+        if: github.event_name == 'pull_request'
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_BASE_SHA"
+          test -n "$BASE_REF"
+          CURRENT_BASE="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          [[ "$CURRENT_BASE" =~ ^[0-9a-f]{40}$ ]]
+          git cat-file -e "$CURRENT_BASE^{commit}"
+          printf 'sha=%s\n' "$CURRENT_BASE" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\n' "$CURRENT_BASE" >> "$GITHUB_ENV"
+      - name: Construct deterministic merge candidate
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.current-base.outputs.sha || env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Bind exact executable candidate identity
+        id: candidate
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          MERGE_SHA: ${{ steps.synthetic.outputs.sha }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$HEPTA_CI_LANE" = base-merge ]; then
+            test -n "$MERGE_SHA"
+            test "$TESTED_SHA" = "$MERGE_SHA"
+            test "$(git rev-list --parents -n 1 HEAD)" = "$TESTED_SHA $BASE_SHA $SOURCE_SHA"
+            EXPECTED_TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          else
+            test -z "$MERGE_SHA"
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          fi
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
+          printf 'HEPTA_CI_LANE=%s\n' "$HEPTA_CI_LANE" >> "$GITHUB_ENV"
+      - name: Prepare native owner-test prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
+      - name: Install pinned repository test tools
+        id: native_ready
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Check formatting without source mutation
+        if: ${{ always() && steps.candidate.outcome == 'success' && steps.native_ready.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/format.json" -- \
+            cargo fmt --package codex-hepta-cognitive-store --package codex-hepta-memory -- --check
+      - name: Execute both owner library regression suites
+        id: owner_tests
+        if: ${{ always() && steps.candidate.outcome == 'success' && steps.native_ready.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/owner-test.json" --minimum-tests 1 -- \
+            just test --locked --lib --no-tests fail \
+              -p codex-hepta-cognitive-store -p codex-hepta-memory
+      - name: Qualify cognitive child-process crash and reopen
+        if: ${{ matrix.lane == 'source-head' && steps.owner_tests.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/cognitive-child-crash-reopen.json" --minimum-tests 1 -- \
+            just test --locked --lib -p codex-hepta-memory --run-ignored only --no-tests fail \
+              -E 'test(=local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe)'
+      - name: Measure cognitive durable-store profile
+        if: ${{ matrix.lane == 'source-head' && steps.owner_tests.outcome == 'success' }}
+        working-directory: codex-rs
+        env:
+          HEPTA_COGNITIVE_PERF_RECORDS: "256"
+          HEPTA_COGNITIVE_PERF_OUTPUT: ${{ runner.temp }}/hepta-command-records/cognitive-perf-metrics.json
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-command.json" -- \
+            cargo run --locked -p codex-hepta-memory --example cognitive_store_perf
+      - name: Measure cognitive maximum-retained profile
+        if: ${{ matrix.lane == 'source-head' && steps.owner_tests.outcome == 'success' }}
+        working-directory: codex-rs
+        env:
+          HEPTA_COGNITIVE_PERF_RECORDS: "16384"
+          HEPTA_COGNITIVE_PERF_OUTPUT: ${{ runner.temp }}/hepta-command-records/cognitive-perf-max-metrics.json
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-max-command.json" -- \
+            cargo run --locked -p codex-hepta-memory --example cognitive_store_perf
+      - name: Strict owner Clippy independently of test outcome
+        if: ${{ always() && steps.candidate.outcome == 'success' && steps.native_ready.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- \
+            just clippy --locked -p codex-hepta-cognitive-store -p codex-hepta-memory --all-targets -- -D warnings
+      - name: Verify clean tracked source after every outcome
+        if: always()
+        env:
+          PRIOR_STATUS: ${{ job.status }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          {
+            printf 'Source: `%s`\n\n' "$SOURCE_SHA"
+            printf 'Tested commit: `%s`\n\n' "$(git rev-parse HEAD)"
+            printf 'Tested tree: `%s`\n\n' "$(git rev-parse HEAD^{tree})"
+            printf 'Parents: `%s`\n\n' "$(git show -s --format=%P HEAD)"
+            printf 'Lane: `%s`\n\n' "$HEPTA_CI_LANE"
+            printf 'Prior job status: `%s` (not a deployment qualification)\n' "$PRIOR_STATUS"
+          } >> "$GITHUB_STEP_SUMMARY"
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain real command records and measured profiles
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cognitive-commands-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-command-records/*
+          if-no-files-found: error
+          retention-days: 30

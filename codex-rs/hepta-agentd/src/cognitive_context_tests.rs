@@ -38,6 +38,7 @@ async fn final_use_reacquires_only_delivered_ids_with_the_global_owner_witness()
     let temp = tempfile::tempdir().unwrap();
     let fleet = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet).unwrap();
+    let fleet = std::fs::canonicalize(&fleet).unwrap();
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000122").unwrap();
     let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
     let store = CognitiveStore::open(&layout).await.unwrap();

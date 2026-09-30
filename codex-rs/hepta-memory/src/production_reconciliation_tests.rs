@@ -87,6 +87,37 @@ async fn prepare_unknown(
         .prepare_operation(operation, "reconciliation", "{}")
         .await
         .expect("prepare");
+    let mut fault = writer
+        .store
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("fixture ordering transaction");
+    // Freeze the fixture's ordering time independently of actual wall-clock
+    // timing. Retain only trusted seeded migration SQL before disabling its
+    // immutable trigger; never execute arbitrary owner-supplied SQL.
+    let guard_sql: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema WHERE name = 'cognitive_operation_ledger_no_update'",
+    )
+    .fetch_one(&mut *fault)
+    .await
+    .expect("trusted immutable guard");
+    sqlx::query("DROP TRIGGER cognitive_operation_ledger_no_update")
+        .execute(&mut *fault)
+        .await
+        .expect("temporarily disable fixture guard");
+    sqlx::query(
+        "UPDATE cognitive_operation_ledger SET prepared_at_unix_seconds = 100 WHERE operation_id = ?",
+    )
+    .bind(operation_id)
+    .execute(&mut *fault)
+    .await
+    .expect("fixed prepared ordering");
+    sqlx::query(sqlx::AssertSqlSafe(guard_sql.as_str()))
+        .execute(&mut *fault)
+        .await
+        .expect("restore exact immutable guard");
+    fault.commit().await.expect("commit exact restored fixture");
     writer
         .mark_indeterminate(operation_id, "lost acknowledgement")
         .await
@@ -145,7 +176,9 @@ async fn unavailable_prefix_does_not_starve_applied_operations_or_other_destinat
             .expect("unavailable observation"),
         0
     );
-    prepare_unknown(&writer, &owner, "z-late-0", "target:a").await;
+    // Same-second arrivals sort between the cursor and the old high-water
+    // tuple. The frozen immutable event frontier must exclude them.
+    prepare_unknown(&writer, &owner, "a-first-late-0", "target:a").await;
     let clone = writer.clone();
     assert_eq!(
         clone
@@ -154,7 +187,7 @@ async fn unavailable_prefix_does_not_starve_applied_operations_or_other_destinat
             .expect("other destination"),
         1
     );
-    prepare_unknown(&writer, &owner, "z-late-1", "target:a").await;
+    prepare_unknown(&writer, &owner, "a-first-late-1", "target:a").await;
     assert_eq!(
         clone
             .reconcile_target_batch(&first, 1)
@@ -162,7 +195,7 @@ async fn unavailable_prefix_does_not_starve_applied_operations_or_other_destinat
             .expect("next operation"),
         1
     );
-    prepare_unknown(&writer, &owner, "z-late-2", "target:a").await;
+    prepare_unknown(&writer, &owner, "a-first-late-2", "target:a").await;
     assert_eq!(
         writer.status("a-first").await.expect("unknown status"),
         LocalOutcomeState::Indeterminate
@@ -192,7 +225,7 @@ async fn unavailable_prefix_does_not_starve_applied_operations_or_other_destinat
         vec!["00-other"]
     );
     assert_eq!(
-        writer.status("z-late-0").await.expect("new tail"),
+        writer.status("a-first-late-0").await.expect("new tail"),
         LocalOutcomeState::Indeterminate
     );
 }

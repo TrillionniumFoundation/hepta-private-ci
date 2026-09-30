@@ -41,6 +41,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let temp = TempDir::new()?;
     let fleet = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet)?;
+    let fleet = std::fs::canonicalize(fleet)?;
     let owner = AgentId::parse("00000000-0000-4000-8000-00000000c057")?;
     let layout = HeptaFleetRoot::parse(fleet)?.layout().agent(&owner);
     let access = CognitiveAccess::agent_private(owner.clone());

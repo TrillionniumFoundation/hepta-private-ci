@@ -15,12 +15,13 @@ use super::validate_text;
 
 const MAX_DESTINATIONS: usize = 256;
 type Cursor = (i64, String);
+type HighWater = (i64, String, i64);
 type DestinationProgress = Arc<Mutex<DestinationState>>;
 
 #[derive(Default)]
 struct DestinationState {
     after: Option<Cursor>,
-    through: Option<Cursor>,
+    through: Option<HighWater>,
 }
 
 #[derive(Default)]
@@ -75,8 +76,9 @@ impl ProductionDurableWriter {
         let Some(mut through) = state.through.clone() else {
             return Ok(0);
         };
-        // Freeze this cycle's upper tuple. A continuous stream of newer
-        // arrivals cannot extend the cycle and prevent old Unknown revisits.
+        // Freeze both the upper ordering tuple and the append-only prepared
+        // event frontier. New arrivals cannot enter this cycle even when their
+        // timestamps move backwards or their IDs sort inside the old tuple.
         let mut rows = self
             .reconciliation_page(destination, state.after.as_ref(), &through, limit)
             .await?;
@@ -118,7 +120,9 @@ impl ProductionDurableWriter {
             self.reconcile(operation_id, outcome).await?;
             reconciled += 1;
         }
-        if state.after.as_ref().is_some_and(|after| after >= &through) {
+        if state.after.as_ref().is_some_and(|after| {
+            after.0 > through.0 || (after.0 == through.0 && after.1 >= through.1)
+        }) {
             *state = DestinationState::default();
         }
         Ok(reconciled)
@@ -127,9 +131,11 @@ impl ProductionDurableWriter {
     async fn reconciliation_high_water(
         &self,
         destination: &str,
-    ) -> Result<Option<Cursor>, ProductionWriterError> {
+    ) -> Result<Option<HighWater>, ProductionWriterError> {
         sqlx::query_as(
-            "SELECT o.prepared_at_unix_seconds, o.operation_id
+            "SELECT o.prepared_at_unix_seconds, o.operation_id,
+                    (SELECT COALESCE(MAX(e.event_sequence), 0)
+                     FROM cognitive_local_events e WHERE e.lease_id = o.lease_id)
              FROM cognitive_operation_ledger o
              WHERE o.lease_id = ? AND o.destination_id = ?
                AND (
@@ -150,13 +156,16 @@ impl ProductionDurableWriter {
         &self,
         destination: &str,
         cursor: Option<&Cursor>,
-        through: &Cursor,
+        through: &HighWater,
         limit: usize,
     ) -> Result<Vec<Cursor>, ProductionWriterError> {
         sqlx::query_as(
             "SELECT o.prepared_at_unix_seconds, o.operation_id
              FROM cognitive_operation_ledger o
+             JOIN cognitive_local_events prepared
+               ON prepared.lease_id = o.lease_id AND prepared.event_id = o.event_id
              WHERE o.lease_id = ? AND o.destination_id = ?
+               AND prepared.event_sequence <= ?
                AND (? IS NULL OR o.prepared_at_unix_seconds > ?
                     OR (o.prepared_at_unix_seconds = ? AND o.operation_id > ?))
                AND (o.prepared_at_unix_seconds < ?
@@ -170,6 +179,7 @@ impl ProductionDurableWriter {
         )
         .bind(self.lease_id())
         .bind(destination)
+        .bind(through.2)
         .bind(cursor.map(|(prepared_at, _)| *prepared_at))
         .bind(cursor.map(|(prepared_at, _)| *prepared_at))
         .bind(cursor.map(|(prepared_at, _)| *prepared_at))
