@@ -206,8 +206,22 @@ class ReceiptTests(unittest.TestCase):
         self.validate(record, log=log)
 
     def test_plans_preserve_default_and_production_lanes_without_retries(self):
-        self.assertEqual(set(PLANS), {"format", "default", "default-products", "production",
-                                     "products", "lint-default", "lint"})
+        self.assertEqual(
+            set(PLANS),
+            {
+                "format",
+                "default",
+                "default-products",
+                "production",
+                "qualification-lib",
+                "hol-256",
+                "sigkill",
+                "authority-distribution",
+                "products",
+                "lint-default",
+                "lint",
+            },
+        )
         self.assertNotIn("--features", PLANS["default"][1])
         self.assertNotIn("--features", PLANS["default-products"][1])
         self.assertNotIn("--features", PLANS["lint-default"][1])
