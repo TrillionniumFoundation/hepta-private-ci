@@ -16,6 +16,7 @@ use crate::WorkControlV1;
 const MAX_DESIGN_POINTS: usize = 16_384;
 const MAX_DIMENSIONS: usize = 32;
 const MAX_SENSORS: usize = 4_096;
+const CHECKPOINT_INTERVAL: u64 = 512;
 
 /// Controlled deterministic farthest-point construction for qualification-scale
 /// sensor cores. Coordinate uniqueness is O(n log n), and all large scans are
@@ -60,11 +61,10 @@ pub fn build_sensor_core_controlled_v2(
         return Err(OperatorClosureError::SensorDimension.into());
     }
 
+    let mut operations = 0_u64;
     let mut coordinate_keys = BTreeSet::new();
-    for (index, candidate) in design.candidates.iter().enumerate() {
-        if index % 512 == 0 {
-            control.checkpoint(index as u64)?;
-        }
+    for candidate in &design.candidates {
+        checkpoint_increment(control, &mut operations)?;
         if candidate.coordinates.len() != dimensions
             || candidate
                 .coordinates
@@ -92,17 +92,20 @@ pub fn build_sensor_core_controlled_v2(
     let mut selected_flags = vec![false; design.candidates.len()];
     let mut selected_indices = vec![first_index];
     selected_flags[first_index] = true;
-    let mut operations = design.candidates.len() as u64;
-    let mut nearest_squared = design
-        .candidates
-        .iter()
-        .map(|candidate| distance_squared(candidate, &design.candidates[first_index]))
-        .collect::<Result<Vec<_>, _>>()?;
+    let mut nearest_squared = Vec::with_capacity(design.candidates.len());
+    for candidate in &design.candidates {
+        checkpoint_increment(control, &mut operations)?;
+        nearest_squared.push(distance_squared(
+            candidate,
+            &design.candidates[first_index],
+        )?);
+    }
 
     while selected_indices.len() < design.requested_count {
         control.checkpoint(operations)?;
         let mut best: Option<(usize, u128)> = None;
         for (index, distance) in nearest_squared.iter().copied().enumerate() {
+            checkpoint_increment(control, &mut operations)?;
             if selected_flags[index] {
                 continue;
             }
@@ -116,18 +119,13 @@ pub fn build_sensor_core_controlled_v2(
         selected_flags[selected_index] = true;
         selected_indices.push(selected_index);
         for (index, candidate) in design.candidates.iter().enumerate() {
+            checkpoint_increment(control, &mut operations)?;
             if selected_flags[index] {
                 nearest_squared[index] = 0;
                 continue;
             }
-            if index % 512 == 0 {
-                control.checkpoint(operations)?;
-            }
             let distance = distance_squared(candidate, &design.candidates[selected_index])?;
             nearest_squared[index] = nearest_squared[index].min(distance);
-            operations = operations
-                .checked_add(1)
-                .ok_or(OperatorClosureError::Arithmetic)?;
         }
     }
 
@@ -145,16 +143,11 @@ pub fn build_sensor_core_controlled_v2(
     let mut minimum_separation_squared = u128::MAX;
     for left in 0..selected_points.len() {
         for right in left + 1..selected_points.len() {
-            if right % 256 == 0 {
-                control.checkpoint(operations)?;
-            }
+            checkpoint_increment(control, &mut operations)?;
             minimum_separation_squared = minimum_separation_squared.min(distance_squared(
                 &selected_points[left],
                 &selected_points[right],
             )?);
-            operations = operations
-                .checked_add(1)
-                .ok_or(OperatorClosureError::Arithmetic)?;
         }
     }
     control.checkpoint(operations)?;
@@ -240,6 +233,19 @@ impl From<WorkControlError> for ControlledSensorCoreError {
     fn from(value: WorkControlError) -> Self {
         Self::WorkControl(value)
     }
+}
+
+fn checkpoint_increment(
+    control: &WorkControlV1,
+    operations: &mut u64,
+) -> Result<(), ControlledSensorCoreError> {
+    *operations = operations
+        .checked_add(1)
+        .ok_or(OperatorClosureError::Arithmetic)?;
+    if *operations % CHECKPOINT_INTERVAL == 0 {
+        control.checkpoint(*operations)?;
+    }
+    Ok(())
 }
 
 fn distance_squared(
@@ -346,6 +352,30 @@ mod tests {
             build_sensor_core_controlled_v2(design, &control),
             Err(ControlledSensorCoreError::Operator(
                 OperatorClosureError::DuplicateSensorCoordinates
+            ))
+        ));
+    }
+
+    #[test]
+    fn cancellation_is_observed_during_candidate_scans() {
+        let design = SensorCoreDesignV1 {
+            sensor_core_id: StableId::new("core").unwrap(),
+            state_axis_digest: Digest32::of_bytes(b"axis"),
+            candidate_design_digest: Digest32::of_bytes(b"design"),
+            seed_digest: Digest32::of_bytes(b"seed"),
+            requested_count: 2,
+            candidates: vec![
+                point("a", 0, 0),
+                point("b", FixedQ32::ONE.raw(), 0),
+                point("c", 0, FixedQ32::ONE.raw()),
+            ],
+        };
+        let (control, cancellation) = WorkControlV1::new(1_000, 1_000).unwrap();
+        cancellation.cancel();
+        assert!(matches!(
+            build_sensor_core_controlled_v2(design, &control),
+            Err(ControlledSensorCoreError::WorkControl(
+                WorkControlError::Cancelled
             ))
         ));
     }
