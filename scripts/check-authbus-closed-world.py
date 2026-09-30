@@ -31,7 +31,7 @@ PORT_OPERATIONS = {
     },
     "AuthBusReadPort": {
         "message_issuer", "settlement_issuer", "quota_snapshot", "reservation",
-        "operational_snapshot",
+        "operational_snapshot", "archive_capacity_snapshot",
     },
     "AuthBusMaintenancePort": {
         "sync_checkpoint", "reconcile_expired_reservation",
@@ -76,6 +76,7 @@ STORE_OPERATIONS = {
     "settlement_issuer",
     "observe_trusted_time_attestation",
     "operational_snapshot",
+    "archive_capacity_snapshot",
 }
 
 STORE_FILES = [
@@ -84,6 +85,7 @@ STORE_FILES = [
     "recovery.rs",
     "settlement_store.rs",
     "trust_store.rs",
+    "archive_capacity.rs",
     "operations.rs",
 ]
 
@@ -158,6 +160,9 @@ def verify_boundaries() -> list[str]:
     operations_source = source(AUTHBUS / "operations.rs")
     if "impl AuthBusAuthorityStore {\n    pub(crate) async fn operational_snapshot" not in operations_source:
         errors.append("operational snapshot raw writer method is not crate-private")
+    archive_source = source(AUTHBUS / "archive_capacity.rs")
+    if "impl AuthBusAuthorityStore {\n    pub(crate) async fn archive_capacity_snapshot" not in archive_source:
+        errors.append("archive capacity raw writer method is not crate-private")
     if re.search(r"(?m)^pub use authority_store::AuthBusAuthorityStore;", lib):
         errors.append("raw authority writer is publicly re-exported")
 
