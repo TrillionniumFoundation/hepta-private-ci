@@ -1,25 +1,15 @@
 {
-  "failurePolicy": {
-    "cancelled": "fail_closed",
-    "crossAttempt": "reject",
-    "crossCandidate": "reject",
-    "failed": "fail_closed",
-    "missing": "fail_closed",
-    "pending": "fail_closed",
-    "queued": "fail_closed",
-    "skipped": "fail_closed"
-  },
-  "identityRules": {
-    "artifactDigestsRequired": true,
-    "baseEqualsSyntheticMergeFirstParent": true,
-    "externalEvidenceNamesCandidateOrFinalMerge": true,
-    "githubMergeEqualsVerifiedSyntheticMerge": true,
-    "sourceAndMergeSameWorkflowAttempt": true,
-    "sourceHeadEqualsSyntheticMergeSecondParent": true,
-    "targetIdentityMatchesAcrossFaultAndPerformanceEvidence": true
-  },
-  "maximumDecision": "approved_for_canary",
+  "schema": "hepta.authbus.readiness-contract.v1",
   "module": "auth.authbus",
+  "maximumDecision": "approved_for_canary",
+  "sourceOfTruth": {
+    "static": "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json",
+    "binding": "scripts/authbus-evidence-projection.py",
+    "aggregation": "scripts/authbus-readiness-manifest.py",
+    "committedCandidateIdentity": false,
+    "committedBoundArtifacts": false,
+    "crossRunAggregation": false
+  },
   "requiredFields": [
     "source_head_sha",
     "base_sha",
@@ -48,25 +38,55 @@
     "target_host",
     "performance",
     "kms_hsm",
+    "key_rotation_revocation",
     "backup_restore",
     "dual_owner_mount",
     "security_signature",
     "operator_signature"
   ],
-  "schema": "hepta.authbus.readiness-contract.v1",
-  "sourceOfTruth": {
-    "aggregation": "scripts/authbus-readiness-manifest.py",
-    "binding": "scripts/authbus-evidence-projection.py",
-    "committedBoundArtifacts": false,
-    "committedCandidateIdentity": false,
-    "crossRunAggregation": false,
-    "static": "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json"
+  "failurePolicy": {
+    "missing": "fail_closed",
+    "queued": "fail_closed",
+    "pending": "fail_closed",
+    "skipped": "fail_closed",
+    "cancelled": "fail_closed",
+    "failed": "fail_closed",
+    "crossCandidate": "reject",
+    "crossAttempt": "reject"
+  },
+  "identityRules": {
+    "sourceHeadEqualsSyntheticMergeSecondParent": true,
+    "baseEqualsSyntheticMergeFirstParent": true,
+    "githubMergeTreeAndParentsEqualDeterministicMerge": true,
+    "sourceAndMergeSameWorkflowAttempt": true,
+    "targetIdentityMatchesAcrossFaultAndPerformanceEvidence": true,
+    "externalEvidenceNamesCandidateOrFinalMerge": true,
+    "artifactDigestsRequired": true
+  },
+  "decisionPolicy": {
+    "allRequiredFieldsNonEmpty": true,
+    "allRequiredLanesTerminalSuccess": true,
+    "singleCandidate": true,
+    "singleWorkflowAttempt": true,
+    "digestAgreementRequired": true,
+    "nonSuccessDecision": {
+      "productionQualified": false,
+      "mergeReady": false,
+      "approvedForCanary": false
+    },
+    "verifiedDecision": {
+      "productionQualified": true,
+      "mergeReady": true,
+      "approvedForCanary": true,
+      "productionActivated": false,
+      "release": false
+    }
   },
   "staticDecision": {
-    "approvedForCanary": false,
-    "mergeReady": false,
-    "productionActivated": false,
     "productionQualified": false,
+    "mergeReady": false,
+    "approvedForCanary": false,
+    "productionActivated": false,
     "release": false
   }
 }
