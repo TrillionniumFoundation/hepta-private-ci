@@ -20,6 +20,7 @@ use crate::ArtifactPublicationReceiptV1;
 use crate::ArtifactPublicationTransactionV1;
 use crate::ArtifactRegistry;
 use crate::DatasetWithdrawalRegistry;
+use crate::DurableCommitReceiptV1;
 use crate::LearningArtifactOwnerHost;
 use crate::SignedArtifactWriterLeaseV1;
 use crate::SignedCurrentArtifactHeadV1;
@@ -305,6 +306,18 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        self.publish_durable(request)
+            .map(DurableCommitReceiptV1::into_publication)
+    }
+
+    /// Execute or reconcile one publication and return the single receipt that
+    /// binds writer fence, generation, withdrawal frontier, route head and the
+    /// historical publication acknowledgement. This receipt grants no
+    /// selection, activation, promotion or release authority.
+    pub fn publish_durable(
+        &mut self,
+        request: LearningArtifactPublishRequestV1,
+    ) -> Result<DurableCommitReceiptV1, LearningArtifactOwnerServiceError> {
         self.require_durable_withdrawals()?;
         if let Some(blocked) = &self.recovery_required
             && blocked != &request.operation_id
@@ -313,12 +326,18 @@ impl LearningArtifactOwnerService {
                 blocked.clone(),
             ));
         }
+        let capability = self.host.acquire_publication_capability(
+            &self.withdrawal_registry,
+            request.expected_registry_predecessor_head,
+            &request.signed_current_head,
+            request.now,
+        )?;
         let operation_id = request.operation_id.clone();
         let result = self.publish_inner(&request);
         match result {
             Ok(receipt) => {
                 self.recovery_required = None;
-                Ok(receipt)
+                DurableCommitReceiptV1::from_publication(receipt, &capability).map_err(Into::into)
             }
             Err(error) => {
                 match self.host.recover_publication(&operation_id) {
