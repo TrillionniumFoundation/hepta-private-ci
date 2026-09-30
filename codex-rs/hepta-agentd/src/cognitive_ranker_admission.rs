@@ -28,12 +28,61 @@ use super::PinnedCognitiveRanker;
 
 /// A current host-owned signer registry and clock. The learning-evidence trust
 /// and the artifact-owner trust are distinct and both must match at final use.
+/// Public callers can construct this value only through the validating
+/// constructor; the fields are not part of the public API.
 #[derive(Clone, Debug)]
 pub struct RankerAdmissionSnapshotV2 {
-    pub learning_verifier: LearningEvidenceVerifierV1,
-    pub artifact_trust_digest: Digest32,
-    pub runtime_profile_digest: Digest32,
-    pub now_unix_micros: u64,
+    pub(crate) learning_verifier: LearningEvidenceVerifierV1,
+    pub(crate) artifact_trust_digest: Digest32,
+    pub(crate) runtime_profile_digest: Digest32,
+    pub(crate) now_unix_micros: u64,
+}
+
+impl RankerAdmissionSnapshotV2 {
+    pub fn new(
+        learning_verifier: LearningEvidenceVerifierV1,
+        artifact_trust_digest: Digest32,
+        runtime_profile_digest: Digest32,
+        now_unix_micros: u64,
+    ) -> Result<Self, String> {
+        if learning_verifier.trust_digest().is_zero()
+            || learning_verifier.authority_epoch() == 0
+            || artifact_trust_digest.is_zero()
+            || runtime_profile_digest.is_zero()
+            || now_unix_micros == 0
+        {
+            return Err(
+                "ranker admission requires current nonzero trust, runtime, authority, and clock"
+                    .to_string(),
+            );
+        }
+        Ok(Self {
+            learning_verifier,
+            artifact_trust_digest,
+            runtime_profile_digest,
+            now_unix_micros,
+        })
+    }
+
+    #[must_use]
+    pub fn learning_verifier(&self) -> &LearningEvidenceVerifierV1 {
+        &self.learning_verifier
+    }
+
+    #[must_use]
+    pub fn artifact_trust_digest(&self) -> Digest32 {
+        self.artifact_trust_digest
+    }
+
+    #[must_use]
+    pub fn runtime_profile_digest(&self) -> Digest32 {
+        self.runtime_profile_digest
+    }
+
+    #[must_use]
+    pub fn now_unix_micros(&self) -> u64 {
+        self.now_unix_micros
+    }
 }
 
 /// Implement this on the authority/configuration host, never on submitted model
