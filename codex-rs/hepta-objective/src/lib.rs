@@ -8,6 +8,8 @@
 #![forbid(unsafe_code)]
 
 mod admission_profile_json;
+mod admission_proof;
+mod admission_results;
 mod compiler;
 mod error;
 mod error_policy;
@@ -28,6 +30,10 @@ mod validated_admission;
 pub use admission_profile_json::MAX_OBJECTIVE_ADMISSION_PROFILE_JSON_BYTES;
 pub use admission_profile_json::ObjectiveAdmissionProfileJsonError;
 pub use admission_profile_json::decode_admission_profile_json_v1;
+pub use admission_proof::ObjectiveAdmissionProofV1;
+pub use admission_results::ObjectivePreflightReportV1;
+pub use admission_results::ProofBearingObjectiveCompileV1;
+pub use admission_results::ValidatedObjectiveAdmissionV1;
 pub use compiler::canonical_native_objective_conflict_bytes_v1;
 pub use compiler::canonical_native_objective_semantic_bytes_v1;
 pub use error::ObjectiveError;
@@ -107,11 +113,8 @@ pub use source_envelope_v1::ObjectiveSourcePredicateV1;
 pub use source_envelope_v1::ObjectiveSourceTrustV1;
 pub use source_envelope_v1::ObjectiveStructuredIntentV1;
 pub use source_envelope_validation::ObjectiveStructureError;
-pub use validated_admission::ObjectiveAdmissionProofV1;
-pub use validated_admission::ProofBearingObjectiveCompileV1;
 pub use validated_admission::ValidatedAdmissionProfileReuseKeyV1;
 pub use validated_admission::ValidatedAdmissionProfileV1;
-pub use validated_admission::ValidatedObjectiveAdmissionV1;
 pub use validated_admission::admit_validated_objective_v1;
 pub use validated_admission::compile_authoritative_objective_v1;
 pub use validated_admission::compile_validated_objective_v1;

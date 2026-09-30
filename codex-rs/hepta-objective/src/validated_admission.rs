@@ -1,12 +1,10 @@
-//! Indexed, proof-bearing admission for authoritative objective publication.
+//! Indexed admission for authoritative objective publication.
 //!
-//! The legacy V1 entrypoints remain available for compatibility fixtures. New
-//! product composition must first freeze and validate a profile through
-//! [`ValidatedAdmissionProfileV1`], then use
-//! [`compile_authoritative_objective_v1`]. This closes target collisions before
-//! source adaptation, preserves exact microsecond deadlines in admission, uses
-//! a conservative millisecond projection for `ObjectiveFunctionV1`, and carries
-//! a non-forgeable provenance proof beside the native compile outcome.
+//! Static profile validation remains here. Proof encoding/verification lives in
+//! `admission_proof`, while authority-bearing and diagnostic result types live
+//! in `admission_results`. Product composition must freeze a profile through
+//! [`ValidatedAdmissionProfileV1`] and call
+//! [`compile_authoritative_objective_v1`].
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -14,24 +12,23 @@ use std::collections::BTreeSet;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-use crate::AdmittedObjectiveV1;
 use crate::ObjectiveActionProfileV1;
 use crate::ObjectiveAdmissionContextV1;
 use crate::ObjectiveAdmissionError;
-use crate::ObjectiveAdmissionOutcomeV1;
 use crate::ObjectiveAdmissionProfileV1;
 use crate::ObjectiveConstraintProfileV1;
 use crate::ObjectiveEvidenceProfileV1;
 use crate::ObjectivePredicateProfileV1;
 use crate::ObjectiveSoftDimensionProfileV1;
-use crate::ObjectiveSourceAuthenticationV1;
 use crate::ObjectiveSourceEnvelopeV1;
-use crate::ObjectiveSourceTrustV1;
-use crate::canonical_objective_intent_digest_v1;
+use crate::admission_proof::build_admission_proof_v1;
+use crate::admission_proof::compiler_contract_digest_v1;
+use crate::admission_proof::source_envelope_proof_digest_v1;
+use crate::admission_results::ObjectivePreflightReportV1;
+use crate::admission_results::ProofBearingObjectiveCompileV1;
+use crate::admission_results::ValidatedObjectiveAdmissionV1;
 use crate::compile_admitted_objective_v1;
 use crate::objective_admission::admit_frozen_objective_v1;
-
-const COMPILER_CONTRACT_V1: &[u8] = b"hepta.objective.compiler.contract.v1:indexed-profile:conservative-ms-deadline:proof-bearing-admission";
 
 /// Exact identity of reusable static profile validation.
 ///
@@ -47,10 +44,6 @@ pub struct ValidatedAdmissionProfileReuseKeyV1 {
 
 /// Frozen profile plus indexes and collision proofs used by authoritative
 /// product composition.
-///
-/// Construction reuses the complete V1 profile validation and then strengthens
-/// it with target uniqueness and a single semantic-identity namespace for all
-/// native constraints and predicates produced by admission.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ValidatedAdmissionProfileV1 {
     profile: ObjectiveAdmissionProfileV1,
@@ -180,13 +173,12 @@ impl ValidatedAdmissionProfileV1 {
         self.profile_digest
     }
 
-    /// Static semantic reuse identity. This is never an authorization result.
     #[must_use]
     pub fn reuse_key(&self) -> ValidatedAdmissionProfileReuseKeyV1 {
         ValidatedAdmissionProfileReuseKeyV1 {
             profile_digest: self.profile_digest,
             profile_revision: self.profile.profile_revision.get(),
-            compiler_contract_digest: Digest32::of_bytes(COMPILER_CONTRACT_V1),
+            compiler_contract_digest: compiler_contract_digest_v1(),
         }
     }
 
@@ -231,109 +223,6 @@ impl ValidatedAdmissionProfileV1 {
     }
 }
 
-/// Provenance bound to one authenticated admission and native compile.
-///
-/// Fields are private so downstream code cannot construct a proof from a set of
-/// mutually consistent but independently forged receipts.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ObjectiveAdmissionProofV1 {
-    source_envelope_digest: Digest32,
-    profile_digest: Digest32,
-    authentication_context_digest: Digest32,
-    compiler_contract_digest: Digest32,
-    admitted_source_digest: Digest32,
-    proof_digest: Digest32,
-}
-
-impl ObjectiveAdmissionProofV1 {
-    #[must_use]
-    pub const fn source_envelope_digest(&self) -> Digest32 {
-        self.source_envelope_digest
-    }
-
-    #[must_use]
-    pub const fn profile_digest(&self) -> Digest32 {
-        self.profile_digest
-    }
-
-    #[must_use]
-    pub const fn authentication_context_digest(&self) -> Digest32 {
-        self.authentication_context_digest
-    }
-
-    #[must_use]
-    pub const fn compiler_contract_digest(&self) -> Digest32 {
-        self.compiler_contract_digest
-    }
-
-    #[must_use]
-    pub const fn admitted_source_digest(&self) -> Digest32 {
-        self.admitted_source_digest
-    }
-
-    #[must_use]
-    pub const fn proof_digest(&self) -> Digest32 {
-        self.proof_digest
-    }
-
-    /// Frozen V1 integrity bytes for the destination-owned RunStart journal.
-    /// Returning bytes does not expose a constructor for this opaque proof and
-    /// does not grant source authentication, publication or effect authority.
-    #[must_use]
-    pub fn canonical_bytes(&self) -> Vec<u8> {
-        canonical_admission_proof_bytes([
-            self.source_envelope_digest,
-            self.profile_digest,
-            self.authentication_context_digest,
-            self.compiler_contract_digest,
-            self.admitted_source_digest,
-        ])
-    }
-}
-
-/// Opaque admission capability consumed exactly once by native compilation.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ValidatedObjectiveAdmissionV1 {
-    admitted: AdmittedObjectiveV1,
-    proof: ObjectiveAdmissionProofV1,
-}
-
-impl ValidatedObjectiveAdmissionV1 {
-    #[must_use]
-    pub fn receipt(&self) -> &crate::ObjectiveAdmissionReceiptV1 {
-        self.admitted.receipt()
-    }
-
-    #[must_use]
-    pub const fn proof(&self) -> &ObjectiveAdmissionProofV1 {
-        &self.proof
-    }
-}
-
-/// Native compile outcome that remains inseparable from its admission proof.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProofBearingObjectiveCompileV1 {
-    outcome: ObjectiveAdmissionOutcomeV1,
-    proof: ObjectiveAdmissionProofV1,
-}
-
-impl ProofBearingObjectiveCompileV1 {
-    #[must_use]
-    pub const fn outcome(&self) -> &ObjectiveAdmissionOutcomeV1 {
-        &self.outcome
-    }
-
-    #[must_use]
-    pub const fn proof(&self) -> &ObjectiveAdmissionProofV1 {
-        &self.proof
-    }
-
-    #[must_use]
-    pub fn into_parts(self) -> (ObjectiveAdmissionOutcomeV1, ObjectiveAdmissionProofV1) {
-        (self.outcome, self.proof)
-    }
-}
-
 /// Authoritative admission boundary used by durable publication paths.
 pub fn admit_validated_objective_v1(
     envelope: &ObjectiveSourceEnvelopeV1,
@@ -341,22 +230,22 @@ pub fn admit_validated_objective_v1(
     context: &ObjectiveAdmissionContextV1,
 ) -> Result<ValidatedObjectiveAdmissionV1, ObjectiveAdmissionError> {
     let admitted = admit_frozen_objective_v1(envelope, profile, context)?;
-    let proof = admission_proof(envelope, profile, context, &admitted)?;
-    Ok(ValidatedObjectiveAdmissionV1 { admitted, proof })
+    let proof = build_admission_proof_v1(envelope, profile, context, &admitted)?;
+    Ok(ValidatedObjectiveAdmissionV1::new(admitted, proof))
 }
 
 /// Consume a proof-bearing admission and compile it once.
 pub fn compile_validated_objective_v1(
     admitted: ValidatedObjectiveAdmissionV1,
 ) -> Result<ProofBearingObjectiveCompileV1, ObjectiveAdmissionError> {
-    let ValidatedObjectiveAdmissionV1 { admitted, proof } = admitted;
+    let (admitted, proof) = admitted.into_parts();
     let outcome = compile_admitted_objective_v1(admitted)?;
-    Ok(ProofBearingObjectiveCompileV1 { outcome, proof })
+    Ok(ProofBearingObjectiveCompileV1::new(outcome, proof))
 }
 
 /// Canonical authoritative source-to-native boundary. Durable publication code
-/// should call this function and persist the returned proof digest beside the
-/// protocol and run-start identities.
+/// should call this function and consume its private publication token exactly
+/// once into the destination journal projection.
 pub fn compile_authoritative_objective_v1(
     envelope: &ObjectiveSourceEnvelopeV1,
     profile: &ValidatedAdmissionProfileV1,
@@ -365,118 +254,22 @@ pub fn compile_authoritative_objective_v1(
     compile_validated_objective_v1(admit_validated_objective_v1(envelope, profile, context)?)
 }
 
-/// Compatibility preflight with an explicit non-publication name. It performs
-/// the same strict validation and proof construction, but grants no durable
-/// publication or effect authority.
+/// Strict diagnostics-only boundary. It performs full admission and native
+/// compilation but constructs neither an admission proof nor publication token.
 pub fn preflight_validate_objective_v1(
     envelope: &ObjectiveSourceEnvelopeV1,
     profile: &ObjectiveAdmissionProfileV1,
     context: &ObjectiveAdmissionContextV1,
-) -> Result<ProofBearingObjectiveCompileV1, ObjectiveAdmissionError> {
+) -> Result<ObjectivePreflightReportV1, ObjectiveAdmissionError> {
     let validated = ValidatedAdmissionProfileV1::from_profile(profile)?;
-    compile_authoritative_objective_v1(envelope, &validated, context)
-}
-
-fn admission_proof(
-    envelope: &ObjectiveSourceEnvelopeV1,
-    profile: &ValidatedAdmissionProfileV1,
-    context: &ObjectiveAdmissionContextV1,
-    admitted: &AdmittedObjectiveV1,
-) -> Result<ObjectiveAdmissionProofV1, ObjectiveAdmissionError> {
-    let source_envelope_digest = source_envelope_proof_digest(envelope)?;
-    let authentication_context_digest = authentication_context_digest(context);
-    let compiler_contract_digest = Digest32::of_bytes(COMPILER_CONTRACT_V1);
-    let admitted_source_digest = admitted.receipt().admitted_source_digest;
-    let proof_digest = Digest32::of_bytes(&canonical_admission_proof_bytes([
-        source_envelope_digest,
-        profile.profile_digest(),
-        authentication_context_digest,
-        compiler_contract_digest,
-        admitted_source_digest,
-    ]));
-    Ok(ObjectiveAdmissionProofV1 {
-        source_envelope_digest,
-        profile_digest: profile.profile_digest(),
-        authentication_context_digest,
-        compiler_contract_digest,
-        admitted_source_digest,
-        proof_digest,
-    })
-}
-
-// One encoding owner for proof construction and durable projection. Neither
-// caller performs another admission or native solve to export these bytes.
-fn canonical_admission_proof_bytes(digests: [Digest32; 5]) -> Vec<u8> {
-    let mut bytes = b"hepta.objective.admission-proof.v1".to_vec();
-    for digest in digests {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    bytes
-}
-
-pub(crate) fn source_envelope_proof_digest(
-    envelope: &ObjectiveSourceEnvelopeV1,
-) -> Result<Digest32, ObjectiveAdmissionError> {
-    let intent_digest = canonical_objective_intent_digest_v1(envelope)?;
-    let mut bytes = b"hepta.objective.source-envelope-proof.v1".to_vec();
-    push_text(&mut bytes, &envelope.request_id);
-    push_digest(&mut bytes, envelope.principal_scope_digest);
-    push_digest(&mut bytes, intent_digest);
-    push_digest(&mut bytes, envelope.input_schema_digest);
-    push_text(&mut bytes, &envelope.locale);
-    push_text(&mut bytes, &envelope.observed_at);
-    match &envelope.deadline {
-        Some(deadline) => {
-            bytes.push(1);
-            push_text(&mut bytes, deadline);
-        }
-        None => bytes.push(0),
-    }
-    bytes.push(match envelope.source_trust_class {
-        ObjectiveSourceTrustV1::Principal => 1,
-        ObjectiveSourceTrustV1::TrustedSystem => 2,
-        ObjectiveSourceTrustV1::AuthorizedAdapter => 3,
-        ObjectiveSourceTrustV1::UntrustedEvidence => 4,
-    });
-    Ok(Digest32::of_bytes(&bytes))
-}
-
-fn authentication_context_digest(context: &ObjectiveAdmissionContextV1) -> Digest32 {
-    let mut bytes = b"hepta.objective.authentication-context.v1".to_vec();
-    bytes.extend_from_slice(&context.revision.get().to_be_bytes());
-    bytes.extend_from_slice(&context.now_unix_micros.to_be_bytes());
-    push_digest(&mut bytes, context.selected_profile_digest);
-    match &context.source_authentication {
-        ObjectiveSourceAuthenticationV1::Principal {
-            principal_scope_digest,
-            source_digest,
-        } => {
-            bytes.push(1);
-            push_digest(&mut bytes, *principal_scope_digest);
-            push_digest(&mut bytes, *source_digest);
-        }
-        ObjectiveSourceAuthenticationV1::TrustedSystem {
-            source_identity,
-            source_digest,
-        } => {
-            bytes.push(2);
-            push_id(&mut bytes, source_identity);
-            push_digest(&mut bytes, *source_digest);
-        }
-        ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
-            source_identity,
-            source_digest,
-        } => {
-            bytes.push(3);
-            push_id(&mut bytes, source_identity);
-            push_digest(&mut bytes, *source_digest);
-        }
-        ObjectiveSourceAuthenticationV1::UntrustedEvidence { source_digest } => {
-            bytes.push(4);
-            push_digest(&mut bytes, *source_digest);
-        }
-    }
-    Digest32::of_bytes(&bytes)
+    let admitted = admit_frozen_objective_v1(envelope, &validated, context)?;
+    let outcome = compile_admitted_objective_v1(admitted)?;
+    Ok(ObjectivePreflightReportV1::new(
+        outcome,
+        source_envelope_proof_digest_v1(envelope)?,
+        validated.profile_digest(),
+        compiler_contract_digest_v1(),
+    ))
 }
 
 fn source_index<'a>(
@@ -534,20 +327,6 @@ fn generated_constraint_ids(profile: &ObjectiveAdmissionProfileV1) -> Vec<Stable
         profile.risk.compensation_constraint_id.clone(),
         profile.risk.abstention_constraint_id.clone(),
     ]
-}
-
-fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
-    push_text(bytes, value.as_str());
-}
-
-fn push_text(bytes: &mut Vec<u8>, value: &str) {
-    let len = u32::try_from(value.len()).unwrap_or(u32::MAX);
-    bytes.extend_from_slice(&len.to_be_bytes());
-    bytes.extend_from_slice(value.as_bytes());
-}
-
-fn push_digest(bytes: &mut Vec<u8>, value: Digest32) {
-    bytes.extend_from_slice(value.as_array());
 }
 
 #[cfg(test)]
