@@ -106,17 +106,31 @@ jobs:
           resolve_run() {
             workflow_file="$1"
             explicit_id="$2"
+            expected_base="$3"
             if [ -n "$explicit_id" ]; then
               payload="$(gh api \
                 -H 'Accept: application/vnd.github+json' \
                 -H 'X-GitHub-Api-Version: 2022-11-28' \
                 "/repos/$GITHUB_REPOSITORY/actions/runs/$explicit_id")"
-              python3 - <<'PY' "$SOURCE_SHA" "$payload"
+              python3 - <<'PY' "$SOURCE_SHA" "$expected_base" "$payload"
           import json, sys
-          source = sys.argv[1]
-          run = json.loads(sys.argv[2])
-          if run.get("head_sha") != source or run.get("status") != "completed":
-              raise SystemExit("explicit workflow run is not complete for the exact source")
+          source, base = sys.argv[1:3]
+          run = json.loads(sys.argv[3])
+          pull_requests = run.get("pull_requests") or []
+          bound = any(
+              item.get("head", {}).get("sha") == source
+              and item.get("base", {}).get("sha") == base
+              for item in pull_requests
+          )
+          if (
+              run.get("head_sha") != source
+              or run.get("event") != "pull_request"
+              or run.get("status") != "completed"
+              or not bound
+          ):
+              raise SystemExit(
+                  "explicit workflow run is not complete for the exact source/base pull request"
+              )
           if run.get("conclusion") != "success":
               raise SystemExit("explicit workflow run did not succeed")
           print(f"{run['id']} {run.get('run_attempt', 1)}")
@@ -132,15 +146,23 @@ jobs:
                 -f head_sha="$SOURCE_SHA" \
                 -f status=completed \
                 -f per_page=100)"
-              selected="$(python3 - <<'PY' "$SOURCE_SHA" "$payload"
+              selected="$(python3 - <<'PY' "$SOURCE_SHA" "$expected_base" "$payload"
           import json, sys
-          source = sys.argv[1]
-          runs = json.loads(sys.argv[2]).get("workflow_runs", [])
+          source, base = sys.argv[1:3]
+          runs = json.loads(sys.argv[3]).get("workflow_runs", [])
+          def bound_to_candidate(run):
+              return any(
+                  item.get("head", {}).get("sha") == source
+                  and item.get("base", {}).get("sha") == base
+                  for item in (run.get("pull_requests") or [])
+              )
           exact = [
               run for run in runs
               if run.get("head_sha") == source
+              and run.get("event") == "pull_request"
               and run.get("status") == "completed"
               and run.get("conclusion") == "success"
+              and bound_to_candidate(run)
           ]
           exact.sort(key=lambda run: (run.get("run_started_at", ""), run["id"]), reverse=True)
           if exact:
@@ -161,10 +183,10 @@ jobs:
           }
 
           read -r readiness_run readiness_attempt < <(
-            resolve_run neuron-runtime-readiness.yml "$INPUT_READINESS_RUN_ID"
+            resolve_run neuron-runtime-readiness.yml "$INPUT_READINESS_RUN_ID" "$base_sha"
           )
           read -r blocking_run blocking_attempt < <(
-            resolve_run blocking-ci.yml "$INPUT_BLOCKING_RUN_ID"
+            resolve_run blocking-ci.yml "$INPUT_BLOCKING_RUN_ID" "$base_sha"
           )
 
           {
@@ -230,8 +252,18 @@ jobs:
           source, base, expected_attempt, run_raw, jobs_raw, output = sys.argv[1:]
           run = json.loads(run_raw)
           jobs = json.loads(jobs_raw).get("jobs", [])
-          if run.get("head_sha") != source:
-              raise SystemExit("blocking-ci run is not bound to exact source")
+          pull_requests = run.get("pull_requests") or []
+          matches = [
+              item
+              for item in pull_requests
+              if item.get("head", {}).get("sha") == source
+              and item.get("base", {}).get("sha") == base
+          ]
+          if run.get("head_sha") != source or run.get("event") != "pull_request":
+              raise SystemExit("blocking-ci run is not bound to exact source PR")
+          if len(matches) != 1:
+              raise SystemExit("blocking-ci run is not bound to exactly one source/base PR")
+          pull_request = matches[0]
           if run.get("status") != "completed" or run.get("conclusion") != "success":
               raise SystemExit("blocking-ci run did not complete successfully")
           if str(run.get("run_attempt", 1)) != expected_attempt:
@@ -254,6 +286,11 @@ jobs:
               "schema": "hepta.neuron.runtime.repository-baseline.v1",
               "sourceSha": source,
               "baseSha": base,
+              "pullRequest": {
+                  "number": int(pull_request["number"]),
+                  "headSha": pull_request["head"]["sha"],
+                  "baseSha": pull_request["base"]["sha"],
+              },
               "workflow": "blocking-ci",
               "checkName": "CI required",
               "status": job["status"],

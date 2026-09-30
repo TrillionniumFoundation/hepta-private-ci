@@ -145,6 +145,17 @@ def validate_baseline(
         blockers.append("repository baseline source SHA differs from candidate")
     if baseline.get("baseSha") != base_sha:
         blockers.append("repository baseline base SHA differs from candidate")
+    pull_request = baseline.get("pullRequest")
+    if not isinstance(pull_request, dict):
+        blockers.append("repository baseline pull request binding is missing")
+    else:
+        number = pull_request.get("number")
+        if not isinstance(number, int) or number <= 0:
+            blockers.append("repository baseline pull request number is invalid")
+        if pull_request.get("headSha") != source_sha:
+            blockers.append("repository baseline pull request head differs from candidate")
+        if pull_request.get("baseSha") != base_sha:
+            blockers.append("repository baseline pull request base differs from candidate")
     if baseline.get("workflow") != "blocking-ci":
         blockers.append("repository baseline did not come from blocking-ci")
     if baseline.get("checkName") != "CI required":

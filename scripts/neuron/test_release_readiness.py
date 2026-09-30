@@ -43,6 +43,7 @@ def baseline():
         "schema": release_readiness.BASELINE_SCHEMA,
         "sourceSha": SOURCE,
         "baseSha": BASE,
+        "pullRequest": {"number": 1240, "headSha": SOURCE, "baseSha": BASE},
         "workflow": "blocking-ci",
         "checkName": "CI required",
         "status": "completed",
@@ -110,6 +111,19 @@ class ReleaseReadinessTests(unittest.TestCase):
             self.assertFalse(result["qualificationReady"])
             self.assertIn(
                 "repository baseline source SHA differs from candidate",
+                result["blockers"],
+            )
+
+    @mock.patch.object(release_readiness, "source_bindings", return_value={})
+    def test_mixed_pull_request_base_fails_closed(self, _bindings):
+        with tempfile.TemporaryDirectory() as directory:
+            value = baseline()
+            value["pullRequest"]["baseSha"] = "c" * 40
+            args = self.args(Path(directory), module_manifest(), value, allow=True)
+            result = release_readiness.finalize(args)
+            self.assertFalse(result["qualificationReady"])
+            self.assertIn(
+                "repository baseline pull request base differs from candidate",
                 result["blockers"],
             )
 
