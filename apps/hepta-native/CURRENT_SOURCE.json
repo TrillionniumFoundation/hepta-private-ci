@@ -1,12 +1,12 @@
 {
-  "schema": "hepta.ui.native.current-source.v4",
+  "schema": "hepta.ui.native.current-source.v5",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
   "convergenceBranch": "work/ui-native-exact-convergence-20260930",
   "baselineCommit": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
   "walIndexSourceCommit": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
   "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
   "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
-  "implementationRole": "immutable ordinary source commit; later commits may change only qualification metadata and review navigation",
+  "implementationRole": "immutable ordinary product source; later commits may change only qualification tooling, evidence metadata and review navigation",
   "inventoryPolicy": {
     "trackedRoots": [
       "apps/hepta-native",
@@ -38,6 +38,12 @@
       "docs/modules/ui.native/REVIEW_DIFF.md",
       "docs/modules/ui.native/TECHNICAL.md",
       "scripts/check_hepta_ui_native_convergence.py",
+      "scripts/hepta_ui_native_evidence.py",
+      "scripts/hepta_ui_native_aggregate.py",
+      "scripts/hepta_ui_native_product_evidence.py",
+      "scripts/hepta_ui_native_qualification_evidence.py",
+      "scripts/hepta_ui_native_qualification_aggregate.py",
+      "scripts/hepta_ui_native_compile_negative.py",
       "scripts/qualify_hepta_ui_native_storage.py",
       "scripts/test_hepta_ui_native_convergence.py",
       "scripts/test_hepta_ui_native_package_security.py"
@@ -48,7 +54,12 @@
     ],
     "digest": "sha256-canonical-path-map-at-verification"
   },
-  "identityBinding": "implementation commit and tree plus exact checked-out head and ordered-parent merge evidence",
+  "identityBinding": "immutable implementation commit and tree plus exact review head, fixed ordered-parent merge, workflow digest, runner image, retained logs, package digests and storage artifact",
+  "qualificationSubjects": {
+    "platform": 6,
+    "storage": 1,
+    "aggregate": 1
+  },
   "sourceMutationInCiAllowed": false,
   "productionQualified": false,
   "deploymentQualified": false,

@@ -1,24 +1,77 @@
 {
-  "schema": "hepta.ui.native.qualification-manifest.v1",
+  "schema": "hepta.ui.native.qualification-manifest.v2",
   "manifestStatus": "pending-executed-evidence",
   "implementationSourceSha": "a417e5756d4dba18737b9d3e6aa8b13016c23662",
   "implementationSourceTree": "76c085b09b249be772deae1ce8fdbab0acfb0908",
   "orderedParents": {
     "base": "9213ff850d3dd91f8734ec954e1e5981db3480fa",
-    "head": "pending-review-head"
+    "head": "pending-final-review-head"
   },
   "toolchain": {
     "rust": "1.95.0",
-    "cargoLock": "apps/hepta-native/Cargo.lock",
+    "applicationCargoLock": "apps/hepta-native/Cargo.lock",
+    "ownerCargoLock": "codex-rs/Cargo.lock",
     "workflow": ".github/workflows/ui-native-qualification.yml"
   },
+  "evidenceCollectors": [
+    "scripts/hepta_ui_native_qualification_evidence.py",
+    "scripts/hepta_ui_native_qualification_aggregate.py",
+    "scripts/hepta_ui_native_compile_negative.py",
+    "scripts/qualify_hepta_ui_native_storage.py",
+    "apps/hepta-native/tools/linux_product_qualification.py"
+  ],
   "requiredSubjects": [
-    "linux-exact-head", "macos-exact-head", "windows-exact-head",
-    "linux-ordered-parent-merge", "macos-ordered-parent-merge", "windows-ordered-parent-merge",
-    "linux-storage-scale-exact-source", "process-kill-and-cold-restart",
-    "journal-wal-corruption", "updater-rollback", "installed-package-e2e",
-    "measured-coverage", "sustained-performance", "physical-accessibility",
-    "signed-release-provenance"
+    "linux-exact-head",
+    "macos-exact-head",
+    "windows-exact-head",
+    "linux-fixed-ordered-parent-merge",
+    "macos-fixed-ordered-parent-merge",
+    "windows-fixed-ordered-parent-merge",
+    "linux-exact-implementation-storage-scale"
+  ],
+  "requiredChecksPerPlatformSubject": [
+    "source-identity",
+    "module-registry",
+    "python-contracts",
+    "application-rustfmt",
+    "owner-rustfmt",
+    "application-strict-clippy",
+    "owner-strict-clippy",
+    "application-tests",
+    "owner-tests",
+    "release-binaries",
+    "compiler-negative-api-boundary",
+    "binary-self-test",
+    "process-kill-and-updater-rollback",
+    "deterministic-unsigned-package",
+    "packaged-self-test",
+    "packaged-process-kill-and-updater-rollback"
+  ],
+  "linuxAdditionalChecks": [
+    "release-gateway",
+    "isolated-AppDir-gateway-keyring-Xvfb-lifecycle"
+  ],
+  "storageChecks": [
+    "4096-active-record-cold-restart",
+    "1000000-retired-identity-indexed-open",
+    "deterministic-legacy-index-rebuild",
+    "mutation-p50-p95-p99",
+    "snapshot-and-WAL-bytes",
+    "peak-RSS",
+    "write-amplification",
+    "fsync-fdatasync-count"
+  ],
+  "stillRequiredBeforePromotion": [
+    "measured-source-coverage",
+    "sustained-performance-soak",
+    "persistent-history-paging",
+    "picker-read-mutation-lane-split",
+    "verified-Open-Reveal-resource-handoff",
+    "portal-first-Linux-picker",
+    "packaged-Windows-WinRT-notification",
+    "physical-platform-accessibility-and-IME-acceptance",
+    "production-signing-notarization-Authenticode-SBOM-provenance",
+    "independent-review-and-branch-protection-administration"
   ],
   "runIds": [],
   "artifactDigests": {},
@@ -28,7 +81,7 @@
   "signing": null,
   "sbom": null,
   "provenance": null,
-  "rule": "A missing, skipped, cancelled, stale-SHA or mismatched-parent subject is failure. Promotion requires one immutable implementation source and independent review.",
+  "rule": "A missing, skipped, cancelled, dirty, stale-SHA, mismatched-parent, foreign-workflow, missing-log, modified-package or over-budget subject is failure. Promotion requires one immutable implementation source and independent review.",
   "productionQualified": false,
   "deploymentQualified": false,
   "releaseAuthorized": false

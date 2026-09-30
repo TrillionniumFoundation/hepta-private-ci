@@ -1,6 +1,6 @@
 {
-  "schema": "hepta.module-implementation-map.v4",
-  "schemaVersion": 4,
+  "schema": "hepta.module-implementation-map.v5",
+  "schemaVersion": 5,
   "module": "ui.native",
   "owner": "ui-platform",
   "deputy": "accessibility",
@@ -16,7 +16,7 @@
     "runtimeOwner": "apps/hepta-native/src/runtime.rs::NativeShellRuntime",
     "journalOwner": "apps/hepta-native/src/journal.rs::OperationJournal",
     "authorityOwner": "codex-rs/hepta-contracts final-use authority",
-    "rule": "UI coordination, picker callbacks and retirement indexes never become execution authority"
+    "rule": "UI coordination, picker callbacks, qualification fixtures and retirement indexes never become execution authority"
   },
   "operations": [
     {"operation": "connect_runtime", "entrypoint": "apps/hepta-native/src/runtime.rs::connect_runtime", "state": "implemented-unqualified"},
@@ -34,18 +34,63 @@
     "retirementIndexBucket": "hepta.native-retirement-index-bucket.v1",
     "authorityRule": "immutable retirement segments are authoritative; manifests, buckets and caches are rebuildable acceleration only"
   },
+  "qualificationSubjects": [
+    "Linux exact head",
+    "macOS exact head",
+    "Windows exact head",
+    "Linux fixed ordered-parent merge",
+    "macOS fixed ordered-parent merge",
+    "Windows fixed ordered-parent merge",
+    "Linux exact implementation storage scale"
+  ],
   "testSurfaces": [
     "apps/hepta-native/src/*_tests.rs",
     "apps/hepta-native/src/storage_qualification_tests.rs",
     "apps/hepta-native/tests/*.rs",
     "apps/hepta-native/tools/tests/test_package_security.py",
+    "apps/hepta-native/tools/linux_product_qualification.py",
+    "apps/hepta-native/tools/package_unsigned.py",
     "scripts/check_hepta_ui_native_convergence.py",
+    "scripts/hepta_ui_native_evidence.py",
+    "scripts/hepta_ui_native_aggregate.py",
+    "scripts/hepta_ui_native_product_evidence.py",
+    "scripts/hepta_ui_native_qualification_evidence.py",
+    "scripts/hepta_ui_native_qualification_aggregate.py",
+    "scripts/hepta_ui_native_compile_negative.py",
     "scripts/qualify_hepta_ui_native_storage.py",
-    "scripts/test_hepta_ui_native_convergence.py",
-    "scripts/test_hepta_ui_native_package_security.py"
+    "scripts/test_hepta_ui_native_*.py"
   ],
+  "repositoryControlledEvidence": {
+    "perPlatform": [
+      "source identity and inventory",
+      "app and owner rustfmt",
+      "app and owner strict Clippy",
+      "app and owner tests",
+      "compiler-negative private-boundary tests",
+      "release binary self-test",
+      "journal parent-death and updater-death qualification",
+      "unsigned deterministic package",
+      "packaged self-test and packaged fault qualification"
+    ],
+    "linuxAdditional": [
+      "release gateway",
+      "isolated AppDir with real D-Bus keyring",
+      "authenticated gateway connection",
+      "two visible Xvfb GUI starts with distinct sessions",
+      "virtual focus, keyboard delivery and normal close",
+      "owner fixture remains read-only"
+    ],
+    "storageAdditional": [
+      "4096 active records through Prepared, Invoking and Terminal",
+      "1000000 retired identities",
+      "indexed cold open and deterministic legacy index rebuild",
+      "p50/p95/p99 mutation latency",
+      "WAL/snapshot sizes, peak RSS, write bytes and fsync/fdatasync calls"
+    ]
+  },
   "repositoryControlledGaps": [
-    "executed storage-scale and crash-point qualification",
+    "successful execution of the final seven-subject workflow",
+    "measured source coverage and sustained soak",
     "persistent history paging",
     "split picker/read/mutation lanes without a second state owner",
     "verified resource capability handoff for OpenPath and RevealPath",
@@ -54,14 +99,13 @@
   ],
   "externalEvidenceGates": [
     "physical platform, accessibility and IME acceptance",
-    "installed-package update and rollback acceptance",
-    "signing, notarization, Authenticode, SBOM and provenance",
-    "independent promotion review"
+    "production signing, notarization, Authenticode, SBOM and provenance",
+    "independent promotion review and branch-protection administration"
   ],
   "claimBoundary": {
     "ordinarySourceCommitEstablished": true,
     "selfMutatingQualificationRemoved": true,
-    "storageQualificationHarnessImplemented": true,
+    "sevenSubjectEvidenceChainImplemented": true,
     "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
