@@ -1,0 +1,190 @@
+{
+  "schema": "hepta.authbus.performance-contract.v1",
+  "module": "auth.authbus",
+  "activation": false,
+  "minimumSamplesPerCase": 200,
+  "requiredStages": [
+    "signatureVerification",
+    "authorityValidation",
+    "mutationGateWait",
+    "sqliteTransaction",
+    "frontierUpdate",
+    "checkpointPublication",
+    "reconciliation",
+    "productAcknowledgement",
+    "endToEnd"
+  ],
+  "requiredPercentiles": [
+    "p50Us",
+    "p95Us",
+    "p99Us",
+    "maxUs"
+  ],
+  "requiredCaseIds": [
+    "fresh-c1-normal",
+    "fresh-c8-normal",
+    "fresh-c32-normal",
+    "fresh-c128-normal",
+    "history-medium-c1-normal",
+    "history-medium-c8-normal",
+    "history-medium-c32-normal",
+    "history-medium-c128-normal",
+    "history-long-active-c1-normal",
+    "history-long-active-c8-normal",
+    "history-long-active-c32-normal",
+    "history-long-active-c128-normal",
+    "history-long-c32-slow-disk",
+    "history-long-c128-slow-disk",
+    "checkpoint-failure-c32",
+    "recovery-backup-overlap-c32"
+  ],
+  "caseContracts": [
+    {
+      "id": "fresh-c1-normal",
+      "databaseProfile": "fresh",
+      "concurrency": 1,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "fresh-c8-normal",
+      "databaseProfile": "fresh",
+      "concurrency": 8,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "fresh-c32-normal",
+      "databaseProfile": "fresh",
+      "concurrency": 32,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "fresh-c128-normal",
+      "databaseProfile": "fresh",
+      "concurrency": 128,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "history-medium-c1-normal",
+      "databaseProfile": "history_medium",
+      "concurrency": 1,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "history-medium-c8-normal",
+      "databaseProfile": "history_medium",
+      "concurrency": 8,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "history-medium-c32-normal",
+      "databaseProfile": "history_medium",
+      "concurrency": 32,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "history-medium-c128-normal",
+      "databaseProfile": "history_medium",
+      "concurrency": 128,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "history-long-active-c1-normal",
+      "databaseProfile": "history_long_active",
+      "concurrency": 1,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "history-long-active-c8-normal",
+      "databaseProfile": "history_long_active",
+      "concurrency": 8,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "history-long-active-c32-normal",
+      "databaseProfile": "history_long_active",
+      "concurrency": 32,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "history-long-active-c128-normal",
+      "databaseProfile": "history_long_active",
+      "concurrency": 128,
+      "storageMode": "normal",
+      "faultMode": "none"
+    },
+    {
+      "id": "history-long-c32-slow-disk",
+      "databaseProfile": "history_long_active",
+      "concurrency": 32,
+      "storageMode": "slow_disk",
+      "faultMode": "none"
+    },
+    {
+      "id": "history-long-c128-slow-disk",
+      "databaseProfile": "history_long_active",
+      "concurrency": 128,
+      "storageMode": "slow_disk",
+      "faultMode": "none"
+    },
+    {
+      "id": "checkpoint-failure-c32",
+      "databaseProfile": "history_medium",
+      "concurrency": 32,
+      "storageMode": "normal",
+      "faultMode": "checkpoint_publication_failure"
+    },
+    {
+      "id": "recovery-backup-overlap-c32",
+      "databaseProfile": "history_medium",
+      "concurrency": 32,
+      "storageMode": "normal",
+      "faultMode": "recovery_backup_overlap"
+    }
+  ],
+  "databaseProfiles": {
+    "fresh": {
+      "minimumHistoryRows": 0,
+      "minimumActiveReservations": 0
+    },
+    "history_medium": {
+      "minimumHistoryRows": 10000,
+      "minimumActiveReservations": 0
+    },
+    "history_long_active": {
+      "minimumHistoryRows": 100000,
+      "minimumActiveReservations": 8000
+    }
+  },
+  "measurementBoundary": {
+    "start": "product caller request entry before signature verification",
+    "finish": "caller receives explicit success or AuthBusMutationDisposition",
+    "includes": [
+      "signature verification",
+      "authority and scope validation",
+      "mutation gate queueing",
+      "SQLite transaction",
+      "incremental frontier update",
+      "checkpoint file write, fsync, rename and directory fsync",
+      "reconciliation when required",
+      "product caller acknowledgement"
+    ]
+  },
+  "receiptPolicy": {
+    "exactCandidateRequired": true,
+    "singleTargetIdentityRequired": true,
+    "rawSamplesDigestRequired": true,
+    "environmentFingerprintRequired": true,
+    "thresholdsAreActivationOwned": true
+  }
+}
