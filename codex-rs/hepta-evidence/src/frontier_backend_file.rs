@@ -511,7 +511,7 @@ fn read_records_from_locked(
         ));
     }
 
-    let mut records = Vec::new();
+    let mut records: Vec<EvidenceFrontierAuditRecordV1> = Vec::new();
     let mut previous_generation = None;
     let mut previous_record_sha256: Option<Sha256Digest> = None;
     for line in bytes[..bytes.len() - 1].split(|byte| *byte == b'\n') {
@@ -579,6 +579,14 @@ fn read_records_from_locked(
             return Err(EvidenceFrontierBackendError::Corrupt(
                 "frontier audit record digest or generation is inconsistent".to_string(),
             ));
+        }
+        if let Some(previous) = records.last() {
+            let decision = classify_frontier_merge(&previous.frontier, &record.frontier);
+            if decision != FrontierMergeDecision::IncomingWins {
+                return Err(EvidenceFrontierBackendError::Corrupt(format!(
+                    "frontier audit history contains a non-automatic transition: {decision:?}"
+                )));
+            }
         }
         previous_generation = Some(record.frontier.frontier_generation);
         previous_record_sha256 = Some(record.record_sha256.clone());
