@@ -17,6 +17,7 @@ mod operational_contract;
 mod publication;
 #[allow(clippy::too_many_arguments)]
 mod qualified;
+mod recovery;
 mod trust;
 mod trust_registry;
 
@@ -74,6 +75,12 @@ pub use qualified::MAX_QUALIFIED_COMPACTION_TOKENS;
 pub use qualified::QualifiedCompactionCandidateV2;
 pub use qualified::QualifiedCompactionError;
 pub use qualified::TokenizationReceiptV1;
+pub use recovery::CompactionAdmissionReconciliationSummaryV1;
+pub use recovery::CompactionAdmissionRecoveryStateV1;
+pub use recovery::CompactionClaimReconciliationSummaryV1;
+pub use recovery::CompactionOperationStatusV1;
+pub use recovery::CompactionRecoveryStartupSummaryV1;
+pub use recovery::DurableCompactionOutboxClaimV2;
 pub use trust::COMPACTION_TRUST_SCHEMA_VERSION;
 pub use trust::CompactionTrustRoleV1;
 pub use trust::QualifiedCandidateBuildRequestV1;
