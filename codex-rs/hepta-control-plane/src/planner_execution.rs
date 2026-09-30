@@ -120,9 +120,7 @@ impl ControlRuntimeExecutionConsumerV1 {
         Self::default()
     }
 
-    pub fn recover_from_store(
-        store: &PlannerStoreV1,
-    ) -> Result<Self, ProductExecutionErrorV1> {
+    pub fn recover_from_store(store: &PlannerStoreV1) -> Result<Self, ProductExecutionErrorV1> {
         let mut consumer = Self::new();
         for durable in store.records() {
             match durable.kind {
@@ -145,10 +143,8 @@ impl ControlRuntimeExecutionConsumerV1 {
                 }
                 PlannerStoreRecordKindV1::AuthorityRequest => {
                     let (identity, request) = decode_grant_request(&durable.payload)?;
-                    let record = consumer.require_phase_mut(
-                        identity,
-                        ProductExecutionPhaseV1::DecisionDurable,
-                    )?;
+                    let record = consumer
+                        .require_phase_mut(identity, ProductExecutionPhaseV1::DecisionDurable)?;
                     record.phase = ProductExecutionPhaseV1::AuthorityRequested;
                     record.authority_request_digest = Some(durable.payload_digest);
                     if consumer.requests.insert(identity, request).is_some() {
@@ -162,10 +158,8 @@ impl ControlRuntimeExecutionConsumerV1 {
                         .get(&identity)
                         .ok_or(ProductExecutionErrorV1::CorruptDurableRecord)?;
                     validate_authorization_binding(request, &grant)?;
-                    let record = consumer.require_phase_mut(
-                        identity,
-                        ProductExecutionPhaseV1::AuthorityRequested,
-                    )?;
+                    let record = consumer
+                        .require_phase_mut(identity, ProductExecutionPhaseV1::AuthorityRequested)?;
                     record.phase = ProductExecutionPhaseV1::IndependentlyAuthorized;
                     record.signed_grant_digest = Some(grant.signed_grant_digest);
                     if consumer.authorizations.insert(identity, grant).is_some() {
@@ -221,9 +215,7 @@ impl ControlRuntimeExecutionConsumerV1 {
         &self.requests
     }
 
-    pub(crate) fn authorizations(
-        &self,
-    ) -> &BTreeMap<Digest32, IndependentAuthorizationV1> {
+    pub(crate) fn authorizations(&self) -> &BTreeMap<Digest32, IndependentAuthorizationV1> {
         &self.authorizations
     }
 
@@ -297,10 +289,7 @@ impl ControlRuntimeExecutionConsumerV1 {
             ProductExecutionPhaseV1::AuthorityRequested,
         )?;
         let payload = encode_authorization(operation_identity_digest, grant)?;
-        let receipt = store.append(
-            PlannerStoreRecordKindV1::IndependentAuthorization,
-            &payload,
-        )?;
+        let receipt = store.append(PlannerStoreRecordKindV1::IndependentAuthorization, &payload)?;
         let output = {
             let record = self.require_phase_mut(
                 operation_identity_digest,
@@ -310,7 +299,10 @@ impl ControlRuntimeExecutionConsumerV1 {
             record.signed_grant_digest = Some(grant.signed_grant_digest);
             record.clone()
         };
-        debug_assert_eq!(receipt.kind, PlannerStoreRecordKindV1::IndependentAuthorization);
+        debug_assert_eq!(
+            receipt.kind,
+            PlannerStoreRecordKindV1::IndependentAuthorization
+        );
         self.authorizations
             .insert(operation_identity_digest, grant.clone());
         Ok(output)
@@ -463,9 +455,7 @@ fn validate_terminal(receipt: &EffectTerminalReceiptV1) -> Result<(), ProductExe
     Ok(())
 }
 
-const fn phase_for_terminal(
-    disposition: EffectTerminalDispositionV1,
-) -> ProductExecutionPhaseV1 {
+const fn phase_for_terminal(disposition: EffectTerminalDispositionV1) -> ProductExecutionPhaseV1 {
     match disposition {
         EffectTerminalDispositionV1::Succeeded => ProductExecutionPhaseV1::Succeeded,
         EffectTerminalDispositionV1::Failed => ProductExecutionPhaseV1::Failed,
@@ -621,9 +611,7 @@ fn decode_dispatch(payload: &[u8]) -> Result<Digest32, ProductExecutionErrorV1> 
     Ok(identity)
 }
 
-fn decode_terminal(
-    payload: &[u8],
-) -> Result<EffectTerminalReceiptV1, ProductExecutionErrorV1> {
+fn decode_terminal(payload: &[u8]) -> Result<EffectTerminalReceiptV1, ProductExecutionErrorV1> {
     let mut cursor = Cursor::new(payload, TERMINAL_PREFIX)?;
     let operation_identity_digest = cursor.read_digest()?;
     let observed_outcome_digest = cursor.read_digest()?;
@@ -652,8 +640,8 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), ProductExecution
 }
 
 fn push_bytes(bytes: &mut Vec<u8>, value: &[u8]) -> Result<(), ProductExecutionErrorV1> {
-    let length = u32::try_from(value.len())
-        .map_err(|_| ProductExecutionErrorV1::DurableLengthOverflow)?;
+    let length =
+        u32::try_from(value.len()).map_err(|_| ProductExecutionErrorV1::DurableLengthOverflow)?;
     bytes.extend_from_slice(&length.to_be_bytes());
     bytes.extend_from_slice(value);
     Ok(())
@@ -751,8 +739,8 @@ impl<'a> Cursor<'a> {
         if raw.is_empty() || raw.len() > MAX_ID_BYTES {
             return Err(ProductExecutionErrorV1::CorruptDurableRecord);
         }
-        let value = std::str::from_utf8(raw)
-            .map_err(|_| ProductExecutionErrorV1::CorruptDurableRecord)?;
+        let value =
+            std::str::from_utf8(raw).map_err(|_| ProductExecutionErrorV1::CorruptDurableRecord)?;
         StableId::new(value).map_err(|_| ProductExecutionErrorV1::CorruptDurableRecord)
     }
 
@@ -904,8 +892,8 @@ mod tests {
         let directory = tempfile::tempdir().expect("tempdir");
         let mut store =
             PlannerStoreV1::open(directory.path().join("planner.store")).expect("store");
-        let payload = encode_dispatch(Digest32::of_bytes(b"unknown"), b"dispatch")
-            .expect("dispatch payload");
+        let payload =
+            encode_dispatch(Digest32::of_bytes(b"unknown"), b"dispatch").expect("dispatch payload");
         store
             .append(PlannerStoreRecordKindV1::Dispatch, &payload)
             .expect("append malformed ordering");

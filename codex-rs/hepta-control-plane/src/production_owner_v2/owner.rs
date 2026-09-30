@@ -273,7 +273,8 @@ impl<C: TrustedClockV1> ControlRuntimeOwnerV1<C> {
         if envelope.owner_generation != self.generation {
             return Err(ControlRuntimeOwnerErrorV1::GenerationBindingMismatch);
         }
-        if envelope.policy_epoch != self.policy_epoch || envelope.policy_digest != self.policy_digest
+        if envelope.policy_epoch != self.policy_epoch
+            || envelope.policy_digest != self.policy_digest
         {
             return Err(ControlRuntimeOwnerErrorV1::PolicyBindingMismatch);
         }

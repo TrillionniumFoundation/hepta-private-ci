@@ -275,8 +275,7 @@ fn validate_envelope(
     if runtime_module_dependency_graph_digest_v1(abi) != envelope.dependency_graph_digest {
         return Err(RuntimeModuleAdmissionErrorV1::DependencyBindingMismatch);
     }
-    if serving_runtime_topology_digest_v1(&registry.snapshot())
-        != envelope.selected_topology_digest
+    if serving_runtime_topology_digest_v1(&registry.snapshot()) != envelope.selected_topology_digest
     {
         return Err(RuntimeModuleAdmissionErrorV1::TopologyBindingMismatch);
     }
@@ -308,10 +307,8 @@ mod tests {
         fn verify(
             &self,
             envelope: &RuntimeModuleAdmissionEnvelopeV1,
-        ) -> Result<
-            RuntimeModuleAdmissionVerificationV1,
-            RuntimeModuleAdmissionVerificationErrorV1,
-        > {
+        ) -> Result<RuntimeModuleAdmissionVerificationV1, RuntimeModuleAdmissionVerificationErrorV1>
+        {
             Ok(RuntimeModuleAdmissionVerificationV1 {
                 verifier_id: id("dependency-verifier"),
                 envelope_digest: envelope.digest(),
@@ -390,8 +387,8 @@ mod tests {
             &clock,
         )
         .expect("admit");
-        let snapshot = promote_bound_runtime_module_v1(&mut registry, &bound, &clock)
-            .expect("promote");
+        let snapshot =
+            promote_bound_runtime_module_v1(&mut registry, &bound, &clock).expect("promote");
         assert_eq!(snapshot.active[0].module_id, candidate.module_id);
         assert_eq!(
             registry

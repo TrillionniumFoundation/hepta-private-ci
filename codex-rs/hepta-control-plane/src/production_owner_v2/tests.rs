@@ -144,9 +144,7 @@ fn owner_rechecks_time_after_verification_and_before_dispatch() {
     let port = owner
         .admit_owner_port(&producer, &AcceptingVerifier)
         .expect("port");
-    owner
-        .commit_decision(&port, &decision)
-        .expect("decision");
+    owner.commit_decision(&port, &decision).expect("decision");
     assert_eq!(
         owner.commit_decision(&port, &decision),
         Err(ControlRuntimeOwnerErrorV1::ProducerPortConsumed)
@@ -224,9 +222,7 @@ fn indeterminate_attempt_survives_owner_restart() {
         let port = owner
             .admit_owner_port(&producer, &AcceptingVerifier)
             .expect("port");
-        owner
-            .commit_decision(&port, &decision)
-            .expect("decision");
+        owner.commit_decision(&port, &decision).expect("decision");
         let request = request();
         owner
             .record_authority_request(identity, &request)
@@ -256,7 +252,10 @@ fn indeterminate_attempt_survives_owner_restart() {
     )
     .expect("reopen owner");
     assert_eq!(
-        reopened.operation(identity).expect("recovered attempt").phase,
+        reopened
+            .operation(identity)
+            .expect("recovered attempt")
+            .phase,
         ProductExecutionPhaseV1::Indeterminate
     );
 }

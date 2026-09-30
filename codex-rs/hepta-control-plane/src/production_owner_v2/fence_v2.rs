@@ -91,9 +91,7 @@ impl<C: TrustedClockV1> ControlRuntimeOwnerV1<C> {
             predecessor_anchor_digest,
             current_anchor_digest,
         )
-        .map_err(|error| {
-            ControlRuntimeOwnerErrorV1::Store(format!("generation fence: {error}"))
-        })?;
+        .map_err(|error| ControlRuntimeOwnerErrorV1::Store(format!("generation fence: {error}")))?;
         Ok(owner)
     }
 }
@@ -271,8 +269,8 @@ fn encode_record(record: &GenerationFenceRecordV1) -> Result<Vec<u8>, Generation
     if owner.is_empty() || owner.len() > MAX_OWNER_ID_BYTES {
         return Err(GenerationFenceErrorV1::LengthOverflow);
     }
-    let owner_len = u32::try_from(owner.len())
-        .map_err(|_| GenerationFenceErrorV1::LengthOverflow)?;
+    let owner_len =
+        u32::try_from(owner.len()).map_err(|_| GenerationFenceErrorV1::LengthOverflow)?;
     let mut bytes = MAGIC.to_vec();
     bytes.extend_from_slice(&VERSION.to_be_bytes());
     bytes.extend_from_slice(&owner_len.to_be_bytes());
@@ -324,10 +322,7 @@ fn read_u64(bytes: &[u8], cursor: &mut usize) -> Result<u64, GenerationFenceErro
     Ok(value)
 }
 
-fn read_digest(
-    bytes: &[u8],
-    cursor: &mut usize,
-) -> Result<Digest32, GenerationFenceErrorV1> {
+fn read_digest(bytes: &[u8], cursor: &mut usize) -> Result<Digest32, GenerationFenceErrorV1> {
     let end = cursor
         .checked_add(32)
         .ok_or(GenerationFenceErrorV1::LengthOverflow)?;

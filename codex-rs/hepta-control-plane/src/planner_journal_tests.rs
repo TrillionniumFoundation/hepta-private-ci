@@ -141,9 +141,7 @@ fn receipt() -> FeasiblePlanReceiptV1 {
     must(finalize_plan(&snapshot, &prepared, &evaluation, 110))
 }
 
-fn serialized_journal(
-    records: &[(PlannerJournalKindV1, Digest32, Digest32)],
-) -> Vec<u8> {
+fn serialized_journal(records: &[(PlannerJournalKindV1, Digest32, Digest32)]) -> Vec<u8> {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(super::MAGIC);
     bytes.extend_from_slice(
@@ -154,8 +152,7 @@ fn serialized_journal(
     let mut predecessor = Digest32::ZERO;
     for (index, (kind, identity, payload)) in records.iter().enumerate() {
         let sequence = u64::try_from(index + 1).expect("sequence");
-        let entry_digest =
-            super::digest_entry(sequence, *kind, *identity, *payload, predecessor);
+        let entry_digest = super::digest_entry(sequence, *kind, *identity, *payload, predecessor);
         bytes.extend_from_slice(&sequence.to_be_bytes());
         bytes.push(kind.tag());
         bytes.extend_from_slice(identity.as_array());
@@ -248,11 +245,7 @@ fn a_second_active_selection_requires_the_first_to_be_revoked() {
     let first = receipt();
     let second_digest = digest("second-decision");
     must(journal.record_decision(&first));
-    must(journal.append_record(
-        PlannerJournalKindV1::Decision,
-        second_digest,
-        second_digest,
-    ));
+    must(journal.append_record(PlannerJournalKindV1::Decision, second_digest, second_digest));
     must(journal.select_plan(digest("select-first"), &first));
     assert_eq!(
         journal
@@ -275,8 +268,7 @@ fn reopen_rejects_selection_without_a_recorded_decision() {
         target,
     )]);
     assert_eq!(
-        PlannerJournalV1::reopen(&bytes)
-            .expect_err("serialized semantic bypass must reject"),
+        PlannerJournalV1::reopen(&bytes).expect_err("serialized semantic bypass must reject"),
         PlannerJournalError::DecisionNotRecorded
     );
 }
@@ -303,8 +295,7 @@ fn reopen_rejects_reselection_after_revocation() {
         ),
     ]);
     assert_eq!(
-        PlannerJournalV1::reopen(&bytes)
-            .expect_err("revoked decision must not resurrect"),
+        PlannerJournalV1::reopen(&bytes).expect_err("revoked decision must not resurrect"),
         PlannerJournalError::RevokedPlan
     );
 }
@@ -317,8 +308,7 @@ fn reopen_rejects_revocation_of_an_unknown_decision() {
         digest("unknown-decision"),
     )]);
     assert_eq!(
-        PlannerJournalV1::reopen(&bytes)
-            .expect_err("unknown revocation target must reject"),
+        PlannerJournalV1::reopen(&bytes).expect_err("unknown revocation target must reject"),
         PlannerJournalError::DecisionNotRecorded
     );
 }
