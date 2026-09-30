@@ -370,7 +370,7 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
         request.candidates = (0..candidate_count)
             .map(|index| {
                 let mut candidate = candidate.clone();
-                candidate.candidate_id = id(&format!("candidate:{index}"));
+                candidate.candidate_id = id(&format!("candidate:{index:03}"));
                 candidate
             })
             .collect();
