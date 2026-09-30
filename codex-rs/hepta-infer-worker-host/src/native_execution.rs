@@ -10,6 +10,7 @@ impl AppServerModelDriver {
         prompt: String,
         context_query: Option<String>,
         intelligence: Option<&NativeIntelligenceRunBinding>,
+        deadline: control::NativeDeadlinePolicy,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
@@ -19,16 +20,30 @@ impl AppServerModelDriver {
             return Err("cancelled before admission".into());
         }
         let wall_at_anchor_ms = unix_time_ms()?;
-        let execution_clock = match intelligence {
-            Some(binding) => crate::native_deadline::NativeDeadline::from_absolute(
-                wall_at_anchor_ms,
-                binding.absolute_deadline_ms,
-                self.config.timeout,
-            )?,
-            None => crate::native_deadline::NativeDeadline::from_budget(
-                wall_at_anchor_ms,
-                self.config.timeout,
-            )?,
+        let execution_clock = match (intelligence, deadline) {
+            (Some(binding), control::NativeDeadlinePolicy::Profile) => {
+                crate::native_deadline::NativeDeadline::from_absolute(
+                    wall_at_anchor_ms,
+                    binding.absolute_deadline_ms,
+                    self.config.timeout,
+                )?
+            }
+            (None, control::NativeDeadlinePolicy::Absolute(deadline_ms)) => {
+                crate::native_deadline::NativeDeadline::from_absolute(
+                    wall_at_anchor_ms,
+                    deadline_ms,
+                    self.config.timeout,
+                )?
+            }
+            (Some(_), control::NativeDeadlinePolicy::Absolute(_)) => {
+                return Err("intelligence deadline is owned by its admitted binding".into());
+            }
+            (None, control::NativeDeadlinePolicy::Profile) => {
+                crate::native_deadline::NativeDeadline::from_budget(
+                    wall_at_anchor_ms,
+                    self.config.timeout,
+                )?
+            }
         };
         let owner = AgentdClient::new(
             self.config.agentd_socket.clone(),

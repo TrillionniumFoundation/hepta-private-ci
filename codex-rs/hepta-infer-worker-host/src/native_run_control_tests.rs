@@ -276,27 +276,52 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
 #[test]
 fn intelligence_handoff_is_committed_to_native_admission_identity() {
     let socket = std::path::Path::new("/tmp/native-owner.sock");
-    let none = native_source_payload_digest("prompt", &None, socket, 5000, None).unwrap();
+    let none = native_source_payload_digest(
+        "prompt",
+        &None,
+        socket,
+        5000,
+        None,
+        NativeDeadlinePolicy::Profile,
+    )
+    .unwrap();
     let original = NativeIntelligenceRunBinding {
         run_id: "intelligence-run".to_string(),
         expected_revision: 2,
+        absolute_deadline_ms: 10_000,
         context_digest: "a".repeat(64),
         envelope_digest: "b".repeat(64),
     };
-    let bound =
-        native_source_payload_digest("prompt", &None, socket, 5000, Some(&original)).unwrap();
+    let bound = native_source_payload_digest(
+        "prompt",
+        &None,
+        socket,
+        5000,
+        Some(&original),
+        NativeDeadlinePolicy::Profile,
+    )
+    .unwrap();
     assert_ne!(none, bound);
-    for field in 0..4 {
+    for field in 0..5 {
         let mut changed = original.clone();
         match field {
             0 => changed.run_id.push_str("-other"),
             1 => changed.expected_revision += 1,
             2 => changed.context_digest = "c".repeat(64),
+            3 => changed.absolute_deadline_ms += 1,
             _ => changed.envelope_digest = "d".repeat(64),
         }
         assert_ne!(
             bound,
-            native_source_payload_digest("prompt", &None, socket, 5000, Some(&changed)).unwrap()
+            native_source_payload_digest(
+                "prompt",
+                &None,
+                socket,
+                5000,
+                Some(&changed),
+                NativeDeadlinePolicy::Profile
+            )
+            .unwrap()
         );
     }
     assert_eq!(
@@ -312,6 +337,52 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
             .unwrap()
         )
     );
+}
+
+#[tokio::test]
+async fn expired_absolute_deadline_cannot_be_refreshed_on_reopen() {
+    let (driver, path) = fixture("assessment-deadline");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let now = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis(),
+    )
+    .unwrap();
+    let cancellation = CancellationToken::new();
+    assert!(
+        driver
+            .run_with_deadline(
+                &mut control,
+                admission(),
+                "prompt".to_string(),
+                now - 1,
+                &cancellation,
+            )
+            .await
+            .is_err()
+    );
+    let stopped = control.native_record("r1").unwrap().clone();
+    assert!(stopped.pre_dispatch_stop.is_some());
+    assert!(stopped.dispatch.is_none());
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert!(
+        driver
+            .run_with_deadline(
+                &mut control,
+                admission(),
+                "prompt".to_string(),
+                now + 60_000,
+                &cancellation,
+            )
+            .await
+            .is_err()
+    );
+    assert_eq!(control.native_record("r1"), Some(&stopped));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
 }
 
 fn admitted_receipt(phase: AgentRunPhase) -> AgentRunReceipt {

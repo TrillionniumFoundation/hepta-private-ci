@@ -140,6 +140,12 @@ fn runtime_codex_sha256_hex(value: &str) -> bool {
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(byte))
 }
 
+#[derive(Clone, Copy)]
+pub(super) enum NativeDeadlinePolicy {
+    Profile,
+    Absolute(u64),
+}
+
 impl AppServerModelDriver {
     /// Reserves before any provider call, journals dispatch before `turn/start`,
     /// and commits real observations before returning them to the caller.
@@ -158,6 +164,7 @@ impl AppServerModelDriver {
             prompt,
             context_query,
             /*intelligence*/ None,
+            NativeDeadlinePolicy::Profile,
             cancellation,
         )
         .await
@@ -180,6 +187,29 @@ impl AppServerModelDriver {
             prompt,
             context_query,
             Some(&intelligence),
+            NativeDeadlinePolicy::Profile,
+            cancellation,
+        )
+        .await
+    }
+
+    /// Execute an authority-neutral model request within its original absolute
+    /// deadline. Queueing or reopening cannot create a fresh execution budget.
+    pub async fn run_with_deadline(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        deadline_ms: u64,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_bound(
+            control,
+            admission,
+            prompt,
+            /*context_query*/ None,
+            /*intelligence*/ None,
+            NativeDeadlinePolicy::Absolute(deadline_ms),
             cancellation,
         )
         .await
@@ -192,6 +222,7 @@ impl AppServerModelDriver {
         prompt: String,
         context_query: Option<String>,
         intelligence: Option<&NativeIntelligenceRunBinding>,
+        deadline: NativeDeadlinePolicy,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
@@ -214,6 +245,7 @@ impl AppServerModelDriver {
                 &self.config.agentd_socket,
                 self.config.timeout.as_millis(),
                 intelligence,
+                deadline,
             )?,
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
@@ -287,6 +319,7 @@ impl AppServerModelDriver {
                 prompt,
                 context_query,
                 intelligence,
+                deadline,
                 cancellation,
             )
             .await
@@ -324,16 +357,25 @@ fn native_source_payload_digest(
     socket: &std::path::Path,
     timeout_ms: u128,
     intelligence: Option<&NativeIntelligenceRunBinding>,
+    deadline: NativeDeadlinePolicy,
 ) -> Result<String> {
-    let bytes = match intelligence {
-        None => serde_json::to_vec(&(
+    let bytes = match (intelligence, deadline) {
+        (None, NativeDeadlinePolicy::Absolute(deadline_ms)) => serde_json::to_vec(&(
+            "hepta.native-assessment-request.v1",
+            prompt,
+            context_query,
+            socket,
+            timeout_ms,
+            deadline_ms,
+        ))?,
+        (None, NativeDeadlinePolicy::Profile) => serde_json::to_vec(&(
             "hepta.native-request.v1",
             prompt,
             context_query,
             socket,
             timeout_ms,
         ))?,
-        Some(binding) => serde_json::to_vec(&(
+        (Some(binding), NativeDeadlinePolicy::Profile) => serde_json::to_vec(&(
             "hepta.native-intelligence-request.v2",
             prompt,
             context_query,
@@ -345,6 +387,9 @@ fn native_source_payload_digest(
             &binding.envelope_digest,
             binding.absolute_deadline_ms,
         ))?,
+        (Some(_), NativeDeadlinePolicy::Absolute(_)) => {
+            return Err("intelligence deadline is owned by its admitted binding".into());
+        }
     };
     Ok(digest(&bytes))
 }

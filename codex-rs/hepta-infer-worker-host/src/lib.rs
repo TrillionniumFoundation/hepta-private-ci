@@ -20,6 +20,8 @@ pub use native_thread_lifecycle::NativeCleanupMetrics;
 pub use native_thread_lifecycle::native_cleanup_metrics;
 pub mod runtime_codex_attempt;
 pub mod runtime_codex_quarantine;
+mod self_iteration_model;
+pub use self_iteration_model::AppServerSelfIterationModelPortV1;
 
 use std::error::Error as StdError;
 use std::fmt;
