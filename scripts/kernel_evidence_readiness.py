@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Build one fail-closed runtime readiness manifest for kernel.evidence.
 
-The manifest binds execution evidence to immutable Git objects and hashes the
-source-controlled inputs that define the qualification surface. It never grants
-independent acceptance, production activation, promotion, or release authority.
+The manifest binds source, deterministic merge, hosted workflow, runtime status,
+qualification receipts, crash receipts, and source-controlled inputs. It never
+grants independent acceptance, external activation, operator activation,
+promotion, or release authority.
 """
 
 from __future__ import annotations
@@ -40,10 +41,6 @@ REQUIRED_CRASH_SCENARIOS = (
     "multi_process_contention",
     "repair_append_concurrency",
 )
-
-
-def sha256_bytes(value: bytes) -> str:
-    return hashlib.sha256(value).hexdigest()
 
 
 def sha256_file(path: Path) -> str:
@@ -88,112 +85,309 @@ def load_json(path: Path) -> dict[str, Any]:
     return value
 
 
-def receipt_passed(path: Path, source_sha: str) -> tuple[bool, str | None]:
+def require_oid(value: str | None, label: str, *, optional: bool = False) -> None:
+    if optional and not value:
+        return
+    if not isinstance(value, str) or OID.fullmatch(value) is None:
+        raise ValueError(f"{label} must be a full lowercase Git object id")
+
+
+def valid_timestamp_range(value: dict[str, Any]) -> bool:
+    started = value.get("startedAtUnixMs")
+    finished = value.get("finishedAtUnixMs")
+    return (
+        isinstance(started, int)
+        and isinstance(finished, int)
+        and started > 0
+        and finished >= started
+    )
+
+
+def qualification_receipt_status(
+    *,
+    path: Path | None,
+    kind: str,
+    source_head_sha: str,
+    source_head_tree: str,
+    base_sha: str,
+    deterministic_merge_sha: str | None,
+    workflow_sha: str,
+    workflow_run_id: str,
+    workflow_run_attempt: str,
+    runner_image: str,
+    target_triple: str,
+) -> dict[str, Any]:
+    entry: dict[str, Any] = {
+        "present": bool(path and path.is_file()),
+        "passed": False,
+    }
+    if path is None or not path.is_file():
+        entry["error"] = "receipt is absent"
+        return entry
     try:
         value = load_json(path)
+        tested_object = (
+            deterministic_merge_sha if kind == "deterministic_merge" else source_head_sha
+        )
+        passed = (
+            value.get("schemaVersion") == 2
+            and value.get("module") == "kernel.evidence"
+            and value.get("receiptKind") == "candidate_qualification"
+            and value.get("kind") == kind
+            and value.get("sourceHeadSha") == source_head_sha
+            and value.get("sourceHeadTree") == source_head_tree
+            and value.get("baseSha") == base_sha
+            and value.get("deterministicMergeSha")
+            == (deterministic_merge_sha if kind == "deterministic_merge" else None)
+            and value.get("testedObjectSha") == tested_object
+            and value.get("workflowSha") == workflow_sha
+            and value.get("workflowRunId") == workflow_run_id
+            and value.get("workflowRunAttempt") == workflow_run_attempt
+            and value.get("runnerImage") == runner_image
+            and value.get("targetTriple") == target_triple
+            and value.get("status") == "passed"
+            and value.get("passed") is True
+            and value.get("exitCode") == 0
+            and valid_timestamp_range(value)
+            and isinstance(value.get("command"), str)
+            and bool(value.get("command"))
+            and isinstance(value.get("logSha256"), str)
+            and SHA256.fullmatch(value["logSha256"]) is not None
+            and value.get("qualificationGranted") is False
+            and value.get("independentAcceptanceGranted") is False
+            and value.get("productionActivationGranted") is False
+            and value.get("releaseGranted") is False
+        )
+        entry.update(
+            {
+                "passed": passed,
+                "sha256": sha256_file(path),
+                "testedObjectSha": value.get("testedObjectSha"),
+                "logSha256": value.get("logSha256"),
+            }
+        )
+        if not passed:
+            entry["error"] = "receipt identity, execution, or authority boundary is invalid"
     except (OSError, ValueError, json.JSONDecodeError) as error:
-        return False, str(error)
-    candidate = value.get("candidate")
-    bound_sha = value.get("testedSha") or value.get("tested_sha")
-    if bound_sha is None and isinstance(candidate, dict):
-        bound_sha = candidate.get("sourceCommit") or candidate.get("testedCommit")
-    if bound_sha not in (None, source_sha):
-        return False, "receipt is bound to a different source candidate"
-    passed = value.get("qualified") is True or value.get("passed") is True
-    if not passed:
-        return False, "receipt is not terminal success"
-    return True, None
+        entry["error"] = str(error)
+    return entry
 
 
-def crash_receipt_status(directory: Path | None, source_sha: str, target: str) -> dict[str, Any]:
+def crash_receipt_status(
+    *,
+    directory: Path | None,
+    source_head_sha: str,
+    source_head_tree: str,
+    base_sha: str,
+    workflow_sha: str,
+    workflow_run_id: str,
+    workflow_run_attempt: str,
+    runner_image: str,
+    target_triple: str,
+) -> dict[str, Any]:
     result: dict[str, Any] = {}
     for scenario in REQUIRED_CRASH_SCENARIOS:
         path = None if directory is None else directory / f"{scenario}.json"
-        entry: dict[str, Any] = {"present": bool(path and path.is_file()), "passed": False}
-        if path and path.is_file():
-            try:
-                value = load_json(path)
-                entry["sha256"] = sha256_file(path)
-                entry["passed"] = (
-                    value.get("schemaVersion") == 1
-                    and value.get("module") == "kernel.evidence"
-                    and value.get("scenario") == scenario
-                    and value.get("testedSha") == source_sha
-                    and value.get("targetTriple") == target
-                    and value.get("status") == "passed"
-                    and value.get("exitCode") == 0
-                    and isinstance(value.get("command"), str)
-                    and bool(value.get("command"))
-                    and isinstance(value.get("startedAtUnixMs"), int)
-                    and isinstance(value.get("finishedAtUnixMs"), int)
-                    and value["finishedAtUnixMs"] >= value["startedAtUnixMs"]
-                    and isinstance(value.get("logSha256"), str)
-                    and SHA256.fullmatch(value["logSha256"]) is not None
-                )
-                if not entry["passed"]:
-                    entry["error"] = "receipt schema, candidate, target, or terminal result is invalid"
-            except (OSError, ValueError, json.JSONDecodeError) as error:
-                entry["error"] = str(error)
-        else:
+        entry: dict[str, Any] = {
+            "present": bool(path and path.is_file()),
+            "passed": False,
+        }
+        if path is None or not path.is_file():
             entry["error"] = "required scenario receipt is absent"
+            result[scenario] = entry
+            continue
+        try:
+            value = load_json(path)
+            commands = value.get("commands")
+            commands_valid = (
+                isinstance(commands, list)
+                and bool(commands)
+                and all(
+                    isinstance(command, dict)
+                    and command.get("status") == "passed"
+                    and command.get("exitCode") == 0
+                    and command.get("timedOut") is False
+                    and command.get("skippedDetected") is False
+                    and not command.get("missingMarkers")
+                    and isinstance(command.get("logSha256"), str)
+                    and SHA256.fullmatch(command["logSha256"]) is not None
+                    and valid_timestamp_range(command)
+                    for command in commands
+                )
+            )
+            passed = (
+                value.get("schemaVersion") == 2
+                and value.get("module") == "kernel.evidence"
+                and value.get("receiptKind") == "crash_consistency_scenario"
+                and value.get("scenario") == scenario
+                and value.get("sourceHeadSha") == source_head_sha
+                and value.get("sourceHeadTree") == source_head_tree
+                and value.get("baseSha") == base_sha
+                and value.get("workflowSha") == workflow_sha
+                and value.get("workflowRunId") == workflow_run_id
+                and value.get("workflowRunAttempt") == workflow_run_attempt
+                and value.get("runnerImage") == runner_image
+                and value.get("targetTriple") == target_triple
+                and value.get("qualificationClass") == "hosted_runner"
+                and value.get("status") == "passed"
+                and valid_timestamp_range(value)
+                and commands_valid
+                and value.get("qualificationGranted") is False
+                and value.get("targetHostAcceptanceGranted") is False
+                and value.get("productionActivationGranted") is False
+                and value.get("releaseGranted") is False
+            )
+            entry.update({"passed": passed, "sha256": sha256_file(path)})
+            if not passed:
+                entry["error"] = (
+                    "scenario receipt, exact candidate, command result, or authority "
+                    "boundary is invalid"
+                )
+        except (OSError, ValueError, json.JSONDecodeError) as error:
+            entry["error"] = str(error)
         result[scenario] = entry
     return result
 
 
-def build_manifest(
+def validate_runtime_status(
     *,
-    root: Path,
+    path: Path,
     source_head_sha: str,
+    source_head_tree: str,
     base_sha: str,
     deterministic_merge_sha: str | None,
     github_synthetic_merge_sha: str | None,
     workflow_sha: str,
     final_merge_sha: str | None,
     workflow_run_id: str,
+    workflow_run_attempt: str,
     runner_image: str,
     target_triple: str,
-    status_source: Path,
+) -> dict[str, Any]:
+    status = load_json(path)
+    exact = (
+        status.get("schema") == "hepta.kernel-evidence-runtime-status-source.v1"
+        and status.get("schemaVersion") == 1
+        and status.get("module") == "kernel.evidence"
+        and status.get("statusClass") == "exact_runtime_qualification"
+        and status.get("asOfCommit") == source_head_sha
+        and status.get("asOfTree") == source_head_tree
+        and status.get("baseSha") == base_sha
+        and status.get("deterministicMergeSha") == deterministic_merge_sha
+        and status.get("githubSyntheticMergeSha") == github_synthetic_merge_sha
+        and status.get("workflowSha") == workflow_sha
+        and status.get("finalMergeSha") == final_merge_sha
+        and status.get("workflowRunId") == workflow_run_id
+        and status.get("workflowRunAttempt") == workflow_run_attempt
+        and status.get("runnerImage") == runner_image
+        and status.get("targetTriple") == target_triple
+        and status.get("authenticatedFrontierAuthorityAccepted") is False
+        and status.get("externalFrontierActive") is False
+        and status.get("independentRollbackAnchorAccepted") is False
+        and status.get("independentAcceptance") is False
+        and status.get("operatorActivation") is False
+        and status.get("canaryAccepted") is False
+        and status.get("promotionApproved") is False
+        and status.get("releaseApproved") is False
+    )
+    return {
+        "present": True,
+        "exact": exact,
+        "sha256": sha256_file(path),
+        "asOfCommit": status.get("asOfCommit"),
+        "asOfTree": status.get("asOfTree"),
+        "error": None if exact else "runtime STATUS_SOURCE is not bound to the exact tested object",
+        "value": status,
+    }
+
+
+def build_manifest(
+    *,
+    root: Path,
+    source_head_sha: str,
+    source_head_tree: str,
+    base_sha: str,
+    deterministic_merge_sha: str | None,
+    github_synthetic_merge_sha: str | None,
+    workflow_sha: str,
+    final_merge_sha: str | None,
+    workflow_run_id: str,
+    workflow_run_attempt: str,
+    runner_image: str,
+    target_triple: str,
+    runtime_status_source: Path,
+    checked_in_status_source: Path,
     qualification_receipts: dict[str, Path],
     artifacts: dict[str, Path],
     crash_receipts: Path | None,
 ) -> dict[str, Any]:
     for label, oid in (
         ("source head", source_head_sha),
+        ("source tree", source_head_tree),
         ("base", base_sha),
         ("workflow", workflow_sha),
     ):
-        if OID.fullmatch(oid) is None:
-            raise ValueError(f"{label} must be a full lowercase Git object id")
+        require_oid(oid, label)
     for label, oid in (
         ("deterministic merge", deterministic_merge_sha),
         ("GitHub synthetic merge", github_synthetic_merge_sha),
         ("final merge", final_merge_sha),
     ):
-        if oid and OID.fullmatch(oid) is None:
-            raise ValueError(f"{label} must be empty or a full lowercase Git object id")
-    if not workflow_run_id or not runner_image or not target_triple:
+        require_oid(oid, label, optional=True)
+    if not workflow_run_id or not workflow_run_attempt or not runner_image or not target_triple:
         raise ValueError("workflow, runner, and target identity must be non-empty")
-
     root = root.resolve()
-    status = load_json(status_source)
-    checked_in_as_of = status.get("asOfCommit")
-    qualification: dict[str, Any] = {}
-    for name in REQUIRED_QUALIFICATION_RECEIPTS:
-        path = qualification_receipts.get(name)
-        if path is None or not path.is_file():
-            qualification[name] = {"present": False, "passed": False, "error": "receipt is absent"}
-            continue
-        passed, error = receipt_passed(path, source_head_sha)
-        qualification[name] = {
-            "present": True,
-            "passed": passed,
-            "sha256": sha256_file(path),
-            "error": error,
-        }
+    checked_status = load_json(checked_in_status_source)
+    require_oid(checked_status.get("asOfCommit"), "checked-in status anchor")
+    require_oid(checked_status.get("asOfTree"), "checked-in status tree")
 
-    crash = crash_receipt_status(crash_receipts, source_head_sha, target_triple)
+    runtime_status = validate_runtime_status(
+        path=runtime_status_source,
+        source_head_sha=source_head_sha,
+        source_head_tree=source_head_tree,
+        base_sha=base_sha,
+        deterministic_merge_sha=deterministic_merge_sha,
+        github_synthetic_merge_sha=github_synthetic_merge_sha,
+        workflow_sha=workflow_sha,
+        final_merge_sha=final_merge_sha,
+        workflow_run_id=workflow_run_id,
+        workflow_run_attempt=workflow_run_attempt,
+        runner_image=runner_image,
+        target_triple=target_triple,
+    )
+    qualification = {
+        kind: qualification_receipt_status(
+            path=qualification_receipts.get(kind),
+            kind=kind,
+            source_head_sha=source_head_sha,
+            source_head_tree=source_head_tree,
+            base_sha=base_sha,
+            deterministic_merge_sha=deterministic_merge_sha,
+            workflow_sha=workflow_sha,
+            workflow_run_id=workflow_run_id,
+            workflow_run_attempt=workflow_run_attempt,
+            runner_image=runner_image,
+            target_triple=target_triple,
+        )
+        for kind in REQUIRED_QUALIFICATION_RECEIPTS
+    }
+    crash = crash_receipt_status(
+        directory=crash_receipts,
+        source_head_sha=source_head_sha,
+        source_head_tree=source_head_tree,
+        base_sha=base_sha,
+        workflow_sha=workflow_sha,
+        workflow_run_id=workflow_run_id,
+        workflow_run_attempt=workflow_run_attempt,
+        runner_image=runner_image,
+        target_triple=target_triple,
+    )
     artifact_hashes = {
-        name: {"path": str(path), "sha256": sha256_file(path), "bytes": path.stat().st_size}
+        name: {
+            "path": str(path),
+            "sha256": sha256_file(path),
+            "bytes": path.stat().st_size,
+        }
         for name, path in sorted(artifacts.items())
         if path.is_file()
     }
@@ -202,6 +396,7 @@ def build_manifest(
         path
         for base in (
             root / "codex-rs/hepta-evidence/src",
+            root / "codex-rs/hepta-evidence/tests",
             root / "codex-rs/hepta-agentd/tests",
             root / "scripts/tests",
         )
@@ -220,19 +415,35 @@ def build_manifest(
     metadata = qualification["metadata"]["passed"]
     publication = qualification["publication_diagnostics"]["passed"]
     crash_ready = all(entry["passed"] for entry in crash.values())
-    local_integrity_ready = exact_source and deterministic_merge and metadata and publication
+    runtime_status_exact = runtime_status["exact"]
+    repository_controlled_ready = bool(
+        exact_source
+        and deterministic_merge
+        and metadata
+        and publication
+        and crash_ready
+        and runtime_status_exact
+    )
+    final_merge_requalified = bool(
+        final_merge_sha
+        and final_merge_sha == source_head_sha
+        and repository_controlled_ready
+    )
 
     blockers: list[str] = []
     for name, entry in qualification.items():
         if not entry["passed"]:
             blockers.append(f"qualification:{name}")
+    if not runtime_status_exact:
+        blockers.append("runtime_status_source_identity")
     if not crash_ready:
         blockers.append("crash_matrix")
-    if not final_merge_sha:
+    if not final_merge_requalified:
         blockers.append("real_merge_sha_not_requalified")
     blockers.extend(
         [
             "independent_acceptance_absent",
+            "authenticated_frontier_authority_acceptance_absent",
             "external_monotonic_anchor_acceptance_absent",
             "operator_activation_absent",
             "release_authority_absent",
@@ -240,15 +451,17 @@ def build_manifest(
     )
 
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "module": "kernel.evidence",
         "source_head_sha": source_head_sha,
+        "source_head_tree": source_head_tree,
         "base_sha": base_sha,
         "deterministic_merge_sha": deterministic_merge_sha,
         "github_synthetic_merge_sha": github_synthetic_merge_sha,
         "workflow_sha": workflow_sha,
         "final_merge_sha": final_merge_sha,
         "workflow_run_id": workflow_run_id,
+        "workflow_run_attempt": workflow_run_attempt,
         "runner_image": runner_image,
         "target_triple": target_triple,
         "Cargo.lock_hash": sha256_file(cargo_lock),
@@ -258,34 +471,46 @@ def build_manifest(
         "documentation_hash": inventory_hash(root, docs_paths),
         "artifact_hashes": artifact_hashes,
         "status_identity": {
-            "checked_in_as_of_commit": checked_in_as_of,
-            "runtime_as_of_commit": source_head_sha,
-            "runtime_matches_tested_sha": True,
-            "checked_in_is_source_anchor": OID.fullmatch(str(checked_in_as_of or "")) is not None,
-            "note": (
-                "A Git commit cannot contain its own hash. The checked-in value is a provenance "
-                "anchor; this runtime manifest is the exact tested-SHA status authority."
-            ),
+            "runtime": {
+                key: value
+                for key, value in runtime_status, items()
+                if key != "value"
+            },
+            "checked_in_implementation_source": {
+                "path": str(checked_in_status_source),
+                "sha256": sha256_file(checked_in_status_source),
+                "asOfCommit": checked_status.get("asOfCommit"),
+                "asOfTree": checked_status.get("asOfTree"),
+                "role": "ancestor implementation provenance only",
+            },
         },
         "qualification_receipts": qualification,
         "crash_consistency_receipts": crash,
         "readiness": {
-            "local_integrity_ready": local_integrity_ready,
-            "authenticated_frontier_ready": False,
+            "repository_controlled_ready": repository_controlled_ready,
+            "local_integrity_ready": repository_controlled_ready,
+            "authenticated_frontier_protocol_ready": repository_controlled_ready,
+            "authenticated_frontier_authority_ready": False,
             "external_rollback_anchor_ready": False,
             "crash_matrix_ready": crash_ready,
+            "runtime_status_exact": runtime_status_exact,
             "exact_source_qualified": exact_source,
             "deterministic_merge_qualified": deterministic_merge,
             "metadata_qualified": metadata,
             "publication_diagnostics_qualified": publication,
+            "final_merge_requalified": final_merge_requalified,
             "independent_acceptance": False,
+            "operator_activation": False,
             "production_activation": False,
+            "promotion_approved": False,
             "release_approved": False,
         },
         "blockers": blockers,
         "authority": {
             "self_issued_independent_acceptance": False,
-            "self_issued_production_activation": False,
+            "self_issued_external_activation": False,
+            "self_issued_operator_activation": False,
+            "self_issued_promotion": False,
             "self_issued_release_approval": False,
         },
     }
@@ -293,7 +518,9 @@ def build_manifest(
 
 def atomic_json(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, temporary_name = tempfile.mkstemp(dir=path.parent, prefix=".readiness-")
+    descriptor, temporary_name = tempfile.mkstemp(
+        dir=path.parent, prefix=".readiness-"
+    )
     temporary = Path(temporary_name)
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
@@ -310,16 +537,19 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--source-head-sha", required=True)
+    parser.add_argument("--source-head-tree", required=True)
     parser.add_argument("--base-sha", required=True)
     parser.add_argument("--deterministic-merge-sha", default="")
     parser.add_argument("--github-synthetic-merge-sha", default="")
     parser.add_argument("--workflow-sha", required=True)
     parser.add_argument("--final-merge-sha", default="")
     parser.add_argument("--workflow-run-id", required=True)
+    parser.add_argument("--workflow-run-attempt", required=True)
     parser.add_argument("--runner-image", required=True)
     parser.add_argument("--target-triple", required=True)
+    parser.add_argument("--runtime-status-source", type=Path, required=True)
     parser.add_argument(
-        "--status-source",
+        "--checked-in-status-source",
         type=Path,
         default=Path("qualification/kernel-evidence/STATUS_SOURCE.json"),
     )
@@ -330,20 +560,26 @@ def main() -> int:
     args = parser.parse_args()
     try:
         root = args.root.resolve()
+        checked_in_status = (
+            (root / args.checked_in_status_source).resolve()
+            if not args.checked_in_status_source.is_absolute()
+            else args.checked_in_status_source
+        )
         manifest = build_manifest(
             root=root,
             source_head_sha=args.source_head_sha,
+            source_head_tree=args.source_head_tree,
             base_sha=args.base_sha,
             deterministic_merge_sha=args.deterministic_merge_sha or None,
             github_synthetic_merge_sha=args.github_synthetic_merge_sha or None,
             workflow_sha=args.workflow_sha,
             final_merge_sha=args.final_merge_sha or None,
             workflow_run_id=args.workflow_run_id,
-            runner_image=args.runner_image,
+            workflow_run_attempt=args.workflow_run_attempt,
+            runner_image=args.runner_imae,
             target_triple=args.target_triple,
-            status_source=(root / args.status_source).resolve()
-            if not args.status_source.is_absolute()
-            else args.status_source,
+            runtime_status_source=args.runtime_status_source,
+            checked_in_status_source=checked_in_status,
             qualification_receipts=parse_named_paths(args.qualification_receipt),
             artifacts=parse_named_paths(args.artifact),
             crash_receipts=args.crash_receipts,
