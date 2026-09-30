@@ -146,6 +146,72 @@ fn authority_critical_unavailability_is_fail_closed() {
 }
 
 #[test]
+fn omitted_expected_owner_is_typed_as_unavailable() {
+    let input = GeneratedCandidateInputV1::new(vec![batch(
+        RetrievalGeneratorOwnerV1::CognitiveLexical,
+        RetrievalSourceCompletenessV1::Exhausted,
+    )])
+    .expect("input");
+    let policy = RetrievalCompletenessPolicyV1::new(vec![
+        row(
+            RetrievalGeneratorOwnerV1::CognitiveLexical,
+            IncompleteSourceActionV1::Degrade,
+            IncompleteSourceActionV1::Abstain,
+        ),
+        row(
+            RetrievalGeneratorOwnerV1::KnowledgeGraphContradiction,
+            IncompleteSourceActionV1::Abstain,
+            IncompleteSourceActionV1::FailClosed,
+        ),
+    ])
+    .expect("policy");
+    let validated = ValidatedCandidateSetV1::new(input, &policy).expect("validated");
+
+    assert!(matches!(
+        validated.completeness(),
+        RetrievalCompletenessDecisionV1::FailClosed { incomplete_sources }
+            if incomplete_sources == &vec![IncompleteRetrievalSourceV1 {
+                generator: RetrievalGeneratorOwnerV1::KnowledgeGraphContradiction,
+                completeness: RetrievalSourceCompletenessV1::Unavailable,
+                action: IncompleteSourceActionV1::FailClosed,
+            }]
+    ));
+}
+
+#[test]
+fn omitted_optional_owner_is_explicit_degradation() {
+    let input = GeneratedCandidateInputV1::new(vec![batch(
+        RetrievalGeneratorOwnerV1::CognitiveLexical,
+        RetrievalSourceCompletenessV1::Exhausted,
+    )])
+    .expect("input");
+    let policy = RetrievalCompletenessPolicyV1::new(vec![
+        row(
+            RetrievalGeneratorOwnerV1::CognitiveLexical,
+            IncompleteSourceActionV1::Degrade,
+            IncompleteSourceActionV1::Abstain,
+        ),
+        row(
+            RetrievalGeneratorOwnerV1::CognitiveTemporal,
+            IncompleteSourceActionV1::Degrade,
+            IncompleteSourceActionV1::Degrade,
+        ),
+    ])
+    .expect("policy");
+    let validated = ValidatedCandidateSetV1::new(input, &policy).expect("validated");
+
+    assert!(matches!(
+        validated.completeness(),
+        RetrievalCompletenessDecisionV1::Degraded { incomplete_sources }
+            if incomplete_sources.len() == 1
+                && incomplete_sources[0].generator
+                    == RetrievalGeneratorOwnerV1::CognitiveTemporal
+                && incomplete_sources[0].completeness
+                    == RetrievalSourceCompletenessV1::Unavailable
+    ));
+}
+
+#[test]
 fn missing_owner_policy_is_rejected() {
     let input = GeneratedCandidateInputV1::new(vec![batch(
         RetrievalGeneratorOwnerV1::CognitiveEntity,
