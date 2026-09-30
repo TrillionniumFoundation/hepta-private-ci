@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
+from collections.abc import Callable
 from textwrap import dedent
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,15 +18,65 @@ SRC = ROOT / "codex-rs" / "hepta-supervisor" / "src"
 DOCS = ROOT / "docs" / "modules" / "runtime.supervisor"
 WORKFLOWS = ROOT / ".github" / "workflows"
 BRANCH = "codex/runtime-supervisor-six-phase-closure-20260930-r4"
+_PENDING: dict[Path, str] | None = None
+_ORIGINAL: dict[Path, str | None] = {}
 
 
 def read(path: Path) -> str:
+    if _PENDING is not None:
+        if path in _PENDING:
+            return _PENDING[path]
+        if path not in _ORIGINAL:
+            _ORIGINAL[path] = path.read_text(encoding="utf-8")
+        original = _ORIGINAL[path]
+        if original is None:
+            raise FileNotFoundError(path)
+        return original
     return path.read_text(encoding="utf-8")
 
 
 def write(path: Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
+    if _PENDING is None:
+        raise RuntimeError("source edits require a transaction")
+    if path not in _ORIGINAL:
+        _ORIGINAL[path] = path.read_text(encoding="utf-8") if path.exists() else None
+    _PENDING[path] = text
+
+
+def transact(operation: Callable[[], None]) -> None:
+    """Validate every staged marker before publishing any source edit.
+
+    Marker/verification failures leave the tree untouched. Publication rejects
+    concurrent edits and restores earlier writes if a later file write fails.
+    This is an authoring transaction, not a crash-durable filesystem protocol.
+    """
+    global _PENDING, _ORIGINAL
+    if _PENDING is not None:
+        raise RuntimeError("nested source edit transaction")
+    _PENDING, _ORIGINAL = {}, {}
+    published: list[Path] = []
+    try:
+        operation()
+        for path, original in _ORIGINAL.items():
+            current = path.read_text(encoding="utf-8") if path.exists() else None
+            if current != original:
+                raise SystemExit(f"source changed while materializing: {path}")
+        for path, text in _PENDING.items():
+            if text == _ORIGINAL[path]:
+                continue
+            path.parent.mkdir(parents=True, exist_ok=True)
+            published.append(path)
+            path.write_text(text, encoding="utf-8")
+    except BaseException:
+        for path in reversed(published):
+            original = _ORIGINAL[path]
+            if original is None:
+                path.unlink(missing_ok=True)
+            else:
+                path.write_text(original, encoding="utf-8")
+        raise
+    finally:
+        _PENDING, _ORIGINAL = None, {}
 
 
 def replace_once(path: Path, old: str, new: str, *, already: str | None = None) -> None:
@@ -289,7 +340,7 @@ def patch_recovery() -> None:
                             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             """
         ),
-        sentinel="let pending_exit =\n            process_exit_witness::read_process_exit_witness",
+        sentinel="let pending_exit =",
     )
     replace_block(
         path,
@@ -723,7 +774,7 @@ def patch_execution() -> None:
                     ));
             """
         ),
-        already="request_id,\n            method,",
+        already="let reply = runtime.block_on(super::handle_request(\n",
     )
     replace_block(
         path,
@@ -1519,12 +1570,13 @@ def patch_status_and_docs() -> None:
         *,
         source_paths: list[str],
         summary: str | None = None,
+        source: str = "implemented",
     ) -> None:
         entry = by_id[capability_id]
         entry.update(
             {
-                "source": "implemented",
-                "test_source": "present",
+                "source": source,
+                "test_source": "present" if source == "implemented" else "partial",
                 "exact_head": "pending",
                 "merge_candidate": "pending",
                 "target_host": "not_run",
@@ -1548,25 +1600,27 @@ def patch_status_and_docs() -> None:
     )
     mark(
         "predecessor_replacement_lineage",
+        source="partial",
         source_paths=[
             "codex-rs/hepta-supervisor/src/restart_lineage.rs",
             "codex-rs/hepta-supervisor/src/recovery.rs",
             "docs/modules/runtime.supervisor/RESTART_LINEAGE_REPAIR_20260928.md",
         ],
         summary=(
-            "Predecessor and replacement identities are generation-bound and recovery rejects "
-            "ambiguous live/terminal combinations"
+            "Generation-bound lineage rejects ambiguous live/terminal combinations; complete "
+            "launch-before-lease and rejected-adoption closure remains unproven"
         ),
     )
     mark(
         "atomic_recovery_observation_envelope",
+        source="partial",
         source_paths=[
             "codex-rs/hepta-supervisor/src/recovery_observation.rs",
             "codex-rs/hepta-supervisor/src/daemon.rs",
         ],
         summary=(
-            "One owner-bound digest-validated observation captures lifecycle, exact process, "
-            "lease, exit witness and recovery blockers for deterministic replay"
+            "Owner-bound lifecycle observations are wired; Matrix identity, release/admission, "
+            "journal and authority-bundle bindings plus expiry remain required for production"
         ),
     )
     if "durable_ordinary_mutation_protocol" not in by_id:
@@ -1592,14 +1646,20 @@ def patch_status_and_docs() -> None:
             "test_source": "present",
         }
         data["capabilities"].append(entry)
-    data["current"]["source"] = "implemented"
+    data["current"]["source"] = "partial"
     data["current"]["claim"] = (
-        "source implementation candidate; exact-head, merge, target-host, independent acceptance "
+        "partial source candidate; complete recovery bindings, lineage and exact-head, merge, "
+        "target-host, independent acceptance "
         "and release authorization remain separate fail-closed gates"
     )
     data["current"]["release"] = False
     data["current"]["activated"] = False
     write(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    if __package__:
+        from .hepta_supervisor_status import render
+    else:
+        from hepta_supervisor_status import render
+    write(DOCS / "CURRENT_STATUS.md", render(data))
 
     write(
         DOCS / "MUTATION_RETRY_PROTOCOL.md",
@@ -1652,17 +1712,18 @@ def patch_status_and_docs() -> None:
             """
             # runtime.supervisor six-phase closure
 
-            This source revision closes the repository-side implementation portions of
-            the six-phase plan without promoting external evidence.
+            This source revision wires lifecycle evidence into a partial implementation
+            candidate without promoting external evidence.
 
-            ## Source closure
+            ## Source candidate
 
             - exact-process exit evidence is persisted before finalization and consumed
               only after lease and lifecycle cleanup;
-            - restart lineage remains bound to exact predecessor and replacement
-              incarnations;
+            - restart lineage checks exact predecessor and replacement incarnations;
+              complete launch-before-lease/rejected-adoption closure remains unproven;
             - startup publishes one owner-bound recovery observation per Agent and
-              deterministically replays it before serving mutations;
+              deterministically replays it before serving mutations; the production
+              Matrix/release/admission/journal/bundle bindings and expiry remain incomplete;
             - ordinary lifecycle mutations persist request identity before effect and
               expose durable status and fail-closed reconciliation;
             - attempt, intent, applied-state, and read-snapshot sequences are represented
@@ -1778,7 +1839,7 @@ def verify_materialized_source() -> None:
         )
 
 
-def main() -> None:
+def materialize() -> None:
     patch_lib()
     patch_exit_witness()
     patch_recovery_observation()
@@ -1792,7 +1853,16 @@ def main() -> None:
     patch_client()
     patch_status_and_docs()
     patch_workflows()
+    if __package__:
+        from .runtime_supervisor_six_phase_followup import apply
+    else:
+        from runtime_supervisor_six_phase_followup import apply
+    apply(ROOT, read, write)
     verify_materialized_source()
+
+
+def main() -> None:
+    transact(materialize)
 
 
 if __name__ == "__main__":
