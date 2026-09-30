@@ -1,0 +1,68 @@
+name: memory federation product semantics author
+
+on:
+  push:
+    branches:
+      - work/memory-federation-product-semantics-20260930
+    paths:
+      - scripts/apply_memory_federation_product_semantics.py
+      - .github/workflows/memory-federation-product-semantics-author.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: memory-federation-product-semantics-author
+  cancel-in-progress: false
+
+jobs:
+  author:
+    if: ${{ contains(github.event.head_commit.message, '[author-memory-federation-semantics]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out authoring branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: work/memory-federation-product-semantics-20260930
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply product semantic fixes
+        run: python3 scripts/apply_memory_federation_product_semantics.py
+
+      - name: Format changed Rust
+        working-directory: codex-rs
+        run: cargo fmt --all
+
+      - name: Test owner memory and federation runtime
+        working-directory: codex-rs
+        env:
+          CARGO_INCREMENTAL: "0"
+        run: cargo test -p codex-hepta-memory --lib
+
+      - name: Test final-use extension
+        working-directory: codex-rs
+        env:
+          CARGO_INCREMENTAL: "0"
+        run: cargo test -p codex-hepta-memory-extension --lib
+
+      - name: Strict lint changed product crates
+        working-directory: codex-rs
+        env:
+          CARGO_INCREMENTAL: "0"
+        run: |
+          cargo clippy -p codex-hepta-memory --all-targets -- -D warnings
+          cargo clippy -p codex-hepta-memory-extension --all-targets -- -D warnings
+
+      - name: Commit verified source and remove authoring harness
+        run: |
+          set -euo pipefail
+          rm scripts/apply_memory_federation_product_semantics.py
+          rm .github/workflows/memory-federation-product-semantics-author.yml
+          git diff --check
+          git config user.name "Hepta Memory Federation Author"
+          git config user.email "hepta-memory-federation-author@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(memory.federation): close host-local product semantics"
+          git push origin HEAD:work/memory-federation-product-semantics-20260930
