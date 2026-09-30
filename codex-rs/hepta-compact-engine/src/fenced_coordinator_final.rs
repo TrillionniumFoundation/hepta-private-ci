@@ -22,6 +22,12 @@ use crate::coordinator::{
     VerifiedCompactionSelectionV2,
 };
 use crate::durable::{DurableCompactionError, DurableCompactionOutboxEventV1};
+use crate::recovery::{
+    CompactionAdmissionReconciliationSummaryV1,
+    CompactionClaimReconciliationSummaryV1, CompactionOperationStatusV1,
+    CompactionRecoveryStartupSummaryV1, DurableCompactionOutboxClaimV2,
+    RecoveryStoreV1,
+};
 use crate::{
     VerifiedCompactionPublicationV1, VerifiedCompactionTrustRegistryV1,
 };
@@ -29,9 +35,14 @@ use crate::{
 pub const MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2: &str =
     guarded::MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2;
 
+const DEFAULT_RECOVERY_BATCH: u32 = 256;
+const LEGACY_OUTBOX_CLAIM_SECONDS: u64 = 300;
+const LEGACY_OUTBOX_WORKER_ID: &str = "legacy-product-worker";
+
 #[derive(Clone)]
 pub struct MemoryCheckpointCoordinatorV2 {
     inner: guarded::MemoryCheckpointCoordinatorV2,
+    recovery: RecoveryStoreV1,
 }
 
 impl MemoryCheckpointCoordinatorV2 {
@@ -76,12 +87,14 @@ impl MemoryCheckpointCoordinatorV2 {
             manifest_chain,
             now_unix_seconds,
         )?;
+        let expected_manifest = expected.manifest_digest();
+        let expected_root = expected.root_key_digest();
         let metadata = open_pool(database_url).await?;
         verify_durable_manifest_preflight(
             &metadata,
             owner_id,
-            expected.manifest_digest(),
-            expected.root_key_digest(),
+            expected_manifest,
+            expected_root,
         )
         .await?;
 
@@ -96,12 +109,28 @@ impl MemoryCheckpointCoordinatorV2 {
             now_unix_seconds,
         )
         .await?;
-        if inner.active_registry_digest() != expected.manifest_digest() {
+        if inner.active_registry_digest() != expected_manifest {
             return Err(manifest_conflict(
                 "opened coordinator differs from the preflighted manifest chain",
             ));
         }
-        Ok(Self { inner })
+
+        let recovery = RecoveryStoreV1::open(
+            database_url,
+            owner_id,
+            expected_root,
+            expected_manifest,
+            Digest32::of_bytes(lease_token.as_bytes()),
+            lease_epoch,
+        )
+        .await?;
+        recovery.verify_local_state(now_unix_seconds).await?;
+        let startup = recovery
+            .reconcile_startup(now_unix_seconds, DEFAULT_RECOVERY_BATCH)
+            .await?;
+        require_safe_startup(startup)?;
+
+        Ok(Self { inner, recovery })
     }
 
     #[must_use]
@@ -121,7 +150,8 @@ impl MemoryCheckpointCoordinatorV2 {
     ) -> Result<(), CompactionCoordinatorErrorV2> {
         self.inner
             .renew_lease(lease_expires_at_unix_seconds, now_unix_seconds)
-            .await
+            .await?;
+        self.recovery.verify_local_state(now_unix_seconds).await
     }
 
     pub async fn install_successor_manifest(
@@ -129,9 +159,13 @@ impl MemoryCheckpointCoordinatorV2 {
         manifest_bytes: &[u8],
         now_unix_seconds: u64,
     ) -> Result<Digest32, CompactionCoordinatorErrorV2> {
-        self.inner
+        let digest = self
+            .inner
             .install_successor_manifest(manifest_bytes, now_unix_seconds)
-            .await
+            .await?;
+        self.recovery.set_manifest_digest(digest);
+        self.recovery.verify_local_state(now_unix_seconds).await?;
+        Ok(digest)
     }
 
     pub async fn publish_verified_checkpoint(
@@ -141,14 +175,21 @@ impl MemoryCheckpointCoordinatorV2 {
         retain_source_until_unix_seconds: u64,
         now_unix_seconds: u64,
     ) -> Result<CompactionPublicationReceiptV2, CompactionCoordinatorErrorV2> {
-        self.inner
+        let receipt = self
+            .inner
             .publish_verified_checkpoint(
                 idempotency_key,
                 publication,
                 retain_source_until_unix_seconds,
                 now_unix_seconds,
             )
-            .await
+            .await?;
+        let admissions = self
+            .recovery
+            .reconcile_admissions(now_unix_seconds, DEFAULT_RECOVERY_BATCH)
+            .await?;
+        require_safe_admissions(admissions)?;
+        Ok(receipt)
     }
 
     pub async fn recover_current_checkpoint(
@@ -157,6 +198,16 @@ impl MemoryCheckpointCoordinatorV2 {
         purpose_id: &str,
         now_unix_seconds: u64,
     ) -> Result<Option<VerifiedCompactionSelectionV2>, CompactionCoordinatorErrorV2> {
+        let claims = self
+            .recovery
+            .reconcile_claims(now_unix_seconds, DEFAULT_RECOVERY_BATCH)
+            .await?;
+        require_safe_claims(claims)?;
+        let admissions = self
+            .recovery
+            .reconcile_admissions(now_unix_seconds, DEFAULT_RECOVERY_BATCH)
+            .await?;
+        require_safe_admissions(admissions)?;
         self.inner
             .recover_current_checkpoint(scope_id, purpose_id, now_unix_seconds)
             .await
@@ -187,39 +238,166 @@ impl MemoryCheckpointCoordinatorV2 {
             .await
     }
 
+    /// Claim one event under an exact worker, token, owner generation and
+    /// bounded deadline. This is the canonical product outbox boundary.
+    pub async fn claim_next_outbox_for_worker(
+        &self,
+        now_unix_seconds: u64,
+        worker_id: &str,
+        claim_token: &str,
+        claim_deadline_unix_seconds: u64,
+    ) -> Result<Option<DurableCompactionOutboxClaimV2>, CompactionCoordinatorErrorV2> {
+        self.recovery
+            .claim_next_outbox(
+                now_unix_seconds,
+                worker_id,
+                claim_token,
+                claim_deadline_unix_seconds,
+            )
+            .await
+    }
+
+    /// Compatibility adapter. New callers must use
+    /// `claim_next_outbox_for_worker` so worker and deadline are explicit.
     pub async fn claim_next_outbox(
         &self,
         now_unix_seconds: u64,
         claim_token: &str,
     ) -> Result<Option<DurableCompactionOutboxEventV1>, CompactionCoordinatorErrorV2> {
-        self.inner
-            .claim_next_outbox(now_unix_seconds, claim_token)
+        let deadline = now_unix_seconds
+            .checked_add(LEGACY_OUTBOX_CLAIM_SECONDS)
+            .ok_or(CompactionCoordinatorErrorV2::Invalid(
+                "outbox claim deadline overflow",
+            ))?;
+        Ok(self
+            .claim_next_outbox_for_worker(
+                now_unix_seconds,
+                LEGACY_OUTBOX_WORKER_ID,
+                claim_token,
+                deadline,
+            )
+            .await?
+            .map(|claim| claim.event))
+    }
+
+    pub async fn complete_outbox_claim(
+        &self,
+        claim: &DurableCompactionOutboxClaimV2,
+        delivered_at_unix_seconds: u64,
+    ) -> Result<(), CompactionCoordinatorErrorV2> {
+        self.recovery
+            .complete_outbox_claim(claim, delivered_at_unix_seconds)
             .await
     }
 
+    /// Compatibility adapter for callers that received the legacy event type.
     pub async fn complete_outbox(
         &self,
         event: &DurableCompactionOutboxEventV1,
         delivered_at_unix_seconds: u64,
     ) -> Result<(), CompactionCoordinatorErrorV2> {
-        self.inner
-            .complete_outbox(event, delivered_at_unix_seconds)
+        self.recovery
+            .complete_legacy_outbox(event, delivered_at_unix_seconds)
             .await
+    }
+
+    pub async fn reconcile_claims_bounded(
+        &self,
+        retry_at_unix_seconds: u64,
+        limit: u32,
+    ) -> Result<CompactionClaimReconciliationSummaryV1, CompactionCoordinatorErrorV2> {
+        let summary = self
+            .recovery
+            .reconcile_claims(retry_at_unix_seconds, limit)
+            .await?;
+        require_safe_claims(summary)?;
+        Ok(summary)
     }
 
     pub async fn reconcile_claims(
         &self,
         retry_at_unix_seconds: u64,
     ) -> Result<u64, CompactionCoordinatorErrorV2> {
-        self.inner.reconcile_claims(retry_at_unix_seconds).await
+        Ok(self
+            .reconcile_claims_bounded(retry_at_unix_seconds, DEFAULT_RECOVERY_BATCH)
+            .await?
+            .requeued)
+    }
+
+    pub async fn reconcile_admissions(
+        &self,
+        now_unix_seconds: u64,
+        limit: u32,
+    ) -> Result<CompactionAdmissionReconciliationSummaryV1, CompactionCoordinatorErrorV2> {
+        let summary = self
+            .recovery
+            .reconcile_admissions(now_unix_seconds, limit)
+            .await?;
+        require_safe_admissions(summary)?;
+        Ok(summary)
+    }
+
+    pub async fn reconcile_startup(
+        &self,
+        now_unix_seconds: u64,
+        limit: u32,
+    ) -> Result<CompactionRecoveryStartupSummaryV1, CompactionCoordinatorErrorV2> {
+        let summary = self
+            .recovery
+            .reconcile_startup(now_unix_seconds, limit)
+            .await?;
+        require_safe_startup(summary)?;
+        Ok(summary)
+    }
+
+    /// Query the original idempotency identity after response loss. A caller
+    /// must not mint a new operation key to infer whether publication committed.
+    pub async fn query_operation(
+        &self,
+        idempotency_key: &str,
+    ) -> Result<CompactionOperationStatusV1, CompactionCoordinatorErrorV2> {
+        self.recovery.query_operation(idempotency_key).await
     }
 
     pub async fn verify_integrity(
         &self,
         now_unix_seconds: u64,
     ) -> Result<(), CompactionCoordinatorErrorV2> {
-        self.inner.verify_integrity(now_unix_seconds).await
+        self.inner.verify_integrity(now_unix_seconds).await?;
+        self.recovery.verify_local_state(now_unix_seconds).await
     }
+}
+
+fn require_safe_startup(
+    summary: CompactionRecoveryStartupSummaryV1,
+) -> Result<(), CompactionCoordinatorErrorV2> {
+    require_safe_claims(summary.claims)?;
+    require_safe_admissions(summary.admissions)
+}
+
+fn require_safe_claims(
+    summary: CompactionClaimReconciliationSummaryV1,
+) -> Result<(), CompactionCoordinatorErrorV2> {
+    if summary.quarantined_orphans != 0 {
+        return Err(manifest_corrupt(
+            "outbox contains claimed events without an authoritative claim lease",
+        ));
+    }
+    Ok(())
+}
+
+fn require_safe_admissions(
+    summary: CompactionAdmissionReconciliationSummaryV1,
+) -> Result<(), CompactionCoordinatorErrorV2> {
+    if summary.indeterminate != 0
+        || summary.terminal_failure != 0
+        || summary.quarantined != 0
+    {
+        return Err(manifest_corrupt(
+            "publication admission recovery found an indeterminate or terminal state",
+        ));
+    }
+    Ok(())
 }
 
 fn verify_supplied_manifest_chain(
