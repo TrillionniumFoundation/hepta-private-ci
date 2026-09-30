@@ -43,6 +43,7 @@ use crate::control::MatrixdConnectionState;
 use crate::control::MatrixdControlIdentity;
 use crate::control::MatrixdControlServer;
 use crate::control::MatrixdControlState;
+use crate::final_use::MatrixFinalUseBroker;
 
 const MATRIXD_CLIENT_VERSION: &str = env!("CARGO_PKG_VERSION");
 const INBOX_RECOVERY_LIMIT: usize = 1_024;
@@ -70,6 +71,11 @@ pub async fn run(config: MatrixdConfig) -> Result<(), MatrixdRunError> {
     prepare_matrix_root(&config)?;
     let _process_lock = acquire_process_lock(&config)?;
     let store = MatrixDurableStore::open(&config.layout, MatrixDurableConfig::default()).await?;
+    let final_use = Arc::new(
+        MatrixFinalUseBroker::open(&config.layout)
+            .await
+            .map_err(|error| MatrixdRunError::FinalUse(error.to_string()))?,
+    );
     store
         .fence_stale_pending_approvals(
             config.spawn_generation,
@@ -202,12 +208,14 @@ pub async fn run(config: MatrixdConfig) -> Result<(), MatrixdRunError> {
     }
     {
         let sidecar = Arc::clone(&sidecar);
+        let final_use = Arc::clone(&final_use);
         let store = store.clone();
         let cancel = cancel.clone();
         tasks.spawn(async move {
             run_outbox_sender(
                 &store,
                 sidecar.as_ref(),
+                final_use.as_ref(),
                 &OutboxDispatchConfig::default(),
                 &cancel,
             )
@@ -423,14 +431,18 @@ where
 {
     let mut interval = tokio::time::interval(INBOX_POLL);
     interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
+    let mut last_metrics = tokio::time::Instant::now();
     loop {
         tokio::select! {
             biased;
             _ = cancel.cancelled() => return Ok(()),
             _ = interval.tick() => {
-                runtime
-                    .recover_pending(INBOX_RECOVERY_LIMIT, system_time_ms()?)
-                    .await?;
+                let recovered = runtime.recover_pending(INBOX_RECOVERY_LIMIT, system_time_ms()?).await;
+                if recovered.is_err() || last_metrics.elapsed() >= std::time::Duration::from_secs(10) {
+                    eprintln!("{}", runtime.operational_metrics());
+                    last_metrics = tokio::time::Instant::now();
+                }
+                recovered?;
             }
         }
     }
@@ -943,6 +955,8 @@ pub enum MatrixdRunError {
     TaskJoin(String),
     #[error("system clock is outside the supported range")]
     Clock,
+    #[error("Matrix final-use authority is not ready: {0}")]
+    FinalUse(String),
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error(transparent)]
@@ -1006,6 +1020,11 @@ mod tests {
             source.find("acquire_process_lock(&config)")
                 < source.find("MatrixDurableStore::open(&config.layout"),
             "the per-Agent matrixd lock must precede SQLite open/migration",
+        );
+        assert!(
+            source.find("MatrixFinalUseBroker::open(&config.layout)")
+                < source.find("MatrixSdkClient::login_or_restore("),
+            "final-use authority must be ready before Matrix transport activation",
         );
         assert_eq!(MATRIX_PLANE_GENERATION, 1);
         assert_eq!(matrix_plane_generation(1), matrix_plane_generation(2));
