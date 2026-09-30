@@ -18,6 +18,7 @@ env:
   SOURCE_SHA: 3a4d0e6bb7018c77e9443a38855d69146542febe
   TARGET_BRANCH: codex/inference-worker-authoritative-20260929
   EXPECTED_TARGET_SHA: 3a4d0e6bb7018c77e9443a38855d69146542febe
+  STAGING_BRANCH: automation/inference-worker-materialize-final-20260930
   PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
@@ -51,69 +52,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git fetch origin "refs/heads/$STAGING_BRANCH:refs/remotes/origin/$STAGING_BRANCH"
+          git show "origin/$STAGING_BRANCH:.github/materialization/inference-worker-finalize.py" > "$RUNNER_TEMP/inference-worker-finalize.py"
           python3 .github/materialization/inference-worker-runtime-closure/apply.py
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          tests_path = Path("codex-rs/hepta-infer-core/src/native_control_tests.rs")
-          tests = tests_path.read_text(encoding="utf-8")
-          for output_name in ("observed", "old_output"):
-              pattern = re.compile(
-                  rf'''let event = Event::Observe \{{\s*
-                  request_id:\s*"r1"\.to_string\(\),\s*
-                  output:\s*{output_name},\s*
-                  \}};''',
-                  re.MULTILINE,
-              )
-              replacement = f'''let event = Event::Observe {{
-                  request_id: "r1".to_string(),
-                  output: {output_name},
-                  observed_at_unix_ms: 0,
-                  usage_units: None,
-              }};'''
-              tests, count = pattern.subn(replacement, tests, count=1)
-              if count != 1:
-                  raise SystemExit(
-                      f"native_control_tests.rs: expected one {output_name} Observe fixture, found {count}"
-                  )
-
-          legacy = re.compile(
-              r'''(?m)^(    let mut json = serde_json::to_value\(event\)\.unwrap\(\);\n)(    json\["Observe"\]\["output"\])'''
-          )
-          legacy_replacement = r'''\1    json["Observe"]
-                  .as_object_mut()
-                  .unwrap()
-                  .remove("observed_at_unix_ms");
-              json["Observe"]
-                  .as_object_mut()
-                  .unwrap()
-                  .remove("usage_units");
-\2'''
-          tests, count = legacy.subn(legacy_replacement, tests, count=1)
-          if count != 1:
-              raise SystemExit(
-                  f"native_control_tests.rs: expected one legacy Observe JSON projection, found {count}"
-              )
-          tests_path.write_text(tests, encoding="utf-8")
-
-          native_path = Path("codex-rs/hepta-infer-core/src/native_control.rs")
-          native = native_path.read_text(encoding="utf-8")
-          condition = re.compile(
-              r'''(?m)(        if record\.observation\.as_ref\(\) == Some\(&output\)\n            && usage_units\.is_none_or\(\|usage\| record\.observed_usage_units == Some\(usage\)\))(\n        \{)'''
-          )
-          native, count = condition.subn(
-              r'''\1
-            && record.last_observed_at_unix_ms == Some(observed_at_unix_ms)\2''',
-              native,
-              count=1,
-          )
-          if count != 1:
-              raise SystemExit(
-                  f"native_control.rs: expected one observation idempotency condition, found {count}"
-              )
-          native_path.write_text(native, encoding="utf-8")
-          PY
+          python3 "$RUNNER_TEMP/inference-worker-finalize.py"
           git diff --check
 
       - name: Refresh generated documentation
