@@ -142,6 +142,9 @@ pub fn activate_learning_trust(
         || now > signed.expires_at
         || signed.issued_at < root.valid_from
         || signed.expires_at > root.expires_at
+        || root
+            .revoked_at
+            .is_some_and(|revoked_at| signed.expires_at >= revoked_at)
     {
         return Err(LearningTrustDistributionError::DistributionWindow);
     }
