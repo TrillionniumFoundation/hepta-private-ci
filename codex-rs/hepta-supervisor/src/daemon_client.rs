@@ -238,6 +238,29 @@ impl SupervisordClient {
         }
     }
 
+    /// Read bounded diagnostic text through the private administrator socket.
+    pub async fn diagnostics(&self, agent_id: AgentId) -> Result<Vec<String>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::AgentDiagnostics {
+                agent_id: agent_id.clone(),
+            })
+            .await?
+        {
+            SupervisordPayload::AgentDiagnostics {
+                agent_id: observed,
+                entries,
+            } if observed == agent_id
+                && entries.len() <= 16
+                && entries.iter().all(|entry| entry.len() <= 512) =>
+            {
+                Ok(entries)
+            }
+            _ => Err(SupervisorError::Invalid(
+                "unexpected or oversized Agent diagnostics".to_string(),
+            )),
+        }
+    }
+
     pub async fn snapshot(
         &self,
         agent_id: AgentId,

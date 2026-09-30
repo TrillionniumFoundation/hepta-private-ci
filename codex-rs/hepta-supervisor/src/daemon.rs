@@ -58,6 +58,10 @@ use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
 #[cfg(unix)]
+#[path = "daemon_diagnostics.rs"]
+mod diagnostics;
+
+#[cfg(unix)]
 use crate::AgentRelease;
 #[cfg(any(unix, test))]
 use crate::AgentSupervisorSnapshot;
@@ -621,6 +625,15 @@ async fn handle_request<D: ProcessDriver>(
     method: SupervisordMethod,
 ) -> SupervisordPayload {
     match method {
+        SupervisordMethod::AgentDiagnostics { agent_id } => {
+            match state.supervisor.lock().await.snapshot(&agent_id) {
+                Some(snapshot) => SupervisordPayload::AgentDiagnostics {
+                    agent_id,
+                    entries: diagnostics::entries(&snapshot),
+                },
+                None => error_payload("unknown_agent", "selected Agent is not registered", None),
+            }
+        }
         SupervisordMethod::RegisterAgent { manifest } => {
             registration::register(state, manifest).await
         }

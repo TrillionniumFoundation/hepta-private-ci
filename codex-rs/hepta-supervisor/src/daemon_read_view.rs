@@ -141,7 +141,8 @@ impl ReadView {
                 ),
             },
             // All other methods use the live owner path, never this observation.
-            SupervisordMethod::RuntimeModuleSelection { .. }
+            SupervisordMethod::AgentDiagnostics { .. }
+            | SupervisordMethod::RuntimeModuleSelection { .. }
             | SupervisordMethod::RegisterAgent { .. }
             | SupervisordMethod::AllowInstalledRelease { .. }
             | SupervisordMethod::RetireAgent { .. }

@@ -134,7 +134,8 @@ impl TryFrom<SupervisordResponse> for RobrixSupervisordResponse {
                 message,
                 actual,
             },
-            SupervisordPayload::RuntimeModuleSelection { .. }
+            SupervisordPayload::AgentDiagnostics { .. }
+            | SupervisordPayload::RuntimeModuleSelection { .. }
             | SupervisordPayload::AgentRegistered { .. }
             | SupervisordPayload::InstalledReleaseAllowed { .. }
             | SupervisordPayload::AgentRetired { .. }

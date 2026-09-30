@@ -51,6 +51,7 @@ impl SupervisordRequest {
             | SupervisordMethod::RegisterAgent { .. }
             | SupervisordMethod::RetiredAgentStatus { .. }
             | SupervisordMethod::Snapshot { .. }
+            | SupervisordMethod::AgentDiagnostics { .. }
             | SupervisordMethod::ReleaseSelection { .. }
             | SupervisordMethod::ProductionMutationStatus { .. } => Ok(()),
             SupervisordMethod::OrdinaryMutationStatus {
@@ -138,6 +139,10 @@ pub enum SupervisordMethod {
         limit: u16,
     },
     Snapshot {
+        agent_id: AgentId,
+    },
+    /// Bounded owner-local process output and events, with no mutation authority.
+    AgentDiagnostics {
         agent_id: AgentId,
     },
     /// Authoritative durable projection of the current release transaction.
@@ -412,6 +417,10 @@ pub enum SupervisordPayload {
         agents: Vec<SupervisordAgentStatus>,
     },
     Agent(SupervisordAgentStatus),
+    AgentDiagnostics {
+        agent_id: AgentId,
+        entries: Vec<String>,
+    },
     ReleaseSelection {
         selection: Option<DurableReleaseTransaction>,
     },

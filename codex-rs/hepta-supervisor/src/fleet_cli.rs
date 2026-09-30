@@ -30,7 +30,7 @@ const USAGE: &str = "hepta-fleetctl --fleet-root ABSOLUTE_PATH COMMAND [ARGS]
       [--agentd-arg ARG]... [--matrixd-arg ARG]...
   allow-release|revoke-release|allow-release-live AGENT_ID RELEASE_ID
   retire|retirement-status AGENT_ID
-  health | roster | snapshot AGENT_ID
+  health | roster | snapshot|diagnostics AGENT_ID
   start|upgrade AGENT_ID RELEASE_ID REQUEST_ID
   drain|stop|kill|restart|rollback AGENT_ID REQUEST_ID
   mutation-status|reconcile-mutation AGENT_ID REQUEST_ID
@@ -241,6 +241,11 @@ async fn control(
             Ok(serde_json::to_value(
                 client.roster(MAX_SUPERVISORD_ROSTER).await?,
             )?)
+        }
+        "diagnostics" => {
+            let agent = args.agent()?;
+            args.finished()?;
+            Ok(json!({"agentId": agent, "entries": client.diagnostics(agent.clone()).await?}))
         }
         "snapshot" => {
             let agent = args.agent()?;
