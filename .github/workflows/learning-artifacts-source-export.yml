@@ -25,7 +25,6 @@ jobs:
         run: |
           tar -czf /tmp/learning-artifacts-source.tgz \
             .github/workflows/hepta-learning-artifacts-qualification.yml \
-            .github/workflows/learning-artifacts-convergence-materialize.yml \
             .github/workflows/learning-artifacts-source-export.yml \
             codex-rs/Cargo.toml \
             codex-rs/Cargo.lock \
