@@ -23,13 +23,27 @@ The source contract accepts at most 4096 dimensions and 16384 unique live indexe
 
 The owner filters by the query's approved maximum OOD before the candidate capacity. It reports `LimitReached` only when an admitted vector result was truncated by capacity; otherwise it reports `Exhausted` relative to the immutable supplied index snapshot. That is not proof that an external durable service indexed every authorized record.
 
+## Durable publication boundary
+
+`VectorIndexPublicationV1` is the immutable publication object. It binds the exact tenant, writer fence, sequence, generation, predecessor publication, encoder release, index snapshot, withdrawal frontier, revocation frontier, withdrawn-record set and active/withdrawn state. Changed index or encoder objects require a strict generation advance; sequence, fences and frontiers cannot regress; a terminally withdrawn publication cannot be reactivated.
+
+A product publisher must use `append_vector_publication_checked_v1` through one `DurableVectorPublicationPortV1` implementation. The checked boundary:
+
+1. reloads the current publication for the exact tenant;
+2. accepts only the named predecessor and a valid genesis or successor;
+3. treats an already committed exact object as an idempotent replay;
+4. resolves a failed compare-and-publish only by reloading the exact current object, never by blind republish;
+5. reloads after a successful port return and requires the exact typed publication to be current.
+
+The source boundary closes stale-parent, stale-writer, lost-acknowledgement and incorrect-commit behavior at the API level. It does **not** establish a deployed durable backend. The selected store must still prove atomic compare-and-publish, durable fencing, crash recovery, corruption handling, disk-full behavior, backup/restore and independent target-host qualification.
+
 ## Product composition requirements
 
 Before enabling `RetrievalChannelV1::Vector`, product composition must additionally prove:
 
 1. a real text encoder executes under the model/tokenizer/encoder identities in the Lane C vector;
 2. every indexed revision is generated from the exact current content digest and scope;
-3. index publication, rotation, rollback, deletion and recovery are durable and independently current;
+3. the selected durable port implements atomic publication, rotation, rollback prevention, deletion and recovery on the deployed store;
 4. the query vector is produced from the exact request digest and same generation;
 5. OOD and score calibration pass approved holdouts;
 6. Agentd appends the returned `EncoderVector` batch before generation-bound union construction and revalidates selected records at final use;
