@@ -3,6 +3,7 @@
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
@@ -31,6 +32,9 @@ pub struct ResourceGrant {
     pub revoked: bool,
     pub maximum_models: usize,
     pub maximum_active_requests: usize,
+    /// Aggregate retained model bytes plus additional invocation transient
+    /// bytes. Drivers must enforce the physical allocation bound themselves;
+    /// post-invocation observations cannot prevent an allocation or OOM.
     pub maximum_memory_bytes: u64,
     pub semantic_digest: String,
 }
@@ -52,6 +56,8 @@ pub struct WorkerRequest {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DriverModelHandle {
     pub opaque_id: String,
+    /// Retained bytes attributable to this model after load, excluding other
+    /// models and per-invocation transient allocations.
     pub observed_memory_bytes: u64,
 }
 
@@ -61,6 +67,8 @@ pub struct DriverRunObservation {
     pub succeeded: bool,
     pub output_digest: Option<String>,
     pub consumed_tokens: u32,
+    /// Retained bytes attributable to this model after the invocation. The
+    /// worker accounts the largest observation until confirmed unload.
     pub observed_memory_bytes: u64,
 }
 
@@ -153,6 +161,7 @@ pub trait ModelDriver {
 struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
+    resident_memory_bytes: u64,
     active_requests: usize,
 }
 
@@ -165,6 +174,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
     driver_fenced: bool,
+    resource_fenced: bool,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -188,6 +198,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
             driver_fenced: false,
+            resource_fenced: false,
         })
     }
 
@@ -209,11 +220,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let resident_memory = self.models.values().try_fold(0_u64, |total, model| {
-            total
-                .checked_add(model.handle.observed_memory_bytes)
-                .ok_or(Error::ModelCapacity)
-        })?;
+        let resident_memory = self.resident_memory_bytes()?;
         let handle = match self.driver.load(&manifest) {
             Ok(handle) => handle,
             Err(error) => {
@@ -246,6 +253,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             manifest.model_id.clone(),
             LoadedModel {
                 manifest,
+                resident_memory_bytes: handle.observed_memory_bytes,
                 handle,
                 active_requests: 0,
             },
@@ -293,7 +301,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 status: ExecutionStatus::Cancelled,
                 output_digest: None,
                 consumed_tokens: 0,
-                observed_memory_bytes: loaded.handle.observed_memory_bytes,
+                observed_memory_bytes: loaded.resident_memory_bytes,
                 terminal_observed: true,
             });
         }
@@ -310,13 +318,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
             self.active_requests.remove(&request.request_id);
             loaded.active_requests = loaded.active_requests.saturating_sub(1);
         }
+        self.observe_memory(model_id, observed.observed_memory_bytes, /*transient_bytes*/ 0)?;
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
             return Err(Error::TokenLimit);
-        }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
             (ExecutionStatus::Indeterminate, None, false)
@@ -347,12 +353,17 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })
     }
 
+    /// Release a known idle model even after its grant expires or is revoked.
+    /// An uncertain driver or active execution still requires external
+    /// reconciliation; cleanup never retries an unknown unload outcome.
     pub fn unload_model(
         &mut self,
-        now_ms: u64,
+        _now_ms: u64,
         model_id: &str,
     ) -> Result<ModelUnloadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        if self.driver_fenced {
+            return Err(Error::DriverUnavailable);
+        }
         validate_identity(model_id, "model")?;
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.active_requests != 0 {
@@ -363,6 +374,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(error);
         }
         self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
+        if self.models.is_empty() {
+            self.resource_fenced = false;
+        }
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -374,7 +388,40 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.driver_fenced {
             return Err(Error::DriverUnavailable);
         }
+        if self.resource_fenced {
+            return Err(Error::ModelCapacity);
+        }
         validate_grant(now_ms, &self.grant)
+    }
+
+    fn resident_memory_bytes(&self) -> Result<u64, Error> {
+        self.models.values().try_fold(0_u64, |total, model| {
+            total
+                .checked_add(model.resident_memory_bytes)
+                .ok_or(Error::ModelCapacity)
+        })
+    }
+
+    fn observe_memory(
+        &mut self,
+        model_id: &str,
+        observed_memory_bytes: u64,
+        transient_bytes: u64,
+    ) -> Result<(), Error> {
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        loaded.resident_memory_bytes = loaded.resident_memory_bytes.max(observed_memory_bytes);
+        let within_limit = self
+            .resident_memory_bytes()
+            .ok()
+            .and_then(|resident| resident.checked_add(transient_bytes))
+            .is_some_and(|peak| peak <= self.grant.maximum_memory_bytes);
+        if !within_limit {
+            // Keep known handles available for cleanup, but admit no further
+            // work until every model has actually been released.
+            self.resource_fenced = true;
+            return Err(Error::ModelCapacity);
+        }
+        Ok(())
     }
 }
 

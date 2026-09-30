@@ -10,7 +10,6 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-use super::DriverModelHandle;
 use super::Error;
 use super::ExecutionStatus;
 use super::InferenceWorker;
@@ -20,6 +19,7 @@ use super::ModelDriver;
 use super::ModelManifest;
 use super::Q24_STATE_LIMIT;
 use super::WorkerRequest;
+use super::DriverModelHandle;
 use super::validate_digest;
 use super::validate_identity;
 use super::validate_request;
@@ -43,7 +43,10 @@ pub struct DriverNeuronFeatureObservation {
     pub head_digest: String,
     pub drive_q24: Vec<i64>,
     pub prediction_q24: Vec<i64>,
+    /// Retained bytes attributable to the invoked model, excluding other
+    /// resident models and the additional transient peak below.
     pub observed_memory_bytes: u64,
+    /// Additional peak invocation allocation beyond retained model memory.
     pub transient_allocation_bytes: u64,
     pub queue_age_micros: u64,
     pub latency_micros: u64,
@@ -131,7 +134,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 status: ExecutionStatus::Cancelled,
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
-                observed_memory_bytes: loaded.handle.observed_memory_bytes,
+                observed_memory_bytes: loaded.resident_memory_bytes,
                 transient_allocation_bytes: 0,
                 queue_age_micros: 0,
                 latency_micros: 0,
@@ -154,9 +157,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 .remove(&request.authorization.request_id);
             loaded.active_requests = loaded.active_requests.saturating_sub(1);
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            return Err(Error::ModelCapacity);
-        }
+        let manifest = loaded.manifest.clone();
+        self.observe_memory(
+            model_id,
+            observed.observed_memory_bytes,
+            observed.transient_allocation_bytes,
+        )?;
+        validate_digest(&observed.encoder_digest, "encoder")?;
+        validate_digest(&observed.head_digest, "head")?;
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
@@ -165,17 +173,24 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         } else {
             ExecutionStatus::Failed
         };
+        let (drive_q24, prediction_q24) = if status == ExecutionStatus::Succeeded {
+            (observed.drive_q24, observed.prediction_q24)
+        } else {
+            // Partial or failed feature values are not canonical terminal
+            // outputs and cannot cross the inference-control receipt boundary.
+            (Vec::new(), Vec::new())
+        };
         Ok(NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
             reservation_id: request.authorization.reservation_id,
             worker_generation: self.generation,
-            manifest: loaded.manifest.clone(),
+            manifest,
             encoder_digest: observed.encoder_digest,
             head_digest: observed.head_digest,
             input_digest: request.input_digest,
             status,
-            drive_q24: observed.drive_q24,
-            prediction_q24: observed.prediction_q24,
+            drive_q24,
+            prediction_q24,
             observed_memory_bytes: observed.observed_memory_bytes,
             transient_allocation_bytes: observed.transient_allocation_bytes,
             queue_age_micros: observed.queue_age_micros,
@@ -304,4 +319,3 @@ fn validate_neuron_feature_output(
     validate_digest(&value.head_digest, "head")?;
     Ok(())
 }
-
