@@ -688,6 +688,7 @@ mod durable_store_tests {
             Some(quarantine.clone())
         );
         let key = SigningKey::from_bytes(&rand::random());
+        let now = quarantine_now_ms()?;
         let resolution = QuarantineResolutionV1 {
             schema_version: 1,
             signer_id: "independent-quarantine-authority".to_string(),
@@ -703,8 +704,8 @@ mod durable_store_tests {
             resolution_key_epoch: 1,
             resolution_sequence: 1,
             nonce: rand::random(),
-            not_before_unix_ms: 1_000,
-            expires_at_unix_ms: 60_000,
+            not_before_unix_ms: now,
+            expires_at_unix_ms: now + 59_000,
             disposition: QuarantineResolutionDispositionV1::AbandonWithoutReplay,
             terminal: None,
             new_operation_constraints: None,
@@ -720,7 +721,7 @@ mod durable_store_tests {
                 resolution.signer_id.clone(),
                 key.verifying_key().to_bytes(),
                 &signed,
-                2_000,
+                now,
             )
             .await?;
         assert!(store.active(&quarantine.operation_id).await?.is_none());
@@ -730,7 +731,7 @@ mod durable_store_tests {
                     resolution.signer_id.clone(),
                     key.verifying_key().to_bytes(),
                     &signed,
-                    2_000,
+                    now,
                 )
                 .await
                 .is_err()
