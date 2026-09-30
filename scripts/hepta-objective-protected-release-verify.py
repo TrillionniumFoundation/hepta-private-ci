@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Run the protected objective release gate from trusted verifier bytes."""
+"""Check candidate receipt consistency using protected trusted verifier bytes.
+
+Protected execution establishes verifier provenance. It does not authenticate
+candidate-supplied receipt issuers or grant external acceptance or release.
+"""
 
 from __future__ import annotations
 
@@ -48,8 +52,12 @@ def sha256_file(path: Path) -> str:
 def load_gate(trusted_root: Path) -> ModuleType:
     path = trusted_root / "scripts/hepta-objective-release-gate.py"
     require(path.is_file(), "trusted release-gate script is missing")
-    spec = importlib.util.spec_from_file_location("trusted_objective_release_gate", path)
-    require(spec is not None and spec.loader is not None, "cannot load trusted release gate")
+    spec = importlib.util.spec_from_file_location(
+        "trusted_objective_release_gate", path
+    )
+    require(
+        spec is not None and spec.loader is not None, "cannot load trusted release gate"
+    )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -60,6 +68,7 @@ def verify(
     candidate_root: Path,
     candidate_sha: str,
     output: Path,
+    receipts_root: Path,
 ) -> dict[str, Any]:
     trusted_root = trusted_root.resolve()
     candidate_root = candidate_root.resolve()
@@ -73,10 +82,15 @@ def verify(
     )
     candidate_tree = git(candidate_root, "rev-parse", "HEAD^{tree}")
     require(HEX40.fullmatch(candidate_tree) is not None, "candidate tree is invalid")
-    require(not git(candidate_root, "status", "--porcelain"), "candidate checkout is dirty")
+    require(
+        not git(candidate_root, "status", "--porcelain"), "candidate checkout is dirty"
+    )
     trusted_sha = git(trusted_root, "rev-parse", "HEAD")
     trusted_tree = git(trusted_root, "rev-parse", "HEAD^{tree}")
-    require(not git(trusted_root, "status", "--porcelain"), "trusted verifier checkout is dirty")
+    require(
+        not git(trusted_root, "status", "--porcelain"),
+        "trusted verifier checkout is dirty",
+    )
 
     gate = load_gate(trusted_root)
     trusted_policy_path = (
@@ -86,13 +100,31 @@ def verify(
         candidate_root / "docs/modules/objective.compiler/RELEASE_POLICY.json"
     )
     state_path = candidate_root / "docs/modules/objective.compiler/CURRENT_STATE.json"
-    receipts = candidate_root / "qualification/objective.compiler/receipts"
+    # Receipts bind an existing candidate; storing them inside that candidate's
+    # commit would require its commit hash to include a receipt naming itself.
+    require(
+        not receipts_root.is_symlink() and receipts_root.is_dir(),
+        "receipt data must be an external directory, not a symlink",
+    )
+    receipts = receipts_root.resolve()
+    require(
+        not receipts.is_relative_to(candidate_root)
+        and not receipts.is_relative_to(trusted_root),
+        "receipt data must be outside the candidate and trusted verifier checkouts",
+    )
 
     trusted_policy = gate.load_json(trusted_policy_path)
     candidate_policy = gate.load_json(candidate_policy_path)
     require(
         gate.sha256_value(trusted_policy) == gate.sha256_value(candidate_policy),
         "candidate release policy differs from the protected trusted policy",
+    )
+    receipt_files = [
+        receipts / row["fileName"] for row in gate.validate_policy(trusted_policy)
+    ]
+    require(
+        all(path.is_file() and not path.is_symlink() for path in receipt_files),
+        "every receipt must be a regular file in the external receipt directory",
     )
     state = gate.load_json(state_path)
     readiness = gate.release_verify(
@@ -101,6 +133,12 @@ def verify(
         receipts,
         candidate_sha,
         candidate_tree,
+    )
+    require(
+        readiness.get("releaseGranted") is False
+        and readiness.get("releaseTruth") == trusted_policy["sourceTruthBeforeRelease"]
+        and readiness.get("receiptAuthenticityVerified") is False,
+        "receipt consistency verifier must not grant external acceptance or release",
     )
     envelope = {
         "schema": "hepta.objective-protected-release-readiness.v2",
@@ -115,6 +153,11 @@ def verify(
         ),
         "trustedPolicyDigest": gate.sha256_value(trusted_policy),
         "candidateCodeExecuted": False,
+        "receiptDataSource": "external_directory",
+        "receiptFilesSha256": {path.name: sha256_file(path) for path in receipt_files},
+        "receiptAuthenticityVerified": False,
+        "externalAuthorityVerification": "required",
+        "releaseGranted": False,
         "releaseReadiness": readiness,
     }
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -131,6 +174,7 @@ def main() -> int:
     parser.add_argument("--candidate-root", type=Path, required=True)
     parser.add_argument("--candidate-sha", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--receipts-root", type=Path, required=True)
     args = parser.parse_args()
     try:
         result = verify(
@@ -138,6 +182,7 @@ def main() -> int:
             args.candidate_root,
             args.candidate_sha,
             args.output,
+            args.receipts_root,
         )
     except (
         ProtectedReleaseError,
@@ -145,9 +190,7 @@ def main() -> int:
         subprocess.CalledProcessError,
         ValueError,
     ) as error:
-        raise SystemExit(
-            f"FAIL_HEPTA_OBJECTIVE_PROTECTED_RELEASE: {error}"
-        ) from error
+        raise SystemExit(f"FAIL_HEPTA_OBJECTIVE_PROTECTED_RELEASE: {error}") from error
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
     return 0
 

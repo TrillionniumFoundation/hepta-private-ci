@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Fail-closed release gate for objective.compiler qualification receipts.
+"""Fail-closed consistency gate for objective.compiler qualification receipts.
 
 The source tree may describe release mechanics, but it cannot self-assert target
 host qualification, independent acceptance, canary success, promotion, rollback
-readiness or release authority. Those facts arrive as immutable, digest-linked
-receipts bound to one exact candidate commit/tree and this policy.
+readiness or release authority. Digest-linked receipts establish internal
+consistency, not issuer authentication or the truth of their evidence. An
+external authority must verify those facts for one exact candidate and policy.
 """
 
 from __future__ import annotations
@@ -137,10 +138,14 @@ def validate_policy(policy: dict[str, Any]) -> list[dict[str, Any]]:
         dependencies = row["dependsOn"]
         if (
             not isinstance(dependencies, list)
-            or any(not isinstance(item, str) or item not in seen for item in dependencies)
+            or any(
+                not isinstance(item, str) or item not in seen for item in dependencies
+            )
             or len(set(dependencies)) != len(dependencies)
         ):
-            raise GateError(f"dependencies for {kind} must name earlier unique receipts")
+            raise GateError(
+                f"dependencies for {kind} must name earlier unique receipts"
+            )
         payload_fields = row["requiredPayloadFields"]
         if (
             not isinstance(payload_fields, list)
@@ -194,18 +199,32 @@ def validate_state(state: dict[str, Any], policy: dict[str, Any]) -> None:
     if set(truth) != set(policy["sourceTruthBeforeRelease"]) or any(
         value is not False for value in truth.values()
     ):
-        raise GateError("static source state cannot grant release or execution qualification")
+        raise GateError(
+            "static source state cannot grant release or execution qualification"
+        )
     projection = state.get("evidenceProjection")
-    if (not isinstance(projection, dict)
+    if (
+        not isinstance(projection, dict)
         or projection.get("schema") != "hepta.objective-evidence-projection.v2"
-        or projection.get("manualPassFieldsForbidden") is not True):
-        raise GateError("current-state requires externally projected execution evidence")
+        or projection.get("manualPassFieldsForbidden") is not True
+    ):
+        raise GateError(
+            "current-state requires externally projected execution evidence"
+        )
     implementation = state.get("implementationState")
-    if not isinstance(implementation, dict) or any(key in implementation for key in (
-        "currentHeadQualification", "syntheticMergeQualification", "targetHostQualification",
-        "checksPassed", "measurementObserved",
-    )):
-        raise GateError("current-state cannot contain manual dynamic qualification claims")
+    if not isinstance(implementation, dict) or any(
+        key in implementation
+        for key in (
+            "currentHeadQualification",
+            "syntheticMergeQualification",
+            "targetHostQualification",
+            "checksPassed",
+            "measurementObserved",
+        )
+    ):
+        raise GateError(
+            "current-state cannot contain manual dynamic qualification claims"
+        )
 
 
 def validate_payload(kind: str, payload: dict[str, Any]) -> None:
@@ -230,7 +249,9 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> None:
                 or check["runId"] <= 0
                 or check["conclusion"] != "success"
             ):
-                raise GateError("exact-head check run is not a successful immutable identity")
+                raise GateError(
+                    "exact-head check run is not a successful immutable identity"
+                )
         require_hex(payload.get("sourceMapDigest"), HEX64, "sourceMapDigest")
         require_hex(payload.get("currentStateDigest"), HEX64, "currentStateDigest")
     elif kind == "synthetic_merge_qualification":
@@ -240,7 +261,10 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> None:
         positive("checkRunId")
         boolean("allChecksPassed")
     elif kind == "target_host_qualification":
-        if not isinstance(payload.get("hostProfileId"), str) or not payload["hostProfileId"]:
+        if (
+            not isinstance(payload.get("hostProfileId"), str)
+            or not payload["hostProfileId"]
+        ):
             raise GateError("target-host receipt requires hostProfileId")
         require_hex(payload.get("measurementDigest"), HEX64, "measurementDigest")
         require_hex(
@@ -252,13 +276,19 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> None:
         boolean("resourceBudgetsAccepted")
         boolean("storageDurabilityAccepted")
     elif kind == "independent_review":
-        if not isinstance(payload.get("reviewerRole"), str) or not payload["reviewerRole"]:
+        if (
+            not isinstance(payload.get("reviewerRole"), str)
+            or not payload["reviewerRole"]
+        ):
             raise GateError("independent review requires reviewerRole")
         require_hex(payload.get("reviewScopeDigest"), HEX64, "reviewScopeDigest")
         boolean("independent")
         boolean("noUnresolvedBlockingFindings")
     elif kind == "canary":
-        if not isinstance(payload.get("environment"), str) or not payload["environment"]:
+        if (
+            not isinstance(payload.get("environment"), str)
+            or not payload["environment"]
+        ):
             raise GateError("canary requires environment")
         parse_timestamp(payload.get("windowStartedAt"), "windowStartedAt")
         parse_timestamp(payload.get("windowEndedAt"), "windowEndedAt")
@@ -275,7 +305,10 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> None:
         require_hex(payload.get("canaryReceiptDigest"), HEX64, "canaryReceiptDigest")
         boolean("approved")
     elif kind == "rollback_authority":
-        if not isinstance(payload.get("authorityRole"), str) or not payload["authorityRole"]:
+        if (
+            not isinstance(payload.get("authorityRole"), str)
+            or not payload["authorityRole"]
+        ):
             raise GateError("rollback authority requires authorityRole")
         require_hex(payload.get("rollbackTargetCommit"), HEX40, "rollbackTargetCommit")
         require_hex(payload.get("procedureDigest"), HEX64, "procedureDigest")
@@ -285,7 +318,9 @@ def validate_payload(kind: str, payload: dict[str, Any]) -> None:
         for name in ("authorityRole", "targetEnvironment", "approvalId"):
             if not isinstance(payload.get(name), str) or not payload[name]:
                 raise GateError(f"release authority requires {name}")
-        require_hex(payload.get("promotionReceiptDigest"), HEX64, "promotionReceiptDigest")
+        require_hex(
+            payload.get("promotionReceiptDigest"), HEX64, "promotionReceiptDigest"
+        )
         require_hex(
             payload.get("rollbackAuthorityReceiptDigest"),
             HEX64,
@@ -410,6 +445,9 @@ def release_verify(
     candidate_commit: str,
     candidate_tree: str,
 ) -> dict[str, Any]:
+    # Receipts are candidate-controlled data. Their SHA-256 digests and distinct
+    # issuer labels cannot authenticate the issuers or validate named evidence.
+    # Keep this compatibility result fail-closed even for a complete chain.
     validate_state(state, policy)
     receipts, policy_digest = validate_receipts(
         policy, receipt_dir, candidate_commit, candidate_tree
@@ -424,8 +462,11 @@ def release_verify(
         "receiptDigests": {
             kind: receipt["receiptDigest"] for kind, receipt in receipts.items()
         },
-        "releaseTruth": policy["releaseTruthAfterAllReceipts"],
-        "releaseGranted": True,
+        "receiptChainConsistent": True,
+        "receiptAuthenticityVerified": False,
+        "externalAuthorityVerification": "required",
+        "releaseTruth": dict(policy["sourceTruthBeforeRelease"]),
+        "releaseGranted": False,
     }
 
 

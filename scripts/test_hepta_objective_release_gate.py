@@ -3,6 +3,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SCRIPT = Path(__file__).with_name("hepta-objective-release-gate.py")
 SPEC = importlib.util.spec_from_file_location("objective_release_gate", SCRIPT)
@@ -10,9 +11,20 @@ assert SPEC is not None and SPEC.loader is not None
 gate = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(gate)
 
+PROTECTED_SCRIPT = SCRIPT.with_name("hepta-objective-protected-release-verify.py")
+PROTECTED_SPEC = importlib.util.spec_from_file_location(
+    "objective_protected_release_verify", PROTECTED_SCRIPT
+)
+assert PROTECTED_SPEC is not None and PROTECTED_SPEC.loader is not None
+protected = importlib.util.module_from_spec(PROTECTED_SPEC)
+PROTECTED_SPEC.loader.exec_module(protected)
+
 COMMIT = "1" * 40
 TREE = "2" * 40
-POLICY = Path(__file__).resolve().parents[1] / "docs/modules/objective.compiler/RELEASE_POLICY.json"
+POLICY = (
+    Path(__file__).resolve().parents[1]
+    / "docs/modules/objective.compiler/RELEASE_POLICY.json"
+)
 
 
 class ReleaseGateTests(unittest.TestCase):
@@ -144,16 +156,21 @@ class ReleaseGateTests(unittest.TestCase):
             )
         return receipts, filenames
 
-    def test_complete_chain_grants_release_readiness(self):
+    def test_fabricated_complete_chain_proves_only_consistency(self):
+        # Every issuer, evidence digest, check run and approval below is invented.
+        # A fully self-consistent chain must never promote those labels to facts.
         receipts, _ = self.write_receipts()
         result = gate.release_verify(self.state, self.policy, self.root, COMMIT, TREE)
-        self.assertTrue(result["releaseGranted"])
+        self.assertTrue(result["receiptChainConsistent"])
+        self.assertFalse(result["receiptAuthenticityVerified"])
+        self.assertFalse(result["releaseGranted"])
+        self.assertEqual(result["externalAuthorityVerification"], "required")
         self.assertEqual(
             result["receiptDigests"]["release_authority"],
             receipts["release_authority"]["receiptDigest"],
         )
         self.assertEqual(
-            result["releaseTruth"], self.policy["releaseTruthAfterAllReceipts"]
+            result["releaseTruth"], self.policy["sourceTruthBeforeRelease"]
         )
 
     def test_tampered_receipt_fails_closed(self):
@@ -206,6 +223,97 @@ class ReleaseGateTests(unittest.TestCase):
         (self.root / filenames["canary"]).unlink()
         with self.assertRaises(gate.GateError):
             gate.validate_receipts(self.policy, self.root, COMMIT, TREE)
+
+    def protected_inputs(self):
+        trusted, candidate = self.root / "trusted", self.root / "candidate"
+        for root in (trusted, candidate):
+            directory = root / "docs/modules/objective.compiler"
+            directory.mkdir(parents=True)
+            (directory / "RELEASE_POLICY.json").write_text(json.dumps(self.policy))
+        (candidate / "docs/modules/objective.compiler/CURRENT_STATE.json").write_text(
+            json.dumps(self.state)
+        )
+        (trusted / "scripts").mkdir()
+        (trusted / "scripts/hepta-objective-release-gate.py").write_text(
+            SCRIPT.read_text(encoding="utf-8"), encoding="utf-8"
+        )
+        (candidate / "scripts").mkdir()
+        (candidate / "scripts/hepta-objective-release-gate.py").write_text(
+            "raise RuntimeError('candidate verifier must never execute')\n"
+        )
+        return trusted, candidate, self.root / "readiness.json"
+
+    @staticmethod
+    def observed_git(_root, *args):
+        # Source identity is mocked here; these tests exercise data handling,
+        # not hosted execution, signatures, or external authority authentication.
+        if args == ("rev-parse", "HEAD"):
+            return COMMIT
+        if args == ("rev-parse", "HEAD^{tree}"):
+            return TREE
+        if args == ("status", "--porcelain"):
+            return ""
+        raise AssertionError(args)
+
+    def test_protected_verifier_accepts_external_data_without_granting_release(self):
+        self.write_receipts()
+        trusted, candidate, output = self.protected_inputs()
+        with mock.patch.object(protected, "git", side_effect=self.observed_git):
+            result = protected.verify(trusted, candidate, COMMIT, output, self.root)
+        self.assertFalse(result["candidateCodeExecuted"])
+        self.assertFalse(result["receiptAuthenticityVerified"])
+        self.assertFalse(result["releaseGranted"])
+        self.assertTrue(result["releaseReadiness"]["receiptChainConsistent"])
+        self.assertEqual(result["receiptDataSource"], "external_directory")
+        self.assertEqual(
+            result["receiptFilesSha256"],
+            {
+                row["fileName"]: protected.sha256_file(self.root / row["fileName"])
+                for row in self.policy["receiptKinds"]
+            },
+        )
+
+    def test_protected_verifier_rejects_candidate_owned_receipt_directory(self):
+        trusted, candidate, output = self.protected_inputs()
+        receipts = candidate / "qualification/objective.compiler/receipts"
+        receipts.mkdir(parents=True)
+        with mock.patch.object(protected, "git", side_effect=self.observed_git):
+            with self.assertRaisesRegex(protected.ProtectedReleaseError, "outside"):
+                protected.verify(trusted, candidate, COMMIT, output, receipts)
+        self.assertFalse(output.exists())
+
+    def test_protected_verifier_rejects_symlinked_receipt(self):
+        _, filenames = self.write_receipts()
+        trusted, candidate, output = self.protected_inputs()
+        path = self.root / filenames["canary"]
+        retained = path.with_suffix(".retained")
+        path.rename(retained)
+        path.symlink_to(retained.name)
+        with mock.patch.object(protected, "git", side_effect=self.observed_git):
+            with self.assertRaisesRegex(
+                protected.ProtectedReleaseError, "regular file"
+            ):
+                protected.verify(trusted, candidate, COMMIT, output, self.root)
+        self.assertFalse(output.exists())
+
+    def test_protected_verifier_rejects_an_older_granting_verifier_result(self):
+        self.write_receipts()
+        trusted, candidate, output = self.protected_inputs()
+        granting = {
+            "releaseGranted": True,
+            "releaseTruth": self.policy["releaseTruthAfterAllReceipts"],
+            "receiptAuthenticityVerified": False,
+        }
+        with (
+            mock.patch.object(protected, "git", side_effect=self.observed_git),
+            mock.patch.object(protected, "load_gate", return_value=gate),
+            mock.patch.object(gate, "release_verify", return_value=granting),
+        ):
+            with self.assertRaisesRegex(
+                protected.ProtectedReleaseError, "must not grant"
+            ):
+                protected.verify(trusted, candidate, COMMIT, output, self.root)
+        self.assertFalse(output.exists())
 
 
 if __name__ == "__main__":
