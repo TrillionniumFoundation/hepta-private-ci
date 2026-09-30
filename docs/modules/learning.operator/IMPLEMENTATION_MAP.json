@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "644ac3b07f28c88821c75d454b053f1b05d0baec",
-    "tree": "39733d92bdda0b5de2ac6cac4c171b7c1fecbb34"
+    "commit": "7e9ab95d25548aaa638d43c6d90b81209e6b8d34",
+    "tree": "028e9b653727372d0f44294371fa68d359593108"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -55,7 +55,7 @@
       "tests": [
         "codex-rs/hepta-bellman-operator/src/authoritative_tests.rs::authoritative_performance_matrix_v1"
       ],
-      "state": "authoritative_bounded_qualification_implemented",
+      "state": "authoritative_bounded_exact_or_deterministically_reduced_qualification_implemented",
       "authority": "none",
       "sourcePathExists": true
     },
@@ -187,9 +187,10 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "tests": [
-        "codex-rs/hepta-bellman-operator/src/authoritative_tests.rs::mutation_persisted_payload_cannot_reuse_the_selected_pin"
+        "codex-rs/hepta-bellman-operator/src/authoritative_tests.rs::mutation_persisted_payload_cannot_reuse_the_selected_pin",
+        "codex-rs/hepta-bellman-operator/src/loaded_tests.rs::distinct_process_load_changes_prediction_and_rolls_back_without_retraining"
       ],
-      "state": "authoritative_read_only_loader_implemented",
+      "state": "authoritative_read_only_fresh_process_loader_implemented",
       "authority": "none",
       "sourcePathExists": true
     },
@@ -325,7 +326,7 @@
       "tests": [
         "codex-rs/hepta-bellman-operator/src/authoritative_tests.rs::mutation_cancelled_work_is_rejected_before_fit"
       ],
-      "state": "authoritative_cancellation_and_deadline_implemented",
+      "state": "authoritative_cancellation_deadline_and_resource_meter_implemented",
       "authority": "none",
       "sourcePathExists": true
     },
@@ -378,6 +379,20 @@
       "sourcePathExists": true
     },
     {
+      "operation": "construct_ranker_admission_snapshot_v2",
+      "designOperation": "construct_ranker_admission_snapshot_v2",
+      "nativeSymbol": "RankerAdmissionSnapshotV2::new",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker_admission.rs",
+      "mappingClass": "product_admission",
+      "delegatedCallees": [],
+      "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs::evaluated_rank_rechecks_expiry_epoch_revocation_runtime_and_clock_without_resurrection"
+      ],
+      "state": "opaque_validated_final_use_admission_implemented",
+      "authority": "host_currentness_provider_only",
+      "sourcePathExists": true
+    },
+    {
       "operation": "coordinate_learning_operator_shadow_v1",
       "designOperation": "coordinate_learning_operator_shadow_v1",
       "nativeSymbol": "coordinate_learning_operator_shadow_v1",
@@ -385,12 +400,15 @@
       "mappingClass": "product_composition",
       "delegatedCallees": [],
       "tests": [
-        "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs::tests::current_shadow_candidate_is_qualified_then_rolled_back",
+        "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs::tests::realistic_monotonic_shadow_timeline_is_qualified_then_rolled_back",
         "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs::tests::revoked_candidate_is_observed_and_rolled_back_without_activation",
         "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs::tests::fresh_process_payload_mismatch_rolls_back_before_shadow",
-        "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs::tests::shadow_rejection_rolls_back_and_never_reaches_currentness"
+        "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs::tests::fresh_process_load_at_deadline_is_rejected_and_rolled_back",
+        "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs::tests::shadow_rejection_rolls_back_and_never_reaches_currentness",
+        "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs::tests::currentness_clock_regression_is_rejected_and_rolled_back",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs::evaluated_load_uses_real_owner_training_selection_revocation_and_rollback"
       ],
-      "state": "default_shadow_only_loop_composed",
+      "state": "default_shadow_only_loop_composed_with_monotonic_deadline_and_real_product_e2e",
       "authority": "composition_only_no_activation",
       "sourcePathExists": true
     },
@@ -416,7 +434,7 @@
       "tests": [
         "codex-rs/hepta-bellman-operator/src/authoritative_tests.rs::authoritative_performance_matrix_v1"
       ],
-      "state": "bounded_1k_16k_and_100k_1m_matrix_defined",
+      "state": "bounded_1k_16k_and_100k_1m_time_rss_and_estimated_memory_matrix_defined",
       "authority": "none",
       "sourcePathExists": true
     },
@@ -428,7 +446,7 @@
       "mappingClass": "qualification_evidence",
       "delegatedCallees": [],
       "tests": [],
-      "state": "exact_source_projection_implemented",
+      "state": "exact_source_projection_and_map_only_observation_freshness_implemented",
       "authority": "none",
       "sourcePathExists": true
     },
@@ -452,14 +470,13 @@
       "mappingClass": "qualification_evidence",
       "delegatedCallees": [],
       "tests": [],
-      "state": "read_only_no_path_skip_workflow_defined",
+      "state": "read_only_exact_source_synthetic_merge_required_fan_in_defined",
       "authority": "none",
       "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain an explicitly successful authoritative qualification-result check on the final immutable candidate.",
-    "Configure the stable qualification-result check as required branch protection when an administration-scoped credential is available."
+    "Obtain an explicitly successful authoritative qualification-result through CI required on the final observation commit and rerun on the final merge SHA."
   ],
   "externalEvidenceGates": [
     "independent scientific and semantic review",
@@ -480,31 +497,47 @@
     "implementedOperationMappingComplete": true,
     "singleUseFinalUseCapabilities": true,
     "defaultShadowOnlyCoordinator": true,
-    "selfModifyingQualificationRemoved": true
+    "selfModifyingQualificationRemoved": true,
+    "protectedFanInRequiresQualification": true,
+    "opaqueRankerAdmission": true,
+    "monotonicShadowTimeline": true,
+    "realProductShadowE2EInAuthoritativeGate": true,
+    "timeAndResidentMemoryQualificationDefined": true,
+    "mapOnlyObservationFreshnessEnforced": true
   },
   "sourceRoot": [
     "codex-rs/hepta-bellman-operator"
   ],
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "sourceIdentityPolicy": "exact_observation_with_map_only_successor_v2",
   "observedAtHead": {
-    "commit": "644ac3b07f28c88821c75d454b053f1b05d0baec",
-    "tree": "39733d92bdda0b5de2ac6cac4c171b7c1fecbb34"
+    "commit": "7e9ab95d25548aaa638d43c6d90b81209e6b8d34",
+    "tree": "028e9b653727372d0f44294371fa68d359593108"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-bellman-operator"
+    "codex-rs/hepta-bellman-operator",
+    "codex-rs/hepta-agentd/src/cognitive_ranker_admission.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker_evaluated_tests.rs",
+    "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs",
+    ".github/workflows/blocking-ci.yml",
+    ".github/workflows/learning-operator-authoritative.yml",
+    "scripts/hepta-learning-operator-authoritative.sh",
+    "scripts/hepta-learning-operator-contract.py",
+    "scripts/hepta-learning-operator-map.py",
+    "scripts/hepta-learning-operator-mutation.py",
+    "scripts/hepta-learning-operator-receipt.py"
   ],
   "productCallers": [
     {
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
       "nativeSymbol": "PinnedCognitiveRanker",
-      "state": "opaque_selected_read_only_consumer"
+      "state": "opaque_selected_read_only_consumer_with_final_use_revalidation"
     },
     {
       "sourcePath": "codex-rs/hepta-agentd/src/learning_operator_coordinator.rs",
       "nativeSymbol": "coordinate_learning_operator_shadow_v1",
-      "state": "default_shadow_only_fit_evaluate_select_load_revalidate_rollback_loop"
+      "state": "default_shadow_only_fit_evaluate_select_fresh_process_load_revalidate_rollback_loop"
     }
   ]
 }
