@@ -482,7 +482,7 @@ impl LearningArtifactReferenceHostV1 {
             command.manifest.manifest,
             now,
         )?;
-        let result = service.publish(LearningArtifactPublishRequestV1 {
+        let result = service.publish_durable(LearningArtifactPublishRequestV1 {
             operation_id: command.operation_id,
             admission,
             payload: command.payload,
@@ -510,20 +510,31 @@ impl LearningArtifactReferenceHostV1 {
                         .fetch_add(1, Ordering::Relaxed);
                 }
                 self.persist_status(now, "publication acknowledged and current head advanced")?;
+                let publication = receipt.publication();
                 Ok(ExecutionResultV1::json(
                     format!(
                         concat!(
                             "{{\"schema\":\"hepta.learning-artifactd.publication.v1\",",
                             "\"operationId\":\"{}\",\"admissionDigest\":\"{}\",",
                             "\"registryHeadDigest\":\"{}\",\"witnessDigest\":\"{}\",",
-                            "\"stateDigest\":\"{}\",\"acknowledgedAt\":{}}}"
+                            "\"stateDigest\":\"{}\",\"acknowledgedAt\":{},",
+                            "\"durableCommitDigest\":\"{}\",",
+                            "\"publicationCapabilityDigest\":\"{}\",",
+                            "\"writerLeaseGeneration\":{},\"registryGeneration\":{},",
+                            "\"withdrawalHeadDigest\":\"{}\",\"routeHeadDigest\":\"{}\"}}"
                         ),
-                        receipt.operation_id,
-                        receipt.admission_digest,
-                        receipt.registry_head_digest,
-                        receipt.witness_digest,
-                        receipt.state_digest,
-                        receipt.acknowledged_at,
+                        publication.operation_id,
+                        publication.admission_digest,
+                        publication.registry_head_digest,
+                        publication.witness_digest,
+                        publication.state_digest,
+                        publication.acknowledged_at,
+                        receipt.receipt_digest(),
+                        receipt.capability_digest(),
+                        receipt.writer_lease_generation(),
+                        receipt.registry_generation().get(),
+                        receipt.withdrawal_head_digest(),
+                        receipt.route_head_digest(),
                     ),
                     false,
                 ))
