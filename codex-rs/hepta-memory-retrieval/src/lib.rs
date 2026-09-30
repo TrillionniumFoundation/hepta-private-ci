@@ -17,6 +17,7 @@ mod semantics;
 mod v2;
 mod vector_owner;
 pub mod vector_publication;
+mod vector_publication_append;
 mod work;
 pub use work::RecallInterruptionV1;
 pub use work::RecallWorkControlV1;
@@ -132,6 +133,8 @@ pub use vector_owner::VectorIndexSnapshotV1;
 pub use vector_owner::VectorOwnerErrorV1;
 pub use vector_owner::VectorQueryV1;
 pub use vector_owner::generate_vector_batch_v1;
+pub use vector_publication_append::DurableVectorPublicationAppendErrorV1;
+pub use vector_publication_append::append_vector_publication_checked_v1;
 
 const MAX_CANDIDATES: usize = 16_384;
 const MAX_RESULTS: usize = 256;
