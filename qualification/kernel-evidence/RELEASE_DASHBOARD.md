@@ -9,10 +9,11 @@ This is generated from `qualification/kernel-evidence/STATUS_SOURCE.json`.
 Runtime readiness is separately bound to the exact tested SHA by
 `scripts/kernel_evidence_readiness.py`; neither source claims nor CI may
 self-issue independent acceptance, production activation, or release.
+The readiness manifest, rather than this projection, retains the complete
+SHA-256 inventory for source, tests, migrations, documentation, and artifacts.
 
-- Source anchor commit: `d52005035c2e08d8e04ac1acde08894bdf6e448c`
-- Source anchor tree: `16ab1946fa0de31c3b2b4d295516264131a90a68`
-- Canonical status SHA-256: `1f398fbf15805339633e2db3e1a510a7be9ea56b57a4f8d441dd426a10c5c44e`
+- Source anchor commit: `a2bf84025de685fcadd943dc2813a32071f488e2`
+- Source anchor tree: `1e30c9aedd5ebb3fc976104a3c57ab4e2a4aaa8f`
 - Workflow run ID: `none`
 - Retained artifact digest: `none`
 
