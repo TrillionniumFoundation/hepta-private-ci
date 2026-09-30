@@ -1,9 +1,15 @@
 //! Directory-capability implementation of the owner request journal store.
 //!
-//! On Unix the store retains an opened root directory and resolves every path
-//! with `openat`/`mkdirat` plus `NOFOLLOW`. No operation re-resolves an ancestor
-//! from an ambient absolute `PathBuf`. New files are created with `EXCL`, synced,
-//! and followed by an fsync of the already-open containing directory.
+//! On Linux the store retains an opened root directory and resolves every child
+//! with `openat2(RESOLVE_BENEATH | RESOLVE_NO_SYMLINKS |
+//! RESOLVE_NO_MAGICLINKS)`. No operation re-resolves an ancestor from an ambient
+//! absolute `PathBuf`. New files are created with `EXCL`, synced, and followed by
+//! an fsync of the already-open containing directory.
+//!
+//! Other Unix targets retain the previous `openat`/`NOFOLLOW` implementation for
+//! source compatibility, but the profile is explicitly marked unqualified for
+//! production durability. Product startup must inspect the exported profile and
+//! refuse activation rather than silently degrading path-resolution guarantees.
 
 #[cfg(not(unix))]
 use std::fmt;
@@ -14,6 +20,36 @@ use std::path::Path;
 use super::transaction::FsOwnerDurableStoreV1 as LexicalFsOwnerDurableStoreV1;
 use super::transaction::OwnerDurableStoreV1;
 use super::transaction::OwnerJournalError;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum OwnerCapabilityStoreProfileV1 {
+    LinuxOpenat2,
+    UnixOpenatNoFollowUnqualified,
+    Unsupported,
+}
+
+impl OwnerCapabilityStoreProfileV1 {
+    #[must_use]
+    pub const fn production_qualified(self) -> bool {
+        matches!(self, Self::LinuxOpenat2)
+    }
+}
+
+#[must_use]
+pub const fn owner_capability_store_profile_v1() -> OwnerCapabilityStoreProfileV1 {
+    #[cfg(target_os = "linux")]
+    {
+        OwnerCapabilityStoreProfileV1::LinuxOpenat2
+    }
+    #[cfg(all(unix, not(target_os = "linux")))]
+    {
+        OwnerCapabilityStoreProfileV1::UnixOpenatNoFollowUnqualified
+    }
+    #[cfg(not(unix))]
+    {
+        OwnerCapabilityStoreProfileV1::Unsupported
+    }
+}
 
 #[cfg(unix)]
 mod unix {
@@ -34,14 +70,24 @@ mod unix {
     use rustix::fs::OFlags;
     use rustix::fs::fsync;
     use rustix::fs::mkdirat;
+    #[cfg(not(target_os = "linux"))]
     use rustix::fs::open;
+    #[cfg(not(target_os = "linux"))]
     use rustix::fs::openat;
+    #[cfg(target_os = "linux")]
+    use rustix::fs::openat2;
+    #[cfg(target_os = "linux")]
+    use rustix::fs::ResolveFlags;
+    #[cfg(target_os = "linux")]
+    use rustix::fs::CWD;
 
     use crate::HostDurabilityError;
     use crate::provision_private_root_v1;
 
+    use super::OwnerCapabilityStoreProfileV1;
     use super::OwnerDurableStoreV1;
     use super::OwnerJournalError;
+    use super::owner_capability_store_profile_v1;
 
     pub struct CapabilityOwnerDurableStoreV1 {
         root_path: PathBuf,
@@ -53,6 +99,7 @@ mod unix {
             formatter
                 .debug_struct("CapabilityOwnerDurableStoreV1")
                 .field("root", &self.root_path)
+                .field("profile", &self.profile())
                 .finish_non_exhaustive()
         }
     }
@@ -61,12 +108,7 @@ mod unix {
         pub fn open(root: impl AsRef<Path>) -> Result<Self, OwnerJournalError> {
             let root_path =
                 provision_private_root_v1(root).map_err(OwnerJournalError::Durability)?;
-            let root = open(
-                &root_path,
-                OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
-                Mode::empty(),
-            )
-            .map_err(errno_to_io)?;
+            let root = open_root(&root_path)?;
             let value = Self { root_path, root };
             for relative in [
                 "host",
@@ -79,6 +121,11 @@ mod unix {
                 value.ensure_directory(Path::new(relative))?;
             }
             Ok(value)
+        }
+
+        #[must_use]
+        pub const fn profile(&self) -> OwnerCapabilityStoreProfileV1 {
+            owner_capability_store_profile_v1()
         }
 
         fn with_parent<T>(
@@ -149,7 +196,7 @@ mod unix {
 
         fn write_new(&self, relative: &Path, bytes: &[u8]) -> Result<(), OwnerJournalError> {
             self.with_parent(relative, |parent, leaf| {
-                let descriptor = match openat(
+                let descriptor = match open_beneath(
                     parent,
                     leaf,
                     OFlags::WRONLY
@@ -160,12 +207,14 @@ mod unix {
                     Mode::from_raw_mode(0o600),
                 ) {
                     Ok(descriptor) => descriptor,
-                    Err(rustix::io::Errno::EXIST) => {
+                    Err(OwnerJournalError::Io(error))
+                        if error.kind() == io::ErrorKind::AlreadyExists =>
+                    {
                         return Err(OwnerJournalError::Durability(
                             HostDurabilityError::ExistingTarget,
                         ));
                     }
-                    Err(error) => return Err(errno_to_io(error).into()),
+                    Err(error) => return Err(error),
                 };
                 let mut file = File::from(descriptor);
                 if !file.metadata()?.is_file() {
@@ -191,7 +240,7 @@ mod unix {
             maximum_bytes: usize,
         ) -> Result<Option<Vec<u8>>, OwnerJournalError> {
             self.with_parent(relative, |parent, leaf| {
-                let descriptor = match openat(
+                let descriptor = match open_beneath(
                     parent,
                     leaf,
                     OFlags::RDONLY
@@ -201,8 +250,12 @@ mod unix {
                     Mode::empty(),
                 ) {
                     Ok(descriptor) => descriptor,
-                    Err(rustix::io::Errno::NOENT) => return Ok(None),
-                    Err(error) => return Err(errno_to_io(error).into()),
+                    Err(OwnerJournalError::Io(error))
+                        if error.kind() == io::ErrorKind::NotFound =>
+                    {
+                        return Ok(None);
+                    }
+                    Err(error) => return Err(error),
                 };
                 let file = File::from(descriptor);
                 let metadata = file.metadata()?;
@@ -220,22 +273,67 @@ mod unix {
         }
     }
 
+    #[cfg(target_os = "linux")]
+    fn open_root(path: &Path) -> Result<OwnedFd, OwnerJournalError> {
+        openat2(
+            CWD,
+            path,
+            OFlags::RDONLY | OFlags::DIRECTORY | OFlags::CLOEXEC,
+            Mode::empty(),
+            ResolveFlags::NO_SYMLINKS | ResolveFlags::NO_MAGICLINKS,
+        )
+        .map_err(resolve_errno)
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    fn open_root(path: &Path) -> Result<OwnedFd, OwnerJournalError> {
+        open(
+            path,
+            OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+            Mode::empty(),
+        )
+        .map_err(resolve_errno)
+    }
+
+    #[cfg(target_os = "linux")]
+    fn open_beneath(
+        parent: BorrowedFd<'_>,
+        name: &OsStr,
+        flags: OFlags,
+        mode: Mode,
+    ) -> Result<OwnedFd, OwnerJournalError> {
+        openat2(
+            parent,
+            name,
+            flags,
+            mode,
+            ResolveFlags::BENEATH
+                | ResolveFlags::NO_SYMLINKS
+                | ResolveFlags::NO_MAGICLINKS,
+        )
+        .map_err(resolve_errno)
+    }
+
+    #[cfg(not(target_os = "linux"))]
+    fn open_beneath(
+        parent: BorrowedFd<'_>,
+        name: &OsStr,
+        flags: OFlags,
+        mode: Mode,
+    ) -> Result<OwnedFd, OwnerJournalError> {
+        openat(parent, name, flags, mode).map_err(resolve_errno)
+    }
+
     fn open_directory(
         parent: BorrowedFd<'_>,
         name: &OsStr,
     ) -> Result<OwnedFd, OwnerJournalError> {
-        openat(
+        open_beneath(
             parent,
             name,
             OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
             Mode::empty(),
         )
-        .map_err(|error| match error {
-            rustix::io::Errno::LOOP | rustix::io::Errno::NOTDIR => {
-                OwnerJournalError::InvalidPath
-            }
-            other => OwnerJournalError::Io(errno_to_io(other)),
-        })
     }
 
     fn relative_components(path: &Path) -> Result<Vec<OsString>, OwnerJournalError> {
@@ -251,6 +349,15 @@ mod unix {
                 | Component::Prefix(_) => Err(OwnerJournalError::InvalidPath),
             })
             .collect()
+    }
+
+    fn resolve_errno(error: rustix::io::Errno) -> OwnerJournalError {
+        match error {
+            rustix::io::Errno::LOOP
+            | rustix::io::Errno::NOTDIR
+            | rustix::io::Errno::XDEV => OwnerJournalError::InvalidPath,
+            other => OwnerJournalError::Io(errno_to_io(other)),
+        }
     }
 
     fn errno_to_io(error: rustix::io::Errno) -> io::Error {
@@ -286,6 +393,17 @@ mod unix {
             ));
             assert!(!outside.join("escape.req").exists());
         }
+
+        #[test]
+        fn capability_profile_is_explicit() {
+            #[cfg(target_os = "linux")]
+            assert_eq!(
+                owner_capability_store_profile_v1(),
+                OwnerCapabilityStoreProfileV1::LinuxOpenat2
+            );
+            #[cfg(not(target_os = "linux"))]
+            assert!(!owner_capability_store_profile_v1().production_qualified());
+        }
     }
 }
 
@@ -303,6 +421,7 @@ impl fmt::Debug for CapabilityOwnerDurableStoreV1 {
         formatter
             .debug_struct("CapabilityOwnerDurableStoreV1")
             .field("inner", &self.inner)
+            .field("profile", &self.profile())
             .finish()
     }
 }
@@ -313,6 +432,11 @@ impl CapabilityOwnerDurableStoreV1 {
         Ok(Self {
             inner: LexicalFsOwnerDurableStoreV1::open(root)?,
         })
+    }
+
+    #[must_use]
+    pub const fn profile(&self) -> OwnerCapabilityStoreProfileV1 {
+        owner_capability_store_profile_v1()
     }
 }
 
