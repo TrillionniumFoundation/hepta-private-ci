@@ -79,6 +79,11 @@ use crate::sparse_tick;
 mod lifecycle;
 pub use lifecycle::NeuronOperationStatusV2;
 
+#[path = "runtime_v2_archive.rs"]
+mod archive;
+pub use archive::MAX_NEURON_GENERATION_ARCHIVE_BYTES_V1;
+pub use archive::NeuronGenerationArchiveV1;
+
 /// Marker for an inference-control owner that durably reserves an operation
 /// before physical dispatch and reconciles dispatched operations without blind
 /// re-execution. There is intentionally no blanket implementation.

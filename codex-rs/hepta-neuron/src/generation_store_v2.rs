@@ -35,6 +35,11 @@ use crate::runtime_file_v2::open_regular;
 #[path = "generation_store_v2_capacity.rs"]
 mod capacity;
 
+#[path = "generation_store_v2_archive.rs"]
+mod archive;
+pub(crate) use archive::decode_archived_record;
+pub(crate) use archive::encode_archived_record;
+
 const MAGIC: &[u8; 8] = b"HPTNGS02";
 const SCHEMA_VERSION: u32 = 2;
 const HEADER_BYTES: usize = 212;

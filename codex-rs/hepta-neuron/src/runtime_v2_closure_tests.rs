@@ -38,7 +38,7 @@ fn recover(fixture: &Fixture, witness: MemoryWitness) -> NeuronRuntimeV2<MemoryW
     ))
 }
 
-struct RejectedModel;
+pub(super) struct RejectedModel;
 impl NeuronModelPort for RejectedModel {
     fn execute(
         &mut self,
@@ -56,9 +56,9 @@ impl DurableNeuronModelPort for RejectedModel {
     }
 }
 
-struct UnknownModel {
-    executions: usize,
-    queries: usize,
+pub(super) struct UnknownModel {
+    pub(super) executions: usize,
+    pub(super) queries: usize,
 }
 impl NeuronModelPort for UnknownModel {
     fn execute(

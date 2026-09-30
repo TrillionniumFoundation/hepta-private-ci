@@ -1022,3 +1022,6 @@ mod process_closure;
 
 #[path = "decision_cell_control_port_tests.rs"]
 mod decision_cell_control_port_tests;
+
+#[path = "runtime_v2_archive_tests.rs"]
+mod archive_tests;

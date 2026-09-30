@@ -31,6 +31,19 @@ impl NeuronOperationFailureV2 {
 }
 
 impl FileNeuronRuntimeIndexV2 {
+    pub(crate) fn archive_failures(
+        &self,
+    ) -> Result<
+        &BTreeMap<StableId, (NeuronOperationKeyV2, NeuronOperationFailureV2)>,
+        NeuronRuntimeIndexError,
+    > {
+        self.ensure_healthy()?;
+        if self.pending.is_some() || self.dispatched {
+            return Err(NeuronRuntimeIndexError::Pending);
+        }
+        Ok(&self.failures)
+    }
+
     pub(crate) fn failure(
         &self,
         key: &NeuronOperationKeyV2,

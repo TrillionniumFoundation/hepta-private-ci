@@ -160,6 +160,8 @@ pub use runtime_v2::DurableInferenceControlModelPort;
 pub use runtime_v2::DurableNeuronFeatureResolutionV2;
 pub use runtime_v2::DurableNeuronInferenceControlPort;
 pub use runtime_v2::DurableNeuronModelPort;
+pub use runtime_v2::MAX_NEURON_GENERATION_ARCHIVE_BYTES_V1;
+pub use runtime_v2::NeuronGenerationArchiveV1;
 pub use runtime_v2::NeuronModelResolutionV2;
 pub use runtime_v2::NeuronOperationStatusV2;
 pub use runtime_v2::NeuronRuntimeCommitV2;
