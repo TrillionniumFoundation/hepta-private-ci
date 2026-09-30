@@ -28,6 +28,19 @@ class LegacyApiPatternTests(unittest.TestCase):
         source = "let digest = Digest32::of_bytes(material.as_bytes());"
         self.assertIsNone(MODULE.REMOVED_DIGEST_BYTES.search(source))
 
+    def test_does_not_cross_constructor_argument_or_later_statement(self) -> None:
+        source = """
+        let digest = Digest32::of_bytes(
+            format!("domain:{value}").as_bytes(),
+        );
+        let raw = value.as_str().as_bytes();
+        """
+        self.assertIsNone(MODULE.REMOVED_DIGEST_BYTES.search(source))
+
+    def test_rejects_direct_chain_with_nested_argument_call(self) -> None:
+        source = "Digest32::of_bytes(material.as_bytes()).as_bytes()"
+        self.assertIsNotNone(MODULE.REMOVED_DIGEST_BYTES.search(source))
+
 
 if __name__ == "__main__":
     unittest.main()
