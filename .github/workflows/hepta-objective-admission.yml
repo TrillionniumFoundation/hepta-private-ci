@@ -26,10 +26,15 @@ on:
       - scripts/hepta-objective-current-state.py
       - scripts/hepta-objective-qualify-exact.py
       - scripts/test_hepta_objective_qualify_exact.py
+      - scripts/hepta-objective-spec-consistency.py
+      - scripts/test_hepta_objective_spec_consistency.py
       - scripts/hepta-implementation-maps.py
       - scripts/hepta-objective-release-gate.py
+      - scripts/test_hepta_objective_release_gate.py
       - .github/workflows/hepta-objective-admission.yml
       - .github/workflows/hepta-objective-exact-execution.yml
+      - .github/workflows/hepta-objective-release-gate.yml
+      - .github/workflows/hepta-objective-target-host.yml
       - .github/workflows/hepta-objective-target-measurement.yml
 
 permissions:
@@ -45,7 +50,7 @@ concurrency:
 jobs:
   qualify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -57,25 +62,29 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          printf 'SOURCE_TREE=%s\n' "$(git rev-parse HEAD^{tree})" >> "$GITHUB_ENV"
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Validate exact-source, static-state and evidence recorders
+      - name: Validate exact source, normative state and evidence recorders
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
-          SOURCE_TREE="$(git rev-parse HEAD^{tree})"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           python3 scripts/hepta-implementation-maps.py verify \
             --module objective.compiler \
-            --expected-sha "${SOURCE_SHA}" \
-            --expected-tree "${SOURCE_TREE}"
+            --expected-sha "$SOURCE_SHA" \
+            --expected-tree "$SOURCE_TREE"
           python3 scripts/hepta-objective-current-state.py verify
+          python3 scripts/hepta-objective-spec-consistency.py verify
+          python3 scripts/hepta-objective-release-gate.py verify-source
           python3 scripts/hepta-objective-target-measure.py --self-test
           python3 -m unittest -v \
             scripts.test_hepta_objective_target_measure \
             scripts.test_hepta_objective_evidence_project \
-            scripts.test_hepta_objective_qualify_exact
+            scripts.test_hepta_objective_qualify_exact \
+            scripts.test_hepta_objective_spec_consistency \
+            scripts.test_hepta_objective_release_gate
 
       - name: Objective and product-composition tests
         working-directory: codex-rs
@@ -83,6 +92,8 @@ jobs:
         run: |
           set -euo pipefail
           cargo test --locked -p codex-hepta-objective -- --nocapture
+          cargo test --locked -p codex-hepta-objective \
+            --features qualification-legacy-compile -- --nocapture
           cargo test --locked -p codex-hepta-learning-ledger run_start -- --nocapture
           cargo test --locked -p codex-hepta-intelligence objective_run -- --nocapture
           cargo test --locked -p codex-hepta-agentd objective_runtime -- --nocapture
@@ -111,6 +122,9 @@ jobs:
             -p codex-hepta-intelligence \
             -p codex-hepta-agentd \
             --all-targets --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-objective \
+            --all-targets --features qualification-legacy-compile \
+            --no-deps -- -D warnings
 
       - name: Formatting and clean source
         if: always()
@@ -122,6 +136,8 @@ jobs:
             --package codex-hepta-learning-ledger \
             --package codex-hepta-intelligence \
             --package codex-hepta-agentd -- --check
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
