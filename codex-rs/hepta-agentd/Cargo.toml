@@ -23,13 +23,10 @@ server = [
     "dep:codex-arg0",
     "dep:codex-hepta-app-bridge",
     "dep:codex-hepta-app-host",
-    "dep:codex-config",
-    "dep:codex-features",
     "dep:codex-hepta-agent-components",
     "dep:codex-model-provider",
     "dep:codex-protocol",
     "dep:codex-utils-absolute-path",
-    "dep:codex-utils-cli",
     "dep:codex-utils-home-dir",
     "dep:codex-state",
     "dep:ed25519-dalek",
@@ -69,8 +66,6 @@ codex-app-server-protocol = { optional = true, workspace = true }
 codex-arg0 = { optional = true, workspace = true }
 codex-hepta-app-bridge = { optional = true, workspace = true }
 codex-hepta-app-host = { optional = true, workspace = true }
-codex-config = { optional = true, workspace = true }
-codex-features = { optional = true, workspace = true }
 codex-hepta-agent-protocol = { workspace = true }
 codex-hepta-agentd-core = { workspace = true }
 codex-hepta-agent-components = { optional = true, workspace = true }
@@ -78,7 +73,6 @@ codex-model-provider = { optional = true, workspace = true }
 codex-protocol = { optional = true, workspace = true }
 codex-uds = { workspace = true }
 codex-utils-absolute-path = { optional = true, workspace = true }
-codex-utils-cli = { optional = true, workspace = true }
 codex-utils-home-dir = { optional = true, workspace = true }
 codex-state = { optional = true, workspace = true }
 ed25519-dalek = { optional = true, workspace = true }

@@ -3496,8 +3496,6 @@ dependencies = [
  "codex-app-server-client",
  "codex-app-server-protocol",
  "codex-arg0",
- "codex-config",
- "codex-features",
  "codex-hepta-agent-components",
  "codex-hepta-agent-protocol",
  "codex-hepta-agentd-core",
@@ -3517,7 +3515,6 @@ dependencies = [
  "codex-uds",
  "codex-utils-absolute-path",
  "codex-utils-cargo-bin",
- "codex-utils-cli",
  "codex-utils-home-dir",
  "core_test_support",
  "ed25519-dalek",
@@ -3654,10 +3651,8 @@ dependencies = [
  "codex-hepta-prompt-extension",
  "codex-hepta-types",
  "codex-hepta-wire",
- "codex-protocol",
  "serde",
  "serde_json",
- "tokio",
 ]
 
 [[package]]
@@ -3730,13 +3725,9 @@ dependencies = [
 name = "codex-hepta-control-plane"
 version = "0.0.0"
 dependencies = [
- "codex-hepta-contracts",
  "codex-hepta-ndu",
  "codex-hepta-types",
- "ed25519-dalek",
  "pretty_assertions",
- "tempfile",
- "tokio",
 ]
 
 [[package]]

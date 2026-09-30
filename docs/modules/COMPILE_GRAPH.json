@@ -22,10 +22,6 @@
     },
     {
       "fromModule": "control.runtime",
-      "toModule": "kernel.authority"
-    },
-    {
-      "fromModule": "control.runtime",
       "toModule": "learning.ledger"
     },
     {
@@ -190,15 +186,6 @@
       "toLayer": 2,
       "toModule": "runtime.fleet",
       "toPackage": "codex-hepta-fleet"
-    },
-    {
-      "dependencyKind": "dev",
-      "fromLayer": 2,
-      "fromModule": "control.runtime",
-      "fromPackage": "codex-hepta-control-plane",
-      "toLayer": 0,
-      "toModule": "kernel.authority",
-      "toPackage": "codex-hepta-contracts"
     },
     {
       "dependencyKind": "dev",
