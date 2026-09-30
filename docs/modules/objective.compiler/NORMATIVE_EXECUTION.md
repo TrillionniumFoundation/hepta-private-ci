@@ -18,9 +18,10 @@ artifacts retain `AuthorityPosture::DENY_ALL`.
 The owners remain distinct:
 
 - Agentd owns signed product ingress, the trusted clock sample, current AuthBus
-  trust, runtime generation and final-use fencing.
-- `objective.compiler` owns deterministic admission, lowering, feasibility,
-  native compilation, proof construction and canonical protocol projection.
+  trust, runtime generation and final-use fencing;
+- `objective.compiler` owns deterministic admission, indexed lowering,
+  feasibility, native compilation, proof construction, destination/run-bound
+  publication typestate and canonical protocol projection;
 - the intelligence facade sequences compilation and durable publication but does
   not open or own the durable store;
 - `RunStartJournal` is the sole durable RunStart and objective-conflict owner;
@@ -43,10 +44,15 @@ signed AuthBus ObjectiveStart
 -> compile_and_publish_validated_objective_run_v1
    -> compile_authoritative_objective_v1
       -> admit_validated_objective_v1
+         -> admit_indexed_objective_v1
          -> opaque, non-cloneable ValidatedObjectiveAdmissionV1
          -> ObjectiveAdmissionProofV1
       -> compile_validated_objective_v1
          -> opaque, non-cloneable ProofBearingObjectiveCompileV1
+   -> ObjectivePublicationBindingV1
+      destination owner + run + predecessor + generation + fence
+   -> ProofBearingObjectiveCompileV1::bind_publication
+      -> non-cloneable BoundObjectivePublicationV1
    -> encode_proof_bearing_objective_function_v1
    -> destination-owned RunStartJournal append
       -> RunStart record V3 or objective-conflict record V2
@@ -58,9 +64,14 @@ signed AuthBus ObjectiveStart
 No caller-controlled skip-validation flag, cache key or proof constructor exists.
 A `ValidatedAdmissionProfileV1` may be reused only within its process generation
 for immutable profile validation, lookup indexes, collision proofs and the exact
-profile digest/revision/compiler-contract reuse key. Authentication, source
-identity, freshness, deadline, revocation, generation, fence and final-use
-checks remain request- or use-local.
+profile digest/revision/compiler-contract reuse key. The canonical product
+admission resolves locale, trusted-source identity, constraint, predicate,
+action, soft-dimension, evidence-requirement and abstention-rule mappings through
+those prevalidated indexes. It does not reconstruct raw lookup tables or fall back
+to repeated raw-vector scans.
+
+Authentication, source identity, freshness, deadline, revocation, generation,
+fence and final-use checks remain request- or use-local.
 
 ## 3. Admission and proof contract
 
@@ -85,7 +96,29 @@ Recovery and compaction never synthesize a proof for them. They are inspectable
 for migration and audit, but Agentd final use rejects them and requires a new
 authorized revision.
 
-## 4. Native and protocol identity
+## 4. Publication binding
+
+An authoritative compile result is not directly projectable or persistable. It
+must first be consumed together with `ObjectivePublicationBindingV1`, which binds:
+
+- the registered destination-owner contract digest;
+- exact run identity;
+- expected journal predecessor;
+- runtime generation;
+- final-use fence digest.
+
+The binding rejects zero destination-owner identity, zero generation and zero
+fence. A zero predecessor is permitted only as the exact initial journal head.
+Binding consumes `ProofBearingObjectiveCompileV1` and returns the non-cloneable
+`BoundObjectivePublicationV1`. Only this bound value may enter
+`encode_proof_bearing_objective_function_v1` or be decomposed by the sealed
+intelligence publication facade.
+
+The binding is single-use in-process typestate, not current effect authority. The
+destination journal still owns duplicate-exact idempotency, predecessor CAS and
+same-key/different-content conflict fencing.
+
+## 5. Native and protocol identity
 
 The native semantic digest and registered `ObjectiveFunctionV1` protocol digest
 are different identities and both are durable:
@@ -97,13 +130,13 @@ are different identities and both are durable:
   evidence requirements, resource endowment and the conservative deadline
   projection.
 
-`encode_proof_bearing_objective_function_v1` accepts only the opaque authoritative
-compile result and rebinds the complete source-envelope and frozen-profile
-identities before invoking the strict canonical encoder/decoder. It does not
-repeat admission or native solving. A conflict cannot be projected as a compiled
-objective.
+`encode_proof_bearing_objective_function_v1` accepts only
+`BoundObjectivePublicationV1` and rebinds the complete source-envelope and
+frozen-profile identities before invoking the strict canonical encoder/decoder.
+It does not repeat admission or native solving. A conflict cannot be projected as
+a compiled objective.
 
-## 5. Semantic support
+## 6. Semantic support
 
 Source V1 scalar values are exact signed Q32 values. The product adapter supports
 only `eq`, `lte` and `gte`. `ne`, `lt`, `gt`, `in` and `not_in` are deterministic
@@ -126,7 +159,7 @@ infeasibility. Conflict extraction returns a deterministic inclusion-minimal cor
 not a minimum-cardinality claim. Empty caller action sets produce the immutable
 `ExplicitAbstain` disposition rather than goal substitution.
 
-## 6. Time and availability
+## 7. Time and availability
 
 Admission time is sampled from the Agentd owner after entering the serialized
 publication boundary. The source observation age, future skew and exact
@@ -141,25 +174,31 @@ wrapper records elapsed host time only after deterministic execution; its
 wall-time parameter is an observed availability threshold, not hard preemption.
 Hard cancellation belongs to the runtime owner around the bounded call.
 
-## 7. Compatibility surfaces
+## 8. Compatibility surfaces
 
-The following surfaces are compatibility or qualification tools, not the normal
-Agentd product path:
+The raw admission and revalidation surface is excluded from the default product
+API and is public only under the explicit `objective-compatibility-api` Cargo
+feature. It contains:
 
-- `compile_and_publish_objective_run_v1`, which validates one raw profile before
-  delegating to the validated-profile facade;
+- `admit_and_compile_objective_v1`;
 - `admit_objective_v1` and `compile_admitted_objective_v1`;
 - `encode_authenticated_objective_function_v1`, which independently repeats
   authenticated admission and native compilation for callers holding separate
-  historical receipts;
-- `compile_prevalidated_legacy_objective_v1`, available only under the explicit
-  `qualification-legacy-compile` Cargo feature.
+  historical receipts.
 
-Production crates must not enable the legacy feature or call the legacy compile
-entrypoint. Compatibility tests and lint run separately from the default product
-build and cannot qualify the product path by themselves.
+`compile_and_publish_objective_run_v1` remains an intelligence-layer raw-profile
+migration facade that validates one profile before delegating to the canonical
+validated-profile facade; it is not used by Agentd product ingress.
 
-## 8. Durable recovery and handoff
+`compile_prevalidated_legacy_objective_v1` is available only under
+`qualification-legacy-compile`, which explicitly enables
+`objective-compatibility-api` for historical parity fixtures.
+
+Production crates must not enable either compatibility feature or call the raw
+facades. Default and compatibility tests and strict lint run separately and cannot
+qualify the product path by themselves.
+
+## 9. Durable recovery and handoff
 
 The destination journal publishes authentication, admission/proof, native bytes,
 protocol bytes and `RunStartSnapshotV1` atomically with its checkpointed chain.
@@ -174,7 +213,7 @@ handoff from durable evidence or retain `AwaitingAuthenticatedRetry` with an
 operator-visible count, age and action code. Client retry is not permission to
 create a second physical execution.
 
-## 9. Stable errors
+## 10. Stable errors
 
 The canonical error registry is `docs/contracts/OBJECTIVE_ERRORS.json`. The
 stable families are `OBJ-E001` through `OBJ-E009`. `OBJ-E007` is not blanket
@@ -182,7 +221,7 @@ retry advice; retryability is variant-specific. `ObjectiveConflictReceiptV1` and
 `ExplicitAbstain` are typed non-error outcomes. No adapter may assign a local
 alternate meaning to an error code.
 
-## 10. Source identity and evidence
+## 11. Source identity and evidence
 
 Every qualification claim binds one immutable full commit and tree. The
 implementation map binds every relevant source, caller, test and guide path to
@@ -214,7 +253,7 @@ exact source head
 No source commit, CI artifact, author or single issuer may advance the external
 acceptance states alone.
 
-## 11. Static truth and change control
+## 12. Static truth and change control
 
 Until the complete receipt chain is independently issued, the checked-in static
 truth remains:
@@ -226,9 +265,10 @@ activated = false
 released = false
 ```
 
-A change to any product API name, proof framing, durable version, Source V1
-semantic support, legacy feature, error family or qualification ordering must
-update `NORMATIVE_EXECUTION.json`, this document and the consistency test in the
-same candidate. `TECHNICAL.md`, `SEMANTIC_SUPPORT.md`, `DELIVERY_EVIDENCE.md`,
+A change to any product API name, index owner, proof framing, publication binding,
+durable version, Source V1 semantic support, compatibility feature, error family
+or qualification ordering must update `NORMATIVE_EXECUTION.json`, this document
+and the consistency test in the same candidate. `TECHNICAL.md`,
+`SEMANTIC_SUPPORT.md`, `DELIVERY_EVIDENCE.md`,
 `OBJECTIVE_COMPILER_EXECUTION.md`, the implementation map and the PR description
 must link here rather than independently redefining the canonical flow.
