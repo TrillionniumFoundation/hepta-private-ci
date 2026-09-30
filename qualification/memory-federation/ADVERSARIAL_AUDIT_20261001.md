@@ -43,8 +43,7 @@ stack-pinned and add no outer heap allocation.
 
 Local checks do not replace hosted checks on the final source and merge
 candidate. Historical FINAL_V2_VERIFICATION.md remains historical/pending and
-cannot qualify this changed source. The implementation map must bind the new
-source snapshot in a subsequent metadata-only commit.
+cannot qualify this changed source. The implementation map binds the new source snapshot in a subsequent metadata-only commit. The repository verifier passes with the registry scoped read-only to memory.federation (one map, productionImplementationProved=false). The full repository verifier fails on pre-existing drift in kernel.operations, memory.retrieval and knowledge.graph and unavailable historical objects in other module maps; it is not a passing full-repository acceptance result.
 
 ## Completion assessment and remaining implementation gates
 
