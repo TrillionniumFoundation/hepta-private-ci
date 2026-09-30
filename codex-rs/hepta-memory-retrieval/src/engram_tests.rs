@@ -708,3 +708,149 @@ fn node_support_has_a_hard_bound_in_snapshot_and_public_receipt() {
     receipt.receipt_digest = receipt.compute_receipt_digest();
     assert_eq!(receipt.validate(), Err(EngramErrorV1::PolicyBoundExceeded));
 }
+
+#[test]
+fn settling_rejects_another_cue_in_the_same_generation() {
+    let cue = cue();
+    let union = build_candidate_union(
+        &cue,
+        &retrieval_policy(1),
+        vec![candidate(1, FixedQ32::ONE.raw())],
+    )
+    .expect("union");
+    let snapshot = EngramSnapshotV1::new(
+        cue.snapshot_key.vector_digest,
+        digest("generation"),
+        vec![node(
+            "node:1",
+            EngramPopulationV1::SemanticConcept,
+            vec![support(1)],
+            FixedQ32::ZERO,
+        )],
+        Vec::new(),
+    )
+    .expect("snapshot");
+    let mut other_cue = cue;
+    other_cue.request_digest = digest("other-request");
+    assert_eq!(
+        settle_engram(
+            &other_cue,
+            &union,
+            &snapshot,
+            &EngramDynamicsPolicyV1::product_default().expect("policy")
+        ),
+        Err(EngramErrorV1::NonCanonical("engram_cue"))
+    );
+}
+
+#[test]
+fn zero_activation_is_never_recalled_even_with_zero_minimum() {
+    let cue = cue();
+    let snapshot = EngramSnapshotV1::new(
+        cue.snapshot_key.vector_digest,
+        digest("generation"),
+        vec![node(
+            "node:1",
+            EngramPopulationV1::SemanticConcept,
+            vec![support(1)],
+            FixedQ32::ONE,
+        )],
+        Vec::new(),
+    )
+    .expect("snapshot");
+    let mut dynamics = EngramDynamicsPolicyV1::product_default().expect("policy");
+    dynamics.minimum_activation = FixedQ32::ZERO;
+    let packet = recall_with_engram(
+        &cue,
+        &retrieval_policy(1),
+        vec![candidate(1, FixedQ32::ONE.raw())],
+        &snapshot,
+        &dynamics,
+    )
+    .expect("recall");
+    assert_eq!(
+        packet.disposition,
+        RecallDispositionV1::Abstained(RecallAbstentionReasonV1::NoCandidate)
+    );
+    assert!(packet.engram.expect("engram").active_nodes.is_empty());
+}
+
+#[test]
+fn recomputed_engram_cannot_claim_zero_activity_or_wrong_path_semantics() {
+    let cue = cue();
+    let union = build_candidate_union(
+        &cue,
+        &retrieval_policy(2),
+        vec![
+            candidate(1, FixedQ32::ONE.raw()),
+            candidate(2, FixedQ32::ONE.raw()),
+        ],
+    )
+    .expect("union");
+    let snapshot = EngramSnapshotV1::new(
+        cue.snapshot_key.vector_digest,
+        digest("generation"),
+        vec![
+            node(
+                "node:1",
+                EngramPopulationV1::SemanticConcept,
+                vec![support(1)],
+                FixedQ32::ZERO,
+            ),
+            node(
+                "node:2",
+                EngramPopulationV1::EpisodicBinding,
+                vec![support(2)],
+                FixedQ32::ZERO,
+            ),
+        ],
+        vec![synapse(
+            "node:1",
+            "node:2",
+            SynapseRelationV1::Contradicts,
+            FixedQ32::from_raw(1_i64 << 28),
+        )],
+    )
+    .expect("snapshot");
+    let original = settle_engram(
+        &cue,
+        &union,
+        &snapshot,
+        &EngramDynamicsPolicyV1::product_default().expect("policy"),
+    )
+    .expect("settled");
+    let mut zero = original.clone();
+    zero.active_nodes.last_mut().expect("node").activation = FixedQ32::ZERO;
+    zero.receipt_digest = zero.compute_receipt_digest();
+    assert_eq!(
+        zero.validate(),
+        Err(EngramErrorV1::ScoreOutOfRange("active_node_activation"))
+    );
+    let mut path = original.clone();
+    path.activation_paths[0].contribution =
+        abs_fixed(path.activation_paths[0].contribution).expect("magnitude");
+    path.receipt_digest = path.compute_receipt_digest();
+    assert_eq!(
+        path.validate(),
+        Err(EngramErrorV1::NonCanonical("activation_path_sign"))
+    );
+    let mut reverse = original.clone();
+    let contradiction = &mut reverse.contradictions[0];
+    std::mem::swap(
+        &mut contradiction.left_node_id,
+        &mut contradiction.right_node_id,
+    );
+    reverse.receipt_digest = reverse.compute_receipt_digest();
+    assert_eq!(
+        reverse.validate(),
+        Err(EngramErrorV1::NonCanonical("contradictions"))
+    );
+    let mut traversals = original;
+    traversals.resources.traversed_synapses = 0;
+    traversals.resources.receipt_digest = traversals.resources.compute_digest();
+    traversals.receipt_digest = traversals.compute_receipt_digest();
+    assert_eq!(
+        traversals.validate(),
+        Err(EngramErrorV1::NonCanonical("engram_resources"))
+    );
+}

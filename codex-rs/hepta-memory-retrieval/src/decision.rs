@@ -231,6 +231,33 @@ pub fn observe_retrieval_assignment(
         }
     }
 
+    if let Some(engram) = &recall.packet.engram {
+        let (expected_support, expected_selection) =
+            crate::engram::select_engram_candidates(&union.union, policy, engram);
+        let disposition_allowed = [
+            crate::engram::EngramContradictionPolicy::ForceAbstention,
+            crate::engram::EngramContradictionPolicy::DeferToRetrieval,
+        ]
+        .into_iter()
+        .any(|posture| {
+            crate::engram::engram_disposition(
+                &union.union,
+                policy,
+                engram,
+                &expected_selection,
+                posture,
+            ) == recall.packet.disposition
+        });
+        if usize::try_from(engram.resources.candidate_records).unwrap_or(usize::MAX)
+            != union.union.entries.len()
+            || engram.selected_support != expected_support
+            || !disposition_allowed
+            || (recall.packet.disposition == RecallDispositionV1::Recalled
+                && recall.packet.selections != expected_selection)
+        {
+            return Err(AssignmentErrorV1::RecallUnionMismatch);
+        }
+    }
     let mut enumerated_candidates = input
         .flattened_candidates()
         .map_err(|error| AssignmentErrorV1::InvalidGenerator(error.to_string()))?

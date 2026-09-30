@@ -35,6 +35,11 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Bind source and host identity
         shell: bash
         run: |
@@ -56,25 +61,47 @@ jobs:
           } > "$RUNNER_TEMP/memory-retrieval-target-host/host.txt" 2>&1
 
       - name: SQLite owner retrieval and revalidation probe
-        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          /usr/bin/time -v             cargo test --release --locked -p codex-hepta-memory             target_host_owner_retrieval_reports_latency_percentiles             -- --ignored --nocapture --test-threads=1             > "$RUNNER_TEMP/memory-retrieval-target-host/sqlite-owner.log" 2>&1
+          /usr/bin/time -v just test --release --locked -p codex-hepta-memory \
+            --run-ignored ignored-only --no-tests fail --no-capture \
+            -E 'test(target_host_owner_retrieval_reports_latency_percentiles)' \
+            > "$RUNNER_TEMP/memory-retrieval-target-host/sqlite-owner.log" 2>&1
+
+      - name: Native receipt and assignment regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --release --locked --no-tests fail -p codex-hepta-memory-retrieval \
+            > "$RUNNER_TEMP/memory-retrieval-target-host/native-regressions.log" 2>&1
+          just test --release --locked --no-tests fail -p codex-hepta-learning-ledger -E 'test(/retrieval/)' \
+            > "$RUNNER_TEMP/memory-retrieval-target-host/ledger-regressions.log" 2>&1
+
+      - name: SQLite owner adapter and revalidation regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --release --locked --no-tests fail -p codex-hepta-memory -E 'test(/cognitive_retrieval/)' \
+            > "$RUNNER_TEMP/memory-retrieval-target-host/owner-regressions.log" 2>&1
 
       - name: HNMF 512-candidate four-step probe
-        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          /usr/bin/time -v             cargo test --release --locked -p codex-hepta-memory-retrieval             target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling             -- --ignored --nocapture --test-threads=1             > "$RUNNER_TEMP/memory-retrieval-target-host/hnmf-512.log" 2>&1
+          /usr/bin/time -v just test --release --locked -p codex-hepta-memory-retrieval \
+            --run-ignored ignored-only --no-tests fail --no-capture \
+            -E 'test(target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling)' \
+            > "$RUNNER_TEMP/memory-retrieval-target-host/hnmf-512.log" 2>&1
 
       - name: HNMF 4096-node 32768-synapse structural probe
-        working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          /usr/bin/time -v             cargo test --release --locked -p codex-hepta-memory-retrieval             target_host_hnmf_validates_full_structural_ceiling             -- --ignored --nocapture --test-threads=1             > "$RUNNER_TEMP/memory-retrieval-target-host/hnmf-structural.log" 2>&1
+          /usr/bin/time -v just test --release --locked -p codex-hepta-memory-retrieval \
+            --run-ignored ignored-only --no-tests fail --no-capture \
+            -E 'test(target_host_hnmf_validates_full_structural_ceiling)' \
+            > "$RUNNER_TEMP/memory-retrieval-target-host/hnmf-structural.log" 2>&1
 
       - name: Summarize measurement lines
         if: always()

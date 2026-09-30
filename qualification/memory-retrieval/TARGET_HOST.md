@@ -15,7 +15,11 @@ a target-host claim.
 release-mode probes on an exact PR/source SHA, records the source tree and runner
 identity, captures kernel/CPU/memory/Rust toolchain facts, preserves raw stdout/
 stderr plus GNU `/usr/bin/time -v` output, and uploads the complete record as a
-30-day workflow artifact. A GitHub-hosted run is useful reproducible
+30-day workflow artifact. The repository's `just test`/nextest runner explicitly
+fails if a probe or regression filter selects zero tests; removed/renamed tests
+cannot silently create successful qualification evidence. Native, learning-ledger
+retrieval and SQLite adapter/revalidation regression logs are retained alongside
+the measurements. A GitHub-hosted run is useful reproducible
 qualification-host evidence; it is **not** the approved named production target
 host and cannot satisfy target-host acceptance by relabeling the runner.
 
@@ -25,13 +29,13 @@ identity and raw-measurement fields before any performance claim advances.
 
 ## 1. Owner SQLite / source-revalidation probe
 
-From `codex-rs` on the named target host:
+From the repository root on the named target host:
 
 ```sh
 /usr/bin/time -v \
-  cargo test --release --locked -p codex-hepta-memory \
-  target_host_owner_retrieval_reports_latency_percentiles \
-  -- --ignored --nocapture --test-threads=1
+  just test --release --locked -p codex-hepta-memory \
+  --run-ignored ignored-only --no-tests fail --no-capture \
+  -E 'test(target_host_owner_retrieval_reports_latency_percentiles)'
 ```
 
 The ignored fixture creates 1,024 verified owner memories and executes 200
@@ -49,9 +53,9 @@ not assert full-store recall.
 
 ```sh
 /usr/bin/time -v \
-  cargo test --release --locked -p codex-hepta-memory-retrieval \
-  target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling \
-  -- --ignored --nocapture --test-threads=1
+  just test --release --locked -p codex-hepta-memory-retrieval \
+  --run-ignored ignored-only --no-tests fail --no-capture \
+  -E 'test(target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling)'
 ```
 
 The fixture executes 100 deterministic HNMF recalls with 512 candidate events,
@@ -64,9 +68,9 @@ substitute for the SQLite/Agentd end-to-end observation above.
 
 ```sh
 /usr/bin/time -v \
-  cargo test --release --locked -p codex-hepta-memory-retrieval \
-  target_host_hnmf_validates_full_structural_ceiling \
-  -- --ignored --nocapture --test-threads=1
+  just test --release --locked -p codex-hepta-memory-retrieval \
+  --run-ignored ignored-only --no-tests fail --no-capture \
+  -E 'test(target_host_hnmf_validates_full_structural_ceiling)'
 ```
 
 This fixture constructs and validates the exact 4,096-node / 32,768-synapse

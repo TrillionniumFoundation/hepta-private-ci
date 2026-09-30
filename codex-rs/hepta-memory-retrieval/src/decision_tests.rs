@@ -359,3 +359,120 @@ fn plain_assignment_replays_deterministic_selection_after_rehash() {
         Err(AssignmentErrorV1::RecallUnionMismatch)
     );
 }
+
+#[test]
+fn rehashed_packet_cannot_select_outside_declared_engram_support() {
+    let (cue, policy, input, mut recall) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    let engram = recall.packet.engram.as_mut().expect("engram");
+    engram.selected_support.clear();
+    engram.coverage = ProbabilityQ32::ZERO;
+    engram.receipt_digest = engram.compute_receipt_digest();
+    recall.packet.packet_digest = recall.packet.compute_packet_digest();
+    recall.receipt_digest = recall.compute_receipt_digest();
+    assert!(recall.validate().is_err());
+    assert!(observe_retrieval_assignment(&cue, &policy, &input, &recall).is_err());
+}
+
+#[test]
+fn rehashed_hnmf_cannot_replace_the_deterministic_winner() {
+    let (cue, mut policy, input, complete) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    policy.maximum_results = 1;
+    let mut recall = recall_generated_with_engram(
+        &cue,
+        &policy,
+        &input,
+        &engram(),
+        &EngramDynamicsPolicyV1::product_default().expect("dynamics"),
+    )
+    .expect("recall");
+    recall.packet.selections[0] = complete.packet.selections[1].clone();
+    recall.packet.packet_digest = recall.packet.compute_packet_digest();
+    recall.receipt_digest = recall.compute_receipt_digest();
+    recall
+        .validate()
+        .expect("structurally valid lower-ranked choice");
+    assert_eq!(
+        observe_retrieval_assignment(&cue, &policy, &input, &recall),
+        Err(AssignmentErrorV1::RecallUnionMismatch)
+    );
+}
+
+#[test]
+fn rehashed_hnmf_cannot_forge_abstention() {
+    let (cue, policy, input, mut recall) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    recall.packet.disposition =
+        RecallDispositionV1::Abstained(crate::RecallAbstentionReasonV1::NoCandidate);
+    recall.packet.selections.clear();
+    recall.packet.omitted_count = 0;
+    recall.packet.packet_digest = recall.packet.compute_packet_digest();
+    recall.receipt_digest = recall.compute_receipt_digest();
+    recall.validate().expect("structurally valid abstention");
+    assert_eq!(
+        observe_retrieval_assignment(&cue, &policy, &input, &recall),
+        Err(AssignmentErrorV1::RecallUnionMismatch)
+    );
+}
+
+#[test]
+fn rehashed_hnmf_cannot_bypass_ood() {
+    let (cue, mut policy, input, _) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    policy.maximum_ood = ProbabilityQ32::ZERO;
+    let mut batches = input.batches;
+    for batch in &mut batches {
+        for candidate in &mut batch.candidates {
+            candidate.ood = ProbabilityQ32::ONE;
+        }
+    }
+    let input = GeneratedCandidateInputV1::new(batches).expect("OOD input");
+    let mut recall = recall_generated_with_engram(
+        &cue,
+        &policy,
+        &input,
+        &engram(),
+        &EngramDynamicsPolicyV1::product_default().expect("dynamics"),
+    )
+    .expect("OOD recall");
+    observe_retrieval_assignment(&cue, &policy, &input, &recall).expect("valid OOD abstention");
+    recall.packet.disposition = RecallDispositionV1::Recalled;
+    let union = crate::build_candidate_union_from_generated(&cue, &policy, &input).expect("union");
+    recall.packet.selections = crate::engram::select_engram_candidates(
+        &union.union,
+        &policy,
+        recall.packet.engram.as_ref().expect("receipt"),
+    )
+    .1;
+    recall.packet.packet_digest = recall.packet.compute_packet_digest();
+    recall.receipt_digest = recall.compute_receipt_digest();
+    recall.validate().expect("structurally valid OOD selection");
+    assert_eq!(
+        observe_retrieval_assignment(&cue, &policy, &input, &recall),
+        Err(AssignmentErrorV1::RecallUnionMismatch)
+    );
+}
+
+#[test]
+fn hnmf_assignment_preserves_both_owner_dynamics_contradiction_postures() {
+    let (cue, mut policy, input, _) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    policy.abstain_on_contradiction = false;
+    let mut batches = input.batches;
+    for batch in &mut batches {
+        for candidate in &mut batch.candidates {
+            candidate.contradiction_group_digest = Some(digest("shared-contradiction"));
+        }
+    }
+    let input = GeneratedCandidateInputV1::new(batches).expect("contradictory input");
+    for force_abstention in [true, false] {
+        let mut dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
+        dynamics.contradiction_forces_abstention = force_abstention;
+        let recall = recall_generated_with_engram(&cue, &policy, &input, &engram(), &dynamics)
+            .expect("owner-generated recall");
+        observe_retrieval_assignment(&cue, &policy, &input, &recall)
+            .expect("both actual owner policies are accepted");
+        let expected = if force_abstention {
+            RecallDispositionV1::Abstained(crate::RecallAbstentionReasonV1::ContradictoryEvidence)
+        } else {
+            RecallDispositionV1::Recalled
+        };
+        assert_eq!(recall.packet.disposition, expected);
+    }
+}

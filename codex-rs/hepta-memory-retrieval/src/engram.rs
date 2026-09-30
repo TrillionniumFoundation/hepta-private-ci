@@ -490,6 +490,12 @@ impl EngramRecallReceiptV1 {
         if self.activation_paths.len() > MAX_ACTIVATION_PATHS {
             return Err(EngramErrorV1::ActivationPathLimitExceeded);
         }
+        if self.selected_support.len() > MAX_GENERATION_BOUND_CANDIDATES {
+            return Err(EngramErrorV1::PolicyBoundExceeded);
+        }
+        if self.contradictions.len() > MAX_ENGRAM_SYNAPSES {
+            return Err(EngramErrorV1::SynapseLimitExceeded);
+        }
         let mut active_ids = BTreeSet::new();
         let mut active_support = BTreeSet::new();
         let mut population_counts = BTreeMap::<EngramPopulationV1, usize>::new();
@@ -498,7 +504,7 @@ impl EngramRecallReceiptV1 {
             if node.support.len() > MAX_GENERATION_BOUND_CANDIDATES {
                 return Err(EngramErrorV1::PolicyBoundExceeded);
             }
-            if node.activation < FixedQ32::ZERO || node.activation > FixedQ32::ONE {
+            if node.activation <= FixedQ32::ZERO || node.activation > FixedQ32::ONE {
                 return Err(EngramErrorV1::ScoreOutOfRange("active_node_activation"));
             }
             if node.support.is_empty() {
@@ -543,6 +549,9 @@ impl EngramRecallReceiptV1 {
                     "activation_path_contribution",
                 ));
             }
+            if path.relation.negative() && path.contribution > FixedQ32::ZERO {
+                return Err(EngramErrorV1::NonCanonical("activation_path_sign"));
+            }
             if !path_keys.insert((
                 path.source_node_id.clone(),
                 path.target_node_id.clone(),
@@ -572,7 +581,7 @@ impl EngramRecallReceiptV1 {
             return Err(EngramErrorV1::NonCanonical("contradictions"));
         }
         if self.contradictions.iter().any(|contradiction| {
-            contradiction.left_node_id == contradiction.right_node_id
+            contradiction.left_node_id >= contradiction.right_node_id
                 || !active_ids.contains(&contradiction.left_node_id)
                 || !active_ids.contains(&contradiction.right_node_id)
         }) {
@@ -582,7 +591,9 @@ impl EngramRecallReceiptV1 {
             return Err(EngramErrorV1::AuthorityGranted);
         }
         self.resources.validate()?;
-        if self.resources.settling_steps != self.settling_steps
+        if usize::try_from(self.resources.traversed_synapses).unwrap_or(0)
+            < self.activation_paths.len().max(self.contradictions.len())
+            || self.resources.settling_steps != self.settling_steps
             || usize::try_from(self.resources.active_nodes).unwrap_or(usize::MAX)
                 != self.active_nodes.len()
             || usize::try_from(self.resources.expanded_nodes).unwrap_or(0) < self.active_nodes.len()
@@ -678,6 +689,9 @@ pub fn settle_engram(
     union.validate().map_err(EngramErrorV1::Recall)?;
     snapshot.validate()?;
     policy.validate()?;
+    if cue.digest() != union.cue_digest {
+        return Err(EngramErrorV1::NonCanonical("engram_cue"));
+    }
     if cue.snapshot_key.vector_digest != union.generation_vector_digest
         || cue.snapshot_key.vector_digest != snapshot.generation_vector_digest
     {
@@ -831,7 +845,8 @@ pub fn settle_engram(
     let mut active_nodes = activation
         .iter()
         .filter_map(|(node_id, activation)| {
-            (*activation >= policy.minimum_activation).then_some((node_id, activation))
+            (*activation > FixedQ32::ZERO && *activation >= policy.minimum_activation)
+                .then_some((node_id, activation))
         })
         .map(|(node_id, activation)| {
             let node = node_map
@@ -961,79 +976,24 @@ pub fn recall_with_engram(
         build_candidate_union(cue, retrieval_policy, candidates).map_err(EngramErrorV1::Recall)?;
     let engram = settle_engram(cue, &union, engram_snapshot, dynamics_policy)?;
 
-    let minimum_channels =
-        usize::try_from(retrieval_policy.minimum_distinct_channels).unwrap_or(usize::MAX);
-    let observed_channels = usize::try_from(union.distinct_channels).unwrap_or(0);
-    let maximum_ood = union
-        .entries
-        .iter()
-        .map(|entry| entry.maximum_ood)
-        .max()
-        .unwrap_or(ProbabilityQ32::ZERO);
-    let contradiction =
-        !engram.contradictions.is_empty() || contradiction_population_count(&union.entries) > 0;
-    let reason = if union.entries.is_empty() || engram.selected_support.is_empty() {
-        Some(RecallAbstentionReasonV1::NoCandidate)
-    } else if observed_channels < minimum_channels {
-        Some(RecallAbstentionReasonV1::InsufficientChannelCoverage)
-    } else if contradiction
-        && (retrieval_policy.abstain_on_contradiction
-            || dynamics_policy.contradiction_forces_abstention)
-    {
-        Some(RecallAbstentionReasonV1::ContradictoryEvidence)
-    } else if maximum_ood > retrieval_policy.maximum_ood {
-        Some(RecallAbstentionReasonV1::OutOfDistribution)
+    let (_, mut selections) = select_engram_candidates(&union, retrieval_policy, &engram);
+    let contradiction_policy = if dynamics_policy.contradiction_forces_abstention {
+        EngramContradictionPolicy::ForceAbstention
     } else {
-        None
+        EngramContradictionPolicy::DeferToRetrieval
     };
-
-    let maximum_results = usize::try_from(retrieval_policy.maximum_results).unwrap_or(0);
-    let active_strength = active_support_strength(&engram);
-    let (disposition, selections, omitted_count) = if let Some(reason) = reason {
-        (RecallDispositionV1::Abstained(reason), Vec::new(), 0)
+    let disposition = engram_disposition(
+        &union,
+        retrieval_policy,
+        &engram,
+        &selections,
+        contradiction_policy,
+    );
+    let omitted_count = if disposition == RecallDispositionV1::Recalled {
+        u32::try_from(union.entries.len().saturating_sub(selections.len())).unwrap_or(u32::MAX)
     } else {
-        let mut ranked = union
-            .entries
-            .iter()
-            .filter_map(|entry| {
-                let support = support_for_entry(entry);
-                let activation = active_strength.get(&support).copied()?;
-                (entry.weighted_score >= retrieval_policy.minimum_total_score)
-                    .then_some((entry, activation))
-            })
-            .collect::<Vec<_>>();
-        ranked.sort_by(|(left, left_activation), (right, right_activation)| {
-            right_activation
-                .cmp(left_activation)
-                .then_with(|| right.weighted_score.cmp(&left.weighted_score))
-                .then_with(|| left.record.record_id.cmp(&right.record.record_id))
-                .then_with(|| left.record.revision.cmp(&right.record.revision))
-        });
-        let selections = ranked
-            .iter()
-            .take(maximum_results)
-            .map(|(entry, _)| RecallSelectionV1 {
-                record_id: entry.record.record_id.clone(),
-                record_revision: entry.record.revision,
-                record_digest: entry.record.record_digest(),
-                weighted_score: entry.weighted_score,
-                maximum_ood: entry.maximum_ood,
-                channels: entry.channels.clone(),
-                support_digests: entry.support_digests.clone(),
-                contradiction_group_digests: entry.contradiction_group_digests.clone(),
-            })
-            .collect::<Vec<_>>();
-        if selections.is_empty() {
-            (
-                RecallDispositionV1::Abstained(RecallAbstentionReasonV1::ScoreBelowFloor),
-                Vec::new(),
-                0,
-            )
-        } else {
-            let omitted_count = u32::try_from(union.entries.len().saturating_sub(selections.len()))
-                .unwrap_or(u32::MAX);
-            (RecallDispositionV1::Recalled, selections, omitted_count)
-        }
+        selections.clear();
+        0
     };
 
     let mut packet = RecallPacketV1 {
@@ -1052,6 +1012,101 @@ pub fn recall_with_engram(
     packet.packet_digest = packet.compute_packet_digest();
     packet.validate().map_err(EngramErrorV1::Recall)?;
     Ok(packet)
+}
+
+#[derive(Clone, Copy)]
+pub(crate) enum EngramContradictionPolicy {
+    ForceAbstention,
+    DeferToRetrieval,
+}
+
+// The observation API lacks the dynamics policy. It can accept either
+// contradiction posture, but must still enforce every known retrieval gate.
+pub(crate) fn engram_disposition(
+    union: &CandidateUnionV1,
+    retrieval_policy: &RetrievalPolicyV1,
+    engram: &EngramRecallReceiptV1,
+    selections: &[RecallSelectionV1],
+    contradiction_policy: EngramContradictionPolicy,
+) -> RecallDispositionV1 {
+    let maximum_ood = union
+        .entries
+        .iter()
+        .map(|entry| entry.maximum_ood)
+        .max()
+        .unwrap_or(ProbabilityQ32::ZERO);
+    let contradiction =
+        !engram.contradictions.is_empty() || contradiction_population_count(&union.entries) > 0;
+    let reason = if union.entries.is_empty() || engram.selected_support.is_empty() {
+        Some(RecallAbstentionReasonV1::NoCandidate)
+    } else if union.distinct_channels < retrieval_policy.minimum_distinct_channels {
+        Some(RecallAbstentionReasonV1::InsufficientChannelCoverage)
+    } else if contradiction
+        && (retrieval_policy.abstain_on_contradiction
+            || matches!(
+                contradiction_policy,
+                EngramContradictionPolicy::ForceAbstention
+            ))
+    {
+        Some(RecallAbstentionReasonV1::ContradictoryEvidence)
+    } else if maximum_ood > retrieval_policy.maximum_ood {
+        Some(RecallAbstentionReasonV1::OutOfDistribution)
+    } else if selections.is_empty() {
+        Some(RecallAbstentionReasonV1::ScoreBelowFloor)
+    } else {
+        None
+    };
+    match reason {
+        Some(reason) => RecallDispositionV1::Abstained(reason),
+        None => RecallDispositionV1::Recalled,
+    }
+}
+
+// Share ranking with assignment verification so a legal but lower-ranked
+// replacement cannot be attributed to the deterministic HNMF policy.
+pub(crate) fn select_engram_candidates(
+    union: &CandidateUnionV1,
+    policy: &RetrievalPolicyV1,
+    engram: &EngramRecallReceiptV1,
+) -> (Vec<EngramSupportV1>, Vec<RecallSelectionV1>) {
+    let active_strength = active_support_strength(engram);
+    let mut eligible_support = union
+        .entries
+        .iter()
+        .map(support_for_entry)
+        .filter(|support| active_strength.contains_key(support))
+        .collect::<Vec<_>>();
+    eligible_support.sort();
+    let mut ranked = union
+        .entries
+        .iter()
+        .filter_map(|entry| {
+            let activation = active_strength.get(&support_for_entry(entry)).copied()?;
+            (entry.weighted_score >= policy.minimum_total_score).then_some((entry, activation))
+        })
+        .collect::<Vec<_>>();
+    ranked.sort_by(|(left, left_activation), (right, right_activation)| {
+        right_activation
+            .cmp(left_activation)
+            .then_with(|| right.weighted_score.cmp(&left.weighted_score))
+            .then_with(|| left.record.record_id.cmp(&right.record.record_id))
+            .then_with(|| left.record.revision.cmp(&right.record.revision))
+    });
+    let selections = ranked
+        .into_iter()
+        .take(usize::try_from(policy.maximum_results).unwrap_or(0))
+        .map(|(entry, _)| RecallSelectionV1 {
+            record_id: entry.record.record_id.clone(),
+            record_revision: entry.record.revision,
+            record_digest: entry.record.record_digest(),
+            weighted_score: entry.weighted_score,
+            maximum_ood: entry.maximum_ood,
+            channels: entry.channels.clone(),
+            support_digests: entry.support_digests.clone(),
+            contradiction_group_digests: entry.contradiction_group_digests.clone(),
+        })
+        .collect();
+    (eligible_support, selections)
 }
 
 fn empty_receipt(

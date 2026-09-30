@@ -314,8 +314,10 @@ its booleans must not be promoted by a local test run.
    record digests, scores, OOD, channel/support/contradiction evidence, generation,
    channel coverage, result limit and recalled omission count against that cut.
    Plain recall is replayed to verify the exact deterministic selection. HNMF
-   assignment consumes the trusted engine output: this API has no engram snapshot
-   argument and cannot independently replay settling from an arbitrary receipt.
+   assignment checks the full active-support intersection with the candidate cut
+   and uses the same ranking routine as generation to verify the actual winner.
+   This API has no engram snapshot argument and cannot independently replay
+   settling from an arbitrary receipt; active-state provenance remains required.
 7. Agentd orders/budgets the final subset and performs final owner/current-context
    revalidation before materialization. `learning.ledger` records delivery evidence.
 
@@ -394,3 +396,38 @@ real Vector owner, exact-head/synthetic-merge CI, target-host measurements and
 independent semantic/operator acceptance. The compatibility/canonical shadow
 bridge also remains separate from a complete downstream canonical migration.
 No local audit grants activation, acceptance, promotion or release.
+
+### Follow-up audit: cue and HNMF state consistency
+
+`settle_engram` requires both generation equality and `union.cue_digest == cue.digest()`;
+sharing a Lane C generation does not make two requests interchangeable. Active
+nodes must have strictly positive activation even when `minimum_activation` is zero.
+Zero is a permitted cutoff configuration, not evidence of activity.
+
+Recall selections must be members of the engram's declared `selected_support`.
+Assignment verification checks that this support is exactly the intersection of
+active-node supports with the current candidate union, and verifies HNMF winners
+with the shared `select_engram_candidates` routine. Candidate counts are checked
+for abstentions as well as recalled packets. Generation and observation also share
+`engram_disposition` to enforce no-candidate, channel coverage, contradiction, OOD
+and score-floor precedence. The observation API lacks the actual dynamics policy,
+so it accepts either owner contradiction posture only where that flag can change
+the outcome; it still rejects arbitrary abstentions and known policy bypasses.
+Settling itself still requires trusted snapshot/dynamics provenance; these checks do not authenticate a fabricated engine.
+
+Negative-relation activation paths cannot claim positive contributions. Contradiction
+pairs use ascending node IDs; resource traversal counts must cover the retained
+paths and contradiction pairs. Selected-support and contradiction collections have
+explicit pre-traversal bounds. Valid existing digest domains remain unchanged.
+
+The qualification-host workflow now also runs native receipt/assignment regressions,
+SQLite owner adapter/revalidation regressions and the learning-ledger retrieval subset,
+and retains their raw logs at the exact source identity. All probe and regression
+filters explicitly fail on zero selected tests. This supplies focused source
+execution evidence independently of unrelated global preflight failures; it does not
+waive those gates or establish Agentd/target-host acceptance.
+
+After committing source and guide changes, refresh only this module's navigation
+observation with `python3 scripts/hepta-implementation-maps.py migrate --module
+memory.retrieval`, commit that metadata, and verify it. The map cannot contain its
+own future commit identity. Source observation is not execution qualification.

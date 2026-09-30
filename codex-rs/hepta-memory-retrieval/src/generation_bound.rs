@@ -497,6 +497,19 @@ impl RecallPacketV1 {
                     selection.record_id.to_string(),
                 ));
             }
+            if let Some(engram) = &self.engram
+                && engram
+                    .selected_support
+                    .binary_search(&crate::EngramSupportV1 {
+                        record_id: selection.record_id.clone(),
+                        record_revision: selection.record_revision,
+                    })
+                    .is_err()
+            {
+                return Err(RecallErrorV1::InvalidEngram(
+                    "selected record is outside declared engram support".to_string(),
+                ));
+            }
             if let Some(left) = previous {
                 let ordered = if let Some(engram) = &self.engram {
                     let left_activation = engram
