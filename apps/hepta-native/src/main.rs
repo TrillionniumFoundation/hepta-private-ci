@@ -130,7 +130,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let updater = UpdateManager::new(trusted_keys.clone(), config.state_dir.join("updates"))?;
     if let Some(handoff) = &handoff {
         updater.validate_running_handoff(handoff)?;
-        hepta_native::update_handoff::watch_helper_lifetime()?;
+        hepta_native::update_handoff::watch_helper_lifetime(updater.clone(), handoff.clone())?;
     } else {
         let _recovery_owner = updater.lock_runner()?;
         if updater.recover_interrupted_activation()? {

@@ -60,6 +60,7 @@ def decode_selected_uri(uri: str) -> str:
 
 
 def main() -> int:
+    deadline = time.monotonic() + MAXIMUM_SECONDS
     connection = Gio.bus_get_sync(Gio.BusType.SESSION, None)
     token = f"hepta_native_{os.getpid()}_{time.monotonic_ns()}"
     expected_path = request_path(connection, token)
@@ -170,8 +171,18 @@ def main() -> int:
         finish(124, message="portal file chooser observation deadline exceeded")
         return GLib.SOURCE_REMOVE
 
-    GLib.timeout_add_seconds(MAXIMUM_SECONDS, on_timeout)
-    loop.run()
+    # Synchronous method dispatch must not restart the observation budget.
+    # A response dispatched during that call may already have finished the
+    # request; reentering the loop after quit would otherwise wait forever.
+    if not bool(state["done"]):
+        remaining_ms = int((deadline - time.monotonic()) * 1000)
+        if remaining_ms <= 0:
+            on_timeout()
+        else:
+            timer = GLib.timeout_add(remaining_ms, on_timeout)
+            loop.run()
+            if int(state["exit"]) != 124:
+                GLib.source_remove(timer)
     for subscription in state["subscriptions"]:
         connection.signal_unsubscribe(subscription)
     selected = state["path"]

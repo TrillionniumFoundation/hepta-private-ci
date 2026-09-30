@@ -186,7 +186,9 @@ impl SystemPlatformAdapter {
             (rustix::fs::OFlags::NOFOLLOW | rustix::fs::OFlags::NONBLOCK).bits() as i32,
         );
         let file = options.open(path).map_err(|error| {
-            ShellError::Platform(format!("open verified resource without following links: {error}"))
+            ShellError::Platform(format!(
+                "open verified resource without following links: {error}"
+            ))
         })?;
         let metadata = file.metadata()?;
         if !metadata.is_file() && !metadata.is_dir() {
@@ -317,11 +319,8 @@ impl PlatformAdapter for SystemPlatformAdapter {
                             "verified resource identity changed before effect entry".to_owned(),
                         ));
                     }
-                    let status = launch_portal_resource(
-                        file,
-                        payload.action(),
-                        &self.active_launchers,
-                    )?;
+                    let status =
+                        launch_portal_resource(file, payload.action(), &self.active_launchers)?;
                     if !status.success() {
                         return Err(ShellError::Platform(format!(
                             "XDG resource handoff failed: {status}"
@@ -596,8 +595,7 @@ fn notification_supported() -> bool {
         return false;
     };
     windows_powershell().is_some()
-        && std::fs::read_to_string(marker)
-            .is_ok_and(|value| value.trim() == WINDOWS_AUMID)
+        && std::fs::read_to_string(marker).is_ok_and(|value| value.trim() == WINDOWS_AUMID)
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]
@@ -661,7 +659,12 @@ fn launch_notification(
             "-Command",
             WINDOWS_TOAST_PROGRAM,
         ]);
-    run_bounded_launcher(command, "send WinRT notification", active, NOTIFICATION_TIMEOUT)
+    run_bounded_launcher(
+        command,
+        "send WinRT notification",
+        active,
+        NOTIFICATION_TIMEOUT,
+    )
 }
 
 #[cfg(all(unix, not(target_os = "macos")))]

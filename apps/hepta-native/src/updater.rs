@@ -15,6 +15,10 @@ use crate::security::now_unix_ms;
 const UPDATE_SCHEMA: &str = "hepta.native-update.v1";
 const PENDING_SCHEMA: &str = "hepta.native-pending-update.v1";
 use crate::update_handoff::{UpdateHandoff, UpdateReadiness};
+#[path = "update_backup_policy.rs"]
+mod backup_policy;
+#[path = "update_confirmation.rs"]
+mod confirmation;
 pub use crate::update_storage::digest_file;
 use crate::update_storage::{
     MAX_PACKAGE_BYTES, copy_and_sync, lock_update_root, lock_update_runner, persist_json_atomic,
@@ -210,7 +214,7 @@ impl UpdateManager {
         let staged_dir = self.root.join("staged");
         std::fs::create_dir_all(&staged_dir)?;
         let staged_package = staged_dir.join(format!("{}.package", manifest.package_digest));
-        copy_and_sync(package_path, &staged_package)?;
+        copy_and_sync(package_path, &staged_package, &manifest.package_digest)?;
         if digest_file(&staged_package)? != manifest.package_digest {
             let _ = std::fs::remove_file(&staged_package);
             return Err(ShellError::Security(
@@ -270,6 +274,24 @@ impl UpdateManager {
 
     fn clear_pending_locked(&self) -> Result<(), ShellError> {
         self.private_root.verify()?;
+        if let Some(pending) = self.load_pending()? {
+            let owned_package = self
+                .root
+                .join("staged")
+                .join(format!("{}.package", pending.manifest.package_digest));
+            // Only the exact private, digest-bound staging file belongs to this
+            // lifecycle. Foreign paths or replaced content are preserved.
+            if pending.staged_package == owned_package
+                && matches!(digest_file(&owned_package), Ok(digest) if digest == pending.manifest.package_digest)
+            {
+                std::fs::remove_file(&owned_package)?;
+                sync_parent_directory(&owned_package)?;
+            }
+            // Predecessor backups live beside the operator-selected installed
+            // binary. Preserve rollback evidence until an explicit retention
+            // policy authorizes discarding it; pending clearance is not that
+            // authority.
+        }
         let path = self.pending_path();
         if path.exists() {
             std::fs::remove_file(&path)?;
@@ -366,7 +388,7 @@ impl UpdateManager {
                 "rollback refused: installed binary is neither candidate nor predecessor",
             );
         }
-        if let Err(error) = copy_and_sync(&backup, &target) {
+        if let Err(error) = copy_and_sync(&backup, &target, &pending.manifest.predecessor_digest) {
             let message = format!("native update rollback copy failed: {error}");
             return recovery_required(&self.pending_path(), &mut pending, &message);
         }
@@ -405,6 +427,7 @@ impl UpdateManager {
         }
         let handoff = UpdateHandoff::issue(arguments)?;
         pending.handoff = Some(handoff.clone());
+        pending.readiness = None;
         persist_json_atomic(&self.pending_path(), &pending)?;
         Ok(handoff)
     }
@@ -414,39 +437,6 @@ impl UpdateManager {
             .load_pending()?
             .ok_or_else(|| ShellError::Update("missing pending activation".into()))?;
         validate_running_handoff(&pending, handoff)
-    }
-
-    pub(crate) fn confirm_running_process(
-        &self,
-        handoff: &UpdateHandoff,
-        session: &crate::model::SessionIncarnation,
-        view: &crate::model::RuntimeView,
-    ) -> Result<(), ShellError> {
-        let _lock = lock_update_root(&self.root)?;
-        let mut pending = self
-            .load_pending()?
-            .ok_or_else(|| ShellError::Update("missing pending activation".into()))?;
-        validate_running_handoff(&pending, handoff)?;
-        session.validate()?;
-        view.validate()?;
-        if view.session_id != session.session_id || view.session_generation != session.generation {
-            return Err(ShellError::Update(
-                "update readiness has mixed session identity".into(),
-            ));
-        }
-        pending.readiness = Some(UpdateReadiness {
-            process_id: std::process::id(),
-            session: session.clone(),
-            view_digest: view.digest.clone(),
-            view_revision: view.revision,
-            binary_digest: pending.manifest.package_digest.clone(),
-        });
-        transition_pending(
-            &self.pending_path(),
-            &mut pending,
-            PendingUpdateStatus::Confirmed,
-            None,
-        )
     }
 }
 
@@ -499,7 +489,12 @@ pub fn activate_staged_update(
         "{}.predecessor",
         pending.manifest.predecessor_digest
     ));
-    copy_and_sync(target_path, &backup)?;
+    backup_policy::admit_predecessor_backup(
+        target_path,
+        &backup,
+        &pending.manifest.predecessor_digest,
+    )?;
+    copy_and_sync(target_path, &backup, &pending.manifest.predecessor_digest)?;
     pending.target_path = Some(target_path.to_owned());
     pending.backup_path = Some(backup.clone());
     transition_pending(
@@ -509,7 +504,11 @@ pub fn activate_staged_update(
         None,
     )?;
 
-    if let Err(error) = copy_and_sync(&pending.staged_package, target_path) {
+    if let Err(error) = copy_and_sync(
+        &pending.staged_package,
+        target_path,
+        &pending.manifest.package_digest,
+    ) {
         let reason = format!("native update activation copy failed: {error}");
         rollback_after_activation_failure(
             pending_path,
@@ -561,12 +560,17 @@ fn validate_pending(pending: &PendingUpdateV1) -> Result<(), ShellError> {
             "pending native update record is invalid".to_owned(),
         ));
     }
-    if pending.status == PendingUpdateStatus::Confirmed {
-        let ready = pending
-            .readiness
-            .as_ref()
-            .ok_or_else(|| ShellError::Update("confirmed update lacks product readiness".into()))?;
+    if pending.status == PendingUpdateStatus::Confirmed && pending.readiness.is_none() {
+        return Err(ShellError::Update(
+            "confirmed update lacks product readiness".into(),
+        ));
+    }
+    if let Some(ready) = &pending.readiness {
         if pending.handoff.is_none()
+            || !matches!(
+                pending.status,
+                PendingUpdateStatus::ActivatedUnconfirmed | PendingUpdateStatus::Confirmed
+            )
             || ready.process_id == 0
             || ready.view_revision == 0
             || ready.binary_digest != pending.manifest.package_digest
@@ -577,10 +581,6 @@ fn validate_pending(pending: &PendingUpdateV1) -> Result<(), ShellError> {
         }
         ready.session.validate()?;
         validate_digest(&ready.view_digest, "update readiness view digest")?;
-    } else if pending.readiness.is_some() {
-        return Err(ShellError::Update(
-            "non-confirmed update contains a readiness claim".into(),
-        ));
     }
     let activated = !matches!(pending.status, PendingUpdateStatus::Staged);
     if activated
@@ -607,10 +607,20 @@ fn transition_pending(
     recovery_reason: Option<String>,
 ) -> Result<(), ShellError> {
     pending.status = status;
-    if status == PendingUpdateStatus::RolledBack {
+    if matches!(
+        status,
+        PendingUpdateStatus::RollbackStarted
+            | PendingUpdateStatus::RolledBack
+            | PendingUpdateStatus::RecoveryRequired
+    ) {
+        pending.readiness = None;
+    }
+    if matches!(
+        status,
+        PendingUpdateStatus::RolledBack | PendingUpdateStatus::RecoveryRequired
+    ) {
         // The admitted predecessor may implement the original v1 pending schema.
         pending.handoff = None;
-        pending.readiness = None;
     }
     pending.transition_unix_ms = now_unix_ms()?;
     pending.recovery_reason = recovery_reason;
@@ -653,7 +663,26 @@ fn rollback_after_activation_failure(
             "activation failed and predecessor backup is unavailable or invalid",
         );
     }
-    if let Err(error) = copy_and_sync(backup, target) {
+    let current_digest = match digest_file(target) {
+        Ok(digest) => digest,
+        Err(_) => {
+            return recovery_required(
+                pending_path,
+                pending,
+                "activation failed and installed binary cannot be identified before rollback",
+            );
+        }
+    };
+    if current_digest != pending.manifest.package_digest
+        && current_digest != pending.manifest.predecessor_digest
+    {
+        return recovery_required(
+            pending_path,
+            pending,
+            "activation failed; rollback refused because installed binary is neither candidate nor predecessor",
+        );
+    }
+    if let Err(error) = copy_and_sync(backup, target, &pending.manifest.predecessor_digest) {
         return recovery_required(
             pending_path,
             pending,
@@ -700,3 +729,7 @@ fn validate_running_handoff(
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "updater_tests.rs"]
+mod tests;

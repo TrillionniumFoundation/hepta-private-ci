@@ -176,15 +176,30 @@ mod tests {
 
     #[cfg(unix)]
     #[test]
-    fn final_symlink_and_socket_are_rejected() {
+    fn final_symlink_is_rejected() {
         let dir = tempfile::tempdir().unwrap();
         let target = dir.path().join("target.json");
         let link = dir.path().join("link.json");
         std::fs::write(&target, b"null").unwrap();
         std::os::unix::fs::symlink(&target, &link).unwrap();
         assert!(read_bytes(&link, 100).is_err());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn socket_input_is_rejected_when_the_host_allows_a_socket_fixture() {
+        let dir = tempfile::tempdir().unwrap();
         let socket = dir.path().join("socket");
-        let _listener = std::os::unix::net::UnixListener::bind(&socket).unwrap();
+        let _listener = match std::os::unix::net::UnixListener::bind(&socket) {
+            Ok(listener) => listener,
+            Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => {
+                eprintln!(
+                    "Unix socket fixture not exercised: host denied UnixListener::bind: {error}"
+                );
+                return;
+            }
+            Err(error) => panic!("create Unix socket fixture: {error}"),
+        };
         assert!(read_bytes(&socket, 100).is_err());
     }
 

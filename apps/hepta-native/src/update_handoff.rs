@@ -69,7 +69,10 @@ pub struct UpdateReadiness {
 /// A candidate may outlive its helper only after the helper has observed the
 /// durable, process-bound GUI readiness record and acknowledged it over stdin.
 /// A dead or stalled helper before that boundary leaves recovery to a new owner.
-pub fn watch_helper_lifetime() -> Result<(), ShellError> {
+pub fn watch_helper_lifetime(
+    manager: crate::updater::UpdateManager,
+    handoff: UpdateHandoff,
+) -> Result<(), ShellError> {
     let (sender, receiver) = std::sync::mpsc::sync_channel(1);
     std::thread::Builder::new()
         .name("native-update-ack-reader".into())
@@ -82,7 +85,9 @@ pub fn watch_helper_lifetime() -> Result<(), ShellError> {
     std::thread::Builder::new()
         .name("native-update-startup-watch".into())
         .spawn(move || {
-            if receiver.recv_timeout(std::time::Duration::from_secs(35)) != Ok(true) {
+            if receiver.recv_timeout(std::time::Duration::from_secs(35)) != Ok(true)
+                || manager.acknowledge_running_process(&handoff).is_err()
+            {
                 eprintln!("hepta-native: update helper disappeared before startup acknowledgement");
                 std::process::exit(1);
             }

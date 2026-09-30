@@ -73,11 +73,28 @@ class PackageSecurityTests(unittest.TestCase):
         return self.rewrite(transform, platform)
 
     def test_all_platforms_have_closed_population_and_product_version(self):
+        expected_files = {
+            "linux": {
+                "usr/bin/hepta-native", "usr/bin/hepta-native-updater",
+                "usr/bin/hepta-native-credential",
+                "usr/share/applications/hepta-native.desktop", "PACKAGING.md",
+            },
+            "macos": {
+                "Contents/MacOS/hepta-native", "Contents/Helpers/hepta-native-updater",
+                "Contents/Helpers/hepta-native-credential", "Contents/Info.plist",
+                "PACKAGING.md",
+            },
+            "windows": {
+                "hepta-native.exe", "hepta-native-updater.exe",
+                "hepta-native-credential.exe", "app.manifest",
+                "Register-HeptaNativeIdentity.ps1", "PACKAGING.md",
+            },
+        }
         for platform, archive in self.archives.items():
             with self.subTest(platform=platform):
                 manifest = safety.validate_archive(archive)
                 self.assertEqual(manifest["schema"], safety.SCHEMA)
-                self.assertEqual(len(manifest["fileSha256"]), 5)
+                self.assertEqual(set(manifest["fileSha256"]), expected_files[platform])
                 self.assertEqual(manifest["version"], package.tomllib.loads(
                     (package.APP / "Cargo.toml").read_text())["package"]["version"])
                 self.assertFalse(manifest["releaseAuthorized"])
