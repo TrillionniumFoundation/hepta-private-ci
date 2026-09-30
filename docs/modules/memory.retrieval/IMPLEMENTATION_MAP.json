@@ -13,6 +13,7 @@
   "statusGuide": "docs/modules/memory.retrieval/STATUS.md",
   "recoveryGuide": "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
   "controlledApiGuide": "docs/modules/memory.retrieval/CONTROLLED_API.md",
+  "qualificationIdentityGuide": "docs/modules/memory.retrieval/QUALIFICATION_IDENTITY.md",
   "qualificationPolicy": "qualification/memory-retrieval/qualification-policy.json",
   "recoveryMatrix": "qualification/memory-retrieval/recovery-matrix.json",
   "runtimeStatusArtifact": "qualification-manifest.json",
@@ -251,10 +252,10 @@
       "state": "explicit_authenticated_retrieval_profile"
     }
   ],
-  "sourceIdentityPolicy": "exact_parent_observation_plus_runtime_manifest_v1",
+  "sourceIdentityPolicy": "coherent_workflow_run_attempt_plus_runtime_manifest_v2",
   "observedAtHead": {
-    "commit": "18336e1f84806b68a520964f5c29314469fad53f",
-    "tree": "253ff1526cc662e6c509c1871eaf40f668bd1eb8"
+    "commit": "dfbeab5fde0bff1aae724315dceafac25b54fe07",
+    "tree": "92631e0ac940cd206c151689f22ee78e27185fe9"
   },
   "observedSourcePaths": [
     ".github/workflows",
