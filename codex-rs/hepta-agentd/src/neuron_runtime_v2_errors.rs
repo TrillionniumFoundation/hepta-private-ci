@@ -169,17 +169,6 @@ impl StdError for AgentdNeuronControlErrorV2 {
     }
 }
 
-/// Optional exact operation context attached at the logging/CLI boundary. The
-/// base control error deliberately does not retain request data; callers that
-/// already own an exact durable key may attach it without weakening the typed
-/// runtime or duplicating operation state.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AgentdNeuronOperationIdentityV2 {
-    pub tick_id: StableId,
-    pub input_semantic_digest: Digest32,
-}
-
 #[derive(Debug)]
 pub struct AgentdNeuronControlFailureV2 {
     error: AgentdNeuronControlErrorV2,

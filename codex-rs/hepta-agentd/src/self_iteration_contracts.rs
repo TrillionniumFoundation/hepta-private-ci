@@ -44,21 +44,33 @@ pub enum AgentdSelfIterationPhaseV1 {
 #[serde(deny_unknown_fields)]
 pub struct AgentdSelfIterationRecordV1 {
     pub candidate_id: String,
+    #[serde(with = "super::codec::digest")]
     pub frozen_digest: Digest32,
+    #[serde(with = "super::codec::digest")]
     pub objective_digest: Digest32,
     pub base_generation: u64,
     pub successor_generation: u64,
     pub rollback_generation: u64,
+    #[serde(with = "super::codec::digest")]
     pub successor_configuration: Digest32,
+    #[serde(with = "super::codec::digest")]
     pub successor_body: Digest32,
+    #[serde(with = "super::codec::digest")]
     pub rollback_configuration: Digest32,
+    #[serde(with = "super::codec::digest")]
     pub rollback_body: Digest32,
     pub expires_at: u64,
     pub phase: AgentdSelfIterationPhaseV1,
+    #[serde(with = "super::codec::optional_digest")]
     pub evaluation_digest: Option<Digest32>,
+    #[serde(with = "super::codec::optional_digest")]
     pub selection_digest: Option<Digest32>,
+    #[serde(with = "super::codec::optional_digest")]
     pub canary_operation_digest: Option<Digest32>,
+    #[serde(with = "super::codec::optional_digest")]
     pub canary_checkpoint_digest: Option<Digest32>,
+    pub canary_observation: Option<AgentdSelfIterationCanaryObservationV1>,
+    #[serde(with = "super::codec::optional_digest")]
     pub observer_digest: Option<Digest32>,
 }
 
@@ -68,4 +80,16 @@ pub struct AgentdSelfIterationRecordV1 {
 pub enum AgentdSelfIterationCanaryVerdictV1 {
     Accept,
     RollBack,
+}
+
+/// Measurements copied from the original durable canary receipt. They are
+/// covered by Observer evidence; this projection grants no result-use power.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentdSelfIterationCanaryObservationV1 {
+    pub latency_micros: u64,
+    pub resident_bytes: u64,
+    pub confidence_ppm: u32,
+    pub ood_ppm: u32,
+    pub abstain: bool,
 }

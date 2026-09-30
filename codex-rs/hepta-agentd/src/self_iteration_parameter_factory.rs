@@ -17,6 +17,8 @@ use super::*;
 /// signs their exact frozen identity using the installed Generator credential.
 /// These capabilities stay outside request data and model text.
 pub trait AgentdGovernedParameterGenerationCompilerV1: Send {
+    fn describe(&self, envelope: &IterationEnvelopeV1) -> Result<String, AgentdError>;
+
     fn prepare(
         &mut self,
         envelope: &IterationEnvelopeV1,
@@ -47,6 +49,9 @@ impl<C: AgentdGovernedParameterGenerationCompilerV1>
 impl<C: AgentdGovernedParameterGenerationCompilerV1> AgentdSelfIterationCandidateAssemblerV1
     for AgentdGovernedParameterCandidateAssemblerV1<C>
 {
+    fn describe(&self, envelope: &IterationEnvelopeV1) -> Result<String, AgentdError> {
+        self.compiler.describe(envelope)
+    }
     async fn assemble(
         &mut self,
         envelope: IterationEnvelopeV1,

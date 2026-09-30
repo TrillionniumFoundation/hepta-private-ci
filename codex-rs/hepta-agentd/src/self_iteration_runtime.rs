@@ -18,6 +18,18 @@ enum Command {
     ),
 }
 
+impl Command {
+    fn reject(self, error: AgentdError) {
+        let response = match self {
+            Self::Freeze(_, response)
+            | Self::Evaluate(_, _, response)
+            | Self::Select(_, _, response)
+            | Self::Observe(_, _, _, response) => response,
+        };
+        let _ = response.send(Err(error));
+    }
+}
+
 /// Bounded product handle. The caller receives neither signing material nor
 /// mutable journal/controller access. Model assessments alone cannot select.
 #[derive(Clone)]
@@ -134,15 +146,16 @@ impl SelfIterationRuntime {
             .lock()
             .map_err(|_| invalid("self-iteration owner poisoned"))?
             .cancellation = cancellation.clone();
+        let mut receiver_closed = false;
         let mut interval = tokio::time::interval(std::time::Duration::from_secs(1));
         interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
         loop {
             let command = tokio::select! {
                 _ = cancellation.cancelled() => return Ok(()),
                 _ = interval.tick() => None,
-                command = self.receiver.recv() => match command {
+                command = self.receiver.recv(), if !receiver_closed => match command {
                     Some(command) => Some(command),
-                    None => { cancellation.cancelled().await; return Ok(()); }
+                    None => { receiver_closed = true; continue; }
                 },
             };
             let owner = Arc::clone(&self.owner);
@@ -162,7 +175,16 @@ impl SelfIterationRuntime {
                 let mut owner = owner
                     .lock()
                     .map_err(|_| invalid("self-iteration owner poisoned"))?;
-                owner.expire(now)?;
+                match owner.expire(now) {
+                    Ok(()) => {}
+                    Err(error @ AgentdError::Overloaded { .. }) => {
+                        if let Some(command) = command {
+                            command.reject(error);
+                        }
+                        return Ok(());
+                    }
+                    Err(error) => return Err(error),
+                }
                 if let Some(command) = command {
                     let (result, response) = match command {
                         Command::Freeze(candidate, response) => {

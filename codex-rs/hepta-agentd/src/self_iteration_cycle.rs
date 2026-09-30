@@ -16,6 +16,10 @@ use super::*;
 /// output. The host owns the compiler, durable inference control and Generator
 /// credential. No caller supplied JSON can substitute for these handles.
 pub trait AgentdSelfIterationCandidateAssemblerV1: Send {
+    /// Current baseline parameters and permitted mutation bounds, resolved by
+    /// the installed host compiler rather than invented by the model.
+    fn describe(&self, envelope: &IterationEnvelopeV1) -> Result<String, AgentdError>;
+
     fn assemble(
         &mut self,
         envelope: IterationEnvelopeV1,
@@ -83,7 +87,7 @@ where
         objective_prompt: String,
     ) -> Result<AgentdSelfIterationRecordV1, AgentdError> {
         envelope.validate().map_err(invalid)?;
-        if objective_prompt.is_empty() || objective_prompt.len() > 4 * 1024 {
+        if objective_prompt.is_empty() || objective_prompt.len() > 2 * 1024 {
             return Err(invalid("self-iteration objective prompt budget"));
         }
         let deadline_ms = envelope
@@ -94,14 +98,23 @@ where
         if deadline_ms <= now || deadline_ms > now.saturating_add(3_600_000) {
             return Err(invalid("iteration deadline"));
         }
+        let current = self.assembler.describe(&envelope)?;
+        if current.is_empty() || current.len() > 2 * 1024 {
+            return Err(invalid("host parameter description budget"));
+        }
         let envelope_digest = envelope_digest(&envelope);
         let proposal = self.assess(SelfIterationModelRoleV1::Generator,
             envelope_digest, None, deadline_ms, format!(
-                "Propose a bounded durable Neuron generation change and its rollback.\nObjective: {objective_prompt}\nEnvelope: {envelope_digest}\nNo acceptance or signing authority is granted."
+                "Propose a bounded durable Neuron generation change and its rollback.\nObjective: {objective_prompt}\nActual baseline and permitted mutations: {current}\nEnvelope: {envelope_digest}\nNo acceptance or signing authority is granted."
             )).await?;
         let candidate = self.assembler.assemble(envelope.clone(), &proposal).await?;
         if candidate.envelope != envelope {
             return Err(invalid("assembler changed frozen envelope"));
+        }
+        let semantic_diff = std::str::from_utf8(&candidate.semantic_diff)
+            .map_err(|_| invalid("model-assisted parameter diff must be textual"))?;
+        if semantic_diff.len() > 4 * 1024 {
+            return Err(invalid("model-assisted parameter diff budget"));
         }
         let frozen_digest = Digest32::of_bytes(&self_iteration_candidate_payload_v1(&candidate)?);
         let frozen = self.runtime.freeze(candidate.clone()).await?;
@@ -118,17 +131,24 @@ where
         }
         let assessment = self.assess(SelfIterationModelRoleV1::Evaluator,
             envelope_digest, Some(frozen_digest), deadline_ms, format!(
-                "Assess the frozen candidate for objective alignment and propose adversarial tests.\nObjective: {objective_prompt}\nFrozen candidate: {frozen_digest}\nDiff: {}\nTest plan: {}\nModel text is advisory; the independent owner executes the complete frozen plan.",
+                "Assess the frozen candidate for objective alignment and propose adversarial tests.\nObjective: {objective_prompt}\nFrozen candidate: {frozen_digest}\nDiff identity: {}\nFull semantic diff: {semantic_diff}\nTest plan: {}\nModel text is advisory; the independent owner executes the complete frozen plan.",
                 candidate.candidate.semantic_diff_digest, candidate.candidate.test_plan_digest
             )).await?;
         let evidence = self
             .owners
             .evaluate(&candidate, &frozen, &assessment)
             .await?;
+        let metrics = format!(
+            "scope={:?}; metrics={:?}",
+            evidence.bundle.claim_scope, evidence.bundle.metrics
+        );
+        if metrics.len() > 4 * 1024 {
+            return Err(invalid("model selection metric context budget"));
+        }
         let evaluated = self.runtime.evaluate(frozen_digest, evidence).await?;
         let selection = self.assess(SelfIterationModelRoleV1::Selector,
             envelope_digest, Some(frozen_digest), deadline_ms, format!(
-                "Assess selection of frozen candidate {frozen_digest}.\nObjective: {objective_prompt}\nAuthenticated independent evaluation: {:?}\nOnly the independent Selector owner can select.", evaluated.evaluation_digest
+                "Assess selection of frozen candidate {frozen_digest}.\nObjective: {objective_prompt}\nAuthenticated independent evaluation: {:?}\nActual independently measured intervals: {metrics}\nOnly the independent Selector owner can select.", evaluated.evaluation_digest
             )).await?;
         let attestation = self.owners.select(&evaluated, &selection).await?;
         let canary = self.runtime.select(frozen_digest, attestation).await?;
@@ -140,9 +160,9 @@ where
         }
         let observation = self.assess(SelfIterationModelRoleV1::Observer,
             envelope_digest, Some(frozen_digest), deadline_ms, format!(
-                "Assess the actual durable canary and recommend acceptance or rollback.\nObjective: {objective_prompt}\nGeneration: {}\nNative operation: {:?}\nNative checkpoint: {:?}\nThe independent Observer must resolve and verify the actual receipt before signing.",
+                "Assess the actual durable canary and recommend acceptance or rollback.\nObjective: {objective_prompt}\nGeneration: {}\nNative operation: {:?}\nNative checkpoint: {:?}\nActual receipt measurements: {:?}\nThe independent Observer must resolve and verify the actual receipt before signing.",
                 canary.successor_generation, canary.canary_operation_digest,
-                canary.canary_checkpoint_digest
+                canary.canary_checkpoint_digest, canary.canary_observation
             )).await?;
         let (verdict, attestation) = self.owners.observe(&canary, &observation).await?;
         self.runtime

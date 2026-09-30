@@ -144,6 +144,15 @@ pub fn self_iteration_canary_payload_v1(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
+    let observed = record
+        .canary_observation
+        .as_ref()
+        .ok_or_else(|| invalid("canary observation missing"))?;
+    bytes.extend_from_slice(&observed.latency_micros.to_be_bytes());
+    bytes.extend_from_slice(&observed.resident_bytes.to_be_bytes());
+    bytes.extend_from_slice(&observed.confidence_ppm.to_be_bytes());
+    bytes.extend_from_slice(&observed.ood_ppm.to_be_bytes());
+    bytes.push(u8::from(observed.abstain));
     bytes.push(match verdict {
         AgentdSelfIterationCanaryVerdictV1::Accept => 1,
         AgentdSelfIterationCanaryVerdictV1::RollBack => 2,

@@ -86,7 +86,11 @@ impl SelfIterationOwner {
                 .body_bundle_digest()
                 .ok_or_else(|| invalid("durable canary body missing"))?,
             current.request.canary_tick.clone(),
-        )?;
+        );
+        let invocation = match invocation {
+            Ok(invocation) => invocation,
+            Err(_) => return self.rollback(),
+        };
         let mut guard = IterationCanaryGuard {
             objective: current.record.objective_digest,
             generation: current.record.successor_generation,
@@ -95,11 +99,19 @@ impl SelfIterationOwner {
                 + std::time::Duration::from_micros(current.request.canary_port.budget_micros),
             cancellation: self.cancellation.clone(),
         };
-        let commit = invocation
-            .execute(&current.request.canary_port, &mut guard)
-            .map_err(|error| invalid(format!("canary operation: {error}")))?;
+        let commit = match invocation.execute(&current.request.canary_port, &mut guard) {
+            Ok(commit) => commit,
+            Err(_) => return self.rollback(),
+        };
         current.record.canary_operation_digest = Some(commit.operation_digest);
         current.record.canary_checkpoint_digest = Some(commit.output.tick.checkpoint_after);
+        current.record.canary_observation = Some(AgentdSelfIterationCanaryObservationV1 {
+            latency_micros: commit.output.model_runtime.latency_micros,
+            resident_bytes: commit.output.model_runtime.resident_bytes,
+            confidence_ppm: commit.output.tick.confidence_ppm,
+            ood_ppm: commit.output.tick.ood_ppm,
+            abstain: commit.output.tick.abstain,
+        });
         current.record.phase = AgentdSelfIterationPhaseV1::Canary;
         self.journal.persist(&current.record)?;
         if commit.disposition != NeuronCommitDispositionV1::CommittedReady {
@@ -167,11 +179,10 @@ impl SelfIterationOwner {
     }
 
     pub(super) fn expire(&mut self, now: u64) -> Result<(), AgentdError> {
-        if self
-            .current
-            .as_ref()
-            .is_none_or(|current| now / 1_000 < current.record.expires_at)
-        {
+        if self.current.as_ref().is_none_or(|current| {
+            now / 1_000 < current.record.expires_at
+                && current.record.phase != AgentdSelfIterationPhaseV1::RollingBack
+        }) {
             return Ok(());
         }
         let current = self
@@ -215,6 +226,17 @@ impl SelfIterationOwner {
         .contains(&actual)
         {
             return Err(invalid("rollback predecessor changed"));
+        }
+        if actual == current.record.successor_generation
+            && self
+                .host
+                .generation_snapshot()?
+                .active
+                .pending_operation_code
+                .is_some()
+        {
+            self.host
+                .reconcile_iteration_probe(&current.request.canary_tick)?;
         }
         self.host
             .install_iteration_generation(current.request.rollback_successor.clone(), actual)?;

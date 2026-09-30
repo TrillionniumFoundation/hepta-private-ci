@@ -27,6 +27,7 @@ fn record() -> AgentdSelfIterationRecordV1 {
         selection_digest: None,
         canary_operation_digest: None,
         canary_checkpoint_digest: None,
+        canary_observation: None,
         observer_digest: None,
     }
 }

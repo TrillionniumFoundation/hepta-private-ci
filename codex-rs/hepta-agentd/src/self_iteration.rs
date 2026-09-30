@@ -11,12 +11,24 @@ use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_agent_components::learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_agent_components::learning_ledger::VerifiedLearningEvidenceV1;
 use codex_hepta_agent_components::learning_ledger::verify_signed_actor_separation;
-use codex_hepta_agent_components::neuron::NeuronTickInputV1;
 use codex_hepta_agent_components::types::Digest32;
 
 use crate::AgentdError;
 use crate::AgentdNeuronRuntimeV2Host;
 use crate::AgentdSignedEvaluationV1;
+
+#[path = "self_iteration_codec.rs"]
+mod codec;
+
+#[path = "self_iteration_measurement.rs"]
+mod measurement;
+pub use measurement::AgentdSelfIterationPhysicalMeasurementV1;
+pub use measurement::AgentdSelfIterationQualificationCaseV1;
+pub use measurement::measure_self_iteration_qualification_v1;
+
+#[path = "self_iteration_signer.rs"]
+mod signer;
+pub use signer::AgentdSelfIterationLocalSignerV1;
 
 #[path = "self_iteration_contracts.rs"]
 mod contracts;
@@ -144,6 +156,7 @@ impl SelfIterationOwner {
             selection_digest: None,
             canary_operation_digest: None,
             canary_checkpoint_digest: None,
+            canary_observation: None,
             observer_digest: None,
         };
         if let Some(previous) = self.journal.record() {

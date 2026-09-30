@@ -294,6 +294,26 @@ impl AgentdNeuronRuntimeV2Host {
             .reload(next)
             .map_err(|error| neuron_product_error("iteration reload", error))
     }
+    pub(crate) fn reconcile_iteration_probe(
+        &self,
+        input: &NeuronTickInputV1,
+    ) -> Result<(), crate::AgentdError> {
+        if !self.iteration_quarantine.load(Ordering::Acquire) {
+            return Err(crate::AgentdError::Protocol(
+                "canary recovery requires quarantine".into(),
+            ));
+        }
+        let report = self
+            .controller
+            .recover_existing_operation(input)
+            .map_err(|error| neuron_product_error("recover canary", error))?;
+        if report.requires_reconciliation {
+            return Err(crate::AgentdError::Overloaded {
+                retry_after_ms: 1_000,
+            });
+        }
+        Ok(())
+    }
     pub(crate) fn prepare_iteration_probe(
         &self,
         run_id: StableId,

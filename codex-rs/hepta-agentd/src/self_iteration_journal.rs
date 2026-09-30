@@ -18,6 +18,7 @@ const MAX_RECORD_BYTES: u64 = 16 * 1024;
 #[serde(deny_unknown_fields)]
 struct StoredRecord {
     version: u32,
+    #[serde(with = "super::codec::digest")]
     checksum: Digest32,
     record: AgentdSelfIterationRecordV1,
 }
@@ -196,6 +197,11 @@ fn validate_record(record: &AgentdSelfIterationRecordV1) -> Result<(), AgentdErr
     };
     if !phase_valid
         || record.canary_operation_digest.is_some() != record.canary_checkpoint_digest.is_some()
+        || record.canary_operation_digest.is_some() != record.canary_observation.is_some()
+        || record
+            .canary_observation
+            .as_ref()
+            .is_some_and(|value| value.confidence_ppm > 1_000_000 || value.ood_ppm > 1_000_000)
         || codex_hepta_agent_components::types::StableId::new(&record.candidate_id).is_err()
         || record.base_generation == 0
         || record.base_generation.checked_add(1) != Some(record.successor_generation)
