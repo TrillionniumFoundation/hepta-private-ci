@@ -10,14 +10,18 @@ mod watchdog;
 pub(super) struct AgentdIntelligenceWorkerV1<T> {
     handle: tokio::task::JoinHandle<T>,
     timed_out: Arc<std::sync::atomic::AtomicBool>,
+    timeout_counted: Arc<std::sync::atomic::AtomicBool>,
     finished: Arc<std::sync::atomic::AtomicBool>,
+    telemetry: Arc<crate::AgentdIntelligenceTelemetryV1>,
 }
 
 impl<T> AgentdIntelligenceWorkerV1<T> {
     fn mark_timed_out(&self) -> bool {
-        !self
-            .timed_out
-            .swap(true, std::sync::atomic::Ordering::AcqRel)
+        self.telemetry.mark_worker_timed_out(
+            &self.timed_out,
+            &self.timeout_counted,
+            &self.finished,
+        )
     }
 
     #[cfg(test)]
@@ -114,7 +118,9 @@ impl AgentdIntelligenceProductRunnerV1 {
 
     #[must_use]
     pub fn authority_rollback_path(&self) -> Option<&std::path::Path> {
-        self.authority_rollback.as_deref().map(super::super::intelligence_authority_rollback::IntelligenceAuthorityRollbackGuardV1::path)
+        self.authority_rollback.as_deref().map(
+            super::super::intelligence_authority_rollback::IntelligenceAuthorityRollbackGuardV1::path,
+        )
     }
 
     #[must_use]
@@ -185,7 +191,11 @@ impl AgentdIntelligenceProductRunnerV1 {
         if budget.is_zero() {
             return Err(AgentdIntelligenceProductError::TimedOut);
         }
-        let permit = match Arc::clone(&self.worker_slots).try_acquire_owned() {
+        let queue_started = Instant::now();
+        let permit_result = Arc::clone(&self.worker_slots).try_acquire_owned();
+        self.telemetry
+            .record_queue_wait(elapsed_micros(queue_started.elapsed()));
+        let permit = match permit_result {
             Ok(permit) => permit,
             Err(_) => {
                 self.telemetry.record_busy();
@@ -194,6 +204,7 @@ impl AgentdIntelligenceProductRunnerV1 {
         };
         let guard = self.telemetry.worker_started();
         let timed_out = guard.timed_out_flag();
+        let timeout_counted = guard.timeout_counted_flag();
         let finished = guard.finished_flag();
         let completion = watchdog::WorkerCompletionV1::supervise(
             budget,
@@ -213,7 +224,9 @@ impl AgentdIntelligenceProductRunnerV1 {
         Ok(AgentdIntelligenceWorkerV1 {
             handle,
             timed_out,
+            timeout_counted,
             finished,
+            telemetry: Arc::clone(&self.telemetry),
         })
     }
 
@@ -303,6 +316,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 self.record_canonical_error(&error);
                 AgentdIntelligenceProductError::Canonical(error)
             })?;
+        self.telemetry.record_candidate_count(candidate_ids.len());
         let mut intuition_ids = inputs
             .intuition_request
             .candidates
@@ -667,4 +681,8 @@ impl AgentdIntelligenceProductRunnerV1 {
             .append_qualification(pending.expected_predecessor, pending.event)
             .map_err(AgentdIntelligenceLedgerError::Ledger)
     }
+}
+
+fn elapsed_micros(value: Duration) -> u64 {
+    u64::try_from(value.as_micros()).unwrap_or(u64::MAX)
 }
