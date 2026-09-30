@@ -7,8 +7,17 @@ import json
 import re
 from pathlib import Path
 
-from channel_matrix_evidence import COMMANDS, MAX_LOG_BYTES, file_digest, read_object
+import channel_matrix_evidence_v2 as evidence_policy
+from channel_matrix_evidence import MAX_LOG_BYTES
+from channel_matrix_evidence import file_digest
+from channel_matrix_evidence import read_object
 from channel_matrix_governed_attestation import verify_attestations
+
+# Receipt producers, status derivation, scenario qualification and paired
+# acceptance must compare against one command policy. Importing the v2 overlay
+# here prevents a successful wrapper receipt from being rejected as the older
+# base command when this script runs in a fresh process.
+COMMANDS = evidence_policy.evidence.COMMANDS
 
 
 def command_state(directory: Path, label: str, source: dict, unchanged: bool) -> str:
@@ -52,9 +61,11 @@ def summarize(directory: Path, governance_policy: Path | None = None) -> dict:
     states = {
         "source_navigation": "not_proved",
         "compilation": "not_executed",
+        "api_compile_fail": "not_executed",
         "native_tests": "not_executed",
         "strict_lint": "not_executed",
         "formatting": "not_executed",
+        "clean_tree": "not_executed",
         "target_qualification": "not_proved",
         "independent_acceptance": "not_proved",
     }
@@ -88,17 +99,17 @@ def summarize(directory: Path, governance_policy: Path | None = None) -> dict:
                 != {"commit": identity["commit"], "tree": identity["tree"]}
             ):
                 raise ValueError("source/navigation identity mismatch")
-            if (
-                candidate.get("status")
-                == "PASS_CHANNEL_MATRIX_CANDIDATE_BINDING"
-            ):
+            if candidate.get("status") == "PASS_CHANNEL_MATRIX_CANDIDATE_BINDING":
                 states["source_navigation"] = "passed"
         after = directory / "source-after.json"
         unchanged = after.exists() and file_digest(after) == file_digest(
             directory / "source.json"
         )
+        if after.exists():
+            states["clean_tree"] = "passed" if unchanged else "invalid_evidence"
         for label, key in (
             ("compile", "compilation"),
+            ("api-compile-fail", "api_compile_fail"),
             ("focused-tests", "native_tests"),
             ("clippy", "strict_lint"),
             ("format", "formatting"),

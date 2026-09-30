@@ -9,12 +9,13 @@ from typing import Sequence
 
 ROOT = Path(__file__).resolve().parents[1]
 CODEX_ROOT = ROOT / "codex-rs"
-PACKAGES = (
-    "codex-hepta-matrix-protocol",
-    "codex-hepta-matrix-store",
-    "codex-hepta-matrix-sdk",
-    "codex-hepta-matrixd",
-)
+SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+if str(SCRIPT_DIRECTORY) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIRECTORY))
+
+import channel_matrix_evidence_v2 as policy
+
+PACKAGES = policy.OWNER_PACKAGES
 RUST_COMMAND = [
     "just",
     "test",

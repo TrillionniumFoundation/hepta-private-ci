@@ -34,9 +34,13 @@ class FocusedGateTests(unittest.TestCase):
                 "-v",
             ],
         )
+        self.assertEqual(module.PACKAGES, module.policy.OWNER_PACKAGES)
         self.assertEqual(
             set(module.PACKAGES),
             {
+                "codex-hepta-contracts",
+                "codex-state",
+                "codex-hepta-operations",
                 "codex-hepta-matrix-protocol",
                 "codex-hepta-matrix-store",
                 "codex-hepta-matrix-sdk",

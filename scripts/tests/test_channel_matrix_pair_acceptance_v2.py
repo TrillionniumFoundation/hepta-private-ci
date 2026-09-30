@@ -35,7 +35,15 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
             "files": [{"path": path} for path in paths],
         }
 
-    def write_receipt(self, directory, source, label, arguments, *, with_junit):
+    def write_receipt(
+        self,
+        directory,
+        source,
+        label,
+        arguments,
+        *,
+        with_junit,
+    ):
         log = directory / f"{label}.log"
         log.write_text(f"{label} passed\n", encoding="utf-8")
         inventory = {log.name: {}}
@@ -44,7 +52,11 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
             junit_path = directory / "focused-tests.junit.xml"
             junit_path.write_text("<testsuites/>\n", encoding="utf-8")
             inventory[junit_path.name] = {}
-            junit = {"path": junit_path.name, "bytes": junit_path.stat().st_size, "sha256": digest(junit_path)}
+            junit = {
+                "path": junit_path.name,
+                "bytes": junit_path.stat().st_size,
+                "sha256": digest(junit_path),
+            }
         command = {
             "schema": "hepta.channel-matrix-command.v1",
             "label": label,
@@ -57,14 +69,27 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
             "launchError": None,
             "junit": junit,
             "sourceUnchanged": True,
-            "log": {"path": log.name, "bytes": log.stat().st_size, "sha256": digest(log), "withinBudget": True},
+            "log": {
+                "path": log.name,
+                "bytes": log.stat().st_size,
+                "sha256": digest(log),
+                "withinBudget": True,
+            },
         }
         command_path = directory / f"{label}.command.json"
         command_path.write_text(json.dumps(command), encoding="utf-8")
         inventory[command_path.name] = {}
         return inventory
 
-    def write_provenance(self, directory, source, lane, *, run_id="42", attempt="1"):
+    def write_provenance(
+        self,
+        directory,
+        source,
+        lane,
+        *,
+        run_id="42",
+        attempt="1",
+    ):
         row = {
             "schema": "hepta.channel-matrix-source-provenance.v1",
             "valid": True,
@@ -72,52 +97,176 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
             "stage": lane,
             "checkoutSha": source["testedSha"],
             "checkoutTree": source["testedTree"],
-            "execution": {"workflowRunId": run_id, "attemptId": attempt, "runnerImage": "ubuntu24:fixture", "targetTriple": "x86_64-unknown-linux-gnu"},
-            "claims": {"trackedSourceOnly": True, "generatedSourceIncluded": False, "cacheSourceIncluded": False, "artifactSourceIncluded": False, "authorityGranted": False},
+            "execution": {
+                "workflowRunId": run_id,
+                "attemptId": attempt,
+                "runnerImage": "ubuntu24:fixture",
+                "targetTriple": "x86_64-unknown-linux-gnu",
+            },
+            "claims": {
+                "trackedSourceOnly": True,
+                "generatedSourceIncluded": False,
+                "cacheSourceIncluded": False,
+                "artifactSourceIncluded": False,
+                "authorityGranted": False,
+            },
             "files": [{"repoRelativePath": "fixture"}],
         }
         path = directory / module.PROVENANCE_FILE
         path.write_text(json.dumps(row), encoding="utf-8")
-        (directory / "manifest.json").write_text(json.dumps({"runId": run_id, "runAttempt": attempt}), encoding="utf-8")
+        (directory / "manifest.json").write_text(
+            json.dumps({"runId": run_id, "runAttempt": attempt}),
+            encoding="utf-8",
+        )
         return {path.name: {}}
 
     def test_source_closure_accepts_all_required_owners(self) -> None:
-        self.assertTrue(module.REQUIRED_EXACT_PATHS.issubset(module._source_paths(self.source())))
+        self.assertTrue(
+            module.REQUIRED_EXACT_PATHS.issubset(
+                module._source_paths(self.source())
+            )
+        )
 
     def test_source_closure_rejects_missing_target_runner(self) -> None:
         source = self.source()
-        source["files"] = [row for row in source["files"] if row["path"] != "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh"]
+        source["files"] = [
+            row
+            for row in source["files"]
+            if row["path"]
+            != "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh"
+        ]
         with self.assertRaisesRegex(ValueError, "exact paths"):
             module._source_paths(source)
+
+    def test_every_policy_command_has_an_independent_receipt_contract(self) -> None:
+        self.assertEqual(
+            set(module.policy.evidence.COMMANDS),
+            {
+                "compile",
+                "focused-tests",
+                "clippy",
+                "format",
+                "api-compile-fail",
+            },
+        )
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            source = self.source()
+            (directory / "source.json").write_text(
+                json.dumps(source, sort_keys=True),
+                encoding="utf-8",
+            )
+            for label, arguments in module.policy.evidence.COMMANDS.items():
+                with self.subTest(label=label):
+                    inventory = self.write_receipt(
+                        directory,
+                        source,
+                        label,
+                        arguments,
+                        with_junit=label == module.FOCUSED_LABEL,
+                    )
+                    self.assertEqual(
+                        module._command_receipt(
+                            directory,
+                            source,
+                            inventory,
+                            label,
+                            arguments,
+                            require_junit=label == module.FOCUSED_LABEL,
+                        )["exitCode"],
+                        0,
+                    )
+                    for path in directory.iterdir():
+                        if path.name != "source.json":
+                            path.unlink()
 
     def test_api_receipt_binds_command_log_and_source(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)
             source = self.source()
-            (directory / "source.json").write_text(json.dumps(source, sort_keys=True), encoding="utf-8")
-            inventory = self.write_receipt(directory, source, module.API_LABEL, module.policy.API_COMPILE_FAIL_COMMAND, with_junit=False)
-            self.assertEqual(module._command_receipt(directory, source, inventory, module.API_LABEL, module.policy.API_COMPILE_FAIL_COMMAND, require_junit=False)["exitCode"], 0)
+            (directory / "source.json").write_text(
+                json.dumps(source, sort_keys=True),
+                encoding="utf-8",
+            )
+            inventory = self.write_receipt(
+                directory,
+                source,
+                module.API_LABEL,
+                module.policy.API_COMPILE_FAIL_COMMAND,
+                with_junit=False,
+            )
+            self.assertEqual(
+                module._command_receipt(
+                    directory,
+                    source,
+                    inventory,
+                    module.API_LABEL,
+                    module.policy.API_COMPILE_FAIL_COMMAND,
+                    require_junit=False,
+                )["exitCode"],
+                0,
+            )
 
     def test_focused_receipt_binds_full_regression_gate_and_junit(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)
             source = self.source()
-            (directory / "source.json").write_text(json.dumps(source, sort_keys=True), encoding="utf-8")
-            inventory = self.write_receipt(directory, source, module.FOCUSED_LABEL, module.policy.FOCUSED_GATE_COMMAND, with_junit=True)
-            self.assertEqual(module._command_receipt(directory, source, inventory, module.FOCUSED_LABEL, module.policy.FOCUSED_GATE_COMMAND, require_junit=True)["exitCode"], 0)
+            (directory / "source.json").write_text(
+                json.dumps(source, sort_keys=True),
+                encoding="utf-8",
+            )
+            inventory = self.write_receipt(
+                directory,
+                source,
+                module.FOCUSED_LABEL,
+                module.policy.FOCUSED_GATE_COMMAND,
+                with_junit=True,
+            )
+            self.assertEqual(
+                module._command_receipt(
+                    directory,
+                    source,
+                    inventory,
+                    module.FOCUSED_LABEL,
+                    module.policy.FOCUSED_GATE_COMMAND,
+                    require_junit=True,
+                )["exitCode"],
+                0,
+            )
 
     def test_provenance_receipt_binds_lane_and_attempt(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)
             source = self.source()
-            inventory = self.write_provenance(directory, source, "source-head")
-            row = module._provenance_receipt(directory, source, inventory, "source-head")
+            inventory = self.write_provenance(
+                directory,
+                source,
+                "source-head",
+            )
+            row = module._provenance_receipt(
+                directory,
+                source,
+                inventory,
+                "source-head",
+            )
             self.assertEqual(row["execution"]["workflowRunId"], "42")
-            manifest = json.loads((directory / "manifest.json").read_text())
+            manifest = json.loads(
+                (directory / "manifest.json").read_text()
+            )
             manifest["runAttempt"] = "2"
-            (directory / "manifest.json").write_text(json.dumps(manifest))
-            with self.assertRaisesRegex(ValueError, "mix workflow attempts"):
-                module._provenance_receipt(directory, source, inventory, "source-head")
+            (directory / "manifest.json").write_text(
+                json.dumps(manifest)
+            )
+            with self.assertRaisesRegex(
+                ValueError,
+                "mix workflow attempts",
+            ):
+                module._provenance_receipt(
+                    directory,
+                    source,
+                    inventory,
+                    "source-head",
+                )
 
 
 if __name__ == "__main__":

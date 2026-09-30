@@ -19,6 +19,7 @@ import channel_matrix_pair_acceptance as base
 API_LABEL = "api-compile-fail"
 FOCUSED_LABEL = "focused-tests"
 PROVENANCE_FILE = "source-provenance.json"
+EXTENDED_LOCAL_STATES = ("api_compile_fail", "clean_tree")
 REQUIRED_EXACT_PATHS = {
     ".github/workflows/channel-matrix-preserve-unknown.yml",
     ".github/workflows/channel-matrix-materialize.yml",
@@ -54,7 +55,9 @@ def _source_paths(source: dict[str, Any]) -> set[str]:
         if not any(path.startswith(prefix) for path in paths)
     ]
     if missing_prefixes:
-        raise ValueError(f"source closure misses owner roots: {sorted(missing_prefixes)}")
+        raise ValueError(
+            f"source closure misses owner roots: {sorted(missing_prefixes)}"
+        )
     return paths
 
 
@@ -90,7 +93,8 @@ def _command_receipt(
         or row.get("arguments") != arguments
         or row.get("workingDirectory") != "codex-rs"
         or row.get("testedSha") != source.get("testedSha")
-        or row.get("sourceSnapshotSha256") != base.digest(directory / "source.json")
+        or row.get("sourceSnapshotSha256")
+        != base.digest(directory / "source.json")
         or type(row.get("exitCode")) is not int
         or row.get("exitCode") != 0
         or row.get("completed") is not True
@@ -135,13 +139,17 @@ def _provenance_receipt(
         or claims.get("artifactSourceIncluded") is not False
         or claims.get("authorityGranted") is not False
     ):
-        raise ValueError("source provenance is missing, invalid or authority-escalating")
+        raise ValueError(
+            "source provenance is missing, invalid or authority-escalating"
+        )
     manifest = base.read_object(directory / "manifest.json")
     if (
         execution.get("workflowRunId") != manifest.get("runId")
         or execution.get("attemptId") != manifest.get("runAttempt")
     ):
-        raise ValueError("source provenance and artifact manifest mix workflow attempts")
+        raise ValueError(
+            "source provenance and artifact manifest mix workflow attempts"
+        )
     return row
 
 
@@ -149,24 +157,25 @@ def _extended_lane(directory_value: Path, expected_lane: str) -> dict[str, Any]:
     row = base.lane(directory_value, expected_lane)
     _source_paths(row["source"])
     row["provenance"] = _provenance_receipt(
-        row["directory"], row["source"], row["inventory"], expected_lane
-    )
-    _command_receipt(
         row["directory"],
         row["source"],
         row["inventory"],
-        API_LABEL,
-        policy.API_COMPILE_FAIL_COMMAND,
-        require_junit=False,
+        expected_lane,
     )
-    _command_receipt(
-        row["directory"],
-        row["source"],
-        row["inventory"],
-        FOCUSED_LABEL,
-        policy.FOCUSED_GATE_COMMAND,
-        require_junit=True,
-    )
+    states = row["status"].get("states")
+    if not isinstance(states, dict) or any(
+        states.get(name) != "passed" for name in EXTENDED_LOCAL_STATES
+    ):
+        raise ValueError("extended repository-controlled states did not pass")
+    for label, arguments in policy.evidence.COMMANDS.items():
+        _command_receipt(
+            row["directory"],
+            row["source"],
+            row["inventory"],
+            label,
+            arguments,
+            require_junit=label == FOCUSED_LABEL,
+        )
     return row
 
 
@@ -179,7 +188,9 @@ def paired(source_head: Path, base_merge: Path) -> dict[str, Any]:
         source_manifest.get("runId") != merge_manifest.get("runId")
         or source_manifest.get("runAttempt") != merge_manifest.get("runAttempt")
     ):
-        raise ValueError("source-head and deterministic merge mix workflow attempts")
+        raise ValueError(
+            "source-head and deterministic merge mix workflow attempts"
+        )
     result = base.paired(source_head, base_merge)
     result["schema"] = "hepta.channel-matrix-paired-qualification.v4"
     result["workflowRunId"] = source_manifest.get("runId")
@@ -189,18 +200,43 @@ def paired(source_head: Path, base_merge: Path) -> dict[str, Any]:
     result["sourceProvenancePassed"] = True
     result["apiCompileFailBoundaryPassed"] = True
     result["repositoryRegressionSuitePassed"] = True
+    result["allCanonicalCommandsRevalidated"] = True
+    result["cleanTreePassed"] = True
+    result["ownerPackages"] = list(policy.OWNER_PACKAGES)
+    result["canonicalCommandArguments"] = policy.evidence.COMMANDS
     result["apiCompileFailArguments"] = policy.API_COMPILE_FAIL_COMMAND
     result["focusedGateArguments"] = policy.FOCUSED_GATE_COMMAND
     result["extendedLaneDigests"] = {}
     for lane_name, lane in (("source-head", source), ("base-merge", merge)):
         directory = lane["directory"]
+        command_digests = {}
+        for label in policy.evidence.COMMANDS:
+            command_digests[label] = {
+                "command": base.digest(
+                    directory / f"{label}.command.json"
+                ),
+                "log": base.digest(directory / f"{label}.log"),
+            }
+            if label == FOCUSED_LABEL:
+                command_digests[label]["junit"] = base.digest(
+                    directory / "focused-tests.junit.xml"
+                )
         result["extendedLaneDigests"][lane_name] = {
             "sourceProvenance": base.digest(directory / PROVENANCE_FILE),
-            "apiCommand": base.digest(directory / f"{API_LABEL}.command.json"),
+            "apiCommand": base.digest(
+                directory / f"{API_LABEL}.command.json"
+            ),
             "apiLog": base.digest(directory / f"{API_LABEL}.log"),
-            "focusedCommand": base.digest(directory / f"{FOCUSED_LABEL}.command.json"),
-            "focusedLog": base.digest(directory / f"{FOCUSED_LABEL}.log"),
-            "focusedJunit": base.digest(directory / "focused-tests.junit.xml"),
+            "focusedCommand": base.digest(
+                directory / f"{FOCUSED_LABEL}.command.json"
+            ),
+            "focusedLog": base.digest(
+                directory / f"{FOCUSED_LABEL}.log"
+            ),
+            "focusedJunit": base.digest(
+                directory / "focused-tests.junit.xml"
+            ),
+            "commands": command_digests,
         }
     return result
 
@@ -212,7 +248,10 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     try:
-        base.write_exclusive(args.output, paired(args.source_head, args.base_merge))
+        base.write_exclusive(
+            args.output,
+            paired(args.source_head, args.base_merge),
+        )
     except (
         OSError,
         ValueError,
@@ -221,7 +260,10 @@ def main() -> int:
         json.JSONDecodeError,
         re.error,
     ) as exc:
-        parser.exit(1, f"FAIL_CHANNEL_MATRIX_PAIRED_QUALIFICATION_V4: {exc}\n")
+        parser.exit(
+            1,
+            f"FAIL_CHANNEL_MATRIX_PAIRED_QUALIFICATION_V4: {exc}\n",
+        )
     return 0
 
 

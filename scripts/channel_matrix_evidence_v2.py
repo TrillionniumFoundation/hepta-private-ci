@@ -25,6 +25,29 @@ EXTRA_SOURCE_ROOTS = (
     "tests/fixtures/run-hermetic-synapse.sh",
     ".github/workflows/channel-matrix-materialize.yml",
 )
+
+# The exact candidate binds these transitive owners, so the same read-only
+# receipt must execute their all-target build, native tests, strict lint and
+# formatting rather than relying on transitive compilation alone.
+OWNER_PACKAGES = (
+    "codex-hepta-contracts",
+    "codex-state",
+    "codex-hepta-operations",
+    "codex-hepta-matrix-protocol",
+    "codex-hepta-matrix-store",
+    "codex-hepta-matrix-sdk",
+    "codex-hepta-matrixd",
+)
+OWNER_PACKAGE_ARGS = [
+    item for package in OWNER_PACKAGES for item in ("-p", package)
+]
+COMPILE_COMMAND = [
+    "cargo",
+    "check",
+    "--locked",
+    *OWNER_PACKAGE_ARGS,
+    "--all-targets",
+]
 API_COMPILE_FAIL_COMMAND = [
     "cargo",
     "test",
@@ -37,6 +60,28 @@ FOCUSED_GATE_COMMAND = [
     "python3",
     "../scripts/channel_matrix_focused_gate.py",
 ]
+CLIPPY_COMMAND = [
+    "cargo",
+    "clippy",
+    "--locked",
+    "--no-deps",
+    *OWNER_PACKAGE_ARGS,
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings",
+]
+FORMAT_COMMAND = [
+    "cargo",
+    "fmt",
+    *[
+        item
+        for package in OWNER_PACKAGES
+        for item in ("--package", package)
+    ],
+    "--",
+    "--check",
+]
 
 # Preserve the canonical implementation and extend only its closed inventories.
 # dict.fromkeys retains deterministic order while rejecting accidental duplicate
@@ -47,15 +92,16 @@ evidence.SOURCE_ROOTS = tuple(
 )
 if "api-compile-fail" in evidence.COMMANDS:
     raise RuntimeError("canonical evidence already defines api-compile-fail")
-if "focused-tests" not in evidence.COMMANDS:
-    raise RuntimeError("canonical evidence lacks focused-tests")
+for required in ("compile", "focused-tests", "clippy", "format"):
+    if required not in evidence.COMMANDS:
+        raise RuntimeError(f"canonical evidence lacks {required}")
 evidence.COMMANDS = {
     **evidence.COMMANDS,
-    "api-compile-fail": API_COMPILE_FAIL_COMMAND,
-    # Keep one focused-tests receipt and one nextest JUnit artifact, but make
-    # that exact command execute both the mapped Rust set and every Matrix
-    # Python/SQLite/evidence regression.
+    "compile": COMPILE_COMMAND,
     "focused-tests": FOCUSED_GATE_COMMAND,
+    "clippy": CLIPPY_COMMAND,
+    "format": FORMAT_COMMAND,
+    "api-compile-fail": API_COMPILE_FAIL_COMMAND,
 }
 
 
