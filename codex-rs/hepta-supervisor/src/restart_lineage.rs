@@ -496,6 +496,42 @@ pub(crate) fn cancel(run_root: &Path, agent_id: &AgentId) -> Result<(), RestartL
     )
 }
 
+/// Cancel only the charged replacement operation whose dispatch failed before
+/// acquiring a process. A later operation or an owned replacement is ineligible.
+pub(crate) fn cancel_failed_spawn(
+    run_root: &Path,
+    agent_id: &AgentId,
+    window_started_unix_ms: u64,
+    attempt: u32,
+) -> Result<(), RestartLineageError> {
+    let lineage = read(run_root)?.ok_or_else(|| {
+        RestartLineageError::Invalid("failed restart dispatch has no lineage".to_string())
+    })?;
+    if lineage.agent_id != *agent_id
+        || !lineage.same_operation(window_started_unix_ms, attempt)
+        || lineage.replacement.is_some()
+        || !matches!(
+            lineage.phase,
+            RestartLineagePhase::ReplacementPending | RestartLineagePhase::Cancelled
+        )
+    {
+        return Err(RestartLineageError::Invalid(
+            "failed dispatch does not match an unowned replacement operation".to_string(),
+        ));
+    }
+    // A previous rename may have published Cancelled before directory sync
+    // failed. Republish the exact terminal witness so every successful retry
+    // obtains a fresh same-parent durability receipt before forgetting it.
+    write(
+        run_root,
+        &lineage.with_state(
+            lineage.predecessor_exit_observed,
+            /*replacement*/ None,
+            RestartLineagePhase::Cancelled,
+        )?,
+    )
+}
+
 pub(crate) fn cancel_if_budget_absent(
     run_root: &Path,
     agent_id: &AgentId,
@@ -591,7 +627,7 @@ fn write(run_root: &Path, lineage: &DurableRestartLineage) -> Result<(), Restart
     if let Err(error) = (|| -> std::io::Result<()> {
         file.write_all(&bytes)?;
         file.sync_all()?;
-        crate::durable_publish::publish(&staging, &destination)
+        crate::durable_publish::publish_at(&staging, &destination, "restart_lineage")
     })() {
         let _ = std::fs::remove_file(&staging);
         return Err(error.into());

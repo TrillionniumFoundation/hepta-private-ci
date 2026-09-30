@@ -182,11 +182,11 @@ fn foreign_companion_journal_is_a_fatal_startup_error() -> Result<()> {
     write_restart_journal(&fixture.run_root, &journal)?;
     let before = std::fs::read(fixture.run_root.join(RESTART_JOURNAL_FILE))?;
     let (supervisor, report) = Supervisor::recover(
-            fixture.registry.clone(),
-            NoDriver,
-            SupervisorConfig::local_default(),
-            Instant::now()
-        )?;
+        fixture.registry.clone(),
+        NoDriver,
+        SupervisorConfig::local_default(),
+        Instant::now(),
+    )?;
     assert!(!report.faults.is_empty());
     assert!(supervisor.production_recovery_required(&fixture.agent)?);
     assert_eq!(

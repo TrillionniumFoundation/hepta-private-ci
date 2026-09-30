@@ -760,20 +760,38 @@ fn recovered_running_restart_settles_pending_budget_before_next_claim()
     control.set_healthy(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
 
-    let record = fleet
-        .registry
-        .load()?
-        .agent(&fleet.first)
-        .expect("registered agent")
-        .clone();
-    let first_claim = crate::restart_budget::claim_restart(
+    let predecessor_generation = supervisor
+        .snapshot(&fleet.first)
+        .expect("predecessor")
+        .spawn_generation
+        .expect("predecessor generation");
+    // A pending budget alone cannot turn a healthy predecessor into its own
+    // replacement. Produce the exact replacement lineage before the crash.
+    supervisor.restart(&fleet.first, now)?;
+    control.set_drained(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let now = now + config().restart_backoff_base;
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    control.set_healthy(&fleet.first);
+    let record = supervisor.record(&fleet.first)?;
+    assert_eq!(record.lifecycle.lifecycle, AgentLifecycle::Starting);
+    let first_claim = crate::restart_budget::pending_restart(
         record.layout.run_root(),
         config().restart_max_attempts,
-        config().restart_window,
-        config().restart_backoff_base,
     )
-    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+    .expect("charged replacement");
     assert_eq!(first_claim.attempt, 1);
+    // Model the crash cut after lifecycle publication but before the exact
+    // replacement's healthy budget-completion receipt.
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        record.lifecycle.generation,
+        AgentLifecycle::Running,
+    )?;
     drop(supervisor);
 
     let (mut recovered, report) =
@@ -784,6 +802,8 @@ fn recovered_running_restart_settles_pending_budget_before_next_claim()
         .expect("adopted replacement");
     assert!(adopted.active);
     assert_eq!(adopted.restart_attempt, 1);
+    assert!(adopted.spawn_generation.expect("replacement generation") > predecessor_generation);
+    assert_eq!(control.spawn_count(&fleet.first), 2);
 
     // Exact adoption is not enough to settle the attempt; a fresh ready
     // observation of the running replacement is required.
@@ -796,6 +816,7 @@ fn recovered_running_restart_settles_pending_budget_before_next_claim()
             .restart_attempt,
         2
     );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
     Ok(())
 }
 
@@ -1601,6 +1622,9 @@ fn paired_companions_stop_before_agent_restart_and_fail_independently()
     assert_eq!(control.counts(&fleet.first), (1, 1, 0));
     control.set_exit(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
+    // The charged replacement becomes eligible only after its backoff.
+    let now = now + config().restart_backoff_base;
+    assert_eq!(supervisor.tick(now), TickReport::default());
     control.set_healthy(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.matrix_spawn_count(&fleet.first), 2);
@@ -1784,6 +1808,17 @@ fn stale_deferred_drain_is_generation_fenced_from_replacement_starting()
     );
     let now = now + config().restart_backoff_base;
     assert_eq!(supervisor.tick(now), TickReport::default());
+    // The old companion is still owned: backoff expiry alone cannot admit
+    // a replacement over its live lease. Its tick must still make progress.
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert!(
+        !supervisor
+            .snapshot(&fleet.first)
+            .expect("waiting owner")
+            .active
+    );
+    control.set_matrix_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
     let replacement = supervisor
         .snapshot(&fleet.first)
         .expect("replacement snapshot");
@@ -1793,7 +1828,16 @@ fn stale_deferred_drain_is_generation_fenced_from_replacement_starting()
     assert!(!replacement.restart_pending);
     assert_eq!(control.spawn_count(&fleet.first), 2);
 
-    control.set_matrix_exit(&fleet.first);
+    // Simulate a late callback carrying the predecessor's cached action.
+    // Normal dispatch now waits for exact companion cleanup; the generation
+    // fence must also reject a stale action delivered after replacement start.
+    supervisor.with_slot(&fleet.first, |_supervisor, slot| {
+        slot.deferred_agent_action = Some(crate::runtime::DeferredAgentAction {
+            kind: crate::runtime::DeferredAgentActionKind::Drain,
+            spawn_generation: original_spawn_generation,
+        });
+        Ok(())
+    })?;
     assert_eq!(supervisor.tick(now), TickReport::default());
     let still_starting = supervisor
         .snapshot(&fleet.first)

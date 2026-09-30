@@ -195,11 +195,8 @@ fn target_start_journal_failure_keeps_transition_for_next_empty_runtime_tick()
     let control = FakeControl::default();
     let now = Instant::now();
     let mut supervisor = start_source(&fleet, &control, now)?;
-    supervisor.upgrade(
-        &fleet.first,
-        admitted_release(&fleet, &fleet.first, "empty-runtime-target")?,
-        now,
-    )?;
+    let target = admitted_release(&fleet, &fleet.first, "empty-runtime-target")?;
+    supervisor.upgrade(&fleet.first, target.clone(), now)?;
     control.set_drained(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
     control.set_exit(&fleet.first);
@@ -215,6 +212,26 @@ fn target_start_journal_failure_keeps_transition_for_next_empty_runtime_tick()
             .expect("snapshot")
             .release_change_pending
     );
+    // An ordinary caller cannot hijack the retained transition while its
+    // predecessor has exited and the target journal writer is being retried.
+    let before = supervisor.record(&fleet.first)?;
+    assert!(matches!(
+        supervisor.start(&fleet.first, command()?, now),
+        Err(SupervisorError::Invalid(_))
+    ));
+    assert!(matches!(
+        supervisor.start_release(&fleet.first, target, now),
+        Err(SupervisorError::Invalid(_))
+    ));
+    #[cfg(unix)]
+    assert!(matches!(
+        supervisor.preflight_start(&fleet.first),
+        Err(SupervisorError::Invalid(_))
+    ));
+    let after = supervisor.record(&fleet.first)?;
+    assert_eq!(after.lifecycle, before.lifecycle);
+    assert_eq!(after.release_state, before.release_state);
+    assert_eq!(control.spawn_count(&fleet.first), 1);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.spawn_count(&fleet.first), 2);
     assert_eq!(
@@ -905,6 +922,125 @@ fn rollback_spawn_and_failed_outcome_publication_retain_the_failed_transition_un
                 SignedIntentStatus::RecoveryRequired
             );
         }
+    }
+    Ok(())
+}
+
+#[test]
+fn failed_restart_dispatch_retries_cancellation_without_redispatch() -> Result<(), SupervisorError>
+{
+    for point in [
+        "restart_lineage.rename",
+        "restart_lineage.directory_sync",
+        "restart_journal.file_write",
+        "restart_journal.directory_sync",
+    ] {
+        let fleet = TestFleet::new()?;
+        let control = FakeControl::default();
+        let now = Instant::now();
+        let mut supervisor = start_source(&fleet, &control, now)?;
+        let source_program = supervisor.with_slot(&fleet.first, |_supervisor, slot| {
+            Ok(slot
+                .active_release
+                .as_ref()
+                .expect("source")
+                .command()
+                .program
+                .clone())
+        })?;
+        supervisor.restart(&fleet.first, now)?;
+        control.set_drained(&fleet.first);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        control.set_exit(&fleet.first);
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        control.reject_spawn_program(source_program);
+        let now = now + config().restart_backoff_base;
+        let failed = with_qualification_fault(point, ErrorKind::Other, || supervisor.tick(now));
+        assert_eq!(failed.faults.len(), 1);
+        assert_eq!(control.spawn_count(&fleet.first), 1);
+        let snapshot = supervisor.snapshot(&fleet.first).expect("failed dispatch");
+        assert!(!snapshot.active);
+        assert!(snapshot.restart_pending, "{point}: {:?}", failed.faults);
+        // An overriding idle Stop keeps containment available, but a failed
+        // cancellation receipt must continue to exclude another Start/Restart
+        // even after Stop cleared the ordinary restart_pending flag.
+        let stopped =
+            with_qualification_fault("restart_lineage.directory_sync", ErrorKind::Other, || {
+                supervisor.stop(&fleet.first, now)
+            });
+        assert!(
+            stopped.is_err(),
+            "{point}: stop cancellation must publish its receipt"
+        );
+        assert!(
+            !supervisor
+                .snapshot(&fleet.first)
+                .expect("stop cancellation")
+                .restart_pending
+        );
+        let before = supervisor.record(&fleet.first)?;
+        assert!(matches!(
+            supervisor.start(&fleet.first, command()?, now),
+            Err(SupervisorError::Invalid(_))
+        ));
+        let source = supervisor.with_slot(&fleet.first, |_supervisor, slot| {
+            Ok(slot.active_release.clone().expect("source"))
+        })?;
+        assert!(matches!(
+            supervisor.start_release(&fleet.first, source, now),
+            Err(SupervisorError::Invalid(_))
+        ));
+        assert!(matches!(
+            supervisor.restart(&fleet.first, now),
+            Err(SupervisorError::Invalid(_))
+        ));
+        assert_eq!(supervisor.record(&fleet.first)?.lifecycle, before.lifecycle);
+        // If the owner accidentally dispatched again, this cleared rejection
+        // would create a new process under the already charged attempt.
+        control
+            .world
+            .lock()
+            .expect("fake world")
+            .reject_spawn_programs
+            .clear();
+        // A second ambiguous terminal publication still cannot discard the
+        // witness merely because the destination already reads Cancelled.
+        let retry =
+            with_qualification_fault("restart_lineage.directory_sync", ErrorKind::Other, || {
+                supervisor.tick(now)
+            });
+        assert_eq!(retry.faults.len(), 1, "{point}");
+        assert_eq!(control.spawn_count(&fleet.first), 1);
+        assert!(matches!(
+            supervisor.start(&fleet.first, command()?, now),
+            Err(SupervisorError::Invalid(_))
+        ));
+        assert_eq!(supervisor.tick(now), TickReport::default());
+        assert_eq!(control.spawn_count(&fleet.first), 1);
+        assert!(
+            !supervisor
+                .snapshot(&fleet.first)
+                .expect("cancelled")
+                .restart_pending
+        );
+        let record = supervisor.record(&fleet.first)?;
+        assert!(
+            crate::restart_budget::pending_restart(
+                record.layout.run_root(),
+                config().restart_max_attempts
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .is_none()
+        );
+        supervisor.restart(&fleet.first, now)?;
+        assert_eq!(
+            supervisor
+                .snapshot(&fleet.first)
+                .expect("new charged attempt")
+                .restart_attempt,
+            2
+        );
+        assert_eq!(control.spawn_count(&fleet.first), 1);
     }
     Ok(())
 }

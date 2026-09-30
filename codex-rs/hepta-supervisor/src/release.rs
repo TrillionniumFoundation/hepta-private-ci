@@ -536,7 +536,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             self.release_became_healthy(agent_id, slot, generation)?;
             return Ok(true);
         }
-        let generation = self.record(agent_id)?.lifecycle.generation;
+        let record = self.record(agent_id)?;
+        // A paired predecessor must relinquish its exact companion owner
+        // before target or rollback dispatch. This is waiting, not a failed
+        // target launch and cannot consume the automatic rollback path.
+        if slot.matrix.runtime.is_some()
+            || crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
+        {
+            return Ok(false);
+        }
+        let generation = record.lifecycle.generation;
         let Some(mut change) = slot.release_change.take() else {
             return Ok(false);
         };

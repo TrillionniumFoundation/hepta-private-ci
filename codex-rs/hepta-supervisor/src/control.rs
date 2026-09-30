@@ -228,11 +228,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         let record = self.record(agent_id)?;
         // Attempt both durable cancellations. A sidecar failure must not hide
         // the budget cancellation, and vice versa.
-        let lineage = restart_lineage::cancel(record.layout.run_root(), agent_id)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()));
+        let lineage = match slot.failed_restart_spawn.as_ref() {
+            Some(failed) => restart_lineage::cancel_failed_spawn(
+                record.layout.run_root(),
+                agent_id,
+                failed.window_started_unix_ms,
+                failed.attempt,
+            ),
+            None => restart_lineage::cancel(record.layout.run_root(), agent_id),
+        }
+        .map_err(|error| SupervisorError::Invalid(error.to_string()));
         let budget = crate::restart_budget::cancel_restart(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()));
-        lineage.and(budget)
+        let result = lineage.and(budget);
+        if result.is_ok() {
+            slot.failed_restart_spawn = None;
+        }
+        result
     }
 
     pub(crate) fn kill_slot(
@@ -268,8 +280,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         // owned main or companion process.
         let cancellation = self.cancel_pending_restart(agent_id, slot);
         slot.deferred_agent_action = None;
-        // Prepare only the main lifecycle here. Do not enter a potentially
-        // failing companion driver before attempting the main emergency signal.
+        // Close the network companion first, but collect its result so failure
+        // cannot skip the already-owned main process's emergency termination.
+        let companion = self.kill_matrix_now(agent_id, slot);
+        // Prepare the main lifecycle independently of companion success.
         let preparation = (|| {
             let lifecycle = self.record(agent_id)?.lifecycle;
             let generation = active_runtime(agent_id, slot)?.generation;
@@ -327,9 +341,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         } else {
             Ok(())
         };
-        // Both outcomes are collected; neither an error nor a delayed companion
-        // call can prevent the main signal that was attempted above.
-        let companion = self.kill_matrix_now(agent_id, slot);
+        // Both termination attempts ran independently before errors propagate.
         for fault in [
             intent.as_ref().err(),
             cancellation.as_ref().err(),
@@ -362,6 +374,11 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         if slot.release_change.is_some() {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
+        }
+        if slot.failed_restart_spawn.is_some() {
+            return Err(SupervisorError::Invalid(format!(
+                "agent {agent_id} has an unacknowledged failed restart cancellation"
+            )));
         }
         let record = self.record(agent_id)?;
         if control_intent::has_unresolved(record.layout.run_root())
