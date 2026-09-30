@@ -177,10 +177,50 @@ pub struct ArtifactOwnerRecoveryV1 {
     pub authority: AuthorityPosture,
 }
 
-#[derive(Clone, Debug)]
-struct VerifiedArtifactWriterLeaseV1 {
+/// Opaque proof that the configured writer lease is authentic and current.
+///
+/// Callers cannot construct this capability. It is re-issued only after signature,
+/// scope, authority-epoch, generation and expiry validation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct VerifiedArtifactWriterFenceV1 {
     producer_id: StableId,
     lease_digest: Digest32,
+    lease_generation: u64,
+    authority_epoch: u64,
+    expires_at: u64,
+    withdrawal_scope_digest: Digest32,
+}
+
+impl VerifiedArtifactWriterFenceV1 {
+    #[must_use]
+    pub fn producer_id(&self) -> &StableId {
+        &self.producer_id
+    }
+
+    #[must_use]
+    pub const fn lease_digest(&self) -> Digest32 {
+        self.lease_digest
+    }
+
+    #[must_use]
+    pub const fn lease_generation(&self) -> u64 {
+        self.lease_generation
+    }
+
+    #[must_use]
+    pub const fn authority_epoch(&self) -> u64 {
+        self.authority_epoch
+    }
+
+    #[must_use]
+    pub const fn expires_at(&self) -> u64 {
+        self.expires_at
+    }
+
+    #[must_use]
+    pub const fn withdrawal_scope_digest(&self) -> Digest32 {
+        self.withdrawal_scope_digest
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -264,7 +304,7 @@ impl ArtifactOwnerVerifierV1 {
         &self,
         lease: &SignedArtifactWriterLeaseV1,
         now: u64,
-    ) -> Result<VerifiedArtifactWriterLeaseV1, ArtifactOwnerHostError> {
+    ) -> Result<VerifiedArtifactWriterFenceV1, ArtifactOwnerHostError> {
         if lease.registry_id != self.trust.registry_id
             || lease.withdrawal_scope_digest != self.trust.withdrawal_scope_digest
             || lease.authority_epoch < self.trust.minimum_authority_epoch
@@ -295,9 +335,13 @@ impl ArtifactOwnerVerifierV1 {
         )?;
         let mut digest_bytes = lease.signing_bytes();
         digest_bytes.extend_from_slice(&lease.signature);
-        Ok(VerifiedArtifactWriterLeaseV1 {
+        Ok(VerifiedArtifactWriterFenceV1 {
             producer_id: lease.producer_id.clone(),
             lease_digest: Digest32::of_bytes(&digest_bytes),
+            lease_generation: lease.lease_generation,
+            authority_epoch: lease.authority_epoch,
+            expires_at: lease.expires_at,
+            withdrawal_scope_digest: lease.withdrawal_scope_digest,
         })
     }
 
@@ -350,7 +394,7 @@ pub struct LearningArtifactOwnerHost {
     writer_fence: File,
     verifier: ArtifactOwnerVerifierV1,
     lease: SignedArtifactWriterLeaseV1,
-    verified_lease: VerifiedArtifactWriterLeaseV1,
+    verified_lease: VerifiedArtifactWriterFenceV1,
     required_current_head: Option<SignedCurrentArtifactHeadV1>,
 }
 
@@ -451,6 +495,14 @@ impl LearningArtifactOwnerHost {
         self.verified_lease.lease_digest
     }
 
+    /// Revalidate and return the current opaque writer-fence capability.
+    pub fn current_writer_fence(
+        &self,
+        now: u64,
+    ) -> Result<VerifiedArtifactWriterFenceV1, ArtifactOwnerHostError> {
+        self.require_current_writer(now)
+    }
+
     #[must_use]
     pub fn trust_digest(&self) -> Digest32 {
         self.verifier.trust_digest()
@@ -459,7 +511,7 @@ impl LearningArtifactOwnerHost {
     fn require_current_writer(
         &self,
         now: u64,
-    ) -> Result<VerifiedArtifactWriterLeaseV1, ArtifactOwnerHostError> {
+    ) -> Result<VerifiedArtifactWriterFenceV1, ArtifactOwnerHostError> {
         self.verifier.verify_writer_lease(&self.lease, now)
     }
 
