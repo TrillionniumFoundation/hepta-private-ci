@@ -6,6 +6,7 @@ use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -27,6 +28,8 @@ use crate::encode_tabular_payload_v1;
 use crate::fit_tabular_operator_strict_controlled_v3;
 use crate::fit_transition_model_controlled_v3;
 
+const Q32_SCALE: u64 = 1_u64 << 32;
+
 /// Caller-supplied values that are not themselves identity claims. Objective,
 /// dataset, generation, profile digest, sensor-core digest and limits are all
 /// derived from the canonical profile and owner receipt.
@@ -44,6 +47,7 @@ pub struct UnboundTabularOperatorPlanV3 {
 pub struct VerifiedTabularOperatorPlanV3 {
     plan: TabularOperatorPlanV1,
     dataset: DatasetSnapshotReceiptV3,
+    maximum_absolute_error: FixedQ32,
     control: WorkControlV1,
 }
 
@@ -139,6 +143,7 @@ pub fn verify_tabular_operator_plan_v3(
     Ok(VerifiedTabularOperatorPlanV3 {
         plan,
         dataset,
+        maximum_absolute_error: profile.maximum_absolute_error(),
         control,
     })
 }
@@ -151,12 +156,14 @@ pub fn fit_tabular_operator_verified_v3(
     let VerifiedTabularOperatorPlanV3 {
         plan,
         dataset,
+        maximum_absolute_error,
         control,
     } = verified;
     control.checkpoint(0)?;
     owner.revalidate_dataset_snapshot(&dataset, now)?;
     let operations = u64::try_from(plan.samples.len()).map_err(|_| FinalUseError::Arithmetic)?;
     let artifact = fit_tabular_operator_strict_controlled_v3(plan, &control)?;
+    validate_tabular_error_budget(&artifact, maximum_absolute_error)?;
     control.checkpoint(operations)?;
     Ok(FittedTabularCandidateV3 {
         artifact,
@@ -226,6 +233,8 @@ pub struct FittedWorldModelCandidateV3 {
     control: WorkControlV1,
 }
 
+/// World-model publication remains qualification-only. The raw model is kept
+/// private until a separately qualified pinned loader exists.
 #[must_use]
 pub struct PublicationReadyWorldModelCandidateV3 {
     model: TabularWorldModelV1,
@@ -235,8 +244,13 @@ pub struct PublicationReadyWorldModelCandidateV3 {
 
 impl PublicationReadyWorldModelCandidateV3 {
     #[must_use]
-    pub fn model(&self) -> &TabularWorldModelV1 {
-        &self.model
+    pub fn model_digest(&self) -> Digest32 {
+        self.model.model_digest
+    }
+
+    #[must_use]
+    pub fn dataset_digest(&self) -> Digest32 {
+        self.model.dataset_digest
     }
 
     #[must_use]
@@ -303,11 +317,14 @@ pub fn fit_transition_model_verified_v3(
         input.samples,
         &control,
     )?;
-    if model.estimates.iter().any(|estimate| {
-        (estimate.sample_count as usize) < profile.minimum_support_per_state_action()
-    }) {
-        return Err(FinalUseError::Binding("world minimum support"));
+    for estimate in &model.estimates {
+        let support = usize::try_from(estimate.sample_count)
+            .map_err(|_| FinalUseError::Arithmetic)?;
+        if support < profile.minimum_support_per_state_action() {
+            return Err(FinalUseError::Binding("world minimum support"));
+        }
     }
+    validate_world_uncertainty_budget(&model, profile.maximum_uncertainty())?;
     control.checkpoint(operations)?;
     Ok(FittedWorldModelCandidateV3 {
         model,
@@ -333,6 +350,46 @@ pub fn revalidate_world_model_candidate_for_publication_v3(
         profile_digest: fitted.profile_digest,
         generation: fitted.generation,
     })
+}
+
+fn validate_tabular_error_budget(
+    artifact: &TabularOperatorArtifactV1,
+    maximum_absolute_error: FixedQ32,
+) -> Result<(), FinalUseError> {
+    let budget = u128::try_from(maximum_absolute_error.raw())
+        .map_err(|_| FinalUseError::Arithmetic)?;
+    for cell in &artifact.cells {
+        let mean = i128::from(cell.mean_target.raw());
+        let lower = (mean - i128::from(cell.minimum_target.raw())).unsigned_abs();
+        let upper = (i128::from(cell.maximum_target.raw()) - mean).unsigned_abs();
+        if lower.max(upper) > budget {
+            return Err(FinalUseError::Binding("tabular error budget"));
+        }
+    }
+    Ok(())
+}
+
+fn validate_world_uncertainty_budget(
+    model: &TabularWorldModelV1,
+    maximum_uncertainty: FixedQ32,
+) -> Result<(), FinalUseError> {
+    let budget = u64::try_from(maximum_uncertainty.raw())
+        .map_err(|_| FinalUseError::Arithmetic)?;
+    for estimate in &model.estimates {
+        let maximum_probability = estimate
+            .branches
+            .iter()
+            .map(|branch| branch.probability.raw())
+            .max()
+            .ok_or(FinalUseError::Arithmetic)?;
+        let uncertainty = Q32_SCALE
+            .checked_sub(maximum_probability)
+            .ok_or(FinalUseError::Arithmetic)?;
+        if uncertainty > budget {
+            return Err(FinalUseError::Binding("world uncertainty budget"));
+        }
+    }
+    Ok(())
 }
 
 #[derive(Debug)]
