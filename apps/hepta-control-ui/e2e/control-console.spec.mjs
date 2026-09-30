@@ -154,3 +154,23 @@ test("lost runtime refresh marks the product stale and disables controls until r
   await expect(page.getByRole("button", { name: "Request start" })).toBeEnabled();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
+
+test("a malformed backend field name is never reflected in the console", async ({ page, request }) => {
+  const secret = "session-credential-do-not-render";
+  const logs = [];
+  page.on("console", message => logs.push(message.text()));
+  await page.route("**/api/ui-control/v1/view", async route => {
+    const response = await route.fetch();
+    const body = await response.json();
+    await route.fulfill({ response, json: { ...body, [secret]: 0.5 } });
+  });
+  await page.goto("/");
+  await expect(page.locator("#error-status")).toContainText("UI_CONTROL_INVALID_INPUT");
+  await expect(page.locator("body")).not.toContainText(secret);
+  await expect.poll(() => logs.some(message => message.startsWith("ui.control console failed to start"))).toBe(true);
+  expect(logs.join("\n")).not.toContain(secret);
+  for (const name of ["Request start", "Request reconcile", "Request stop"]) {
+    await expect(page.getByRole("button", { name })).toBeDisabled();
+  }
+  expect((await (await request.get("/__test__/state")).json()).requestCount).toBe(0);
+});

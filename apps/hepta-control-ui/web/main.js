@@ -3,6 +3,7 @@ import {
   SameOriginHttpTransport,
   SessionProvider,
   UI_CONTROL_PROTOCOL_VERSION,
+  UI_CONTROL_ERROR_CODES,
   createControlConsole,
 } from "./src/index.js";
 
@@ -80,11 +81,13 @@ try {
   await consoleApp.start();
   publishReadiness("ready", { readyAt: new Date().toISOString() });
 } catch (error) {
+  const code = error && Object.getOwnPropertyDescriptor(error, "code")?.value;
+  const errorCode = Object.values(UI_CONTROL_ERROR_CODES).includes(code) ? code : "UI_CONTROL_STARTUP";
   publishReadiness("failed", {
     failedAt: new Date().toISOString(),
-    errorCode: typeof error?.code === "string" ? error.code : "UI_CONTROL_STARTUP",
+    errorCode,
   });
-  console.error("ui.control console failed to start", error);
+  console.error("ui.control console failed to start", errorCode);
 }
 
 window.addEventListener("pagehide", () => {

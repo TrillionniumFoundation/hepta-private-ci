@@ -132,7 +132,7 @@ Automated checks do not replace manual screen-reader/operator acceptance; that r
 
 Stable error codes include ${q("UI_CONTROL_SESSION_EXPIRED")}, ${q("UI_CONTROL_PERMISSION_DENIED")}, ${q("UI_CONTROL_STALE_GENERATION")}, ${q("UI_CONTROL_STALE_REVISION")}, ${q("UI_CONTROL_SNAPSHOT_DRIFT")}, ${q("UI_CONTROL_PENDING_LIMIT")}, ${q("UI_CONTROL_OPERATION_CONFLICT")}, ${q("UI_CONTROL_BACKEND_REJECTED")}, ${q("UI_CONTROL_ACK_MISMATCH")}, and ${q("UI_CONTROL_AMBIGUOUS_SUBMISSION")}.
 
-Callers branch on ${q("code")} and ${q("retryable")}; parsing message text is unsupported. Unknown exception messages are replaced by an operator-safe generic error before DOM rendering.
+Callers branch on ${q("code")} and ${q("retryable")}; parsing message text is unsupported. The console renders only known error codes with fixed operator messages. Detailed messages, backend validation labels, details and causes remain outside DOM text and live regions.
 
 ## 10. Evidence semantics
 

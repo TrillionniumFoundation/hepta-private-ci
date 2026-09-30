@@ -1,11 +1,97 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createControlConsole } from "../src/browser-app.js";
+import { UI_CONTROL_ERROR_CODES as C, UiControlError } from "../src/errors.js";
+import { normalizeSnapshot } from "../src/snapshot.js";
+import { session, snapshot } from "./helpers.js";
 import { ScopedRecoveryStore } from "../src/recovery-store.js";
 import { fixture, operation, terminal, deferred } from "./browser-fixture.js";
 
 const recordCount = storage => [...storage.values.keys()]
   .filter(key => key.startsWith("hepta.ui-control.scoped-recovery.v2:")).length;
+
+test("backend validation labels stay outside the console's error and live regions", async t => {
+  const secret = "session-credential-do-not-render";
+  const f = fixture();
+  f.client.refreshView = () => normalizeSnapshot(snapshot({ [secret]: 0.5 }), session());
+  const app = createControlConsole(f.config); t.after(() => app.destroy());
+  await assert.rejects(app.start(), error => error.code === C.INVALID_INPUT && error.message.includes(secret));
+  for (const id of ["error-status", "live-status"]) {
+    const rendered = f.document.getElementById(id).textContent;
+    assert.match(rendered, /UI_CONTROL_INVALID_INPUT/);
+    assert.equal(rendered.includes(secret), false);
+  }
+});
+
+test("a typed error's message accessor is never evaluated for display", async t => {
+  const f = fixture();
+  const error = new UiControlError(C.TRANSPORT, "original");
+  let reads = 0;
+  Object.defineProperty(error, "message", { get() { reads += 1; return "unsafe-secret-message"; } });
+  f.client.refreshView = async () => { throw error; };
+  const app = createControlConsole(f.config); t.after(() => app.destroy());
+  await assert.rejects(app.start(), cause => cause === error);
+  assert.equal(reads, 0);
+  assert.match(f.document.getElementById("error-status").textContent, /UI_CONTROL_TRANSPORT/);
+});
+
+test("a mutated typed error code cannot reflect arbitrary data into the console", async t => {
+  const f = fixture();
+  const error = new UiControlError(C.TRANSPORT, "unsafe-message");
+  error.code = "unsafe-secret-code";
+  f.client.refreshView = async () => { throw error; };
+  const app = createControlConsole(f.config); t.after(() => app.destroy());
+  await assert.rejects(app.start(), cause => cause === error);
+  for (const id of ["error-status", "live-status"]) {
+    assert.equal(f.document.getElementById(id).textContent.includes("unsafe"), false);
+  }
+});
+
+test("a destroyed console's late submission cannot close or disable its replacement", async t => {
+  const f = fixture();
+  const sent = deferred();
+  const response = deferred();
+  f.client.requestStop = async () => {
+    f.counters.mutations += 1; sent.resolve(); await response.promise; return operation();
+  };
+  const old = createControlConsole(f.config);
+  await old.start();
+  f.document.getElementById("operation-reason").value = "Original operator reason";
+  await f.document.getElementById("request-stop").fire();
+  const submission = f.document.getElementById("confirm-submit").fire();
+  await sent.promise;
+  await old.destroy();
+  const replacement = createControlConsole(f.config); t.after(() => replacement.destroy());
+  await replacement.start();
+  assert.equal(f.document.getElementById("operation-reason").value, "");
+  f.document.getElementById("operation-reason").value = "Replacement operator reason";
+  await f.document.getElementById("request-stop").fire();
+  response.resolve(); await submission;
+  assert.equal(f.document.getElementById("confirm-operation").open, true);
+  assert.equal(f.document.getElementById("confirm-submit").disabled, false);
+  assert.equal(f.document.getElementById("request-stop").disabled, false);
+  const writes = f.document.getElementById("request-stop").disabled;
+  old.render();
+  assert.equal(f.document.getElementById("request-stop").disabled, writes);
+});
+
+test("every destroy caller waits for the same cleanup settlement", async () => {
+  const f = fixture();
+  const closed = deferred();
+  const release = deferred();
+  f.client.close = async () => { f.counters.close += 1; closed.resolve(); await release.promise; };
+  const app = createControlConsole(f.config);
+  await app.start();
+  const first = app.destroy();
+  await closed.promise;
+  let settled = false;
+  const second = app.destroy().then(() => { settled = true; });
+  try {
+    await Promise.resolve(); await Promise.resolve();
+    assert.equal(settled, false);
+  } finally { release.resolve(); await Promise.all([first, second]); }
+  assert.equal(f.counters.close, 1);
+});
 
 for (const failure of ["lock", "removal"]) {
   test(`browser shows asynchronous ${failure} failure and retains the original record`, async t => {

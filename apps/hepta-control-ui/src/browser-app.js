@@ -8,6 +8,29 @@ import { ScopedRecoveryStore } from "./recovery-store.js";
 import { TerminalCleanupQueue } from "./terminal-cleanup.js";
 import { createKeyedList, setText } from "./keyed-list.js";
 
+const operatorErrors = new Map([
+  [UI_CONTROL_ERROR_CODES.INVALID_INPUT, "The request or backend response is invalid."],
+  [UI_CONTROL_ERROR_CODES.NOT_CONNECTED, "An authenticated connection is required."],
+  [UI_CONTROL_ERROR_CODES.ALREADY_CONNECTED, "The client is already connected."],
+  [UI_CONTROL_ERROR_CODES.SESSION_EXPIRED, "The session expired; establish a new authenticated session."],
+  [UI_CONTROL_ERROR_CODES.SESSION_REVOKED, "The session was revoked; establish a new authenticated session."],
+  [UI_CONTROL_ERROR_CODES.SESSION_IDENTITY_CHANGED, "The authenticated identity changed; reconnect."],
+  [UI_CONTROL_ERROR_CODES.PERMISSION_DENIED, "The session does not permit this request."],
+  [UI_CONTROL_ERROR_CODES.STALE_PERMISSION_REVISION, "Session permissions changed; reconnect."],
+  [UI_CONTROL_ERROR_CODES.PROTOCOL_MISMATCH, "The client and backend protocols do not match."],
+  [UI_CONTROL_ERROR_CODES.STALE_GENERATION, "The runtime context changed; refresh and confirm again."],
+  [UI_CONTROL_ERROR_CODES.STALE_REVISION, "The displayed view changed; refresh and confirm again."],
+  [UI_CONTROL_ERROR_CODES.SNAPSHOT_DRIFT, "The backend view is inconsistent; preserve recovery records."],
+  [UI_CONTROL_ERROR_CODES.PENDING_LIMIT, "Pending capacity is exhausted; recover existing operations."],
+  [UI_CONTROL_ERROR_CODES.OPERATION_CONFLICT, "The operation identity conflicts with retained data."],
+  [UI_CONTROL_ERROR_CODES.BACKEND_REJECTED, "The backend rejected this request."],
+  [UI_CONTROL_ERROR_CODES.ACK_MISMATCH, "The backend observation does not match the retained operation."],
+  [UI_CONTROL_ERROR_CODES.AMBIGUOUS_SUBMISSION, "Acceptance is uncertain; recover the original operation without resubmitting."],
+  [UI_CONTROL_ERROR_CODES.ABORTED, "The attempt was cancelled; preserve unresolved operation identities."],
+  [UI_CONTROL_ERROR_CODES.STORAGE, "Local recovery storage needs attention; preserve records and recover unresolved operations."],
+  [UI_CONTROL_ERROR_CODES.TRANSPORT, "Backend communication failed; refresh or recover unresolved operations."],
+]);
+
 function requiredElement(document, id) {
   const element = document.getElementById(id);
   if (!element) throw new TypeError(`missing browser shell element: ${id}`);
@@ -44,7 +67,11 @@ function redactDigest(value) {
 
 function visibleError(error) {
   if (error instanceof UiControlError) {
-    return `${error.code}: ${error.message}`;
+    // Validation messages can contain untrusted field labels. Even a typed
+    // error must not reflect its message, cause, or accessor-shaped code.
+    const code = Object.getOwnPropertyDescriptor(error, "code")?.value;
+    const message = operatorErrors.get(code);
+    if (message) return `${code}: ${message}`;
   }
   return "UI_CONTROL_UNEXPECTED: An unexpected ui.control failure occurred.";
 }
@@ -91,10 +118,17 @@ export function createControlConsole({
     cancel: requiredElement(document, "confirm-cancel"),
   };
 
+  // A replacement controller starts with fresh interaction state over the DOM.
+  elements.confirm.disabled = false;
+  elements.reason.value = "";
+  elements.target.value = "";
+  if (elements.dialog.open) elements.dialog.close();
+
   let timer = null;
   let destroyed = false;
   let started = false;
   let startPromise = null;
+  let destroyPromise = null;
   let lifecycleEpoch = 0;
   let inFlight = false;
   let pendingAction = null;
@@ -343,6 +377,10 @@ export function createControlConsole({
   }
 
   function render() {
+    if (!destroyed) renderView();
+  }
+
+  function renderView() {
     const view = client.readView();
     elements.connection.textContent = view.connected ? "Connected" : "Disconnected";
     elements.session.textContent = redactIdentifier(view.sessionId);
@@ -454,6 +492,7 @@ export function createControlConsole({
     } finally {
       await persistRecovery();
       inFlight = false;
+      if (destroyed) return;
       elements.confirm.disabled = false;
       if (elements.dialog.open) elements.dialog.close();
       render();
@@ -580,8 +619,8 @@ export function createControlConsole({
 
     render,
 
-    async destroy() {
-      if (destroyed) return;
+    destroy() {
+      if (destroyPromise) return destroyPromise;
       destroyed = true;
       lifecycle.abort();
       started = false;
@@ -590,12 +629,15 @@ export function createControlConsole({
       timer = null;
       unsubscribe();
       sessionProvider.stop();
-      await cleanupQueue?.drain();
-      try {
-        await client.close();
-      } finally {
-        render();
-      }
+      destroyPromise = (async () => {
+        await cleanupQueue?.drain();
+        try {
+          await client.close();
+        } finally {
+          renderView();
+        }
+      })();
+      return destroyPromise;
     },
   });
 }

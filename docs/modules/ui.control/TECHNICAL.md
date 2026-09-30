@@ -78,6 +78,8 @@ The transition validator enforces:
 1. Recovery import validates bounded data without executing accessors or inherited iterators, preserves live dispatch promises and terminal history, rejects conflicts atomically, and bounds the combined pending inventory.
 1. Independent accessibility and security reviewers are distinct from one another and from deployment, release, and security approval authorities.
 1. Production approval cannot predate deployment, real-backend, independent review, or operational evidence; accepted bundles expose only domain-separated principal digests.
+1. Browser failures render only known error codes with fixed operator messages; untrusted validation labels, detailed messages and causes remain outside DOM text and live regions, and startup diagnostics emit only known error codes.
+1. Console replacement resets interaction state; destroyed controllers cannot alter replacement controls, and every destroy caller waits for the same cleanup settlement.
 
 The browser persists only bounded recovery metadata. It never persists credentials, CSRF tokens, backend responses containing secrets, or a claim that a mutation succeeded.
 
@@ -149,7 +151,7 @@ Automated checks do not replace manual screen-reader/operator acceptance; that r
 
 Stable error codes include `UI_CONTROL_SESSION_EXPIRED`, `UI_CONTROL_PERMISSION_DENIED`, `UI_CONTROL_STALE_GENERATION`, `UI_CONTROL_STALE_REVISION`, `UI_CONTROL_SNAPSHOT_DRIFT`, `UI_CONTROL_PENDING_LIMIT`, `UI_CONTROL_OPERATION_CONFLICT`, `UI_CONTROL_BACKEND_REJECTED`, `UI_CONTROL_ACK_MISMATCH`, and `UI_CONTROL_AMBIGUOUS_SUBMISSION`.
 
-Callers branch on `code` and `retryable`; parsing message text is unsupported. Unknown exception messages are replaced by an operator-safe generic error before DOM rendering.
+Callers branch on `code` and `retryable`; parsing message text is unsupported. The console renders only known error codes with fixed operator messages. Detailed messages, backend validation labels, details and causes remain outside DOM text and live regions.
 
 ## 10. Evidence semantics
 
