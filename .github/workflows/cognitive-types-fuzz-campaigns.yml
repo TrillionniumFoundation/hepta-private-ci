@@ -52,7 +52,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/cognitive-fuzz-target
       RUSTUP_TOOLCHAIN: nightly-2026-09-15
       CARGO_FUZZ_VERSION: 0.13.2
       PYTHONDONTWRITEBYTECODE: '1'
@@ -93,6 +92,7 @@ jobs:
           TARGET: ${{ matrix.target }}
         run: |
           set -euo pipefail
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/cognitive-fuzz-target"
           python3 qualification/cognitive-types-v1/run_fuzz_campaign.py \
             --target "$TARGET" \
             --seconds 60 \
