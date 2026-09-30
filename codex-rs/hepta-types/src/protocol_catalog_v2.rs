@@ -309,7 +309,6 @@ const fn field(
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
