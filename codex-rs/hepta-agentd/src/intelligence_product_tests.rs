@@ -1,3 +1,7 @@
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn product_test_coordinator() -> AgentRunCoordinator {
     AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.product".to_string(),
@@ -91,6 +95,10 @@ const Q24: i64 = 1 << 24;
 const OBSERVED_MICROS: u64 = 1_788_861_600_000_000;
 const NOW_MICROS: u64 = OBSERVED_MICROS + 1_000_000;
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed test-fixture identifiers and scalar values are valid by construction."
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
 }
@@ -99,14 +107,26 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed test-fixture identifiers and scalar values are valid by construction."
+)]
 fn generation(value: u64) -> Generation {
     Generation::new(value).expect("generation")
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed test-fixture identifiers and scalar values are valid by construction."
+)]
 fn revision(value: u64) -> Revision {
     Revision::new(value).expect("revision")
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed test-fixture identifiers and scalar values are valid by construction."
+)]
 fn probability(raw: u64) -> ProbabilityQ32 {
     ProbabilityQ32::from_raw(raw).expect("probability")
 }
@@ -210,6 +230,10 @@ fn objective_profile() -> ObjectiveAdmissionProfileV1 {
     }
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn objective_envelope() -> ObjectiveSourceEnvelopeV1 {
     let mut envelope = ObjectiveSourceEnvelopeV1 {
         request_id: "request.agentd.001".to_string(),
@@ -286,6 +310,10 @@ fn objective_envelope() -> ObjectiveSourceEnvelopeV1 {
     envelope
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn objective_context(
     profile: &ObjectiveAdmissionProfileV1,
     envelope: &ObjectiveSourceEnvelopeV1,
@@ -335,6 +363,10 @@ fn authority_verifier() -> IntelligenceAuthorityVerifierV1 {
     }
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn write_authority_file(path: &std::path::Path, owners: &[OwnerBindingV1], frontier: Digest32) {
     let file = IntelligenceAuthorityFileV1 {
         schema_version: 1,
@@ -375,6 +407,10 @@ struct Fixture {
     owners: Vec<OwnerBindingV1>,
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn fixture() -> Fixture {
     let profile = objective_profile();
     let envelope = objective_envelope();
@@ -661,6 +697,10 @@ fn fixture() -> Fixture {
 
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 async fn real_owner_product_path_records_decision_outcome_and_reopens() {
     let fixture = fixture();
     let temp = tempfile::tempdir().expect("tempdir");
@@ -792,6 +832,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 async fn unsigned_currentness_substitution_fails_before_owner_use() {
     let fixture = fixture();
     let temp = tempfile::tempdir().expect("tempdir");
@@ -824,6 +868,10 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
 
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 async fn final_use_revocation_race_fails_before_decision_publication() {
     let fixture = fixture();
     let temp = tempfile::tempdir().expect("tempdir");
@@ -873,6 +921,10 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 async fn missing_current_owner_fails_before_product_use() {
     let fixture = fixture();
     let temp = tempfile::tempdir().expect("tempdir");
@@ -897,6 +949,10 @@ async fn missing_current_owner_fails_before_product_use() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
     let mut fixture = fixture();
     fixture.request.budget = CanonicalBudgetV1 {
@@ -937,6 +993,10 @@ async fn total_budget_timeout_never_creates_a_dispatch_or_ledger_capability() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
     let temp = tempfile::tempdir().expect("tempdir");
     let runner = AgentdIntelligenceProductRunnerV1::new(

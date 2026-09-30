@@ -17,6 +17,10 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn receipt(disposition: ProductionDispositionV1) -> AgentdIntuitionDecisionReceiptV2 {
     let is_abstain = matches!(disposition, ProductionDispositionV1::Abstained(_));
     AgentdIntuitionDecisionReceiptV2 {
@@ -65,6 +69,10 @@ fn slow_path_receipt() -> AgentdIntuitionDecisionReceiptV2 {
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn intuition_policy_admission_preserves_complete_slow_path_receipt() {
     let expected = slow_path_receipt();
     let admitted = finish_canonical_admission(
@@ -82,6 +90,10 @@ fn intuition_policy_admission_preserves_complete_slow_path_receipt() {
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn intuition_policy_admission_preserves_complete_abstention_receipt() {
     let expected = receipt(ProductionDispositionV1::Abstained(
         AbstentionReasonV1::NoLegalCandidate,
@@ -140,6 +152,10 @@ fn intuition_policy_admission_each_downstream_failure_keeps_the_original_receipt
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn intuition_policy_admission_binding_changes_with_service_host_or_authentication() {
     let original = slow_path_receipt();
     let baseline = finish_canonical_admission(
@@ -179,6 +195,10 @@ fn intuition_policy_admission_rejects_zero_binding_and_keeps_its_receipt() {
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn intuition_policy_admission_explicit_compatibility_does_not_fabricate_a_receipt() {
     let admitted = finish_canonical_admission(
         Ok(AgentdIntelligenceAdmittedOutcomeV1::SlowPath),

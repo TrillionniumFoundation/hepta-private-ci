@@ -33,10 +33,18 @@ impl SequencedBlockingClock {
         }
     }
 
+    #[allow(
+        clippy::expect_used,
+        reason = "Test synchronization must fail on poisoned state or a broken handshake."
+    )]
     fn set_now(&self, now: u64) {
         self.state.lock().expect("clock state").now = now;
     }
 
+    #[allow(
+        clippy::expect_used,
+        reason = "Test synchronization must fail on poisoned state or a broken handshake."
+    )]
     fn wait_for_entered(&self, count: usize) {
         let mut state = self.state.lock().expect("clock state");
         while state.entered < count {
@@ -44,10 +52,18 @@ impl SequencedBlockingClock {
         }
     }
 
+    #[allow(
+        clippy::expect_used,
+        reason = "Test synchronization must fail on poisoned state or a broken handshake."
+    )]
     fn entered(&self) -> usize {
         self.state.lock().expect("clock state").entered
     }
 
+    #[allow(
+        clippy::expect_used,
+        reason = "Test synchronization must fail on poisoned state or a broken handshake."
+    )]
     fn release_through(&self, count: usize) {
         let mut state = self.state.lock().expect("clock state");
         state.released = state.released.max(count);
@@ -56,6 +72,10 @@ impl SequencedBlockingClock {
 }
 
 impl IntuitionPolicyClock for SequencedBlockingClock {
+    #[allow(
+        clippy::expect_used,
+        reason = "Test synchronization must fail on poisoned state or a broken handshake."
+    )]
     fn now(&self) -> Result<u64, AgentdIntuitionPolicyError> {
         let mut state = self.state.lock().expect("clock state");
         state.entered += 1;
@@ -68,6 +88,10 @@ impl IntuitionPolicyClock for SequencedBlockingClock {
     }
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn successor_trust_distribution(
     keys: &[SigningKey; 3],
     principals: &[AuthenticatedPrincipalV1; 3],
@@ -130,6 +154,10 @@ fn successor_trust_distribution(
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn prepared_decision_rejects_every_changed_host_pin_before_writing() {
     let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent");
     let (request, profile) = request_and_profile();
@@ -394,6 +422,10 @@ fn prepared_decision_rejects_every_changed_host_pin_before_writing() {
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn writer_wait_samples_fresh_clock_and_expires_before_any_ledger_mutation() {
     let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent");
     let (request, profile) = request_and_profile();
@@ -558,6 +590,10 @@ fn writer_wait_samples_fresh_clock_and_expires_before_any_ledger_mutation() {
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn final_use_revalidates_scheduled_signer_revocation_and_distribution_expiry() {
     for (generator_revoked_at, distribution_expires_at) in [(Some(175), 900), (None, 175)] {
         let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent");

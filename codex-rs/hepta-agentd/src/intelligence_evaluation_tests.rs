@@ -24,6 +24,10 @@ use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Fixed test-fixture identifiers and scalar values are valid by construction."
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value.to_owned()).unwrap()
 }
@@ -101,6 +105,10 @@ use codex_hepta_learning_ledger::activate_learning_trust;
 use codex_hepta_types::Generation;
 use std::sync::Arc;
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn activate(
     trust: LearningEvidenceTrustV1,
     now: u64,
@@ -140,6 +148,10 @@ pub(super) fn evidence_fixture(
     evidence_fixture_with_distribution_expiry(binding, now, now + 60_000)
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn evidence_fixture_with_distribution_expiry(
     binding: &AgentdEvaluationBindingV1,
     now: u64,
@@ -321,6 +333,10 @@ fn input(binding: &AgentdEvaluationBindingV1) -> CanonicalPortInputV1 {
     }
 }
 
+#[allow(
+    clippy::unwrap_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn session(binding: &AgentdEvaluationBindingV1, now: u64) -> AgentdEvaluationSessionV1 {
     let (trust, signed) = evidence_fixture(binding, now);
     AgentdEvaluationSessionV1 {
@@ -340,6 +356,10 @@ fn session(binding: &AgentdEvaluationBindingV1, now: u64) -> AgentdEvaluationSes
 }
 
 #[test]
+#[allow(
+    clippy::unwrap_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust() {
     let binding = binding();
     let receipt = session(&binding, 1_000)
@@ -349,6 +369,10 @@ fn signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust() {
 }
 
 #[test]
+#[allow(
+    clippy::unwrap_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn expired_distribution_rejects_still_valid_signed_evaluation_use() {
     let binding = binding();
     let (trust, signed) = evidence_fixture_with_distribution_expiry(

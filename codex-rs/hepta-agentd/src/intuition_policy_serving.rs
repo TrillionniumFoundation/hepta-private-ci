@@ -395,6 +395,10 @@ mod tests {
     use codex_hepta_intuition::ProductionSlowPathReasonV1;
     use codex_hepta_types::ProbabilityQ32;
 
+    #[allow(
+        clippy::expect_used,
+        reason = "Fixed test-fixture identifiers and scalar values are valid by construction."
+    )]
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("id")
     }

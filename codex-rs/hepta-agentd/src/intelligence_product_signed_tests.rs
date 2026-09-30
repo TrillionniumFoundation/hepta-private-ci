@@ -4,6 +4,10 @@ use codex_hepta_intelligence::build_legal_candidates;
 use codex_hepta_intuition::CanonicalRiskRuleV1;
 use codex_hepta_intuition::LearnedScorerContractV1;
 
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn signed_fixture() -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
@@ -72,6 +76,10 @@ fn routing_profile(
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 async fn product_profile_routes_slow_path_before_context_and_evaluation() {
     for (risk_rule, risk_class) in [
         (CanonicalRiskRuleV1::AlwaysSlowPath, RiskClass::Low),
@@ -121,6 +129,10 @@ async fn product_profile_routes_slow_path_before_context_and_evaluation() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 async fn selected_product_profile_preserves_v4_receipt_and_propensity() {
     for risk_rule in [
         CanonicalRiskRuleV1::HighOnlySlowPath,
@@ -173,6 +185,10 @@ async fn selected_product_profile_preserves_v4_receipt_and_propensity() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 async fn signed_evaluation_completes_existing_owner_preparation_and_run_admission() {
     let (value, trust) = signed_fixture();
     let directory = tempfile::tempdir().expect("directory");
@@ -205,6 +221,10 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
     let (value, _) = signed_fixture();
     let directory = tempfile::tempdir().expect("directory");

@@ -35,6 +35,10 @@ use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed test-fixture identifiers and scalar values are valid by construction."
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("id")
 }
@@ -70,6 +74,10 @@ fn sign(
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn agentd_calls_authenticated_current_intuition_policy_with_owner_pins() {
     let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent id");
     let policy_digest = digest("policy:agentd-product");

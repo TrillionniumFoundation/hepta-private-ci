@@ -10,11 +10,19 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed test-fixture identifiers and scalar values are valid by construction."
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("stable id")
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn host_identity_and_owner_pins_fail_closed_before_policy_admission() {
     let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent id");
     let key = SigningKey::from_bytes(&[7; 32]);
@@ -108,6 +116,10 @@ fn successful_reconciliation_returns_the_verified_replay_receipt() {
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn product_host_binding_mutation_covers_every_profile_pin() {
     let agent = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent");
     let pins = AgentdIntuitionPolicyPinsV2 {

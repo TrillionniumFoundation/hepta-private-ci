@@ -88,6 +88,10 @@ impl IntuitionPolicyClock for TestIntuitionClock {
     }
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed test-fixture identifiers and scalar values are valid by construction."
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("stable id")
 }
@@ -136,6 +140,10 @@ fn trust_material() -> (
     )
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn trust_material_with_options(
     observer_controller: &str,
     generator_revoked_at: Option<u64>,
@@ -238,6 +246,10 @@ fn sign_evidence(
     evidence
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn request_and_profile() -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
     let policy_digest = digest("policy:intuition-product-v3");
     let objective_digest = digest("objective:intuition-product-v3");
@@ -329,6 +341,10 @@ fn request_and_profile() -> (CalibratedDecisionRequestV1, CanonicalPolicyProfile
     (request, profile)
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Fixed signed fixture construction must fail the test if its contract changes."
+)]
 fn commitments(
     request: &CalibratedDecisionRequestV1,
     profile: &CanonicalPolicyProfileV1,
@@ -353,6 +369,10 @@ fn commitments(
     (scoring, assignment)
 }
 
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn open_rw(path: &Path) -> File {
     OpenOptions::new()
         .read(true)
@@ -362,6 +382,10 @@ fn open_rw(path: &Path) -> File {
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
     for candidate_count in [1, codex_hepta_agentd::MAX_PRODUCT_INTUITION_CANDIDATES] {
         let agent_id = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("agent id");
@@ -633,6 +657,10 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
 }
 
 #[test]
+#[allow(
+    clippy::expect_used,
+    reason = "Test setup and success assertions intentionally fail the test on unexpected errors."
+)]
 fn v3_product_rejects_evaluator_observer_controller_collision_despite_distinct_keys() {
     let (_, verifier, keys, principals) = trust_material_with_options(
         "controller:evaluator",
