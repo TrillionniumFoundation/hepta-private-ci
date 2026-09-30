@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   materialize:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -36,7 +36,7 @@ jobs:
           cp codex-rs/Cargo.lock "$out/Cargo.lock"
           cp -R codex-rs/hepta-learning-artifacts/src "$out/source/"
           git diff --binary -- codex-rs/Cargo.lock codex-rs/hepta-learning-artifacts/src >"$out/materialized.patch"
-          sha256sum "$out/Cargo.lock" "$out/materialized.patch" >"$out/SHA256SUMS"
+          shasum -a 256 "$out/Cargo.lock" "$out/materialized.patch" >"$out/SHA256SUMS"
       - name: Upload materialized candidate
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
