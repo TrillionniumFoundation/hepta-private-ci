@@ -71,6 +71,7 @@ jobs:
             scripts/runtime-codex-durability-fixup.py
             scripts/runtime-codex-transactional-owner-fixup.py
             scripts/runtime-codex-quarantine-migration.py
+            scripts/runtime-codex-quarantine-authority-fixup.py
             scripts/runtime-codex-deadline-migration.py
             scripts/runtime-codex-cleanup-migration.py
             scripts/runtime-codex-storage-fixup.py
@@ -80,6 +81,7 @@ jobs:
             scripts/runtime-codex-effect-guard-fixup.py
             scripts/runtime-codex-structured-sequence-migration.py
             scripts/runtime-codex-process-crash-migration.py
+            scripts/runtime-codex-process-crash-expansion.py
             scripts/runtime-codex-qualification-fixup.py
             scripts/runtime-codex-final-closure.py
           )
@@ -154,6 +156,7 @@ jobs:
             scripts/runtime-codex-durability-fixup.py \
             scripts/runtime-codex-transactional-owner-fixup.py \
             scripts/runtime-codex-quarantine-migration.py \
+            scripts/runtime-codex-quarantine-authority-fixup.py \
             scripts/runtime-codex-deadline-migration.py \
             scripts/runtime-codex-cleanup-migration.py \
             scripts/runtime-codex-storage-fixup.py \
@@ -163,6 +166,7 @@ jobs:
             scripts/runtime-codex-effect-guard-fixup.py \
             scripts/runtime-codex-structured-sequence-migration.py \
             scripts/runtime-codex-process-crash-migration.py \
+            scripts/runtime-codex-process-crash-expansion.py \
             scripts/runtime-codex-qualification-fixup.py \
             scripts/runtime-codex-final-closure.py \
             scripts/runtime-codex-finalize-map.py \
