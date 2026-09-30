@@ -5,6 +5,11 @@ on:
     branches:
       - codex/cognitive-types-full-closure-20260927
     paths:
+      - 'codex-rs/hepta-cognitive-types/**'
+      - 'qualification/cognitive-types-v1/prepare_fuzz_corpus.py'
+      - 'qualification/cognitive-types-v1/run_fuzz_campaign.py'
+      - 'qualification/cognitive-types-v1/verify_fuzz_campaign_receipts.py'
+      - 'qualification/cognitive-types-v1/test_fuzz_campaigns.py'
       - '.github/workflows/cognitive-types-fuzz-campaigns.yml'
 
 permissions:
@@ -31,3 +36,84 @@ jobs:
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           python3 -B -m unittest -v qualification/cognitive-types-v1/test_fuzz_campaigns.py
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+  campaign:
+    needs: verifier
+    name: fuzz-${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - hnmf_base
+          - hnmf_learning
+          - shared_experience_v2
+          - consumer_handoff
+          - canonical_json_grammar
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/cognitive-fuzz-target
+      RUSTUP_TOOLCHAIN: nightly-2026-09-15
+      CARGO_FUZZ_VERSION: 0.13.2
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out immutable exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source and clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Install pinned fuzz toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal
+          rustup component add --toolchain "$RUSTUP_TOOLCHAIN" rust-src
+          cargo +"$RUSTUP_TOOLCHAIN" install cargo-fuzz --version "$CARGO_FUZZ_VERSION" --locked
+          cargo +"$RUSTUP_TOOLCHAIN" fuzz --version
+
+      - name: Prepare deterministic target corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/cognitive-types-v1/prepare_fuzz_corpus.py \
+            --output "$RUNNER_TEMP/cognitive-types-corpus"
+
+      - name: Run sixty-second target campaign
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          python3 qualification/cognitive-types-v1/run_fuzz_campaign.py \
+            --target "$TARGET" \
+            --seconds 60 \
+            --rss-mb 2048 \
+            --campaign-class smoke \
+            --corpus "$RUNNER_TEMP/cognitive-types-corpus/$TARGET" \
+            --evidence "$RUNNER_TEMP/cognitive-types-fuzz-$TARGET"
+
+      - name: Recheck source immutability
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Upload target receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-fuzz-${{ matrix.target }}-${{ github.sha }}
+          path: ${{ runner.temp }}/cognitive-types-fuzz-${{ matrix.target }}
+          if-no-files-found: error
+          retention-days: 30
