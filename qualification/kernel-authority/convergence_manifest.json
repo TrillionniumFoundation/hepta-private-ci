@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.kernel-authority-convergence-manifest.v1",
+  "schemaVersion": 1,
+  "module": "kernel.authority",
+  "sourceAnchor": {
+    "commit": "d98cf4f4d98a9e6858b103ffc4668a86b304ee49",
+    "tree": "b35e3f25a1f736728c9cc6e3a39ddf60f9ff5ef4"
+  },
+  "preservedInvariants": [
+    "one-authoritative-lease-and-final-use-owner",
+    "fresh-final-use-revalidation-before-the-irreversible-boundary",
+    "parent-revocation-and-epoch-propagation",
+    "durable-consumption-revocation-and-provider-attempt-identity",
+    "fail-closed-recovery-on-missing-stale-or-inconsistent-trust-material",
+    "post-boundary-cancellation-does-not-erase-terminal-observation"
+  ],
+  "trackedSourcePaths": [
+    "codex-rs/hepta-contracts/src/authority_trust.rs",
+    "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
+    "codex-rs/hepta-agentd/src/automation_authority_bootstrap.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs",
+    "codex-rs/hepta-fleet/src/authority_port.rs",
+    "qualification/kernel-authority/port_acceptance.py",
+    ".github/workflows/kernel-authority-production-closure.yml",
+    ".github/workflows/kernel-authority-product-process-recovery.yml",
+    ".github/workflows/kernel-authority-target-capacity.yml"
+  ],
+  "closures": {
+    "trustedClockOwnership": {
+      "sourceClosed": true,
+      "canonicalType": "codex_hepta_contracts::FinalUseFeedClock",
+      "singleOwnerComposition": "AgentdAutomationEffectHost",
+      "exactCandidateExecutionProved": false,
+      "productionAccepted": false
+    },
+    "productionTrustBootstrap": {
+      "sourceClosed": true,
+      "entryPoint": "AgentdProductionAuthorityBootstrap::from_trust_bundle",
+      "fleetEntryPoint": "FleetAuthorityPort::open_production",
+      "ordinaryDeploymentProviderWired": false,
+      "compatibilityProfileIsProduction": false,
+      "productionAccepted": false
+    },
+    "executablePortAcceptance": {
+      "sourceClosed": true,
+      "projector": "qualification/kernel-authority/port_acceptance.py",
+      "rawNativeLogsRequired": true,
+      "rawProductProcessLogsRequired": true,
+      "allDeclaredPortsNativelyVerified": false,
+      "allDeclaredPortsProductionAccepted": false
+    },
+    "measuredHotPathAndCapacity": {
+      "sourceClosed": true,
+      "collectorWorkflow": ".github/workflows/kernel-authority-target-capacity.yml",
+      "realTargetHostRequired": true,
+      "targetCollectionExecuted": false,
+      "runtimeOptimizationAuthorized": false,
+      "productionSloGranted": false
+    },
+    "sourceBoundDocumentation": {
+      "sourceClosed": true,
+      "manifest": "qualification/kernel-authority/convergence_manifest.json",
+      "validator": "qualification/kernel-authority/convergence_acceptance.py",
+      "statusDocument": "docs/modules/kernel.authority/CONVERGENCE_STATUS.md",
+      "exactCandidateExecutionProved": false,
+      "independentAcceptance": false
+    }
+  },
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "targetHostQualified": false,
+    "independentAcceptance": false,
+    "activationGranted": false,
+    "releaseGranted": false
+  }
+}
