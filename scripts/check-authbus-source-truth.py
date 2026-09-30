@@ -35,11 +35,12 @@ SHA_FIELD = re.compile(
     r"(?:^|_)(?:commit|candidate|head|base|tree|merge|final_merge|workflow)_?sha$",
     re.IGNORECASE,
 )
-# Detached checkout/reset is allowed to materialize one exact immutable
-# candidate in a runner worktree. Publication and source synthesis are not.
+# Detached checkout/reset and read-only plumbing such as merge-tree/commit-tree
+# are allowed to materialize one exact immutable candidate. Publication and
+# source synthesis are not.
 SOURCE_MUTATION = re.compile(
     r"(?im)(?:^\s*contents:\s*write\s*(?:#.*)?$|"
-    r"\bgit\s+(?:add|commit|push|merge|rebase|cherry-pick|am)\b|"
+    r"\bgit\s+(?:add|commit|push|merge|rebase|cherry-pick|am)(?=\s|$)|"
     r"^\s*persist-credentials:\s*true\s*(?:#.*)?$|"
     r"\bauthbus-materialize[^\s]*\.py\b|"
     r"\bauthority-convergence-once\b|"
