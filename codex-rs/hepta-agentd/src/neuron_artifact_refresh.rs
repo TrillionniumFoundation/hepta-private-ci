@@ -159,3 +159,6 @@ fn refresh_digest(selections: &NeuronSelectedArtifactsV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+#[cfg(test)]
+#[path = "neuron_artifact_refresh_tests.rs"]
+mod tests;
