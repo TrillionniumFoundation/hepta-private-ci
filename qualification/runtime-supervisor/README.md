@@ -63,8 +63,8 @@ contains no signing material and cannot issue grants. The external release-polic
 owner distributes it; `hepta-supervisord` consumes it through:
 
 ```text
---production-authority-bundle ABSOLUTE_PATH
---production-authority-bundle-sha256 SHA256
+--authority-bundle ABSOLUTE_PATH
+--authority-bundle-sha256 SHA256
 ```
 
 The bundle path is mutually exclusive with the legacy six verifier arguments.
@@ -122,7 +122,7 @@ hepta-supervisor-authority-bundle \
 ```
 
 The command prints the bundle SHA-256. `hepta-supervisord` then requires both
-`--production-authority-bundle` and `--production-authority-bundle-sha256`. A
+`--authority-bundle` and `--authority-bundle-sha256`. A
 rotation changes the pinned key/epoch/digest tuple; predecessor, wrong-signer,
 expired and stale-daemon-epoch grants reject in the authority-distribution test.
 The bundle contains no signing key and does not make the supervisor a release
