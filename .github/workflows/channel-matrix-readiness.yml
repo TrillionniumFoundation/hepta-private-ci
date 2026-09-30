@@ -1,0 +1,222 @@
+name: channel.matrix exact readiness manifest
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/channel-matrix-readiness.yml'
+      - '.github/workflows/channel-matrix-preserve-unknown.yml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/rust-toolchain.toml'
+      - 'codex-rs/.config/nextest.toml'
+      - 'codex-rs/hepta-matrix-protocol/**'
+      - 'codex-rs/hepta-matrix-store/**'
+      - 'codex-rs/hepta-matrix-sdk/**'
+      - 'codex-rs/hepta-matrixd/**'
+      - 'docs/modules/channel.matrix/**'
+      - 'scripts/*channel_matrix*'
+      - 'scripts/tests/test_channel_matrix*'
+      - 'scripts/verify_channel_matrix_candidate.py'
+      - 'justfile'
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact source/final-merge SHA
+        required: true
+      base_sha:
+        description: Exact base/pre-integration SHA
+        required: true
+      mode:
+        description: pull-request or post-merge
+        required: true
+        type: choice
+        options: [pull-request, post-merge]
+      pull_request_number:
+        description: Required in pull-request mode
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: channel-matrix-readiness-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.before }}
+  QUALIFICATION_MODE: ${{ inputs.mode || (github.event_name == 'push' && 'post-merge' || 'pull-request') }}
+  PR_NUMBER: ${{ inputs.pull_request_number || github.event.pull_request.number || '' }}
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  exact-lanes:
+    name: Matrix readiness ${{ matrix.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, deterministic-merge, github-merge]
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install qualification prerequisites
+        run: |
+          set -euo pipefail
+          rustup component add rustfmt clippy
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends sqlite3 libsqlite3-dev binutils
+      - name: Install pinned test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Select exact lane candidate
+        env:
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse "$BASE_SHA^{commit}")" = "$BASE_SHA"
+          evidence="$RUNNER_TEMP/channel-matrix-$LANE"
+          mkdir -p "$evidence"
+          case "$LANE" in
+            source-head)
+              tested="$SOURCE_SHA"
+              receipt_lane=source-head
+              ;;
+            deterministic-merge)
+              tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+              export GIT_AUTHOR_NAME='channel.matrix readiness'
+              export GIT_AUTHOR_EMAIL='channel-matrix@invalid'
+              export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
+              export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+              export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+              export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+              tested="$(printf '%s\n' 'channel.matrix deterministic merge' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+              git checkout --detach "$tested"
+              receipt_lane=base-merge
+              ;;
+            github-merge)
+              if test "$QUALIFICATION_MODE" = post-merge; then
+                tested="$SOURCE_SHA"
+                receipt_lane=source-head
+              else
+                test -n "$PR_NUMBER"
+                git fetch --no-tags origin "+refs/pull/$PR_NUMBER/merge:refs/remotes/origin/pr-$PR_NUMBER-merge"
+                tested="$(git rev-parse "refs/remotes/origin/pr-$PR_NUMBER-merge^{commit}")"
+                test "$(git rev-list --parents -n 1 "$tested" | cut -d' ' -f2-)" = "$BASE_SHA $SOURCE_SHA"
+                expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+                test "$(git rev-parse "$tested^{tree}")" = "$expected_tree"
+                git checkout --detach "$tested"
+                receipt_lane=base-merge
+              fi
+              ;;
+          esac
+          echo "TESTED_SHA=$tested" >> "$GITHUB_ENV"
+          echo "RECEIPT_LANE=$receipt_lane" >> "$GITHUB_ENV"
+          echo "EVIDENCE_DIR=$evidence" >> "$GITHUB_ENV"
+      - name: Bind exact source and tracked provenance
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$TESTED_SHA" --output "$EVIDENCE_DIR/candidate.json"
+          python3 scripts/channel_matrix_evidence.py snapshot --expected-sha "$TESTED_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane "$RECEIPT_LANE" --output "$EVIDENCE_DIR/source.json"
+          python3 scripts/channel_matrix_source_provenance.py --source-snapshot "$EVIDENCE_DIR/source.json" --expected-sha "$TESTED_SHA" --stage checkout --output "$EVIDENCE_DIR/source-provenance-before.json"
+      - name: Execute exact lane qualification
+        run: |
+          set -uo pipefail
+          result=0
+          (
+            cd codex-rs
+            cargo test --locked -p codex-hepta-matrix-sdk --doc
+          ) >"$EVIDENCE_DIR/api-compile-fail.log" 2>&1 || result=1
+          for label in compile focused-tests clippy format; do
+            python3 scripts/channel_matrix_evidence.py run --directory "$EVIDENCE_DIR" --label "$label" || result=1
+          done
+          python3 scripts/channel_matrix_evidence.py snapshot --expected-sha "$TESTED_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane "$RECEIPT_LANE" --output "$EVIDENCE_DIR/source-after.json" || result=1
+          python3 scripts/channel_matrix_source_provenance.py --source-snapshot "$EVIDENCE_DIR/source-after.json" --expected-sha "$TESTED_SHA" --stage post-qualification --output "$EVIDENCE_DIR/source-provenance-after.json" || result=1
+          python3 scripts/channel_matrix_status.py --directory "$EVIDENCE_DIR" || result=1
+          python3 scripts/channel_matrix_qualification.py --directory "$EVIDENCE_DIR" || result=1
+          status=failure; test "$result" -eq 0 && status=success
+          python3 scripts/channel_matrix_evidence.py manifest --directory "$EVIDENCE_DIR" --job-status "$status" || result=1
+          exit "$result"
+      - name: Retain exact lane evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-readiness-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.EVIDENCE_DIR }}/
+          if-no-files-found: error
+          retention-days: 30
+
+  readiness-manifest:
+    name: Matrix single readiness manifest
+    needs: [exact-lanes]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Download source-head lane
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: channel-matrix-readiness-source-head-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/readiness/source-head
+      - name: Download deterministic-merge lane
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: channel-matrix-readiness-deterministic-merge-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/readiness/deterministic-merge
+      - name: Download GitHub/final merge lane
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: channel-matrix-readiness-github-merge-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/readiness/github-merge
+      - name: Derive one non-mixable manifest
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/readiness/result"
+          final_args=()
+          if test "$QUALIFICATION_MODE" = post-merge; then final_args=(--final-merge-sha "$SOURCE_SHA"); fi
+          python3 scripts/channel_matrix_readiness.py \
+            --source-head "$RUNNER_TEMP/readiness/source-head" \
+            --base-merge "$RUNNER_TEMP/readiness/deterministic-merge" \
+            --github-merge "$RUNNER_TEMP/readiness/github-merge" \
+            --mode "$QUALIFICATION_MODE" \
+            --expected-source-sha "$SOURCE_SHA" \
+            --expected-base-sha "$BASE_SHA" \
+            "${final_args[@]}" \
+            --output "$RUNNER_TEMP/readiness/result/readiness-manifest.json"
+          sha256sum "$RUNNER_TEMP/readiness/result/readiness-manifest.json" > "$RUNNER_TEMP/readiness/result/readiness-manifest.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-readiness-manifest-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/readiness/result/
+          if-no-files-found: error
+          retention-days: 30
+
+  readiness-required:
+    name: Matrix readiness required
+    if: always()
+    needs: [exact-lanes, readiness-manifest]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require exact lanes and manifest
+        env:
+          LANES: ${{ needs.exact-lanes.result }}
+          MANIFEST: ${{ needs.readiness-manifest.result }}
+        run: |
+          set -euo pipefail
+          test "$LANES" = success
+          test "$MANIFEST" = success
