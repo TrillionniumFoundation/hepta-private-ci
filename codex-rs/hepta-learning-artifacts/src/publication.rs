@@ -109,6 +109,9 @@ impl ArtifactPublicationTransactionV1 {
         expected_registry_predecessor_head: Digest32,
         now: u64,
     ) -> Result<Self, ArtifactPublicationError> {
+        if admission.validated_manifest.manifest.predecessor_ids.len() > 1 {
+            return Err(ArtifactPublicationError::UnsupportedMultiPredecessorLineage);
+        }
         validate_artifact_publication_v3(&admission, withdrawal_registry, now)?;
         if registry.snapshot().head_digest != expected_registry_predecessor_head {
             return Err(ArtifactPublicationError::RegistryPredecessorMismatch);
@@ -210,9 +213,17 @@ impl ArtifactPublicationTransactionV1 {
         let ArtifactEvent::Register { manifest: v1, .. } = &record.event else {
             return Err(ArtifactPublicationError::RegistryProjectionMismatch);
         };
+        let predecessor_id = if v2.predecessor_ids.len() == 1 {
+            v2.predecessor_ids.first()
+        } else {
+            None
+        };
         if v1.artifact_id != v2.artifact_id
             || v1.kind != v2.kind
             || v1.generation != v2.generation
+            || v1.predecessor_id.as_ref() != predecessor_id
+            || v1.objective_digest != v2.objective_class_digest
+            || v1.support_digest != self.intent.admission.validated_manifest.manifest_digest
             || v1.content_digest != v2.bytes_digest
             || v1.producer_id != v2.producer_id
             || v1.compatibility_digest != v2.compatibility_digest
@@ -303,6 +314,17 @@ impl ArtifactPublicationTransactionV1 {
     pub fn from_snapshot(
         snapshot: ArtifactPublicationTransactionSnapshotV1,
     ) -> Result<Self, ArtifactPublicationError> {
+        if snapshot
+            .intent
+            .admission
+            .validated_manifest
+            .manifest
+            .predecessor_ids
+            .len()
+            > 1
+        {
+            return Err(ArtifactPublicationError::UnsupportedMultiPredecessorLineage);
+        }
         verify_artifact_admission_v3(
             &snapshot.intent.admission,
             snapshot.intent.admission.withdrawal_head_digest,
@@ -471,6 +493,7 @@ pub enum ArtifactPublicationError {
     PayloadMismatch,
     RegistryPredecessorMismatch,
     RegistryProjectionMismatch,
+    UnsupportedMultiPredecessorLineage,
     RegistryReceiptMismatch,
     WitnessReceiptMismatch,
     AcknowledgementTime,
@@ -492,6 +515,7 @@ impl StdError for ArtifactPublicationError {
             | Self::PayloadMismatch
             | Self::RegistryPredecessorMismatch
             | Self::RegistryProjectionMismatch
+            | Self::UnsupportedMultiPredecessorLineage
             | Self::RegistryReceiptMismatch
             | Self::WitnessReceiptMismatch
             | Self::AcknowledgementTime
@@ -521,25 +545,25 @@ mod tests {
     use crate::ProvenanceModeV1;
     use crate::admit_manifest_at_withdrawal_head_v3;
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         match StableId::new(value.to_owned()) {
             Ok(value) => value,
             Err(error) => panic!("invalid test id {value}: {error}"),
         }
     }
 
-    fn digest(value: &str) -> Digest32 {
+    pub(super) fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn generation(value: u64) -> Generation {
+    pub(super) fn generation(value: u64) -> Generation {
         match Generation::new(value) {
             Ok(value) => value,
             Err(error) => panic!("invalid generation {value}: {error}"),
         }
     }
 
-    fn withdrawal_registry() -> DatasetWithdrawalRegistry {
+    pub(super) fn withdrawal_registry() -> DatasetWithdrawalRegistry {
         DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
             authority_domain_id: id("dataset-authority"),
             registry_id: id("withdrawal-registry"),
@@ -547,7 +571,7 @@ mod tests {
         })
     }
 
-    fn v2_manifest() -> LearningArtifactManifestV2 {
+    pub(super) fn v2_manifest() -> LearningArtifactManifestV2 {
         LearningArtifactManifestV2 {
             artifact_id: id("artifact-v2"),
             kind: ArtifactKind::Model,
@@ -555,8 +579,8 @@ mod tests {
             provenance_mode: ProvenanceModeV1::DatasetDerived,
             source_dataset_digests: vec![digest("dataset-a"), digest("dataset-b")],
             lineage_digests: vec![digest("lineage-a"), digest("lineage-b")],
-            predecessor_ids: vec![id("artifact-parent-a"), id("artifact-parent-b")],
-            rollback_predecessor: Some(id("artifact-parent-a")),
+            predecessor_ids: Vec::new(),
+            rollback_predecessor: None,
             bytes_digest: digest("payload"),
             encoded_size_bytes: 7,
             training_code_digest: digest("training"),
@@ -585,8 +609,10 @@ mod tests {
                 generation: generation(2),
                 predecessor_id: None,
                 content_digest: digest("payload"),
-                objective_digest: digest("objective-index"),
-                support_digest: digest("support-index"),
+                objective_digest: digest("objective"),
+                support_digest: crate::validate_artifact_manifest_v2(v2_manifest(), 20)
+                    .expect("valid projection manifest")
+                    .manifest_digest,
                 producer_id: id("producer"),
                 compatibility_digest: digest("compatibility"),
                 encoded_size_bytes: 7,
@@ -598,7 +624,7 @@ mod tests {
         registry
     }
 
-    fn snapshot_receipt(registry: &ArtifactRegistry) -> RegistrySnapshotReceipt {
+    pub(super) fn snapshot_receipt(registry: &ArtifactRegistry) -> RegistrySnapshotReceipt {
         RegistrySnapshotReceipt {
             binding: digest("publication-scope"),
             head_digest: registry.snapshot().head_digest,
@@ -645,7 +671,7 @@ mod tests {
         }
     }
 
-    fn prepared() -> ArtifactPublicationTransactionV1 {
+    pub(super) fn prepared() -> ArtifactPublicationTransactionV1 {
         let withdrawal = withdrawal_registry();
         let admission = match admit_manifest_at_withdrawal_head_v3(
             &withdrawal,
@@ -843,8 +869,10 @@ mod tests {
                 generation: generation(2),
                 predecessor_id: None,
                 content_digest: digest("wrong-payload"),
-                objective_digest: digest("objective-index"),
-                support_digest: digest("support-index"),
+                objective_digest: digest("objective"),
+                support_digest: crate::validate_artifact_manifest_v2(v2_manifest(), 20)
+                    .expect("valid projection manifest")
+                    .manifest_digest,
                 producer_id: id("producer"),
                 compatibility_digest: digest("compatibility"),
                 encoded_size_bytes: 7,
@@ -863,3 +891,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "publication_adversarial_tests.rs"]
+mod adversarial_tests;
