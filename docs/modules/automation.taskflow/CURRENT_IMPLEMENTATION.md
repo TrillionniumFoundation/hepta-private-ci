@@ -15,9 +15,9 @@ Source declarations only. Native source-head, deterministic-merge, selected-runt
 | `separateRecoveryBudgetComplete` | `true` |
 | `externalEffectProductCompositionComplete` | `true` |
 | `neuralCircuitRuntimeVerticalSliceComplete` | `true` |
-| `durableNeuralCircuitProductComplete` | `false` |
+| `durableNeuralCircuitProductComplete` | `true` |
 | `crossHostRecoveryContractComplete` | `true` |
-| `crossHostRecoveryProductComplete` | `false` |
+| `crossHostRecoveryProductComplete` | `true` |
 | `selectedHostQualificationPathComplete` | `false` |
 | `independentAcceptanceVerificationPathComplete` | `false` |
 | `deploymentQualificationComplete` | `false` |
@@ -29,11 +29,10 @@ Source declarations only. Native source-head, deterministic-merge, selected-runt
 
 ## Remaining module work
 
-1. Exact-head and deterministic-merge formatting, compile, strict owner lint, native tests, Agentd product tests and Bazel qualification have not yet reached terminal success for this revision.
-2. The schema-22 durable Circuit owner path is source-present, but a real Agentd DecisionCell/organ/Wait/effect/recovery port chain and process-cut receipt are not yet qualified.
-3. The authenticated host-fence and target-admission contracts do not themselves transport the checkpoint, physically fence the predecessor, advance the native target epoch or execute a two-host recovery exercise.
-4. Occurrence verification is paged, but definition/run enumeration and per-run TaskFlow event verification still require complete bounded-startup convergence and long-retention native measurements.
-5. Selected-host evidence must prove actual authorization consumption, provider contact, revocation behavior and terminal observation; configuration loading alone is insufficient.
-6. Independent acceptance, activation, promotion and release remain false and cannot be issued by repository source declarations.
+1. Linux exact-head, macOS exact-head and deterministic-merge formatting, locked compile, strict Clippy, native tests, Agentd product tests and Bazel qualification must all reach terminal success on the final immutable candidate; queued, skipped and not_run receipts do not count.
+2. Selected-host evidence must bind the native binary and SQLite identity, the timezone profile actually consumed, provider endpoint/contract, final-use trust root, current revocation frontier and terminal observer to one execution receipt.
+3. The repository now contains a signed-fence copied-store handoff controller and two-store fault tests, but physical source-host fencing, checkpoint transport and a real two-host network-partition exercise remain selected-runtime evidence.
+4. Long-retention startup is paged and bounded in source; retained-history growth, restore latency, compaction and saturation still require native selected-runtime measurements.
+5. Independent acceptance, activation, promotion and release remain false and cannot be issued by repository source declarations.
 
 Native-test definitions, static source navigation, Python/SQLite fixtures, native source-head execution, native merged-tree execution, selected-host execution and independent acceptance are distinct evidence classes.

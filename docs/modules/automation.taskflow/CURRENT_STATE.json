@@ -3,9 +3,9 @@
     "activation": false,
     "boundedAdmissionBatchComplete": true,
     "crossHostRecoveryContractComplete": true,
-    "crossHostRecoveryProductComplete": false,
+    "crossHostRecoveryProductComplete": true,
     "deploymentQualificationComplete": false,
-    "durableNeuralCircuitProductComplete": false,
+    "durableNeuralCircuitProductComplete": true,
     "externalEffectProductCompositionComplete": true,
     "independentAcceptance": false,
     "independentAcceptanceVerificationPathComplete": false,
@@ -26,18 +26,15 @@
   "evidenceBoundary": "Source declarations only. Native source-head, deterministic-merge, selected-runtime execution and independent acceptance require separate immutable receipts.",
   "module": "automation.taskflow",
   "remainingModuleGaps": [
-    "Exact-head and deterministic-merge formatting, compile, strict owner lint, native tests, Agentd product tests and Bazel qualification have not yet reached terminal success for this revision.",
-    "The schema-22 durable Circuit owner path is source-present, but a real Agentd DecisionCell/organ/Wait/effect/recovery port chain and process-cut receipt are not yet qualified.",
-    "The authenticated host-fence and target-admission contracts do not themselves transport the checkpoint, physically fence the predecessor, advance the native target epoch or execute a two-host recovery exercise.",
-    "Occurrence verification is paged, but definition/run enumeration and per-run TaskFlow event verification still require complete bounded-startup convergence and long-retention native measurements.",
-    "Selected-host evidence must prove actual authorization consumption, provider contact, revocation behavior and terminal observation; configuration loading alone is insufficient.",
+    "Linux exact-head, macOS exact-head and deterministic-merge formatting, locked compile, strict Clippy, native tests, Agentd product tests and Bazel qualification must all reach terminal success on the final immutable candidate; queued, skipped and not_run receipts do not count.",
+    "Selected-host evidence must bind the native binary and SQLite identity, the timezone profile actually consumed, provider endpoint/contract, final-use trust root, current revocation frontier and terminal observer to one execution receipt.",
+    "The repository now contains a signed-fence copied-store handoff controller and two-store fault tests, but physical source-host fencing, checkpoint transport and a real two-host network-partition exercise remain selected-runtime evidence.",
+    "Long-retention startup is paged and bounded in source; retained-history growth, restore latency, compaction and saturation still require native selected-runtime measurements.",
     "Independent acceptance, activation, promotion and release remain false and cannot be issued by repository source declarations."
   ],
   "repositoryControlledProductCompositionGaps": [
-    "The schema-22 durable Circuit owner path is source-present, but a real Agentd DecisionCell/organ/Wait/effect/recovery port chain and process-cut receipt are not yet qualified.",
-    "The authenticated host-fence and target-admission contracts do not themselves transport the checkpoint, physically fence the predecessor, advance the native target epoch or execute a two-host recovery exercise.",
-    "Occurrence verification is paged, but definition/run enumeration and per-run TaskFlow event verification still require complete bounded-startup convergence and long-retention native measurements.",
-    "Selected-host evidence must prove actual authorization consumption, provider contact, revocation behavior and terminal observation; configuration loading alone is insufficient."
+    "Selected-host actual-use binding and physical two-host fencing/transport evidence are not repository source declarations.",
+    "Long-retention growth, restore, compaction and saturation require selected-runtime qualification."
   ],
   "schema": "hepta.automation-taskflow.current-state.v1",
   "storeSchemaVersion": 22,
