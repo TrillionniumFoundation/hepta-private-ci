@@ -203,7 +203,7 @@ class TransportObservationTests(unittest.TestCase):
         self.assertIs(result["activation_authorized"], False)
         self.assertIs(result["credential_separation_proven"], False)
 
-    def test_auth_network_policy_and_success_are_not_permission_denial(self):
+    def test_auth_network_policy_and_success_remain_unknown_observations(self):
         cases = [
             (200, b"Write access to repository not granted."),
             (401, b"Bad credentials"),
@@ -217,16 +217,19 @@ class TransportObservationTests(unittest.TestCase):
         ]
         for status, body in cases:
             with self.subTest(status=status, body=body):
-                with self.assertRaises(controls.ControlError):
-                    self.observe(status, body)
+                result = self.observe(status, body)
+                self.assertIsNone(result["write_transport_denied"])
+                self.assertEqual(result["observation_status"], "unknown")
+                self.assertIs(result["activation_authorized"], False)
 
     def test_read_api_failure_does_not_probe_or_pass(self):
         with (
             patch.object(controls, "api", side_effect=OSError("offline")),
             patch.object(controls.http.client, "HTTPSConnection") as connect,
         ):
-            with self.assertRaises(OSError):
-                controls.observe_write_transport_denial(REPO, "fixture-token")
+            result = controls.observe_write_transport_denial(REPO, "fixture-token")
+            self.assertIsNone(result["write_transport_denied"])
+            self.assertEqual(result["reason"], "repository_observation_unavailable")
         connect.assert_not_called()
 
     def test_repository_identity_mismatch_rejected(self):
@@ -236,8 +239,8 @@ class TransportObservationTests(unittest.TestCase):
             ),
             patch.object(controls.http.client, "HTTPSConnection") as connect,
         ):
-            with self.assertRaises(controls.ControlError):
-                controls.observe_write_transport_denial(REPO, "fixture-token")
+            result = controls.observe_write_transport_denial(REPO, "fixture-token")
+            self.assertIsNone(result["write_transport_denied"])
         connect.assert_not_called()
 
     def test_timeout_is_not_denial_and_closes_connection(self):
@@ -246,13 +249,14 @@ class TransportObservationTests(unittest.TestCase):
             patch.object(controls.http.client, "HTTPSConnection") as connect,
         ):
             connect.return_value.getresponse.side_effect = TimeoutError("timed out")
-            with self.assertRaises(controls.ControlError):
-                controls.observe_write_transport_denial(REPO, "fixture-token")
+            result = controls.observe_write_transport_denial(REPO, "fixture-token")
+            self.assertIsNone(result["write_transport_denied"])
         connect.return_value.close.assert_called_once()
 
     def test_response_size_is_bounded(self):
-        with self.assertRaises(controls.ControlError):
-            self.observe(403, b"x" * 65537)
+        result = self.observe(403, b"x" * 65537)
+        self.assertIsNone(result["write_transport_denied"])
+        self.assertEqual(result["reason"], "transport_response_exceeds_bound")
 
     def test_missing_token_and_bad_repository_never_access_network(self):
         for repo, token in [
@@ -265,7 +269,13 @@ class TransportObservationTests(unittest.TestCase):
                     controls.observe_write_transport_denial(repo, token)
                 api.assert_not_called()
 
-    def test_cli_discards_control_success_when_transport_is_unknown(self):
+    def test_cli_preserves_verified_controls_and_reports_transport_unknown(self):
+        unknown = {
+            "observation_status": "unknown",
+            "write_transport_denied": None,
+            "advisory": True,
+            "activation_authorized": False,
+        }
         with (
             patch.object(
                 sys,
@@ -286,18 +296,49 @@ class TransportObservationTests(unittest.TestCase):
             patch.object(
                 controls,
                 "observe",
-                return_value={"repository_control_profile_passed": True},
+                return_value={
+                    "repository_control_profile_passed": True,
+                    "activation_authorized": False,
+                },
             ),
             patch.object(
-                controls,
-                "observe_write_transport_denial",
-                side_effect=controls.ControlError("unknown"),
+                controls, "observe_write_transport_denial", return_value=unknown
             ),
+            patch("sys.stdout", new_callable=io.StringIO) as out,
+        ):
+            self.assertEqual(controls.main(), 0)
+        result = controls.json.loads(out.getvalue())
+        self.assertIs(result["repository_control_profile_passed"], True)
+        self.assertIs(result["activation_authorized"], False)
+        self.assertEqual(result["write_transport_observation"], unknown)
+
+    def test_cli_transport_denial_cannot_replace_failed_live_protection(self):
+        with (
+            patch.object(
+                sys,
+                "argv",
+                [
+                    "controls",
+                    "--repo",
+                    REPO,
+                    "--expected-sha",
+                    SHA,
+                    "--probe-write-denial",
+                ],
+            ),
+            patch.dict(controls.os.environ, {"HEPTA_EVALUATOR_APP_ID": str(APP)}),
+            patch.object(
+                controls,
+                "observe",
+                side_effect=controls.ControlError("main unprotected"),
+            ),
+            patch.object(controls, "observe_write_transport_denial") as probe,
             patch("sys.stdout", new_callable=io.StringIO) as out,
             patch("sys.stderr", new_callable=io.StringIO),
         ):
             self.assertEqual(controls.main(), 1)
         self.assertEqual(out.getvalue(), "")
+        probe.assert_not_called()
 
 
 class FormattingCommandTests(unittest.TestCase):
