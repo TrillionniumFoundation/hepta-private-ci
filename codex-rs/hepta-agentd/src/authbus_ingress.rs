@@ -2,8 +2,6 @@
 
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
@@ -139,7 +137,11 @@ pub(crate) async fn submit(
     {
         return Err(invalid("thread or spawn generation is not permitted"));
     }
-    let now = now_ms()?;
+    let now = host
+        .evidence
+        .authbus_monotonic_now_ms()
+        .await
+        .map_err(|error| invalid(&error.to_string()))?;
     if request.expires_at_ms <= now || request.expires_at_ms.saturating_sub(now) > 300_000 {
         return Err(invalid("message expiry must be within five minutes"));
     }
@@ -161,12 +163,17 @@ pub(crate) async fn submit(
     // refuse to report readiness. The worker independently refreshes all gates.
     require_ready(state)?;
     let current = host.trust(state)?;
+    let current_time = host
+        .evidence
+        .authbus_monotonic_now_ms()
+        .await
+        .map_err(|error| invalid(&error.to_string()))?;
     message
         .authenticate(
             &current.issuer()?,
             host.scope,
             Digest32::of_bytes(&body),
-            now_ms()?,
+            current_time,
         )
         .map_err(|error| invalid(&error.to_string()))?;
     if !current.permits(&request.body.thread_id) {
@@ -251,14 +258,4 @@ fn scope(owner: &AgentId) -> Digest32 {
     let mut bytes = b"hepta:agentd:signed-text:v1\0".to_vec();
     bytes.extend_from_slice(owner.as_str().as_bytes());
     Digest32::of_bytes(&bytes)
-}
-
-pub(crate) fn now_ms() -> Result<u64, AgentdError> {
-    u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|_| invalid("invalid host clock"))?
-            .as_millis(),
-    )
-    .map_err(|_| invalid("host clock overflow"))
 }
