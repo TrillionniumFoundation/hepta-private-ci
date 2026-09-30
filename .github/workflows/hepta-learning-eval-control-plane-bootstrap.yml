@@ -115,7 +115,8 @@ jobs:
           assert 'workflow_run:' in reporter
           assert 'pull-requests: write' in reporter
           assert 'github.event.repository.default_branch' in reporter
-          assert 'ref: ${{ github.event.workflow_run.head_sha }}' not in reporter
+          forbidden_candidate_checkout = 'ref: $' + '{{ github.event.workflow_run.head_sha }}'
+          assert forbidden_candidate_checkout not in reporter
           assert 'hepta-learning-eval-trusted-entry.py' in reporter
 
           result = {
