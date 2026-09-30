@@ -175,6 +175,10 @@ jobs:
           output="$RUNNER_TEMP/authority-evidence/$LANE"
           case "$LANE" in
             trust-bundle)
+              mkdir -p "$output"
+              python3 -B qualification/kernel-authority/test_convergence_acceptance.py
+              python3 -B qualification/kernel-authority/convergence_acceptance.py \
+                --output "$output/convergence-projection.json"
               python3 -B qualification/kernel-authority/run_native_checks.py \
                 --identity "$identity" --output-dir "$output"
               ;;
