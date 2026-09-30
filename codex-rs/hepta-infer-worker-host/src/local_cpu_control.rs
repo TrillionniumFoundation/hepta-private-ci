@@ -10,6 +10,8 @@ use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::feature::DEFAULT_FEATURE_COLD_BYTE_LIMIT;
+use codex_hepta_infer_core::durable_control::feature::FeatureHistoryMaintenanceReceipt;
 use codex_hepta_infer_core::durable_control::feature::FeatureOperationStateV1;
 use codex_hepta_neuron::DurableNeuronFeatureResolutionV2;
 use codex_hepta_neuron::DurableNeuronInferenceControlPort;
@@ -38,6 +40,8 @@ pub struct CpuNeuronInferenceControlV1 {
     manifest: ModelManifest,
     encoder: String,
     head: String,
+    input_width: usize,
+    output_width: usize,
     generation: u64,
     maximum_request_duration: Duration,
     clock: Arc<dyn AuthorityClock>,
@@ -80,6 +84,7 @@ impl CpuNeuronInferenceControlV1 {
         let manifest = driver.manifest().clone();
         let encoder = driver.encoder_digest.clone();
         let head = driver.head_digest.clone();
+        let (input_width, output_width) = driver.feature_dimensions()?;
         let now = clock
             .now_unix_ms()
             .map_err(|error| crate::model_worker::Error::DriverFailure(error.to_string()))?;
@@ -97,6 +102,8 @@ impl CpuNeuronInferenceControlV1 {
             manifest,
             encoder,
             head,
+            input_width,
+            output_width,
             generation: config.generation,
             maximum_request_duration: config.maximum_request_duration,
             clock,
@@ -105,6 +112,21 @@ impl CpuNeuronInferenceControlV1 {
 
     pub fn manifest(&self) -> &ModelManifest {
         &self.manifest
+    }
+
+    /// This is the same exclusive control owner used for physical dispatch.
+    /// A full cold budget stops new work while original receipts remain usable.
+    pub fn maintain_history(
+        &self,
+        maximum_records: usize,
+        cold_limit_bytes: u64,
+        budget: Duration,
+    ) -> Result<FeatureHistoryMaintenanceReceipt, codex_hepta_infer_core::durable_control::Error>
+    {
+        self.control
+            .try_lock()
+            .map_err(|_| codex_hepta_infer_core::durable_control::Error::WriterUnavailable)?
+            .maintain_feature_history(maximum_records, cold_limit_bytes, budget)
     }
 }
 
@@ -119,15 +141,37 @@ impl NeuronInferenceControlPort for CpuNeuronInferenceControlV1 {
             || request.weights_digest.to_string() != self.manifest.weights_digest
             || request.encoder_digest.to_string() != self.encoder
             || request.head_digest.to_string() != self.head
+            || request.feature_vector_q24.len() != self.input_width
+            || request.expected_output_width != self.output_width
         {
             return Err(NeuronModelError::Rejected);
         }
-        let record = self
-            .control
-            .try_lock()
-            .map_err(|_| NeuronModelError::Indeterminate)?
-            .reserve_feature(request.clone())
-            .map_err(|_| NeuronModelError::Indeterminate)?;
+        let record = {
+            let mut control = self
+                .control
+                .try_lock()
+                .map_err(|_| NeuronModelError::Indeterminate)?;
+            match control
+                .feature_record(request)
+                .map_err(|_| NeuronModelError::Indeterminate)?
+            {
+                Some(record) => record,
+                None => {
+                    let threshold = (control.resident_record_capacity() / 2).clamp(1, 64);
+                    if control.resident_feature_records() >= threshold {
+                        let limit = control
+                            .feature_history_cold_byte_limit()
+                            .unwrap_or(DEFAULT_FEATURE_COLD_BYTE_LIMIT);
+                        control
+                            .maintain_feature_history(8, limit, Duration::from_millis(100))
+                            .map_err(|_| NeuronModelError::Indeterminate)?;
+                    }
+                    control
+                        .reserve_feature(request.clone())
+                        .map_err(|_| NeuronModelError::Indeterminate)?
+                }
+            }
+        };
         match record.state {
             FeatureOperationStateV1::Observed(receipt) => return Ok(*receipt),
             FeatureOperationStateV1::Dispatched => return Err(NeuronModelError::Indeterminate),
@@ -177,6 +221,12 @@ impl NeuronInferenceControlPort for CpuNeuronInferenceControlV1 {
         let digest = canonical_neuron_feature_payload_digest(&physical);
         physical.authorization.payload_digest = digest.clone();
         physical.authorization.lease_payload_digest = digest;
+        // Dispatch fsync can outlast the lease or request deadline. Physical
+        // worker admission uses the protected current clock at this boundary.
+        let now = self
+            .clock
+            .now_unix_ms()
+            .map_err(|_| NeuronModelError::Indeterminate)?;
         let receipt = self
             .worker
             .run_neuron_features_receipt(now, &self.manifest.model_id, physical)

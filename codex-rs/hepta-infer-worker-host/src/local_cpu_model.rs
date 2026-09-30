@@ -175,6 +175,11 @@ impl CpuNeuronModelDriver {
     pub fn head_digest(&self) -> &str {
         &self.head_digest
     }
+
+    pub(crate) fn feature_dimensions(&self) -> Result<(usize, usize), Error> {
+        let weights = self.weights.as_ref().ok_or(Error::ModelNotLoaded)?;
+        Ok((weights.input, weights.output))
+    }
 }
 
 impl ModelDriver for CpuNeuronModelDriver {
