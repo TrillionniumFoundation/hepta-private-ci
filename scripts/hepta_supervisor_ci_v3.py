@@ -32,6 +32,10 @@ CURRENT_BINDING_PATHS = (
     "scripts/test_hepta_supervisor_ci_v3.py",
     "scripts/test_hepta_supervisor_status.py",
     "scripts/test_hepta_supervisor_external_receipt.py",
+    "scripts/runtime_supervisor_six_phase_materialize.py",
+    "scripts/runtime_supervisor_six_phase_followup.py",
+    "scripts/test_runtime_supervisor_materialize.py",
+    ".github/workflows/hepta-supervisor-recovery-check.yml",
     ".github/workflows/runtime-supervisor-target-host-qualification.yml",
     "docs/modules/runtime.supervisor/CAPABILITY_STATUS.json",
     "docs/modules/runtime.supervisor/CURRENT_STATUS.md",
@@ -72,6 +76,7 @@ def current_plan() -> CurrentPlan:
                     "scripts.test_hepta_supervisor_external_receipt",
                     "scripts.test_hepta_supervisor_ci_v3",
                     "scripts.test_hepta_supervisor_workflow",
+                    "scripts.test_runtime_supervisor_materialize",
                 ],
             ),
             "verifier-artifact": (
@@ -154,6 +159,9 @@ def current_plan() -> CurrentPlan:
             "default_daemon_refuses_pinned_bundle_before_fleet_mutation",
         ),
     }
+    required_binary_tests["products"][f"{base.PACKAGE}::bin/hepta-supervisord"] = (
+        CURRENT_KEY_REQUIREMENTS
+    )
     required_tests = {
         name: tuple(test_name for tests in binaries.values() for test_name in tests)
         for name, binaries in required_binary_tests.items()

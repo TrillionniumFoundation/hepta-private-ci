@@ -246,6 +246,13 @@ class FileTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 read_regular(self.path, 64)
 
+    @unittest.skipUnless(os.name == "posix", "Cargo hard-link fixture")
+    def test_cargo_binary_read_can_allow_hardlinks_without_relaxing_receipts(self):
+        os.link(self.path, self.root / "cargo-deps-binary")
+        self.assertEqual(read_regular(self.path, 4, allow_hardlinks=True), b"abcd")
+        with self.assertRaises(ValueError):
+            read_regular(self.path, 4)
+
 
 class CompanionRequirementTests(unittest.TestCase):
     def test_new_rust_cases_are_required_in_both_library_profiles(self):

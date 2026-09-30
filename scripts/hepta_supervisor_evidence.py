@@ -59,7 +59,7 @@ def strict_json(raw: str | bytes) -> Any:
     )
 
 
-def read_regular(path: Path, maximum: int) -> bytes:
+def read_regular(path: Path, maximum: int, *, allow_hardlinks: bool = False) -> bytes:
     """Bound and pin the opened descriptor; never block on a substituted FIFO.
 
     Parent directories remain the trusted CI operator's responsibility. This is
@@ -79,7 +79,7 @@ def read_regular(path: Path, maximum: int) -> bytes:
         if (
             not stat.S_ISREG(opened.st_mode)
             or (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino)
-            or opened.st_nlink != 1
+            or (not allow_hardlinks and opened.st_nlink != 1)
             or opened.st_size > maximum
         ):
             raise ValueError(

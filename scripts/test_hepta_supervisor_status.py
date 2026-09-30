@@ -103,6 +103,44 @@ class SupervisorStatusTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 validate_matrix(root, data)
 
+    def test_capability_external_pass_and_aggregate_source_overclaim_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source.txt").write_text("source")
+            for field, value in (
+                ("target_host", "passed"),
+                ("independent_acceptance", "accepted"),
+            ):
+                data = self.matrix()
+                data["capabilities"][0][field] = value
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate_matrix(root, data)
+            data = self.matrix()
+            data["current"]["source"] = "implemented"
+            data["capabilities"][0]["source"] = "partial"
+            with self.assertRaises(ValueError):
+                validate_matrix(root, data)
+
+    def test_dormant_module_and_escaping_paths_cannot_support_source_claims(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source.txt").write_text("source")
+            library = root / "codex-rs/hepta-supervisor/src/lib.rs"
+            library.parent.mkdir(parents=True)
+            library.write_text("mod supervisor;\n")
+            data = self.matrix()
+            data["capabilities"][0]["id"] = "atomic_recovery_observation_envelope"
+            with self.assertRaisesRegex(ValueError, "library build graph"):
+                validate_matrix(root, data)
+            data = self.matrix()
+            data["capabilities"][0]["source_paths"] = ["../source.txt"]
+            with self.assertRaisesRegex(ValueError, "escapes checkout"):
+                validate_matrix(root, data)
+            data = self.matrix()
+            data["generated_status_path"] = "../external.md"
+            with self.assertRaisesRegex(ValueError, "destination"):
+                validate_matrix(root, data)
+
     def test_history_inventory_is_closed_world(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

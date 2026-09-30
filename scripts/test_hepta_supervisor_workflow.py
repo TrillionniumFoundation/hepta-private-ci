@@ -28,7 +28,7 @@ class WorkflowTests(unittest.TestCase):
         names = []
         for step in steps:
             match = re.search(
-                r"hepta_supervisor_ci_v3\.py execute ([a-z-]+) --records", step
+                r"hepta_supervisor_ci_v3\.py execute ([a-z0-9-]+) --records", step
             )
             if match:
                 names.append(match[1])
@@ -47,6 +47,7 @@ class WorkflowTests(unittest.TestCase):
             "test_hepta_supervisor_status",
             "test_hepta_supervisor_external_receipt",
             "test_hepta_supervisor_ci_v3",
+            "test_runtime_supervisor_materialize",
         ):
             self.assertIn(f"scripts.{module}", self.text)
         for path in (
@@ -62,6 +63,9 @@ class WorkflowTests(unittest.TestCase):
             "scripts/test_hepta_supervisor_workflow.py",
             "scripts/test_hepta_supervisor_status.py",
             "scripts/test_hepta_supervisor_external_receipt.py",
+            "scripts/runtime_supervisor_six_phase_materialize.py",
+            "scripts/runtime_supervisor_six_phase_followup.py",
+            "scripts/test_runtime_supervisor_materialize.py",
         ):
             self.assertIn(f'"{path}"', self.text)
             self.assertIn(path, BINDING_PATHS)
@@ -129,7 +133,23 @@ class WorkflowTests(unittest.TestCase):
             'git_identity["parents"] == [context["base_sha"], context["source_sha"]]',
             source,
         )
-        self.assertIn('"merge-tree", "--write-tree"', source)
+        merge_commands = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.List)
+            and len(node.elts) >= 3
+            and all(isinstance(item, ast.Constant) for item in node.elts[:3])
+            and [item.value for item in node.elts[:3]]
+            == ["git", "merge-tree", "--write-tree"]
+        ]
+        self.assertEqual(len(merge_commands), 1)
+        command = merge_commands[0]
+        self.assertEqual(len(command.elts), 5)
+        for argument, field in zip(command.elts[3:], ("base_sha", "source_sha")):
+            self.assertIsInstance(argument, ast.Subscript)
+            self.assertIsInstance(argument.value, ast.Name)
+            self.assertEqual(argument.value.id, "context")
+            self.assertEqual(ast.literal_eval(argument.slice), field)
 
     def test_fan_in_rejects_every_applicable_non_success_state(self):
         block = self.text.split("  qualification-result:\n", 1)[1]
@@ -166,6 +186,31 @@ class WorkflowTests(unittest.TestCase):
         self.assertNotIn("continue-on-error:", self.text)
         self.assertIn(
             '--output "$RUNNER_TEMP/hepta-supervisor/qualification.json"', self.text
+        )
+
+    def test_operator_target_receipt_is_bound_to_actual_current_run(self):
+        text = (
+            ROOT / ".github/workflows/runtime-supervisor-target-host-qualification.yml"
+        ).read_text()
+        execution = text.split(
+            "      - name: Execute complete operator target-host fault matrix", 1
+        )[1]
+        execution = execution.split("      - name: Retain target-host evidence", 1)[0]
+        for field in (
+            "LANE",
+            "SOURCE_SHA",
+            "BASE_SHA",
+            "MERGE_CANDIDATE_SHA",
+            "TESTED_SHA",
+            "FINAL_MERGE_SHA",
+            "TARGET_OS",
+        ):
+            self.assertIn(f"          {field}:", execution)
+        self.assertIn("--bind-current-run", execution)
+        self.assertIn('--workflow-run-attempt "$GITHUB_RUN_ATTEMPT"', execution)
+        self.assertIn("TARGET_BINARY_SHA256=%s", text)
+        self.assertIn(
+            '--binary "$HEPTA_VERIFIER_TARGET_DIR/release/hepta-supervisord"', execution
         )
 
 

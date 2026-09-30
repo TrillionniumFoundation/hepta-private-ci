@@ -10,6 +10,8 @@ on:
       - "docs/modules/runtime.supervisor/**"
       - "scripts/hepta_supervisor_*.py"
       - "scripts/test_hepta_supervisor_*.py"
+      - "scripts/runtime_supervisor_six_phase_*.py"
+      - "scripts/test_runtime_supervisor_materialize.py"
       - ".github/workflows/hepta-supervisor-qualification.yml"
       - ".github/workflows/runtime-supervisor-target-host-qualification.yml"
 
@@ -43,6 +45,7 @@ jobs:
           scripts.test_hepta_supervisor_external_receipt
           scripts.test_hepta_supervisor_ci_v3
           scripts.test_hepta_supervisor_workflow
+          scripts.test_runtime_supervisor_materialize
       - name: Select native and supervisor documentation changes
         id: scope
         env:
@@ -73,6 +76,9 @@ jobs:
                       "scripts/test_hepta_supervisor_workflow.py",
                       "scripts/test_hepta_supervisor_status.py",
                       "scripts/test_hepta_supervisor_external_receipt.py",
+                      "scripts/runtime_supervisor_six_phase_materialize.py",
+                      "scripts/runtime_supervisor_six_phase_followup.py",
+                      "scripts/test_runtime_supervisor_materialize.py",
                   }
                   for p in paths
               )

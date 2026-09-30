@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 import sys
 import tomllib
 from typing import Any
@@ -48,8 +49,15 @@ def require(condition: bool, message: str) -> None:
 
 
 def validate_matrix(root: Path, matrix: dict[str, Any]) -> None:
-    require(matrix.get("schema_version") == 1, "capability matrix schema")
+    require(
+        type(matrix.get("schema_version")) is int and matrix["schema_version"] == 1,
+        "capability matrix schema",
+    )
     require(matrix.get("module") == "runtime.supervisor", "capability matrix module")
+    require(
+        matrix.get("generated_status_path") == str(CURRENT_PATH),
+        "generated status destination",
+    )
     semantics = matrix.get("status_semantics")
     require(isinstance(semantics, dict), "status semantics")
     expected_semantics = {
@@ -108,12 +116,25 @@ def validate_matrix(root: Path, matrix: dict[str, Any]) -> None:
         require(
             capability["activated"] is False, f"{identifier}: source cannot activate"
         )
+        require(
+            capability["target_host"] != "passed",
+            f"{identifier}: source cannot assert target-host pass",
+        )
+        require(
+            capability["independent_acceptance"] != "accepted",
+            f"{identifier}: source cannot assert independent acceptance",
+        )
         paths = capability.get("source_paths")
         require(isinstance(paths, list) and paths, f"{identifier}: source paths")
         for path in paths:
             require(
                 isinstance(path, str) and path and not path.startswith("/"),
                 f"{identifier}: invalid source path",
+            )
+            require(
+                ".." not in Path(path).parts
+                and (root / path).resolve().is_relative_to(root.resolve()),
+                f"{identifier}: source path escapes checkout",
             )
             require((root / path).exists(), f"{identifier}: missing source path {path}")
         if capability["source"] == "not_implemented":
@@ -130,6 +151,22 @@ def validate_matrix(root: Path, matrix: dict[str, Any]) -> None:
                 capability["source"] != "implemented",
                 f"{identifier}: implemented capability needs test source",
             )
+        required_module = {
+            "cross_daemon_exit_cleanup_witness": "process_exit_witness",
+            "atomic_recovery_observation_envelope": "recovery_observation",
+            "durable_ordinary_mutation_protocol": "mutation_journal",
+        }.get(identifier)
+        if capability["source"] == "implemented" and required_module is not None:
+            library = (root / LIB_PATH).read_text(encoding="utf-8")
+            require(
+                re.search(rf"(?m)^mod {required_module};$", library) is not None,
+                f"{identifier}: source module is absent from the library build graph",
+            )
+    if current["source"] == "implemented":
+        require(
+            all(capability["source"] == "implemented" for capability in capabilities),
+            "implemented module still declares incomplete capabilities",
+        )
 
 
 def validate_history(root: Path, history: dict[str, Any]) -> None:

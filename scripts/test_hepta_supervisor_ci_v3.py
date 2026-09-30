@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
+import re
 
 from scripts.hepta_supervisor_ci_v3 import current_plan
 
@@ -43,6 +45,25 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
             "default_daemon_refuses_pinned_bundle_before_fleet_mutation",
             self.plan.required_tests["default-products"],
         )
+
+    def test_both_daemon_lanes_bind_existing_current_option_tests(self):
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "codex-rs/hepta-supervisor/src/main_key_tests.rs"
+        ).read_text()
+        actual = {
+            f"key_tests::{name}" for name in re.findall(r"#\[test\]\s+fn (\w+)", source)
+        }
+        for lane in ("default-products", "products"):
+            with self.subTest(lane=lane):
+                self.assertEqual(
+                    set(
+                        self.plan.required_binary_tests[lane][
+                            "codex-hepta-supervisor::bin/hepta-supervisord"
+                        ]
+                    ),
+                    actual,
+                )
 
 
 if __name__ == "__main__":
