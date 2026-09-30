@@ -19,6 +19,7 @@ qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualificatio
 workspace = true
 
 [dependencies]
+codex-hepta-infer-core = { path = "../hepta-infer-core" }
 codex-hepta-automation = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }

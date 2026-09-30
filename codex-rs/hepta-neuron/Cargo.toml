@@ -14,6 +14,7 @@ doctest = false
 workspace = true
 
 [dependencies]
+libc = { workspace = true }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 codex-hepta-types = { path = "../hepta-types" }
 serde = { workspace = true, features = ["derive"] }
