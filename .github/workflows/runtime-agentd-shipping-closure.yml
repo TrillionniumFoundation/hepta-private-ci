@@ -25,6 +25,8 @@ concurrency:
 env:
   CARGO_TERM_COLOR: always
 
+# This workflow is intentionally read-only. Source materialization is temporary
+# and must be removed once the reviewed Rust sources are committed.
 jobs:
   format:
     runs-on: ubuntu-24.04-arm
