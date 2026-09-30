@@ -428,3 +428,6 @@ fn physical_cpu_refreshes_protected_time_after_dispatch_fsync_before_worker_admi
         codex_hepta_infer_core::durable_control::feature::FeatureOperationStateV1::Dispatched
     );
 }
+
+#[path = "local_cpu_runtime_binding_tests.rs"]
+mod runtime_binding;

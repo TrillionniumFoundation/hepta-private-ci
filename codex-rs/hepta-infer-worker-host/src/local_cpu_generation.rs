@@ -107,33 +107,9 @@ pub fn open_installed_cpu_neuron_generation_v1(
         worker,
     )
     .map_err(|error| AgentdError::Invalid(format!("installed CPU model: {error}")))?;
-    let manifest = physical.manifest();
-    for (actual, expected) in [
-        (&manifest.model_digest, plan.runtime.model_manifest_digest),
-        (&manifest.weights_digest, plan.runtime.weights_digest),
-        (&manifest.tokenizer_digest, plan.runtime.tokenizer_digest),
-        (
-            &manifest.preprocessor_digest,
-            plan.runtime.preprocessor_digest,
-        ),
-        (
-            &manifest.quantization_digest,
-            plan.runtime.quantization_digest,
-        ),
-        (&manifest.runtime_digest, plan.runtime.runtime_digest),
-        (&manifest.device_digest, plan.runtime.device_digest),
-    ] {
-        if actual != &expected.to_string() {
-            return Err(AgentdError::Invalid(
-                "installed Neuron runtime tuple changed".into(),
-            ));
-        }
-    }
-    if manifest.model_id != plan.runtime.model_id.as_str() {
-        return Err(AgentdError::Invalid(
-            "installed Neuron model ID changed".into(),
-        ));
-    }
+    physical.validate_runtime(&plan.runtime).map_err(|error| {
+        AgentdError::Invalid(format!("installed Neuron runtime tuple changed: {error}"))
+    })?;
     let witness = match mode {
         CpuNeuronGenerationOpenModeV1::Create => {
             FileNeuronWitnessStoreV2::create(&plan.witness, plan.witness_context)

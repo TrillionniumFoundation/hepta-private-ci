@@ -115,6 +115,38 @@ impl CpuNeuronInferenceControlV1 {
         &self.manifest
     }
 
+    /// Compare the runtime against bytes already parsed by the physical CPU
+    /// loader, including both tensor regions and their actual dimensions.
+    pub(crate) fn validate_runtime(
+        &self,
+        runtime: &codex_hepta_neuron::NeuronRuntimeConfigV1,
+    ) -> Result<(), crate::model_worker::Error> {
+        let manifest = &self.manifest;
+        for (actual, expected) in [
+            (&manifest.model_digest, runtime.model_manifest_digest),
+            (&manifest.weights_digest, runtime.weights_digest),
+            (&manifest.tokenizer_digest, runtime.tokenizer_digest),
+            (&manifest.preprocessor_digest, runtime.preprocessor_digest),
+            (&manifest.quantization_digest, runtime.quantization_digest),
+            (&manifest.runtime_digest, runtime.runtime_digest),
+            (&manifest.device_digest, runtime.device_digest),
+            (&self.encoder, runtime.encoder_digest),
+            (&self.head, runtime.head_digest),
+        ] {
+            if actual != &expected.to_string() {
+                return Err(crate::model_worker::Error::ModelMismatch);
+            }
+        }
+        if manifest.model_id != runtime.model_id.as_str()
+            || self.input_width != runtime.input_feature_dimension
+            || self.output_width != runtime.state_width
+            || self.generation != runtime.generation.get()
+        {
+            return Err(crate::model_worker::Error::ModelMismatch);
+        }
+        Ok(())
+    }
+
     /// This is the same exclusive control owner used for physical dispatch.
     /// A full cold budget stops new work while original receipts remain usable.
     pub fn maintain_history(
