@@ -1,9 +1,14 @@
 {
   "authorityDeniedEventsCritical": 3,
+  "expiredClaimAgeWarningMs": 60000,
+  "expiredClaimCountWarning": 1,
   "inboxDependencyUnavailableWarning": 10,
   "indeterminateAgeWarningMs": 900000,
+  "parkedAgeWarningMs": 900000,
+  "parkedQueueWarning": 1,
   "queueAgeWarningMs": 300000,
   "rateLimitedEventsWarning": 10,
+  "redactionPropagationWarningMs": 300000,
   "responseLostEventsWarning": 5,
   "schema": "hepta.channel-matrix-alert-policy.v1",
   "syncStaleMs": 120000

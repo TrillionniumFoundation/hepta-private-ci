@@ -147,3 +147,58 @@ The evidence status output records the policy digest, bytewise public-key
 digests, canonical SPKI digests, receipt/signature digests,
 evidence-manifest digest, principal and check identities. It does not reproduce
 target logs or message content.
+
+## 6. Protected production bundle
+
+The production gate is stricter than the compatibility status view. It requires
+three distinct governance principals and three distinct canonical Ed25519 keys:
+
+```json
+{
+  "schema": "hepta.channel-matrix-production-governance-policy.v1",
+  "namespace": "hepta-channel-matrix-production",
+  "principals": {
+    "target_qualification": "matrix-target-operator",
+    "security_acceptance": "matrix-security-review",
+    "operations_acceptance": "matrix-operations-review"
+  },
+  "publicKeys": {
+    "target_qualification": "target.public.pem",
+    "security_acceptance": "security.public.pem",
+    "operations_acceptance": "operations.public.pem"
+  }
+}
+```
+
+The protected evidence directory for one exact candidate contains:
+
+- `target-qualification.manifest.json`;
+- `independent-acceptance.manifest.json`;
+- target, security and operations attestations plus detached signatures.
+
+The target attestation binds the complete target qualification inventory.
+Security acceptance binds exactly evidence reproduction, release-boundary review
+and security-threat review. Operations acceptance binds exactly the operator
+runbook and restore/rollback drill reviews. The two independent signatures bind
+the same independently validated acceptance manifest, must use different
+principals and keys, and must be issued after the target attestation.
+
+Run the closed bundle validator as follows:
+
+```sh
+python3 scripts/channel_matrix_production_bundle.py \
+  --directory "/protected/evidence/$CANDIDATE_SHA" \
+  --governance-policy /protected/channel-matrix/production-policy.json \
+  --expected-commit "$CANDIDATE_SHA" \
+  --expected-tree "$CANDIDATE_TREE" \
+  --output /protected/results/production-bundle.json
+```
+
+A valid bundle may set `productionQualified = true`; it always keeps
+`authorityGranted`, `activation`, `promotion` and `release` false. The manual
+`channel.matrix protected production qualification` workflow runs only in the
+protected `channel-matrix-production-qualification` environment on a labeled
+self-hosted runner. It checks out the exact candidate without credentials,
+reads candidate-specific evidence from a protected external mount, validates the
+three signatures and closed manifests, and uploads only bounded validation
+receipts. It never receives signing keys and cannot edit, commit or push source.

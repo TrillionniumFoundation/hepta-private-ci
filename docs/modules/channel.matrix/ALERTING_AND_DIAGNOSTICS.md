@@ -44,6 +44,13 @@ JSON file with exactly the same schema and fields:
 - `queueAgeWarningMs`: warn on old pending, in-flight or scheduled work;
 - `indeterminateAgeWarningMs`: warn when the oldest unknown remote effect has
   not reconciled;
+- `parkedQueueWarning` and `parkedAgeWarningMs`: warn when permanently parked
+  same-transaction reconciliation work accumulates or ages;
+- `expiredClaimCountWarning` and `expiredClaimAgeWarningMs`: warn when claim
+  leases have expired and exact fenced recovery has not progressed;
+- `redactionPropagationWarningMs`: warn when a redaction observed during the
+  diagnostic five-minute window arrived too long after the original matching
+  homeserver event;
 - `rateLimitedEventsWarning`: warn on sustained typed 429 observations in the
   diagnostic five-minute window;
 - `authorityDeniedEventsCritical`: page on repeated authority denials;
@@ -63,6 +70,9 @@ The additional policy alerts are:
 |---|---|
 | `sync_checkpoint_stale_with_unresolved_work` | stop new admission; restore authenticated sync; preserve transaction identities |
 | `indeterminate_age` | reconcile the same transaction; never invent a replacement transaction |
+| `parked_work_pressure` | restore authenticated sync and preserve every stable transaction; never create replacement work |
+| `claim_expiry_pressure` | verify the process lease and use only fenced recovery; never edit or delete claims |
+| `redaction_propagation_lag` | inspect sync/redaction frontier continuity and preserve original terminal lineage |
 | `rate_limit_pressure` | inspect normalized Retry-After handling and capacity; do not hot-loop |
 | `authority_denial_pressure` | stop dispatch and restore broker/revocation freshness |
 | `response_loss_pressure` | restore sync and reconcile unknown effects |
@@ -72,9 +82,22 @@ The evaluator retains built-in diagnostic alerts, upgrades severity only when a
 closed policy rule requires it, and never includes transaction IDs, event IDs,
 room IDs, payloads, credentials, grants or raw claim capabilities.
 
-## 4. Coverage boundary
+## 4. Measurement semantics
+
+`oldest_parked_age_ms` is measured from the original outbox creation time.
+`oldest_expired_claim_age_ms` is measured from the expired lease boundary.
+Neither authorizes a new attempt. `redaction_propagation_max_last_300s_ms` is the
+largest observed interval in the last five minutes between a matching
+`homeserver_event` observation and its later redaction observation. It describes
+completed propagation, not proof that no still-pending remote redaction exists.
+
+All three measurements come from one read-only SQLite snapshot that includes the
+live WAL. Missing measurements remain `null`; they are never rewritten as zero.
+
+## 5. Coverage boundary
 
 The durable snapshot still cannot measure live broker/revocation freshness,
-redaction propagation latency, supervisor restart counts or encrypted-session
-continuity. Those remain explicit external probes and qualification receipts;
-absence from this alert result is not a green measurement.
+supervisor restart counts, encrypted-session continuity, or redactions that have
+not yet produced any authenticated remote observation. Those remain explicit
+external probes and qualification receipts; absence from this alert result is
+not a green measurement.

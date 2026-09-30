@@ -48,6 +48,7 @@ BASE_ALERTS = {
     "sync_checkpoint_stale",
     "queue_age",
     "expired_claims",
+    "parked_work",
     "inbox_quarantine",
 }
 POLICY_ALERTS = {
@@ -57,6 +58,9 @@ POLICY_ALERTS = {
     "authority_denial_pressure",
     "response_loss_pressure",
     "inbox_dependency_pressure",
+    "claim_expiry_pressure",
+    "parked_work_pressure",
+    "redaction_propagation_lag",
 }
 SEVERITY = {"warning": 1, "critical": 2}
 POLICY_FIELDS = {
@@ -68,6 +72,11 @@ POLICY_FIELDS = {
     "authorityDeniedEventsCritical",
     "responseLostEventsWarning",
     "inboxDependencyUnavailableWarning",
+    "expiredClaimCountWarning",
+    "expiredClaimAgeWarningMs",
+    "parkedQueueWarning",
+    "parkedAgeWarningMs",
+    "redactionPropagationWarningMs",
 }
 
 
@@ -86,6 +95,12 @@ def _count_map(value: object, labels: tuple[str, ...], name: str) -> dict[str, i
 def _optional_age(value: object, name: str) -> int | None:
     if value is None:
         return None
+    if type(value) is not int or not 0 <= value <= 2**63 - 1:
+        raise ValueError(f"invalid {name}")
+    return value
+
+
+def _count(value: object, name: str) -> int:
     if type(value) is not int or not 0 <= value <= 2**63 - 1:
         raise ValueError(f"invalid {name}")
     return value
@@ -142,6 +157,16 @@ def evaluate(snapshot: dict, policy: dict) -> dict:
     indeterminate_age = _optional_age(
         snapshot.get("oldest_indeterminate_age_ms"), "indeterminate age"
     )
+    parked_age = _optional_age(snapshot.get("oldest_parked_age_ms"), "parked age")
+    expired_age = _optional_age(
+        snapshot.get("oldest_expired_claim_age_ms"), "expired claim age"
+    )
+    redaction_latency = _optional_age(
+        snapshot.get("redaction_propagation_max_last_300s_ms"),
+        "redaction propagation latency",
+    )
+    parked = _count(snapshot.get("parked_queue", 0), "parked queue")
+    expired = _count(snapshot.get("expired_claims", 0), "expired claims")
     unresolved = sum(dispatch[label] for label in LEDGER[:3])
     pending = sum(outbox[label] for label in OUTBOX[:3])
     if snapshot.get("unresolved") != unresolved:
@@ -203,6 +228,31 @@ def evaluate(snapshot: dict, policy: dict) -> dict:
             "inbox_dependency_pressure",
             "warning",
             "restore_dependency_keep_event_identity_and_backoff",
+        )
+    if expired >= policy["expiredClaimCountWarning"] or (
+        expired_age is not None and expired_age >= policy["expiredClaimAgeWarningMs"]
+    ):
+        add(
+            "claim_expiry_pressure",
+            "warning",
+            "verify_process_lease_and_run_fenced_recovery_never_edit_claims",
+        )
+    if parked >= policy["parkedQueueWarning"] or (
+        parked_age is not None and parked_age >= policy["parkedAgeWarningMs"]
+    ):
+        add(
+            "parked_work_pressure",
+            "warning",
+            "restore_authenticated_sync_preserve_stable_transactions",
+        )
+    if (
+        redaction_latency is not None
+        and redaction_latency >= policy["redactionPropagationWarningMs"]
+    ):
+        add(
+            "redaction_propagation_lag",
+            "warning",
+            "inspect_sync_redaction_frontier_and_preserve_terminal_lineage",
         )
 
     alerts.sort(key=lambda row: (-SEVERITY[row["severity"]], row["code"]))

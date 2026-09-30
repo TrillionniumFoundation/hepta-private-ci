@@ -1,0 +1,153 @@
+name: channel.matrix protected production qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact candidate commit SHA
+        required: true
+        type: string
+      candidate_tree:
+        description: Exact candidate tree SHA
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: channel-matrix-production-${{ inputs.candidate_sha }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate protected target and independent evidence
+    environment: channel-matrix-production-qualification
+    runs-on:
+      - self-hosted
+      - channel-matrix
+      - production-qualification
+    timeout-minutes: 45
+    env:
+      CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+      CANDIDATE_TREE: ${{ inputs.candidate_tree }}
+      MATRIX_PRODUCTION_EVIDENCE_ROOT: ${{ secrets.MATRIX_PRODUCTION_EVIDENCE_ROOT }}
+      MATRIX_PRODUCTION_GOVERNANCE_POLICY: ${{ secrets.MATRIX_PRODUCTION_GOVERNANCE_POLICY }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout exact candidate without write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact candidate and protected mounts
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CANDIDATE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$CANDIDATE_TREE" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$CANDIDATE_TREE"
+          test -z "$(git status --porcelain=v2 --untracked-files=all)"
+          test -n "$MATRIX_PRODUCTION_EVIDENCE_ROOT"
+          test -n "$MATRIX_PRODUCTION_GOVERNANCE_POLICY"
+          case "$MATRIX_PRODUCTION_EVIDENCE_ROOT" in /*) ;; *) exit 2 ;; esac
+          case "$MATRIX_PRODUCTION_GOVERNANCE_POLICY" in /*) ;; *) exit 2 ;; esac
+          evidence="$MATRIX_PRODUCTION_EVIDENCE_ROOT/$CANDIDATE_SHA"
+          test -d "$evidence"
+          test -f "$MATRIX_PRODUCTION_GOVERNANCE_POLICY"
+          test "$(realpath "$evidence")" = "$evidence"
+          test "$(realpath "$MATRIX_PRODUCTION_GOVERNANCE_POLICY")" = "$MATRIX_PRODUCTION_GOVERNANCE_POLICY"
+          case "$evidence" in "$GITHUB_WORKSPACE"|"$GITHUB_WORKSPACE"/*) exit 2 ;; esac
+          case "$MATRIX_PRODUCTION_GOVERNANCE_POLICY" in "$GITHUB_WORKSPACE"|"$GITHUB_WORKSPACE"/*) exit 2 ;; esac
+          mkdir -p "$RUNNER_TEMP/channel-matrix-production"
+
+      - name: Verify read-only workflow and source contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/channel-matrix-production"
+          python3 scripts/channel_matrix_workflow_policy.py --check > "$output/workflow-policy.json"
+          python3 scripts/verify_channel_matrix_candidate.py \
+            --expected-sha "$CANDIDATE_SHA" \
+            --output "$output/candidate.json"
+
+      - name: Validate complete signed production bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/channel-matrix-production"
+          evidence="$MATRIX_PRODUCTION_EVIDENCE_ROOT/$CANDIDATE_SHA"
+          python3 scripts/channel_matrix_production_bundle.py \
+            --directory "$evidence" \
+            --governance-policy "$MATRIX_PRODUCTION_GOVERNANCE_POLICY" \
+            --expected-commit "$CANDIDATE_SHA" \
+            --expected-tree "$CANDIDATE_TREE" \
+            --output "$output/production-bundle.json"
+          sha256sum "$output/production-bundle.json" > "$output/production-bundle.sha256"
+
+      - name: Bind workflow execution identity
+        shell: bash
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+          RUNNER_NAME_VALUE: ${{ runner.name }}
+          RUNNER_OS_VALUE: ${{ runner.os }}
+          RUNNER_ARCH_VALUE: ${{ runner.arch }}
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/channel-matrix-production"
+          export OUTPUT_DIRECTORY="$output"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["OUTPUT_DIRECTORY"])
+          bundle = root / "production-bundle.json"
+          payload = bundle.read_bytes()
+          receipt = {
+              "schema": "hepta.channel-matrix-protected-workflow-receipt.v1",
+              "candidate": {
+                  "commit": os.environ["CANDIDATE_SHA"],
+                  "tree": os.environ["CANDIDATE_TREE"],
+              },
+              "workflow": {
+                  "ref": os.environ["WORKFLOW_REF"],
+                  "runId": os.environ["RUN_ID"],
+                  "attemptId": os.environ["RUN_ATTEMPT"],
+              },
+              "runner": {
+                  "name": os.environ["RUNNER_NAME_VALUE"],
+                  "os": os.environ["RUNNER_OS_VALUE"],
+                  "arch": os.environ["RUNNER_ARCH_VALUE"],
+              },
+              "productionBundle": {
+                  "path": bundle.name,
+                  "bytes": len(payload),
+                  "sha256": hashlib.sha256(payload).hexdigest(),
+              },
+              "productionQualified": True,
+              "authorityGranted": False,
+              "activation": False,
+              "promotion": False,
+              "release": False,
+          }
+          (root / "workflow-receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          test -z "$(git status --porcelain=v2 --untracked-files=all)"
+
+      - name: Retain protected production validation
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-production-${{ inputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/channel-matrix-production/
+          if-no-files-found: error
+          retention-days: 90
