@@ -27,6 +27,8 @@ External or production callers enter through `ProductEvaluationRunnerV1`; the ru
 
 The `trusted_inprocess` module is absent from default builds and is available
 only with the explicit `trusted-inprocess-eval` feature.
+Its raw-metric `prepare_self_evolution_selection_v1` compatibility entrypoint is
+also feature-only; selection types and signature-admission APIs remain public.
 
 ## Signed admission
 
@@ -100,6 +102,20 @@ and `ClusterOpeEstimate` receipts; a caller cannot submit replacement
 
 The repository's current signed consumer is
 `codex-rs/hepta-intelligence/src/evaluated_shadow.rs::run_evaluated_shadow_v1`. It now accepts only a sealed `ProductQualificationReceiptV1`, checks its trust digest against the current host verifier, binds its dataset/objective/snapshot set and requires the same evaluator to sign the candidate bytes against that terminal receipt. It no longer re-runs low-level V2 admission. This closes the repository-controlled product qualification spine without claiming runtime activation, target-host qualification or production longitudinal efficacy.
+
+Agentd's signed evaluation consumer and the governed parameter-plasticity
+consumer also require that same sealed terminal receipt. Each verifies a current,
+independent evaluator's V2 use attestation over the receipt and complete runtime
+or proposal lineage. A newly signed use cannot replace the qualified objective,
+candidate, baseline, dataset or generator. The receipt integrity seal covers the
+complete decision, including disposition and failed metrics; public fields may
+not be relabelled after qualification. A qualification is a historical fact authenticated at issuance; expiration of
+an original generator attestation does not erase an already published result.
+Each consumer still requires the exact current host trust digest and a valid
+current independent evaluator use signature. The parameter-plasticity path also
+requires its separate current Generator attestation before any new proposal.
+Low-level signed admission remains
+crate-private. The prior caller-supplied metric-bundle ingress is removed.
 
 ## CI closure evidence
 

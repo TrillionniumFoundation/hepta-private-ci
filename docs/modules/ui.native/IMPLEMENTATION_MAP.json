@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "65c7b9d97e253fb5edbf04be331a31790cd3d8df",
+    "tree": "e8459261ff4eab3306b47db264c1773209f50662"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.native",
@@ -141,5 +141,9 @@
   "technicalGuide": "docs/modules/ui.native/TECHNICAL.md",
   "sourceRoot": [
     "apps/hepta-native"
+  ],
+  "futureTargetSourceObligations": [
+    "After selecting the native framework and supported platform matrix, implement the packaged application entrypoint and concrete authenticated backend, OS-permission and updater adapters around the existing shell library.",
+    "Implement platform-specific code-signing/notarization/keychain and updater trust-root integration in source and packaging, with executable crash/restart/update-rollback/accessibility integration coverage; deployed trust enrollment and selected-host qualification remain external gates."
   ]
 }

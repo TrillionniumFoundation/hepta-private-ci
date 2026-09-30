@@ -165,6 +165,13 @@ From the repository root, run `node --test apps/hepta-control-ui/test/control.te
 
 ## 13. Implementation sequence and work packages
 
+### Future target source obligations outside current closure
+
+The existing `repositoryControlledSourceBoundaryGapsClosed=true` claim covers the current mapped source subset. The map's `futureTargetSourceObligations` records the wider target-design work below, which is outside that closed subset. These are repository source, caller, packaging and integration-test obligations; they are not reclassified as external-only evidence. Their completion would still require separate host qualification and independent acceptance. This planning description changes no canonical work-package state, source closure, production, execution, acceptance, activation or release claim.
+
+- Compose the existing presentation/runtime-client library into the selected browser package and bind a real authenticated versioned runtime.agentd backend; product integration must preserve request identity over reconnect and expose stale/pending/indeterminate states.
+- Add executable selected-package/backend integration and accessibility coverage for that composed frontend; browser/platform qualification and independent accessibility acceptance remain separate from the library source tests.
+
 Applicable work packages:
 
 - `UI-V5`
@@ -189,7 +196,7 @@ For `ui.control`, this document grants no runtime, production, model, provider, 
 
 #### `UI-V5`
 
-- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `independent_source_preparation`.
+- State: `source_implemented`; priority: `2`; parallel class: `independent_source_preparation`.
 - Owner/deputy: `ui-platform` / `accessibility`.
 - Allowed write paths:
 - `apps/hepta-control-ui/**`

@@ -3,12 +3,12 @@
   "schemaVersion": 3,
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "aea53eac111b8eb8b85e6c3693e6c3b1a01b9e74",
+    "tree": "a7703adeed074678e6dbed164aa6e1cf230e5b6b"
   },
   "observedAtHead": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "aea53eac111b8eb8b85e6c3693e6c3b1a01b9e74",
+    "tree": "a7703adeed074678e6dbed164aa6e1cf230e5b6b"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -29,7 +29,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "named_agentd_runner_present_daemon_route_not_composed",
+  "productCallerState": "named_agentd_runner_present_authenticated_daemon_route_source_wired",
   "productionWriterState": "none_by_design_composition_facade",
   "operations": [
     {
@@ -406,6 +406,18 @@
       "authority": "none"
     },
     {
+      "operation": "plasticity_evaluation_signing_payload_v2",
+      "designOperation": "plasticity_evaluation_signing_payload_v2",
+      "nativeSymbol": "plasticity_evaluation_signing_payload_v2",
+      "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "state": "source_navigation_only_product_binding_not_proved",
+      "delegatedCallees": [],
+      "tests": [],
+      "authority": "none"
+    },
+    {
       "operation": "prepare_prompt_delivery_v1",
       "designOperation": "prepare_prompt_delivery_v1",
       "nativeSymbol": "prepare_prompt_delivery_v1",
@@ -569,7 +581,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
@@ -589,19 +601,19 @@
     },
     {
       "path": "codex-rs/hepta-intelligence",
-      "object": "c382c211dc34b0c3abaf87aec27e7e353bae418e"
+      "object": "7ed08a6f8d20e0b02849dc0b6d06d22a946e9455"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "0e61e82c7e344d7c2b1b07f70ab752fd2867e149"
+      "object": "4bcebec84d00c8db4c387d8e0fd127f432a33d4f"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "object": "c610f073b47939acf15e7e76aad59883ac13fad4"
+      "object": "9ea19f552a0bddc904871360b2007aa1cc9105e2"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
-      "object": "25505e9bad9105368fece10afd40e812ae2f4ccf"
+      "object": "03fe479e1abe8ce9997578b5a1f483b21f70c910"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
@@ -617,7 +629,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib.rs",
-      "object": "ac161c19df7b828fbca02d39ebfdb6661982e6d4"
+      "object": "3ef187b9c32c3b69c316c184754aa851525cc668"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib_tests.rs",
@@ -657,7 +669,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "object": "128016bddabb5bdb6a0262d07c7b9327ffb7a8ee"
+      "object": "68db92a796b82bc29d211b8110b3bc465d4bbe5e"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
@@ -693,15 +705,15 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "efa4ff3593319d96f9d55853a59f211bfc68a000"
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "2e0cb699ff6d11dd63e996040d935153f4e63f57"
+      "object": "dd8802ebde5cae2230e9919a4702d6e223c70263"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "b189ee1fa70517ff43d860ee80c392f57f1c94b2"
+      "object": "e87e2fbc4c049c4f7f03d3bd9170984353d6a052"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer",
@@ -709,7 +721,7 @@
     },
     {
       "path": "docs/modules/intelligence.control/TECHNICAL.md",
-      "object": "255133762234bb470a3ee24e1c7c84554f2688c0"
+      "object": "9a1d90f60cd5dcb258fe47afb534861e81f8d5b4"
     }
   ]
 }

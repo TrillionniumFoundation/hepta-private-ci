@@ -1176,3 +1176,6 @@ fn canonical_transaction_type_is_used_by_public_store_models() -> TestResult {
     let _: MatrixTransactionId = txn;
     Ok(())
 }
+
+#[path = "durable_core/outbox_adversarial.rs"]
+mod outbox_adversarial;

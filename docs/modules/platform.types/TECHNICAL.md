@@ -210,7 +210,7 @@ Composition requires a named authenticated product caller; qualification require
 
 #### `LRN-0-CAUSAL-LEARNING-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `learning-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-learning-ledger/**`
@@ -240,7 +240,7 @@ Composition requires a named authenticated product caller; qualification require
 
 #### `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `learning-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-ndu/**`
@@ -271,7 +271,7 @@ Composition requires a named authenticated product caller; qualification require
 
 #### `OBJ-0-OBJECTIVE-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -338,7 +338,7 @@ Composition requires a named authenticated product caller; qualification require
 
 #### `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -370,7 +370,7 @@ Composition requires a named authenticated product caller; qualification require
 
 #### `BIO-0-NEURON-INTUITION-CONTRACTS`
 
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `learning-platform` / `inference-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-neuron/**`
@@ -404,7 +404,7 @@ Composition requires a named authenticated product caller; qualification require
 
 #### `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
 
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `learning-platform` / `qualification-plane`.
 - Allowed write paths:
 - `codex-rs/hepta-bellman-operator/**`

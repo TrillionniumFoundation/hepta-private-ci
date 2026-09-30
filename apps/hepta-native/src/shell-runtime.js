@@ -1,6 +1,7 @@
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 const ZERO_DIGEST = "0".repeat(64);
+const MAX_OPERATION_RECORDS = 4096;
 const PLATFORM_ACTIONS = new Set([
   "open_path",
   "reveal_path",
@@ -11,6 +12,35 @@ const PLATFORM_ACTIONS = new Set([
 function record(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError(`${name} must be an object`);
+  }
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError(`${name} must be a plain object`);
+  }
+  const snapshot = Object.create(null);
+  for (const key of Reflect.ownKeys(value)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (
+      typeof key !== "string" ||
+      !Object.hasOwn(descriptor, "value") ||
+      !descriptor.enumerable
+    ) {
+      throw new TypeError(
+        `${name} fields must be enumerable own data properties`,
+      );
+    }
+    snapshot[key] = descriptor.value;
+  }
+  return Object.freeze(snapshot);
+}
+
+function resourceReference(value) {
+  if (
+    typeof value !== "string" ||
+    value.length > 4096 ||
+    value.includes("\0")
+  ) {
+    throw new TypeError("resource must be a bounded text reference");
   }
   return value;
 }
@@ -23,7 +53,11 @@ function stableId(value, name) {
 }
 
 function digest(value, name) {
-  if (typeof value !== "string" || !DIGEST.test(value) || value === ZERO_DIGEST) {
+  if (
+    typeof value !== "string" ||
+    !DIGEST.test(value) ||
+    value === ZERO_DIGEST
+  ) {
     throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
   }
   return value;
@@ -53,6 +87,9 @@ export class NativeShellRuntime {
   #session = null;
   #view = null;
   #operations = new Map();
+  #connectionEpoch = 0;
+  #updates = new Map();
+  #pendingUpdate = null;
 
   constructor({ backend, platform, updater }) {
     for (const [name, value, methods] of [
@@ -60,7 +97,9 @@ export class NativeShellRuntime {
       ["platform", platform, ["permission", "invoke"]],
       ["updater", updater, ["verify", "apply", "rollback"]],
     ]) {
-      record(value, name);
+      if (value === null || typeof value !== "object" || Array.isArray(value)) {
+        throw new TypeError(`${name} must be an object`);
+      }
       for (const method of methods) {
         if (typeof value[method] !== "function") {
           throw new TypeError(`${name}.${method} must be a function`);
@@ -73,14 +112,30 @@ export class NativeShellRuntime {
   }
 
   async connectRuntime(manifest) {
-    record(manifest, "manifest");
+    if (this.#pendingUpdate) {
+      throw new TypeError("shell update is already in progress");
+    }
+    manifest = record(manifest, "manifest");
     const endpointId = stableId(manifest.endpointId, "endpointId");
     const manifestDigest = digest(manifest.manifestDigest, "manifestDigest");
-    const protocolVersion = positive(manifest.protocolVersion, "protocolVersion");
+    const protocolVersion = positive(
+      manifest.protocolVersion,
+      "protocolVersion",
+    );
+    const epoch = ++this.#connectionEpoch;
+    this.#session = null;
+    this.#view = null;
     const observed = record(
-      await this.#backend.connect({ endpointId, manifestDigest, protocolVersion }),
+      await this.#backend.connect({
+        endpointId,
+        manifestDigest,
+        protocolVersion,
+      }),
       "backend connection",
     );
+    if (epoch !== this.#connectionEpoch) {
+      throw new TypeError("backend connection was superseded");
+    }
     if (observed.authenticated !== true) {
       throw new TypeError("backend connection is not authenticated");
     }
@@ -100,7 +155,7 @@ export class NativeShellRuntime {
 
   renderRuntimeView(view) {
     this.#requireSession();
-    record(view, "view");
+    view = record(view, "view");
     if (view.sessionId !== this.#session.sessionId) {
       throw new TypeError("view session mismatch");
     }
@@ -114,7 +169,10 @@ export class NativeShellRuntime {
       if (generation < this.#view.generation) {
         throw new TypeError("view generation regressed");
       }
-      if (generation === this.#view.generation && revision <= this.#view.revision) {
+      if (
+        generation === this.#view.generation &&
+        revision <= this.#view.revision
+      ) {
         throw new TypeError("view revision did not advance");
       }
     }
@@ -134,90 +192,216 @@ export class NativeShellRuntime {
 
   async requestPlatformCapability(input) {
     this.#requireView();
-    record(input, "input");
+    input = record(input, "input");
     const operationId = stableId(input.operationId, "operationId");
-    if (!PLATFORM_ACTIONS.has(input.action)) {
+    const action = input.action;
+    if (!PLATFORM_ACTIONS.has(action)) {
       throw new TypeError("platform action is not registered");
     }
     if (input.displayedRevision !== this.#view.revision) {
-      throw new TypeError("platform request was confirmed against a stale view");
+      throw new TypeError(
+        "platform request was confirmed against a stale view",
+      );
     }
-    const finalPayloadDigest = digest(input.finalPayloadDigest, "finalPayloadDigest");
-    const grantPayloadDigest = digest(input.grantPayloadDigest, "grantPayloadDigest");
+    const resource = resourceReference(input.resource);
+    const finalPayloadDigest = digest(
+      input.finalPayloadDigest,
+      "finalPayloadDigest",
+    );
+    const grantPayloadDigest = digest(
+      input.grantPayloadDigest,
+      "grantPayloadDigest",
+    );
     if (finalPayloadDigest !== grantPayloadDigest) {
       throw new TypeError("grant does not bind final platform payload");
     }
+    const session = this.#session;
+    const view = this.#view;
     const prior = this.#operations.get(operationId);
     if (prior) {
-      if (prior.finalPayloadDigest !== finalPayloadDigest) {
-        throw new TypeError("operation identity was reused with changed payload");
+      if (
+        prior.finalPayloadDigest !== finalPayloadDigest ||
+        prior.action !== action ||
+        prior.resource !== resource ||
+        prior.session !== session
+      ) {
+        throw new TypeError(
+          "operation identity was reused with changed binding",
+        );
       }
-      return prior.receipt;
+      return prior.promise;
     }
-    const permission = record(
-      await this.#platform.permission({
-        action: input.action,
-        resource: input.resource,
-      }),
-      "platform permission",
-    );
-    if (permission.allowed !== true) {
-      return result({
-        kind: "PlatformDecisionV1",
-        operationId,
-        action: input.action,
-        status: "rejected",
-        terminalObserved: true,
-        outcomeDigest: digest(permission.outcomeDigest, "outcomeDigest"),
-      });
+    if (this.#operations.size >= MAX_OPERATION_RECORDS) {
+      throw new TypeError("native operation capacity exhausted");
     }
-    const observed = record(
-      await this.#platform.invoke({
-        sessionId: this.#session.sessionId,
-        sessionGeneration: this.#session.generation,
-        operationId,
-        action: input.action,
-        resource: input.resource,
-        finalPayloadDigest,
-      }),
-      "platform observation",
+    // Reserve identity before any asynchronous permission/dispatch boundary.
+    // Retain unknown outcomes so a lost acknowledgement cannot cause replay.
+    const operation = {
+      operationId,
+      action,
+      resource,
+      finalPayloadDigest,
+      session,
+    };
+    this.#operations.set(operationId, operation);
+    operation.promise = Promise.resolve().then(() =>
+      this.#executePlatformRequest(operation, view),
     );
-    let receipt;
-    if (observed.terminalObserved !== true) {
-      receipt = result({
-        kind: "PlatformDecisionV1",
-        operationId,
-        action: input.action,
-        status: "indeterminate",
-        terminalObserved: false,
-        outcomeDigest: null,
-      });
-    } else {
-      if (observed.status !== "succeeded" && observed.status !== "failed") {
-        throw new TypeError("terminal platform status is not registered");
+    return operation.promise;
+  }
+
+  async #executePlatformRequest(operation, view) {
+    const { operationId, action, resource, finalPayloadDigest, session } =
+      operation;
+    let permission;
+    try {
+      if (this.#session !== session || this.#view !== view) {
+        throw new TypeError(
+          "platform request session or view changed before dispatch",
+        );
       }
-      receipt = result({
-        kind: "PlatformDecisionV1",
-        operationId,
-        action: input.action,
-        status: observed.status,
-        terminalObserved: true,
-        outcomeDigest: digest(observed.outcomeDigest, "outcomeDigest"),
-      });
+      permission = record(
+        await this.#platform.permission({ action, resource }),
+        "platform permission",
+      );
+      if (this.#session !== session || this.#view !== view) {
+        throw new TypeError(
+          "platform request session or view changed before dispatch",
+        );
+      }
+      if (permission.allowed !== true && permission.allowed !== false) {
+        throw new TypeError(
+          "platform permission must be exactly true or false",
+        );
+      }
+      if (permission.allowed === false) {
+        return result({
+          kind: "PlatformDecisionV1",
+          operationId,
+          action,
+          status: "rejected",
+          terminalObserved: true,
+          outcomeDigest: digest(permission.outcomeDigest, "outcomeDigest"),
+        });
+      }
+    } catch (error) {
+      // No effect adapter was entered, so retry remains safe.
+      this.#operations.delete(operationId);
+      throw error;
     }
-    this.#operations.set(operationId, { finalPayloadDigest, receipt });
-    return receipt;
+    try {
+      const observed = record(
+        await this.#platform.invoke({
+          sessionId: session.sessionId,
+          sessionGeneration: session.generation,
+          operationId,
+          action,
+          resource,
+          finalPayloadDigest,
+        }),
+        "platform observation",
+      );
+      if (observed.terminalObserved === true) {
+        if (observed.status !== "succeeded" && observed.status !== "failed") {
+          throw new TypeError("terminal platform status is not registered");
+        }
+        return result({
+          kind: "PlatformDecisionV1",
+          operationId,
+          action,
+          status: observed.status,
+          terminalObserved: true,
+          outcomeDigest: digest(observed.outcomeDigest, "outcomeDigest"),
+        });
+      }
+    } catch {
+      // Adapter failure or malformed post-dispatch evidence cannot prove absence.
+    }
+    return result({
+      kind: "PlatformDecisionV1",
+      operationId,
+      action,
+      status: "indeterminate",
+      terminalObserved: false,
+      outcomeDigest: null,
+    });
   }
 
   async applyShellUpdate(input) {
-    this.#requireSession();
-    record(input, "input");
+    input = record(input, "input");
     const packageDigest = digest(input.packageDigest, "packageDigest");
-    const predecessorDigest = digest(input.predecessorDigest, "predecessorDigest");
+    const predecessorDigest = digest(
+      input.predecessorDigest,
+      "predecessorDigest",
+    );
     const evidenceDigest = digest(input.evidenceDigest, "evidenceDigest");
     const selectedBy = stableId(input.selectedBy, "selectedBy");
-    if (selectedBy === input.generatorPrincipal) {
+    const generatorPrincipal = stableId(
+      input.generatorPrincipal,
+      "generatorPrincipal",
+    );
+    const platform = stableId(input.platform, "platform");
+    const architecture = stableId(input.architecture, "architecture");
+    if (selectedBy === generatorPrincipal) {
       throw new TypeError("shell update cannot be selected by its generator");
+    }
+    const binding = JSON.stringify([
+      predecessorDigest,
+      evidenceDigest,
+      selectedBy,
+      generatorPrincipal,
+      platform,
+      architecture,
+    ]);
+    const prior = this.#updates.get(packageDigest);
+    if (prior) {
+      if (prior.binding !== binding) {
+        throw new TypeError("update identity was reused with changed binding");
+      }
+      return prior.promise;
+    }
+    this.#requireSession();
+    if (this.#pendingUpdate) {
+      throw new TypeError("shell update is already in progress");
+    }
+    if (this.#updates.size >= 128) {
+      throw new TypeError("shell update capacity exhausted");
+    }
+    const operation = { binding, dispatched: false, rollbackStarted: false };
+    const session = this.#session;
+    this.#updates.set(packageDigest, operation);
+    this.#pendingUpdate = operation;
+    operation.promise = Promise.resolve()
+      .then(() => this.#executeShellUpdate(input, operation, session))
+      .catch(async (error) => {
+        if (!operation.dispatched) {
+          this.#updates.delete(packageDigest);
+          throw error;
+        }
+        if (!operation.rollbackStarted) {
+          operation.rollbackStarted = true;
+          try {
+            await this.#updater.rollback({ predecessorDigest });
+          } catch {}
+        }
+        return result({
+          kind: "UpdateDispositionV1",
+          packageDigest,
+          predecessorDigest,
+          status: "quarantined",
+          terminalObserved: false,
+        });
+      })
+      .finally(() => {
+        this.#pendingUpdate = null;
+      });
+    return operation.promise;
+  }
+
+  async #executeShellUpdate(input, operation, session) {
+    const { packageDigest, predecessorDigest, evidenceDigest } = input;
+    if (this.#session !== session) {
+      throw new TypeError("shell update session changed before apply");
     }
     const verification = record(
       await this.#updater.verify({
@@ -226,13 +410,20 @@ export class NativeShellRuntime {
         evidenceDigest,
         platform: input.platform,
         architecture: input.architecture,
-        backendProtocolVersion: this.#session.protocolVersion,
+        backendProtocolVersion: session.protocolVersion,
       }),
       "update verification",
     );
+    if (this.#session !== session) {
+      throw new TypeError("shell update session changed before apply");
+    }
     if (verification.accepted !== true) {
       throw new TypeError("shell update verification failed");
     }
+    operation.dispatched = true;
+    ++this.#connectionEpoch;
+    this.#session = null;
+    this.#view = null;
     const observed = record(
       await this.#updater.apply({
         packageDigest,
@@ -242,6 +433,7 @@ export class NativeShellRuntime {
       "update observation",
     );
     if (observed.terminalObserved !== true || observed.restarted !== true) {
+      operation.rollbackStarted = true;
       await this.#updater.rollback({ predecessorDigest });
       return result({
         kind: "UpdateDispositionV1",
@@ -261,12 +453,14 @@ export class NativeShellRuntime {
   }
 
   async close() {
+    ++this.#connectionEpoch;
     if (!this.#session) {
       return;
     }
-    await this.#backend.close({ sessionId: this.#session.sessionId });
+    const session = this.#session;
     this.#session = null;
     this.#view = null;
+    await this.#backend.close({ sessionId: session.sessionId });
   }
 
   #requireSession() {

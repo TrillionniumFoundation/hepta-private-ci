@@ -78,7 +78,7 @@ but not arithmetic semantics. `FixedQ32` compatibility multiply/divide uses
 `fixed-q32-toward-zero-v1`; the numeric conversion profile uses
 nearest-ties-even. The source API exposes this distinction explicitly.
 
-## Durability and product composition
+## Durability and activation
 
 The module is stateless and has no durability. `productCallerState` is
 `not_composed`: source tests, generated bindings and conformance oracles are
@@ -86,7 +86,7 @@ not a named production caller. Product provisioning of an authenticated
 registry generation, target-host qualification and operator acceptance are
 separate gates.
 
-## Owned target protocols still source-pending
+## Target-only design
 
 Canonical registries assign these protocols to `platform.types`, but no native
 Rust contract exists for them in this candidate:
@@ -97,6 +97,14 @@ Rust contract exists for them in this candidate:
 
 Their ownership does not make the module's full target protocol inventory source
 complete.
+
+## Known limits and non-claims
+
+Registered ownership and generated bindings do not implement target-only
+manifests or authenticate a supplied registry generation. The crate supplies
+bounded contracts and deterministic validation; it does not grant effect
+authority, supply a durable owner, or establish production activation,
+target-host qualification or independent acceptance.
 
 ## Verification
 
@@ -110,3 +118,11 @@ Python/Node accepted and rejected conformance oracles, regenerate bindings with
 `--check`, run generated Python/JavaScript consumer compatibility gates and
 run Lane A native tests plus strict lint. Executed workflow artifacts, not this
 document, are the candidate receipts.
+
+## Integration prerequisites
+
+Consumers must select the exact schema and arithmetic profile, validate raw
+values before constructing trusted types, and supply an authenticated immutable
+registry generation through their own authority boundary. New target manifests
+require explicit source implementations, registered encodings, consumer tests
+and separate host qualification before their availability can be claimed.

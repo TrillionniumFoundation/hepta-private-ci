@@ -1321,6 +1321,9 @@ impl MatrixDurableStore {
         {
             let mut payload = existing.payload;
             payload.extend_from_slice(&draft.payload);
+            // Raw fragments fit the coalescing batch, but this row renders the
+            // complete stream prefix and must still satisfy the payload cap.
+            validate_payload(&payload)?;
             let payload_sha256 = Sha256Digest::for_bytes(&payload);
             sqlx::query(
                 "UPDATE outbox_messages
@@ -1621,12 +1624,24 @@ impl MatrixDurableStore {
                     payload, payload_sha256, logical_txn_count,
                     binding_revision, generation, state, attempts, next_attempt_at_ms,
                     lease_until_ms, created_at_ms, updated_at_ms, sent_event_id
-             FROM matrix_sendable_outbox_v2
+             FROM matrix_sendable_outbox_v2 AS candidate
              WHERE (
-                    state IN ('pending', 'retry_scheduled') AND next_attempt_at_ms <= ?
-                   ) OR (
-                    state = 'in_flight' AND lease_until_ms <= ?
+                    (state IN ('pending', 'retry_scheduled') AND next_attempt_at_ms <= ?)
+                 OR (state = 'in_flight' AND lease_until_ms <= ?)
                    )
+               AND NOT EXISTS (
+                   SELECT 1 FROM outbox_txns AS current_txn
+                   JOIN outbox_txns AS root_txn
+                     ON root_txn.logical_outbox_id = current_txn.logical_outbox_id
+                    AND root_txn.revision = (
+                        SELECT MIN(root_candidate.revision) FROM outbox_txns AS root_candidate
+                        WHERE root_candidate.logical_outbox_id = current_txn.logical_outbox_id
+                    )
+                   JOIN outbox_messages AS root_message ON root_message.outbox_id = root_txn.outbox_id
+                   WHERE current_txn.txn_id = candidate.stable_txn_id
+                     AND current_txn.revision != root_txn.revision
+                     AND root_message.state IN ('pending', 'in_flight', 'retry_scheduled')
+               )
              ORDER BY next_attempt_at_ms, outbox_id LIMIT ?",
         )
         .bind(to_i64(now_ms)?)
@@ -3460,6 +3475,7 @@ fn outbox_from_row(row: &SqliteRow) -> Result<OutboxRecord, MatrixDurableError> 
         .transpose()
         .map_err(|_| MatrixDurableError::Corrupt)?;
     let payload: Vec<u8> = row.try_get("payload").map_err(unavailable)?;
+    validate_payload(&payload).map_err(|_| MatrixDurableError::Corrupt)?;
     let payload_sha256: String = row.try_get("payload_sha256").map_err(unavailable)?;
     if Sha256Digest::for_bytes(&payload).as_str() != payload_sha256 {
         return Err(MatrixDurableError::Corrupt);

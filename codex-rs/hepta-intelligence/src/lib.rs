@@ -84,6 +84,7 @@ pub use plasticity_product::PlasticityAnchorCommitterV1;
 pub use plasticity_product::PlasticityWriterStateV1;
 pub use plasticity_product::no_change_disposition_signing_payload_v1;
 pub use plasticity_product::plasticity_admission_signing_payload_v1;
+pub use plasticity_product::plasticity_evaluation_signing_payload_v2;
 pub use plasticity_product::propose_authenticated_parameter_plasticity_v1;
 
 mod topology_canary_product;

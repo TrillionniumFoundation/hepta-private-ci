@@ -273,7 +273,14 @@ impl RevalidatingCandidate {
         current: RegistrySnapshotReceipt,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        self.unavailable = true;
         let registry = read_registry_snapshot(snapshot, current)?;
+        // Successful decoding hands off to the same fail-closed validation as
+        // an authenticated view; failed decoding cannot reopen this consumer.
+        self.unavailable = false;
         self.with_verified_registry(current, registry, consume)
     }
 }

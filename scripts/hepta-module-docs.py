@@ -81,6 +81,41 @@ def sha(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def project_work_package_states(text, packages, label, *, check):
+    """Keep existing prose envelopes consistent with their canonical state owner."""
+    states = {package["id"]: package["state"] for package in packages}
+
+    def project(match):
+        package_id, body = match.group(1), match.group(2)
+        entries = list(re.finditer(r"(?m)^[ \t]*- State:[^\n]*$", body))
+        if not entries:
+            return match.group(0)
+        need(len(entries) == 1, f"{label} duplicate work-package state: {package_id}")
+        line = entries[0]
+        state = re.fullmatch(
+            r"[ \t]*- State: `([^`\n]+)`(?:; priority: `[0-9]+`; parallel class: `[A-Za-z0-9_.-]+`\.)?[ \t]*",
+            line.group(0),
+        )
+        need(state is not None, f"{label} malformed work-package state: {package_id}")
+        need(
+            package_id in states, f"{label} unknown work-package envelope {package_id}"
+        )
+        expected = states[package_id]
+        need(
+            not check or state.group(1) == expected,
+            f"{label} work-package state drift: {package_id}: {state.group(1)} != {expected}",
+        )
+        prefix = match.group(0)[: len(match.group(0)) - len(body)]
+        return (
+            prefix
+            + body[: line.start() + state.start(1)]
+            + expected
+            + body[line.start() + state.end(1) :]
+        )
+
+    return re.sub(r"(?ms)^#### `([^`\n]+)`[ \t]*\n(.*?)(?=^#{1,4} |\Z)", project, text)
+
+
 def false_authority(value, label):
     need(
         isinstance(value, dict) and set(value) == set(AUTHORITY_KEYS),
@@ -174,14 +209,20 @@ def refresh_derived(check):
     # Preflight the entire input before writing either derived file. Missing
     # guides remain real work; a generated row must not fabricate documentation.
     for module_id, module in module_map.items():
-        need(re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*", module_id),
-             "invalid canonical module ID")
+        need(
+            re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*", module_id),
+            "invalid canonical module ID",
+        )
         expected = f"docs/modules/{module_id}/TECHNICAL.md"
         guide = (ROOT / expected).resolve()
         need(module["technicalDocument"] == expected, module_id + " stable doc path")
-        need(guide.is_relative_to(ROOT.resolve()) and guide.is_file(),
-             module_id + " guide missing or outside repository")
-        need(bool(guide.read_text(encoding="utf-8").strip()), module_id + " empty guide")
+        need(
+            guide.is_relative_to(ROOT.resolve()) and guide.is_file(),
+            module_id + " guide missing or outside repository",
+        )
+        need(
+            bool(guide.read_text(encoding="utf-8").strip()), module_id + " empty guide"
+        )
 
     # Membership comes only from MODULES.json: additions and removals do not
     # require hand-edited projection rows. Preserve module-local navigation
@@ -189,11 +230,16 @@ def refresh_derived(check):
     bindings["bindings"] = []
     docs["modules"] = []
     for module_id, module in module_map.items():
-        row = dict(old_bindings.get(module_id, {
-            "module": module_id,
-            "sourceEvidenceRoots": [],
-            "interpretation": "generated_navigation_only_not_execution_evidence",
-        }))
+        row = dict(
+            old_bindings.get(
+                module_id,
+                {
+                    "module": module_id,
+                    "sourceEvidenceRoots": [],
+                    "interpretation": "generated_navigation_only_not_execution_evidence",
+                },
+            )
+        )
         declared = [binding["path"] for binding in module["rootBindings"]]
         existing = [item for item in declared if (ROOT / item).exists()]
         row.update(
@@ -221,9 +267,15 @@ def refresh_derived(check):
             requiredSections=HEADINGS,
             producedContracts=produced,
             consumedContracts=consumed,
-            protocols=sorted(p["id"] for p in protocols if p.get("contractId") in touched),
-            ownedDomains=sorted(d["id"] for d in domains if d["authoritativeWriter"] == module_id),
-            readDomains=sorted(d["id"] for d in domains if module_id in d.get("readers", [])),
+            protocols=sorted(
+                p["id"] for p in protocols if p.get("contractId") in touched
+            ),
+            ownedDomains=sorted(
+                d["id"] for d in domains if d["authoritativeWriter"] == module_id
+            ),
+            readDomains=sorted(
+                d["id"] for d in domains if module_id in d.get("readers", [])
+            ),
             workPackages=sorted(
                 p["id"]
                 for p in packages
@@ -234,12 +286,27 @@ def refresh_derived(check):
         docs["modules"].append(row)
 
     rendered = {
-        "docs/modules/SOURCE_BINDINGS.json": json.dumps(bindings, indent=2, ensure_ascii=False) + "\n",
-        "docs/modules/MODULE_DOCS.json": json.dumps(docs, indent=2, ensure_ascii=False) + "\n",
+        "docs/modules/SOURCE_BINDINGS.json": json.dumps(
+            bindings, indent=2, ensure_ascii=False
+        )
+        + "\n",
+        "docs/modules/MODULE_DOCS.json": json.dumps(docs, indent=2, ensure_ascii=False)
+        + "\n",
     }
-    changed = [path for path, text in rendered.items()
-               if (ROOT / path).read_text(encoding="utf-8") != text]
-    need(not check or not changed, "generated module projection drift: " + ", ".join(changed))
+    for module in module_map.values():
+        path = module["technicalDocument"]
+        rendered[path] = project_work_package_states(
+            (ROOT / path).read_text(encoding="utf-8"), packages, path, check=False
+        )
+    changed = [
+        path
+        for path, text in rendered.items()
+        if (ROOT / path).read_text(encoding="utf-8") != text
+    ]
+    need(
+        not check or not changed,
+        "generated module projection drift: " + ", ".join(changed),
+    )
     if not check:
         for path in changed:
             (ROOT / path).write_text(rendered[path], encoding="utf-8")
@@ -364,6 +431,7 @@ def verify():
         # verbatim heading/contract inventory. Machine ownership and coverage
         # checks below, source existence and local links remain enforced.
         need(bool(text.strip()), mid + " empty guide")
+        project_work_package_states(text, packages, mid, check=True)
         produced = sorted(c["id"] for c in contracts if c["producer"] == mid)
         consumed = sorted(c["id"] for c in contracts if mid in c["consumers"])
         touched = set(produced + consumed)
@@ -441,7 +509,9 @@ def self_test():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["verify", "self-test", "refresh-indexes", "refresh-derived"])
+    p.add_argument(
+        "command", choices=["verify", "self-test", "refresh-indexes", "refresh-derived"]
+    )
     p.add_argument("--check", action="store_true")
     args = p.parse_args()
     if args.command == "refresh-indexes":

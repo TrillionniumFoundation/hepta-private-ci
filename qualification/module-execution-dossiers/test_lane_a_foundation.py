@@ -22,7 +22,6 @@ class LaneAFoundationTruthTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.matrix = verify.read_json(verify.MATRIX_PATH)
         cls.capability_map = verify.read_json(verify.CAPABILITY_MAP_PATH)
-        cls.operations_capability_map = verify.read_json(verify.OPS_CAPABILITY_MAP_PATH)
 
     def test_exact_repository_truth_is_valid(self) -> None:
         verify.validate_matrix(self.matrix)
@@ -44,21 +43,12 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         mapped = [
             (entry["module"], entry["summary"])
             for entry in self.capability_map["entries"]
-            if entry["module"] != "kernel.operations"
         ]
-        mapped.extend(
-            ("kernel.operations", entry["summary"])
-            for entry in self.operations_capability_map["entries"]
-        )
-        mapped.append(
-            ("kernel.operations", verify.REFERENCE_OPERATIONS_SUMMARY)
-        )
         self.assertEqual(len(declared), len(set(declared)))
         self.assertEqual(len(mapped), len(set(mapped)))
-        self.assertCountEqual(mapped, declared)
+        self.assertEqual(mapped, declared)
         self.assertEqual(
-            self.operations_capability_map["entryCount"],
-            len(self.operations_capability_map["entries"]),
+            self.capability_map["entryCount"], len(mapped)
         )
 
     def test_operations_cannot_claim_unimplemented_durability(self) -> None:
@@ -135,8 +125,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertEqual(receipt["moduleCoverage"], 7)
         self.assertEqual(
             receipt["capabilityCoverage"],
-            self.capability_map["entryCount"]
-            + self.operations_capability_map["entryCount"],
+            self.capability_map["entryCount"],
         )
         self.assertEqual(
             receipt["currentImplementationTruth"], "source_and_test_anchored"
@@ -211,14 +200,32 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertEqual(registry["lane"], "LANE-A-FOUNDATION")
         self.assertEqual(registry["authority"], "none")
         self.assertEqual(
-            [row["module"] for row in registry["protocols"]],
+            [(row["module"], row["protocolId"]) for row in registry["protocols"]],
+            [
+                ("platform.types", "hepta.platform.types.primitives.v1"),
+                ("platform.wire", "hepta.platform.wire.versioned-envelope.v2"),
+                ("kernel.authority", "hepta.kernel.authority.final-use.v1"),
+                ("kernel.operations", "hepta.kernel.operations.durable-ledger-outbox.v1"),
+                ("kernel.operations", "hepta.kernel.operations.durable-owner.v1"),
+                ("kernel.evidence", "hepta.kernel.evidence.sqlite-lineage.v1"),
+                ("auth.authbus", "hepta.authbus.signed-message.v1"),
+                ("secrets.heptabao", "hepta.secrets.heptabao.kv-v2-read.v1"),
+            ],
+        )
+        self.assertEqual(
+            list(dict.fromkeys(row["module"] for row in registry["protocols"])),
             verify.EXPECTED_MODULES,
         )
-        self.assertEqual(len(registry["protocols"]), 7)
         for row in registry["protocols"]:
             self.assertTrue(row["protocolId"].startswith("hepta."))
             self.assertTrue(row["source"])
             self.assertTrue(row["invariants"])
+        evidence = next(
+            row for row in registry["protocols"] if row["module"] == "kernel.evidence"
+        )
+        self.assertIn(
+            "migration lineage is exactly 0001 through 0012", evidence["invariants"]
+        )
         operations = registry["protocols"][3]
         self.assertEqual(
             operations["protocolId"],

@@ -1,5 +1,21 @@
-export async function callWithDeadline({ call, payload, now, deadlineMs, timeoutCapMs, abortable, timeoutName }) {
-  const remaining = Math.max(1, deadlineMs - now());
+export async function callWithDeadline({
+  call,
+  payload,
+  now,
+  deadlineMs,
+  timeoutCapMs,
+  abortable,
+  timeoutName,
+}) {
+  const remaining = deadlineMs - now();
+  if (remaining <= 0) {
+    const error = new Error(`${timeoutName} deadline has expired`);
+    error.name =
+      timeoutName === "browser driver"
+        ? "BrowserDriverTimeoutError"
+        : "BrowserAuthorityTimeoutError";
+    throw error;
+  }
   const timeoutMs = Math.min(timeoutCapMs, remaining);
   const controller = abortable ? new AbortController() : null;
   let timer;
@@ -7,13 +23,29 @@ export async function callWithDeadline({ call, payload, now, deadlineMs, timeout
     timer = setTimeout(() => {
       controller?.abort();
       const error = new Error(`${timeoutName} timed out`);
-      error.name = timeoutName === "browser driver" ? "BrowserDriverTimeoutError" : "BrowserAuthorityTimeoutError";
+      error.name =
+        timeoutName === "browser driver"
+          ? "BrowserDriverTimeoutError"
+          : "BrowserAuthorityTimeoutError";
       reject(error);
     }, timeoutMs);
   });
   try {
     return await Promise.race([
-      Promise.resolve().then(() => call(payload, controller ? { signal: controller.signal } : undefined)),
+      Promise.resolve().then(() => {
+        if (now() >= deadlineMs) {
+          const error = new Error(`${timeoutName} deadline has expired`);
+          error.name =
+            timeoutName === "browser driver"
+              ? "BrowserDriverTimeoutError"
+              : "BrowserAuthorityTimeoutError";
+          throw error;
+        }
+        return call(
+          payload,
+          controller ? { signal: controller.signal } : undefined,
+        );
+      }),
       timeout,
     ]);
   } finally {
@@ -24,7 +56,9 @@ export async function callWithDeadline({ call, payload, now, deadlineMs, timeout
 export async function exclusive(lockMap, key, operation) {
   const prior = lockMap.get(key) ?? Promise.resolve();
   let release;
-  const current = new Promise((resolve) => { release = resolve; });
+  const current = new Promise((resolve) => {
+    release = resolve;
+  });
   const tail = prior.catch(() => {}).then(() => current);
   lockMap.set(key, tail);
   await prior.catch(() => {});

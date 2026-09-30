@@ -422,6 +422,20 @@ where
     }
 }
 
+/// V1 provider keys delimit run/step with ':'. Keep the historical lookup
+/// format but reject ambiguous identities before any new effect admission.
+fn validate_dispatch_logical_identity(
+    intent: &AuthorizedEffectIntent,
+) -> Result<(), TaskFlowError> {
+    if intent.run_id.contains(':') || intent.step_id.contains(':') {
+        return Err(TaskFlowError::Invalid(
+            "new effect dispatch requires run/step IDs without ':' until logical-key migration"
+                .to_string(),
+        ));
+    }
+    Ok(())
+}
+
 fn provider_effect_intent(
     intent: &AuthorizedEffectIntent,
     wire_payload: &[u8],
@@ -653,6 +667,7 @@ impl AutomationStore {
         command_id: &str,
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        validate_dispatch_logical_identity(intent)?;
         let operation_intent = intent.operation_intent_v1()?;
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AuthorizedEffectError::BindingMismatch);
@@ -660,7 +675,13 @@ impl AutomationStore {
         let intent_digest = intent.digest()?;
         let payload_digest = &intent.payload_digest;
         let current = self
-            .read_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt, fence)
+            .read_taskflow_step_for_dispatch(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                fence,
+                now_ms,
+            )
             .await?
             .ok_or_else(|| {
                 TaskFlowError::Conflict(
@@ -729,6 +750,7 @@ impl AutomationStore {
                 &signed_grant.grant.grant_id,
                 &nonce_digest,
                 command_id,
+                fence,
                 now_ms,
             )
             .await?;
@@ -876,11 +898,18 @@ impl AutomationStore {
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
         let provider_intent = provider_effect_intent(intent, wire_payload)?;
+        validate_dispatch_logical_identity(intent)?;
         let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;
         let payload_digest = &intent.payload_digest;
         let current = self
-            .read_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt, fence)
+            .read_taskflow_step_for_dispatch(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                fence,
+                now_ms,
+            )
             .await?
             .ok_or_else(|| {
                 TaskFlowError::Conflict(
@@ -946,6 +975,7 @@ impl AutomationStore {
                 &signed_grant.grant.grant_id,
                 &nonce_digest,
                 command_id,
+                fence,
                 now_ms,
             )
             .await?;
@@ -1032,8 +1062,9 @@ impl AutomationStore {
         }
     }
 
-    /// Return bounded provider-contact attempts that have no durable provider
-    /// observation yet. A restart reconciler must hand these immutable
+    /// Return bounded provider-contact attempts whose terminal provider
+    /// evidence has not been fully projected, including unobserved attempts.
+    /// A restart reconciler must hand these immutable
     /// identities to the registered downstream effect owner; this scan never
     /// redispatches and never interprets absence of a local row as provider
     /// absence.
@@ -1096,9 +1127,20 @@ impl AutomationStore {
             return Err(AuthorizedEffectError::RecoveryRequired);
         };
 
+        if let Some(step) = self.completed_effect_projection(durable, fence).await? {
+            self.mark_effect_projection_complete(durable).await?;
+            return Ok(
+                if observation.kind == EffectDispatchObservationKind::ProvenAbsent {
+                    AuthorizedEffectRecoveryResult::ProvenAbsent
+                } else {
+                    AuthorizedEffectRecoveryResult::Observed(step)
+                },
+            );
+        }
         if observation.kind == EffectDispatchObservationKind::ProvenAbsent {
             self.requeue_effect_after_proven_absence(durable, fence, observation)
                 .await?;
+            self.mark_effect_projection_complete(durable).await?;
             return Ok(AuthorizedEffectRecoveryResult::ProvenAbsent);
         }
 
@@ -1195,6 +1237,7 @@ impl AutomationStore {
         if let Some(terminal) = outcome.reconcile_outcome() {
             self.reconcile_effect_run(durable, fence, observation, terminal)
                 .await?;
+            self.mark_effect_projection_complete(durable).await?;
         }
         Ok(AuthorizedEffectRecoveryResult::Observed(step))
     }
@@ -1292,6 +1335,18 @@ impl AutomationStore {
         if run.state == TaskFlowRunState::Queued {
             return Ok(());
         }
+        if run.state == TaskFlowRunState::Cancelled && run.cancel_requested {
+            let step = self
+                .read_taskflow_step(&durable.run_id, &durable.step_id, durable.attempt, fence)
+                .await?;
+            if step.is_some_and(|step| {
+                step.state == TaskFlowStepState::Reconciled
+                    && step.final_outcome == Some(TaskFlowReconcileOutcome::Cancelled)
+                    && step.receipt_digest.as_ref() == Some(&observation.evidence_digest)
+            }) {
+                return Ok(());
+            }
+        }
         if !matches!(
             run.state,
             TaskFlowRunState::Running | TaskFlowRunState::Indeterminate
@@ -1361,12 +1416,22 @@ impl AutomationStore {
             effect_command_id("requeue-absent", durable),
             fence.clone(),
             run.revision,
-            TaskFlowTransition::RequeueProvenAbsent {
-                proof_digest: observation.evidence_digest.clone(),
+            if run.cancel_requested {
+                TaskFlowTransition::CancelProvenAbsent {
+                    proof_digest: observation.evidence_digest.clone(),
+                }
+            } else {
+                TaskFlowTransition::RequeueProvenAbsent {
+                    proof_digest: observation.evidence_digest.clone(),
+                }
             },
             observation.observed_at_ms,
         )?;
-        self.apply_taskflow_requeue_proven_absent(&command).await?;
+        if run.cancel_requested {
+            self.apply_taskflow_cancel_proven_absent(&command).await?;
+        } else {
+            self.apply_taskflow_requeue_proven_absent(&command).await?;
+        }
         Ok(())
     }
 }
@@ -1439,7 +1504,7 @@ fn final_use_binding_digest(
     Ok(Sha256Digest::for_bytes(&bytes))
 }
 
-fn effect_command_id(phase: &str, durable: &EffectDispatchAttempt) -> String {
+pub(crate) fn effect_command_id(phase: &str, durable: &EffectDispatchAttempt) -> String {
     let mut bytes = b"hepta.automation.effect.command.v1\0".to_vec();
     bytes.extend_from_slice(phase.as_bytes());
     bytes.push(0);

@@ -85,12 +85,17 @@ impl AutomationStore {
             pool.close().await;
             return Err(AutomationError::Corrupt);
         }
-        Ok(Self {
+        let store = Self {
             pool,
             owner_agent_id,
             path,
             timer_epoch,
-        })
+        };
+        if let Err(error) = store.verify_effect_projection_receipts().await {
+            store.pool.close().await;
+            return Err(map_taskflow_verify_error(error));
+        }
+        Ok(store)
     }
 
     pub fn owner_agent_id(&self) -> &AgentId {

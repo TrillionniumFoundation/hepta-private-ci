@@ -16,7 +16,7 @@ from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
-from native_source_bindings import BindingError, identifiers, observe_native_bindings
+from native_source_bindings import BindingError, entrypoint_identifiers, observe_native_bindings
 
 ROOT = Path(__file__).resolve().parents[2]
 REL = Path('qualification/module-execution-dossiers')
@@ -252,6 +252,11 @@ def verify_bundle(root: Path) -> dict[str, Any]:
             'specified_not_product_evidence',
             'source_implemented_product_composed_requires_candidate_evidence',
         }
+        if mid == 'kernel.operations':
+            # Durable source exists; product execution and deployment stay open.
+            allowed_implementation_states.add('durable_source_implemented_product_execution_pending')
+        elif mid == 'neuron.runtime':
+            allowed_implementation_states.add('source_owner_implemented_not_product_evidence')
         if row['implementationState'] not in allowed_implementation_states or row['nativeMappingRequired'] is not True or row['productTestsExecuted'] is not False or row['deploymentQualified'] is not False:
             raise Invalid(mid+': false source or deployment closure')
         if not row['declaredRoots'] or not row['workPackages']:
@@ -353,8 +358,14 @@ def verify_repository(root: Path) -> dict[str,Any]:
         for entry in entries:
             if not isinstance(entry, dict) or set(entry) != {'path', 'symbol'}:
                 raise Invalid(mid+': malformed native entrypoint')
+            if not isinstance(entry['symbol'], str) or re.fullmatch(r'[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*', entry['symbol']) is None:
+                raise Invalid(mid+': malformed native entrypoint symbol')
             path = inside(root, entry['path'])
-            if not path.is_file() or entry['symbol'] not in identifiers(path, path.read_bytes()):
+            try:
+                names = entrypoint_identifiers(path, path.read_bytes()) if path.is_file() else set()
+            except BindingError as error:
+                raise Invalid(mid+': '+str(error)) from error
+            if entry['symbol'] not in names:
                 raise Invalid(mid+': missing native entrypoint '+str(entry))
             native_references['entrypoints'] += 1
         for key in ('testFiles', 'runtimeDocuments'):
@@ -368,7 +379,7 @@ def verify_repository(root: Path) -> dict[str,Any]:
     ndu=next(d for d in algorithm['documents'] if d['id']=='ALG-NDU-FBSDE')
     if blob(inside(root,ndu['path']).read_bytes()) != ndu['blobSha']:
         raise Invalid('canonical NDU blob mismatch')
-    required=profiles['readWith']+[str(REL/name) for name in ('IMPLEMENTATION_PROFILES.json','IMPLEMENTATION_COMPLETION.json','NATIVE_BINDINGS.json','NATIVE_BINDINGS_LANE_A.json','native_source_bindings.py','COGNITIVE_STORE.sql','implementation_contracts.py','test_implementation_contracts.py')]
+    required=profiles['readWith']+[str(REL/name) for name in ('IMPLEMENTATION_PROFILES.json','IMPLEMENTATION_COMPLETION.json','NATIVE_BINDINGS.json','NATIVE_BINDINGS_LANE_A.json','native_source_bindings.py','native_entrypoints.py','COGNITIVE_STORE.sql','implementation_contracts.py','test_implementation_contracts.py')]
     for path in required:
         if git(root,'show','HEAD:'+path) != inside(root,path).read_bytes():
             raise Invalid('uncommitted candidate document: '+path)

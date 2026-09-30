@@ -251,6 +251,15 @@ impl CognitiveStore {
                         "recovered generation changed during checkpoint/reopen".to_string(),
                     ));
                 }
+                // Recovery and checkpointing may outlive the admission lease
+                // or its revocation state. Recheck at the activation boundary
+                // while failure can still discard this private generation.
+                verifier
+                    .verify(authority, layout.agent_id())
+                    .map_err(CognitiveRecoveryError::AccessDenied)?;
+                authority
+                    .validate_for_agent(layout.agent_id())
+                    .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
                 Ok(())
             }
             .await;

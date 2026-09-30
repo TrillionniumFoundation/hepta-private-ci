@@ -9,7 +9,9 @@ import os
 import subprocess
 import tempfile
 import unittest
+from copy import deepcopy
 from pathlib import Path
+from shutil import copy2
 from unittest import mock
 
 SCRIPT = Path(__file__).with_name("hepta-lane-d-semantic-conformance.py")
@@ -274,6 +276,178 @@ class LaneDChangeScopeTests(unittest.TestCase):
             ),
         )
         self.assertEqual(result["otherLaneChangedPaths"], 1)
+
+
+class LaneDTruthBoundaryTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.maturity_path = "docs/readiness/LANE_D_MATURITY.json"
+        self.maturity = LANE_D.load(self.maturity_path)
+        self.original_load = LANE_D.load
+
+    def copy_real_checkout(self, root: Path) -> None:
+        paths = set(LANE_D.REQUIRED_DOCS) | set(LANE_D.MAPS.values())
+        paths.update(LANE_D.NDU_READ_ONLY_CALLER_EVIDENCE)
+        paths.update(
+            (
+                "codex-rs/hepta-objective/src/objective_admission.rs",
+                "codex-rs/hepta-ndu/src/evaluator.rs",
+                "codex-rs/hepta-control-plane/src/planner.rs",
+            )
+        )
+        for mapping_path in LANE_D.MAPS.values():
+            for operation in self.original_load(mapping_path)["operations"]:
+                paths.add(operation["sourcePath"])
+                paths.update(test["path"] for test in operation.get("tests", []))
+        for path in paths:
+            target = root / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            copy2(LANE_D.ROOT / path, target)
+
+    def row(self, maturity: dict, module: str) -> dict:
+        return next(row for row in maturity["modules"] if row["module"] == module)
+
+    def verify(self, maturity: dict) -> int:
+        def load(path: str) -> dict:
+            return maturity if path == self.maturity_path else self.original_load(path)
+
+        with (
+            mock.patch.object(LANE_D, "load", side_effect=load),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            return LANE_D.verify()
+
+    def test_current_real_read_only_caller_evidence_passes_without_authority(
+        self,
+    ) -> None:
+        self.assertEqual(self.verify(self.maturity), 0)
+
+    def test_product_caller_states_cannot_promote_or_cross_module_boundaries(
+        self,
+    ) -> None:
+        current_states = {
+            row["dimensions"]["productCaller"]["state"]
+            for row in self.maturity["modules"]
+        }
+        for module in LANE_D.MODULES:
+            original = self.row(self.maturity, module)["dimensions"]["productCaller"][
+                "state"
+            ]
+            for state in (
+                *sorted(current_states - {original}),
+                "source_composed_authenticated_production",
+                "authenticated_production_established",
+                "activated",
+                "released",
+                "arbitrary_state",
+                None,
+                True,
+            ):
+                with self.subTest(module=module, state=state):
+                    maturity = deepcopy(self.maturity)
+                    self.row(maturity, module)["dimensions"]["productCaller"][
+                        "state"
+                    ] = state
+                    with self.assertRaisesRegex(
+                        SystemExit, f"truth boundary {module} productCaller"
+                    ):
+                        self.verify(maturity)
+
+    def test_independent_acceptance_activation_and_release_remain_unestablished(
+        self,
+    ) -> None:
+        for module in LANE_D.MODULES:
+            for dimension in ("independentAcceptance", "activation", "release"):
+                for state in (
+                    "established",
+                    "activated",
+                    "released",
+                    "arbitrary_state",
+                ):
+                    with self.subTest(module=module, dimension=dimension, state=state):
+                        maturity = deepcopy(self.maturity)
+                        self.row(maturity, module)["dimensions"][dimension]["state"] = (
+                            state
+                        )
+                        with self.assertRaisesRegex(
+                            SystemExit, f"truth boundary {module} {dimension}"
+                        ):
+                            self.verify(maturity)
+
+    def test_maturity_cannot_grant_authority(self) -> None:
+        maturity = deepcopy(self.maturity)
+        maturity["authorityDelta"] = "granted"
+        with self.assertRaisesRegex(SystemExit, "maturity authority delta"):
+            self.verify(maturity)
+
+    def test_duplicate_module_rows_cannot_satisfy_exact_three_module_closure(
+        self,
+    ) -> None:
+        for module in LANE_D.MODULES:
+            for index in (0, len(self.maturity["modules"])):
+                with self.subTest(module=module, index=index):
+                    maturity = deepcopy(self.maturity)
+                    maturity["modules"].insert(
+                        index, deepcopy(self.row(maturity, module))
+                    )
+                    with self.assertRaisesRegex(SystemExit, "maturity module closure"):
+                        self.verify(maturity)
+
+    def test_caller_evidence_rejects_file_and_parent_symlinks_inside_or_outside(
+        self,
+    ) -> None:
+        for component in ("file", "parent"):
+            for external in (False, True):
+                with self.subTest(component=component, external=external):
+                    with tempfile.TemporaryDirectory() as directory:
+                        root = Path(directory) / "repo"
+                        self.copy_real_checkout(root)
+                        target = root / "codex-rs/hepta-agentd/src/cognitive_context.rs"
+                        if component == "parent":
+                            target = target.parent
+                        moved = (Path(directory) if external else root) / "relocated"
+                        target.rename(moved)
+                        target.symlink_to(
+                            moved, target_is_directory=component == "parent"
+                        )
+                        with mock.patch.object(LANE_D, "ROOT", root):
+                            with self.assertRaisesRegex(
+                                SystemExit, "read-only caller evidence symlink"
+                            ):
+                                self.verify(self.maturity)
+
+    def test_caller_evidence_must_be_a_present_regular_file(self) -> None:
+        for replacement in ("missing", "directory"):
+            with self.subTest(replacement=replacement):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory) / "repo"
+                    self.copy_real_checkout(root)
+                    target = root / "codex-rs/hepta-agentd/src/cognitive_context.rs"
+                    target.unlink()
+                    if replacement == "directory":
+                        target.mkdir()
+                    with mock.patch.object(LANE_D, "ROOT", root):
+                        with self.assertRaisesRegex(
+                            SystemExit, "missing read-only caller evidence"
+                        ):
+                            self.verify(self.maturity)
+
+    def test_read_only_caller_claim_requires_exact_real_evidence(self) -> None:
+        evidence = self.row(self.maturity, "utility.ndu")["dimensions"][
+            "productCaller"
+        ]["evidence"]
+        for altered in (
+            [],
+            evidence[:-1],
+            evidence + [evidence[0]],
+            ["codex-rs/hepta-ndu/src/evaluator.rs", *evidence[1:]],
+        ):
+            with self.subTest(evidence=altered):
+                maturity = deepcopy(self.maturity)
+                self.row(maturity, "utility.ndu")["dimensions"]["productCaller"][
+                    "evidence"
+                ] = altered
+                with self.assertRaisesRegex(SystemExit, "read-only caller evidence"):
+                    self.verify(maturity)
 
 
 class LaneDOwnerMapTests(unittest.TestCase):

@@ -97,15 +97,25 @@ pub struct CompactionLossReportV2 {
 
 impl CompactionLossReportV2 {
     pub fn validate(&self) -> Result<(), QualifiedCompactionError> {
-        if self.live_source_heads + self.deleted_records != self.source_current_heads {
+        if self.live_source_heads.checked_add(self.deleted_records)
+            != Some(self.source_current_heads)
+            || self.source_current_heads > MAX_QUALIFIED_COMPACTION_INPUTS as u64
+        {
             return Err(QualifiedCompactionError::InvalidLossAccounting);
         }
-        if self.retained_records + self.omitted_live_records != self.live_source_heads {
+        if self.retained_records.checked_add(self.omitted_live_records)
+            != Some(self.live_source_heads)
+        {
             return Err(QualifiedCompactionError::InvalidLossAccounting);
         }
         if self.protected_retained_records != self.protected_live_records
-            || self.protected_live_records + self.protected_deleted_records
-                > self.source_current_heads
+            || self.protected_live_records > self.live_source_heads
+            || self.protected_retained_records > self.retained_records
+            || self.protected_deleted_records > self.deleted_records
+            || self
+                .protected_live_records
+                .checked_add(self.protected_deleted_records)
+                .is_none_or(|count| count > self.source_current_heads)
         {
             return Err(QualifiedCompactionError::ProtectedReferenceLost);
         }
@@ -160,13 +170,28 @@ impl QualifiedCompactionCandidateV2 {
             .validate()
             .map_err(QualifiedCompactionError::Contract)?;
         self.loss_report.validate()?;
-        if self.checkpoint.source_snapshot != self.source_snapshot {
+        if self.checkpoint.source_snapshot != self.source_snapshot
+            || self.checkpoint.tombstone_cutoff != self.source_snapshot.vector.tombstone_frontier
+        {
             return Err(QualifiedCompactionError::SnapshotMismatch);
+        }
+        if self.retained_records.len() > MAX_QUALIFIED_COMPACTION_INPUTS
+            || self.omitted_record_digests.len() > MAX_QUALIFIED_COMPACTION_INPUTS
+        {
+            return Err(QualifiedCompactionError::InputLimitExceeded);
+        }
+        if u64::try_from(self.retained_records.len()).ok()
+            != Some(self.loss_report.retained_records)
+            || u64::try_from(self.omitted_record_digests.len()).ok()
+                != Some(self.loss_report.omitted_live_records)
+        {
+            return Err(QualifiedCompactionError::InvalidLossAccounting);
         }
         if self.authority.grants_any() {
             return Err(QualifiedCompactionError::AuthorityGranted);
         }
         let mut identities = BTreeSet::new();
+        let mut support_digests = BTreeSet::new();
         for record in &self.retained_records {
             record
                 .validate()
@@ -180,6 +205,36 @@ impl QualifiedCompactionCandidateV2 {
                 return Err(QualifiedCompactionError::DuplicateRetainedRecord(
                     record.record_id.to_string(),
                 ));
+            }
+            support_digests.insert(record.record_digest());
+        }
+        for digest in &self.omitted_record_digests {
+            if digest.is_zero() || !support_digests.insert(*digest) {
+                return Err(QualifiedCompactionError::InvalidOmittedRecordSet);
+            }
+        }
+        for (name, actual, expected) in [
+            (
+                "payload",
+                self.checkpoint.payload_digest,
+                digest_record_set(PAYLOAD_DOMAIN, self.retained_records.iter()),
+            ),
+            (
+                "omitted_information",
+                self.checkpoint.omitted_information_digest,
+                digest_digests(OMITTED_DOMAIN, &self.omitted_record_digests),
+            ),
+            (
+                "support_manifest",
+                self.checkpoint.support_manifest_digest,
+                digest_digests(
+                    SUPPORT_MANIFEST_DOMAIN,
+                    &support_digests.into_iter().collect::<Vec<_>>(),
+                ),
+            ),
+        ] {
+            if actual != expected {
+                return Err(QualifiedCompactionError::DigestMismatch(name));
             }
         }
         if self.candidate_digest != self.compute_candidate_digest() {
@@ -513,6 +568,7 @@ pub enum QualifiedCompactionError {
     ProtectedReferencesExceedCapacity,
     ProtectedReferenceLost,
     InvalidLossAccounting,
+    InvalidOmittedRecordSet,
     InvalidRecord(String),
     EmptyLineage,
     BrokenLineage(String),

@@ -230,6 +230,13 @@ These remain source tests. Completion of BROWSER-01..04 against the real current
 
 ## 13. Implementation sequence and work packages
 
+### Future target source obligations outside current closure
+
+The existing `repositoryControlledSourceBoundaryGapsClosed=true` claim covers the current mapped source subset. The map's `futureTargetSourceObligations` records the wider target-design work below, which is outside that closed subset. These are repository source, caller, packaging and integration-test obligations; they are not reclassified as external-only evidence. Their completion would still require separate host qualification and independent acceptance. This planning description changes no canonical work-package state, source closure, production, execution, acceptance, activation or release claim.
+
+- Beyond the current hardened owner/driver subset, revalidate the pinned Servo embedding API/feature topology and implement/build the Hepta-owned one-WebView worker that serves the private framed protocol; bind reproducible artifact and SBOM evidence to that source.
+- Compose the named non-test product caller through registered runtime.agentd/authority ports and add equivalent macOS/Windows worker launchers plus credential-store integration; real worker sandbox/terminal observations and host acceptance remain separate qualification gates.
+
 Applicable work package:
 
 - `BROWSER-WEB-C1`

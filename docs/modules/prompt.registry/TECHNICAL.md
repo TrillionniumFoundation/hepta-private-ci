@@ -226,7 +226,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`

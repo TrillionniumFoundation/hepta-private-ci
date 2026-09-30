@@ -412,10 +412,12 @@ fn apply_replay_transition(
         TaskFlowTransition::RequeueProvenAbsent { proof_digest } => {
             if !matches!(
                 state.state,
-                TaskFlowRunState::Queued | TaskFlowRunState::Running
+                TaskFlowRunState::Queued
+                    | TaskFlowRunState::Running
+                    | TaskFlowRunState::Indeterminate
             ) {
                 return Err(invalid_transition(
-                    "provider-absence requeue requires queued or running state",
+                    "provider-absence requeue requires queued, running, or indeterminate state",
                 ));
             }
             validate_digest(proof_digest.as_str(), "provider absence proof digest")?;
@@ -427,10 +429,12 @@ fn apply_replay_transition(
         TaskFlowTransition::CancelProvenAbsent { proof_digest } => {
             if !matches!(
                 state.state,
-                TaskFlowRunState::Queued | TaskFlowRunState::Running
+                TaskFlowRunState::Queued
+                    | TaskFlowRunState::Running
+                    | TaskFlowRunState::Indeterminate
             ) {
                 return Err(invalid_transition(
-                    "provider-absence cancellation requires queued or running state",
+                    "provider-absence cancellation requires queued, running, or indeterminate state",
                 ));
             }
             validate_digest(proof_digest.as_str(), "provider absence proof digest")?;
@@ -448,6 +452,19 @@ fn apply_replay_transition(
             state.cancel_requested = true;
             state.state = TaskFlowRunState::Cancelled;
             state.terminal_reason = Some(reason.clone());
+        }
+        TaskFlowTransition::CancelPendingEffect { reason } => {
+            if is_terminal_state(state.state) {
+                return Err(invalid_transition(
+                    "terminal run cannot accept pending cancellation",
+                ));
+            }
+            validate_text(reason, "cancel reason")?;
+            state.cancel_requested = true;
+            state.state = TaskFlowRunState::Indeterminate;
+            state.terminal_reason = Some(reason.clone());
+            state.wait_token = None;
+            state.retry_at_ms = None;
         }
         TaskFlowTransition::Succeed { output_digest } => {
             if !matches!(
@@ -538,6 +555,7 @@ fn transition_name(transition: &TaskFlowTransition) -> &'static str {
         TaskFlowTransition::RequeueProvenAbsent { .. } => "requeued_proven_absent",
         TaskFlowTransition::CancelProvenAbsent { .. } => "cancelled_proven_absent",
         TaskFlowTransition::Cancel { .. } => "cancelled",
+        TaskFlowTransition::CancelPendingEffect { .. } => "cancel_pending_effect",
         TaskFlowTransition::Succeed { .. } => "succeeded",
         TaskFlowTransition::Fail { .. } => "failed",
         TaskFlowTransition::Indeterminate { .. } => "indeterminate",

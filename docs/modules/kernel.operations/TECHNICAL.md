@@ -372,5 +372,5 @@ This receipt is source-navigation evidence for the current durable candidate; ru
 | reference outbox | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | reference oracle |
 
 - Exact mapped source identity is verified through `path_blob_manifest_v1`.
-- `productionImplementation=true` means repository source implementation exists; it does not mean product execution, activation, acceptance or release.
+- Mapped native code records repository source implementation; `productionImplementation=false` retains the requirement for a named product caller and executable product tests; it does not mean product execution, activation, acceptance or release.
 - Remaining repository gates are current exact-head/synthetic-merge success, remaining destination adapters and long-lived segment/checkpoint compaction. External production authority/grant enrollment remains an activation gate and is not manufactured by Agentd.

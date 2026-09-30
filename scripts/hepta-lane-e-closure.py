@@ -10,6 +10,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from hepta_learning_write_guard import legacy_write_findings
 from hepta_workflow_commands import workflow_commands
 from typing import Any
 
@@ -33,7 +34,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 14)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 7)),
     *(f"EVAL-{index:02d}" for index in range(1, 8)),
     *(f"ART-{index:02d}" for index in range(1, 13)),
 }
@@ -93,6 +94,12 @@ EXPECTED_OPERATIONS = {
         "admit_operator_regularity",
         "fit_transition_model",
         "predict_transition",
+        "validate_applicability_with_signed_evidence_v2",
+        "admit_operator_regularity_with_signed_evidence_v2",
+        "verify_tabular_operator_plan_v2",
+        "fit_tabular_operator_verified_v2",
+        "verify_world_model_dataset_v2",
+        "fit_transition_model_verified_v2",
     },
     "learning.eval": {
         "estimate_ope",
@@ -268,7 +275,13 @@ def verify_matrix(
             ):
                 findings.add("invalid_operation", f"{module} has an invalid operation")
                 continue
-            operations[operation["operation"]] = operation
+            name = operation["operation"]
+            if name in operations:
+                findings.add(
+                    "duplicate_operation", f"duplicate operation: {module}.{name}"
+                )
+                continue
+            operations[name] = operation
         findings.require(
             set(operations) == EXPECTED_OPERATIONS[module],
             "operation_closed_world",
@@ -325,7 +338,15 @@ def verify_matrix(
     if isinstance(external_raw, list):
         for item in external_raw:
             if isinstance(item, dict) and isinstance(item.get("id"), str):
-                external[item["id"]] = item
+                gate_id = item["id"]
+                if gate_id in external:
+                    findings.add(
+                        "duplicate_external_gate", f"duplicate external gate: {gate_id}"
+                    )
+                    continue
+                external[gate_id] = item
+            else:
+                findings.add("invalid_external_gate", "invalid external gate record")
     findings.require(
         set(external) == EXPECTED_EXTERNAL_GATES,
         "external_gate_closed_world",
@@ -632,13 +653,6 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
         "codex-rs/hepta-learning-ledger",
         "codex-rs/hepta-shadow-qualification",
     }
-    forbidden = {
-        r"\bDurableLearningJournal\b": "legacy durable journal trait",
-        r"LedgerEvent::Decision\b": "raw V1 Decision append",
-        r"LedgerEvent::Outcome\b": "raw V1 Outcome append",
-        r"LedgerEvent::Credit\b": "raw V1 Credit append",
-        r"LedgerEvent::Revocation\b": "raw V1 Revocation append",
-    }
 
     for path in (ROOT / "codex-rs").rglob("*.rs"):
         relative = path.relative_to(ROOT).as_posix()
@@ -655,9 +669,8 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
             continue
 
         text = path.read_text(encoding="utf-8")
-        for pattern, description in forbidden.items():
-            findings.require(
-                re.search(pattern, text) is None,
+        for description in legacy_write_findings(text):
+            findings.add(
                 "legacy_learning_writer_product_bypass",
                 f"{relative} uses {description}; product learning writes must use LedgerWriter",
             )

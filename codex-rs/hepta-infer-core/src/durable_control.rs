@@ -172,6 +172,7 @@ pub struct DurableInferenceControl {
     path: PathBuf,
     file: File,
     records: BTreeMap<String, RequestRecord>,
+    terminal_observations: BTreeMap<String, TerminalObservation>,
     native: native::NativeJournal,
     capacity: usize,
     journal_bytes: u64,
@@ -198,6 +199,7 @@ impl DurableInferenceControl {
         // Lock before replay: two owners must never admit from the same stale cut.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
+        let mut terminal_observations = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
@@ -229,7 +231,16 @@ impl DurableInferenceControl {
             if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
             } else {
-                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+                let event = decode_event(line)?;
+                apply_event(&mut records, &event, /*replay*/ true)?;
+                if let Event::Settle {
+                    request_id,
+                    observation,
+                    ..
+                } = event
+                {
+                    terminal_observations.insert(request_id, observation);
+                }
             }
             if records.len() + native.records.len() > capacity
                 || records.keys().any(|id| native.records.contains_key(id))
@@ -249,6 +260,7 @@ impl DurableInferenceControl {
             path,
             file,
             records,
+            terminal_observations,
             native,
             capacity,
             journal_bytes,
@@ -288,6 +300,9 @@ impl DurableInferenceControl {
         validate_identity(request_id, "request")?;
         validate_reservation(now_ms, &reservation)?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+        if record.request.deadline_ms <= now_ms {
+            return Err(Error::InvalidTime);
+        }
         if record.revision != expected_revision {
             return Err(Error::StaleRevision);
         }
@@ -371,47 +386,22 @@ impl DurableInferenceControl {
         if record.revision != expected_revision {
             return Err(Error::StaleRevision);
         }
+        validate_bound_observation(record, &observation)?;
         if record.terminal_observation_digest.as_ref() == Some(&observation_digest) {
+            if self.terminal_observations.get(request_id) != Some(&observation)
+                || record.consumed_tokens != observation.consumed_tokens
+                || record.usage_units != observation.usage_units
+                || record.state
+                    != observation
+                        .terminal_status
+                        .unwrap_or(RequestState::Indeterminate)
+            {
+                return Err(Error::Conflict);
+            }
             return Ok(receipt(record, /*idempotent*/ true));
         }
         if record.state.terminal() {
             return Err(Error::Conflict);
-        }
-        let reservation = record
-            .reservation
-            .as_ref()
-            .ok_or(Error::ReservationMismatch)?;
-        let assignment = record
-            .assignment
-            .as_ref()
-            .ok_or(Error::AssignmentMismatch)?;
-        if observation.request_id != record.request.request_id
-            || observation.reservation_id != reservation.reservation_id
-            || observation.worker_id != assignment.worker_id
-            || observation.worker_generation != assignment.worker_generation
-            || observation.model_digest != record.request.model_digest
-            || observation.payload_digest != record.request.payload_digest
-        {
-            return Err(Error::AssignmentMismatch);
-        }
-        if observation.consumed_tokens > reservation.maximum_tokens {
-            return Err(Error::UsageExceeded);
-        }
-        if observation.terminal_observed {
-            let status = observation
-                .terminal_status
-                .ok_or(Error::TerminalObservationMissing)?;
-            if !matches!(
-                status,
-                RequestState::Completed | RequestState::Failed | RequestState::Cancelled
-            ) {
-                return Err(Error::InvalidTransition);
-            }
-            if matches!(status, RequestState::Completed) && observation.output_digest.is_none() {
-                return Err(Error::TerminalObservationMissing);
-            }
-        } else if observation.terminal_status.is_some() || observation.output_digest.is_some() {
-            return Err(Error::TerminalObservationMissing);
         }
         self.commit(Event::Settle {
             request_id: request_id.to_string(),
@@ -441,6 +431,15 @@ impl DurableInferenceControl {
         self.append(&encoded)?;
         let request_id = event.request_id().to_string();
         self.records = next;
+        if let Event::Settle {
+            request_id,
+            observation,
+            ..
+        } = &event
+        {
+            self.terminal_observations
+                .insert(request_id.clone(), observation.clone());
+        }
         let record = self
             .records
             .get(&request_id)
@@ -519,6 +518,7 @@ fn apply_event(
 ) -> Result<(), Error> {
     match event {
         Event::Submit(request) => {
+            validate_request(/*now_ms*/ 0, request)?;
             if let Some(current) = records.get(&request.request_id) {
                 if replay && current.request == *request {
                     return Ok(());
@@ -544,10 +544,14 @@ fn apply_event(
             expected_revision,
             reservation,
         } => {
+            validate_reservation(/*now_ms*/ 0, reservation)?;
             let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
             require_revision(record, *expected_revision, replay)?;
             if record.state != RequestState::Pending {
                 return Err(Error::InvalidTransition);
+            }
+            if reservation.maximum_tokens < record.request.maximum_tokens {
+                return Err(Error::UsageExceeded);
             }
             record.reservation = Some(reservation.clone());
             record.state = RequestState::Reserved;
@@ -558,6 +562,7 @@ fn apply_event(
             expected_revision,
             assignment,
         } => {
+            validate_assignment(assignment)?;
             let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
             require_revision(record, *expected_revision, replay)?;
             if record.state != RequestState::Reserved {
@@ -586,6 +591,8 @@ fn apply_event(
             observation_digest,
             observation,
         } => {
+            validate_digest(observation_digest, "observation")?;
+            validate_observation(observation)?;
             let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
             require_revision(record, *expected_revision, replay)?;
             if !matches!(
@@ -594,6 +601,7 @@ fn apply_event(
             ) {
                 return Err(Error::InvalidTransition);
             }
+            validate_bound_observation(record, observation)?;
             record.state = if observation.terminal_observed {
                 observation
                     .terminal_status
@@ -672,6 +680,51 @@ fn validate_observation(value: &TerminalObservation) -> Result<(), Error> {
     }
     if let Some(output) = &value.output_digest {
         validate_digest(output, "output")?;
+    }
+    Ok(())
+}
+
+fn validate_bound_observation(
+    record: &RequestRecord,
+    observation: &TerminalObservation,
+) -> Result<(), Error> {
+    let reservation = record
+        .reservation
+        .as_ref()
+        .ok_or(Error::ReservationMismatch)?;
+    let assignment = record
+        .assignment
+        .as_ref()
+        .ok_or(Error::AssignmentMismatch)?;
+    if observation.request_id != record.request.request_id
+        || observation.reservation_id != reservation.reservation_id
+        || observation.worker_id != assignment.worker_id
+        || observation.worker_generation != assignment.worker_generation
+        || observation.model_digest != record.request.model_digest
+        || observation.payload_digest != record.request.payload_digest
+    {
+        return Err(Error::AssignmentMismatch);
+    }
+    if observation.consumed_tokens > reservation.maximum_tokens
+        || observation.usage_units > reservation.quota_units
+    {
+        return Err(Error::UsageExceeded);
+    }
+    if observation.terminal_observed {
+        let status = observation
+            .terminal_status
+            .ok_or(Error::TerminalObservationMissing)?;
+        if !matches!(
+            status,
+            RequestState::Completed | RequestState::Failed | RequestState::Cancelled
+        ) {
+            return Err(Error::InvalidTransition);
+        }
+        if status == RequestState::Completed && observation.output_digest.is_none() {
+            return Err(Error::TerminalObservationMissing);
+        }
+    } else if observation.terminal_status.is_some() || observation.output_digest.is_some() {
+        return Err(Error::TerminalObservationMissing);
     }
     Ok(())
 }

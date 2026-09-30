@@ -6,6 +6,9 @@ use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
 
+#[path = "native_output_event_tests.rs"]
+mod output_projection;
+
 fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
     CodexTurnBinding {
@@ -42,27 +45,56 @@ fn observed(notification: ServerNotification) -> RemoteAppServerObservedEvent {
 }
 
 fn observe_for_test(
-    output: &mut NativeRunOutput,
+    output: &mut ObservedOutput,
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    let result = observe_event(
+        &mut output.run,
+        &mut output.projection,
+        &observed(notification),
+        &binding,
+    );
+    output.run.output = output.projection.text();
+    result
 }
 
-fn output() -> NativeRunOutput {
-    NativeRunOutput {
-        thread_id: "thread-a".to_string(),
-        turn_id: "turn-a".to_string(),
-        model: "provider-model".to_string(),
-        model_provider: "provider".to_string(),
-        status: NativeRunStatus::Indeterminate,
-        boundary_status: NativeBoundaryStatus::Indeterminate,
-        output: String::new(),
-        observed_output_tokens: None,
-        terminal_observed: false,
-        stop_reason: None,
-        owner_authority: NativeOwnerAuthority::Unverified,
-        codex_terminal_correlation_digest: None,
+struct ObservedOutput {
+    run: NativeRunOutput,
+    projection: NativeOutputProjection,
+}
+
+impl std::ops::Deref for ObservedOutput {
+    type Target = NativeRunOutput;
+
+    fn deref(&self) -> &Self::Target {
+        &self.run
+    }
+}
+
+impl std::ops::DerefMut for ObservedOutput {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.run
+    }
+}
+
+fn output() -> ObservedOutput {
+    ObservedOutput {
+        run: NativeRunOutput {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            model: "provider-model".to_string(),
+            model_provider: "provider".to_string(),
+            status: NativeRunStatus::Indeterminate,
+            boundary_status: NativeBoundaryStatus::Indeterminate,
+            output: String::new(),
+            observed_output_tokens: None,
+            terminal_observed: false,
+            stop_reason: None,
+            owner_authority: NativeOwnerAuthority::Unverified,
+            codex_terminal_correlation_digest: None,
+        },
+        projection: NativeOutputProjection::default(),
     }
 }
 
@@ -399,22 +431,41 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
 
 #[test]
 fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
+    let source: String = include_str!("native_app_server.rs")
+        .split_whitespace()
+        .collect();
     let durable_dispatch = source
         .find("control.dispatch_native_with_pre_effect_abort(")
         .expect("durable native dispatch");
     let revalidation = source
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
+    let entered_use = source
+        .find("verified_use.enter(&authority_binding)")
+        .expect("final-use authority entry");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mutclient,entered_use,turn_params)")
+        .expect("physical turn start with entered authority");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
+    assert!(revalidation < entered_use);
+    assert!(entered_use < turn_start);
     assert!(durable_stop < turn_start);
+
+    let sender = source
+        .split_once("asyncfnsend_authorized_turn_start(")
+        .expect("protected turn/start sender")
+        .1;
+    let token_parameter = sender
+        .find("_entered:EnteredUseToken")
+        .expect("sender requires an entered authority token");
+    let physical_send = sender
+        .find(".request_typed_observed(ClientRequest::TurnStart{")
+        .expect("protected physical turn/start request");
+    assert!(token_parameter < physical_send);
+    assert_eq!(source.matches("ClientRequest::TurnStart{").count(), 1);
 }
 
 #[cfg(unix)]
@@ -450,8 +501,21 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // core_test_support configures this test executable's hidden arg0 helper
+    // modes before test threads start, matching the upstream core fixtures.
+    #[cfg(target_os = "linux")]
+    let sandbox_exe = Some(core_test_support::find_codex_linux_sandbox_exe()?);
+    #[cfg(not(target_os = "linux"))]
+    let sandbox_exe = None;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        std::env::current_exe()?,
+        sandbox_exe,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;

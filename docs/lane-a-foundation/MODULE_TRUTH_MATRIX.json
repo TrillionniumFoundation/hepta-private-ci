@@ -227,7 +227,20 @@
             "pub struct FleetAuthorityPort",
             "pub fn issue(",
             ".verify_use(",
-            ".with_verified_use("
+            "dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |_| {",
+            "ledger.issue(now_ms, grant)"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "pub fn dispatch_authority_lease_with_witness<T>(",
+            "verifier.with_dispatch_boundary_witness(token, expected, dispatch_boundary)",
+            "fn with_dispatch_boundary_witness<T>(",
+            "let state = self.lock_state()?;",
+            "VerifiedUseBoundaryV1::DispatchEntry",
+            "let result = dispatch_boundary(&witness);",
+            "drop(state);"
           ]
         }
       ]
@@ -336,7 +349,21 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "tasks.spawn_required(",
+            "\"production-operation-reconciler\"",
+            ".run_until(async move {",
+            "host.reconcile(256).await?;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks.rs",
+          "mustContain": [
+            "pub fn spawn_required<F>",
+            "pub async fn observe_next",
+            "self.tasks.join_next_with_id().await",
+            "let Some(quarantine) = entry.quarantine else {",
+            "pub async fn run_until<S>",
+            "self.shutdown().await;"
           ]
         }
       ]
@@ -451,69 +478,6 @@
       ],
       "namedProductCallers": [
         "runtime.agentd"
-      ]
-    },
-    {
-      "module": "secrets.heptabao",
-      "profile": "bounded_external_secret_reader",
-      "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
-      "formalGuideRole": "target_architecture",
-      "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
-      "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
-      "states": {
-        "source": "implemented",
-        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
-        "durability": "external_authority_plus_local_final_use_state",
-        "qualification": "source_tests_and_exact_candidate_workflow_required",
-        "activation": "registered_host_composed_not_product_activated",
-        "acceptance": "not_granted"
-      },
-      "currentCapabilities": [
-        "pinned-CA HTTPS read of one exact KV-v2 string field",
-        "canonical final-use claim and delivery boundaries",
-        "registered signed consumer-id to trusted callback mapping",
-        "independent approval before dispatch and authenticated revocation ingestion",
-        "metadata-only receipt without raw secret value"
-      ],
-      "targetOnlyCapabilities": [
-        "secret mutation",
-        "generic secret lease renewal API",
-        "durable operation and evidence composition",
-        "fleet revocation distribution and freshness enforcement",
-        "automatic production enrollment and selected process caller"
-      ],
-      "sourceAnchors": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-          "mustContain": [
-            "pub struct BaoClient",
-            "consume_kv_v2",
-            "MAX_RESPONSE_BYTES",
-            "claim_final_use(authority, grant, &binding)",
-            "deliver_final_use(authority, verified, &binding"
-          ],
-          "mustNotContain": [
-            ".claim(grant, &binding)",
-            ".with_verified_use(verified"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
-          "mustContain": [
-            "pub struct BaoFinalUseHost",
-            "UnregisteredConsumer",
-            "approval_verifier",
-            "revocation_verifier"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-bao-adapter/README.md",
-          "mustContain": [
-            "Authorized HeptaBao HTTPS consumer",
-            "Only read operations exist here"
-          ]
-        }
       ]
     },
     {
@@ -638,6 +602,70 @@
       ],
       "namedProductCallers": [
         "codex-hepta-agentd signed-text ingress"
+      ]
+    },
+    {
+      "module": "secrets.heptabao",
+      "profile": "bounded_external_secret_reader",
+      "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
+      "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+      "states": {
+        "source": "implemented",
+        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
+        "durability": "external_authority_plus_local_final_use_state",
+        "qualification": "source_tests_and_exact_candidate_workflow_required",
+        "activation": "registered_host_composed_not_product_activated",
+        "acceptance": "not_granted"
+      },
+      "currentCapabilities": [
+        "pinned-CA HTTPS read of one exact KV-v2 string field",
+        "canonical final-use claim and delivery boundaries",
+        "registered signed consumer-id to trusted callback mapping",
+        "independent approval before dispatch and authenticated revocation ingestion",
+        "metadata-only receipt without raw secret value"
+      ],
+      "targetOnlyCapabilities": [
+        "secret mutation",
+        "generic secret lease renewal API",
+        "durable operation and evidence composition",
+        "fleet revocation distribution and freshness enforcement",
+        "automatic production enrollment and selected process caller"
+      ],
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "pub struct BaoClient",
+            "consume_kv_v2",
+            "MAX_RESPONSE_BYTES",
+            "claim_final_use(authority, grant, &binding)",
+            "deliver_final_use(authority, verified, &binding"
+          ],
+          "mustNotContain": [
+            ".claim(grant, &binding)",
+            ".with_verified_use(verified"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+          "mustContain": [
+            "pub struct BaoFinalUseHost",
+            "UnregisteredConsumer",
+            "approval_verifier",
+            "revocation_verifier"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/README.md",
+          "mustContain": [
+            "Authorized HeptaBao HTTPS consumer",
+            "GET /v1/{mount}/data/{path}?version=N",
+            "It deliberately does not dispatch provider mutation APIs:"
+          ]
+        }
       ]
     }
   ]

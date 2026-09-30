@@ -1,8 +1,10 @@
 #![cfg(unix)]
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
+use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
@@ -49,7 +51,12 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
+use sqlx::Row;
 use tempfile::TempDir;
+
+type LogicalOwnerRows = BTreeMap<String, Vec<BTreeMap<String, String>>>;
 
 #[tokio::test]
 #[cfg(feature = "qualification-cognitive-write")]
@@ -143,6 +150,10 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
+    let predecessor_rows = logical_owner_rows(store.path()).await?;
+    // Finish SQLite worker shutdown before releasing the store-open fence;
+    // dropping the pool alone can leave sidecar cleanup running asynchronously.
+    store.close().await;
     drop(store);
 
     let authority = ProductionAuthorityLease::from_verified_parts(
@@ -173,6 +184,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    let activation_started = i64::try_from(now_unix_seconds()?)?;
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -183,7 +195,68 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    assert_eq!(recovered_anchor.profile, expected.profile);
+    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
+    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
+    // Exact-cut admission precedes writer acquisition. The host then appends
+    // its first authority-bound lease, which legitimately advances that cut.
+    let mut activated_rows = logical_owner_rows(host.writer().database_path()).await?;
+    let leases = activated_rows
+        .get_mut("cognitive_local_leases")
+        .ok_or("missing recovered lease table")?;
+    assert_eq!(leases.len(), 1);
+    let mut lease = leases.pop().ok_or("missing recovered writer lease")?;
+    let recorded_at: i64 = lease
+        .remove("recorded_at_unix_seconds")
+        .ok_or("missing lease timestamp")?
+        .parse()?;
+    assert!(recorded_at >= activation_started);
+    assert!(recorded_at <= i64::try_from(now_unix_seconds()?)?);
+    let lease_digest = lease.remove("lease_sha256").ok_or("missing lease digest")?;
+    Sha256Digest::parse(lease_digest.trim_matches('\''))?;
+    let writer = host.writer();
+    let authority = writer.authority();
+    let expected_lease = BTreeMap::from([
+        (
+            "lease_id".to_string(),
+            "'agentd-product-recovery-test'".to_string(),
+        ),
+        ("lease_sequence".to_string(), "1".to_string()),
+        (
+            "owner_agent_id".to_string(),
+            format!("'{}'", owner.as_str()),
+        ),
+        ("generation".to_string(), "1".to_string()),
+        (
+            "fencing_token".to_string(),
+            format!("'{}'", authority.fencing_token_digest()?.as_str()),
+        ),
+        ("state".to_string(), "'active'".to_string()),
+        (
+            "authority_epoch".to_string(),
+            authority.authority_epoch.to_string(),
+        ),
+        ("owner_epoch".to_string(), authority.owner_epoch.to_string()),
+        (
+            "lease_expires_at_unix_seconds".to_string(),
+            authority.lease_expires_at_unix_seconds.to_string(),
+        ),
+        (
+            "previous_sha256".to_string(),
+            format!(
+                "'{}'",
+                Sha256Digest::for_bytes(b"hepta-memory:local-lease:genesis:v1").as_str()
+            ),
+        ),
+    ]);
+    assert_eq!(lease, expected_lease);
+    host.writer().verify_current_authority().await?;
+    drop(writer);
+    assert_eq!(
+        activated_rows, predecessor_rows,
+        "writer activation may append only its exact authority-bound lease"
+    );
+    assert_ne!(recovered_anchor.state_digest, expected.state_digest);
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
@@ -431,4 +504,72 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
 fn now_unix_seconds() -> Result<u64, std::time::SystemTimeError> {
     Ok(SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs())
+}
+
+async fn logical_owner_rows(path: &Path) -> Result<LogicalOwnerRows, Box<dyn Error>> {
+    let sqlite = SqliteConfig::new_for_testing(AbsolutePathBuf::from_absolute_path(
+        path.parent()
+            .ok_or("cognitive database path has no parent")?,
+    )?);
+    let pool = sqlite.open_read_only_pool(path).await?;
+    let mut transaction = pool.begin().await?;
+    let mut tables: Vec<String> = sqlx::query_scalar(
+        "SELECT name FROM pragma_table_list
+         WHERE schema = 'main' AND type IN ('table', 'virtual')
+           AND name NOT LIKE 'sqlite_%' ORDER BY name LIMIT 256",
+    )
+    .fetch_all(&mut *transaction)
+    .await?;
+    assert!(tables.len() < 256);
+    tables.push("sqlite_schema".to_string());
+    let mut snapshot = BTreeMap::new();
+    for table in tables {
+        let columns: Vec<String> = if table == "sqlite_schema" {
+            ["type", "name", "tbl_name", "sql"]
+                .map(str::to_string)
+                .to_vec()
+        } else {
+            sqlx::query_scalar("SELECT name FROM pragma_table_info(?) ORDER BY cid LIMIT 65")
+                .bind(&table)
+                .fetch_all(&mut *transaction)
+                .await?
+        };
+        assert!(!columns.is_empty() && columns.len() <= 64);
+        let quoted: Vec<String> = columns
+            .iter()
+            .map(|column| format!("\"{}\"", column.replace('"', "\"\"")))
+            .collect();
+        let selection = quoted
+            .iter()
+            .map(|column| format!("quote({column})"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let ordering = quoted
+            .iter()
+            .map(|column| format!("typeof({column}), {column} COLLATE BINARY"))
+            .collect::<Vec<_>>()
+            .join(", ");
+        let query = format!(
+            "SELECT {selection} FROM \"{}\" ORDER BY {ordering} LIMIT 1025",
+            table.replace('"', "\"\"")
+        );
+        let rows = sqlx::query(sqlx::AssertSqlSafe(query))
+            .fetch_all(&mut *transaction)
+            .await?;
+        assert!(rows.len() <= 1024);
+        let values = rows
+            .iter()
+            .map(|row| {
+                columns
+                    .iter()
+                    .enumerate()
+                    .map(|(index, column)| Ok((column.clone(), row.try_get::<String, _>(index)?)))
+                    .collect::<Result<BTreeMap<_, _>, sqlx::Error>>()
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        snapshot.insert(table, values);
+    }
+    transaction.commit().await?;
+    pool.close().await;
+    Ok(snapshot)
 }

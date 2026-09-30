@@ -10,6 +10,8 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
+from hepta_module_source_roots import resolve_source_roots
+
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
 
@@ -85,6 +87,7 @@ def delegated_dependency_matches(
     root: Path, owner_roots: list[str], anchor: dict[str, Any]
 ) -> bool:
     """Admit a delegated callee only through an owner's real direct Cargo dependency."""
+    root = root.resolve()
     source = (root / anchor["path"]).resolve()
     if not source.is_relative_to(root.resolve()):
         return False
@@ -92,6 +95,9 @@ def delegated_dependency_matches(
     workspace_manifest = root / "codex-rs/Cargo.toml"
     if not workspace_manifest.is_file():
         return False
+    canonical_path(
+        root, "codex-rs/Cargo.toml", "dependency workspace", require_file=True
+    )
     workspace = tomllib.loads(workspace_manifest.read_text(encoding="utf-8"))[
         "workspace"
     ]
@@ -99,6 +105,9 @@ def delegated_dependency_matches(
         manifest = root / owner_root / "Cargo.toml"
         if not manifest.is_file():
             continue
+        canonical_path(
+            root, f"{owner_root}/Cargo.toml", "dependency owner", require_file=True
+        )
         package = tomllib.loads(manifest.read_text(encoding="utf-8"))
         for name, dependency in package.get("dependencies", {}).items():
             if not isinstance(dependency, dict):
@@ -109,12 +118,34 @@ def delegated_dependency_matches(
                 base = root / "codex-rs"
             if not isinstance(dependency, dict) or "path" not in dependency:
                 continue
-            dependency_root = (base / dependency["path"]).resolve()
+            dependency_path = dependency["path"]
+            need(
+                isinstance(dependency_path, str)
+                and bool(dependency_path)
+                and not Path(dependency_path).is_absolute()
+                and "\\" not in dependency_path
+                and ":" not in dependency_path
+                and all(
+                    ord(char) >= 32 and ord(char) != 127 for char in dependency_path
+                ),
+                "invalid direct dependency path",
+            )
+            candidate = base
+            for part in Path(dependency_path).parts:
+                candidate = candidate / part
+                need(not candidate.is_symlink(), "symlink direct dependency path")
+            dependency_root = candidate.resolve()
             if not dependency_root.is_relative_to(root.resolve()):
                 continue
             dependency_manifest = dependency_root / "Cargo.toml"
             if not dependency_manifest.is_file():
                 continue
+            canonical_path(
+                root,
+                dependency_manifest.relative_to(root).as_posix(),
+                "direct dependency manifest",
+                require_file=True,
+            )
             declared = tomllib.loads(dependency_manifest.read_text(encoding="utf-8"))[
                 "package"
             ]["name"]
@@ -133,6 +164,10 @@ def verify_anchor(
 ) -> None:
     need(isinstance(anchor, dict), f"{module}: anchor must be object")
     need(set(anchor) >= {"role", "path", "symbol", "buildTarget"}, f"{module}: anchor")
+    symbol = anchor["symbol"]
+    target = anchor["buildTarget"]
+    need(isinstance(symbol, str) and bool(symbol.strip()), f"{module}: invalid symbol")
+    need(isinstance(target, str) and bool(target.strip()), f"{module}: build target")
     path = anchor["path"]
     source = canonical_path(root, path, f"{module}: source", require_file=True)
     if owner:
@@ -148,10 +183,6 @@ def verify_anchor(
             or delegated_dependency_matches(root, roots[delegated_owner], anchor),
             f"{module}: delegate-root escape {path}",
         )
-    symbol = anchor["symbol"]
-    target = anchor["buildTarget"]
-    need(isinstance(symbol, str) and bool(symbol.strip()), f"{module}: invalid symbol")
-    need(isinstance(target, str) and bool(target.strip()), f"{module}: build target")
     need(
         symbol in source.read_text(encoding="utf-8"),
         f"{module}: missing symbol {symbol!r}",
@@ -166,6 +197,40 @@ def verify(root: Path = ROOT) -> int:
     )
     entries = truth.get("modules")
     need(isinstance(entries, list) and entries, "module index")
+    registry_path = canonical_path(
+        root, "docs/modules/MODULES.json", "module registry", require_file=True
+    )
+    registered = load(registry_path).get("modules")
+    need(isinstance(registered, list) and registered, "registered module index")
+    owner_modules = {}
+    for entry in registered:
+        need(isinstance(entry, dict), "registered module entry")
+        module = entry.get("id")
+        need(isinstance(module, str) and bool(module), "registered module identity")
+        need(module not in owner_modules, f"{module}: duplicate registered owner")
+        owner_modules[module] = entry
+
+    def registered_roots(module: str) -> list[str]:
+        need(module in owner_modules, f"{module}: unregistered delegated owner")
+        owner = owner_modules[module]
+        bindings = owner.get("rootBindings")
+        need(isinstance(bindings, list) and bindings, f"{module}: registered roots")
+        for binding in bindings:
+            need(isinstance(binding, dict), f"{module}: registered root binding")
+            canonical_path(
+                root,
+                binding.get("path"),
+                f"{module}: declared root",
+                require_file=False,
+            )
+        try:
+            resolved = resolve_source_roots(root, owner)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise Invalid(f"{module}: invalid registered source alias: {exc}") from exc
+        need(bool(resolved), f"{module}: no registered source roots")
+        for path in resolved:
+            canonical_path(root, path, f"{module}: registered root", require_file=None)
+        return resolved
 
     maps: dict[str, dict[str, Any]] = {}
     roots: dict[str, list[str]] = {}
@@ -174,6 +239,7 @@ def verify(root: Path = ROOT) -> int:
         module = entry.get("module")
         map_path = entry.get("mapPath")
         need(isinstance(module, str) and bool(module), "module identity")
+        need(module not in maps, f"{module}: duplicate lane module")
         path = canonical_path(root, map_path, f"{module}: map", require_file=True)
         row = load(path)
         need(row.get("module") == module, f"{module}: map identity")
@@ -184,8 +250,10 @@ def verify(root: Path = ROOT) -> int:
             and all(isinstance(item, str) and item for item in resolved_roots),
             f"{module}: resolved roots",
         )
-        for owner_root in resolved_roots:
-            canonical_path(root, owner_root, f"{module}: owner root", require_file=None)
+        need(
+            resolved_roots == registered_roots(module),
+            f"{module}: resolved roots do not match registered owner",
+        )
         maps[module] = row
         roots[module] = resolved_roots
 
@@ -203,8 +271,18 @@ def verify(root: Path = ROOT) -> int:
                 "buildTarget": item.get("buildTarget", "canonical-v3"),
             }
             verify_anchor(root, module, roots, anchor, owner=True)
-            for delegate in item.get("delegatedCallees", []):
+            delegated = item.get("delegatedCallees", [])
+            need(isinstance(delegated, list), f"{module}: delegated callees")
+            for delegate in delegated:
                 delegates += 1
+                need(isinstance(delegate, dict), f"{module}: delegated binding")
+                owner_module = delegate.get("ownerModule")
+                need(
+                    isinstance(owner_module, str) and owner_module in owner_modules,
+                    f"{module}: unregistered delegated owner",
+                )
+                if owner_module not in roots:
+                    roots[owner_module] = registered_roots(owner_module)
                 verify_anchor(root, module, roots, delegate, owner=False)
             bound_tests = item.get("tests")
             need(isinstance(bound_tests, list) and bound_tests, f"{module}: tests")

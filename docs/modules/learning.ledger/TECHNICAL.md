@@ -300,7 +300,7 @@ For `learning.ledger`, this document grants no runtime, production, model, provi
 
 #### `LRN-0-CAUSAL-LEARNING-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `learning-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-learning-ledger/**`

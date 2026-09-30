@@ -15,7 +15,9 @@ use super::solve_preference_target;
 use super::validate_staged_updates;
 use crate::AxisValue;
 use crate::NduError;
+use crate::NduIterationContextV1;
 use crate::SubjectClass;
+use crate::bind_solver_iteration_receipt_v1;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
@@ -46,6 +48,7 @@ fn damped_preference_update_emits_local_solver_receipts() {
         }],
     ));
     let predecessor = initial.state_digest;
+    let initial_residual_raw = FixedQ32::ONE.raw() - initial.values[0].value.raw();
     let (terminal, termination, receipts) = must(solve_preference_target(
         initial,
         vec![AxisValue {
@@ -70,9 +73,8 @@ fn damped_preference_update_emits_local_solver_receipts() {
     );
     assert_eq!(
         termination.maximum_residual_raw,
-        receipts
-            .iter()
-            .map(|receipt| receipt.residual_raw)
+        std::iter::once(initial_residual_raw)
+            .chain(receipts.iter().map(|receipt| receipt.residual_raw))
             .max()
             .expect("maximum residual")
     );
@@ -282,6 +284,64 @@ fn impossible_local_receipt_invariants_are_rejected() {
         must_err(invalid.validate()),
         NduError::InvalidSolverReceipt("iteration")
     );
+}
+
+#[test]
+fn malformed_local_solver_receipts_reject_before_protocol_publication() {
+    let initial = must(PreferenceState::genesis(
+        id("agent-protocol"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    let (_, _, receipts) = must(solve_preference_target(
+        initial,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ONE,
+        }],
+        FixedQ32::from_raw(1_i64 << 30),
+    ));
+    let valid = receipts.first().expect("first solver receipt");
+    let context = NduIterationContextV1 {
+        subject_id: valid.subject_id.clone(),
+        subject_class: valid.subject_class,
+        objective_digest: Digest32::of_bytes(b"objective"),
+        generation: must(Generation::new(4)),
+        event_digest: Digest32::of_bytes(b"event"),
+        coefficient_digest: Digest32::of_bytes(b"coefficient"),
+    };
+    assert!(
+        !must(bind_solver_iteration_receipt_v1(&context, valid))
+            .authority
+            .grants_any()
+    );
+
+    type Corrupt = fn(&mut NduSolverIterationReceipt);
+    let cases: &[(&str, Corrupt)] = &[
+        ("iteration", |receipt| receipt.iteration = 0),
+        ("iteration", |receipt| receipt.iteration = 65),
+        ("predecessor revision", |receipt| {
+            receipt.predecessor_revision = must(Revision::new(u64::MAX));
+        }),
+        ("revision adjacency", |receipt| {
+            receipt.next_revision = receipt.predecessor_revision;
+        }),
+        ("negative residual", |receipt| receipt.residual_raw = -1),
+        ("state digest", |receipt| {
+            receipt.state_digest = Digest32::ZERO;
+        }),
+    ];
+    for &(field, corrupt) in cases {
+        let mut receipt = valid.clone();
+        corrupt(&mut receipt);
+        assert_eq!(
+            must_err(bind_solver_iteration_receipt_v1(&context, &receipt)),
+            NduError::InvalidSolverReceipt(field)
+        );
+    }
 }
 
 #[test]

@@ -21,6 +21,8 @@ After a dispatch may have crossed the worker boundary, exceptions and timeouts b
 
 `FileBrowserOperationJournal` is append-only, checksum-bound, size-bounded, fsynced and mode-0600 on Unix. A process restart can use `reconcilePersistedOperation()` without issuing another effect. Terminal operations are bounded in memory while durable tombstones remain available for replay.
 
+The journal serializes handles within one process and uses an exclusive `.owner.lock` file across processes. It syncs that lock and its directory before appending intent, then syncs the journal and directory before acknowledging the write. An uncertain write or a crashed owner retains the lock and blocks subsequent journal access. Recovery must first establish exclusive ownership and inspect the journal for incomplete records and unresolved driver operations; removing a lock alone does not establish that an effect was absent. Automatic stale-lock removal and journal repair are not implemented.
+
 ## Worker boundary
 
 `src/worker-protocol.js` implements the private protocol: four-byte big-endian length prefix, at most 1 MiB canonical JSON, payload digest, session ID, generation, monotonic sequence and request identity. Unknown/non-canonical frames fail closed.

@@ -168,6 +168,13 @@ From the repository root, run `node --test apps/hepta-native/test/native.test.js
 
 ## 13. Implementation sequence and work packages
 
+### Future target source obligations outside current closure
+
+The existing `repositoryControlledSourceBoundaryGapsClosed=true` claim covers the current mapped source subset. The map's `futureTargetSourceObligations` records the wider target-design work below, which is outside that closed subset. These are repository source, caller, packaging and integration-test obligations; they are not reclassified as external-only evidence. Their completion would still require separate host qualification and independent acceptance. This planning description changes no canonical work-package state, source closure, production, execution, acceptance, activation or release claim.
+
+- After selecting the native framework and supported platform matrix, implement the packaged application entrypoint and concrete authenticated backend, OS-permission and updater adapters around the existing shell library.
+- Implement platform-specific code-signing/notarization/keychain and updater trust-root integration in source and packaging, with executable crash/restart/update-rollback/accessibility integration coverage; deployed trust enrollment and selected-host qualification remain external gates.
+
 Applicable work packages:
 
 - `UI-NATIVE-1-SHELL`
@@ -217,7 +224,7 @@ For `ui.native`, this document grants no runtime, production, model, provider, t
 
 #### `UI-V5`
 
-- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `independent_source_preparation`.
+- State: `source_implemented`; priority: `2`; parallel class: `independent_source_preparation`.
 - Owner/deputy: `ui-platform` / `accessibility`.
 - Allowed write paths:
 - `apps/hepta-control-ui/**`

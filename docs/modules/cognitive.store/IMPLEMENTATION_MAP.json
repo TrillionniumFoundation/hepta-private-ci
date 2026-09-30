@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "235428e55101e4c548c71577cb3c36912f354c32",
+    "tree": "241a2e211be09c13f902526eaaede5d93a6009b2"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -120,7 +120,15 @@
       "tests": [
         "codex-rs/hepta-memory/src/production_writer.rs",
         "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
-        "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs"
+        "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer_authority_tests.rs",
+          "kind": "semantic_authority_currentness_before_commit",
+          "command": "just test -p codex-hepta-memory --lib",
+          "testNames": [
+            "revoked_semantic_authority_rolls_back_remember_correct_and_forget"
+          ]
+        }
       ],
       "sourcePathExists": true,
       "designOperation": "remember_correct_forget_with_atomic_authority_and_operation_provenance",
@@ -301,7 +309,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
-      "object": "4ca370fcc2760aa21f9abd3582cbf34532083fe8"
+      "object": "2a9c99f60cb720f08cc0cbbb0714bd46582db326"
     },
     {
       "path": "codex-rs/hepta-cognitive-store",
@@ -321,19 +329,19 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "object": "b52e3a1aa275c178a075677f5df9faa832173b41"
+      "object": "a2343082d29d1e259bda149c6c1a49e313087e2c"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
-      "object": "b04217a0de797501c61262b20b8c52d2bd1b1822"
+      "object": "216c00cf3c1e7a7fb294964ee0243c638e0e5cee"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
-      "object": "72eaa499826321a2564614706a38d91dff149b72"
+      "object": "2e151a8d025582011a94c161fed8fd1334765fe3"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "b5462745d335c2115144ddc161d242b3205fdc06"
+      "object": "4f613c961f1b7cda55892412e0c4e6a97dfe173e"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
@@ -345,7 +353,11 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+      "object": "d279f62442fee467b44e0e124f0d4d78bc3347d8"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer_authority_tests.rs",
+      "object": "eb1b1cabfb4113b163dfe67a96a7bcd084b31c41"
     },
     {
       "path": "codex-rs/hepta-memory/src/shared_experience.rs",

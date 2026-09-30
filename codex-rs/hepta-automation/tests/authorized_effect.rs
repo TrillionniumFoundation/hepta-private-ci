@@ -96,19 +96,19 @@ impl Fixture {
     }
 }
 
-fn definition() -> TaskFlowDefinition {
+fn definition(step_id: &str) -> TaskFlowDefinition {
     TaskFlowDefinition::new(
         "authorized-effect",
         1,
-        "effect",
+        step_id,
         vec![
-            TaskFlowNodeSpec::effect("effect", "matrix.send", "matrix-send-v1"),
+            TaskFlowNodeSpec::effect(step_id, "matrix.send", "matrix-send-v1"),
             TaskFlowNodeSpec::new("success", TaskFlowNodeKind::TerminalSuccess),
             TaskFlowNodeSpec::new("failure", TaskFlowNodeKind::TerminalFailure),
         ],
         vec![
-            TaskFlowEdgeSpec::new("effect", "success"),
-            TaskFlowEdgeSpec::new("effect", "failure"),
+            TaskFlowEdgeSpec::new(step_id, "success"),
+            TaskFlowEdgeSpec::new(step_id, "failure"),
         ],
         vec!["matrix.send".to_string()],
         Sha256Digest::for_bytes(b"authorized-effect-policy"),
@@ -245,14 +245,14 @@ async fn prepared_effect_store_for(
         .await
         .expect("open store");
     let owner = fence();
-    let definition = definition();
+    let definition = definition(&effect.step_id);
     store
         .register_taskflow_definition(&definition, &owner, 10)
         .await
         .expect("register definition");
     store
         .create_taskflow_run(
-            "authorized-effect-run",
+            &effect.run_id,
             &definition.workflow_id,
             definition.version,
             definition.definition_digest(),
@@ -262,13 +262,13 @@ async fn prepared_effect_store_for(
         .await
         .expect("create run");
     let claimed = store
-        .claim_taskflow_run("authorized-effect-run", &owner, 20, 1_000)
+        .claim_taskflow_run(&effect.run_id, &owner, 20, 1_000)
         .await
         .expect("claim run");
     let started = store
         .apply_taskflow_command(
             &TaskFlowCommand::new(
-                "authorized-effect-run",
+                &effect.run_id,
                 "authorized-effect-start",
                 owner.clone(),
                 claimed.revision,
@@ -1227,3 +1227,9 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
     );
     assert_eq!(must_not_dispatch.calls, 0);
 }
+
+#[path = "authorized_effect/adversarial.rs"]
+mod adversarial;
+
+#[path = "authorized_effect/projection_recovery.rs"]
+mod projection_recovery;

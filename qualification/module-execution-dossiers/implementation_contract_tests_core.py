@@ -2,8 +2,10 @@
 import json
 import re
 import unittest
+from copy import deepcopy
 from fractions import Fraction as F
 from pathlib import Path
+from unittest.mock import patch
 import implementation_contracts as c
 
 BASE=Path(__file__).resolve().parent
@@ -87,6 +89,94 @@ class NativeBindingCoverageTests(unittest.TestCase):
             self.assertEqual(observed, dict(registered, blobSha=c.blob(data), historicalBlobSha=registered['blobSha']))
         self.assertFalse(actual['consumerCallsitesProved'])
         self.assertFalse(actual['productExecutionProved'])
+
+    def test_codex_bindings_resolve_to_real_public_request_and_observation_entries(self):
+        _, observations = self.merged_native_observations()
+        row = next(row for row in observations if row['module'] == 'runtime.codex')
+        source = (c.ROOT / row['path']).read_text(encoding='utf-8')
+        declarations = set(re.findall(r'^pub (?:struct|enum|fn|const) (\w+)\b', source, re.MULTILINE))
+        self.assertTrue(set(row['exports']) <= declarations)
+        observed = next(row for row in c.current_native_bindings(c.ROOT)['observations'] if row['module'] == 'runtime.codex')
+        self.assertEqual(observed['exports'], row['exports'])
+
+    def test_removed_codex_entries_cannot_be_registered_again(self):
+        original_read = c.read_json
+        native = original_read(BASE / 'NATIVE_BINDINGS.json')
+        for legacy in ('AppServerObservation', 'adapt'):
+            with self.subTest(legacy=legacy):
+                changed = deepcopy(native)
+                row = next(row for row in changed['observations'] if row['module'] == 'runtime.codex')
+                row['exports'].append(legacy)
+                with patch.object(c, 'read_json', side_effect=lambda path: changed if path == BASE / 'NATIVE_BINDINGS.json' else original_read(path)):
+                    with self.assertRaisesRegex(c.Invalid, 'runtime.codex: missing native symbols'):
+                        c.current_native_bindings(c.ROOT)
+
+class ImplementationStateBoundaryTests(unittest.TestCase):
+    def verify_changed_profiles(self, change):
+        profiles = deepcopy(c.read_json(BASE / 'IMPLEMENTATION_PROFILES.json'))
+        change(profiles)
+        original_read = c.read_json
+        with patch.object(c, 'read_json', side_effect=lambda path: profiles if path == BASE / 'IMPLEMENTATION_PROFILES.json' else original_read(path)):
+            return c.verify_bundle(c.ROOT)
+
+    def test_registered_durable_pending_source_preserves_open_product_gates(self):
+        report = c.verify_bundle(c.ROOT)
+        self.assertEqual(report['kind'], 'documentation_bundle_conformance')
+        self.assertFalse(report['nativeProductTestsExecuted'])
+        self.assertFalse(report['independentReview'])
+        self.assertFalse(report['allGapsClosed'])
+
+    def test_durable_pending_state_is_limited_to_registered_operations_module(self):
+        for module, state in (
+            ('runtime.codex', 'durable_source_implemented_product_execution_pending'),
+            ('runtime.codex', 'source_owner_implemented_not_product_evidence'),
+            ('neuron.runtime', 'durable_source_implemented_product_execution_pending'),
+            ('kernel.operations', 'source_owner_implemented_not_product_evidence'),
+        ):
+            with self.subTest(module=module, state=state):
+                def change(profiles):
+                    row = next(row for row in profiles['modules'] if row['module'] == module)
+                    row['implementationState'] = state
+                with self.assertRaisesRegex(c.Invalid, module + ': false source or deployment closure'):
+                    self.verify_changed_profiles(change)
+
+    def test_durable_pending_cannot_accept_unknown_or_completion_states(self):
+        for state in ('source_implemented', 'production_complete', 'durable_source_implemented_product_execution_pending_extra', 'durable_source_implemented_product_execution_pending '):
+            with self.subTest(state=state):
+                def change(profiles):
+                    row = next(row for row in profiles['modules'] if row['module'] == 'kernel.operations')
+                    row['implementationState'] = state
+                with self.assertRaisesRegex(c.Invalid, 'kernel.operations: false source or deployment closure'):
+                    self.verify_changed_profiles(change)
+
+    def test_durable_pending_cannot_promote_execution_or_deployment(self):
+        for module in ('kernel.operations', 'neuron.runtime'):
+            for field in ('productTestsExecuted', 'deploymentQualified'):
+                for value in (True, 1):
+                    with self.subTest(module=module, field=field, value=value):
+                        def change(profiles):
+                            row = next(row for row in profiles['modules'] if row['module'] == module)
+                            row[field] = value
+                        with self.assertRaisesRegex(c.Invalid, module + ': false source or deployment closure'):
+                            self.verify_changed_profiles(change)
+
+    def test_durable_pending_still_requires_native_mapping(self):
+        for value in (False, 0):
+            with self.subTest(value=value):
+                def change(profiles):
+                    row = next(row for row in profiles['modules'] if row['module'] == 'kernel.operations')
+                    row['nativeMappingRequired'] = value
+                with self.assertRaisesRegex(c.Invalid, 'kernel.operations: false source or deployment closure'):
+                    self.verify_changed_profiles(change)
+
+    def test_source_state_cannot_promote_any_global_claim(self):
+        profiles = c.read_json(BASE / 'IMPLEMENTATION_PROFILES.json')
+        for field in profiles['claimBoundary']:
+            with self.subTest(field=field):
+                def change(changed):
+                    changed['claimBoundary'][field] = True
+                with self.assertRaisesRegex(c.Invalid, 'positive document capability claim'):
+                    self.verify_changed_profiles(change)
 
 class GraphAndEvolutionTests(unittest.TestCase):
     def test_stable_topology(self): self.assertEqual(c.topo(['b','a','c'],[('a','c'),('b','c')]),['a','b','c'])

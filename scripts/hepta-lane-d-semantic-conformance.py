@@ -14,6 +14,20 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ("objective.compiler", "utility.ndu", "control.runtime")
 MAPS = {module: f"docs/modules/{module}/IMPLEMENTATION_MAP.json" for module in MODULES}
+PRODUCT_CALLER_STATES = {
+    "objective.compiler": "source_composed_authenticated_agentd_not_activated",
+    "utility.ndu": (
+        "request_local_read_only_established_authenticated_production_not_composed"
+    ),
+    "control.runtime": "not_established",
+}
+NDU_READ_ONLY_CALLER_EVIDENCE = (
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-control-plane/src/planner_context.rs",
+    "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+    "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
+    "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+)
 REQUIRED_DOCS = (
     "docs/contracts/OBJECTIVE_ERRORS.json",
     "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
@@ -309,22 +323,35 @@ def verify() -> int:
     maturity = load("docs/readiness/LANE_D_MATURITY.json")
     need(maturity.get("authorityDelta") == "none", "maturity authority delta")
     need(
-        {row["module"] for row in maturity["modules"]} == set(MODULES),
+        len(maturity["modules"]) == len(MODULES)
+        and {row["module"] for row in maturity["modules"]} == set(MODULES),
         "maturity module closure",
     )
     for row in maturity["modules"]:
         module = row["module"]
-        product_caller = row["dimensions"]["productCaller"]["state"]
-        if module == "objective.compiler":
+        product_caller = row["dimensions"]["productCaller"]
+        need(
+            product_caller["state"] == PRODUCT_CALLER_STATES[module],
+            f"truth boundary {module} productCaller",
+        )
+        if module == "utility.ndu":
             need(
-                product_caller == "source_composed_authenticated_agentd_not_activated",
-                f"truth boundary {module} productCaller",
+                product_caller.get("evidence") == list(NDU_READ_ONLY_CALLER_EVIDENCE),
+                "truth boundary utility.ndu read-only caller evidence",
             )
-        else:
-            need(
-                product_caller == "not_established",
-                f"truth boundary {module} productCaller",
-            )
+            for path in NDU_READ_ONLY_CALLER_EVIDENCE:
+                target = ROOT
+                for component in Path(path).parts:
+                    target /= component
+                    need(
+                        not target.is_symlink(),
+                        f"read-only caller evidence symlink: {path}",
+                    )
+                need(target.is_file(), f"missing read-only caller evidence {path}")
+                need(
+                    target.resolve(strict=True).is_relative_to(ROOT.resolve()),
+                    f"read-only caller evidence escape: {path}",
+                )
         for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",

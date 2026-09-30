@@ -347,6 +347,16 @@ impl CognitiveStore {
         &self.path
     }
 
+    /// Close the shared pool and wait for all SQLite connections to shut down.
+    ///
+    /// This closes the pool for every cloned handle. Callers must first stop
+    /// writes and background tasks, then drop all handles after closing to
+    /// release the store-open fence. Closing does not establish independent
+    /// current-cut evidence or grant recovery authority.
+    pub async fn close(&self) {
+        self.pool.close().await;
+    }
+
     pub fn owner_agent_id(&self) -> &AgentId {
         &self.owner_agent_id
     }

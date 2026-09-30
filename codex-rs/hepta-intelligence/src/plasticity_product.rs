@@ -12,13 +12,10 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
 
-use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
-use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::ProductEvaluationError;
+use codex_hepta_intelligence_eval::ProductQualificationReceiptV1;
 use codex_hepta_intelligence_eval::SignedEvaluationError;
-use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
-use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedEvidenceError;
@@ -66,9 +63,9 @@ pub struct PlasticityAdmissionEvidenceV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CandidateEvaluationAdmissionV1 {
-    pub bundle: IndependentEvaluationBundleV1,
-    pub metric_roles: Vec<MetricRoleContractV2>,
-    pub evidence: SignedEvaluationEvidenceV1,
+    pub qualification: ProductQualificationReceiptV1,
+    /// Current evaluator signs the sealed receipt for this exact proposal lineage.
+    pub use_attestation: SignedLearningEvidenceV1,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -112,6 +109,7 @@ pub enum ParameterPlasticityProductErrorV1 {
     GeneratorEvidence(SignedEvidenceError),
     AdmissionEvidence(SignedEvidenceError),
     Evaluation(SignedEvaluationError),
+    Qualification(ProductEvaluationError),
     Ineligible(IndependentEvaluationDispositionV1),
     MissingEvaluation(String),
     DuplicateEvaluation(String),
@@ -317,6 +315,29 @@ pub fn plasticity_admission_signing_payload_v1(
     bytes
 }
 
+/// Bind one sealed qualification to the exact proposal lineage. This signature
+/// cannot replace estimator evidence, fenced holdout use or durable publication.
+pub fn plasticity_evaluation_signing_payload_v2(
+    admission: &PlasticityAdmissionEvidenceV1,
+    qualification: &ProductQualificationReceiptV1,
+) -> Result<Vec<u8>, ParameterPlasticityProductErrorV1> {
+    qualification
+        .validate_integrity()
+        .map_err(ParameterPlasticityProductErrorV1::Qualification)?;
+    let mut bytes = b"hepta.intelligence.plasticity-evaluation-use.v2\0".to_vec();
+    bytes.extend_from_slice(&plasticity_admission_signing_payload_v1(admission));
+    push_id(&mut bytes, &qualification.candidate_id);
+    push_id(&mut bytes, &qualification.baseline_id);
+    for digest in [
+        qualification.evidence_digest,
+        qualification.publication_digest,
+        qualification.decision.authentication_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    Ok(bytes)
+}
+
 /// Canonical terminal payload used only when the deterministic V3 generator
 /// produces the explicit no-change candidate and no admissible update candidate.
 /// Signing this payload is an independent evaluation of the terminal disposition;
@@ -400,14 +421,14 @@ pub fn propose_authenticated_parameter_plasticity_v1(
 
     let mut evaluations = BTreeMap::new();
     for evaluation in request.evaluations {
-        let key = evaluation.bundle.candidate_id.clone();
+        let key = evaluation.qualification.candidate_id.clone();
         if evaluations.insert(key.clone(), evaluation).is_some() {
             return Err(E::DuplicateEvaluation(key.to_string()));
         }
     }
 
     let mut evaluator_id: Option<StableId> = None;
-    let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v1\0".to_vec();
+    let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v2\0".to_vec();
 
     if disposition == ParameterPlasticityDispositionV1::NoAdmissibleUpdate {
         if let Some(unexpected) = evaluations.keys().next() {
@@ -445,21 +466,23 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     for candidate in update_candidates {
         let candidate_id = candidate.candidate_id.clone();
         let CandidateEvaluationAdmissionV1 {
-            bundle,
-            metric_roles,
-            evidence,
+            qualification,
+            use_attestation,
         } = evaluations
             .remove(&candidate_id)
             .ok_or_else(|| E::MissingEvaluation(candidate_id.to_string()))?;
-        if bundle.candidate_id != candidate_id
-            || bundle.baseline_id != request.admission.baseline_id
-            || bundle.objective_digest != request.admission.objective_digest
-            || bundle.dataset_digest != request.admission.dataset_digest
-            || &bundle.generator != generator.principal()
+        qualification
+            .validate_integrity()
+            .map_err(E::Qualification)?;
+        if qualification.candidate_id != candidate_id
+            || qualification.baseline_id != request.admission.baseline_id
+            || qualification.objective_digest != request.admission.objective_digest
+            || qualification.dataset_digest != request.admission.dataset_digest
+            || &qualification.generator != generator.principal()
         {
             return Err(E::Binding("candidate evaluation lineage"));
         }
-        let this_evaluator = bundle.evaluator.principal_id.clone();
+        let this_evaluator = qualification.evaluator.principal_id.clone();
         if evaluator_id
             .as_ref()
             .is_some_and(|existing| existing != &this_evaluator)
@@ -468,25 +491,29 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         }
         evaluator_id.get_or_insert(this_evaluator);
 
-        let evaluator_payload = evaluation_signing_payload_v2(&bundle, &metric_roles)
-            .map_err(|error| E::Evaluation(error.into()))?;
+        let evaluator_payload =
+            plasticity_evaluation_signing_payload_v2(&request.admission, &qualification)?;
         let evaluator = verifier
             .verify(
                 LearningEvidenceRoleV1::Evaluator,
-                &evidence.evaluator_bundle,
+                &use_attestation,
                 &evaluator_payload,
                 now,
             )
             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
-        if evaluator.principal() != &bundle.evaluator {
+        if evaluator.principal() != &qualification.evaluator
+            || use_attestation.objective_digest != request.admission.objective_digest
+        {
             return Err(E::Evaluation(SignedEvaluationError::IdentityBinding));
         }
         verify_signed_independent_roles_v1(&observer, &evaluator, now)
             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
-
-        let decision =
-            decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, verifier, now)
-                .map_err(E::Evaluation)?;
+        verify_signed_independent_roles_v1(&generator, &evaluator, now)
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+        if qualification.decision.trust_digest != verifier.trust_digest() {
+            return Err(E::Binding("qualification trust"));
+        }
+        let decision = &qualification.decision;
         if decision.decision.disposition
             != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         {
@@ -496,6 +523,9 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         evaluation_binding.extend_from_slice(decision.decision.evidence_digest.as_array());
         evaluation_binding.extend_from_slice(decision.authentication_digest.as_array());
         evaluation_binding.extend_from_slice(decision.trust_digest.as_array());
+        evaluation_binding.extend_from_slice(qualification.evidence_digest.as_array());
+        evaluation_binding.extend_from_slice(qualification.publication_digest.as_array());
+        evaluation_binding.extend_from_slice(attestation_digest(&use_attestation).as_array());
     }
     if let Some(unexpected) = evaluations.keys().next() {
         return Err(E::UnexpectedEvaluation(unexpected.to_string()));

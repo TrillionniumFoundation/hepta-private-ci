@@ -532,6 +532,105 @@ impl AutomationStore {
             .await
     }
 
+    /// Effect admission requires a live run lease; historical evidence reads
+    /// remain available through read_taskflow_step after cancellation/expiry.
+    pub(crate) async fn read_taskflow_step_for_dispatch(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: &TaskFlowFence,
+        now_ms: u64,
+    ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
+        let mut transaction = self.begin_step_tx().await?;
+        let receipt = self
+            .verify_taskflow_effect_dispatch_tx(
+                &mut transaction,
+                run_id,
+                step_id,
+                attempt,
+                fence,
+                now_ms,
+            )
+            .await?;
+        transaction
+            .commit()
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+        Ok(Some(receipt))
+    }
+
+    /// The provider-attempt barrier invokes this under its write transaction,
+    /// so cancellation cannot commit between live admission and barrier insert.
+    pub(crate) async fn verify_taskflow_effect_dispatch_tx(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: &TaskFlowFence,
+        now_ms: u64,
+    ) -> Result<TaskFlowStepReceipt, TaskFlowError> {
+        validate_common_without_digests(run_id, step_id, attempt, "dispatch")?;
+        validate_fence(self, fence)?;
+        let run = load_run(transaction, self, run_id).await?;
+        let definition = load_definition(transaction, self, &run).await?;
+        validate_step_node(&definition, step_id)?;
+        check_active_run_fence(&run, fence, now_ms)?;
+        if run.state != crate::TaskFlowRunState::Running || run.cancel_requested {
+            return Err(TaskFlowError::Conflict(
+                "effect dispatch requires a running non-cancelled TaskFlow run".to_string(),
+            ));
+        }
+        let events = load_step_events(transaction, self, run_id, step_id, attempt).await?;
+        if events.is_empty() {
+            return Err(TaskFlowError::Conflict(
+                "effect step is not prepared".to_string(),
+            ));
+        }
+        let receipt = reconstruct_step(
+            self.taskflow_owner_agent_id(),
+            run_id,
+            step_id,
+            attempt,
+            &events,
+        )?;
+        check_step_fence(&receipt.fence, fence)?;
+        if receipt.state != TaskFlowStepState::Claimed {
+            return Err(TaskFlowError::Conflict(
+                "effect dispatch requires a claimed step".to_string(),
+            ));
+        }
+        Ok(receipt)
+    }
+
+    /// Owner-only evidence read within an existing transaction. This checks
+    /// both immutable chains and grants no lease or permission to dispatch.
+    pub(crate) async fn read_taskflow_step_for_projection_tx(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<TaskFlowStepReceipt>, TaskFlowError> {
+        validate_common_without_digests(run_id, step_id, attempt, "projection")?;
+        let run = load_run(transaction, self, run_id).await?;
+        let definition = load_definition(transaction, self, &run).await?;
+        validate_step_node(&definition, step_id)?;
+        let events = load_step_events(transaction, self, run_id, step_id, attempt).await?;
+        if events.is_empty() {
+            return Ok(None);
+        }
+        reconstruct_step(
+            self.taskflow_owner_agent_id(),
+            run_id,
+            step_id,
+            attempt,
+            &events,
+        )
+        .map(Some)
+    }
+
     async fn read_verified_step(
         &self,
         run_id: &str,

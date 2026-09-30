@@ -229,3 +229,148 @@ fn protected_set_cannot_exceed_checkpoint_capacity() {
         Err(QualifiedCompactionError::ProtectedReferencesExceedCapacity)
     );
 }
+
+fn candidate_with_omissions() -> QualifiedCompactionCandidateV2 {
+    build_qualified_candidate(
+        snapshot_key(),
+        generation(2),
+        Some(digest("predecessor-checkpoint")),
+        &policy(/*maximum*/ 1, Vec::new()),
+        vec![
+            input(
+                record(
+                    "memory:a",
+                    /*revision_value*/ 1,
+                    /*predecessor_digest*/ None,
+                    RecordState::Live,
+                ),
+                /*priority*/ 2,
+            ),
+            input(
+                record(
+                    "memory:b",
+                    /*revision_value*/ 1,
+                    /*predecessor_digest*/ None,
+                    RecordState::Live,
+                ),
+                /*priority*/ 1,
+            ),
+        ],
+    )
+    .unwrap_or_else(|error| panic!("valid candidate: {error}"))
+}
+
+#[test]
+fn loss_accounting_rejects_overflow_and_impossible_protected_counts() {
+    let report = candidate_with_omissions().loss_report;
+    let mut source_overflow = report.clone();
+    source_overflow.source_current_heads = 0;
+    source_overflow.live_source_heads = u64::MAX;
+    source_overflow.deleted_records = 1;
+
+    let mut retained_overflow = report.clone();
+    retained_overflow.source_current_heads = 0;
+    retained_overflow.live_source_heads = 0;
+    retained_overflow.retained_records = u64::MAX;
+    retained_overflow.omitted_live_records = 1;
+
+    let mut protected_overflow = report.clone();
+    protected_overflow.protected_live_records = u64::MAX;
+    protected_overflow.protected_retained_records = u64::MAX;
+    protected_overflow.protected_deleted_records = 1;
+
+    let mut impossible_protected = report;
+    impossible_protected.protected_live_records = 2;
+    impossible_protected.protected_retained_records = 2;
+
+    for (mut invalid, expected) in [
+        (
+            source_overflow,
+            QualifiedCompactionError::InvalidLossAccounting,
+        ),
+        (
+            retained_overflow,
+            QualifiedCompactionError::InvalidLossAccounting,
+        ),
+        (
+            protected_overflow,
+            QualifiedCompactionError::ProtectedReferenceLost,
+        ),
+        (
+            impossible_protected,
+            QualifiedCompactionError::ProtectedReferenceLost,
+        ),
+    ] {
+        invalid.loss_report_digest = invalid.compute_digest();
+        assert_eq!(invalid.validate(), Err(expected));
+    }
+}
+
+#[test]
+fn candidate_counts_must_match_retained_and_omitted_payloads() {
+    let mut candidate = candidate_with_omissions();
+    candidate.loss_report.retained_records = 2;
+    candidate.loss_report.omitted_live_records = 0;
+    candidate.loss_report.loss_report_digest = candidate.loss_report.compute_digest();
+    candidate.candidate_digest = candidate.compute_candidate_digest();
+    assert_eq!(
+        candidate.validate(),
+        Err(QualifiedCompactionError::InvalidLossAccounting)
+    );
+}
+
+#[test]
+fn recomputing_candidate_digest_cannot_hide_changed_payload_or_omissions() {
+    let candidate = candidate_with_omissions();
+    let mut changed_payload = candidate.clone();
+    changed_payload.retained_records[0].content_digest = digest("changed-payload");
+    let mut changed_omission = candidate.clone();
+    changed_omission.omitted_record_digests[0] = digest("changed-omission");
+    let mut overlapping_omission = candidate.clone();
+    overlapping_omission.omitted_record_digests[0] = candidate.retained_records[0].record_digest();
+    let mut empty_omission = candidate;
+    empty_omission.omitted_record_digests[0] = Digest32::ZERO;
+
+    for (mut invalid, expected) in [
+        (
+            changed_payload,
+            QualifiedCompactionError::DigestMismatch("payload"),
+        ),
+        (
+            changed_omission,
+            QualifiedCompactionError::DigestMismatch("omitted_information"),
+        ),
+        (
+            overlapping_omission,
+            QualifiedCompactionError::InvalidOmittedRecordSet,
+        ),
+        (
+            empty_omission,
+            QualifiedCompactionError::InvalidOmittedRecordSet,
+        ),
+    ] {
+        invalid.candidate_digest = invalid.compute_candidate_digest();
+        assert_eq!(invalid.validate(), Err(expected));
+    }
+}
+
+#[test]
+fn checkpoint_must_bind_the_complete_support_set_and_deletion_frontier() {
+    let candidate = candidate_with_omissions();
+    let mut changed_support = candidate.clone();
+    changed_support.checkpoint.support_manifest_digest = digest("unrelated-support");
+    let mut changed_cutoff = candidate;
+    changed_cutoff.checkpoint.tombstone_cutoff = 0;
+
+    for (mut invalid, expected) in [
+        (
+            changed_support,
+            QualifiedCompactionError::DigestMismatch("support_manifest"),
+        ),
+        (changed_cutoff, QualifiedCompactionError::SnapshotMismatch),
+    ] {
+        invalid.checkpoint.checkpoint_digest = invalid.checkpoint.compute_checkpoint_digest();
+        invalid.candidate_digest = invalid.compute_candidate_digest();
+        assert_eq!(invalid.validate(), Err(expected));
+    }
+}

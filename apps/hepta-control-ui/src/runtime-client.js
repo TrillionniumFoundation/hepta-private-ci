@@ -11,6 +11,80 @@ const STATUSES = new Set([
 ]);
 const MAX_PENDING = 1024;
 
+function snapshotModules(modules) {
+  if (!Array.isArray(modules) || modules.length > 256)
+    throw new TypeError("snapshot modules must be a bounded array");
+  let nodes = 0;
+  let bytes = 0;
+  function clone(value, depth) {
+    if (++nodes > 4096 || depth > 8)
+      throw new TypeError("snapshot modules exceed structural limits");
+    if (value === null || typeof value === "boolean") return value;
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string") {
+      bytes += new TextEncoder().encode(value).byteLength;
+      if (bytes > 65536)
+        throw new TypeError("snapshot modules exceed byte limit");
+      return value;
+    }
+    if (Array.isArray(value)) {
+      if (
+        value.length > 256 ||
+        Object.getPrototypeOf(value) !== Array.prototype ||
+        Reflect.ownKeys(value).length !== value.length + 1
+      ) {
+        throw new TypeError(
+          "snapshot module array exceeds limit or contains non-data fields",
+        );
+      }
+      const copied = [];
+      for (let index = 0; index < value.length; index++) {
+        const item = Object.getOwnPropertyDescriptor(value, String(index));
+        if (!item || !Object.hasOwn(item, "value") || !item.enumerable) {
+          throw new TypeError(
+            "snapshot module arrays must contain own data properties",
+          );
+        }
+        copied.push(clone(item.value, depth + 1));
+      }
+      return Object.freeze(copied);
+    }
+    if (
+      value === null ||
+      typeof value !== "object" ||
+      (Object.getPrototypeOf(value) !== Object.prototype &&
+        Object.getPrototypeOf(value) !== null)
+    ) {
+      throw new TypeError("snapshot module fields must be JSON data");
+    }
+    const descriptors = Object.getOwnPropertyDescriptors(value);
+    const keys = Reflect.ownKeys(descriptors);
+    if (keys.length > 256)
+      throw new TypeError("snapshot module object exceeds limit");
+    return Object.freeze(
+      Object.fromEntries(
+        keys.map((key) => {
+          const field = descriptors[key];
+          if (
+            typeof key !== "string" ||
+            !Object.hasOwn(field, "value") ||
+            !field.enumerable
+          ) {
+            throw new TypeError(
+              "snapshot module fields must be own data properties",
+            );
+          }
+          bytes += new TextEncoder().encode(key).byteLength;
+          if (bytes > 65536)
+            throw new TypeError("snapshot modules exceed byte limit");
+          return [key, clone(field.value, depth + 1)];
+        }),
+      ),
+    );
+  }
+  return clone(modules, 0);
+}
+
 function record(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError(`${name} must be an object`);
@@ -26,7 +100,11 @@ function stableId(value, name) {
 }
 
 function digest(value, name) {
-  if (typeof value !== "string" || !DIGEST.test(value) || value === ZERO_DIGEST) {
+  if (
+    typeof value !== "string" ||
+    !DIGEST.test(value) ||
+    value === ZERO_DIGEST
+  ) {
     throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
   }
   return value;
@@ -53,6 +131,8 @@ export class RuntimeClient {
   #session = null;
   #snapshot = null;
   #pending = new Map();
+  #connectionAttempt = 0;
+  #closing = null;
 
   constructor({ transport }) {
     record(transport, "transport");
@@ -65,17 +145,30 @@ export class RuntimeClient {
   }
 
   async connect(endpointManifest) {
+    const attempt = ++this.#connectionAttempt;
     record(endpointManifest, "endpointManifest");
     const endpointId = stableId(endpointManifest.endpointId, "endpointId");
     const protocolVersion = revision(
       endpointManifest.protocolVersion,
       "protocolVersion",
     );
-    const manifestDigest = digest(endpointManifest.manifestDigest, "manifestDigest");
+    const manifestDigest = digest(
+      endpointManifest.manifestDigest,
+      "manifestDigest",
+    );
+    if (this.#closing) await this.#closing;
+    if (attempt !== this.#connectionAttempt)
+      throw new TypeError("runtime connection attempt was superseded");
     const observed = record(
-      await this.#transport.connect({ endpointId, protocolVersion, manifestDigest }),
+      await this.#transport.connect({
+        endpointId,
+        protocolVersion,
+        manifestDigest,
+      }),
       "connection observation",
     );
+    if (attempt !== this.#connectionAttempt)
+      throw new TypeError("runtime connection attempt was superseded");
     if (observed.authenticated !== true) {
       throw new TypeError("runtime connection is not authenticated");
     }
@@ -123,7 +216,7 @@ export class RuntimeClient {
       generation,
       revision: snapshotRevision,
       digest: snapshotDigest,
-      modules: Object.freeze([...(snapshot.modules ?? [])]),
+      modules: snapshotModules(snapshot.modules ?? []),
     };
     return this.readView();
   }
@@ -167,6 +260,11 @@ export class RuntimeClient {
     if (!pending) {
       throw new TypeError("observation does not match a pending operation");
     }
+    if (pending.session !== this.#session) {
+      throw new TypeError(
+        "pending operation belongs to a previous runtime connection",
+      );
+    }
     if (observation.semanticDigest !== pending.semanticDigest) {
       throw new TypeError("observation semantic digest mismatch");
     }
@@ -197,18 +295,33 @@ export class RuntimeClient {
   }
 
   async close() {
+    this.#connectionAttempt++;
+    if (this.#closing) return this.#closing;
     if (!this.#session) {
       return;
     }
-    await this.#transport.close({ sessionId: this.#session.sessionId });
+    const session = this.#session;
     this.#session = null;
     this.#snapshot = null;
+    const closing = Promise.resolve().then(() =>
+      this.#transport.close(
+        Object.freeze({
+          sessionId: session.sessionId,
+          connectionGeneration: session.connectionGeneration,
+        }),
+      ),
+    );
+    this.#closing = closing;
+    await closing;
+    if (this.#closing === closing) this.#closing = null;
   }
 
   async #submit(method, input) {
     this.#requireSession();
     if (!this.#snapshot) {
-      throw new TypeError("mutating request requires a coherent runtime snapshot");
+      throw new TypeError(
+        "mutating request requires a coherent runtime snapshot",
+      );
     }
     record(input, "input");
     const operationId = stableId(input.operationId, "operationId");
@@ -222,43 +335,64 @@ export class RuntimeClient {
     }
     const prior = this.#pending.get(operationId);
     if (prior) {
-      if (prior.semanticDigest !== semanticDigest) {
-        throw new TypeError("operation identity was reused with changed semantics");
+      if (prior.semanticDigest !== semanticDigest || prior.method !== method) {
+        throw new TypeError(
+          "operation identity was reused with changed semantics",
+        );
+      }
+      if (prior.session !== this.#session) {
+        throw new TypeError(
+          "pending operation belongs to a previous runtime connection",
+        );
       }
       return prior.acknowledgement;
     }
     if (this.#pending.size >= MAX_PENDING) {
       throw new TypeError("pending operation capacity is exhausted");
     }
-    const response = record(
-      await this.#transport.request(method, {
-        sessionId: this.#session.sessionId,
-        connectionGeneration: this.#session.connectionGeneration,
-        runtimeGeneration: this.#snapshot.generation,
-        displayedRevision,
-        operationId,
-        semanticDigest,
-      }),
-      "request acknowledgement",
-    );
-    if (response.accepted !== true) {
-      throw new TypeError("backend rejected the request");
-    }
-    if (
-      response.operationId !== operationId ||
-      response.semanticDigest !== semanticDigest
-    ) {
-      throw new TypeError("backend acknowledgement identity mismatch");
-    }
-    const acknowledgement = frozen({
-      kind: "OperationAcknowledgementV1",
-      method,
+    const session = this.#session;
+    const request = Object.freeze({
+      sessionId: session.sessionId,
+      connectionGeneration: session.connectionGeneration,
+      runtimeGeneration: this.#snapshot.generation,
+      displayedRevision,
       operationId,
       semanticDigest,
-      status: "pending",
-      accepted: true,
     });
-    this.#pending.set(operationId, { semanticDigest, acknowledgement });
+    // Reserve identity and capacity before crossing the asynchronous boundary.
+    // A failed transport can have delivered the request, so its reservation
+    // remains until a backend observation reconciles the operation.
+    const pending = { semanticDigest, method, session, acknowledgement: null };
+    const acknowledgement = Promise.resolve().then(async () => {
+      const response = record(
+        await this.#transport.request(method, request),
+        "request acknowledgement",
+      );
+      if (this.#session !== session) {
+        throw new TypeError(
+          "runtime connection changed while awaiting acknowledgement",
+        );
+      }
+      if (response.accepted !== true) {
+        throw new TypeError("backend rejected the request");
+      }
+      if (
+        response.operationId !== operationId ||
+        response.semanticDigest !== semanticDigest
+      ) {
+        throw new TypeError("backend acknowledgement identity mismatch");
+      }
+      return frozen({
+        kind: "OperationAcknowledgementV1",
+        method,
+        operationId,
+        semanticDigest,
+        status: "pending",
+        accepted: true,
+      });
+    });
+    pending.acknowledgement = acknowledgement;
+    this.#pending.set(operationId, pending);
     return acknowledgement;
   }
 

@@ -966,18 +966,13 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
-    sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop v2 index");
-    sqlx::query("DROP TABLE automation_dispatch_outcomes")
-        .execute(&mut *rewind)
-        .await
-        .expect("drop v2 table");
     // The current opener applies the full durable causal-chain schema.
     // Remove every post-v1 object in reverse dependency order, then rewind the
     // migration ledger so reopening exercises the real v1 -> latest path.
     for statement in [
+        "DROP TABLE IF EXISTS taskflow_effect_projection_receipts",
+        "DROP TABLE IF EXISTS automation_timer_lifecycle",
+        "DROP TABLE IF EXISTS destination_operation_dedupe",
         "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_update",
         "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_delete",
         "DROP TABLE IF EXISTS automation_legacy_dispatch_reconciliations",
@@ -1028,6 +1023,14 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .execute(&mut *rewind)
         .await
         .expect("drop TaskFlow definitions");
+    sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop v2 index");
+    sqlx::query("DROP TABLE automation_dispatch_outcomes")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop v2 table");
     sqlx::query("ALTER TABLE automation_runs DROP COLUMN schedule_revision")
         .execute(&mut *rewind)
         .await
@@ -1054,6 +1057,27 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     .execute(&mut *rewind)
     .await
     .expect("restore immutable trigger");
+    let legacy_objects: Vec<String> = sqlx::query_scalar(
+        "SELECT type || ':' || name FROM sqlite_schema
+         WHERE name NOT LIKE 'sqlite_%' ORDER BY type, name",
+    )
+    .fetch_all(&mut *rewind)
+    .await
+    .expect("inspect exact v1 fixture catalog");
+    assert_eq!(
+        legacy_objects,
+        [
+            "index:automation_due_idx",
+            "index:automation_recovery_idx",
+            "table:_sqlx_migrations",
+            "table:automation_meta",
+            "table:automation_runs",
+            "table:automation_tasks",
+            "trigger:automation_meta_no_delete",
+            "trigger:automation_meta_no_update",
+        ],
+        "the v1 fixture must not retain post-v1 schema objects"
+    );
     rewind.commit().await.expect("commit legacy schema rewind");
     pool.close().await;
 

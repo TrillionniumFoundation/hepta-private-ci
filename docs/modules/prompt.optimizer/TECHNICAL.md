@@ -240,7 +240,7 @@ For `prompt.optimizer`, this document grants no runtime, production, model, prov
 
 #### `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -272,7 +272,7 @@ For `prompt.optimizer`, this document grants no runtime, production, model, prov
 
 #### `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `performance`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-optimizer/**`
