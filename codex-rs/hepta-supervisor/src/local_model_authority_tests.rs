@@ -106,6 +106,8 @@ fn actual_signed_ordinary_grant_is_exact_one_use_and_cannot_change_destination()
         cgroup: cgroup(&subject, "main"),
         cgroup_device: 1,
         cgroup_inode: 1,
+        executable_device: 1,
+        executable_inode: 1,
         executable_sha256: "a".repeat(64),
     };
     let config = config();

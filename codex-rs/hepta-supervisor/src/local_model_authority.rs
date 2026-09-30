@@ -168,6 +168,8 @@ struct Peer {
     cgroup: String,
     cgroup_device: u64,
     cgroup_inode: u64,
+    executable_device: u64,
+    executable_inode: u64,
     executable_sha256: String,
 }
 
@@ -220,6 +222,7 @@ async fn capture_peer(
         .parse()?;
     let executable = File::open(format!("/proc/{pid}/exe"))?;
     let executable_sha256 = executables.verify(&executable)?;
+    let executable_metadata = executable.metadata()?;
     anyhow::ensure!(
         config
             .allowed_executable_sha256
@@ -258,6 +261,8 @@ async fn capture_peer(
         cgroup,
         cgroup_device: metadata.dev(),
         cgroup_inode: metadata.ino(),
+        executable_device: executable_metadata.dev(),
+        executable_inode: executable_metadata.ino(),
         executable_sha256,
     })
 }
