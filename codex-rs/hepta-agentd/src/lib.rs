@@ -31,6 +31,8 @@ mod intuition_policy;
 mod lane_b_runtime;
 mod neuron_runtime;
 mod objective_runtime;
+#[cfg(unix)]
+mod operator_namespace;
 mod plasticity_anchor_journal;
 mod plasticity_host;
 mod plasticity_learning_producer;

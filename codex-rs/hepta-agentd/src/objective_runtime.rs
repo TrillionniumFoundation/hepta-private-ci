@@ -417,25 +417,76 @@ fn open_run_start_journal(
     profile_digest: Digest32,
 ) -> Result<DurableRunStartJournal, AgentdError> {
     let root = identity.home_root.join(RUN_START_DIRECTORY);
+    #[cfg(unix)]
+    let home_namespace = crate::operator_namespace::OperatorNamespace::capture(
+        &root,
+        &std::fs::metadata(&identity.home_root)?,
+    )?;
     prepare_private_directory(&root)?;
     let path = root.join(RUN_START_FILE);
-    if path.exists() {
-        let metadata = std::fs::symlink_metadata(&path)?;
+    #[cfg(unix)]
+    let home = std::fs::metadata(&identity.home_root)?;
+    #[cfg(unix)]
+    home_namespace.verify(&root, &home)?;
+    #[cfg(unix)]
+    let namespace = crate::operator_namespace::OperatorNamespace::capture(&path, &home)?;
+    let validate = |metadata: &std::fs::Metadata| -> Result<(), AgentdError> {
         if !metadata.is_file() || metadata.file_type().is_symlink() {
             return Err(invalid(
                 "objective run-start journal must be a regular file",
             ));
         }
-    }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+
+            if metadata.nlink() != 1 || metadata.uid() != home.uid() || metadata.mode() & 0o077 != 0
+            {
+                return Err(invalid(
+                    "objective run-start journal must be private and owner-controlled",
+                ));
+            }
+        }
+        Ok(())
+    };
+    // exists() follows links and hides dangling symlinks. Inspect the entry
+    // itself before opening, and create only an absent entry with create_new.
+    let before = match std::fs::symlink_metadata(&path) {
+        Ok(metadata) => {
+            validate(&metadata)?;
+            Some(metadata)
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
+        Err(error) => return Err(error.into()),
+    };
     let mut options = OpenOptions::new();
-    options.read(true).write(true).create(true);
+    options.read(true).write(true).create_new(before.is_none());
     #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
         options.mode(0o600);
     }
-    let file = options.open(path)?;
-    if file.metadata()?.len() == 0 {
+    let file = options.open(&path)?;
+    let opened = file.metadata()?;
+    validate(&opened)?;
+    let after = std::fs::symlink_metadata(&path)?;
+    validate(&after)?;
+    #[cfg(unix)]
+    namespace.verify(&path, &after)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+
+        if after.dev() != opened.dev()
+            || after.ino() != opened.ino()
+            || before.is_some_and(|metadata| {
+                metadata.dev() != opened.dev() || metadata.ino() != opened.ino()
+            })
+        {
+            return Err(invalid("objective run-start journal changed while opening"));
+        }
+    }
+    if opened.len() == 0 {
         let journal = DurableRunStartJournal::create(
             file,
             run_start_binding(identity, profile_digest),
@@ -469,15 +520,49 @@ fn sync_run_start_directory(_path: &Path) -> Result<(), AgentdError> {
 }
 
 fn prepare_private_directory(path: &Path) -> Result<(), AgentdError> {
-    std::fs::create_dir_all(path)?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
+    let parent = path
+        .parent()
+        .ok_or_else(|| invalid("objective run-start root has no parent"))?;
+    if parent.canonicalize()? != parent {
+        return Err(invalid("objective run-start parent must be canonical"));
+    }
+    match std::fs::symlink_metadata(path) {
+        Ok(metadata) if !metadata.is_dir() || metadata.file_type().is_symlink() => {
+            return Err(invalid("objective run-start root must be a real directory"));
+        }
+        Ok(_) => {}
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            std::fs::create_dir(path)?;
+        }
+        Err(error) => return Err(error.into()),
     }
     let metadata = std::fs::symlink_metadata(path)?;
     if !metadata.is_dir() || metadata.file_type().is_symlink() {
         return Err(invalid("objective run-start root must be a real directory"));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::PermissionsExt;
+
+        let directory = std::fs::File::open(path)?;
+        let opened = directory.metadata()?;
+        if !opened.is_dir()
+            || opened.dev() != metadata.dev()
+            || opened.ino() != metadata.ino()
+            || opened.uid() != std::fs::metadata(parent)?.uid()
+        {
+            return Err(invalid("objective run-start root changed while opening"));
+        }
+        // Change the verified directory handle, never a path that may have
+        // become a symlink to another owner's directory before chmod.
+        directory.set_permissions(std::fs::Permissions::from_mode(0o700))?;
+        let after = std::fs::symlink_metadata(path)?;
+        if !after.is_dir() || after.dev() != opened.dev() || after.ino() != opened.ino() {
+            return Err(invalid(
+                "objective run-start root changed during preparation",
+            ));
+        }
     }
     Ok(())
 }
@@ -575,4 +660,4 @@ fn store_error(error: codex_hepta_learning_ledger::RunStartStoreError) -> Agentd
 
 #[cfg(test)]
 #[path = "objective_runtime_tests.rs"]
-mod tests;
+pub(crate) mod tests;

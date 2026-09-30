@@ -17,6 +17,8 @@ use serde::Serialize;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::authbus_trust::invalid;
+#[cfg(unix)]
+use crate::operator_namespace::OperatorNamespace;
 
 const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
 const MAX_CHECKPOINT_BYTES: u64 = 4096;
@@ -33,6 +35,8 @@ struct CheckpointDocument {
 pub(crate) struct ReplayCheckpointFile {
     path: PathBuf,
     agent_id: String,
+    identity: AgentdIdentity,
+    owner_uid: u32,
 }
 
 impl ReplayCheckpointFile {
@@ -40,17 +44,22 @@ impl ReplayCheckpointFile {
         path: PathBuf,
         identity: &AgentdIdentity,
     ) -> Result<(Self, ReplayCheckpoint), AgentdError> {
-        validate_path(&path, identity)?;
+        let owner_uid = validate_path(&path, identity)?;
         let file = Self {
             path,
             agent_id: identity.agent_id.to_string(),
+            identity: identity.clone(),
+            owner_uid,
         };
         let checkpoint = file.read()?;
         Ok((file, checkpoint))
     }
 
     pub fn read(&self) -> Result<ReplayCheckpoint, AgentdError> {
-        let bytes = read_private_file(&self.path)?;
+        if validate_path(&self.path, &self.identity)? != self.owner_uid {
+            return Err(invalid("external replay checkpoint owner changed"));
+        }
+        let bytes = read_private_file(&self.path, self.owner_uid)?;
         let document: CheckpointDocument = serde_json::from_slice(&bytes)?;
         if document.schema_version != CHECKPOINT_SCHEMA_VERSION
             || document.agent_id != self.agent_id
@@ -95,7 +104,7 @@ impl ReplayCheckpointFile {
         {
             return Err(invalid("external replay checkpoint CAS mismatch"));
         }
-        write_private_atomic(&self.path, &self.agent_id, next)?;
+        write_private_atomic(self, expected, next)?;
         if self.read()? != next {
             return Err(invalid(
                 "external replay checkpoint changed during publication",
@@ -106,10 +115,13 @@ impl ReplayCheckpointFile {
 }
 
 #[cfg(unix)]
-fn validate_path(path: &Path, identity: &AgentdIdentity) -> Result<(), AgentdError> {
+fn validate_path(path: &Path, identity: &AgentdIdentity) -> Result<u32, AgentdError> {
     use std::os::unix::fs::MetadataExt;
 
-    if !path.is_absolute() || path.starts_with(&identity.home_root) {
+    if !path.is_absolute()
+        || path.starts_with(&identity.home_root)
+        || identity.home_root.canonicalize()? != identity.home_root
+    {
         return Err(invalid(
             "external replay checkpoint must be an absolute path outside Agent home",
         ));
@@ -124,32 +136,38 @@ fn validate_path(path: &Path, identity: &AgentdIdentity) -> Result<(), AgentdErr
     }
     let home = std::fs::metadata(&identity.home_root)?;
     let directory = std::fs::metadata(parent)?;
-    if !directory.is_dir() || directory.uid() != home.uid() || directory.mode() & 0o077 != 0 {
+    if !home.is_dir()
+        || home.mode() & 0o077 != 0
+        || !directory.is_dir()
+        || directory.uid() != home.uid()
+        || directory.mode() & 0o077 != 0
+    {
         return Err(invalid(
             "external replay checkpoint parent must be a private owner-controlled directory",
         ));
     }
-    validate_file_metadata(path, home.uid())?;
+    let metadata = std::fs::symlink_metadata(path)?;
+    validate_file_metadata(&metadata, home.uid())?;
+    OperatorNamespace::capture(path, &metadata)?;
     if path.canonicalize()? != path {
         return Err(invalid(
             "external replay checkpoint must be canonical and symlink-free",
         ));
     }
-    Ok(())
+    Ok(home.uid())
 }
 
 #[cfg(not(unix))]
-fn validate_path(_path: &Path, _identity: &AgentdIdentity) -> Result<(), AgentdError> {
+fn validate_path(_path: &Path, _identity: &AgentdIdentity) -> Result<u32, AgentdError> {
     Err(invalid(
         "external replay checkpoint currently requires Unix ownership checks",
     ))
 }
 
 #[cfg(unix)]
-fn validate_file_metadata(path: &Path, owner_uid: u32) -> Result<(), AgentdError> {
+fn validate_file_metadata(metadata: &std::fs::Metadata, owner_uid: u32) -> Result<(), AgentdError> {
     use std::os::unix::fs::MetadataExt;
 
-    let metadata = std::fs::symlink_metadata(path)?;
     if !metadata.is_file()
         || metadata.nlink() != 1
         || metadata.uid() != owner_uid
@@ -164,12 +182,15 @@ fn validate_file_metadata(path: &Path, owner_uid: u32) -> Result<(), AgentdError
 }
 
 #[cfg(unix)]
-fn read_private_file(path: &Path) -> Result<Vec<u8>, AgentdError> {
+fn read_private_file(path: &Path, owner_uid: u32) -> Result<Vec<u8>, AgentdError> {
     use std::os::unix::fs::MetadataExt;
 
     let before = std::fs::symlink_metadata(path)?;
+    validate_file_metadata(&before, owner_uid)?;
+    let namespace = OperatorNamespace::capture(path, &before)?;
     let mut file = File::open(path)?;
     let opened = file.metadata()?;
+    validate_file_metadata(&opened, owner_uid)?;
     let identity = |m: &std::fs::Metadata| {
         (
             m.dev(),
@@ -179,6 +200,9 @@ fn read_private_file(path: &Path) -> Result<Vec<u8>, AgentdError> {
             m.mtime_nsec(),
             m.ctime(),
             m.ctime_nsec(),
+            m.uid(),
+            m.mode(),
+            m.nlink(),
         )
     };
     if identity(&opened) != identity(&before) {
@@ -189,9 +213,13 @@ fn read_private_file(path: &Path) -> Result<Vec<u8>, AgentdError> {
         .take(MAX_CHECKPOINT_BYTES + 1)
         .read_to_end(&mut bytes)?;
     let after = std::fs::symlink_metadata(path)?;
+    validate_file_metadata(&after, owner_uid)?;
+    namespace.verify(path, &after)?;
+    let opened_after = file.metadata()?;
+    validate_file_metadata(&opened_after, owner_uid)?;
     if bytes.len() as u64 > MAX_CHECKPOINT_BYTES
         || identity(&after) != identity(&before)
-        || identity(&file.metadata()?) != identity(&before)
+        || identity(&opened_after) != identity(&before)
     {
         return Err(invalid("external replay checkpoint changed while reading"));
     }
@@ -199,7 +227,7 @@ fn read_private_file(path: &Path) -> Result<Vec<u8>, AgentdError> {
 }
 
 #[cfg(not(unix))]
-fn read_private_file(_path: &Path) -> Result<Vec<u8>, AgentdError> {
+fn read_private_file(_path: &Path, _owner_uid: u32) -> Result<Vec<u8>, AgentdError> {
     Err(invalid(
         "external replay checkpoint currently requires Unix ownership checks",
     ))
@@ -207,12 +235,13 @@ fn read_private_file(_path: &Path) -> Result<Vec<u8>, AgentdError> {
 
 #[cfg(unix)]
 fn write_private_atomic(
-    path: &Path,
-    agent_id: &str,
+    witness: &ReplayCheckpointFile,
+    expected: ReplayCheckpoint,
     next: ReplayCheckpoint,
 ) -> Result<(), AgentdError> {
     use std::os::unix::fs::OpenOptionsExt;
 
+    let path = &witness.path;
     let parent = path
         .parent()
         .ok_or_else(|| invalid("external replay checkpoint has no parent"))?;
@@ -227,7 +256,7 @@ fn write_private_atomic(
     ));
     let document = CheckpointDocument {
         schema_version: CHECKPOINT_SCHEMA_VERSION,
-        agent_id: agent_id.to_string(),
+        agent_id: witness.agent_id.clone(),
         generation: next.generation,
         digest: next.digest.to_string(),
     };
@@ -235,15 +264,27 @@ fn write_private_atomic(
     if payload.len() as u64 > MAX_CHECKPOINT_BYTES {
         return Err(invalid("external replay checkpoint encoding is too large"));
     }
+    let before = std::fs::symlink_metadata(path)?;
+    validate_file_metadata(&before, witness.owner_uid)?;
+    let namespace = OperatorNamespace::capture(path, &before)?;
+    // A competing publication may own this same predecessor's temporary file.
+    // A failed create_new must never clean up a file this attempt did not create.
+    let mut file = OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .mode(0o600)
+        .open(&temporary)?;
     let result = (|| -> Result<(), AgentdError> {
-        let mut file = OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .mode(0o600)
-            .open(&temporary)?;
         file.write_all(&payload)?;
         file.sync_all()?;
+        // Revalidate protection and the exact predecessor after the temporary
+        // file is durable, before replacing the independently retained witness.
+        if witness.read()? != expected {
+            return Err(invalid("external replay checkpoint CAS mismatch"));
+        }
+        namespace.verify(path, &std::fs::symlink_metadata(path)?)?;
         std::fs::rename(&temporary, path)?;
+        namespace.verify(path, &std::fs::symlink_metadata(path)?)?;
         File::open(parent)?.sync_all()?;
         Ok(())
     })();
@@ -255,11 +296,16 @@ fn write_private_atomic(
 
 #[cfg(not(unix))]
 fn write_private_atomic(
-    _path: &Path,
-    _agent_id: &str,
+    _witness: &ReplayCheckpointFile,
+    _expected: ReplayCheckpoint,
     _next: ReplayCheckpoint,
 ) -> Result<(), AgentdError> {
     Err(invalid(
         "external replay checkpoint currently requires Unix ownership checks",
     ))
 }
+
+#[cfg(test)]
+#[cfg(unix)]
+#[path = "authbus_checkpoint_tests.rs"]
+mod tests;
