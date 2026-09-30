@@ -23,9 +23,12 @@ DELIVERY_GUIDE = ROOT / "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md"
 FINAL_USE_GUIDE = ROOT / "docs/modules/cognitive.read/FINAL_USE_CLOSURE.md"
 
 SOURCE_PATHS = {
+    "codex-rs/Cargo.lock",
     "codex-rs/hepta-agentd/src/client.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_delivery_tests.rs",
+    "codex-rs/hepta-context-compiler/src/cognitive_read_ingress.rs",
+    "codex-rs/hepta-context-compiler/src/cognitive_read_ingress_tests.rs",
     "codex-rs/hepta-infer-core/src/native_control.rs",
     "codex-rs/hepta-infer-core/src/native_control_tests.rs",
     "codex-rs/hepta-infer-core/src/cognitive_delivery.rs",
@@ -33,6 +36,9 @@ SOURCE_PATHS = {
     "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
     "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
     "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_read_compact_product.rs",
+    "codex-rs/hepta-memory/src/cognitive_read_compact_product_tests.rs",
+    "codex-rs/hepta-memory/src/lane_c_scope_witness.rs",
 }
 
 SELECTED_CUT_MARKERS = {
@@ -87,6 +93,17 @@ def verify_selected_cut() -> None:
 def commit_source() -> None:
     current = git("rev-parse", "HEAD")
     run("python3", HANDOFF_APPLIER, "--expected-sha", current)
+    run(
+        "cargo",
+        "metadata",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--format-version",
+        "1",
+        "--all-features",
+        "--filter-platform",
+        "x86_64-unknown-linux-gnu",
+    )
     run("cargo", "fmt", "--manifest-path", "codex-rs/Cargo.toml", "--all")
     run("git", "diff", "--check")
     changed = set(git("diff", "--name-only").splitlines())
