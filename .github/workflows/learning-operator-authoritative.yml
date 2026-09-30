@@ -20,13 +20,14 @@ concurrency:
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-  CARGO_TARGET_DIR: ${{ runner.temp }}/learning-operator-target
 
 jobs:
   qualification-result:
     name: qualification-result
     runs-on: ubuntu-24.04
     timeout-minutes: 240
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/learning-operator-target
     steps:
       - name: Check out exact source head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
