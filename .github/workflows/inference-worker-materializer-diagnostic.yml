@@ -1,0 +1,72 @@
+name: Inference worker materializer diagnostic
+
+on:
+  push:
+    branches:
+      - automation/inference-worker-materialize-final-20260930
+    paths:
+      - .github/workflows/inference-worker-materializer-diagnostic.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inference-worker-materializer-diagnostic
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: 3a4d0e6bb7018c77e9443a38855d69146542febe
+  STAGING_BRANCH: automation/inference-worker-materialize-final-20260930
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  diagnose:
+    name: Diagnose reviewed materializer
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact authoritative source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: true
+          clean: true
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.13"
+
+      - name: Run materializer and persist exact failure
+        shell: bash
+        run: |
+          set -uo pipefail
+          log="$RUNNER_TEMP/inference-worker-materializer.log"
+          {
+            echo "source_sha=$SOURCE_SHA"
+            echo "python=$(python3 --version 2>&1)"
+            echo "working_tree=$(git rev-parse HEAD)"
+            echo "--- materializer output ---"
+          } > "$log"
+          set +e
+          python3 .github/materialization/inference-worker-runtime-closure/apply.py >> "$log" 2>&1
+          status=$?
+          set -e
+          echo "--- exit_status=$status ---" >> "$log"
+          cat "$log"
+
+          diagnostic="$RUNNER_TEMP/inference-worker-materializer-${GITHUB_RUN_ID}.log"
+          cp "$log" "$diagnostic"
+          git reset --hard
+          git clean -fd
+          git fetch origin "refs/heads/$STAGING_BRANCH:refs/remotes/origin/$STAGING_BRANCH"
+          git checkout -B "$STAGING_BRANCH" "origin/$STAGING_BRANCH"
+          mkdir -p diagnostics
+          cp "$diagnostic" "diagnostics/inference-worker-materializer-${GITHUB_RUN_ID}.log"
+          git config user.name hepta-inference-diagnostics
+          git config user.email hepta-inference-diagnostics@users.noreply.github.com
+          git add "diagnostics/inference-worker-materializer-${GITHUB_RUN_ID}.log"
+          git commit -m "ci(inference.worker): persist materializer diagnostic ${GITHUB_RUN_ID}"
+          git push origin "HEAD:$STAGING_BRANCH"
+          exit "$status"
