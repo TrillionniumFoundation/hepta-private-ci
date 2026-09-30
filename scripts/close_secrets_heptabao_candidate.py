@@ -13,24 +13,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def replace(path: str, old: str, new: str) -> None:
-    target = ROOT / path
-    text = target.read_text(encoding="utf-8")
-    if new in text:
-        return
-    if old not in text:
-        raise SystemExit(f"expected source fragment missing in {path}: {old!r}")
-    target.write_text(text.replace(old, new), encoding="utf-8")
-
-
 def write(path: str, content: str) -> None:
     target = ROOT / path
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(content, encoding="utf-8")
 
 
-# Keep BaoProductHostError below Clippy's large-result threshold while retaining
-# the full durable operation for reconciliation and diagnostics.
 for path in (
     "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
     "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
@@ -59,8 +47,6 @@ for path in (
             text = text.replace(old, new)
     target.write_text(text, encoding="utf-8")
 
-# The reusable exact-head lane must follow the new candidate and retain evidence
-# long enough for release and post-release audit.
 workflow = ROOT / ".github/workflows/secrets-heptabao-five-closure-qualified.yml"
 text = workflow.read_text(encoding="utf-8")
 branch = "      - codex/secrets-heptabao-production-qualified-20260930\n"
@@ -84,7 +70,7 @@ import platform
 import subprocess
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[4]
+ROOT = Path(__file__).resolve().parents[3]
 
 
 def run(*args: str) -> str:
@@ -190,7 +176,7 @@ from pathlib import Path
 
 class ReadinessManifestTest(unittest.TestCase):
     def test_source_green_without_product_caller_is_fail_closed(self):
-        root = Path(__file__).resolve().parents[4]
+        root = Path(__file__).resolve().parents[3]
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "receipt.json"
             subprocess.run(
