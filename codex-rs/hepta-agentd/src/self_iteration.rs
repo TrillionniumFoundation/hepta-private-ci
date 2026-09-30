@@ -28,6 +28,8 @@ pub use payload::self_iteration_canary_payload_v1;
 pub use payload::self_iteration_candidate_payload_v1;
 pub use payload::self_iteration_stage_payload_v1;
 
+#[path = "self_iteration_apply.rs"]
+mod apply;
 #[path = "self_iteration_journal.rs"]
 mod journal;
 #[path = "self_iteration_runtime.rs"]
@@ -206,7 +208,7 @@ impl SelfIterationOwner {
             selector: None,
         });
         if now / 1_000 >= record.expires_at {
-            self.expire_frozen(now)?;
+            self.expire(now)?;
             return self
                 .journal
                 .record()
@@ -294,24 +296,4 @@ fn invalid(message: impl Into<String>) -> AgentdError {
 }
 fn control_error(error: crate::AgentdNeuronControlErrorV2) -> AgentdError {
     AgentdError::Protocol(format!("self-iteration runtime: {error}"))
-}
-
-impl SelfIterationOwner {
-    fn expire_frozen(&mut self, now: u64) -> Result<(), AgentdError> {
-        let Some(current) = self.current.as_mut() else {
-            return Ok(());
-        };
-        if now / 1_000 < current.record.expires_at {
-            return Ok(());
-        }
-        match current.record.phase {
-            AgentdSelfIterationPhaseV1::Frozen | AgentdSelfIterationPhaseV1::Evaluated => {
-                current.record.phase = AgentdSelfIterationPhaseV1::Rejected;
-                self.journal.persist(&current.record)?;
-                self.current = None;
-                Ok(())
-            }
-            _ => Err(invalid("iteration requires physical recovery")),
-        }
-    }
 }

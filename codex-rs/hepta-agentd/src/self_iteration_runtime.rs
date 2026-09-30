@@ -9,6 +9,13 @@ type Response = oneshot::Sender<Result<AgentdSelfIterationRecordV1, AgentdError>
 enum Command {
     Freeze(Box<AgentdSelfIterationCandidateV1>, Response),
     Evaluate(Digest32, Box<AgentdSignedEvaluationV1>, Response),
+    Select(Digest32, SignedLearningEvidenceV1, Response),
+    Observe(
+        Digest32,
+        AgentdSelfIterationCanaryVerdictV1,
+        SignedLearningEvidenceV1,
+        Response,
+    ),
 }
 
 /// Bounded product handle. The caller receives neither signing material nor
@@ -34,6 +41,28 @@ impl AgentdSelfIterationHandleV1 {
         let (response, receive) = oneshot::channel();
         self.send(
             Command::Evaluate(frozen, Box::new(evaluation), response),
+            receive,
+        )
+        .await
+    }
+    pub async fn select(
+        &self,
+        frozen: Digest32,
+        attestation: SignedLearningEvidenceV1,
+    ) -> Result<AgentdSelfIterationRecordV1, AgentdError> {
+        let (response, receive) = oneshot::channel();
+        self.send(Command::Select(frozen, attestation, response), receive)
+            .await
+    }
+    pub async fn observe(
+        &self,
+        frozen: Digest32,
+        verdict: AgentdSelfIterationCanaryVerdictV1,
+        attestation: SignedLearningEvidenceV1,
+    ) -> Result<AgentdSelfIterationRecordV1, AgentdError> {
+        let (response, receive) = oneshot::channel();
+        self.send(
+            Command::Observe(frozen, verdict, attestation, response),
             receive,
         )
         .await
@@ -133,7 +162,7 @@ impl SelfIterationRuntime {
                 let mut owner = owner
                     .lock()
                     .map_err(|_| invalid("self-iteration owner poisoned"))?;
-                owner.expire_frozen(now)?;
+                owner.expire(now)?;
                 if let Some(command) = command {
                     let (result, response) = match command {
                         Command::Freeze(candidate, response) => {
@@ -141,6 +170,12 @@ impl SelfIterationRuntime {
                         }
                         Command::Evaluate(frozen, signed, response) => {
                             (owner.evaluate(frozen, *signed, now), response)
+                        }
+                        Command::Select(frozen, signed, response) => {
+                            (owner.select(frozen, signed, now), response)
+                        }
+                        Command::Observe(frozen, verdict, signed, response) => {
+                            (owner.observe(frozen, verdict, signed, now), response)
                         }
                     };
                     let _ = response.send(result);

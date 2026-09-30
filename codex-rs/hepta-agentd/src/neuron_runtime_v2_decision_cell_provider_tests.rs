@@ -246,3 +246,6 @@ impl Harness {
 
 #[path = "neuron_runtime_v2_decision_cell_tests.rs"]
 mod cases;
+
+#[path = "neuron_runtime_v2_iteration_tests.rs"]
+mod iteration_tests;
