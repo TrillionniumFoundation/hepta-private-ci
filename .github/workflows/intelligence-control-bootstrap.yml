@@ -23,7 +23,7 @@ jobs:
     env:
       ORIGINAL_HEAD: 11588c5b1fc7d9a6a93a457e59513f4a39c32384
       BRANCH: codex/intelligence-control-production-closure-20260929
-      PATCH_SHA256: bbcec4c9bed5e5f59286475cc6976bacab9de2ef62ddc735b7174eb1602ef3a3
+      PATCH_SHA256: bb0858c91872e4406b2e383c6a6ac362df853b76fb03dc96580bb8f1d0c9e244
     steps:
       - name: Check out bootstrap delivery
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
