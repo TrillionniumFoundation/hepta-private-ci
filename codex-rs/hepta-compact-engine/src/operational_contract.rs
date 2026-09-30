@@ -15,6 +15,9 @@ use codex_hepta_types::Digest32;
 use crate::coordinator::CompactionCoordinatorErrorV2;
 use crate::durable::DurableCompactionError;
 
+const CURRENT_SOURCE_USE_BINDING_DOMAIN: &[u8] =
+    b"hepta.compaction.current-source-use-binding.v1\0";
+
 /// Stable externally actionable error families for compact.engine.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[non_exhaustive]
@@ -98,6 +101,18 @@ impl CompactionErrorSemanticsV1 for CompactionCoordinatorErrorV2 {
         match self {
             Self::Durable(error) => error.error_class(),
             Self::Admission(_) => CompactionErrorClassV1::TrustRejected,
+            Self::CurrentSourceUse(error) => match error {
+                CurrentSourceUseErrorV1::InvalidBinding => {
+                    CompactionErrorClassV1::InvalidInput
+                }
+                CurrentSourceUseErrorV1::Unavailable => {
+                    CompactionErrorClassV1::RecoveryRequired
+                }
+                CurrentSourceUseErrorV1::Rejected
+                | CurrentSourceUseErrorV1::Stale => {
+                    CompactionErrorClassV1::TrustRejected
+                }
+            },
             Self::Invalid(_) => CompactionErrorClassV1::InvalidInput,
             Self::Corrupt(_) => CompactionErrorClassV1::StorageCorrupt,
         }
@@ -107,6 +122,15 @@ impl CompactionErrorSemanticsV1 for CompactionCoordinatorErrorV2 {
         match self {
             Self::Durable(error) => error.recovery_directive(),
             Self::Admission(_) => CompactionRecoveryDirectiveV1::AwaitManifestOrOperator,
+            Self::CurrentSourceUse(CurrentSourceUseErrorV1::Unavailable) => {
+                CompactionRecoveryDirectiveV1::RunReconciler
+            }
+            Self::CurrentSourceUse(CurrentSourceUseErrorV1::InvalidBinding) => {
+                CompactionRecoveryDirectiveV1::DoNotRetry
+            }
+            Self::CurrentSourceUse(
+                CurrentSourceUseErrorV1::Rejected | CurrentSourceUseErrorV1::Stale,
+            ) => CompactionRecoveryDirectiveV1::AwaitManifestOrOperator,
             Self::Invalid(_) => CompactionRecoveryDirectiveV1::DoNotRetry,
             Self::Corrupt(_) => CompactionRecoveryDirectiveV1::StopWritesAndQuarantine,
         }
@@ -195,7 +219,8 @@ impl MutationFenceContextV1 {
 pub const MAX_COMPACTION_SEMANTIC_PAYLOAD_BYTES_V2: usize = 64 * 1024 * 1024;
 pub const MAX_COMPACTION_SOURCE_METADATA_BYTES_V2: usize = 128 * 1024 * 1024;
 pub const MAX_COMPACTION_RECEIPTS_AND_PROOF_BYTES_V2: usize = 128 * 1024 * 1024;
-pub const MAX_COMPACTION_ARCHIVE_BYTES_V2: usize = 64 * 1024 * 1024;
+pub const MAX_COMPACTION_ARCHIVE_BYTES_V2: usize =
+    MAX_COMPACTION_SEMANTIC_PAYLOAD_BYTES_V2 + 64 * 1024 * 1024;
 pub const MAX_COMPACTION_DURABLE_TRANSACTION_BYTES_V2: usize = 320 * 1024 * 1024;
 pub const MAX_COMPACTION_TRANSIENT_MEMORY_BYTES_V2: usize = 448 * 1024 * 1024;
 
@@ -302,6 +327,57 @@ pub struct CurrentSourceUseBindingV1 {
     pub payload_digest: Digest32,
 }
 
+impl CurrentSourceUseBindingV1 {
+    pub fn validate(&self) -> Result<(), CurrentSourceUseErrorV1> {
+        if self.owner_id.trim().is_empty()
+            || self.owner_id.len() > 128
+            || self.scope_id.trim().is_empty()
+            || self.scope_id.len() > 256
+            || self.purpose_id.trim().is_empty()
+            || self.purpose_id.len() > 256
+            || self.owner_generation == 0
+            || self.source_snapshot_digest.is_zero()
+            || self.source_memory_snapshot_digest.is_zero()
+            || self.checkpoint_digest.is_zero()
+            || self.payload_digest.is_zero()
+        {
+            return Err(CurrentSourceUseErrorV1::InvalidBinding);
+        }
+        Ok(())
+    }
+
+    /// Canonical immutable source-owner cut. A cached receipt is reusable only
+    /// when this digest and its validation revision are unchanged; the product
+    /// boundary still invokes the validator on every returned payload.
+    pub fn owner_cut_digest(&self) -> Result<Digest32, CurrentSourceUseErrorV1> {
+        self.validate()?;
+        let owner_length = u64::try_from(self.owner_id.len())
+            .map_err(|_| CurrentSourceUseErrorV1::InvalidBinding)?
+            .to_be_bytes();
+        let scope_length = u64::try_from(self.scope_id.len())
+            .map_err(|_| CurrentSourceUseErrorV1::InvalidBinding)?
+            .to_be_bytes();
+        let purpose_length = u64::try_from(self.purpose_id.len())
+            .map_err(|_| CurrentSourceUseErrorV1::InvalidBinding)?
+            .to_be_bytes();
+        let owner_generation = self.owner_generation.to_be_bytes();
+        Ok(Digest32::of_parts(&[
+            CURRENT_SOURCE_USE_BINDING_DOMAIN,
+            &owner_length,
+            self.owner_id.as_bytes(),
+            &owner_generation,
+            self.source_snapshot_digest.as_array(),
+            self.source_memory_snapshot_digest.as_array(),
+            &scope_length,
+            self.scope_id.as_bytes(),
+            &purpose_length,
+            self.purpose_id.as_bytes(),
+            self.checkpoint_digest.as_array(),
+            self.payload_digest.as_array(),
+        ]))
+    }
+}
+
 /// Source-owner response. Caches may retain this only for the exact immutable
 /// owner cut and validation revision represented here; revocation is never
 /// skipped by cache freshness alone.
@@ -313,6 +389,26 @@ pub struct CurrentSourceUseReceiptV1 {
     pub validation_revision: u64,
     pub validated_at_unix_seconds: u64,
     pub expires_at_unix_seconds: u64,
+}
+
+impl CurrentSourceUseReceiptV1 {
+    pub fn validate_for(
+        &self,
+        binding: &CurrentSourceUseBindingV1,
+        now_unix_seconds: u64,
+    ) -> Result<(), CurrentSourceUseErrorV1> {
+        if self.owner_cut_digest != binding.owner_cut_digest()?
+            || self.deletion_correction_frontier_digest.is_zero()
+            || self.retention_revocation_state_digest.is_zero()
+            || self.validation_revision == 0
+            || self.validated_at_unix_seconds > now_unix_seconds
+            || self.validated_at_unix_seconds >= self.expires_at_unix_seconds
+            || now_unix_seconds >= self.expires_at_unix_seconds
+        {
+            return Err(CurrentSourceUseErrorV1::Stale);
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
@@ -345,17 +441,35 @@ pub trait CurrentSourceUseValidatorV1: Send + Sync {
 mod tests {
     use super::*;
 
-    #[test]
-    fn capacity_domains_reject_each_limit_plus_one() {
-        let base = CompactionCapacityUsageV2 {
+    fn capacity_at_limits() -> CompactionCapacityUsageV2 {
+        CompactionCapacityUsageV2 {
             semantic_payload_bytes: MAX_COMPACTION_SEMANTIC_PAYLOAD_BYTES_V2,
             source_metadata_bytes: MAX_COMPACTION_SOURCE_METADATA_BYTES_V2,
             receipts_and_proof_bytes: MAX_COMPACTION_RECEIPTS_AND_PROOF_BYTES_V2,
             archive_bytes: MAX_COMPACTION_ARCHIVE_BYTES_V2,
             durable_transaction_bytes: MAX_COMPACTION_DURABLE_TRANSACTION_BYTES_V2,
             transient_memory_bytes: MAX_COMPACTION_TRANSIENT_MEMORY_BYTES_V2,
+        }
+    }
+
+    #[test]
+    fn capacity_domains_accept_limit_minus_one_and_limit() {
+        let at_limit = capacity_at_limits();
+        assert_eq!(at_limit.validate(), Ok(()));
+        let below = CompactionCapacityUsageV2 {
+            semantic_payload_bytes: at_limit.semantic_payload_bytes - 1,
+            source_metadata_bytes: at_limit.source_metadata_bytes - 1,
+            receipts_and_proof_bytes: at_limit.receipts_and_proof_bytes - 1,
+            archive_bytes: at_limit.archive_bytes - 1,
+            durable_transaction_bytes: at_limit.durable_transaction_bytes - 1,
+            transient_memory_bytes: at_limit.transient_memory_bytes - 1,
         };
-        assert_eq!(base.validate(), Ok(()));
+        assert_eq!(below.validate(), Ok(()));
+    }
+
+    #[test]
+    fn capacity_domains_reject_each_limit_plus_one() {
+        let base = capacity_at_limits();
 
         let mut over = base;
         over.semantic_payload_bytes += 1;
@@ -407,6 +521,40 @@ mod tests {
         assert_eq!(
             MutationFenceContextV1::new("owner", digest, digest, digest, 0, 0),
             Err(MutationFenceContextErrorV1::InvalidLeaseEpoch)
+        );
+    }
+
+    #[test]
+    fn current_source_receipt_is_bound_to_exact_owner_cut_and_live_window() {
+        let binding = CurrentSourceUseBindingV1 {
+            owner_id: "owner".to_string(),
+            owner_generation: 7,
+            source_snapshot_digest: Digest32::of_bytes(b"source-snapshot"),
+            source_memory_snapshot_digest: Digest32::of_bytes(b"source-memory"),
+            scope_id: "scope".to_string(),
+            purpose_id: "purpose".to_string(),
+            checkpoint_digest: Digest32::of_bytes(b"checkpoint"),
+            payload_digest: Digest32::of_bytes(b"payload"),
+        };
+        let receipt = CurrentSourceUseReceiptV1 {
+            owner_cut_digest: binding.owner_cut_digest().expect("valid binding"),
+            deletion_correction_frontier_digest: Digest32::of_bytes(b"frontier"),
+            retention_revocation_state_digest: Digest32::of_bytes(b"retention"),
+            validation_revision: 11,
+            validated_at_unix_seconds: 100,
+            expires_at_unix_seconds: 200,
+        };
+        assert_eq!(receipt.validate_for(&binding, 150), Ok(()));
+        assert_eq!(
+            receipt.validate_for(&binding, 200),
+            Err(CurrentSourceUseErrorV1::Stale)
+        );
+
+        let mut other_cut = binding.clone();
+        other_cut.owner_generation += 1;
+        assert_eq!(
+            receipt.validate_for(&other_cut, 150),
+            Err(CurrentSourceUseErrorV1::Stale)
         );
     }
 }
