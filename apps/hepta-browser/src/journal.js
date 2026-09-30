@@ -1,12 +1,13 @@
 import { createHash } from "node:crypto";
 import { constants } from "node:fs";
-import { mkdir, open, realpath } from "node:fs/promises";
+import { mkdir, open, realpath, unlink } from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
 
 const SCHEMA = "hepta.browser.operation-journal.v1";
 const MAX_LINE_BYTES = 262_144;
 const MAX_FILE_BYTES = 64 * 1024 * 1024;
 const UTF8 = new TextEncoder();
+const FILE_QUEUES = new Map();
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -28,15 +29,103 @@ function keyOf(record) {
 }
 
 function freezeRecord(record) {
+  record = { ...record };
+  const id = /^[A-Za-z0-9._:-]{1,128}$/;
+  const digest = /^[0-9a-f]{64}$/;
+  if (
+    typeof record.profileId !== "string" ||
+    typeof record.operationId !== "string" ||
+    !id.test(record.profileId) ||
+    !id.test(record.operationId) ||
+    !Number.isSafeInteger(record.generation) ||
+    record.generation < 1 ||
+    typeof record.requestDigest !== "string" ||
+    typeof record.semanticDigest !== "string" ||
+    !digest.test(record.requestDigest) ||
+    !digest.test(record.semanticDigest) ||
+    record.requestDigest === "0".repeat(64) ||
+    record.semanticDigest === "0".repeat(64)
+  ) {
+    throw new TypeError("journal record identity or semantics are invalid");
+  }
+  const terminal = record.terminalObserved === true;
+  if (
+    (terminal &&
+      ((record.status !== "succeeded" && record.status !== "failed") ||
+        typeof record.outcomeDigest !== "string" ||
+        !digest.test(record.outcomeDigest) ||
+        record.outcomeDigest === "0".repeat(64))) ||
+    (!terminal &&
+      (record.terminalObserved !== false ||
+        record.status !== "indeterminate" ||
+        record.outcomeDigest !== null))
+  ) {
+    throw new TypeError("journal terminal observation is inconsistent");
+  }
   return Object.freeze({ ...record });
+}
+
+const OBSERVATION_FIELDS = new Set([
+  "status",
+  "outcomeDigest",
+  "terminalObserved",
+  "observationReason",
+]);
+
+function requireSameSemantics(prior, record) {
+  const keys = new Set([...Object.keys(prior), ...Object.keys(record)]);
+  for (const key of keys) {
+    if (!OBSERVATION_FIELDS.has(key) && prior[key] !== record[key]) {
+      throw new TypeError("journal operation changed immutable semantics");
+    }
+  }
+}
+
+function applyObservation(prior, record) {
+  if (!prior) throw new TypeError("journal observation has no dispatch intent");
+  requireSameSemantics(prior, record);
+  if (prior.terminalObserved === true) {
+    if (
+      record.terminalObserved !== true ||
+      prior.status !== record.status ||
+      prior.outcomeDigest !== record.outcomeDigest
+    ) {
+      throw new TypeError(
+        "journal observation conflicts with an observed terminal result",
+      );
+    }
+    return prior;
+  }
+  return freezeRecord({ ...prior, ...record });
+}
+
+async function syncDirectory(path) {
+  const handle = await open(
+    path,
+    constants.O_RDONLY |
+      (constants.O_DIRECTORY ?? 0) |
+      (constants.O_NOFOLLOW ?? 0),
+  );
+  try {
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
 }
 
 async function ensureCanonicalPrivateParent(path) {
   const parent = dirname(path);
-  await mkdir(parent, { recursive: true, mode: 0o700 });
+  const created = await mkdir(parent, { recursive: true, mode: 0o700 });
   const actual = await realpath(parent);
   if (actual !== resolve(parent)) {
     throw new TypeError("browser journal parent path contains a symlink");
+  }
+  if (created) {
+    const barrier = dirname(created);
+    for (let directory = parent; ; directory = dirname(directory)) {
+      await syncDirectory(directory);
+      if (directory === barrier) break;
+    }
   }
 }
 
@@ -45,12 +134,15 @@ export class MemoryBrowserOperationJournal {
 
   async recordDispatch(record) {
     const snapshot = freezeRecord(requireRecord(record, "dispatch record"));
+    if (snapshot.terminalObserved)
+      throw new TypeError(
+        "journal dispatch cannot claim a terminal observation",
+      );
     const key = keyOf(snapshot);
     const prior = this.#records.get(key);
-    if (prior && prior.requestDigest !== snapshot.requestDigest) {
-      throw new TypeError(
-        "journal operation identity was reused with changed semantics",
-      );
+    if (prior) {
+      requireSameSemantics(prior, snapshot);
+      return;
     }
     this.#records.set(key, snapshot);
   }
@@ -59,15 +151,7 @@ export class MemoryBrowserOperationJournal {
     const snapshot = freezeRecord(requireRecord(record, "observation record"));
     const key = keyOf(snapshot);
     const prior = this.#records.get(key);
-    if (!prior)
-      throw new TypeError("journal observation has no dispatch intent");
-    if (
-      prior.requestDigest !== snapshot.requestDigest ||
-      prior.semanticDigest !== snapshot.semanticDigest
-    ) {
-      throw new TypeError("journal observation changed immutable semantics");
-    }
-    this.#records.set(key, freezeRecord({ ...prior, ...snapshot }));
+    this.#records.set(key, applyObservation(prior, snapshot));
   }
 
   async getOperation(profileId, generation, operationId) {
@@ -88,7 +172,8 @@ export class MemoryBrowserOperationJournal {
 
 export class FileBrowserOperationJournal {
   #path;
-  #tail = Promise.resolve();
+  #parentReady = false;
+  #needsRecovery = false;
 
   constructor(path) {
     if (typeof path !== "string" || !isAbsolute(path)) {
@@ -98,43 +183,36 @@ export class FileBrowserOperationJournal {
   }
 
   async recordDispatch(record) {
+    const snapshot = freezeRecord(requireRecord(record, "dispatch record"));
+    if (snapshot.terminalObserved)
+      throw new TypeError(
+        "journal dispatch cannot claim a terminal observation",
+      );
     return this.#serialize(async () => {
       const prior = await this.#getOperationUnlocked(
-        record.profileId,
-        record.generation,
-        record.operationId,
+        snapshot.profileId,
+        snapshot.generation,
+        snapshot.operationId,
       );
-      if (prior && prior.requestDigest !== record.requestDigest) {
-        throw new TypeError(
-          "journal operation identity was reused with changed semantics",
-        );
+      if (prior) {
+        requireSameSemantics(prior, snapshot);
+        return;
       }
-      await this.#append({
-        type: "dispatch",
-        record: requireRecord(record, "dispatch record"),
-      });
+      await this.#append({ type: "dispatch", record: snapshot });
     });
   }
 
   async recordObservation(record) {
+    const snapshot = freezeRecord(requireRecord(record, "observation record"));
     return this.#serialize(async () => {
       const prior = await this.#getOperationUnlocked(
-        record.profileId,
-        record.generation,
-        record.operationId,
+        snapshot.profileId,
+        snapshot.generation,
+        snapshot.operationId,
       );
-      if (!prior)
-        throw new TypeError("journal observation has no dispatch intent");
-      if (
-        prior.requestDigest !== record.requestDigest ||
-        prior.semanticDigest !== record.semanticDigest
-      ) {
-        throw new TypeError("journal observation changed immutable semantics");
-      }
-      await this.#append({
-        type: "observation",
-        record: requireRecord(record, "observation record"),
-      });
+      const next = applyObservation(prior, snapshot);
+      if (next === prior || canonical(next) === canonical(prior)) return;
+      await this.#append({ type: "observation", record: snapshot });
     });
   }
 
@@ -162,10 +240,10 @@ export class FileBrowserOperationJournal {
   }
 
   async #load() {
+    await this.#ensureParent();
     const noFollow = constants.O_NOFOLLOW ?? 0;
     let handle;
     try {
-      await ensureCanonicalPrivateParent(this.#path);
       handle = await open(this.#path, constants.O_RDONLY | noFollow);
     } catch (error) {
       if (error?.code === "ENOENT") return new Map();
@@ -183,6 +261,9 @@ export class FileBrowserOperationJournal {
       bytes = await handle.readFile({ encoding: "utf8" });
     } finally {
       await handle.close();
+    }
+    if (bytes.length !== 0 && !bytes.endsWith("\n")) {
+      throw new TypeError("browser journal has an incomplete trailing record");
     }
     const records = new Map();
     const lines = bytes.length === 0 ? [] : bytes.split("\n");
@@ -219,22 +300,17 @@ export class FileBrowserOperationJournal {
       const key = keyOf(record);
       const prior = records.get(key);
       if (envelope.type === "dispatch") {
-        if (prior && prior.requestDigest !== record.requestDigest) {
+        if (record.terminalObserved)
           throw new TypeError(
-            "browser journal contains conflicting dispatch identity",
+            "journal dispatch cannot claim a terminal observation",
           );
+        if (prior) {
+          requireSameSemantics(prior, record);
+        } else {
+          records.set(key, record);
         }
-        records.set(key, record);
       } else if (envelope.type === "observation") {
-        if (!prior)
-          throw new TypeError("browser journal observation precedes dispatch");
-        if (
-          prior.requestDigest !== record.requestDigest ||
-          prior.semanticDigest !== record.semanticDigest
-        ) {
-          throw new TypeError("browser journal observation changed semantics");
-        }
-        records.set(key, freezeRecord({ ...prior, ...record }));
+        records.set(key, applyObservation(prior, record));
       } else {
         throw new TypeError("browser journal record type is unsupported");
       }
@@ -250,7 +326,6 @@ export class FileBrowserOperationJournal {
     if (lineBytes > MAX_LINE_BYTES) {
       throw new TypeError("browser journal record exceeds line limit");
     }
-    await ensureCanonicalPrivateParent(this.#path);
     const noFollow = constants.O_NOFOLLOW ?? 0;
     const flags =
       constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow;
@@ -266,16 +341,90 @@ export class FileBrowserOperationJournal {
       if (info.size + lineBytes > MAX_FILE_BYTES) {
         throw new TypeError("browser journal capacity exhausted");
       }
-      await handle.writeFile(line, "utf8");
-      await handle.sync();
+      try {
+        await handle.writeFile(line, "utf8");
+        await handle.sync();
+      } catch (error) {
+        this.#needsRecovery = true;
+        throw error;
+      }
     } finally {
-      await handle.close();
+      try {
+        await handle.close();
+      } catch (error) {
+        this.#needsRecovery = true;
+        throw error;
+      }
+    }
+    try {
+      await syncDirectory(dirname(this.#path));
+    } catch (error) {
+      this.#needsRecovery = true;
+      throw error;
+    }
+  }
+
+  async #ensureParent() {
+    if (this.#parentReady) return;
+    try {
+      await ensureCanonicalPrivateParent(this.#path);
+      this.#parentReady = true;
+    } catch (error) {
+      this.#needsRecovery = true;
+      throw error;
     }
   }
 
   #serialize(operation) {
-    const run = this.#tail.catch(() => {}).then(operation);
-    this.#tail = run.catch(() => {});
+    const preceding = FILE_QUEUES.get(this.#path) ?? Promise.resolve();
+    const run = preceding.then(async () => {
+      if (this.#needsRecovery)
+        throw new TypeError("browser journal requires explicit owner recovery");
+      await this.#ensureParent();
+      const lockPath = this.#path + ".owner.lock";
+      let lock;
+      try {
+        lock = await open(
+          lockPath,
+          constants.O_WRONLY |
+            constants.O_CREAT |
+            constants.O_EXCL |
+            (constants.O_NOFOLLOW ?? 0),
+          0o600,
+        );
+      } catch (error) {
+        if (error?.code === "EEXIST") {
+          throw new TypeError(
+            "browser journal has an active owner or requires explicit owner recovery for incomplete or uncertain durability",
+          );
+        }
+        throw error;
+      }
+      try {
+        try {
+          await lock.sync();
+          await syncDirectory(dirname(this.#path));
+        } catch (error) {
+          this.#needsRecovery = true;
+          throw error;
+        }
+        return await operation();
+      } finally {
+        try {
+          await lock.close();
+          if (!this.#needsRecovery) await unlink(lockPath);
+        } catch (error) {
+          this.#needsRecovery = true;
+          throw error;
+        }
+      }
+    });
+    const settled = run.catch(() => {});
+    FILE_QUEUES.set(this.#path, settled);
+    void settled.then(() => {
+      if (FILE_QUEUES.get(this.#path) === settled)
+        FILE_QUEUES.delete(this.#path);
+    });
     return run;
   }
 }

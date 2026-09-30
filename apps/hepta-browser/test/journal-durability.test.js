@@ -48,7 +48,11 @@ function observeSync(t, prototype, before = async () => {}) {
   t.mock.method(prototype, "sync", async function () {
     const info = await this.stat();
     const event = {
-      kind: info.isDirectory() ? "directory" : "file",
+      kind: info.isDirectory()
+        ? "directory"
+        : info.size === 0
+          ? "lock"
+          : "file",
       id: identity(info),
     };
     events.push(event);
@@ -98,7 +102,7 @@ test("successful parent initialization is not repeated on every append", async (
   await journal.recordDispatch(record("operation.2"));
   assert.deepEqual(
     events.map((event) => event.kind),
-    ["file", "directory"],
+    ["lock", "directory", "file", "directory"],
   );
 });
 
@@ -151,6 +155,7 @@ test("a directory-sync failure after writing cannot become successful dedupe", a
       ...record(),
       terminalObserved: true,
       status: "succeeded",
+      outcomeDigest: "3".repeat(64),
     }),
     /owner recovery/,
   );
@@ -269,5 +274,34 @@ test("a close failure after a write also fences the live owner", async (t) => {
   await assert.rejects(
     journal.recordDispatch(record("operation.2")),
     /owner recovery/,
+  );
+});
+
+test("uncertain durability remains fenced across independent owners", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  const other = new FileBrowserOperationJournal(path);
+  observeSync(t, prototype, async (event) => {
+    if (event.kind === "file") throw ioFailure();
+  });
+  await assert.rejects(journal.recordDispatch(record()), { code: "EIO" });
+  await assert.rejects(
+    other.getOperation("profile.1", 1, "operation.1"),
+    /owner recovery/,
+  );
+  await assert.rejects(other.recordDispatch(record()), /owner recovery/);
+  assert.equal((await stat(path + ".owner.lock")).isFile(), true);
+});
+
+test("the persistent owner lock precedes any journal bytes", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  const events = observeSync(t, prototype, async (event) => {
+    if (event.kind === "lock") {
+      await assert.rejects(stat(path), { code: "ENOENT" });
+    }
+  });
+  await journal.recordDispatch(record());
+  assert.deepEqual(
+    events.slice(-4).map((event) => event.kind),
+    ["lock", "directory", "file", "directory"],
   );
 });

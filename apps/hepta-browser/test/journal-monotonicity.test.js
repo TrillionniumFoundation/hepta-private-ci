@@ -74,6 +74,29 @@ function line(type, recordValue) {
 }
 
 for (const kind of ["memory", "file"]) {
+  test(`${kind}: inconsistent terminal facts and terminal dispatch fail closed`, async (t) => {
+    const { journal } = await fixture(t, kind);
+    await assert.rejects(journal.recordDispatch(terminal()), /dispatch/);
+    await journal.recordDispatch(record());
+    for (const changes of [
+      { terminalObserved: true },
+      { status: "succeeded", outcomeDigest: D3 },
+      {
+        terminalObserved: true,
+        status: "succeeded",
+        outcomeDigest: "0".repeat(64),
+      },
+    ]) {
+      await assert.rejects(
+        journal.recordObservation(record(changes)),
+        /terminal/,
+      );
+    }
+    assert.deepEqual(
+      await journal.getOperation("profile.1", 1, "operation.1"),
+      record(),
+    );
+  });
   test(`${kind}: duplicate dispatch cannot erase an observed terminal result`, async (t) => {
     const { journal } = await fixture(t, kind);
     await journal.recordDispatch(record());
@@ -266,5 +289,34 @@ test("file: queued observations use their entry-time identity", async (t) => {
   assert.equal(
     (await journal.getOperation("profile.1", 1, "operation.1")).status,
     "succeeded",
+  );
+});
+
+test("file: concurrent handles serialize the identity check and append", async (t) => {
+  const { path, journal } = await fixture(t);
+  const other = new FileBrowserOperationJournal(path);
+  const results = await Promise.allSettled([
+    journal.recordDispatch(record()),
+    other.recordDispatch(record({ requestDigest: D3 })),
+  ]);
+  assert.equal(results[0].status, "fulfilled");
+  assert.equal(results[1].status, "rejected");
+  assert.match(results[1].reason.message, /semantics/);
+  assert.deepEqual(
+    await other.getOperation("profile.1", 1, "operation.1"),
+    record(),
+  );
+});
+
+test("file: an unrecovered external owner lock cannot authorize an append", async (t) => {
+  const { path, journal } = await fixture(t);
+  await writeFile(path + ".owner.lock", "", { mode: 0o600 });
+  await assert.rejects(journal.recordDispatch(record()), /owner recovery/);
+  await assert.rejects(readFile(path), { code: "ENOENT" });
+  await rm(path + ".owner.lock");
+  await journal.recordDispatch(record());
+  assert.deepEqual(
+    await journal.getOperation("profile.1", 1, "operation.1"),
+    record(),
   );
 });

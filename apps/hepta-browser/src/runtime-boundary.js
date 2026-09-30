@@ -7,7 +7,15 @@ export async function callWithDeadline({
   abortable,
   timeoutName,
 }) {
-  const remaining = Math.max(1, deadlineMs - now());
+  const remaining = deadlineMs - now();
+  if (remaining <= 0) {
+    const error = new Error(`${timeoutName} deadline has expired`);
+    error.name =
+      timeoutName === "browser driver"
+        ? "BrowserDriverTimeoutError"
+        : "BrowserAuthorityTimeoutError";
+    throw error;
+  }
   const timeoutMs = Math.min(timeoutCapMs, remaining);
   const controller = abortable ? new AbortController() : null;
   let timer;
@@ -24,9 +32,20 @@ export async function callWithDeadline({
   });
   try {
     return await Promise.race([
-      Promise.resolve().then(() =>
-        call(payload, controller ? { signal: controller.signal } : undefined),
-      ),
+      Promise.resolve().then(() => {
+        if (now() >= deadlineMs) {
+          const error = new Error(`${timeoutName} deadline has expired`);
+          error.name =
+            timeoutName === "browser driver"
+              ? "BrowserDriverTimeoutError"
+              : "BrowserAuthorityTimeoutError";
+          throw error;
+        }
+        return call(
+          payload,
+          controller ? { signal: controller.signal } : undefined,
+        );
+      }),
       timeout,
     ]);
   } finally {

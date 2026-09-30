@@ -347,6 +347,12 @@ export class BrowserProfileHost {
                 this.#durableRecord(state, entry),
               );
               state.operations.set(operationId, entry);
+              const now = this.#clock();
+              if (now >= state.expiresAtMs)
+                throw new TypeError(
+                  "profile grant has expired before dispatch",
+                );
+              admitNewOperation(state, requestSemantics, now);
               return this.#callDriver(
                 "dispatch",
                 semantics,
@@ -457,7 +463,7 @@ export class BrowserProfileHost {
     const profileId = stableId(input.profileId, "profileId");
     const generation = positiveInteger(input.generation, "generation");
     const operationId = stableId(input.operationId, "operationId");
-    return exclusive(this.#locks, `${profileId}:${generation}`, async () => {
+    return exclusive(this.#locks, profileId, async () => {
       const durable = await this.#journal.getOperation(
         profileId,
         generation,
@@ -485,8 +491,11 @@ export class BrowserProfileHost {
           "persisted reconciliation changed immutable semantics",
         );
       }
-      if (durable.terminalObserved === true)
-        return this.#receiptFromDurable(durable);
+      if (durable.terminalObserved === true) {
+        const receipt = this.#receiptFromDurable(durable);
+        this.#adoptPersistedReceipt(durable, receipt);
+        return receipt;
+      }
       const effectSemantics = Object.freeze({
         ...semantics,
         verifiedUseTokenWitnessDigest: durable.verifiedUseTokenWitnessDigest,
@@ -520,7 +529,14 @@ export class BrowserProfileHost {
             : "reconcile_error",
         );
       }
-      await this.#journal.recordObservation({ ...durable, ...receipt });
+      await this.#journal.recordObservation({
+        ...durable,
+        status: receipt.status,
+        outcomeDigest: receipt.outcomeDigest,
+        terminalObserved: receipt.terminalObserved,
+        observationReason: receipt.observationReason,
+      });
+      this.#adoptPersistedReceipt(durable, receipt);
       return receipt;
     });
   }
@@ -654,6 +670,24 @@ export class BrowserProfileHost {
     });
   }
 
+  #adoptPersistedReceipt(durable, receipt) {
+    const state = this.#profiles.get(durable.profileId);
+    if (!state || state.generation !== durable.generation) return;
+    const entry = state.operations.get(durable.operationId);
+    if (!entry) return;
+    if (
+      entry.requestDigest !== durable.requestDigest ||
+      entry.semanticDigest !== durable.semanticDigest
+    ) {
+      throw new TypeError(
+        "persisted operation conflicts with live immutable semantics",
+      );
+    }
+    entry.receipt = receipt;
+    entry.phase = receipt.terminalObserved ? "terminal" : "indeterminate";
+    this.#pruneTerminalOperations(state);
+  }
+
   async #persistReceipt(state, entry) {
     try {
       await this.#journal.recordObservation(this.#durableRecord(state, entry));
@@ -736,9 +770,13 @@ export class BrowserProfileHost {
       finishConsumer = resolve;
     });
     let enteredOnce = false;
+    let entryClosed = false;
 
     const authorityCall = Promise.resolve().then(() =>
       this.#authority.withVerifiedUse(request, async (verified) => {
+        if (entryClosed || this.#clock() >= deadlineMs) {
+          throw new TypeError("final-use authority consumer entry has expired");
+        }
         if (enteredOnce) {
           throw new TypeError(
             "final-use authority invoked the consumer more than once",
@@ -757,20 +795,29 @@ export class BrowserProfileHost {
     // verified-use consumer has started, its driver operation owns its own
     // deadline; racing a second authority timer here can misclassify a driver
     // timeout as an authority failure.
-    const first = await callWithDeadline({
-      call: () =>
-        Promise.race([
-          authorityCall.then((value) => ({ kind: "completed", value })),
-          entered.then(() => ({ kind: "entered" })),
-        ]),
-      payload: null,
-      now: this.#clock,
-      deadlineMs,
-      timeoutCapMs: this.#driverCallTimeoutMs,
-      abortable: false,
-      timeoutName: "browser authority",
-    });
-    if (first.kind === "completed") return first.value;
+    let first;
+    try {
+      first = await callWithDeadline({
+        call: () =>
+          Promise.race([
+            authorityCall.then((value) => ({ kind: "completed", value })),
+            entered.then(() => ({ kind: "entered" })),
+          ]),
+        payload: null,
+        now: this.#clock,
+        deadlineMs,
+        timeoutCapMs: this.#driverCallTimeoutMs,
+        abortable: false,
+        timeoutName: "browser authority",
+      });
+    } catch (error) {
+      entryClosed = true;
+      throw error;
+    }
+    if (first.kind === "completed") {
+      entryClosed = true;
+      return first.value;
+    }
 
     await consumerFinished;
     // After the local consumer settles, bound only the authority-side
