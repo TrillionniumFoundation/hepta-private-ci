@@ -209,19 +209,60 @@ async fn run_model_owner(
         identity.spawn_generation,
     )?;
     let mut proposal_attempted = false;
+    let mut status = serde_json::json!({
+        "version": 1,
+        "state": "pending_inputs",
+        "generation_ready": false,
+        "authority_grants": false,
+    });
     loop {
         tokio::select! { _ = cancellation.cancelled() => return Ok(()), _ = interval.tick() => {} }
         // Serial owner maintenance runs at startup and while idle. The future
         // retires its exact bounded native obligations before the next turn.
-        let maintenance = model.maintain_native_control(Duration::from_secs(5)).await;
-        if let Err(error) = maintenance {
-            write_status(
-                &installed.status_file,
-                "pending_native_recovery",
-                None,
-                Some(&error.to_string()),
-            )?;
-            continue;
+        match model.maintain_native_control(Duration::from_secs(5)).await {
+            Ok(receipt) => {
+                let pending = receipt.aborts_unresolved > 0
+                    || receipt.terminal_publications_unresolved > 0
+                    || receipt.cleanup_error.is_some()
+                    || receipt.cleanup.is_some_and(|cleanup| {
+                        cleanup.pending_pre_effect > 0
+                            || cleanup.unknown_history_retained > 0
+                            || cleanup.terminal_cleanup_pending > 0
+                            || cleanup.actively_cleaning > 0
+                    });
+                status["maintenance"] = serde_json::json!({
+                    "state": if pending { "pending_native_recovery" } else { "completed_batch" },
+                    "aborts_attempted": receipt.aborts_attempted,
+                    "aborts_confirmed": receipt.aborts_confirmed,
+                    "aborts_unresolved": receipt.aborts_unresolved,
+                    "terminal_publications_attempted": receipt.terminal_publications_attempted,
+                    "terminal_publications_acknowledged": receipt.terminal_publications_acknowledged,
+                    "terminal_publications_unresolved": receipt.terminal_publications_unresolved,
+                    "history": receipt.history.map(|history| serde_json::json!({
+                        "archived_records": history.archived_records,
+                        "resident_native_records": history.resident_native_records,
+                        "journal_bytes": history.journal_bytes,
+                        "journal_compacted": history.journal_compacted,
+                    })),
+                    "cleanup": receipt.cleanup.map(|cleanup| serde_json::json!({
+                        "pending_pre_effect": cleanup.pending_pre_effect,
+                        "unknown_history_retained": cleanup.unknown_history_retained,
+                        "terminal_cleanup_pending": cleanup.terminal_cleanup_pending,
+                        "actively_cleaning": cleanup.actively_cleaning,
+                        "oldest_pending_age_ms": cleanup.oldest_pending_age_ms,
+                    })),
+                    "diagnostic": receipt.cleanup_error.map(|error| error.chars().take(2048).collect::<String>()),
+                });
+                publish_status(&installed.status_file, &status)?;
+            }
+            Err(error) => {
+                status["maintenance"] = serde_json::json!({
+                    "state": "pending_native_recovery",
+                    "diagnostic": error.to_string().chars().take(2048).collect::<String>(),
+                });
+                publish_status(&installed.status_file, &status)?;
+                continue;
+            }
         }
         if proposal_attempted {
             continue;
@@ -243,6 +284,7 @@ async fn run_model_owner(
         )?;
         write_status(
             &installed.status_file,
+            &mut status,
             "pending_inputs",
             Some(&readiness),
             None,
@@ -281,9 +323,10 @@ async fn run_model_owner(
         )
         .await;
         match result {
-            Ok(proposal) => write_proposal(&installed.status_file, &proposal)?,
+            Ok(proposal) => write_proposal(&installed.status_file, &mut status, &proposal)?,
             Err(error) => write_status(
                 &installed.status_file,
+                &mut status,
                 "pending_model_observation",
                 Some(&readiness),
                 Some(&error.to_string()),
@@ -324,26 +367,30 @@ fn private_parent(path: &Path) -> Result<(), AgentdError> {
 }
 fn write_status(
     path: &Path,
+    status: &mut serde_json::Value,
     state: &str,
     readiness: Option<&AgentdSelfIterationArtifactReadinessV1>,
     error: Option<&str>,
 ) -> Result<(), AgentdError> {
-    publish_status(
-        path,
-        &serde_json::json!({"version":1,"state":state,"inputs":readiness.map(|value| format!("{value:?}")),
-        "diagnostic":error.map(|message| message.chars().take(2048).collect::<String>()), "generation_ready":false,"authority_grants":false}),
-    )
+    status["state"] = serde_json::json!(state);
+    status["inputs"] = serde_json::json!(readiness.map(|value| format!("{value:?}")));
+    status["diagnostic"] =
+        serde_json::json!(error.map(|message| message.chars().take(2048).collect::<String>()));
+    publish_status(path, status)
 }
 fn write_proposal(
     path: &Path,
+    status: &mut serde_json::Value,
     proposal: &codex_hepta_agentd::AgentdSelfIterationPendingProposalV1,
 ) -> Result<(), AgentdError> {
-    publish_status(
-        path,
-        &serde_json::json!({"version":1,"state":"pending_inputs_advisory_proposal","inputs":format!("{:?}",proposal.readiness),
-        "proposal_id":proposal.assessment.request_id.to_string(),"proposal":proposal.assessment.model_output,
-        "native_run_digest":proposal.assessment.native_run_digest.to_string(),"generation_ready":false,"authority_grants":false}),
-    )
+    status["state"] = serde_json::json!("pending_inputs_advisory_proposal");
+    status["inputs"] = serde_json::json!(format!("{:?}", proposal.readiness));
+    status["proposal_id"] = serde_json::json!(proposal.assessment.request_id.to_string());
+    status["proposal"] = serde_json::json!(proposal.assessment.model_output);
+    status["native_run_digest"] =
+        serde_json::json!(proposal.assessment.native_run_digest.to_string());
+    status["diagnostic"] = serde_json::Value::Null;
+    publish_status(path, status)
 }
 fn publish_status(path: &Path, value: &serde_json::Value) -> Result<(), AgentdError> {
     private_parent(path)?;
