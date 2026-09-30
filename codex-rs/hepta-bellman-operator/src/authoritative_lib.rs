@@ -95,66 +95,6 @@ pub use legacy::verify_tabular_operator_plan_v3;
 pub use legacy::verify_world_model_dataset_v3;
 pub use legacy::world_model_training_signing_payload_v2;
 
-/// Non-default compatibility surface for structural fitters and V2 caller-
-/// authored verified inputs. These functions do not grant final-use authority.
-#[cfg(feature = "qualification-unverified-input")]
-pub mod compatibility {
-    pub use super::legacy::TransitionEstimateV2;
-    pub use super::legacy::VerifiedTabularOperatorPlanV2;
-    pub use super::legacy::VerifiedWorldModelDatasetV2;
-    pub use super::legacy::fit_tabular_operator;
-    pub use super::legacy::fit_tabular_operator_strict_v2;
-    pub use super::legacy::fit_tabular_operator_verified_v2;
-    pub use super::legacy::fit_transition_model;
-    pub use super::legacy::fit_transition_model_verified_v2;
-    pub use super::legacy::predict_tabular_operator;
-    pub use super::legacy::predict_tabular_operator_indexed_v2;
-    pub use super::legacy::predict_transition;
-    pub use super::legacy::train;
-    pub use super::legacy::verify_tabular_operator_plan_v2;
-    pub use super::legacy::verify_world_model_dataset_v2;
-}
-
-// Temporary feature-gated aliases keep existing qualification fixtures source-
-// compatible while callers migrate to `compatibility::*`. They are absent from
-// the default public API and therefore cannot be used by product dependencies.
-#[cfg(feature = "qualification-unverified-input")]
-#[deprecated(note = "use codex_hepta_bellman_operator::compatibility")]
-pub use compatibility::fit_tabular_operator;
-#[cfg(feature = "qualification-unverified-input")]
-#[deprecated(note = "use codex_hepta_bellman_operator::compatibility")]
-pub use compatibility::fit_tabular_operator_strict_v2;
-#[cfg(feature = "qualification-unverified-input")]
-#[deprecated(note = "use codex_hepta_bellman_operator::compatibility")]
-pub use compatibility::fit_tabular_operator_verified_v2;
-#[cfg(feature = "qualification-unverified-input")]
-#[deprecated(note = "use codex_hepta_bellman_operator::compatibility")]
-pub use compatibility::fit_transition_model;
-#[cfg(feature = "qualification-unverified-input")]
-#[deprecated(note = "use codex_hepta_bellman_operator::compatibility")]
-pub use compatibility::fit_transition_model_verified_v2;
-#[cfg(feature = "qualification-unverified-input")]
-#[deprecated(note = "use codex_hepta_bellman_operator::compatibility")]
-pub use compatibility::predict_tabular_operator;
-#[cfg(feature = "qualification-unverified-input")]
-#[deprecated(note = "use codex_hepta_bellman_operator::compatibility")]
-pub use compatibility::predict_tabular_operator_indexed_v2;
-#[cfg(feature = "qualification-unverified-input")]
-#[deprecated(note = "use codex_hepta_bellman_operator::compatibility")]
-pub use compatibility::predict_transition;
-#[cfg(feature = "qualification-unverified-input")]
-#[deprecated(note = "use codex_hepta_bellman_operator::compatibility")]
-pub use compatibility::verify_tabular_operator_plan_v2;
-#[cfg(feature = "qualification-unverified-input")]
-#[deprecated(note = "use codex_hepta_bellman_operator::compatibility")]
-pub use compatibility::verify_world_model_dataset_v2;
-#[cfg(feature = "qualification-unverified-input")]
-pub use compatibility::TransitionEstimateV2;
-#[cfg(feature = "qualification-unverified-input")]
-pub use compatibility::VerifiedTabularOperatorPlanV2;
-#[cfg(feature = "qualification-unverified-input")]
-pub use compatibility::VerifiedWorldModelDatasetV2;
-
 mod budget;
 pub use budget::OperatorResourceBudgetV1;
 pub use budget::OperatorResourceKindV1;
@@ -195,6 +135,8 @@ mod world_model_v2;
 pub use world_model_v2::TransitionBranchV2;
 pub use world_model_v2::WorldModelPredictionV2;
 #[cfg(feature = "qualification-unverified-input")]
+pub use world_model_v2::TransitionEstimateV2;
+#[cfg(feature = "qualification-unverified-input")]
 pub use world_model_v2::WORLD_MODEL_ARTIFACT_SCHEMA_V2;
 #[cfg(feature = "qualification-unverified-input")]
 pub use world_model_v2::WorldModelArtifactV2;
@@ -207,6 +149,62 @@ pub use world_model_v2::WorldModelV2Error;
 pub use world_model_v2::fit_world_model_v2;
 #[cfg(feature = "qualification-unverified-input")]
 pub use world_model_v2::predict_world_model_v2;
+
+/// Non-default compatibility surface for structural fitters and V2 caller-
+/// authored verified inputs. These functions do not grant final-use authority.
+#[cfg(feature = "qualification-unverified-input")]
+pub mod compatibility {
+    pub use super::legacy::VerifiedTabularOperatorPlanV2;
+    pub use super::legacy::VerifiedWorldModelDatasetV2;
+    pub use super::legacy::fit_tabular_operator;
+    pub use super::legacy::fit_tabular_operator_strict_v2;
+    pub use super::legacy::fit_tabular_operator_verified_v2;
+    pub use super::legacy::fit_transition_model;
+    pub use super::legacy::fit_transition_model_verified_v2;
+    pub use super::legacy::predict_tabular_operator;
+    pub use super::legacy::predict_tabular_operator_indexed_v2;
+    pub use super::legacy::predict_transition;
+    pub use super::legacy::train;
+    pub use super::legacy::verify_tabular_operator_plan_v2;
+    pub use super::legacy::verify_world_model_dataset_v2;
+    pub use super::tabular_v2::TabularFitReceiptV2;
+    pub use super::tabular_v2::fit_tabular_operator_bounded_v2;
+    pub use super::world_model_v2::TransitionEstimateV2;
+    pub use super::world_model_v2::WORLD_MODEL_ARTIFACT_SCHEMA_V2;
+    pub use super::world_model_v2::WorldModelArtifactV2;
+    pub use super::world_model_v2::WorldModelPlanV2;
+    pub use super::world_model_v2::WorldModelUsePinV2;
+    pub use super::world_model_v2::fit_world_model_v2;
+    pub use super::world_model_v2::predict_world_model_v2;
+}
+
+// Feature-gated aliases keep existing qualification fixtures source-compatible
+// while callers migrate to `compatibility::*`. They are absent from the default
+// public API and cannot be used by ordinary product dependencies.
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::VerifiedTabularOperatorPlanV2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::VerifiedWorldModelDatasetV2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::fit_tabular_operator;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::fit_tabular_operator_strict_v2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::fit_tabular_operator_verified_v2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::fit_transition_model;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::fit_transition_model_verified_v2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::predict_tabular_operator;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::predict_tabular_operator_indexed_v2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::predict_transition;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::verify_tabular_operator_plan_v2;
+#[cfg(feature = "qualification-unverified-input")]
+pub use compatibility::verify_world_model_dataset_v2;
 
 mod final_use;
 pub use final_use::FinalUseErrorV1;
