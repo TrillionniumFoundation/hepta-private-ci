@@ -216,8 +216,7 @@ fn exchange(
     let mut stream = loop {
         match TcpStream::connect(address) {
             Ok(stream) => break stream,
-            Err(error) if std::time::Instant::now() < deadline => {
-                let _ = error;
+            Err(_error) if std::time::Instant::now() < deadline => {
                 thread::sleep(Duration::from_millis(10));
             }
             Err(error) => panic!("connect daemon: {error}"),
@@ -260,7 +259,7 @@ fn real_daemon_bootstrap_kill_restart_metrics_and_durable_shutdown() {
     );
     let metrics = String::from_utf8(metrics).expect("Prometheus text");
     assert!(metrics.contains("hepta_learning_artifact_requests_received_total"));
-    assert!(metrics.contains("hepta_learning_artifact_oldest_pending_attempt_age_seconds") == false);
+    assert!(!metrics.contains("hepta_learning_artifact_oldest_pending_attempt_age_seconds"));
 
     let shutdown = exchange(
         address,
