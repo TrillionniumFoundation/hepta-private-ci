@@ -7,9 +7,12 @@ import re
 import subprocess
 import unittest
 
-from scripts.hepta_supervisor_ci import PLANS
-from scripts.hepta_supervisor_ci import REQUIRED_BINARY_TESTS
-from scripts.hepta_supervisor_ci import BINDING_PATHS
+from scripts.hepta_supervisor_ci_v3 import current_plan
+
+PLAN = current_plan()
+BINDING_PATHS = PLAN.binding_paths
+PLANS = PLAN.plans
+REQUIRED_BINARY_TESTS = PLAN.required_binary_tests
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/hepta-supervisor-qualification.yml"
@@ -19,11 +22,11 @@ class WorkflowTests(unittest.TestCase):
     def setUp(self):
         self.text = WORKFLOW.read_text()
 
-    def test_all_seven_suites_are_dispatched_exactly_once_without_success_dependency(self):
+    def test_all_candidate_bound_suites_are_dispatched_exactly_once(self):
         steps = self.text.split("      - name: ")
         names = []
         for step in steps:
-            match = re.search(r"hepta_supervisor_ci\.py execute ([a-z-]+) --records", step)
+            match = re.search(r"hepta_supervisor_ci_v3\.py execute ([a-z-]+) --records", step)
             if match:
                 names.append(match[1])
                 self.assertIn("if: ${{ !cancelled() && steps.ready.outcome == 'success' }}", step)
@@ -31,19 +34,31 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(set(names), set(PLANS))
         self.assertEqual(len(names), len(PLANS))
 
-    def test_rejection_suites_are_run_and_all_evidence_changes_trigger_native_scope(self):
-        for module in ("test_hepta_supervisor_ci", "test_hepta_supervisor_evidence",
-                       "test_hepta_supervisor_workflow"):
+    def test_rejection_suites_and_all_evidence_changes_trigger_scope(self):
+        for module in (
+            "test_hepta_supervisor_ci", "test_hepta_supervisor_evidence",
+            "test_hepta_supervisor_workflow", "test_hepta_supervisor_status",
+            "test_hepta_supervisor_external_receipt", "test_hepta_supervisor_ci_v3",
+        ):
             self.assertIn(f"scripts.{module}", self.text)
-        for path in ("scripts/hepta_supervisor_ci.py", "scripts/hepta_supervisor_evidence.py",
-                     "scripts/test_hepta_supervisor_ci.py",
-                     "scripts/test_hepta_supervisor_evidence.py",
-                     "scripts/test_hepta_supervisor_workflow.py"):
+        for path in (
+            "scripts/hepta_supervisor_ci.py", "scripts/hepta_supervisor_ci_v3.py",
+            "scripts/hepta_supervisor_evidence.py", "scripts/hepta_supervisor_status.py",
+            "scripts/hepta_supervisor_external_receipt.py",
+            "scripts/hepta_supervisor_artifact_gate.py",
+            "scripts/test_hepta_supervisor_ci.py",
+            "scripts/test_hepta_supervisor_ci_v3.py",
+            "scripts/test_hepta_supervisor_evidence.py",
+            "scripts/test_hepta_supervisor_workflow.py",
+            "scripts/test_hepta_supervisor_status.py",
+            "scripts/test_hepta_supervisor_external_receipt.py",
+        ):
             self.assertIn(f'"{path}"', self.text)
             self.assertIn(path, BINDING_PATHS)
         self.assertIn('p.startswith("docs/modules/runtime.supervisor/")', self.text)
 
-    def test_four_native_matrix_lanes_and_exact_checkout_are_retained(self):
+    def test_four_pr_lanes_exact_checkout_and_real_main_rerun_are_retained(self):
+        self.assertIn("push:\n    branches: [main]", self.text)
         self.assertIn("os: [ubuntu-24.04, macos-15]", self.text)
         self.assertIn('["source-head","base-merge"]', self.text)
         self.assertIn("ref: ${{ env.SOURCE_SHA }}", self.text)
@@ -51,7 +66,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('test "$(git rev-parse HEAD)" = "$CANDIDATE"', self.text)
         self.assertIn("nextest@0.9.103", self.text)
 
-    def test_default_authority_denial_is_not_a_cfg_test_library_claim(self):
+    def test_default_authority_denial_uses_only_the_pinned_bundle(self):
         command = PLANS["default-products"][1]
         self.assertIn("--no-default-features", command)
         self.assertNotIn("--features", command)
@@ -59,6 +74,8 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('#![cfg(all(unix, not(feature = "production-authority")))]', source)
         self.assertIn('env!("CARGO_BIN_EXE_hepta-supervisord")', source)
         self.assertIn('Err(SupervisorError::ProductionAuthorityFeatureDisabled)', source)
+        self.assertIn('"--authority-bundle"', source)
+        self.assertNotIn('"--grant-verifier-key"', source)
         for name in REQUIRED_BINARY_TESTS["default-products"][
             "codex-hepta-supervisor::default_authority_denied"
         ]:
@@ -86,8 +103,6 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("if: ${{ always() }}", block)
         script = block.split("        run: |\n", 1)[1]
         script = "\n".join(line[10:] for line in script.splitlines())
-        # Execute the workflow's actual shell policy over the outcome table,
-        # rather than checking that a gate merely has a reassuring name.
         for scope in ("success", "failure", "skipped", "cancelled", ""):
             for required in ("true", "false", "", "unexpected"):
                 for result in ("success", "failure", "skipped", "cancelled", ""):

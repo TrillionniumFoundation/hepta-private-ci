@@ -3,6 +3,7 @@
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::os::unix::fs::OpenOptionsExt;
+use std::os::unix::fs::PermissionsExt;
 use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
@@ -14,6 +15,7 @@ use anyhow::Result;
 use anyhow::ensure;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::H7H89ProductionGrantVerifier;
+use codex_hepta_supervisor::ProductionAuthorityBundle;
 use codex_hepta_supervisor::SupervisorError;
 use ed25519_dalek::SigningKey;
 use tokio_util::sync::CancellationToken;
@@ -51,22 +53,25 @@ async fn default_library_refuses_runtime_verifier_before_opening_fleet() -> Resu
 }
 
 #[test]
-fn default_daemon_refuses_valid_verifier_configuration_before_fleet_mutation() -> Result<()> {
+fn default_daemon_refuses_pinned_bundle_before_fleet_mutation() -> Result<()> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet = root.join("fleet-must-not-exist");
-    let key = root.join("fixture.pub");
-    let public = SigningKey::from_bytes(&TEST_SEED).verifying_key().to_bytes();
-    {
-        use std::io::Write;
-        let mut file = OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .mode(0o600)
-            .open(&key)?;
-        file.write_all(&public)?;
-        file.sync_all()?;
-    }
+    let key = SigningKey::from_bytes(&TEST_SEED);
+    let h7_key = SigningKey::from_bytes(&[118; 32]);
+    let bundle = ProductionAuthorityBundle::new(
+        "default-denial-fixture",
+        1,
+        key.verifying_key(),
+        "default-h7-fixture",
+        1,
+        h7_key.verifying_key(),
+    )?;
+    let bundle_path = root.join("authority-bundle.json");
+    let bundle_bytes = bundle.to_json_bytes()?;
+    std::fs::write(&bundle_path, &bundle_bytes)?;
+    std::fs::set_permissions(&bundle_path, std::fs::Permissions::from_mode(0o600))?;
+
     // Use a regular diagnostic file rather than a pipe a child could retain.
     let diagnostic = root.join("stderr.log");
     let stderr = OpenOptions::new()
@@ -78,14 +83,10 @@ fn default_daemon_refuses_valid_verifier_configuration_before_fleet_mutation() -
         Command::new(env!("CARGO_BIN_EXE_hepta-supervisord"))
             .arg("--fleet-root")
             .arg(&fleet)
-            .arg("--grant-verifier-key")
-            .arg(&key)
-            .args(["--grant-signer-id", "default-denial-fixture"])
-            .args(["--grant-signer-epoch", "1"])
-            .arg("--h7-verifier-key")
-            .arg(&key)
-            .args(["--h7-signer-id", "default-h7-fixture"])
-            .args(["--h7-signer-epoch", "1"])
+            .arg("--authority-bundle")
+            .arg(&bundle_path)
+            .arg("--authority-bundle-sha256")
+            .arg(bundle.bundle_sha256.as_str())
             .stdin(Stdio::null())
             .stdout(Stdio::null())
             .stderr(stderr)
@@ -120,7 +121,7 @@ fn default_daemon_refuses_valid_verifier_configuration_before_fleet_mutation() -
     );
     ensure!(!fleet.exists(), "default daemon touched fleet state");
     ensure!(
-        std::fs::read(&key)? == public,
+        std::fs::read(&bundle_path)? == bundle_bytes,
         "daemon changed verifier material"
     );
     Ok(())

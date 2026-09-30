@@ -1,0 +1,296 @@
+{
+  "capabilities": [
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "single_instance_owner",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/src/daemon_owner.rs",
+        "codex-rs/hepta-supervisor/src/daemon.rs",
+        "codex-rs/hepta-supervisor/tests/daemon_product.rs"
+      ],
+      "summary": "Stable-inode single-instance owner lock and owner-only control socket",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "exact_process_identity",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/src/unix.rs",
+        "docs/modules/runtime.supervisor/PROCESS_LIFETIME.md"
+      ],
+      "summary": "PID plus retained kernel lifetime identity; no adopted bare-PID signal fallback",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "durable_stop_kill_control",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/src/control_intent.rs",
+        "codex-rs/hepta-supervisor/src/control_durable_restart_tests.rs"
+      ],
+      "summary": "Stop/Kill kind, exact process/spawn identity, lifecycle generation, phase and operation/record digests are durable before effect",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "durable_original_stop_deadline",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/src/control_intent.rs",
+        "codex-rs/hepta-supervisor/src/control_durable_restart_tests.rs"
+      ],
+      "summary": "Stop recovery reuses the original durable deadline instead of granting a fresh grace interval",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "durable_restart_cancellation",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/src/control.rs",
+        "codex-rs/hepta-supervisor/src/control_intent.rs",
+        "docs/modules/runtime.supervisor/RESTART_CANCELLATION.md"
+      ],
+      "summary": "Journaled Stop/Kill persists restart cancellation before absence reconciliation may terminalize control",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "not_applicable",
+      "id": "cross_daemon_exit_cleanup_witness",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "not_applicable",
+      "source": "not_implemented",
+      "source_paths": [
+        "docs/modules/runtime.supervisor/PROCESS_OWNERSHIP.md"
+      ],
+      "summary": "Failed-publication exit cleanup proof that survives daemon restart",
+      "target_host": "not_applicable",
+      "test_source": "partial"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "predecessor_replacement_lineage",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "partial",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/src/restart_lineage.rs",
+        "docs/modules/runtime.supervisor/RESTART_LINEAGE_REPAIR_20260928.md"
+      ],
+      "summary": "Complete predecessor/replacement identity proof across launch-before-lease and rejected-adoption boundaries",
+      "target_host": "not_run",
+      "test_source": "partial"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "bounded_read_projection",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/src/daemon_read_view.rs",
+        "docs/modules/runtime.supervisor/OWNER_AND_READ_ISOLATION.md"
+      ],
+      "summary": "Health, roster and snapshot use a bounded immutable non-authoritative projection",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "coalesced_tick_projection",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/src/daemon_execution.rs",
+        "codex-rs/hepta-supervisor/src/daemon_execution_tests.rs"
+      ],
+      "summary": "Tick authority remains 25 ms while tick-only whole-fleet projection rebuilds are coalesced to 100 ms; mutation publication remains immediate",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "not_applicable",
+      "id": "incremental_per_agent_projection",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "not_applicable",
+      "source": "not_implemented",
+      "source_paths": [
+        "docs/modules/runtime.supervisor/TARGET_HOST_PROFILE.json"
+      ],
+      "summary": "Incremental dirty-Agent projection rather than a periodic whole-fleet rebuild",
+      "target_host": "not_applicable",
+      "test_source": "absent"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "digest_pinned_authority_bundle",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/src/authority_bundle.rs",
+        "codex-rs/hepta-supervisor/src/main.rs"
+      ],
+      "summary": "Production verifier material is supplied only through an exact-digest authority bundle",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "verifier_signer_build_split",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/Cargo.toml",
+        "codex-rs/hepta-supervisor/src/lib.rs",
+        "scripts/hepta_supervisor_status.py"
+      ],
+      "summary": "Verifier-only daemon and offline private-key tools require different explicit Cargo features",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "legacy_six_field_verifier_tuple_removed",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "codex-rs/hepta-supervisor/src/main.rs",
+        "codex-rs/hepta-supervisor/src/main_key_tests.rs"
+      ],
+      "summary": "hepta-supervisord rejects legacy grant/H7 key-id-epoch tuples",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "not_applicable",
+      "id": "atomic_recovery_observation_envelope",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "not_applicable",
+      "source": "not_implemented",
+      "source_paths": [
+        "docs/modules/runtime.supervisor/PRODUCTION_BOUNDARY.md"
+      ],
+      "summary": "One daemon-generated digest-bound recovery observation produced under the owner boundary",
+      "target_host": "not_applicable",
+      "test_source": "absent"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "target_host_receipt_gate",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "scripts/hepta_supervisor_external_receipt.py",
+        ".github/workflows/runtime-supervisor-target-host-qualification.yml"
+      ],
+      "summary": "Linux/macOS target-host evidence is validated separately from repository CI",
+      "target_host": "not_run",
+      "test_source": "present"
+    },
+    {
+      "activated": false,
+      "exact_head": "pending",
+      "id": "production_acceptance_gate",
+      "independent_acceptance": "not_obtained",
+      "merge_candidate": "pending",
+      "source": "implemented",
+      "source_paths": [
+        "docs/modules/runtime.supervisor/PRODUCTION_QUALIFICATION_PROFILE.json",
+        "scripts/hepta_supervisor_external_receipt.py"
+      ],
+      "summary": "Activation requires target hosts, key custody, fault matrix, operator drill and distinct code/security/operations acceptance",
+      "target_host": "not_run",
+      "test_source": "present"
+    }
+  ],
+  "current": {
+    "activated": false,
+    "claim": "source candidate; repository and external qualification remain separate evidence gates",
+    "exact_head": "pending",
+    "independent_acceptance": "not_obtained",
+    "merge_candidate": "pending",
+    "release": false,
+    "source": "partial",
+    "target_host": "not_run",
+    "test_source": "present"
+  },
+  "generated_status_path": "docs/modules/runtime.supervisor/CURRENT_STATUS.md",
+  "module": "runtime.supervisor",
+  "schema_version": 1,
+  "status_semantics": {
+    "exact_head": [
+      "pending",
+      "passed",
+      "failed",
+      "not_applicable"
+    ],
+    "independent_acceptance": [
+      "not_obtained",
+      "pending",
+      "accepted",
+      "rejected",
+      "not_applicable"
+    ],
+    "merge_candidate": [
+      "pending",
+      "passed",
+      "failed",
+      "not_applicable"
+    ],
+    "source": [
+      "implemented",
+      "partial",
+      "not_implemented"
+    ],
+    "target_host": [
+      "not_run",
+      "pending",
+      "passed",
+      "failed",
+      "not_applicable"
+    ],
+    "test_source": [
+      "present",
+      "partial",
+      "absent"
+    ]
+  }
+}

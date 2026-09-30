@@ -140,3 +140,17 @@ async fn queued_request_gets_owner_capacity_before_a_later_tick() -> Result<()> 
     timeout(Duration::from_secs(1), ticker).await?;
     Ok(())
 }
+
+#[test]
+fn tick_projection_refresh_is_coalesced_at_the_fixed_interval() {
+    let execution = Execution::new(CancellationToken::new());
+    let started = execution.started;
+    execution
+        .last_view_refresh_us
+        .store(20_000, Ordering::Relaxed);
+    assert!(!execution.view_refresh_due(started + Duration::from_millis(119)));
+    assert!(execution.view_refresh_due(started + Duration::from_millis(120)));
+    execution.note_view_refresh(started + Duration::from_millis(120));
+    assert!(!execution.view_refresh_due(started + Duration::from_millis(219)));
+    assert!(execution.view_refresh_due(started + Duration::from_millis(220)));
+}

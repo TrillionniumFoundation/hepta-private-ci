@@ -25,6 +25,11 @@ use super::read_view::ReadView;
 use super::read_view::unavailable;
 use crate::UnixProcessDriver;
 
+// The authoritative lifecycle tick remains 25 ms. The immutable whole-fleet
+// observation is only a bounded read projection, so coalesce tick-only rebuilds
+// instead of reloading and re-projecting all 256 Agents after every tick.
+const READ_VIEW_REFRESH_INTERVAL: Duration = Duration::from_millis(100);
+
 pub(super) struct Execution {
     pub(super) view: ReadView,
     slots: Arc<Semaphore>,
@@ -33,6 +38,9 @@ pub(super) struct Execution {
     rejected: AtomicU64,
     completed: AtomicU64,
     tick_delay_max_us: AtomicU64,
+    view_refreshes: AtomicU64,
+    view_refresh_skips: AtomicU64,
+    last_view_refresh_us: AtomicU64,
     started: Instant,
     last_log_second: AtomicU64,
 }
@@ -48,6 +56,9 @@ impl Execution {
             rejected: AtomicU64::new(0),
             completed: AtomicU64::new(0),
             tick_delay_max_us: AtomicU64::new(0),
+            view_refreshes: AtomicU64::new(0),
+            view_refresh_skips: AtomicU64::new(0),
+            last_view_refresh_us: AtomicU64::new(0),
             started: Instant::now(),
             last_log_second: AtomicU64::new(0),
         }
@@ -59,6 +70,22 @@ impl Execution {
 
     fn stopped(&self) -> bool {
         self.poisoned.load(Ordering::Acquire) || self.cancellation.is_cancelled()
+    }
+
+    fn elapsed_us(&self, now: Instant) -> u64 {
+        micros(now.saturating_duration_since(self.started))
+    }
+
+    fn view_refresh_due(&self, now: Instant) -> bool {
+        self.elapsed_us(now).saturating_sub(
+            self.last_view_refresh_us.load(Ordering::Relaxed),
+        ) >= micros(READ_VIEW_REFRESH_INTERVAL)
+    }
+
+    fn note_view_refresh(&self, now: Instant) {
+        self.last_view_refresh_us
+            .store(self.elapsed_us(now), Ordering::Relaxed);
+        self.view_refreshes.fetch_add(1, Ordering::Relaxed);
     }
 }
 
@@ -139,6 +166,8 @@ pub(super) async fn handle(
     match spawn_owned(state, permit, move |state| {
         let reply = runtime.block_on(super::handle_request(Arc::clone(state), method));
         let supervisor = state.supervisor.blocking_lock();
+        // A live owner request may have changed state and therefore always
+        // publishes a fresh projection before its result becomes observable.
         refresh(state, &supervisor);
         reply
     })
@@ -174,7 +203,7 @@ pub(super) async fn tick(state: Arc<DaemonState<UnixProcessDriver>>, scheduled: 
         state
             .observed_faults
             .fetch_add(faults.len() as u64, Ordering::Relaxed);
-        refresh(state, &supervisor);
+        refresh_if_due(state, &supervisor, Instant::now());
         drop(supervisor);
         let second = execution.started.elapsed().as_secs();
         let previous = execution.last_log_second.load(Ordering::Relaxed);
@@ -186,19 +215,44 @@ pub(super) async fn tick(state: Arc<DaemonState<UnixProcessDriver>>, scheduled: 
         {
             state.supervisor.log_snapshot();
             eprintln!(
-                "hepta_supervisord_scheduler completed={} rejected_busy={} tick_delay_max_us={}",
+                "hepta_supervisord_scheduler completed={} rejected_busy={} tick_delay_max_us={} view_refreshes={} view_refresh_skips={}",
                 execution.completed.load(Ordering::Relaxed),
                 execution.rejected.load(Ordering::Relaxed),
                 execution.tick_delay_max_us.load(Ordering::Relaxed),
+                execution.view_refreshes.load(Ordering::Relaxed),
+                execution.view_refresh_skips.load(Ordering::Relaxed),
             );
         }
     })
     .await;
 }
 
+fn refresh_if_due(
+    state: &DaemonState<UnixProcessDriver>,
+    supervisor: &crate::Supervisor<UnixProcessDriver>,
+    now: Instant,
+) {
+    if state.execution.view_refresh_due(now) {
+        refresh_at(state, supervisor, now);
+    } else {
+        state
+            .execution
+            .view_refresh_skips
+            .fetch_add(1, Ordering::Relaxed);
+    }
+}
+
 pub(super) fn refresh(
     state: &DaemonState<UnixProcessDriver>,
     supervisor: &crate::Supervisor<UnixProcessDriver>,
+) {
+    refresh_at(state, supervisor, Instant::now());
+}
+
+fn refresh_at(
+    state: &DaemonState<UnixProcessDriver>,
+    supervisor: &crate::Supervisor<UnixProcessDriver>,
+    now: Instant,
 ) {
     if state
         .execution
@@ -208,6 +262,8 @@ pub(super) fn refresh(
     {
         state.execution.view.invalidate();
         state.observed_faults.fetch_add(1, Ordering::Relaxed);
+    } else {
+        state.execution.note_view_refresh(now);
     }
 }
 

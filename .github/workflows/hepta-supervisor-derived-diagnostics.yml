@@ -10,6 +10,10 @@ on:
       - "scripts/hepta-module-docs.py"
       - "scripts/hepta-lane-b-truth.py"
       - "scripts/hepta-docs.py"
+      - "scripts/hepta_supervisor_status.py"
+      - "scripts/hepta_supervisor_external_receipt.py"
+      - "scripts/test_hepta_supervisor_status.py"
+      - "scripts/test_hepta_supervisor_external_receipt.py"
       - ".github/workflows/hepta-supervisor-derived-diagnostics.yml"
   workflow_dispatch:
 
@@ -49,6 +53,17 @@ jobs:
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
+      - name: Test supervisor truth validators
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            scripts.test_hepta_supervisor_status \
+            scripts.test_hepta_supervisor_external_receipt \
+            > .hepta-evidence/supervisor-validator-tests.log 2>&1
+          python3 scripts/hepta_supervisor_status.py check \
+            > .hepta-evidence/supervisor-status.log 2>&1
+
       - name: Regenerate projections without publishing
         shell: bash
         run: |
@@ -56,19 +71,39 @@ jobs:
           python3 scripts/hepta-module-docs.py refresh-derived
           python3 scripts/hepta-lane-b-truth.py generate
           python3 scripts/hepta-docs.py generate-status
+          python3 scripts/hepta_supervisor_status.py generate
           git diff --check
-          git diff --binary --             docs/modules/MODULE_DOCS.json             docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json             docs/STATUS.md             qualification/lane-b/LANE_B_NATIVE_CLOSURE.md             qualification/lane-b/TEST_TRACEABILITY.json             > .hepta-evidence/runtime-supervisor-derived.patch
+          git diff --binary -- \
+            docs/modules/MODULE_DOCS.json \
+            docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json \
+            docs/modules/runtime.supervisor/CURRENT_STATUS.md \
+            docs/STATUS.md \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json \
+            > .hepta-evidence/runtime-supervisor-derived.patch
           git status --short > .hepta-evidence/status.txt
-          sha256sum .hepta-evidence/runtime-supervisor-derived.patch             > .hepta-evidence/runtime-supervisor-derived.patch.sha256
+          sha256sum .hepta-evidence/runtime-supervisor-derived.patch \
+            > .hepta-evidence/runtime-supervisor-derived.patch.sha256
 
       - name: Verify generated truth and exact clean parity
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-module-docs.py refresh-derived --check             > .hepta-evidence/module-docs.log 2>&1
-          python3 scripts/hepta-lane-b-truth.py verify             > .hepta-evidence/lane-b.log 2>&1
-          python3 scripts/hepta-docs.py verify             > .hepta-evidence/development-docs.log 2>&1
-          if ! git diff --quiet --             docs/modules/MODULE_DOCS.json             docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json             docs/STATUS.md             qualification/lane-b/LANE_B_NATIVE_CLOSURE.md             qualification/lane-b/TEST_TRACEABILITY.json; then
+          python3 scripts/hepta-module-docs.py refresh-derived --check \
+            > .hepta-evidence/module-docs.log 2>&1
+          python3 scripts/hepta-lane-b-truth.py verify \
+            > .hepta-evidence/lane-b.log 2>&1
+          python3 scripts/hepta-docs.py verify \
+            > .hepta-evidence/development-docs.log 2>&1
+          python3 scripts/hepta_supervisor_status.py check \
+            > .hepta-evidence/supervisor-status-after.log 2>&1
+          if ! git diff --quiet -- \
+            docs/modules/MODULE_DOCS.json \
+            docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json \
+            docs/modules/runtime.supervisor/CURRENT_STATUS.md \
+            docs/STATUS.md \
+            qualification/lane-b/LANE_B_NATIVE_CLOSURE.md \
+            qualification/lane-b/TEST_TRACEABILITY.json; then
             echo "tracked derived truth is stale for the exact candidate" >&2
             cat .hepta-evidence/status.txt >&2
             exit 1

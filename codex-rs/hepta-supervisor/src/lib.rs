@@ -3,6 +3,7 @@
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
 mod authority_bundle;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 mod authority_signer;
 mod control;
 mod control_intent;
@@ -53,14 +54,23 @@ pub use authority_bundle::PRODUCTION_AUTHORITY_BUNDLE_NAMESPACE;
 pub use authority_bundle::PRODUCTION_AUTHORITY_BUNDLE_SCHEMA_VERSION;
 pub use authority_bundle::ProductionAuthorityBundle;
 pub use authority_bundle::ProductionAuthorityBundleError;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::ExternalSignerError;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::MAX_SIGNING_KEY_INPUT_BYTES;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::MAX_SIGNING_REQUEST_BYTES;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::SignRequest;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::SignResponse;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::load_signing_key_from_fd;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::load_signing_key_from_path;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::read_request;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use authority_signer::sign_request;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
@@ -154,6 +164,7 @@ pub use robrix_protocol::RobrixSupervisordPayload;
 pub use robrix_protocol::RobrixSupervisordRequest;
 pub use robrix_protocol::RobrixSupervisordResponse;
 pub use signed_authority::H7H89ProductionGrant;
+#[cfg(any(test, feature = "offline-authority-tools"))]
 pub use signed_authority::H7H89ProductionGrantSigner;
 pub use signed_authority::H7H89ProductionGrantVerifier;
 pub use signed_authority::H7H89ProductionTransition;

@@ -3,6 +3,15 @@ name: Hepta supervisor qualification
 on:
   workflow_call:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/modules/runtime.supervisor/**"
+      - "scripts/hepta_supervisor_*.py"
+      - "scripts/test_hepta_supervisor_*.py"
+      - ".github/workflows/hepta-supervisor-qualification.yml"
+      - ".github/workflows/runtime-supervisor-target-host-qualification.yml"
 
 permissions:
   contents: read
@@ -24,10 +33,16 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Test receipt rejection policy
+      - name: Test stable receipt rejection policy
         run: >-
           python3 -m unittest -v scripts.test_hepta_supervisor_ci
-          scripts.test_hepta_supervisor_evidence scripts.test_hepta_supervisor_workflow
+          scripts.test_hepta_supervisor_evidence
+      - name: Test current status receipt and workflow policy
+        run: >-
+          python3 -m unittest -v scripts.test_hepta_supervisor_status
+          scripts.test_hepta_supervisor_external_receipt
+          scripts.test_hepta_supervisor_ci_v3
+          scripts.test_hepta_supervisor_workflow
       - name: Select native and supervisor documentation changes
         id: scope
         env:
@@ -47,10 +62,17 @@ jobs:
                   p.startswith("docs/modules/runtime.supervisor/")
                   or p in {
                       "scripts/hepta_supervisor_ci.py",
+                      "scripts/hepta_supervisor_ci_v3.py",
                       "scripts/hepta_supervisor_evidence.py",
+                      "scripts/hepta_supervisor_status.py",
+                      "scripts/hepta_supervisor_external_receipt.py",
+                      "scripts/hepta_supervisor_artifact_gate.py",
                       "scripts/test_hepta_supervisor_ci.py",
+                      "scripts/test_hepta_supervisor_ci_v3.py",
                       "scripts/test_hepta_supervisor_evidence.py",
                       "scripts/test_hepta_supervisor_workflow.py",
+                      "scripts/test_hepta_supervisor_status.py",
+                      "scripts/test_hepta_supervisor_external_receipt.py",
                   }
                   for p in paths
               )
@@ -106,6 +128,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$CANDIDATE"
           printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
           printf 'CARGO_TARGET_DIR=%s/hepta-supervisor-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'HEPTA_VERIFIER_TARGET_DIR=%s/hepta-supervisor-verifier-only\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           mkdir -p "$RUNNER_TEMP/hepta-supervisor/records"
           git diff --check
       - name: Install Linux process prerequisites
@@ -146,43 +169,52 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=normal)"
       # Every independent suite still runs after another suite fails. Failures
       # remain failures: no continue-on-error, no retries, no success fallback.
+      - name: Verify generated capability and current status truth
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute status --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Exercise current status and external receipt rejection tests
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute validator-tests --records "$RUNNER_TEMP/hepta-supervisor/records"
+      - name: Build and inspect verifier-only release artifact
+        if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute verifier-artifact --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Check supervisor formatting without mutation
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute format --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute format --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Exercise default library lifecycle fixtures
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute default --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute default --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Prove default library and daemon refuse production authority
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute default-products --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute default-products --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Exercise production-authority library
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute production --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute production --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Exercise qualification-only durability matrix
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute qualification-lib --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute qualification-lib --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Measure 256-Agent lifecycle-writer HOL
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute hol-256 --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute hol-256 --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Execute actual SIGKILL recovery matrix
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute sigkill --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute sigkill --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Exercise authority distribution and product pinning
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute authority-distribution --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute authority-distribution --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Exercise real signer daemon pairs and durable writer handoff
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute products --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute products --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Strict default-boundary supervisor lint
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute lint-default --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute lint-default --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Strict supervisor lint
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
-        run: python3 scripts/hepta_supervisor_ci.py execute lint --records "$RUNNER_TEMP/hepta-supervisor/records"
+        run: python3 scripts/hepta_supervisor_ci_v3.py execute lint --records "$RUNNER_TEMP/hepta-supervisor/records"
       - name: Require all records on the same exact candidate
         if: ${{ !cancelled() && steps.ready.outcome == 'success' }}
         run: >-
-          python3 scripts/hepta_supervisor_ci.py assemble
+          python3 scripts/hepta_supervisor_ci_v3.py assemble
           --records "$RUNNER_TEMP/hepta-supervisor/records"
           --output "$RUNNER_TEMP/hepta-supervisor/qualification.json"
       - name: Retain raw execution evidence even on failure
