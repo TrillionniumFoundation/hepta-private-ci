@@ -1,0 +1,56 @@
+name: learning.artifacts r6 materialize
+
+on:
+  push:
+    branches:
+      - scratch/learning-artifacts-r6-materialize-20260930
+
+permissions:
+  contents: read
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Generate formatted source and exact lockfile
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/materialized/codex-rs/hepta-learning-artifacts"
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts
+          set +e
+          cargo check --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts --all-targets \
+            >"$RUNNER_TEMP/materialized/cargo-check.stdout" \
+            2>"$RUNNER_TEMP/materialized/cargo-check.stderr"
+          check_code=$?
+          set -e
+          printf '%s\n' "$check_code" > "$RUNNER_TEMP/materialized/cargo-check.exit-code"
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/materialized/codex-rs/Cargo.lock"
+          cp -R codex-rs/hepta-learning-artifacts/src "$RUNNER_TEMP/materialized/codex-rs/hepta-learning-artifacts/src"
+          git diff -- codex-rs/Cargo.lock codex-rs/hepta-learning-artifacts \
+            > "$RUNNER_TEMP/materialized/materialized.patch"
+          git status --short > "$RUNNER_TEMP/materialized/git-status.txt"
+
+      - name: Upload materialized candidate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-artifacts-r6-materialized-${{ github.sha }}
+          path: ${{ runner.temp }}/materialized
+          if-no-files-found: error
+          retention-days: 7
