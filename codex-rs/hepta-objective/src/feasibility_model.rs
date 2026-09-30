@@ -68,11 +68,25 @@ pub struct ConstraintAtomV1 {
     pub origin_digest: Digest32,
 }
 
-/// Call limits above 257 are capped. Zero duration or calls yields Exhausted.
+/// Legacy availability wrapper. Wall time is interpreted only by the outer
+/// runtime adapter; it is never read by the deterministic semantic engine.
+/// Call limits above 257 are capped by this compatibility API.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct OracleBudgetV1 {
     pub max_calls: u16,
     pub wall_time: Duration,
+}
+
+/// Host-independent work budget for deterministic feasibility.
+///
+/// `max_work_units` counts candidate-atom visits at solver entry. The cache is
+/// request-local, bounded, and never evicts, so equal inputs and budgets have
+/// equal outcomes regardless of host load or thread scheduling.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct DeterministicOracleBudgetV1 {
+    pub max_calls: u16,
+    pub max_work_units: u64,
+    pub max_cache_entries: u16,
 }
 
 /// A witness assignment is advisory and grants no effect permission.
@@ -93,6 +107,8 @@ pub enum FeasibilityOutcomeV1 {
         reason: &'static str,
         atom_ids: Vec<StableId>,
     },
+    /// Runtime cancellation, wall-clock expiration, or deterministic work
+    /// budget exhaustion. This is never a semantic infeasibility proof.
     Exhausted,
 }
 
@@ -103,5 +119,7 @@ pub struct FeasibilityReceiptV1 {
     pub original_constraints: Vec<ConstraintAtomV1>,
     pub outcome: FeasibilityOutcomeV1,
     pub oracle_calls: u16,
+    /// Zero for deterministic semantic evaluation. Runtime adapters may project
+    /// their measured duration without changing the semantic outcome.
     pub elapsed: Duration,
 }
