@@ -1,0 +1,78 @@
+name: Cargo lock sync migration (one shot)
+
+on:
+  push:
+    branches:
+      - codex/neuron-runtime-lock-sync-staging-20260930
+    paths:
+      - .github/workflows/cargo-lock-sync-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cargo-lock-sync-neuron-runtime
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact migration input
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: "${{ github.sha }}"
+          fetch-depth: 0
+
+      - name: Synchronize lock and remove migration authority
+        shell: bash
+        env:
+          TARGET_BRANCH: codex/neuron-runtime-lock-sync-staging-20260930
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/cargo-lock-sync-once.yml
+
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+          (cd codex-rs && cargo metadata --format-version=1 >/dev/null)
+
+          mapfile -t changed < <(git diff --name-only)
+          test "${#changed[@]}" -eq 1
+          test "${changed[0]}" = codex-rs/Cargo.lock
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          value = Path("codex-rs/Cargo.lock").read_text()
+          marker = 'name = "codex-hepta-infer-core"'
+          start = value.index(marker)
+          end = value.find("\n[[package]]", start)
+          if end < 0:
+              end = len(value)
+          block = value[start:end]
+          if ' "fs2",' not in block:
+              raise SystemExit("codex-hepta-infer-core lock entry is missing fs2")
+          PY
+
+          python3 scripts/verify_cargo_lock.py
+          (cd codex-rs && cargo metadata --locked --format-version=1 >/dev/null)
+
+          rm -f "$workflow"
+          git add codex-rs/Cargo.lock "$workflow"
+          git diff --cached --check
+
+          mapfile -t staged < <(git diff --cached --name-only)
+          test "${#staged[@]}" -eq 2
+          printf '%s\n' "${staged[@]}" | grep -Fx codex-rs/Cargo.lock
+          printf '%s\n' "${staged[@]}" | grep -Fx "$workflow"
+
+          git config user.name hepta-source-migration
+          git config user.email source-migration@invalid
+          git commit -m "fix(neuron): synchronize materialized product Cargo lock"
+
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse HEAD^)" = "$(git rev-parse FETCH_HEAD)"
+          git push origin "HEAD:$TARGET_BRANCH"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
