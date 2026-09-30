@@ -11,7 +11,9 @@
   "deputy": "performance",
   "technicalGuide": "docs/modules/memory.retrieval/TECHNICAL.md",
   "statusGuide": "docs/modules/memory.retrieval/STATUS.md",
+  "recoveryGuide": "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
   "qualificationPolicy": "qualification/memory-retrieval/qualification-policy.json",
+  "recoveryMatrix": "qualification/memory-retrieval/recovery-matrix.json",
   "runtimeStatusArtifact": "qualification-manifest.json",
   "declaredRoots": [
     "codex-rs/hepta-memory-retrieval"
@@ -126,6 +128,46 @@
       "tests": [
         "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
       ]
+    },
+    {
+      "operation": "recall_product_with_engram_v1",
+      "nativeSymbol": "recall_product_with_engram_v1",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/product.rs",
+      "state": "source_implemented_mandatory_work_control_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/product_tests.rs"
+      ]
+    },
+    {
+      "operation": "verify_retrieval_delivery_v1",
+      "nativeSymbol": "verify_retrieval_delivery_v1",
+      "sourcePath": "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
+      "state": "source_implemented_durable_owner_join_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs"
+      ]
+    },
+    {
+      "operation": "project_retrieval_delivery_lifecycle_v1",
+      "nativeSymbol": "project_retrieval_delivery_lifecycle_v1",
+      "sourcePath": "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
+      "state": "source_implemented_lifecycle_projection_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs"
+      ]
+    },
+    {
+      "operation": "append_retrieval_lifecycle_projection_v1",
+      "nativeSymbol": "append_retrieval_lifecycle_projection_v1",
+      "sourcePath": "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
+      "state": "source_implemented_single_port_append_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
@@ -133,7 +175,7 @@
     "Qualify Agentd on a named protected host. Durable external frontier recovery, protected launcher isolation and real-process lifecycle kill-point tests remain external gates.",
     "Prove a killable worker boundary with enforced CPU, RSS, allocation and wall-time limits; cooperative cancellation and bounded permits are not hard isolation.",
     "Compose and qualify a real text encoder plus durable vector-index publisher before enabling Vector; compatibility remains the only activation mode.",
-    "Execute the nine-stage E2E matrix with at least 100 samples per case and actual allocation, SQLite, CPU/RSS, contention and worker-exit counters against approved SLOs.",
+    "Execute the recovery matrix and nine-stage E2E matrix with real processes, at least 100 samples per case, and actual allocation, SQLite, CPU/RSS, contention and worker-exit counters against approved SLOs.",
     "Retain exact-head raw evidence in independently governed immutable storage; Git and 90-day artifacts are not external WORM evidence."
   ],
   "externalEvidenceGates": [
@@ -165,10 +207,12 @@
     "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_provider.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_transport.rs",
+    "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
     "codex-rs/hepta-agentd/src/retrieval_product_mode.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs",
     "codex-rs/hepta-agentd/src/main.rs",
-    "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs"
+    "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
+    "codex-rs/hepta-learning-ledger/src/retrieval_preparation.rs"
   ],
   "canonicalCognitiveRecallMigration": {
     "state": "shadow_adapter_source_candidate",
@@ -177,6 +221,16 @@
     "exactIdentityBridgeRequired": true,
     "replacesLegacyOutput": false,
     "productComposed": false
+  },
+  "recoveryContract": {
+    "state": "source_contract_not_product_qualified",
+    "preparationOwner": "codex-hepta-learning-ledger:RetrievalPrepared/tag-10",
+    "nativeOperationOwner": "codex-hepta-infer-core:NativeRunRecord",
+    "lifecyclePort": "codex-hepta-memory-retrieval:DurableDecisionPortV1",
+    "dispatchUnknownState": "DispatchOutcomeUnknown",
+    "unknownOutcomePolicy": "exact_operation_reconciliation_only",
+    "blindReplayAllowed": false,
+    "secondDurableOwnerIntroduced": false
   },
   "productCallers": [
     {
@@ -187,8 +241,8 @@
   ],
   "sourceIdentityPolicy": "exact_parent_observation_plus_runtime_manifest_v1",
   "observedAtHead": {
-    "commit": "7fe2288acda110e91b3fd52664aed197242837dc",
-    "tree": "3496317db3b68025e0cb38434bbcded7f69a80bc"
+    "commit": "5fa6c7b8f7bf95ee082dc696891bc1451c8beb8f",
+    "tree": "c8ce512cab113f0b58f8b3c664749a1d9b540863"
   },
   "observedSourcePaths": [
     ".github/workflows",
