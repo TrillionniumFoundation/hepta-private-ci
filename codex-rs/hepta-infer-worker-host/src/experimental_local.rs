@@ -32,6 +32,7 @@ pub use authority::VerifiedInput;
 pub use authority::VerifiedModelManifest;
 pub use authority::VerifiedResourceGrant;
 pub use driver::AttestedModelHandle;
+pub use driver::DriverInterruptReason;
 pub use driver::DriverLoadObservation;
 pub use driver::DriverReconciliation;
 pub use driver::DriverRunObservation;

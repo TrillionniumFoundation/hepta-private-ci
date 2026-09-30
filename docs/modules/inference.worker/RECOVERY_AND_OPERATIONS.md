@@ -102,10 +102,19 @@ selected host telemetry boundary. At minimum alert on:
 - local generation fence reason, committed model bytes, transient request
   bytes, loaded models and active/quarantined requests.
 
-The v1 journal does not contain a trusted wall-clock timestamp for first
-indeterminate observation. Age is reportable only when an operator-owned
-monotonic projection supplies evidence for every current indeterminate record;
-otherwise `age_evidence_complete` is false and age is `None`.
+New native observations persist their host observation time and the first
+indeterminate time. `oldest_indeterminate_age_ms` therefore survives restart
+for new records. Historical records may still require the operator-owned
+compatibility projection; when neither source is available,
+`age_evidence_complete` is false and age is `None`.
+
+Experimental local observations also persist independently bounded
+`usage_units`; an absent value remains unknown. Mid-run cancellation and
+deadline expiry are owned by the worker rather than delegated to driver
+cooperation: the in-flight future is dropped, the driver receives one bounded
+interrupt/reconcile call, and any missing, pending, ambiguous, failed or timed
+out interrupt retains request resources and fences the generation. A later
+invocation may inspect the original operation but may never call `run` again.
 
 ## 6. History-retention contract
 

@@ -213,9 +213,21 @@ pub struct NativeRunRecord {
     #[serde(default)]
     pub dispatch_rejection: Option<NativeDispatchRejection>,
     pub observation: Option<NativeRunOutput>,
+    /// Generic usage observed by a qualified local driver or reconciler.
+    /// Hosted output-token observations remain in `NativeRunOutput`.
+    #[serde(default)]
+    pub observed_usage_units: Option<u64>,
+    /// First durable nonterminal observation time. Historical records may lack
+    /// this field and must not be assigned an invented age.
+    #[serde(default)]
+    pub first_indeterminate_at_unix_ms: Option<u64>,
+    /// Most recent durable observation time, monotonic for one request.
+    #[serde(default)]
+    pub last_observed_at_unix_ms: Option<u64>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub(super) struct NativeJournal {
     maximum_in_flight: Option<usize>,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
@@ -254,6 +266,12 @@ enum Event {
     Observe {
         request_id: String,
         output: NativeRunOutput,
+        /// Zero is accepted only while replaying a pre-metadata journal event.
+        #[serde(default)]
+        observed_at_unix_ms: u64,
+        /// `None` is unknown and never means zero.
+        #[serde(default)]
+        usage_units: Option<u64>,
     },
 }
 
@@ -450,12 +468,36 @@ impl DurableInferenceControl {
         request_id: &str,
         output: NativeRunOutput,
     ) -> Result<NativeRunRecord, Error> {
+        self.settle_native_with_usage_at(
+            request_id,
+            output,
+            None,
+            host_unix_time_ms()?,
+        )
+    }
+
+    /// Settle an observation with independently bounded generic usage and an
+    /// explicit trusted-host observation time. This is used by the local-model
+    /// adapter so usage and indeterminate age survive restart.
+    pub fn settle_native_with_usage_at(
+        &mut self,
+        request_id: &str,
+        output: NativeRunOutput,
+        usage_units: Option<u64>,
+        observed_at_unix_ms: u64,
+    ) -> Result<NativeRunRecord, Error> {
+        if observed_at_unix_ms == 0 {
+            return Err(Error::InvalidTime);
+        }
         let record = self
             .native
             .records
             .get(request_id)
             .ok_or(Error::RequestNotFound)?;
-        if record.observation.as_ref() == Some(&output) {
+        if record.observation.as_ref() == Some(&output)
+            && usage_units.is_none_or(|usage| record.observed_usage_units == Some(usage))
+            && record.last_observed_at_unix_ms == Some(observed_at_unix_ms)
+        {
             return Ok(record.clone());
         }
         self.commit_native(
@@ -463,6 +505,8 @@ impl DurableInferenceControl {
             Event::Observe {
                 request_id: request_id.to_string(),
                 output,
+                observed_at_unix_ms,
+                usage_units,
             },
         )
     }
@@ -569,6 +613,9 @@ impl NativeJournal {
                     pre_dispatch_stop: None,
                     dispatch_rejection: None,
                     observation: None,
+                    observed_usage_units: None,
+                    first_indeterminate_at_unix_ms: None,
+                    last_observed_at_unix_ms: None,
                 },
             );
             return Ok(());
@@ -753,11 +800,21 @@ impl NativeJournal {
                 record.pre_dispatch_stop = Some(reason);
                 record.state = NativeReservationState::Released;
             }
-            Event::Observe { output, .. } => {
+            Event::Observe {
+                output,
+                observed_at_unix_ms,
+                usage_units,
+                ..
+            } => {
                 if record.dispatch_rejection.is_some() {
                     return Err(Error::InvalidTransition);
                 }
                 apply_observation(record, output)?;
+                apply_observation_metadata(
+                    record,
+                    observed_at_unix_ms,
+                    usage_units,
+                )?;
             }
         }
         record.revision = record
@@ -869,6 +926,45 @@ fn apply_observation(
     record.observation = Some(output);
     Ok(())
 }
+
+fn apply_observation_metadata(
+    record: &mut NativeRunRecord,
+    observed_at_unix_ms: u64,
+    usage_units: Option<u64>,
+) -> Result<(), Error> {
+    if observed_at_unix_ms != 0 {
+        if record
+            .last_observed_at_unix_ms
+            .is_some_and(|previous| observed_at_unix_ms < previous)
+        {
+            return Err(Error::Conflict);
+        }
+        record.last_observed_at_unix_ms = Some(observed_at_unix_ms);
+        if record.state == NativeReservationState::Indeterminate
+            && record.first_indeterminate_at_unix_ms.is_none()
+        {
+            record.first_indeterminate_at_unix_ms = Some(observed_at_unix_ms);
+        }
+    }
+    if let Some(usage) = usage_units {
+        if record
+            .observed_usage_units
+            .is_some_and(|previous| usage < previous)
+        {
+            return Err(Error::Conflict);
+        }
+        record.observed_usage_units = Some(usage);
+    }
+    Ok(())
+}
+
+fn host_unix_time_ms() -> Result<u64, Error> {
+    let elapsed = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|_| Error::InvalidTime)?;
+    u64::try_from(elapsed.as_millis()).map_err(|_| Error::InvalidTime)
+}
+
 
 #[cfg(test)]
 #[path = "native_control_tests.rs"]

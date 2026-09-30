@@ -38,6 +38,21 @@ pub struct DriverRunObservation {
     pub stop_reason: Option<String>,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum DriverInterruptReason {
+    Cancelled,
+    DeadlineElapsed,
+}
+
+impl DriverInterruptReason {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Cancelled => "cancelled after local effect entry",
+            Self::DeadlineElapsed => "deadline elapsed after local effect entry",
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DriverReconciliation {
     Pending {
@@ -103,6 +118,25 @@ pub trait LocalModelDriver: Send + Sync {
         cancellation: &'a CancellationToken,
         deadline: TrustedDeadline,
     ) -> LocalFuture<'a, DriverRunObservation>;
+
+    /// Request interruption after durable effect entry. The default is
+    /// deliberately ambiguous: dropping a run future is never proof that the
+    /// physical runtime stopped.
+    fn interrupt<'a>(
+        &'a self,
+        _operation_id: &'a str,
+        _handle: &'a AttestedModelHandle,
+        reason: DriverInterruptReason,
+    ) -> LocalFuture<'a, DriverReconciliation> {
+        Box::pin(async move {
+            Ok(DriverReconciliation::Ambiguous {
+                reason: format!(
+                    "{}; driver supplied no qualified interrupt observation",
+                    reason.as_str()
+                ),
+            })
+        })
+    }
 
     fn inspect<'a>(
         &'a self,

@@ -173,9 +173,9 @@ pub struct NativeRecoverySnapshot {
 }
 
 impl NativeRecoverySnapshot {
-    /// `first_indeterminate_ms` is an operator-owned monotonic projection. The
-    /// current v1 journal has no trusted wall-clock field, so age is reported
-    /// only when every currently indeterminate request has supplied evidence.
+    /// New journal records carry the first durable indeterminate observation
+    /// time. `first_indeterminate_ms` remains a compatibility projection for
+    /// historical records that predate persisted age evidence.
     pub fn observe(
         control: &DurableInferenceControl,
         now_ms: u64,
@@ -202,10 +202,15 @@ impl NativeRecoverySnapshot {
                     .is_some_and(|output| output.status == NativeRunStatus::Indeterminate);
             if indeterminate {
                 indeterminate_count += 1;
-                match first_indeterminate_ms.get(&record.request.request_id) {
-                    Some(first_seen) if *first_seen <= now_ms => {
+                let first_seen = record.first_indeterminate_at_unix_ms.or_else(|| {
+                    first_indeterminate_ms
+                        .get(&record.request.request_id)
+                        .copied()
+                });
+                match first_seen {
+                    Some(first_seen) if first_seen <= now_ms => {
                         oldest_indeterminate_age_ms =
-                            oldest_indeterminate_age_ms.max(now_ms - *first_seen);
+                            oldest_indeterminate_age_ms.max(now_ms - first_seen);
                     }
                     _ => age_evidence_complete = false,
                 }

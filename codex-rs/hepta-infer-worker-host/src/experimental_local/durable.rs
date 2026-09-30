@@ -7,10 +7,13 @@ use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+use std::time::Duration;
+
 use serde::Serialize;
 use tokio_util::sync::CancellationToken;
 
 use super::AttestedModelHandle;
+use super::DriverInterruptReason;
 use super::DriverLoadObservation;
 use super::DriverReconciliation;
 use super::DriverRunObservation;
@@ -31,6 +34,7 @@ use super::validate_identity;
 
 const LOCAL_PROVIDER_ID: &str = "local.model.experimental";
 const MAX_LOCAL_OUTPUT_BYTES: usize = 1024 * 1024;
+const LOCAL_INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LocalRunAdmission {
@@ -338,9 +342,26 @@ where
             return Ok(result);
         }
 
-        let observed = match self.driver.run(handle, input, cancellation, deadline).await {
-            Ok(observed) => observed,
-            Err(error) => {
+        let now_ms = self.clock.now_ms()?;
+        let remaining_ms = deadline
+            .as_millis()
+            .checked_sub(now_ms)
+            .ok_or(LocalWorkerError::DeadlineExpired)?;
+        let driver_outcome = {
+            let run = self.driver.run(handle, input, cancellation, deadline);
+            tokio::pin!(run);
+            tokio::select! {
+                biased;
+                _ = cancellation.cancelled() => Err(DriverInterruptReason::Cancelled),
+                _ = tokio::time::sleep(Duration::from_millis(remaining_ms)) => {
+                    Err(DriverInterruptReason::DeadlineElapsed)
+                }
+                result = &mut run => Ok(result),
+            }
+        };
+        let observed = match driver_outcome {
+            Ok(Ok(observed)) => observed,
+            Ok(Err(error)) => {
                 let output = indeterminate_output(
                     &admission.request_id,
                     manifest.model_id(),
@@ -348,9 +369,12 @@ where
                     None,
                     "driver returned after effect entry without a trusted terminal observation",
                 );
-                let settled = control
-                    .settle_native(&admission.request_id, output)
-                    .map_err(control_error)?;
+                let settled = self.settle_local(
+                    control,
+                    &admission.request_id,
+                    output,
+                    None,
+                )?;
                 request_resources.quarantine()?;
                 self.resources
                     .fence_generation("local driver result unknown after effect entry")?;
@@ -360,6 +384,19 @@ where
                     result.stop_reason.unwrap_or_default()
                 ));
                 return Ok(result);
+            }
+            Err(reason) => {
+                return self
+                    .interrupt_after_effect(
+                        control,
+                        grant,
+                        manifest,
+                        handle,
+                        &admission,
+                        request_resources,
+                        reason,
+                    )
+                    .await;
             }
         };
         validate_run_observation(&observed, &admission, grant)?;
@@ -374,9 +411,12 @@ where
                     .as_deref()
                     .unwrap_or("driver reported nonterminal local execution"),
             );
-            let settled = control
-                .settle_native(&admission.request_id, output)
-                .map_err(control_error)?;
+            let settled = self.settle_local(
+                control,
+                &admission.request_id,
+                output,
+                observed.usage_units,
+            )?;
             request_resources.quarantine()?;
             self.resources
                 .fence_generation("nonterminal local execution requires reconciliation")?;
@@ -390,11 +430,24 @@ where
             handle.handle_id(),
             observed,
             boundary,
+            None,
         )?;
-        let settled = control
-            .settle_native(&admission.request_id, output)
-            .map_err(control_error)?;
-        request_resources.complete()?;
+        let release_resources =
+            output.boundary_status != NativeBoundaryStatus::Quarantined;
+        let settled = self.settle_local(
+            control,
+            &admission.request_id,
+            output,
+            observed.usage_units,
+        )?;
+        if release_resources {
+            request_resources.complete()?;
+        } else {
+            request_resources.quarantine()?;
+            self.resources.fence_generation(
+                "terminal local execution lacked trusted release evidence",
+            )?;
+        }
         result_from_record(&settled)
     }
 
@@ -434,19 +487,32 @@ where
                     handle.handle_id(),
                     observed,
                     boundary,
+                    None,
                 )?;
-                let settled = control
-                    .settle_native(&record.request.request_id, output)
-                    .map_err(control_error)?;
-                self.resources
-                    .resolve_quarantine_if_present(&record.request.request_id)?;
+                let release_resources =
+                    output.boundary_status != NativeBoundaryStatus::Quarantined;
+                let settled = self.settle_local(
+                    control,
+                    &record.request.request_id,
+                    output,
+                    observed.usage_units,
+                )?;
+                if release_resources {
+                    self.resources
+                        .resolve_quarantine_if_present(&record.request.request_id)?;
+                } else {
+                    self.resources.fence_generation(
+                        "terminal reconciliation lacked trusted resource evidence",
+                    )?;
+                }
                 result_from_record(&settled)
             }
             DriverReconciliation::Pending {
                 observed_tokens,
-                usage_units: _,
+                usage_units,
             } => {
                 let tokens = merge_observed_tokens(record, observed_tokens);
+                let usage_units = merge_observed_usage(record, usage_units);
                 let output = indeterminate_output(
                     &record.request.request_id,
                     manifest.model_id(),
@@ -454,9 +520,12 @@ where
                     tokens,
                     "local operation is still pending during reconciliation",
                 );
-                let settled = control
-                    .settle_native(&record.request.request_id, output)
-                    .map_err(control_error)?;
+                let settled = self.settle_local(
+                    control,
+                    &record.request.request_id,
+                    output,
+                    usage_units,
+                )?;
                 self.resources
                     .fence_generation("reopened local operation remains pending")?;
                 result_from_record(&settled)
@@ -469,9 +538,12 @@ where
                     merge_observed_tokens(record, None),
                     "local driver history is missing; operation quarantined without replay",
                 );
-                let settled = control
-                    .settle_native(&record.request.request_id, output)
-                    .map_err(control_error)?;
+                let settled = self.settle_local(
+                    control,
+                    &record.request.request_id,
+                    output,
+                    record.observed_usage_units,
+                )?;
                 self.resources
                     .fence_generation("local driver history missing during recovery")?;
                 result_from_record(&settled)
@@ -485,9 +557,12 @@ where
                     merge_observed_tokens(record, None),
                     &reason,
                 );
-                let settled = control
-                    .settle_native(&record.request.request_id, output)
-                    .map_err(control_error)?;
+                let settled = self.settle_local(
+                    control,
+                    &record.request.request_id,
+                    output,
+                    record.observed_usage_units,
+                )?;
                 self.resources
                     .fence_generation("ambiguous local recovery observation")?;
                 result_from_record(&settled)
@@ -533,6 +608,179 @@ where
                     "terminal local execution lacked trusted resource observation",
                 );
                 TerminalBoundary::Quarantined(error.to_string())
+            }
+        }
+    }
+
+    fn settle_local(
+        &self,
+        control: &mut DurableInferenceControl,
+        request_id: &str,
+        output: NativeRunOutput,
+        usage_units: Option<u64>,
+    ) -> Result<NativeRunRecord, LocalWorkerError> {
+        control
+            .settle_native_with_usage_at(
+                request_id,
+                output,
+                usage_units,
+                self.clock.now_ms()?,
+            )
+            .map_err(control_error)
+    }
+
+    async fn interrupt_after_effect(
+        &self,
+        control: &mut DurableInferenceControl,
+        grant: &VerifiedResourceGrant,
+        manifest: &VerifiedModelManifest,
+        handle: &AttestedModelHandle,
+        admission: &LocalRunAdmission,
+        request_resources: super::resources::RequestReservation,
+        reason: DriverInterruptReason,
+    ) -> Result<LocalRunResult, LocalWorkerError> {
+        let boundary_status = match reason {
+            DriverInterruptReason::Cancelled => NativeBoundaryStatus::Cancelled,
+            DriverInterruptReason::DeadlineElapsed => NativeBoundaryStatus::TimedOut,
+        };
+        let reconciliation = tokio::time::timeout(
+            LOCAL_INTERRUPT_GRACE,
+            self.driver
+                .interrupt(&admission.request_id, handle, reason),
+        )
+        .await;
+        match reconciliation {
+            Ok(Ok(DriverReconciliation::Terminal(observed))) => {
+                validate_run_observation(&observed, admission, grant)?;
+                if !observed.terminal_observed {
+                    return Err(LocalWorkerError::InvalidObservation(
+                        "interrupt terminal observation was nonterminal",
+                    ));
+                }
+                let usage_units = observed.usage_units;
+                let boundary = self.terminal_boundary(grant, handle, &observed).await;
+                let output = terminal_output(
+                    &admission.request_id,
+                    manifest.model_id(),
+                    handle.handle_id(),
+                    observed,
+                    boundary,
+                    Some((boundary_status, reason.as_str().to_string())),
+                )?;
+                let release_resources =
+                    output.boundary_status != NativeBoundaryStatus::Quarantined;
+                let settled = self.settle_local(
+                    control,
+                    &admission.request_id,
+                    output,
+                    usage_units,
+                )?;
+                if release_resources {
+                    request_resources.complete()?;
+                } else {
+                    request_resources.quarantine()?;
+                    self.resources.fence_generation(
+                        "interrupt terminal observation lacked trusted resource evidence",
+                    )?;
+                }
+                result_from_record(&settled)
+            }
+            Ok(Ok(DriverReconciliation::Pending {
+                observed_tokens,
+                usage_units,
+            })) => {
+                let output = indeterminate_output_with_boundary(
+                    &admission.request_id,
+                    manifest.model_id(),
+                    handle.handle_id(),
+                    observed_tokens,
+                    reason.as_str(),
+                    boundary_status,
+                );
+                let settled = self.settle_local(
+                    control,
+                    &admission.request_id,
+                    output,
+                    usage_units,
+                )?;
+                request_resources.quarantine()?;
+                self.resources.fence_generation(
+                    "local interrupt left the physical execution pending",
+                )?;
+                result_from_record(&settled)
+            }
+            Ok(Ok(DriverReconciliation::MissingHistory)) => {
+                let output = indeterminate_output_with_boundary(
+                    &admission.request_id,
+                    manifest.model_id(),
+                    handle.handle_id(),
+                    None,
+                    "interrupt outcome missing from local driver history",
+                    boundary_status,
+                );
+                let settled =
+                    self.settle_local(control, &admission.request_id, output, None)?;
+                request_resources.quarantine()?;
+                self.resources.fence_generation(
+                    "local interrupt outcome is missing and requires reconciliation",
+                )?;
+                result_from_record(&settled)
+            }
+            Ok(Ok(DriverReconciliation::Ambiguous { reason: detail })) => {
+                let detail = bounded_reason(&detail)?;
+                let output = indeterminate_output_with_boundary(
+                    &admission.request_id,
+                    manifest.model_id(),
+                    handle.handle_id(),
+                    None,
+                    &format!("{}; {detail}", reason.as_str()),
+                    boundary_status,
+                );
+                let settled =
+                    self.settle_local(control, &admission.request_id, output, None)?;
+                request_resources.quarantine()?;
+                self.resources.fence_generation(
+                    "local interrupt was ambiguous and requires reconciliation",
+                )?;
+                result_from_record(&settled)
+            }
+            Ok(Err(error)) => {
+                let output = indeterminate_output_with_boundary(
+                    &admission.request_id,
+                    manifest.model_id(),
+                    handle.handle_id(),
+                    None,
+                    &format!("{}; interrupt failed: {error}", reason.as_str()),
+                    boundary_status,
+                );
+                let settled =
+                    self.settle_local(control, &admission.request_id, output, None)?;
+                request_resources.quarantine()?;
+                self.resources.fence_generation(
+                    "local interrupt failed after effect entry",
+                )?;
+                result_from_record(&settled)
+            }
+            Err(_) => {
+                let output = indeterminate_output_with_boundary(
+                    &admission.request_id,
+                    manifest.model_id(),
+                    handle.handle_id(),
+                    None,
+                    &format!(
+                        "{}; interrupt exceeded {} ms",
+                        reason.as_str(),
+                        LOCAL_INTERRUPT_GRACE.as_millis()
+                    ),
+                    boundary_status,
+                );
+                let settled =
+                    self.settle_local(control, &admission.request_id, output, None)?;
+                request_resources.quarantine()?;
+                self.resources.fence_generation(
+                    "local interrupt timed out after effect entry",
+                )?;
+                result_from_record(&settled)
             }
         }
     }
@@ -685,6 +933,7 @@ fn terminal_output(
     handle_id: &str,
     observed: DriverRunObservation,
     boundary: TerminalBoundary,
+    forced_boundary: Option<(NativeBoundaryStatus, String)>,
 ) -> Result<NativeRunOutput, LocalWorkerError> {
     let output_digest = digest(&observed.output);
     validate_digest(&output_digest, "local output digest")?;
@@ -726,6 +975,14 @@ fn terminal_output(
             Some(reason),
         ),
     };
+    let (boundary_status, stop_reason) =
+        if boundary_status != NativeBoundaryStatus::Quarantined
+            && let Some((forced, reason)) = forced_boundary
+        {
+            (forced, Some(reason))
+        } else {
+            (boundary_status, stop_reason)
+        };
     let receipt_digest = local_terminal_receipt_digest(
         request_id,
         model_id,
@@ -784,13 +1041,31 @@ fn indeterminate_output(
     observed_tokens: Option<u64>,
     reason: &str,
 ) -> NativeRunOutput {
+    indeterminate_output_with_boundary(
+        request_id,
+        model_id,
+        handle_id,
+        observed_tokens,
+        reason,
+        NativeBoundaryStatus::Quarantined,
+    )
+}
+
+fn indeterminate_output_with_boundary(
+    request_id: &str,
+    model_id: &str,
+    handle_id: &str,
+    observed_tokens: Option<u64>,
+    reason: &str,
+    boundary_status: NativeBoundaryStatus,
+) -> NativeRunOutput {
     NativeRunOutput {
         thread_id: handle_id.to_string(),
         turn_id: request_id.to_string(),
         model: model_id.to_string(),
         model_provider: LOCAL_PROVIDER_ID.to_string(),
         status: NativeRunStatus::Indeterminate,
-        boundary_status: NativeBoundaryStatus::Quarantined,
+        boundary_status,
         output: String::new(),
         observed_output_tokens: observed_tokens,
         terminal_observed: false,
@@ -812,11 +1087,20 @@ fn result_from_record(record: &NativeRunRecord) -> Result<LocalRunResult, LocalW
             "durable result is not a local-model observation",
         ));
     }
-    let status = match output.status {
-        NativeRunStatus::Completed => LocalRunStatus::Succeeded,
-        NativeRunStatus::Failed => LocalRunStatus::Failed,
-        NativeRunStatus::Interrupted => LocalRunStatus::Interrupted,
-        NativeRunStatus::Indeterminate => LocalRunStatus::Indeterminate,
+    let status = if output.boundary_status == NativeBoundaryStatus::Quarantined {
+        LocalRunStatus::Indeterminate
+    } else if matches!(
+        output.boundary_status,
+        NativeBoundaryStatus::Cancelled | NativeBoundaryStatus::TimedOut
+    ) {
+        LocalRunStatus::Interrupted
+    } else {
+        match output.status {
+            NativeRunStatus::Completed => LocalRunStatus::Succeeded,
+            NativeRunStatus::Failed => LocalRunStatus::Failed,
+            NativeRunStatus::Interrupted => LocalRunStatus::Interrupted,
+            NativeRunStatus::Indeterminate => LocalRunStatus::Indeterminate,
+        }
     };
     let output_digest = if output.output.is_empty() {
         None
@@ -829,9 +1113,10 @@ fn result_from_record(record: &NativeRunRecord) -> Result<LocalRunResult, LocalW
         status,
         output_digest,
         observed_tokens: output.observed_output_tokens,
-        observed_usage_units: None,
+        observed_usage_units: record.observed_usage_units,
         terminal_observed: output.terminal_observed,
-        quarantined: output.boundary_status == NativeBoundaryStatus::Quarantined,
+        quarantined: record.state != NativeReservationState::Released
+            || output.boundary_status == NativeBoundaryStatus::Quarantined,
         stop_reason: output.stop_reason.clone(),
         receipt_digest: output.codex_terminal_correlation_digest.clone(),
     })
@@ -850,6 +1135,15 @@ fn merge_observed_tokens(record: &NativeRunRecord, next: Option<u64>) -> Option<
         (None, candidate) => candidate,
     }
 }
+
+fn merge_observed_usage(record: &NativeRunRecord, next: Option<u64>) -> Option<u64> {
+    match (record.observed_usage_units, next) {
+        (Some(previous), Some(candidate)) => Some(previous.max(candidate)),
+        (Some(previous), None) => Some(previous),
+        (None, candidate) => candidate,
+    }
+}
+
 
 fn resource_matches(
     observed: &TrustedResourceObservation,

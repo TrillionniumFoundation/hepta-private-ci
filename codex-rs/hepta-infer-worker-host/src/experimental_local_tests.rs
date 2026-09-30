@@ -31,12 +31,15 @@ struct FakeDriverState {
     loads: AtomicUsize,
     runs: AtomicUsize,
     inspections: AtomicUsize,
+    interrupts: AtomicUsize,
     failed_load_cleanups: AtomicUsize,
     fail_failed_load_cleanup: AtomicBool,
     fail_unload: AtomicBool,
     corrupt_load_identity: AtomicBool,
+    hang_run: AtomicBool,
     run_observation: Mutex<DriverRunObservation>,
     reconciliation: Mutex<DriverReconciliation>,
+    interrupt_reconciliation: Mutex<DriverReconciliation>,
 }
 
 impl FakeDriver {
@@ -46,12 +49,17 @@ impl FakeDriver {
                 loads: AtomicUsize::new(0),
                 runs: AtomicUsize::new(0),
                 inspections: AtomicUsize::new(0),
+                interrupts: AtomicUsize::new(0),
                 failed_load_cleanups: AtomicUsize::new(0),
                 fail_failed_load_cleanup: AtomicBool::new(false),
                 fail_unload: AtomicBool::new(false),
                 corrupt_load_identity: AtomicBool::new(false),
+                hang_run: AtomicBool::new(false),
                 run_observation: Mutex::new(success_observation()),
                 reconciliation: Mutex::new(DriverReconciliation::MissingHistory),
+                interrupt_reconciliation: Mutex::new(
+                    DriverReconciliation::MissingHistory,
+                ),
             }),
         }
     }
@@ -115,11 +123,30 @@ impl LocalModelDriver for FakeDriver {
         _deadline: TrustedDeadline,
     ) -> LocalFuture<'a, DriverRunObservation> {
         self.state.runs.fetch_add(1, Ordering::SeqCst);
+        if self.state.hang_run.load(Ordering::SeqCst) {
+            return Box::pin(std::future::pending());
+        }
         let observed = self
             .state
             .run_observation
             .lock()
             .expect("run observation lock")
+            .clone();
+        Box::pin(async move { Ok(observed) })
+    }
+
+    fn interrupt<'a>(
+        &'a self,
+        _operation_id: &'a str,
+        _handle: &'a AttestedModelHandle,
+        _reason: DriverInterruptReason,
+    ) -> LocalFuture<'a, DriverReconciliation> {
+        self.state.interrupts.fetch_add(1, Ordering::SeqCst);
+        let observed = self
+            .state
+            .interrupt_reconciliation
+            .lock()
+            .expect("interrupt reconciliation lock")
             .clone();
         Box::pin(async move { Ok(observed) })
     }
@@ -763,5 +790,160 @@ async fn exact_duplicate_and_restart_reconciliation_never_replay_run() {
         .expect("reconciliation");
     assert_eq!(reconciled.status, LocalRunStatus::Succeeded);
     assert_eq!(driver.state.runs.load(Ordering::SeqCst), 2);
+    assert_eq!(driver.state.inspections.load(Ordering::SeqCst), 1);
+}
+
+#[tokio::test]
+async fn mid_run_cancellation_interrupts_once_and_persists_usage_and_age() {
+    let (grant, _) = signed_grant(512);
+    let manifest = manifest(&grant);
+    let driver = FakeDriver::new();
+    driver.state.hang_run.store(true, Ordering::SeqCst);
+    *driver
+        .state
+        .interrupt_reconciliation
+        .lock()
+        .expect("interrupt reconciliation") = DriverReconciliation::Pending {
+        observed_tokens: Some(3),
+        usage_units: Some(5),
+    };
+    let worker = DurableLocalModelWorker::new(
+        driver.clone(),
+        FakeObserver,
+        FixedClock(1_000),
+        &grant,
+    )
+    .expect("worker");
+    let handle = worker
+        .load_model(&grant, &manifest)
+        .await
+        .expect("model");
+    let directory = tempdir().expect("tempdir");
+    let journal = directory.path().join("local-cancel.journal");
+    let mut control = DurableInferenceControl::open(&journal, 64).expect("control");
+    let cancellation = CancellationToken::new();
+    let verified_input = input();
+
+    let run = worker.run(
+        &mut control,
+        &grant,
+        &manifest,
+        &handle,
+        admission("request.local.cancel"),
+        &verified_input,
+        &cancellation,
+    );
+    let cancel = async {
+        tokio::task::yield_now().await;
+        cancellation.cancel();
+    };
+    let (result, ()) = tokio::join!(run, cancel);
+    let result = result.expect("cancelled result");
+    assert_eq!(result.status, LocalRunStatus::Interrupted);
+    assert_eq!(result.observed_tokens, Some(3));
+    assert_eq!(result.observed_usage_units, Some(5));
+    assert!(result.quarantined);
+    assert_eq!(driver.state.runs.load(Ordering::SeqCst), 1);
+    assert_eq!(driver.state.interrupts.load(Ordering::SeqCst), 1);
+
+    let record = control
+        .native_record("request.local.cancel")
+        .expect("durable cancelled record");
+    assert_eq!(
+        record
+            .observation
+            .as_ref()
+            .expect("cancelled observation")
+            .boundary_status,
+        codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::Cancelled
+    );
+    assert_eq!(record.observed_usage_units, Some(5));
+    assert_eq!(record.first_indeterminate_at_unix_ms, Some(1_000));
+    assert_eq!(record.last_observed_at_unix_ms, Some(1_000));
+    let resources = worker.resources().snapshot().expect("resource snapshot");
+    assert_eq!(resources.active_or_quarantined_requests, 1);
+    assert_eq!(resources.request_bytes, 20);
+    assert!(resources.fenced_reason.is_some());
+}
+
+#[tokio::test]
+async fn worker_deadline_interrupts_hung_driver_without_replay() {
+    let (grant, _) = signed_grant(512);
+    let manifest = manifest(&grant);
+    let driver = FakeDriver::new();
+    driver.state.hang_run.store(true, Ordering::SeqCst);
+    *driver
+        .state
+        .interrupt_reconciliation
+        .lock()
+        .expect("interrupt reconciliation") = DriverReconciliation::Ambiguous {
+        reason: "runtime did not acknowledge interrupt".to_string(),
+    };
+    let worker = DurableLocalModelWorker::new(
+        driver.clone(),
+        FakeObserver,
+        FixedClock(1_000),
+        &grant,
+    )
+    .expect("worker");
+    let handle = worker
+        .load_model(&grant, &manifest)
+        .await
+        .expect("model");
+    let directory = tempdir().expect("tempdir");
+    let journal = directory.path().join("local-deadline.journal");
+    let mut control = DurableInferenceControl::open(&journal, 64).expect("control");
+    let mut bounded = admission("request.local.deadline");
+    bounded.requested_deadline_ms = 1_001;
+    let verified_input = input();
+    let cancellation = CancellationToken::new();
+
+    let result = worker
+        .run(
+            &mut control,
+            &grant,
+            &manifest,
+            &handle,
+            bounded.clone(),
+            &verified_input,
+            &cancellation,
+        )
+        .await
+        .expect("deadline result");
+    assert_eq!(result.status, LocalRunStatus::Interrupted);
+    assert!(result.quarantined);
+    assert_eq!(driver.state.runs.load(Ordering::SeqCst), 1);
+    assert_eq!(driver.state.interrupts.load(Ordering::SeqCst), 1);
+    let record = control
+        .native_record("request.local.deadline")
+        .expect("deadline record");
+    assert_eq!(
+        record
+            .observation
+            .as_ref()
+            .expect("deadline observation")
+            .boundary_status,
+        codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::TimedOut
+    );
+
+    *driver
+        .state
+        .reconciliation
+        .lock()
+        .expect("reconciliation") = DriverReconciliation::MissingHistory;
+    let reopened = worker
+        .run(
+            &mut control,
+            &grant,
+            &manifest,
+            &handle,
+            bounded,
+            &verified_input,
+            &CancellationToken::new(),
+        )
+        .await
+        .expect("recovery remains indeterminate");
+    assert!(reopened.quarantined);
+    assert_eq!(driver.state.runs.load(Ordering::SeqCst), 1);
     assert_eq!(driver.state.inspections.load(Ordering::SeqCst), 1);
 }
