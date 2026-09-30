@@ -15,22 +15,34 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(MODULE)
 
 
-class AuxiliaryControlPlaneIdentityTests(unittest.TestCase):
-    def fixture(self, root: Path) -> tuple[tuple[str, ...], dict[str, bytes]]:
+class ControlPlaneIdentityTests(unittest.TestCase):
+    def fixture(
+        self, root: Path
+    ) -> tuple[tuple[str, ...], tuple[str, ...], dict[str, bytes]]:
+        workflows = (
+            ".github/workflows/hepta-learning-eval-first.yml",
+            ".github/workflows/hepta-learning-eval-second.yml",
+        )
+        auxiliary = (
+            "scripts/first.py",
+            "scripts/model.json",
+        )
         values = {
-            "scripts/first.py": b"print('first')\n",
-            "scripts/model.json": b'{"value":1}\n',
+            workflows[0]: b"name: first\n",
+            workflows[1]: b"name: second\n",
+            auxiliary[0]: b"print('first')\n",
+            auxiliary[1]: b'{"value":1}\n',
         }
         for path, content in values.items():
             target = root / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(content)
-        return tuple(values), values
+        return workflows, auxiliary, values
 
-    def test_exact_candidate_bytes_are_bound_to_source_sha(self):
+    def test_exact_candidate_bytes_and_workflow_inventory_are_bound(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            paths, values = self.fixture(root)
+            workflows, auxiliary, values = self.fixture(root)
 
             def fetcher(repository: str, path: str, sha: str, token: str) -> bytes:
                 self.assertEqual(repository, "owner/repository")
@@ -43,14 +55,16 @@ class AuxiliaryControlPlaneIdentityTests(unittest.TestCase):
                 "a" * 40,
                 "token",
                 root=root,
-                paths=paths,
+                paths=auxiliary,
                 fetcher=fetcher,
+                workflow_fetcher=lambda *_: workflows,
             )
             self.assertEqual(
                 result["schema"],
-                "hepta.learning-eval.auxiliary-control-plane-identity.v1",
+                "hepta.learning-eval.control-plane-identity.v2",
             )
-            self.assertEqual(set(result["files"]), set(paths))
+            self.assertEqual(result["workflowInventory"], list(workflows))
+            self.assertEqual(set(result["files"]), set(values))
             self.assertEqual(result["authority"], "DENY_ALL")
             self.assertEqual(result["releasePosture"], "NO_GO")
             self.assertFalse(result["claims"]["sourceQualifiedByThisRun"])
@@ -58,10 +72,10 @@ class AuxiliaryControlPlaneIdentityTests(unittest.TestCase):
     def test_candidate_byte_drift_fails_closed(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            paths, values = self.fixture(root)
+            workflows, auxiliary, values = self.fixture(root)
 
             def fetcher(_repository: str, path: str, _sha: str, _token: str) -> bytes:
-                return values[path] + (b"drift" if path == paths[0] else b"")
+                return values[path] + (b"drift" if path == auxiliary[0] else b"")
 
             with self.assertRaisesRegex(ValueError, "differs from trusted"):
                 MODULE.verify_control_plane(
@@ -69,8 +83,36 @@ class AuxiliaryControlPlaneIdentityTests(unittest.TestCase):
                     "b" * 40,
                     "token",
                     root=root,
-                    paths=paths,
+                    paths=auxiliary,
                     fetcher=fetcher,
+                    workflow_fetcher=lambda *_: workflows,
+                )
+
+    def test_candidate_workflow_addition_or_removal_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workflows, auxiliary, values = self.fixture(root)
+            fetcher = lambda _repository, path, _sha, _token: values[path]
+            with self.assertRaisesRegex(ValueError, "workflow inventory differs"):
+                MODULE.verify_control_plane(
+                    "owner/repository",
+                    "c" * 40,
+                    "token",
+                    root=root,
+                    paths=auxiliary,
+                    fetcher=fetcher,
+                    workflow_fetcher=lambda *_: workflows[:-1],
+                )
+            with self.assertRaisesRegex(ValueError, "workflow inventory differs"):
+                MODULE.verify_control_plane(
+                    "owner/repository",
+                    "c" * 40,
+                    "token",
+                    root=root,
+                    paths=auxiliary,
+                    fetcher=fetcher,
+                    workflow_fetcher=lambda *_: workflows
+                    + (".github/workflows/hepta-learning-eval-extra.yml",),
                 )
 
     def test_local_symlink_component_is_rejected_before_read(self):
@@ -90,41 +132,55 @@ class AuxiliaryControlPlaneIdentityTests(unittest.TestCase):
     def test_identity_and_path_inventory_are_strict(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / "value").write_text("value", encoding="utf-8")
+            workflows, auxiliary, values = self.fixture(root)
+            fetcher = lambda _repository, path, _sha, _token: values[path]
             with self.assertRaisesRegex(ValueError, "owner/name"):
                 MODULE.verify_control_plane(
                     "not-a-repository",
-                    "c" * 40,
+                    "d" * 40,
                     "token",
                     root=root,
-                    paths=("value",),
-                    fetcher=lambda *_: b"value",
+                    paths=auxiliary,
+                    fetcher=fetcher,
+                    workflow_fetcher=lambda *_: workflows,
                 )
             with self.assertRaisesRegex(ValueError, "empty or duplicated"):
                 MODULE.verify_control_plane(
                     "owner/repository",
-                    "c" * 40,
+                    "d" * 40,
                     "token",
                     root=root,
-                    paths=("value", "value"),
-                    fetcher=lambda *_: b"value",
+                    paths=(auxiliary[0], auxiliary[0]),
+                    fetcher=fetcher,
+                    workflow_fetcher=lambda *_: workflows,
                 )
 
-    def test_default_inventory_covers_auxiliary_execution_dependencies(self):
-        required = {
-            ".github/workflows/hepta-learning-eval-control-plane-bootstrap.yml",
-            ".github/workflows/hepta-learning-eval-convergence.yml",
-            ".github/workflows/hepta-learning-eval-exact.yml",
-            ".github/workflows/hepta-learning-eval-trusted-report.yml",
-            "scripts/hepta-learning-eval-control-plane-identity.py",
-            "scripts/hepta-learning-eval-markdown-links.py",
-            "scripts/hepta_learning_eval_projection.py",
-            "scripts/hepta_rust_identifiers.py",
-            "scripts/learning_eval_status_model.json",
-            "scripts/test_hepta_learning_eval_control_plane_identity.py",
-            "scripts/test_hepta_learning_eval_projection.py",
-        }
-        self.assertEqual(set(MODULE.EXTRA_CONTROL_PLANE_PATHS), required)
+    def test_repository_workflow_inventory_is_closed_world(self):
+        self.assertEqual(
+            MODULE.trusted_learning_eval_workflow_paths(MODULE.ROOT),
+            (
+                ".github/workflows/hepta-learning-eval-api-diagnostics.yml",
+                ".github/workflows/hepta-learning-eval-control-plane-bootstrap.yml",
+                ".github/workflows/hepta-learning-eval-convergence.yml",
+                ".github/workflows/hepta-learning-eval-exact.yml",
+                ".github/workflows/hepta-learning-eval-soak.yml",
+                ".github/workflows/hepta-learning-eval-trusted-report.yml",
+            ),
+        )
+
+    def test_default_auxiliary_inventory_covers_execution_dependencies(self):
+        self.assertEqual(
+            set(MODULE.AUXILIARY_CONTROL_PLANE_PATHS),
+            {
+                "scripts/hepta-learning-eval-control-plane-identity.py",
+                "scripts/hepta-learning-eval-markdown-links.py",
+                "scripts/hepta_learning_eval_projection.py",
+                "scripts/hepta_rust_identifiers.py",
+                "scripts/learning_eval_status_model.json",
+                "scripts/test_hepta_learning_eval_control_plane_identity.py",
+                "scripts/test_hepta_learning_eval_projection.py",
+            },
+        )
 
 
 if __name__ == "__main__":
