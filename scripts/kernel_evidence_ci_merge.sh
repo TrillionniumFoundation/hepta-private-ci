@@ -13,8 +13,19 @@ set -euo pipefail
 
 mkdir -p "$READINESS_RECORDS/merge"
 test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
 construction_log="$READINESS_RECORDS/merge/construction.log"
 : >"$construction_log"
+
+initial_state="$(git status --porcelain=v1 --untracked-files=all)"
+if [[ -n "$initial_state" ]]; then
+  {
+    printf 'deterministic merge refused a dirty source worktree\n'
+    printf '%s\n' "$initial_state"
+  } >>"$construction_log"
+  printf 'MERGE_SHA=\nMERGE_TREE=\n' >>"$GITHUB_ENV"
+  exit 0
+fi
 
 set +e
 merge_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" 2>>"$construction_log")"
@@ -43,11 +54,32 @@ git checkout --detach "$MERGE_SHA" >>"$construction_log" 2>&1
 command='set -euo pipefail; test "$(git rev-parse HEAD)" = "$MERGE_SHA"; test "$(git rev-parse HEAD^{tree})" = "$MERGE_TREE"; cd codex-rs; cargo test --locked -p codex-hepta-evidence; cargo test --locked -p codex-hepta-agentd --lib --test kernel_evidence_product --test kernel_evidence_profile --test kernel_evidence_paging_product --test kernel_evidence_publication_cli'
 started="$(date +%s%3N)"
 set +e
-bash -lc "$command" >"$READINESS_RECORDS/merge/tests.log" 2>&1
+timeout --signal=TERM --kill-after=30s 5400s \
+  bash -lc "$command" >"$READINESS_RECORDS/merge/tests.log" 2>&1
 code=$?
 set -e
+merge_state="$(git status --porcelain=v1 --untracked-files=all)"
+if [[ -n "$merge_state" ]]; then
+  {
+    printf '\ndeterministic merge qualification dirtied the immutable merge worktree\n'
+    printf '%s\n' "$merge_state"
+  } >>"$READINESS_RECORDS/merge/tests.log"
+  code=125
+fi
 finished="$(date +%s%3N)"
-git checkout --detach "$SOURCE_SHA" >>"$construction_log" 2>&1
+
+git checkout --detach -f "$SOURCE_SHA" >>"$construction_log" 2>&1
+git clean -fd >>"$construction_log" 2>&1
+test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+restored_state="$(git status --porcelain=v1 --untracked-files=all)"
+if [[ -n "$restored_state" ]]; then
+  {
+    printf '\nsource worktree was not restored after deterministic merge qualification\n'
+    printf '%s\n' "$restored_state"
+  } >>"$READINESS_RECORDS/merge/tests.log"
+  code=125
+fi
 
 python3 scripts/kernel_evidence_qualification_receipt.py \
   --kind deterministic_merge \
