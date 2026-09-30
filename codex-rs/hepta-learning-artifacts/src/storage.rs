@@ -43,12 +43,16 @@ const HEAD_MAGIC: &str = "HEPTAH01";
 /// Safe callers cannot construct this capability from an arbitrary `File` or
 /// extract/clone its handle. Creation fails when the final path component already
 /// exists, including when it is empty, truncated, or a symbolic link. Trusted
-/// parent traversal and containing-directory durability remain host obligations.
-pub struct CreateOnlyArtifactFile(pub(crate) File);
+/// A trusted-root constructor additionally retains the containing-directory
+/// capability so namespace publication is synchronized before success.
+pub struct CreateOnlyArtifactFile {
+    pub(crate) file: File,
+    parent_directory: Option<File>,
+}
 
 impl fmt::Debug for CreateOnlyArtifactFile {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str("CreateOnlyArtifactFile(<opaque>)")
+        formatter.write_str("CreateOnlyArtifactFile(<opaque-fd-capability>)")
     }
 }
 
@@ -59,7 +63,10 @@ impl CreateOnlyArtifactFile {
         #[cfg(unix)]
         options.mode(0o600);
         match options.open(path) {
-            Ok(file) => Ok(Self(file)),
+            Ok(file) => Ok(Self {
+                file,
+                parent_directory: None,
+            }),
             Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
                 Err(ArtifactStorageError::AlreadyExists)
             }
@@ -69,25 +76,30 @@ impl CreateOnlyArtifactFile {
 
     /// Create a new final component beneath a host-designated trusted root.
     ///
-    /// The relative path must contain only normal components. Every existing
-    /// ancestor below the canonical root must be a real directory rather than a
-    /// symlink. This closes lexical escape and ordinary symlink traversal. The
-    /// host must still prevent concurrent hostile replacement of trusted
-    /// ancestors; the Rust standard library does not expose an openat2-style
-    /// directory capability under this crate's unsafe-code prohibition.
+    /// The relative path must contain only normal components. On Unix every
+    /// ancestor and the final file are opened relative to retained directory
+    /// descriptors with NOFOLLOW, so a concurrent path replacement cannot swap
+    /// in a symlink between validation and creation. The containing directory
+    /// descriptor is retained and synchronized by `write_new`.
     pub fn create_beneath_trusted_root(
         root: impl AsRef<Path>,
         relative: impl AsRef<Path>,
     ) -> Result<Self, ArtifactStorageError> {
-        Self::create(resolve_beneath_trusted_root(root, relative)?)
+        let root = root.as_ref();
+        let relative = relative.as_ref();
+        validate_relative_path(relative)?;
+        #[cfg(unix)]
+        {
+            create_beneath_directory_capability(root, relative)
+        }
+        #[cfg(not(unix))]
+        {
+            Self::create(resolve_beneath_trusted_root(root, relative)?)
+        }
     }
 }
 
-pub(crate) fn resolve_beneath_trusted_root(
-    root: impl AsRef<Path>,
-    relative: impl AsRef<Path>,
-) -> Result<PathBuf, ArtifactStorageError> {
-    let relative = relative.as_ref();
+fn validate_relative_path(relative: &Path) -> Result<(), ArtifactStorageError> {
     if relative.as_os_str().is_empty()
         || relative.is_absolute()
         || relative
@@ -96,6 +108,142 @@ pub(crate) fn resolve_beneath_trusted_root(
     {
         return Err(ArtifactStorageError::InvalidPath);
     }
+    Ok(())
+}
+
+#[cfg(unix)]
+fn create_beneath_directory_capability(
+    root: &Path,
+    relative: &Path,
+) -> Result<CreateOnlyArtifactFile, ArtifactStorageError> {
+    use rustix::fs::Mode;
+    use rustix::fs::OFlags;
+
+    let mut directory: File = rustix::fs::open(
+        root,
+        OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+        Mode::empty(),
+    )
+    .map_err(map_rustix_path_error)?
+    .into();
+    let mut components = relative.components().peekable();
+    while let Some(component) = components.next() {
+        let Component::Normal(name) = component else {
+            return Err(ArtifactStorageError::InvalidPath);
+        };
+        if components.peek().is_none() {
+            let file: File = rustix::fs::openat(
+                &directory,
+                name,
+                OFlags::RDWR
+                    | OFlags::CREATE
+                    | OFlags::EXCL
+                    | OFlags::NOFOLLOW
+                    | OFlags::CLOEXEC,
+                Mode::RUSR | Mode::WUSR,
+            )
+            .map_err(map_rustix_create_error)?
+            .into();
+            return Ok(CreateOnlyArtifactFile {
+                file,
+                parent_directory: Some(directory),
+            });
+        }
+        directory = rustix::fs::openat(
+            &directory,
+            name,
+            OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+            Mode::empty(),
+        )
+        .map_err(map_rustix_path_error)?
+        .into();
+    }
+    Err(ArtifactStorageError::InvalidPath)
+}
+
+#[cfg(unix)]
+fn open_beneath_directory_capability(
+    root: &Path,
+    relative: &Path,
+) -> Result<File, ArtifactStorageError> {
+    use rustix::fs::Mode;
+    use rustix::fs::OFlags;
+
+    validate_relative_path(relative)?;
+    let mut directory: File = rustix::fs::open(
+        root,
+        OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+        Mode::empty(),
+    )
+    .map_err(map_rustix_path_error)?
+    .into();
+    let mut components = relative.components().peekable();
+    while let Some(component) = components.next() {
+        let Component::Normal(name) = component else {
+            return Err(ArtifactStorageError::InvalidPath);
+        };
+        if components.peek().is_none() {
+            return Ok(rustix::fs::openat(
+                &directory,
+                name,
+                OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+                Mode::empty(),
+            )
+            .map_err(map_rustix_path_error)?
+            .into());
+        }
+        directory = rustix::fs::openat(
+            &directory,
+            name,
+            OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+            Mode::empty(),
+        )
+        .map_err(map_rustix_path_error)?
+        .into();
+    }
+    Err(ArtifactStorageError::InvalidPath)
+}
+
+#[cfg(unix)]
+fn map_rustix_create_error(error: rustix::io::Errno) -> ArtifactStorageError {
+    match error {
+        rustix::io::Errno::EXIST => ArtifactStorageError::AlreadyExists,
+        other => map_rustix_path_error(other),
+    }
+}
+
+#[cfg(unix)]
+fn map_rustix_path_error(error: rustix::io::Errno) -> ArtifactStorageError {
+    match error {
+        rustix::io::Errno::LOOP => ArtifactStorageError::PathEscape,
+        rustix::io::Errno::NOTDIR => ArtifactStorageError::NotRegular,
+        other => ArtifactStorageError::Io(io::Error::from_raw_os_error(other.raw_os_error()).kind()),
+    }
+}
+
+pub(crate) fn open_existing_beneath_trusted_root(
+    root: impl AsRef<Path>,
+    relative: impl AsRef<Path>,
+) -> Result<File, ArtifactStorageError> {
+    let root = root.as_ref();
+    let relative = relative.as_ref();
+    validate_relative_path(relative)?;
+    #[cfg(unix)]
+    {
+        open_beneath_directory_capability(root, relative)
+    }
+    #[cfg(not(unix))]
+    {
+        Ok(File::open(resolve_beneath_trusted_root(root, relative)?)?)
+    }
+}
+
+pub(crate) fn resolve_beneath_trusted_root(
+    root: impl AsRef<Path>,
+    relative: impl AsRef<Path>,
+) -> Result<PathBuf, ArtifactStorageError> {
+    let relative = relative.as_ref();
+    validate_relative_path(relative)?;
 
     let canonical_root = std::fs::canonicalize(root).map_err(ArtifactStorageError::from)?;
     if !canonical_root.metadata()?.is_dir() {
@@ -478,7 +626,11 @@ pub(crate) fn write_new(
     file: CreateOnlyArtifactFile,
     bytes: &[u8],
 ) -> Result<(), ArtifactStorageError> {
-    let mut guard = lock(file.0, LockKind::Exclusive)?;
+    let CreateOnlyArtifactFile {
+        file,
+        parent_directory,
+    } = file;
+    let mut guard = lock(file, LockKind::Exclusive)?;
     if guard.0.metadata()?.len() != 0 {
         // Atomic creation already proved the target did not exist. Bytes appearing
         // before the guarded write are interference, so completion is unknown.
@@ -489,7 +641,13 @@ pub(crate) fn write_new(
         .0
         .write_all(bytes)
         .and_then(|()| guard.0.sync_all())
-        .map_err(|_| ArtifactStorageError::Indeterminate)
+        .map_err(|_| ArtifactStorageError::Indeterminate)?;
+    if let Some(parent) = parent_directory {
+        parent
+            .sync_all()
+            .map_err(|_| ArtifactStorageError::Indeterminate)?;
+    }
+    Ok(())
 }
 
 pub(crate) fn read_bounded(
