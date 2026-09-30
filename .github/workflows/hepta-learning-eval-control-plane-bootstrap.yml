@@ -68,6 +68,7 @@ jobs:
             scripts/hepta-learning-eval-exact-summary.py
             scripts/hepta-learning-eval-exact.py
             scripts/hepta-learning-eval-local-verify.py
+            scripts/hepta-learning-eval-markdown-links.py
             scripts/hepta-learning-eval-pr-status.py
             scripts/hepta-learning-eval-status.py
             scripts/hepta-learning-eval-target-host.py
@@ -76,6 +77,7 @@ jobs:
             scripts/hepta-nextest-require.py
             scripts/hepta_learning_eval_projection.py
             scripts/hepta_rust_identifiers.py
+            scripts/test_hepta_learning_eval_doc_contract.py
             "${tests[@]}"
           )
           python3 -m py_compile "${python_files[@]}"
@@ -84,6 +86,13 @@ jobs:
             printf '== %s ==\n' "$test_file" | tee -a "$out/regressions.log"
             python3 "$test_file" -v 2>&1 | tee -a "$out/regressions.log"
           done
+          python3 scripts/test_hepta_learning_eval_doc_contract.py \
+            DocumentationContractTests.test_markdown_links_validate_files_and_duplicate_heading_anchors \
+            DocumentationContractTests.test_markdown_missing_file_and_anchor_fail_closed \
+            DocumentationContractTests.test_markdown_links_may_not_escape_repository \
+            DocumentationContractTests.test_markdown_symlink_target_fails_closed_before_resolution \
+            DocumentationContractTests.test_markdown_source_symlink_is_rejected \
+            -v 2>&1 | tee "$out/markdown-link-regressions.log"
           python3 scripts/hepta-learning-eval-target-host.py self-test \
             2>&1 | tee "$out/target-host-verifier-self-test.log"
           bash -n scripts/hepta-learning-eval-api-surface.sh
@@ -126,6 +135,7 @@ jobs:
               'candidateOidcAuthority': False,
               'trustedReporterFromDefaultBranch': True,
               'completeLearningEvalWorkflowPathTrigger': True,
+              'markdownSymlinkComponentRejection': True,
               'authority': 'DENY_ALL',
               'releasePosture': 'NO_GO',
           }
