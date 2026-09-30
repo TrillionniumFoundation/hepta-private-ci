@@ -37,7 +37,7 @@ def _product_code(source: str) -> str:
         while code.startswith("#[", cursor):
             extra_end = _matching_delimiter(code, cursor + 1, "[", "]")
             if extra_end is None:
-                # An unparseable item is retained, so it cannot hide a write.
+                # An unparsable item is retained, so it cannot hide a write.
                 return "".join(output)
             cursor = _skip_space(code, extra_end + 1)
         item_end = _rust_item_end(code, cursor)
