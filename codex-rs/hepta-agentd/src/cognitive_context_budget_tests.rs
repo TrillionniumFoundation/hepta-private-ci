@@ -16,9 +16,9 @@ use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactManifest;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
+use codex_hepta_learning_artifacts::CurrentArtifactUseViewV1;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
-use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
 use codex_hepta_learning_artifacts::write_candidate_payload;
 use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_memory::RetrievalRequest;
@@ -42,7 +42,7 @@ struct CurrentView {
 }
 
 impl CurrentCognitiveRegistry for CurrentView {
-    fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String> {
+    fn current(&self) -> Result<CurrentArtifactUseViewV1, String> {
         crate::cognitive_ranker::verified_fixture_current_view(
             File::open(&self.path).map_err(|error| error.to_string())?,
             self.receipt,
