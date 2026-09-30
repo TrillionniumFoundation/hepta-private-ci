@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.secrets-target-storage-profile.v1",
+  "module": "secrets.heptabao",
+  "targetId": null,
+  "databasePath": null,
+  "nodeClass": null,
+  "volumeClass": null,
+  "filesystem": null,
+  "mountOptions": [],
+  "qualifier": "codex-rs/hepta-bao-adapter/qa/qualify_storage_profile.py",
+  "requiredChecks": [
+    "localLockingFilesystem",
+    "walEnabled",
+    "fullSynchronous",
+    "byteRangeLockingObserved",
+    "directoryFsyncWorks",
+    "restartReopenWorks",
+    "corruptionDetected",
+    "powerLossEvidencePresent",
+    "snapshotRollbackEvidencePresent",
+    "nodeMigrationExercised"
+  ],
+  "targetStorageProfileQualified": false,
+  "targetHostQualified": false,
+  "operatorAccepted": false,
+  "evidenceReceipt": null,
+  "nonClaims": [
+    "Runner-local SQLite evidence is not target-volume qualification.",
+    "No production volume, mount options, power-loss run or writable-snapshot rollback run is selected yet."
+  ]
+}

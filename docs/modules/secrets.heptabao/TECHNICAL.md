@@ -16,6 +16,18 @@
 
 This stable document is the implementation guide for `secrets.heptabao`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+## Current candidate implementation contract
+
+The current registered consumption state machine is specified in
+[CONSUMPTION_SAGA_V4.md](CONSUMPTION_SAGA_V4.md); the schema-4 JSON reference
+owner and migration protocol are specified in
+[LEASE_OWNER_V3.md](LEASE_OWNER_V3.md). Executable diagnostics, full-operation
+latency and the production-store replacement gate are specified in
+[OPERATIONS_AND_CAPACITY_V1.md](OPERATIONS_AND_CAPACITY_V1.md). These contracts
+supersede older metadata-only lifecycle descriptions where they differ.
+Provider-native dynamic lease dispatch and normal daemon activation remain
+unqualified.
+
 ## 1. Identity, mission and ownership
 
 Bridge governed secret leases and metadata to the external HeptaBao authority without returning raw secrets in receipts.
@@ -157,13 +169,17 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) specifies this module's algorithm and pilot ceilings. Current executable measurement belongs to `BaoFinalUseHost::operation_metrics` and `DurableLeaseRegistryV1::diagnostics`, as described in [OPERATIONS_AND_CAPACITY_V1.md](OPERATIONS_AND_CAPACITY_V1.md). They cover full forward/recovery calls and reference-owner commit cost; process-local samples are not target-host qualification.
+
+A production replacement must preserve deduplication, immutable results, compare-and-swap transitions, recovery fairness, archive semantics and external anti-rollback. It must also remove synchronous snapshot work from async runtime workers. Merely changing the container format to SQLite is insufficient.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Use the host-enrolled BaoClient consumer behind a registered trusted callback. The current integration supports the KV v2 read contract and a durable metadata-only lease lifecycle/reconciliation owner. Provider-native lease issuance/renew/revoke dispatch remains gated by the OpenBao compatibility blocker and must stay fail-closed until the exact endpoint contract is qualified. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain indeterminate consumer outcomes without blind retry.
+Use the host-enrolled BaoClient consumer behind a registered trusted callback. The current integration supports the KV v2 read contract and a durable metadata-only lease lifecycle/reconciliation owner. Export state/recovery counts, pending quota, post-dispatch rows without receipts, settlement/observer backlog, owner fencing, encoded/reserved bytes and forward/recovery latency from the approved host. Debug and ordinary telemetry must not contain secret digests or path components.
+
+Provider-native lease issuance/renew/revoke dispatch remains gated by the OpenBao compatibility blocker and must stay fail-closed until the exact endpoint contract is qualified. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain indeterminate consumer outcomes without blind retry.
 
 Current operating and state-format references:
 
@@ -179,7 +195,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs); named case: `real_tls_read_uses_headers_exact_version_and_secret_only_consumer`.
 - [codex-rs/hepta-bao-adapter/src/lib_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lib_tests.rs); named case: `exact_reference_returns_only_opaque_digest`.
-- [codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs); covers idempotency conflict, unknown outcome reconciliation, renew/revoke and restart durability.
+- [codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs); covers idempotency conflict, proof-preserving schema-3 migration, capacity, unknown outcome reconciliation, renew/revoke and restart durability.
+- [codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs](../../../codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs); exercises 26 named SIGKILL cuts and restart reconciliation without a `BaoClient`.
 
 In `codex-rs`, run `just test -p codex-hepta-bao-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) separately labels target acceptance designs.
 
@@ -258,3 +275,17 @@ The bootstrap source-location obligation for `secrets.heptabao` is implemented b
 - `codex-rs/hepta-bao-adapter`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. `.github/workflows/hepta-consolidated-source.yml` still verifies the repository-wide gap inventory, but its selected Rust package set is not the `secrets.heptabao` compilation receipt. These receipts are source implementation evidence only. They grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+<!-- secrets-heptabao-sqlite-source-status:v1 -->
+## SQLite source and qualification status
+
+The current source candidate contains `SqliteBaoOwnerV1` and
+`SqliteBaoProductRuntimeV1`, including revision-CAS transitions, generation-
+fenced recovery claims, schema-4 reference import, immutable terminal archive
+and external-checkpoint hashing/publication hooks. This is a **source-presence**
+fact only. Exact-head compilation/qualification, storage-profile qualification,
+a named product caller, target-host qualification, activation, operator
+acceptance and release remain false until independently proved for one exact
+SHA. The fixed provider remains KV-v2-read-only; generic dynamic issue, renew
+and revoke remain fail-closed.
+<!-- /secrets-heptabao-sqlite-source-status:v1 -->

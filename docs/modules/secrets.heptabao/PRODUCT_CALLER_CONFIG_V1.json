@@ -1,0 +1,25 @@
+{
+  "binaryTarget": "hepta-secrets-runtime",
+  "checkpointService": "external_checkpoint_service",
+  "consumerRegistrySource": "compiled_registered_consumers",
+  "databasePathEnv": "HEPTA_SECRETS_DB_PATH",
+  "deadlines": {
+    "absoluteOperationDeadlineMs": 240000,
+    "consumerTimeoutMs": 60000,
+    "forwardExecutionLeaseMs": 180000,
+    "shutdownDrainDeadlineMs": 30000
+  },
+  "deploymentTopology": "single_process_local_filesystem",
+  "metricsSinkEnv": "HEPTA_SECRETS_METRICS_ENDPOINT",
+  "providerEndpointEnv": "HEPTA_SECRETS_PROVIDER_ENDPOINT",
+  "providerTokenFileEnv": "HEPTA_SECRETS_PROVIDER_TOKEN_FILE",
+  "recoveryWorker": {
+    "claimMode": "just_in_time",
+    "leaseMs": 60000,
+    "maxClaimsPerSweep": 32
+  },
+  "schema": "hepta.secrets-heptabao-product-caller-config.v1",
+  "storageQualificationRequired": true,
+  "targetHostQualificationRequired": true,
+  "trustedTimeSource": "kernel_authority_clock"
+}

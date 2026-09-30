@@ -1,9 +1,9 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
-  "schemaVersion": 3,
+  "schema": "hepta.module-implementation-map.v4",
+  "schemaVersion": 4,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "b881b5f99e13c8c47ce374158b5258e02fe2202f",
+    "tree": "69b214a8bb62497ac877d0c8158b6d186fc334ef"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -21,13 +21,13 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionWriterState": "sqlite_owner_source_present_unqualified",
   "operations": [
     {
       "operation": "consume_kv_v2",
-      "nativeSymbol": "consume_kv_v2",
+      "nativeSymbol": "BaoClient::consume_kv_v2",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "trusted_low_level_legacy_read",
       "authority": "kernel.final_use",
       "tests": [
         "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
@@ -38,63 +38,231 @@
       "delegatedCallees": []
     },
     {
-      "operation": "binding",
-      "nativeSymbol": "binding",
-      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "consume_kv_v2_with_authbus",
+      "nativeSymbol": "BaoFinalUseHost::consume_kv_v2_with_authbus",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "state": "registered_durable_product_ingress",
+      "authority": "kernel.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "consume_kv_v2_with_authbus",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reconcile_consumption",
+      "nativeSymbol": "BaoFinalUseHost::reconcile_consumption",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "state": "observer_only_restart_reconciliation",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reconcile_consumption",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reservation_by_operation",
+      "nativeSymbol": "AuthBusAuthorityHost::reservation_by_operation",
+      "sourcePath": "codex-rs/hepta-authbus/src/host.rs",
+      "state": "read_only_recovery_projection",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-authbus/src/operation_lookup_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reservation_by_operation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "durable_consumption_transitions",
+      "nativeSymbol": "DurableLeaseRegistryV1",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
+      "state": "json_reference_owner",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "durable_consumption_transitions",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lease_lifecycle_reference",
+      "nativeSymbol": "DurableLeaseRegistryV1",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "state": "json_reference_owner",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lease_lifecycle_reference",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "registry_diagnostics",
+      "nativeSymbol": "DurableLeaseRegistryV1::diagnostics",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "state": "secret_free_reference_owner_diagnostics",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "registry_diagnostics",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "operation_metrics",
+      "nativeSymbol": "BaoFinalUseHost::operation_metrics",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "state": "bounded_process_local_full_operation_metrics",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "binding",
+      "designOperation": "operation_metrics",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "lease_lifecycle_prepare",
-      "nativeSymbol": "DurableLeaseRegistryV1::prepare_issue/prepare_renew/prepare_revoke",
-      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
-      "state": "source_implemented_provider_dispatch_blocked",
+      "operation": "registered_saga_sigkill_matrix",
+      "nativeSymbol": "registered_saga_sigkill_matrix",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs",
+      "state": "synthetic_unix_crash_recovery_qualification_fixture",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+        "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "request_secret_lease/renew/revoke local durable intent",
+      "designOperation": "registered_saga_sigkill_matrix",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "lease_lifecycle_reconcile",
-      "nativeSymbol": "DurableLeaseRegistryV1::mark_unknown/reconcile/expire_at",
-      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
-      "state": "source_implemented_provider_observer_not_product_composed",
+      "operation": "sqlite_owner_open_and_verify",
+      "nativeSymbol": "SqliteBaoOwnerV1::open",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "state": "sqlite_owner_source_present_unqualified",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "ambiguous outcome reconciliation",
+      "designOperation": "sqlite_owner_open_and_verify",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_reference_import",
+      "nativeSymbol": "SqliteBaoOwnerV1::import_reference_snapshot",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "state": "schema4_reference_import_source_present",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_reference_import",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_reconciliation_claims",
+      "nativeSymbol": "SqliteBaoOwnerV1::claim_due_reconciliation",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "state": "bounded_generation_fenced_recovery_claims",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_reconciliation_claims",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_checkpoint_publication",
+      "nativeSymbol": "SqliteBaoOwnerV1::publish_checkpoint_with",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "state": "caller_owned_external_checkpoint_boundary",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_checkpoint_publication",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_terminal_archive",
+      "nativeSymbol": "SqliteBaoOwnerV1::archive_terminal_before",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "state": "bounded_immutable_terminal_archive",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_terminal_archive",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_product_runtime",
+      "nativeSymbol": "SqliteBaoProductRuntimeV1",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
+      "state": "product_runtime_source_present_not_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sqlite_product_runtime",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind the lease lifecycle owner to an authenticated product caller and durable host composition.",
-    "Add provider-native dynamic lease issue/renew/revoke dispatch only after the exact HeptaBao/OpenBao endpoint contract is qualified; current compatibility status is blocking partial.",
-    "Run exact-source package tests, crash/fault injection and deterministic synthetic-merge qualification for this candidate."
+    "selected Agentd or App Server production bootstrap",
+    "independently operated trusted-time settlement and key-rotation services",
+    "external anti-rollback checkpoint service and disaster-recovery ceremony",
+    "target-host power-loss and long-history archival qualification",
+    "selected-host metrics export alerting and retention policy",
+    "independent operator acceptance promotion and release",
+    "exact-head and deterministic-merge qualification of the SQLite owner/runtime source"
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "exact-candidate source and deterministic-merge qualification",
+    "storage-profile and target-host qualification",
+    "named product execution",
+    "independent operator acceptance promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "sourceCompiled": "unproved_for_exact_head",
+    "sourceQualified": false,
+    "storageProfileQualified": false,
     "productionImplementation": false,
     "productExecutionProved": false,
+    "productComposed": false,
+    "targetHostQualified": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false,
@@ -103,5 +271,62 @@
   "sourceRoot": [
     "external/HeptaBao",
     "codex-rs/hepta-bao-adapter"
-  ]
+  ],
+  "currentImplementationGuide": "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v2",
+  "observedAtHead": {
+    "commit": "b881b5f99e13c8c47ce374158b5258e02fe2202f",
+    "tree": "69b214a8bb62497ac877d0c8158b6d186fc334ef"
+  },
+  "observedSourcePaths": [
+    ".github/workflows/lane-a-foundation.yml",
+    ".github/workflows/secrets-heptabao-candidate-attestation.yml",
+    ".github/workflows/secrets-heptabao-five-closure-qualified.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-authbus",
+    "codex-rs/hepta-bao-adapter",
+    "codex-rs/hepta-bao-adapter/migrations/0001_bao_owner_v1.sql",
+    "codex-rs/hepta-bao-adapter/migrations/0002_reconciliation_claims.sql",
+    "codex-rs/hepta-bao-adapter/qa/evidence/dynamic-contract-probe-20260925.json",
+    "codex-rs/hepta-bao-adapter/qa/validate_build_contract.py",
+    "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+    "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs",
+    "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-types",
+    "codex-rs/http-client",
+    "codex-rs/state",
+    "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+    "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
+    "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
+    "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
+    "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md",
+    "docs/modules/secrets.heptabao/PRODUCTION_READINESS.md",
+    "docs/modules/secrets.heptabao/READINESS_POLICY_V1.json",
+    "docs/modules/secrets.heptabao/TECHNICAL.md",
+    "external/HeptaBao",
+    "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+    "qualification/module-execution-dossiers/detail/secrets.heptabao.md",
+    "scripts/close_secrets_heptabao_candidate.py",
+    "scripts/generate_secrets_heptabao_module.py",
+    "scripts/hepta-implementation-maps.py"
+  ],
+  "canonicalManifest": "docs/modules/secrets.heptabao/MODULE_MANIFEST_V1.json",
+  "buildSurface": {
+    "kind": "single_complete",
+    "cargoFeatures": [],
+    "statement": "The adapter is one complete Cargo build surface. Qualification must not pass undeclared synthetic feature names."
+  },
+  "readinessDimensions": {
+    "sourcePresent": true,
+    "sourceCompiled": "unproved_for_exact_head",
+    "sourceQualified": false,
+    "storageProfileQualified": false,
+    "productComposed": false,
+    "targetHostQualified": false,
+    "activated": false,
+    "operatorAccepted": false,
+    "released": false
+  }
 }

@@ -67,7 +67,7 @@ impl AuthBusAuthorityStore {
         if let Err(error) = result {
             if error
                 .as_database_error()
-                .is_some_and(|database| database.is_unique_violation())
+                .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
             {
                 return Err(AuthBusAuthorityError::AlreadyExists);
             }
@@ -171,6 +171,16 @@ impl AuthBusAuthorityStore {
                 tx.commit().await.map_err(storage)?;
                 return Ok(existing);
             }
+            return Err(AuthBusAuthorityError::IdempotencyConflict);
+        }
+        let sealed: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_operation_admission_fence WHERE operation_id = ?",
+        )
+        .bind(request.operation_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(storage)?;
+        if sealed != 0 {
             return Err(AuthBusAuthorityError::IdempotencyConflict);
         }
         let policy = load_policy_by_id(&mut tx, decision.policy_id()).await?;
@@ -384,7 +394,7 @@ pub(crate) async fn load_reservation(
     reservation_from_row(&row)
 }
 
-async fn load_reservation_by_operation(
+pub(crate) async fn load_reservation_by_operation(
     tx: &mut Transaction<'_, Sqlite>,
     operation_id: &StableId,
 ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {

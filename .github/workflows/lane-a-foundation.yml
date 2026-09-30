@@ -5,6 +5,11 @@ on:
     paths:
       - "codex-rs/hepta-*/**"
       - "codex-rs/kernel-*/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/http-client/**"
+      - "codex-rs/state/**"
+      - "docs/modules/secrets.heptabao/**"
       - "docs/contracts/**"
       - "docs/lane-a-foundation/**"
       - "docs/modules/platform.types/**"
@@ -172,6 +177,75 @@ jobs:
         with:
           name: lane-a-merge-native-${{ steps.merge.outputs.sha }}
           path: .hepta-evidence/lane-a-*.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
+  secrets-native-head:
+    name: secrets.heptabao independent native source-head
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Execute native checks independently of document verification
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          python3 codex-rs/hepta-bao-adapter/qa/qualify.py \
+            --expected-sha "$EXPECTED_SHA" --candidate-role source-head \
+            --output .hepta-evidence/secrets-native-head
+      - name: Retain actual native results including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: secrets-native-head-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/secrets-native-head
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
+  secrets-native-merge:
+    name: secrets.heptabao independent native synthetic-merge
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Construct deterministic synthetic merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Lane A CI
+          author-email: hepta-lane-a-ci@users.noreply.github.com
+          message: Synthetic Lane A merge
+      - name: Execute native checks independently of document verification
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          python3 codex-rs/hepta-bao-adapter/qa/qualify.py \
+            --expected-sha "$EXPECTED_SHA" --candidate-role synthetic-merge \
+            --output .hepta-evidence/secrets-native-merge
+      - name: Retain actual native results including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: secrets-native-merge-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/secrets-native-merge
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90

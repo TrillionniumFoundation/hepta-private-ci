@@ -7,10 +7,16 @@
 //! updates are accepted only through an independently pinned signed feed.
 
 use std::collections::BTreeMap;
+use std::collections::VecDeque;
 use std::fmt;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::Instant;
 
+use codex_hepta_authbus::AuthBusAuthorityHost;
+use codex_hepta_authbus::QuotaReservation;
+use codex_hepta_authbus::ReservationState;
+use codex_hepta_authbus::SettlementStatus;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_contracts::FinalUseApprovalVerifier;
@@ -21,11 +27,55 @@ use codex_hepta_contracts::FinalUseRevocationReceipt;
 use codex_hepta_contracts::SignedFinalUseApproval;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
+use crate::BaoAuthBusAdmission;
+use crate::BaoAuthBusError;
+use crate::BaoAuthBusEvidenceProvider;
 use crate::BaoClient;
 use crate::BaoClientError;
 use crate::BaoReadRequest;
 use crate::BaoSecretReceipt;
+use crate::{
+    BaoConsumptionOperationV1, BaoConsumptionRecoveryActionV1, BaoConsumptionStateV1,
+    DurableLeaseRegistryV1, LeaseRegistryErrorV1,
+};
+
+#[path = "sqlite_product_runtime.rs"]
+mod sqlite_product_runtime;
+pub use sqlite_product_runtime::{
+    BaoRecoveryBatchReportV1, BaoRecoveryWorkerMetricsV1, BaoSqliteProductRuntimeConfigV1,
+    SqliteBaoProductRuntimeMetricsV1, SqliteBaoProductRuntimeV1,
+};
+
+/// Independently approved operation inputs; dependencies remain host-owned.
+#[derive(Clone, Copy)]
+pub struct BaoApprovedReadV1<'a> {
+    pub admission: &'a BaoAuthBusAdmission,
+    pub grant: &'a SignedFinalUseGrant,
+    pub approval: &'a SignedFinalUseApproval,
+    pub request: &'a BaoReadRequest,
+}
+
+pub type BaoOperationConsumerCallback =
+    Arc<dyn Fn(&str, [u8; 32], &[u8]) -> Result<(), ()> + Send + Sync + 'static>;
+pub type BaoConsumerObserverCallback =
+    Arc<dyn Fn(&str, [u8; 32]) -> Result<BaoConsumerObservationV1, ()> + Send + Sync + 'static>;
+
+/// Durable observation of the original consumer effect.
+///
+/// The legacy `NotApplied` value remains conservative and cannot release quota.
+/// `NotAppliedWithEvidence` is the terminal negative outcome: the enrolled
+/// observer must return a nonzero immutable evidence digest for the original
+/// operation identity and semantic digest.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BaoConsumerObservationV1 {
+    Succeeded,
+    NotApplied,
+    NotAppliedWithEvidence { evidence_sha256: [u8; 32] },
+    Unknown,
+}
 
 pub type BaoConsumerCallback = Arc<dyn Fn(&[u8]) -> Result<(), ()> + Send + Sync + 'static>;
 
@@ -33,11 +83,15 @@ pub type BaoConsumerCallback = Arc<dyn Fn(&[u8]) -> Result<(), ()> + Send + Sync
 pub struct RegisteredBaoConsumer {
     id: String,
     callback: BaoConsumerCallback,
+    configuration_sha256: Option<[u8; 32]>,
+    operation_callback: Option<BaoOperationConsumerCallback>,
+    observer: Option<BaoConsumerObserverCallback>,
 }
 
 impl fmt::Debug for RegisteredBaoConsumer {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("RegisteredBaoConsumer")
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("RegisteredBaoConsumer")
             .field("id", &self.id)
             .field("callback", &"[TRUSTED CALLBACK]")
             .finish()
@@ -49,12 +103,195 @@ impl RegisteredBaoConsumer {
         if !consumer_id(&id) {
             return Err(BaoFinalUseHostError::InvalidConsumerId);
         }
-        Ok(Self { id, callback })
+        Ok(Self {
+            id,
+            callback,
+            configuration_sha256: None,
+            operation_callback: None,
+            observer: None,
+        })
+    }
+
+    /// A product registration must bind its immutable implementation/configuration
+    /// identity and provide an operation-bound observer for restart reconciliation.
+    pub fn for_operations(
+        id: String,
+        configuration_sha256: [u8; 32],
+        callback: BaoOperationConsumerCallback,
+        observer: BaoConsumerObserverCallback,
+    ) -> Result<Self, BaoFinalUseHostError> {
+        if !consumer_id(&id) || configuration_sha256 == [0; 32] {
+            return Err(BaoFinalUseHostError::InvalidConsumerConfiguration);
+        }
+        Ok(Self {
+            id,
+            callback: Arc::new(|_| Err(())),
+            configuration_sha256: Some(configuration_sha256),
+            operation_callback: Some(callback),
+            observer: Some(observer),
+        })
     }
 
     pub fn id(&self) -> &str {
         &self.id
     }
+}
+
+const OPERATION_DURATION_SAMPLE_LIMIT: usize = 256;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct BaoOperationLatencyMetricsV1 {
+    pub attempts: u64,
+    pub succeeded: u64,
+    pub admission_rejected: u64,
+    pub reconciliation_required: u64,
+    pub awaiting_evidence: u64,
+    pub awaiting_settlement: u64,
+    pub terminal_failed: u64,
+    pub identity_conflict: u64,
+    pub capacity_rejected: u64,
+    pub owner_busy: u64,
+    pub commit_indeterminate: u64,
+    pub durable_owner_failed: u64,
+    pub external_control_failed: u64,
+    pub last_duration_micros: u64,
+    pub max_duration_micros: u64,
+    pub p50_duration_micros: u64,
+    pub p95_duration_micros: u64,
+    pub p99_duration_micros: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct BaoOperationMetricsV1 {
+    pub forward: BaoOperationLatencyMetricsV1,
+    pub recovery: BaoOperationLatencyMetricsV1,
+}
+
+#[derive(Default)]
+struct BaoOperationMetricSeriesV1 {
+    attempts: u64,
+    succeeded: u64,
+    admission_rejected: u64,
+    reconciliation_required: u64,
+    awaiting_evidence: u64,
+    awaiting_settlement: u64,
+    terminal_failed: u64,
+    identity_conflict: u64,
+    capacity_rejected: u64,
+    owner_busy: u64,
+    commit_indeterminate: u64,
+    durable_owner_failed: u64,
+    external_control_failed: u64,
+    last_duration_micros: u64,
+    max_duration_micros: u64,
+    duration_samples_micros: VecDeque<u64>,
+}
+
+impl BaoOperationMetricSeriesV1 {
+    fn record(&mut self, started: Instant, error_class: Option<BaoProductErrorClassV1>) {
+        self.attempts = self.attempts.saturating_add(1);
+        match error_class {
+            None => self.succeeded = self.succeeded.saturating_add(1),
+            Some(BaoProductErrorClassV1::AdmissionRejected) => {
+                self.admission_rejected = self.admission_rejected.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::ReconciliationRequired) => {
+                self.reconciliation_required = self.reconciliation_required.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::AwaitingOriginalEvidence) => {
+                self.awaiting_evidence = self.awaiting_evidence.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::AwaitingSettlement) => {
+                self.awaiting_settlement = self.awaiting_settlement.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::HistoricalTerminalFailure) => {
+                self.terminal_failed = self.terminal_failed.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::IdentityConflict) => {
+                self.identity_conflict = self.identity_conflict.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::CapacityRejected) => {
+                self.capacity_rejected = self.capacity_rejected.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::OwnerBusy) => {
+                self.owner_busy = self.owner_busy.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::CommitIndeterminate) => {
+                self.commit_indeterminate = self.commit_indeterminate.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::DurableOwnerFailure) => {
+                self.durable_owner_failed = self.durable_owner_failed.saturating_add(1);
+            }
+            Some(BaoProductErrorClassV1::ExternalControlFailure) => {
+                self.external_control_failed = self.external_control_failed.saturating_add(1);
+            }
+        }
+        let micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
+        self.last_duration_micros = micros;
+        self.max_duration_micros = self.max_duration_micros.max(micros);
+        if self.duration_samples_micros.len() == OPERATION_DURATION_SAMPLE_LIMIT {
+            self.duration_samples_micros.pop_front();
+        }
+        self.duration_samples_micros.push_back(micros);
+    }
+
+    fn snapshot(&self) -> BaoOperationLatencyMetricsV1 {
+        let mut samples = self
+            .duration_samples_micros
+            .iter()
+            .copied()
+            .collect::<Vec<_>>();
+        samples.sort_unstable();
+        BaoOperationLatencyMetricsV1 {
+            attempts: self.attempts,
+            succeeded: self.succeeded,
+            admission_rejected: self.admission_rejected,
+            reconciliation_required: self.reconciliation_required,
+            awaiting_evidence: self.awaiting_evidence,
+            awaiting_settlement: self.awaiting_settlement,
+            terminal_failed: self.terminal_failed,
+            identity_conflict: self.identity_conflict,
+            capacity_rejected: self.capacity_rejected,
+            owner_busy: self.owner_busy,
+            commit_indeterminate: self.commit_indeterminate,
+            durable_owner_failed: self.durable_owner_failed,
+            external_control_failed: self.external_control_failed,
+            last_duration_micros: self.last_duration_micros,
+            max_duration_micros: self.max_duration_micros,
+            p50_duration_micros: operation_percentile(&samples, 50),
+            p95_duration_micros: operation_percentile(&samples, 95),
+            p99_duration_micros: operation_percentile(&samples, 99),
+        }
+    }
+}
+
+#[derive(Default)]
+struct BaoOperationMetricsOwnerV1 {
+    forward: BaoOperationMetricSeriesV1,
+    recovery: BaoOperationMetricSeriesV1,
+}
+
+impl BaoOperationMetricsOwnerV1 {
+    fn snapshot(&self) -> BaoOperationMetricsV1 {
+        BaoOperationMetricsV1 {
+            forward: self.forward.snapshot(),
+            recovery: self.recovery.snapshot(),
+        }
+    }
+}
+
+fn operation_percentile(samples: &[u64], percentile: usize) -> u64 {
+    if samples.is_empty() {
+        return 0;
+    }
+    let last = samples.len() - 1;
+    let index = last
+        .checked_mul(percentile)
+        .and_then(|value| value.checked_add(99))
+        .map(|value| value / 100)
+        .unwrap_or(last)
+        .min(last);
+    samples[index]
 }
 
 /// Host-selected composition of final-use authority, independent approval,
@@ -65,12 +302,14 @@ pub struct BaoFinalUseHost {
     revocation_verifier: FinalUseRevocationFeedVerifier,
     clock: Arc<dyn AuthorityClock>,
     revocation_fresh_until_unix_ms: Mutex<u64>,
-    consumers: BTreeMap<String, BaoConsumerCallback>,
+    consumers: BTreeMap<String, RegisteredBaoConsumer>,
+    operation_metrics: Mutex<BaoOperationMetricsOwnerV1>,
 }
 
 impl fmt::Debug for BaoFinalUseHost {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("BaoFinalUseHost")
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("BaoFinalUseHost")
             .field("authority", &self.authority)
             .field("approval_verifier", &self.approval_verifier)
             .field("revocation_verifier", &self.revocation_verifier)
@@ -89,7 +328,7 @@ impl BaoFinalUseHost {
     ) -> Result<Self, BaoFinalUseHostError> {
         let mut registry = BTreeMap::new();
         for consumer in consumers {
-            if registry.insert(consumer.id, consumer.callback).is_some() {
+            if registry.insert(consumer.id.clone(), consumer).is_some() {
                 return Err(BaoFinalUseHostError::DuplicateConsumer);
             }
         }
@@ -103,11 +342,46 @@ impl BaoFinalUseHost {
             clock,
             revocation_fresh_until_unix_ms: Mutex::new(0),
             consumers: registry,
+            operation_metrics: Mutex::new(Default::default()),
         })
     }
 
     pub fn consumer_count(&self) -> usize {
         self.consumers.len()
+    }
+
+    #[must_use]
+    pub fn operation_metrics(&self) -> BaoOperationMetricsV1 {
+        self.operation_metrics
+            .lock()
+            .map(|metrics| metrics.snapshot())
+            .unwrap_or_else(|_| BaoOperationMetricsOwnerV1::default().snapshot())
+    }
+
+    fn record_forward_metric(
+        &self,
+        started: Instant,
+        result: &Result<BaoSecretReceipt, BaoProductHostError>,
+    ) {
+        if let Ok(mut metrics) = self.operation_metrics.lock() {
+            metrics.forward.record(
+                started,
+                result.as_ref().err().map(BaoProductHostError::class),
+            );
+        }
+    }
+
+    fn record_recovery_metric(
+        &self,
+        started: Instant,
+        result: &Result<BaoSecretReceipt, BaoProductHostError>,
+    ) {
+        if let Ok(mut metrics) = self.operation_metrics.lock() {
+            metrics.recovery.record(
+                started,
+                result.as_ref().err().map(BaoProductHostError::class),
+            );
+        }
     }
 
     fn ensure_revocation_fresh(&self) -> Result<(), BaoFinalUseHostError> {
@@ -123,6 +397,22 @@ impl BaoFinalUseHost {
             return Err(BaoFinalUseHostError::StaleRevocationFeed);
         }
         Ok(())
+    }
+
+    fn approved_consumer(
+        &self,
+        grant: &SignedFinalUseGrant,
+        approval: &SignedFinalUseApproval,
+        consumer_id: &str,
+    ) -> Result<BaoConsumerCallback, BaoFinalUseHostError> {
+        self.ensure_revocation_fresh()?;
+        self.approval_verifier
+            .verify(grant, approval)
+            .map_err(BaoFinalUseHostError::Control)?;
+        self.consumers
+            .get(consumer_id)
+            .map(|consumer| consumer.callback.clone())
+            .ok_or(BaoFinalUseHostError::UnregisteredConsumer)
     }
 
     /// Apply one independently signed revocation head. The feed signature is
@@ -148,13 +438,9 @@ impl BaoFinalUseHost {
         Ok(receipt)
     }
 
-    /// Production composition boundary. The request's signed `consumer_id`
-    /// selects one pre-enrolled callback; callers cannot substitute a closure at
-    /// the callsite. Independent operator approval is verified before any
-    /// provider dispatch. Freshness is checked again at the registered consumer
-    /// entry after provider I/O, so a feed that expires while the network call is
-    /// in flight cannot release a secret. The lower-level client performs the
-    /// claim/network/digest/final-delivery authority fencing.
+    /// Registered final-use boundary without quota composition. This remains a
+    /// bounded source integration path; product callers that reserve quota must
+    /// use `consume_kv_v2_with_authbus` below.
     pub async fn consume_kv_v2(
         &self,
         client: &BaoClient,
@@ -162,28 +448,731 @@ impl BaoFinalUseHost {
         approval: &SignedFinalUseApproval,
         request: &BaoReadRequest,
     ) -> Result<BaoSecretReceipt, BaoFinalUseHostError> {
-        self.ensure_revocation_fresh()?;
-        self.approval_verifier
-            .verify(grant, approval)
-            .map_err(BaoFinalUseHostError::Control)?;
-        let consumer = self
-            .consumers
-            .get(&request.consumer_id)
-            .cloned()
-            .ok_or(BaoFinalUseHostError::UnregisteredConsumer)?;
+        let consumer = self.approved_consumer(grant, approval, &request.consumer_id)?;
         match client
-            .consume_kv_v2_guarded(&self.authority, grant, request, move |secret| {
-                self.ensure_revocation_fresh()?;
-                consumer(secret).map_err(|()| {
-                    BaoFinalUseHostError::Client(BaoClientError::ConsumerIndeterminate)
-                })
-            })
+            .consume_kv_v2_guarded(
+                &self.authority,
+                grant,
+                request,
+                |_| Ok(()),
+                move |secret, _receipt| {
+                    self.ensure_revocation_fresh()?;
+                    consumer(secret).map_err(|()| {
+                        BaoFinalUseHostError::Client(BaoClientError::ConsumerIndeterminate)
+                    })
+                },
+            )
             .await
             .map_err(BaoFinalUseHostError::Client)?
         {
             Ok(receipt) => Ok(receipt),
             Err(error) => Err(error),
         }
+    }
+
+    /// The single durable product ingress. Only a newly committed `Claimed`
+    /// identity may execute. Exact retries of an incomplete identity are routed
+    /// to reconciliation and never redispatch blindly.
+    pub async fn consume_kv_v2_with_authbus<E: BaoAuthBusEvidenceProvider>(
+        &self,
+        client: &BaoClient,
+        authbus: &AuthBusAuthorityHost,
+        registry: &Mutex<DurableLeaseRegistryV1>,
+        read: BaoApprovedReadV1<'_>,
+        evidence: &mut E,
+    ) -> Result<BaoSecretReceipt, BaoProductHostError> {
+        let started = Instant::now();
+        let result = async {
+            let BaoApprovedReadV1 {
+                admission,
+                grant,
+                approval,
+                request,
+            } = read;
+            validate_product_admission(admission).map_err(BaoProductHostError::Host)?;
+            self.approved_consumer(grant, approval, &request.consumer_id)
+                .map_err(BaoProductHostError::Host)?;
+            let registration = self
+                .consumers
+                .get(&request.consumer_id)
+                .ok_or(BaoProductHostError::ConsumerProfileRequired)?;
+            let configuration = registration
+                .configuration_sha256
+                .ok_or(BaoProductHostError::ConsumerProfileRequired)?;
+            if request.consumer_configuration_sha256 != Some(configuration) {
+                return Err(BaoProductHostError::ConsumerProfileRequired);
+            }
+            let callback = registration
+                .operation_callback
+                .clone()
+                .ok_or(BaoProductHostError::ConsumerProfileRequired)?;
+            let binding = client
+                .binding(request)
+                .map_err(|error| BaoProductHostError::Host(BaoFinalUseHostError::Client(error)))?;
+            let effect = client
+                .authbus_effect_digest(request, &admission.operation_id)
+                .map_err(|error| BaoProductHostError::Host(BaoFinalUseHostError::Client(error)))?;
+            let semantics = serde_json::to_vec(&(
+                "hepta.bao.durable-product.v2",
+                effect.as_array(),
+                admission.policy_revision,
+                admission.quota_key.as_str(),
+                admission.expected_quota_revision,
+                admission.amount,
+                admission.expires_at_ms,
+                grant,
+                approval,
+                configuration,
+            ))
+            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::InvalidInput))?;
+            let semantic_sha256 = Digest32::of_bytes(&semantics).into_array();
+            let operation_id = admission.operation_id.as_str();
+            let _execution = registry
+                .lock()
+                .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                .enter_consumption_execution(operation_id)
+                .map_err(BaoProductHostError::Store)?;
+            let operation = BaoConsumptionOperationV1 {
+                operation_id: operation_id.to_owned(),
+                semantic_sha256,
+                effect_sha256: effect.into_array(),
+                request_sha256: binding.request_sha256,
+                consumer_id: request.consumer_id.clone(),
+                consumer_configuration_sha256: configuration,
+                amount: admission.amount,
+                reservation_id: None,
+                state: BaoConsumptionStateV1::Claimed,
+                receipt: None,
+                created_revision: 0,
+                updated_revision: 0,
+                terminal_kind: None,
+                terminal_code: None,
+                terminal_evidence_sha256: None,
+                terminal_observed_cost: None,
+            };
+            #[cfg(all(test, unix))]
+            crate::saga_crash::cut("claim.before");
+            let existing = registry
+                .lock()
+                .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                .claim_consumption(operation)
+                .map_err(BaoProductHostError::Store)?;
+            #[cfg(all(test, unix))]
+            crate::saga_crash::cut("claim.after");
+            if let Some(existing) = existing {
+                return match existing.state.recovery_action() {
+                    BaoConsumptionRecoveryActionV1::ReturnHistoricalSuccess => {
+                        existing.receipt.ok_or(BaoProductHostError::Store(
+                            LeaseRegistryErrorV1::CorruptState,
+                        ))
+                    }
+                    BaoConsumptionRecoveryActionV1::ReturnHistoricalFailure => {
+                        Err(BaoProductHostError::TerminalFailure(Box::new(existing)))
+                    }
+                    _ => Err(BaoProductHostError::OutcomePending(Box::new(existing))),
+                };
+            }
+
+            let result = crate::authbus_saga::consume_kv_v2_with_authbus_saga(
+                client,
+                authbus,
+                crate::BaoAuthorizedReadV1 {
+                    admission,
+                    authority: &self.authority,
+                    grant,
+                    request,
+                },
+                evidence,
+                crate::authbus_saga::BaoAuthBusSagaHooks {
+                    reserved: |reservation: &QuotaReservation| {
+                        let result = match registry.lock() {
+                            Ok(mut owner) => owner
+                                .mark_consumption_reserved(
+                                    operation_id,
+                                    reservation.reservation_id.as_str().to_owned(),
+                                )
+                                .map_err(|_| {
+                                    BaoAuthBusError::Evidence("durable reservation commit failed")
+                                }),
+                            Err(_) => Err(BaoAuthBusError::Evidence("durable owner unavailable")),
+                        };
+                        std::future::ready(result)
+                    },
+                    dispatch_fenced: |reservation: &QuotaReservation| {
+                        let result = match registry.lock() {
+                            Ok(mut owner) => owner
+                                .mark_consumption_dispatch_fenced(
+                                    operation_id,
+                                    reservation.reservation_id.as_str(),
+                                )
+                                .map_err(|_| {
+                                    BaoAuthBusError::Evidence(
+                                        "durable dispatch fence commit failed",
+                                    )
+                                }),
+                            Err(_) => Err(BaoAuthBusError::Evidence("durable owner unavailable")),
+                        };
+                        std::future::ready(result)
+                    },
+                    provider_terminal: |error: BaoClientError, terminal: Digest32| {
+                        let result = provider_failure_code(error)
+                            .ok_or(BaoAuthBusError::Evidence(
+                                "nonterminal provider error classified terminal",
+                            ))
+                            .and_then(|code| match registry.lock() {
+                                Ok(mut owner) => owner
+                                    .record_provider_failure(
+                                        operation_id,
+                                        code,
+                                        terminal.into_array(),
+                                        admission.amount,
+                                    )
+                                    .map_err(|_| {
+                                        BaoAuthBusError::Evidence(
+                                            "durable provider terminal commit failed",
+                                        )
+                                    }),
+                                Err(_) => {
+                                    Err(BaoAuthBusError::Evidence("durable owner unavailable"))
+                                }
+                            });
+                        std::future::ready(result)
+                    },
+                    prepare_delivery: |receipt: &BaoSecretReceipt| {
+                        let result = match registry.lock() {
+                            Ok(mut owner) => owner
+                                .enter_consumption(operation_id, receipt.clone())
+                                .map_err(|_| {
+                                    BaoAuthBusError::Evidence("durable delivery preparation failed")
+                                }),
+                            Err(_) => Err(BaoAuthBusError::Evidence("durable owner unavailable")),
+                        };
+                        std::future::ready(result)
+                    },
+                    consumer: |secret: &[u8], _receipt: &BaoSecretReceipt| {
+                        self.ensure_revocation_fresh().map_err(|_| ())?;
+                        callback(operation_id, semantic_sha256, secret)
+                    },
+                    consumer_succeeded: |_receipt: &BaoSecretReceipt| {
+                        let result = match registry.lock() {
+                            Ok(mut owner) => {
+                                owner.observe_consumption(operation_id, true).map_err(|_| {
+                                    BaoAuthBusError::Evidence(
+                                        "durable consumer observation commit failed",
+                                    )
+                                })
+                            }
+                            Err(_) => Err(BaoAuthBusError::Evidence("durable owner unavailable")),
+                        };
+                        std::future::ready(result)
+                    },
+                },
+            )
+            .await;
+            match result {
+                Ok(_) => {
+                    #[cfg(all(test, unix))]
+                    crate::saga_crash::cut("local_terminal.before");
+                    let result = registry
+                        .lock()
+                        .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                        .settle_consumption(operation_id)
+                        .map_err(BaoProductHostError::Store);
+                    #[cfg(all(test, unix))]
+                    crate::saga_crash::cut("local_terminal.after");
+                    result
+                }
+                Err(error @ BaoAuthBusError::Provider(_)) => {
+                    let current = registry
+                        .lock()
+                        .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                        .consumption_result(operation_id)
+                        .map_err(BaoProductHostError::Store)?;
+                    if current.state == BaoConsumptionStateV1::ProviderFailed {
+                        let row = registry
+                            .lock()
+                            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                            .settle_consumption_failure(operation_id)
+                            .map_err(BaoProductHostError::Store)?;
+                        Err(BaoProductHostError::TerminalFailure(Box::new(row)))
+                    } else if let Some(terminal) = self
+                        .close_unreserved_failure_if_proved(authbus, registry, operation_id, &error)
+                        .await?
+                    {
+                        Err(BaoProductHostError::TerminalFailure(Box::new(terminal)))
+                    } else {
+                        Err(BaoProductHostError::AuthBus(error))
+                    }
+                }
+                Err(error @ BaoAuthBusError::Indeterminate { .. }) => {
+                    let _ = registry.lock().map(|mut owner| {
+                        let _ = owner.mark_consumption_indeterminate(operation_id);
+                    });
+                    Err(BaoProductHostError::AuthBus(error))
+                }
+                Err(error) => {
+                    if let Some(terminal) = self
+                        .close_unreserved_failure_if_proved(authbus, registry, operation_id, &error)
+                        .await?
+                    {
+                        Err(BaoProductHostError::TerminalFailure(Box::new(terminal)))
+                    } else {
+                        Err(BaoProductHostError::AuthBus(error))
+                    }
+                }
+            }
+        }
+        .await;
+        self.record_forward_metric(started, &result);
+        result
+    }
+
+    async fn close_unreserved_failure_if_proved(
+        &self,
+        authbus: &AuthBusAuthorityHost,
+        registry: &Mutex<DurableLeaseRegistryV1>,
+        operation_id: &str,
+        error: &BaoAuthBusError,
+    ) -> Result<Option<BaoConsumptionOperationV1>, BaoProductHostError> {
+        let operation = StableId::new(operation_id.to_owned())
+            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::CorruptState))?;
+        let row = registry
+            .lock()
+            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+            .consumption_result(operation_id)
+            .map_err(BaoProductHostError::Store)?;
+        if row.state != BaoConsumptionStateV1::Claimed {
+            return Ok(None);
+        }
+        if authbus
+            .seal_unreserved_operation(&operation, Digest32::from_array(row.effect_sha256))
+            .await
+            .map_err(|error| BaoProductHostError::AuthBus(error.into()))?
+            .is_some()
+        {
+            return Ok(None);
+        }
+        let evidence = Digest32::of_bytes(
+            format!("hepta.bao.pre-reservation.v1:{operation_id}:{error:?}").as_bytes(),
+        );
+        let terminal = registry
+            .lock()
+            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+            .record_consumption_abort(operation_id, false, "no_reservation", evidence.into_array())
+            .map_err(BaoProductHostError::Store)?;
+        Ok(Some(terminal))
+    }
+
+    /// Reconcile the original consumer and AuthBus operation identity. This
+    /// method never fetches a secret and never invokes the consumer effect.
+    pub async fn reconcile_consumption<E: BaoAuthBusEvidenceProvider>(
+        &self,
+        authbus: &AuthBusAuthorityHost,
+        registry: &Mutex<DurableLeaseRegistryV1>,
+        operation_id: &str,
+        evidence: &mut E,
+    ) -> Result<BaoSecretReceipt, BaoProductHostError> {
+        let started = Instant::now();
+        let result = async {
+            let _execution = registry
+                .lock()
+                .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                .enter_consumption_execution(operation_id)
+                .map_err(BaoProductHostError::Store)?;
+            let mut row = registry
+                .lock()
+                .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                .consumption_result(operation_id)
+                .map_err(BaoProductHostError::Store)?;
+            if row.state == BaoConsumptionStateV1::Succeeded {
+                return row.receipt.ok_or(BaoProductHostError::Store(
+                    LeaseRegistryErrorV1::CorruptState,
+                ));
+            }
+            if row.state == BaoConsumptionStateV1::Failed {
+                return Err(BaoProductHostError::TerminalFailure(Box::new(row)));
+            }
+            let registration = self
+                .consumers
+                .get(&row.consumer_id)
+                .ok_or(BaoProductHostError::ConsumerProfileRequired)?;
+            if registration.configuration_sha256 != Some(row.consumer_configuration_sha256) {
+                return Err(BaoProductHostError::ConsumerProfileRequired);
+            }
+            let stable_operation = StableId::new(operation_id.to_owned())
+                .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::CorruptState))?;
+            let reservation = match row.reservation_id.as_deref() {
+                Some(value) => {
+                    let reservation_id = StableId::new(value.to_owned()).map_err(|_| {
+                        BaoProductHostError::Store(LeaseRegistryErrorV1::CorruptState)
+                    })?;
+                    Some(
+                        authbus
+                            .reservation(&reservation_id)
+                            .await
+                            .map_err(|error| BaoProductHostError::AuthBus(error.into()))?,
+                    )
+                }
+                None => authbus
+                    .seal_unreserved_operation(
+                        &stable_operation,
+                        Digest32::from_array(row.effect_sha256),
+                    )
+                    .await
+                    .map_err(|error| BaoProductHostError::AuthBus(error.into()))?,
+            };
+            let Some(mut reservation) = reservation else {
+                if matches!(
+                    row.state,
+                    BaoConsumptionStateV1::Claimed | BaoConsumptionStateV1::DispatchAttempted
+                ) {
+                    let terminal = abort_evidence(&row, "no_reservation", None);
+                    let terminal = registry
+                        .lock()
+                        .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                        .record_consumption_abort(operation_id, false, "no_reservation", terminal)
+                        .map_err(BaoProductHostError::Store)?;
+                    return Err(BaoProductHostError::TerminalFailure(Box::new(terminal)));
+                }
+                return Err(BaoProductHostError::OutcomePending(Box::new(row)));
+            };
+            validate_reservation(&row, &reservation).map_err(BaoProductHostError::Store)?;
+            {
+                let mut owner = registry
+                    .lock()
+                    .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?;
+                owner
+                    .mark_consumption_reserved(
+                        operation_id,
+                        reservation.reservation_id.as_str().to_owned(),
+                    )
+                    .map_err(BaoProductHostError::Store)?;
+                match reservation.state {
+                    ReservationState::DispatchAttempted | ReservationState::Indeterminate => {
+                        owner
+                            .mark_consumption_dispatch_fenced(
+                                operation_id,
+                                reservation.reservation_id.as_str(),
+                            )
+                            .map_err(BaoProductHostError::Store)?;
+                        if reservation.state == ReservationState::Indeterminate
+                            && owner
+                                .consumption_result(operation_id)
+                                .map_err(BaoProductHostError::Store)?
+                                .state
+                                .recovery_action()
+                                == BaoConsumptionRecoveryActionV1::ObserveOriginalOutcome
+                        {
+                            owner
+                                .mark_consumption_indeterminate(operation_id)
+                                .map_err(BaoProductHostError::Store)?;
+                        }
+                    }
+                    _ => {}
+                }
+                row = owner
+                    .consumption_result(operation_id)
+                    .map_err(BaoProductHostError::Store)?;
+            }
+
+            match reservation.state {
+                ReservationState::Held => {
+                    if !matches!(
+                        row.state,
+                        BaoConsumptionStateV1::Reserved | BaoConsumptionStateV1::DispatchAttempted
+                    ) {
+                        return Err(BaoProductHostError::Store(
+                            LeaseRegistryErrorV1::ObservationMismatch,
+                        ));
+                    }
+                    let time = authbus
+                        .observe_trusted_time_attestation(
+                            &evidence
+                                .trusted_time()
+                                .map_err(BaoProductHostError::AuthBus)?,
+                        )
+                        .await
+                        .map_err(|error| BaoProductHostError::AuthBus(error.into()))?;
+                    reservation = if time.wall_time_ms() >= reservation.expires_at_ms {
+                        authbus
+                            .reconcile_expired_reservation(
+                                &reservation.reservation_id,
+                                reservation.revision,
+                                time,
+                            )
+                            .await
+                            .map_err(|error| BaoProductHostError::AuthBus(error.into()))?
+                    } else {
+                        authbus
+                            .cancel_reservation(
+                                &reservation.reservation_id,
+                                reservation.revision,
+                                time,
+                            )
+                            .await
+                            .map_err(|error| BaoProductHostError::AuthBus(error.into()))?
+                    };
+                    let code = match reservation.state {
+                        ReservationState::Expired => "reservation_expired",
+                        ReservationState::Cancelled => "reservation_cancelled",
+                        _ => {
+                            return Err(BaoProductHostError::Store(
+                                LeaseRegistryErrorV1::ObservationMismatch,
+                            ));
+                        }
+                    };
+                    let terminal = abort_evidence(&row, code, Some(&reservation));
+                    let terminal = registry
+                        .lock()
+                        .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                        .record_consumption_abort(operation_id, true, code, terminal)
+                        .map_err(BaoProductHostError::Store)?;
+                    return Err(BaoProductHostError::TerminalFailure(Box::new(terminal)));
+                }
+                ReservationState::Cancelled | ReservationState::Expired => {
+                    if matches!(
+                        row.state,
+                        BaoConsumptionStateV1::Reserved | BaoConsumptionStateV1::DispatchAttempted
+                    ) {
+                        let code = if reservation.state == ReservationState::Expired {
+                            "reservation_expired"
+                        } else {
+                            "reservation_cancelled"
+                        };
+                        let terminal = abort_evidence(&row, code, Some(&reservation));
+                        let terminal = registry
+                            .lock()
+                            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                            .record_consumption_abort(operation_id, true, code, terminal)
+                            .map_err(BaoProductHostError::Store)?;
+                        return Err(BaoProductHostError::TerminalFailure(Box::new(terminal)));
+                    }
+                }
+                ReservationState::Released => {
+                    if matches!(
+                        row.state,
+                        BaoConsumptionStateV1::Reserved | BaoConsumptionStateV1::DispatchAttempted
+                    ) {
+                        let terminal =
+                            abort_evidence(&row, "reservation_released", Some(&reservation));
+                        let terminal = registry
+                            .lock()
+                            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                            .record_consumption_abort(
+                                operation_id,
+                                true,
+                                "reservation_released",
+                                terminal,
+                            )
+                            .map_err(BaoProductHostError::Store)?;
+                        return Err(BaoProductHostError::TerminalFailure(Box::new(terminal)));
+                    }
+                }
+                ReservationState::DispatchAttempted
+                | ReservationState::Indeterminate
+                | ReservationState::Settled => {}
+            }
+
+            row = registry
+                .lock()
+                .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                .consumption_result(operation_id)
+                .map_err(BaoProductHostError::Store)?;
+            if matches!(
+                row.state,
+                BaoConsumptionStateV1::DeliveryPrepared | BaoConsumptionStateV1::Indeterminate
+            ) && row.receipt.is_some()
+            {
+                let observer = registration
+                    .observer
+                    .as_ref()
+                    .ok_or(BaoProductHostError::ConsumerProfileRequired)?;
+                match observer(operation_id, row.semantic_sha256) {
+                    Ok(BaoConsumerObservationV1::Succeeded) => registry
+                        .lock()
+                        .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                        .observe_consumption(operation_id, true)
+                        .map_err(BaoProductHostError::Store)?,
+                    Ok(BaoConsumerObservationV1::NotAppliedWithEvidence { evidence_sha256 }) => {
+                        registry
+                            .lock()
+                            .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                            .observe_consumption_not_applied(operation_id, evidence_sha256)
+                            .map_err(BaoProductHostError::Store)?;
+                    }
+                    Ok(
+                        BaoConsumerObservationV1::NotApplied | BaoConsumerObservationV1::Unknown,
+                    )
+                    | Err(()) => return Err(BaoProductHostError::OutcomePending(Box::new(row))),
+                }
+            }
+
+            row = registry
+                .lock()
+                .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?
+                .consumption_result(operation_id)
+                .map_err(BaoProductHostError::Store)?;
+            match row.state {
+                BaoConsumptionStateV1::ConsumerSucceeded
+                | BaoConsumptionStateV1::ProviderFailed
+                | BaoConsumptionStateV1::ConsumerNotApplied => {
+                    settle_terminal_row(authbus, registry, row, reservation, evidence).await
+                }
+                BaoConsumptionStateV1::Succeeded => row.receipt.ok_or(BaoProductHostError::Store(
+                    LeaseRegistryErrorV1::CorruptState,
+                )),
+                BaoConsumptionStateV1::Failed => {
+                    Err(BaoProductHostError::TerminalFailure(Box::new(row)))
+                }
+                _ => Err(BaoProductHostError::OutcomePending(Box::new(row))),
+            }
+        }
+        .await;
+        self.record_recovery_metric(started, &result);
+        result
+    }
+}
+
+async fn settle_terminal_row<E: BaoAuthBusEvidenceProvider>(
+    authbus: &AuthBusAuthorityHost,
+    registry: &Mutex<DurableLeaseRegistryV1>,
+    row: BaoConsumptionOperationV1,
+    reservation: QuotaReservation,
+    evidence: &mut E,
+) -> Result<BaoSecretReceipt, BaoProductHostError> {
+    let terminal = Digest32::from_array(row.terminal_evidence_sha256.ok_or(
+        BaoProductHostError::Store(LeaseRegistryErrorV1::CorruptState),
+    )?);
+    let (status, observed_cost, success) = match row.state {
+        BaoConsumptionStateV1::ConsumerSucceeded => (SettlementStatus::Completed, row.amount, true),
+        BaoConsumptionStateV1::ProviderFailed => (
+            SettlementStatus::Completed,
+            row.terminal_observed_cost
+                .ok_or(BaoProductHostError::Store(
+                    LeaseRegistryErrorV1::CorruptState,
+                ))?,
+            false,
+        ),
+        BaoConsumptionStateV1::ConsumerNotApplied => (SettlementStatus::Rejected, 0, false),
+        _ => {
+            return Err(BaoProductHostError::Store(
+                LeaseRegistryErrorV1::InvalidTransition,
+            ));
+        }
+    };
+    let expected_terminal_state = match status {
+        SettlementStatus::Completed => ReservationState::Settled,
+        SettlementStatus::Rejected => ReservationState::Released,
+    };
+    if matches!(
+        reservation.state,
+        ReservationState::Settled | ReservationState::Released
+    ) {
+        if reservation.state != expected_terminal_state
+            || reservation.terminal_evidence != Some(terminal)
+            || reservation.observed_cost != Some(observed_cost)
+        {
+            return Err(BaoProductHostError::Store(
+                LeaseRegistryErrorV1::ObservationMismatch,
+            ));
+        }
+    } else {
+        if !matches!(
+            reservation.state,
+            ReservationState::DispatchAttempted | ReservationState::Indeterminate
+        ) {
+            return Err(BaoProductHostError::OutcomePending(Box::new(row)));
+        }
+        crate::https_consumer::settle_observed(
+            authbus,
+            evidence,
+            &reservation,
+            status,
+            observed_cost,
+            terminal,
+            if success { row.receipt.clone() } else { None },
+        )
+        .await
+        .map_err(BaoProductHostError::AuthBus)?;
+    }
+    let mut owner = registry
+        .lock()
+        .map_err(|_| BaoProductHostError::Store(LeaseRegistryErrorV1::Fenced))?;
+    if success {
+        owner
+            .settle_consumption(&row.operation_id)
+            .map_err(BaoProductHostError::Store)
+    } else {
+        let terminal = owner
+            .settle_consumption_failure(&row.operation_id)
+            .map_err(BaoProductHostError::Store)?;
+        Err(BaoProductHostError::TerminalFailure(Box::new(terminal)))
+    }
+}
+
+fn validate_reservation(
+    row: &BaoConsumptionOperationV1,
+    reservation: &QuotaReservation,
+) -> Result<(), LeaseRegistryErrorV1> {
+    if reservation.operation_id.as_str() != row.operation_id
+        || reservation.amount != row.amount
+        || reservation.effect_digest.into_array() != row.effect_sha256
+    {
+        return Err(LeaseRegistryErrorV1::ObservationMismatch);
+    }
+    Ok(())
+}
+
+fn abort_evidence(
+    row: &BaoConsumptionOperationV1,
+    code: &str,
+    reservation: Option<&QuotaReservation>,
+) -> [u8; 32] {
+    let reservation_id = reservation
+        .map(|value| value.reservation_id.as_str())
+        .unwrap_or("");
+    let reservation_revision = reservation.map(|value| value.revision).unwrap_or(0);
+    Digest32::of_bytes(
+        &serde_json::to_vec(&(
+            "hepta.bao.abort.v1",
+            row.operation_id.as_str(),
+            row.semantic_sha256,
+            row.effect_sha256,
+            code,
+            reservation_id,
+            reservation_revision,
+        ))
+        .unwrap_or_default(),
+    )
+    .into_array()
+}
+
+fn validate_product_admission(admission: &BaoAuthBusAdmission) -> Result<(), BaoFinalUseHostError> {
+    if admission.policy_revision == 0
+        || admission.expected_quota_revision == 0
+        || admission.amount == 0
+        || admission.expires_at_ms == 0
+    {
+        return Err(BaoFinalUseHostError::Client(BaoClientError::InvalidRequest));
+    }
+    Ok(())
+}
+
+fn provider_failure_code(error: BaoClientError) -> Option<&'static str> {
+    match error {
+        BaoClientError::ProviderDenied => Some("provider_denied"),
+        BaoClientError::ProviderUnavailable => Some("provider_unavailable"),
+        BaoClientError::NotFound => Some("not_found"),
+        BaoClientError::ResponseTooLarge => Some("response_too_large"),
+        BaoClientError::InvalidResponse => Some("invalid_response"),
+        BaoClientError::VersionMismatch => Some("version_mismatch"),
+        BaoClientError::SecretDigestMismatch => Some("secret_digest_mismatch"),
+        BaoClientError::InvalidConfiguration
+        | BaoClientError::InvalidRequest
+        | BaoClientError::Authority(_)
+        | BaoClientError::TransportUnavailable
+        | BaoClientError::TimedOut
+        | BaoClientError::ConsumerIndeterminate => None,
     }
 }
 
@@ -194,12 +1183,14 @@ fn consumer_id(value: &str) -> bool {
         && value != ".."
         && value
             .bytes()
-            .all(|b| b.is_ascii_alphanumeric() || b"_-.:".contains(&b))
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:".contains(&byte))
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BaoFinalUseHostError {
     InvalidConsumerId,
+    InvalidConsumerConfiguration,
+    InvalidRuntimeConfiguration,
     DuplicateConsumer,
     EmptyConsumerRegistry,
     UnregisteredConsumer,
@@ -211,11 +1202,131 @@ pub enum BaoFinalUseHostError {
 }
 
 impl fmt::Display for BaoFinalUseHostError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{self:?}")
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
     }
 }
 impl std::error::Error for BaoFinalUseHostError {}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BaoProductErrorClassV1 {
+    AdmissionRejected,
+    ReconciliationRequired,
+    AwaitingOriginalEvidence,
+    AwaitingSettlement,
+    HistoricalTerminalFailure,
+    IdentityConflict,
+    CapacityRejected,
+    OwnerBusy,
+    CommitIndeterminate,
+    DurableOwnerFailure,
+    ExternalControlFailure,
+}
+
+#[derive(Debug)]
+pub enum BaoProductHostError {
+    Host(BaoFinalUseHostError),
+    AuthBus(BaoAuthBusError),
+    Store(LeaseRegistryErrorV1),
+    SqliteStore(crate::SqliteBaoOwnerErrorV1),
+    ConsumerProfileRequired,
+    OutcomePending(Box<BaoConsumptionOperationV1>),
+    TerminalFailure(Box<BaoConsumptionOperationV1>),
+}
+
+impl BaoProductHostError {
+    #[must_use]
+    pub fn class(&self) -> BaoProductErrorClassV1 {
+        match self {
+            Self::ConsumerProfileRequired
+            | Self::Host(BaoFinalUseHostError::InvalidConsumerId)
+            | Self::Host(BaoFinalUseHostError::InvalidConsumerConfiguration)
+            | Self::Host(BaoFinalUseHostError::InvalidRuntimeConfiguration)
+            | Self::Host(BaoFinalUseHostError::UnregisteredConsumer)
+            | Self::Host(BaoFinalUseHostError::Client(BaoClientError::InvalidRequest)) => {
+                BaoProductErrorClassV1::AdmissionRejected
+            }
+            Self::OutcomePending(row) => match row.state.recovery_action() {
+                BaoConsumptionRecoveryActionV1::ObserveOriginalOutcome => {
+                    BaoProductErrorClassV1::AwaitingOriginalEvidence
+                }
+                BaoConsumptionRecoveryActionV1::SettleTerminalEvidence => {
+                    BaoProductErrorClassV1::AwaitingSettlement
+                }
+                _ => BaoProductErrorClassV1::ReconciliationRequired,
+            },
+            Self::TerminalFailure(_) => BaoProductErrorClassV1::HistoricalTerminalFailure,
+            Self::Store(
+                LeaseRegistryErrorV1::OperationConflict | LeaseRegistryErrorV1::ObservationMismatch,
+            ) => BaoProductErrorClassV1::IdentityConflict,
+            Self::Store(LeaseRegistryErrorV1::CapacityExceeded) => {
+                BaoProductErrorClassV1::CapacityRejected
+            }
+            Self::Store(LeaseRegistryErrorV1::WriterBusy) => BaoProductErrorClassV1::OwnerBusy,
+            Self::Store(LeaseRegistryErrorV1::CommitIndeterminate) => {
+                BaoProductErrorClassV1::CommitIndeterminate
+            }
+            Self::Store(_) => BaoProductErrorClassV1::DurableOwnerFailure,
+            Self::SqliteStore(error) => sqlite_owner_error_class(error),
+            Self::AuthBus(BaoAuthBusError::DurableOwner(error)) => sqlite_owner_error_class(error),
+            Self::AuthBus(BaoAuthBusError::Indeterminate { .. }) => {
+                BaoProductErrorClassV1::AwaitingOriginalEvidence
+            }
+            Self::AuthBus(BaoAuthBusError::SettlementPending { .. }) => {
+                BaoProductErrorClassV1::AwaitingSettlement
+            }
+            Self::Host(_) | Self::AuthBus(_) => BaoProductErrorClassV1::ExternalControlFailure,
+        }
+    }
+}
+
+fn sqlite_owner_error_class(error: &crate::SqliteBaoOwnerErrorV1) -> BaoProductErrorClassV1 {
+    use crate::SqliteBaoOwnerErrorV1 as Error;
+    match error {
+        Error::OperationConflict | Error::ObservationMismatch => {
+            BaoProductErrorClassV1::IdentityConflict
+        }
+        Error::CapacityExceeded => BaoProductErrorClassV1::CapacityRejected,
+        Error::WriterBusy | Error::RevisionConflict => BaoProductErrorClassV1::OwnerBusy,
+        Error::CommitIndeterminate(_) => BaoProductErrorClassV1::CommitIndeterminate,
+        Error::InvalidInput
+        | Error::OperationNotFound
+        | Error::InvalidTransition
+        | Error::ExternalCheckpointUnavailable
+        | Error::MigrationConflict
+        | Error::CorruptState(_)
+        | Error::RollbackDetected
+        | Error::Fenced
+        | Error::UnsupportedPlatform
+        | Error::UnsafeStorage(_)
+        | Error::Storage(_) => BaoProductErrorClassV1::DurableOwnerFailure,
+    }
+}
+
+impl fmt::Display for BaoProductHostError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Host(error) => write!(formatter, "host admission failed: {error}"),
+            Self::AuthBus(error) => write!(formatter, "AuthBus product path failed: {error}"),
+            Self::Store(error) => write!(formatter, "durable reference operation failed: {error}"),
+            Self::SqliteStore(error) => {
+                write!(formatter, "durable SQLite operation failed: {error}")
+            }
+            Self::ConsumerProfileRequired => {
+                formatter.write_str("matching operation-aware consumer profile required")
+            }
+            Self::OutcomePending(_) => {
+                formatter.write_str("original operation requires reconciliation; no redispatch")
+            }
+            Self::TerminalFailure(row) => write!(
+                formatter,
+                "original operation reached immutable terminal failure ({})",
+                row.terminal_code.as_deref().unwrap_or("unspecified")
+            ),
+        }
+    }
+}
+impl std::error::Error for BaoProductHostError {}
 
 #[cfg(all(test, unix))]
 mod tests {
@@ -277,6 +1388,28 @@ mod tests {
             )
             .unwrap_err(),
             BaoFinalUseHostError::DuplicateConsumer
+        );
+    }
+    #[test]
+    fn pending_authbus_errors_have_actionable_metric_classes() {
+        let reservation_id = StableId::new("reservation:bao-pending").unwrap();
+        let indeterminate = BaoProductHostError::AuthBus(BaoAuthBusError::Indeterminate {
+            reservation_id: reservation_id.clone(),
+            provider_error: BaoClientError::TimedOut,
+        });
+        assert_eq!(
+            indeterminate.class(),
+            BaoProductErrorClassV1::AwaitingOriginalEvidence
+        );
+
+        let settlement = BaoProductHostError::AuthBus(BaoAuthBusError::SettlementPending {
+            reservation_id,
+            receipt: None,
+            control_error: "synthetic settlement outage".to_owned(),
+        });
+        assert_eq!(
+            settlement.class(),
+            BaoProductErrorClassV1::AwaitingSettlement
         );
     }
 }

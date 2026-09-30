@@ -14,15 +14,32 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+mod authbus_saga;
 mod final_use_host;
 mod https_consumer;
 mod lease_lifecycle;
+mod operation_execution;
+#[cfg(all(test, unix))]
+mod saga_crash;
 mod secret_boundary_v1;
+mod sqlite_owner;
 
 pub use final_use_host::BaoConsumerCallback;
 pub use final_use_host::BaoFinalUseHost;
 pub use final_use_host::BaoFinalUseHostError;
+pub use final_use_host::BaoOperationLatencyMetricsV1;
+pub use final_use_host::BaoOperationMetricsV1;
+pub use final_use_host::BaoProductErrorClassV1;
+pub use final_use_host::BaoProductHostError;
+pub use final_use_host::BaoRecoveryBatchReportV1;
+pub use final_use_host::BaoRecoveryWorkerMetricsV1;
+pub use final_use_host::BaoSqliteProductRuntimeConfigV1;
 pub use final_use_host::RegisteredBaoConsumer;
+pub use final_use_host::SqliteBaoProductRuntimeMetricsV1;
+pub use final_use_host::SqliteBaoProductRuntimeV1;
+pub use final_use_host::{
+    BaoConsumerObservationV1, BaoConsumerObserverCallback, BaoOperationConsumerCallback,
+};
 pub use https_consumer::BaoAuthBusAdmission;
 pub use https_consumer::BaoAuthBusError;
 pub use https_consumer::BaoAuthBusEvidenceProvider;
@@ -34,12 +51,20 @@ pub use https_consumer::BaoToken;
 
 pub use lease_lifecycle::DurableLeaseRegistryV1;
 pub use lease_lifecycle::LeaseOperationKindV1;
+pub use lease_lifecycle::LeaseOperationResultV1;
 pub use lease_lifecycle::LeaseOperationStateV1;
 pub use lease_lifecycle::LeaseOperationV1;
+pub use lease_lifecycle::LeaseRegistryCommitMetricsV1;
+pub use lease_lifecycle::LeaseRegistryDiagnosticsV1;
 pub use lease_lifecycle::LeaseRegistryErrorV1;
+pub use lease_lifecycle::LeaseRegistryMigrationSnapshotV1;
 pub use lease_lifecycle::ProviderLeaseObservationV1;
 pub use lease_lifecycle::SecretLeaseMetadataV1;
 pub use lease_lifecycle::SecretLeaseStateV1;
+pub use lease_lifecycle::{
+    BaoConsumptionOperationV1, BaoConsumptionPhaseV1, BaoConsumptionRecoveryActionV1,
+    BaoConsumptionStateV1, BaoSecretTelemetryV1,
+};
 
 pub use secret_boundary_v1::AUTHBUS_POLICY_PRODUCER_ID;
 pub use secret_boundary_v1::HEPTABAO_BACKEND_ID;
@@ -58,6 +83,18 @@ pub use secret_boundary_v1::SecretPermissionObservationV1;
 pub use secret_boundary_v1::SecretPermissionStatusV1;
 pub use secret_boundary_v1::assess_secret_boundary_v1;
 pub use secret_boundary_v1::secret_boundary_request_digest_v1;
+
+pub use sqlite_owner::BaoOwnerCheckpointV1;
+pub use sqlite_owner::SqliteBaoOwnerErrorV1;
+pub use sqlite_owner::SqliteBaoOwnerImportReceiptV1;
+pub use sqlite_owner::SqliteBaoOwnerMetricsV1;
+pub use sqlite_owner::SqliteBaoOwnerRuntimeMetricsV1;
+pub use sqlite_owner::SqliteBaoOwnerV1;
+pub use sqlite_owner::SqliteConsumptionClaimV1;
+pub use sqlite_owner::SqliteConsumptionExecutionClaimV1;
+pub use sqlite_owner::SqliteConsumptionRecordV1;
+pub use sqlite_owner::SqliteLeaseOperationRecordV1;
+pub use sqlite_owner::SqliteReconciliationClaimV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SecretReference {
@@ -182,3 +219,6 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+pub use final_use_host::BaoApprovedReadV1;
+pub use https_consumer::BaoAuthorizedReadV1;

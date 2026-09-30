@@ -1,0 +1,389 @@
+{
+  "schema": "hepta.module-manifest.v1",
+  "schemaVersion": 1,
+  "module": "secrets.heptabao",
+  "lane": "LANE-A-FOUNDATION",
+  "profile": "registered_exact_kv_v2_secret_consumer",
+  "owner": "secrets-platform",
+  "deputy": "security-authority",
+  "canonical": true,
+  "generatedTargets": {
+    "moduleTruthMatrix": "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json",
+    "implementationMap": "docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json",
+    "capabilityMatrix": "docs/modules/secrets.heptabao/CAPABILITY_MATRIX.json",
+    "nonclaims": "docs/modules/secrets.heptabao/NONCLAIMS.json",
+    "sourceAnchors": "docs/modules/secrets.heptabao/SOURCE_ANCHORS.json"
+  },
+  "documents": {
+    "technicalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
+    "currentImplementation": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+    "durableSaga": "docs/modules/secrets.heptabao/CONSUMPTION_SAGA_V4.md",
+    "jsonReferenceOwner": "docs/modules/secrets.heptabao/LEASE_OWNER_V3.md",
+    "legacyRawRead": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+    "evidenceHistory": "docs/modules/secrets.heptabao/evidence/HISTORY.md",
+    "operationsAndCapacity": "docs/modules/secrets.heptabao/OPERATIONS_AND_CAPACITY_V1.md",
+    "productionReadiness": "docs/modules/secrets.heptabao/PRODUCTION_READINESS.md",
+    "readinessPolicy": "docs/modules/secrets.heptabao/READINESS_POLICY_V1.json"
+  },
+  "states": {
+    "source": "implemented_candidate",
+    "implementation": "registered_read_saga_with_sqlite_owner_source_present",
+    "durability": "sqlite_owner_source_present_unqualified",
+    "qualification": "exact_source_and_deterministic_merge_required",
+    "activation": "not_product_composed",
+    "acceptance": "not_granted"
+  },
+  "currentCapabilities": [
+    "pinned-CA HTTPS read of one exact KV-v2 string field",
+    "independently signed final-use grant and operator approval",
+    "authenticated monotonic revocation-feed admission",
+    "closed consumer registry bound to an immutable configuration digest",
+    "explicit Claimed Reserved DispatchFenced durable consumption saga",
+    "operation-ID reservation lookup and restart reconciliation without blind redispatch",
+    "immutable provider-failure and proved consumer-NotApplied terminal evidence",
+    "metadata-only receipts and secret-buffer best-effort zeroization",
+    "bounded single-writer JSON reference owner with fsync and fencing",
+    "proof-preserving schema-3 to schema-4 migration for durable consumption history",
+    "single-sourced durable phase recovery-action and future-capacity classification",
+    "secret-free state recovery capacity and commit-cost diagnostics",
+    "bounded full-forward and recovery latency/error-class metrics",
+    "26-cut Unix SIGKILL restart-reconciliation qualification fixture",
+    "redacted Debug surfaces for secret paths and secret-related digests",
+    "transactional SQLite metadata-owner source with revision CAS, append-only transitions, reconciliation claims, terminal archive and checkpoint hashing",
+    "SQLite product-runtime source with atomic forward execution leases, bounded recovery claims and secret-free metrics",
+    "schema-4 JSON reference-owner import into the SQLite owner with an immutable import receipt"
+  ],
+  "targetOnlyCapabilities": [
+    "selected Agentd or App Server production bootstrap",
+    "independently operated trusted-time settlement and key-rotation services",
+    "external anti-rollback checkpoint service and disaster-recovery ceremony",
+    "target-host power-loss and long-history archival qualification",
+    "selected-host metrics export alerting and retention policy",
+    "independent operator acceptance promotion and release",
+    "exact-head and deterministic-merge qualification of the SQLite owner/runtime source"
+  ],
+  "nonclaims": [
+    "The current fixed HeptaBao provider does not expose qualified generic dynamic issue renew or revoke endpoints.",
+    "No source or document enables provider mutation while the provider-contract blocker remains open.",
+    "The registered host is source-composed but not activated by a normal product process.",
+    "Local zeroization is not a locked-memory or no-copy guarantee for TLS HTTP or the operating system.",
+    "A legacy observer NotApplied value without immutable evidence is not a terminal refund proof.",
+    "Source tests and receipts do not grant independent acceptance promotion or release authority.",
+    "Process-local latency and commit metrics are diagnostics, not durable audit evidence or target-host qualification.",
+    "The truncated phase-three staging payload is not an executable SQLite production owner.",
+    "Debug redaction does not make secret digests or size/version metadata non-sensitive.",
+    "SQLite owner and runtime source presence is not exact-head qualification, product composition, activation or deployment.",
+    "Qualification workflows are read-only and never materialize, commit or push source.",
+    "The adapter intentionally has one complete Cargo build surface; undeclared feature names are not a product boundary."
+  ],
+  "provider": {
+    "name": "HeptaBao",
+    "sourceCommit": "eac9c608bfda77a8972e1e8a1343dfc21985d62b",
+    "evidence": "codex-rs/hepta-bao-adapter/qa/evidence/dynamic-contract-probe-20260925.json",
+    "supportedProductionContract": "kv_v2_exact_read_only",
+    "dynamicLeaseExecutionProved": false,
+    "dynamicMutationGate": "fail_closed_blocked_provider_contract"
+  },
+  "recoveryStates": [
+    {
+      "state": "Claimed",
+      "meaning": "operation identity and exact semantics are durable; no reservation is implied",
+      "recovery": "atomically seal absent AuthBus admission for the exact operation/effect or bind the returned original reservation; a SELECT absence is not proof"
+    },
+    {
+      "state": "Reserved",
+      "meaning": "the original AuthBus reservation is durable; dispatch has not been fenced",
+      "recovery": "query the reservation; cancel or expire Held reservations and record a terminal pre-dispatch abort"
+    },
+    {
+      "state": "DispatchFenced",
+      "meaning": "AuthBus committed mark_dispatch_attempted; provider or consumer outcome may be unknown",
+      "recovery": "never redispatch; reconcile provider/consumer evidence and the original reservation"
+    },
+    {
+      "state": "DeliveryPrepared",
+      "meaning": "validated metadata receipt is durable before final authority recheck; consumer entry is not proved",
+      "recovery": "query the original registered observer; accept only Succeeded or evidence-bound NotApplied"
+    },
+    {
+      "state": "Indeterminate",
+      "meaning": "dispatch or consumer entry may have occurred but terminal effect is not proved",
+      "recovery": "query the original observer and AuthBus reservation; do not fetch the secret or call the consumer"
+    },
+    {
+      "state": "ConsumerSucceeded",
+      "meaning": "consumer success and receipt digest are durable; settlement or local final commit may remain",
+      "recovery": "settle the original reservation idempotently and commit Succeeded"
+    },
+    {
+      "state": "ConsumerNotApplied",
+      "meaning": "the original observer supplied immutable negative evidence",
+      "recovery": "settle the original reservation as Rejected with zero observed cost and commit Failed"
+    },
+    {
+      "state": "ProviderFailed",
+      "meaning": "a deterministic provider error and terminal evidence are durable",
+      "recovery": "settle the original reservation with the recorded charging policy and commit Failed"
+    },
+    {
+      "state": "Succeeded",
+      "meaning": "consumer success and AuthBus settlement are both recorded",
+      "recovery": "return historical receipt only"
+    },
+    {
+      "state": "Failed",
+      "meaning": "an immutable terminal negative outcome and its settlement/abort proof are recorded",
+      "recovery": "return historical terminal failure only"
+    },
+    {
+      "state": "DispatchAttempted",
+      "meaning": "legacy schema-3 conservative state",
+      "recovery": "look up and bind the original reservation, then migrate to Reserved or DispatchFenced without redispatch"
+    }
+  ],
+  "operations": [
+    {
+      "operation": "consume_kv_v2",
+      "symbol": "BaoClient::consume_kv_v2",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "class": "trusted_low_level_legacy_read"
+    },
+    {
+      "operation": "consume_kv_v2_with_authbus",
+      "symbol": "BaoFinalUseHost::consume_kv_v2_with_authbus",
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "class": "registered_durable_product_ingress"
+    },
+    {
+      "operation": "reconcile_consumption",
+      "symbol": "BaoFinalUseHost::reconcile_consumption",
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "class": "observer_only_restart_reconciliation"
+    },
+    {
+      "operation": "reservation_by_operation",
+      "symbol": "AuthBusAuthorityHost::reservation_by_operation",
+      "path": "codex-rs/hepta-authbus/src/host.rs",
+      "class": "read_only_recovery_projection"
+    },
+    {
+      "operation": "durable_consumption_transitions",
+      "symbol": "DurableLeaseRegistryV1",
+      "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
+      "class": "json_reference_owner"
+    },
+    {
+      "operation": "lease_lifecycle_reference",
+      "symbol": "DurableLeaseRegistryV1",
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "class": "json_reference_owner"
+    },
+    {
+      "operation": "registry_diagnostics",
+      "symbol": "DurableLeaseRegistryV1::diagnostics",
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "class": "secret_free_reference_owner_diagnostics"
+    },
+    {
+      "operation": "operation_metrics",
+      "symbol": "BaoFinalUseHost::operation_metrics",
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "class": "bounded_process_local_full_operation_metrics"
+    },
+    {
+      "operation": "registered_saga_sigkill_matrix",
+      "symbol": "registered_saga_sigkill_matrix",
+      "path": "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs",
+      "class": "synthetic_unix_crash_recovery_qualification_fixture"
+    },
+    {
+      "operation": "sqlite_owner_open_and_verify",
+      "symbol": "SqliteBaoOwnerV1::open",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "sqlite_owner_source_present_unqualified"
+    },
+    {
+      "operation": "sqlite_reference_import",
+      "symbol": "SqliteBaoOwnerV1::import_reference_snapshot",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "schema4_reference_import_source_present"
+    },
+    {
+      "operation": "sqlite_reconciliation_claims",
+      "symbol": "SqliteBaoOwnerV1::claim_due_reconciliation",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "bounded_generation_fenced_recovery_claims"
+    },
+    {
+      "operation": "sqlite_checkpoint_publication",
+      "symbol": "SqliteBaoOwnerV1::publish_checkpoint_with",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "caller_owned_external_checkpoint_boundary"
+    },
+    {
+      "operation": "sqlite_terminal_archive",
+      "symbol": "SqliteBaoOwnerV1::archive_terminal_before",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "class": "bounded_immutable_terminal_archive"
+    },
+    {
+      "operation": "sqlite_product_runtime",
+      "symbol": "SqliteBaoProductRuntimeV1",
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
+      "class": "product_runtime_source_present_not_composed"
+    }
+  ],
+  "sourceAnchors": [
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle.rs",
+      "mustContain": [
+        "Claimed",
+        "Reserved",
+        "DispatchFenced",
+        "record_provider_failure",
+        "observe_consumption_not_applied",
+        "BaoConsumptionPhaseV1",
+        "BaoConsumptionRecoveryActionV1",
+        "requires_future_capacity",
+        "migrate_schema_three_consumptions"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "mustContain": [
+        "consume_kv_v2_with_authbus",
+        "reconcile_consumption",
+        "NotAppliedWithEvidence",
+        "seal_unreserved_operation",
+        "operation_metrics",
+        "BaoProductErrorClassV1",
+        "validate_product_admission"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authbus_saga.rs",
+      "mustContain": [
+        "mark_dispatch_attempted",
+        "dispatch_fenced",
+        "provider_terminal"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/operation_lookup.rs",
+      "mustContain": [
+        "reservation_by_operation",
+        "seal_unreserved_operation",
+        "authbus_operation_admission_fence"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumption_lifecycle_saga_tests.rs",
+      "mustContain": [
+        "claimed_reserved_and_dispatch_fenced_are_distinct_durable_states",
+        "deterministic_provider_failure_is_immutable_and_terminal",
+        "proved_not_applied_settles_as_terminal_negative_without_reentry"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "mustContain": [
+        "LeaseRegistryDiagnosticsV1",
+        "future_reserve_bytes",
+        "SCHEMA_VERSION: u32 = 4",
+        "commit_metrics"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/saga_crash_tests.rs",
+      "mustContain": [
+        "registered_saga_sigkill_matrix",
+        "post_dispatch_without_receipt",
+        "recovery reentered consumer"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner.rs",
+      "mustContain": [
+        "pub struct SqliteBaoOwnerV1",
+        "pub async fn import_reference_snapshot",
+        "pub async fn claim_due_reconciliation",
+        "pub async fn publish_checkpoint_with",
+        "pub async fn archive_terminal_before",
+        "BEGIN IMMEDIATE"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_product_runtime.rs",
+      "mustContain": [
+        "pub struct SqliteBaoProductRuntimeV1",
+        "claim_consumption_for_execution",
+        "reconcile_due",
+        "record_claimed_reconciliation_failure"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/migrations/0001_bao_owner_v1.sql",
+      "mustContain": [
+        "CREATE TABLE bao_operation",
+        "CREATE TABLE bao_consumption",
+        "CREATE TABLE bao_transition",
+        "CREATE TABLE bao_terminal_archive"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/migrations/0002_reconciliation_claims.sql",
+      "mustContain": [
+        "claim_owner",
+        "claim_until_unix_ms",
+        "claim_generation",
+        "bao_reference_import"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/sqlite_owner_tests.rs",
+      "mustContain": [
+        "private_owner_opens_reopens_and_binds_external_checkpoint",
+        "success_path_reopens_archives_and_preserves_exact_retry_identity",
+        "concurrent_cas_allows_only_one_changed_reservation_identity"
+      ]
+    }
+  ],
+  "candidateIdentity": {
+    "binding": "external_read_only_ci_attestation",
+    "requiredFields": [
+      "sourceCommitSha",
+      "sourceTreeSha",
+      "baseSha",
+      "deterministicMergeSha",
+      "workflowSha",
+      "workflowRunId",
+      "workflowAttempt",
+      "rustToolchain",
+      "targetTriple",
+      "dependencyLockSha256",
+      "migrationSha256",
+      "schemaSha256",
+      "testSetSha256",
+      "documentationSha256",
+      "artifactHashes"
+    ],
+    "selfReferentialCommitInDocument": false,
+    "identityRule": "candidateSha == testedSha == documentedSha == artifactSourceSha == qualificationSha"
+  },
+  "buildSurface": {
+    "kind": "single_complete",
+    "cargoFeatures": [],
+    "statement": "The adapter is one complete Cargo build surface. Qualification must not pass undeclared synthetic feature names."
+  },
+  "readinessDimensions": {
+    "sourcePresent": true,
+    "sourceCompiled": "unproved_for_exact_head",
+    "sourceQualified": false,
+    "storageProfileQualified": false,
+    "productComposed": false,
+    "targetHostQualified": false,
+    "activated": false,
+    "operatorAccepted": false,
+    "released": false
+  }
+}
