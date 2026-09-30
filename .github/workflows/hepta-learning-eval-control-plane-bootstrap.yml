@@ -1,0 +1,160 @@
+name: Hepta learning.eval trusted control-plane bootstrap
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/*learning*eval*'
+      - 'scripts/hepta-nextest-require.py'
+      - 'scripts/test_hepta_nextest_require.py'
+      - 'scripts/*rust_identifiers*'
+      - '.github/workflows/hepta-learning-eval-*.yml'
+      - 'codex-rs/hepta-intelligence-eval/fixtures/trusted-inprocess/**'
+  workflow_dispatch:
+
+# This workflow validates only the default-branch reporting and evidence control
+# plane. It does not execute or qualify the learning.eval product implementation.
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-eval-control-plane-bootstrap-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  control-plane-bootstrap:
+    name: control-plane-bootstrap
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Bind immutable bootstrap source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-eval-control-plane-bootstrap
+          sha="$(git rev-parse HEAD)"
+          tree="$(git rev-parse HEAD^{tree})"
+          test "$sha" = '${{ github.event.pull_request.head.sha || github.sha }}'
+          test -z "$(git status --porcelain --untracked-files=no)"
+          printf 'sha=%s\ntree=%s\n' "$sha" "$tree" | tee \
+            .hepta-evidence/learning-eval-control-plane-bootstrap/source.env
+
+      - name: Execute deterministic control-plane regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONDONTWRITEBYTECODE=1
+          out=.hepta-evidence/learning-eval-control-plane-bootstrap
+          tests=(
+            scripts/test_hepta_learning_eval_trusted_report.py
+            scripts/test_hepta_learning_eval_trusted_entry.py
+            scripts/test_hepta_learning_eval_control_plane_identity.py
+            scripts/test_hepta_learning_eval_exact.py
+            scripts/test_hepta_learning_eval_exact_entry.py
+            scripts/test_hepta_learning_eval_evidence.py
+            scripts/test_hepta_learning_eval_projection.py
+            scripts/test_hepta_learning_eval_compat_fixture.py
+            scripts/test_hepta_nextest_require.py
+            scripts/test_hepta_rust_identifiers.py
+          )
+          python_files=(
+            scripts/hepta-learning-eval-aggregate.py
+            scripts/hepta-learning-eval-compat-fixture.py
+            scripts/hepta-learning-eval-control-plane-identity.py
+            scripts/hepta-learning-eval-exact-entry.py
+            scripts/hepta-learning-eval-exact-summary.py
+            scripts/hepta-learning-eval-exact.py
+            scripts/hepta-learning-eval-local-verify.py
+            scripts/hepta-learning-eval-markdown-links.py
+            scripts/hepta-learning-eval-pr-status.py
+            scripts/hepta-learning-eval-status.py
+            scripts/hepta-learning-eval-target-host.py
+            scripts/hepta-learning-eval-trusted-entry.py
+            scripts/hepta-learning-eval-trusted-report.py
+            scripts/hepta-nextest-require.py
+            scripts/hepta_learning_eval_projection.py
+            scripts/hepta_rust_identifiers.py
+            scripts/test_hepta_learning_eval_doc_contract.py
+            "${tests[@]}"
+          )
+          python3 -m py_compile "${python_files[@]}"
+          : > "$out/regressions.log"
+          for test_file in "${tests[@]}"; do
+            printf '== %s ==\n' "$test_file" | tee -a "$out/regressions.log"
+            python3 "$test_file" -v 2>&1 | tee -a "$out/regressions.log"
+          done
+          python3 scripts/test_hepta_learning_eval_doc_contract.py \
+            DocumentationContractTests.test_markdown_links_validate_files_and_duplicate_heading_anchors \
+            DocumentationContractTests.test_markdown_missing_file_and_anchor_fail_closed \
+            DocumentationContractTests.test_markdown_links_may_not_escape_repository \
+            DocumentationContractTests.test_markdown_symlink_target_fails_closed_before_resolution \
+            DocumentationContractTests.test_markdown_source_symlink_is_rejected \
+            -v 2>&1 | tee "$out/markdown-link-regressions.log"
+          python3 scripts/hepta-learning-eval-target-host.py self-test \
+            2>&1 | tee "$out/target-host-verifier-self-test.log"
+          bash -n scripts/hepta-learning-eval-api-surface.sh
+          bash -n scripts/hepta-learning-eval-faults.sh
+
+      - name: Verify workflow privilege separation and trigger coverage
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=.hepta-evidence/learning-eval-control-plane-bootstrap
+          python3 - "$out/workflow-contract.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          root = Path('.')
+          convergence = (root / '.github/workflows/hepta-learning-eval-convergence.yml').read_text()
+          exact = (root / '.github/workflows/hepta-learning-eval-exact.yml').read_text()
+          reporter = (root / '.github/workflows/hepta-learning-eval-trusted-report.yml').read_text()
+
+          for name, value in [('convergence', convergence), ('exact', exact)]:
+              assert 'permissions:\n  contents: read' in value, name
+              assert 'pull-requests: write' not in value, name
+              assert 'hepta-learning-eval-pr-status.py' not in value, name
+              assert "github.ref == 'refs/heads/main'" in value, name
+              assert value.count('id-token: write') == 1, name
+              assert value.count('attestations: write') == 1, name
+          assert "'.github/workflows/hepta-learning-eval-*.yml'" in exact
+          assert 'workflow_run:' in reporter
+          assert 'pull-requests: write' in reporter
+          assert 'github.event.repository.default_branch' in reporter
+          forbidden_candidate_checkout = 'ref: $' + '{{ github.event.workflow_run.head_sha }}'
+          assert forbidden_candidate_checkout not in reporter
+          assert 'hepta-learning-eval-control-plane-identity.py' in reporter
+          assert 'hepta-learning-eval-trusted-entry.py' in reporter
+
+          result = {
+              'schema': 'hepta.learning-eval.control-plane-bootstrap.v1',
+              'candidateExecutionPermissions': 'contents_read_only',
+              'candidatePrMutation': False,
+              'candidateOidcAuthority': False,
+              'trustedReporterFromDefaultBranch': True,
+              'completeLearningEvalWorkflowPathTrigger': True,
+              'markdownSymlinkComponentRejection': True,
+              'auxiliaryControlPlaneByteIdentity': True,
+              'authority': 'DENY_ALL',
+              'releasePosture': 'NO_GO',
+          }
+          Path(sys.argv[1]).write_text(json.dumps(result, indent=2, sort_keys=True) + '\n')
+          print(json.dumps(result, sort_keys=True))
+          PY
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain bootstrap evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-control-plane-bootstrap-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/learning-eval-control-plane-bootstrap/
+          if-no-files-found: error
+          retention-days: 30
