@@ -72,6 +72,24 @@ impl UnixStream {
     pub fn ensure_current_user_peer(&self) -> IoResult<()> {
         platform::ensure_current_user_peer(&self.inner)
     }
+
+    /// Verify the kernel-reported UID against trusted installation policy.
+    /// The expected UID must never come from the peer's request payload.
+    pub fn ensure_peer_user(&self, expected_uid: u32) -> IoResult<()> {
+        platform::ensure_expected_user_peer(&self.inner, expected_uid)
+    }
+}
+
+/// Verify a synchronous Unix connection's trusted UID and exact child PID.
+/// Linux exposes both through SO_PEERCRED; unavailable identity fails closed.
+#[cfg(unix)]
+pub fn ensure_unix_peer_identity(
+    stream: &std::os::unix::net::UnixStream,
+    expected_uid: u32,
+    expected_pid: u32,
+) -> IoResult<()> {
+    use std::os::fd::AsRawFd;
+    platform::ensure_peer_process(stream.as_raw_fd(), expected_uid, expected_pid)
 }
 
 impl AsyncRead for UnixStream {
@@ -170,6 +188,17 @@ mod platform {
 
     #[cfg(any(target_os = "linux", target_os = "android"))]
     pub(super) fn ensure_current_user_peer(stream: &Stream) -> IoResult<()> {
+        ensure_expected_user_peer(stream, unsafe { libc::getuid() })
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "android"))]
+    pub(super) fn ensure_expected_user_peer(stream: &Stream, expected_uid: u32) -> IoResult<()> {
+        let credentials = peer_credentials(stream.as_raw_fd())?;
+        ensure_expected_uid(credentials.uid, expected_uid)
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "android"))]
+    fn peer_credentials(fd: std::os::fd::RawFd) -> IoResult<libc::ucred> {
         let mut credentials = libc::ucred {
             pid: 0,
             uid: 0,
@@ -178,7 +207,7 @@ mod platform {
         let mut credentials_len = std::mem::size_of::<libc::ucred>() as libc::socklen_t;
         let result = unsafe {
             libc::getsockopt(
-                stream.as_raw_fd(),
+                fd,
                 libc::SOL_SOCKET,
                 libc::SO_PEERCRED,
                 std::ptr::addr_of_mut!(credentials).cast(),
@@ -188,7 +217,26 @@ mod platform {
         if result != 0 {
             return Err(io::Error::last_os_error());
         }
-        ensure_peer_uid(credentials.uid)
+        if credentials_len as usize != std::mem::size_of::<libc::ucred>() {
+            return Err(io::Error::new(
+                ErrorKind::InvalidData,
+                "invalid peer credential length",
+            ));
+        }
+        Ok(credentials)
+    }
+
+    #[cfg(any(target_os = "linux", target_os = "android"))]
+    pub(super) fn ensure_peer_process(fd: std::os::fd::RawFd, uid: u32, pid: u32) -> IoResult<()> {
+        let credentials = peer_credentials(fd)?;
+        ensure_expected_uid(credentials.uid, uid)?;
+        if u32::try_from(credentials.pid).ok() != Some(pid) {
+            return Err(io::Error::new(
+                ErrorKind::PermissionDenied,
+                "Unix socket peer PID differs from the owned child",
+            ));
+        }
+        Ok(())
     }
 
     #[cfg(any(
@@ -200,13 +248,25 @@ mod platform {
         target_os = "dragonfly"
     ))]
     pub(super) fn ensure_current_user_peer(stream: &Stream) -> IoResult<()> {
+        ensure_expected_user_peer(stream, unsafe { libc::getuid() })
+    }
+
+    #[cfg(any(
+        target_os = "macos",
+        target_os = "ios",
+        target_os = "freebsd",
+        target_os = "openbsd",
+        target_os = "netbsd",
+        target_os = "dragonfly"
+    ))]
+    pub(super) fn ensure_expected_user_peer(stream: &Stream, expected_uid: u32) -> IoResult<()> {
         let mut peer_uid: libc::uid_t = 0;
         let mut peer_gid: libc::gid_t = 0;
         let result = unsafe { libc::getpeereid(stream.as_raw_fd(), &mut peer_uid, &mut peer_gid) };
         if result != 0 {
             return Err(io::Error::last_os_error());
         }
-        ensure_peer_uid(peer_uid)
+        ensure_expected_uid(peer_uid, expected_uid)
     }
 
     #[cfg(not(any(
@@ -226,13 +286,47 @@ mod platform {
         ))
     }
 
+    #[cfg(not(any(
+        target_os = "linux",
+        target_os = "android",
+        target_os = "macos",
+        target_os = "ios",
+        target_os = "freebsd",
+        target_os = "openbsd",
+        target_os = "netbsd",
+        target_os = "dragonfly"
+    )))]
+    pub(super) fn ensure_expected_user_peer(_stream: &Stream, _uid: u32) -> IoResult<()> {
+        Err(io::Error::new(
+            ErrorKind::Unsupported,
+            "peer user identity is unavailable on this platform",
+        ))
+    }
+
+    #[cfg(not(any(target_os = "linux", target_os = "android")))]
+    pub(super) fn ensure_peer_process(
+        _fd: std::os::fd::RawFd,
+        _uid: u32,
+        _pid: u32,
+    ) -> IoResult<()> {
+        Err(io::Error::new(
+            ErrorKind::Unsupported,
+            "peer process identity is unavailable on this platform",
+        ))
+    }
+
+    #[cfg(test)]
     fn ensure_peer_uid(peer_uid: libc::uid_t) -> IoResult<()> {
-        if peer_uid == unsafe { libc::getuid() } {
+        ensure_expected_uid(peer_uid, unsafe { libc::getuid() })
+    }
+
+    fn ensure_expected_uid(peer_uid: libc::uid_t, expected_uid: u32) -> IoResult<()> {
+        if peer_uid == expected_uid {
             Ok(())
         } else {
             Err(io::Error::new(
                 ErrorKind::PermissionDenied,
-                "Unix socket peer is not owned by the current user",
+                "Unix socket peer differs from the trusted user identity",
             ))
         }
     }
@@ -324,6 +418,13 @@ mod platform {
     }
 
     pub(super) fn ensure_current_user_peer(_stream: &Stream) -> IoResult<()> {
+        Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "peer user identity is unavailable on this platform",
+        ))
+    }
+
+    pub(super) fn ensure_expected_user_peer(_stream: &Stream, _uid: u32) -> IoResult<()> {
         Err(io::Error::new(
             io::ErrorKind::Unsupported,
             "peer user identity is unavailable on this platform",
