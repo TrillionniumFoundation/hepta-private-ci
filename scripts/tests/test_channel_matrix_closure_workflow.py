@@ -264,7 +264,7 @@ class ChannelMatrixSourcePurityTests(unittest.TestCase):
         self.assertIn(
             "workflow_source_authoring_is_closed",
             qualification["invariants"],
-         )
+        )
 
     def test_repository_qualification_binds_provenance_and_readiness(self) -> None:
         workflow = ROOT / ".github/workflows/channel-matrix-preserve-unknown.yml"
@@ -282,8 +282,9 @@ class ChannelMatrixSourcePurityTests(unittest.TestCase):
         self.assertIn("channel_matrix_focused_gate.py", policy)
         self.assertTrue(focused_gate.is_file())
         self.assertEqual(text.count("channel_matrix_source_provenance.py"), 2)
+        self.assertIn("channel_matrix_readiness.py", text)
         self.assertIn(
-channel-matrix-readiness-${{ github.run_id }}-${{ github.run_attempt }}",
+            "channel-matrix-readiness-${{ github.run_id }}-${{ github.run_attempt }}",
             text,
         )
         self.assertIn("READINESS_RESULT", text)
@@ -296,11 +297,11 @@ channel-matrix-readiness-${{ github.run_id }}-${{ github.run_attempt }}",
         self.assertNotIn(
             "$RUNNER_TEMP/matrix-base-merge/api-compile-fail.log",
             text,
-       )
+        )
         self.assertNotIn(
             "python3 -m unittest discover -s scripts/tests",
             text,
-       )
+        )
         self.assertNotIn(
             "cargo test --locked -p codex-hepta-matrix-sdk --doc 2>&1 | tee",
             text,

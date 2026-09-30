@@ -103,7 +103,7 @@ Paths:
 
 Invariants:
 
-- `dynamic_physical_send_is_forbidden 
+- `dynamic_physical_send_is_forbidden`
 - `raw_sdk_client_does_not_escape`
 - `sealed_adapter_is_non_overridable`
 - `transport_identity_is_bound_to_external_artifacts`
