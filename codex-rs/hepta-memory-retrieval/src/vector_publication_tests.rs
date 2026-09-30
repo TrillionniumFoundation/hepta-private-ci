@@ -87,6 +87,7 @@ fn encoder() -> EncoderReleaseIdentityV1 {
 fn genesis() -> VectorIndexPublicationV1 {
     VectorIndexPublicationV1::new(
         digest("tenant-a"),
+        7,
         1,
         1,
         None,
@@ -142,6 +143,7 @@ fn changed_index_requires_generation_advance_and_exact_parent() {
     let current = genesis();
     let same_generation = VectorIndexPublicationV1::new(
         current.tenant_digest(),
+        current.writer_fence(),
         2,
         1,
         Some(current.publication_digest()),
@@ -160,6 +162,7 @@ fn changed_index_requires_generation_advance_and_exact_parent() {
 
     let advanced = VectorIndexPublicationV1::new(
         current.tenant_digest(),
+        current.writer_fence(),
         2,
         2,
         Some(current.publication_digest()),
@@ -177,11 +180,57 @@ fn changed_index_requires_generation_advance_and_exact_parent() {
 }
 
 #[test]
+fn stale_writer_fence_cannot_publish_with_an_exact_parent() {
+    let current = genesis();
+    let stale = VectorIndexPublicationV1::new(
+        current.tenant_digest(),
+        current.writer_fence() - 1,
+        current.sequence() + 1,
+        current.generation(),
+        Some(current.publication_digest()),
+        encoder(),
+        current.snapshot().clone(),
+        current.withdrawal_frontier(),
+        current.revocation_frontier(),
+        Vec::new(),
+        VectorPublicationStateV1::Active,
+    )
+    .expect("standalone stale-fence publication");
+    assert_eq!(
+        current.validate_successor(&stale),
+        Err(VectorPublicationErrorV1::StaleWriterFence)
+    );
+}
+
+#[test]
+fn newer_writer_fence_can_take_over_at_the_same_object() {
+    let current = genesis();
+    let takeover = VectorIndexPublicationV1::new(
+        current.tenant_digest(),
+        current.writer_fence() + 1,
+        current.sequence() + 1,
+        current.generation(),
+        Some(current.publication_digest()),
+        encoder(),
+        current.snapshot().clone(),
+        current.withdrawal_frontier(),
+        current.revocation_frontier(),
+        Vec::new(),
+        VectorPublicationStateV1::Active,
+    )
+    .expect("takeover publication");
+    current
+        .validate_successor(&takeover)
+        .expect("new fenced writer may take over");
+}
+
+#[test]
 fn withdrawal_is_monotonic_and_removed_content_cannot_reappear() {
     let current = genesis();
     let removed = record(2).record_digest();
     let withdrawn = VectorIndexPublicationV1::new(
         current.tenant_digest(),
+        current.writer_fence(),
         2,
         2,
         Some(current.publication_digest()),
@@ -199,6 +248,7 @@ fn withdrawal_is_monotonic_and_removed_content_cannot_reappear() {
 
     let reintroduced = VectorIndexPublicationV1::new(
         current.tenant_digest(),
+        current.writer_fence(),
         3,
         3,
         Some(withdrawn.publication_digest()),
@@ -221,6 +271,7 @@ fn terminally_withdrawn_publication_cannot_serve_or_reactivate() {
     let current = genesis();
     let terminal = VectorIndexPublicationV1::new(
         current.tenant_digest(),
+        current.writer_fence(),
         2,
         1,
         Some(current.publication_digest()),
@@ -242,6 +293,7 @@ fn terminally_withdrawn_publication_cannot_serve_or_reactivate() {
 
     let reactivated = VectorIndexPublicationV1::new(
         terminal.tenant_digest(),
+        terminal.writer_fence() + 1,
         3,
         2,
         Some(terminal.publication_digest()),
