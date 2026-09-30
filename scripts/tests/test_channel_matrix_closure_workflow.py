@@ -40,17 +40,26 @@ class ChannelMatrixSourcePurityTests(unittest.TestCase):
                 self.assertNotIn("push origin", text)
                 self.assertNotIn("--allow-dirty", text)
 
-    def test_exact_candidate_executes_api_compile_fail_in_both_lanes(self) -> None:
+    def test_exact_candidate_binds_api_compile_fail_receipts_in_both_lanes(self) -> None:
         workflow = ROOT / ".github/workflows/channel-matrix-preserve-unknown.yml"
         text = workflow.read_text(encoding="utf-8")
-        command = "cargo test --locked -p codex-hepta-matrix-sdk --doc"
-        self.assertEqual(text.count(command), 2)
-        self.assertIn(
+        labels = "compile api-compile-fail focused-tests clippy format"
+
+        # API negative proofs are now a first-class canonical command receipt,
+        # not an unstructured side log created by an ad-hoc workflow step.
+        self.assertEqual(text.count(f"for label in {labels}; do"), 2)
+        self.assertIn("scripts/channel_matrix_evidence_v2.py", text)
+        self.assertIn("scripts/channel_matrix_pair_acceptance_v2.py", text)
+        self.assertNotIn(
             "$RUNNER_TEMP/matrix-source-head/api-compile-fail.log",
             text,
         )
-        self.assertIn(
+        self.assertNotIn(
             "$RUNNER_TEMP/matrix-base-merge/api-compile-fail.log",
+            text,
+        )
+        self.assertNotIn(
+            "cargo test --locked -p codex-hepta-matrix-sdk --doc 2>&1 | tee",
             text,
         )
 
