@@ -15,8 +15,10 @@ on:
       - scripts/authbus-exact-head-evidence.py
       - scripts/authbus-target-host-evidence.py
       - scripts/authbus-performance-evidence.py
+      - scripts/authbus-production-acceptance.py
       - .github/workflows/authbus-authority-qualification.yml
       - .github/workflows/authbus-target-host-qualification.yml
+      - .github/workflows/authbus-production-acceptance.yml
   push:
     branches: [main]
     paths:
@@ -32,8 +34,10 @@ on:
       - scripts/authbus-exact-head-evidence.py
       - scripts/authbus-target-host-evidence.py
       - scripts/authbus-performance-evidence.py
+      - scripts/authbus-production-acceptance.py
       - .github/workflows/authbus-authority-qualification.yml
       - .github/workflows/authbus-target-host-qualification.yml
+      - .github/workflows/authbus-production-acceptance.yml
   workflow_dispatch:
     inputs:
       candidate_sha:
