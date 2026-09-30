@@ -86,6 +86,10 @@
     },
     {
       "fromModule": "runtime.agentd",
+      "toModule": "context.compiler"
+    },
+    {
+      "fromModule": "runtime.agentd",
       "toModule": "inference.control"
     },
     {
@@ -316,6 +320,15 @@
       "toLayer": 1,
       "toModule": "kernel.operations",
       "toPackage": "codex-hepta-operations"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 7,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agentd",
+      "toLayer": 2,
+      "toModule": "context.compiler",
+      "toPackage": "codex-hepta-context-compiler"
     },
     {
       "dependencyKind": "dev",
@@ -1529,11 +1542,19 @@
     },
     {
       "fromModule": "runtime.agentd",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "runtime.agentd",
       "toModule": "context.compiler"
     },
     {
       "fromModule": "runtime.agentd",
       "toModule": "control.runtime"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "inference.control"
     },
     {
       "fromModule": "runtime.agentd",
@@ -2011,11 +2032,19 @@
     },
     {
       "fromModule": "runtime.agentd",
+      "toModule": "cognitive.types"
+    },
+    {
+      "fromModule": "runtime.agentd",
       "toModule": "context.compiler"
     },
     {
       "fromModule": "runtime.agentd",
       "toModule": "control.runtime"
+    },
+    {
+      "fromModule": "runtime.agentd",
+      "toModule": "inference.control"
     },
     {
       "fromModule": "runtime.agentd",
@@ -3348,6 +3377,24 @@
       "toLayer": 1,
       "toModule": "auth.authbus",
       "toPackage": "codex-hepta-authbus"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 1,
+      "toModule": "cognitive.types",
+      "toPackage": "codex-hepta-cognitive-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 6,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-components",
+      "toLayer": 1,
+      "toModule": "inference.control",
+      "toPackage": "codex-hepta-infer-core"
     },
     {
       "dependencyKind": "normal",
