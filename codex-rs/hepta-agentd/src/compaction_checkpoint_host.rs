@@ -7,9 +7,11 @@
 use std::sync::Arc;
 
 use codex_hepta_compact_engine::{
-    CompactionCoordinatorErrorV2, CompactionPublicationReceiptV2,
-    DurableCompactionOutboxEventV1, MemoryCheckpointCoordinatorV2,
-    VerifiedCompactionPublicationV1, VerifiedCompactionSelectionV2,
+    CompactionCoordinatorErrorV2, CompactionOperationStatusV1,
+    CompactionPublicationReceiptV2, CompactionRecoveryStartupSummaryV1,
+    CurrentSourceUseValidatorV1, CurrentSourceValidatedSelectionV1,
+    DurableCompactionOutboxClaimV2, MemoryCheckpointCoordinatorV2,
+    VerifiedCompactionPublicationV1,
 };
 use codex_hepta_types::Digest32;
 use tokio::sync::Mutex;
@@ -17,7 +19,9 @@ use tokio::sync::MutexGuard;
 
 use crate::{AgentdError, AgentdProductionWriterHost};
 
-pub const AGENTD_COMPACTION_SCHEDULER_CALLER_V1: &str = "agentd.runtime.compaction-scheduler.v1";
+pub const AGENTD_COMPACTION_SCHEDULER_CALLER_V1: &str =
+    "agentd.runtime.compaction-scheduler.v1";
+const AGENTD_COMPACTION_RECOVERY_BATCH: u32 = 256;
 
 #[derive(Clone)]
 pub struct AgentdCompactionCheckpointHostV1 {
@@ -63,8 +67,11 @@ impl AgentdCompactionCheckpointHostV1 {
             .verify_integrity(now_unix_seconds)
             .await
             .map_err(compaction_error)?;
-        coordinator
-            .reconcile_claims(now_unix_seconds)
+        let _ = coordinator
+            .reconcile_startup(
+                now_unix_seconds,
+                AGENTD_COMPACTION_RECOVERY_BATCH,
+            )
             .await
             .map_err(compaction_error)?;
         production_writer
@@ -139,18 +146,31 @@ impl AgentdCompactionCheckpointHostV1 {
             .map_err(compaction_error)
     }
 
+    /// Product recovery always re-admits current source validity. The host does
+    /// not expose the coordinator's low-level historical reconstruction path.
     pub async fn recover_current_checkpoint(
         &self,
         scope_id: &str,
         purpose_id: &str,
         now_unix_seconds: u64,
-    ) -> Result<Option<VerifiedCompactionSelectionV2>, AgentdError> {
-        let coordinator = self.checked_coordinator().await?;
+        validator: &dyn CurrentSourceUseValidatorV1,
+    ) -> Result<Option<CurrentSourceValidatedSelectionV1>, AgentdError> {
+        // Do not hold the Agentd serialization mutex while the external source
+        // owner is consulted. The cloned coordinator rechecks manifest, lease
+        // and current head after that await; a concurrent rotation fails closed.
+        let coordinator = {
+            let guard = self.checked_coordinator().await?;
+            (*guard).clone()
+        };
         let selection = coordinator
-            .recover_current_checkpoint(scope_id, purpose_id, now_unix_seconds)
-            .await
-            .map_err(compaction_error)?;
-        // A historical signature does not outlive current writer authority.
+            .recover_current_checkpoint_validated(
+                scope_id,
+                purpose_id,
+                now_unix_seconds,
+                validator,
+            )
+            .await?;
+        // Source validity cannot outlive the current Agentd writer authority.
         self.production_writer
             .writer()
             .verify_current_authority()
@@ -166,7 +186,11 @@ impl AgentdCompactionCheckpointHostV1 {
     ) -> Result<Digest32, AgentdError> {
         self.checked_coordinator()
             .await?
-            .revoke_checkpoint(checkpoint_digest, reason_digest, revoked_at_unix_seconds)
+            .revoke_checkpoint(
+                checkpoint_digest,
+                reason_digest,
+                revoked_at_unix_seconds,
+            )
             .await
             .map_err(compaction_error)
     }
@@ -186,35 +210,61 @@ impl AgentdCompactionCheckpointHostV1 {
     pub async fn claim_next_publication_event(
         &self,
         now_unix_seconds: u64,
+        worker_id: &str,
         claim_token: &str,
-    ) -> Result<Option<DurableCompactionOutboxEventV1>, AgentdError> {
+        claim_deadline_unix_seconds: u64,
+    ) -> Result<Option<DurableCompactionOutboxClaimV2>, AgentdError> {
         self.checked_coordinator()
             .await?
-            .claim_next_outbox(now_unix_seconds, claim_token)
+            .claim_next_outbox_for_worker(
+                now_unix_seconds,
+                worker_id,
+                claim_token,
+                claim_deadline_unix_seconds,
+            )
             .await
             .map_err(compaction_error)
     }
 
     pub async fn complete_publication_event(
         &self,
-        event: &DurableCompactionOutboxEventV1,
+        claim: &DurableCompactionOutboxClaimV2,
         delivered_at_unix_seconds: u64,
     ) -> Result<(), AgentdError> {
         self.checked_coordinator()
             .await?
-            .complete_outbox(event, delivered_at_unix_seconds)
+            .complete_outbox_claim(claim, delivered_at_unix_seconds)
             .await
             .map_err(compaction_error)
     }
 
-    pub async fn reconcile_startup(&self, now_unix_seconds: u64) -> Result<u64, AgentdError> {
+    /// Query the original operation identity after an unknown publish outcome.
+    /// Callers must not mint a new idempotency key to infer whether it committed.
+    pub async fn query_publication_operation(
+        &self,
+        idempotency_key: &str,
+    ) -> Result<CompactionOperationStatusV1, AgentdError> {
+        self.checked_coordinator()
+            .await?
+            .query_operation(idempotency_key)
+            .await
+            .map_err(compaction_error)
+    }
+
+    pub async fn reconcile_startup(
+        &self,
+        now_unix_seconds: u64,
+    ) -> Result<CompactionRecoveryStartupSummaryV1, AgentdError> {
         let coordinator = self.checked_coordinator().await?;
         coordinator
             .verify_integrity(now_unix_seconds)
             .await
             .map_err(compaction_error)?;
         coordinator
-            .reconcile_claims(now_unix_seconds)
+            .reconcile_startup(
+                now_unix_seconds,
+                AGENTD_COMPACTION_RECOVERY_BATCH,
+            )
             .await
             .map_err(compaction_error)
     }
