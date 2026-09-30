@@ -290,11 +290,8 @@ impl SelfIterationOwner {
             now,
         )
         .map_err(|error| invalid(error.to_string()))?;
-        if result.decision.disposition
-            != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
-            || result.decision.authority.grants_any()
-        {
-            return Err(invalid("candidate independently ineligible"));
+        if result.decision.authority.grants_any() {
+            return Err(invalid("evaluation granted authority"));
         }
         let evaluator = self
             .trust
@@ -317,6 +314,27 @@ impl SelfIterationOwner {
             && previous != result.authentication_digest
         {
             return Err(invalid("recovery changed evaluation"));
+        }
+        if result.decision.disposition
+            != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+        {
+            // An authenticated failed experiment completes this round. No
+            // selection or installation occurred, so the predecessor keeps
+            // serving and the next candidate need not wait for expiry.
+            if !matches!(
+                current.record.phase,
+                AgentdSelfIterationPhaseV1::Frozen | AgentdSelfIterationPhaseV1::Evaluated
+            ) || self.host.generation_snapshot()?.active_generation
+                != current.record.base_generation
+            {
+                return Err(invalid("rejection predecessor changed"));
+            }
+            let mut rejected = current.record.clone();
+            rejected.evaluation_digest = Some(result.authentication_digest);
+            rejected.phase = AgentdSelfIterationPhaseV1::Rejected;
+            self.journal.persist(&rejected)?;
+            self.current = None;
+            return Ok(rejected);
         }
         current.record.evaluation_digest = Some(result.authentication_digest);
         if current.record.phase == AgentdSelfIterationPhaseV1::Frozen {

@@ -146,6 +146,9 @@ where
             return Err(invalid("model selection metric context budget"));
         }
         let evaluated = self.runtime.evaluate(frozen_digest, evidence).await?;
+        if evaluated.phase == AgentdSelfIterationPhaseV1::Rejected {
+            return Ok(evaluated);
+        }
         let selection = self.assess(SelfIterationModelRoleV1::Selector,
             envelope_digest, Some(frozen_digest), deadline_ms, format!(
                 "Assess selection of frozen candidate {frozen_digest}.\nObjective: {objective_prompt}\nAuthenticated independent evaluation: {:?}\nActual independently measured intervals: {metrics}\nOnly the independent Selector owner can select.", evaluated.evaluation_digest

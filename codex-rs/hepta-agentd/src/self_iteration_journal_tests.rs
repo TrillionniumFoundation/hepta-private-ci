@@ -88,3 +88,30 @@ fn accepted_label_with_valid_checksum_cannot_replace_missing_native_and_owner_pr
     std::fs::write(&path, serde_json::to_vec(&stored).expect("json")).expect("write");
     assert!(IterationJournal::open(path).is_err());
 }
+
+#[test]
+fn failed_evaluation_reopens_terminal_and_admits_another_candidate_on_same_predecessor() {
+    let directory = private_directory();
+    let path = directory.path().join("iteration.json");
+    let mut owner = IterationJournal::open(path.clone()).expect("owner");
+    let mut rejected = record();
+    owner.persist(&rejected).expect("freeze");
+    rejected.evaluation_digest = Some(Digest32::of_bytes(b"original failed evaluation"));
+    rejected.phase = AgentdSelfIterationPhaseV1::Rejected;
+    owner
+        .persist(&rejected)
+        .expect("reject actual failed experiment");
+    assert!(!owner.pending());
+    assert!(!owner.unresolved_apply());
+    drop(owner);
+    let mut recovered = IterationJournal::open(path).expect("recover rejection");
+    assert_eq!(recovered.record(), Some(&rejected));
+    let mut next = record();
+    next.candidate_id = "candidate.b".into();
+    next.frozen_digest = Digest32::of_bytes(b"next frozen");
+    assert_eq!(next.base_generation, rejected.base_generation);
+    recovered
+        .persist(&next)
+        .expect("next experiment admitted immediately");
+    assert!(recovered.pending());
+}
