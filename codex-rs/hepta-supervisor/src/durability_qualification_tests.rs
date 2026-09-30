@@ -27,10 +27,18 @@ use crate::restart_journal::RESTART_JOURNAL_FILE;
 use crate::signed_intent::read_intent;
 use crate::signed_intent::write_intent;
 
+#[expect(
+    clippy::expect_used,
+    reason = "A malformed fixed AgentId is a test fixture failure."
+)]
 fn agent() -> AgentId {
     AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("fixed AgentId")
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "A rejected valid signed intent is a test fixture failure."
+)]
 fn intent(status: SignedIntentStatus) -> SignedSupervisorIntent {
     SignedSupervisorIntent::new(
         Sha256Digest::for_bytes(b"durability-grant"),
@@ -46,6 +54,10 @@ fn intent(status: SignedIntentStatus) -> SignedSupervisorIntent {
     .expect("intent")
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "A rejected valid transaction or enum phase is a test fixture failure."
+)]
 fn transaction(phase: ReleaseTransactionPhase) -> DurableReleaseTransaction {
     DurableReleaseTransaction::new(
         agent().to_string(),
@@ -65,6 +77,10 @@ fn transaction(phase: ReleaseTransactionPhase) -> DurableReleaseTransaction {
     .expect("phase")
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "A malformed fixed lease identity is a test fixture failure."
+)]
 fn lease() -> ProcessLease {
     ProcessLease {
         schema_version: PROCESS_LEASE_SCHEMA_VERSION,

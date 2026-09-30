@@ -70,10 +70,18 @@ impl QualificationControl {
         }
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "poisoned fixture state must fail qualification rather than supply a successful measurement"
+    )]
     fn set_poll_delay(&self, delay: Duration) {
         self.world.lock().expect("qualification world").poll_delay = delay;
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "poisoned fixture state must fail qualification rather than omit a requested fault wave"
+    )]
     fn crash_prefix(&self, agents: &[AgentId], count: usize) {
         let mut world = self.world.lock().expect("qualification world");
         for agent_id in agents.iter().take(count) {
@@ -95,6 +103,10 @@ impl QualificationControl {
 impl ProcessDriver for QualificationDriver {
     type Process = QualificationProcess;
 
+    #[expect(
+        clippy::expect_used,
+        reason = "poisoned process fixture state must fail the qualification run"
+    )]
     fn spawn(
         &mut self,
         spec: &SpawnSpec,
@@ -123,6 +135,10 @@ impl ProcessDriver for QualificationDriver {
         })
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "poisoned process fixture state must fail the qualification run"
+    )]
     fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
         let world = self.world.lock().expect("qualification world");
         let Some((&id, _)) = world.processes.iter().find(|(_, state)| {
@@ -140,6 +156,10 @@ impl ProcessDriver for QualificationDriver {
 }
 
 impl ManagedProcess for QualificationProcess {
+    #[expect(
+        clippy::expect_used,
+        reason = "poisoned state or a missing fixture process invalidates the qualification observation"
+    )]
     fn poll(&mut self, _max_logs: usize) -> Result<ProcessObservation, ProcessDriverError> {
         let delay = self.world.lock().expect("qualification world").poll_delay;
         if !delay.is_zero() {
@@ -151,7 +171,7 @@ impl ManagedProcess for QualificationProcess {
             .get(&self.id)
             .expect("qualification process");
         Ok(ProcessObservation {
-            state: state.exit.clone().map_or(
+            state: state.exit.map_or(
                 ProcessState::Running {
                     healthy: state.healthy,
                     drained: state.drained,
@@ -162,6 +182,10 @@ impl ManagedProcess for QualificationProcess {
         })
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "fixture control requires the exact existing process and unpoisoned state"
+    )]
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
         self.world
             .lock()
@@ -173,6 +197,10 @@ impl ManagedProcess for QualificationProcess {
         Ok(())
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "fixture control requires the exact existing process and unpoisoned state"
+    )]
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
         self.world
             .lock()
@@ -187,6 +215,10 @@ impl ManagedProcess for QualificationProcess {
         Ok(())
     }
 
+    #[expect(
+        clippy::expect_used,
+        reason = "fixture control requires the exact existing process and unpoisoned state"
+    )]
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
         self.world
             .lock()
@@ -334,6 +366,10 @@ fn register_agents(
     Ok(agents)
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "a failed tick task must fail qualification rather than emit a latency receipt"
+)]
 async fn run_tick_with_status(
     owner: &Arc<MeasuredMutex<Supervisor<QualificationDriver>>>,
     read_view: &Arc<RwLock<Vec<AgentId>>>,
@@ -348,7 +384,11 @@ async fn run_tick_with_status(
     });
     tokio::task::yield_now().await;
     let status_latencies = spawn_status_reads(read_view, 64).await;
-    let owner_latencies = spawn_owner_snapshots(owner, &read_view.read().await[..64]).await;
+    let selected_agents = {
+        let view = read_view.read().await;
+        view[..64].to_vec()
+    };
+    let owner_latencies = spawn_owner_snapshots(owner, &selected_agents).await;
     let (tick_elapsed, faults) = tick.await.expect("tick task");
     json!({
         "tick_elapsed_us": micros(tick_elapsed),
@@ -359,6 +399,10 @@ async fn run_tick_with_status(
     })
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "failed mutation or tick tasks must invalidate their qualification measurements"
+)]
 async fn run_concurrent_drain_status_mutation(
     owner: &Arc<MeasuredMutex<Supervisor<QualificationDriver>>>,
     read_view: &Arc<RwLock<Vec<AgentId>>>,
@@ -399,6 +443,10 @@ async fn run_concurrent_drain_status_mutation(
     })
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "failed read tasks must invalidate their qualification measurements"
+)]
 async fn spawn_status_reads(read_view: &Arc<RwLock<Vec<AgentId>>>, count: usize) -> Vec<Duration> {
     let mut tasks = Vec::with_capacity(count);
     for index in 0..count {
@@ -417,6 +465,10 @@ async fn spawn_status_reads(read_view: &Arc<RwLock<Vec<AgentId>>>, count: usize)
     latencies
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "failed owner snapshot tasks must invalidate their qualification measurements"
+)]
 async fn spawn_owner_snapshots(
     owner: &Arc<MeasuredMutex<Supervisor<QualificationDriver>>>,
     agents: &[AgentId],

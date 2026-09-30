@@ -216,6 +216,10 @@ fn fleet_revocation_is_observed_from_the_current_policy_owner() {
     ));
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "Constructs a valid signed grant fixture; setup failure must fail the test."
+)]
 fn grant(
     signer: &H7H89ProductionGrantSigner,
     envelope: &H7SignedArtifactEnvelope,
@@ -238,6 +242,10 @@ fn grant(
         .expect("grant")
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "Constructs a deterministic valid H7 envelope fixture; setup failure must fail the test."
+)]
 fn h7_envelope() -> H7SignedArtifactEnvelope {
     let mut runtime = H7QualificationRuntime::new();
     let event = codex_hepta_memory::H7TrajectoryEvent::new(

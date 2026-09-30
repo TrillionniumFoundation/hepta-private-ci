@@ -71,7 +71,7 @@ async fn main() -> Result<()> {
                 intent.intent_sha256.as_str() == expected_digest,
                 "intent digest changed; inspect again before issuing an abort directive"
             );
-            let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())?;
+            let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)?;
             write_signed_intent_recovery_directive(&root_or_socket, &directive)?;
             println!("{}", serde_json::to_string_pretty(&directive)?);
         }

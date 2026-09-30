@@ -45,6 +45,10 @@ fn request_json() -> Value {
     })
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "Test requests are deliberately valid and must sign before contextual rejection is tested."
+)]
 fn sign(value: Value) -> ProductionRecoveryDecision {
     let request: SignRequest = serde_json::from_value(value).expect("typed request");
     let response =
@@ -55,6 +59,10 @@ fn sign(value: Value) -> ProductionRecoveryDecision {
     decision
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "Deterministic test key material must create a verifier."
+)]
 fn verifier(seed: &[u8; 32]) -> H7H89ProductionGrantVerifier {
     H7H89ProductionGrantVerifier::from_bytes(
         "external-recovery",
@@ -64,6 +72,10 @@ fn verifier(seed: &[u8; 32]) -> H7H89ProductionGrantVerifier {
     .expect("pinned verifier")
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "The fixed test AgentId must parse before verification is exercised."
+)]
 fn verifies(
     verifier: &H7H89ProductionGrantVerifier,
     decision: &ProductionRecoveryDecision,

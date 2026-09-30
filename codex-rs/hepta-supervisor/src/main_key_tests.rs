@@ -11,6 +11,10 @@ fn absolute_fleet(temp: &tempfile::TempDir) -> OsString {
     temp.path().join("fleet").into_os_string()
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "A valid deterministic authority bundle must be created before CLI admission is tested."
+)]
 fn authority_bundle(temp: &tempfile::TempDir) -> (OsString, OsString, Vec<u8>) {
     let grant = SigningKey::from_bytes(&[3; 32]);
     let h7 = SigningKey::from_bytes(&[7; 32]);
@@ -84,13 +88,13 @@ fn authority_bundle_and_digest_are_an_atomic_pair() {
             OsString::from("--fleet-root"),
             absolute_fleet(&temp),
             OsString::from("--authority-bundle"),
-            path.clone(),
+            path,
         ],
         vec![
             OsString::from("--fleet-root"),
             absolute_fleet(&temp),
             OsString::from("--authority-bundle-sha256"),
-            digest.clone(),
+            digest,
         ],
     ] {
         let error = parse_options_from(arguments)

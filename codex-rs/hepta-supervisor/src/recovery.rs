@@ -478,10 +478,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         // Acquire the main owner first. Then attempt semantic hydration, but do
         // not propagate its failure before the independent Matrix acquisition.
         let main = self.recover_main_slot(agent_id, slot, record, now);
-        if let Err(error) = &main {
-            if !Self::recovery_control_fault_is_retryable(slot, error) {
-                slot.recovery_blocker = Some(bounded_message(error.to_string()));
-            }
+        if let Err(error) = &main
+            && !Self::recovery_control_fault_is_retryable(slot, error)
+        {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
         }
         let hydration = if slot.recovery_blocker.is_some() {
             Ok(())
