@@ -10,6 +10,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use super::LockedQualificationPublicationStoreV1;
+use super::final_use::SelectedHostFinalUseSinkV1;
 use super::map_store_to_recorded;
 use crate::DurableProductEvaluationAttemptJournalV1;
 use crate::FinalHoldoutCasStoreV1;
@@ -28,6 +29,7 @@ use crate::SignedEvaluationEvidenceV1;
 use crate::product::SelectedHostClockErrorV1;
 use crate::product::SelectedHostClockV1;
 use crate::reconcile_product_attempt_publication_v1;
+use crate::recorded_publication::archive;
 
 fn map_clock(error: SelectedHostClockErrorV1) -> RecordedProductEvaluationErrorV1 {
     match error {
@@ -52,7 +54,7 @@ fn current_verifier_at(
     Ok(trust.verifier())
 }
 
-fn sample_current_verifier<'a>(
+pub(super) fn sample_current_verifier<'a>(
     trust: &'a ActivatedLearningTrustV1,
     clock: &mut dyn SelectedHostClockV1,
 ) -> Result<(&'a LearningEvidenceVerifierV1, u64), RecordedProductEvaluationErrorV1> {
@@ -87,26 +89,46 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         publication_root: impl AsRef<Path>,
         selected_host_binding: Digest32,
     ) -> Result<ProductQualificationReceiptV1, RecordedProductEvaluationErrorV1> {
-        let (verifier, now) = sample_current_verifier(trust, clock)?;
+        let clock_binding = clock.binding();
+        let (verifier, mut now) = sample_current_verifier(trust, clock)?;
+        let artifact_root = artifact_root.as_ref();
         let store = LockedQualificationPublicationStoreV1::new(
             publication_root.as_ref(),
             selected_host_binding,
         )
         .map_err(map_store_to_recorded)?;
         let mut sink = ReconciledProductQualificationSinkV1::new(store);
-        self.qualify_and_persist_with_artifacts(
+        let mut guarded = SelectedHostFinalUseSinkV1 {
+            inner: &mut sink,
+            trust,
+            clock_binding,
+            clock,
+            last_now: &mut now,
+            artifact_root,
+            attempt_id,
+            host_binding: selected_host_binding,
+            namespace: self.namespace,
+            family: archive::TEMPORAL,
+            error: None,
+        };
+        let initial_now = *guarded.last_now;
+        let result = self.qualify_and_persist_with_artifacts(
             attempt_id,
             temporal,
             context,
             evidence,
             timing,
             verifier,
-            now,
+            initial_now,
             journal,
             artifact_root,
             selected_host_binding,
-            &mut sink,
-        )
+            &mut guarded,
+        );
+        if let Some(error) = guarded.error {
+            return Err(error);
+        }
+        result
     }
 
     /// Cold replay has no callback capable of bypassing current V2/V3 checks.
@@ -121,7 +143,8 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         trust: &ActivatedLearningTrustV1,
         clock: &mut dyn SelectedHostClockV1,
     ) -> Result<ProductEvaluationAttemptReceiptV1, RecordedProductEvaluationErrorV1> {
-        let (_, now) = sample_current_verifier(trust, clock)?;
+        let clock_binding = clock.binding();
+        let (_, mut now) = sample_current_verifier(trust, clock)?;
         self.recover_selected_host_qualification_at_current_time(
             journal,
             attempt_id,
@@ -129,7 +152,9 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             publication_root,
             selected_host_binding,
             trust,
-            now,
+            clock,
+            clock_binding,
+            &mut now,
         )
     }
 
@@ -144,24 +169,45 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         publication_root: impl AsRef<Path>,
         selected_host_binding: Digest32,
         trust: &ActivatedLearningTrustV1,
-        now: u64,
+        clock: &mut dyn SelectedHostClockV1,
+        clock_binding: Digest32,
+        now: &mut u64,
     ) -> Result<ProductEvaluationAttemptReceiptV1, RecordedProductEvaluationErrorV1> {
-        let verifier = current_verifier_at(trust, now)?;
+        let verifier = current_verifier_at(trust, *now)?;
+        let artifact_root = artifact_root.as_ref();
         let store = LockedQualificationPublicationStoreV1::open_existing(
             publication_root.as_ref(),
             selected_host_binding,
         )
         .map_err(map_store_to_recorded)?;
         let mut sink = ReconciledProductQualificationSinkV1::new(store);
-        self.recover_persisted_qualification(
+        let mut guarded = SelectedHostFinalUseSinkV1 {
+            inner: &mut sink,
+            trust,
+            clock_binding,
+            clock,
+            last_now: now,
+            artifact_root,
+            attempt_id,
+            host_binding: selected_host_binding,
+            namespace: self.namespace,
+            family: archive::TEMPORAL,
+            error: None,
+        };
+        let initial_now = *guarded.last_now;
+        let result = self.recover_persisted_qualification(
             journal,
             attempt_id,
             artifact_root,
             selected_host_binding,
             verifier,
-            now,
-            &mut sink,
-        )
+            initial_now,
+            &mut guarded,
+        );
+        if let Some(error) = guarded.error {
+            return Err(error);
+        }
+        result
     }
 
     /// Read-verify an existing publication; only the attempt journal advances.
@@ -196,26 +242,46 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         publication_root: impl AsRef<Path>,
         selected_host_binding: Digest32,
     ) -> Result<ProductOutcomeQualificationReceiptV1, RecordedProductEvaluationErrorV1> {
-        let (verifier, now) = sample_current_verifier(trust, clock)?;
+        let clock_binding = clock.binding();
+        let (verifier, mut now) = sample_current_verifier(trust, clock)?;
+        let artifact_root = artifact_root.as_ref();
         let store = LockedQualificationPublicationStoreV1::new(
             publication_root.as_ref(),
             selected_host_binding,
         )
         .map_err(map_store_to_recorded)?;
         let mut sink = ReconciledProductQualificationSinkV1::new(store);
-        self.qualify_outcomes_and_persist_with_artifacts(
+        let mut guarded = SelectedHostFinalUseSinkV1 {
+            inner: &mut sink,
+            trust,
+            clock_binding,
+            clock,
+            last_now: &mut now,
+            artifact_root,
+            attempt_id,
+            host_binding: selected_host_binding,
+            namespace: self.namespace,
+            family: archive::OUTCOME,
+            error: None,
+        };
+        let initial_now = *guarded.last_now;
+        let result = self.qualify_outcomes_and_persist_with_artifacts(
             attempt_id,
             temporal,
             context,
             evidence,
             timing,
             verifier,
-            now,
+            initial_now,
             journal,
             artifact_root,
             selected_host_binding,
-            &mut sink,
-        )
+            &mut guarded,
+        );
+        if let Some(error) = guarded.error {
+            return Err(error);
+        }
+        result
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -231,7 +297,8 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         trust: &ActivatedLearningTrustV1,
         clock: &mut dyn SelectedHostClockV1,
     ) -> Result<ProductEvaluationAttemptReceiptV1, RecordedProductEvaluationErrorV1> {
-        let (_, now) = sample_current_verifier(trust, clock)?;
+        let clock_binding = clock.binding();
+        let (_, mut now) = sample_current_verifier(trust, clock)?;
         self.recover_selected_host_outcome_qualification_at_current_time(
             journal,
             attempt_id,
@@ -239,7 +306,9 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
             publication_root,
             selected_host_binding,
             trust,
-            now,
+            clock,
+            clock_binding,
+            &mut now,
         )
     }
 
@@ -254,24 +323,45 @@ impl<S: FinalHoldoutCasStoreV1> RecordedProductEvaluationRunnerV1<S> {
         publication_root: impl AsRef<Path>,
         selected_host_binding: Digest32,
         trust: &ActivatedLearningTrustV1,
-        now: u64,
+        clock: &mut dyn SelectedHostClockV1,
+        clock_binding: Digest32,
+        now: &mut u64,
     ) -> Result<ProductEvaluationAttemptReceiptV1, RecordedProductEvaluationErrorV1> {
-        let verifier = current_verifier_at(trust, now)?;
+        let verifier = current_verifier_at(trust, *now)?;
+        let artifact_root = artifact_root.as_ref();
         let store = LockedQualificationPublicationStoreV1::open_existing(
             publication_root.as_ref(),
             selected_host_binding,
         )
         .map_err(map_store_to_recorded)?;
         let mut sink = ReconciledProductQualificationSinkV1::new(store);
-        self.recover_persisted_outcome_qualification(
+        let mut guarded = SelectedHostFinalUseSinkV1 {
+            inner: &mut sink,
+            trust,
+            clock_binding,
+            clock,
+            last_now: now,
+            artifact_root,
+            attempt_id,
+            host_binding: selected_host_binding,
+            namespace: self.namespace,
+            family: archive::OUTCOME,
+            error: None,
+        };
+        let initial_now = *guarded.last_now;
+        let result = self.recover_persisted_outcome_qualification(
             journal,
             attempt_id,
             artifact_root,
             selected_host_binding,
             verifier,
-            now,
-            &mut sink,
-        )
+            initial_now,
+            &mut guarded,
+        );
+        if let Some(error) = guarded.error {
+            return Err(error);
+        }
+        result
     }
 
     pub fn reconcile_selected_host_outcome_publication<

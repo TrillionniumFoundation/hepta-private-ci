@@ -43,7 +43,7 @@ const MAGIC: &[u8; 8] = b"HQARCV02";
 pub(crate) enum ArchivedTiming {
     Qualification,
     SystemLongitudinal {
-        timing: LongitudinalTimeEvidenceV1,
+        timing: Box<LongitudinalTimeEvidenceV1>,
         minimum_window_micros: u64,
     },
 }
@@ -56,7 +56,7 @@ impl ArchivedTiming {
                 timing,
                 minimum_window_micros,
             } => Self::SystemLongitudinal {
-                timing: timing.clone(),
+                timing: Box::new(timing.clone()),
                 minimum_window_micros,
             },
         }
@@ -250,6 +250,34 @@ impl Archive {
         })?;
         Ok(decision)
     }
+}
+
+/// The journal has already bound and admitted this archive. Reload its exact
+/// typed evidence at the actual first-publication use, after pending journal I/O.
+/// No caller-supplied decision or replacement artifact can pass this comparison.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn load_publication_archive(
+    root: &Path,
+    attempt_id: &StableId,
+    host_binding: Digest32,
+    namespace: Digest32,
+    family: u8,
+    execution_digest: Digest32,
+) -> Result<Archive, RecordedProductEvaluationErrorV1> {
+    let bytes =
+        store::load(root, attempt_id).map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
+    let archive = Archive::decode(&bytes).map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
+    if &archive.attempt_id != attempt_id
+        || archive.host_binding != host_binding
+        || archive.namespace != namespace
+        || archive.family != family
+        || archive.execution_digest != execution_digest
+    {
+        return Err(RecordedProductEvaluationErrorV1::Evaluation(
+            ProductEvaluationError::Binding("selected-host final-use archive binding"),
+        ));
+    }
+    Ok(archive)
 }
 
 /// Rebuild and verify only the exact artifact already committed in the anchored

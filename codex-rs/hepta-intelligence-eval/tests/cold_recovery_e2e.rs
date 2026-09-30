@@ -46,48 +46,59 @@ fn fence() -> HoldoutWriterFenceV1 {
 }
 
 fn produce(root: &Path, family: &str, cut: u64) {
+    let mut clock = host::clock(85);
+    let result = qualify(root, family, Some(cut), &mut clock, &host::activate());
+    panic!("producer did not terminate at the requested native durability cut: {result:?}");
+}
+
+fn qualify(
+    root: &Path,
+    family: &str,
+    cut: Option<u64>,
+    clock: &mut host::FixtureClock,
+    trust: &codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+) -> Result<(), RecordedProductEvaluationErrorV1> {
     let store = LockedFileFinalHoldoutCasStoreV1::create(
         storage::create(&root.join("holdout.cas")),
         namespace(),
     )
-    .expect("create holdout store");
-    let owner =
-        FencedFinalHoldoutOwnerV1::initialize(store, namespace(), fence()).expect("create owner");
+    .unwrap_or_else(|error| panic!("create holdout store: {error:?}"));
+    let owner = FencedFinalHoldoutOwnerV1::initialize(store, namespace(), fence())
+        .unwrap_or_else(|error| panic!("create owner: {error:?}"));
     let mut runner = RecordedProductEvaluationRunnerV1::new(owner);
     let mut journal = AnchoredProductEvaluationAttemptJournalV1::create(
         storage::create(&root.join("attempt.journal")),
         attempt_binding(),
-        storage::DiskAnchor::new(&root.join("anchor"), Some(cut)),
+        storage::DiskAnchor::new(&root.join("anchor"), cut),
     )
-    .expect("create anchored journal");
+    .unwrap_or_else(|error| panic!("create anchored journal: {error:?}"));
     let attempt = host::id("cold-process-attempt");
     let context = host::context();
-    let trust = host::activate();
-    let mut clock = host::clock(85);
     if family == "outcome" {
         let (plan, mut provider, roles) = outcome_model::fixture();
         let receipt = runner
             .evaluate_outcome_comparison(attempt.clone(), &plan, &mut provider, &mut journal)
-            .expect("native multi-outcome estimation");
+            .unwrap_or_else(|error| panic!("native multi-outcome estimation: {error:?}"));
         storage::retain_holdout_anchor(&root.join("holdout.anchor"), runner.holdout_anchor());
         let bundle = runner
             .outcome_qualification_bundle(&receipt, &context)
-            .expect("outcome bundle");
+            .unwrap_or_else(|error| panic!("outcome bundle: {error:?}"));
         let evidence = host::evidence(&bundle, &roles, None);
-        let result = runner.qualify_outcomes_and_persist_on_selected_host(
-            &attempt,
-            &receipt,
-            &context,
-            &evidence,
-            ProductTimingEvidenceV1::Qualification,
-            &trust,
-            &mut clock,
-            &mut journal,
-            root.join("artifacts"),
-            root.join("publications"),
-            host_binding(),
-        );
-        panic!("producer did not terminate at the requested native durability cut: {result:?}");
+        runner
+            .qualify_outcomes_and_persist_on_selected_host(
+                &attempt,
+                &receipt,
+                &context,
+                &evidence,
+                ProductTimingEvidenceV1::Qualification,
+                trust,
+                clock,
+                &mut journal,
+                root.join("artifacts"),
+                root.join("publications"),
+                host_binding(),
+            )
+            .map(|_| ())
     } else {
         let longitudinal = family == "longitudinal";
         let (plan, candidate, baseline, mut provider) = temporal_model::fixture(longitudinal);
@@ -100,11 +111,11 @@ fn produce(root: &Path, family: &str, cut: u64) {
                 &mut provider,
                 &mut journal,
             )
-            .expect("native temporal estimation");
+            .unwrap_or_else(|error| panic!("native temporal estimation: {error:?}"));
         storage::retain_holdout_anchor(&root.join("holdout.anchor"), runner.holdout_anchor());
         let bundle = runner
             .qualification_bundle(&receipt, &context)
-            .expect("temporal bundle");
+            .unwrap_or_else(|error| panic!("temporal bundle: {error:?}"));
         let timing = longitudinal.then(|| host::timing(&bundle));
         let evidence = host::evidence(&bundle, &plan.metric_roles, timing.as_ref());
         let timing = match timing.as_ref() {
@@ -114,20 +125,21 @@ fn produce(root: &Path, family: &str, cut: u64) {
             },
             None => ProductTimingEvidenceV1::Qualification,
         };
-        let result = runner.qualify_and_persist_on_selected_host(
-            &attempt,
-            &receipt,
-            &context,
-            &evidence,
-            timing,
-            &trust,
-            &mut clock,
-            &mut journal,
-            root.join("artifacts"),
-            root.join("publications"),
-            host_binding(),
-        );
-        panic!("producer did not terminate at the requested native durability cut: {result:?}");
+        runner
+            .qualify_and_persist_on_selected_host(
+                &attempt,
+                &receipt,
+                &context,
+                &evidence,
+                timing,
+                trust,
+                clock,
+                &mut journal,
+                root.join("artifacts"),
+                root.join("publications"),
+                host_binding(),
+            )
+            .map(|_| ())
     }
 }
 
@@ -139,19 +151,22 @@ fn recover(root: &Path, family: &str, mode: &str) {
         namespace(),
         Some(storage::load_holdout_anchor(&root.join("holdout.anchor"))),
     )
-    .expect("recover holdout bytes");
-    let owner =
-        FencedFinalHoldoutOwnerV1::recover(store, namespace(), fence()).expect("recover owner");
+    .unwrap_or_else(|error| panic!("recover holdout bytes: {error:?}"));
+    let owner = FencedFinalHoldoutOwnerV1::recover(store, namespace(), fence())
+        .unwrap_or_else(|error| panic!("recover owner: {error:?}"));
     let runner = RecordedProductEvaluationRunnerV1::new(owner);
     let mut journal = AnchoredProductEvaluationAttemptJournalV1::recover(
         storage::reopen(&root.join("attempt.journal")),
         attempt_binding(),
         storage::DiskAnchor::new(&root.join("anchor"), None),
     )
-    .expect("recover anchored history");
+    .unwrap_or_else(|error| panic!("recover anchored history: {error:?}"));
     let attempt = host::id("cold-process-attempt");
-    let before = journal.latest(&attempt).expect("before").expect("attempt");
-    let result = if matches!(mode, "page-first" | "page-next") {
+    let before = journal
+        .latest(&attempt)
+        .unwrap_or_else(|error| panic!("before: {error:?}"))
+        .unwrap_or_else(|| panic!("attempt"));
+    let result = if matches!(mode, "page-first" | "page-next" | "page-late-expired") {
         match controller_tests::recover_page(&runner, &mut journal, root, mode, &before) {
             Some(published) => published,
             None => return,
@@ -163,12 +178,12 @@ fn recover(root: &Path, family: &str, mode: &str) {
             root.join("publications"),
             host_binding(),
         )
-        .expect("read existing publication")
+        .unwrap_or_else(|error| panic!("read existing publication: {error:?}"))
     } else {
-        let trust = if mode == "revoked" {
-            host::activate_revoked()
-        } else {
-            host::activate()
+        let trust = match mode {
+            "revoked" => host::activate_revoked(),
+            "late-signature-expired" => host::activate_until(100),
+            _ => host::activate(),
         };
         let binding = if mode == "wrong-host" {
             host::digest("wrong-host")
@@ -176,7 +191,11 @@ fn recover(root: &Path, family: &str, mode: &str) {
             host_binding()
         };
         let now = if mode == "expired" { 91 } else { 85 };
-        let mut clock = host::clock(now);
+        let mut clock = if matches!(mode, "late-expired" | "late-signature-expired") {
+            host::scripted_clock(&[85, 91])
+        } else {
+            host::clock(now)
+        };
         let result = if family == "outcome" {
             runner.recover_selected_host_outcome_qualification(
                 &mut journal,
@@ -198,31 +217,58 @@ fn recover(root: &Path, family: &str, mode: &str) {
                 &mut clock,
             )
         };
-        if matches!(mode, "revoked" | "expired" | "wrong-host" | "corrupt") {
-            assert!(
-                result.is_err(),
-                "invalid recovery must not reach publication"
+        if matches!(mode, "late-expired" | "late-signature-expired") {
+            assert!(result.is_err(), "expired final use must not publish");
+            let latest = journal
+                .latest(&attempt)
+                .unwrap_or_else(|error| panic!("latest: {error:?}"))
+                .unwrap_or_else(|| panic!("attempt"));
+            assert_eq!(
+                latest.transition.phase,
+                ProductEvaluationAttemptPhaseV1::PublicationPending
             );
-            assert_eq!(journal.latest(&attempt).expect("unchanged"), Some(before));
             assert_eq!(
                 fs::read_dir(root.join("publications"))
-                    .expect("publication directory")
+                    .unwrap_or_else(|error| panic!("publications: {error:?}"))
                     .count(),
                 0
             );
             return;
         }
-        result.expect("cold decode and internal current signature verification")
+        if matches!(mode, "revoked" | "expired" | "wrong-host" | "corrupt") {
+            assert!(
+                result.is_err(),
+                "invalid recovery must not reach publication"
+            );
+            assert_eq!(
+                journal
+                    .latest(&attempt)
+                    .unwrap_or_else(|error| panic!("unchanged: {error:?}")),
+                Some(before)
+            );
+            assert_eq!(
+                fs::read_dir(root.join("publications"))
+                    .unwrap_or_else(|error| panic!("publication directory: {error:?}"))
+                    .count(),
+                0
+            );
+            return;
+        }
+        result.unwrap_or_else(|error| {
+            panic!("cold decode and internal current signature verification: {error:?}")
+        })
     };
     use ProductEvaluationAttemptPhaseV1 as Phase;
     assert_eq!(result.transition.phase, Phase::Published);
     assert_eq!(
         fs::read_dir(root.join("publications"))
-            .expect("publications")
+            .unwrap_or_else(|error| panic!("publications: {error:?}"))
             .count(),
         1
     );
-    let history = journal.history(&attempt).expect("history");
+    let history = journal
+        .history(&attempt)
+        .unwrap_or_else(|error| panic!("history: {error:?}"));
     assert_eq!(
         history
             .iter()
@@ -248,6 +294,93 @@ fn recover(root: &Path, family: &str, mode: &str) {
 }
 
 #[test]
+fn selected_host_first_publication_rechecks_time_after_pending_io() {
+    for family in ["temporal", "outcome", "longitudinal"] {
+        for case in [
+            "clock-regressed",
+            "distribution-expired",
+            "signature-expired",
+        ] {
+            let late_time = if case == "clock-regressed" { 84 } else { 91 };
+            let trust = if case == "signature-expired" {
+                host::activate_until(100)
+            } else {
+                host::activate()
+            };
+            let ordinal = NEXT_ROOT.fetch_add(1, Ordering::Relaxed);
+            let root = std::env::temp_dir().join(format!(
+                "hepta-final-use-{}-{ordinal}-{family}-{case}",
+                std::process::id()
+            ));
+            fs::create_dir(&root).expect("root");
+            let mut clock = host::scripted_clock(&[85, late_time]);
+            let result = qualify(&root, family, None, &mut clock, &trust);
+            if case == "signature-expired" {
+                assert!(trust.is_current_at(late_time));
+                assert!(matches!(
+                    result,
+                    Err(RecordedProductEvaluationErrorV1::Evaluation(
+                        ProductEvaluationError::Signed(SignedEvaluationError::Evidence(_))
+                    ))
+                ));
+            } else {
+                assert!(matches!(
+                    result,
+                    Err(RecordedProductEvaluationErrorV1::Invariant(_))
+                ));
+            }
+            assert_eq!(
+                fs::read_dir(root.join("publications"))
+                    .expect("publications")
+                    .count(),
+                0
+            );
+            let mut journal = AnchoredProductEvaluationAttemptJournalV1::recover(
+                storage::reopen(&root.join("attempt.journal")),
+                attempt_binding(),
+                storage::DiskAnchor::new(&root.join("anchor"), None),
+            )
+            .expect("anchored journal");
+            assert_eq!(
+                journal
+                    .latest(&host::id("cold-process-attempt"))
+                    .expect("latest")
+                    .expect("attempt")
+                    .transition
+                    .phase,
+                ProductEvaluationAttemptPhaseV1::PublicationPending
+            );
+            drop(journal);
+            fs::remove_dir_all(root).expect("remove fixture");
+        }
+    }
+}
+
+#[test]
+fn cold_recovery_rechecks_final_use_and_keeps_pending_unresolved() {
+    for family in ["temporal", "outcome", "longitudinal"] {
+        for mode in ["late-expired", "late-signature-expired"] {
+            let ordinal = NEXT_ROOT.fetch_add(1, Ordering::Relaxed);
+            let root = std::env::temp_dir().join(format!(
+                "hepta-cold-final-use-{}-{ordinal}-{family}-{mode}",
+                std::process::id()
+            ));
+            fs::create_dir(&root).expect("root");
+            assert_eq!(child(&root, family, "produce", 4).code(), Some(73));
+            assert!(child(&root, family, mode, 4).success());
+            let pending = fs::read(root.join("attempt.journal")).expect("pending");
+            assert!(child(&root, family, mode, 4).success());
+            assert_eq!(
+                fs::read(root.join("attempt.journal")).expect("unchanged"),
+                pending,
+                "a refused final-use publication must not make Pending retryable"
+            );
+            fs::remove_dir_all(root).expect("remove fixture");
+        }
+    }
+}
+
+#[test]
 fn cold_process_entry() {
     let Some(root) = std::env::var_os("HEPTA_EVAL_COLD_TEST_ROOT") else {
         return;
@@ -267,19 +400,24 @@ fn cold_process_entry() {
 }
 
 fn child(root: &Path, family: &str, mode: &str, cut: u64) -> ExitStatus {
-    let mut child = Command::new(std::env::current_exe().expect("test executable"))
-        .arg("--exact")
-        .arg("cold_process_entry")
-        .arg("--nocapture")
-        .env("HEPTA_EVAL_COLD_TEST_ROOT", root)
-        .env("HEPTA_EVAL_COLD_TEST_FAMILY", family)
-        .env("HEPTA_EVAL_COLD_TEST_MODE", mode)
-        .env("HEPTA_EVAL_COLD_TEST_CUT", cut.to_string())
-        .spawn()
-        .expect("start a fresh test process");
+    let mut child = Command::new(
+        std::env::current_exe().unwrap_or_else(|error| panic!("test executable: {error:?}")),
+    )
+    .arg("--exact")
+    .arg("cold_process_entry")
+    .arg("--nocapture")
+    .env("HEPTA_EVAL_COLD_TEST_ROOT", root)
+    .env("HEPTA_EVAL_COLD_TEST_FAMILY", family)
+    .env("HEPTA_EVAL_COLD_TEST_MODE", mode)
+    .env("HEPTA_EVAL_COLD_TEST_CUT", cut.to_string())
+    .spawn()
+    .unwrap_or_else(|error| panic!("start a fresh test process: {error:?}"));
     let started = Instant::now();
     loop {
-        if let Some(status) = child.try_wait().expect("observe child") {
+        if let Some(status) = child
+            .try_wait()
+            .unwrap_or_else(|error| panic!("observe child: {error:?}"))
+        {
             return status;
         }
         if started.elapsed() > Duration::from_secs(90) {

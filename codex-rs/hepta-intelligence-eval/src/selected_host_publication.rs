@@ -25,6 +25,8 @@ use crate::RecordedProductEvaluationErrorV1;
 
 #[path = "selected_host_facade.rs"]
 mod facade;
+#[path = "selected_host_final_use.rs"]
+mod final_use;
 
 const MAGIC: &[u8; 8] = b"HQPUBF01";
 const FILE_BYTES: usize = 8 + (8 * 32);

@@ -218,7 +218,7 @@ impl Wire for ArchivedTiming {
         match u8::read(input)? {
             0 => Ok(Self::Qualification),
             1 => Ok(Self::SystemLongitudinal {
-                timing: LongitudinalTimeEvidenceV1::read(input)?,
+                timing: Box::new(LongitudinalTimeEvidenceV1::read(input)?),
                 minimum_window_micros: u64::read(input)?,
             }),
             _ => Err(invalid()),
