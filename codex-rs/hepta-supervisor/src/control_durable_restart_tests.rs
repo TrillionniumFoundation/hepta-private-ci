@@ -15,6 +15,7 @@ use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
+use pretty_assertions::assert_eq;
 
 use crate::AdoptSpec;
 use crate::Adoption;
@@ -53,6 +54,7 @@ struct State {
     signals: Vec<(Signal, Option<bool>)>,
     fail: Option<Signal>,
     exited: bool,
+    healthy: bool,
 }
 
 struct Process(Arc<Mutex<State>>);
@@ -83,7 +85,7 @@ impl ManagedProcess for Process {
                 })
             } else {
                 ProcessState::Running {
-                    healthy: true,
+                    healthy: state.healthy,
                     drained: false,
                 }
             },
@@ -174,6 +176,7 @@ impl Fixture {
             signals: Vec::new(),
             fail: None,
             exited: false,
+            healthy: true,
         }));
         let identity = ProcessIdentity::new(42, "durable-cancellation-fixture")?;
         let release_id = ReleaseId::parse("control-test")?;
@@ -229,6 +232,39 @@ impl Fixture {
         Ok(read_main_restart_budget(&self.root)?
             .expect("restart state")
             .pending)
+    }
+
+    fn bind_current_as_restart_replacement(&mut self) -> Result<()> {
+        self.queue_restart()?;
+        let claim = crate::restart_budget::pending_restart(
+            &self.root,
+            self.supervisor.config.restart_max_attempts,
+        )?
+        .expect("pending claim");
+        crate::restart_lineage::begin(
+            &self.root,
+            &self.agent,
+            claim.window_started_unix_ms,
+            claim.attempt,
+            /*predecessor*/ None,
+        )?;
+        let runtime = self.slot.runtime.as_ref().expect("runtime");
+        crate::restart_lineage::bind_replacement(
+            &self.root,
+            &self.agent,
+            claim.window_started_unix_ms,
+            claim.attempt,
+            crate::restart_lineage::RestartProcessWitness::new(
+                runtime.spawn_generation,
+                runtime.identity.clone(),
+                runtime.release_id.clone(),
+            )?,
+        )?;
+        self.supervisor
+            .recover_restart_budget(&self.agent, &mut self.slot, self.now)?;
+        assert!(!self.slot.restart_pending);
+        assert!(self.slot.restart_not_before.is_none());
+        Ok(())
     }
 }
 
@@ -380,6 +416,175 @@ fn deferred_companion_stop_continuation_does_not_cancel_the_restart_claim() -> R
     assert_eq!(
         f.process.lock().expect("state").signals,
         vec![(Signal::Stop, Some(true))]
+    );
+    Ok(())
+}
+
+#[test]
+fn recovered_running_replacement_completes_only_after_fresh_health() -> Result<()> {
+    let mut f = Fixture::new(true)?;
+    f.bind_current_as_restart_replacement()?;
+    f.process.lock().expect("state").healthy = false;
+    f.supervisor.tick_slot(&f.agent, &mut f.slot, f.now)?;
+    assert!(f.pending()?);
+    f.process.lock().expect("state").healthy = true;
+    f.supervisor.tick_slot(&f.agent, &mut f.slot, f.now)?;
+    assert!(!f.pending()?);
+    assert!(f.slot.runtime.as_ref().expect("runtime").healthy);
+    assert!(f.process.lock().expect("state").signals.is_empty());
+    Ok(())
+}
+
+#[test]
+fn restart_health_completion_retries_after_running_transition_and_write_failure() -> Result<()> {
+    let mut f = Fixture::new(false)?;
+    f.bind_current_as_restart_replacement()?;
+    let path = f.root.join(crate::restart_lineage::RESTART_LINEAGE_FILE);
+    let lineage = std::fs::read(&path)?;
+    std::fs::write(&path, b"injected unreadable restart lineage")?;
+    assert!(
+        f.supervisor
+            .tick_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
+    assert_eq!(
+        f.registry.load()?.agents[&f.agent].lifecycle.lifecycle,
+        AgentLifecycle::Running
+    );
+    assert!(f.pending()?);
+    std::fs::write(&path, lineage)?;
+    f.supervisor.tick_slot(&f.agent, &mut f.slot, f.now)?;
+    assert!(!f.pending()?);
+    assert!(f.slot.runtime.as_ref().expect("runtime").healthy);
+    Ok(())
+}
+
+#[test]
+fn healthy_recovered_predecessor_cannot_complete_restart_claim() -> Result<()> {
+    let mut f = Fixture::new(true)?;
+    f.queue_restart()?;
+    let claim =
+        crate::restart_budget::pending_restart(&f.root, f.supervisor.config.restart_max_attempts)?
+            .expect("claim");
+    let runtime = f.slot.runtime.as_ref().expect("runtime");
+    crate::restart_lineage::begin(
+        &f.root,
+        &f.agent,
+        claim.window_started_unix_ms,
+        claim.attempt,
+        Some(crate::restart_lineage::RestartProcessWitness::new(
+            runtime.spawn_generation,
+            runtime.identity.clone(),
+            runtime.release_id.clone(),
+        )?),
+    )?;
+    f.supervisor
+        .recover_restart_budget(&f.agent, &mut f.slot, f.now)?;
+    f.supervisor.tick_slot(&f.agent, &mut f.slot, f.now)?;
+    assert!(f.pending()?);
+    assert!(f.slot.restart_pending);
+    assert!(f.slot.restart_not_before.is_some());
+    assert_eq!(
+        f.process.lock().expect("state").signals,
+        vec![(Signal::Drain, Some(true))]
+    );
+    assert_eq!(
+        f.registry.load()?.agents[&f.agent].lifecycle.lifecycle,
+        AgentLifecycle::Draining
+    );
+    Ok(())
+}
+
+#[test]
+fn restart_recovery_retains_predecessor_after_unacknowledged_resumed_drain() -> Result<()> {
+    let mut f = Fixture::new(true)?;
+    // The failed initial signal models a crash after durable restart ownership
+    // was established but before control was acknowledged. Lose the in-memory
+    // retry, then reconstruct it from the same durable predecessor.
+    f.process.lock().expect("state").fail = Some(Signal::Drain);
+    assert!(
+        f.supervisor
+            .restart_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
+    f.slot.pending_control = None;
+    f.slot.runtime.as_mut().expect("runtime").phase = RuntimePhase::Running;
+    f.process.lock().expect("state").signals.clear();
+    f.supervisor
+        .recover_restart_budget(&f.agent, &mut f.slot, f.now)?;
+    assert!(f.pending()?);
+    assert!(f.slot.runtime.is_some());
+    assert!(f.slot.pending_control.is_some());
+    assert_eq!(
+        f.process.lock().expect("state").signals,
+        vec![(Signal::Drain, Some(true))]
+    );
+    f.process.lock().expect("state").fail = None;
+    f.supervisor.tick_slot(&f.agent, &mut f.slot, f.now)?;
+    assert!(f.pending()?);
+    assert!(f.slot.pending_control.is_none());
+    assert!(matches!(
+        f.slot.runtime.as_ref().expect("runtime").phase,
+        RuntimePhase::Draining { .. }
+    ));
+    Ok(())
+}
+
+#[test]
+fn replacement_exit_before_health_cancels_only_pending_work_and_preserves_charge() -> Result<()> {
+    let mut f = Fixture::new(false)?;
+    f.bind_current_as_restart_replacement()?;
+    let before = read_main_restart_budget(&f.root)?.expect("before");
+    f.process.lock().expect("state").exited = true;
+    f.supervisor.tick_slot(&f.agent, &mut f.slot, f.now)?;
+    assert!(f.slot.runtime.is_none());
+    assert!(!f.slot.restart_pending);
+    let mut expected = before;
+    expected.pending = false;
+    assert_eq!(read_main_restart_budget(&f.root)?, Some(expected));
+    let config = f.supervisor.config.clone();
+    let (recovered, report) = Supervisor::recover(f.registry.clone(), Driver, config, f.now)?;
+    assert!(report.faults.is_empty());
+    assert!(
+        !recovered
+            .snapshot(&f.agent)
+            .expect("snapshot")
+            .restart_pending
+    );
+    Ok(())
+}
+
+#[test]
+fn completed_lineage_with_pending_budget_is_settled_before_next_automatic_restart() -> Result<()> {
+    let mut f = Fixture::new(true)?;
+    f.bind_current_as_restart_replacement()?;
+    let runtime = f.slot.runtime.as_ref().expect("runtime");
+    let replacement = crate::restart_lineage::RestartProcessWitness::new(
+        runtime.spawn_generation,
+        runtime.identity.clone(),
+        runtime.release_id.clone(),
+    )?;
+    crate::restart_lineage::complete(&f.root, &f.agent, &replacement)?;
+    let old = read_main_restart_budget(&f.root)?.expect("old pending budget");
+    assert!(old.pending);
+    f.process.lock().expect("state").exited = true;
+    f.supervisor.tick_slot(&f.agent, &mut f.slot, f.now)?;
+    assert!(f.slot.runtime.is_none());
+    assert!(f.slot.restart_pending);
+    let next = read_main_restart_budget(&f.root)?.expect("next pending budget");
+    assert!(next.pending);
+    assert_eq!(next.attempts, old.attempts + 1);
+    assert_eq!(next.window_started_unix_ms, old.window_started_unix_ms);
+    assert_eq!(
+        crate::restart_lineage::reconcile_pending(
+            &f.root,
+            &f.agent,
+            next.window_started_unix_ms,
+            next.attempts,
+            /*current*/ None,
+            /*process_lease_present*/ false,
+        )?,
+        crate::restart_lineage::RestartRecoveryRole::ReplacementPending
     );
     Ok(())
 }

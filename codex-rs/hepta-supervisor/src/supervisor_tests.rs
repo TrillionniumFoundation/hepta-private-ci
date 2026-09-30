@@ -2294,3 +2294,6 @@ fn finish_release_drain(
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
 }
+
+#[path = "release_retry_tests.rs"]
+mod release_retry_tests;

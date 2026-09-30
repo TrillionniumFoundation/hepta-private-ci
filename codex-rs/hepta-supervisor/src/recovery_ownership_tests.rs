@@ -1,6 +1,9 @@
 //! Real lease/registry files with an injected process driver. These are source
 //! regression cases, not evidence of native Agentd or target-host execution.
 
+#[path = "constructor_recovery_tests.rs"]
+mod constructor_tests;
+
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Instant;
