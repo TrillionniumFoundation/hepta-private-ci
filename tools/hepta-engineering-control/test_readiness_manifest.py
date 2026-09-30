@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 import hashlib
 import json
 import unittest
 
-from control_engineering_v2 import HmacTrustStore
+from control_engineering_v2 import HmacTrustStore, semantic_digest
 from control_engineering_v2.control_plane import EngineeringError
 from control_engineering_v2.key_custody_continuity import (
     CustodiedKeyBinding,
@@ -373,6 +373,68 @@ class CanonicalReadinessManifestTests(unittest.TestCase):
                     "independent_review", "independent_evaluator", "review-key"
                 ),), custody_receipt=custody, trust_store=self.trust,
             )
+
+    def rotating_custody(self, *, retiring_reviewer):
+        previous = self.custody()
+        if not retiring_reviewer:
+            previous = replace(previous, current_keys=tuple(
+                replace(key, subject_signing_identity="old-review-key")
+                if key.role == "independent_evaluator" else key
+                for key in previous.current_keys
+            ), signature="")
+            previous = replace(previous, signature=self.trust.sign(
+                previous, previous.issuer, previous.signing_identity
+            ))
+        current = tuple(replace(
+            key, key_id="rotated-" + key.key_id,
+            subject_signing_identity=(
+                "review-key" if key.role == "independent_evaluator" and not retiring_reviewer
+                else "rotated-" + key.subject_signing_identity
+            ), public_key_digest=semantic_digest({"rotatedKey": key.role}),
+        ) for key in previous.current_keys)
+        receipt = replace(
+            previous, rotation_epoch=2, rotation_state="dual_window",
+            previous_set_digest=semantic_digest(asdict(previous)),
+            current_keys=current,
+            retiring_keys=tuple(sorted(previous.current_keys, key=lambda key: key.role)),
+            dual_window_expires_unix_ns=self.now + 100, signature="",
+        )
+        receipt = replace(receipt, signature=self.trust.sign(
+            receipt, receipt.issuer, receipt.signing_identity
+        ))
+        return previous, receipt
+
+    def test_retiring_reviewer_limits_retained_manifest_to_dual_window(self) -> None:
+        previous, custody = self.rotating_custody(retiring_reviewer=True)
+        manifest = self.build(
+            acceptance_receipts=(self.acceptance(
+                "independent_review", "independent_evaluator", "review-key"
+            ),), custody_receipt=custody, previous_custody_receipt=previous,
+            trust_store=self.trust,
+        )
+        self.assertTrue(manifest["mergeReady"])
+        self.assertEqual(manifest["evidence_expiry"], custody.dual_window_expires_unix_ns)
+        verify_canonical_readiness_manifest(
+            manifest, now_ns=custody.dual_window_expires_unix_ns - 1
+        )
+        with self.assertRaisesRegex(EngineeringError, "readiness_manifest_expired"):
+            verify_canonical_readiness_manifest(
+                manifest, now_ns=custody.dual_window_expires_unix_ns
+            )
+
+    def test_current_reviewer_does_not_inherit_retiring_key_expiry(self) -> None:
+        previous, custody = self.rotating_custody(retiring_reviewer=False)
+        manifest = self.build(
+            acceptance_receipts=(self.acceptance(
+                "independent_review", "independent_evaluator", "review-key"
+            ),), custody_receipt=custody, previous_custody_receipt=previous,
+            trust_store=self.trust,
+        )
+        self.assertTrue(manifest["mergeReady"])
+        self.assertEqual(manifest["evidence_expiry"], custody.expires_unix_ns)
+        verify_canonical_readiness_manifest(
+            manifest, now_ns=custody.dual_window_expires_unix_ns
+        )
 
     def test_source_commit_cannot_impersonate_synthetic_merge(self) -> None:
         pair = self.pair()

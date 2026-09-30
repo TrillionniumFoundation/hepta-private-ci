@@ -19,6 +19,7 @@ from pathlib import Path
 import re
 import tempfile
 import time
+from typing import TypedDict, TypeVar
 
 from .control_plane import DENIED_AUTHORITIES, WorkEnvelope
 from .evidence import HmacTrustStore
@@ -55,6 +56,25 @@ MAX_CANONICAL_REGISTRY_BYTES = 4 * 1024 * 1024
 MAX_REVIEW_OBSERVATIONS = 256
 PRODUCT_EXECUTION_SCHEMA = "hepta.control-engineering-product-execution.v5"
 PRODUCT_RECEIPT_PAIR_SCHEMA = "hepta.control-engineering-product-receipt-pair.v3"
+_FixtureReceipt = TypeVar(
+    "_FixtureReceipt",
+    WorkerRegistrationReceipt,
+    WorkerHeartbeatReceipt,
+    WorkerResultReceipt,
+    CompletionReceipt,
+    IntegrationStageReceipt,
+    IntegrationTerminalReceipt,
+)
+
+
+class _ReviewObservation(TypedDict):
+    reviewId: int
+    reviewerLogin: str
+    reviewerUserId: int
+    state: str
+    commitId: str
+    submittedAt: str
+    currentHead: bool
 
 
 class _RejectingTrustStore:
@@ -73,7 +93,9 @@ class _RejectingTrustStore:
         return False
 
 
-def _signed_fixture(value, trust: HmacTrustStore, issuer: str, identity: str):
+def _signed_fixture(
+    value: _FixtureReceipt, trust: HmacTrustStore, issuer: str, identity: str
+) -> _FixtureReceipt:
     """Sign only the bounded CI lifecycle fixture; never CI/review/merge authority."""
     return replace(value, signature=trust.sign(value, issuer, identity))
 
@@ -921,7 +943,7 @@ def bind_github_review_observations(
     expected_head_sha = _sha(expected_head_sha, "review_head_sha")
     if not isinstance(reviews, list) or len(reviews) > MAX_REVIEW_OBSERVATIONS:
         raise ValueError("github_review_observation_shape")
-    observations: list[dict[str, object]] = []
+    observations: list[_ReviewObservation] = []
     seen: set[int] = set()
     for row in reviews:
         if not isinstance(row, Mapping):
@@ -1048,8 +1070,19 @@ def verify_product_receipt_pair(
         ):
             raise ValueError("product_receipt_pair_ci_identity")
         workflow_ref = identity.get("workflowRef")
-        if not _workflow_identity(workflow_ref, expected_repository):
+        if (
+            not _workflow_identity(workflow_ref, expected_repository)
+            or (
+                isinstance(workflow_ref, str)
+                and "@refs/pull/" in workflow_ref
+                and not workflow_ref.endswith(
+                    f"@refs/pull/{expected_pull_request_number}/merge"
+                )
+            )
+        ):
             raise ValueError("product_receipt_pair_workflow_identity")
+    if source_identity.get("workflowRef") != merge_identity.get("workflowRef"):
+        raise ValueError("product_receipt_pair_workflow_identity")
 
     if (
         source_head.get("sourceSha") != expected_source_sha
@@ -1078,8 +1111,11 @@ def verify_product_receipt_pair(
     ):
         raise ValueError("product_receipt_pair_merge_identity")
 
-    for receipt in (source_head, base_merge):
-        integration = receipt.get("integrationReconciliation")
+    source_integration = source_head.get("integrationReconciliation")
+    merge_integration = base_merge.get("integrationReconciliation")
+    if not isinstance(source_integration, Mapping) or not isinstance(merge_integration, Mapping):
+        raise ValueError("product_receipt_pair_integration_base")
+    for integration in (source_integration, merge_integration):
         if (
             not isinstance(integration, Mapping)
             or integration.get("baseCommit") != expected_base_sha
@@ -1088,8 +1124,8 @@ def verify_product_receipt_pair(
         ):
             raise ValueError("product_receipt_pair_integration_base")
     if (
-        source_head["integrationReconciliation"].get("baseTree")
-        != base_merge["integrationReconciliation"].get("baseTree")
+        source_integration.get("baseTree")
+        != merge_integration.get("baseTree")
     ):
         raise ValueError("product_receipt_pair_integration_base")
 

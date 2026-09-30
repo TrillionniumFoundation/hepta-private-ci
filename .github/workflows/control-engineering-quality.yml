@@ -67,7 +67,9 @@ jobs:
             tools/hepta-engineering-control/control_engineering_v2/production_adapters.py \
             tools/hepta-engineering-control/control_engineering_v2/deployment_evidence.py \
             tools/hepta-engineering-control/control_engineering_v2/stress_profile.py \
-            tools/hepta-engineering-control/control_engineering_v2/qualification_mutation.py
+            tools/hepta-engineering-control/control_engineering_v2/qualification_mutation.py \
+            tools/hepta-engineering-control/control_engineering_v2/product_gate.py \
+            tools/hepta-engineering-control/control_engineering_v2/readiness_manifest.py
       - name: Branch coverage gate
         env:
           PYTHONPATH: tools/hepta-engineering-control

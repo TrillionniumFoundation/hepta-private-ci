@@ -113,6 +113,7 @@ def command_plan(root: Path, output: Path) -> list[tuple[str, list[str]]]:
         "time_policy.py", "audit_checkpoint.py", "capacity_policy.py",
         "worker_registration.py", "product_runtime.py", "production_adapters.py",
         "deployment_evidence.py", "stress_profile.py", "qualification_mutation.py",
+        "product_gate.py", "readiness_manifest.py",
     )]
     return [
         ("toolchain", [python, "-m", "pip", "freeze"]),

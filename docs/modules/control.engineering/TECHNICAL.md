@@ -68,7 +68,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `control.engineering`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` records that the declared roots resolve to materialized source. The current owner is the Python `control_engineering_v2` package; its source inventory and exact Git blobs are checked by `scripts/hepta-implementation-maps.py`. Candidate tests, lint, type checks, coverage and strong-sandbox qualification require recorded results for the exact candidate. Source location alone does not establish that those checks passed. This status does not activate `control.engineering`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -667,4 +667,4 @@ The bootstrap source-location obligation for `control.engineering` is implemente
 
 - `tools/hepta-engineering-control`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+This section identifies the bootstrap source location; execution results belong to exact-candidate qualification receipts. `.github/workflows/control-engineering-quality.yml` defines generated STATUS/API checks, source-identity regressions, Python lint, type checks and branch coverage. `.github/workflows/hepta-consolidated-source.yml` defines strong-sandbox tests for source-head and, on pull requests, a fixed base-merge candidate. `.github/workflows/control-engineering-bootstrap.yml` retains source identity and invokes the read-only candidate evidence collector. Inspect the retained command results, failures, skips and exclusions for the candidate being assessed. Workflow definitions and source-location facts grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

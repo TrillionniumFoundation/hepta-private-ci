@@ -15,12 +15,14 @@ import time
 from .control_plane import (
     EngineeringError,
     EngineeringStore,
+    MAX_ACTIVE_LEASES,
     WorkEnvelope,
     canonical_json,
     canonical_paths,
     checked_id,
     checked_sha256,
     path_is_within,
+    path_sets_overlap,
     semantic_digest,
 )
 from .evidence import SignatureTrustStore
@@ -426,7 +428,7 @@ def claim_assignment(
         expected_profile = {
             "workerId": worker_id,
             "workerSigningIdentity": str(registration["worker_signing_identity"]),
-            "skills": tuple(plan_worker.get("skills", ())),
+            "skills": tuple(sorted(plan_worker.get("skills", ()))),
             "capacityUnits": plan_worker.get("capacity_units"),
             "allowedPaths": tuple(plan_worker.get("allowed_paths", ())),
         }
@@ -494,6 +496,35 @@ def claim_assignment(
             attempt = int(previous["attempt"]) + 1
         if attempt > MAX_CLAIM_ATTEMPTS:
             raise EngineeringError("claim_attempts_exhausted")
+        active_claims = store.connection.execute(
+            "SELECT c.generation_id,c.package_id FROM worker_claims c "
+            "JOIN path_leases l ON l.lease_id=c.lease_id "
+            "JOIN assignment_generations a ON a.generation_id=c.generation_id "
+            "JOIN work_envelopes e ON e.envelope_id=a.envelope_id "
+            "WHERE c.worker_id=? AND c.state IN ('claimed','running') "
+            "AND c.heartbeat_deadline_unix_ns>? AND l.state='active' "
+            "AND l.expires_unix_ns>? AND e.expires_unix_ns>? LIMIT ?",
+            (worker_id, now, now, now, MAX_ACTIVE_LEASES + 1),
+        ).fetchall()
+        if len(active_claims) > MAX_ACTIVE_LEASES:
+            raise EngineeringError("active_claim_path_limit_exceeded")
+        for active in active_claims:
+            active_plan = _load_plan(store, str(active["generation_id"]))
+            active_packages = active_plan.get("packages")
+            if not isinstance(active_packages, list):
+                raise EngineeringError("orchestration_generation_invalid")
+            active_package = next(
+                (
+                    row for row in active_packages
+                    if isinstance(row, dict) and row.get("package_id") == active["package_id"]
+                ),
+                None,
+            )
+            if active_package is None:
+                raise EngineeringError("orchestration_generation_invalid")
+            active_paths = canonical_paths(active_package.get("write_paths", ()))
+            if path_sets_overlap(package_paths, active_paths):
+                raise EngineeringError("active_claim_path_conflict")
         usage = worker_capacity_usage(store, worker_id)
         if usage.reserved_units + reservation_units > usage.capacity_units:
             raise EngineeringError("worker_capacity_exhausted")

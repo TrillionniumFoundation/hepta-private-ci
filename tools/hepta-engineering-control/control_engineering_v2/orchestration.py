@@ -487,6 +487,7 @@ def plan_engineering_work(
     normalized_worker_rows = []
     for worker in worker_values:
         row = asdict(worker)
+        row["skills"] = tuple(sorted(worker.skills))
         row["allowed_paths"] = worker_scopes[worker.worker_id]
         input_bytes += len(canonical_json(row))
         if input_bytes > MAX_PLAN_INPUT_BYTES:

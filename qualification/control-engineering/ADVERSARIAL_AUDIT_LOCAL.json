@@ -1,0 +1,96 @@
+{
+  "cacheDisabled": true,
+  "coverageExit": 0,
+  "coverageJsonExit": 0,
+  "coverageJsonSha256": "1ea7fc216a512c831d60335d6a48d292f2488258fc9553368de34e380defbd8b",
+  "coverageTotals": {
+    "covered_branches": 1741,
+    "covered_lines": 5537,
+    "excluded_lines": 41,
+    "missing_branches": 753,
+    "missing_lines": 1002,
+    "num_branches": 2494,
+    "num_partial_branches": 691,
+    "num_statements": 6539,
+    "percent_covered": 80.5712387910993,
+    "percent_covered_display": "81"
+  },
+  "endHead": "ad08d3ebc89f6f009d32a3ccff7be9aeacd32892",
+  "endSourceTree": "e7bc55bfc0750c646599819dc802e7d50d12a467",
+  "evidenceKind": "repository-controlled-local-diagnostic",
+  "excludedHostProfileTests": 31,
+  "excludedModules": [
+    "test_owned_service",
+    "test_counter_task",
+    "test_counter_retention"
+  ],
+  "files": [
+    "tools/hepta-engineering-control/control_engineering_v2/time_policy.py",
+    "tools/hepta-engineering-control/control_engineering_v2/audit_checkpoint.py",
+    "tools/hepta-engineering-control/control_engineering_v2/capacity_policy.py",
+    "tools/hepta-engineering-control/control_engineering_v2/production_adapters.py",
+    "tools/hepta-engineering-control/control_engineering_v2/deployment_evidence.py",
+    "tools/hepta-engineering-control/control_engineering_v2/stress_profile.py",
+    "tools/hepta-engineering-control/control_engineering_v2/qualification_mutation.py",
+    "tools/hepta-engineering-control/control_engineering_v2/worker_registration.py",
+    "tools/hepta-engineering-control/control_engineering_v2/product_runtime.py",
+    "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
+    "tools/hepta-engineering-control/control_engineering_v2/readiness_manifest.py"
+  ],
+  "fullOwnerSuiteQualified": false,
+  "hostUid": 0,
+  "independentAcceptance": false,
+  "logIntegrity": {
+    "mypy": {
+      "bytes": 44,
+      "path": "qualification/control-engineering/adversarial-local-mypy.txt",
+      "sha256": "049f51b850512be193c74d3fbb731e25fbc6374a66560d8ec0d6569d79c88ea6"
+    },
+    "report": {
+      "bytes": 8675,
+      "path": "qualification/control-engineering/adversarial-local-report.txt",
+      "sha256": "f7c48fa8bd9d4eead633a511632815da98e210975282958707cfa3414bbaa566"
+    },
+    "ruff": {
+      "bytes": 19,
+      "path": "qualification/control-engineering/adversarial-local-ruff.txt",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    "suite": {
+      "bytes": 1259,
+      "path": "qualification/control-engineering/adversarial-local-suite.txt",
+      "sha256": "d7ce29b31b3cfcb14273fcee74b9d14925e66a833a0be996ff87f4f51fb79495"
+    }
+  },
+  "logs": {
+    "mypy": "qualification/control-engineering/adversarial-local-mypy.txt",
+    "report": "qualification/control-engineering/adversarial-local-report.txt",
+    "ruff": "qualification/control-engineering/adversarial-local-ruff.txt",
+    "suite": "qualification/control-engineering/adversarial-local-suite.txt"
+  },
+  "mergeAuthority": false,
+  "mypyExit": 0,
+  "platform": "linux",
+  "productionImplementation": false,
+  "pythonVersion": "3.12.14",
+  "qualificationScope": "portable supported regression and owner package coverage; no strong-sandbox or production acceptance",
+  "releaseAuthority": false,
+  "ruffExit": 0,
+  "runtimeAuthority": false,
+  "schema": "hepta.control-engineering-adversarial-local.v1",
+  "scopeLimitation": "Local tests qualify the recorded unchanged module subtree only; final whole-candidate source and synthetic-merge execution require hosted CI.",
+  "selectedTests": 422,
+  "sourceTreeStable": true,
+  "startHead": "ad08d3ebc89f6f009d32a3ccff7be9aeacd32892",
+  "startSourceTree": "e7bc55bfc0750c646599819dc802e7d50d12a467",
+  "strongSandboxExecuted": false,
+  "suiteExit": 0,
+  "supportedRunner": {
+    "path": "qualification/control-engineering/adversarial-supported-suite.py",
+    "sha256": "e1e790bec242da18975d2932f8c533f609bf3445d03bfb587274ef7dfe58dddb"
+  },
+  "testSeconds": 14.158,
+  "testsPassed": 420,
+  "testsRun": 422,
+  "testsSkipped": 2
+}

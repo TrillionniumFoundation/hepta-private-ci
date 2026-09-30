@@ -511,6 +511,7 @@ class ProductGateTests(unittest.TestCase):
                 expected_pull_request_number=780,
             )
 
+
         source = self.product_receipt("source-head")
         merge = self.product_receipt("base-merge")
         source["testedTree"] = "0" * 40
@@ -549,6 +550,39 @@ class ProductGateTests(unittest.TestCase):
                 expected_base_sha="b" * 40,
                 expected_pull_request_number=780,
             )
+
+    def test_product_pair_binds_one_workflow_ref_and_its_pull_request(self):
+        for source_ref, merge_ref, accepted in (
+            ("refs/heads/main", "refs/pull/780/merge", False),
+            ("refs/pull/999/merge", "refs/pull/999/merge", False),
+            ("refs/heads/main", "refs/heads/main", True),
+        ):
+            with self.subTest(source_ref=source_ref, merge_ref=merge_ref):
+                source = self.product_receipt("source-head")
+                merge = self.product_receipt("base-merge")
+                for receipt, ref in ((source, source_ref), (merge, merge_ref)):
+                    receipt["ciIdentity"]["workflowRef"] = (
+                        product_gate.EXPECTED_REPOSITORY
+                        + product_gate.EXPECTED_WORKFLOW_SUFFIX + "@" + ref
+                    )
+                    receipt["receiptDigest"] = hashlib.sha256(json.dumps(
+                        {key: value for key, value in receipt.items() if key != "receiptDigest"},
+                        sort_keys=True, separators=(",", ":"),
+                    ).encode("utf-8")).hexdigest()
+                arguments = {
+                    "expected_repository": product_gate.EXPECTED_REPOSITORY,
+                    "expected_repository_id": product_gate.EXPECTED_REPOSITORY_ID,
+                    "expected_run_id": 42, "expected_run_attempt": 3,
+                    "expected_source_sha": "a" * 40, "expected_base_sha": "b" * 40,
+                    "expected_pull_request_number": 780,
+                }
+                if accepted:
+                    pair = product_gate.verify_product_receipt_pair(source, merge, **arguments)
+                    self.assertEqual(pair["runId"], 42)
+                else:
+                    with self.assertRaisesRegex(ValueError, "product_receipt_pair_workflow_identity"):
+                        product_gate.verify_product_receipt_pair(source, merge, **arguments)
+
 
     def test_ci_identity_mismatch_fails_closed(self):
         identity = self.identity()

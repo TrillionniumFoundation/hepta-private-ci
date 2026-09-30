@@ -312,7 +312,8 @@ def _runner_profile(value: Mapping[str, object]) -> dict[str, object]:
 
 def _repository_evidence(value: Mapping[str, object], pair: Mapping[str, object]) -> dict[str, object]:
     result = dict(value)
-    if type(result.get("schemaVersion")) is not int or result["schemaVersion"] < 1:
+    schema_version = result.get("schemaVersion")
+    if type(schema_version) is not int or schema_version < 1:
         raise EngineeringError("readiness_schema_version")
     for field in (
         "migrationHash",
@@ -435,18 +436,24 @@ def build_canonical_readiness_manifest(
         expiry = min(expiry, custody_receipt.expires_unix_ns)
         review_signer = acceptance_signers.get("independent_review")
         if review_signer is not None:
-            review_keys = list(custody_receipt.current_keys)
-            if (
-                custody_receipt.rotation_state == "dual_window"
-                and now < custody_receipt.dual_window_expires_unix_ns
-            ):
-                review_keys.extend(custody_receipt.retiring_keys)
-            if not any(
+            current_reviewer = any(
                 key.role == "independent_evaluator"
                 and key.subject_signing_identity == review_signer
-                for key in review_keys
-            ):
+                for key in custody_receipt.current_keys
+            )
+            retiring_reviewer = (
+                custody_receipt.rotation_state == "dual_window"
+                and now < custody_receipt.dual_window_expires_unix_ns
+                and any(
+                    key.role == "independent_evaluator"
+                    and key.subject_signing_identity == review_signer
+                    for key in custody_receipt.retiring_keys
+                )
+            )
+            if not current_reviewer and not retiring_reviewer:
                 raise EngineeringError("readiness_review_custody_mismatch")
+            if not current_reviewer:
+                expiry = min(expiry, custody_receipt.dual_window_expires_unix_ns)
 
     internal_ready = not blockers
     independent = "independent_review" in external
@@ -556,7 +563,8 @@ def verify_canonical_readiness_manifest(
     now = time.time_ns() if now_ns is None else now_ns
     if type(now) is not int or now < 0:
         raise EngineeringError("invalid_time")
-    if type(value.get("evidence_expiry")) is not int or now >= value["evidence_expiry"]:
+    evidence_expiry = value.get("evidence_expiry")
+    if type(evidence_expiry) is not int or now >= evidence_expiry:
         raise EngineeringError("readiness_manifest_expired")
     names = value.get("required_job_names")
     jobs = value.get("job_ids")
@@ -689,12 +697,15 @@ def capture_repository_evidence(root: Path, *, source_tree_sha1: str) -> dict[st
     }
 
 
-def _load(path: Path) -> object:
+def _load(path: Path) -> dict[str, object]:
     with path.open("rb") as stream:
         encoded = stream.read(8 * 1024 * 1024 + 1)
     if len(encoded) > 8 * 1024 * 1024:
         raise EngineeringError("readiness_document_budget")
-    return json.loads(encoded)
+    document = json.loads(encoded)
+    if not isinstance(document, dict):
+        raise EngineeringError("readiness_document_shape")
+    return document
 
 
 def main(argv: list[str] | None = None) -> int:
