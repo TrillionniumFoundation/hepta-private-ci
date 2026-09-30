@@ -1,4 +1,4 @@
-name: learning.artifacts r6 materialize
+name: learning.artifacts r6 source materialization
 
 on:
   push:
@@ -6,17 +6,30 @@ on:
       - scratch/learning-artifacts-r6-materialize-20260930
 
 permissions:
-  contents: read
+  contents: write
+
+env:
+  TARGET_BRANCH: work/learning-artifacts-owner-storage-durability-20260930-r6
+  EXPECTED_HEAD: d6d356e566741a60ca5e5b8672d6925b5ee143bd
 
 jobs:
   materialize:
-    runs-on: windows-2025
-    timeout-minutes: 60
+    runs-on: macos-15
+    timeout-minutes: 120
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Checkout exact R6 source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          persist-credentials: false
+          ref: ${{ env.TARGET_BRANCH }}
           fetch-depth: 0
+          persist-credentials: true
+
+      - name: Bind immutable input head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git status --porcelain --untracked-files=all)" = ""
 
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
@@ -27,30 +40,212 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
-      - name: Generate formatted source and exact lockfile
+      - name: Close exhaustive operational error mapping
         shell: bash
         run: |
-          set -uo pipefail
-          mkdir -p "$RUNNER_TEMP/materialized/codex-rs/hepta-learning-artifacts"
-          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts
-          set +e
-          cargo check --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts --all-targets \
-            >"$RUNNER_TEMP/materialized/cargo-check.stdout" \
-            2>"$RUNNER_TEMP/materialized/cargo-check.stderr"
-          check_code=$?
-          set -e
-          printf '%s\n' "$check_code" > "$RUNNER_TEMP/materialized/cargo-check.exit-code"
-          cp codex-rs/Cargo.lock "$RUNNER_TEMP/materialized/codex-rs/Cargo.lock"
-          cp -R codex-rs/hepta-learning-artifacts/src "$RUNNER_TEMP/materialized/codex-rs/hepta-learning-artifacts/src"
-          git diff -- codex-rs/Cargo.lock codex-rs/hepta-learning-artifacts \
-            > "$RUNNER_TEMP/materialized/materialized.patch"
-          git status --short > "$RUNNER_TEMP/materialized/git-status.txt"
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
 
-      - name: Upload materialized candidate
+          root = Path("codex-rs/hepta-learning-artifacts/src")
+
+          coordination = root / "owner/publication_coordination.rs"
+          source = coordination.read_text(encoding="utf-8")
+          source = source.replace("use codex_hepta_types::StableId;\n", "")
+          coordination.write_text(source, encoding="utf-8")
+
+          operational = root / "owner/operational.rs"
+          source = operational.read_text(encoding="utf-8")
+          if "use crate::CurrentArtifactUseErrorV1;" not in source:
+              source = source.replace(
+                  "use crate::ArtifactOwnerHostError;\n",
+                  "use crate::ArtifactOwnerHostError;\nuse crate::CurrentArtifactUseErrorV1;\n",
+              )
+          old = '''        match self {
+              Self::Host(error) => classify_host_error(error),
+              Self::Publication(_) => ArtifactOwnerFailureClassV1::IdentityConflict,
+              Self::ControlIo(_) | Self::WithdrawalDurabilityUnknown => {
+                  ArtifactOwnerFailureClassV1::PersistenceOutcomeUnknown
+              }
+              Self::InvalidConfiguration => ArtifactOwnerFailureClassV1::InvalidConfiguration,
+              Self::WithdrawalFrontierConflict => {
+                  ArtifactOwnerFailureClassV1::WithdrawalFrontierInsufficient
+              }
+              Self::RecoveryConflict | Self::CheckpointShape | Self::UnexpectedPhase => {
+                  ArtifactOwnerFailureClassV1::CorruptState
+              }
+              Self::RecoveryRequired(_) => ArtifactOwnerFailureClassV1::RecoveryRequired,
+              Self::RequestMismatch | Self::CheckpointMismatch => {
+                  ArtifactOwnerFailureClassV1::IdentityConflict
+              }
+              Self::Draining => ArtifactOwnerFailureClassV1::Draining,
+          }
+          '''
+          new = '''        match self {
+              Self::Host(error) => classify_host_error(error),
+              Self::Publication(_) => ArtifactOwnerFailureClassV1::IdentityConflict,
+              Self::CurrentUse(error) => classify_current_use_error(error),
+              Self::ControlIo(_) | Self::WithdrawalDurabilityUnknown => {
+                  ArtifactOwnerFailureClassV1::PersistenceOutcomeUnknown
+              }
+              Self::InvalidConfiguration => ArtifactOwnerFailureClassV1::InvalidConfiguration,
+              Self::StoreIdentityMismatch
+              | Self::RequestMismatch
+              | Self::CheckpointMismatch => ArtifactOwnerFailureClassV1::IdentityConflict,
+              Self::CurrentHeadUnavailable => ArtifactOwnerFailureClassV1::Unavailable,
+              Self::WithdrawalFrontierConflict => {
+                  ArtifactOwnerFailureClassV1::WithdrawalFrontierInsufficient
+              }
+              Self::RecoveryConflict | Self::CheckpointShape | Self::UnexpectedPhase => {
+                  ArtifactOwnerFailureClassV1::CorruptState
+              }
+              Self::RecoveryRequired(_) => ArtifactOwnerFailureClassV1::RecoveryRequired,
+              Self::Draining => ArtifactOwnerFailureClassV1::Draining,
+          }
+          '''
+          if old in source:
+              source = source.replace(old, new)
+          elif "Self::CurrentUse(error) => classify_current_use_error(error)," not in source:
+              raise SystemExit("unexpected operational failure-class source")
+          helper = '''fn classify_current_use_error(error: &CurrentArtifactUseErrorV1) -> ArtifactOwnerFailureClassV1 {
+              match error {
+                  CurrentArtifactUseErrorV1::CurrentHeadMismatch
+                  | CurrentArtifactUseErrorV1::CurrentHeadRollbackOrFork
+                  | CurrentArtifactUseErrorV1::AuthorityExpired
+                  | CurrentArtifactUseErrorV1::TimeRegression => ArtifactOwnerFailureClassV1::StaleOwner,
+                  CurrentArtifactUseErrorV1::WithdrawalScopeMismatch
+                  | CurrentArtifactUseErrorV1::WithdrawalFrontierChanged => {
+                      ArtifactOwnerFailureClassV1::WithdrawalFrontierInsufficient
+                  }
+                  CurrentArtifactUseErrorV1::Capacity => ArtifactOwnerFailureClassV1::CapacityExhausted,
+                  CurrentArtifactUseErrorV1::Unavailable
+                  | CurrentArtifactUseErrorV1::Candidate(_) => ArtifactOwnerFailureClassV1::Unavailable,
+              }
+          }
+
+          '''
+          marker = "fn classify_host_error(error: &ArtifactOwnerHostError) -> ArtifactOwnerFailureClassV1 {\n"
+          if "fn classify_current_use_error(" not in source:
+              if marker not in source:
+                  raise SystemExit("host classifier marker missing")
+              source = source.replace(marker, helper + marker)
+          operational.write_text(source, encoding="utf-8")
+
+          tests = root / "owner_operational_tests.rs"
+          source = tests.read_text(encoding="utf-8")
+          if "use crate::CurrentArtifactUseErrorV1;" not in source:
+              source = source.replace(
+                  "use crate::LearningArtifactOwnerServiceError;\n",
+                  "use crate::CurrentArtifactUseErrorV1;\nuse crate::LearningArtifactOwnerServiceError;\n",
+              )
+          anchor = '''    let identity = LearningArtifactOwnerServiceError::RequestMismatch;
+              assert_eq!(
+                  identity.failure_class(),
+                  ArtifactOwnerFailureClassV1::IdentityConflict
+              );
+              assert_eq!(
+                  identity.retry_disposition(),
+                  ArtifactOwnerRetryDispositionV1::OperatorIntervention
+              );
+          '''
+          cases = anchor + '''
+              let expired = LearningArtifactOwnerServiceError::CurrentUse(
+                  CurrentArtifactUseErrorV1::AuthorityExpired,
+              );
+              assert_eq!(expired.failure_class(), ArtifactOwnerFailureClassV1::StaleOwner);
+              assert_eq!(
+                  expired.retry_disposition(),
+                  ArtifactOwnerRetryDispositionV1::RefreshAuthority
+              );
+
+              let stale_withdrawal = LearningArtifactOwnerServiceError::CurrentUse(
+                  CurrentArtifactUseErrorV1::WithdrawalFrontierChanged,
+              );
+              assert_eq!(
+                  stale_withdrawal.failure_class(),
+                  ArtifactOwnerFailureClassV1::WithdrawalFrontierInsufficient
+              );
+
+              let missing_head = LearningArtifactOwnerServiceError::CurrentHeadUnavailable;
+              assert_eq!(
+                  missing_head.failure_class(),
+                  ArtifactOwnerFailureClassV1::Unavailable
+              );
+          '''
+          if anchor in source and "let stale_withdrawal" not in source:
+              source = source.replace(anchor, cases)
+          elif "let stale_withdrawal" not in source:
+              raise SystemExit("operational test anchor missing")
+          tests.write_text(source, encoding="utf-8")
+          PY
+
+      - name: Materialize formatting and exact lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts
+          cargo check --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts --all-targets
+          cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-learning-artifacts
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-artifacts -- --check
+
+      - name: Verify current Lane E policy regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p 'test_hepta_lane_e_closure_policy.py' -v
+          python3 scripts/hepta-lane-e-closure.py self-test
+
+      - name: Refresh exact source-object seals explicitly
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add codex-rs/Cargo.lock codex-rs/hepta-learning-artifacts/src
+          staged_tree=$(git write-tree)
+          python3 scripts/hepta_artifact_source_binding.py --tree "$staged_tree" --write
+          git add docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json
+          final_tree=$(git write-tree)
+          python3 scripts/hepta_artifact_source_binding.py --tree "$final_tree"
+          python3 scripts/hepta-lane-e-closure.py verify
+          git diff --cached --check
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=all | grep '^??' || true)"
+
+      - name: Commit normal source candidate
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'learning.artifacts source materializer'
+          git config user.email 'learning-artifacts@users.noreply.github.com'
+          git commit -m 'fix(learning.artifacts): close source qualification blockers'
+          candidate=$(git rev-parse HEAD)
+          tree=$(git rev-parse HEAD^{tree})
+          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
+          echo "tree=$tree" >> "$GITHUB_OUTPUT"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+
+      - name: Retain exact materialization evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/learning-artifacts-r6-materialization"
+          mkdir -p "$out"
+          git status --short > "$out/git-status.txt"
+          git rev-parse HEAD > "$out/candidate-sha.txt"
+          git rev-parse HEAD^{tree} > "$out/candidate-tree.txt"
+          cp codex-rs/Cargo.lock "$out/Cargo.lock"
+          cp docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json "$out/IMPLEMENTATION_MAP.json"
+          git show --stat --oneline --decorate HEAD > "$out/commit.txt"
+          git show --format=fuller --binary HEAD > "$out/candidate.patch"
+
+      - name: Upload exact materialization evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: learning-artifacts-r6-materialized-${{ github.sha }}
-          path: ${{ runner.temp }}/materialized
+          name: learning-artifacts-r6-source-materialization-${{ github.sha }}
+          path: ${{ runner.temp }}/learning-artifacts-r6-materialization
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14
