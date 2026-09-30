@@ -193,11 +193,7 @@ impl NduAuthenticatedOwnerV1 {
         policy: NduProductionPolicyV1,
     ) -> Result<Self, NduOwnerError> {
         Self::open_inner(
-            root,
-            authority,
-            context,
-            policy,
-            /*numeric_registry*/ None,
+            root, authority, context, policy, /*numeric_registry*/ None,
             /*numeric_snapshot*/ None,
         )
     }
