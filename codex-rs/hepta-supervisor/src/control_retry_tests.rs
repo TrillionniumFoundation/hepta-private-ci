@@ -44,6 +44,7 @@ enum Failure {
     Drain,
     Stop,
     Kill,
+    Termination,
 }
 
 struct State {
@@ -86,10 +87,13 @@ impl Process {
             Failure::Drain => 0,
             Failure::Stop => 1,
             Failure::Kill => 2,
-            Failure::None => unreachable!("not a control signal"),
+            Failure::None | Failure::Termination => unreachable!("not a control signal"),
         };
         state.calls[index] += 1;
-        if state.failure == signal {
+        if state.failure == signal
+            || (state.failure == Failure::Termination
+                && matches!(signal, Failure::Stop | Failure::Kill))
+        {
             return Err(ProcessDriverError::new("injected control error"));
         }
         Ok(())
@@ -310,20 +314,37 @@ fn failed_drain_is_retried_without_publishing_draining() -> Result<()> {
 #[test]
 fn repeated_stop_preserves_the_first_deadline() -> Result<()> {
     let mut f = Fixture::new(AgentLifecycle::Running)?;
-    f.failure(Failure::Stop);
+    f.failure(Failure::Termination);
     assert!(
         f.supervisor
             .stop_slot(&f.agent, &mut f.slot, f.now)
             .is_err()
     );
+    let run_root = f
+        .supervisor
+        .registry
+        .load_agent(&f.agent)?
+        .layout
+        .run_root()
+        .to_path_buf();
+    let intent_path = run_root.join(crate::control_intent::CONTROL_INTENT_FILE);
+    let original = std::fs::read(&intent_path)?;
     let later = f.now + Duration::from_millis(500);
     assert!(
         f.supervisor
             .stop_slot(&f.agent, &mut f.slot, later)
             .is_err()
     );
+    assert_eq!(std::fs::read(&intent_path)?, original);
+    // Physical fsync may already have consumed the real persisted Stop budget.
+    // Both failed termination signals retain the same intent and cannot grant
+    // a fresh deadline; the original synthetic deadline must still force Kill.
+    f.failure(Failure::None);
     f.tick(f.now + Duration::from_secs(1))?;
-    assert_eq!(f.process.lock().expect("process").calls, [0, 2, 1]);
+    let calls = f.process.lock().expect("process").calls;
+    assert_eq!(calls[0], 0);
+    assert_eq!(calls[1] + calls[2], 3);
+    assert!(calls[2] >= 1);
     assert_eq!(f.control_events(), vec![SupervisorEventKind::KillRequested]);
     Ok(())
 }
