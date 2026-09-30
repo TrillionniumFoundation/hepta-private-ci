@@ -583,6 +583,116 @@ async fn provider_lookup_after_restart_uses_original_persisted_key() {
 }
 
 #[tokio::test]
+async fn provider_absence_reconciliation_allows_fenced_retry_with_original_key() {
+    let fixture = Fixture::new();
+    let (store, original, mut driver) = unknown_provider_effect(&fixture, intent()).await;
+    let owner = fence();
+    let mut next_owner = owner.clone();
+    next_owner.generation += 1;
+    next_owner.fencing_token = "effect-retry-fence".to_string();
+    assert!(
+        store
+            .claim_taskflow_run(&original.run_id, &next_owner, 31, 1_000)
+            .await
+            .is_err(),
+        "unresolved contact must not allow a new owner"
+    );
+    let AuthorizedProviderEffectLookup::ProvenAbsent { proof_digest } =
+        driver.lookup(&original).await
+    else {
+        panic!("fixture absence proof");
+    };
+    assert_eq!(
+        store
+            .recover_authorized_taskflow_effect(
+                &original.run_id,
+                &original.step_id,
+                1,
+                &owner,
+                AuthorizedEffectRecovery::ProvenAbsent { proof_digest },
+                32,
+            )
+            .await
+            .expect("requeue absent effect"),
+        AuthorizedEffectRecoveryResult::ProvenAbsent
+    );
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen absent run");
+    let claimed = reopened
+        .claim_taskflow_run(&original.run_id, &next_owner, 33, 1_000)
+        .await
+        .expect("reconciled absence permits takeover");
+    reopened
+        .apply_taskflow_command(
+            &TaskFlowCommand::new(
+                &original.run_id,
+                "retry-start",
+                next_owner.clone(),
+                claimed.revision,
+                TaskFlowTransition::Start,
+                34,
+            )
+            .expect("retry start"),
+        )
+        .await
+        .expect("start retry");
+    let mut effect = intent();
+    effect.attempt = 2;
+    let digest = effect.digest().expect("retry intent");
+    reopened
+        .prepare_taskflow_step(
+            &effect.run_id,
+            &effect.step_id,
+            effect.attempt,
+            &next_owner,
+            &digest,
+            &effect.payload_digest,
+            "retry-prepare",
+            35,
+        )
+        .await
+        .expect("prepare new attempt");
+    reopened
+        .claim_taskflow_step(
+            &effect.run_id,
+            &effect.step_id,
+            effect.attempt,
+            &next_owner,
+            &digest,
+            &effect.payload_digest,
+            "retry-claim",
+            36,
+        )
+        .await
+        .expect("claim new attempt");
+    let expected = binding(&effect);
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "proven-absent-retry");
+    reopened
+        .execute_authorized_taskflow_effect_async(
+            &authority,
+            &mut driver,
+            &effect,
+            EFFECT_PAYLOAD,
+            &next_owner,
+            &signed,
+            &expected,
+            "retry-dispatch",
+            37,
+        )
+        .await
+        .expect("safely retried send");
+    let retried = reopened
+        .authorized_taskflow_effect_attempt(&effect.run_id, &effect.step_id, 2)
+        .await
+        .expect("retry identity")
+        .expect("second attempt");
+    assert_eq!(retried.provider_effect_key, original.provider_effect_key);
+    assert_eq!(driver.adapter().dispatch_calls.load(Ordering::Relaxed), 2);
+}
+
+#[tokio::test]
 async fn legacy_unscoped_identity_stays_quarantined_after_restart() {
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;

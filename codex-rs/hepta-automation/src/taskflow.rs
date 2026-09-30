@@ -1036,8 +1036,14 @@ impl AutomationStore {
               AND o.run_id = a.run_id
               AND o.step_id = a.step_id
               AND o.attempt = a.attempt
+             LEFT JOIN taskflow_effect_dispatch_reconciliations r
+               ON r.owner_agent_id = a.owner_agent_id
+              AND r.run_id = a.run_id
+              AND r.step_id = a.step_id
+              AND r.attempt = a.attempt
              WHERE a.owner_agent_id = ? AND a.run_id = ?
-               AND (o.observation IS NULL OR o.observation != 'proven_absent')",
+               AND (COALESCE(r.observation, o.observation) IS NULL
+                    OR COALESCE(r.observation, o.observation) != 'proven_absent')",
         )
         .bind(self.taskflow_owner_agent_id().as_str())
         .bind(run_id)
