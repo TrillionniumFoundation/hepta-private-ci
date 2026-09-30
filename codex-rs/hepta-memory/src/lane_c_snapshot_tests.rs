@@ -48,6 +48,196 @@ fn vector(cut: &DurableCognitiveSnapshot) -> LaneCGenerationVectorV1 {
 }
 
 #[tokio::test]
+async fn selected_cuts_bind_unselected_visibility_and_preserve_complete_ancestry() {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(98);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(&access, &source(scope.clone(), "selected", "evidence"))
+        .await
+        .unwrap();
+    let selected = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "selected".to_string(),
+                revision: memory_revision(scope.clone(), "first", citation.clone()),
+            },
+        )
+        .await
+        .unwrap();
+    store
+        .correct_memory(
+            &access,
+            &selected.id.memory_id,
+            1,
+            &memory_revision(scope.clone(), "second", citation.clone()),
+        )
+        .await
+        .unwrap();
+    let mut expiring = memory_revision(scope.clone(), "other", citation);
+    expiring.valid_to_unix_seconds = Some(150);
+    store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "other".to_string(),
+                revision: expiring,
+            },
+        )
+        .await
+        .unwrap();
+    let ids = vec![StableId::new(selected.id.memory_id.as_str()).unwrap()];
+    let selected_cut = store
+        .lane_c_snapshot_ids(&access, &scope, 140, ids.clone())
+        .await
+        .unwrap();
+    let full = store.lane_c_snapshot(&access, &scope, 140).await.unwrap();
+    assert_eq!(selected_cut.frontiers(), full.frontiers());
+    assert_eq!(
+        selected_cut.snapshot().records,
+        full.snapshot()
+            .records
+            .iter()
+            .filter(|record| record.record_id == ids[0])
+            .cloned()
+            .collect::<Vec<_>>()
+    );
+    let empty = store
+        .lane_c_snapshot_ids(&access, &scope, 141, Vec::new())
+        .await
+        .unwrap();
+    assert_eq!(selected_cut.cut_digest(), empty.cut_digest());
+    store
+        .revalidate_lane_c_snapshot(&access, &scope, &selected_cut, 141)
+        .await
+        .unwrap();
+    assert!(
+        matches!(
+            store
+                .revalidate_lane_c_snapshot(&access, &scope, &selected_cut, 150)
+                .await,
+            Err(CognitiveStoreError::Conflict(_))
+        ),
+        "unselected expiry must invalidate the global cut"
+    );
+    assert!(matches!(
+        store
+            .lane_c_snapshot_ids(&access, &scope, 140, vec![ids[0].clone(), ids[0].clone()])
+            .await,
+        Err(CognitiveStoreError::Invalid(_))
+    ));
+    assert!(matches!(
+        store
+            .lane_c_snapshot_ids(
+                &CognitiveAccess::agent_private(agent_id(97)),
+                &scope,
+                140,
+                ids
+            )
+            .await,
+        Err(CognitiveStoreError::AccessDenied(_))
+    ));
+}
+
+#[tokio::test]
+async fn selected_cut_remains_available_beyond_whole_scope_history_capacity() {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(96);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(&access, &source(scope.clone(), "large-history", "evidence"))
+        .await
+        .unwrap();
+    let selected = store
+        .create_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "small-history".to_string(),
+                revision: memory_revision(scope.clone(), "selected", citation.clone()),
+            },
+        )
+        .await
+        .unwrap();
+    let mut old = memory_revision(scope.clone(), "expired history", citation);
+    old.valid_to_unix_seconds = Some(150);
+    let deep = store
+        .create_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "deep-history".to_string(),
+                revision: old,
+            },
+        )
+        .await
+        .unwrap();
+    // Batch equivalent, citation-bound historical corrections in one fixture
+    // transaction; no history is deleted and the selected record stays shallow.
+    let mut transaction = store.pool.begin().await.unwrap();
+    sqlx::query("WITH RECURSIVE revisions(n) AS (SELECT 2 UNION ALL SELECT n+1 FROM revisions WHERE n < 16384)
+        INSERT INTO memory_revisions SELECT memory_id, n, owner_agent_id, scope_kind, workspace_sha256,
+        content, content_sha256, verification, lifecycle, tombstone_reason, valid_from_unix_seconds,
+        valid_to_unix_seconds, n-1, recorded_at_unix_seconds FROM revisions CROSS JOIN memory_revisions
+        WHERE memory_id = ? AND revision = 1 ORDER BY n")
+        .bind(deep.id.memory_id.as_str()).execute(&mut *transaction).await.unwrap();
+    sqlx::query("INSERT INTO memory_citations SELECT r.memory_id, r.revision, c.ordinal, c.source_id, c.source_revision
+        FROM memory_revisions r JOIN memory_citations c ON c.memory_id = r.memory_id AND c.memory_revision = 1
+        WHERE r.memory_id = ? AND r.revision > 1")
+        .bind(deep.id.memory_id.as_str()).execute(&mut *transaction).await.unwrap();
+    sqlx::query("UPDATE memory_heads SET revision = 16384 WHERE memory_id = ?")
+        .bind(deep.id.memory_id.as_str())
+        .execute(&mut *transaction)
+        .await
+        .unwrap();
+    sqlx::query("UPDATE memory_fts SET revision = 16384 WHERE memory_id = ?")
+        .bind(deep.id.memory_id.as_str())
+        .execute(&mut *transaction)
+        .await
+        .unwrap();
+    transaction.commit().await.unwrap();
+    assert!(matches!(
+        store.lane_c_snapshot(&access, &scope, 200).await,
+        Err(CognitiveStoreError::Unavailable(_))
+    ));
+    let ids = vec![StableId::new(selected.id.memory_id.as_str()).unwrap()];
+    let cut = store
+        .lane_c_snapshot_ids(&access, &scope, 200, ids)
+        .await
+        .unwrap();
+    assert_eq!(cut.frontiers().memory, 16_385);
+    assert_eq!(cut.snapshot().records.len(), 1);
+    assert_eq!(
+        cut.snapshot().records[0].record_id.as_str(),
+        selected.id.memory_id.as_str()
+    );
+    store
+        .revalidate_lane_c_snapshot(&access, &scope, &cut, 201)
+        .await
+        .unwrap();
+    assert!(
+        matches!(
+            store
+                .lane_c_snapshot_ids(
+                    &access,
+                    &scope,
+                    200,
+                    vec![
+                        StableId::new(deep.id.memory_id.as_str()).unwrap(),
+                        cut.snapshot().records[0].record_id.clone()
+                    ]
+                )
+                .await,
+            Err(CognitiveStoreError::Unavailable(_))
+        ),
+        "selected ancestry remains bounded without returning a prefix"
+    );
+}
+
+#[tokio::test]
 async fn durable_lane_c_pages_preserve_ancestry_and_global_tombstone_frontier() {
     let temp = TempDir::new().unwrap();
     let owner = agent_id(100);
