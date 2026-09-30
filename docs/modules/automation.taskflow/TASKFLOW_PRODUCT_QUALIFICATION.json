@@ -112,14 +112,76 @@
   "authorityGranted": false,
   "note": "This file separates repository source composition from external target-host qualification. Null target-host fields are required evidence slots and must never be inferred from unit tests or source presence.",
   "subsequentAudit": {
-    "status": "source_optimized_external_exact_candidate_validation_required",
+    "status": "source_optimized_local_package_tests_passed_hosted_exact_candidate_validation_required",
     "historicalSourceObservationRetained": true,
-    "runtimeSourceCommit": "f0d3e5203ac9756d7d8958f15e53242b88a78359",
-    "runtimeSourceTree": "d860886e67b6bf255b4530693e8d0f989bc6fb02",
+    "runtimeSourceCommit": "117f7f5260600303e05bee3f877ded0c82a2aa23",
+    "runtimeSourceTree": "a1ab4cd4c6a3e81e23496edd85e6cb5a84215ce0",
     "executionEvidenceOwner": "GitHub Actions checks for the published candidate and its main merge",
-    "localRustTestsPassed": false,
+    "localRustTestsPassed": true,
     "localClippyPassed": false,
-    "localBuildBlocker": "workspace disk exhausted before module tests/type checks completed",
-    "semantics": "This candidate hardens repository code. Historical source observations do not cover its changed runtime objects. Hosted statuses are external evidence; this file grants no target-host, deployment, acceptance, activation or release qualification."
+    "localBuildBlocker": null,
+    "semantics": "This record separates local source/package verification from hosted exact-candidate evidence and product qualification. Historical source observations do not cover changed runtime objects. Hosted checks for the final published candidate and its main merge remain external evidence; no target-host, deployment, acceptance, activation or release qualification is granted.",
+    "localVerification": {
+      "automationDefault": {
+        "passed": 116,
+        "total": 116
+      },
+      "automationStructuralQualification": {
+        "passed": 121,
+        "total": 121,
+        "feature": "taskflow-structural-qualification"
+      },
+      "callerVerifier": {
+        "regressionsPassed": 28,
+        "selfTestPassed": true,
+        "fullClosurePassed": true,
+        "boundaries": 45,
+        "rustFiles": 4365
+      },
+      "independentReview": {
+        "reviewedBypassClasses": 7,
+        "newActionableFindingsInFinalReviewedScope": false
+      },
+      "moduleClippy": {
+        "command": "just clippy --locked --offline --no-deps -p codex-hepta-automation",
+        "status": "passed",
+        "passed": true,
+        "exitCode": 0,
+        "existingAdvisoryWarnings": 4,
+        "advisoryScope": "existing large-enum and argument-count warnings; no denied selected-module lints"
+      },
+      "scope": "Local automation/operations source/package, selected-module Clippy, formatting and caller-verifier validation bound to runtimeSourceCommit/runtimeSourceTree only; no local Agentd Rust test pass or dependency-inclusive strict Clippy pass is recorded. No target-host/provider execution or independent acceptance is established.",
+      "operations": {
+        "passed": 44,
+        "ignoredChildWorkerEntry": 1,
+        "ignoredEntryExecutedByParentTests": true
+      },
+      "fix": {
+        "entrypoint": "just fix",
+        "package": "codex-hepta-automation",
+        "exitCode": 0
+      },
+      "dependencyInclusiveClippy": {
+        "passed": false,
+        "blocker": "Existing upstream kernel.operations direct SQLite connection lint debt at destination_dedupe.rs:49 and durable_store.rs:93.",
+        "scope": "Dependency-inclusive strict Clippy failed in existing operations source; this is separate from selected automation module lint validation."
+      },
+      "agentd": {
+        "rustTestsPassed": false,
+        "requiredHostedExecution": true
+      },
+      "rustfmt": {
+        "scopedSourceOwnersPassed": true
+      },
+      "sourceReadback": {
+        "allSourceFollowupFilesMatchTestedContents": true,
+        "fileCount": 12
+      }
+    },
+    "historicalLocalBuildInterruption": "The first overlay build attempt exhausted workspace disk; subsequent actual default and structural package tests completed and passed.",
+    "localAgentdRustTestsPassed": false,
+    "localModuleClippyPassed": true,
+    "localDependencyInclusiveClippyPassed": false,
+    "localAgentdTestsPassed": false
   }
 }
