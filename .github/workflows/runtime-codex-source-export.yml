@@ -1,0 +1,51 @@
+name: runtime.codex exact source export
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-p0-ordinary-convergence-20260930
+    paths:
+      - .github/workflows/runtime-codex-source-export.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-codex-source-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export-exact-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Export immutable source snapshot
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain=v1)"
+          archive="$RUNNER_TEMP/runtime-codex-source-$EXPECTED_SHA.tar.gz"
+          tar --exclude=.git --exclude=.hepta-evidence --exclude=.hepta-diagnostics -czf "$archive" .
+          sha256sum "$archive" > "$archive.sha256"
+          printf 'archive=%s\n' "$archive" >> "$GITHUB_ENV"
+
+      - name: Retain exact source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-codex-source-${{ github.sha }}
+          path: |
+            ${{ env.archive }}
+            ${{ env.archive }}.sha256
+          if-no-files-found: error
+          retention-days: 1
