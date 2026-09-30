@@ -8,6 +8,7 @@ and keeps source-closure claims separate from pending execution receipts.
 
 from pathlib import Path
 import runpy
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -77,6 +78,41 @@ def separate_qualification_pending(path: Path) -> None:
     path.write_text(text[:start] + replacement + text[end:], encoding="utf-8")
 
 
+def drop_stale_materializer_diagnostics() -> None:
+    """Remove tracked construction diagnostics from the immutable candidate.
+
+    The live materializer continues writing its current logs in the working
+    tree and can retain them on failure. On success, however, no ancestor or
+    earlier-attempt diagnostic may survive as a tracked candidate object.
+    Removing only the index entries keeps the active log descriptors usable
+    until the one-shot workflow has completed every verification command.
+    """
+
+    completed = subprocess.run(
+        [
+            "git",
+            "ls-files",
+            "-z",
+            "--",
+            "qualification/runtime-codex-materialize-debug",
+        ],
+        cwd=ROOT,
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+    tracked = [
+        value.decode("utf-8")
+        for value in completed.stdout.split(b"\0")
+        if value
+    ]
+    if tracked:
+        subprocess.run(
+            ["git", "rm", "-f", "--cached", "--ignore-unmatch", "--", *tracked],
+            cwd=ROOT,
+            check=True,
+        )
+
+
 def main() -> None:
     apply_owner_lineage()
     replace_once(
@@ -89,6 +125,7 @@ def main() -> None:
     separate_qualification_pending(
         ROOT / "scripts/runtime-codex-finalize-map-followup.py"
     )
+    drop_stale_materializer_diagnostics()
 
 
 if __name__ == "__main__":
