@@ -14,6 +14,7 @@ on:
       - scripts/authbus-evidence-projection.py
       - scripts/authbus-exact-head-evidence.py
       - scripts/authbus-target-host-evidence.py
+      - scripts/authbus-performance-evidence.py
       - .github/workflows/authbus-authority-qualification.yml
       - .github/workflows/authbus-target-host-qualification.yml
   push:
@@ -30,6 +31,7 @@ on:
       - scripts/authbus-evidence-projection.py
       - scripts/authbus-exact-head-evidence.py
       - scripts/authbus-target-host-evidence.py
+      - scripts/authbus-performance-evidence.py
       - .github/workflows/authbus-authority-qualification.yml
       - .github/workflows/authbus-target-host-qualification.yml
   workflow_dispatch:
@@ -157,7 +159,7 @@ jobs:
             --projection-dir "$RUNNER_TEMP/authbus-evidence/projections" \
             --candidate-kind "$CANDIDATE_KIND" \
             --expected-head "$CANDIDATE_SHA" \
-            ${EXPECTED_BASE:+--expected-base "$EXPECTED_BASE"} \
+            --expected-base "$EXPECTED_BASE" \
             --test-log "$RUNNER_TEMP/authbus-evidence/authbus.log" \
             --test-log "$RUNNER_TEMP/authbus-evidence/qualification.log" \
             --test-log "$RUNNER_TEMP/authbus-evidence/evidence.log" \
