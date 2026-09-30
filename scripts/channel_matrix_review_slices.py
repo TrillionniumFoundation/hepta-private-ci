@@ -16,6 +16,7 @@ if str(SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIRECTORY))
 
 import channel_matrix_evidence as evidence
+import channel_matrix_source_provenance as source_provenance
 
 ROOT = SCRIPT_DIRECTORY.parent
 REGISTRY_PATH = ROOT / "docs/modules/channel.matrix/REVIEW_SLICES.json"
@@ -33,6 +34,9 @@ EXPECTED_SLICE_IDS = (
 SHA1 = re.compile(r"[0-9a-f]{40}")
 SHA256 = re.compile(r"[0-9a-f]{64}")
 MAX_JSON_BYTES = 64 * 1024 * 1024
+COMMAND_SET_DOMAIN = b"hepta.channel-matrix-review-command-set.v1"
+SOURCE_RANGE_DOMAIN = b"hepta.channel-matrix-review-range.v1"
+INVARIANT_POLICY_DOMAIN = b"hepta.channel-matrix-review-invariants.v1"
 
 
 def git(root: Path, *arguments: str, check: bool = True) -> subprocess.CompletedProcess[bytes]:
@@ -91,9 +95,6 @@ def exact_commit(root: Path, value: object, label: str) -> str:
 
 def command_policy() -> dict[str, list[str]]:
     if "api-compile-fail" not in evidence.COMMANDS:
-        # Importing the policy overlay mutates the canonical command map for
-        # this process. It does not execute commands or introduce a second
-        # receipt format.
         import channel_matrix_evidence_v2  # noqa: F401
 
     return evidence.COMMANDS
@@ -214,10 +215,7 @@ def validate_command_receipts(
             "logSha256": digest(log_path),
             "junitSha256": junit_digest,
         }
-    return receipts, object_digest(
-        receipts,
-        b"hepta.channel-matrix-review-command-set.v1",
-    )
+    return receipts, object_digest(receipts, COMMAND_SET_DOMAIN)
 
 
 def build(
@@ -250,13 +248,17 @@ def build(
         if parents != [base_sha, source_sha]:
             raise ValueError("base-merge review receipt has wrong parents")
 
-    provenance = read_object(directory / "source-provenance.json")
+    provenance = source_provenance.validate_receipt(
+        read_object(directory / "source-provenance.json"),
+        expected_stage=lane,
+        expected_sha=tested_sha,
+        expected_tree=tested_tree,
+    )
+    workspace = provenance.get("workspaceRoot")
     execution = provenance.get("execution")
     if (
-        provenance.get("schema") != "hepta.channel-matrix-source-provenance.v1"
-        or provenance.get("valid") is not True
-        or provenance.get("checkoutSha") != tested_sha
-        or provenance.get("checkoutTree") != tested_tree
+        not isinstance(workspace, str)
+        or Path(workspace).resolve(strict=True) != root
         or not isinstance(execution, dict)
         or not isinstance(execution.get("workflowRunId"), str)
         or not execution["workflowRunId"]
@@ -323,12 +325,9 @@ def build(
                 "changedPaths": changed_paths,
                 "sourceRangeSha256": object_digest(
                     {"base": base_sha, "source": source_sha, "commits": commits, "paths": changed_paths},
-                    b"hepta.channel-matrix-review-range.v1",
+                    SOURCE_RANGE_DOMAIN,
                 ),
-                "invariantPolicySha256": object_digest(
-                    policy,
-                    b"hepta.channel-matrix-review-invariants.v1",
-                ),
+                "invariantPolicySha256": object_digest(policy, INVARIANT_POLICY_DOMAIN),
                 "commandEvidenceSha256": command_set_sha256,
                 "sourceBound": True,
                 "invariantPolicyBound": True,
@@ -345,6 +344,9 @@ def build(
         "testedTree": tested_tree,
         "workflowRunId": execution["workflowRunId"],
         "attemptId": execution["attemptId"],
+        "sourceProvenanceSha256": digest(directory / "source-provenance.json"),
+        "sourceInventorySha256": provenance["sourceInventorySha256"],
+        "sourceContentInventorySha256": provenance["sourceContentInventorySha256"],
         "registrySha256": registry_sha256,
         "commandSetSha256": command_set_sha256,
         "commandEvidence": commands,
@@ -377,10 +379,7 @@ def main() -> int:
     parser.add_argument("--registry", type=Path, default=REGISTRY_PATH)
     args = parser.parse_args()
     try:
-        write_exclusive(
-            args.output,
-            build(args.root, args.directory, args.registry),
-        )
+        write_exclusive(args.output, build(args.root, args.directory, args.registry))
     except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError, subprocess.SubprocessError) as exc:
         parser.exit(1, f"FAIL_CHANNEL_MATRIX_REVIEW_SLICES: {exc}\n")
     print("PASS_CHANNEL_MATRIX_REVIEW_SLICES")

@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/channel_matrix_pair_acceptance_v2.py"
@@ -34,6 +35,8 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
             | {f"{prefix}fixture" for prefix in module.REQUIRED_PREFIXES}
         )
         return {
+            "sourceSha": "1" * 40,
+            "baseSha": "8" * 40,
             "testedSha": "1" * 40,
             "testedTree": "2" * 40,
             "files": [{"path": path} for path in paths],
@@ -194,6 +197,90 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
         )
         return {path.name: {}}
 
+    def write_review(
+        self,
+        directory,
+        source,
+        inventory,
+        provenance,
+        command_evidence,
+        command_set_sha256,
+        policies,
+        registry_sha256,
+        lane="source-head",
+    ):
+        slices = []
+        for index, policy in enumerate(policies, start=1):
+            commit = f"{index:x}" * 40
+            changed = [policy["paths"][0]]
+            policy_row = {
+                "id": policy["id"],
+                "owner": policy["owner"],
+                "deputy": policy["deputy"],
+                "paths": policy["paths"],
+                "invariants": policy["invariants"],
+                "commands": policy["commands"],
+            }
+            slices.append(
+                {
+                    **policy_row,
+                    "firstCommit": commit,
+                    "lastCommit": commit,
+                    "commitCount": 1,
+                    "commits": [commit],
+                    "changedPathCount": 1,
+                    "changedPaths": changed,
+                    "sourceRangeSha256": module.review_slices.object_digest(
+                        {
+                            "base": source["baseSha"],
+                            "source": source["sourceSha"],
+                            "commits": [commit],
+                            "paths": changed,
+                        },
+                        module.review_slices.SOURCE_RANGE_DOMAIN,
+                    ),
+                    "invariantPolicySha256": module.review_slices.object_digest(
+                        policy_row, module.review_slices.INVARIANT_POLICY_DOMAIN
+                    ),
+                    "commandEvidenceSha256": command_set_sha256,
+                    "sourceBound": True,
+                    "invariantPolicyBound": True,
+                    "commandEvidenceBound": True,
+                }
+            )
+        manifest = json.loads((directory / "manifest.json").read_text())
+        row = {
+            "schema": module.review_slices.RESULT_SCHEMA,
+            "module": "channel.matrix",
+            "lane": lane,
+            "sourceSha": source["sourceSha"],
+            "baseSha": source["baseSha"],
+            "testedSha": source["testedSha"],
+            "testedTree": source["testedTree"],
+            "workflowRunId": manifest["runId"],
+            "attemptId": manifest["runAttempt"],
+            "sourceProvenanceSha256": digest(directory / module.PROVENANCE_FILE),
+            "sourceInventorySha256": provenance["sourceInventorySha256"],
+            "sourceContentInventorySha256": provenance[
+                "sourceContentInventorySha256"
+            ],
+            "registrySha256": registry_sha256,
+            "commandSetSha256": command_set_sha256,
+            "commandEvidence": command_evidence,
+            "slices": slices,
+            "allSlicesSourceBound": True,
+            "allSlicesInvariantPolicyBound": True,
+            "allSlicesCommandEvidenceBound": True,
+            "authorityGranted": False,
+            "activation": False,
+            "promotion": False,
+            "release": False,
+        }
+        path = directory / module.REVIEW_FILE
+        path.write_text(json.dumps(row), encoding="utf-8")
+        inventory[path.name] = {}
+        return row
+
     def test_source_closure_accepts_all_required_owners(self) -> None:
         self.assertTrue(
             module.REQUIRED_EXACT_PATHS.issubset(module._source_paths(self.source()))
@@ -333,6 +420,84 @@ class ExtendedPairAcceptanceTests(unittest.TestCase):
                 module._provenance_receipt(
                     directory, source, inventory, "source-head"
                 )
+
+    def test_review_slices_are_required_and_revalidated(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            source = self.source()
+            (directory / "source.json").write_text(
+                json.dumps(source, sort_keys=True), encoding="utf-8"
+            )
+            inventory = self.write_provenance(directory, source, "source-head")
+            provenance = module._provenance_receipt(
+                directory, source, inventory, "source-head"
+            )
+            for label, arguments in module.policy.evidence.COMMANDS.items():
+                inventory.update(
+                    self.write_receipt(
+                        directory,
+                        source,
+                        label,
+                        arguments,
+                        with_junit=label == module.FOCUSED_LABEL,
+                    )
+                )
+            command_evidence, command_set = module._command_evidence(
+                directory, source, inventory
+            )
+            policies = [
+                {
+                    "id": slice_id,
+                    "owner": "owner",
+                    "deputy": "deputy",
+                    "paths": [f"slice-{index}.txt"],
+                    "invariants": [f"invariant_{index}"],
+                    "commands": [f"verify {index}"],
+                }
+                for index, slice_id in enumerate(
+                    module.review_slices.EXPECTED_SLICE_IDS, start=1
+                )
+            ]
+            registry_sha = "f" * 64
+            self.write_review(
+                directory,
+                source,
+                inventory,
+                provenance,
+                command_evidence,
+                command_set,
+                policies,
+                registry_sha,
+            )
+            with mock.patch.object(
+                module.review_slices,
+                "load_registry",
+                return_value=(policies, registry_sha),
+            ):
+                row = module._review_receipt(
+                    directory,
+                    source,
+                    inventory,
+                    "source-head",
+                    provenance,
+                    command_evidence,
+                    command_set,
+                )
+                self.assertTrue(row["allSlicesSourceBound"])
+                path = directory / module.REVIEW_FILE
+                tampered = json.loads(path.read_text())
+                tampered["slices"][0]["commandEvidenceSha256"] = "0" * 64
+                path.write_text(json.dumps(tampered))
+                with self.assertRaisesRegex(ValueError, "invalid review-slice"):
+                    module._review_receipt(
+                        directory,
+                        source,
+                        inventory,
+                        "source-head",
+                        provenance,
+                        command_evidence,
+                        command_set,
+                    )
 
 
 if __name__ == "__main__":

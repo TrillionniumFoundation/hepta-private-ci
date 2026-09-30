@@ -20,6 +20,10 @@ sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 
 
+def empty_sha256() -> str:
+    return hashlib.sha256(b"").hexdigest()
+
+
 class ReviewSliceTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
@@ -82,14 +86,102 @@ class ReviewSliceTests(unittest.TestCase):
             "testedTree": self.tree,
         }
         self.write_json(self.evidence / "source.json", source)
+        provenance_file = self.root / "slice-1.txt"
+        provenance_data = provenance_file.read_bytes()
+        provenance_rows = [
+            {
+                "absolutePath": str(provenance_file),
+                "repoRelativePath": "slice-1.txt",
+                "gitBlob": self.git("rev-parse", f"{self.head}:slice-1.txt").strip(),
+                "sha256": hashlib.sha256(provenance_data).hexdigest(),
+                "bytes": len(provenance_data),
+                "tracked": True,
+                "gitLsFilesErrorUnmatch": True,
+                "trackedCheck": {
+                    "command": [
+                        "git",
+                        "ls-files",
+                        "--error-unmatch",
+                        "--",
+                        "slice-1.txt",
+                    ],
+                    "exitStatus": 0,
+                    "stdoutSha256": "5" * 64,
+                    "stderrSha256": "6" * 64,
+                },
+                "introducedAtCommit": self.base,
+                "firstObservedStage": "source-head",
+                "origin": "tracked_repository_source",
+                "sourceClass": "tracked_repository_source",
+                "classification": {
+                    "fixture": False,
+                    "workflow": False,
+                    "documentation": False,
+                    "generated": False,
+                    "cache": False,
+                    "artifact": False,
+                },
+            }
+        ]
+        clean = {
+            "clean": True,
+            "unstaged": [],
+            "staged": [],
+            "untrackedClosureInputs": [],
+            "ignoredClosureInputs": [],
+            "workspaceStatus": {
+                "command": [
+                    "git",
+                    "status",
+                    "--porcelain=v2",
+                    "-z",
+                    "--untracked-files=all",
+                ],
+                "bytes": 0,
+                "sha256": empty_sha256(),
+                "empty": True,
+            },
+        }
         self.write_json(
             self.evidence / "source-provenance.json",
             {
                 "schema": "hepta.channel-matrix-source-provenance.v1",
                 "valid": True,
+                "errors": [],
+                "stage": "source-head",
+                "workspaceRoot": str(self.root.resolve()),
                 "checkoutSha": self.head,
                 "checkoutTree": self.tree,
-                "execution": {"workflowRunId": "run-1", "attemptId": "1"},
+                "scan": {
+                    "defaultCommand": ["git", "ls-files", "-z"],
+                    "closureFileCount": 1,
+                    "closurePathInventorySha256": module.source_provenance.path_inventory(
+                        ["slice-1.txt"]
+                    ),
+                    "cleanBefore": clean,
+                    "cleanAfter": clean,
+                },
+                "execution": {
+                    "workflowRunId": "run-1",
+                    "attemptId": "1",
+                    "runnerImage": "ubuntu24:fixture",
+                    "targetTriple": "x86_64-unknown-linux-gnu",
+                },
+                "files": provenance_rows,
+                "sourceInventorySha256": module.source_provenance.aggregate(
+                    provenance_rows
+                ),
+                "sourceContentInventorySha256": module.source_provenance.canonical_digest(
+                    module.source_provenance.CONTENT_INVENTORY_DOMAIN,
+                    module.source_provenance.content_inventory(provenance_rows),
+                ),
+                "claims": {
+                    "trackedSourceOnly": True,
+                    "generatedSourceIncluded": False,
+                    "cacheSourceIncluded": False,
+                    "artifactSourceIncluded": False,
+                    "authorityGranted": False,
+                },
             },
         )
         self.command_map = {
@@ -160,6 +252,10 @@ class ReviewSliceTests(unittest.TestCase):
         self.assertTrue(row["allSlicesSourceBound"])
         self.assertTrue(row["allSlicesInvariantPolicyBound"])
         self.assertTrue(row["allSlicesCommandEvidenceBound"])
+        self.assertEqual(
+            row["sourceProvenanceSha256"],
+            self.digest(self.evidence / "source-provenance.json"),
+        )
         self.assertFalse(row["authorityGranted"])
         for item in row["slices"]:
             self.assertEqual(item["commitCount"], 1)
@@ -186,6 +282,14 @@ class ReviewSliceTests(unittest.TestCase):
         source["testedSha"] = self.base
         self.write_json(self.evidence / "source.json", source)
         with self.assertRaisesRegex(ValueError, "checkout differs"):
+            self.build()
+
+    def test_tampered_provenance_inventory_fails_closed(self) -> None:
+        path = self.evidence / "source-provenance.json"
+        row = json.loads(path.read_text())
+        row["files"][0]["sha256"] = "9" * 64
+        self.write_json(path, row)
+        with self.assertRaisesRegex(ValueError, "inventory digest"):
             self.build()
 
 
