@@ -5,8 +5,8 @@ Status: **source-composed candidate; exact native and external qualification not
 ## Frozen source snapshot
 
 The implementation map observes source commit
-`d58ca90b779c851ab7f7f9676356471f3d17795b`, tree
-`07f52d905672e4482c3c0feb12bf38e355640ad2`. That snapshot is the frozen
+`5762f76b6044a9362144b115c7c600cdac9bf3a5`, tree
+`cc10a76f81b64d7224ecda6b210155d77761627b`. That snapshot is the frozen
 ordinary-source ancestor for the current evidence cycle. The commit containing
 this status file cannot embed its own future Git identity; the exact current
 candidate commit/tree and every inspected blob are bound by
@@ -18,6 +18,9 @@ receipts.
 - Matrix apply/finalizer workflows and encoded staging sources are absent.
 - Matrix qualification workflows are read-only and use exact source-head and
   deterministic-merge lanes plus one paired acceptance receipt.
+- The exact-candidate workflow cancels superseded executions in each branch/PR
+  concurrency group so stale SHAs cannot starve the latest immutable head.
+  Cancellation, queuing, skipping, staleness or partial execution is never a pass.
 - The typed entered-use boundary remains intact. Post-entry proof, persistence,
   authority, session identity, cancellation, deadline, clock, store, permit and
   invariant faults retain distinct identity-free diagnostics while all remain
