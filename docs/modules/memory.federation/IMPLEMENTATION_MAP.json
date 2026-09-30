@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "db6ad91c9a95dc326e41d601a26e19d9e4c38dad",
-    "tree": "ce7c21e52541f9a04f9a99c5aed4abc2894e4092"
+    "commit": "550d146bcf5077efc062c44900f088e6efe718cf",
+    "tree": "8f01841a044b8d142ed887b1109c2e26cc84bd51"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -87,9 +87,9 @@
   "headAttestation": {
     "candidateBranch": "feat/memory-federation-full-closure-20260927",
     "baseCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
-    "candidateHead": "db6ad91c9a95dc326e41d601a26e19d9e4c38dad",
-    "candidateTree": "ce7c21e52541f9a04f9a99c5aed4abc2894e4092",
-    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed context_self_encoded_attestation_payload nonblocking_owner_backpressure interrupted_qualification_failure_evidence bounded_cleanup_batch_receipt domain_separated_fixture_nonces module_scoped_strict_clippy_dependency_boundary exact_scope_before_ranking owner_exhaustion_completion_witness peer_local_setup_failure_coverage post_io_authority_observation final_use_memory_validity_window separate_wire_map_rebind",
+    "candidateHead": "550d146bcf5077efc062c44900f088e6efe718cf",
+    "candidateTree": "8f01841a044b8d142ed887b1109c2e26cc84bd51",
+    "headMeaning": "canonical_v2 bounded_discovery_reserved_read_budget deterministic_peer_selection final_use_revalidation private_verified_frame monotonic_partitioned_replay authenticated_transport_identity durable_replay_attempt_recovery restart_surviving_cancellation owner_cut_witness scoped_canonical_map_verification pre_post_execution_guard canonical_capability_status retained_logical_capacity_metrics terminal_request_credential_currentness issuing_host_token_binding actual_command_execution locked_input_revalidation ordered_merge_parents authenticated_product_body_bridge atomic_product_preflight retry_safe_client_inbound_commit v4_combined_attachment_partial_peer_evidence single_pr_qualification_owner_required_fanin issuer_attested_transport_context_before_packet_replay local_owner_bound_transport_context stale_public_constructor_regression_removed context_self_encoded_attestation_payload nonblocking_owner_backpressure interrupted_qualification_failure_evidence bounded_cleanup_batch_receipt domain_separated_fixture_nonces module_scoped_strict_clippy_dependency_boundary exact_scope_before_ranking owner_exhaustion_completion_witness peer_local_setup_failure_coverage post_io_authority_observation final_use_memory_validity_window separate_wire_map_rebind workspace_lint_inheritance narrow_function_lint_exceptions cfg_test_only_expect_exception",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "agentd_product_runtime_composition",
@@ -150,7 +150,9 @@
       "same_process_group_descendant_cleanup",
       "single_pr_qualification_owner_required_fanin",
       "terminal_request_credential_revocation_rotation_expiry_fence",
+      "test_expect_exception_cfg_test_only",
       "tracked_lockfile_byte_identity",
+      "transaction_lint_exceptions_function_scoped",
       "transport_context_attestation_payload_self_encoded",
       "transport_context_hmac_local_owner_peer_profile_channel_lifetime_key_generation_binding",
       "transport_context_private_construction_contract",
@@ -159,6 +161,7 @@
       "v4_combined_attachment_partial_peer_evidence",
       "wire_map_source_rebound_without_activation",
       "workflow_run_attempt_and_job_binding",
+      "workspace_lint_inheritance_restored",
       "wrong_local_host_transport_context_rejected_without_consuming_replay"
     ],
     "productCallsites": [
@@ -223,15 +226,15 @@
       "scripts/verify_memory_federation_implementation.py",
       "scripts/verify_memory_federation_status.py"
     ],
-    "note": "Author-only observation of the canonically formatted frozen host-product source and separately rebound authenticated-wire map. Exact-scope-before-ranking, same-snapshot owner exhaustion, peer-local failure coverage, post-I/O authority observation, and final-use memory validity remain the candidate semantics. This map-only commit grants no execution, independent acceptance, activation, promotion, or release claim.",
+    "note": "Author-only observation of the frozen host-product candidate after restoring workspace lint ownership and narrowing exceptions to cfg(test) fixtures plus two exact transaction-shaped functions. Exact-scope-before-ranking, same-snapshot exhaustion, structured peer failure, post-I/O authority time, and final-use memory validity remain unchanged. This map-only commit grants no execution, acceptance, activation, promotion, or release claim.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "db6ad91c9a95dc326e41d601a26e19d9e4c38dad",
-    "tree": "ce7c21e52541f9a04f9a99c5aed4abc2894e4092"
+    "commit": "550d146bcf5077efc062c44900f088e6efe718cf",
+    "tree": "8f01841a044b8d142ed887b1109c2e26cc84bd51"
   },
   "observedSourcePaths": [
     ".github/workflows/blocking-ci.yml",
@@ -444,7 +447,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
-      "object": "41a92a3ef52e40975216d37b11e36e05b360113a"
+      "object": "48389d9e6c84010754b5d5dd5c57423ab485f98e"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
@@ -484,7 +487,7 @@
     },
     {
       "path": "docs/modules/memory.federation/WIRE_IMPLEMENTATION_MAP.json",
-      "object": "84c72d16d719cd84f1290dfc0168813659fa1a2b"
+      "object": "b343c807138029361813f067ee2917eb50565787"
     },
     {
       "path": "docs/modules/memory.federation/WIRE_V1.md",
