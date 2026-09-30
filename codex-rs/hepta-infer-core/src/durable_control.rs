@@ -19,6 +19,8 @@ mod archive;
 mod archive_compaction;
 #[path = "native_archive_store.rs"]
 mod archive_store;
+#[path = "feature_control.rs"]
+pub mod feature;
 #[path = "native_control.rs"]
 pub mod native;
 pub use archive::NativeHistoryMaintenanceReceipt;
@@ -180,6 +182,7 @@ pub struct DurableInferenceControl {
     file: File,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
+    features: feature::FeatureJournal,
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
@@ -206,6 +209,7 @@ impl DurableInferenceControl {
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
+        let mut features = feature::FeatureJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
@@ -236,11 +240,19 @@ impl DurableInferenceControl {
             if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 archive::validate_replay_archive(&path, json)?;
                 native.replay(json)?;
+            } else if let Some(json) = line.strip_prefix(feature::JOURNAL_PREFIX) {
+                features.replay(json)?;
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
+            if records.len() + native.records.len() + features.records.len() > capacity
+                || records
+                    .keys()
+                    .any(|id| native.records.contains_key(id) || features.records.contains_key(id))
+                || native
+                    .records
+                    .keys()
+                    .any(|id| features.records.contains_key(id))
             {
                 return Err(Error::CapacityExceeded);
             }
@@ -258,6 +270,7 @@ impl DurableInferenceControl {
             file,
             records,
             native,
+            features,
             capacity,
             journal_bytes,
             poisoned: false,
@@ -276,13 +289,17 @@ impl DurableInferenceControl {
             }
             return Err(Error::Conflict);
         }
-        if self.native.records.contains_key(&request.request_id) {
+        if self.native.records.contains_key(&request.request_id)
+            || self.features.records.contains_key(&request.request_id)
+        {
             return Err(Error::Conflict);
         }
         if archive_store::lookup(&self.path, &request.request_id)?.is_some() {
             return Err(Error::Conflict);
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
+        if self.records.len() + self.native.records.len() + self.features.records.len()
+            >= self.capacity
+        {
             return Err(Error::CapacityExceeded);
         }
         let event = Event::Submit(request);

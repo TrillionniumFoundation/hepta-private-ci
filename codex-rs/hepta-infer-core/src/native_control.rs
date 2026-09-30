@@ -448,6 +448,9 @@ impl DurableInferenceControl {
         {
             return Err(Error::Conflict);
         }
+        if self.features.records.contains_key(&request.request_id) {
+            return Err(Error::Conflict);
+        }
         if let Some(record) = self.native.records.get(&request.request_id) {
             return if record.request == request {
                 Ok(record.clone())
@@ -462,7 +465,9 @@ impl DurableInferenceControl {
                 Err(Error::Conflict)
             };
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
+        if self.records.len() + self.native.records.len() + self.features.records.len()
+            >= self.capacity
+        {
             return Err(Error::CapacityExceeded);
         }
         self.ensure_native_dispatch_space()?;
