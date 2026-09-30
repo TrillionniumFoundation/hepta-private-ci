@@ -8,6 +8,7 @@
 
 mod model;
 mod store;
+mod turn_recovery;
 
 pub use codex_hepta_matrix_protocol::MatrixEventId;
 pub use codex_hepta_matrix_protocol::MatrixRoomId;

@@ -75,7 +75,7 @@ pub use sync_observation::MatrixSyncUnchangedResultV1;
 const MATRIX_SCHEMA_VERSION: u32 = 1;
 const MATRIX_DB_FILENAME: &str = "matrix_1.sqlite3";
 const MATRIX_V2_SCHEMA_FINGERPRINT: &str =
-    "53a59efa865437f08e2bc84b6b44c133b53dc7f40f485ec1dc6200876d221fd1";
+    "5c8d5557c812465a58cc0e9746afcd384d848627536c0c7a0efcec7a18ef8e90";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
@@ -764,6 +764,11 @@ impl MatrixDurableStore {
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
+        sqlx::query("DELETE FROM matrix_turn_recovery WHERE event_id = ?")
+            .bind(draft.event_id.as_str())
+            .execute(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
         self.append_change(
             &mut transaction,
             ChangeKind::InboxProcessed,
@@ -1218,6 +1223,46 @@ impl MatrixDurableStore {
         .fetch_all(&self.pool)
         .await
         .map_err(unavailable)?;
+        rows.iter().map(inbox_from_row).collect()
+    }
+
+    /// Bounded keyset window for recovery, wrapping only after the current
+    /// frontier. A permanently pending old turn cannot hide later inbox work.
+    pub async fn pending_recovery_inbox(
+        &self,
+        limit: usize,
+        after_cursor: u64,
+    ) -> Result<Vec<InboxRecord>, MatrixDurableError> {
+        validate_limit(limit)?;
+        let mut tx = self.pool.begin().await.map_err(unavailable)?;
+        let mut rows = sqlx::query(
+            "SELECT inbox_cursor, event_id, room_id, sender_user_id, event_type, payload,
+                    payload_sha256, binding_revision, generation, origin_server_ts_ms,
+                    received_at_ms, state, processed_at_ms
+             FROM matrix_visible_inbox_events_v2 WHERE state = 'pending' AND inbox_cursor > ?
+             ORDER BY inbox_cursor LIMIT ?",
+        )
+        .bind(to_i64(after_cursor)?)
+        .bind(to_i64(limit as u64)?)
+        .fetch_all(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+        if rows.len() < limit {
+            let wrapped = sqlx::query(
+                "SELECT inbox_cursor, event_id, room_id, sender_user_id, event_type, payload,
+                        payload_sha256, binding_revision, generation, origin_server_ts_ms,
+                        received_at_ms, state, processed_at_ms
+                 FROM matrix_visible_inbox_events_v2 WHERE state = 'pending' AND inbox_cursor <= ?
+                 ORDER BY inbox_cursor LIMIT ?",
+            )
+            .bind(to_i64(after_cursor)?)
+            .bind(to_i64((limit - rows.len()) as u64)?)
+            .fetch_all(&mut *tx)
+            .await
+            .map_err(unavailable)?;
+            rows.extend(wrapped);
+        }
+        tx.commit().await.map_err(unavailable)?;
         rows.iter().map(inbox_from_row).collect()
     }
 
@@ -3550,13 +3595,14 @@ async fn verify_matrix_v2_schema(pool: &SqlitePool) -> Result<(), MatrixDurableE
             'matrix_sync_mutations_v2_by_tombstone',
             'matrix_sync_mutations_v2_no_delete',
             'matrix_sync_mutations_v2_no_update',
-            'matrix_visible_inbox_events_v2'
+            'matrix_visible_inbox_events_v2',
+            'matrix_turn_recovery'
          ) ORDER BY name",
     )
     .fetch_all(pool)
     .await
     .map_err(unavailable)?;
-    if rows.len() != 17 {
+    if rows.len() != 18 {
         return Err(MatrixDurableError::Corrupt);
     }
     let mut identity = Vec::new();
@@ -3635,6 +3681,7 @@ async fn verify_store(
             ('matrix_meta_no_update', 'trigger'), ('matrix_meta_no_delete', 'trigger'),
             ('room_bindings', 'table'), ('room_threads', 'table'),
             ('inbox_events', 'table'), ('inbox_dispatches', 'table'),
+            ('matrix_turn_recovery', 'table'),
             ('outbox_messages', 'table'), ('outbox_txns', 'table'), ('change_log', 'table'),
             ('matrix_sync_checkpoint', 'table'),
             ('matrix_sync_checkpoint_no_delete', 'trigger'),
@@ -3663,7 +3710,7 @@ async fn verify_store(
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 31 {
+    if required_objects != 32 {
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
