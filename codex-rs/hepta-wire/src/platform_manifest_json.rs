@@ -339,12 +339,21 @@ where
     T: for<'de> Deserialize<'de>,
 {
     enforce_raw_limits(bytes)?;
-    serde_json::from_slice(bytes).map_err(|error| {
-        if error.to_string().contains("duplicate field") {
-            PlatformManifestWireError::Wire(PlatformTypesWireError::DuplicateKey)
-        } else {
-            PlatformManifestWireError::Wire(PlatformTypesWireError::InvalidJson)
+    match super::strict_json::validate_json_structure(bytes) {
+        Ok(()) => {}
+        Err(super::strict_json::JsonStructureError::DuplicateKey) => {
+            return Err(PlatformManifestWireError::Wire(
+                PlatformTypesWireError::DuplicateKey,
+            ));
         }
+        Err(super::strict_json::JsonStructureError::InvalidJson) => {
+            return Err(PlatformManifestWireError::Wire(
+                PlatformTypesWireError::InvalidJson,
+            ));
+        }
+    }
+    serde_json::from_slice(bytes).map_err(|_| {
+        PlatformManifestWireError::Wire(PlatformTypesWireError::InvalidJson)
     })
 }
 

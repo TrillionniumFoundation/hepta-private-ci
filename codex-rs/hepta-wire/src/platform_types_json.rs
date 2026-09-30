@@ -283,13 +283,16 @@ where
     T: for<'de> Deserialize<'de>,
 {
     enforce_raw_limits(bytes)?;
-    serde_json::from_slice(bytes).map_err(|error| {
-        if error.to_string().contains("duplicate field") {
-            PlatformTypesWireError::DuplicateKey
-        } else {
-            PlatformTypesWireError::InvalidJson
+    match super::strict_json::validate_json_structure(bytes) {
+        Ok(()) => {}
+        Err(super::strict_json::JsonStructureError::DuplicateKey) => {
+            return Err(PlatformTypesWireError::DuplicateKey);
         }
-    })
+        Err(super::strict_json::JsonStructureError::InvalidJson) => {
+            return Err(PlatformTypesWireError::InvalidJson);
+        }
+    }
+    serde_json::from_slice(bytes).map_err(|_| PlatformTypesWireError::InvalidJson)
 }
 
 fn encode_json<T>(value: &T) -> Result<Vec<u8>, PlatformTypesWireError>

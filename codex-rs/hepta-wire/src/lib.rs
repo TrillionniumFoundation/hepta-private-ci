@@ -15,6 +15,7 @@ mod platform_manifest_json;
 mod platform_types_json;
 mod schema;
 mod stream;
+mod strict_json;
 mod version;
 
 pub use envelope::MAX_WIRE_PAYLOAD_BYTES;
