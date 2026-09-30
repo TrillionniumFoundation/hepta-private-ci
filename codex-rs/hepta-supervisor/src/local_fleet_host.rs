@@ -1,7 +1,6 @@
 //! Explicit root-owned local resource authority and native containment.
 //! This owner issues only resource leases, never model or acceptance grants.
 
-use std::ffi::OsString;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -30,6 +29,8 @@ use crate::SpawnSpec;
 
 #[path = "local_fleet_containment.rs"]
 mod containment;
+#[path = "local_fleet_environment.rs"]
+mod environment;
 #[path = "local_fleet_maintenance.rs"]
 mod maintenance;
 #[path = "local_fleet_trust.rs"]
@@ -46,6 +47,8 @@ pub(crate) struct Policy {
     pub resource_authority_frontier: PathBuf,
     pub process_thread_reserve: u64,
     pub matrix_resources: ResourceVectorV1,
+    #[serde(default)]
+    pub self_iteration_config_directory: Option<PathBuf>,
 }
 
 pub struct LocalFleetHost {
@@ -56,7 +59,7 @@ pub struct LocalFleetHost {
     runtime: Handle,
     clock: Arc<trust::HostClock>,
     launch_gate: Arc<tokio::sync::Mutex<()>>,
-    launch_environment: Vec<(OsString, OsString)>,
+    launch_environment: environment::LaunchEnvironment,
     pub(crate) policy: Policy,
 }
 
@@ -77,6 +80,9 @@ impl LocalFleetHost {
             return Err(ProcessDriverError::new(
                 "local host requires root and a bounded non-root workload policy",
             ));
+        }
+        if let Some(directory) = &policy.self_iteration_config_directory {
+            trust::validate_root_directory(directory)?;
         }
         containment::prepare_base(&policy)?;
         containment::protect_registry(&registry, &policy)?;
@@ -119,14 +125,7 @@ impl LocalFleetHost {
             runtime: Handle::current(),
             clock,
             launch_gate: Arc::new(tokio::sync::Mutex::new(())),
-            launch_environment: [
-                "HEPTA_MODEL_CREDENTIAL_PROFILE_HOME",
-                "HEPTA_SELF_ITERATION_HOST_CONFIG",
-                "HEPTA_SELF_ITERATION_HOST_CONFIG_DIGEST",
-            ]
-            .into_iter()
-            .filter_map(|name| std::env::var_os(name).map(|value| (OsString::from(name), value)))
-            .collect(),
+            launch_environment: environment::LaunchEnvironment::capture(),
             policy,
         });
         host.maintain().await?;
@@ -137,6 +136,8 @@ impl LocalFleetHost {
         &self,
         record: &codex_hepta_fleet::AgentRecord,
     ) -> Result<(), ProcessDriverError> {
+        self.launch_environment
+            .resolve(&self.policy, &record.manifest.agent_id)?;
         containment::prepare_workload(&record.layout, &self.policy)
     }
 
@@ -151,6 +152,9 @@ impl LocalFleetHost {
                 .load_agent(&spec.agent_id)
                 .map_err(host_error)?;
             containment::prepare_workload(&record.layout, &self.policy)?;
+            let environment = self
+                .launch_environment
+                .resolve(&self.policy, &spec.agent_id)?;
             let budget = &record.manifest.resources;
             let resources = ResourceVectorV1 {
                 cpu_millis: u64::from(budget.max_concurrent_turns) * 1000,
@@ -166,7 +170,7 @@ impl LocalFleetHost {
             digest.update(std::fs::read(&spec.command.program)?);
             digest.update(serde_json::to_vec(&record.manifest)?);
             digest.update(spec.generation.to_be_bytes());
-            for (name, value) in &self.launch_environment {
+            for (name, value) in &environment {
                 for bytes in [name.as_encoded_bytes(), value.as_encoded_bytes()] {
                     digest.update((bytes.len() as u64).to_be_bytes());
                     digest.update(bytes);
@@ -186,6 +190,7 @@ impl LocalFleetHost {
                 )
                 .await?;
             prepared.launch = Some(launch);
+            prepared.environment = environment;
             Ok(prepared)
         })
     }
@@ -361,7 +366,8 @@ impl LocalFleetHost {
             .env("PATH", "/usr/bin:/bin")
             .env("LANG", "C.UTF-8")
             .envs(
-                self.launch_environment
+                prepared
+                    .environment
                     .iter()
                     .map(|(name, value)| (name, value)),
             )

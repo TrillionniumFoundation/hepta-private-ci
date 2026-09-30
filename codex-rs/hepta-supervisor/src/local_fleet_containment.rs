@@ -1,5 +1,6 @@
 //! The child joins an already protected cgroup before any executable effect.
 
+use std::ffi::OsString;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::os::fd::AsRawFd;
@@ -26,6 +27,7 @@ pub(crate) struct PreparedExecution {
     pub relative: String,
     membership: File,
     pub launch: Option<tokio::sync::OwnedMutexGuard<()>>,
+    pub environment: Vec<(OsString, OsString)>,
 }
 
 pub(super) fn prepare_base(policy: &Policy) -> Result<(), ProcessDriverError> {
@@ -107,6 +109,7 @@ pub(super) fn create_execution(
         relative,
         membership,
         launch: None,
+        environment: Vec::new(),
     })
 }
 
