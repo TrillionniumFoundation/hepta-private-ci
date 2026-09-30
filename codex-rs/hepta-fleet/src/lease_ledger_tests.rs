@@ -79,3 +79,64 @@ fn renewal_and_revocation_are_generation_fenced() {
         Err(Error::Revoked)
     );
 }
+
+#[test]
+fn expired_grant_cannot_be_resurrected_after_capacity_is_reallocated() {
+    let mut ledger = LeaseLedger::new();
+    ledger.admit_host(host()).expect("host");
+    let mut first = grant("one", 1_000);
+    first.expires_at_ms = 300;
+    ledger.issue(200, first.clone()).expect("first grant");
+    ledger.issue(300, grant("two", 1_000)).expect("reallocated");
+    assert_eq!(
+        ledger.renew_or_revoke(
+            300,
+            "one",
+            1,
+            3,
+            &"1".repeat(64),
+            LeaseDisposition::Renew { expires_at_ms: 900 },
+        ),
+        Err(Error::InvalidTime)
+    );
+    assert_eq!(ledger.get("one"), Some(&first));
+}
+
+#[test]
+fn failed_generation_advance_does_not_change_grant() {
+    for disposition in [
+        LeaseDisposition::Revoke,
+        LeaseDisposition::Renew { expires_at_ms: 900 },
+    ] {
+        let mut ledger = LeaseLedger::new();
+        ledger.admit_host(host()).expect("host");
+        let mut original = grant("one", 500);
+        original.lease_generation = u64::MAX;
+        ledger.issue(200, original.clone()).expect("grant");
+        assert_eq!(
+            ledger.renew_or_revoke(300, "one", u64::MAX, 3, &"1".repeat(64), disposition),
+            Err(Error::ArithmeticOverflow)
+        );
+        assert_eq!(ledger.get("one"), Some(&original));
+    }
+}
+
+#[test]
+fn renewal_rejects_time_before_host_observation() {
+    let mut ledger = LeaseLedger::new();
+    ledger.admit_host(host()).expect("host");
+    let original = grant("one", 500);
+    ledger.issue(200, original.clone()).expect("grant");
+    assert_eq!(
+        ledger.renew_or_revoke(
+            99,
+            "one",
+            1,
+            3,
+            &"1".repeat(64),
+            LeaseDisposition::Renew { expires_at_ms: 900 },
+        ),
+        Err(Error::StaleHost)
+    );
+    assert_eq!(ledger.get("one"), Some(&original));
+}

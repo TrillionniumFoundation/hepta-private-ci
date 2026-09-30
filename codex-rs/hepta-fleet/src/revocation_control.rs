@@ -217,14 +217,14 @@ impl FleetRevocationCoordinator {
             return Err(FleetRevocationError::UnknownNode);
         }
         let now = self.now()?;
-        if now >= current.update.update.expires_at_unix_ms {
+        if now < current.update.update.issued_at_unix_ms
+            || now >= current.update.update.expires_at_unix_ms
+        {
             return Ok(FleetNodeRevocationState::FeedStale);
         }
-        if current
-            .acknowledgements
-            .iter()
-            .any(|candidate| candidate.ack.node_id == node_id)
-        {
+        if current.acknowledgements.iter().any(|candidate| {
+            candidate.ack.node_id == node_id && candidate.ack.applied_at_unix_ms <= now
+        }) {
             return Ok(FleetNodeRevocationState::Ready);
         }
         if now >= current.convergence_deadline_unix_ms {
@@ -240,7 +240,9 @@ impl FleetRevocationCoordinator {
             .as_ref()
             .ok_or(FleetRevocationError::NoCurrentUpdate)?;
         let now = self.now()?;
-        if now >= current.update.update.expires_at_unix_ms {
+        if now < current.update.update.issued_at_unix_ms
+            || now >= current.update.update.expires_at_unix_ms
+        {
             let acknowledged: BTreeSet<String> = current
                 .acknowledgements
                 .iter()
@@ -486,6 +488,29 @@ mod tests {
             coordinator.node_state("node-a").unwrap(),
             FleetNodeRevocationState::Ready
         );
+    }
+
+    #[test]
+    fn clock_rollback_before_feed_issuance_revokes_ready_projection() {
+        let (mut coordinator, clock, _distributor, node, update) = setup();
+        coordinator.install_update(update.clone()).unwrap();
+        clock.set(1_200);
+        coordinator
+            .record_ack(signed_ack(&node, &update, 1_200))
+            .unwrap();
+        clock.set(1_199);
+        assert_eq!(
+            coordinator.node_state("node-a").unwrap(),
+            FleetNodeRevocationState::CatchingUp
+        );
+        clock.set(999);
+        assert_eq!(
+            coordinator.node_state("node-a").unwrap(),
+            FleetNodeRevocationState::FeedStale
+        );
+        let status = coordinator.status().unwrap();
+        assert!(!status.feed_fresh);
+        assert!(!status.converged);
     }
 
     #[test]

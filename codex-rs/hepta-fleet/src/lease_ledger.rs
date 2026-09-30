@@ -226,15 +226,16 @@ impl LeaseLedger {
                 Ok(receipt(&current, LeaseOutcome::Unchanged))
             }
             LeaseDisposition::Revoke => {
+                let next_generation = current
+                    .lease_generation
+                    .checked_add(1)
+                    .ok_or(Error::ArithmeticOverflow)?;
                 let grant = self
                     .grants
                     .get_mut(allocation_id)
                     .ok_or(Error::AllocationNotFound)?;
                 grant.revoked = true;
-                grant.lease_generation = grant
-                    .lease_generation
-                    .checked_add(1)
-                    .ok_or(Error::ArithmeticOverflow)?;
+                grant.lease_generation = next_generation;
                 Ok(receipt(grant, LeaseOutcome::Revoked))
             }
             LeaseDisposition::Renew { .. } if current.revoked => Err(Error::Revoked),
@@ -243,24 +244,31 @@ impl LeaseLedger {
                     .hosts
                     .get(&current.host_id)
                     .ok_or(Error::HostNotFound)?;
-                if now_ms >= host.valid_until_ms || host.generation != current.host_generation {
+                if now_ms < host.observed_at_ms
+                    || now_ms >= host.valid_until_ms
+                    || host.generation != current.host_generation
+                {
                     return Err(Error::StaleHost);
                 }
-                if expires_at_ms <= now_ms || expires_at_ms > host.valid_until_ms {
+                if current.expires_at_ms <= now_ms
+                    || expires_at_ms <= now_ms
+                    || expires_at_ms > host.valid_until_ms
+                {
                     return Err(Error::InvalidTime);
                 }
                 if expires_at_ms == current.expires_at_ms {
                     return Ok(receipt(&current, LeaseOutcome::Unchanged));
                 }
+                let next_generation = current
+                    .lease_generation
+                    .checked_add(1)
+                    .ok_or(Error::ArithmeticOverflow)?;
                 let grant = self
                     .grants
                     .get_mut(allocation_id)
                     .ok_or(Error::AllocationNotFound)?;
                 grant.expires_at_ms = expires_at_ms;
-                grant.lease_generation = grant
-                    .lease_generation
-                    .checked_add(1)
-                    .ok_or(Error::ArithmeticOverflow)?;
+                grant.lease_generation = next_generation;
                 Ok(receipt(grant, LeaseOutcome::Renewed))
             }
         }
