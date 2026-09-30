@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   author:
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -32,7 +32,12 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           test "$(git ls-remote origin "refs/heads/$BRANCH" | awk '{print $1}')" = "$EXPECTED_SHA"
-          cat .github/intuition-final-use-authoring/part-* | base64 --decode | gzip --decompress > "$RUNNER_TEMP/transform.py"
+          python3 - <<'PY'
+          import base64, gzip
+          from pathlib import Path
+          raw = b''.join(path.read_bytes() for path in sorted(Path('.github/intuition-final-use-authoring').glob('part-*')))
+          Path(__import__('os').environ['RUNNER_TEMP'], 'transform.py').write_bytes(gzip.decompress(base64.b64decode(raw)))
+          PY
           python3 "$RUNNER_TEMP/transform.py"
           git diff --check
           cd codex-rs
