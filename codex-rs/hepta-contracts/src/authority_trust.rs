@@ -29,6 +29,7 @@ use std::fmt;
 use std::marker::PhantomData;
 use std::path::Path;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -285,6 +286,108 @@ impl VerifiedFinalUseRevocationHead {
     }
 }
 
+/// Signed-feed admission clock layered over one retained authority clock.
+///
+/// This type carries no authority by itself. It emits time only while a
+/// signature-verified revocation head is live on the retained base clock.
+/// Observed expiry, base-clock failure, or explicit invalidation clears the
+/// window irreversibly until another verified head is published.
+pub struct FinalUseFeedClock {
+    clock: Arc<dyn AuthorityClock>,
+    window: Mutex<Option<(u64, u64)>>,
+}
+
+impl fmt::Debug for FinalUseFeedClock {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str("FinalUseFeedClock([REDACTED CLOCK AND WINDOW])")
+    }
+}
+
+impl FinalUseFeedClock {
+    pub fn new(clock: Arc<dyn AuthorityClock>) -> Self {
+        Self {
+            clock,
+            window: Mutex::new(None),
+        }
+    }
+
+    pub fn invalidate(&self) -> Result<(), AuthorityTrustError> {
+        *self
+            .window
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)? = None;
+        Ok(())
+    }
+
+    pub fn publish(
+        &self,
+        verified: &VerifiedFinalUseRevocationHead,
+    ) -> Result<(), AuthorityTrustError> {
+        let mut current = self
+            .window
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        // Sample after acquiring the publication lock. Failed replacement
+        // cannot leave a formerly live interval behind.
+        *current = None;
+        let sample = self.clock.now_with_uncertainty()?;
+        let window = (
+            verified.issued_at_unix_ms(),
+            verified.expires_at_unix_ms(),
+        );
+        if !feed_interval_is_live(sample, window) {
+            return Err(AuthorityTrustError::Unavailable);
+        }
+        *current = Some(window);
+        Ok(())
+    }
+
+    fn is_bound_to(&self, clock: &Arc<dyn AuthorityClock>) -> bool {
+        Arc::ptr_eq(&self.clock, clock)
+    }
+}
+
+impl AuthorityClock for FinalUseFeedClock {
+    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+        self.now_with_uncertainty().map(|(now, _)| now)
+    }
+
+    fn now_with_uncertainty(&self) -> Result<(u64, u64), AuthorityTrustError> {
+        let mut window = self
+            .window
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        let sample = match self.clock.now_with_uncertainty() {
+            Ok(sample) => sample,
+            Err(error) => {
+                *window = None;
+                return Err(error);
+            }
+        };
+        match *window {
+            Some(current) if feed_interval_is_live(sample, current) => Ok(sample),
+            _ => {
+                // A clock rollback cannot resurrect an observed expiry/failure.
+                *window = None;
+                Err(AuthorityTrustError::Unavailable)
+            }
+        }
+    }
+}
+
+fn feed_interval_is_live(
+    (now, uncertainty): (u64, u64),
+    (issued, expires): (u64, u64),
+) -> bool {
+    uncertainty <= MAX_PRODUCTION_CLOCK_UNCERTAINTY_MS
+        && now
+            .checked_sub(uncertainty)
+            .is_some_and(|earliest| earliest >= issued)
+        && now
+            .checked_add(uncertainty)
+            .is_some_and(|latest| latest < expires)
+}
+
 /// Mandatory production trust components; no component is optional.
 pub struct ProductionAuthorityTrustBundle<C, S, K, F> {
     clock: Arc<C>,
@@ -355,6 +458,145 @@ where
             return Err(AuthorityTrustError::Invalid);
         }
         Ok(())
+    }
+}
+
+/// A validated production final-use trust context with one retained runtime clock.
+///
+/// The context is constructed only from a complete production bundle and the
+/// exact externally custodied issuer-key set. Clones retain the same live
+/// clock/custody fence and external frontier owner; they do not snapshot or
+/// manufacture trust.
+#[derive(Clone)]
+pub struct ProductionFinalUseTrustContext {
+    clock: Arc<dyn AuthorityClock>,
+    frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+    issuer_trust_sha256: [u8; 32],
+}
+
+impl fmt::Debug for ProductionFinalUseTrustContext {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str("ProductionFinalUseTrustContext([REDACTED LIVE TRUST])")
+    }
+}
+
+impl ProductionFinalUseTrustContext {
+    /// Bind one exact issuer-key set to one live production bundle.
+    pub fn bind<C, S, K>(
+        issuer_keys: &[FinalUseIssuerTrustKey],
+        bundle: &ProductionAuthorityTrustBundle<C, S, K, FinalUseFrontier>,
+    ) -> Result<Self, FinalUseError>
+    where
+        C: ProductionAuthorityClock + 'static,
+        S: ProductionAuthorityFrontierStore<FinalUseFrontier> + 'static,
+        K: ProductionAuthorityKeyCustody + 'static,
+    {
+        validate_final_use_production_bundle(issuer_keys, bundle)?;
+        let clock = runtime_clock::bind(bundle);
+        let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
+            bundle.frontier_store.clone();
+        Ok(Self {
+            clock,
+            frontier_store,
+            issuer_trust_sha256: final_use_issuer_trust_sha256(issuer_keys)?,
+        })
+    }
+
+    /// Return the shared read-only clock/custody fence retained by this context.
+    pub fn clock(&self) -> Arc<dyn AuthorityClock> {
+        Arc::clone(&self.clock)
+    }
+
+    /// Create a feed gate that is identity-bound to this exact runtime clock.
+    pub fn feed_clock(&self) -> Arc<FinalUseFeedClock> {
+        Arc::new(FinalUseFeedClock::new(Arc::clone(&self.clock)))
+    }
+
+    /// Recheck one authenticated revocation head on the retained production clock.
+    pub fn verified_revocations(
+        &self,
+        verified_head: &VerifiedFinalUseRevocationHead,
+    ) -> Result<FinalUseRevocations, FinalUseError> {
+        let (now, uncertainty) = self
+            .clock
+            .now_with_uncertainty()
+            .map_err(|_| FinalUseError::InvalidTrust)?;
+        verified_head.head_at(now, uncertainty)
+    }
+
+    /// Recover a final-use owner with a stricter admission clock layered over
+    /// the same retained production clock. This is used by product hosts that
+    /// additionally gate authority on a live signed-feed interval.
+    pub fn recover_state_dir_with_feed_clock(
+        &self,
+        directory: &Path,
+        signer_id: String,
+        issuer_keys: Vec<FinalUseIssuerTrustKey>,
+        verified_head: &VerifiedFinalUseRevocationHead,
+        admission_clock: Arc<FinalUseFeedClock>,
+    ) -> Result<FinalUseAuthority, FinalUseError> {
+        self.require_issuer_keys(&issuer_keys)?;
+        if !admission_clock.is_bound_to(&self.clock) {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let head = self.verified_revocations(verified_head)?;
+        let admission_clock: Arc<dyn AuthorityClock> = admission_clock;
+        FinalUseAuthority::recover_state_dir_with_issuer_keys(
+            directory,
+            signer_id,
+            issuer_keys,
+            head,
+            admission_clock,
+            Arc::clone(&self.frontier_store),
+        )
+    }
+
+    fn require_issuer_keys(
+        &self,
+        issuer_keys: &[FinalUseIssuerTrustKey],
+    ) -> Result<(), FinalUseError> {
+        if final_use_issuer_trust_sha256(issuer_keys)? != self.issuer_trust_sha256 {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        Ok(())
+    }
+
+    fn open_state_dir(
+        &self,
+        directory: &Path,
+        signer_id: String,
+        issuer_keys: Vec<FinalUseIssuerTrustKey>,
+        verified_head: &VerifiedFinalUseRevocationHead,
+    ) -> Result<FinalUseAuthority, FinalUseError> {
+        self.require_issuer_keys(&issuer_keys)?;
+        let head = self.verified_revocations(verified_head)?;
+        FinalUseAuthority::open_state_dir_with_issuer_keys(
+            directory,
+            signer_id,
+            issuer_keys,
+            head,
+            Arc::clone(&self.clock),
+            Arc::clone(&self.frontier_store),
+        )
+    }
+
+    fn recover_state_dir(
+        &self,
+        directory: &Path,
+        signer_id: String,
+        issuer_keys: Vec<FinalUseIssuerTrustKey>,
+        verified_head: &VerifiedFinalUseRevocationHead,
+    ) -> Result<FinalUseAuthority, FinalUseError> {
+        self.require_issuer_keys(&issuer_keys)?;
+        let head = self.verified_revocations(verified_head)?;
+        FinalUseAuthority::recover_state_dir_with_issuer_keys(
+            directory,
+            signer_id,
+            issuer_keys,
+            head,
+            Arc::clone(&self.clock),
+            Arc::clone(&self.frontier_store),
+        )
     }
 }
 
@@ -433,12 +675,12 @@ where
     S: ProductionAuthorityFrontierStore<FinalUseFrontier> + 'static,
     K: ProductionAuthorityKeyCustody + 'static,
 {
-    validate_final_use_production_bundle(&issuer_keys, bundle)?;
-    let clock = runtime_clock::bind(bundle);
-    let (now, uncertainty) = clock.now_with_uncertainty().map_err(|_| FinalUseError::InvalidTrust)?;
-    let head = verified_head.head_at(now, uncertainty)?;
-    let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> = bundle.frontier_store.clone();
-    FinalUseAuthority::open_state_dir_with_issuer_keys(directory, signer_id, issuer_keys, head, clock, frontier_store)
+    ProductionFinalUseTrustContext::bind(&issuer_keys, bundle)?.open_state_dir(
+        directory,
+        signer_id,
+        issuer_keys,
+        verified_head,
+    )
 }
 
 /// Recover only an exact external frontier under the same production trust.
@@ -454,12 +696,12 @@ where
     S: ProductionAuthorityFrontierStore<FinalUseFrontier> + 'static,
     K: ProductionAuthorityKeyCustody + 'static,
 {
-    validate_final_use_production_bundle(&issuer_keys, bundle)?;
-    let clock = runtime_clock::bind(bundle);
-    let (now, uncertainty) = clock.now_with_uncertainty().map_err(|_| FinalUseError::InvalidTrust)?;
-    let head = verified_head.head_at(now, uncertainty)?;
-    let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> = bundle.frontier_store.clone();
-    FinalUseAuthority::recover_state_dir_with_issuer_keys(directory, signer_id, issuer_keys, head, clock, frontier_store)
+    ProductionFinalUseTrustContext::bind(&issuer_keys, bundle)?.recover_state_dir(
+        directory,
+        signer_id,
+        issuer_keys,
+        verified_head,
+    )
 }
 
 fn validate_final_use_production_bundle<C, S, K>(

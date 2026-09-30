@@ -8,11 +8,18 @@
 use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 use codex_hepta_contracts::authority_trust::AuthorityDispatchBinding;
+use codex_hepta_contracts::authority_trust::ProductionAuthorityClock;
+use codex_hepta_contracts::authority_trust::ProductionAuthorityFrontierStore;
+use codex_hepta_contracts::authority_trust::ProductionAuthorityKeyCustody;
+use codex_hepta_contracts::authority_trust::ProductionAuthorityTrustBundle;
 use sha2::Digest;
 use sha2::Sha256;
 use std::fmt;
+use std::path::Path;
 
 use crate::lease_ledger::AllocationGrant;
 use crate::lease_ledger::Error as LeaseLedgerError;
@@ -28,6 +35,29 @@ pub struct FleetAuthorityPort {
 impl FleetAuthorityPort {
     pub fn new(verifier: AuthorityLeaseVerifier) -> Self {
         Self { verifier }
+    }
+
+    /// Open the single production lease owner and its read/verify-only fleet
+    /// port from one complete trust bundle. No compatibility clock or local
+    /// rollback frontier is selected by this entry point.
+    pub fn open_production<C, S, K>(
+        directory: &Path,
+        owner_id: String,
+        bundle: &ProductionAuthorityTrustBundle<C, S, K, AuthorityLeaseFrontier>,
+    ) -> Result<(AuthorityLeaseRegistry, Self), FleetAuthorityError>
+    where
+        C: ProductionAuthorityClock + 'static,
+        S: ProductionAuthorityFrontierStore<AuthorityLeaseFrontier> + 'static,
+        K: ProductionAuthorityKeyCustody + 'static,
+    {
+        let registry = AuthorityLeaseRegistry::open_production_state_dir(
+            directory,
+            owner_id,
+            bundle,
+        )
+        .map_err(FleetAuthorityError::Authority)?;
+        let port = Self::new(registry.verifier());
+        Ok((registry, port))
     }
 
     /// Issue one fleet allocation under the exact current generic authority

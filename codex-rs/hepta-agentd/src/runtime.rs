@@ -43,6 +43,8 @@ pub async fn run(
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
     let production_operations = config.take_production_operations();
+    let automation_effect_production_authority =
+        config.take_automation_effect_production_authority();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
         .authbus_trust_file()
@@ -59,6 +61,13 @@ pub async fn run(
     let objective_profile_file = config
         .objective_profile_file()
         .map(std::path::Path::to_path_buf);
+    if automation_effect_production_authority.is_some()
+        && automation_effect_host_file.is_none()
+    {
+        return Err(AgentdError::Invalid(
+            "automation effect production authority requires a protected host file".to_string(),
+        ));
+    }
     if objective_profile_file.is_some() && trust_file.is_none() {
         return Err(AgentdError::Invalid(
             "objective profile requires explicit AuthBus trust configuration".to_string(),
@@ -233,12 +242,33 @@ pub async fn run(
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
     }
-    if let Some(path) = automation_effect_host_file {
-        state.refresh_generation()?;
-        let host =
-            crate::automation_effect_host::AgentdAutomationEffectHost::open(&identity, &path)?;
-        state.refresh_generation()?;
-        state.attach_automation_effect_host(Arc::new(host))?;
+    match (
+        automation_effect_host_file,
+        automation_effect_production_authority,
+    ) {
+        (Some(path), Some(authority)) => {
+            state.refresh_generation()?;
+            let host = crate::automation_effect_host::AgentdAutomationEffectHost::open_production(
+                &identity,
+                &path,
+                &authority,
+            )?;
+            state.refresh_generation()?;
+            state.attach_automation_effect_host(Arc::new(host))?;
+        }
+        (Some(path), None) => {
+            state.refresh_generation()?;
+            let host =
+                crate::automation_effect_host::AgentdAutomationEffectHost::open(&identity, &path)?;
+            state.refresh_generation()?;
+            state.attach_automation_effect_host(Arc::new(host))?;
+        }
+        (None, None) => {}
+        (None, Some(_)) => {
+            return Err(AgentdError::Invalid(
+                "automation effect production authority requires a protected host file".to_string(),
+            ));
+        }
     }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();

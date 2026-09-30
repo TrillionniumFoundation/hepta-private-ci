@@ -299,11 +299,14 @@ fn signed_revocation_update(
     head: FinalUseRevocations,
     now: u64,
 ) -> SignedFinalUseRevocationUpdate {
+    let issued_at_unix_ms = now.saturating_sub(1_000);
     let update = FinalUseRevocationUpdate::new(
         "automation-revocation-distributor".to_string(),
         head,
-        now.saturating_sub(1_000),
-        now + TRUST_WINDOW_MS,
+        issued_at_unix_ms,
+        issued_at_unix_ms.saturating_add(
+            codex_hepta_contracts::MAX_REVOCATION_FEED_LIFETIME_MS,
+        ),
     );
     SignedFinalUseRevocationUpdate {
         signature: signer

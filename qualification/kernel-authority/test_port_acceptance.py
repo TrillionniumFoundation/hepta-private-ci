@@ -53,21 +53,97 @@ class PortAcceptanceTests(unittest.TestCase):
         }
         self.save()
 
+        self.process_root = self.root / "product-process"
+        process_text = (
+            f"test {PORTS.PROCESS.TEST_NAME} ... ok\n"
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; "
+            "0 filtered out; finished in 0.01s\n"
+        )
+        process_raw = process_text.encode()
+        process_log = self.process_root / "logs" / "authority-effect-process-restart.log"
+        process_log.parent.mkdir(parents=True)
+        process_log.write_bytes(process_raw)
+        process_execution = PORTS.PROCESS.parse_execution(process_text)
+        self.process_receipt = {
+            "schema": "hepta.kernel-authority-product-process-recovery.v1",
+            "schemaVersion": 1,
+            "candidate": self.identity,
+            "scope": "two-normal-agentd-product-processes",
+            "command": list(PORTS.PROCESS.command()),
+            "workingDirectory": "codex-rs",
+            "exitCode": 0,
+            "durationMs": 1,
+            "logPath": "logs/authority-effect-process-restart.log",
+            "logBytes": len(process_raw),
+            "logSha256": hashlib.sha256(process_raw).hexdigest(),
+            "testExecution": process_execution,
+            "validationError": None,
+            **{field: True for field in PORTS.PROCESS_PROOF_FIELDS},
+            "passed": True,
+            "productionTrustProved": False,
+            "targetHostQualified": False,
+            "independentAcceptance": False,
+            "activationGranted": False,
+            "releaseGranted": False,
+        }
+        self.save_process()
+
     def save(self):
         (self.root / "product-pilot-receipt.json").write_text(json.dumps(self.receipt))
 
+    def save_process(self):
+        (self.process_root / "product-process-recovery-receipt.json").write_text(
+            json.dumps(self.process_receipt)
+        )
+
     def verify(self):
         return PORTS.verified_pilot(self.identity, self.root)
+
+    def verify_process(self):
+        return PORTS.verified_product_process(self.identity, self.process_root)
 
     def test_matching_raw_fixture_is_reopened_without_granting_production(self):
         observed = self.verify()
         manifest = json.loads(Path(__file__).with_name("status_manifest.json").read_text())
         report = PORTS.project(manifest, self.identity, observed)
+        self.assertEqual(report["schema"], "hepta.kernel-authority-port-acceptance.v2")
         self.assertEqual(len(report["ports"]), len(manifest["targetPorts"]))
         self.assertEqual(sum(row["nativePilotVerified"] for row in report["ports"]), 2)
         self.assertTrue(all(not row["nativeIntegrationVerified"] for row in report["ports"]))
         self.assertTrue(all(not row["productionAccepted"] for row in report["ports"]))
         self.assertFalse(report["activationGranted"])
+
+    def test_combined_raw_evidence_reopens_product_process_without_granting_production(self):
+        observed = self.verify()
+        self.assertTrue(self.verify_process())
+        manifest = json.loads(Path(__file__).with_name("status_manifest.json").read_text())
+        report = PORTS.project(manifest, self.identity, observed, True)
+        self.assertEqual(
+            report["nativeEvidence"],
+            "pilot-and-product-process-raw-logs-reopened",
+        )
+        self.assertTrue(report["productProcessVerified"])
+        browser = next(
+            row
+            for row in report["ports"]
+            if row["id"] == "ModulePort::kernel.authority::browser.servo"
+        )
+        self.assertTrue(browser["productProcessRecoveryVerified"])
+        self.assertIn("two-product-process-recovery", browser["provenLifecycleObligations"])
+        self.assertFalse(browser["nativeIntegrationVerified"])
+        self.assertFalse(report["productionTrustProved"])
+
+    def test_changed_product_process_log_and_overclaim_are_rejected(self):
+        log = self.process_root / self.process_receipt["logPath"]
+        original = log.read_bytes()
+        log.write_text("running 0 tests\n")
+        with self.assertRaises(PORTS.EvidenceError):
+            self.verify_process()
+        log.write_bytes(original)
+        self.process_receipt["productionTrustProved"] = True
+        self.save_process()
+        with self.assertRaises(PORTS.EvidenceError):
+            self.verify_process()
 
     def test_source_only_does_not_grant_native_execution(self):
         manifest = json.loads(Path(__file__).with_name("status_manifest.json").read_text())

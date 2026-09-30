@@ -5,9 +5,36 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use std::collections::BTreeSet;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
+
+#[derive(Debug)]
+struct MutablePointClock {
+    now_unix_ms: AtomicU64,
+    uncertainty_ms: AtomicU64,
+    unavailable: AtomicBool,
+}
+
+impl AuthorityClock for MutablePointClock {
+    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+        self.now_with_uncertainty().map(|(now, _)| now)
+    }
+
+    fn now_with_uncertainty(&self) -> Result<(u64, u64), AuthorityTrustError> {
+        if self.unavailable.load(Ordering::SeqCst) {
+            Err(AuthorityTrustError::Unavailable)
+        } else {
+            Ok((
+                self.now_unix_ms.load(Ordering::SeqCst),
+                self.uncertainty_ms.load(Ordering::SeqCst),
+            ))
+        }
+    }
+}
 
 #[derive(Debug)]
 struct QualifiedClock {
@@ -493,5 +520,174 @@ fn production_open_rechecks_verified_head_freshness_on_the_protected_clock() {
         )
         .unwrap_err(),
         FinalUseError::InvalidTrust
+    );
+}
+
+#[test]
+fn final_use_feed_clock_does_not_resurrect_expiry_or_clock_failure() {
+    let head = FinalUseRevocations {
+        authority_epoch: 7,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let verified_head = verified_revocation_head(&head, 1_000, 1_100);
+    let base = Arc::new(MutablePointClock {
+        now_unix_ms: AtomicU64::new(1_050),
+        uncertainty_ms: AtomicU64::new(0),
+        unavailable: AtomicBool::new(false),
+    });
+    let clock: Arc<dyn AuthorityClock> = base.clone();
+    let feed = FinalUseFeedClock::new(clock);
+
+    feed.publish(&verified_head).unwrap();
+    assert_eq!(feed.now_unix_ms(), Ok(1_050));
+    base.now_unix_ms.store(1_100, Ordering::SeqCst);
+    assert_eq!(feed.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
+    base.now_unix_ms.store(1_050, Ordering::SeqCst);
+    assert_eq!(feed.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
+
+    feed.publish(&verified_head).unwrap();
+    base.unavailable.store(true, Ordering::SeqCst);
+    assert_eq!(feed.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
+    base.unavailable.store(false, Ordering::SeqCst);
+    assert_eq!(feed.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
+}
+
+#[test]
+fn final_use_feed_clock_preserves_uncertainty_and_rejects_future_windows() {
+    let head = FinalUseRevocations {
+        authority_epoch: 7,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let verified_head = verified_revocation_head(&head, 1_000, 1_100);
+    let base = Arc::new(MutablePointClock {
+        now_unix_ms: AtomicU64::new(1_050),
+        uncertainty_ms: AtomicU64::new(49),
+        unavailable: AtomicBool::new(false),
+    });
+    let clock: Arc<dyn AuthorityClock> = base.clone();
+    let feed = FinalUseFeedClock::new(clock);
+    feed.publish(&verified_head).unwrap();
+    assert_eq!(feed.now_with_uncertainty(), Ok((1_050, 49)));
+    base.uncertainty_ms.store(50, Ordering::SeqCst);
+    assert_eq!(feed.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
+    base.uncertainty_ms.store(49, Ordering::SeqCst);
+    assert_eq!(feed.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
+
+    let future_head = verified_revocation_head(&head, 1_060, 1_200);
+    assert_eq!(
+        feed.publish(&future_head),
+        Err(AuthorityTrustError::Unavailable)
+    );
+}
+
+#[test]
+fn final_use_feed_clock_invalidation_reaches_existing_readers() {
+    let head = FinalUseRevocations {
+        authority_epoch: 7,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let verified_head = verified_revocation_head(&head, 1_000, 1_100);
+    let base = Arc::new(MutablePointClock {
+        now_unix_ms: AtomicU64::new(1_050),
+        uncertainty_ms: AtomicU64::new(0),
+        unavailable: AtomicBool::new(false),
+    });
+    let clock: Arc<dyn AuthorityClock> = base;
+    let feed = Arc::new(FinalUseFeedClock::new(clock));
+    feed.publish(&verified_head).unwrap();
+    let reader: Arc<dyn AuthorityClock> = feed.clone();
+    assert_eq!(reader.now_unix_ms(), Ok(1_050));
+    feed.invalidate().unwrap();
+    assert_eq!(reader.now_unix_ms(), Err(AuthorityTrustError::Unavailable));
+}
+
+#[test]
+fn production_final_use_context_retains_one_clock_and_exact_issuer_identity() {
+    let signer = SigningKey::from_bytes(&[71; 32]);
+    let issuer_keys = vec![FinalUseIssuerTrustKey {
+        key_id: "issuer-context".into(),
+        verifying_key: signer.verifying_key().to_bytes(),
+        not_before_authority_epoch: 1,
+        not_after_authority_epoch: 20,
+    }];
+    let key_set_sha256 = final_use_issuer_trust_sha256(&issuer_keys).unwrap();
+    let head = FinalUseRevocations {
+        authority_epoch: 7,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let verified_head = verified_revocation_head(&head, 1_000, 3_000);
+    let frontier = Arc::new(MemoryProductionFrontier {
+        current: Mutex::new(FinalUseFrontier::for_initial_head(&head).unwrap()),
+        trust_domain: "authority-root".into(),
+    });
+    let bundle = ProductionAuthorityTrustBundle::new(
+        clock(),
+        frontier,
+        custody("final-use-issuer", key_set_sha256),
+        trust_evidence(),
+        custody_evidence("final-use-issuer", key_set_sha256),
+    )
+    .unwrap();
+
+    let context = ProductionFinalUseTrustContext::bind(&issuer_keys, &bundle).unwrap();
+    let first_clock = context.clock();
+    let second_clock = context.clock();
+    assert!(Arc::ptr_eq(&first_clock, &second_clock));
+    assert_eq!(context.verified_revocations(&verified_head), Ok(head.clone()));
+
+    let feed_clock = context.feed_clock();
+    assert_eq!(
+        feed_clock.now_unix_ms(),
+        Err(AuthorityTrustError::Unavailable)
+    );
+    feed_clock.publish(&verified_head).unwrap();
+    assert_eq!(feed_clock.now_unix_ms(), Ok(2_000));
+    feed_clock.invalidate().unwrap();
+    assert_eq!(
+        feed_clock.now_unix_ms(),
+        Err(AuthorityTrustError::Unavailable)
+    );
+
+    let other_frontier = Arc::new(MemoryProductionFrontier {
+        current: Mutex::new(FinalUseFrontier::for_initial_head(&head).unwrap()),
+        trust_domain: "authority-root".into(),
+    });
+    let other_bundle = ProductionAuthorityTrustBundle::new(
+        clock(),
+        other_frontier,
+        custody("final-use-issuer", key_set_sha256),
+        trust_evidence(),
+        custody_evidence("final-use-issuer", key_set_sha256),
+    )
+    .unwrap();
+    let other_context =
+        ProductionFinalUseTrustContext::bind(&issuer_keys, &other_bundle).unwrap();
+    let directory = tempfile::tempdir().unwrap();
+    assert!(matches!(
+        context.recover_state_dir_with_feed_clock(
+            directory.path(),
+            "security-owner".into(),
+            issuer_keys.clone(),
+            &verified_head,
+            other_context.feed_clock(),
+        ),
+        Err(FinalUseError::InvalidTrust)
+    ));
+
+    let wrong_keys = vec![FinalUseIssuerTrustKey {
+        key_id: "issuer-other".into(),
+        verifying_key: SigningKey::from_bytes(&[72; 32])
+            .verifying_key()
+            .to_bytes(),
+        not_before_authority_epoch: 1,
+        not_after_authority_epoch: 20,
+    }];
+    assert_eq!(
+        context.require_issuer_keys(&wrong_keys),
+        Err(FinalUseError::InvalidTrust)
     );
 }

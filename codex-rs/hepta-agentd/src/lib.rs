@@ -11,6 +11,7 @@ mod authbus_ingress;
 mod authbus_trust;
 mod authority_trust_host;
 mod automation;
+mod automation_authority_bootstrap;
 mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
@@ -54,6 +55,7 @@ pub mod test_support;
 mod topology_plasticity_host;
 
 pub use authbus_ingress::authbus_text_claims;
+pub use automation_authority_bootstrap::AgentdProductionAuthorityBootstrap;
 pub use browser_servo::BrowserFinalUseInvocation;
 pub use browser_servo::BrowserServoCall;
 pub use browser_servo::BrowserServoError;

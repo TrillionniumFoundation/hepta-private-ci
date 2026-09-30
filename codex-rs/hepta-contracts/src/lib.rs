@@ -32,6 +32,8 @@ pub use authority_lease::dispatch_authority_lease_with_witness;
 pub use authority_trust::AuthorityClock;
 pub use authority_trust::AuthorityFrontierStore;
 pub use authority_trust::AuthorityTrustError;
+pub use authority_trust::FinalUseFeedClock;
+pub use authority_trust::ProductionFinalUseTrustContext;
 pub use authority_trust::SystemAuthorityClock;
 pub use authority_trust::VerifiedFinalUseRevocationHead;
 

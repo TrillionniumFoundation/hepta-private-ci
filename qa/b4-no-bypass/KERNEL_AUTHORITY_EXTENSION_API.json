@@ -28,15 +28,38 @@
     },
     {
       "typeName": "VerifiedFinalUseRevocationHead",
-      "privilegedMethods": {},
+      "privilegedMethods": {
+        "verify": "final_use_verified_revocation_head_verify"
+      },
       "nonPrivilegedMethods": [
-        "verify",
         "distributor_id",
         "trust_key_id",
         "head",
         "update_sha256",
         "issued_at_unix_ms",
         "expires_at_unix_ms"
+      ]
+    },
+    {
+      "typeName": "FinalUseFeedClock",
+      "privilegedMethods": {
+        "publish": "final_use_feed_clock_publish"
+      },
+      "nonPrivilegedMethods": [
+        "new",
+        "invalidate"
+      ]
+    },
+    {
+      "typeName": "ProductionFinalUseTrustContext",
+      "privilegedMethods": {
+        "bind": "final_use_production_trust_bind",
+        "recover_state_dir_with_feed_clock": "final_use_open_state"
+      },
+      "nonPrivilegedMethods": [
+        "clock",
+        "feed_clock",
+        "verified_revocations"
       ]
     },
     {

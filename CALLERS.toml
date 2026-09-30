@@ -32,6 +32,9 @@ required_boundary_ids = [
   "final_use_approval_verify",
   "final_use_revocation_feed_trust",
   "final_use_revocation_feed_verify",
+  "final_use_verified_revocation_head_verify",
+  "final_use_feed_clock_publish",
+  "final_use_production_trust_bind",
   "final_use_revocation_feed_apply",
   "final_use_revocation_convergence_trust",
   "final_use_revocation_convergence_verify",
@@ -270,8 +273,36 @@ symbol = "FinalUseRevocationFeedVerifier::verify"
 call_pattern = 'revocation_feed_verifier\s*\.\s*verify\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["pub fn verify<", "self.verify_signed(signed, now_unix_ms)"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_verified_revocation_head_verify"
+symbol = "VerifiedFinalUseRevocationHead::verify"
+call_pattern = 'VerifiedFinalUseRevocationHead\s*::\s*verify\s*\('
+definition_path = "codex-rs/hepta-contracts/src/authority_trust.rs"
+definition_markers = ["pub struct VerifiedFinalUseRevocationHead", "pub fn verify(", "verifier.verify(signed, now_unix_ms)"]
 product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
-caller_markers = ["revocation_feed_verifier", ".verify(&signed", "signed final-use revocation feed rejected"]
+caller_markers = ["VerifiedFinalUseRevocationHead::verify", "initial signed final-use revocation feed rejected"]
+
+[[boundary]]
+id = "final_use_feed_clock_publish"
+symbol = "FinalUseFeedClock::publish"
+call_pattern = '\.\s*publish\s*\('
+caller_type_marker = "FinalUseFeedClock"
+definition_path = "codex-rs/hepta-contracts/src/authority_trust.rs"
+definition_markers = ["pub struct FinalUseFeedClock", "pub fn publish(", "feed_interval_is_live"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
+caller_markers = ["FinalUseFeedClock", ".publish(&verified_initial_head)"]
+
+[[boundary]]
+id = "final_use_production_trust_bind"
+symbol = "ProductionFinalUseTrustContext::bind"
+call_pattern = 'ProductionFinalUseTrustContext\s*::\s*bind\s*\('
+definition_path = "codex-rs/hepta-contracts/src/authority_trust.rs"
+definition_markers = ["pub struct ProductionFinalUseTrustContext", "pub fn bind<", "validate_final_use_production_bundle"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_authority_bootstrap.rs"]
+caller_markers = ["ProductionFinalUseTrustContext::bind", "from_trust_bundle"]
 
 [[boundary]]
 id = "final_use_revocation_feed_apply"
@@ -362,8 +393,8 @@ symbol = "AuthorityLeaseRegistry::open_production_state_dir"
 call_pattern = 'AuthorityLeaseRegistry\s*::\s*open_production_state_dir\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_trust.rs"
 definition_markers = ["pub fn open_production_state_dir", "ProductionAuthorityTrustEvidence", "ProductionAuthorityClock", "ProductionAuthorityFrontierStore"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
+caller_markers = ["AuthorityLeaseRegistry::open_production_state_dir", "pub fn open_production"]
 
 [[boundary]]
 id = "authority_lease_put"
@@ -412,8 +443,8 @@ call_pattern = '\.\s*verify_use\s*\('
 caller_type_marker = "AuthorityLeaseVerifier"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-contracts/src/authority_trust.rs"]
+caller_markers = ["self.verify_use(", "pub fn bind_dispatch"]
 
 [[boundary]]
 id = "authority_lease_bind_dispatch"

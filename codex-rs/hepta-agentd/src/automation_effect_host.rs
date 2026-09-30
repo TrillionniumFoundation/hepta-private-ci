@@ -55,6 +55,7 @@ use serde::Deserialize;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+use crate::AgentdProductionAuthorityBootstrap;
 use crate::authority_trust_host::AgentdFinalUseTrustStore;
 
 #[path = "authority_feed_clock.rs"]
@@ -63,7 +64,7 @@ mod feed_clock;
 mod effect_tasks;
 
 use effect_tasks::EffectTasks;
-use feed_clock::FeedClock;
+use feed_clock::FinalUseFeedClock;
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 2;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
@@ -94,8 +95,8 @@ pub(crate) struct AgentdAutomationEffectHost {
     destination_id: String,
     final_use_scope_digest: Sha256Digest,
     authority: FinalUseAuthority,
-    authority_trust: Arc<AgentdFinalUseTrustStore>,
-    admission_clock: Arc<FeedClock>,
+    refresh_clock: Arc<dyn AuthorityClock>,
+    admission_clock: Arc<FinalUseFeedClock>,
     revocation_feed_verifier: FinalUseRevocationFeedVerifier,
     revocation_feed_file: PathBuf,
     revocation_refresh: Arc<Mutex<()>>,
@@ -156,8 +157,34 @@ struct AutomationEffectHostFileV2 {
     claim_reserve: usize,
 }
 
+#[derive(Clone, Copy)]
+enum AutomationAuthorityMode<'a> {
+    Compatibility,
+    Production(&'a AgentdProductionAuthorityBootstrap),
+}
+
 impl AgentdAutomationEffectHost {
     pub(crate) fn open(identity: &AgentdIdentity, path: &Path) -> Result<Self, AgentdError> {
+        Self::open_with_authority(identity, path, AutomationAuthorityMode::Compatibility)
+    }
+
+    pub(crate) fn open_production(
+        identity: &AgentdIdentity,
+        path: &Path,
+        authority: &AgentdProductionAuthorityBootstrap,
+    ) -> Result<Self, AgentdError> {
+        Self::open_with_authority(
+            identity,
+            path,
+            AutomationAuthorityMode::Production(authority),
+        )
+    }
+
+    fn open_with_authority(
+        identity: &AgentdIdentity,
+        path: &Path,
+        authority_mode: AutomationAuthorityMode<'_>,
+    ) -> Result<Self, AgentdError> {
         let config = read_host_file(path)?;
         if config.schema_version != AUTOMATION_EFFECT_HOST_SCHEMA_VERSION {
             return Err(AgentdError::Invalid("unsupported automation effect host schema".to_string()));
@@ -205,32 +232,121 @@ impl AgentdAutomationEffectHost {
         ).map_err(|error| AgentdError::Invalid(format!("invalid final-use revocation trust: {error}")))?;
         let signed_update = read_revocation_feed_file(&config.final_use_revocation_feed_file)?;
         let authority_root = identity.layout.automation_root().join("final-use-authority");
-        let local_authority_uninitialized = authority_state_uninitialized(&authority_root)?;
+        let local_authority_uninitialized = if matches!(
+            authority_mode,
+            AutomationAuthorityMode::Compatibility
+        ) {
+            authority_state_uninitialized(&authority_root)?
+        } else {
+            false
+        };
         fs::create_dir_all(&authority_root)?;
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;
             fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700))?;
         }
-        let authority_trust = Arc::new(AgentdFinalUseTrustStore::open(
-            &config.final_use_trust_root, &identity.home_root, &config.final_use_signer_id,
-        )?);
-        let now = authority_trust.now_unix_ms().map_err(|error| AgentdError::Protocol(format!("sample protected final-use clock: {error}")))?;
-        let verified_initial_head = VerifiedFinalUseRevocationHead::verify(&revocation_feed_verifier, &signed_update, now)
-            .map_err(|error| AgentdError::GenerationFenced(format!("initial signed final-use revocation feed rejected: {error}")))?;
-        let initial_revocations = verified_initial_head.head().clone();
-        let initial_frontier = FinalUseFrontier::for_initial_head(&initial_revocations)
-            .map_err(|error| AgentdError::Invalid(format!("invalid initial final-use frontier: {error}")))?;
-        authority_trust.ensure_initial_frontier(initial_frontier, local_authority_uninitialized)?;
-        let admission_clock = Arc::new(FeedClock::new(authority_trust.clone()));
-        admission_clock.publish(&verified_initial_head)
-            .map_err(|error| AgentdError::GenerationFenced(format!("initial feed interval rejected: {error}")))?;
-        let clock: Arc<dyn AuthorityClock> = admission_clock.clone();
-        let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> = authority_trust.clone();
-        let authority = FinalUseAuthority::recover_state_dir_with_issuer_keys(
-            &authority_root, config.final_use_signer_id, final_use_issuer_keys,
-            initial_revocations, clock, frontier_store,
-        ).map_err(|error| AgentdError::Protocol(format!("open automation final-use authority state: {error}")))?;
+        let (refresh_clock, admission_clock, authority) = match authority_mode {
+            AutomationAuthorityMode::Compatibility => {
+                let authority_trust = Arc::new(AgentdFinalUseTrustStore::open(
+                    &config.final_use_trust_root,
+                    &identity.home_root,
+                    &config.final_use_signer_id,
+                )?);
+                let now = authority_trust.now_unix_ms().map_err(|error| {
+                    AgentdError::Protocol(format!(
+                        "sample protected final-use clock: {error}"
+                    ))
+                })?;
+                let verified_initial_head = VerifiedFinalUseRevocationHead::verify(
+                    &revocation_feed_verifier,
+                    &signed_update,
+                    now,
+                )
+                .map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "initial signed final-use revocation feed rejected: {error}"
+                    ))
+                })?;
+                let initial_revocations = verified_initial_head.head().clone();
+                let initial_frontier = FinalUseFrontier::for_initial_head(&initial_revocations)
+                    .map_err(|error| {
+                        AgentdError::Invalid(format!(
+                            "invalid initial final-use frontier: {error}"
+                        ))
+                    })?;
+                authority_trust
+                    .ensure_initial_frontier(initial_frontier, local_authority_uninitialized)?;
+                let refresh_clock: Arc<dyn AuthorityClock> = authority_trust.clone();
+                let admission_clock =
+                    Arc::new(FinalUseFeedClock::new(Arc::clone(&refresh_clock)));
+                admission_clock.publish(&verified_initial_head).map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "initial feed interval rejected: {error}"
+                    ))
+                })?;
+                let clock: Arc<dyn AuthorityClock> = admission_clock.clone();
+                let frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> =
+                    authority_trust;
+                let authority = FinalUseAuthority::recover_state_dir_with_issuer_keys(
+                    &authority_root,
+                    config.final_use_signer_id.clone(),
+                    final_use_issuer_keys,
+                    initial_revocations,
+                    clock,
+                    frontier_store,
+                )
+                .map_err(|error| {
+                    AgentdError::Protocol(format!(
+                        "open automation final-use authority state: {error}"
+                    ))
+                })?;
+                (refresh_clock, admission_clock, authority)
+            }
+            AutomationAuthorityMode::Production(bootstrap) => {
+                let context = bootstrap.bind(&final_use_issuer_keys).map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "production final-use trust rejected: {error}"
+                    ))
+                })?;
+                let refresh_clock = context.clock();
+                let now = refresh_clock.now_unix_ms().map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "sample production final-use clock: {error}"
+                    ))
+                })?;
+                let verified_initial_head = VerifiedFinalUseRevocationHead::verify(
+                    &revocation_feed_verifier,
+                    &signed_update,
+                    now,
+                )
+                .map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "initial signed final-use revocation feed rejected: {error}"
+                    ))
+                })?;
+                let admission_clock = context.feed_clock();
+                admission_clock.publish(&verified_initial_head).map_err(|error| {
+                    AgentdError::GenerationFenced(format!(
+                        "initial production feed interval rejected: {error}"
+                    ))
+                })?;
+                let authority = context
+                    .recover_state_dir_with_feed_clock(
+                        &authority_root,
+                        config.final_use_signer_id.clone(),
+                        final_use_issuer_keys,
+                        &verified_initial_head,
+                        Arc::clone(&admission_clock),
+                    )
+                    .map_err(|error| {
+                        AgentdError::GenerationFenced(format!(
+                            "recover production automation authority: {error}"
+                        ))
+                    })?;
+                (refresh_clock, admission_clock, authority)
+            }
+        };
         let capacity = authority.capacity().map_err(|error| AgentdError::Protocol(format!("read authority capacity: {error}")))?;
         if config.claim_reserve.saturating_add(config.max_inflight_effects) >= capacity.max_claims
             || config.claim_reserve >= capacity.max_revocations
@@ -243,7 +359,7 @@ impl AgentdAutomationEffectHost {
             destination_id: config.destination_id,
             final_use_scope_digest,
             authority,
-            authority_trust,
+            refresh_clock,
             admission_clock,
             revocation_feed_verifier,
             revocation_feed_file: config.final_use_revocation_feed_file,
@@ -384,7 +500,9 @@ impl AgentdAutomationEffectHost {
     fn refresh_revocations(&self) -> Result<(), AgentdError> {
         let _refresh = self.revocation_refresh.lock().map_err(|_| AgentdError::Protocol("automation effect revocation refresh lock is poisoned".to_string()))?;
         let signed = read_revocation_feed_file(&self.revocation_feed_file)?;
-        let now = self.authority_trust.now_unix_ms().map_err(|error| AgentdError::Protocol(format!("sample protected final-use clock: {error}")))?;
+        let now = self.refresh_clock.now_unix_ms().map_err(|error| {
+            AgentdError::Protocol(format!("sample protected final-use clock: {error}"))
+        })?;
         let verified = VerifiedFinalUseRevocationHead::verify(&self.revocation_feed_verifier, &signed, now)
             .map_err(|error| AgentdError::GenerationFenced(format!("automation effect signed revocation feed rejected: {error}")))?;
         let current = self.authority.revocation_head().map_err(|error| AgentdError::Protocol(format!("read automation revocation head: {error}")))?;
@@ -455,7 +573,7 @@ struct HttpAuthorizedEffectDriver {
     adapter: HttpProviderEffectAdapter,
     provider_scope: String,
     destination_id: String,
-    admission_clock: Arc<FeedClock>,
+    admission_clock: Arc<FinalUseFeedClock>,
     grant_not_before: u64,
     grant_expires: u64,
 }

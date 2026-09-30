@@ -518,21 +518,21 @@ impl FinalUseAuthority {
         {
             return Err(FinalUseError::StaleRevocationHead);
         }
+        if state.pending_revocations.as_ref() != Some(&head) {
+            let mut pending = state.clone();
+            pending.pending_revocations = Some(head.clone());
+            self.persist_or_fence(&mut state, pending)?;
+        }
         if self.0.active_dispatches.load(Ordering::Acquire) != 0 {
-            if state.pending_revocations.as_ref() != Some(&head) {
-                let mut next = state.clone();
-                next.pending_revocations = Some(head);
-                self.persist_or_fence(&mut state, next)?;
-            }
             return Err(FinalUseError::DispatchInProgress);
         }
-        let mut next = state.clone();
-        if head.authority_epoch > next.head.authority_epoch {
-            next.used_nonces.clear();
+        let mut committed = state.clone();
+        if head.authority_epoch > committed.head.authority_epoch {
+            committed.used_nonces.clear();
         }
-        next.head = head;
-        next.pending_revocations = None;
-        self.persist_or_fence(&mut state, next)
+        committed.head = head;
+        committed.pending_revocations = None;
+        self.persist_or_fence(&mut state, committed)
     }
 
     /// Durably consume one nonce. Failed/uncertain effects never refund it.
@@ -968,19 +968,6 @@ fn recover_local_state_from_trusted_frontier(
             committed.used_nonces.clear();
         }
         committed.head = pending_head;
-        committed.pending_revocations = None;
-        if frontier_for_state(&committed) == trusted {
-            store.persist(&committed)?;
-            *state = committed;
-            return Ok(());
-        }
-    }
-    if head_advances(&state.head, authenticated_head) {
-        let mut committed = state.clone();
-        if authenticated_head.authority_epoch > committed.head.authority_epoch {
-            committed.used_nonces.clear();
-        }
-        committed.head = authenticated_head.clone();
         committed.pending_revocations = None;
         if frontier_for_state(&committed) == trusted {
             store.persist(&committed)?;

@@ -78,6 +78,8 @@ pub struct AgentdConfig {
     authbus_trust_file: Option<PathBuf>,
     evidence_trust_file: Option<PathBuf>,
     automation_effect_host_file: Option<PathBuf>,
+    automation_effect_production_authority:
+        Option<crate::AgentdProductionAuthorityBootstrap>,
     evidence_recovery_frontier_file: Option<PathBuf>,
     evidence_recovery_frontier_trust_file: Option<PathBuf>,
     objective_profile_file: Option<PathBuf>,
@@ -201,6 +203,7 @@ impl AgentdConfig {
             authbus_trust_file: None,
             evidence_trust_file: None,
             automation_effect_host_file: None,
+            automation_effect_production_authority: None,
             evidence_recovery_frontier_file: None,
             evidence_recovery_frontier_trust_file: None,
             objective_profile_file: None,
@@ -271,6 +274,28 @@ impl AgentdConfig {
 
     pub(crate) fn automation_effect_host_file(&self) -> Option<&Path> {
         self.automation_effect_host_file.as_deref()
+    }
+
+    /// Bind the automation effect owner to one externally supplied production
+    /// clock, frontier store and key-custody bundle. The protected host file is
+    /// still required and supplies the exact provider, issuer and feed identity.
+    pub fn with_automation_effect_production_authority(
+        mut self,
+        authority: crate::AgentdProductionAuthorityBootstrap,
+    ) -> Result<Self, AgentdError> {
+        if self.automation_effect_production_authority.is_some() {
+            return Err(AgentdError::Invalid(
+                "automation effect production authority already configured".to_string(),
+            ));
+        }
+        self.automation_effect_production_authority = Some(authority);
+        Ok(self)
+    }
+
+    pub(crate) fn take_automation_effect_production_authority(
+        &mut self,
+    ) -> Option<crate::AgentdProductionAuthorityBootstrap> {
+        self.automation_effect_production_authority.take()
     }
 
     /// Explicit owner-managed objective admission profile. A request cannot
