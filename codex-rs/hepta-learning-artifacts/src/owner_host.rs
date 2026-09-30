@@ -29,6 +29,7 @@ use ed25519_dalek::VerifyingKey;
 
 use crate::ArtifactEvent;
 use crate::ArtifactManifest;
+use crate::ArtifactPublicationCapabilityV1;
 use crate::ArtifactPublicationError;
 use crate::ArtifactPublicationPhaseV1;
 use crate::ArtifactPublicationTransactionSnapshotV1;
@@ -182,6 +183,8 @@ pub struct ArtifactOwnerRecoveryV1 {
 struct VerifiedArtifactWriterLeaseV1 {
     producer_id: StableId,
     lease_digest: Digest32,
+    lease_generation: u64,
+    authority_epoch: u64,
 }
 
 #[derive(Clone, Debug)]
@@ -299,6 +302,8 @@ impl ArtifactOwnerVerifierV1 {
         Ok(VerifiedArtifactWriterLeaseV1 {
             producer_id: lease.producer_id.clone(),
             lease_digest: Digest32::of_bytes(&digest_bytes),
+            lease_generation: lease.lease_generation,
+            authority_epoch: lease.authority_epoch,
         })
     }
 
@@ -462,6 +467,93 @@ impl LearningArtifactOwnerHost {
         now: u64,
     ) -> Result<VerifiedArtifactWriterLeaseV1, ArtifactOwnerHostError> {
         self.verifier.verify_writer_lease(&self.lease, now)
+    }
+
+    /// Mint one non-forgeable publication capability from the currently held
+    /// writer fence, the independently authenticated withdrawal frontier and
+    /// the monotonic current-head chain. A capability is valid only for the
+    /// exact target head and generation named here.
+    pub fn acquire_publication_capability(
+        &self,
+        withdrawal_registry: &DatasetWithdrawalRegistry,
+        expected_registry_predecessor_head: Digest32,
+        target: &SignedCurrentArtifactHeadV1,
+        now: u64,
+    ) -> Result<ArtifactPublicationCapabilityV1, ArtifactOwnerHostError> {
+        let writer = self.require_current_writer(now)?;
+        if withdrawal_registry.scope_digest()
+            != Some(self.verifier.trust.withdrawal_scope_digest)
+            || target.withdrawal_scope_digest != self.verifier.trust.withdrawal_scope_digest
+            || target.witness.registry_id != self.verifier.trust.registry_id
+            || target.witness.predecessor_head_digest != expected_registry_predecessor_head
+        {
+            return Err(ArtifactOwnerHostError::WriterLeaseContext);
+        }
+
+        let current = self.discover_current_head(now)?;
+        let (required_generation, minimum_authority_epoch) = match current.as_ref() {
+            Some(current)
+                if current.signed.witness.head_digest == expected_registry_predecessor_head =>
+            {
+                (
+                    current
+                        .signed
+                        .witness
+                        .generation
+                        .next()
+                        .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?,
+                    current.signed.witness.authority_epoch,
+                )
+            }
+            Some(current)
+                if current.signed.witness.head_digest == target.witness.head_digest
+                    && current.signed.witness.predecessor_head_digest
+                        == expected_registry_predecessor_head =>
+            {
+                if current.signed != *target {
+                    return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+                }
+                (
+                    current.signed.witness.generation,
+                    current.signed.witness.authority_epoch,
+                )
+            }
+            None
+                if expected_registry_predecessor_head
+                    == self.verifier.trust.genesis_predecessor_head_digest =>
+            {
+                (
+                    self.verifier.trust.minimum_registry_generation,
+                    self.verifier.trust.minimum_authority_epoch,
+                )
+            }
+            Some(_) | None => return Err(ArtifactOwnerHostError::CurrentHeadConflict),
+        };
+        if target.witness.generation != required_generation {
+            return Err(ArtifactOwnerHostError::CurrentHeadRollback);
+        }
+        let requirement = RegistryHeadRequirementV1 {
+            registry_id: self.verifier.trust.registry_id.clone(),
+            minimum_generation: required_generation,
+            expected_predecessor_head_digest: expected_registry_predecessor_head,
+            minimum_authority_epoch,
+            now,
+        };
+        self.verifier.verify_signed_head(target, &requirement, true)?;
+
+        Ok(ArtifactPublicationCapabilityV1::new(
+            writer.lease_digest,
+            writer.lease_generation,
+            writer.authority_epoch,
+            writer.producer_id,
+            self.verifier.trust_digest(),
+            required_generation,
+            expected_registry_predecessor_head,
+            target.witness.head_digest,
+            self.verifier.trust.withdrawal_scope_digest,
+            withdrawal_registry.head_digest(),
+            withdrawal_registry.snapshot().records().len(),
+        ))
     }
 
     pub fn begin_publication(
