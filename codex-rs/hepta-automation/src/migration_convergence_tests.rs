@@ -86,6 +86,8 @@ async fn both_historical_branches_converge_without_rewriting_checksums() {
             "automation_occurrence_lifecycle",
             "destination_operation_dedupe",
             "automation_timer_lifecycle",
+            "taskflow_circuit_activations",
+            "taskflow_circuit_choices",
         ] {
             let count: i64 = sqlx::query_scalar(
                 "SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?",
