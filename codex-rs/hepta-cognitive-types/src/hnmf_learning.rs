@@ -930,17 +930,7 @@ fn validate_serialized_bound_v1<T: Serialize>(
     maximum: usize,
     field: &'static str,
 ) -> Result<(), HnmfContractError> {
-    let actual = serde_json::to_vec(value)
-        .map_err(|_| HnmfContractError::Invalid("contract serialization"))?
-        .len();
-    if actual > maximum {
-        return Err(HnmfContractError::LimitExceeded {
-            field,
-            actual,
-            maximum,
-        });
-    }
-    Ok(())
+    crate::bounded::serialized_size(value, maximum, field).map(|_| ())
 }
 
 fn validate_unit_q16(value: i32, field: &'static str) -> Result<(), HnmfContractError> {
@@ -1003,3 +993,7 @@ pub fn population_counts_v1(
     }
     Ok(counts)
 }
+
+#[cfg(test)]
+#[path = "hnmf_learning_budget_tests.rs"]
+mod budget_tests;

@@ -6,6 +6,7 @@ from run_mutations import (
     mutate_once,
     observed_kill,
     observed_rust_test_kill,
+    observed_rust_test_pass,
     rust_test_command,
 )
 
@@ -77,6 +78,19 @@ class MutationRunnerTests(unittest.TestCase):
             ({"exit_code": None, "status": "infrastructure_invalid"}, log),
         ]:
             self.assertFalse(observed_rust_test_kill(result, text, name))
+
+    def test_pass_requires_the_named_regression_to_execute(self):
+        name = "consumer_tests::payload_consumer_matrix_fails_closed"
+        passed = {"exit_code": 0, "status": "passed"}
+        log = f"test {name} ... ok\ntest result: ok. 1 passed; 0 failed; 0 ignored"
+        self.assertTrue(observed_rust_test_pass(passed, log, name))
+        for result, text in [
+            (passed, "running 0 tests\ntest result: ok. 0 passed; 0 failed"),
+            (passed, log.replace(name, "other::test")),
+            (dict(passed, exit_code=101), log),
+            (dict(passed, status="infrastructure_invalid"), log),
+        ]:
+            self.assertFalse(observed_rust_test_pass(result, text, name))
 
     def test_rust_mutation_command_is_exact_and_compile_first(self):
         name = "consumer_tests::payload_consumer_matrix_fails_closed"

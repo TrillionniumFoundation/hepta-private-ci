@@ -32,8 +32,7 @@ pub struct ConsumerIdentityPolicyRegistrationV1 {
     pub free_text_identity_allowed: bool,
 }
 
-pub const REGISTERED_CONSUMER_IDENTITY_POLICIES_V1:
-    [ConsumerIdentityPolicyRegistrationV1; 5] = [
+pub const REGISTERED_CONSUMER_IDENTITY_POLICIES_V1: [ConsumerIdentityPolicyRegistrationV1; 5] = [
     ConsumerIdentityPolicyRegistrationV1 {
         consumer: CanonicalConsumerV1::CognitiveRead,
         owner: "cognitive-platform",
@@ -90,15 +89,12 @@ pub fn validate_consumer_semantic_identity_v1(
         .ok_or(SemanticIdentityErrorV1::ConsumerPolicyMissing)?;
     let canonical_registration = registered_consumer_v1(consumer.as_str())
         .ok_or(SemanticIdentityErrorV1::ConsumerPolicyMissing)?;
-    if registration.owner != canonical_registration.owner
-        || registration.free_text_identity_allowed
+    if registration.owner != canonical_registration.owner || registration.free_text_identity_allowed
     {
         return Err(SemanticIdentityErrorV1::PolicyRegistryMismatch);
     }
     match registration.policy {
-        SemanticIdentityPolicyV1::StableIdAsciiV1 => {
-            validate_stable_semantic_identity_v1(value)
-        }
+        SemanticIdentityPolicyV1::StableIdAsciiV1 => validate_stable_semantic_identity_v1(value),
         SemanticIdentityPolicyV1::OwnerNormalizedProfileV1 { .. }
         | SemanticIdentityPolicyV1::RejectNormalizationVariantsV1 => {
             Err(SemanticIdentityErrorV1::OwnerEvidenceRequired)

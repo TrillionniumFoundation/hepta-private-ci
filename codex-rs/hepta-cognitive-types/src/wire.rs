@@ -11,8 +11,8 @@
 #[path = "wire_legacy.rs"]
 mod legacy;
 
-pub use legacy::*;
 pub(crate) use legacy::decode_validated_wire_with_digests_v1;
+pub use legacy::*;
 
 use codex_hepta_types::Digest32;
 use serde::Serialize;
@@ -23,8 +23,7 @@ use crate::contract::Validated;
 
 const PREPARED_MAX_ENVELOPE_OVERHEAD_BYTES: usize = 1_024;
 const PREPARED_DIGEST_DOMAIN_V1: &[u8] = b"hepta.cognitive.contract.canonical-json.v1\0";
-const PREPARED_BOUND_DIGEST_DOMAIN_V1: &[u8] =
-    b"hepta.cognitive.contract.bound-digest.v1\0";
+const PREPARED_BOUND_DIGEST_DOMAIN_V1: &[u8] = b"hepta.cognitive.contract.bound-digest.v1\0";
 
 /// Typed identity for the frozen historical V1 contract digest.
 ///
@@ -290,9 +289,7 @@ fn prepared_component_length(component: &[u8]) -> [u8; 8] {
         .to_be_bytes()
 }
 
-fn prepared_canonical_json_bytes<T: Serialize>(
-    value: &T,
-) -> Result<Vec<u8>, CognitiveWireError> {
+fn prepared_canonical_json_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, CognitiveWireError> {
     let value = serde_json::to_value(value).map_err(CognitiveWireError::Json)?;
     let mut output = String::new();
     prepared_write_canonical_value(&value, &mut output)?;

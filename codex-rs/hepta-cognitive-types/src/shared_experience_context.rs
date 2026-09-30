@@ -22,8 +22,7 @@ use crate::shared_experience::SharedExperienceUseGrantV2;
 use crate::shared_experience::SharedExperienceUseReceiptV2;
 use crate::wire::canonical_contract_digest_v1;
 
-const FINAL_USE_CONTEXT_DOMAIN_V2: &[u8] =
-    b"hepta.shared-experience.final-use-context.v2\0";
+const FINAL_USE_CONTEXT_DOMAIN_V2: &[u8] = b"hepta.shared-experience.final-use-context.v2\0";
 
 impl SharedExperienceUseClassV2 {
     /// Stable protocol token. Never derive digest input from `Debug` output.
@@ -116,8 +115,7 @@ impl<'a> FinalSharedExperienceUseV2<'a> {
 
         let publication_value = publication.as_inner();
         let receipt_value = receipt.as_inner();
-        if !receipt_value.disposition.is_successful_final_use()
-            || !receipt_value.final_use_observed
+        if !receipt_value.disposition.is_successful_final_use() || !receipt_value.final_use_observed
         {
             return Err(violation(
                 ContractErrorCodeV1::StateConflict,
@@ -375,11 +373,7 @@ fn compute_context_digest(
 }
 
 fn push_text(bytes: &mut Vec<u8>, value: &str) {
-    bytes.extend_from_slice(
-        &u64::try_from(value.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
     bytes.extend_from_slice(value.as_bytes());
 }
 

@@ -115,9 +115,7 @@ fn bind_prepared_consumer_v1<T: CognitiveContractV1>(
     Ok(binding)
 }
 
-fn checked_digest(
-    value: Digest32,
-) -> Result<ContractDigestV1, CanonicalConsumerBindingError> {
+fn checked_digest(value: Digest32) -> Result<ContractDigestV1, CanonicalConsumerBindingError> {
     ContractDigestV1::from_digest(value).map_err(|_| CanonicalConsumerBindingError::ZeroDigest)
 }
 

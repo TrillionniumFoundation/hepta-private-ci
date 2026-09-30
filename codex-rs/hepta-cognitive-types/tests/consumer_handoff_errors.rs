@@ -270,7 +270,7 @@ fn exercise_binding_refusals<T: CognitiveContractV1 + Debug>(
         );
     }
 
-    let mut changed = binding.clone();
+    let mut changed = binding;
     changed.operation_id = id("operation:different");
     reseal(&mut changed);
     must(changed.validate(), "structurally valid alternative");

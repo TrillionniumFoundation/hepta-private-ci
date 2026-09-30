@@ -218,9 +218,9 @@ fn qualification_and_export_workflows_are_read_only() {
 #[test]
 fn source_exports_keep_only_the_latest_immutable_candidate() {
     for token in [
-        "group: cognitive-types-source-export-${{ github.ref }}",
+        "group: cognitive-types-source-export-${{ github.event.pull_request.head.ref || github.ref }}",
         "cancel-in-progress: true",
-        "test \"$(git rev-parse HEAD)\" = \"$GITHUB_SHA\"",
+        "test \"$(git rev-parse HEAD)\" = \"$SOURCE_SHA\"",
         "git rev-parse HEAD^{tree}",
         "git archive --format=tar HEAD",
         "git bundle create \"$export_dir/source.bundle\" HEAD",

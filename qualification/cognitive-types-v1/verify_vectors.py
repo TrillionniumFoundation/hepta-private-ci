@@ -355,12 +355,17 @@ def verify_negative_case(case: dict[str, object]) -> None:
 
 
 def main() -> int:
-    wire = (ROOT / "codex-rs/hepta-cognitive-types/src/wire.rs").read_text(
-        encoding="utf-8"
-    )
-    tests = (ROOT / "codex-rs/hepta-cognitive-types/src/contract_tests.rs").read_text(
-        encoding="utf-8"
-    )
+    source = ROOT / "codex-rs/hepta-cognitive-types/src"
+    facade = (source / "wire.rs").read_text(encoding="utf-8")
+    harness = (source / "contract_tests.rs").read_text(encoding="utf-8")
+    if '#[path = "wire_legacy.rs"]' not in facade:
+        raise SystemExit("frozen codec is disconnected from the wire facade")
+    if 'include!("contract_tests_base.rs")' not in harness:
+        raise SystemExit("golden-vector fixtures are disconnected from the test harness")
+    if "mod contract_tests;" not in (source / "lib.rs").read_text(encoding="utf-8"):
+        raise SystemExit("golden-vector test harness is disconnected from the crate")
+    wire = facade + (source / "wire_legacy.rs").read_text(encoding="utf-8")
+    tests = harness + (source / "contract_tests_base.rs").read_text(encoding="utf-8")
     registry = json.loads(
         (ROOT / "docs/contracts/PROTOCOL_SCHEMAS.json").read_text(encoding="utf-8")
     )

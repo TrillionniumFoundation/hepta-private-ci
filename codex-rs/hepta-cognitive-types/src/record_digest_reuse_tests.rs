@@ -121,5 +121,8 @@ fn a_later_call_recomputes_content_and_snapshot_identity() {
     assert_ne!(snapshot.snapshot_digest, changed.snapshot_digest);
     let mut stale = snapshot;
     stale.records = vec![value];
-    assert_eq!(stale.validate_integrity(), Err(Error::SnapshotDigestMismatch));
+    assert_eq!(
+        stale.validate_integrity(),
+        Err(Error::SnapshotDigestMismatch)
+    );
 }

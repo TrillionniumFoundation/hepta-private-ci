@@ -101,7 +101,7 @@ RECIPES = [
     },
     {
         "name": "schema-bound-digest-domain",
-        "file": "codex-rs/hepta-cognitive-types/src/wire.rs",
+        "file": "codex-rs/hepta-cognitive-types/src/wire_legacy.rs",
         "old": 'b"hepta.cognitive.contract.bound-digest.v1\\0"',
         "new": 'b"hepta.cognitive.contract.bound-digest.mutant\\0"',
         "case": "ModalitySpanRefV1:golden",
@@ -155,6 +155,15 @@ def rust_test_command(test_name, *, no_run=False):
     return command
 
 
+def observed_rust_test_pass(result, log_text, test_name):
+    return (
+        result.get("exit_code") == 0
+        and result.get("status") == "passed"
+        and f"test {test_name} ... ok" in log_text
+        and "test result: ok. 1 passed; 0 failed" in log_text
+    )
+
+
 def observed_rust_test_kill(result, log_text, test_name):
     return (
         result.get("exit_code") not in (None, 0)
@@ -201,7 +210,9 @@ def main():
                 output,
                 timeout=1800,
             )
-            baseline_passed = baseline["status"] == "passed"
+            baseline_passed = observed_rust_test_pass(
+                baseline, (output / baseline["log"]).read_text(errors="replace"), recipe["test"]
+            )
             evidence_identity = {"test": recipe["test"]}
         else:
             raise ValueError("unknown mutation mode: " + mode)
@@ -294,7 +305,7 @@ def main():
                             if row["killed"]
                             else (
                                 "survived"
-                                if experiment["status"] == "passed"
+                                if observed_rust_test_pass(experiment, log_text, recipe["test"])
                                 else "infrastructure_invalid"
                             )
                         )

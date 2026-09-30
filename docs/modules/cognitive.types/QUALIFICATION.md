@@ -104,3 +104,27 @@ The shared consumer constructor now preserves codec failures in a sealed `Canoni
 Run `python3 qualification/cognitive-types-v1/render_traceability.py --check` to verify the generated obligation table and referenced files. For an intentional documentation change, generate to a separate temporary file, inspect it and commit the new projection normally. The verifier never rewrites the candidate to make itself pass.
 
 Outstanding acceptance must be represented explicitly: current exact-source and merge Rust execution, authenticated default-profile composition of all five consumers, authorized compatibility retirement, broad source-mutation coverage, sustained fuzzing, selected-host capacity/allocation measurements and independent acceptance. Preserving those open gates is not a reduction of the target scope. Completion requires their real evidence; source declarations or old run results are not substitutes.
+
+## 7. Adversarial review of the 2026-09-30 candidate
+
+The reviewed source was `682d1f5317bf00e666ff822709c244e6958f6c1c`, the head of the existing draft PR #1134, against main `a126987b84737dbc2ee2592442a314117bddb4a2`. Earlier main-only identity and pointer findings are already repaired in that candidate and are not new defects.
+
+The review found six unregistered Rust test modules: contract, consumer, hardening, Shared Experience, Shared Experience context and borrowed record digest regressions. They are now registered in the crate root. A successful exact-filter command with zero executed tests previously let the consumer-family mutant survive. Mutation evidence now requires the named successful test and a one-test passing summary; zero tests and unrelated tests are infrastructure-invalid. The schema-bound-domain mutant now changes the production legacy codec used by the probe, rather than an unused facade constant. The cross-language verifier follows the registered split codec and base fixture and rejects a disconnected test harness.
+
+Native learning serialization previously allocated a complete JSON buffer before enforcing its maximum. It now shares the bounded counting writer. Counted-sequence and escaped-Unicode regressions check early termination and exact byte boundaries. LimitExceeded.actual is a witnessed lower bound (maximum + 1), not a measurement of an intentionally unmaterialized remainder.
+
+The review also restores Rust formatting, updates source-export traceability to the existing immutable SOURCE_SHA and PR-head concurrency expressions, removes an unnecessary test clone, and repairs the constant-size claims-frame iteration in the shared authority dependency. The existing divisibility and bounded-read checks remain in force. A narrow allowance on the deprecated NDU compatibility re-export preserves warnings at actual downstream uses while avoiding an error merely for retaining that export.
+
+The local validation commands are:
+
+```sh
+cd codex-rs
+just test --locked -p codex-hepta-cognitive-types
+cargo clippy --locked -p codex-hepta-cognitive-types -p codex-hepta-cognitive-read -p codex-hepta-cognitive-store -p codex-hepta-memory-retrieval -p codex-hepta-compact-engine -p codex-hepta-intelligence --all-targets -- -D warnings
+just test --locked -p codex-hepta-contracts -p codex-hepta-cognitive-read -p codex-hepta-cognitive-store -p codex-hepta-memory-retrieval -p codex-hepta-compact-engine -p codex-hepta-intelligence
+cd ..
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s qualification/cognitive-types-v1 -p 'test_*.py'
+python3 qualification/cognitive-types-v1/verify_vectors.py
+```
+
+Local command outcomes are review evidence, not replacement immutable hosted receipts. The observed hosted runs on the reviewed source included failed native qualification and failed store/control depth jobs. Development-docs qualification also reported stale implementation-map observations in other modules. Old PR prose saying that an earlier candidate is pending cannot establish the current source's status. Required source/base/host receipts, sustained fuzz campaigns, physical owner-authenticated final use, compatibility retirement and independent acceptance remain separate gates. This repair does not set any of those gates to true.

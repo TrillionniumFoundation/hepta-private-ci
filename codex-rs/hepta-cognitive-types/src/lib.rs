@@ -259,3 +259,21 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod contract_tests;
+
+#[cfg(test)]
+mod consumer_tests;
+
+#[cfg(test)]
+mod hardening_tests;
+
+#[cfg(test)]
+mod shared_experience_tests;
+
+#[cfg(test)]
+mod shared_experience_context_tests;
+
+#[cfg(test)]
+mod record_digest_reuse_tests;

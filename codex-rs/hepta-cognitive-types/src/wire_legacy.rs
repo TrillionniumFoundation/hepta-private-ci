@@ -336,12 +336,7 @@ pub fn canonical_contract_digests_v1<T: CognitiveContractV1>(
 // Private byte-level helpers are only called after the bounded, validating
 // canonical encoder or decoder. Never expose unchecked byte-to-proof constructors.
 fn frozen_digest_from_checked_payload<T: CognitiveContractV1>(payload: &[u8]) -> Digest32 {
-    Digest32::of_parts(&[
-        DIGEST_DOMAIN_V1,
-        T::CONTRACT_ID.as_bytes(),
-        b"\0",
-        payload,
-    ])
+    Digest32::of_parts(&[DIGEST_DOMAIN_V1, T::CONTRACT_ID.as_bytes(), b"\0", payload])
 }
 
 fn bound_digest_from_checked_payload<T: CognitiveContractV1>(payload: &[u8]) -> Digest32 {
