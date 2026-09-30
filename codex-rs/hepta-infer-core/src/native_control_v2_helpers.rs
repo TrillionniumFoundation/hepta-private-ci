@@ -348,7 +348,9 @@ fn sibling_directory(path: &Path, suffix: &str) -> PathBuf {
 fn temporary_generation_path(path: &Path, generation: u64, now_unix_ms: u64) -> PathBuf {
     let digest = sha256_hex(
         b"hepta.inference-control.journal-name.v1\0",
-        path.file_name().unwrap_or(path.as_os_str()).as_encoded_bytes(),
+        path.file_name()
+            .unwrap_or(path.as_os_str())
+            .as_encoded_bytes(),
     );
     path.with_file_name(format!(
         ".hepta-inference-{digest}.compact.{generation}.{now_unix_ms}.{}",
@@ -358,7 +360,16 @@ fn temporary_generation_path(path: &Path, generation: u64, now_unix_ms: u64) -> 
 
 fn write_content_addressed(path: &Path, bytes: &[u8]) -> Result<(), Error> {
     if path.exists() {
-        if read_bounded(path, bytes.len() as u64)? == bytes {
+        // Reuse must retry durability even if an earlier write filled the page
+        // cache before its fsync failed. Read and flush the same descriptor;
+        // Windows FlushFileBuffers requires a handle opened for writing.
+        let mut existing = OpenOptions::new().read(true).write(true).open(path)?;
+        let mut existing_bytes = Vec::new();
+        (&mut existing)
+            .take((bytes.len() as u64).saturating_add(1))
+            .read_to_end(&mut existing_bytes)?;
+        if existing_bytes == bytes {
+            existing.sync_all()?;
             return Ok(());
         }
         return Err(Error::CorruptJournal("content-address collision"));
@@ -408,3 +419,7 @@ fn sync_directory(path: &Path) -> Result<(), Error> {
 #[cfg(test)]
 #[path = "native_control_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "native_storage_sync_tests.rs"]
+mod storage_sync_tests;
