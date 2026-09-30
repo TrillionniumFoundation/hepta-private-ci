@@ -1,8 +1,9 @@
 impl SegmentedFileEvidenceFrontierBackend {
-    fn read_segment_records(
+    fn read_segment_records_with_cursor(
         &self,
         store_id: &str,
         metadata: &EvidenceFrontierSegmentMetadataV1,
+        cursor: ChainCursor,
     ) -> Result<Vec<EvidenceFrontierAuditRecordV1>, EvidenceFrontierBackendError> {
         validate_segment_metadata(
             metadata,
@@ -22,14 +23,6 @@ impl SegmentedFileEvidenceFrontierBackend {
         {
             return Err(corrupt("frontier segment bytes differ from immutable metadata"));
         }
-        let cursor = ChainCursor {
-            next_audit_sequence: metadata.first_audit_sequence,
-            previous_generation: metadata
-                .first_generation
-                .checked_sub(1)
-                .filter(|generation| *generation > 0),
-            previous_record_sha256: metadata.previous_record_sha256.clone(),
-        };
         let records = parse_records(
             &bytes,
             store_id,
@@ -51,6 +44,75 @@ impl SegmentedFileEvidenceFrontierBackend {
             return Err(corrupt("frontier segment boundaries differ from metadata"));
         }
         Ok(records)
+    }
+
+    fn read_segment_records(
+        &self,
+        store_id: &str,
+        metadata: &EvidenceFrontierSegmentMetadataV1,
+    ) -> Result<Vec<EvidenceFrontierAuditRecordV1>, EvidenceFrontierBackendError> {
+        let cursor = ChainCursor {
+            next_audit_sequence: metadata.first_audit_sequence,
+            previous_generation: metadata
+                .first_generation
+                .checked_sub(1)
+                .filter(|generation| *generation > 0),
+            previous_record_sha256: metadata.previous_record_sha256.clone(),
+            previous_frontier: None,
+        };
+        self.read_segment_records_with_cursor(store_id, metadata, cursor)
+    }
+
+    fn verify_archived_history(
+        &self,
+        store_id: &str,
+        latest_pointer: &EvidenceFrontierSegmentPointerV1,
+    ) -> Result<VerifiedArchivedHistory, EvidenceFrontierBackendError> {
+        let mut reverse_chain = Vec::new();
+        let mut seen = BTreeSet::new();
+        let mut pointer = Some(latest_pointer.clone());
+        while let Some(current_pointer) = pointer {
+            if !seen.insert(current_pointer.metadata_file_name.clone()) {
+                return Err(corrupt("frontier segment predecessor chain contains a cycle"));
+            }
+            if reverse_chain.len() >= EVIDENCE_FRONTIER_MAX_AUDIT_RECORDS {
+                return Err(corrupt("frontier segment predecessor chain exceeds its bound"));
+            }
+            let metadata = self.read_segment_metadata(&current_pointer, store_id)?;
+            pointer = metadata.previous_segment.clone();
+            reverse_chain.push(metadata);
+        }
+        reverse_chain.reverse();
+        let latest_metadata = reverse_chain
+            .last()
+            .cloned()
+            .ok_or_else(|| corrupt("frontier archive pointer resolved to no segments"))?;
+        let segment_count = u64::try_from(reverse_chain.len())
+            .map_err(|_| corrupt("frontier segment count exceeds its numeric domain"))?;
+        let mut archived_bytes = 0_u64;
+        let mut cursor = ChainCursor::initial();
+        let mut latest_record = None;
+        for metadata in &reverse_chain {
+            let records =
+                self.read_segment_records_with_cursor(store_id, metadata, cursor.clone())?;
+            let last = records
+                .last()
+                .ok_or_else(|| corrupt("verified frontier segment is empty"))?;
+            archived_bytes = archived_bytes
+                .checked_add(metadata.segment_bytes)
+                .ok_or_else(|| corrupt("archived frontier byte count overflow"))?;
+            cursor = ChainCursor::after_record(last)?;
+            latest_record = Some(last.clone());
+        }
+        let latest_record = latest_record
+            .ok_or_else(|| corrupt("verified frontier archive has no records"))?;
+        Ok(VerifiedArchivedHistory {
+            latest_metadata,
+            archived_records: latest_record.audit_sequence,
+            archived_bytes,
+            latest_record,
+            segment_count,
+        })
     }
 
     pub fn capacity_status(
