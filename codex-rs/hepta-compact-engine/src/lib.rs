@@ -13,6 +13,7 @@ mod durable;
 #[allow(unused_imports)]
 #[path = "fenced_coordinator_final.rs"]
 mod fenced_coordinator;
+mod operational_contract;
 mod publication;
 #[allow(clippy::too_many_arguments)]
 mod qualified;
@@ -35,6 +36,27 @@ pub use durable::DurableCompactionError;
 pub use durable::DurableCompactionOutboxEventV1;
 pub use fenced_coordinator::MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2;
 pub use fenced_coordinator::MemoryCheckpointCoordinatorV2;
+pub use operational_contract::CompactionCapacityUsageV2;
+pub use operational_contract::CompactionCapacityViolationV2;
+pub use operational_contract::CompactionErrorClassV1;
+pub use operational_contract::CompactionErrorSemanticsV1;
+pub use operational_contract::CompactionOperationMeasurementsV1;
+pub use operational_contract::CompactionPhaseTimingsV1;
+pub use operational_contract::CompactionRecoveryDirectiveV1;
+pub use operational_contract::CompactionResourceMeasurementsV1;
+pub use operational_contract::CurrentSourceUseBindingV1;
+pub use operational_contract::CurrentSourceUseErrorV1;
+pub use operational_contract::CurrentSourceUseFuture;
+pub use operational_contract::CurrentSourceUseReceiptV1;
+pub use operational_contract::CurrentSourceUseValidatorV1;
+pub use operational_contract::MAX_COMPACTION_ARCHIVE_BYTES_V2;
+pub use operational_contract::MAX_COMPACTION_DURABLE_TRANSACTION_BYTES_V2;
+pub use operational_contract::MAX_COMPACTION_RECEIPTS_AND_PROOF_BYTES_V2;
+pub use operational_contract::MAX_COMPACTION_SEMANTIC_PAYLOAD_BYTES_V2;
+pub use operational_contract::MAX_COMPACTION_SOURCE_METADATA_BYTES_V2;
+pub use operational_contract::MAX_COMPACTION_TRANSIENT_MEMORY_BYTES_V2;
+pub use operational_contract::MutationFenceContextErrorV1;
+pub use operational_contract::MutationFenceContextV1;
 pub use publication::CompactionNonceBindingV1;
 pub use publication::CompactionPublicationEvidenceV1;
 pub use publication::CompactionPublicationRequestV1;

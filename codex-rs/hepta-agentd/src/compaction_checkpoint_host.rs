@@ -7,7 +7,8 @@
 use std::sync::Arc;
 
 use codex_hepta_compact_engine::{
-    CompactionPublicationReceiptV2, DurableCompactionOutboxEventV1, MemoryCheckpointCoordinatorV2,
+    CompactionCoordinatorErrorV2, CompactionPublicationReceiptV2,
+    DurableCompactionOutboxEventV1, MemoryCheckpointCoordinatorV2,
     VerifiedCompactionPublicationV1, VerifiedCompactionSelectionV2,
 };
 use codex_hepta_types::Digest32;
@@ -219,8 +220,6 @@ impl AgentdCompactionCheckpointHostV1 {
     }
 }
 
-fn compaction_error(error: impl std::fmt::Display) -> AgentdError {
-    AgentdError::Protocol(format!(
-        "compact.engine product boundary rejected the operation: {error}"
-    ))
+fn compaction_error(error: CompactionCoordinatorErrorV2) -> AgentdError {
+    AgentdError::Compaction(error)
 }
