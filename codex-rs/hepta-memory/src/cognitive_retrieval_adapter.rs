@@ -45,7 +45,7 @@ pub fn execute_owner_observation(
         request_digest,
         acquired_at_unix_ms,
         lease_expires_unix_ms,
-        Some(work),
+        work,
     )
 }
 
@@ -66,7 +66,7 @@ pub fn execute_owner_observation_controlled(
         request_digest,
         acquired_at_unix_ms,
         lease_expires_unix_ms,
-        Some(work),
+        work,
     )
 }
 
@@ -77,31 +77,19 @@ fn execute_owner_observation_inner(
     request_digest: Digest32,
     acquired_at_unix_ms: u64,
     lease_expires_unix_ms: u64,
-    work: Option<&codex_hepta_memory_retrieval::RecallWorkControlV1>,
+    work: &codex_hepta_memory_retrieval::RecallWorkControlV1,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
-    if let Some(work) = work {
-        work.checkpoint()
-            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
-    }
-    let mut execution = match work {
-        Some(work) => core::execute_owner_observation_controlled(
-            observation,
-            cut,
-            context,
-            request_digest,
-            acquired_at_unix_ms,
-            lease_expires_unix_ms,
-            work,
-        ),
-        None => core::execute_owner_observation(
-            observation,
-            cut,
-            context,
-            request_digest,
-            acquired_at_unix_ms,
-            lease_expires_unix_ms,
-        ),
-    }?;
+    work.checkpoint()
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+    let mut execution = core::execute_owner_observation_controlled(
+        observation,
+        cut,
+        context,
+        request_digest,
+        acquired_at_unix_ms,
+        lease_expires_unix_ms,
+        work,
+    )?;
     // Reconstruct the exact bounded union using the same cue identity. This
     // deliberately favors one verifiable algorithm over an approximate score
     // shortcut. It may be fused with the core after differential qualification.
@@ -166,10 +154,8 @@ fn execute_owner_observation_inner(
         )
         .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
     }
-    if let Some(work) = work {
-        work.checkpoint()
-            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
-    }
+    work.checkpoint()
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     Ok(execution)
 }
 
