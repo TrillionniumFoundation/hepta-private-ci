@@ -11,6 +11,7 @@ use std::error::Error as StdError;
 use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 
 use codex_hepta_contracts::FinalUseAuthority;
@@ -99,14 +100,14 @@ impl UnixFinalUseAuthorizer {
     pub fn open(config_path: &Path) -> Result<Self> {
         let config: FinalUseAuthorizerConfig =
             serde_json::from_slice(&read_private_config(config_path)?)?;
-        Self::from_config_inner(config, cfg!(target_os = "linux"))
+        Self::from_config_inner(config, /*require_process_identity*/ true)
     }
 
     /// Build from an already decoded production configuration. This path has
     /// the same Linux process-identity requirement as `open`; callers cannot
     /// use a decoded config to bypass the production issuer fence.
     pub fn from_config(config: FinalUseAuthorizerConfig) -> Result<Self> {
-        Self::from_config_inner(config, cfg!(target_os = "linux"))
+        Self::from_config_inner(config, /*require_process_identity*/ true)
     }
 
     /// Explicit non-production constructor for unit/product qualification.
@@ -146,16 +147,31 @@ impl UnixFinalUseAuthorizer {
         if config.issuer_process_identity.is_some() || config.issuer_process_attestation.is_some() {
             return Err("issuer process identity is currently supported only on Linux".into());
         }
-        let authority = FinalUseAuthority::open_state_dir(
-            &config.authority_state_dir,
-            config.signer_id,
-            config.verifying_key,
-            FinalUseRevocations {
-                authority_epoch: config.authority_epoch,
-                revision: config.revocation_revision,
-                revoked_grant_ids: config.revoked_grant_ids,
-            },
-        )?;
+        let authority = if require_process_identity {
+            let trust = Arc::new(
+                crate::final_use_trust_port::UnixFinalUseTrustPort::for_production(&config)?,
+            );
+            let snapshot = trust.load_snapshot()?;
+            FinalUseAuthority::open_state_dir_with_trust(
+                &config.authority_state_dir,
+                config.signer_id,
+                config.verifying_key,
+                snapshot.revocations,
+                trust.clone(),
+                trust,
+            )?
+        } else {
+            FinalUseAuthority::open_state_dir(
+                &config.authority_state_dir,
+                config.signer_id,
+                config.verifying_key,
+                FinalUseRevocations {
+                    authority_epoch: config.authority_epoch,
+                    revision: config.revocation_revision,
+                    revoked_grant_ids: config.revoked_grant_ids,
+                },
+            )?
+        };
         Ok(Self {
             issuer_socket: config.issuer_socket,
             issuer_uid: config.issuer_uid,
@@ -292,7 +308,7 @@ struct IssuerProcessSnapshot {
 }
 
 #[cfg(target_os = "linux")]
-struct IssuerProcessGuard {
+pub(crate) struct IssuerProcessGuard {
     initial: IssuerProcessSnapshot,
     expected: IssuerProcessIdentityConfig,
     attestation_path: Option<PathBuf>,
@@ -300,7 +316,7 @@ struct IssuerProcessGuard {
 
 #[cfg(target_os = "linux")]
 impl IssuerProcessGuard {
-    fn revalidate(&self) -> Result<()> {
+    pub(crate) fn revalidate(&self) -> Result<()> {
         let current = if let Some(path) = &self.attestation_path {
             capture_attested_issuer(self.initial.pid, path)?
         } else {
@@ -314,7 +330,7 @@ impl IssuerProcessGuard {
 }
 
 #[cfg(target_os = "linux")]
-fn validate_connected_issuer_with_attestation(
+pub(crate) fn validate_connected_issuer_with_attestation(
     pid: Option<u32>,
     expected: Option<&IssuerProcessIdentityConfig>,
     attestation: Option<&Path>,
@@ -583,7 +599,7 @@ fn validate_issuer_peer_uid(actual_uid: u32, expected_uid: u32) -> Result<()> {
 }
 
 #[cfg(unix)]
-fn validate_issuer_socket(path: &Path, issuer_uid: u32) -> Result<()> {
+pub(crate) fn validate_issuer_socket(path: &Path, issuer_uid: u32) -> Result<()> {
     use std::os::unix::fs::FileTypeExt;
     use std::os::unix::fs::MetadataExt;
 

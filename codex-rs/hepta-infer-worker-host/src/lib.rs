@@ -11,6 +11,7 @@
 pub mod model_worker;
 
 pub mod final_use_authorizer;
+mod final_use_trust_port;
 pub mod native_app_server;
 mod native_cleanup_owner;
 mod native_cleanup_store;
