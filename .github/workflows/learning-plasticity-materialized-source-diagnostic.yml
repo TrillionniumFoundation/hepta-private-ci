@@ -12,14 +12,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: learning-plasticity-source-materialize-${{ github.ref }}
+  group: learning-plasticity-source-audit-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   export:
-    name: Export reviewed materialized source without publishing it
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 30
+    name: Decode reviewed source inputs without executing them
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -28,65 +28,89 @@ jobs:
           persist-credentials: false
           clean: true
 
-      - name: Authenticate and materialize reviewed inputs
+      - name: Authenticate and decode reviewed inputs
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          mkdir -p diagnostic/plasticity-materialized/p0
 
-          test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part00)" = "0a3e77db906b659595d28bfaf3d61764365df928"
-          test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part01)" = "a36d920b0e85769b92ff275d9fe01477d2459ede"
-          test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part02)" = "2c86ef886003b445b7662fcb6ed38cf2bb52be24"
-          test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part03)" = "b518613b3449d8ede3b37c584ffee9bf5d09e4ed"
-          test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part04)" = "d1f3cf81123598219e8c439b4e532ac73bdccc78"
-          test "$(git hash-object scripts/.learning_plasticity_runtime_materializer.part05)" = "fbc5941c6d3ba44299b724bcdbb4742ce2403775"
-          cat scripts/.learning_plasticity_runtime_materializer.part{00..05} > /tmp/materialize-runtime.py
-          python3 -m py_compile /tmp/materialize-runtime.py
-          python3 /tmp/materialize-runtime.py
-
-          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part00)" = "44194fbf03b24d700ee2b2f6083dbf7e31e05302"
-          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part01)" = "68783839e39f70a3b0226f1bd7752b3cd6e878f5"
-          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part02)" = "3d4aaa47d5185cb2312f18b8492e802121c0ae37"
-          test "$(git hash-object scripts/.learning_plasticity_phase_timing.part03)" = "0d6bb75f1ec35fc77372b64935a2b56740eb808a"
-          cat scripts/.learning_plasticity_phase_timing.part{00..03} > /tmp/materialize-phase.py
-          python3 -m py_compile /tmp/materialize-phase.py
-          python3 /tmp/materialize-phase.py
-
-          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part00)" = "f7fbe294b5161bc980f1541711559052a73e3d86"
-          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part01)" = "a4a4672b60ca40a4a74ec045a18d2a29bbdffda4"
-          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part02)" = "84adc7988aeb7a83a1ca6e2d4a47f70f0009a698"
-          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part03)" = "5b5b301dce83fb16fc4cb2a35307bec3580d0d2c"
-          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part04)" = "87a95d53c47fa231e4814b8660ff639ace056697"
-          test "$(git hash-object .authoring/learning-plasticity-finalize-source.patch.gz.b64.part05)" = "920a0503eaf039e509cf017b2a4c141fc8be98d2"
-          cat .authoring/learning-plasticity-finalize-source.patch.gz.b64.part{00..05} > /tmp/finalize.patch.gz.b64
+          test "$(git hash-object .authoring/direct-plasticity-source.part00)" = "88d1bf98e2a2ed9e54c2ad41c45cc5319b5f7dc6"
+          test "$(git hash-object .authoring/direct-plasticity-source.part01)" = "61573af0f189c9288c3b006fceea435963dc4fe3"
+          cat .authoring/direct-plasticity-source.part{00..01} > /tmp/direct.patch.gz.b64
           python3 - <<'PY'
           import base64
           import gzip
-          import hashlib
+          from pathlib import Path
+          encoded = Path('/tmp/direct.patch.gz.b64').read_bytes()
+          patch = gzip.decompress(base64.b64decode(b''.join(encoded.split()), validate=True))
+          Path('diagnostic/plasticity-materialized/direct.patch').write_bytes(patch)
+          PY
+
+          for item in \
+            f7fbe294b5161bc980f1541711559052a73e3d86:.authoring/learning-plasticity-finalize-source.patch.gz.b64.part00 \
+            a4a4672b60ca40a4a74ec045a18d2a29bbdffda4:.authoring/learning-plasticity-finalize-source.patch.gz.b64.part01 \
+            84adc7988aeb7a83a1ca6e2d4a47f70f0009a698:.authoring/learning-plasticity-finalize-source.patch.gz.b64.part02 \
+            5b5b301dce83fb16fc4cb2a35307bec3580d0d2c:.authoring/learning-plasticity-finalize-source.patch.gz.b64.part03 \
+            87a95d53c47fa231e4814b8660ff639ace056697:.authoring/learning-plasticity-finalize-source.patch.gz.b64.part04 \
+            920a0503eaf039e509cf017b2a4c141fc8be98d2:.authoring/learning-plasticity-finalize-source.patch.gz.b64.part05; do
+            expected="${item%%:*}"
+            path="${item#*:}"
+            test "$(git hash-object "$path")" = "$expected"
+          done
+          cat .authoring/learning-plasticity-finalize-source.patch.gz.b64.part{00..05} \
+            > /tmp/finalize.patch.gz.b64
+          python3 - <<'PY'
+          import base64
+          import gzip
           from pathlib import Path
           encoded = Path('/tmp/finalize.patch.gz.b64').read_bytes()
-          assert hashlib.sha256(encoded).hexdigest() == '2664e72baa6d2865197ad10ba5a7f21912b2221e99e62b775b75d493459a1d83'
-          patch = gzip.decompress(base64.b64decode(encoded))
-          assert hashlib.sha256(patch).hexdigest() == '60d2f26f4fccd81bb92df7473afb16b4150abf19c6ff56d4f19a51917ff1b284'
-          Path('/tmp/finalize.patch').write_bytes(patch)
+          patch = gzip.decompress(base64.b64decode(b''.join(encoded.split()), validate=True))
+          Path('diagnostic/plasticity-materialized/finalize.patch').write_bytes(patch)
           PY
-          git apply --check /tmp/finalize.patch
-          git apply /tmp/finalize.patch
 
-          mkdir -p diagnostic/plasticity-materialized
-          cp codex-rs/hepta-agentd/src/plasticity_runtime.rs diagnostic/plasticity-materialized/
-          cp codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs diagnostic/plasticity-materialized/
-          cp codex-rs/hepta-agentd/src/plasticity_host.rs diagnostic/plasticity-materialized/
-          git diff --binary > diagnostic/plasticity-materialized/materialized.patch
-          git diff --name-status > diagnostic/plasticity-materialized/changed-files.txt
-          sha256sum diagnostic/plasticity-materialized/* > diagnostic/plasticity-materialized/SHA256SUMS
+          for item in \
+            010a475614e5558cda58446f8c5a3f081353d77f:.authoring/learning-plasticity-p0.tar.gz.b64.part00 \
+            07330c45cd608e94d8363da6accc7811a1448350:.authoring/learning-plasticity-p0.tar.gz.b64.part01 \
+            04a78c44a5024d4a0a6fc61c1ffbe24e057543ac:.authoring/learning-plasticity-p0.tar.gz.b64.part02; do
+            expected="${item%%:*}"
+            path="${item#*:}"
+            test "$(git hash-object "$path")" = "$expected"
+          done
+          cat .authoring/learning-plasticity-p0.tar.gz.b64.part{00..02} > /tmp/p0.tar.gz.b64
+          test "$(sha256sum /tmp/p0.tar.gz.b64 | cut -d' ' -f1)" = \
+            "83f5b4b50b24a8c61156c63baec1c9cbc04e404e44642ebd47e48ee2ab1675b6"
+          base64 --decode /tmp/p0.tar.gz.b64 > /tmp/p0.tar.gz
+          test "$(sha256sum /tmp/p0.tar.gz | cut -d' ' -f1)" = \
+            "2a5478e206eff0834eec4131717635183e29f30729a5b129ea4774c56cbe0b0d"
+          python3 - <<'PY'
+          import tarfile
+          from pathlib import Path
+          archive = Path('/tmp/p0.tar.gz')
+          output = Path('diagnostic/plasticity-materialized/p0')
+          with tarfile.open(archive, 'r:gz') as source:
+              members = source.getmembers()
+              for member in members:
+                  path = Path(member.name)
+                  if path.is_absolute() or '..' in path.parts or member.issym() or member.islnk():
+                      raise SystemExit(f'unsafe archive member: {member.name}')
+              source.extractall(output, filter='data')
+              Path('diagnostic/plasticity-materialized/p0-members.txt').write_text(
+                  ''.join(f'{member.name}\n' for member in members), encoding='utf-8'
+              )
+          PY
 
-      - name: Retain exact materialized source
+          git apply --check diagnostic/plasticity-materialized/direct.patch
+          git apply --check diagnostic/plasticity-materialized/finalize.patch
+          find diagnostic/plasticity-materialized -type f -print0 \
+            | sort -z | xargs -0 sha256sum \
+            > diagnostic/plasticity-materialized/SHA256SUMS
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain exact decoded source inputs
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: learning-plasticity-materialized-source-${{ github.run_id }}
           path: diagnostic/plasticity-materialized
           if-no-files-found: error
           retention-days: 1
-
-# Retriggered for an exact, read-only materialized-source audit on 2026-09-30.
