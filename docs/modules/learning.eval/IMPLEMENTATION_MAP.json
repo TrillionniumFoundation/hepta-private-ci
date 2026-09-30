@@ -4,6 +4,7 @@
     "activation": false,
     "anchoredKnownNoWriteRejectionSafeSourcePresent": true,
     "anchoredStateMachineCrashCutMatrixSourcePresent": true,
+    "auxiliaryControlPlaneByteIdentitySourcePresent": true,
     "checkpointTailRecoveryImplemented": true,
     "consumerBoundAdmissionComposed": true,
     "defaultProductionCoverageSeparatedSourcePresent": true,
@@ -264,6 +265,13 @@
       ]
     },
     {
+      "nativeSymbol": "verify_control_plane",
+      "sourcePath": "scripts/hepta-learning-eval-control-plane-identity.py",
+      "tests": [
+        "scripts/test_hepta_learning_eval_control_plane_identity.py"
+      ]
+    },
+    {
       "nativeSymbol": "local_deterministic_verification",
       "sourcePath": "scripts/hepta-learning-eval-local-verify.py",
       "tests": [
@@ -316,10 +324,10 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1b769510722e3947805e40abc668a37db48b32fa",
-    "tree": "bde14c51948b898dc5830d899f4d78978de11c23"
+    "commit": "a0c1ef7560841f18a9e5df0f8979886de4ae08d9",
+    "tree": "96c07914e168f94e03ec069c7a013c70fc71b27f"
   },
-  "sourceBaseSemantics": "Exact source/test/documentation observation immediately preceding this map-only rebind. It binds anchored known-no-write rejection recovery, anchored near-capacity completion, accepted-unknown poisoning, every legal lifecycle prefix and single-crash-cut recovery, repaired audit navigation, fail-closed Markdown link/anchor validation with lexical symlink-component and symlink-source rejection before resolution, exact workflow coverage of every learning.eval control-plane workflow, and separately reported default-production versus compatibility coverage. This observation is not passing exact-head or ordered-parent execution, target-host qualification, independent acceptance, activation, promotion or release authority.",
+  "sourceBaseSemantics": "Exact source/test/documentation observation immediately preceding this map-only rebind. It binds anchored known-no-write rejection recovery, anchored near-capacity completion, accepted-unknown poisoning, every legal lifecycle prefix and single-crash-cut recovery, repaired audit navigation, fail-closed Markdown link/anchor validation with lexical symlink-component and symlink-source rejection before resolution, exact workflow coverage of every learning.eval control-plane workflow, separately reported default-production versus compatibility coverage, and trusted default-branch exact-byte validation for auxiliary workflow, Markdown, projection, Rust-identifier and status-model files before any PR marker update. This observation is not passing exact-head or ordered-parent execution, target-host qualification, independent acceptance, activation, promotion or release authority.",
   "sourceIdentityPolicy": "exact_observation_plus_candidate_unchanged_v2",
   "sourceRootPresent": true,
   "technicalGuide": "docs/modules/learning.eval/TECHNICAL.md"
