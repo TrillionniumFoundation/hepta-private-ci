@@ -316,7 +316,6 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
     for (pointer, invalid) in [
         ("/locale", json!("é".repeat(17))),
-        ("/structuredIntent/successPredicates", json!([])),
         (
             "/structuredIntent/legalActionClasses",
             json!(vec!["read"; 129]),
@@ -349,32 +348,20 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
 }
 
 #[test]
-fn empty_action_collections_decode_without_inventing_permission_or_actions() {
+fn preserves_empty_caller_actions_for_intrinsic_abstain() {
+    let mut expected = decode_source_envelope_json_v1(SOURCE.as_bytes()).unwrap();
+    expected.structured_intent.legal_action_classes.clear();
+    expected
+        .structured_intent
+        .confirmation_action_classes
+        .clear();
     let mut source: Value = serde_json::from_str(SOURCE).unwrap();
-    for key in [
-        "legalActionClasses",
-        "forbiddenActionClasses",
-        "confirmationActionClasses",
-    ] {
-        source["structuredIntent"][key] = json!([]);
-    }
-    let decoded = decode_source_envelope_json_v1(&serde_json::to_vec(&source).unwrap())
-        .expect("the source owner permits empty action collections before admission");
-    assert!(decoded.structured_intent.legal_action_classes.is_empty());
-    assert!(
-        decoded
-            .structured_intent
-            .forbidden_action_classes
-            .is_empty()
+    source["structuredIntent"]["legalActionClasses"] = json!([]);
+    source["structuredIntent"]["confirmationActionClasses"] = json!([]);
+    assert_eq!(
+        decode_source_envelope_json_v1(&serde_json::to_vec(&source).unwrap()),
+        Ok(expected)
     );
-    assert!(
-        decoded
-            .structured_intent
-            .confirmation_action_classes
-            .is_empty()
-    );
-    assert_eq!(decoded.principal_scope_digest, Digest32::ZERO);
-    assert_eq!(decoded.intent_digest, Digest32::from_array([0x11; 32]));
 }
 
 #[test]

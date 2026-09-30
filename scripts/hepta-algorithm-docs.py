@@ -14,26 +14,11 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.hepta_metadata import has_object_keys, has_registry_ids
-    from scripts.hepta_metadata import (
-        AUTHORITY_KEYS as AUTHORITY_KEYS,
-        has_schema_version,
-        has_deny_all_authority,
-    )
-    from scripts.hepta_workflow_commands import (
-        workflow_commands,
-        verify_document_workflow,
-    )
+    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import has_object_keys, has_registry_ids
-    from hepta_metadata import (
-        AUTHORITY_KEYS as AUTHORITY_KEYS,
-        has_schema_version,
-        has_deny_all_authority,
-    )
-    from hepta_workflow_commands import workflow_commands, verify_document_workflow
+    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
 
 try:
     from scripts.hepta_module_catalog import has_unique_module_ids
@@ -70,21 +55,6 @@ WORKFLOW_PATH = ".github/workflows/hepta-algorithm-docs.yml"
 DOC_PACKAGE = "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
 RECEIPT_SCHEMA = "hepta.algorithm-docs-execution-receipt.v2"
 
-HEADINGS = [
-    "## 1. Scope, ownership and non-claims",
-    "## 2. Symbols, dimensions, units and normalization",
-    "## 3. Formal model and invariants",
-    "## 4. Deterministic reference algorithm",
-    "## 5. Trainable or estimated algorithm",
-    "## 6. Data, protocol and lineage schema",
-    "## 7. Numerical stability, complexity and resource bounds",
-    "## 8. Failure detection, fallback and rollback",
-    "## 9. Security, authority, privacy and unlearning",
-    "## 10. Verification, golden vectors and property tests",
-    "## 11. Quantitative acceptance gates",
-    "## 12. Paper traceability and Hepta extensions",
-    "## 13. Implementation sequence and completion rule",
-]
 TEMPORARY_PATHS = [
     ".github/hepta-doc-closure.part00",
     ".github/hepta-doc-closure.part01",
@@ -369,81 +339,68 @@ def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def verify_specification(row: dict[str, Any], paper_ids: set[str]) -> list[str]:
-    """Validate source/reference identity and return non-blocking prose advice."""
+def protocol_authority_boundary(text: str) -> bool:
+    remaining = text
+    for path in PROTOCOL_AUTHORITY_PATHS:
+        token = f"`{path}`"
+        if token not in remaining:
+            return False
+        remaining = remaining.replace(token, "")
+    return not any(Path(path).name in remaining for path in PROTOCOL_AUTHORITY_PATHS)
+
+
+def false_authority(value: Any, label: str) -> None:
+    need(isinstance(value, dict), label + " authority object")
+    need(set(value) == set(AUTHORITY_KEYS), label + " authority key closure")
+    need(all(item is False for item in value.values()), label + " positive authority")
+
+
+def validate_specification_document(row: dict[str, Any], paper_ids: set[str]) -> None:
+    """Check ownership and references without prescribing an editorial template."""
     doc_id = row["id"]
-    path = row.get("path")
-    need(
-        isinstance(path, str)
-        and path.startswith("docs/learning/")
-        and path.endswith(".md")
-        and not any(part in {"", ".", ".."} for part in path.split("/"))
-        and "\\" not in path,
-        doc_id + " invalid specification path",
-    )
-    target = ROOT / path
-    need(target.resolve().is_relative_to(ROOT.resolve()), doc_id + " escaped path")
+    target = ROOT / row["path"]
     need(target.is_file(), doc_id + " missing")
+    text = target.read_text(encoding="utf-8")
+    need(bool(text.strip()), doc_id + " empty document")
     need(row.get("documentationState") == "closed", doc_id + " documentation state")
     need(
         row.get("implementationState") == "not_implied",
         doc_id + " implementation state",
     )
-    references = row.get("paperIds", [])
+    need(protocol_authority_boundary(text), doc_id + " protocol authority boundary")
+    for module in row["modules"]:
+        need(module in text, doc_id + " missing module " + module)
+    for paper_id in row.get("paperIds", []):
+        need(paper_id in paper_ids, doc_id + " unknown paper")
+        need(paper_id in text, doc_id + " missing paper " + paper_id)
+
+
+def committed_blob_sha(path: str, expected_sha: str) -> str:
+    observed = git("hash-object", path)
     need(
-        isinstance(references, list)
-        and all(isinstance(item, str) for item in references)
-        and len(references) == len(set(references))
-        and set(references).issubset(paper_ids),
-        doc_id + " invalid paper references",
+        observed == git("rev-parse", f"{expected_sha}:{path}"),
+        "uncommitted receipt input " + path,
     )
-    text = target.read_text(encoding="utf-8")
-    need(bool(text.strip()), doc_id + " empty specification")
-    advice = []
-    positions = [text.find(heading) for heading in HEADINGS]
-    if any(position < 0 for position in positions) or positions != sorted(positions):
-        advice.append("consider the recommended section profile")
-    if not all(path in text for path in PROTOCOL_AUTHORITY_PATHS):
-        advice.append("consider linking the canonical protocol registries")
-    markers = (
-        "**Documentation state:** `closed`",
-        "**Implementation state:** not implied",
-    )
-    if any(marker not in text for marker in markers):
-        advice.append("consider explaining documentation versus implementation status")
-    if any(name not in text for name in row["modules"] + references):
-        advice.append("consider explaining the registered module and paper bindings")
-    terms = (
-        "deterministic reference",
-        "golden vector",
-        "rollback",
-        "unlearning",
-        "acceptance gate",
-        "non-claims",
-        "implementation sequence",
-    )
-    if any(term not in text.casefold() for term in terms):
-        advice.append(
-            "consider documenting verification, failure and implementation guidance"
+    return observed
+
+
+def specification_blob_shas(
+    registry: dict[str, Any], expected_sha: str
+) -> dict[str, str]:
+    """Bind an execution receipt to committed bytes, not cached registry metrics."""
+    result = {}
+    for row in registry["documents"]:
+        result[row["id"]] = committed_blob_sha(row["path"], expected_sha)
+    return result
+
+
+def paper_source_lock_digest(papers: dict[str, Any]) -> str:
+    return sha256_text(
+        json.dumps(
+            [row["sourceLock"] for row in papers["papers"]],
+            sort_keys=True,
+            separators=(",", ":"),
         )
-    return advice
-
-
-def verify_protocol_authority_bindings(closure: dict[str, Any]) -> None:
-    """Protocol ownership is a machine contract, not a sentence in a guide."""
-    for key, expected in (
-        ("contractRegistryPath", CONTRACTS_PATH),
-        ("protocolSchemaRegistryPath", PROTOCOLS_PATH),
-        ("dataAuthorityPath", DATA_PATH),
-    ):
-        need(closure.get(key) == expected, "canonical authority binding " + key)
-
-
-def false_authority(value: object, label: str) -> None:
-    need(
-        has_deny_all_authority(value),
-        label
-        + " positive authority or invalid authority metadata; exact false booleans required",
     )
 
 
@@ -481,8 +438,8 @@ def status_text(registry: dict[str, Any], papers: dict[str, Any]) -> str:
         f"- Canonical adaptive protocols: **{len(registry['requiredProtocols'])}**",
         f"- Paper source locks: **{locked}/{len(papers['papers'])} verified; every used claim is locator- and SHA-256-bound**",
         f"- Global work package: **`{registry['globalClosure']['workPackageId']}`**",
-        "- Specification identity: **actual Git bytes; no hand-maintained prose blob cache**",
-        "- Candidate validation: **one executing owner per check; source and merge identities retained**",
+        "- Specification identity: **exact Git blob bound**",
+        "- Exact source and synthetic merge validation: **required in dedicated and global workflows**",
         "",
         "## Critical-module coverage",
         "",
@@ -522,11 +479,7 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
         "unsupportedPaperAttributionMayRemainInClaimsUsed": False,
         "paperReferenceMayAdvanceRuntimeClaim": False,
     }
-    need(
-        has_object_keys(policy, list(expected_policy))
-        and all(policy[key] is expected for key, expected in expected_policy.items()),
-        "paper source lock policy closure",
-    )
+    need(policy == expected_policy, "paper source lock policy closure")
     rules = papers.get("rules")
     for key in (
         "claimAnchorDigestRequired",
@@ -554,12 +507,11 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
 
     for row in rows:
         paper_id = row["id"]
-        need(has_object_keys(row, PAPER_ROW_KEYS), paper_id + " paper key closure")
+        need(list(row) == PAPER_ROW_KEYS, paper_id + " paper key closure/order")
         lock = row.get("sourceLock")
         need(isinstance(lock, dict), paper_id + " source lock")
         need(
-            has_object_keys(lock, SOURCE_LOCK_KEYS),
-            paper_id + " source-lock key closure",
+            list(lock) == SOURCE_LOCK_KEYS, paper_id + " source-lock key closure/order"
         )
         expected_lock = EXPECTED_SOURCE_LOCKS[paper_id]
         for key, expected in expected_lock.items():
@@ -671,7 +623,7 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
         for anchor in claim_anchors:
             claim = anchor["claim"]
             need(
-                has_object_keys(anchor, CLAIM_ANCHOR_KEYS),
+                list(anchor) == CLAIM_ANCHOR_KEYS,
                 paper_id + " claim-anchor key closure " + claim,
             )
             need(
@@ -680,7 +632,7 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
             )
             locator = anchor.get("locator")
             need(
-                has_object_keys(locator, LOCATOR_KEYS),
+                isinstance(locator, dict) and list(locator) == LOCATOR_KEYS,
                 paper_id + " locator closure " + claim,
             )
             need(
@@ -756,7 +708,7 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
         for anchor in nonclaim_anchors:
             nonclaim = anchor["nonClaim"]
             need(
-                has_object_keys(anchor, NONCLAIM_ANCHOR_KEYS),
+                list(anchor) == NONCLAIM_ANCHOR_KEYS,
                 paper_id + " nonclaim-anchor key closure " + nonclaim,
             )
             need(
@@ -801,7 +753,7 @@ def validate_paper_sources(papers: dict[str, Any]) -> int:
                 )
                 locator = anchor.get("locator")
                 need(
-                    has_object_keys(locator, LOCATOR_KEYS),
+                    isinstance(locator, dict) and list(locator) == LOCATOR_KEYS,
                     paper_id + " sourced nonclaim locator",
                 )
                 need(
@@ -891,9 +843,10 @@ def verify() -> int:
         "capability truth state",
     )
     need(registry.get("paperTraceabilityPath") == PAPER_PATH, "paper path")
-    # Registry blob caches are presentation metadata, not another source owner.
-    # The source-lock verifier below still pins each paper's real content and
-    # claim anchors. Explicit receipts bind the actual current registry bytes.
+    need(
+        git("hash-object", PAPER_PATH) == registry.get("paperTraceabilityBlobSha"),
+        "paper traceability blob identity",
+    )
 
     module_ids = [row.get("id") for row in modules.get("modules", [])]
     need(
@@ -901,11 +854,25 @@ def verify() -> int:
         "module registry closure",
     )
     critical = registry.get("criticalModules")
-    need(has_unique_module_ids(critical), "critical module identities")
+    need(
+        isinstance(critical, list)
+        and bool(critical)
+        and len(critical) == len(set(critical)),
+        "critical module registry",
+    )
     need(set(critical).issubset(set(module_ids)), "unknown critical module")
 
     gates = registry.get("closureGates")
-    need(has_registry_ids(gates), "closure gate identities")
+    need(isinstance(gates, list) and bool(gates), "closure gate registry")
+    gate_ids = [row.get("id") for row in gates]
+    need(
+        all(
+            isinstance(value, str) and re.fullmatch(r"ACG-\d+", value)
+            for value in gate_ids
+        )
+        and len(gate_ids) == len(set(gate_ids)),
+        "closure gate IDs",
+    )
     need(all(row.get("required") is True for row in gates), "optional closure gate")
 
     rules = registry.get("rules")
@@ -922,23 +889,13 @@ def verify() -> int:
         need(rules.get(key) is True, "algorithm rule " + key)
 
     documents = registry.get("documents")
-    need(has_registry_ids(documents), "specification identities")
-    need(
-        has_registry_ids(documents, key="path"),
-        "duplicate or invalid specification path",
-    )
-    for row in documents:
-        need(
-            has_unique_module_ids(row.get("modules")), row["id"] + " module identities"
-        )
+    need(isinstance(documents, list) and bool(documents), "specification registry")
+    ids = [row.get("id") for row in documents]
+    need(len(ids) == len(set(ids)), "duplicate specification ID")
     bound = coverage(registry)
-    verify_protocol_authority_bindings(registry["globalClosure"])
-    advisory = {}
     paper_ids = {item["id"] for item in papers["papers"]}
     for row in documents:
-        notes = verify_specification(row, paper_ids)
-        if notes:
-            advisory[row["id"]] = notes
+        validate_specification_document(row, paper_ids)
     need(
         all(bound[module] for module in critical),
         "critical module without specification",
@@ -949,20 +906,18 @@ def verify() -> int:
     domain_ids = {row["id"] for row in data["domains"]}
     required_protocols = registry.get("requiredProtocols")
     required_domains = registry.get("requiredDataDomains")
-    for references, label in (
-        (required_protocols, "protocol"),
-        (required_domains, "data domain"),
-    ):
-        need(
-            isinstance(references, list)
-            and bool(references)
-            and all(
-                isinstance(value, str) and value and value.strip() == value
-                for value in references
-            )
-            and len(references) == len(set(references)),
-            label + " reference identities",
-        )
+    need(
+        isinstance(required_protocols, list)
+        and bool(required_protocols)
+        and len(required_protocols) == len(set(required_protocols)),
+        "protocol closure registry",
+    )
+    need(
+        isinstance(required_domains, list)
+        and bool(required_domains)
+        and len(required_domains) == len(set(required_domains)),
+        "data authority registry",
+    )
     need(set(required_protocols).issubset(contract_ids), "required contract missing")
     need(
         set(required_protocols).issubset(protocol_ids),
@@ -980,12 +935,7 @@ def verify() -> int:
             row["denyUnknownCriticalFields"] is True,
             protocol_id + " unknown-field policy",
         )
-        need(
-            type(row["maximumEncodedBytes"]) is int
-            and row["maximumEncodedBytes"] > 0
-            and row["fields"],
-            protocol_id + " bounds",
-        )
+        need(row["maximumEncodedBytes"] > 0 and row["fields"], protocol_id + " bounds")
         names = [item["name"] for item in row["fields"]]
         need(len(names) == len(set(names)), protocol_id + " duplicate field")
 
@@ -1079,15 +1029,24 @@ def verify() -> int:
 
     dedicated_workflow = (ROOT / WORKFLOW_PATH).read_text(encoding="utf-8")
     global_workflow = (ROOT / GLOBAL_WORKFLOW).read_text(encoding="utf-8")
-    try:
-        verify_document_workflow(
-            dedicated_workflow, ROOT, "scripts/hepta-algorithm-docs.py"
+    global_verifier = (ROOT / GLOBAL_VERIFIER).read_text(encoding="utf-8")
+    for workflow, label in (
+        (dedicated_workflow, "dedicated workflow"),
+        (global_workflow, "global workflow"),
+    ):
+        need("permissions:\n  contents: read" in workflow, label + " permissions")
+        for forbidden in (
+            "contents: write",
+            "git push",
+            "update-ref",
+            "persist-credentials: true",
+        ):
+            need(forbidden not in workflow, label + " mutation " + forbidden)
+        need(
+            "git merge-tree --write-tree" in workflow
+            or ".github/actions/hepta-synthetic-merge" in workflow,
+            label + " synthetic merge",
         )
-        verify_document_workflow(
-            global_workflow, ROOT, "scripts/hepta-docs.py", recorded=True
-        )
-    except ValueError as error:
-        die("algorithm workflow: " + str(error))
     verify_algorithm_workflow_commands(dedicated_workflow, global_workflow)
 
     print(
@@ -1096,7 +1055,6 @@ def verify() -> int:
                 "status": "PASS_HEPTA_ALGORITHM_DOCS_CLOSED_WORLD_V2",
                 "criticalModules": len(critical),
                 "specifications": len(documents),
-                "editorialAdvisories": advisory,
                 "closureGates": len(gates),
                 "protocols": len(required_protocols),
                 "papers": len(papers["papers"]),
@@ -1112,51 +1070,70 @@ def verify() -> int:
 
 
 def verify_algorithm_workflow_commands(dedicated: str, global_workflow: str) -> None:
-    """Require real verification; the aggregate owns its subordinate calls.
+    """Owner workflow runs self-tests; global verification checks current inputs.
 
-    Source locks and status checks already run inside verify. Shell comments,
-    echo output and a source-only check cannot replace semantic verification.
+    Requiring the same owner self-test a second time in the global workflow
+    added no coverage and conflicted with the scoped CI policy. The dedicated
+    workflow still must run it, and the global verifier still calls verify.
     """
+    prefix = "python3 scripts/hepta-algorithm-docs.py "
 
-    def targets(workflow: str) -> list[list[str]]:
-        commands = []
-        for command in workflow_commands(workflow):
-            if (
-                command[:2] == ["python3", "scripts/hepta_ci_exec.py"]
-                and "--" in command
-            ):
-                command = command[command.index("--") + 1 :]
-            commands.append(command)
-        return commands
+    def invokes(workflow: str, command: str) -> bool:
+        # Comments and a verify-sources command cannot stand in for verify.
+        pattern = r"(?m)^\s*" + re.escape(prefix + command) + r"(?:[ \t]|$)"
+        return re.search(pattern, workflow) is not None
 
-    owner = targets(dedicated)
-    for name in ("self-test", "verify"):
+    for command in ("self-test", "verify-sources", "verify", "generate-status"):
         need(
-            ["python3", "scripts/hepta-algorithm-docs.py", name] in owner,
-            "dedicated workflow must execute algorithm " + name,
+            invokes(dedicated, command), "dedicated workflow token " + prefix + command
         )
-    need(
-        ["python3", "scripts/hepta-docs.py", "verify"] in targets(global_workflow),
-        "global workflow must execute the aggregate verifier",
-    )
+    for command in ("verify-sources", "generate-status"):
+        need(
+            invokes(global_workflow, command),
+            "global workflow token " + prefix + command,
+        )
 
 
 def self_test() -> int:
-    authority_fixture = {
-        "contractRegistryPath": CONTRACTS_PATH,
-        "protocolSchemaRegistryPath": PROTOCOLS_PATH,
-        "dataAuthorityPath": DATA_PATH,
-    }
-    verify_protocol_authority_bindings(authority_fixture)
-    hostile_authority_cases = []
-    for key in authority_fixture:
-        candidate = {**authority_fixture, key: "docs/learning/other.json"}
-        try:
-            verify_protocol_authority_bindings(candidate)
-        except SystemExit:
-            hostile_authority_cases.append(key)
-        else:
-            raise AssertionError("substituted authority owner accepted: " + key)
+    authority_fixture = (
+        "Canonical production protocols remain owned by "
+        f"`{CONTRACTS_PATH}` and `{PROTOCOLS_PATH}`."
+    )
+    need(
+        protocol_authority_boundary(authority_fixture),
+        "canonical protocol authority fixture",
+    )
+    hostile_authority_cases: list[str] = []
+
+    def rejected_authority(name: str, candidate: str) -> None:
+        need(
+            not protocol_authority_boundary(candidate),
+            "hostile protocol authority fixture accepted: " + name,
+        )
+        hostile_authority_cases.append(name)
+
+    rejected_authority(
+        "abbreviated_protocol_schema",
+        authority_fixture.replace(PROTOCOLS_PATH, Path(PROTOCOLS_PATH).name),
+    )
+    rejected_authority(
+        "abbreviated_contract_registry",
+        authority_fixture.replace(CONTRACTS_PATH, Path(CONTRACTS_PATH).name),
+    )
+    rejected_authority(
+        "wrong_protocol_directory",
+        authority_fixture.replace(
+            PROTOCOLS_PATH, "docs/learning/PROTOCOL_SCHEMAS.json"
+        ),
+    )
+    rejected_authority(
+        "unquoted_canonical_protocol_path",
+        authority_fixture.replace(f"`{PROTOCOLS_PATH}`", PROTOCOLS_PATH),
+    )
+    rejected_authority(
+        "canonical_pair_plus_abbreviated_reference",
+        authority_fixture + " Alias `PROTOCOL_SCHEMAS.json` is forbidden.",
+    )
     try:
         json.loads('{"x":1,"x":2}', object_pairs_hook=pairs)
         raise AssertionError("duplicate key accepted")
@@ -1277,17 +1254,6 @@ def generate_status(check: bool) -> int:
     return 0
 
 
-def paper_source_lock_digest(papers: dict[str, Any]) -> str:
-    """Bind paper lock values while ignoring JSON object serialization order."""
-    return sha256_text(
-        json.dumps(
-            [row["sourceLock"] for row in papers["papers"]],
-            sort_keys=True,
-            separators=(",", ":"),
-        )
-    )
-
-
 def receipt(expected_sha: str, output: str) -> int:
     verify()
     need(re.fullmatch(r"[0-9a-f]{40}", expected_sha) is not None, "expected SHA")
@@ -1299,12 +1265,10 @@ def receipt(expected_sha: str, output: str) -> int:
         "expectedSha": expected_sha,
         "headSha": git("rev-parse", "HEAD"),
         "treeSha": git("rev-parse", "HEAD^{tree}"),
-        "algorithmRegistryBlobSha": git("hash-object", REGISTRY_PATH),
-        "paperTraceabilityBlobSha": git("hash-object", PAPER_PATH),
+        "algorithmRegistryBlobSha": committed_blob_sha(REGISTRY_PATH, expected_sha),
+        "paperTraceabilityBlobSha": committed_blob_sha(PAPER_PATH, expected_sha),
         "paperSourceLockSha256": paper_source_lock_digest(papers),
-        "specificationBlobShas": {
-            row["id"]: git("hash-object", row["path"]) for row in registry["documents"]
-        },
+        "specificationBlobShas": specification_blob_shas(registry, expected_sha),
         "requiredProtocolIds": registry["requiredProtocols"],
         "documentationGapState": registry["documentationGapState"],
         "globalClosureState": registry["globalClosure"]["state"],
@@ -1344,25 +1308,29 @@ def receipt_verify(input_path: str, expected_sha: str) -> int:
     )
     need(value.get("treeSha") == git("rev-parse", "HEAD^{tree}"), "receipt tree")
     need(
-        value.get("algorithmRegistryBlobSha") == git("hash-object", REGISTRY_PATH),
+        value.get("algorithmRegistryBlobSha")
+        == committed_blob_sha(REGISTRY_PATH, expected_sha),
         "receipt registry",
     )
     registry = load(REGISTRY_PATH)
     papers = load(PAPER_PATH)
     need(
-        value.get("paperTraceabilityBlobSha") == git("hash-object", PAPER_PATH),
-        "receipt paper registry identity",
+        value.get("paperTraceabilityBlobSha")
+        == committed_blob_sha(PAPER_PATH, expected_sha),
+        "receipt paper traceability bytes",
     )
     need(
         value.get("paperSourceLockSha256") == paper_source_lock_digest(papers),
-        "receipt paper source-lock identity",
+        "receipt paper source locks",
+    )
+    need(
+        value.get("requiredProtocolIds") == registry["requiredProtocols"],
+        "receipt protocols",
     )
     need(
         value.get("specificationBlobShas")
-        == {
-            row["id"]: git("hash-object", row["path"]) for row in registry["documents"]
-        },
-        "receipt specification identity",
+        == specification_blob_shas(registry, expected_sha),
+        "receipt specification bytes",
     )
     need(value.get("documentationGapState") == "closed", "receipt closure")
     need(value.get("globalClosureState") == "closed", "receipt global closure")

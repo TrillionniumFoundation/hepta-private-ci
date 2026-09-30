@@ -9,6 +9,7 @@
   "capabilityClaimState": "unchanged_and_governed_by_docs/evidence/CLAIMS.json",
   "paperTraceabilityPath": "docs/learning/PAPER_TRACEABILITY.json",
   "paperTraceabilityBlobSha": "58fc422b753dce1992bb95b80a79adeea72d486e",
+  "requiredSectionProfile": "editorial_guidance_only",
   "criticalModules": [
     "objective.compiler",
     "utility.ndu",
@@ -202,6 +203,7 @@
   "rules": {
     "allCriticalModulesCovered": true,
     "oneOrMoreAlgorithmSpecsPerCriticalModule": true,
+    "allRequiredSectionsPresentAndOrdered": false,
     "exactGitBlobIdentityRequired": true,
     "paperIdsClosedAgainstTraceability": true,
     "documentationDoesNotImplySource": true,

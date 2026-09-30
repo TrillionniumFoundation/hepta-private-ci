@@ -274,8 +274,28 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
         (self.repo / "scripts").mkdir()
         (self.repo / "codex-rs").mkdir()
         shutil.copyfile(RUNNER, self.repo / "scripts" / RUNNER.name)
+        shutil.copyfile(
+            RUNNER.with_name("hepta_ci_dependencies.py"),
+            self.repo / "scripts/hepta_ci_dependencies.py",
+        )
+        (self.repo / "codex-rs/Cargo.toml").write_text(
+            '[workspace]\nmembers=["one", "two", "unrelated"]\n'
+        )
+        for directory in ("one", "two", "unrelated"):
+            package = self.repo / "codex-rs" / directory
+            (package / "src").mkdir(parents=True)
+            (package / "Cargo.toml").write_text(
+                f'[package]\nname="codex-{directory}"\nversion="0.1.0"\n'
+            )
+            (package / "src/lib.rs").write_text("pub fn run() {}\n")
         self.git("add", ".")
         self.git("commit", "-qm", "runner")
+        base = self.git("rev-parse", "HEAD")
+        for directory in ("one", "two"):
+            (self.repo / "codex-rs" / directory / "src/lib.rs").write_text(
+                "// owner edit\npub fn run() {}\n"
+            )
+        self.git("commit", "-qam", "owner changes")
         self.source = self.git("rev-parse", "HEAD")
         binaries = self.root / "bin"
         binaries.mkdir()
@@ -295,10 +315,10 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
             "PATH": str(binaries) + os.pathsep + os.environ["PATH"],
             "SOURCE_SHA": self.source,
             "TESTED_SHA": self.source,
-            "BASE_SHA": "0" * 40,
+            "BASE_SHA": base,
             "HEPTA_CI_LANE": "source-head",
             "RUNNER_TEMP": str(self.root),
-            "PACKAGES": "codex-one codex-two",
+            "FULL_QUALIFICATION": "false",
             "CALLS": str(self.root / "calls"),
         }
         workflow = load_workflow(

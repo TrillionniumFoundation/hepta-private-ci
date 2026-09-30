@@ -17,6 +17,7 @@ import json
 import posixpath
 import re
 import subprocess
+import sys
 import tomllib
 from dataclasses import dataclass
 from functools import lru_cache
@@ -566,8 +567,17 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
     }
 
 
-def plan(root: Path, base: str | None, tested: str) -> dict:
+def plan(
+    root: Path, base: str | None, tested: str, *, force_full: bool = False
+) -> dict:
     after = graph(root, tested)
+    if force_full:
+        return {
+            "packages": sorted(after.targets),
+            "full_workspace": True,
+            "changed_packages": [],
+            "reasons": ["explicit full qualification"],
+        }
     if not base or not OID.fullmatch(base) or base == "0" * 40:
         return {
             "packages": sorted(after.targets),
@@ -606,6 +616,43 @@ def plan(root: Path, base: str | None, tested: str) -> dict:
     )
 
 
+def execution_command(selected: dict, action: str) -> list[str] | None:
+    """Apply one exact-revision impact plan to each native check."""
+    if action == "plan" or not selected["packages"]:
+        return None
+    packages = []
+    if not selected["full_workspace"]:
+        for package in selected["packages"]:
+            packages.extend(["-p", package])
+    if action == "test":
+        return [
+            "just",
+            "test",
+            "--locked",
+            *(["--workspace"] if selected["full_workspace"] else packages),
+        ]
+    if action == "fmt":
+        return [
+            "cargo",
+            "fmt",
+            *(["--all"] if selected["full_workspace"] else packages),
+            "--",
+            "--check",
+        ]
+    if action == "clippy":
+        return [
+            "cargo",
+            "clippy",
+            "--locked",
+            *(["--workspace"] if selected["full_workspace"] else packages),
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings",
+        ]
+    raise ValueError("unknown native check")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
@@ -615,28 +662,54 @@ def main() -> None:
     parser.add_argument(
         "--run", action="store_true", help="execute the plan with just test --locked"
     )
+    parser.add_argument(
+        "--action", choices=["plan", "test", "fmt", "clippy"], default="plan"
+    )
+    parser.add_argument(
+        "--full", action="store_true", help="explicitly qualify the entire workspace"
+    )
+    parser.add_argument("--github-output", type=Path)
+    parser.add_argument(
+        "--record-output",
+        type=Path,
+        help="record the selected native command with hepta_ci_exec",
+    )
     args = parser.parse_args()
+    if args.run and args.action != "plan":
+        parser.error("--run is the compatibility alias for --action test")
+    if args.record_output and not args.run and args.action == "plan":
+        parser.error("--record-output requires a native execution action")
     if not OID.fullmatch(args.tested):
         parser.error("--tested must be an exact 40-character SHA")
     if git(args.root, "rev-parse", "HEAD").decode().strip() != args.tested:
         parser.error("checkout differs from --tested")
     git(args.root, "diff", "--no-ext-diff", "--quiet", "HEAD", "--")
-    selected = plan(args.root, args.base, args.tested)
+    selected = plan(args.root, args.base, args.tested, force_full=args.full)
     payload = {"tested_sha": args.tested, "base_sha": args.base, **selected}
     text = json.dumps(payload, sort_keys=True) + "\n"
     print(text, end="")
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(text, encoding="utf-8")
-    if args.run and selected["packages"]:
-        command = ["just", "test", "--locked"]
-        if selected["full_workspace"]:
-            command.append("--workspace")
-        if not selected["full_workspace"]:
-            for package in selected["packages"]:
-                command.extend(["-p", package])
-        subprocess.run(command, cwd=args.root / WORKSPACE, check=True)
+    if args.github_output:
+        with args.github_output.open("a", encoding="utf-8") as stream:
+            stream.write(f"has_packages={str(bool(selected['packages'])).lower()}\n")
+    command = execution_command(selected, "test" if args.run else args.action)
+    if command is not None:
+        if args.record_output:
+            command = [
+                sys.executable,
+                str(Path(__file__).with_name("hepta_ci_exec.py")),
+                "--output",
+                str(args.record_output.resolve()),
+                "--",
+                *command,
+            ]
+        result = subprocess.run(command, cwd=args.root / WORKSPACE, check=False)
         git(args.root, "diff", "--no-ext-diff", "--quiet", "HEAD", "--")
+        raise SystemExit(
+            result.returncode if result.returncode >= 0 else 128 - result.returncode
+        )
 
 
 if __name__ == "__main__":

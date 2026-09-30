@@ -4,7 +4,16 @@ on:
   # Automatic pull-request and main-branch fan-out is owned by the two
   # aggregate checks. Deep qualifications remain reusable and manually runnable.
   workflow_call:
+    inputs:
+      full_qualification:
+        type: boolean
+        default: false
   workflow_dispatch:
+    inputs:
+      full_qualification:
+        description: Execute all affected owners and revalidate historical qualification evidence.
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -18,6 +27,7 @@ env:
   BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
   TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   HEPTA_CI_LANE: source-head
+  FULL_QUALIFICATION: ${{ inputs.full_qualification && 'true' || 'false' }}
 
 jobs:
   workspace-regression:
@@ -258,28 +268,6 @@ jobs:
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
-      # Explicit owners: testing a dependency does not execute its own tests.
-      PACKAGES: >-
-        codex-hepta-agent-protocol codex-hepta-agentd
-        codex-hepta-authbus codex-hepta-authbus-p1-3-qualification
-        codex-hepta-automation codex-hepta-bao-adapter
-        codex-hepta-bellman-operator codex-hepta-codex-adapter
-        codex-hepta-cognitive-read codex-hepta-cognitive-store
-        codex-hepta-cognitive-types codex-hepta-compact-engine
-        codex-hepta-context-compiler codex-hepta-control-plane
-        codex-hepta-evidence codex-hepta-fleet
-        codex-hepta-infer-core codex-hepta-infer-worker-host
-        codex-hepta-inferd codex-hepta-intelligence
-        codex-hepta-intelligence-eval codex-hepta-intuition
-        codex-hepta-kg codex-hepta-learning-artifacts
-        codex-hepta-learning-ledger codex-hepta-matrixd
-        codex-hepta-memory codex-hepta-memory-federation
-        codex-hepta-memory-retrieval codex-hepta-ndu
-        codex-hepta-objective codex-hepta-plasticity codex-hepta-shadow-qualification
-        codex-state codex-core codex-app-server
-        codex-hepta-matrix-store codex-hepta-memory-extension
-        codex-hepta-neuron codex-hepta-prompt-registry codex-hepta-supervisor
-        codex-hepta-runtime
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -351,9 +339,21 @@ jobs:
         run: |
           set -euo pipefail
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/workspace-metadata.json" -- cargo metadata --locked --format-version 1 --no-deps
+      - name: Compute affected owners from both exact Cargo graphs
+        id: impact
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--base "$BASE_SHA" --tested "$TESTED_SHA")
+          if [ "$FULL_QUALIFICATION" = true ]; then args+=(--full); fi
+          python3 scripts/hepta_ci_dependencies.py "${args[@]}" \
+            --output "$RUNNER_TEMP/hepta-command-records/cargo-impact.json" \
+            --github-output "$GITHUB_OUTPUT"
       - name: Formatting without source mutation
         id: formatting
-        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' && steps.impact.outputs.has_packages == 'true' }}
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
           HEPTA_CI_LANE: ${{ matrix.lane }}
@@ -361,11 +361,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          args=()
-          for package in $PACKAGES; do args+=(--package "$package"); done
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/format.json" -- cargo fmt "${args[@]}" -- --check
+          args=(--base "$BASE_SHA" --tested "$TESTED_SHA")
+          if [ "$FULL_QUALIFICATION" = true ]; then args+=(--full); fi
+          python3 ../scripts/hepta_ci_dependencies.py --root .. "${args[@]}" --action fmt \
+            --record-output "$RUNNER_TEMP/hepta-command-records/format.json"
       - name: Prepare native owner-test prerequisites
         id: native-prerequisites
+        if: steps.impact.outputs.has_packages == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
@@ -374,13 +376,17 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
       - name: Install DotSlash for shell integration tests
+        if: steps.impact.outputs.has_packages == 'true'
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
       - name: Expose DotSlash at the path used by integration tests
+        if: steps.impact.outputs.has_packages == 'true'
         run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        if: steps.impact.outputs.has_packages == 'true'
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Resolve verified sandboxed V8 artifacts for Cargo
+        if: steps.impact.outputs.has_packages == 'true'
         id: native_ready
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
@@ -388,6 +394,7 @@ jobs:
         run: python3 scripts/hepta_ci_v8.py
       - name: Compile and test actual imported packages
         id: owner-tests
+        if: steps.impact.outputs.has_packages == 'true'
         working-directory: codex-rs
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
@@ -396,11 +403,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          args=()
-          for package in $PACKAGES; do args+=(-p "$package"); done
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/owner-test.json" -- just test --locked "${args[@]}"
+          args=(--base "$BASE_SHA" --tested "$TESTED_SHA")
+          if [ "$FULL_QUALIFICATION" = true ]; then args+=(--full); fi
+          python3 ../scripts/hepta_ci_dependencies.py --root .. "${args[@]}" --action test \
+            --record-output "$RUNNER_TEMP/hepta-command-records/owner-test.json"
       - name: Qualify cognitive child-process crash and reopen
-        if: matrix.lane == 'source-head'
+        if: matrix.lane == 'source-head' && steps.impact.outputs.has_packages == 'true'
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
@@ -423,7 +431,7 @@ jobs:
               -- --ignored --exact
 
       - name: Measure cognitive durable-store profile
-        if: matrix.lane == 'source-head'
+        if: matrix.lane == 'source-head' && steps.impact.outputs.has_packages == 'true'
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
@@ -445,7 +453,7 @@ jobs:
             --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-command.json" -- \
             cargo run --locked -p codex-hepta-memory --example cognitive_store_perf
       - name: Measure cognitive maximum-retained profile
-        if: matrix.lane == 'source-head'
+        if: matrix.lane == 'source-head' && steps.impact.outputs.has_packages == 'true'
         working-directory: codex-rs
         env:
           CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
@@ -477,12 +485,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          args=()
-          for package in $PACKAGES; do args+=(-p "$package"); done
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
+          args=(--base "$BASE_SHA" --tested "$TESTED_SHA")
+          if [ "$FULL_QUALIFICATION" = true ]; then args+=(--full); fi
+          python3 ../scripts/hepta_ci_dependencies.py --root .. "${args[@]}" --action clippy \
+            --record-output "$RUNNER_TEMP/hepta-command-records/clippy.json"
       - name: Retain original document and source-owner gates
         id: document-gates
-        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' && env.FULL_QUALIFICATION == 'true' }}
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
           HEPTA_CI_LANE: ${{ matrix.lane }}
@@ -516,7 +525,7 @@ jobs:
             printf 'Tested tree: `%s`\n\n' "$(git rev-parse HEAD^{tree})"
             printf 'Parents: `%s`\n\n' "$(git show -s --format=%P HEAD)"
             printf 'Prior job status: `%s` (not a deployment qualification)\n\n' "$PRIOR_STATUS"
-            printf 'Targets: `%s`\n' "$PACKAGES"
+            cat "$RUNNER_TEMP/hepta-command-records/cargo-impact.json"
           } >> "$GITHUB_STEP_SUMMARY"
           git diff --check
           git diff --exit-code
@@ -581,7 +590,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-gap-closure.py verify
+          profile=development
+          if [ "$FULL_QUALIFICATION" = true ]; then profile=qualification; fi
+          python3 scripts/hepta-gap-closure.py verify --profile "$profile"
           python3 -m unittest discover -v \
             -s tools/hepta-engineering-control -p 'test_*.py'
       - name: Invoke v2 engineering product caller

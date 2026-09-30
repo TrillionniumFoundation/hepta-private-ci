@@ -2,20 +2,17 @@
 """Closed-world validator for Hepta module source bindings and technical guides."""
 
 try:
-    from scripts.hepta_metadata import (
-        has_deny_all_authority,
-    )
+    from scripts.hepta_metadata import AUTHORITY_KEYS
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import (
-        has_deny_all_authority,
-    )
+    from hepta_metadata import AUTHORITY_KEYS
 
 import argparse
 import hashlib
 import json
 import re
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -84,11 +81,14 @@ def sha(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def false_authority(value: object, label: str) -> None:
+def false_authority(value, label):
     need(
-        has_deny_all_authority(value),
-        label
-        + " positive authority or invalid authority metadata; exact false booleans required",
+        isinstance(value, dict) and set(value) == set(AUTHORITY_KEYS),
+        label + " authority key closure",
+    )
+    need(
+        all(type(flag) is bool and flag is False for flag in value.values()),
+        label + " positive authority or invalid authority type",
     )
 
 
@@ -201,12 +201,10 @@ def refresh_derived(check):
                 {
                     "module": module_id,
                     "sourceEvidenceRoots": [],
+                    "interpretation": "generated_navigation_only_not_execution_evidence",
                 },
             )
         )
-        # Explanatory prose belongs in the module guide, not a duplicated
-        # machine projection that can contradict typed implementation facts.
-        row.pop("interpretation", None)
         declared = [binding["path"] for binding in module["rootBindings"]]
         existing = [item for item in declared if (ROOT / item).exists()]
         row.update(
@@ -276,7 +274,8 @@ def refresh_derived(check):
     return 0
 
 
-def verify():
+def verify(profile="qualification"):
+    need(profile in {"development", "qualification"}, "verification profile")
     modules = load("docs/modules/MODULES.json")
     bindings = load("docs/modules/SOURCE_BINDINGS.json")
     docs = load("docs/modules/MODULE_DOCS.json")
@@ -419,11 +418,25 @@ def verify():
         verify_local_links(path, text)
     readme = ROOT / "docs/modules/README.md"
     verify_local_links(readme, readme.read_text(encoding="utf-8"))
-    # Exact Git/source-map identity belongs to candidate qualification, not
-    # ordinary source or documentation development.  Module documentation
-    # verifies the single manifest projection, ownership and usable navigation;
-    # high-risk and release workflows invoke hepta-implementation-maps.py
-    # explicitly when exact candidate evidence is required.
+    # Every registered module must expose a source navigation map.  The map
+    # records the distinction between a source root being present and a
+    # production implementation being composed; it never upgrades claims.
+    maps = subprocess.run(
+        [
+            "python3",
+            "scripts/hepta-implementation-maps.py",
+            "verify",
+            "--profile",
+            profile,
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+    )
+    need(
+        maps.returncode == 0,
+        "implementation maps: " + (maps.stderr.strip() or maps.stdout.strip()),
+    )
     print(
         json.dumps(
             {
@@ -432,6 +445,8 @@ def verify():
                 "technicalDocuments": len(dmap),
                 "sourceBindings": len(bmap),
                 "validationScope": "registry_ownership_paths_and_document_navigation",
+                "verificationProfile": profile,
+                "historicalEvidenceRevalidated": profile == "qualification",
                 "productExecutionProved": False,
                 "authorityGranted": False,
             },
@@ -466,6 +481,9 @@ def main():
         "command", choices=["verify", "self-test", "refresh-indexes", "refresh-derived"]
     )
     p.add_argument("--check", action="store_true")
+    p.add_argument(
+        "--profile", choices=["development", "qualification"], default="qualification"
+    )
     args = p.parse_args()
     if args.command == "refresh-indexes":
         return refresh_indexes(args.check)
@@ -473,7 +491,7 @@ def main():
         return refresh_derived(args.check)
     if args.check:
         p.error("--check applies only to refresh-indexes or refresh-derived")
-    return verify() if args.command == "verify" else self_test()
+    return verify(args.profile) if args.command == "verify" else self_test()
 
 
 if __name__ == "__main__":

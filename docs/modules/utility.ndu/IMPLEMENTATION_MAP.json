@@ -147,15 +147,15 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "iteration_bound_exhaustion_is_unavailable"
+          "symbol": "iteration_exhaustion_is_unavailable"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "parent_and_child_updates_cannot_share_generation_within_one_hierarchy"
+          "symbol": "parent_and_child_updates_cannot_share_generation"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "unrelated_hierarchies_may_advance_different_levels_in_same_generation"
+          "symbol": "unrelated_hierarchy_updates_can_share_generation"
         }
       ],
       "designOperation": "solve_preference_target",
@@ -187,8 +187,8 @@
           "symbol": "zero_context_digest_rejects_before_protocol_publication"
         },
         {
-          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-          "symbol": "malformed_local_solver_receipts_reject_before_protocol_publication"
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "impossible_local_receipt_invariants_are_rejected"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
@@ -298,7 +298,11 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "hash_valid_but_semantically_impossible_recovery_rejects"
+          "symbol": "reopen_rejects_well_hashed_selection_without_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_well_hashed_revocation_without_projection"
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -540,8 +544,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
+    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -609,7 +613,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "71aca0bd75f100cb55f1404441dc2e08ead89251"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
@@ -649,7 +653,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-      "object": "b8ea26756281b80957cbfd2ede9d41b098493a22"
+      "object": "8a3418187cad9f513d47e3f0ccfc7840331edc11"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
@@ -657,7 +661,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-      "object": "3018e57b24b4e5a3a86b9b205504744426ade4f0"
+      "object": "d14f039e8cf68191b393a37ead95f114c29f7ee1"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store.rs",

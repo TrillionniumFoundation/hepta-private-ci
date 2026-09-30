@@ -3,7 +3,17 @@ name: Hepta development documents
 on:
   # Automatic fan-out belongs to the existing aggregate checks.
   workflow_call:
+    inputs:
+      profile:
+        type: string
+        default: development
   workflow_dispatch:
+    inputs:
+      profile:
+        description: Qualification additionally renews historical source evidence and receipts.
+        type: choice
+        options: [qualification, development]
+        default: qualification
 
 permissions:
   contents: read
@@ -11,6 +21,7 @@ permissions:
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  VERIFICATION_PROFILE: ${{ inputs.profile || 'development' }}
 
 concurrency:
   group: hepta-development-docs-${{ github.event.pull_request.number || github.ref }}
@@ -53,7 +64,7 @@ jobs:
           python3 scripts/hepta-docs.py self-test
           python3 -m unittest discover -v -s scripts -p 'test_hepta_*.py'
           # The global verifier owns source locks, status and subordinate checks.
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-document-records/source-head.json" -- python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-document-records/source-head.json" -- python3 scripts/hepta-docs.py verify --profile "$VERIFICATION_PROFILE"
 
       - name: Retain source execution and diagnostics
         if: always()
@@ -112,7 +123,7 @@ jobs:
           set -euo pipefail
           # Source-head owns self-tests. The shared recorder checks ordered
           # parents and recomputes the merge tree before this verifier executes.
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-document-records/base-merge.json" -- python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-document-records/base-merge.json" -- python3 scripts/hepta-docs.py verify --profile "$VERIFICATION_PROFILE"
 
       - name: Retain merge execution and diagnostics
         if: always()

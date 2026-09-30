@@ -98,7 +98,7 @@ jobs:
     if: needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/hepta-contract-gate.yml
     with:
-      require_exact_source: ${{ needs.scope.outputs.require_exact_source == 'true' }}
+      profile: ${{ needs.scope.outputs.require_exact_source == 'true' && 'qualification' || 'development' }}
     secrets: inherit
 
   bazel:
@@ -238,7 +238,7 @@ jobs:
           python3 scripts/hepta_module_manifest.py --check
           python3 scripts/hepta_architecture_graph.py --check
           python3 scripts/hepta_rust_reachability.py --strict
-          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-docs.py verify --profile development
           test -z "$(git status --porcelain --untracked-files=no)"
 
   required:
