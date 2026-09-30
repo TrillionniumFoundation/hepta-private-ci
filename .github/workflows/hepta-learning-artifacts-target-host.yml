@@ -1,0 +1,40 @@
+name: Hepta learning.artifacts target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_root:
+        description: Absolute path on the qualified target filesystem
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  target-host:
+    runs-on: [self-hosted, learning-artifacts-target]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "SOURCE_TREE=$(git rev-parse 'HEAD^{tree}')" >> "$GITHUB_ENV"
+      - name: Run target filesystem qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-learning-artifacts-target-fs.py             --root "${{ inputs.target_root }}"             --source-sha "$SOURCE_SHA"             --source-tree "$SOURCE_TREE"             --output "$RUNNER_TEMP/learning-artifacts-target-fs.json"
+      - name: Retain target-host receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-artifacts-target-host-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/learning-artifacts-target-fs.json
+          if-no-files-found: error
+          retention-days: 90
