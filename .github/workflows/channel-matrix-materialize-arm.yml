@@ -1,0 +1,87 @@
+name: channel.matrix isolated arm materialization
+
+on:
+  push:
+    branches:
+      - codex/channel-matrix-materialize-once-20260930
+    paths:
+      - '.github/workflows/channel-matrix-materialize-arm.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  materialize:
+    name: Materialize reviewed source on ARM
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      OPS_SHA256: 3ad03651989919489dfc3e4171b2fccad252e948247ecc7ab1ee15810aea11e9
+      CLOSURE_SHA256: 6be88c59e74ef4d6f16231c0ba13dadfe542c69b3e060c10719bb7b7245d90a2
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Materialize and validate reviewed source
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, gzip, hashlib, runpy, tarfile
+          from pathlib import Path
+          import os
+          def payload(pattern, expected, target):
+              encoded=b''.join(p.read_bytes() for p in sorted(Path('.').glob(pattern)))
+              raw=base64.b64decode(encoded, validate=True)
+              actual=hashlib.sha256(raw).hexdigest()
+              if actual != expected:
+                  raise SystemExit(f'{pattern}: {actual} != {expected}')
+              Path(target).write_bytes(raw)
+          payload('.matrix-staging/channel-matrix-ops-evidence.part*', os.environ['OPS_SHA256'], '/tmp/ops.tar.gz')
+          with tarfile.open('/tmp/ops.tar.gz','r:gz') as archive:
+              archive.extractall('.')
+          payload('.matrix-staging/channel_matrix_apply.part*', os.environ['CLOSURE_SHA256'], '/tmp/closure.py.gz')
+          Path('/tmp/closure.py').write_bytes(gzip.decompress(Path('/tmp/closure.py.gz').read_bytes()))
+          runpy.run_path('/tmp/closure.py', run_name='__main__')
+          PY
+          rm -f .github/channel-matrix-repair.py \
+            .github/workflows/channel-matrix-bootstrap.yml \
+            .github/workflows/channel-matrix-closure-apply.yml \
+            .github/workflows/channel-matrix-hardening-apply.yml \
+            .github/workflows/channel-matrix-ops-evidence-finalize.yml \
+            .github/workflows/channel-matrix-source-export.yml \
+            .github/workflows/channel-matrix-materialize-arm.yml \
+            scripts/channel_matrix_full_patch.py.gz.b64
+          rm -rf .matrix-staging
+          python3 -m compileall -q scripts
+          python3 -m unittest discover -s scripts/tests -p 'test_channel_matrix*.py' -v
+          git diff --check
+      - name: Package materialized source
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, stat, subprocess, tarfile
+          from pathlib import Path
+          out=Path('/tmp/materialized'); out.mkdir()
+          changed=subprocess.check_output(['git','diff','--name-only','--diff-filter=ACMRT',os.environ['SOURCE_SHA'],'--'],text=True).splitlines()
+          deleted=subprocess.check_output(['git','diff','--name-only','--diff-filter=D',os.environ['SOURCE_SHA'],'--'],text=True).splitlines()
+          with tarfile.open(out/'tree.tar','w') as archive:
+              for name in changed: archive.add(name, arcname=name, recursive=False)
+          files=[]
+          for name in changed:
+              p=Path(name); data=p.read_bytes()
+              files.append({'path':name,'mode':'100755' if p.stat().st_mode & stat.S_IXUSR else '100644','bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()})
+          (out/'deletions.txt').write_text('\n'.join(sorted(deleted))+'\n')
+          (out/'manifest.json').write_text(json.dumps({'schema':'hepta.channel-matrix-reviewed-materialization.v1','sourceCommit':os.environ['SOURCE_SHA'],'files':files,'deletions':sorted(deleted),'payloads':{'ops':os.environ['OPS_SHA256'],'closure':os.environ['CLOSURE_SHA256']},'authorityGranted':False,'activation':False,'release':False},indent=2,sort_keys=True)+'\n')
+          subprocess.run(['git','diff','--binary','--full-index',os.environ['SOURCE_SHA'],'--'],stdout=(out/'materialized.patch').open('wb'),check=True)
+          (out/'digests.txt').write_text(f"{hashlib.sha256((out/'tree.tar').read_bytes()).hexdigest()}  tree.tar\n{hashlib.sha256((out/'materialized.patch').read_bytes()).hexdigest()}  materialized.patch\n")
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: channel-matrix-reviewed-materialization-arm-${{ github.run_id }}
+          path: /tmp/materialized/
+          if-no-files-found: error
+          retention-days: 30
