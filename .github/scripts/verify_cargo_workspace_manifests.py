@@ -6,7 +6,13 @@ Checks:
 - Crates inherit `[workspace.package]` metadata.
 - Crates opt into `[lints] workspace = true`.
 - Crate names follow the codex-rs directory naming conventions.
-- Workspace manifests do not introduce workspace crate feature toggles.
+- Workspace manifests do not introduce unreviewed workspace crate features.
+
+The allowlists below are exact, defaults-off migration surfaces. They preserve
+pre-existing qualification fixtures while those fixtures move into dedicated
+qualification crates. An allowlist entry does not certify Bazel feature
+coverage and becomes an error as soon as the corresponding manifest no longer
+uses it.
 """
 
 from __future__ import annotations
@@ -15,25 +21,30 @@ import sys
 import tomllib
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 CARGO_RS_ROOT = ROOT / "codex-rs"
 WORKSPACE_PACKAGE_FIELDS = ("version", "edition", "license")
+
 TOP_LEVEL_NAME_EXCEPTIONS = {
     "windows-sandbox-rs": "codex-windows-sandbox",
 }
 UTILITY_NAME_EXCEPTIONS = {
     "path-utils": "codex-utils-path",
 }
-MANIFEST_FEATURE_EXCEPTIONS = {
-    "codex-rs/v8-poc/Cargo.toml": {"sandbox": ("v8/v8_enable_sandbox",)},
-    # Temporary migration: retain existing opt-in Hepta profiles until their
-    # qualification libraries/tests are extracted into dedicated Bazel targets.
-    # This exact allowlist does not certify Bazel feature coverage or independent
-    # acceptance. Remove each entry with its reviewed extraction; defaults stay off.
+
+MANIFEST_FEATURE_EXCEPTIONS: dict[str, dict[str, tuple[str, ...]]] = {
+    "codex-rs/v8-poc/Cargo.toml": {
+        "sandbox": ("v8/v8_enable_sandbox",),
+    },
+    "codex-rs/app-server-client/Cargo.toml": {
+        "test-support": (),
+    },
     "codex-rs/hepta-agentd/Cargo.toml": {
         "default": (),
         "qualification-cognitive-write": (),
+        "qualification-legacy-learning-write": (
+            "codex-hepta-learning-ledger/qualification-legacy-write",
+        ),
     },
     "codex-rs/hepta-automation/Cargo.toml": {
         "default": (),
@@ -43,6 +54,14 @@ MANIFEST_FEATURE_EXCEPTIONS = {
         "default": (),
         "authbus-local-qualification": (),
     },
+    "codex-rs/hepta-intelligence-eval/Cargo.toml": {
+        "default": (),
+        "trusted-inprocess-eval": (),
+    },
+    "codex-rs/hepta-learning-ledger/Cargo.toml": {
+        "default": (),
+        "qualification-legacy-write": (),
+    },
     "codex-rs/hepta-matrix-sdk/Cargo.toml": {
         "default": (),
         "qualification-failpoints": (),
@@ -51,13 +70,43 @@ MANIFEST_FEATURE_EXCEPTIONS = {
         "default": (),
         "real-synapse-e2e": ("codex-hepta-matrix-sdk/qualification-failpoints",),
     },
+    "codex-rs/hepta-objective/Cargo.toml": {
+        "default": (),
+        "qualification-legacy-compile": (),
+    },
     "codex-rs/hepta-supervisor/Cargo.toml": {
         "default": (),
+        "qualification": (),
         "production-authority": (),
     },
 }
-OPTIONAL_DEPENDENCY_EXCEPTIONS = set()
-INTERNAL_DEPENDENCY_FEATURE_EXCEPTIONS = {}
+
+OPTIONAL_DEPENDENCY_EXCEPTIONS: set[tuple[str, str, str]] = set()
+
+INTERNAL_DEPENDENCY_FEATURE_EXCEPTIONS: dict[
+    tuple[str, str, str], tuple[str, ...]
+] = {
+    (
+        "codex-rs/hepta-codex-adapter/Cargo.toml",
+        "dev-dependencies",
+        "codex-app-server-client",
+    ): ("test-support",),
+    (
+        "codex-rs/hepta-infer-worker-host/Cargo.toml",
+        "dev-dependencies",
+        "codex-app-server-client",
+    ): ("test-support",),
+    (
+        "codex-rs/hepta-shadow-qualification/Cargo.toml",
+        "dev-dependencies",
+        "codex-hepta-learning-ledger",
+    ): ("qualification-legacy-write",),
+    (
+        "codex-rs/hepta-shadow-qualification/Cargo.toml",
+        "dev-dependencies",
+        "codex-hepta-objective",
+    ): ("qualification-legacy-compile",),
+}
 
 
 def main() -> int:
@@ -68,13 +117,14 @@ def main() -> int:
     failures_by_path: dict[str, list[str]] = {}
 
     for path in manifests_to_verify():
-        if errors := manifest_errors(
+        errors = manifest_errors(
             path,
             internal_package_names,
             used_manifest_feature_exceptions,
             used_optional_dependency_exceptions,
             used_internal_dependency_feature_exceptions,
-        ):
+        )
+        if errors:
             failures_by_path[manifest_key(path)] = errors
 
     add_unused_exception_errors(
@@ -89,43 +139,24 @@ def main() -> int:
 
     print(
         "Cargo manifests under codex-rs must inherit workspace package metadata, "
-        "opt into workspace lints, and avoid introducing new workspace crate "
-        "features."
+        "opt into workspace lints, and avoid introducing unreviewed workspace "
+        "crate features."
     )
     print(
-        "Workspace crate features are disallowed because our Bazel build setup "
-        "does not honor them today, which can let issues hidden behind feature "
-        "gates go unnoticed, and because they add extra crate build "
-        "permutations we want to avoid."
+        "Workspace crate features are disallowed by default because the Bazel "
+        "build does not honor them today. Exact defaults-off migration "
+        "allowlists are temporary and do not establish feature coverage."
     )
-    print(
-        "Cargo only applies `codex-rs/Cargo.toml` `[workspace.lints.clippy]` "
-        "entries to a crate when that crate declares:"
-    )
+    print()
+    print("Cargo applies codex-rs workspace lints only when a crate declares:")
     print()
     print("[lints]")
     print("workspace = true")
     print()
-    print(
-        "Without that opt-in, `cargo clippy` can miss violations that Bazel clippy "
-        "catches."
-    )
-    print()
-    print(
-        "Package-name checks apply to `codex-rs/<crate>/Cargo.toml` and "
-        "`codex-rs/utils/<crate>/Cargo.toml`."
-    )
-    print(
-        "Workspace crate features are forbidden; add a targeted exception here "
-        "only if there is a deliberate temporary migration in flight."
-    )
-    print()
     for path in sorted(failures_by_path):
-        errors = failures_by_path[path]
         print(f"{path}:")
-        for error in errors:
+        for error in failures_by_path[path]:
             print(f"  - {error}")
-
     return 1
 
 
@@ -137,19 +168,14 @@ def manifest_errors(
     used_internal_dependency_feature_exceptions: set[tuple[str, str, str]],
 ) -> list[str]:
     manifest = load_manifest(path)
-    # cargo-fuzz crates intentionally use a nested standalone workspace so they
-    # do not become members of the product workspace. Their isolated manifest
-    # cannot inherit package metadata or workspace lints from codex-rs without
-    # changing that build topology. Keep the exception structural and narrow:
-    # only a manifest under a `fuzz` directory with cargo-fuzz metadata and its
-    # own workspace root is exempt from product-workspace inheritance checks.
     if is_isolated_cargo_fuzz_workspace(path, manifest):
         return []
+
     package = manifest.get("package")
     if not isinstance(package, dict) and path != CARGO_RS_ROOT / "Cargo.toml":
         return []
 
-    errors = []
+    errors: list[str] = []
     if isinstance(package, dict):
         for field in WORKSPACE_PACKAGE_FIELDS:
             if not is_workspace_reference(package.get(field)):
@@ -164,7 +190,8 @@ def manifest_errors(
             actual_name = package.get("name")
             if actual_name != expected_name:
                 errors.append(
-                    f"set `[package].name` to `{expected_name}` (found `{actual_name}`)"
+                    f"set `[package].name` to `{expected_name}` "
+                    f"(found `{actual_name}`)"
                 )
 
     path_key = manifest_key(path)
@@ -174,14 +201,14 @@ def manifest_errors(
         expected_features = MANIFEST_FEATURE_EXCEPTIONS.get(path_key)
         if expected_features is None:
             errors.append(
-                "remove `[features]`; new workspace crate features are not allowed"
+                "remove `[features]`; workspace crate features require an "
+                "exact reviewed migration exception"
             )
         else:
             used_manifest_feature_exceptions.add(path_key)
             if normalized_features != expected_features:
                 errors.append(
-                    "limit `[features]` to the existing exception list while "
-                    "workspace crate features are being removed "
+                    "limit `[features]` to the exact migration allowlist "
                     f"(expected {render_feature_mapping(expected_features)})"
                 )
 
@@ -190,19 +217,20 @@ def manifest_errors(
             if not isinstance(dependency, dict):
                 continue
 
+            exception_key = (path_key, section_name, dependency_name)
             if dependency.get("optional") is True:
-                exception_key = (path_key, section_name, dependency_name)
                 if exception_key in OPTIONAL_DEPENDENCY_EXCEPTIONS:
                     used_optional_dependency_exceptions.add(exception_key)
                 else:
                     errors.append(
                         "remove `optional = true` from "
                         f"`{dependency_entry_label(section_name, dependency_name)}`; "
-                        "new optional dependencies are not allowed because they "
-                        "create crate features"
+                        "optional workspace dependencies create crate features"
                     )
 
-            if not is_internal_dependency(path, dependency_name, dependency, internal_package_names):
+            if not is_internal_dependency(
+                path, dependency_name, dependency, internal_package_names
+            ):
                 continue
 
             dependency_features = dependency.get("features")
@@ -210,7 +238,6 @@ def manifest_errors(
                 normalized_dependency_features = normalize_string_list(
                     dependency_features
                 )
-                exception_key = (path_key, section_name, dependency_name)
                 expected_dependency_features = (
                     INTERNAL_DEPENDENCY_FEATURE_EXCEPTIONS.get(exception_key)
                 )
@@ -218,7 +245,8 @@ def manifest_errors(
                     errors.append(
                         "remove `features = [...]` from workspace dependency "
                         f"`{dependency_entry_label(section_name, dependency_name)}`; "
-                        "new workspace crate feature activations are not allowed"
+                        "internal feature activations require an exact reviewed "
+                        "migration exception"
                     )
                 else:
                     used_internal_dependency_feature_exceptions.add(exception_key)
@@ -226,16 +254,16 @@ def manifest_errors(
                         errors.append(
                             "limit workspace dependency features on "
                             f"`{dependency_entry_label(section_name, dependency_name)}` "
-                            "to the existing exception list while workspace crate "
-                            "features are being removed "
-                            f"(expected {render_string_list(expected_dependency_features)})"
+                            "to the exact migration allowlist "
+                            f"(expected "
+                            f"{render_string_list(expected_dependency_features)})"
                         )
 
             if dependency.get("default-features") is False:
                 errors.append(
                     "remove `default-features = false` from workspace dependency "
                     f"`{dependency_entry_label(section_name, dependency_name)}`; "
-                    "new workspace crate feature toggles are not allowed"
+                    "workspace dependency feature toggles are not allowed"
                 )
 
     return errors
@@ -246,7 +274,7 @@ def is_isolated_cargo_fuzz_workspace(path: Path, manifest: dict) -> bool:
         relative = path.relative_to(CARGO_RS_ROOT)
     except ValueError:
         return False
-    # Only <workspace-crate>/fuzz/Cargo.toml is an isolated cargo-fuzz root.
+
     if (
         len(relative.parts) != 3
         or relative.parts[1] != "fuzz"
@@ -254,6 +282,7 @@ def is_isolated_cargo_fuzz_workspace(path: Path, manifest: dict) -> bool:
         or not isinstance(manifest.get("workspace"), dict)
     ):
         return False
+
     package = manifest.get("package")
     if not isinstance(package, dict):
         return False
@@ -283,11 +312,13 @@ def manifest_key(path: Path) -> str:
     return str(path.relative_to(ROOT))
 
 
-def normalize_feature_mapping(value: object) -> dict[str, tuple[str, ...]] | None:
+def normalize_feature_mapping(
+    value: object,
+) -> dict[str, tuple[str, ...]] | None:
     if not isinstance(value, dict):
         return None
 
-    normalized = {}
+    normalized: dict[str, tuple[str, ...]] = {}
     for key, features in value.items():
         if not isinstance(key, str):
             return None
@@ -299,14 +330,17 @@ def normalize_feature_mapping(value: object) -> dict[str, tuple[str, ...]] | Non
 
 
 def normalize_string_list(value: object) -> tuple[str, ...] | None:
-    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) for item in value
+    ):
         return None
     return tuple(value)
 
 
 def render_feature_mapping(features: dict[str, tuple[str, ...]]) -> str:
     entries = [
-        f"{name} = {render_string_list(items)}" for name, items in features.items()
+        f"{name} = {render_string_list(items)}"
+        for name, items in features.items()
     ]
     return ", ".join(entries)
 
@@ -316,17 +350,21 @@ def render_string_list(items: tuple[str, ...]) -> str:
 
 
 def dependency_sections(manifest: dict) -> list[tuple[str, dict]]:
-    sections = []
-    for section_name in ("dependencies", "dev-dependencies", "build-dependencies"):
+    sections: list[tuple[str, dict]] = []
+    for section_name in (
+        "dependencies",
+        "dev-dependencies",
+        "build-dependencies",
+    ):
         dependencies = manifest.get(section_name)
         if isinstance(dependencies, dict):
             sections.append((section_name, dependencies))
 
     workspace = manifest.get("workspace")
     if isinstance(workspace, dict):
-        workspace_dependencies = workspace.get("dependencies")
-        if isinstance(workspace_dependencies, dict):
-            sections.append(("workspace.dependencies", workspace_dependencies))
+        dependencies = workspace.get("dependencies")
+        if isinstance(dependencies, dict):
+            sections.append(("workspace.dependencies", dependencies))
 
     target = manifest.get("target")
     if not isinstance(target, dict):
@@ -335,11 +373,16 @@ def dependency_sections(manifest: dict) -> list[tuple[str, dict]]:
     for target_name, tables in target.items():
         if not isinstance(tables, dict):
             continue
-        for section_name in ("dependencies", "dev-dependencies", "build-dependencies"):
+        for section_name in (
+            "dependencies",
+            "dev-dependencies",
+            "build-dependencies",
+        ):
             dependencies = tables.get(section_name)
             if isinstance(dependencies, dict):
-                sections.append((f"target.{target_name}.{section_name}", dependencies))
-
+                sections.append(
+                    (f"target.{target_name}.{section_name}", dependencies)
+                )
     return sections
 
 
@@ -361,9 +404,9 @@ def is_internal_dependency(
     if not isinstance(dependency_path, str):
         return False
 
-    resolved_dependency_path = (manifest_path.parent / dependency_path).resolve()
+    resolved = (manifest_path.parent / dependency_path).resolve()
     try:
-        resolved_dependency_path.relative_to(CARGO_RS_ROOT)
+        resolved.relative_to(CARGO_RS_ROOT)
     except ValueError:
         return False
     return True
@@ -409,15 +452,18 @@ def add_unused_exception_errors(
         )
 
 
-def add_failure(failures_by_path: dict[str, list[str]], path_key: str, error: str) -> None:
+def add_failure(
+    failures_by_path: dict[str, list[str]],
+    path_key: str,
+    error: str,
+) -> None:
     failures_by_path.setdefault(path_key, []).append(error)
 
 
 def workspace_package_names() -> set[str]:
-    package_names = set()
+    package_names: set[str] = set()
     for path in cargo_manifests():
-        manifest = load_manifest(path)
-        package = manifest.get("package")
+        package = load_manifest(path).get("package")
         if not isinstance(package, dict):
             continue
         package_name = package.get("name")
@@ -427,7 +473,7 @@ def workspace_package_names() -> set[str]:
 
 
 def load_manifest(path: Path) -> dict:
-    return tomllib.loads(path.read_text())
+    return tomllib.loads(path.read_text(encoding="utf-8"))
 
 
 def cargo_manifests() -> list[Path]:

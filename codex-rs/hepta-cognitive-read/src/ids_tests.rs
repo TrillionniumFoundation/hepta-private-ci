@@ -1,4 +1,5 @@
 use super::*;
+use codex_hepta_cognitive_types::Citation;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::build_snapshot;
 use codex_hepta_types::Generation;
@@ -143,4 +144,98 @@ fn maximum_exact_id_batch_resolves_from_the_full_snapshot() {
         result.records().last().unwrap().record_id,
         record_ids[MAX_READ_IDS_V1 - 1]
     );
+}
+
+#[test]
+fn payload_and_total_wire_accounting_are_explicit() {
+    let mut value = record("memory:accounting", RecordState::Live);
+    value.citations = vec![Citation {
+        source_id: id("source:one"),
+        source_digest: Digest32::of_bytes(b"source:one"),
+    }];
+    let snapshot = snapshot(vec![value]);
+    let result = read_ids_v1(
+        &snapshot,
+        ReadIdsRequestV1 {
+            snapshot_digest: snapshot.snapshot_digest,
+            record_ids: vec![id("memory:accounting"), id("memory:missing")],
+            fields: vec![ReadFieldV1::ContentDigest, ReadFieldV1::Citations],
+            maximum_encoded_bytes: 4096,
+        },
+    )
+    .expect("bounded result");
+
+    assert_eq!(
+        result.payload_encoded_bytes() + 32,
+        result.total_encoded_bytes()
+    );
+    assert_eq!(result.encoded_bytes(), result.total_encoded_bytes());
+    assert_eq!(result.canonical_bytes().len(), result.total_encoded_bytes());
+    assert_eq!(
+        Digest32::of_bytes(&result.canonical_bytes()[..result.payload_encoded_bytes()]),
+        result.receipt_digest()
+    );
+    assert_eq!(
+        &result.canonical_bytes()[result.payload_encoded_bytes()..],
+        result.receipt_digest().as_array()
+    );
+}
+
+#[test]
+fn exact_total_canonical_boundary_is_all_or_error() {
+    let snapshot = snapshot(vec![record("memory:boundary", RecordState::Live)]);
+    let request = ReadIdsRequestV1 {
+        snapshot_digest: snapshot.snapshot_digest,
+        record_ids: vec![id("memory:boundary")],
+        fields: vec![ReadFieldV1::ContentDigest],
+        maximum_encoded_bytes: MAX_ENCODED_READ_RESULT_BYTES_V2,
+    };
+    let probe = read_ids_v1(&snapshot, request.clone()).expect("probe");
+    let exact = probe.total_encoded_bytes();
+
+    let accepted = read_ids_v1(
+        &snapshot,
+        ReadIdsRequestV1 {
+            maximum_encoded_bytes: exact,
+            ..request.clone()
+        },
+    )
+    .expect("exact total boundary");
+    assert_eq!(accepted.total_encoded_bytes(), exact);
+
+    assert_eq!(
+        read_ids_v1(
+            &snapshot,
+            ReadIdsRequestV1 {
+                maximum_encoded_bytes: exact - 1,
+                ..request
+            }
+        ),
+        Err(ReadIdsError::EncodedResultTooLarge {
+            actual: exact,
+            maximum: exact - 1,
+        })
+    );
+}
+
+#[test]
+fn invalid_zero_and_over_module_budget_fail_before_projection() {
+    let snapshot = snapshot(vec![record("memory:a", RecordState::Live)]);
+    for requested in [0, MAX_ENCODED_READ_RESULT_BYTES_V2 + 1] {
+        assert_eq!(
+            read_ids_v1(
+                &snapshot,
+                ReadIdsRequestV1 {
+                    snapshot_digest: snapshot.snapshot_digest,
+                    record_ids: vec![id("memory:a")],
+                    fields: Vec::new(),
+                    maximum_encoded_bytes: requested,
+                }
+            ),
+            Err(ReadIdsError::InvalidMaximumEncodedBytes {
+                requested,
+                maximum: MAX_ENCODED_READ_RESULT_BYTES_V2,
+            })
+        );
+    }
 }

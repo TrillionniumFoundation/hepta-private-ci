@@ -355,7 +355,7 @@ fn hnmf_required_retrieval_mode_fails_closed_without_current_context() {
         .expect("HNMF-required mode accepts an explicitly configured current context");
 }
 
-#[cfg(feature = "production-cognitive-write")]
+#[cfg(feature = "qualification-cognitive-write")]
 #[test]
 fn product_write_profile_fails_closed_when_cognitive_store_is_unavailable() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
@@ -772,7 +772,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     );
 }
 
-#[cfg(not(feature = "production-cognitive-write"))]
+#[cfg(not(feature = "qualification-cognitive-write"))]
 #[test]
 fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(

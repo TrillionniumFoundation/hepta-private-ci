@@ -56,6 +56,9 @@ use crate::freeze_dataset_receipt_v3;
 use crate::validate_candidate_set_completeness;
 use crate::verify_dataset_snapshot_receipt_v3;
 
+#[path = "retrieval_preparation.rs"]
+mod retrieval_preparation;
+
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
 
 #[derive(Clone, Debug, Eq, PartialEq)]

@@ -4,6 +4,8 @@
 
 mod authoritative;
 mod ids;
+mod revisioned_shadow;
+mod transient;
 mod v2;
 
 use std::collections::BTreeMap;
@@ -31,12 +33,21 @@ pub use authoritative::SnapshotProviderError;
 pub use authoritative::adapt_authoritative_read_to_canonical_shadow_v1;
 pub use authoritative::read_authoritative;
 pub use ids::MAX_READ_IDS_V1;
+pub use ids::PreparedReadSnapshotV1;
 pub use ids::ReadFieldV1;
 pub use ids::ReadIdsError;
 pub use ids::ReadIdsRequestV1;
 pub use ids::ReadIdsResultV1;
 pub use ids::ReadProjectionRecordV1;
 pub use ids::read_ids_v1;
+pub use revisioned_shadow::CanonicalAuthoritativeReadShadowV2;
+pub use revisioned_shadow::CanonicalReadRecordBindingV2;
+pub use revisioned_shadow::CanonicalReadShadowRowV2;
+pub use revisioned_shadow::CanonicalReadShadowV2Error;
+pub use revisioned_shadow::CanonicalSourceRevisionBindingV2;
+pub use revisioned_shadow::adapt_authoritative_read_to_revision_bound_canonical_shadow_v2;
+pub use transient::TransientReadIdsResultV1;
+pub use transient::TransientSnapshotProjectionV1;
 pub use v2::MAX_ENCODED_READ_RESULT_BYTES_V2;
 pub use v2::ReadRequestV2;
 pub use v2::ReadResultV2;
@@ -88,11 +99,6 @@ pub(crate) fn current_records(
         .validate_integrity()
         .map_err(|_| Error::SnapshotMismatch)?;
 
-    // The owning store makes a tombstone terminal. Preserve that invariant
-    // when reading a caller-supplied snapshot. Every complete resurrection
-    // contains a direct tombstone-to-live edge, so checking exact present
-    // same-record predecessors is sufficient. Missing or cross-record
-    // predecessors are not inferred to be lineage.
     let records_by_digest = snapshot
         .records
         .iter()
@@ -114,8 +120,6 @@ pub(crate) fn current_records(
         }
     }
 
-    // Resolve the current revision before any caller-specific filtering. A
-    // tombstone or kind change must never make an older revision visible again.
     let mut current = BTreeMap::new();
     for record in &snapshot.records {
         let latest = current.entry(record.record_id.clone()).or_insert(record);
@@ -189,3 +193,27 @@ mod tombstone_resurrection_tests;
 #[cfg(test)]
 #[path = "ids_tests.rs"]
 mod ids_tests;
+
+#[cfg(test)]
+#[path = "property_tests.rs"]
+mod property_tests;
+
+#[cfg(test)]
+#[path = "mutation_tests.rs"]
+mod mutation_tests;
+
+#[cfg(test)]
+#[path = "fuzz_tests.rs"]
+mod fuzz_tests;
+
+#[cfg(test)]
+#[path = "golden_vectors.rs"]
+mod golden_vectors;
+
+#[cfg(test)]
+#[path = "contract_docs_tests.rs"]
+mod contract_docs_tests;
+
+#[cfg(test)]
+#[path = "revisioned_shadow_tests.rs"]
+mod revisioned_shadow_tests;

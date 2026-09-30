@@ -1,0 +1,148 @@
+name: Cognitive read mutable RC repair
+
+on:
+  push:
+    branches:
+      - work/cognitive-read-production-convergence-20260927
+    paths:
+      - ".github/workflows/cognitive-read-rc-repair.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-read-mutable-rc-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    name: Generate cognitive.read RC source and map commits
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      EXPECTED_PARENT: 24bb63a259f4ac1006a13cca86cf593477546008
+      TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
+      RUST_MIN_STACK: "8388608"
+    steps:
+      - name: Check out the mutable repair carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prove the repair carrier and clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test -z "$(git status --porcelain)"
+          test "$(git diff --name-only "$EXPECTED_PARENT" HEAD)" = ".github/workflows/cognitive-read-rc-repair.yml"
+
+      - name: Prepare repository CI tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Configure repair author
+        shell: bash
+        run: |
+          git config user.name "Cognitive Read RC Repair"
+          git config user.email "cognitive-read-rc@users.noreply.github.com"
+
+      - name: Repair lock, formatting and deterministic contract drift
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          constants = Path("scripts/verify-cognitive-read-constants.py")
+          body = constants.read_text(encoding="utf-8")
+          old = 'exec python3 scripts/cognitive_read_full_evidence.py "$@"'
+          new = 'exec python3 scripts/cognitive_read_release_evidence.py "$@"'
+          if old not in body:
+              raise SystemExit("stale qualification marker not found")
+          constants.write_text(body.replace(old, new, 1), encoding="utf-8")
+
+          policy = json.loads(Path("docs/modules/cognitive.read/CONSUMER_POLICY.json").read_text(encoding="utf-8"))
+          expected = next(row["expectedProductCallerState"] for row in policy["consumers"] if row["consumer"] == "compact.engine")
+          path = Path("docs/modules/compact.engine/IMPLEMENTATION_MAP.json")
+          mapping = json.loads(path.read_text(encoding="utf-8"))
+          mapping["productCallerState"] = expected
+          path.write_text(json.dumps(mapping, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          PY
+
+          cargo generate-lockfile --manifest-path codex-rs/Cargo.toml
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-memory \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-compact-engine \
+            -p codex-hepta-context-compiler
+
+          rm .github/workflows/cognitive-read-rc-repair.yml
+          python3 -m unittest discover -s scripts -p 'test_cognitive_read_*.py'
+          python3 scripts/verify-cognitive-read-constants.py
+          python3 .github/scripts/verify_cargo_workspace_manifests.py
+          git diff --check
+          git add -A
+          test -n "$(git status --porcelain)"
+          git commit -m "fix(cognitive.read): converge immutable RC source"
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          python3 scripts/cognitive_read_consumers.py --expected-sha "$SOURCE_SHA" --output /tmp/cognitive-read-consumers.json
+
+      - name: Refresh the exact source-object map in a documentation-only child
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          def git(*args: str) -> str:
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          path = Path("docs/modules/cognitive.read/IMPLEMENTATION_MAP.json")
+          mapping = json.loads(path.read_text(encoding="utf-8"))
+          source_commit = git("rev-parse", "HEAD")
+          source_tree = git("rev-parse", "HEAD^{tree}")
+          mapping["observedAtHead"] = {"commit": source_commit, "tree": source_tree}
+
+          source_objects = mapping.get("sourceObjects")
+          if not isinstance(source_objects, list) or not source_objects:
+              raise SystemExit("missing sourceObjects")
+          for row in source_objects:
+              repo_path = row["path"]
+              row["object"] = git("rev-parse", f"HEAD:{repo_path}")
+
+          def refresh(node):
+              if isinstance(node, dict):
+                  source_path = node.get("sourcePath")
+                  if isinstance(source_path, str) and "sourceBlob" in node:
+                      node["sourceBlob"] = git("rev-parse", f"HEAD:{source_path}")
+                  for value in node.values():
+                      refresh(value)
+              elif isinstance(node, list):
+                  for value in node:
+                      refresh(value)
+
+          refresh(mapping)
+          path.write_text(json.dumps(mapping, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          PY
+
+          git diff --check
+          git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git commit -m "docs(cognitive.read): bind RC source object map"
+          MAP_SHA="$(git rev-parse HEAD)"
+          python3 scripts/verify-cognitive-read-map.py --expected-sha "$MAP_SHA"
+
+      - name: Push the two-commit RC chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:$TARGET_BRANCH"

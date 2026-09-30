@@ -1,0 +1,1473 @@
+name: Cognitive read final immutable convergence
+
+on:
+  push:
+    branches:
+      - work/cognitive-read-production-convergence-20260927
+    paths:
+      - ".github/workflows/cognitive-read-rc-repair-macos.yml"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: cognitive-read-final-immutable-convergence
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    name: Produce frozen source and exact map child
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      EXPECTED_PARENT: a3a3f426a06e524a1988367b41025b8c11856edb
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
+      RUST_MIN_STACK: "8388608"
+      CARGO_TERM_COLOR: never
+      NO_COLOR: "1"
+    steps:
+      - name: Check out exact repair carrier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prove carrier identity and clean tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test -z "$(git status --porcelain)"
+          test "$(git diff --name-only "$EXPECTED_PARENT" HEAD)" = ".github/workflows/cognitive-read-rc-repair-macos.yml"
+
+      - name: Prepare repository tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103
+
+      - name: Configure source author
+        shell: bash
+        run: |
+          git config user.name "Cognitive Read Convergence"
+          git config user.email "cognitive-read-convergence@users.noreply.github.com"
+
+      - name: Apply correctness, evidence and closed-world fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import json
+          import re
+          import sqlite3
+          from pathlib import Path
+
+          ROOT = Path.cwd()
+
+          def replace_once(path: Path, old: str, new: str) -> None:
+              body = path.read_text(encoding="utf-8")
+              if body.count(old) != 1:
+                  raise SystemExit(f"{path}: expected one replacement marker, found {body.count(old)}")
+              path.write_text(body.replace(old, new, 1), encoding="utf-8")
+
+          # Qualification is release-candidate evidence; the verifier must inspect
+          # the same release wrapper rather than its full-suite predecessor.
+          constants = ROOT / "scripts/verify-cognitive-read-constants.py"
+          replace_once(
+              constants,
+              'exec python3 scripts/cognitive_read_full_evidence.py "$@"',
+              'exec python3 scripts/cognitive_read_release_evidence.py "$@"',
+          )
+          body = constants.read_text(encoding="utf-8")
+          workflow_guard = '''\n    workflow_root = ROOT / ".github/workflows"\n    mutable = []\n    for candidate in sorted(workflow_root.glob("*cognitive*read*.yml")):\n        text = candidate.read_text(encoding="utf-8")\n        if "contents: write" in text or re.search(r"(?m)^\\s*git push(?:\\s|$)", text):\n            mutable.append(str(candidate.relative_to(ROOT)))\n    if mutable:\n        raise ValueError(f"cognitive.read qualification candidate contains mutable workflows: {mutable}")\n'''
+          marker = '    if "contents: write" in read(workflow_path) or "git push" in read(workflow_path):\n        raise ValueError("qualification may not write repository source")\n'
+          if workflow_guard.strip() not in body:
+              if marker not in body:
+                  raise SystemExit("qualification workflow guard marker missing")
+              body = body.replace(marker, marker + workflow_guard, 1)
+              constants.write_text(body, encoding="utf-8")
+
+          # Build an empty current schema with the exact migration SQL, discover
+          # every Lane C witness object, and bind it into the fixed schema oracle.
+          connection = sqlite3.connect(":memory:")
+          connection.execute("PRAGMA foreign_keys = ON")
+          for migration in sorted((ROOT / "codex-rs/hepta-memory/migrations").glob("*.sql")):
+              try:
+                  connection.executescript(migration.read_text(encoding="utf-8"))
+              except sqlite3.Error as error:
+                  raise SystemExit(f"failed to execute {migration}: {error}") from error
+          witness_objects = connection.execute(
+              "SELECT name, type, sql FROM sqlite_schema "
+              "WHERE name GLOB 'lane_c_*' AND type IN ('table','index','view','trigger') "
+              "ORDER BY name"
+          ).fetchall()
+          if not witness_objects:
+              raise SystemExit("no Lane C witness schema objects discovered")
+
+          store_path = ROOT / "codex-rs/hepta-memory/src/cognitive_store.rs"
+          store = store_path.read_text(encoding="utf-8")
+          start = store.index('const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[')
+          finish_marker = '];\nconst REQUIRED_SCHEMA_ORACLE_SHA256: &str ='
+          finish = store.index(finish_marker, start)
+          block = store[start:finish]
+          pair_pattern = re.compile(r'\(\s*"([^"]+)"\s*,\s*"([^"]+)"\s*,?\s*\)', re.DOTALL)
+          pairs = pair_pattern.findall(block)
+          existing = {name for name, _ in pairs}
+          additions = [
+              f'    ("{name}", "{kind}"),\n'
+              for name, kind, _ in witness_objects
+              if name not in existing
+          ]
+          if additions:
+              store = store[:finish] + "".join(additions) + store[finish:]
+
+          # Reparse the expanded list and reproduce cognitive_store.rs frame_part.
+          start = store.index('const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[')
+          finish = store.index(finish_marker, start)
+          pairs = pair_pattern.findall(store[start:finish])
+          if len({name for name, _ in pairs}) != len(pairs):
+              raise SystemExit("duplicate required schema object")
+          schema_rows = []
+          for name, expected_type in pairs:
+              row = connection.execute(
+                  "SELECT type, sql FROM sqlite_schema WHERE name = ?", (name,)
+              ).fetchone()
+              if row is None or row[0] != expected_type or not row[1]:
+                  raise SystemExit(f"required schema object mismatch while sealing: {name}")
+              schema_rows.append((name, row[0], row[1]))
+          schema_rows.sort(key=lambda row: row[0])
+
+          digest = hashlib.sha256()
+          def frame(part: bytes) -> None:
+              digest.update(len(part).to_bytes(8, "big"))
+              digest.update(part)
+          frame(b"hepta:cognitive:required-schema-oracle:v1")
+          frame(len(schema_rows).to_bytes(8, "big"))
+          for name, kind, sql in schema_rows:
+              frame(name.encode())
+              frame(kind.encode())
+              frame(sql.encode())
+          oracle = digest.hexdigest()
+          store, replacements = re.subn(
+              r'(const REQUIRED_SCHEMA_ORACLE_SHA256: &str =\s*\n\s*")[0-9a-f]{64}(";)',
+              rf'\g<1>{oracle}\2',
+              store,
+              count=1,
+          )
+          if replacements != 1:
+              raise SystemExit("schema oracle constant marker missing")
+
+          audit = '''    let lane_c_witness_problems: i64 = sqlx::query_scalar(
+        "SELECT (
+             SELECT COUNT(*) FROM lane_c_scope_witness_audit
+         ) + (
+             SELECT COUNT(*) FROM lane_c_head_validity_audit
+         )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(|error| {
+        CognitiveStoreError::Corrupt(format!(
+            "Lane C witness audit is unavailable: {error}"
+        ))
+    })?;
+    if lane_c_witness_problems != 0 {
+        return Err(CognitiveStoreError::Corrupt(format!(
+            "Lane C witness audit detected {lane_c_witness_problems} inconsistent rows"
+        )));
+    }
+'''
+          audit_marker = '''    let row = sqlx::query(
+        "SELECT schema_version, owner_agent_id FROM cognitive_meta WHERE singleton = 1",
+    )
+'''
+          if audit.strip() not in store:
+              if store.count(audit_marker) != 1:
+                  raise SystemExit("verify_store audit insertion marker missing")
+              store = store.replace(audit_marker, audit + audit_marker, 1)
+          store_path.write_text(store, encoding="utf-8")
+
+          # The compaction owner samples a trusted clock again at publication,
+          # enforces its observation window, and never reuses the acquisition time.
+          compact_path = ROOT / "codex-rs/hepta-memory/src/cognitive_read_compact_product.rs"
+          compact = compact_path.read_text(encoding="utf-8")
+          compact = compact.replace(
+              'use std::collections::BTreeSet;\n',
+              'use std::collections::BTreeSet;\nuse std::time::SystemTime;\nuse std::time::UNIX_EPOCH;\n',
+              1,
+          )
+          compact = compact.replace(
+              'pub const COGNITIVE_READ_COMPACTION_PURPOSE_ID: &str = "purpose:cognitive-compaction";\n',
+              'pub const COGNITIVE_READ_COMPACTION_PURPOSE_ID: &str = "purpose:cognitive-compaction";\nconst COMPACTION_OBSERVATION_WINDOW_MS: u64 = 5_000;\n',
+              1,
+          )
+          compact = compact.replace(
+              'let lease_expires_unix_ms = acquired_at_unix_ms.checked_add(1_000).ok_or_else(|| {',
+              'let lease_expires_unix_ms = acquired_at_unix_ms\n            .checked_add(COMPACTION_OBSERVATION_WINDOW_MS)\n            .ok_or_else(|| {',
+              1,
+          )
+          compact = compact.replace(
+              '        #[cfg(test)]\n        pause_before_compaction_revalidation_for_test().await;\n        self.revalidate_lane_c_selection(access, scope, &selected, now_unix_seconds)\n            .await?;\n',
+              '''        #[cfg(test)]
+        pause_before_compaction_revalidation_for_test().await;
+        let final_now_unix_seconds =
+            compaction_final_revalidation_time(now_unix_seconds)?;
+        let final_now_unix_ms = u64::try_from(final_now_unix_seconds)
+            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?
+            .checked_mul(1_000)
+            .ok_or_else(|| {
+                CognitiveStoreError::Invalid(
+                    "cognitive compaction final-use time overflow".to_string(),
+                )
+            })?;
+        if final_now_unix_ms >= lease_expires_unix_ms {
+            return Err(CognitiveStoreError::Conflict(
+                "cognitive compaction owner observation expired before publication".to_string(),
+            ));
+        }
+        self.revalidate_lane_c_selection(
+            access,
+            scope,
+            &selected,
+            final_now_unix_seconds,
+        )
+        .await?;
+''',
+              1,
+          )
+          clock_code = '''fn trusted_compaction_now_unix_seconds() -> Result<i64, CognitiveStoreError> {
+    let seconds = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
+        .as_secs();
+    i64::try_from(seconds)
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))
+}
+
+#[cfg(test)]
+static COMPACTION_FINAL_REVALIDATION_TIME: std::sync::OnceLock<
+    std::sync::Mutex<Option<i64>>,
+> = std::sync::OnceLock::new();
+
+#[cfg(test)]
+fn set_compaction_final_revalidation_time_for_test(value: i64) {
+    *COMPACTION_FINAL_REVALIDATION_TIME
+        .get_or_init(|| std::sync::Mutex::new(None))
+        .lock()
+        .expect("compaction final-use clock lock") = Some(value);
+}
+
+fn compaction_final_revalidation_time(
+    acquisition_time: i64,
+) -> Result<i64, CognitiveStoreError> {
+    #[cfg(test)]
+    {
+        return Ok(COMPACTION_FINAL_REVALIDATION_TIME
+            .get_or_init(|| std::sync::Mutex::new(None))
+            .lock()
+            .expect("compaction final-use clock lock")
+            .take()
+            .unwrap_or(acquisition_time));
+    }
+    #[cfg(not(test))]
+    {
+        let _ = acquisition_time;
+        trusted_compaction_now_unix_seconds()
+    }
+}
+
+#[cfg(test)]
+async fn compaction_test_serial() -> tokio::sync::MutexGuard<'static, ()> {
+    static SERIAL: std::sync::OnceLock<tokio::sync::Mutex<()>> =
+        std::sync::OnceLock::new();
+    SERIAL
+        .get_or_init(|| tokio::sync::Mutex::new(()))
+        .lock()
+        .await
+}
+
+'''
+          hook_marker = '#[cfg(test)]\nstruct CompactionFinalRevalidationHook {'
+          if clock_code.strip() not in compact:
+              if compact.count(hook_marker) != 1:
+                  raise SystemExit("compaction hook marker missing")
+              compact = compact.replace(hook_marker, clock_code + hook_marker, 1)
+          compact_path.write_text(compact, encoding="utf-8")
+
+          compact_tests_path = ROOT / "codex-rs/hepta-memory/src/cognitive_read_compact_product_tests.rs"
+          compact_tests = compact_tests_path.read_text(encoding="utf-8")
+          compact_tests = compact_tests.replace(
+              'use crate::MemoryDraft;\n',
+              'use crate::MemoryDraft;\nuse crate::MemoryLifecycleState;\nuse crate::MemoryRevisionDraft;\nuse crate::MemoryVerification;\n',
+              1,
+          )
+          for signature in (
+              'async fn normal_owner_path_binds_full_lineage_exact_read_and_final_cut() {\n',
+              'async fn concurrent_correction_is_rejected_before_candidate_publication() {\n',
+          ):
+              replacement = signature + '    let _serial = compaction_test_serial().await;\n'
+              if replacement not in compact_tests:
+                  if compact_tests.count(signature) != 1:
+                      raise SystemExit(f"compact test signature missing: {signature.strip()}")
+                  compact_tests = compact_tests.replace(signature, replacement, 1)
+          extra_compact_tests = r'''
+
+#[tokio::test]
+async fn validity_expiry_during_candidate_build_is_rejected_without_owner_write() {
+    let _serial = compaction_test_serial().await;
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(213);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(&access, &source(scope.clone(), "expiry", "evidence"))
+        .await
+        .unwrap();
+    let first = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "compact-expiry".to_string(),
+                revision: MemoryRevisionDraft {
+                    scope: scope.clone(),
+                    content: "expires during compaction".to_string(),
+                    verification: MemoryVerification::Verified,
+                    lifecycle: MemoryLifecycleState::Active,
+                    valid_from_unix_seconds: 100,
+                    valid_to_unix_seconds: Some(301),
+                    citations: vec![citation],
+                },
+            },
+        )
+        .await
+        .unwrap();
+    let record_id = StableId::new(first.id.memory_id.as_str()).unwrap();
+    let cut = store
+        .lane_c_snapshot_ids(&access, &scope, 300, std::slice::from_ref(&record_id))
+        .await
+        .unwrap();
+    set_compaction_final_revalidation_time_for_test(301);
+    let result = store
+        .build_cognitive_read_compaction_candidate(
+            &access,
+            &scope,
+            300,
+            vector(&cut),
+            Generation::new(1).unwrap(),
+            None,
+            &policy(record_id.clone()),
+            vec![CognitiveReadCompactionRetentionV1 {
+                record_id,
+                retention_priority: 10,
+                retention_reason_digest: digest("expiry-reason"),
+            }],
+        )
+        .await;
+    assert!(matches!(result, Err(CognitiveStoreError::Conflict(_))));
+}
+
+#[tokio::test]
+async fn observation_deadline_expiry_without_owner_write_is_rejected() {
+    let _serial = compaction_test_serial().await;
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(214);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(&access, &source(scope.clone(), "deadline", "evidence"))
+        .await
+        .unwrap();
+    let first = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "compact-deadline".to_string(),
+                revision: memory_revision(scope.clone(), "deadline", citation),
+            },
+        )
+        .await
+        .unwrap();
+    let record_id = StableId::new(first.id.memory_id.as_str()).unwrap();
+    let cut = store
+        .lane_c_snapshot_ids(&access, &scope, 300, std::slice::from_ref(&record_id))
+        .await
+        .unwrap();
+    set_compaction_final_revalidation_time_for_test(305);
+    let result = store
+        .build_cognitive_read_compaction_candidate(
+            &access,
+            &scope,
+            300,
+            vector(&cut),
+            Generation::new(1).unwrap(),
+            None,
+            &policy(record_id.clone()),
+            vec![CognitiveReadCompactionRetentionV1 {
+                record_id,
+                retention_priority: 10,
+                retention_reason_digest: digest("deadline-reason"),
+            }],
+        )
+        .await;
+    assert!(matches!(result, Err(CognitiveStoreError::Conflict(_))));
+}
+
+#[tokio::test]
+async fn final_revalidation_clock_regression_is_rejected() {
+    let _serial = compaction_test_serial().await;
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(215);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(&access, &source(scope.clone(), "clock", "evidence"))
+        .await
+        .unwrap();
+    let first = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "compact-clock".to_string(),
+                revision: memory_revision(scope.clone(), "clock", citation),
+            },
+        )
+        .await
+        .unwrap();
+    let record_id = StableId::new(first.id.memory_id.as_str()).unwrap();
+    let cut = store
+        .lane_c_snapshot_ids(&access, &scope, 300, std::slice::from_ref(&record_id))
+        .await
+        .unwrap();
+    set_compaction_final_revalidation_time_for_test(299);
+    let result = store
+        .build_cognitive_read_compaction_candidate(
+            &access,
+            &scope,
+            300,
+            vector(&cut),
+            Generation::new(1).unwrap(),
+            None,
+            &policy(record_id.clone()),
+            vec![CognitiveReadCompactionRetentionV1 {
+                record_id,
+                retention_priority: 10,
+                retention_reason_digest: digest("clock-reason"),
+            }],
+        )
+        .await;
+    assert!(matches!(result, Err(CognitiveStoreError::Invalid(_))));
+}
+'''
+          if "validity_expiry_during_candidate_build_is_rejected_without_owner_write" not in compact_tests:
+              compact_tests += extra_compact_tests
+          compact_tests_path.write_text(compact_tests, encoding="utf-8")
+
+          # Strong reopen regressions prove both fixed schema identity and the
+          # independent logical audit after guards are restored.
+          witness_tests_path = ROOT / "codex-rs/hepta-memory/tests/lane_c_witness_integrity.rs"
+          witness_tests = witness_tests_path.read_text(encoding="utf-8")
+          extra_witness_tests = r'''
+
+async fn expect_witness_reopen_failure(
+    layout: &codex_hepta_paths::HeptaAgentLayout,
+    expected: &str,
+) -> TestResult {
+    match CognitiveStore::open(layout).await {
+        Ok(_) => Err("tampered Lane C witness store reopened".into()),
+        Err(error) => {
+            assert!(
+                error.to_string().contains(expected),
+                "unexpected reopen error: {error}"
+            );
+            Ok(())
+        }
+    }
+}
+
+async fn seed_witness_head(
+    layout: &codex_hepta_paths::HeptaAgentLayout,
+    owner: &AgentId,
+    suffix: &str,
+) -> TestResult {
+    let store = CognitiveStore::open(layout).await?;
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(
+            &access,
+            &SourceDraft {
+                scope: scope.clone(),
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: format!("lane-c-reopen-source-{suffix}"),
+                content: format!("lane c reopen {suffix}").into_bytes(),
+                observed_at_unix_seconds: 100,
+            },
+        )
+        .await?;
+    store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: format!("lane-c-reopen-memory-{suffix}"),
+                revision: MemoryRevisionDraft {
+                    scope,
+                    content: format!("lane c reopen memory {suffix}"),
+                    verification: MemoryVerification::Verified,
+                    lifecycle: MemoryLifecycleState::Active,
+                    valid_from_unix_seconds: 100,
+                    valid_to_unix_seconds: None,
+                    citations: vec![citation],
+                },
+            },
+        )
+        .await?;
+    drop(store);
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn lane_c_reopen_rejects_dropped_required_witness_trigger() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let fleet_path = temp.path().join("fleet");
+    fs::create_dir_all(&fleet_path)?;
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000520")?;
+    let layout = HeptaFleetRoot::parse(fleet_path)?.layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await?;
+    drop(store);
+    let pool = raw_pool(&layout.cognitive_root().join("cognitive_1.sqlite3"), false).await?;
+    sqlx::query("DROP TRIGGER lane_c_source_witness_after_insert")
+        .execute(&pool)
+        .await?;
+    pool.close().await;
+    expect_witness_reopen_failure(&layout, "required cognitive schema object").await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn lane_c_reopen_rejects_modified_audit_view_definition() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let fleet_path = temp.path().join("fleet");
+    fs::create_dir_all(&fleet_path)?;
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000521")?;
+    let layout = HeptaFleetRoot::parse(fleet_path)?.layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await?;
+    drop(store);
+    let pool = raw_pool(&layout.cognitive_root().join("cognitive_1.sqlite3"), false).await?;
+    sqlx::query("DROP VIEW lane_c_scope_witness_audit")
+        .execute(&pool)
+        .await?;
+    sqlx::query(
+        "CREATE VIEW lane_c_scope_witness_audit AS
+         SELECT '' AS owner_agent_id, '' AS scope_kind, '' AS workspace_key,
+                'tampered' AS problem WHERE 0",
+    )
+    .execute(&pool)
+    .await?;
+    pool.close().await;
+    expect_witness_reopen_failure(&layout, "schema definition oracle mismatch").await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn lane_c_reopen_audit_rejects_missing_head_validity_row() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let fleet_path = temp.path().join("fleet");
+    fs::create_dir_all(&fleet_path)?;
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000522")?;
+    let layout = HeptaFleetRoot::parse(fleet_path)?.layout().agent(&owner);
+    seed_witness_head(&layout, &owner, "validity").await?;
+    let pool = raw_pool(&layout.cognitive_root().join("cognitive_1.sqlite3"), false).await?;
+    let guard_sql: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema
+         WHERE name = 'lane_c_head_validity_direct_delete_guard'",
+    )
+    .fetch_one(&pool)
+    .await?;
+    sqlx::query("DROP TRIGGER lane_c_head_validity_direct_delete_guard")
+        .execute(&pool)
+        .await?;
+    sqlx::query("DELETE FROM lane_c_head_validity")
+        .execute(&pool)
+        .await?;
+    sqlx::query(&guard_sql).execute(&pool).await?;
+    pool.close().await;
+    expect_witness_reopen_failure(&layout, "Lane C witness audit detected").await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn lane_c_reopen_audit_rejects_count_and_revision_drift() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let fleet_path = temp.path().join("fleet");
+    fs::create_dir_all(&fleet_path)?;
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000523")?;
+    let layout = HeptaFleetRoot::parse(fleet_path)?.layout().agent(&owner);
+    seed_witness_head(&layout, &owner, "count").await?;
+    let pool = raw_pool(&layout.cognitive_root().join("cognitive_1.sqlite3"), false).await?;
+    let guard_sql: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema
+         WHERE name = 'lane_c_scope_witness_direct_update_guard'",
+    )
+    .fetch_one(&pool)
+    .await?;
+    sqlx::query("DROP TRIGGER lane_c_scope_witness_direct_update_guard")
+        .execute(&pool)
+        .await?;
+    sqlx::query(
+        "UPDATE lane_c_scope_witness
+         SET source_count = source_count + 1, state_revision = 0",
+    )
+    .execute(&pool)
+    .await?;
+    sqlx::query(&guard_sql).execute(&pool).await?;
+    pool.close().await;
+    expect_witness_reopen_failure(&layout, "Lane C witness audit detected").await
+}
+'''
+          if "lane_c_reopen_rejects_dropped_required_witness_trigger" not in witness_tests:
+              witness_tests += extra_witness_tests
+          witness_tests_path.write_text(witness_tests, encoding="utf-8")
+
+          # Add a separately gated write-amplification measurement. It is exact
+          # candidate evidence, never a portable SLA.
+          write_test = ROOT / "codex-rs/hepta-memory/tests/cognitive_read_write_capacity.rs"
+          write_test.write_text(r'''use std::error::Error;
+use std::fs;
+use std::time::Instant;
+
+use codex_hepta_contracts::AgentId;
+use codex_hepta_memory::CognitiveAccess;
+use codex_hepta_memory::CognitiveScope;
+use codex_hepta_memory::CognitiveStore;
+use codex_hepta_memory::ForgetMemoryDraft;
+use codex_hepta_memory::LedgerSourceKind;
+use codex_hepta_memory::MemoryDraft;
+use codex_hepta_memory::MemoryLifecycleState;
+use codex_hepta_memory::MemoryRevisionDraft;
+use codex_hepta_memory::MemoryRevisionRecord;
+use codex_hepta_memory::MemoryVerification;
+use codex_hepta_memory::SourceDraft;
+use codex_hepta_paths::HeptaFleetRoot;
+use serde_json::json;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqlitePoolOptions;
+
+const DEFAULT_RECORDS: usize = 256;
+const CITATION_FANOUT: usize = 8;
+const MUTATION_SAMPLES: usize = 32;
+
+fn micros(started: Instant) -> u64 {
+    u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX)
+}
+
+fn distribution(mut values: Vec<u64>) -> serde_json::Value {
+    values.sort_unstable();
+    let pick = |percent: usize| {
+        let index = ((values.len() - 1) * percent).div_ceil(100);
+        values[index.min(values.len() - 1)]
+    };
+    json!({
+        "p50_us": pick(50),
+        "p95_us": pick(95),
+        "p99_us": pick(99),
+    })
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn cognitive_read_sqlite_write_capacity_report(
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let Ok(output_path) = std::env::var("COGNITIVE_READ_SQLITE_WRITE_CAPACITY_OUTPUT") else {
+        return Ok(());
+    };
+    let records = std::env::var("COGNITIVE_READ_WRITE_RECORDS")
+        .ok()
+        .map(|value| value.parse::<usize>())
+        .transpose()?
+        .unwrap_or(DEFAULT_RECORDS);
+    if records < MUTATION_SAMPLES * 2 || records > 1_000_000 {
+        return Err("write-capacity record count must be 64..=1,000,000".into());
+    }
+
+    let temp = tempfile::tempdir()?;
+    let fleet_path = temp.path().join("fleet");
+    fs::create_dir_all(&fleet_path)?;
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000524")?;
+    let layout = HeptaFleetRoot::parse(fleet_path)?.layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await?;
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+
+    let mut citations = Vec::with_capacity(CITATION_FANOUT);
+    for index in 0..CITATION_FANOUT {
+        citations.push(
+            store
+                .append_source(
+                    &access,
+                    &SourceDraft {
+                        scope: scope.clone(),
+                        kind: LedgerSourceKind::ExplicitMemoryDirective,
+                        event_key: format!("cognitive-read-write-source-{index:02}"),
+                        content: format!("write capacity evidence {index:02}").into_bytes(),
+                        observed_at_unix_seconds: 100,
+                    },
+                )
+                .await?,
+        );
+    }
+
+    let mut remember_us = Vec::with_capacity(records);
+    let mut heads = Vec::<MemoryRevisionRecord>::with_capacity(records);
+    for index in 0..records {
+        let started = Instant::now();
+        let record = store
+            .remember_memory(
+                &access,
+                &MemoryDraft {
+                    stable_key: format!("write-capacity-{index:07}"),
+                    revision: MemoryRevisionDraft {
+                        scope: scope.clone(),
+                        content: format!("write capacity record {index:07}"),
+                        verification: MemoryVerification::Verified,
+                        lifecycle: MemoryLifecycleState::Active,
+                        valid_from_unix_seconds: 100,
+                        valid_to_unix_seconds: None,
+                        citations: citations.clone(),
+                    },
+                },
+            )
+            .await?;
+        remember_us.push(micros(started));
+        heads.push(record);
+    }
+
+    let mut correct_us = Vec::with_capacity(MUTATION_SAMPLES);
+    for index in 0..MUTATION_SAMPLES {
+        let current = heads[index].clone();
+        let started = Instant::now();
+        heads[index] = store
+            .correct_memory(
+                &access,
+                &current.id.memory_id,
+                current.id.revision,
+                &MemoryRevisionDraft {
+                    scope: scope.clone(),
+                    content: format!("corrected write capacity record {index:07}"),
+                    verification: MemoryVerification::Verified,
+                    lifecycle: MemoryLifecycleState::Active,
+                    valid_from_unix_seconds: 200,
+                    valid_to_unix_seconds: None,
+                    citations: citations.clone(),
+                },
+            )
+            .await?;
+        correct_us.push(micros(started));
+    }
+
+    let mut forget_us = Vec::with_capacity(MUTATION_SAMPLES);
+    for index in MUTATION_SAMPLES..MUTATION_SAMPLES * 2 {
+        let current = heads[index].clone();
+        let started = Instant::now();
+        heads[index] = store
+            .forget_memory(
+                &access,
+                &current.id.memory_id,
+                current.id.revision,
+                &ForgetMemoryDraft {
+                    scope: scope.clone(),
+                    reason: "write-capacity tombstone".to_string(),
+                    valid_from_unix_seconds: 200,
+                    citations: citations.clone(),
+                },
+            )
+            .await?;
+        forget_us.push(micros(started));
+    }
+
+    let sqlite_path = layout.cognitive_root().join("cognitive_1.sqlite3");
+    let wal_path = layout.cognitive_root().join("cognitive_1.sqlite3-wal");
+    let sqlite_file_bytes = fs::metadata(&sqlite_path)?.len();
+    let sqlite_wal_file_bytes = fs::metadata(&wal_path).map(|value| value.len()).unwrap_or(0);
+    let pool = SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect_with(
+            SqliteConnectOptions::new()
+                .filename(&sqlite_path)
+                .read_only(true),
+        )
+        .await?;
+    let page_count: i64 = sqlx::query_scalar("PRAGMA page_count").fetch_one(&pool).await?;
+    let page_size: i64 = sqlx::query_scalar("PRAGMA page_size").fetch_one(&pool).await?;
+    let revision_rows: i64 = sqlx::query_scalar("SELECT count(*) FROM memory_revisions")
+        .fetch_one(&pool)
+        .await?;
+    let citation_rows: i64 = sqlx::query_scalar("SELECT count(*) FROM memory_citations")
+        .fetch_one(&pool)
+        .await?;
+    let witness_problems: i64 = sqlx::query_scalar(
+        "SELECT (SELECT count(*) FROM lane_c_scope_witness_audit)
+              + (SELECT count(*) FROM lane_c_head_validity_audit)",
+    )
+    .fetch_one(&pool)
+    .await?;
+    pool.close().await;
+
+    let operations = records + MUTATION_SAMPLES * 2;
+    let report = json!({
+        "schema": "hepta.cognitive.read.sqlite-write-capacity.v1",
+        "records": records,
+        "citation_fanout": CITATION_FANOUT,
+        "mutation_samples": MUTATION_SAMPLES,
+        "operations": operations,
+        "sqlite_file_bytes": sqlite_file_bytes,
+        "sqlite_wal_file_bytes": sqlite_wal_file_bytes,
+        "sqlite_page_count": page_count,
+        "sqlite_page_size_bytes": page_size,
+        "sqlite_memory_revision_rows": revision_rows,
+        "sqlite_citation_rows": citation_rows,
+        "witness_audit_problems": witness_problems,
+        "operation_latency_includes_lock_wait_and_transaction": true,
+        "remember": distribution(remember_us),
+        "correct": distribution(correct_us),
+        "forget": distribution(forget_us),
+    });
+    fs::write(output_path, serde_json::to_vec_pretty(&report)?)?;
+    Ok(())
+}
+''', encoding="utf-8")
+
+          write_script = ROOT / "scripts/cognitive_read_sqlite_write_capacity.py"
+          write_script.write_text(r'''#!/usr/bin/env python3
+"""Measure SQLite cognitive-memory write amplification on one exact candidate."""
+from __future__ import annotations
+
+import json
+import os
+from pathlib import Path
+import platform
+import shutil
+import subprocess
+import sys
+import tempfile
+
+SCHEMA = "hepta.cognitive.read.sqlite-write-capacity.v1"
+TEST_NAME = "cognitive_read_sqlite_write_capacity_report"
+
+
+def git(root: Path, *args: str) -> str:
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(GIT_NO_REPLACE_OBJECTS="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1")
+    return subprocess.check_output(["git", "--literal-pathspecs", *args], cwd=root, env=env, text=True).strip()
+
+
+def distribution(value: object, label: str) -> None:
+    if not isinstance(value, dict):
+        raise ValueError(f"missing distribution: {label}")
+    points = [value.get(f"p{percent}_us") for percent in (50, 95, 99)]
+    if not all(type(point) is int and point >= 0 for point in points) or points != sorted(points):
+        raise ValueError(f"invalid distribution: {label}")
+
+
+def main() -> int:
+    root = Path(__file__).resolve().parents[1]
+    records = int(os.environ.get("COGNITIVE_READ_WRITE_RECORDS", "256"))
+    with tempfile.TemporaryDirectory(prefix="cognitive-read-write-capacity-") as temporary:
+        temporary_path = Path(temporary)
+        rust_report = temporary_path / "rust-report.json"
+        time_report = temporary_path / "time.txt"
+        time_binary = Path("/usr/bin/time")
+        if not time_binary.is_file():
+            fallback = shutil.which("time")
+            if not fallback:
+                raise SystemExit("GNU time is unavailable")
+            time_binary = Path(fallback)
+        env = dict(
+            os.environ,
+            COGNITIVE_READ_SQLITE_WRITE_CAPACITY_OUTPUT=str(rust_report),
+            COGNITIVE_READ_WRITE_RECORDS=str(records),
+            CARGO_TERM_COLOR="never",
+            NO_COLOR="1",
+            RUST_MIN_STACK="8388608",
+        )
+        command = [str(time_binary), "-v", "-o", str(time_report), "cargo", "test",
+                   "--manifest-path", "codex-rs/Cargo.toml", "--locked", "-p",
+                   "codex-hepta-memory", "--test", "cognitive_read_write_capacity",
+                   TEST_NAME, "--", "--exact", "--nocapture", "--test-threads=1"]
+        completed = subprocess.run(command, cwd=root, env=env, stdout=sys.stderr,
+                                   stderr=sys.stderr, check=False)
+        if completed.returncode != 0:
+            return completed.returncode
+        value = json.loads(rust_report.read_text(encoding="utf-8"))
+        if value.get("schema") != SCHEMA or value.get("records") != records:
+            raise SystemExit("write-capacity report identity mismatch")
+        if value.get("citation_fanout") != 8 or value.get("mutation_samples") != 32:
+            raise SystemExit("write-capacity fixture mismatch")
+        if value.get("witness_audit_problems") != 0:
+            raise SystemExit("write-capacity run left witness drift")
+        for label in ("remember", "correct", "forget"):
+            distribution(value.get(label), label)
+        for field in ("sqlite_file_bytes", "sqlite_page_count", "sqlite_page_size_bytes",
+                      "sqlite_memory_revision_rows", "sqlite_citation_rows"):
+            if type(value.get(field)) is not int or value[field] <= 0:
+                raise SystemExit(f"invalid write-capacity field: {field}")
+        if type(value.get("sqlite_wal_file_bytes")) is not int or value["sqlite_wal_file_bytes"] < 0:
+            raise SystemExit("invalid WAL measurement")
+        value["candidate"] = {"commit": git(root, "rev-parse", "HEAD"),
+                              "tree": git(root, "rev-parse", "HEAD^{tree}")}
+        value["host"] = {"platform": platform.platform(), "machine": platform.machine()}
+        value["test"] = TEST_NAME
+        value["claim_boundary"] = (
+            "Exact candidate/current runner diagnostic only; latency includes SQLite lock wait "
+            "and transaction work and is not a target-host SLA. Set COGNITIVE_READ_WRITE_RECORDS "
+            "to 1000, 100000 or 1000000 only on an operator-selected qualification host."
+        )
+        print(json.dumps(value, indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+''', encoding="utf-8")
+          write_script.chmod(0o755)
+
+          full_path = ROOT / "scripts/cognitive_read_full_evidence.py"
+          full = full_path.read_text(encoding="utf-8")
+          if 'SQLITE_WRITE_CAPACITY_SCHEMA' not in full:
+              full = full.replace(
+                  'SQLITE_CAPACITY_SCHEMA = "hepta.cognitive.read.sqlite-capacity.v1"\n',
+                  'SQLITE_CAPACITY_SCHEMA = "hepta.cognitive.read.sqlite-capacity.v1"\n'
+                  'SQLITE_WRITE_CAPACITY_SCHEMA = "hepta.cognitive.read.sqlite-write-capacity.v1"\n',
+                  1,
+              )
+              full = full.replace(
+                  '    result["sqlite-capacity"] = [\n        "python3",\n        "scripts/cognitive_read_sqlite_capacity.py",\n    ]\n',
+                  '    result["sqlite-capacity"] = [\n        "python3",\n        "scripts/cognitive_read_sqlite_capacity.py",\n    ]\n'
+                  '    result["sqlite-write-capacity"] = [\n        "python3",\n        "scripts/cognitive_read_sqlite_write_capacity.py",\n    ]\n',
+                  1,
+              )
+              validation_marker = 'def validate_measurement(label: str, value: object) -> list[str]:\n'
+              write_validation = '''def validate_write_capacity(value: object) -> list[str]:
+    if not isinstance(value, dict) or value.get("schema") != SQLITE_WRITE_CAPACITY_SCHEMA:
+        return ["sqlite-write-capacity: wrong measurement schema"]
+    problems: list[str] = []
+    for field, expected in (("records", 256), ("citation_fanout", 8), ("mutation_samples", 32)):
+        if value.get(field) != expected:
+            problems.append(f"sqlite-write-capacity: unexpected {field}")
+    if value.get("witness_audit_problems") != 0:
+        problems.append("sqlite-write-capacity: witness audit drift")
+    for field in ("sqlite_file_bytes", "sqlite_page_count", "sqlite_page_size_bytes",
+                  "sqlite_memory_revision_rows", "sqlite_citation_rows"):
+        if type(value.get(field)) is not int or value[field] <= 0:
+            problems.append(f"sqlite-write-capacity: invalid {field}")
+    if type(value.get("sqlite_wal_file_bytes")) is not int or value["sqlite_wal_file_bytes"] < 0:
+        problems.append("sqlite-write-capacity: invalid WAL bytes")
+    for field in ("remember", "correct", "forget"):
+        row = value.get(field)
+        points = ([row.get(f"p{percent}_us") for percent in (50, 95, 99)]
+                  if isinstance(row, dict) else [])
+        if (len(points) != 3 or not all(type(point) is int and point >= 0 for point in points)
+                or points != sorted(points)):
+            problems.append(f"sqlite-write-capacity: invalid {field} distribution")
+    candidate = value.get("candidate")
+    if not isinstance(candidate, dict) or not all(
+        re.fullmatch(r"[0-9a-f]{40}", str(candidate.get(field, "")))
+        for field in ("commit", "tree")
+    ):
+        problems.append("sqlite-write-capacity: missing exact candidate identity")
+    return problems
+
+
+'''
+              if validation_marker not in full:
+                  raise SystemExit("full evidence validation marker missing")
+              full = full.replace(validation_marker, write_validation + validation_marker, 1)
+              full = full.replace(
+                  '    if label != "sqlite-capacity":\n        return _original_validate_measurement(label, value)\n',
+                  '    if label == "sqlite-write-capacity":\n        return validate_write_capacity(value)\n'
+                  '    if label != "sqlite-capacity":\n        return _original_validate_measurement(label, value)\n',
+                  1,
+              )
+              full = full.replace(
+                  '    receipt["sqlite_capacity"] = {\n',
+                  '    receipt["sqlite_write_capacity"] = {\n'
+                  '        "gate": "sqlite-write-capacity",\n'
+                  '        "passed": gate_status(evidence, "sqlite-write-capacity"),\n'
+                  '        "artifact": "sqlite-write-capacity.json",\n'
+                  '        "target_host_acceptance": False,\n'
+                  '    }\n'
+                  '    receipt["sqlite_capacity"] = {\n',
+                  1,
+              )
+              full = full.replace(
+                  '    base.BENCHMARK_SCHEMAS["sqlite-capacity"] = SQLITE_CAPACITY_SCHEMA\n',
+                  '    base.BENCHMARK_SCHEMAS["sqlite-capacity"] = SQLITE_CAPACITY_SCHEMA\n'
+                  '    base.BENCHMARK_SCHEMAS["sqlite-write-capacity"] = SQLITE_WRITE_CAPACITY_SCHEMA\n',
+                  1,
+              )
+              full_path.write_text(full, encoding="utf-8")
+
+          # Register the expanded witness regressions in the release gate.
+          release_path = ROOT / "scripts/cognitive_read_release_evidence.py"
+          release = release_path.read_text(encoding="utf-8")
+          old_cases = '''WITNESS_INTEGRITY_TESTS = (
+    "lane_c_witness_guards_reject_drift_and_reopen_cleanly",
+    "lane_c_witness_migration_recomputes_nonempty_v16_store",
+    "lane_c_witness_migration_rejects_preexisting_drift",
+)'''
+          new_cases = '''WITNESS_INTEGRITY_TESTS = (
+    "lane_c_witness_guards_reject_drift_and_reopen_cleanly",
+    "lane_c_witness_migration_recomputes_nonempty_v16_store",
+    "lane_c_witness_migration_rejects_preexisting_drift",
+    "lane_c_reopen_rejects_dropped_required_witness_trigger",
+    "lane_c_reopen_rejects_modified_audit_view_definition",
+    "lane_c_reopen_audit_rejects_missing_head_validity_row",
+    "lane_c_reopen_audit_rejects_count_and_revision_drift",
+)'''
+          if old_cases in release:
+              release = release.replace(old_cases, new_cases, 1)
+          elif new_cases not in release:
+              raise SystemExit("release witness case marker missing")
+          release_path.write_text(release, encoding="utf-8")
+
+          # Deterministic source-map and PR-body generator. It binds every listed
+          # object to the frozen source commit and enforces closed-world coverage.
+          generator = ROOT / "scripts/generate_cognitive_read_candidate.py"
+          generator.write_text(r'''#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+
+ROOT = Path(__file__).resolve().parents[1]
+MAP = ROOT / "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+HEX = re.compile(r"[0-9a-f]{40}")
+
+
+def git(*args: str) -> str:
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1", GIT_NO_REPLACE_OBJECTS="1")
+    return subprocess.check_output(["git", "--literal-pathspecs", *args], cwd=ROOT, env=env, text=True).strip()
+
+
+def exists(commit: str, path: str) -> bool:
+    return subprocess.run(["git", "cat-file", "-e", f"{commit}:{path}"], cwd=ROOT,
+                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+
+
+def scoped(path: str) -> bool:
+    prefixes = (
+        "codex-rs/hepta-cognitive-read/", "codex-rs/hepta-cognitive-types/",
+        "codex-rs/hepta-cognitive-store/", "codex-rs/hepta-memory/",
+        "codex-rs/hepta-agentd/", "codex-rs/hepta-agent-protocol/",
+        "codex-rs/hepta-infer-core/", "codex-rs/hepta-infer-worker-host/",
+        "codex-rs/hepta-learning-ledger/", "codex-rs/hepta-compact-engine/",
+        "codex-rs/hepta-context-compiler/", "qualification/cognitive-read/",
+        "docs/modules/cognitive.read/",
+    )
+    if path.startswith(prefixes):
+        return path != "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+    return (
+        path in {"codex-rs/Cargo.toml", "codex-rs/Cargo.lock",
+                 ".github/workflows/cognitive-read-qualification.yml"}
+        or path.startswith("scripts/cognitive_read")
+        or path.startswith("scripts/verify-cognitive-read")
+        or path == "scripts/generate_cognitive_read_candidate.py"
+    )
+
+
+def refresh_blobs(node: object, source: str) -> None:
+    if isinstance(node, dict):
+        path = node.get("sourcePath")
+        if isinstance(path, str) and "sourceBlob" in node:
+            if not exists(source, path):
+                raise SystemExit(f"mapped operation source is absent: {path}")
+            node["sourceBlob"] = git("rev-parse", f"{source}:{path}")
+        for value in node.values():
+            refresh_blobs(value, source)
+    elif isinstance(node, list):
+        for value in node:
+            refresh_blobs(value, source)
+
+
+def generate(source: str, base: str) -> dict[str, object]:
+    if HEX.fullmatch(source) is None or HEX.fullmatch(base) is None:
+        raise SystemExit("source/base must be complete lowercase SHAs")
+    git("merge-base", "--is-ancestor", base, source)
+    value = json.loads(MAP.read_text(encoding="utf-8"))
+    source_identity = {"commit": source, "tree": git("rev-parse", f"{source}^{{tree}}")}
+    base_identity = {"commit": base, "tree": git("rev-parse", f"{base}^{{tree}}")}
+    value["sourceBase"] = source_identity
+    value["observedAtHead"] = source_identity
+    value["observedImplementationBase"] = {
+        **base_identity,
+        "interpretation": "exact pull-request base used for closed-world cognitive.read source coverage",
+    }
+    value["mappingSourceIdentityMode"] = "exact_blob"
+    value["sourceIdentityMode"] = "repository_baseline_plus_exact_head_objects"
+
+    existing = {
+        row["path"] for row in value.get("sourceObjects", [])
+        if isinstance(row, dict) and isinstance(row.get("path"), str)
+    }
+    changed = git("diff", "--name-only", base, source).splitlines()
+    required = {path for path in changed if scoped(path) and exists(source, path)}
+    paths = sorted(path for path in existing.union(required) if exists(source, path))
+    value["sourceObjects"] = [
+        {"path": path, "object": git("rev-parse", f"{source}:{path}")}
+        for path in paths
+    ]
+    value["closedWorldSourcePaths"] = paths
+    evidence = value.get("exactSourceEvidence")
+    if isinstance(evidence, dict):
+        evidence["kind"] = "path_blob_manifest_v1"
+        evidence["entries"] = [
+            {"path": row["path"], "blobSha": row["object"]}
+            for row in value["sourceObjects"]
+        ]
+    refresh_blobs(value, source)
+    value["productionImplementation"] = False
+    value["productExecutionProved"] = False
+    boundary = value.get("claimBoundary")
+    if isinstance(boundary, dict):
+        for key in ("productionImplementation", "productExecutionProved",
+                    "independentAcceptance", "activation", "release"):
+            boundary[key] = False
+    return value
+
+
+def write_pr_body(path: Path, source: str, candidate: str) -> None:
+    consumers = json.loads((ROOT / "docs/modules/cognitive.read/CONSUMER_EXECUTION.json").read_text())
+    source_tree = git("rev-parse", f"{source}^{{tree}}")
+    candidate_tree = git("rev-parse", f"{candidate}^{{tree}}")
+    rows = "\n".join(
+        f"- `{row['module']}` — `{row['migration_class']}`"
+        for row in consumers["consumers"]
+    )
+    path.write_text(f'''## Scope
+
+Converges `cognitive.read` through the existing SQLite owner, Agentd and native-worker boundaries without a second durable owner, authorization cache or admitted wire protocol.
+
+### Frozen candidate identity
+
+- source commit: `{source}`
+- source tree: `{source_tree}`
+- documentation-only exact-map child: `{candidate}`
+- candidate tree: `{candidate_tree}`
+
+The child changes only `docs/modules/cognitive.read/IMPLEMENTATION_MAP.json`. The map is generated by `scripts/generate_cognitive_read_candidate.py`, binds every mapped path to the frozen source object, and verifies closed-world coverage relative to the exact PR base.
+
+## Correctness closure in this candidate
+
+- qualification runner and verifier both use `cognitive_read_release_evidence.py`;
+- all mutable/self-pushing cognitive.read repair workflows are absent from the frozen candidate;
+- every Lane C witness table, index, view and trigger is in the fixed schema oracle;
+- every store open/recovery runs both independent witness audit views;
+- reopen regressions cover dropped triggers, modified audit views, missing validity rows and count/revision drift;
+- compaction samples trusted time again before publication, rejects clock regression, natural validity expiry and observation-window expiry;
+- write-capacity evidence records remember/correct/forget p50/p95/p99, citation fan-out, SQLite/WAL/page/row growth and final witness integrity;
+- exact source-head and deterministic synthetic-merge qualification remain read-only and seal immutable evidence artifacts.
+
+## Consumer state retained honestly
+
+{rows}
+
+No package result is relabeled as V2 migration, independent acceptance, activation or release. The candidate remains:
+
+```text
+productionImplementation = false
+productExecutionProved = false
+independentAcceptance = false
+activation = false
+release = false
+```
+
+Those flags may change only from successful exact-candidate receipts and their separately governed external gates.
+''', encoding="utf-8")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--source-sha")
+    parser.add_argument("--base-sha")
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--candidate-sha")
+    parser.add_argument("--pr-body", type=Path)
+    args = parser.parse_args()
+    if args.source_sha and args.base_sha and args.output:
+        args.output.write_text(json.dumps(generate(args.source_sha, args.base_sha), indent=2,
+                                          ensure_ascii=False) + "\n", encoding="utf-8")
+    elif args.source_sha and args.candidate_sha and args.pr_body:
+        write_pr_body(args.pr_body, args.source_sha, args.candidate_sha)
+    else:
+        parser.error("select map generation or PR body generation mode")
+
+
+if __name__ == "__main__":
+    main()
+''', encoding="utf-8")
+          generator.chmod(0o755)
+
+          # Closed-world verification is enforced, not only generated.
+          map_verify = ROOT / "scripts/verify-cognitive-read-map.py"
+          verify = map_verify.read_text(encoding="utf-8")
+          if "def scoped_source_path" not in verify:
+              insertion = r'''
+
+def scoped_source_path(path: str) -> bool:
+    prefixes = (
+        "codex-rs/hepta-cognitive-read/", "codex-rs/hepta-cognitive-types/",
+        "codex-rs/hepta-cognitive-store/", "codex-rs/hepta-memory/",
+        "codex-rs/hepta-agentd/", "codex-rs/hepta-agent-protocol/",
+        "codex-rs/hepta-infer-core/", "codex-rs/hepta-infer-worker-host/",
+        "codex-rs/hepta-learning-ledger/", "codex-rs/hepta-compact-engine/",
+        "codex-rs/hepta-context-compiler/", "qualification/cognitive-read/",
+        "docs/modules/cognitive.read/",
+    )
+    if path.startswith(prefixes):
+        return path != "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+    return (path in {"codex-rs/Cargo.toml", "codex-rs/Cargo.lock",
+                     ".github/workflows/cognitive-read-qualification.yml"}
+            or path.startswith("scripts/cognitive_read")
+            or path.startswith("scripts/verify-cognitive-read")
+            or path == "scripts/generate_cognitive_read_candidate.py")
+
+
+def verify_closed_world(mapping: dict[str, object], objects: dict[str, str], source: str) -> None:
+    baseline = mapping.get("observedImplementationBase")
+    if not isinstance(baseline, dict) or not isinstance(baseline.get("commit"), str):
+        raise SystemExit("observedImplementationBase.commit is required")
+    base = baseline["commit"]
+    try:
+        git("merge-base", "--is-ancestor", base, source)
+    except subprocess.CalledProcessError as error:
+        raise SystemExit("closed-world base is not an ancestor of sourceBase") from error
+    required = {
+        path for path in git("diff", "--name-only", base, source).splitlines()
+        if scoped_source_path(path) and path != "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+    }
+    missing = sorted(required.difference(objects))
+    if missing:
+        raise SystemExit(f"closed-world cognitive.read source paths are unmapped: {missing}")
+    declared = mapping.get("closedWorldSourcePaths")
+    if declared != sorted(objects):
+        raise SystemExit("closedWorldSourcePaths must exactly equal sorted sourceObjects paths")
+'''
+              verify = verify.replace('\ndef collect_activation(value: object) -> list[object]:\n', insertion + '\ndef collect_activation(value: object) -> list[object]:\n', 1)
+              verify = verify.replace(
+                  '    objects = source_objects(mapping, expected_sha)\n    verify_exact_manifest(mapping, objects)\n',
+                  '    objects = source_objects(mapping, expected_sha)\n'
+                  '    verify_exact_manifest(mapping, objects)\n'
+                  '    verify_closed_world(mapping, objects, mapping["sourceBase"]["commit"])\n',
+                  1,
+              )
+              map_verify.write_text(verify, encoding="utf-8")
+
+          # Remove stale self-identities from prose. Exact identity is generated.
+          readme = ROOT / "docs/modules/cognitive.read/README.md"
+          text = readme.read_text(encoding="utf-8")
+          text = re.sub(
+              r'## Current source candidate, 2026-09-29\n\n.*?\nRead the documents together:',
+              '## Current source candidate\n\nThe frozen source identity is generated by '
+              '`scripts/generate_cognitive_read_candidate.py` and recorded in '
+              '`IMPLEMENTATION_MAP.json` and the PR body. Candidate SHAs are never '
+              'hand-maintained in this source document. Qualification is read-only; '
+              'any source change creates a new candidate.\n\nRead the documents together:',
+              text,
+              count=1,
+              flags=re.DOTALL,
+          )
+          readme.write_text(text, encoding="utf-8")
+
+          selected = ROOT / "docs/modules/cognitive.read/SELECTED_OWNER_CUT.md"
+          text = selected.read_text(encoding="utf-8")
+          text = re.sub(
+              r'Status: source implementation and ordinary product integration materialized in\n`[0-9a-f]{40}`; regression tests are authored, while\nexact source and deterministic merge execution remain pending\.',
+              'Status: source implementation and ordinary product integration are materialized. '
+              'The exact frozen source identity and current execution receipts are generated, not '
+              'embedded in this stable design supplement.',
+              text,
+              count=1,
+          )
+          selected.write_text(text, encoding="utf-8")
+
+          supplement = ROOT / "docs/modules/cognitive.read/WITNESS_AND_WRITE_CAPACITY.md"
+          supplement.write_text('''# Lane C witness integrity and write-capacity qualification
+
+Status: source candidate. This document grants no activation, production or release authority.
+
+## Fixed schema and reopen audit
+
+Every `lane_c_scope_witness` and `lane_c_head_validity` table, index, expected/audit
+view, maintenance trigger and direct-write guard is part of the fixed cognitive-store
+schema oracle. Every ordinary or recovery open executes both independent audit views
+after verifying the exact schema definitions. A missing object, definition substitution,
+missing validity row, counter drift or regressed witness revision fails closed.
+
+Normal owner transactions still update the rebuildable witness in the same SQLite
+transaction as the immutable facts. The audit views are correctness oracles, not an
+authorization cache, second fact store or currentness lease.
+
+## Trusted final-use time for compaction
+
+Compaction acquisition retains its explicit observation time for deterministic source
+binding. Publication does not reuse that timestamp. The owner samples its trusted clock
+again, rejects clock regression and expiration of the bounded observation window, then
+reacquires the selected owner cut. Tests cover correction, natural validity expiry,
+observation-window expiry and clock regression without requiring another database write.
+
+## Write amplification evidence
+
+`sqlite-write-capacity` records remember/correct/forget p50/p95/p99 latency, citation
+fan-out, SQLite database/WAL/page/row growth and the final witness-audit result. Operation
+latency includes lock wait and transaction work. The default CI fixture is deliberately
+bounded; `COGNITIVE_READ_WRITE_RECORDS` supports 1,000, 100,000 and 1,000,000-record
+operator-selected runs. GitHub-runner data is candidate evidence only, never a portable
+SLA or target-host acceptance.
+
+The current exact witness favors conservative scope-level conflict detection. Partitioned
+or Merkle dependency roots, immutable lineage checkpoints and sealed compatibility-provider
+features remain separately reviewed evolution work; they are not silently introduced by
+this qualification patch.
+''', encoding="utf-8")
+
+          # The final source candidate contains no workflow capable of rewriting it.
+          for workflow in (
+              ROOT / ".github/workflows/cognitive-read-rc-repair.yml",
+              ROOT / ".github/workflows/cognitive-read-rc-repair-macos.yml",
+          ):
+              workflow.unlink(missing_ok=True)
+          PY
+
+          python3 -m py_compile \
+            scripts/cognitive_read_full_evidence.py \
+            scripts/cognitive_read_release_evidence.py \
+            scripts/cognitive_read_sqlite_write_capacity.py \
+            scripts/generate_cognitive_read_candidate.py \
+            scripts/verify-cognitive-read-constants.py \
+            scripts/verify-cognitive-read-map.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-memory \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-compact-engine \
+            -p codex-hepta-context-compiler
+          git diff --check
+
+      - name: Run deterministic source regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p 'test_cognitive_read_*.py'
+          python3 scripts/verify-cognitive-read-constants.py
+          python3 .github/scripts/verify_cargo_workspace_manifests.py
+          just test --locked -p codex-hepta-memory --test lane_c_witness_integrity \
+            --no-tests=fail --status-level pass
+          just test --locked -p codex-hepta-memory --lib --no-tests=fail \
+            --status-level pass \
+            -E 'test(normal_owner_path_binds_full_lineage_exact_read_and_final_cut) | test(concurrent_correction_is_rejected_before_candidate_publication) | test(validity_expiry_during_candidate_build_is_rejected_without_owner_write) | test(observation_deadline_expiry_without_owner_write_is_rejected) | test(final_revalidation_clock_regression_is_rejected)'
+          COGNITIVE_READ_WRITE_RECORDS=256 python3 scripts/cognitive_read_sqlite_write_capacity.py \
+            > /tmp/cognitive-read-write-capacity.json
+          python3 -m json.tool /tmp/cognitive-read-write-capacity.json >/dev/null
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-memory \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-compact-engine \
+            -p codex-hepta-context-compiler \
+            --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-memory \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-compact-engine \
+            -p codex-hepta-context-compiler \
+            --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          test -z "$(find .github/workflows -maxdepth 1 -type f -name '*cognitive*read*repair*.yml' -print)"
+          git diff --check
+
+      - name: Commit frozen source
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          test -n "$(git status --porcelain)"
+          git commit -m "fix(cognitive.read): freeze exact owner qualification candidate"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Generate exact implementation map child
+        id: map
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/generate_cognitive_read_candidate.py \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --output docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git diff --check
+          test "$(git diff --name-only)" = "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+          git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git commit -m "docs(cognitive.read): bind frozen exact source map"
+          MAP_SHA="$(git rev-parse HEAD)"
+          MAP_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/verify-cognitive-read-map.py \
+            --expected-sha "$MAP_SHA" --expected-tree "$MAP_TREE"
+          python3 scripts/generate_cognitive_read_candidate.py \
+            --source-sha "$SOURCE_SHA" \
+            --candidate-sha "$MAP_SHA" \
+            --pr-body /tmp/cognitive-read-pr-body.md
+          echo "sha=$MAP_SHA" >> "$GITHUB_OUTPUT"
+          echo "tree=$MAP_TREE" >> "$GITHUB_OUTPUT"
+
+      - name: Push frozen two-commit candidate
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          MAP_SHA: ${{ steps.map.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$MAP_SHA"
+          test -z "$(git status --porcelain)"
+          git push origin "HEAD:$TARGET_BRANCH"
+
+      - name: Publish generated PR identity
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="$(cat /tmp/cognitive-read-pr-body.md)"
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/1032" \
+            --method PATCH --field body="$BODY" >/dev/null
+          {
+            echo '## Frozen cognitive.read candidate'
+            echo "Source: ${{ steps.source.outputs.sha }} / ${{ steps.source.outputs.tree }}"
+            echo "Map child: ${{ steps.map.outputs.sha }} / ${{ steps.map.outputs.tree }}"
+            echo 'The pushed candidate contains no mutable cognitive.read repair workflow.'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -47,6 +47,7 @@ pub use shared_experience::SharedExperienceUseV1;
 
 pub use lane_c_snapshot::CognitiveOwnerFrontiers;
 pub use lane_c_snapshot::DURABLE_SQLITE_MEMORY_KIND;
+pub use lane_c_snapshot::DurableCognitiveSelectionSnapshot;
 pub use lane_c_snapshot::DurableCognitiveSnapshot;
 pub use lane_c_snapshot::DurableCognitiveSnapshotCursor;
 pub use lane_c_snapshot::DurableCognitiveSnapshotPage;

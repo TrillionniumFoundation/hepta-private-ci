@@ -1,0 +1,217 @@
+name: Cognitive read direct convergence macOS
+
+on:
+  push:
+    branches:
+      - work/cognitive-read-production-convergence-20260927
+    paths:
+      - ".github/workflows/cognitive-read-direct-convergence-macos.yml"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: cognitive-read-direct-convergence-macos
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    name: Build frozen source and exact map on macOS
+    runs-on: macos-14
+    timeout-minutes: 180
+    env:
+      EXPECTED_PARENT: 1b3f1650bd41ffdefcaee9c7008cd9c6856154bc
+      BASE_SHA: a126987b84737dbc2ee2592442a314117bddb4a2
+      TARGET_BRANCH: work/cognitive-read-production-convergence-20260927
+      RUST_MIN_STACK: "8388608"
+      CARGO_TERM_COLOR: never
+      NO_COLOR: "1"
+    steps:
+      - name: Check out exact execution commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Prove one-file macOS executor commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test -z "$(git status --porcelain)"
+          test "$(git diff --name-only "$EXPECTED_PARENT" HEAD)" = ".github/workflows/cognitive-read-direct-convergence-macos.yml"
+
+      - name: Prepare repository tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Install pinned nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103
+
+      - name: Configure source author
+        shell: bash
+        run: |
+          git config user.name "Cognitive Read Convergence"
+          git config user.email "cognitive-read-convergence@users.noreply.github.com"
+
+      - name: Apply reviewed convergence program
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          carrier = Path(".github/workflows/cognitive-read-rc-repair-macos.yml")
+          body = carrier.read_text(encoding="utf-8")
+          opening = "          python3 - <<'PY'\n"
+          closing = "\n          PY\n"
+          start = body.index(opening) + len(opening)
+          end = body.index(closing, start)
+          program = textwrap.dedent(body[start:end])
+          exec(compile(program, str(carrier) + ":embedded", "exec"), {"__name__": "__main__"})
+          PY
+          rm -f \
+            .github/workflows/cognitive-read-direct-convergence.yml \
+            .github/workflows/cognitive-read-direct-convergence-macos.yml
+          python3 -m py_compile \
+            scripts/cognitive_read_full_evidence.py \
+            scripts/cognitive_read_release_evidence.py \
+            scripts/cognitive_read_sqlite_write_capacity.py \
+            scripts/generate_cognitive_read_candidate.py \
+            scripts/verify-cognitive-read-constants.py \
+            scripts/verify-cognitive-read-map.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-memory \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-compact-engine \
+            -p codex-hepta-context-compiler
+          git diff --check
+
+      - name: Run deterministic source regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p 'test_cognitive_read_*.py'
+          python3 scripts/verify-cognitive-read-constants.py
+          python3 .github/scripts/verify_cargo_workspace_manifests.py
+          just test --locked -p codex-hepta-memory --test lane_c_witness_integrity \
+            --no-tests=fail --status-level pass
+          just test --locked -p codex-hepta-memory --lib --no-tests=fail \
+            --status-level pass \
+            -E 'test(normal_owner_path_binds_full_lineage_exact_read_and_final_cut) | test(concurrent_correction_is_rejected_before_candidate_publication) | test(validity_expiry_during_candidate_build_is_rejected_without_owner_write) | test(observation_deadline_expiry_without_owner_write_is_rejected) | test(final_revalidation_clock_regression_is_rejected)'
+          WRITE_REPORT="$RUNNER_TEMP/cognitive-read-write-capacity.json"
+          COGNITIVE_READ_SQLITE_WRITE_CAPACITY_OUTPUT="$WRITE_REPORT" \
+          COGNITIVE_READ_WRITE_RECORDS=256 \
+            cargo test --manifest-path codex-rs/Cargo.toml --locked \
+              -p codex-hepta-memory --test cognitive_read_write_capacity \
+              cognitive_read_sqlite_write_capacity_report -- \
+              --exact --nocapture --test-threads=1
+          python3 - "$WRITE_REPORT" <<'PY'
+          import json, pathlib, sys
+          value = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert value["schema"] == "hepta.cognitive.read.sqlite-write-capacity.v1"
+          assert value["records"] == 256
+          assert value["witness_audit_problems"] == 0
+          for label in ("remember", "correct", "forget"):
+              points = [value[label][f"p{p}_us"] for p in (50, 95, 99)]
+              assert points == sorted(points)
+          PY
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-memory \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-compact-engine \
+            -p codex-hepta-context-compiler \
+            --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-memory \
+            -p codex-hepta-cognitive-read \
+            -p codex-hepta-agentd \
+            -p codex-hepta-infer-core \
+            -p codex-hepta-infer-worker-host \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-compact-engine \
+            -p codex-hepta-context-compiler \
+            --all-targets -- -D warnings
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          test -z "$(find .github/workflows -maxdepth 1 -type f -name '*cognitive*read*repair*.yml' -print)"
+          test ! -e .github/workflows/cognitive-read-direct-convergence.yml
+          test ! -e .github/workflows/cognitive-read-direct-convergence-macos.yml
+          git diff --check
+
+      - name: Commit frozen source
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          test -n "$(git status --porcelain)"
+          git commit -m "fix(cognitive.read): freeze exact owner qualification candidate"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Generate exact implementation map child
+        id: map
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/generate_cognitive_read_candidate.py \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --output docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git diff --check
+          test "$(git diff --name-only)" = "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json"
+          git add docs/modules/cognitive.read/IMPLEMENTATION_MAP.json
+          git commit -m "docs(cognitive.read): bind frozen exact source map"
+          MAP_SHA="$(git rev-parse HEAD)"
+          MAP_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/verify-cognitive-read-map.py \
+            --expected-sha "$MAP_SHA" --expected-tree "$MAP_TREE"
+          python3 scripts/generate_cognitive_read_candidate.py \
+            --source-sha "$SOURCE_SHA" \
+            --candidate-sha "$MAP_SHA" \
+            --pr-body /tmp/cognitive-read-pr-body.md
+          echo "sha=$MAP_SHA" >> "$GITHUB_OUTPUT"
+          echo "tree=$MAP_TREE" >> "$GITHUB_OUTPUT"
+
+      - name: Push frozen two-commit candidate
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+          MAP_SHA: ${{ steps.map.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$MAP_SHA"
+          test -z "$(git status --porcelain)"
+          git push origin "HEAD:$TARGET_BRANCH"
+
+      - name: Publish generated PR identity
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BODY="$(cat /tmp/cognitive-read-pr-body.md)"
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/1032" \
+            --method PATCH --field body="$BODY" >/dev/null
+          {
+            echo '## Frozen cognitive.read candidate'
+            echo "Source: ${{ steps.source.outputs.sha }} / ${{ steps.source.outputs.tree }}"
+            echo "Map child: ${{ steps.map.outputs.sha }} / ${{ steps.map.outputs.tree }}"
+            echo 'The pushed candidate contains no mutable cognitive.read repair workflow.'
+          } >> "$GITHUB_STEP_SUMMARY"

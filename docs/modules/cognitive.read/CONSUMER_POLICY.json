@@ -1,0 +1,110 @@
+{
+  "schema": "hepta.cognitive.read.consumer-policy.v1",
+  "consumers": [
+    {
+      "consumer": "compact.engine",
+      "expectedProductCallerState": "exact_owner_read_compaction_candidate_composed_product_qualification_pending",
+      "minimumMappedProductCallers": 1,
+      "migrationClass": "source_composed_product_qualification_pending",
+      "adoptedReadBoundary": "existing_sqlite_owner_exact_id_read_to_deny_all_compaction_candidate",
+      "finalUseResponsibility": "The existing SQLite owner reacquires the exact selected cut before candidate publication; checkpoint persistence and any later mutation remain with the existing compact owner.",
+      "errorMappingRequirement": "Differentiate missing or stale source rows, invalid retention metadata, construction-budget failure and owner unavailability; a candidate never grants checkpoint-write authority.",
+      "requiredExecutionEvidence": [
+        "normal SQLite owner product caller",
+        "complete-lineage exact-read binding",
+        "concurrent correction rejection before publication",
+        "exact-head and fixed-merge execution"
+      ]
+    },
+    {
+      "consumer": "context.compiler",
+      "expectedProductCallerState": "legacy_v1_composed_revision_bound_v2_ingress_source_implemented_product_use_pending",
+      "minimumMappedProductCallers": 1,
+      "migrationClass": "legacy_v1_composed_v2_pending",
+      "adoptedReadBoundary": "legacy_v1_product_source_plus_revision_bound_v2_verified_ingress",
+      "finalUseResponsibility": "The V2 ingress verifies the complete revision-bound source set and delegates to existing compiler admission; the provider/model use owner must still bind and revalidate the compiled payload before physical send.",
+      "errorMappingRequirement": "Keep omitted or substituted source revisions, unverified or inactive events, compiler admission failure and provider-boundary staleness distinct from owner corruption.",
+      "requiredExecutionEvidence": [
+        "legacy product caller and revision-bound V2 ingress comparison",
+        "omission source-substitution and role-escalation rejection",
+        "exact candidate-set and generation binding",
+        "named provider-bound V2 product use"
+      ]
+    },
+    {
+      "consumer": "memory.federation",
+      "expectedProductCallerState": "composed_candidate_pending_execution",
+      "minimumMappedProductCallers": 2,
+      "migrationClass": "source_composed_execution_pending",
+      "adoptedReadBoundary": "registered_local_owner_composition",
+      "finalUseResponsibility": "Federation authorization and each source owner retain source-currentness; the final model-input owner must revalidate the aggregated selection.",
+      "errorMappingRequirement": "Preserve denied, unavailable, partial and omitted coverage without leaking denied-record existence or relabelling transport failure as an empty success.",
+      "requiredExecutionEvidence": [
+        "normal federation product entry",
+        "peer and owner final-use checks",
+        "denied and unavailable coverage",
+        "partial and omitted result semantics"
+      ]
+    },
+    {
+      "consumer": "memory.retrieval",
+      "expectedProductCallerState": "source_composed_explicit_profile_not_product_qualified",
+      "minimumMappedProductCallers": 1,
+      "migrationClass": "source_composed_product_qualification_pending",
+      "adoptedReadBoundary": "exact_owner_cut_through_agentd_context",
+      "finalUseResponsibility": "The retrieval owner supplies the exact cut; Agentd and the native worker own final-use revalidation of ID, revision, content and retrieval-context bindings.",
+      "errorMappingRequirement": "Distinguish missing records, stale candidates, invalid request bounds, optional ranker failure and actual owner-store failure.",
+      "requiredExecutionEvidence": [
+        "authenticated retrieval profile",
+        "exact ID revision and content binding",
+        "missing-record disposition",
+        "native worker fresh and stale context cases"
+      ]
+    },
+    {
+      "consumer": "neuron.runtime",
+      "expectedProductCallerState": "agentd_owner_source_compiled_not_daemon_lifecycle_composed",
+      "minimumMappedProductCallers": 2,
+      "migrationClass": "owner_source_compiled_lifecycle_pending",
+      "adoptedReadBoundary": "registered_context_input_no_direct_read_migration_proved",
+      "finalUseResponsibility": "The runtime scope/generation owner and inference effect owner must validate revocation, cancellation and selected model state at use.",
+      "errorMappingRequirement": "Keep stale generation, revoked input, cancellation and inference-owner unavailability distinct from malformed cognitive projections.",
+      "requiredExecutionEvidence": [
+        "daemon lifecycle composition",
+        "generation and revocation rejection",
+        "cancellation behavior",
+        "selected-model final-use binding"
+      ]
+    },
+    {
+      "consumer": "objective.compiler",
+      "expectedProductCallerState": "source_composed_authenticated_agentd_not_activated",
+      "minimumMappedProductCallers": 1,
+      "migrationClass": "authenticated_source_composed_activation_pending",
+      "adoptedReadBoundary": "registered_context_input_authenticated_objective_host",
+      "finalUseResponsibility": "Objective admission and durable publication stay with their existing owners; any downstream effect owner must bind the admitted objective and current context before use.",
+      "errorMappingRequirement": "Separate stale cognitive input, objective admission failure, publication failure and downstream final-use rejection.",
+      "requiredExecutionEvidence": [
+        "authenticated Agentd objective entry",
+        "stale-input rejection",
+        "payload and publication binding",
+        "crash restart and backpressure behavior"
+      ]
+    },
+    {
+      "consumer": "utility.ndu",
+      "expectedProductCallerState": "request_local_read_only_established_authenticated_owner_source_candidate_not_product_composed",
+      "minimumMappedProductCallers": 1,
+      "migrationClass": "request_local_read_only_established_authenticated_owner_pending",
+      "adoptedReadBoundary": "request_local_read_only_planning_chain",
+      "finalUseResponsibility": "Request-local utility evaluation remains deny-all; the independent authorization owner controls effects and the authenticated NDU owner controls any durable mutation.",
+      "errorMappingRequirement": "Separate stale planning state, invalid bounds, missing uncertainty axes and unavailable independent authorization from ordinary utility comparison outcomes.",
+      "requiredExecutionEvidence": [
+        "request-local read-only chain",
+        "stale-state and invalid-bound rejection",
+        "authenticated owner product bootstrap",
+        "independent authorization and selected-writer evidence"
+      ]
+    }
+  ]
+}

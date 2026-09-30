@@ -15,6 +15,7 @@ mod automation_recovery;
 mod browser_servo;
 mod client;
 mod cognitive_context;
+mod cognitive_context_metrics;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
 mod cognitive_retrieval_learning;

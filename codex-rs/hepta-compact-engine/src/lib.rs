@@ -2,6 +2,7 @@
 
 #![forbid(unsafe_code)]
 
+mod product;
 mod qualified;
 
 use std::collections::BTreeMap;
@@ -14,6 +15,10 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use product::CognitiveReadCompactionBindingError;
+pub use product::CognitiveReadCompactionCandidateV1;
+pub use product::CognitiveReadCompactionRetentionV1;
+pub use product::MAX_COGNITIVE_READ_COMPACTION_IDS;
 pub use qualified::CompactionInputRecordV2;
 pub use qualified::CompactionLossReportV2;
 pub use qualified::CompactionPolicyV2;
