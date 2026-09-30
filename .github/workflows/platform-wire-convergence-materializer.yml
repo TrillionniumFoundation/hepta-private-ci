@@ -1,0 +1,120 @@
+name: Platform wire one-shot convergence materializer
+
+on:
+  push:
+    branches:
+      - automation/platform-wire-convergence-materializer-20260930
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: platform-wire-convergence-materializer-20260930
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    name: Validate and fast-forward exact convergence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      EXPECTED_SOURCE_SHA: 4a76055219065fd9db2010e24e2cac34908f659c
+      TARGET_BRANCH: codex/platform-wire-final-convergence-20260925
+      STAGING_BRANCH: automation/platform-wire-convergence-materializer-20260930
+      PATCH_SHA256: e8d312e4f1f2a54c506befcedcbcbb60c7b4d6f2745a9f56c277a06b9a7798e9
+      RUST_TOOLCHAIN: 1.95.0
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - name: Check out immutable materializer payload
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: materializer
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Assemble and verify immutable patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "TrillionniumFoundation/hepta-private-ci"
+          test "$GITHUB_REF_NAME" = "$STAGING_BRANCH"
+          test "$(find materializer/.hepta/materializer -maxdepth 1 -name 'platform-wire-convergence.patch.b64.*' -type f | wc -l)" = "9"
+          cat materializer/.hepta/materializer/platform-wire-convergence.patch.b64.* \
+            | base64 --decode > "$RUNNER_TEMP/platform-wire-convergence.patch"
+          echo "$PATCH_SHA256  $RUNNER_TEMP/platform-wire-convergence.patch" | sha256sum -c -
+
+      - name: Check out exact target source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SOURCE_SHA }}
+          path: source
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Apply exact patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd source
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          test "$(git rev-parse "origin/$TARGET_BRANCH")" = "$EXPECTED_SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git apply --index "$RUNNER_TEMP/platform-wire-convergence.patch"
+          git diff --cached --check
+          test -n "$(git diff --cached --name-only)"
+          test ! -e .github/workflows/platform-wire-worktree-export.yml
+
+      - name: Validate Python contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd source
+          python3 scripts/platform_wire_status.py self-test
+          python3 scripts/platform_wire_status.py check-doc
+          python3 scripts/platform_wire_performance_gate.py --self-test
+          python3 scripts/platform_wire_production_gate.py --self-test
+          python3 -m unittest discover -s scripts/tests -p test_platform_wire_fuzz_campaign.py -v
+          python3 scripts/hepta-module-docs.py self-test
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install "$RUST_TOOLCHAIN" --profile minimal --component rustfmt,clippy
+          rustc +"$RUST_TOOLCHAIN" --version --verbose
+
+      - name: Validate Rust formatting, tests and strict Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd source
+          cargo +"$RUST_TOOLCHAIN" fmt --manifest-path codex-rs/Cargo.toml --all -- --check
+          cargo +"$RUST_TOOLCHAIN" test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-wire --all-targets
+          cargo +"$RUST_TOOLCHAIN" test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-codex-adapter --all-targets
+          cargo +"$RUST_TOOLCHAIN" clippy --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-wire -p codex-hepta-codex-adapter --all-targets --no-deps -- -D warnings
+
+      - name: Commit and fast-forward target branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd source
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          test "$(git rev-parse "origin/$TARGET_BRANCH")" = "$EXPECTED_SOURCE_SHA"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(platform.wire): close canonical, rotation, and operations contracts"
+          new_sha="$(git rev-parse HEAD)"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          echo "new_source_sha=$new_sha" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove one-shot staging branch
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd source
+          git push origin --delete "$STAGING_BRANCH"
