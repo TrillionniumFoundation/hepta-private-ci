@@ -1,7 +1,7 @@
 {
   "schema": "hepta.ui-native-storage-budgets.v2",
-  "implementationSourceSha": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
-  "implementationSourceTree": "136c62bfe0cc0ca6c7455169162c3f5a1b951f8a",
+  "implementationSourceSha": "f4ce125546ab743ebedbc793762add89b1143ac3",
+  "implementationSourceTree": "ab59592d3077e8a34dedb5fa20de3ed0c4905ded",
   "walIndexSourceCommit": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
   "status": "provisional-unqualified",
   "structural": {
@@ -43,7 +43,9 @@
     "peak resident set size",
     "retirement index deterministic rebuild time",
     "20 fresh-process open/rebuild observations with uncontrolled OS page cache",
-    "64-record durable history page p95 latency and exact retained serialized bytes"
+    "64-record durable history page p95 latency and exact retained serialized bytes",
+    "4096 active records and 1000000 retired identities together: 20 fresh-process journal opens and 64-record history pages",
+    "compiled release-profile observations matching optimized product binaries; debug results are diagnostic only"
   ],
   "measurements": null,
   "qualificationRule": "Every performance field is a blocking ceiling. Missing, cancelled, skipped, foreign-SHA or over-budget evidence is failure.",

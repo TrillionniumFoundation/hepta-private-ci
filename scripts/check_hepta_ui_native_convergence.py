@@ -70,6 +70,7 @@ QUALIFIED_MANIFESTS = (
     "codex-rs/hepta-native-gateway/Cargo.toml",
     "codex-rs/hepta-contracts/Cargo.toml",
     "codex-rs/hepta-private-state/Cargo.toml",
+    "codex-rs/utils/private-state/Cargo.toml",
 )
 
 
@@ -121,7 +122,10 @@ def _git_success(*args: str) -> bool:
 
 
 def _cargo_manifest(path: Path) -> dict[str, Any]:
-    _require(path.is_file() and not path.is_symlink(), f"unsafe or missing Cargo manifest: {path}")
+    _require(
+        path.is_file() and not path.is_symlink(),
+        f"unsafe or missing Cargo manifest: {path}",
+    )
     return tomllib.loads(path.read_text(encoding="utf-8"))
 
 
@@ -130,10 +134,17 @@ def _repository_path(path: Path) -> str:
     try:
         relative = resolved.relative_to(ROOT.resolve())
     except ValueError as error:
-        raise RuntimeError(f"local Cargo dependency escapes the repository: {path}") from error
-    _require(not any(parent.is_symlink() for parent in (path, *path.parents)
-                     if parent.is_relative_to(ROOT)),
-             f"local Cargo dependency uses a symlink: {path}")
+        raise RuntimeError(
+            f"local Cargo dependency escapes the repository: {path}"
+        ) from error
+    _require(
+        not any(
+            parent.is_symlink()
+            for parent in (path, *path.parents)
+            if parent.is_relative_to(ROOT)
+        ),
+        f"local Cargo dependency uses a symlink: {path}",
+    )
     return relative.as_posix()
 
 
@@ -144,7 +155,10 @@ def _workspace_manifest(path: Path, manifest: dict[str, Any]) -> Path | None:
     if explicit is not None:
         _require(isinstance(explicit, str), "Cargo package.workspace must be a path")
         workspace = path.parent / explicit / "Cargo.toml"
-        _require("workspace" in _cargo_manifest(workspace), "explicit Cargo workspace is missing")
+        _require(
+            "workspace" in _cargo_manifest(workspace),
+            "explicit Cargo workspace is missing",
+        )
         _repository_path(workspace)
         return workspace
     for parent in path.parent.parents:
@@ -165,7 +179,11 @@ def local_cargo_dependency_paths() -> tuple[str, ...]:
     target's normal/build dependencies and optional dependencies are included,
     because qualification uses all features and all three operating systems.
     """
-    seeds = {ROOT / relative for relative in QUALIFIED_MANIFESTS if (ROOT / relative).is_file()}
+    seeds = {
+        ROOT / relative
+        for relative in QUALIFIED_MANIFESTS
+        if (ROOT / relative).is_file()
+    }
     queue = [(path, True) for path in seeds]
     visited: dict[Path, bool] = {}
     paths: set[str] = set()
@@ -179,10 +197,14 @@ def local_cargo_dependency_paths() -> tuple[str, ...]:
         paths.add(_repository_path(path.parent))
         manifest = _cargo_manifest(path)
         workspace_path = _workspace_manifest(path, manifest)
-        workspace = _cargo_manifest(workspace_path) if workspace_path is not None else {}
+        workspace = (
+            _cargo_manifest(workspace_path) if workspace_path is not None else {}
+        )
         if workspace_path is not None:
             paths.add(_repository_path(workspace_path))
-        sections = ("dependencies", "build-dependencies") + (("dev-dependencies",) if include_dev else ())
+        sections = ("dependencies", "build-dependencies") + (
+            ("dev-dependencies",) if include_dev else ()
+        )
         for table in [manifest, *manifest.get("target", {}).values()]:
             for section in sections:
                 for name, specification in table.get(section, {}).items():
@@ -190,21 +212,39 @@ def local_cargo_dependency_paths() -> tuple[str, ...]:
                         continue
                     base = path.parent
                     if specification.get("workspace") is True:
-                        _require(workspace_path is not None, f"{path}: dependency {name} has no workspace")
-                        inherited = workspace.get("workspace", {}).get("dependencies", {}).get(name)
-                        _require(inherited is not None, f"{path}: workspace dependency {name} is missing")
+                        _require(
+                            workspace_path is not None,
+                            f"{path}: dependency {name} has no workspace",
+                        )
+                        inherited = (
+                            workspace.get("workspace", {})
+                            .get("dependencies", {})
+                            .get(name)
+                        )
+                        _require(
+                            inherited is not None,
+                            f"{path}: workspace dependency {name} is missing",
+                        )
                         specification = inherited
                         base = workspace_path.parent
                     if isinstance(specification, dict) and "path" in specification:
                         dependency = base / specification["path"]
                         _repository_path(dependency)
-                        queue.append((dependency / "Cargo.toml", dependency / "Cargo.toml" in seeds))
+                        queue.append(
+                            (
+                                dependency / "Cargo.toml",
+                                dependency / "Cargo.toml" in seeds,
+                            )
+                        )
         # Local registry/git overrides may influence any qualified root. Freeze
         # every declared local override, even when it currently resolves unused.
         for owner_path, owner in ((path, manifest), (workspace_path, workspace)):
             if owner_path is None:
                 continue
-            for override in [*owner.get("patch", {}).values(), owner.get("replace", {})]:
+            for override in [
+                *owner.get("patch", {}).values(),
+                owner.get("replace", {}),
+            ]:
                 for specification in override.values():
                     if isinstance(specification, dict) and "path" in specification:
                         dependency = owner_path.parent / specification["path"]
@@ -223,32 +263,43 @@ def implementation_paths() -> tuple[str, ...]:
 def check_dependency_workflow_filters(workflow: str) -> None:
     _require("    paths:\n" in workflow, "qualification path filters are missing")
     filters = workflow.split("    paths:\n", 1)[1].split("  workflow_dispatch:", 1)[0]
-    patterns = {line.strip().removeprefix("- ").strip("\"'")
-                for line in filters.splitlines() if line.strip().startswith("- ")}
-    dependencies = (*local_cargo_dependency_paths(), "tools/ui-native-projections", ".cargo", "codex-rs/.cargo")
+    patterns = {
+        line.strip().removeprefix("- ").strip("\"'")
+        for line in filters.splitlines()
+        if line.strip().startswith("- ")
+    }
+    dependencies = (
+        *local_cargo_dependency_paths(),
+        "tools/ui-native-projections",
+        ".cargo",
+        "codex-rs/.cargo",
+    )
     for path in dependencies:
         expected = path if path.endswith("Cargo.toml") else f"{path}/**"
-        parent_patterns = {f"{parent.as_posix()}/**" for parent in Path(path).parents
-                           if parent.as_posix() != "."}
-        _require(expected in patterns or bool(parent_patterns & patterns) or "**" in patterns,
-                 f"qualification workflow does not trigger for dependency {path}")
+        parent_patterns = {
+            f"{parent.as_posix()}/**"
+            for parent in Path(path).parents
+            if parent.as_posix() != "."
+        }
+        _require(
+            expected in patterns
+            or bool(parent_patterns & patterns)
+            or "**" in patterns,
+            f"qualification workflow does not trigger for dependency {path}",
+        )
 
 
 def check_frozen_implementation(implementation: str) -> None:
     paths = implementation_paths()
     _require(
-        _git_success(
-            "diff", "--quiet", implementation, "HEAD", "--", *paths
-        ),
+        _git_success("diff", "--quiet", implementation, "HEAD", "--", *paths),
         "metadata continuation changes product implementation after the frozen source",
     )
     _require(
         _git_success("diff", "--quiet", "HEAD", "--", *paths),
         "product implementation has staged or working-tree drift",
     )
-    untracked = _git_value(
-        "ls-files", "--others", "--exclude-standard", "--", *paths
-    )
+    untracked = _git_value("ls-files", "--others", "--exclude-standard", "--", *paths)
     _require(untracked == "", "product implementation has untracked source files")
     check_frozen_storage_budgets(implementation)
 
@@ -267,7 +318,9 @@ def check_frozen_storage_budgets(implementation: str) -> None:
     )
     frozen = json.loads(_git_value("show", f"{implementation}:{relative}") or "null")
     current = _load_json(relative)
-    _require(isinstance(frozen, dict), "frozen storage budget contract is not an object")
+    _require(
+        isinstance(frozen, dict), "frozen storage budget contract is not an object"
+    )
     navigation = {"implementationSourceSha", "implementationSourceTree"}
     _require(
         {key: value for key, value in frozen.items() if key not in navigation}

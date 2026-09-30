@@ -7,8 +7,6 @@ use std::fs::OpenOptions;
 use std::io::Write as _;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
-use std::process::Stdio;
 use std::time::Duration;
 use std::time::Instant;
 use std::time::SystemTime;
@@ -16,7 +14,6 @@ use std::time::UNIX_EPOCH;
 
 use serde_json::Value;
 
-use crate::backend::LoopbackGatewayBackend;
 use crate::journal::OperationJournal;
 use crate::journal::OperationPhase;
 use crate::journal::OperationRecord;
@@ -24,15 +21,33 @@ use crate::model::OperationKey;
 use crate::model::PlatformAction;
 use crate::model::TerminalStatus;
 use crate::model::sha256_hex;
-use crate::platform::PlatformPolicy;
-use crate::platform::SystemPlatformAdapter;
 use crate::private_state::PrivateStateRoot;
-use crate::retirement::Checkpoint;
 use crate::retirement::RetirementStore;
 use crate::retirement::directory as retirement_directory;
-use crate::runtime::NativeShellRuntime;
+
+mod process_samples;
+
+use self::process_samples::fresh_process_sample;
+use self::process_samples::percentile_samples;
+use self::process_samples::sample_milliseconds;
 
 const STORAGE_BUDGETS: &str = include_str!("../STORAGE_BUDGETS.json");
+
+fn compiled_build_profile() -> &'static str {
+    if cfg!(debug_assertions) {
+        "debug"
+    } else {
+        "release"
+    }
+}
+
+fn require_release_qualification() {
+    assert_eq!(
+        compiled_build_profile(),
+        "release",
+        "blocking storage performance qualification requires the optimized --release profile"
+    );
+}
 
 #[derive(Debug)]
 struct QualificationRoot {
@@ -185,267 +200,10 @@ fn assert_at_most(label: &str, actual: f64, ceiling: u64) {
     );
 }
 
-fn sample_milliseconds(samples: &[Value], field: &str) -> Vec<f64> {
-    samples
-        .iter()
-        .map(|sample| sample[field].as_f64().expect("numeric process observation"))
-        .collect()
-}
-
-fn percentile_samples(values: &[f64], percentile: usize) -> f64 {
-    assert!(!values.is_empty(), "cannot calculate an empty percentile");
-    let mut ordered = values.to_vec();
-    ordered.sort_by(f64::total_cmp);
-    let rank = (ordered.len() * percentile).div_ceil(100).saturating_sub(1);
-    ordered[rank.min(ordered.len() - 1)]
-}
-
-fn fresh_process_sample(root: &Path, label: &str, ordinal: usize, config: &Value) -> Value {
-    let output_path = root.join(format!("qualification-{label}-{ordinal}.json"));
-    let mut child = Command::new(std::env::current_exe().expect("storage test executable"))
-        .args([
-            "storage_qualification_tests::storage_process_sample_worker",
-            "--ignored",
-            "--exact",
-            "--nocapture",
-            "--test-threads=1",
-        ])
-        .env("HEPTA_UI_NATIVE_PROCESS_SAMPLE", config.to_string())
-        .env("HEPTA_UI_NATIVE_PROCESS_SAMPLE_OUTPUT", &output_path)
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .expect("spawn fresh storage sample process");
-    let deadline = Instant::now() + Duration::from_secs(120);
-    loop {
-        if child
-            .try_wait()
-            .expect("observe storage sample process")
-            .is_some()
-        {
-            break;
-        }
-        if Instant::now() >= deadline {
-            child
-                .kill()
-                .expect("terminate over-deadline storage sample");
-            let _ = child.wait();
-            panic!("fresh storage sample exceeded the observation deadline");
-        }
-        std::thread::sleep(Duration::from_millis(10));
-    }
-    let output = child
-        .wait_with_output()
-        .expect("join storage sample process");
-    assert!(
-        output.status.success(),
-        "fresh storage sample failed: stdout={} stderr={}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
-    );
-    let sample: Value =
-        serde_json::from_slice(&fs::read(&output_path).expect("read process sample"))
-            .expect("parse process sample");
-    fs::remove_file(output_path).expect("remove consumed process observation");
-    assert_eq!(sample["sourceSha"], source_sha());
-    sample
-}
-
-/// An isolated child owns no effect capability and observes only the already
-/// persisted qualification fixture. The OS page cache is deliberately not
-/// controlled, so this proves fresh-process store opening, not cold-disk startup.
-#[test]
-#[ignore = "child of storage scale qualification only"]
-fn storage_process_sample_worker() {
-    let config: Value = serde_json::from_str(
-        &std::env::var("HEPTA_UI_NATIVE_PROCESS_SAMPLE").expect("storage sample configuration"),
-    )
-    .expect("parse storage sample configuration");
-    let path = PathBuf::from(config["journalPath"].as_str().expect("sample journal path"));
-    let expected = config["expectedRecords"]
-        .as_u64()
-        .expect("sample expected count") as usize;
-    let kind = config["kind"].as_str().expect("sample kind");
-    let mut sample = serde_json::json!({
-        "schema": "hepta.ui-native-storage-process-sample.v1",
-        "sourceSha": source_sha(), "kind": kind, "pid": std::process::id(),
-    });
-    if kind == "active-open" {
-        let started = Instant::now();
-        let journal = OperationJournal::open(&path).expect("fresh-process active journal open");
-        sample["elapsedMilliseconds"] = (started.elapsed().as_secs_f64() * 1_000.0).into();
-        assert_eq!(journal.all().len(), expected);
-        assert!(
-            journal
-                .all()
-                .iter()
-                .all(|record| record.phase == OperationPhase::Terminal)
-        );
-        let backend = LoopbackGatewayBackend::new(
-            "127.0.0.1:1".parse().expect("inert loopback endpoint"),
-            "q".repeat(32),
-        )
-        .expect("inert backend construction");
-        let policy =
-            PlatformPolicy::new(Vec::new(), false, false).expect("deny-all platform policy");
-        let runtime = NativeShellRuntime::new(
-            Box::new(backend),
-            Box::new(SystemPlatformAdapter::new(policy)),
-            None,
-            journal,
-        );
-        let page_index = config["pageIndex"].as_u64().expect("sample page index") as usize;
-        let started = Instant::now();
-        let page = runtime
-            .operation_history_page(page_index, 64)
-            .expect("real durable history page");
-        sample["historyPageMilliseconds"] = (started.elapsed().as_secs_f64() * 1_000.0).into();
-        assert_eq!(page.total, expected);
-        assert_eq!(page.receipts.len(), expected.min(64));
-        // Exact bytes retained by receipt serialization; this is not allocator
-        // accounting and does not include Vec capacity or temporary allocations.
-        sample["historyPageRetainedJsonBytes"] = serde_json::to_vec(&page.receipts)
-            .expect("serialize retained history receipts")
-            .len()
-            .into();
-        sample["historyPageSize"] = page.receipts.len().into();
-    } else {
-        assert!(matches!(kind, "retired-open" | "retired-rebuild"));
-        let checkpoint: Checkpoint = serde_json::from_value(config["checkpoint"].clone())
-            .expect("sample retirement checkpoint");
-        let started = Instant::now();
-        let store = RetirementStore::open(&path, Some(&checkpoint))
-            .expect("fresh-process retirement open")
-            .expect("retirement fixture exists");
-        sample["elapsedMilliseconds"] = (started.elapsed().as_secs_f64() * 1_000.0).into();
-        assert_eq!(store.len(), expected);
-        assert!(
-            store.contains(
-                config["firstIdentity"]
-                    .as_str()
-                    .expect("first retired identity")
-            )
-        );
-        assert!(
-            store.contains(
-                config["lastIdentity"]
-                    .as_str()
-                    .expect("last retired identity")
-            )
-        );
-        drop(store);
-        if kind == "retired-rebuild" {
-            let digest = sha256_hex(
-                fs::read(retirement_directory(&path).join("head.json"))
-                    .expect("rebuilt retirement head"),
-            );
-            assert_eq!(
-                digest,
-                config["expectedHeadSha256"]
-                    .as_str()
-                    .expect("expected rebuilt head digest")
-            );
-        }
-    }
-    sample["peakRssMiB"] = serde_json::json!(peak_rss_mib());
-    let output = PathBuf::from(
-        std::env::var_os("HEPTA_UI_NATIVE_PROCESS_SAMPLE_OUTPUT")
-            .expect("process sample output path"),
-    );
-    fs::write(
-        output,
-        serde_json::to_vec(&sample).expect("encode process sample"),
-    )
-    .expect("persist process sample");
-}
-
-#[test]
-fn storage_process_observations_smoke_real_persisted_fixtures() {
-    let root = QualificationRoot::create("sample-smoke");
-    let journal_path = root.path.join("active-journal.json");
-    let mut journal = OperationJournal::open(&journal_path).expect("smoke active journal");
-    for phase in [
-        OperationPhase::Prepared,
-        OperationPhase::Invoking,
-        OperationPhase::Terminal,
-    ] {
-        for index in 0..64 {
-            journal
-                .upsert(operation_record(index, phase))
-                .expect("smoke durable mutation");
-        }
-    }
-    drop(journal);
-    let sample = fresh_process_sample(
-        &root.path,
-        "smoke-active",
-        0,
-        &serde_json::json!({
-            "kind": "active-open", "journalPath": journal_path, "expectedRecords": 64, "pageIndex": 0,
-        }),
-    );
-    assert_ne!(
-        sample["pid"].as_u64().expect("child pid"),
-        u64::from(std::process::id())
-    );
-    assert_eq!(sample["historyPageSize"], 64);
-    assert!(
-        sample["historyPageRetainedJsonBytes"]
-            .as_u64()
-            .expect("retained bytes")
-            > 0
-    );
-
-    let retired_path = root.path.join("retired-journal.json");
-    let mut store = RetirementStore::create(&retired_path).expect("smoke retirement store");
-    let mut identities = (0..32)
-        .map(|index| sha256_hex(format!("sample-retired-{index}")))
-        .collect::<Vec<_>>();
-    identities.sort_unstable();
-    store
-        .append(&identities)
-        .expect("smoke retired fixture append");
-    let checkpoint = store.checkpoint();
-    drop(store);
-    let head_path = retirement_directory(&retired_path).join("head.json");
-    let head_digest = sha256_hex(fs::read(&head_path).expect("smoke retirement head"));
-    let mut config = serde_json::json!({
-        "kind": "retired-open", "journalPath": retired_path, "expectedRecords": 32,
-        "checkpoint": checkpoint, "firstIdentity": identities[0], "lastIdentity": identities[31],
-        "expectedHeadSha256": head_digest,
-    });
-    let open = fresh_process_sample(&root.path, "smoke-retired", 0, &config);
-    assert!(
-        open["elapsedMilliseconds"]
-            .as_f64()
-            .expect("elapsed observation")
-            >= 0.0
-    );
-    let legacy_head =
-        serde_json::json!({"schema": "hepta.native-retirement.v2", "checkpoint": checkpoint});
-    let mut head = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .open(&head_path)
-        .expect("smoke legacy retirement head");
-    head.write_all(&serde_json::to_vec(&legacy_head).expect("smoke legacy projection"))
-        .expect("write smoke legacy head");
-    head.sync_all().expect("sync smoke legacy head");
-    drop(head);
-    config["kind"] = "retired-rebuild".into();
-    let rebuild = fresh_process_sample(&root.path, "smoke-rebuild", 0, &config);
-    assert!(
-        rebuild["elapsedMilliseconds"]
-            .as_f64()
-            .expect("rebuild observation")
-            >= 0.0
-    );
-    assert_ne!(open["pid"], rebuild["pid"]);
-}
-
 #[test]
 #[ignore = "full 4096-active-record storage qualification"]
 fn storage_active_scale_qualification() {
+    require_release_qualification();
     let budgets = budgets();
     let active_records = budget_u64(&budgets, "performance", "activeRecordsSubject") as usize;
     assert_eq!(
@@ -526,6 +284,7 @@ fn storage_active_scale_qualification() {
         "mutationSamplesMilliseconds": mutation_latencies.iter()
             .map(|duration| duration.as_secs_f64() * 1_000.0).collect::<Vec<_>>(),
         "measurementScope": {
+            "buildProfile": compiled_build_profile(),
             "open": "fresh-process-os-page-cache-uncontrolled",
             "historyPageBytes": "serialized-retained-receipts-not-allocator-accounting",
         },
@@ -600,11 +359,25 @@ fn storage_active_scale_qualification() {
 #[test]
 #[ignore = "full 1000000-retired-identity storage qualification"]
 fn storage_retirement_scale_qualification() {
+    require_release_qualification();
     let budgets = budgets();
     let retired_identities =
         budget_u64(&budgets, "performance", "retiredIdentitiesSubject") as usize;
     let root = QualificationRoot::create("retired");
     let journal_path = root.path.join("operation-journal.json");
+    let active_records = budget_u64(&budgets, "performance", "activeRecordsSubject") as usize;
+    let mut journal = OperationJournal::open(&journal_path).expect("create combined journal");
+    // Persist the real live population before publishing the retirement fixture.
+    // Closing these operations afterward checkpoints the published retirement
+    // frontier through the journal's ordinary WAL and snapshot implementation.
+    for phase in [OperationPhase::Prepared, OperationPhase::Invoking] {
+        for index in 0..active_records {
+            journal
+                .upsert(operation_record(index, phase))
+                .expect("persist combined live population");
+        }
+    }
+    drop(journal);
     let mut store = RetirementStore::create(&journal_path).expect("create retirement store");
 
     let approximate_bucket = retired_identities.div_ceil(256);
@@ -641,6 +414,15 @@ fn storage_retirement_scale_qualification() {
     let head_path = retirement_directory(&journal_path).join("head.json");
     let original_head = fs::read(&head_path).expect("read indexed retirement head");
     drop(store);
+    let mut journal = OperationJournal::open(&journal_path).expect("open combined live population");
+    assert_eq!(journal.retired_count(), retired_identities);
+    for index in 0..active_records {
+        journal
+            .upsert(operation_record(index, OperationPhase::Terminal))
+            .expect("close combined population with durable retirement checkpoint");
+    }
+    assert_eq!(journal.all().len(), active_records);
+    drop(journal);
 
     let sample_count = budget_u64(&budgets, "performance", "freshProcessSamples") as usize;
     assert!(
@@ -658,6 +440,13 @@ fn storage_retirement_scale_qualification() {
         .collect::<Vec<_>>();
     let open_samples_ms = sample_milliseconds(&open_process_samples, "elapsedMilliseconds");
     let open_p95_ms = percentile_samples(&open_samples_ms, 95);
+    let combined_journal = measure_combined_journal(
+        &root.path,
+        &journal_path,
+        active_records,
+        retired_identities,
+        sample_count,
+    );
 
     let legacy_head = serde_json::json!({
         "schema": "hepta.native-retirement.v2",
@@ -697,6 +486,7 @@ fn storage_retirement_scale_qualification() {
         .chain(&index_rebuild_process_samples)
         .filter_map(|sample| sample["peakRssMiB"].as_u64())
         .chain(peak_rss_mib())
+        .chain(combined_journal["peakRssMiB"].as_u64())
         .max();
     let evidence = serde_json::json!({
         "schema": "hepta.ui-native-storage-retirement-evidence.v1",
@@ -705,7 +495,10 @@ fn storage_retirement_scale_qualification() {
         "retiredIdentities": retired_identities,
         "retirementSegments": segment_count,
         "appendMilliseconds": append_ms,
-        "measurementScope": {"open": "fresh-process-os-page-cache-uncontrolled"},
+        "measurementScope": {
+            "buildProfile": compiled_build_profile(),
+            "open": "fresh-process-os-page-cache-uncontrolled",
+        },
         "processSampleCount": sample_count,
         "openProcessSamples": open_process_samples,
         "indexRebuildProcessSamples": index_rebuild_process_samples,
@@ -713,6 +506,7 @@ fn storage_retirement_scale_qualification() {
         "freshProcessOpenP95Milliseconds": open_p95_ms,
         "freshProcessIndexRebuildSamplesMilliseconds": rebuild_samples_ms,
         "freshProcessIndexRebuildP95Milliseconds": rebuild_p95_ms,
+        "combinedJournal": combined_journal,
         "deterministicRebuild": deterministic_rebuild,
         "totalStorageBytes": total_bytes,
         "peakRssMiB": rss_mib,
@@ -737,9 +531,89 @@ fn storage_retirement_scale_qualification() {
             "millionRetiredIndexRebuildP95Milliseconds",
         ),
     );
+    assert_combined_journal_budgets(&evidence["combinedJournal"], &budgets);
     let rss_mib = rss_mib.expect("Linux qualification must expose VmHWM");
     assert!(
         rss_mib <= budget_u64(&budgets, "performance", "millionRetiredPeakRssMiB"),
         "million-retired peak RSS exceeded its hard budget"
     );
+}
+
+fn measure_combined_journal(
+    root: &Path,
+    journal_path: &Path,
+    active_records: usize,
+    retired_identities: usize,
+    sample_count: usize,
+) -> Value {
+    let page_count = active_records.div_ceil(64);
+    let observations = (0..sample_count)
+        .map(|ordinal| {
+            fresh_process_sample(root, "combined-open", ordinal, &serde_json::json!({
+                "kind": "combined-open", "journalPath": journal_path,
+                "expectedRecords": active_records, "expectedRetiredIdentities": retired_identities,
+                "pageIndex": ordinal * (page_count - 1) / (sample_count - 1),
+            }))
+        })
+        .collect::<Vec<_>>();
+    let open_samples = sample_milliseconds(&observations, "elapsedMilliseconds");
+    let page_samples = sample_milliseconds(&observations, "historyPageMilliseconds");
+    let retained_bytes = observations
+        .iter()
+        .map(|sample| {
+            sample["historyPageRetainedJsonBytes"]
+                .as_u64()
+                .expect("combined history bytes")
+        })
+        .max()
+        .expect("combined sample population");
+    let rss_mib = observations
+        .iter()
+        .filter_map(|sample| sample["peakRssMiB"].as_u64())
+        .chain(peak_rss_mib())
+        .max();
+    serde_json::json!({
+        "schema": "hepta.ui-native-storage-combined-evidence.v1", "sourceSha": source_sha(),
+        "activeRecords": active_records, "retiredIdentities": retired_identities,
+        "measurementScope": {
+            "buildProfile": compiled_build_profile(),
+            "open": "fresh-process-os-page-cache-uncontrolled",
+            "historyPageBytes": "serialized-retained-receipts-not-allocator-accounting",
+        },
+        "processSampleCount": sample_count, "openProcessSamples": observations,
+        "freshProcessOpenP95Milliseconds": percentile_samples(&open_samples, 95),
+        "freshProcessOpenSamplesMilliseconds": open_samples,
+        "historyPageSize": 64, "historyPageP95Milliseconds": percentile_samples(&page_samples, 95),
+        "historyPageSamplesMilliseconds": page_samples,
+        "historyPageMaxRetainedJsonBytes": retained_bytes, "peakRssMiB": rss_mib,
+    })
+}
+
+fn assert_combined_journal_budgets(evidence: &Value, budgets: &Value) {
+    for (field, ceiling) in [
+        (
+            "freshProcessOpenP95Milliseconds",
+            "coldStartP95Milliseconds",
+        ),
+        ("historyPageP95Milliseconds", "historyPageP95Milliseconds"),
+        (
+            "historyPageMaxRetainedJsonBytes",
+            "historyPageRetainedSerializedBytes",
+        ),
+    ] {
+        assert_at_most(
+            field,
+            evidence[field].as_f64().expect("combined measurement"),
+            budget_u64(budgets, "performance", ceiling),
+        );
+    }
+    let rss_mib = evidence["peakRssMiB"]
+        .as_u64()
+        .expect("Linux combined peak RSS");
+    for ceiling in ["activePeakRssMiB", "millionRetiredPeakRssMiB"] {
+        assert!(
+            rss_mib <= budget_u64(budgets, "performance", ceiling),
+            "combined active-and-retired peak RSS exceeded its hard budget"
+        );
+    }
 }

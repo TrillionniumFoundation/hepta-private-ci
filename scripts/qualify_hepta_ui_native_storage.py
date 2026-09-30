@@ -19,6 +19,7 @@ OPEN_MEASUREMENT_SCOPE = "fresh-process-os-page-cache-uncontrolled"
 HISTORY_BYTES_MEASUREMENT_SCOPE = (
     "serialized-retained-receipts-not-allocator-accounting"
 )
+QUALIFICATION_BUILD_PROFILE = "release"
 
 
 def require(condition: bool, message: str) -> None:
@@ -79,7 +80,10 @@ def number(value: dict[str, Any], key: str) -> float:
 
 
 def sampled_percentile(
-    value: dict[str, Any], sample_key: str, percentile_key: str, sample_count: int,
+    value: dict[str, Any],
+    sample_key: str,
+    percentile_key: str,
+    sample_count: int,
     percentile_rank: int = 95,
 ) -> float:
     samples = value.get(sample_key)
@@ -132,6 +136,10 @@ def validate_process_observations(
             observation.get("sourceSha") == source_sha,
             f"{observation_key}[{index}] process source SHA mismatch",
         )
+        require(
+            observation.get("buildProfile") == QUALIFICATION_BUILD_PROFILE,
+            f"{observation_key}[{index}] process build profile is not release",
+        )
         pid = integer(observation, "pid")
         require(
             pid > 0 and pid not in pids,
@@ -147,7 +155,13 @@ def validate_process_observations(
             0 <= rss_mib <= integer(evidence, "peakRssMiB"),
             f"{observation_key}[{index}] peak RSS is negative or exceeds the summary peak",
         )
-        if kind == "active-open":
+        if kind == "combined-open":
+            for subject in ("activeRecords", "retiredIdentities"):
+                require(
+                    integer(observation, subject) == integer(evidence, subject),
+                    f"{observation_key}[{index}] combined {subject} subject mismatch",
+                )
+        if kind in {"active-open", "combined-open"}:
             require(
                 integer(observation, "historyPageSize") == 64,
                 f"{observation_key}[{index}] history page size mismatch",
@@ -314,13 +328,39 @@ def validate_storage(
         retired.get("schema") == "hepta.ui-native-storage-retirement-evidence.v1",
         "retirement evidence schema mismatch",
     )
-    for label, evidence in (("active", active), ("retirement", retired)):
+    combined = retired.get("combinedJournal")
+    require(isinstance(combined, dict), "combined journal evidence is missing")
+    require(
+        combined.get("schema") == "hepta.ui-native-storage-combined-evidence.v1",
+        "combined journal evidence schema mismatch",
+    )
+    require(
+        combined.get("sourceSha") == source_sha,
+        "combined journal evidence source SHA mismatch",
+    )
+    require(
+        integer(combined, "activeRecords") == integer(active, "activeRecords"),
+        "combined journal active-record qualification subject mismatch",
+    )
+    require(
+        integer(combined, "retiredIdentities") == integer(retired, "retiredIdentities"),
+        "combined journal retired-identity qualification subject mismatch",
+    )
+    for label, evidence in (
+        ("active", active),
+        ("retirement", retired),
+        ("combined", combined),
+    ):
         require(
             integer(evidence, "processSampleCount") == sample_count,
             f"{label} evidence did not measure {sample_count} fresh processes",
         )
         scope = evidence.get("measurementScope")
         require(isinstance(scope, dict), f"{label} measurement scope is missing")
+        require(
+            scope.get("buildProfile") == QUALIFICATION_BUILD_PROFILE,
+            f"{label} qualification build profile is not release",
+        )
         require(
             scope.get("open") == OPEN_MEASUREMENT_SCOPE,
             f"{label} open measurement scope does not describe uncontrolled OS page cache",
@@ -337,12 +377,19 @@ def validate_storage(
         )
         rss_mib = integer(evidence, "peakRssMiB")
         require(rss_mib >= 0, f"{label} peak RSS is negative")
-        require(
-            rss_mib
-            <= integer(
+        rss_ceiling = (
+            min(
+                integer(performance, "activePeakRssMiB"),
+                integer(performance, "millionRetiredPeakRssMiB"),
+            )
+            if label == "combined"
+            else integer(
                 performance,
                 "activePeakRssMiB" if label == "active" else "millionRetiredPeakRssMiB",
-            ),
+            )
+        )
+        require(
+            rss_mib <= rss_ceiling,
             f"{label} peak RSS exceeded its hard ceiling",
         )
     require(
@@ -355,31 +402,34 @@ def validate_storage(
         <= number(performance, "millionRetiredIndexRebuildP95Milliseconds"),
         "million-retired fresh-process index rebuild p95 exceeded its hard ceiling",
     )
-    require(
-        integer(active, "historyPageSize") == 64,
-        "history evidence did not measure a 64-record page",
-    )
-    require(
-        active["measurementScope"].get("historyPageBytes")
-        == HISTORY_BYTES_MEASUREMENT_SCOPE,
-        "history page retained bytes must identify serialized receipts rather than allocator accounting",
-    )
-    require(
-        sampled_percentile(
-            active,
-            "historyPageSamplesMilliseconds",
-            "historyPageP95Milliseconds",
-            sample_count,
+    for label, evidence in (("active", active), ("combined", combined)):
+        require(
+            integer(evidence, "historyPageSize") == 64,
+            f"{label} history evidence did not measure a 64-record page",
         )
-        <= number(performance, "historyPageP95Milliseconds"),
-        "history page p95 exceeded its hard ceiling",
-    )
-    history_bytes = integer(active, "historyPageMaxRetainedJsonBytes")
-    require(history_bytes > 0, "history page retained bytes are not positive")
-    require(
-        history_bytes <= integer(performance, "historyPageRetainedSerializedBytes"),
-        "history page retained bytes exceeded their hard ceiling",
-    )
+        require(
+            evidence["measurementScope"].get("historyPageBytes")
+            == HISTORY_BYTES_MEASUREMENT_SCOPE,
+            f"{label} history page retained bytes must identify serialized receipts rather than allocator accounting",
+        )
+        require(
+            sampled_percentile(
+                evidence,
+                "historyPageSamplesMilliseconds",
+                "historyPageP95Milliseconds",
+                sample_count,
+            )
+            <= number(performance, "historyPageP95Milliseconds"),
+            f"{label} history page p95 exceeded its hard ceiling",
+        )
+        history_bytes = integer(evidence, "historyPageMaxRetainedJsonBytes")
+        require(
+            history_bytes > 0, f"{label} history page retained bytes are not positive"
+        )
+        require(
+            history_bytes <= integer(performance, "historyPageRetainedSerializedBytes"),
+            f"{label} history page retained bytes exceeded their hard ceiling",
+        )
     validate_process_observations(
         active,
         "openProcessSamples",
@@ -404,13 +454,26 @@ def validate_storage(
         source_sha,
         sample_count,
     )
+    validate_process_observations(
+        combined,
+        "openProcessSamples",
+        "freshProcessOpenSamplesMilliseconds",
+        "combined-open",
+        source_sha,
+        sample_count,
+    )
 
     for percentile_rank in (50, 95, 99):
         metric = f"mutationP{percentile_rank}Milliseconds"
         require(
             sampled_percentile(
-                active, "mutationSamplesMilliseconds", metric, transitions, percentile_rank
-            ) <= number(performance, metric),
+                active,
+                "mutationSamplesMilliseconds",
+                metric,
+                transitions,
+                percentile_rank,
+            )
+            <= number(performance, metric),
             f"{metric} exceeded its hard ceiling",
         )
     require(
@@ -481,6 +544,7 @@ def validate_storage(
         "limitations": [
             "Linux hosted-runner evidence is not physical desktop acceptance",
             "Fresh processes do not control or evict the operating-system page cache",
+            "Performance ceilings apply to optimized release-profile test harnesses",
             "History retained JSON bytes measure receipt payload, not total allocator activity",
             "storage qualification alone does not authorize production, deployment or release",
         ],

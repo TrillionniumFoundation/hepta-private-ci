@@ -21,6 +21,7 @@ on:
       - codex-rs/hepta-wire/**
       - codex-rs/third_party/matrix-sdk-sqlite-0.18.0/**
       - codex-rs/utils/cargo-bin/**
+      - codex-rs/utils/private-state/**
       - tools/ui-native-projections/**
       - .cargo/**
       - codex-rs/.cargo/**
@@ -230,12 +231,12 @@ jobs:
           check app_format cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
           check owner_format cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-native-gateway -p codex-hepta-contracts \
-            -p codex-hepta-private-state -- --check
+            -p codex-hepta-private-state -p codex-utils-private-state -- --check
           check app_lint cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml \
             --locked --all-targets --all-features -- -D warnings
           check owner_lint cargo +1.95.0 clippy --manifest-path codex-rs/Cargo.toml \
             --locked -p codex-hepta-native-gateway -p codex-hepta-contracts \
-            -p codex-hepta-private-state --all-targets --all-features --no-deps -- -D warnings
+            -p codex-hepta-private-state -p codex-utils-private-state --all-targets --all-features --no-deps -- -D warnings
       - name: Full tests, release binaries and compiler-negative API boundary
         shell: bash
         run: |
@@ -245,7 +246,7 @@ jobs:
             --locked --all-targets
           check owner_tests cargo +1.95.0 test --manifest-path codex-rs/Cargo.toml \
             --locked -p codex-hepta-native-gateway -p codex-hepta-contracts \
-            -p codex-hepta-private-state --all-targets --all-features
+            -p codex-hepta-private-state -p codex-utils-private-state --all-targets --all-features
           check release cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml \
             --locked --release --bins
           check compile_negative python3 scripts/hepta_ui_native_compile_negative.py
@@ -353,7 +354,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/ui-native-storage-evidence" "$RUNNER_TEMP/ui-native-storage-roots"
       - id: compile
         name: Compile full-scale storage qualification harness
-        run: cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib --no-run
+        run: cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml --locked --lib --release --no-run
       - id: active
         name: Measure 4096 active records and durability syscalls
         shell: bash
@@ -368,7 +369,7 @@ jobs:
             -o "$RUNNER_TEMP/ui-native-storage-evidence/active.strace" \
             -e trace=write,writev,pwrite64,pwritev,pwritev2,fsync,fdatasync \
             cargo +1.95.0 test \
-              --manifest-path apps/hepta-native/Cargo.toml --locked --lib \
+              --manifest-path apps/hepta-native/Cargo.toml --locked --lib --release \
               storage_qualification_tests::storage_active_scale_qualification -- \
               --ignored --exact --nocapture --test-threads=1
       - id: retired
@@ -382,7 +383,7 @@ jobs:
           set -euo pipefail
           HEPTA_UI_NATIVE_SOURCE_SHA="$IMPLEMENTATION_SHA" \
           cargo +1.95.0 test \
-            --manifest-path apps/hepta-native/Cargo.toml --locked --lib \
+            --manifest-path apps/hepta-native/Cargo.toml --locked --lib --release \
             storage_qualification_tests::storage_retirement_scale_qualification -- \
             --ignored --exact --nocapture --test-threads=1
       - id: validate

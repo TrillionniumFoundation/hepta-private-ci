@@ -1,86 +1,383 @@
 {
   "schema": "hepta.ui.native.test-registry.v1",
   "sourceDiscovery": {
-    "root": "apps/hepta-native/tests",
-    "fileCount": 19,
-    "manifestDigest": "24fd82110bd75d5dea15ea07ab4a2d7ddba0cf8c28654f178865852787dfbf86"
+    "roots": [
+      "apps/hepta-native/tests",
+      "apps/hepta-native/src",
+      "codex-rs/hepta-native-gateway/src",
+      "codex-rs/hepta-contracts/tests",
+      "codex-rs/hepta-contracts/src",
+      "codex-rs/hepta-private-state/src",
+      "codex-rs/utils/private-state/src"
+    ],
+    "fileCount": 73,
+    "manifestDigest": "51d34c2e9c0f7e009580ac1f01ffb2f4f72fc1a099fae0f758307469075d3b74"
   },
   "files": [
     {
+      "path": "apps/hepta-native/src/file_input.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/journal_storage_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/journal_wal_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/native_http_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/platform.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/platform_terminality_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/resource_snapshot_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/retirement_claim_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/retirement_membership_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/retirement_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/storage_qualification_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/storage_qualification_tests/process_samples.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/history_page.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/input_event_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/native_picker.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/operations_view.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/path_input_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/readiness.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/runtime_status_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/shutdown_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/task_supervisor_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/update_backup_policy_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/update_storage_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/updater_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
       "path": "apps/hepta-native/tests/backend.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/backend_security.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/common/mod.rs",
-      "role": "support"
+      "role": "support",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/common/snapshot.rs",
-      "role": "support"
+      "role": "support",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/file_input.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/journal.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/journal_regressions.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/launch_config.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/private_state.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/remediation_regressions.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/resource_identity.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/retirement_recovery.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/runtime.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/security_updater.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/session_store.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/shutdown_recovery.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/trusted_key_regressions.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/update_handoff.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
     },
     {
       "path": "apps/hepta-native/tests/update_product.rs",
-      "role": "integration_test"
+      "role": "integration_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/agent_id_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authbus_b1_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authbus_b2_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authbus_b3.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authbus_b4.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authbus_b5.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authbus_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/canonical.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_nonce_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/identity.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/memory.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/native_gateway_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/provider.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/provider_effect.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/qualification_receipt.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/tests/authbus_b3_adapter_qualification.rs",
+      "role": "integration_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/tests/authbus_local_qualification.rs",
+      "role": "integration_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+      "role": "integration_test",
+      "ownerPackage": "codex-hepta-contracts"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/src/lib.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-native-gateway"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/src/native_mac_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-native-gateway"
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/src/organ_request_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-hepta-native-gateway"
+    },
+    {
+      "path": "codex-rs/utils/private-state/src/windows.rs",
+      "role": "unit_test",
+      "ownerPackage": "codex-utils-private-state"
     }
   ],
   "profiles": [
@@ -96,7 +393,7 @@
     },
     {
       "id": "gateway_authority",
-      "command": "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state --all-targets --all-features",
+      "command": "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state -p codex-utils-private-state --all-targets --all-features",
       "workingDirectory": "."
     },
     {

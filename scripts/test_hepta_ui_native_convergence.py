@@ -84,13 +84,18 @@ class FrozenImplementationTests(unittest.TestCase):
 
     def freeze_storage_budget(self) -> Path:
         path = self.root / "apps/hepta-native/STORAGE_BUDGETS.json"
-        path.write_text(json.dumps({
-            "implementationSourceSha": "1" * 40,
-            "implementationSourceTree": "2" * 40,
-            "performance": {"mutationP95Milliseconds": 100},
-            "structural": {"maxActiveRecords": 4096},
-            "productionQualified": False,
-        }), encoding="utf-8")
+        path.write_text(
+            json.dumps(
+                {
+                    "implementationSourceSha": "1" * 40,
+                    "implementationSourceTree": "2" * 40,
+                    "performance": {"mutationP95Milliseconds": 100},
+                    "structural": {"maxActiveRecords": 4096},
+                    "productionQualified": False,
+                }
+            ),
+            encoding="utf-8",
+        )
         self.git("add", ".")
         self.git("commit", "--quiet", "-m", "freeze compiled storage budget contract")
         self.implementation = self.git("rev-parse", "HEAD").strip()
@@ -99,7 +104,9 @@ class FrozenImplementationTests(unittest.TestCase):
     def test_storage_budget_source_anchors_can_continue(self) -> None:
         path = self.freeze_storage_budget()
         budget = json.loads(path.read_text(encoding="utf-8"))
-        budget.update(implementationSourceSha="3" * 40, implementationSourceTree="4" * 40)
+        budget.update(
+            implementationSourceSha="3" * 40, implementationSourceTree="4" * 40
+        )
         path.write_text(json.dumps(budget, indent=2), encoding="utf-8")
         self.git("add", ".")
         self.git("commit", "--quiet", "-m", "source navigation anchors only")
@@ -111,7 +118,9 @@ class FrozenImplementationTests(unittest.TestCase):
         budget["performance"]["mutationP95Milliseconds"] = 1000000
         path.write_text(json.dumps(budget), encoding="utf-8")
         self.git("add", ".")
-        self.git("commit", "--quiet", "-m", "relaxed ceiling without implementation freeze")
+        self.git(
+            "commit", "--quiet", "-m", "relaxed ceiling without implementation freeze"
+        )
         with self.assertRaisesRegex(RuntimeError, "budget contract changed"):
             self.check()
 
@@ -132,16 +141,24 @@ class LocalCargoDependencyTests(unittest.TestCase):
         self.git("init", "--quiet")
         self.git("config", "user.email", "fixture@example.invalid")
         self.git("config", "user.name", "fixture")
-        self.write("codex-rs/Cargo.toml", '''[workspace]
+        self.write(
+            "codex-rs/Cargo.toml",
+            """[workspace]
 members = ["hepta-native-gateway", "hepta-runtime", "leaf", "windows", "build-tool", "test-helper", "unbuilt-dev", "patched"]
 [workspace.dependencies]
 runtime-alias = { package = "real-runtime", path = "hepta-runtime" }
 leaf = { path = "leaf" }
 [patch.crates-io]
 patched = { path = "patched" }
-''')
-        self.crate("apps/hepta-native", '[dependencies]\ngateway = { path = "../../codex-rs/hepta-native-gateway" }\n')
-        self.crate("codex-rs/hepta-native-gateway", '''[dependencies]
+""",
+        )
+        self.crate(
+            "apps/hepta-native",
+            '[dependencies]\ngateway = { path = "../../codex-rs/hepta-native-gateway" }\n',
+        )
+        self.crate(
+            "codex-rs/hepta-native-gateway",
+            """[dependencies]
 runtime-alias = { workspace = true }
 [target.'cfg(windows)'.dependencies]
 windows = { path = "../windows", optional = true }
@@ -149,13 +166,24 @@ windows = { path = "../windows", optional = true }
 build-tool = { path = "../build-tool" }
 [dev-dependencies]
 test-helper = { path = "../test-helper" }
-''')
-        self.crate("codex-rs/hepta-runtime", '''[dependencies]
+""",
+        )
+        self.crate(
+            "codex-rs/hepta-runtime",
+            """[dependencies]
 leaf = { workspace = true }
 [dev-dependencies]
 unbuilt-dev = { path = "../unbuilt-dev" }
-''')
-        for name in ("leaf", "windows", "build-tool", "test-helper", "unbuilt-dev", "patched"):
+""",
+        )
+        for name in (
+            "leaf",
+            "windows",
+            "build-tool",
+            "test-helper",
+            "unbuilt-dev",
+            "patched",
+        ):
             self.crate("codex-rs/" + name)
         self.git("add", ".")
         self.git("commit", "--quiet", "-m", "frozen dependency graph")
@@ -168,7 +196,11 @@ unbuilt-dev = { path = "../unbuilt-dev" }
 
     def crate(self, relative, dependencies=""):
         name = Path(relative).name
-        self.write(relative + "/Cargo.toml", f'[package]\nname = "{name}"\nversion = "0.1.0"\nedition = "2024"\n' + dependencies)
+        self.write(
+            relative + "/Cargo.toml",
+            f'[package]\nname = "{name}"\nversion = "0.1.0"\nedition = "2024"\n'
+            + dependencies,
+        )
         self.write(relative + "/src/lib.rs", "pub fn original() {}\n")
 
     def git(self, *args):
@@ -177,7 +209,14 @@ unbuilt-dev = { path = "../unbuilt-dev" }
     def test_workspace_alias_target_build_and_root_dev_dependencies_are_frozen(self):
         with patch.object(MODULE, "ROOT", self.root):
             paths = MODULE.local_cargo_dependency_paths()
-        for name in ("hepta-runtime", "leaf", "windows", "build-tool", "test-helper", "patched"):
+        for name in (
+            "hepta-runtime",
+            "leaf",
+            "windows",
+            "build-tool",
+            "test-helper",
+            "patched",
+        ):
             self.assertIn("codex-rs/" + name, paths)
         self.assertNotIn("codex-rs/unbuilt-dev", paths)
 
@@ -185,13 +224,30 @@ unbuilt-dev = { path = "../unbuilt-dev" }
         self.write("codex-rs/hepta-runtime/src/lib.rs", "pub fn changed() {}\n")
         self.git("add", ".")
         self.git("commit", "--quiet", "-m", "mutated transitive runtime")
-        with patch.object(MODULE, "ROOT", self.root), self.assertRaisesRegex(RuntimeError, "after the frozen source"):
+        with (
+            patch.object(MODULE, "ROOT", self.root),
+            self.assertRaisesRegex(RuntimeError, "after the frozen source"),
+        ):
             MODULE.check_frozen_implementation(self.implementation)
 
     def test_actual_untracked_transitive_source_is_rejected(self):
         self.write("codex-rs/leaf/src/injected.rs", "pub fn injected() {}\n")
-        with patch.object(MODULE, "ROOT", self.root), self.assertRaisesRegex(RuntimeError, "untracked source"):
+        with (
+            patch.object(MODULE, "ROOT", self.root),
+            self.assertRaisesRegex(RuntimeError, "untracked source"),
+        ):
             MODULE.check_frozen_implementation(self.implementation)
+
+    def test_qualified_utility_tests_freeze_their_direct_dev_dependencies(self):
+        self.crate(
+            "codex-rs/utils/private-state",
+            '[dev-dependencies]\nutility-test = { path = "../../utility-test" }\n',
+        )
+        self.crate("codex-rs/utility-test")
+        with patch.object(MODULE, "ROOT", self.root):
+            paths = MODULE.local_cargo_dependency_paths()
+        self.assertIn("codex-rs/utils/private-state", paths)
+        self.assertIn("codex-rs/utility-test", paths)
 
     def test_standalone_app_evidence_metadata_can_continue(self):
         self.write("apps/hepta-native/CANDIDATE.json", "{}\n")
@@ -202,16 +258,30 @@ unbuilt-dev = { path = "../unbuilt-dev" }
 
     def test_workflow_missing_transitive_trigger_is_rejected(self):
         workflow = "    paths:\n      - apps/hepta-native/**\n      - codex-rs/hepta-native-gateway/**\n  workflow_dispatch:\n"
-        with patch.object(MODULE, "ROOT", self.root), self.assertRaisesRegex(RuntimeError, "does not trigger"):
+        with (
+            patch.object(MODULE, "ROOT", self.root),
+            self.assertRaisesRegex(RuntimeError, "does not trigger"),
+        ):
             MODULE.check_dependency_workflow_filters(workflow)
 
     def test_workflow_complete_dependency_and_projection_triggers_pass(self):
         with patch.object(MODULE, "ROOT", self.root):
-            paths = (*MODULE.local_cargo_dependency_paths(), "tools/ui-native-projections", ".cargo", "codex-rs/.cargo")
-            workflow = "    paths:\n" + "".join(
-                "      - " + (path if path.endswith("Cargo.toml") else path + "/**") + "\n"
-                for path in paths
-            ) + "  workflow_dispatch:\n"
+            paths = (
+                *MODULE.local_cargo_dependency_paths(),
+                "tools/ui-native-projections",
+                ".cargo",
+                "codex-rs/.cargo",
+            )
+            workflow = (
+                "    paths:\n"
+                + "".join(
+                    "      - "
+                    + (path if path.endswith("Cargo.toml") else path + "/**")
+                    + "\n"
+                    for path in paths
+                )
+                + "  workflow_dispatch:\n"
+            )
             MODULE.check_dependency_workflow_filters(workflow)
 
 

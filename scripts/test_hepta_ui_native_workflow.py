@@ -95,6 +95,53 @@ class PlatformConstructionTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
 
 
+class StorageReleaseProfileTests(unittest.TestCase):
+    def test_actual_storage_shell_commands_build_and_run_release_harness(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            binary = root / "bin"
+            binary.mkdir()
+            commands = root / "commands.jsonl"
+            cargo = binary / "cargo"
+            cargo.write_text(
+                "#!/usr/bin/env python3\n"
+                "import json, os, sys\n"
+                "with open(os.environ['CAPTURED_COMMANDS'], 'a') as output:\n"
+                "    output.write(json.dumps(sys.argv[1:]) + '\\n')\n",
+                encoding="utf-8",
+            )
+            strace = binary / "strace"
+            strace.write_text(
+                '#!/bin/sh\nwhile [ "$1" != "cargo" ]; do shift; done\nexec "$@"\n',
+                encoding="utf-8",
+            )
+            cargo.chmod(0o755)
+            strace.chmod(0o755)
+            workflow = WORKFLOW.read_text(encoding="utf-8")
+            for identifier in ("compile", "active", "retired"):
+                section = workflow.split(f"      - id: {identifier}\n", 1)[1].split("      - ", 1)[0]
+                run = section.split("        run: ", 1)[1]
+                script = textwrap.dedent(run[2:]) if run.startswith("|\n") else run.strip()
+                result = subprocess.run(
+                    ["bash", "-c", script], cwd=root, capture_output=True, text=True,
+                    env={
+                        **os.environ, "PATH": f"{binary}{os.pathsep}{os.environ['PATH']}",
+                        "CAPTURED_COMMANDS": str(commands), "RUNNER_TEMP": str(root),
+                        "IMPLEMENTATION_SHA": "a" * 40,
+                    },
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+            captured = [json.loads(line) for line in commands.read_text().splitlines()]
+            self.assertEqual(len(captured), 3)
+            for command in captured:
+                cargo_arguments = command[:command.index("--")] if "--" in command else command
+                for argument in ("test", "--release", "--locked", "--lib"):
+                    self.assertIn(argument, cargo_arguments)
+            self.assertIn("--no-run", captured[0])
+            self.assertIn("storage_qualification_tests::storage_active_scale_qualification", captured[1])
+            self.assertIn("storage_qualification_tests::storage_retirement_scale_qualification", captured[2])
+
+
 class RepositoryAggregateTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

@@ -74,6 +74,7 @@ class StorageQualificationTests(unittest.TestCase):
             "peakRssMiB": 64,
             "processSampleCount": 20,
             "measurementScope": {
+                "buildProfile": "release",
                 "open": storage.OPEN_MEASUREMENT_SCOPE,
                 "historyPageBytes": storage.HISTORY_BYTES_MEASUREMENT_SCOPE,
             },
@@ -91,36 +92,66 @@ class StorageQualificationTests(unittest.TestCase):
             "deterministicRebuild": True,
             "peakRssMiB": 64,
             "processSampleCount": 20,
-            "measurementScope": {"open": storage.OPEN_MEASUREMENT_SCOPE},
+            "measurementScope": {
+                "buildProfile": "release",
+                "open": storage.OPEN_MEASUREMENT_SCOPE,
+            },
             "freshProcessOpenSamplesMilliseconds": list(range(1, 21)),
             "freshProcessOpenP95Milliseconds": 19,
             "freshProcessIndexRebuildSamplesMilliseconds": list(range(1, 21)),
             "freshProcessIndexRebuildP95Milliseconds": 19,
         }
+        self.combined = {
+            "schema": "hepta.ui-native-storage-combined-evidence.v1",
+            "sourceSha": SOURCE_SHA,
+            "activeRecords": 4096,
+            "retiredIdentities": 1000000,
+            "peakRssMiB": 64,
+            "processSampleCount": 20,
+            "measurementScope": {
+                "buildProfile": "release",
+                "open": storage.OPEN_MEASUREMENT_SCOPE,
+                "historyPageBytes": storage.HISTORY_BYTES_MEASUREMENT_SCOPE,
+            },
+            "freshProcessOpenSamplesMilliseconds": list(range(1, 21)),
+            "freshProcessOpenP95Milliseconds": 19,
+            "historyPageSize": 64,
+            "historyPageSamplesMilliseconds": list(range(1, 21)),
+            "historyPageP95Milliseconds": 19,
+            "historyPageMaxRetainedJsonBytes": 64000,
+        }
+        self.retired["combinedJournal"] = self.combined
         for evidence, key, kind, base_pid in (
             (self.active, "openProcessSamples", "active-open", 1000),
             (self.retired, "openProcessSamples", "retired-open", 2000),
             (self.retired, "indexRebuildProcessSamples", "retired-rebuild", 3000),
+            (self.combined, "openProcessSamples", "combined-open", 4000),
         ):
             evidence[key] = [
                 {
                     "schema": "hepta.ui-native-storage-process-sample.v1",
                     "sourceSha": SOURCE_SHA,
                     "kind": kind,
+                    "buildProfile": "release",
                     "pid": base_pid + index,
                     "elapsedMilliseconds": index + 1,
                     "peakRssMiB": 32,
                 }
                 for index in range(20)
             ]
-        for index, observation in enumerate(self.active["openProcessSamples"]):
-            observation.update(
-                {
-                    "historyPageSize": 64,
-                    "historyPageMilliseconds": index + 1,
-                    "historyPageRetainedJsonBytes": 64000,
-                }
-            )
+        for evidence in (self.active, self.combined):
+            for index, observation in enumerate(evidence["openProcessSamples"]):
+                observation.update(
+                    {
+                        "historyPageSize": 64,
+                        "historyPageMilliseconds": index + 1,
+                        "historyPageRetainedJsonBytes": 64000,
+                    }
+                )
+                if evidence is self.combined:
+                    observation.update(
+                        {"activeRecords": 4096, "retiredIdentities": 1000000}
+                    )
 
     def validate(self):
         for path, value in (
@@ -160,6 +191,16 @@ class StorageQualificationTests(unittest.TestCase):
             ),
             (
                 self.active,
+                "historyPageSamplesMilliseconds",
+                "historyPageP95Milliseconds",
+            ),
+            (
+                self.combined,
+                "freshProcessOpenSamplesMilliseconds",
+                "freshProcessOpenP95Milliseconds",
+            ),
+            (
+                self.combined,
                 "historyPageSamplesMilliseconds",
                 "historyPageP95Milliseconds",
             ),
@@ -242,18 +283,40 @@ class StorageQualificationTests(unittest.TestCase):
             evidence[sample_key], evidence[percentile_key] = original, 19
 
     def test_insufficient_process_count_and_budget_rejected(self):
-        for evidence in (self.active, self.retired):
+        for evidence in (self.active, self.retired, self.combined):
             evidence["processSampleCount"] = 19
             self.assert_rejected("did not measure 20")
             evidence["processSampleCount"] = 20
         self.budgets["performance"]["freshProcessSamples"] = 19
         self.assert_rejected("at least 20")
 
+    def test_debug_missing_and_invalid_build_scope_rejected_for_every_subject(self):
+        for evidence in (self.active, self.retired, self.combined):
+            for profile in ("debug", None, False):
+                with self.subTest(schema=evidence["schema"], profile=profile):
+                    evidence["measurementScope"]["buildProfile"] = profile
+                    self.assert_rejected("qualification build profile is not release")
+            evidence["measurementScope"]["buildProfile"] = "release"
+
+    def test_each_raw_process_observation_must_have_release_profile(self):
+        for evidence, key in (
+            (self.active, "openProcessSamples"),
+            (self.retired, "openProcessSamples"),
+            (self.retired, "indexRebuildProcessSamples"),
+            (self.combined, "openProcessSamples"),
+        ):
+            for profile in ("debug", None, False):
+                with self.subTest(schema=evidence["schema"], population=key, profile=profile):
+                    evidence[key][0]["buildProfile"] = profile
+                    self.assert_rejected("process build profile is not release")
+            evidence[key][0]["buildProfile"] = "release"
+
     def test_process_observations_require_unique_positive_pids(self):
         for evidence, key in (
             (self.active, "openProcessSamples"),
             (self.retired, "openProcessSamples"),
             (self.retired, "indexRebuildProcessSamples"),
+            (self.combined, "openProcessSamples"),
         ):
             observation = evidence[key][0]
             original_pid = observation["pid"]
@@ -282,7 +345,7 @@ class StorageQualificationTests(unittest.TestCase):
         self.assert_rejected("exactly 20 process observations")
 
     def test_rss_requires_nonnegative_integer_and_respects_each_budget(self):
-        for evidence in (self.active, self.retired):
+        for evidence in (self.active, self.retired, self.combined):
             for invalid in (-1, 1.5, True, float("nan"), 257):
                 evidence["peakRssMiB"] = invalid
                 self.assert_rejected("negative|not an integer|exceeded")
@@ -310,7 +373,7 @@ class StorageQualificationTests(unittest.TestCase):
         self.assert_rejected("serialized receipts")
 
     def test_open_scope_cannot_claim_controlled_page_cache(self):
-        for evidence in (self.active, self.retired):
+        for evidence in (self.active, self.retired, self.combined):
             evidence["measurementScope"]["open"] = "cold-cache"
             self.assert_rejected("uncontrolled OS page cache")
             evidence["measurementScope"]["open"] = storage.OPEN_MEASUREMENT_SCOPE
@@ -324,6 +387,131 @@ class StorageQualificationTests(unittest.TestCase):
             self.assert_rejected(flag)
             self.budgets[flag] = False
 
+    def test_combined_journal_is_required_and_its_schema_is_bound(self):
+        for invalid in (None, [], "combined", False):
+            with self.subTest(combined=invalid):
+                self.retired["combinedJournal"] = invalid
+                self.assert_rejected("combined journal evidence is missing")
+        del self.retired["combinedJournal"]
+        self.assert_rejected("combined journal evidence is missing")
+        self.retired["combinedJournal"] = self.combined
+        self.combined["schema"] = "hepta.ui-native-storage-active-evidence.v1"
+        self.assert_rejected("combined journal evidence schema mismatch")
+
+    def test_combined_summary_cannot_substitute_source_or_subjects(self):
+        for key, invalid, message in (
+            ("sourceSha", "b" * 40, "combined journal evidence source SHA mismatch"),
+            (
+                "activeRecords",
+                4095,
+                "combined journal active-record qualification subject mismatch",
+            ),
+            (
+                "retiredIdentities",
+                999999,
+                "combined journal retired-identity qualification subject mismatch",
+            ),
+            ("activeRecords", True, "not an integer"),
+            ("retiredIdentities", 1000000.0, "not an integer"),
+        ):
+            with self.subTest(subject=key, invalid=invalid):
+                original = self.combined[key]
+                self.combined[key] = invalid
+                self.assert_rejected(message)
+                self.combined[key] = original
+
+    def test_combined_process_observations_bind_both_loaded_populations(self):
+        observation = self.combined["openProcessSamples"][0]
+        for key, invalid, message in (
+            ("sourceSha", "b" * 40, "process source SHA mismatch"),
+            ("kind", "active-open", "process kind mismatch"),
+            ("activeRecords", 4095, "combined activeRecords subject mismatch"),
+            (
+                "retiredIdentities",
+                999999,
+                "combined retiredIdentities subject mismatch",
+            ),
+            ("elapsedMilliseconds", 2, "summary sample"),
+            ("historyPageMilliseconds", 2, "history latency"),
+            ("historyPageSize", 32, "page size mismatch"),
+            ("historyPageRetainedJsonBytes", 0, "retained bytes are not positive"),
+            ("peakRssMiB", 65, "exceeds the summary peak"),
+        ):
+            with self.subTest(field=key):
+                original = observation[key]
+                observation[key] = invalid
+                self.assert_rejected(message)
+                observation[key] = original
+        del observation["activeRecords"]
+        self.assert_rejected("activeRecords is not an integer")
+
+    def test_combined_missing_history_scope_page_and_observations_rejected(self):
+        original_scope = self.combined["measurementScope"]
+        self.combined["measurementScope"] = None
+        self.assert_rejected("combined measurement scope is missing")
+        self.combined["measurementScope"] = original_scope
+        del original_scope["historyPageBytes"]
+        self.assert_rejected("serialized receipts")
+        original_scope["historyPageBytes"] = storage.HISTORY_BYTES_MEASUREMENT_SCOPE
+        self.combined["historyPageSize"] = 63
+        self.assert_rejected(
+            "combined history evidence did not measure a 64-record page"
+        )
+        self.combined["historyPageSize"] = 64
+        self.combined["openProcessSamples"] = []
+        self.assert_rejected("exactly 20 process observations")
+
+    def test_rehashed_combined_open_and_history_overbudget_samples_rejected(self):
+        original_digest = self.validate()["retirementEvidence"]["sha256"]
+        for sample_key, percentile_key, observation_key, milliseconds in (
+            (
+                "freshProcessOpenSamplesMilliseconds",
+                "freshProcessOpenP95Milliseconds",
+                "elapsedMilliseconds",
+                2001,
+            ),
+            (
+                "historyPageSamplesMilliseconds",
+                "historyPageP95Milliseconds",
+                "historyPageMilliseconds",
+                26,
+            ),
+        ):
+            with self.subTest(sample=sample_key):
+                self.combined[sample_key] = [milliseconds] * 20
+                self.combined[percentile_key] = milliseconds
+                for observation in self.combined["openProcessSamples"]:
+                    observation[observation_key] = milliseconds
+                self.retired_path.write_text(json.dumps(self.retired), encoding="utf-8")
+                self.assertNotEqual(
+                    storage.sha256_file(self.retired_path), original_digest
+                )
+                self.assert_rejected("combined .* exceeded")
+                self.combined[sample_key] = list(range(1, 21))
+                self.combined[percentile_key] = 19
+                for index, observation in enumerate(
+                    self.combined["openProcessSamples"]
+                ):
+                    observation[observation_key] = index + 1
+
+    def test_combined_rss_obeys_the_lower_of_both_existing_ceilings(self):
+        self.combined["peakRssMiB"] = 65
+        for lower_budget in ("activePeakRssMiB", "millionRetiredPeakRssMiB"):
+            with self.subTest(budget=lower_budget):
+                self.budgets["performance"][lower_budget] = 64
+                self.assert_rejected("combined peak RSS exceeded its hard ceiling")
+                self.budgets["performance"][lower_budget] = 256
+
+    def test_rehashed_combined_retained_bytes_cannot_exceed_existing_ceiling(self):
+        self.combined["historyPageMaxRetainedJsonBytes"] = 2097153
+        for observation in self.combined["openProcessSamples"]:
+            observation["historyPageRetainedJsonBytes"] = 2097153
+        self.assert_rejected("combined history page retained bytes exceeded")
+        self.combined["historyPageMaxRetainedJsonBytes"] = 64001
+        for observation in self.combined["openProcessSamples"]:
+            observation["historyPageRetainedJsonBytes"] = 64000
+        self.assert_rejected("retained-byte summary")
+
     def test_missing_sync_or_writes_rejected(self):
         self.trace.write_text(
             f'write(3<{self.active["root"]}/journal.wal>, "data", 100) = 100\n'
@@ -336,17 +524,21 @@ class StorageQualificationTests(unittest.TestCase):
         for invalid in (1_000_000_000_000, 12287, 12289, 0, -1, True, 12288.0):
             with self.subTest(transitions=invalid):
                 self.active["transitions"] = invalid
-                self.assert_rejected("three transitions per active record|not an integer")
+                self.assert_rejected(
+                    "three transitions per active record|not an integer"
+                )
 
     def test_trace_requires_a_successful_sync_for_every_state_transition(self):
         for sync_count in (1, 12287):
             with self.subTest(sync_count=sync_count):
                 self.trace.write_text(
                     f'write(3<{self.active["root"]}/journal.wal>, "data", 100) = 100\n'
-                    + f'fsync(3<{self.active["root"]}/journal.wal>) = 0\n' * sync_count,
+                    + f"fsync(3<{self.active['root']}/journal.wal>) = 0\n" * sync_count,
                     encoding="utf-8",
                 )
-                self.assert_rejected("fewer successful fsync/fdatasync calls than state transitions")
+                self.assert_rejected(
+                    "fewer successful fsync/fdatasync calls than state transitions"
+                )
 
     def test_raw_mutation_samples_are_complete_finite_and_nonnegative(self):
         original = self.active["mutationSamplesMilliseconds"]
@@ -381,24 +573,32 @@ class StorageQualificationTests(unittest.TestCase):
     def test_resumed_state_writes_and_syncs_are_counted(self):
         self.trace.write_text(
             f'write(3<{self.active["root"]}/journal.wal>, "data", 100 <unfinished ...>\n'
-            '<... write resumed>) = 100\n'
-            f'fsync(3<{self.active["root"]}/journal.wal> <unfinished ...>\n'
-            '<... fsync resumed>) = 0\n',
+            "<... write resumed>) = 100\n"
+            f"fsync(3<{self.active['root']}/journal.wal> <unfinished ...>\n"
+            "<... fsync resumed>) = 0\n",
             encoding="utf-8",
         )
-        write_bytes, sync_calls, _ = storage.parse_traces(self.trace_prefix, self.active["root"])
+        write_bytes, sync_calls, _ = storage.parse_traces(
+            self.trace_prefix, self.active["root"]
+        )
         self.assertEqual(write_bytes, 100)
         self.assertEqual(sync_calls, 1)
 
     def test_root_name_in_stdout_and_similar_prefix_does_not_count(self):
         with self.trace.open("a", encoding="utf-8") as stream:
-            stream.write(f'write(1</tmp/stdout>, "{self.active["root"]} fsync(", 999999) = 999999\n')
-            stream.write(f'write(3<{self.active["root"]}-foreign/journal.wal>, "foreign", 999999) = 999999\n')
+            stream.write(
+                f'write(1</tmp/stdout>, "{self.active["root"]} fsync(", 999999) = 999999\n'
+            )
+            stream.write(
+                f'write(3<{self.active["root"]}-foreign/journal.wal>, "foreign", 999999) = 999999\n'
+            )
         self.assertEqual(self.validate()["durabilitySyscalls"]["writeBytes"], 100)
 
     def test_unfinished_state_syscall_cannot_lower_write_amplification(self):
         with self.trace.open("a", encoding="utf-8") as stream:
-            stream.write(f'write(3<{self.active["root"]}/journal.wal>, "data", 100 <unfinished ...>\n')
+            stream.write(
+                f'write(3<{self.active["root"]}/journal.wal>, "data", 100 <unfinished ...>\n'
+            )
         self.assert_rejected("unfinished durable-state syscall")
 
     def test_duplicate_json_keys_rejected_including_nested_observations(self):

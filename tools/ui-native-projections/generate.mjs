@@ -62,7 +62,7 @@ const TEST_PROFILES = [
   {
     id: "gateway_authority",
     command:
-      "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state --all-targets --all-features",
+      "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state -p codex-utils-private-state --all-targets --all-features",
     workingDirectory: ".",
   },
   {
@@ -70,6 +70,16 @@ const TEST_PROFILES = [
     command: "hepta-native --qualification-e2e",
     workingDirectory: "packaged artifact",
   },
+];
+
+const TEST_SOURCE_ROOTS = [
+  { path: "apps/hepta-native/tests", package: "hepta-native", role: "integration_test" },
+  { path: "apps/hepta-native/src", package: "hepta-native", role: "unit_test" },
+  { path: "codex-rs/hepta-native-gateway/src", package: "codex-hepta-native-gateway", role: "unit_test" },
+  { path: "codex-rs/hepta-contracts/tests", package: "codex-hepta-contracts", role: "integration_test" },
+  { path: "codex-rs/hepta-contracts/src", package: "codex-hepta-contracts", role: "unit_test" },
+  { path: "codex-rs/hepta-private-state/src", package: "codex-hepta-private-state", role: "unit_test" },
+  { path: "codex-rs/utils/private-state/src", package: "codex-utils-private-state", role: "unit_test" },
 ];
 
 function read(root, path) {
@@ -104,6 +114,23 @@ function walkFiles(root, directory) {
   };
   visit(base);
   return output;
+}
+
+export function discoverRustTestFiles(root = REPO_ROOT) {
+  return TEST_SOURCE_ROOTS.flatMap((sourceRoot) =>
+    walkFiles(root, sourceRoot.path)
+      .filter((path) => path.endsWith(".rs"))
+      .filter((path) =>
+        sourceRoot.role === "integration_test" ||
+        path.endsWith("_tests.rs") ||
+        /^\s*#\s*\[\s*(?:[A-Za-z_]\w*::)*test(?:\s*[\](])/m.test(read(root, path)),
+      )
+      .map((path) => ({
+        path,
+        role: path.includes("/common/") ? "support" : sourceRoot.role,
+        ownerPackage: sourceRoot.package,
+      })),
+  ).sort((left, right) => left.path < right.path ? -1 : left.path > right.path ? 1 : 0);
 }
 
 function enumBody(source, enumName) {
@@ -213,12 +240,7 @@ export function buildProjections(root = REPO_ROOT) {
     };
   });
 
-  const testFiles = walkFiles(root, "apps/hepta-native/tests")
-    .filter((path) => path.endsWith(".rs"))
-    .map((path) => ({
-      path,
-      role: path.includes("/common/") ? "support" : "integration_test",
-    }));
+  const testFiles = discoverRustTestFiles(root);
 
   const apiRegistry = {
     schema: "hepta.ui.native.api-registry.v1",
@@ -242,7 +264,7 @@ export function buildProjections(root = REPO_ROOT) {
   const testRegistry = {
     schema: "hepta.ui.native.test-registry.v1",
     sourceDiscovery: {
-      root: "apps/hepta-native/tests",
+      roots: TEST_SOURCE_ROOTS.map((sourceRoot) => sourceRoot.path),
       fileCount: testFiles.length,
       manifestDigest: sha256(stableJson(testFiles)),
     },
@@ -268,6 +290,7 @@ export function buildProjections(root = REPO_ROOT) {
     actions,
     limits: {
       stableIdBytes: rustConstant(model, "MAX_STABLE_ID_BYTES"),
+      nativePathBytes: rustConstant(model, "MAX_NATIVE_PATH_BYTES"),
       copyTextBytes: rustConstant(model, "MAX_COPY_TEXT_BYTES"),
       notificationTitleBytes: rustConstant(
         model,
