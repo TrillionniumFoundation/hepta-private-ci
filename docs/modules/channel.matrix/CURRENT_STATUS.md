@@ -18,6 +18,9 @@ receipts.
 - Matrix apply/finalizer workflows and encoded staging sources are absent.
 - Matrix qualification workflows are read-only and use exact source-head and
   deterministic-merge lanes plus one paired acceptance receipt.
+- Both exact-candidate lanes execute Rustdoc compile-fail boundaries proving
+  that downstream safe code cannot import the final permit, forge the raw seal,
+  override an authorized send entry or escape to the raw Matrix client.
 - Pull requests qualify the immutable candidate head; protected `main` pushes
   qualify the real integrated SHA against the immediately preceding main SHA.
   PR evidence is never reused as merge-SHA evidence.
@@ -39,9 +42,10 @@ receipts.
 ## Evidence state
 
 The current source-head and deterministic-merge lanes must both complete locked
-compilation, all mapped Matrix native tests, all-target checks, strict Clippy,
-rustfmt, Q01-Q29 JUnit accounting, clean-tree verification and the paired
-receipt. Queued, skipped, canceled, stale-SHA or partial runs are not passes.
+compilation, public-API negative compile tests, all mapped Matrix native tests,
+all-target checks, strict Clippy, rustfmt, Q01-Q29 JUnit accounting, clean-tree
+verification and the paired receipt. Queued, skipped, canceled, stale-SHA or
+partial runs are not passes.
 
 Real enrolled homeserver execution, encrypted-room and multi-device/session
 rotation, protected restore, storage-fault recovery, sustained capacity/network

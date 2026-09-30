@@ -3,6 +3,42 @@
 //! Matrix is a chat transport only. This crate can persist allowlisted room
 //! messages and deliver durable outbox records, but it intentionally exposes
 //! no tool-approval, turn-cancel, file, or supervisor authority.
+//!
+//! The final-use permit is deliberately not part of the public API.
+//!
+//! ```compile_fail,E0432
+//! use codex_hepta_matrix_sdk::MatrixSendPermit;
+//! # fn main() {}
+//! ```
+//!
+//! Safe downstream code cannot forge the raw transport seal.
+//!
+//! ```compile_fail,E0451
+//! use codex_hepta_matrix_sdk::MatrixRawSendSeal;
+//! # fn main() {
+//! let _forged = MatrixRawSendSeal { _private: () };
+//! # }
+//! ```
+//!
+//! The public transport trait has no overridable authorized-send bypass.
+//!
+//! ```compile_fail,E0599
+//! use codex_hepta_matrix_sdk::MatrixOutboundTransport;
+//! fn bypass<T: MatrixOutboundTransport>(transport: &T) {
+//!     let _ = transport.send_authorized();
+//! }
+//! # fn main() {}
+//! ```
+//!
+//! The authenticated SDK facade does not expose the underlying raw client.
+//!
+//! ```compile_fail,E0599
+//! use codex_hepta_matrix_sdk::MatrixSdkClient;
+//! fn raw_client(client: &MatrixSdkClient) {
+//!     let _ = client.client();
+//! }
+//! # fn main() {}
+//! ```
 
 #![forbid(unsafe_code)]
 

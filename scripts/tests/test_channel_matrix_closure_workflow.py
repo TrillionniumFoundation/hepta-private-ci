@@ -40,6 +40,20 @@ class ChannelMatrixSourcePurityTests(unittest.TestCase):
                 self.assertNotIn("push origin", text)
                 self.assertNotIn("--allow-dirty", text)
 
+    def test_exact_candidate_executes_api_compile_fail_in_both_lanes(self) -> None:
+        workflow = ROOT / ".github/workflows/channel-matrix-preserve-unknown.yml"
+        text = workflow.read_text(encoding="utf-8")
+        command = "cargo test --locked -p codex-hepta-matrix-sdk --doc"
+        self.assertEqual(text.count(command), 2)
+        self.assertIn(
+            "$RUNNER_TEMP/matrix-source-head/api-compile-fail.log",
+            text,
+        )
+        self.assertIn(
+            "$RUNNER_TEMP/matrix-base-merge/api-compile-fail.log",
+            text,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

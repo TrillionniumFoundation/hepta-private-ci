@@ -86,6 +86,11 @@ jobs:
           evidence="$RUNNER_TEMP/matrix-source-head"
           python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$SOURCE_SHA" --output "$evidence/candidate.json"
           python3 scripts/channel_matrix_evidence.py snapshot --expected-sha "$SOURCE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane source-head --output "$evidence/source.json"
+      - name: Prove public API negative compile boundaries
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-matrix-sdk --doc 2>&1 | tee "$RUNNER_TEMP/matrix-source-head/api-compile-fail.log"
       - name: Execute locked source-head qualification
         id: qualify
         run: |
@@ -157,6 +162,11 @@ jobs:
           evidence="$RUNNER_TEMP/matrix-base-merge"
           python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$MERGE_SHA" --output "$evidence/candidate.json"
           python3 scripts/channel_matrix_evidence.py snapshot --expected-sha "$MERGE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane base-merge --output "$evidence/source.json"
+      - name: Prove public API negative compile boundaries
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-matrix-sdk --doc 2>&1 | tee "$RUNNER_TEMP/matrix-base-merge/api-compile-fail.log"
       - name: Execute locked merge qualification
         id: qualify
         run: |
