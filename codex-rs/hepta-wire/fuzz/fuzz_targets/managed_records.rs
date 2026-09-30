@@ -1,5 +1,6 @@
 #![no_main]
 
+mod hardened_fixture;
 mod managed_fixture;
 
 use codex_hepta_wire::MAX_WIRE_FRAME_BYTES;
@@ -86,5 +87,12 @@ fn exercise(data: &[u8]) -> Outcome {
 }
 
 fuzz_target!(|data: &[u8]| {
-    assert!(exercise(data).is_ok(), "managed-session fixture or invariant failed");
+    assert!(
+        exercise(data).is_ok(),
+        "managed-session fixture or invariant failed"
+    );
+    assert!(
+        hardened_fixture::exercise(data).is_ok(),
+        "hardened-session fixture or invariant failed"
+    );
 });
