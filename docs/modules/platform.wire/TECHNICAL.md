@@ -37,7 +37,8 @@ bind them to native source.
 | Authenticated transcript and immutable session | implemented source, execution pending | `src/secure_session.rs`; checked constructor rejects transcript/posture/registry substitution; session identity profile V2 also binds the runtime admission role |
 | Terminal EOF and key destruction | implemented source, execution pending | consuming `finish()` rejects partial frames; standard HMAC verification and zeroizing owned keys; poison and retirement close the session |
 | Direction-separated HPTM records | implemented source | `src/directional_session.rs`; initiator/responder key derivation, independent directional sequences and reflection rejection |
-| Property tests + fuzz target | implemented source evidence | `src/property_tests.rs`, `fuzz/fuzz_targets/decode_frames.rs` |
+| Hardened production owner and typed stream | implemented source | `HardenedManagedWireSession` → `HardenedRecordStream<C: BoundPayloadCodec>`; production-only API excludes raw authenticated owners |
+| Property tests + three fuzz targets | implemented source evidence | `src/property_tests.rs`, `decode_frames`, `managed_records`, `policy_admission`; exact-source campaign evidence is required for qualification |
 | Rust↔Python raw binary session | implemented bidirectional qualification source | `hepta-shadow-qualification/tests/cross_runtime_wire_session.rs` |
 | Read-only runtime/gateway caller | source-composed | explicit V2 `Accept` on existing runtime status route |
 | Product-bound runtime.codex caller | source-composed | normal `hepta-infer-worker-host` path uses HPTA V2 plus payload schema V3 before final-use claim |
@@ -85,9 +86,16 @@ None.
 
 ### Native source and scope
 
-The frozen V1 source remains [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). Current versioned source additionally includes `envelope_v2.rs`, `frame_header.rs`, `frame.rs`, `version.rs`, `session.rs`, `schema.rs`, `registry.rs`, `stream.rs`, `secure_session.rs` and `directional_session.rs`; public exports are collected in `src/lib.rs`. `FrozenSchemaRegistry` is the production policy surface, while the basic mutable `SchemaRegistry` remains a lower-level codec registry. `WireSession` couples the negotiated posture, runtime role, frozen registry snapshot and authenticated transport transcript. The public HPTM wrapper requires an explicit local initiator/responder role and derives direction-specific send/receive keys.
+The frozen V1 source remains [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). Current versioned source additionally includes `envelope_v2.rs`, `frame_header.rs`, `frame.rs`, `version.rs`, `session.rs`, `schema.rs`, `registry.rs`, `stream.rs`, `secure_session.rs`, `directional_session.rs`, `hardened_managed_session.rs` and `hardened_record_stream/`; public exports are collected in `src/lib.rs`. `FrozenSchemaRegistry` is the production policy surface, while the basic mutable `SchemaRegistry` remains a lower-level codec registry. The production-only public owner is `HardenedManagedWireSession`, consumed by `HardenedRecordStream<C: BoundPayloadCodec>` for typed ingress. It owns the negotiated posture, runtime role, registry, authenticated transcript and direction-specific keys internally. Raw `WireSession`, authenticated/managed owners and raw-envelope record streaming are available only through the tooling/test compatibility surface. Production integrations disable default features and enable only `production`; see [HARDENED_SESSION.md](HARDENED_SESSION.md).
 
 A named read-only caller is source-composed through `hepta-runtime` and `hepta-native-gateway`. Registered `context.compiler` and `runtime.codex` adapters enforce schema plus canonical producer admission before domain decode. The normal `hepta-infer-worker-host` runtime.codex path admits its complete App Server binding through `hepta.codex-operation-intent.v3` before the existing final-use claim and physical `turn/start`; production activation and acceptance remain separate gates. Read [REMEDIATION_20260928.md](REMEDIATION_20260928.md) for the checked-constructor API migration, EOF contract and current evidence limits. Read [CURRENT_IMPLEMENTATION.md](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md), [SECURITY_AND_QUALIFICATION.md](SECURITY_AND_QUALIFICATION.md) and the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the target requirements in this guide.
+
+These callers currently retain default `protocol-tooling` dependencies. The
+runtime.codex V3 admission is an in-process encode/decode round trip; the gateway
+is a read-only loopback response; context receipt framing remains a compatibility
+DTO. No existing product transport constructs the hardened owner or supplies a
+deployed authenticated channel binding and session key. Source composition of
+those codec callers therefore does not complete production transport composition.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -119,6 +127,7 @@ The bounded components are:
 - `bounded frozen schema policy with producer, role and capability admission`
 - `bounded header-first decoder with byte/work ceilings and terminal poison state`
 - `authenticated transcript plus direction-separated HPTM record protection`
+- `unique hardened production owner and codec-bound typed record stream`
 - `transport-neutral safe error mapping and evidence-derived lifecycle status`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -184,13 +193,22 @@ completed-frame work budgets bound both large-body and many-small-frame input.
 Live negotiated connections use `NegotiatedStreamingDecoder`; `decode_frame`
 remains an offline multi-version parser.
 
-`WireSession` is immutable for one completed negotiation and binds the selected
-version, effective capabilities, frozen registry digest, runtime role and
-negotiation transcript. The public `AuthenticatedWireSession` owns independent
-send and receive record state. Its local `SessionEndpoint` selects opposite
+The production `HardenedManagedWireSession` owns the immutable selected version,
+effective capabilities, frozen registry digest, runtime role and negotiation
+transcript. Its internal authenticated owner has independent send and receive
+record state. Its local `SessionEndpoint` selects opposite
 direction labels for initiator and responder, so the two peers derive matching
 cross-direction keys while a reflected local outbound record or same-endpoint
 peer fails MAC verification.
+
+`HardenedRecordStream<C>` consumes this owner and returns only `C::Value` after
+bound-codec admission and canonical re-encoding. The non-Clone stream budget
+charges accepted bytes, full record attempts and full serialized-frame work.
+Cooperative yield preserves the unconsumed suffix; a valid typed prefix must be
+delivered once even if a later record in the same feed fails. See
+[HARDENED_SESSION.md](HARDENED_SESSION.md#hardened-record-stream) for the complete
+budget and ownership contract. `WireSession` and raw managed streams remain
+tooling compatibility APIs.
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md).
 
@@ -205,8 +223,10 @@ stream. Valid frames completed before a later terminal error are returned in the
 same batch and must not disappear because of transport chunking.
 
 Wrong HPTM session identity, direction-derived MAC, sequence, length, format or
-admitted frame is terminal. The public bidirectional authenticated session is
-poisoned when either direction encounters such an error; send or receive state
+admitted frame is terminal. The hardened owner also terminates on codec-binding,
+typed-decode or canonicalization failure and on partial-record EOF. It drops its
+key-bearing child immediately; metadata is the only remaining diagnostic view.
+The connection is poisoned when either direction encounters such an error; send or receive state
 is never reset in place. Recovery creates a fresh authenticated transport,
 channel binding, negotiation transcript and session key.
 
@@ -228,7 +248,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as host qualification. Current native limits belong to [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs), `frame_header.rs`, `stream.rs`, `registry.rs` and `secure_session.rs`. `StreamingDecoder` validates the fixed header before body admission, transfers each completed frame out of its buffer and enforces both feed-byte and completed-frame work ceilings. Frozen registries cap schema entries and per-policy subjects. Authenticated records cap total record bytes before frame decode. The owning transport additionally enforces read deadlines, connection counts and selected-host resource policy; an over-budget feed or record is rejected before unbounded work or allocation.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as host qualification. Current native limits belong to [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs), `frame_header.rs`, `stream.rs`, `registry.rs`, `secure_session.rs` and `hardened_record_stream/`. `StreamingDecoder` validates the fixed header before body admission, transfers each completed frame out of its buffer and enforces both feed-byte and completed-frame work ceilings. Frozen registries cap schema entries and per-policy subjects. Authenticated records cap total record bytes before frame decode. The hardened typed stream yields cooperatively when a feed work budget is insufficient and rejects terminal resource-limit violations. The owning transport additionally enforces read deadlines, connection counts and selected-host resource policy.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -238,12 +258,19 @@ Transport-neutral codec library, embedded by the actual transport owner. Recreat
 
 Safe diagnostics include schema/producer/role identifiers, session digest, byte offset, actual value and configured limit. They exclude payload contents, transport secrets and MAC keys. Operational status is evidence-derived rather than hand-maintained: `scripts/platform_wire_status.py` validates source-bound receipt-v2 artifacts and renders Designed/Implemented/Qualified/Accepted/Released without interpreting queued, absent, legacy or mismatched evidence as success.
 
+This offline evaluator checks the consistency of supplied receipts; it does not
+authenticate GitHub workflow execution, protected-environment configuration,
+artifact origin or approver identity. The importing owner must establish that
+provenance before evaluation. Locally authored JSON or a passing evaluator does
+not supply acceptance or release authority.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs);
 - `codex-rs/hepta-wire/src/registry.rs`;
 - `codex-rs/hepta-wire/src/secure_session.rs`;
 - `codex-rs/hepta-wire/src/directional_session.rs`;
+- [`HARDENED_SESSION.md`](HARDENED_SESSION.md);
 - [`SECURITY_AND_QUALIFICATION.md`](SECURITY_AND_QUALIFICATION.md);
 - [`STATUS.md`](STATUS.md).
 
@@ -262,7 +289,11 @@ Current focused test sources (source references, not pass receipts):
 - `codex-rs/hepta-wire/src/stream_tests.rs`: chunking-invariant prefix delivery, header-first body admission, feed-byte/work ceilings, terminal poison state and buffer bounds.
 - `codex-rs/hepta-wire/src/secure_session.rs`: transcript/channel binding, typed session admission, tamper, replay, sequence-gap and cross-session rejection.
 - `codex-rs/hepta-wire/src/directional_session.rs`: opposite-endpoint interoperability, reflected-record rejection and same-endpoint direction mismatch.
-- `codex-rs/hepta-wire/src/property_tests.rs` and `codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs`: property/fuzz surfaces.
+- `codex-rs/hepta-wire/src/hardened_managed_session.rs` and `codex-rs/hepta-wire/src/hardened_record_stream/tests.rs`: final-owner destruction, bound canonical ingress, rotation, typed-prefix delivery and budget tests.
+- `codex-rs/hepta-wire/src/secure_session_preflight_tests.rs`: rejects invalid metadata before invoking payload encoding.
+- `codex-rs/hepta-wire/fuzz/fuzz_targets/managed_records.rs`: covers raw records and final hardened typed delivery, including terminal and canonicalization failures.
+- `codex-rs/hepta-wire/tests/production_surface/`: positive production-only compilation and raw-owner/codec/key escape rejection.
+- `codex-rs/hepta-wire/src/property_tests.rs` and the `decode_frames`, `managed_records`, `policy_admission` fuzz targets: property/fuzz surfaces.
 - `codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs`: bidirectional raw-binary Rust↔Python negotiation and typed V2 load, including strict duplicate-key and boolean/integer rejection.
 - `codex-rs/hepta-native-gateway/src/lib.rs`: explicit content-negotiated read-only product callsite tests.
 - `codex-rs/hepta-context-compiler/src/wire_tests.rs`: strict schema, payload and wrong-producer rejection.
@@ -272,13 +303,14 @@ Current focused test sources (source references, not pass receipts):
 - `scripts/platform_wire_production_gate.py`: eight-scenario production plan/report/producer-registry validation, resource/recovery negative tests and exact-source intake contracts.
 - `scripts/platform_wire_status.py`: receipt-v2 validation, source consistency, performance/production prerequisites, distinct acceptance identities and fail-closed lifecycle derivation.
 - `.github/workflows/lane-a-foundation.yml`: exact-head and deterministic synthetic-merge receipts with current test floors.
+- `.github/workflows/platform-wire-fuzz.yml`: three fixed libFuzzer targets with exact-source command, raw-log and executed-unit evidence.
 - `.github/workflows/platform-wire-target-host.yml`: exact dispatched SHA, fixed protected host profile, locked/offline target-host qualification and retained receipt.
 - `.github/workflows/platform-wire-performance-intake.yml`: protected registered five-path paired-measurement intake.
 - `.github/workflows/platform-wire-production-intake.yml`: protected registered eight-scenario deployment-observation intake.
 
 In `codex-rs`, run `just test --locked -p codex-hepta-wire`. The exact candidate's Lane A receipt requires the current 41-test wire floor, eight registered adapter-port tests, two bidirectional cross-runtime tests and strict Clippy. Those numbers are admission floors, not stored success claims. Inspect the exact-candidate output and retained command records for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) separately labels target acceptance designs.
 
-Qualification is true only when source-consistent exact-head, synthetic-merge and protected target-host receipt-v2 artifacts all pass. Acceptance additionally requires same-source passed five-path performance and eight-scenario production-composition receipts plus distinct independent-reviewer and operations receipts, each independent of the implementation author. Release additionally requires a source-bound release receipt and artifact digest. Source code, ordinary CI and this guide cannot self-issue those external facts.
+Qualification is true only when source-consistent exact-head, synthetic-merge, protected target-host and three-target fuzz campaign receipts all pass. The fuzz campaign uses `hepta.platform-wire.fuzz-campaign.v2`; the other lifecycle receipts use `hepta.platform-wire.receipt.v2`. Acceptance additionally requires same-source passed five-path performance and eight-scenario production-composition receipts plus distinct independent-reviewer and operations receipts, each independent of the implementation author. Release additionally requires a source-bound release receipt and artifact digest. Source code, ordinary CI and this guide cannot self-issue those external facts.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -290,7 +322,7 @@ Applicable work packages:
 
 The bootstrap package is `P0.7E-DEPENDENCY-INVERSION`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries and focused source tests are defined. Qualification is a later evidence state requiring current exact-head, deterministic synthetic-merge and protected target-host receipts for one source SHA. Acceptance and release remain externally governed after qualification. Later planned packages may remain without invalidating documentation closure, but absent evidence never becomes an implicit pass.
+Source implementation completes only when the declared target root exists, public surfaces match registries and focused source tests are defined. Qualification is a later evidence state requiring current exact-head, deterministic synthetic-merge, protected target-host and three-target fuzz campaign receipts for one source SHA. Acceptance and release remain externally governed after qualification. Later planned packages may remain without invalidating documentation closure, but absent evidence never becomes an implicit pass.
 
 ## 14. Activation, compatibility and retirement
 
@@ -300,7 +332,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. `scripts/platform_wire_status.py` then derives five monotonic, fail-closed states: Designed, Implemented, Qualified, Accepted and Released. Qualified requires current exact-head, synthetic-merge and protected target-host evidence; Accepted additionally requires same-source passed five-path performance and eight-scenario production-composition receipts plus distinct independent-reviewer and operations receipts; Released additionally requires a source-bound release receipt and artifact digest. Selection, activation, canary and promotion remain separate externally governed facts.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Codec composition requires a named caller; production transport composition additionally requires the hardened typed owner at the authenticated transport boundary. `scripts/platform_wire_status.py` derives five fail-closed states over trusted imported evidence: Designed, Implemented, Qualified, Accepted and Released. Qualified requires current exact-head, synthetic-merge, protected target-host and three-target fuzz campaign evidence; Accepted additionally requires same-source passed five-path performance and eight-scenario production-composition receipts plus distinct independent-reviewer and operations receipts; Released additionally requires a source-bound release receipt and artifact digest. Selection, activation, canary and promotion remain separate externally governed facts.
 
 For `platform.wire`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -387,6 +419,8 @@ This receipt records repository source bindings for the current documentation ca
 | `stream_decode` | `StreamingDecoder` | `codex-rs/hepta-wire/src/stream.rs` | header-first, byte/work budget, prefix and poison tests |
 | `authenticated_session` | `WireSession` / `NegotiationTranscript` | `codex-rs/hepta-wire/src/secure_session.rs` | transcript/channel binding, replay and cross-session tests |
 | `authenticated_record` | `AuthenticatedWireSession` / `SessionEndpoint` | `codex-rs/hepta-wire/src/directional_session.rs` | bidirectional, reflection and direction-mismatch tests |
+| `hardened_owner` | `HardenedManagedWireSession` | `codex-rs/hepta-wire/src/hardened_managed_session.rs` | bound admission, key-owner destruction and fresh-session rotation tests |
+| `hardened_stream` | `HardenedRecordStream<C: BoundPayloadCodec>` | `codex-rs/hepta-wire/src/hardened_record_stream/impl.rs` | typed-prefix delivery, canonicalization, byte/record/frame budgets and terminal EOF tests |
 | `runtime_codex_v3` | `adapt_product_wire_v3` | `codex-rs/hepta-codex-adapter/src/wire.rs` | complete-binding round-trip/mutation tests and normal worker callsite |
 | `performance_evidence` | `platform_wire_performance_gate.py` | `scripts/platform_wire_performance_gate.py` | five-path thresholds, plan/report and closed producer registry tests |
 | `production_evidence` | `platform_wire_production_gate.py` | `scripts/platform_wire_production_gate.py` | eight-scenario observation, resource/recovery and closed producer registry tests |
@@ -394,4 +428,4 @@ This receipt records repository source bindings for the current documentation ca
 
 - Source identity and exact Git objects are recorded in `IMPLEMENTATION_MAP.json`; rebinding navigation evidence does not grant execution.
 - The read-only runtime status path and the normal inference-worker runtime.codex V3 admission path are named source-composed callers. Registered context/compiler and runtime/Codex adapters pin canonical producer identities; these source facts are not target-host execution, deployment or operator acceptance.
-- Exact-head, deterministic synthetic-merge and protected target-host execution remain separate qualification receipts. Same-source passed performance and production-composition receipts plus independent reviewer and operations acceptance must be distinct external receipts, followed by a separate release receipt. Activation, canary and promotion remain outside this source map.
+- Exact-head, deterministic synthetic-merge, protected target-host and three-target fuzz execution remain separate qualification receipts. Same-source passed performance and production-composition receipts plus independent reviewer and operations acceptance must be distinct external receipts, followed by a separate release receipt. Activation, canary and promotion remain outside this source map.
