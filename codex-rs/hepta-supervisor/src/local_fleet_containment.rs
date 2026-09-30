@@ -88,6 +88,7 @@ pub(super) fn create_execution(
         .ok_or_else(|| ProcessDriverError::new("CPU quota overflow"))?;
     std::fs::write(path.join("cpu.max"), format!("{quota} 100000"))?;
     std::fs::write(path.join("memory.max"), resources.memory_bytes.to_string())?;
+    std::fs::write(path.join("memory.swap.max"), b"0")?;
     std::fs::write(path.join("memory.oom.group"), b"1")?;
     std::fs::write(
         path.join("pids.max"),
