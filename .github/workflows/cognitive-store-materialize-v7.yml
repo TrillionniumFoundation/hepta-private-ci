@@ -1,0 +1,59 @@
+name: Cognitive store v7 source materialize
+
+on:
+  push:
+    branches:
+      - codex/cognitive-store-full-closure-20260927
+    paths:
+      - .github/workflows/cognitive-store-materialize-v7.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cognitive-store-materialize-v7
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Materialize reviewed V7 source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          shopt -s nullglob
+          parts=(scripts/cognitive_store_v7.patch.b64.*)
+          test "${#parts[@]}" -eq 8
+          cat "${parts[@]}" | base64 --decode > "$RUNNER_TEMP/cognitive_store_v7.patch"
+          echo "5618518765605bacd5bf4262bb19eb153eb327bb1e51c5cbed0925ffc73eec73  $RUNNER_TEMP/cognitive_store_v7.patch" | sha256sum -c -
+          git apply --check "$RUNNER_TEMP/cognitive_store_v7.patch"
+          git apply "$RUNNER_TEMP/cognitive_store_v7.patch"
+          rm -- "${parts[@]}"
+          rm -- .github/workflows/cognitive-store-one-shot-v7.yml
+          rm -- .github/workflows/cognitive-store-materialize-v7.yml
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-cognitive-store \
+            --package codex-hepta-memory \
+            --package codex-hepta-agentd
+          python3 scripts/cognitive_store_status.py --write
+          git diff --check
+
+      - name: Commit materialized source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "cognitive.store: materialize reviewed V7 source repair" \
+            -m "Materialize the previously SHA-256-bound source patch and remove its one-shot transport. This commit deliberately preserves the known recovery-fence regression as visible source state so the subsequent authority, clock, locking, and handoff fixes can be reviewed and qualified against real files. No production, target-host, erasure, acceptance, activation, promotion, or release claim is advanced.\n\nSigned-off-by: OpenAI <noreply@openai.com>"
+          git push origin HEAD:codex/cognitive-store-full-closure-20260927
