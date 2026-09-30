@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -140,7 +141,8 @@ fn temporal_plan(name: &str, objective: Digest32) -> TemporalEvaluationPlan {
             outcome_watermark: 100,
             minimum_rows: 2,
             minimum_ess: FixedQ32::ONE,
-            maximum_weight: FixedQ32::from_raw(4_i64 << 32),
+            // Prespecified legal-action ratio ceiling for these frozen policies.
+            maximum_weight: FixedQ32::from_raw(3_i64 << 31),
         },
         confidence: ClusterConfidencePlan {
             plan_digest: digest(&format!("{name}-confidence-plan")),
@@ -239,7 +241,7 @@ fn fixture() -> Fixture {
     let mut candidate_observations = Vec::new();
     let mut baseline_observations = Vec::new();
     let mut assignments = Vec::new();
-    for index in 0..128 {
+    for index in 0..1024 {
         let decision = id(&format!("decision-{index}"));
         targets.push(HeldOutTarget {
             decision_id: decision.clone(),
@@ -263,7 +265,7 @@ fn fixture() -> Fixture {
                     evaluation_probability: match ProbabilityQ32::from_raw(if candidate {
                         3 << 30
                     } else {
-                        1 << 31
+                        1 << 30
                     }) {
                         Ok(value) => value,
                         Err(error) => panic!("evaluation probability: {error}"),
@@ -279,7 +281,7 @@ fn fixture() -> Fixture {
                     evaluation_probability: match ProbabilityQ32::from_raw(if candidate {
                         1 << 30
                     } else {
-                        1 << 31
+                        3 << 30
                     }) {
                         Ok(value) => value,
                         Err(error) => panic!("evaluation probability: {error}"),
@@ -419,106 +421,143 @@ fn signed_context(
 
 #[test]
 fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
-    let mut fixture = fixture();
-    let frozen = match freeze_product_evaluation_plan_v1(
-        fixture.cross_fold.clone(),
-        fixture.roles.clone(),
-        fixture.sources.clone(),
-        &fixture.candidate_plan,
-        &fixture.baseline_plan,
-    ) {
-        Ok(value) => value,
-        Err(error) => panic!("freeze product plan: {error}"),
-    };
-    let store = MemoryCas::default();
-    let owner = match FencedFinalHoldoutOwnerV1::initialize(
-        store,
-        digest("holdout-binding"),
-        HoldoutWriterFenceV1 {
-            owner_id: id("evaluation-owner"),
-            generation: 1,
-            lease_digest: digest("lease-1"),
-        },
-    ) {
-        Ok(value) => value,
-        Err(error) => panic!("fenced owner: {error}"),
-    };
-    let mut runner = ProductEvaluationRunnerV1::new(owner);
-    let temporal = match runner.evaluate_temporal_comparison(
-        &frozen,
-        &fixture.candidate_plan,
-        &fixture.baseline_plan,
-        &mut fixture.provider,
-    ) {
-        Ok(value) => value,
-        Err(error) => panic!("product evaluation: {error}"),
-    };
-    assert_eq!(fixture.provider.release_count, 1);
-    assert_eq!(temporal.metrics.len(), 1);
-    assert_eq!(
-        temporal.metrics[0].candidate,
-        EvaluationIntervalV1 {
-            lower: temporal.candidate.estimate.doubly_robust.lower,
-            upper: temporal.candidate.estimate.doubly_robust.upper,
+    for require_ineligible in [false, true] {
+        let mut fixture = fixture();
+        if require_ineligible {
+            fixture.roles[0].role = MetricRoleV2::PrimarySuperiority {
+                minimum_improvement: FixedQ32::ONE,
+            };
         }
-    );
+        let frozen = match freeze_product_evaluation_plan_v1(
+            fixture.cross_fold.clone(),
+            fixture.roles.clone(),
+            fixture.sources.clone(),
+            &fixture.candidate_plan,
+            &fixture.baseline_plan,
+        ) {
+            Ok(value) => value,
+            Err(error) => panic!("freeze product plan: {error}"),
+        };
+        let store = MemoryCas::default();
+        let owner = match FencedFinalHoldoutOwnerV1::initialize(
+            store,
+            digest("holdout-binding"),
+            HoldoutWriterFenceV1 {
+                owner_id: id("evaluation-owner"),
+                generation: 1,
+                lease_digest: digest("lease-1"),
+            },
+        ) {
+            Ok(value) => value,
+            Err(error) => panic!("fenced owner: {error}"),
+        };
+        let mut runner = ProductEvaluationRunnerV1::new(owner);
+        let temporal = match runner.evaluate_temporal_comparison(
+            &frozen,
+            &fixture.candidate_plan,
+            &fixture.baseline_plan,
+            &mut fixture.provider,
+        ) {
+            Ok(value) => value,
+            Err(error) => panic!("product evaluation: {error}"),
+        };
+        assert_eq!(fixture.provider.release_count, 1);
+        assert_eq!(temporal.metrics.len(), 1);
+        assert_eq!(
+            temporal.metrics[0].candidate,
+            EvaluationIntervalV1 {
+                lower: temporal.candidate.estimate.doubly_robust.lower,
+                upper: temporal.candidate.estimate.doubly_robust.upper,
+            }
+        );
 
-    let placeholder = ProductQualificationContextV1 {
-        generator: AuthenticatedPrincipalV1 {
-            principal_id: id("placeholder-generator"),
-            credential_chain_digest: digest("placeholder-generator-credential"),
-            signing_key_digest: digest("placeholder-generator-key"),
-            scope_digest: digest("placeholder-scope"),
-            authority_epoch: 7,
-            authenticated_at: 1,
-            expires_at: 100,
-        },
-        evaluator: AuthenticatedPrincipalV1 {
-            principal_id: id("placeholder-evaluator"),
-            credential_chain_digest: digest("placeholder-evaluator-credential"),
-            signing_key_digest: digest("placeholder-evaluator-key"),
-            scope_digest: digest("placeholder-scope"),
-            authority_epoch: 7,
-            authenticated_at: 1,
-            expires_at: 100,
-        },
-        retention_receipt_digests: Vec::new(),
-        unlearning_receipt_digest: Digest32::ZERO,
-    };
-    let template = match runner.qualification_bundle(&temporal, &placeholder) {
-        Ok(value) => value,
-        Err(error) => panic!("template bundle: {error}"),
-    };
-    let (context, _, _) = signed_context(&template, &fixture.roles);
-    let bundle = match runner.qualification_bundle(&temporal, &context) {
-        Ok(value) => value,
-        Err(error) => panic!("qualification bundle: {error}"),
-    };
-    let (_, evidence, verifier) = signed_context(&bundle, &fixture.roles);
-    let mut sink = Sink::default();
-    let qualified = match runner.qualify_and_persist(
-        &temporal,
-        &context,
-        &evidence,
-        ProductTimingEvidenceV1::Qualification,
-        &verifier,
-        50,
-        &mut sink,
-    ) {
-        Ok(value) => value,
-        Err(error) => panic!("qualification: {error}"),
-    };
-    assert!(!qualified.evidence_digest.is_zero());
-    assert_eq!(sink.persisted, vec![qualified.publication_digest]);
-    assert!(!qualified.authority.grants_any());
+        let placeholder = ProductQualificationContextV1 {
+            generator: AuthenticatedPrincipalV1 {
+                principal_id: id("placeholder-generator"),
+                credential_chain_digest: digest("placeholder-generator-credential"),
+                signing_key_digest: digest("placeholder-generator-key"),
+                scope_digest: digest("placeholder-scope"),
+                authority_epoch: 7,
+                authenticated_at: 1,
+                expires_at: 100,
+            },
+            evaluator: AuthenticatedPrincipalV1 {
+                principal_id: id("placeholder-evaluator"),
+                credential_chain_digest: digest("placeholder-evaluator-credential"),
+                signing_key_digest: digest("placeholder-evaluator-key"),
+                scope_digest: digest("placeholder-scope"),
+                authority_epoch: 7,
+                authenticated_at: 1,
+                expires_at: 100,
+            },
+            retention_receipt_digests: Vec::new(),
+            unlearning_receipt_digest: Digest32::ZERO,
+        };
+        let template = match runner.qualification_bundle(&temporal, &placeholder) {
+            Ok(value) => value,
+            Err(error) => panic!("template bundle: {error}"),
+        };
+        let (context, _, _) = signed_context(&template, &fixture.roles);
+        let bundle = match runner.qualification_bundle(&temporal, &context) {
+            Ok(value) => value,
+            Err(error) => panic!("qualification bundle: {error}"),
+        };
+        let (_, evidence, verifier) = signed_context(&bundle, &fixture.roles);
+        let mut sink = Sink::default();
+        let qualified = match runner.qualify_and_persist(
+            &temporal,
+            &context,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            &verifier,
+            50,
+            &mut sink,
+        ) {
+            Ok(value) => value,
+            Err(error) => panic!("qualification: {error}"),
+        };
+        assert!(!qualified.evidence_digest.is_zero());
+        assert_eq!(sink.persisted, vec![qualified.publication_digest]);
+        assert!(!qualified.authority.grants_any());
+        assert_eq!(
+            qualified.decision.decision.disposition,
+            if require_ineligible {
+                crate::IndependentEvaluationDispositionV1::Ineligible
+            } else {
+                crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+            }
+        );
 
-    let mut changed_generator = qualified;
-    changed_generator.generator.principal_id = id("substituted-generator");
-    assert!(changed_generator.validate_integrity().is_err());
+        for mutation in 0..6 {
+            let mut tampered = qualified.clone();
+            match mutation {
+                0 => {
+                    tampered.decision.decision.disposition = if require_ineligible {
+                        crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+                    } else {
+                        crate::IndependentEvaluationDispositionV1::Ineligible
+                    }
+                }
+                1 => tampered.decision.decision.evaluation_id = id("substituted-evaluation"),
+                2 => tampered
+                    .decision
+                    .decision
+                    .failed_metrics
+                    .push(id("substituted-metric")),
+                3 => tampered.baseline_id = id("substituted-baseline"),
+                4 => tampered.decision.decision.baseline_id = id("substituted-baseline"),
+                _ => tampered.decision.decision.candidate_id = id("substituted-candidate"),
+            }
+            assert!(tampered.validate_integrity().is_err());
+        }
+        let mut changed_generator = qualified;
+        changed_generator.generator.principal_id = id("substituted-generator");
+        assert!(changed_generator.validate_integrity().is_err());
 
-    let mut tampered = temporal.clone();
-    tampered.metrics[0].candidate.lower = FixedQ32::ZERO;
-    assert!(runner.qualification_bundle(&tampered, &context).is_err());
+        let mut tampered = temporal.clone();
+        tampered.metrics[0].candidate.lower = FixedQ32::ZERO;
+        assert!(runner.qualification_bundle(&tampered, &context).is_err());
+    }
 }
 
 #[test]

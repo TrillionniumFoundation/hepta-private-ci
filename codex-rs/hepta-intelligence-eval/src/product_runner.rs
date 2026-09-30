@@ -303,6 +303,7 @@ pub enum ProductTimingEvidenceV1<'a> {
 pub struct ProductQualificationReceiptV1 {
     pub temporal_execution_digest: Digest32,
     pub candidate_id: StableId,
+    pub baseline_id: StableId,
     pub evaluator: AuthenticatedPrincipalV1,
     pub generator: AuthenticatedPrincipalV1,
     pub objective_digest: Digest32,
@@ -329,6 +330,7 @@ impl ProductQualificationReceiptV1 {
             || self.authority.grants_any()
             || self.decision.decision.authority.grants_any()
             || self.decision.decision.candidate_id != self.candidate_id
+            || self.decision.decision.baseline_id != self.baseline_id
         {
             return Err(ProductEvaluationError::Integrity("qualification receipt"));
         }
@@ -489,6 +491,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
     ) -> Result<ProductQualificationReceiptV1, ProductEvaluationError> {
         let bundle = self.qualification_bundle(temporal, context)?;
         let candidate_id = bundle.candidate_id.clone();
+        let baseline_id = bundle.baseline_id.clone();
         let evaluator = bundle.evaluator.clone();
         let generator = bundle.generator.clone();
         let objective_digest = bundle.objective_digest;
@@ -528,6 +531,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         let mut receipt = ProductQualificationReceiptV1 {
             temporal_execution_digest: temporal.execution_digest,
             candidate_id,
+            baseline_id,
             evaluator,
             generator,
             objective_digest,
@@ -548,7 +552,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 }
 
 fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification.v3".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification.v4".to_vec();
     for digest in [
         receipt.temporal_execution_digest,
         receipt.objective_digest,
@@ -561,6 +565,16 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
         bytes.extend_from_slice(digest.as_array());
     }
     push_id(&mut bytes, &receipt.candidate_id);
+    push_id(&mut bytes, &receipt.baseline_id);
+    push_id(&mut bytes, &receipt.decision.decision.evaluation_id);
+    push_id(&mut bytes, &receipt.decision.decision.candidate_id);
+    push_id(&mut bytes, &receipt.decision.decision.baseline_id);
+    bytes.push(match receipt.decision.decision.disposition {
+        crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection => 0,
+        crate::IndependentEvaluationDispositionV1::Ineligible => 1,
+        crate::IndependentEvaluationDispositionV1::InsufficientEvidence => 2,
+    });
+    push_ids(&mut bytes, &receipt.decision.decision.failed_metrics);
     push_principal(&mut bytes, &receipt.evaluator);
     push_principal(&mut bytes, &receipt.generator);
     bytes.push(match receipt.claim_scope {
@@ -574,7 +588,7 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
 }
 
 fn product_qualification_seal(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v1".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v2".to_vec();
     bytes.extend_from_slice(product_qualification_evidence_digest(receipt).as_array());
     bytes.extend_from_slice(receipt.evidence_digest.as_array());
     Digest32::of_bytes(&bytes)
