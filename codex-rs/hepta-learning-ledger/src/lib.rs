@@ -178,3 +178,8 @@ mod shadow_tests;
 mod recovery_work;
 pub use recovery_work::LedgerRecoveryWorkV1;
 pub use recovery_work::measure_ledger_recovery_work;
+
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+mod review_host;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::run_local_calibration_review;

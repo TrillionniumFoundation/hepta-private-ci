@@ -16,6 +16,8 @@ workspace = true
 [features]
 default = []
 qualification-legacy-write = []
+# A root-custody local calibration review. It never grants activation authority.
+review-host = []
 
 [dependencies]
 codex-hepta-intuition = { path = "../hepta-intuition" }
@@ -28,3 +30,9 @@ serde_json = { workspace = true }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }
+
+[[bin]]
+name = "hepta-evolution-review"
+path = "src/bin/hepta-evolution-review.rs"
+required-features = ["review-host"]
+test = false
