@@ -23,7 +23,9 @@ impl DurableInferenceControl {
         started: Instant,
         budget: Duration,
     ) -> Result<bool, Error> {
-        if !self.native.compaction_pending || started.elapsed() >= budget {
+        if (!self.native.compaction_pending && !self.features.history.compaction_pending)
+            || started.elapsed() >= budget
+        {
             return Ok(false);
         }
         let temporary = self
@@ -39,6 +41,10 @@ impl DurableInferenceControl {
                 .try_lock()
                 .map_err(|_| Error::WriterUnavailable)?;
             let mut bytes = 0_u64;
+            if let Some(snapshot) = super::feature::history::snapshot(&self.features)? {
+                replacement.write_all(snapshot.as_bytes())?;
+                bytes += snapshot.len() as u64;
+            }
             if let Some(maximum_in_flight) = self.native.maximum_in_flight {
                 let pin = serde_json::to_string(&Event::CapacityPinned { maximum_in_flight })
                     .map_err(|_| Error::CorruptJournal("native capacity encode"))?;
@@ -74,6 +80,10 @@ impl DurableInferenceControl {
                     event
                         .request_id()
                         .is_some_and(|id| self.native.records.contains_key(id))
+                } else if let Some(json) = value.strip_prefix(super::feature::JOURNAL_PREFIX) {
+                    super::feature::keep_live_event(json, &self.features)?
+                } else if value.starts_with(super::feature::history::JOURNAL_PREFIX) {
+                    false // The single frontier above includes committed and pending retirement.
                 } else {
                     true // Generic control-owner events are preserved exactly.
                 };
@@ -110,6 +120,7 @@ impl DurableInferenceControl {
                 return Err(error.into());
             }
             self.native.compaction_pending = false;
+            self.features.history.compaction_pending = false;
             Ok(true)
         })();
         if temporary.exists() {

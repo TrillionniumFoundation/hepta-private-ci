@@ -3,7 +3,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-fn private_directory() -> std::path::PathBuf {
+pub(super) fn private_directory() -> std::path::PathBuf {
     let path = std::env::temp_dir().join(format!(
         "hepta-feature-control-{:032x}",
         rand::random::<u128>()
@@ -18,7 +18,7 @@ fn private_directory() -> std::path::PathBuf {
     path
 }
 
-fn request() -> NeuronFeatureRequestV1 {
+pub(super) fn request() -> NeuronFeatureRequestV1 {
     NeuronFeatureRequestV1 {
         request_id: StableId::new("feature.original").expect("request ID"),
         generation: Generation::new(1).expect("generation"),
@@ -31,7 +31,7 @@ fn request() -> NeuronFeatureRequestV1 {
         expected_output_width: 1,
     }
 }
-fn receipt(request: &NeuronFeatureRequestV1) -> NeuronFeatureReceiptV1 {
+pub(super) fn receipt(request: &NeuronFeatureRequestV1) -> NeuronFeatureReceiptV1 {
     crate::build_neuron_feature_receipt_v1(
         request,
         crate::NeuronModelRuntimeTupleV1 {

@@ -242,6 +242,8 @@ impl DurableInferenceControl {
                 native.replay(json)?;
             } else if let Some(json) = line.strip_prefix(feature::JOURNAL_PREFIX) {
                 features.replay(json)?;
+            } else if let Some(json) = line.strip_prefix(feature::history::JOURNAL_PREFIX) {
+                feature::history::replay(&mut features, &path, json)?;
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
@@ -255,6 +257,14 @@ impl DurableInferenceControl {
                     .any(|id| features.records.contains_key(id))
             {
                 return Err(Error::CapacityExceeded);
+            }
+        }
+        features.history.validate_pending(&features, &path)?;
+        for id in records.keys().chain(native.records.keys()) {
+            if feature::archive_store::lookup(&path, id)?.is_some() {
+                return Err(Error::CorruptJournal(
+                    "cold feature shared identity re-admitted",
+                ));
             }
         }
         #[cfg(unix)]

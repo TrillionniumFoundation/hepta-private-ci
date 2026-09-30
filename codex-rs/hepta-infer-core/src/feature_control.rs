@@ -19,6 +19,10 @@ use super::Error;
 pub(super) mod archive_store;
 #[path = "feature_control_codec.rs"]
 mod codec;
+#[path = "feature_archive.rs"]
+pub(super) mod history;
+pub use history::DEFAULT_FEATURE_COLD_BYTE_LIMIT;
+pub use history::FeatureHistoryMaintenanceReceipt;
 pub(super) const JOURNAL_PREFIX: &str = "feature-v1|";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -47,6 +51,7 @@ impl FeatureDispatchPermitV1 {
 #[derive(Debug, Default)]
 pub(super) struct FeatureJournal {
     pub(super) records: BTreeMap<String, FeatureOperationRecordV1>,
+    pub(super) history: history::Frontier,
 }
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "event", rename_all = "snake_case", deny_unknown_fields)]
@@ -183,6 +188,16 @@ impl DurableInferenceControl {
             .insert(next.request.request_id.to_string(), next);
         Ok(())
     }
+}
+
+pub(super) fn keep_live_event(json: &str, features: &FeatureJournal) -> Result<bool, Error> {
+    let event: Event = serde_json::from_str(json)
+        .map_err(|_| Error::CorruptJournal("typed feature compaction decode"))?;
+    let id = match event {
+        Event::Reserve { request } => request.decode()?.request_id.to_string(),
+        Event::Dispatch { request_id, .. } | Event::Observe { request_id, .. } => request_id,
+    };
+    Ok(features.records.contains_key(&id))
 }
 
 impl FeatureJournal {

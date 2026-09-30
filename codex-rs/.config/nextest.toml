@@ -122,7 +122,6 @@ test-group = 'hepta_product_lifecycle'
 filter = 'package(codex-hepta-agentd) & test(normal_product_bounded_evolution_under_concurrent_load)'
 slow-timeout = { period = "60s", terminate-after = 4 }
 
-
 # The live roster qualification runs multiple real CLI processes and durable
 # publications in one scenario. This bounds its total harness time while each
 # request retains its existing 10-second admission and native exit deadlines.
@@ -146,3 +145,16 @@ retries = 0
 filter = 'package(codex-hepta-infer-core) & test(small_capacity_survives_many_rounds_reload_and_never_replays_history)'
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 6 }
+
+# These experiments retain every real fsync, cold receipt and original replay.
+# Their total test duration is separate from the 100ms product maintenance slice.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-infer-core) & test(feature_cold)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "60s", terminate-after = 10 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-infer-worker-host) & test(physical_cpu_traffic_retires_observed_features_and_replays_full_cold_receipts)'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0
