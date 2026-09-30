@@ -3,8 +3,8 @@
   "schemaVersion": 1,
   "module": "kernel.authority",
   "sourceAnchor": {
-    "commit": "b7b871a28c7443709fbcb27419e5387ebab1ab04",
-    "tree": "03318c882636be00b4516e62a9a1a3a853af93c3"
+    "commit": "be80239ab17b041e357a5aa2161c9b023f8b563c",
+    "tree": "ed49fe9c56c266f80e99316e9112e3dc000bab08"
   },
   "preservedInvariants": [
     "one-authoritative-lease-and-final-use-owner",
@@ -23,10 +23,35 @@
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/tests/authority_effect_process_restart.rs",
     "codex-rs/hepta-fleet/src/authority_port.rs",
+    "qualification/kernel-authority/convergence_acceptance.py",
+    "qualification/kernel-authority/test_convergence_acceptance.py",
+    "qualification/kernel-authority/prepare_candidate.py",
+    "qualification/kernel-authority/run_native_checks.py",
+    "qualification/kernel-authority/runtime_qualification.py",
+    "qualification/kernel-authority/owner_runtime_qualification.py",
+    "qualification/kernel-authority/product_process_recovery.py",
     "qualification/kernel-authority/port_acceptance.py",
+    "qualification/kernel-authority/capacity_matrix.py",
+    "qualification/kernel-authority/hot_path_gate.py",
+    "qualification/kernel-authority/test_native_checks.py",
+    "qualification/kernel-authority/test_runtime_qualification.py",
+    "qualification/kernel-authority/test_owner_runtime_qualification.py",
+    "qualification/kernel-authority/test_product_process_recovery.py",
+    "qualification/kernel-authority/test_port_acceptance.py",
+    "qualification/kernel-authority/test_capacity_matrix.py",
+    "qualification/kernel-authority/test_hot_path_gate.py",
+    "qualification/kernel-authority/test_workflow_coverage.py",
+    ".github/workflows/kernel-authority-convergence.yml",
     ".github/workflows/kernel-authority-production-closure.yml",
     ".github/workflows/kernel-authority-product-process-recovery.yml",
-    ".github/workflows/kernel-authority-target-capacity.yml"
+    ".github/workflows/kernel-authority-target-capacity.yml",
+    "docs/modules/kernel.authority/README.md",
+    "docs/modules/kernel.authority/TECHNICAL.md",
+    "docs/modules/kernel.authority/PORT_MATRIX.md",
+    "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
+    "docs/modules/kernel.authority/HOT_PATH_DECISION.md",
+    "docs/modules/kernel.authority/PRODUCTION_TRUST_PROFILE.md",
+    "docs/modules/kernel.authority/PRODUCTION_CLOSURE.md"
   ],
   "closures": {
     "trustedClockOwnership": {
