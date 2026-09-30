@@ -331,18 +331,20 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_open_state"
 symbol = "AuthorityLeaseRegistry::open_state_dir"
+call_pattern = '\bAuthorityLeaseRegistry::open_state_dir(?:_with_frontier_store|_with_clock|_with_trust)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
-definition_markers = ["pub fn open_state_dir(", "trusted_frontier", "Store::open"]
-product_callers = []
-caller_markers = []
+definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "trusted_frontier", "Store::open"]
+product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_host.rs"]
+caller_markers = ["AuthorityLeaseRegistry::open_state_dir_with_trust", "trust::read_root_file", "RootResourceFrontier::open", "unsafe { libc::geteuid() } != 0"]
 
 [[boundary]]
 id = "authority_lease_put"
 symbol = "AuthorityLeaseRegistry::put_lease"
+call_pattern = '(?:AuthorityLeaseRegistry\s*::|\.\s*)put_lease\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseRegistry", "pub fn put_lease(", "expected_revision"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_host.rs"]
+caller_markers = ["fn authorize(", "self.authority", ".put_lease(lease, previous)", "frontier()", "issued_at_unix_ms"]
 
 [[boundary]]
 id = "authority_lease_revoke"
@@ -355,18 +357,20 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_prune"
 symbol = "AuthorityLeaseRegistry::prune_expired_leases"
+call_pattern = '(?:AuthorityLeaseRegistry\s*::|\.\s*)prune_expired_leases\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn prune_expired_leases(", "MAX_AUTHORITY_PRUNE_BATCH", "expires_at_unix_ms"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_maintenance.rs"]
+caller_markers = ["impl LocalFleetHost", "self.authority", ".prune_expired_leases(1024)", "launch_gate.lock().await"]
 
 [[boundary]]
 id = "authority_lease_epoch_advance"
 symbol = "AuthorityLeaseRegistry::advance_epoch"
+call_pattern = '(?:AuthorityLeaseRegistry\s*::|\bauthority\s*\.\s*)advance_epoch\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn advance_epoch(", "new_authority_epoch", "next.leases.clear()"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_maintenance.rs"]
+caller_markers = ["roll_resource_epoch_if_needed", "rollover_required_with_reserve", "checked_add(1)", ".advance_epoch(frontier.store_revision, next_epoch)"]
 
 [[boundary]]
 id = "authority_lease_verify_use"
