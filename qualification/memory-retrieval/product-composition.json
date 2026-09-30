@@ -59,6 +59,18 @@
     "generation": "compatibility-v1",
     "publicationState": "not-production-approved"
   },
+  "recovery": {
+    "state": "source-contract-not-product-qualified",
+    "matrix": "qualification/memory-retrieval/recovery-matrix.json",
+    "documentation": "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
+    "preparationOwner": "codex-hepta-learning-ledger:RetrievalPrepared/tag-10",
+    "nativeOperationOwner": "codex-hepta-infer-core:NativeRunRecord",
+    "lifecyclePort": "codex-hepta-memory-retrieval:DurableDecisionPortV1",
+    "dispatchUnknownStage": "DispatchOutcomeUnknown",
+    "unknownOutcomePolicy": "exact-operation-reconciliation-only",
+    "blindReplayAllowed": false,
+    "secondDurableOwnerIntroduced": false
+  },
   "stages": [
     {"ordinal": 1, "name": "prepare", "identityField": "execution_identity_v1", "durabilityRequired": false},
     {"ordinal": 2, "name": "durable_publish", "identityField": "execution_identity_v1", "durabilityRequired": true},
@@ -75,6 +87,7 @@
     "durable store identity is absent",
     "transport, endpoint, mTLS profile and scopes are absent",
     "native consumer exact binary receipt is absent",
-    "end-to-end lifecycle receipt is absent"
+    "durable lifecycle port backend and end-to-end lifecycle receipt are absent",
+    "real-process retrieval kill-point and late-result qualification are absent"
   ]
 }

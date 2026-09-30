@@ -10,6 +10,7 @@ use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_learning_ledger::CandidateSetCompleteness;
 use codex_hepta_learning_ledger::RetrievalAssignmentFact;
+use codex_hepta_memory_retrieval::RetrievalExecutionIdentityPartsV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
@@ -60,6 +61,84 @@ fn binding() -> RetrievalNativeBindingV1 {
     }
 }
 
+fn lifecycle_identity(principal: &str, request: &str) -> RetrievalExecutionIdentityV1 {
+    RetrievalExecutionIdentityV1::new(RetrievalExecutionIdentityPartsV1 {
+        tenant: "tenant".to_string(),
+        principal: principal.to_string(),
+        request: request.to_string(),
+        query_digest: digest("query").to_string(),
+        policy_generation: "policy-7".to_string(),
+        encoder_identity: "encoder-release".to_string(),
+        snapshot_identity: "snapshot".to_string(),
+        decision_identity: "retrieval-assignment:test".to_string(),
+    })
+    .expect("lifecycle identity")
+}
+
+#[derive(Debug)]
+struct MockPortError;
+
+impl std::fmt::Display for MockPortError {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str("mock port error")
+    }
+}
+
+impl std::error::Error for MockPortError {}
+
+#[derive(Default)]
+struct MockDecisionPort {
+    compare_calls: u32,
+    quarantine_calls: u32,
+}
+
+impl DurableDecisionPortV1 for MockDecisionPort {
+    type Error = MockPortError;
+
+    fn acquire_writer_fence(&mut self, _writer_identity: &str) -> Result<u64, Self::Error> {
+        Ok(11)
+    }
+
+    fn compare_and_append(
+        &mut self,
+        expected_frontier: u64,
+        record: &DurableDecisionRecordV1,
+    ) -> Result<u64, Self::Error> {
+        self.compare_calls += 1;
+        assert_eq!(record.frontier, expected_frontier + 1);
+        Ok(record.frontier)
+    }
+
+    fn load_latest(
+        &self,
+        _identity: &RetrievalExecutionIdentityV1,
+    ) -> Result<Option<DurableDecisionRecordV1>, Self::Error> {
+        Ok(None)
+    }
+
+    fn quarantine_unknown_outcome(
+        &mut self,
+        expected_frontier: u64,
+        outcome: &QuarantinedUnknownOutcomeV1,
+        writer_fence: u64,
+        payload_digest: &str,
+    ) -> Result<u64, Self::Error> {
+        self.quarantine_calls += 1;
+        assert_eq!(writer_fence, 11);
+        assert_eq!(outcome.reason(), DISPATCH_UNKNOWN_REASON);
+        assert!(!payload_digest.is_empty());
+        Ok(expected_frontier + 1)
+    }
+
+    fn verify_replay_integrity(&self) -> Result<(), Self::Error> {
+        Ok(())
+    }
+
+    fn retire_before_frontier(&mut self, exclusive_frontier: u64) -> Result<u64, Self::Error> {
+        Ok(exclusive_frontier)
+    }
+}
+
 fn native(context: Option<Digest32>) -> NativeRunRecord {
     NativeRunRecord {
         request: NativeRequest {
@@ -99,20 +178,23 @@ fn native(context: Option<Digest32>) -> NativeRunRecord {
 }
 
 #[test]
-fn prepared_published_start_and_outcome_are_distinct_evidence() {
+fn prepared_dispatch_unknown_published_start_and_outcome_are_distinct_evidence() {
     let assignment = assignment(true);
     let prepared = verify_retrieval_delivery_v1(&assignment, &binding(), None).expect("prepared");
     assert_eq!(prepared.stage, RetrievalDeliveryStageV1::AssignmentPrepared);
+    assert!(!prepared.requires_exact_operation_reconciliation());
 
-    // A write-ahead dispatch is committed before the external effect boundary
-    // and must not be mislabeled as publication.
+    // A write-ahead dispatch is committed before the external effect boundary.
+    // It is not publication, but it is no longer safely equivalent to a request
+    // that never crossed dispatch.
     let mut run = native(assignment.prepared_context_digest);
-    let dispatch_prepared = verify_retrieval_delivery_v1(&assignment, &binding(), Some(&run))
-        .expect("dispatch prepared");
+    let dispatch_unknown = verify_retrieval_delivery_v1(&assignment, &binding(), Some(&run))
+        .expect("dispatch unknown");
     assert_eq!(
-        dispatch_prepared.stage,
-        RetrievalDeliveryStageV1::AssignmentPrepared
+        dispatch_unknown.stage,
+        RetrievalDeliveryStageV1::DispatchOutcomeUnknown
     );
+    assert!(dispatch_unknown.requires_exact_operation_reconciliation());
 
     run.revision += 1;
     run.state = NativeReservationState::Released;
@@ -158,23 +240,168 @@ fn prepared_published_start_and_outcome_are_distinct_evidence() {
         verify_retrieval_delivery_v1(&assignment, &binding(), Some(&run)).expect("outcome");
     assert_eq!(outcome.stage, RetrievalDeliveryStageV1::OutcomeObserved);
     assert_eq!(outcome.terminal_status, Some(NativeRunStatus::Completed));
+    assert!(!outcome.requires_exact_operation_reconciliation());
     outcome.validate().expect("receipt");
 }
 
 #[test]
-fn socket_unknown_and_pre_effect_abort_never_create_false_publication() {
+fn socket_unknown_requires_reconciliation_and_pre_effect_abort_does_not() {
     let assignment = assignment(true);
     let mut run = native(assignment.prepared_context_digest);
     run.state = NativeReservationState::Indeterminate;
     let unknown =
         verify_retrieval_delivery_v1(&assignment, &binding(), Some(&run)).expect("unknown");
-    assert_eq!(unknown.stage, RetrievalDeliveryStageV1::AssignmentPrepared);
+    assert_eq!(
+        unknown.stage,
+        RetrievalDeliveryStageV1::DispatchOutcomeUnknown
+    );
+    assert!(unknown.requires_exact_operation_reconciliation());
 
     run.state = NativeReservationState::Released;
     run.pre_dispatch_stop = Some("proved unsent".to_string());
     let aborted =
         verify_retrieval_delivery_v1(&assignment, &binding(), Some(&run)).expect("aborted");
     assert_eq!(aborted.stage, RetrievalDeliveryStageV1::AssignmentPrepared);
+    assert!(!aborted.requires_exact_operation_reconciliation());
+}
+
+#[test]
+fn lifecycle_projection_quarantines_dispatch_unknown_without_a_second_owner() {
+    let assignment = assignment(true);
+    let run = native(assignment.prepared_context_digest);
+    let unknown =
+        verify_retrieval_delivery_v1(&assignment, &binding(), Some(&run)).expect("unknown");
+    let projected = project_retrieval_delivery_lifecycle_v1(
+        &unknown,
+        &binding(),
+        lifecycle_identity("principal", "native-request"),
+        11,
+        23,
+    )
+    .expect("projection");
+
+    assert_eq!(
+        projected.record.phase,
+        RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome
+    );
+    assert_eq!(projected.record.writer_fence, 11);
+    assert_eq!(projected.record.frontier, 23);
+    assert_eq!(
+        projected.record.payload_digest,
+        unknown.receipt_digest.to_string()
+    );
+    let quarantine = projected.quarantine.expect("quarantine");
+    assert_eq!(quarantine.reason(), DISPATCH_UNKNOWN_REASON);
+    assert_eq!(quarantine.identity(), &projected.record.identity);
+}
+
+#[test]
+fn lifecycle_projection_appends_through_one_existing_durable_port_operation() {
+    let assignment = assignment(true);
+    let run = native(assignment.prepared_context_digest);
+    let unknown =
+        verify_retrieval_delivery_v1(&assignment, &binding(), Some(&run)).expect("unknown");
+    let unknown_projection = project_retrieval_delivery_lifecycle_v1(
+        &unknown,
+        &binding(),
+        lifecycle_identity("principal", "native-request"),
+        11,
+        24,
+    )
+    .expect("unknown projection");
+
+    let mut port = MockDecisionPort::default();
+    assert_eq!(
+        append_retrieval_lifecycle_projection_v1(&mut port, 23, &unknown_projection)
+            .expect("quarantine append"),
+        24
+    );
+    assert_eq!(port.quarantine_calls, 1);
+    assert_eq!(port.compare_calls, 0);
+
+    let prepared = verify_retrieval_delivery_v1(&assignment, &binding(), None).expect("prepared");
+    let prepared_projection = project_retrieval_delivery_lifecycle_v1(
+        &prepared,
+        &binding(),
+        lifecycle_identity("principal", "native-request"),
+        11,
+        25,
+    )
+    .expect("prepared projection");
+    assert_eq!(
+        append_retrieval_lifecycle_projection_v1(&mut port, 24, &prepared_projection)
+            .expect("compare append"),
+        25
+    );
+    assert_eq!(port.quarantine_calls, 1);
+    assert_eq!(port.compare_calls, 1);
+}
+
+#[test]
+fn lifecycle_projection_rejects_cross_principal_or_request_identity() {
+    let assignment = assignment(true);
+    let prepared = verify_retrieval_delivery_v1(&assignment, &binding(), None).expect("prepared");
+
+    assert_eq!(
+        project_retrieval_delivery_lifecycle_v1(
+            &prepared,
+            &binding(),
+            lifecycle_identity("other-principal", "native-request"),
+            1,
+            1,
+        ),
+        Err(RetrievalDeliveryError::LifecycleIdentityMismatch(
+            "principal"
+        ))
+    );
+    assert_eq!(
+        project_retrieval_delivery_lifecycle_v1(
+            &prepared,
+            &binding(),
+            lifecycle_identity("principal", "other-request"),
+            1,
+            1,
+        ),
+        Err(RetrievalDeliveryError::LifecycleIdentityMismatch("request"))
+    );
+}
+
+#[test]
+fn lifecycle_projection_preserves_monotonic_semantic_phases() {
+    let assignment = assignment(true);
+    let prepared = verify_retrieval_delivery_v1(&assignment, &binding(), None).expect("prepared");
+    let prepared_projection = project_retrieval_delivery_lifecycle_v1(
+        &prepared,
+        &binding(),
+        lifecycle_identity("principal", "native-request"),
+        1,
+        1,
+    )
+    .expect("prepared projection");
+    assert_eq!(
+        prepared_projection.record.phase,
+        RetrievalLifecyclePhaseV1::QualifiedDecision
+    );
+    assert!(prepared_projection.quarantine.is_none());
+
+    let mut run = native(assignment.prepared_context_digest);
+    run.turn_id = Some("turn".to_string());
+    run.state = NativeReservationState::Running;
+    let started =
+        verify_retrieval_delivery_v1(&assignment, &binding(), Some(&run)).expect("started");
+    let started_projection = project_retrieval_delivery_lifecycle_v1(
+        &started,
+        &binding(),
+        lifecycle_identity("principal", "native-request"),
+        1,
+        2,
+    )
+    .expect("started projection");
+    assert_eq!(
+        started_projection.record.phase,
+        RetrievalLifecyclePhaseV1::ConsumedRetrieval
+    );
+    assert!(started_projection.quarantine.is_none());
 }
 
 #[test]

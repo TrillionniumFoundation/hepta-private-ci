@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.memory-retrieval.recovery-matrix.v1",
+  "module": "memory.retrieval",
+  "authority": "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
+  "durableOwners": {
+    "preparation": "codex-hepta-learning-ledger:RetrievalPrepared/tag-10",
+    "nativeOperation": "codex-hepta-infer-core:NativeRunRecord",
+    "lifecycleAppend": "codex-hepta-memory-retrieval:DurableDecisionPortV1",
+    "secondOwnerIntroduced": false
+  },
+  "states": [
+    {
+      "deliveryStage": "AssignmentPrepared",
+      "lifecyclePhase": "QualifiedDecision",
+      "effectMayBeReplayed": false,
+      "recovery": "revalidate_current_fences_before_new_admission",
+      "learningPermitted": false
+    },
+    {
+      "deliveryStage": "DispatchOutcomeUnknown",
+      "lifecyclePhase": "QuarantinedUnknownOutcome",
+      "effectMayBeReplayed": false,
+      "recovery": "exact_operation_reconciliation_only",
+      "learningPermitted": false
+    },
+    {
+      "deliveryStage": "Published",
+      "lifecyclePhase": "PublishedRetrieval",
+      "effectMayBeReplayed": false,
+      "recovery": "preserve_typed_response_and_reconcile_named_request",
+      "learningPermitted": false
+    },
+    {
+      "deliveryStage": "NativeStarted",
+      "lifecyclePhase": "ConsumedRetrieval",
+      "effectMayBeReplayed": false,
+      "recovery": "reconcile_exact_turn_identity",
+      "learningPermitted": false
+    },
+    {
+      "deliveryStage": "OutcomeObserved",
+      "lifecyclePhase": "AcknowledgedRetrieval",
+      "effectMayBeReplayed": false,
+      "recovery": "idempotent_exact_payload_append",
+      "learningPermitted": true,
+      "learningRequiresFreshCurrentUse": true
+    },
+    {
+      "deliveryStage": "OutcomeObserved:Indeterminate",
+      "lifecyclePhase": "QuarantinedUnknownOutcome",
+      "effectMayBeReplayed": false,
+      "recovery": "exact_operation_reconciliation_only",
+      "learningPermitted": false
+    }
+  ],
+  "crashPoints": [
+    {
+      "id": "before-preparation-append",
+      "requiredResult": "no_lifecycle_fact_no_effect_assumption"
+    },
+    {
+      "id": "after-preparation-before-dispatch",
+      "requiredResult": "recover_preparation_and_revalidate_current_fences"
+    },
+    {
+      "id": "after-dispatch-before-response",
+      "requiredResult": "quarantine_no_blind_replay"
+    },
+    {
+      "id": "after-response-before-turn",
+      "requiredResult": "preserve_publication_without_native_start_claim"
+    },
+    {
+      "id": "after-turn-before-terminal",
+      "requiredResult": "reconcile_exact_turn"
+    },
+    {
+      "id": "after-terminal-before-lifecycle-append",
+      "requiredResult": "recompute_same_digest_and_append_idempotently"
+    },
+    {
+      "id": "after-append-before-ack",
+      "requiredResult": "same_payload_idempotent_different_payload_conflict"
+    },
+    {
+      "id": "late-result-after-deadline-or-cancel",
+      "requiredResult": "retain_truth_withhold_delivery_cache_and_learning"
+    },
+    {
+      "id": "generation-or-revocation-advanced",
+      "requiredResult": "retain_history_fail_current_use_closed"
+    }
+  ],
+  "identity": {
+    "principalMustMatchNativePrincipal": true,
+    "requestMustMatchNativeRequest": true,
+    "decisionMustMatchAssignmentRecord": true,
+    "payloadIsDeliveryReceiptDigest": true,
+    "writerFenceRequired": true,
+    "compareAndAppendRequired": true
+  },
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}

@@ -1,12 +1,15 @@
 //! Verified join between retrieval assignment preparation and the durable native
-//! inference journal. Preparation, external publication, native turn/start, and
-//! terminal outcome observation are distinct monotonic evidence stages.
+//! inference journal. Preparation, dispatch with an unknown external outcome,
+//! external publication, native turn/start, and terminal outcome observation are
+//! distinct monotonic evidence stages.
 //!
 //! A write-ahead `NativeDispatch` is deliberately not publication evidence: it
-//! is committed before the external App Server effect boundary. Publication is
-//! recognized only from an observed typed server response or is implied by a
-//! durable native turn. Unknown socket outcomes therefore remain prepared and
-//! reconcile-only rather than becoming false exposures.
+//! is committed before the external App Server effect boundary. Once that
+//! dispatch is durable, however, the operation is no longer equivalent to a
+//! merely prepared request. Until a typed response or exact turn is observed it
+//! is `DispatchOutcomeUnknown`, must be reconciled by exact operation identity,
+//! and must never be blindly replayed. Publication is recognized only from an
+//! observed typed server response or is implied by a durable native turn.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -14,17 +17,30 @@ use std::fmt;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_learning_ledger::RetrievalPreparationFactV1;
+use codex_hepta_memory_retrieval::DurableDecisionPortV1;
+use codex_hepta_memory_retrieval::DurableDecisionRecordV1;
+use codex_hepta_memory_retrieval::LifecycleErrorV1;
+use codex_hepta_memory_retrieval::QuarantinedUnknownOutcomeV1;
+use codex_hepta_memory_retrieval::RetrievalExecutionIdentityV1;
+use codex_hepta_memory_retrieval::RetrievalLifecyclePhaseV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 const RECEIPT_DOMAIN: &[u8] = b"hepta.retrieval-native-delivery-receipt.v3";
+const DISPATCH_UNKNOWN_REASON: &str = "native_dispatch_outcome_unknown";
+const TERMINAL_INDETERMINATE_REASON: &str = "native_terminal_outcome_indeterminate";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RetrievalDeliveryStageV1 {
-    /// An idempotent preparation is durable. Later freshness fences may still
-    /// fail. Neither publication nor consumer use is claimed.
+    /// An idempotent preparation is durable and no external dispatch is known.
+    /// Later freshness fences may still fail. Neither publication nor consumer
+    /// use is claimed.
     AssignmentPrepared,
+    /// A write-ahead dispatch is durable but no typed server response or exact
+    /// turn has been observed. The external outcome may have happened. Recovery
+    /// is exact-operation reconciliation only; blind replay is forbidden.
+    DispatchOutcomeUnknown,
     /// The App Server returned a typed response before turn/start. Successful
     /// requests normally advance directly to `NativeStarted`.
     Published,
@@ -62,6 +78,16 @@ pub struct RetrievalNativeBindingV1 {
     pub request_id: String,
     pub principal_id: String,
     pub worker_generation: u64,
+}
+
+/// Canonical lifecycle projection of the two existing durable owners. This is
+/// not another ledger or writer. `record` can be appended by the already owned
+/// durable decision port; `quarantine` is present only when exact-operation
+/// reconciliation is required before any further effect or learning use.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RetrievalLifecycleProjectionV1 {
+    pub record: DurableDecisionRecordV1,
+    pub quarantine: Option<QuarantinedUnknownOutcomeV1>,
 }
 
 impl RetrievalDeliveryReceiptV1 {
@@ -115,6 +141,16 @@ impl RetrievalDeliveryReceiptV1 {
                     return Err(RetrievalDeliveryError::InvalidStageEvidence);
                 }
             }
+            RetrievalDeliveryStageV1::DispatchOutcomeUnknown => {
+                if self.context_digest.is_none()
+                    || self.native_request_id.is_none()
+                    || self.publication_receipt_digest.is_some()
+                    || self.turn_id.is_some()
+                    || self.terminal_status.is_some()
+                {
+                    return Err(RetrievalDeliveryError::InvalidStageEvidence);
+                }
+            }
             RetrievalDeliveryStageV1::Published => {
                 if self.context_digest.is_none()
                     || self.native_request_id.is_none()
@@ -150,6 +186,15 @@ impl RetrievalDeliveryReceiptV1 {
             return Err(RetrievalDeliveryError::DigestMismatch);
         }
         Ok(())
+    }
+
+    /// True only when recovery must query the already named native operation and
+    /// may not create a new effect under the same logical retrieval request.
+    #[must_use]
+    pub fn requires_exact_operation_reconciliation(&self) -> bool {
+        self.stage == RetrievalDeliveryStageV1::DispatchOutcomeUnknown
+            || (self.stage == RetrievalDeliveryStageV1::OutcomeObserved
+                && self.terminal_status == Some(NativeRunStatus::Indeterminate))
     }
 
     #[must_use]
@@ -189,6 +234,7 @@ impl RetrievalDeliveryReceiptV1 {
 pub enum RetrievalDeliveryError {
     AssignmentPreparationMismatch,
     NativeIdentityMismatch,
+    LifecycleIdentityMismatch(&'static str),
     InvalidContextDigest,
     NativeDispatchMissingContext,
     NativeContextDigestMismatch,
@@ -197,6 +243,7 @@ pub enum RetrievalDeliveryError {
     InvalidStageEvidence,
     AuthorityGranted,
     DigestMismatch,
+    Lifecycle(LifecycleErrorV1),
 }
 
 impl fmt::Display for RetrievalDeliveryError {
@@ -207,6 +254,12 @@ impl fmt::Display for RetrievalDeliveryError {
 
 impl StdError for RetrievalDeliveryError {}
 
+impl From<LifecycleErrorV1> for RetrievalDeliveryError {
+    fn from(error: LifecycleErrorV1) -> Self {
+        Self::Lifecycle(error)
+    }
+}
+
 /// Join a tag-10 unexposed preparation with one independently named native run.
 /// Inputs must come from their owning durable stores, not caller wire structs.
 /// The returned digest is an integrity receipt, never an authority credential.
@@ -214,8 +267,8 @@ impl StdError for RetrievalDeliveryError {}
 /// The result is the highest stage established by durable evidence. A successful
 /// request may advance directly from `AssignmentPrepared` to `NativeStarted`;
 /// this does not collapse the semantic distinction, because a write-ahead
-/// dispatch never produces `Published`. A typed server rejection establishes
-/// `Published` without claiming a native turn.
+/// dispatch produces `DispatchOutcomeUnknown`, never `Published`. A typed server
+/// rejection establishes `Published` without claiming a native turn.
 pub fn verify_retrieval_delivery_v1(
     preparation: &RetrievalPreparationFactV1,
     binding: &RetrievalNativeBindingV1,
@@ -344,7 +397,11 @@ pub fn verify_retrieval_delivery_v1(
                 (None, None, None) => (
                     request_id,
                     revision,
-                    RetrievalDeliveryStageV1::AssignmentPrepared,
+                    if record.pre_dispatch_stop.is_some() {
+                        RetrievalDeliveryStageV1::AssignmentPrepared
+                    } else {
+                        RetrievalDeliveryStageV1::DispatchOutcomeUnknown
+                    },
                     None,
                     None,
                     None,
@@ -406,6 +463,101 @@ pub fn verify_retrieval_delivery_v1(
     )
 }
 
+/// Project the immutable preparation/native join onto the canonical retrieval
+/// lifecycle. The caller remains responsible for appending `record` through its
+/// existing `DurableDecisionPortV1` with compare-and-append semantics.
+pub fn project_retrieval_delivery_lifecycle_v1(
+    receipt: &RetrievalDeliveryReceiptV1,
+    binding: &RetrievalNativeBindingV1,
+    identity: RetrievalExecutionIdentityV1,
+    writer_fence: u64,
+    frontier: u64,
+) -> Result<RetrievalLifecycleProjectionV1, RetrievalDeliveryError> {
+    receipt.validate()?;
+    if receipt.native_principal_id.as_str() != binding.principal_id.as_str()
+        || receipt.native_worker_generation != binding.worker_generation
+        || receipt
+            .native_request_id
+            .as_deref()
+            .is_some_and(|request| request != binding.request_id.as_str())
+    {
+        return Err(RetrievalDeliveryError::NativeIdentityMismatch);
+    }
+    if identity.principal() != binding.principal_id.as_str() {
+        return Err(RetrievalDeliveryError::LifecycleIdentityMismatch(
+            "principal",
+        ));
+    }
+    if identity.request() != binding.request_id.as_str() {
+        return Err(RetrievalDeliveryError::LifecycleIdentityMismatch("request"));
+    }
+    if identity.decision_identity() != receipt.assignment_record_id.as_str() {
+        return Err(RetrievalDeliveryError::LifecycleIdentityMismatch(
+            "decision_identity",
+        ));
+    }
+
+    let (phase, quarantine_reason) = match receipt.stage {
+        RetrievalDeliveryStageV1::AssignmentPrepared => {
+            (RetrievalLifecyclePhaseV1::QualifiedDecision, None)
+        }
+        RetrievalDeliveryStageV1::DispatchOutcomeUnknown => (
+            RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
+            Some(DISPATCH_UNKNOWN_REASON),
+        ),
+        RetrievalDeliveryStageV1::Published => {
+            (RetrievalLifecyclePhaseV1::PublishedRetrieval, None)
+        }
+        RetrievalDeliveryStageV1::NativeStarted => {
+            (RetrievalLifecyclePhaseV1::ConsumedRetrieval, None)
+        }
+        RetrievalDeliveryStageV1::OutcomeObserved
+            if receipt.terminal_status == Some(NativeRunStatus::Indeterminate) =>
+        {
+            (
+                RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
+                Some(TERMINAL_INDETERMINATE_REASON),
+            )
+        }
+        RetrievalDeliveryStageV1::OutcomeObserved => {
+            (RetrievalLifecyclePhaseV1::AcknowledgedRetrieval, None)
+        }
+    };
+
+    let quarantine = quarantine_reason
+        .map(|reason| QuarantinedUnknownOutcomeV1::new(identity.clone(), reason.to_string()))
+        .transpose()?;
+    let record = DurableDecisionRecordV1 {
+        identity,
+        phase,
+        writer_fence,
+        frontier,
+        payload_digest: receipt.receipt_digest.to_string(),
+    };
+    record.validate()?;
+    Ok(RetrievalLifecycleProjectionV1 { record, quarantine })
+}
+
+/// Append exactly one lifecycle fact through the existing durable owner. An
+/// unknown outcome uses the port's quarantine append; every other stage uses
+/// compare-and-append. The expected frontier and writer fence are never renewed
+/// by this helper, so a stale process cannot regain ownership while recovering.
+pub fn append_retrieval_lifecycle_projection_v1<P: DurableDecisionPortV1>(
+    port: &mut P,
+    expected_frontier: u64,
+    projection: &RetrievalLifecycleProjectionV1,
+) -> Result<u64, P::Error> {
+    match &projection.quarantine {
+        Some(quarantine) => port.quarantine_unknown_outcome(
+            expected_frontier,
+            quarantine,
+            projection.record.writer_fence,
+            &projection.record.payload_digest,
+        ),
+        None => port.compare_and_append(expected_frontier, &projection.record),
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 fn receipt(
     preparation: &RetrievalPreparationFactV1,
@@ -454,6 +606,7 @@ fn stage_code(stage: RetrievalDeliveryStageV1) -> u8 {
         RetrievalDeliveryStageV1::Published => 1,
         RetrievalDeliveryStageV1::NativeStarted => 2,
         RetrievalDeliveryStageV1::OutcomeObserved => 3,
+        RetrievalDeliveryStageV1::DispatchOutcomeUnknown => 4,
     }
 }
 
