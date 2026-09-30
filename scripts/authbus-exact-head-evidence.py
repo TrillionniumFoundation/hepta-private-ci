@@ -27,6 +27,7 @@ RELEVANT_ROOTS = [
     "scripts/authbus-evidence-projection.py",
     "scripts/authbus-exact-head-evidence.py",
     "scripts/authbus-target-host-evidence.py",
+    "scripts/authbus-performance-evidence.py",
 ]
 ARTIFACT_TOKENS = ("authbus", "hepta_evidence", "hepta_agentd", "bao_adapter")
 REQUIRED_PROJECTIONS = (
