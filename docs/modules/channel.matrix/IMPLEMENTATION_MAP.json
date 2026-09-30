@@ -16,8 +16,8 @@
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
   ],
-  "stateOwnerDisposition": "Owns Matrix ingress projection, sync frontier, dispatch ledger, outbox, and transaction identities.",
-  "terminalObserverDisposition": "A homeserver event observation settles send terminality; App Server turn completion and HTTP acceptance cannot substitute.",
+  "stateOwnerDisposition": "The existing MatrixDurableStore owns per-Agent inbox, room/thread bindings, sync frontier, dispatch ledger, outbox and stable transaction identities; MatrixSendObserver has separate in-memory state only.",
+  "terminalObserverDisposition": "The live sender records the homeserver send acknowledgement event ID as OutboxState::Sent. This proves that acknowledgement, not recipient reading or a separately observed sync echo. MatrixSendObserver models a stronger observation target but is not wired to the live sender or a trusted observer.",
   "operations": [
     {
       "designOperation": "admit_event",
@@ -31,12 +31,37 @@
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-matrixd/src/tests.rs",
-          "kind": "runtime_ingress",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "path": "codex-rs/hepta-matrixd/src/runtime/tests.rs",
+          "kind": "durable_inbox_to_app_server_dispatch",
+          "command": "just test --locked -p codex-hepta-matrixd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-matrixd/src/runner_startup_tests.rs",
+          "kind": "sync_before_recovery",
+          "command": "just test --locked -p codex-hepta-matrixd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-sdk/src/sync_tests.rs",
+          "kind": "durable_sync_and_redaction",
+          "command": "just test --locked -p codex-hepta-matrix-sdk --lib"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs",
+          "kind": "limited_timeline_gap_recovery",
+          "command": "just test --locked -p codex-hepta-matrix-sdk --lib"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs",
+          "kind": "mutation_commit_reopen_and_tombstones",
+          "command": "just test --locked -p codex-hepta-matrix-store --test sync_mutation_v2"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/outbox_unresolved.rs",
+          "kind": "parked_unknown_outcome_reopen",
+          "command": "just test --locked -p codex-hepta-matrix-store --test outbox_unresolved"
         }
       ],
-      "sourceSemantics": "Deduplicates enrolled-room events and advances the durable sync frontier with correction/redaction handling.",
+      "sourceSemantics": "Loads one already durable inbox event and dispatches or reconciles it through the owning Agent App Server. Live sync admission, dedupe, redaction and frontier advancement are composed earlier by MatrixSdkClient and MatrixSyncComposer through MatrixDurableStore; process_event does not own the sync cursor.",
       "operation": "admit_event",
       "nativeSymbol": "pub async fn process_event(",
       "sourcePath": "codex-rs/hepta-matrixd/src/runtime.rs",
@@ -56,10 +81,10 @@
         {
           "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
           "kind": "send_identity",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "command": "just test --locked -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch.",
+      "sourceSemantics": "In-memory observer validates supplied identity, deadline and payload/grant digest equality, then binds one transaction. It neither verifies independently issued authority nor prepares the live durable outbox.",
       "operation": "prepare_send",
       "nativeSymbol": "pub fn prepare_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
@@ -79,10 +104,10 @@
         {
           "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
           "kind": "acknowledgement_and_reconciliation",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "command": "just test --locked -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation.",
+      "sourceSemantics": "In-memory observer checks a supplied observation against the prepared transaction and preserves nonterminal uncertainty. It neither authenticates the observer nor records a live homeserver observation in the durable outbox.",
       "operation": "observe_send",
       "nativeSymbol": "pub fn observe_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
@@ -90,12 +115,17 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender."
+    "Bind the live SDK send boundary to independently issued current operation/room/final-payload authority and revocation; room/revision/generation checks and observer digest equality are not VerifiedUseToken consumption.",
+    "Integrate the stronger send-observation contract with the existing MatrixDurableStore transaction identity and an authenticated observer; preserve the homeserver send acknowledgement as a distinct claim.",
+    "Supply authenticated owner-controlled reconciliation for parked uncertain transport outcomes, preserving the stable transaction after retry exhaustion or crash without a new PUT.",
+    "Supply provider-context withdrawal and authenticated resolution for durable dispatched-source redaction scope quarantine; retaining issued dispatch identity and blocking new work does not prove remote terminality or restored-data erasure.",
+    "Compose the bounded gap-fill helper into the live sync path before accepting limited timelines; current live rejection preserves the cursor but is not reconnect completion.",
+    "Enforce HTTP response byte admission before SDK decoding, total retained inbox/outbox capacity and authenticated archival/rotation; event_capacity bounds batch/change/control/scrub work only and V2 journals have fixed 65536-record lifetime ceilings."
   ],
   "externalEvidenceGates": [
-    "real enrolled homeserver/user/device/encryption identity",
-    "live sync and send transport callsites",
-    "rate-limit/reconnect/redaction/restore target qualification"
+    "independently provisioned enrolled homeserver/user/device credentials, encryption and current authority/configuration trust",
+    "exact-candidate real homeserver sync/send, encrypted wire identity, lost-acknowledgement and authenticated observer qualification",
+    "selected-host rate-limit/reconnect/redaction/restore/capacity measurements and independent acceptance"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -123,5 +153,33 @@
   "sourceRoot": [
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
-  ]
+  ],
+  "sourceComposition": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "symbol": "pub(crate) fn start_matrix_companion(",
+      "role": "existing per-Agent sidecar lifecycle, paired release and generation fences"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/runner.rs",
+      "symbol": "pub async fn run(",
+      "role": "composes durable store, Agentd App Server bridge, real SDK sync, inbox recovery and the existing outbox sender"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "symbol": "pub async fn sync_durable_once(",
+      "role": "live authenticated sync and durable owner commit before recovery"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
+      "symbol": "pub async fn run_outbox_sender",
+      "role": "live stable-transaction lease-bounded transport, owner-controlled HTTP retry budget, send acknowledgement and durable unknown_delivery parking"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
+      "symbol": "pub struct MatrixSendObserver",
+      "role": "uncomposed in-memory target state machine; no second durable sender"
+    }
+  ],
+  "sourceCompositionDisposition": "Live Matrix transport and App Server bridge callsites exist. productCallerState remains not_composed for the complete governed prepare_send/observe_send contract, final-use authority and independent terminal observation target."
 }

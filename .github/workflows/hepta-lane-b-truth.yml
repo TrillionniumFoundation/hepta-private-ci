@@ -6,10 +6,15 @@ on:
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrixd/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
+      - "docs/modules/channel.matrix/TECHNICAL.md"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
       - "scripts/hepta-lane-b-*.py"
@@ -24,10 +29,15 @@ on:
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-automation/**"
       - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrixd/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
+      - "docs/modules/channel.matrix/TECHNICAL.md"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
       - "scripts/hepta-lane-b-*.py"
@@ -102,6 +112,11 @@ jobs:
         working-directory: codex-rs
         run: cargo fmt --all -- --check
 
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Verify Rust Lane B owners
         working-directory: codex-rs
         shell: bash
@@ -115,8 +130,7 @@ jobs:
           cargo test -p codex-hepta-automation
           cargo test -p codex-hepta-automation --features taskflow-structural-qualification
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
-          cargo test -p codex-hepta-matrixd --lib
-          cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+          just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
           cargo test -p codex-app-server --test all thread_start
           cargo test -p codex-app-server --test all turn_start
           cargo test -p codex-core executed_tool_calls
@@ -172,6 +186,11 @@ jobs:
           author-email: hepta-lane-b-ci@users.noreply.github.com
           message: Synthetic Lane B merge
 
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
       - name: Verify synthetic merge truth and tests
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
@@ -187,7 +206,7 @@ jobs:
             cd codex-rs
             cargo test -p codex-hepta-automation
             cargo test -p codex-hepta-automation --features taskflow-structural-qualification
-            cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+            just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
           )
           bazel test --test_output=errors \
             //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test \
