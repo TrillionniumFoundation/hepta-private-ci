@@ -67,7 +67,8 @@
           "state": "destination_owner_journal_source_composed_not_deployed",
           "evidence": [
             "codex-rs/hepta-learning-ledger/src/run_start.rs::DurableRunStartJournal"
-          ]
+          ],
+          "activated": false
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -230,7 +231,8 @@
             "durable_writer_round_trips_selected_and_revoked_state",
             "older_valid_backup_cannot_remove_a_later_revocation",
             "indeterminate_handle_fails_closed_until_reopen"
-          ]
+          ],
+          "activated": false
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -320,7 +322,8 @@
         },
         "productionWriter": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [],
+          "activated": false
         },
         "independentAcceptance": {
           "state": "not_established",

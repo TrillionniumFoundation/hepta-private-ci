@@ -167,12 +167,19 @@ def verify_truth_boundary(row: dict[str, Any], mapping: dict[str, Any]) -> None:
         and boundary.get("authenticatedProductionProductExecutionProved", False) is False,
         f"truth boundary {module} authenticated production",
     )
+    need(
+        dimensions["productionWriter"].get("activated") is False
+        and boundary.get("productionWriterActivated", False) is False,
+        f"truth boundary {module} production writer activation",
+    )
     for key in ("independentAcceptance", "activation", "release"):
         need(
             boundary.get(key) is False and dimensions[key].get("established") is False,
             f"truth boundary {module} {key}",
         )
-    if boundary.get("requestLocalReadOnlyProductExecutionProved") is True:
+    read_only = boundary.get("requestLocalReadOnlyProductExecutionProved", False)
+    need(type(read_only) is bool, f"truth boundary {module} read-only claim type")
+    if read_only:
         callers = mapping.get("productCallers", [])
         need(bool(callers), f"truth boundary {module} missing read-only caller")
         for caller in callers:

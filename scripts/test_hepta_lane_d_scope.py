@@ -408,6 +408,7 @@ class LaneDTruthBoundaryTests(unittest.TestCase):
             "module": "utility.ndu",
             "dimensions": {
                 "productCaller": {"authenticatedProductionEstablished": False},
+                "productionWriter": {"activated": False},
                 "independentAcceptance": {"established": False},
                 "activation": {"established": False},
                 "release": {"established": False},
@@ -443,6 +444,10 @@ class LaneDTruthBoundaryTests(unittest.TestCase):
                     self.mapping["claimBoundary"][key] = False
         self.row["dimensions"]["productCaller"]["authenticatedProductionEstablished"] = "false"
         with self.assertRaisesRegex(SystemExit, "authenticated production"):
+            LANE_D.verify_truth_boundary(self.row, self.mapping)
+        self.row["dimensions"]["productCaller"]["authenticatedProductionEstablished"] = False
+        self.mapping["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = "true"
+        with self.assertRaisesRegex(SystemExit, "read-only claim type"):
             LANE_D.verify_truth_boundary(self.row, self.mapping)
 
 
