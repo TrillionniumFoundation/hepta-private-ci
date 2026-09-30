@@ -1,0 +1,300 @@
+name: Neuron runtime release readiness
+
+on:
+  workflow_run:
+    workflows:
+      - Neuron runtime unified readiness
+      - blocking-ci
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact source commit to finalize
+        required: true
+        type: string
+      base_sha:
+        description: Exact integration base commit
+        required: true
+        type: string
+      readiness_run_id:
+        description: Optional exact successful readiness run
+        required: false
+        type: string
+      blocking_run_id:
+        description: Optional exact successful blocking-ci run
+        required: false
+        type: string
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: neuron-runtime-release-readiness-${{ github.event.workflow_run.head_sha || inputs.source_sha }}
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    name: Neuron release readiness
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SOURCE_SHA: ${{ github.event.workflow_run.head_sha || inputs.source_sha }}
+      INPUT_BASE_SHA: ${{ inputs.base_sha }}
+      INPUT_READINESS_RUN_ID: ${{ inputs.readiness_run_id }}
+      INPUT_BLOCKING_RUN_ID: ${{ inputs.blocking_run_id }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Resolve exact candidate and successful source runs
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' "$SOURCE_SHA"
+          import re, sys
+          if re.fullmatch(r"[0-9a-f]{40}", sys.argv[1]) is None:
+              raise SystemExit("SOURCE_SHA must be a lowercase 40-hex commit")
+          PY
+
+          base_sha="$INPUT_BASE_SHA"
+          if [ -z "$base_sha" ]; then
+            pulls="$(gh api \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "/repos/$GITHUB_REPOSITORY/commits/$SOURCE_SHA/pulls")"
+            base_sha="$(python3 - <<'PY' "$SOURCE_SHA" "$pulls"
+          import json, sys
+          source = sys.argv[1]
+          pulls = json.loads(sys.argv[2])
+          exact = [
+              item for item in pulls
+              if item.get("state") == "open"
+              and item.get("head", {}).get("sha") == source
+          ]
+          if not exact:
+              raise SystemExit("no open pull request has the exact source SHA")
+          exact.sort(key=lambda item: item["number"], reverse=True)
+          print(exact[0]["base"]["sha"])
+          PY
+            )"
+          fi
+          python3 - <<'PY' "$base_sha"
+          import re, sys
+          if re.fullmatch(r"[0-9a-f]{40}", sys.argv[1]) is None:
+              raise SystemExit("BASE_SHA must be a lowercase 40-hex commit")
+          PY
+
+          resolve_run() {
+            workflow_file="$1"
+            explicit_id="$2"
+            if [ -n "$explicit_id" ]; then
+              payload="$(gh api \
+                -H 'Accept: application/vnd.github+json' \
+                -H 'X-GitHub-Api-Version: 2022-11-28' \
+                "/repos/$GITHUB_REPOSITORY/actions/runs/$explicit_id")"
+              python3 - <<'PY' "$SOURCE_SHA" "$payload"
+          import json, sys
+          source = sys.argv[1]
+          run = json.loads(sys.argv[2])
+          if run.get("head_sha") != source or run.get("status") != "completed":
+              raise SystemExit("explicit workflow run is not complete for the exact source")
+          if run.get("conclusion") != "success":
+              raise SystemExit("explicit workflow run did not succeed")
+          print(f"{run['id']} {run.get('run_attempt', 1)}")
+          PY
+              return
+            fi
+
+            for attempt in $(seq 1 30); do
+              payload="$(gh api --method GET \
+                -H 'Accept: application/vnd.github+json' \
+                -H 'X-GitHub-Api-Version: 2022-11-28' \
+                "/repos/$GITHUB_REPOSITORY/actions/workflows/$workflow_file/runs" \
+                -f head_sha="$SOURCE_SHA" \
+                -f status=completed \
+                -f per_page=100)"
+              selected="$(python3 - <<'PY' "$SOURCE_SHA" "$payload"
+          import json, sys
+          source = sys.argv[1]
+          runs = json.loads(sys.argv[2]).get("workflow_runs", [])
+          exact = [
+              run for run in runs
+              if run.get("head_sha") == source
+              and run.get("status") == "completed"
+              and run.get("conclusion") == "success"
+          ]
+          exact.sort(key=lambda run: (run.get("run_started_at", ""), run["id"]), reverse=True)
+          if exact:
+              run = exact[0]
+              print(f"{run['id']} {run.get('run_attempt', 1)}")
+          PY
+              )"
+              if [ -n "$selected" ]; then
+                printf '%s\n' "$selected"
+                return
+              fi
+              if [ "$attempt" -lt 30 ]; then
+                sleep 30
+              fi
+            done
+            echo "no successful $workflow_file run for exact source $SOURCE_SHA" >&2
+            return 1
+          }
+
+          read -r readiness_run readiness_attempt < <(
+            resolve_run neuron-runtime-readiness.yml "$INPUT_READINESS_RUN_ID"
+          )
+          read -r blocking_run blocking_attempt < <(
+            resolve_run blocking-ci.yml "$INPUT_BLOCKING_RUN_ID"
+          )
+
+          {
+            printf 'source_sha=%s\n' "$SOURCE_SHA"
+            printf 'base_sha=%s\n' "$base_sha"
+            printf 'readiness_run_id=%s\n' "$readiness_run"
+            printf 'readiness_run_attempt=%s\n' "$readiness_attempt"
+            printf 'blocking_run_id=%s\n' "$blocking_run"
+            printf 'blocking_run_attempt=%s\n' "$blocking_attempt"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ steps.resolve.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact source and base
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.resolve.outputs.base_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Download exact module readiness manifest
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: neuron-readiness-manifest-${{ steps.resolve.outputs.readiness_run_id }}-${{ steps.resolve.outputs.readiness_run_attempt }}
+          path: ${{ runner.temp }}/module-readiness
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.resolve.outputs.readiness_run_id }}
+
+      - name: Capture exact repository baseline job
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.resolve.outputs.base_sha }}
+          BLOCKING_RUN_ID: ${{ steps.resolve.outputs.blocking_run_id }}
+          BLOCKING_RUN_ATTEMPT: ${{ steps.resolve.outputs.blocking_run_attempt }}
+        run: |
+          set -euo pipefail
+          run="$(gh api \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "/repos/$GITHUB_REPOSITORY/actions/runs/$BLOCKING_RUN_ID")"
+          jobs="$(gh api --method GET \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "/repos/$GITHUB_REPOSITORY/actions/runs/$BLOCKING_RUN_ID/jobs" \
+            -f filter=latest \
+            -f per_page=100)"
+          python3 - <<'PY' \
+            "$SOURCE_SHA" "$BASE_SHA" "$BLOCKING_RUN_ATTEMPT" \
+            "$run" "$jobs" "$RUNNER_TEMP/repository-baseline.json"
+          import hashlib
+          import json
+          import sys
+
+          source, base, expected_attempt, run_raw, jobs_raw, output = sys.argv[1:]
+          run = json.loads(run_raw)
+          jobs = json.loads(jobs_raw).get("jobs", [])
+          if run.get("head_sha") != source:
+              raise SystemExit("blocking-ci run is not bound to exact source")
+          if run.get("status") != "completed" or run.get("conclusion") != "success":
+              raise SystemExit("blocking-ci run did not complete successfully")
+          if str(run.get("run_attempt", 1)) != expected_attempt:
+              raise SystemExit("blocking-ci run attempt changed")
+          required = [job for job in jobs if job.get("name") == "CI required"]
+          if len(required) != 1:
+              raise SystemExit("expected exactly one CI required job")
+          job = required[0]
+          if job.get("status") != "completed" or job.get("conclusion") != "success":
+              raise SystemExit("CI required job did not succeed")
+          runner = {
+              "name": job.get("runner_name") or "unknown",
+              "group": job.get("runner_group_name") or "unknown",
+              "labels": sorted(job.get("labels") or []),
+          }
+          canonical = (
+              json.dumps(runner, sort_keys=True, separators=(",", ":")) + "\n"
+          ).encode()
+          evidence = {
+              "schema": "hepta.neuron.runtime.repository-baseline.v1",
+              "sourceSha": source,
+              "baseSha": base,
+              "workflow": "blocking-ci",
+              "checkName": "CI required",
+              "status": job["status"],
+              "conclusion": job["conclusion"],
+              "runId": int(run["id"]),
+              "runAttempt": int(run.get("run_attempt", 1)),
+              "jobId": int(job["id"]),
+              "event": run.get("event"),
+              "htmlUrl": job.get("html_url"),
+              "startedAt": job.get("started_at"),
+              "completedAt": job.get("completed_at"),
+              "runner": runner,
+              "runnerFingerprintSha256": hashlib.sha256(canonical).hexdigest(),
+          }
+          with open(output, "w", encoding="utf-8") as handle:
+              json.dump(evidence, handle, sort_keys=True, separators=(",", ":"))
+              handle.write("\n")
+          PY
+
+      - name: Finalize one same-candidate readiness manifest
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.resolve.outputs.base_sha }}
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -v -s scripts/neuron -p 'test_release_readiness.py'
+          module_manifest="$RUNNER_TEMP/module-readiness/READINESS_MANIFEST.json"
+          test -f "$module_manifest"
+          python3 scripts/neuron/release_readiness.py finalize \
+            --module-manifest "$module_manifest" \
+            --baseline "$RUNNER_TEMP/repository-baseline.json" \
+            --source-sha "$SOURCE_SHA" \
+            --base-sha "$BASE_SHA" \
+            --output "$RUNNER_TEMP/RELEASE_READINESS_MANIFEST.json"
+          python3 - <<'PY' "$RUNNER_TEMP/RELEASE_READINESS_MANIFEST.json"
+          import json, sys
+          value = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert value["qualificationReady"] is True
+          assert value["productionActivation"] is False
+          assert value["release"] is False
+          assert value["blockers"] == []
+          PY
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Retain immutable final readiness manifest
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-release-readiness-${{ steps.resolve.outputs.source_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/module-readiness/READINESS_MANIFEST.json
+            ${{ runner.temp }}/repository-baseline.json
+            ${{ runner.temp }}/RELEASE_READINESS_MANIFEST.json
+          if-no-files-found: warn
+          retention-days: 90
