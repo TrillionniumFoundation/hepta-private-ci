@@ -189,9 +189,9 @@ fn unavailable_degradation_requires_a_bound_degraded_policy() {
         )]),
         Err(
             ProductRecallErrorV1::UnavailableDegradationRequiresBoundPolicy(
-                RetrievalGeneratorOwnerV1::CognitiveTemporal
-            )
-        )
+                RetrievalGeneratorOwnerV1::CognitiveTemporal,
+            ),
+        ),
     );
 }
 
