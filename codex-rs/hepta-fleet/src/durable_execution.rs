@@ -366,6 +366,59 @@ impl DurableFleetStore {
             .map_err(|_| self.indeterminate(format!("bind:{execution_id}"), execution_id.into()))
     }
 
+    /// Revalidate the stored kernel lifetime before recovering a live execution.
+    /// A caller DTO or a current PID alone never establishes resource ownership.
+    pub async fn verify_local_process(
+        &self,
+        execution_id: &str,
+        pid: u32,
+    ) -> Result<(), DurableFleetError> {
+        let row = sqlx::query(crate::durable_process_proof::PROCESS_PROOF_QUERY)
+            .bind(execution_id)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(sqlx_error)?
+            .ok_or_else(|| DurableFleetError::Missing(execution_id.into()))?;
+        crate::durable_process_proof::verify_record(&row, execution_id, pid)?
+            .bound_context()
+            .map(|_| ())
+    }
+
+    /// Kill only the recorded protected cgroup after durable stop intent.
+    /// The reservation remains held until native absence is independently proven.
+    #[cfg(target_os = "linux")]
+    pub async fn kill_local_containment(
+        &self,
+        execution_id: &str,
+    ) -> Result<(), DurableFleetError> {
+        use std::io::Write;
+        use std::os::unix::fs::OpenOptionsExt;
+        let hold = self.request_local_stop(execution_id).await?;
+        if hold.state == "stopped" {
+            return Ok(());
+        }
+        let row = sqlx::query("SELECT boot_identity, containment_dev, containment_ino FROM fleet_execution_holds WHERE execution_id = ?")
+            .bind(execution_id).fetch_one(&self.pool).await.map_err(sqlx_error)?;
+        let boot: String = row.try_get("boot_identity").map_err(sqlx_error)?;
+        if boot != native_boot_identity()? {
+            return Err(DurableFleetError::Stale);
+        }
+        let dev = to_u64(row.try_get("containment_dev").map_err(sqlx_error)?)?;
+        let ino = to_u64(row.try_get("containment_ino").map_err(sqlx_error)?)?;
+        if native_containment(&hold.context.containment)? != (dev, ino) {
+            return Err(DurableFleetError::Stale);
+        }
+        let path = std::path::Path::new("/sys/fs/cgroup")
+            .join(&hold.context.containment)
+            .join("cgroup.kill");
+        let mut kill = fs::OpenOptions::new()
+            .write(true)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC)
+            .open(path)
+            .map_err(native_io)?;
+        kill.write_all(b"1").map_err(native_io)
+    }
+
     pub async fn pending_executions(&self) -> Result<Vec<FleetExecutionHoldV1>, DurableFleetError> {
         let rows = sqlx::query(
             "SELECT context_json, state, process_id FROM fleet_execution_holds
@@ -426,24 +479,31 @@ impl DurableFleetStore {
             let pid: Option<i64> = row.try_get("process_id").map_err(sqlx_error)?;
             let group: Option<i64> = row.try_get("process_group").map_err(sqlx_error)?;
             let ticks: Option<i64> = row.try_get("process_start_ticks").map_err(sqlx_error)?;
-            let (Some(pid), Some(group), Some(ticks)) = (pid, group, ticks) else {
-                return Err(DurableFleetError::Conflict(
-                    "unbound launch requires recovery, not capacity release".into(),
-                ));
-            };
-            let pid = u32::try_from(pid)
-                .map_err(|_| DurableFleetError::Corrupt("invalid process ID".into()))?;
-            if let Some(process) = native_process(pid)?
-                && process.start_ticks == to_u64(ticks)?
-            {
-                return Err(DurableFleetError::Conflict(
-                    "execution process has not been reaped".into(),
-                ));
-            }
-            if process_group_exists(to_u64(group)?)? {
-                return Err(DurableFleetError::Conflict(
-                    "execution descendants have not stopped".into(),
-                ));
+            match (pid, group, ticks) {
+                (Some(pid), Some(group), Some(ticks)) => {
+                    let pid = u32::try_from(pid)
+                        .map_err(|_| DurableFleetError::Corrupt("invalid process ID".into()))?;
+                    if let Some(process) = native_process(pid)?
+                        && process.start_ticks == to_u64(ticks)?
+                    {
+                        return Err(DurableFleetError::Conflict(
+                            "execution process has not been reaped".into(),
+                        ));
+                    }
+                    if process_group_exists(to_u64(group)?)? {
+                        return Err(DurableFleetError::Conflict(
+                            "execution descendants have not stopped".into(),
+                        ));
+                    }
+                }
+                (None, None, None) => {
+                    // A missing PID alone proves nothing. The same boot and
+                    // protected containment dev/ino were verified above, and
+                    // cgroup.events proves its whole subtree empty. The local
+                    // host confines the unprivileged child before exec, so an
+                    // unknown launch can retire only after this native proof.
+                }
+                _ => return Err(DurableFleetError::Corrupt("partial process binding".into())),
             }
         } else {
             // Native reboot proves old OS processes are gone only after the
@@ -484,7 +544,7 @@ impl DurableFleetStore {
 }
 
 #[cfg(target_os = "linux")]
-fn native_containment(relative: &str) -> Result<(u64, u64), DurableFleetError> {
+pub(crate) fn native_containment(relative: &str) -> Result<(u64, u64), DurableFleetError> {
     use std::os::unix::fs::MetadataExt;
 
     if relative.is_empty()
@@ -533,7 +593,7 @@ fn native_containment(relative: &str) -> Result<(u64, u64), DurableFleetError> {
 }
 
 #[cfg(not(target_os = "linux"))]
-fn native_containment(_relative: &str) -> Result<(u64, u64), DurableFleetError> {
+pub(crate) fn native_containment(_relative: &str) -> Result<(u64, u64), DurableFleetError> {
     Err(DurableFleetError::Unavailable(
         "native containment proof requires Linux".into(),
     ))
@@ -583,12 +643,12 @@ pub(crate) fn native_boot_identity() -> Result<String, DurableFleetError> {
     Ok(boot.to_ascii_lowercase())
 }
 
-struct NativeProcess {
-    group: u64,
-    start_ticks: u64,
+pub(crate) struct NativeProcess {
+    pub group: u64,
+    pub start_ticks: u64,
 }
 
-fn native_process(pid: u32) -> Result<Option<NativeProcess>, DurableFleetError> {
+pub(crate) fn native_process(pid: u32) -> Result<Option<NativeProcess>, DurableFleetError> {
     let stat = match fs::read_to_string(format!("/proc/{pid}/stat")) {
         Ok(stat) => stat,
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),

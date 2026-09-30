@@ -18,6 +18,7 @@ default = []
 durable-store = ["dep:sqlx"]
 
 [dependencies]
+libc = { workspace = true }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-paths = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

@@ -27,6 +27,8 @@ mod durable_grants;
 mod durable_metrics;
 mod durable_model;
 #[cfg(feature = "durable-store")]
+mod durable_process_proof;
+#[cfg(feature = "durable-store")]
 mod durable_product;
 #[cfg(feature = "durable-store")]
 mod durable_receipt;
@@ -102,6 +104,10 @@ pub use durable_model::MAX_DURABLE_ACTIVE_GRANTS;
 pub use durable_model::MAX_DURABLE_EXPIRY_BATCH;
 pub use durable_model::MAX_DURABLE_HISTORY_ROWS;
 pub use durable_model::WorkspaceReservationV1;
+#[cfg(feature = "durable-store")]
+pub use durable_process_proof::FleetExecutionVerifier;
+#[cfg(feature = "durable-store")]
+pub use durable_process_proof::FleetProcessBinding;
 #[cfg(feature = "durable-store")]
 pub use durable_store::DurableFleetStore;
 pub use error::FleetRegistryError;
