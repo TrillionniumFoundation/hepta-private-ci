@@ -50,6 +50,37 @@ impl EvidenceFrontierBackend for SegmentedFileEvidenceFrontierBackend {
                 actual: actual_generation,
             });
         }
+        if let Some(current) = state.latest_frontier() {
+            match crate::classify_frontier_merge(&current, new_frontier) {
+                crate::FrontierMergeDecision::IncomingWins => {}
+                crate::FrontierMergeDecision::ExactDuplicate => {
+                    return Err(invalid(
+                        "proposed frontier is an exact duplicate, not a new generation",
+                    ));
+                }
+                crate::FrontierMergeDecision::IncomingStale => {
+                    return Err(invalid("proposed frontier is stale"));
+                }
+                crate::FrontierMergeDecision::ConflictSameOrderDifferentIdentity => {
+                    return Err(invalid(
+                        "proposed frontier has a same-generation identity conflict",
+                    ));
+                }
+                crate::FrontierMergeDecision::InvalidIncoming => {
+                    return Err(invalid("proposed frontier is structurally invalid"));
+                }
+                crate::FrontierMergeDecision::InvalidCurrent => {
+                    return Err(corrupt(
+                        "accepted frontier is structurally invalid under the store lock",
+                    ));
+                }
+                crate::FrontierMergeDecision::RepairRequired => {
+                    return Err(invalid(
+                        "proposed frontier requires an exact signed repair transition",
+                    ));
+                }
+            }
+        }
         let required_generation = actual_generation
             .unwrap_or(0)
             .checked_add(1)
