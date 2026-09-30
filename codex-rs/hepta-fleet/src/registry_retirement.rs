@@ -44,6 +44,11 @@ impl FleetRegistry {
             Err(error) if error.kind() == ErrorKind::NotFound => {}
             Err(error) => return Err(error.into()),
         }
+        // A root-managed live Agent has group-read access for its workload.
+        // Terminal history returns to private custody before publication. Sync
+        // even if a previous attempt changed the mode but failed its barrier.
+        set_private_directory_permissions(record.layout.agent_root())?;
+        sync_directory(record.layout.agent_root())?;
         std::fs::rename(record.layout.agent_root(), &archived)?;
         sync_directory(&archives)?;
         sync_directory(self.layout.agents_root())?;

@@ -87,3 +87,39 @@ fn local_read_rejects_a_symlinked_control_file() {
     std::os::unix::fs::symlink(target, path).expect("fixture symlink");
     assert!(registry.load_agent(&record.manifest.agent_id).is_err());
 }
+
+#[cfg(unix)]
+#[test]
+fn retirement_reclaims_shared_read_permissions_and_preserves_identity_history() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let (_temp, registry, record) = fixture();
+    fs::set_permissions(
+        record.layout.agent_root(),
+        fs::Permissions::from_mode(0o750),
+    )
+    .expect("protected workload read access");
+    let evidence = record.layout.home_root().join("historical-evidence");
+    fs::write(&evidence, b"actual retained history").expect("historical record");
+    let archived = registry
+        .retire_agent(&record.manifest.agent_id, /*expected_generation*/ 0)
+        .expect("terminal archive");
+    assert_eq!(
+        registry
+            .retired_agent_path(&record.manifest.agent_id)
+            .expect("retirement receipt after publication"),
+        Some(archived.clone())
+    );
+    assert_eq!(
+        fs::metadata(&archived).unwrap().permissions().mode() & 0o777,
+        0o700
+    );
+    assert_eq!(
+        fs::read(archived.join("home").join("historical-evidence")).unwrap(),
+        b"actual retained history"
+    );
+    assert!(matches!(
+        registry.register(record.manifest.clone()),
+        Err(super::FleetRegistryError::AlreadyRegistered(agent)) if agent == record.manifest.agent_id
+    ));
+}
