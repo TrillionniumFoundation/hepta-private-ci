@@ -172,6 +172,7 @@ impl FileBackedFreshnessOracleV1 {
         &self,
         requested: &StableId,
     ) -> Result<BTreeMap<StableId, CurrentOwnerStateV1>, CanonicalIntelligenceError> {
+        let verification_started = Instant::now();
         let unavailable = || CanonicalIntelligenceError::FreshnessUnavailable(requested.clone());
         let bytes = crate::intelligence_files::read_bounded(
             &self.path,
@@ -183,9 +184,6 @@ impl FileBackedFreshnessOracleV1 {
         verify_authority_file(&file, &self.verifier, requested)?;
         if file.schema_version != 1 || file.authority_epoch == 0 || file.owners.len() != 7 {
             return Err(unavailable());
-        }
-        if let Some(telemetry) = self.telemetry.as_ref() {
-            telemetry.record_authority_manifest(file.authority_epoch);
         }
         let frontier =
             Digest32::from_str(&file.revocation_frontier_digest).map_err(|_| unavailable())?;
@@ -254,6 +252,13 @@ impl FileBackedFreshnessOracleV1 {
         }
         if !states.contains_key(requested) {
             return Err(unavailable());
+        }
+        if let Some(telemetry) = self.telemetry.as_ref() {
+            telemetry.record_authority_manifest(
+                authority_epoch,
+                best_effort_wall_clock_ms(),
+                duration_micros(verification_started.elapsed()),
+            );
         }
         Ok(states)
     }
@@ -499,6 +504,18 @@ fn wall_clock_ms() -> Result<u64, AgentdIntelligenceProductError> {
         .map_err(|_| AgentdIntelligenceProductError::Clock)?
         .as_millis();
     u64::try_from(millis).map_err(|_| AgentdIntelligenceProductError::Clock)
+}
+
+fn best_effort_wall_clock_ms() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .ok()
+        .and_then(|duration| u64::try_from(duration.as_millis()).ok())
+        .unwrap_or(0)
+}
+
+fn duration_micros(value: Duration) -> u64 {
+    u64::try_from(value.as_micros()).unwrap_or(u64::MAX)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
