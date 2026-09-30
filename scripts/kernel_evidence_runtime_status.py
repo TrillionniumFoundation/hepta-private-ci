@@ -14,6 +14,7 @@ import tempfile
 from typing import Any
 
 OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
+SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 QUALIFICATION_KINDS = (
     "exact_source",
     "deterministic_merge",
@@ -61,21 +62,65 @@ def require_oid(value: str, label: str, *, optional: bool = False) -> None:
         raise ValueError(f"{label} must be a full lowercase Git object id")
 
 
-def receipt_state(path: Path | None, kind: str, source_sha: str) -> dict[str, object]:
+def valid_timestamp_range(value: dict[str, Any]) -> bool:
+    started = value.get("startedAtUnixMs")
+    finished = value.get("finishedAtUnixMs")
+    return (
+        type(started) is int
+        and type(finished) is int
+        and started > 0
+        and finished >= started
+    )
+
+
+def receipt_state(
+    *,
+    path: Path | None,
+    kind: str,
+    source_head_sha: str,
+    source_head_tree: str,
+    base_sha: str,
+    deterministic_merge_sha: str | None,
+    workflow_sha: str,
+    workflow_run_id: str,
+    workflow_run_attempt: str,
+    runner_image: str,
+    target_triple: str,
+) -> dict[str, object]:
     if path is None or not path.is_file():
         return {"present": False, "passed": False, "error": "receipt is absent"}
     try:
         value = load_json(path)
+        expected_merge = deterministic_merge_sha if kind == "deterministic_merge" else None
+        expected_tested_object = (
+            deterministic_merge_sha if kind == "deterministic_merge" else source_head_sha
+        )
+        log_sha256 = value.get("logSha256")
         passed = (
             value.get("schemaVersion") == 2
             and value.get("module") == "kernel.evidence"
             and value.get("receiptKind") == "candidate_qualification"
             and value.get("kind") == kind
-            and value.get("sourceHeadSha") == source_sha
+            and value.get("sourceHeadSha") == source_head_sha
+            and value.get("sourceHeadTree") == source_head_tree
+            and value.get("baseSha") == base_sha
+            and value.get("deterministicMergeSha") == expected_merge
+            and value.get("testedObjectSha") == expected_tested_object
+            and value.get("workflowSha") == workflow_sha
+            and value.get("workflowRunId") == workflow_run_id
+            and value.get("workflowRunAttempt") == workflow_run_attempt
+            and value.get("runnerImage") == runner_image
+            and value.get("targetTriple") == target_triple
             and value.get("status") == "passed"
             and value.get("passed") is True
             and value.get("exitCode") == 0
+            and valid_timestamp_range(value)
+            and isinstance(value.get("command"), str)
+            and bool(value.get("command"))
+            and isinstance(log_sha256, str)
+            and SHA256.fullmatch(log_sha256) is not None
             and value.get("qualificationGranted") is False
+            and value.get("independentAcceptanceGranted") is False
             and value.get("productionActivationGranted") is False
             and value.get("releaseGranted") is False
         )
@@ -83,7 +128,12 @@ def receipt_state(path: Path | None, kind: str, source_sha: str) -> dict[str, ob
             "present": True,
             "passed": passed,
             "sha256": sha256_file(path),
-            "error": None if passed else "receipt is not exact terminal success",
+            "testedObjectSha": value.get("testedObjectSha"),
+            "workflowRunId": value.get("workflowRunId"),
+            "workflowRunAttempt": value.get("workflowRunAttempt"),
+            "error": None
+            if passed
+            else "receipt identity, execution, or authority boundary is not exact",
         }
     except (OSError, ValueError, json.JSONDecodeError) as error:
         return {"present": True, "passed": False, "error": str(error)}
@@ -119,6 +169,9 @@ def build_status(
         ("final merge", final_merge_sha or ""),
     ):
         require_oid(value, label, optional=True)
+    if not workflow_run_id or not workflow_run_attempt or not runner_image or not target_triple:
+        raise ValueError("workflow, runner, and target identity must be non-empty")
+
     checked_in = load_json(checked_in_status_source)
     checked_anchor = checked_in.get("asOfCommit")
     checked_tree = checked_in.get("asOfTree")
@@ -126,7 +179,19 @@ def build_status(
     require_oid(str(checked_tree or ""), "checked-in status tree")
 
     receipts = {
-        kind: receipt_state(qualification_receipts.get(kind), kind, source_head_sha)
+        kind: receipt_state(
+            path=qualification_receipts.get(kind),
+            kind=kind,
+            source_head_sha=source_head_sha,
+            source_head_tree=source_head_tree,
+            base_sha=base_sha,
+            deterministic_merge_sha=deterministic_merge_sha,
+            workflow_sha=workflow_sha,
+            workflow_run_id=workflow_run_id,
+            workflow_run_attempt=workflow_run_attempt,
+            runner_image=runner_image,
+            target_triple=target_triple,
+        )
         for kind in QUALIFICATION_KINDS
     }
     crash_state: dict[str, object]
@@ -145,6 +210,12 @@ def build_status(
                 and crash.get("receiptKind") == "crash_consistency_matrix"
                 and crash.get("sourceHeadSha") == source_head_sha
                 and crash.get("sourceHeadTree") == source_head_tree
+                and crash.get("baseSha") == base_sha
+                and crash.get("workflowSha") == workflow_sha
+                and crash.get("workflowRunId") == workflow_run_id
+                and crash.get("workflowRunAttempt") == workflow_run_attempt
+                and crash.get("runnerImage") == runner_image
+                and crash.get("targetTriple") == target_triple
                 and crash.get("passed") is True
                 and crash.get("scenarioCount") == crash.get("requiredScenarioCount")
                 and crash.get("targetHostAcceptanceGranted") is False
@@ -155,7 +226,9 @@ def build_status(
                 "present": True,
                 "passed": passed,
                 "sha256": sha256_file(crash_summary),
-                "error": None if passed else "crash summary is not exact terminal success",
+                "error": None
+                if passed
+                else "crash summary identity or terminal result is not exact",
             }
         except (OSError, ValueError, json.JSONDecodeError) as error:
             crash_state = {"present": True, "passed": False, "error": str(error)}
