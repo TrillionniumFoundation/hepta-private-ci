@@ -66,21 +66,33 @@ where
 
     fn lock_control(
         &self,
-    ) -> Result<MutexGuard<'_, GuardedOwnerV2<W, P, G>>, AgentdNeuronControlErrorV2> {
-        self.guarded.try_lock().map_err(|error| match error {
-            TryLockError::WouldBlock => {
+    ) -> Result<AgentdNeuronOwnerLockGuardV2<'_, W, P, G>, AgentdNeuronControlErrorV2> {
+        self.counters
+            .owner_lock_attempts
+            .fetch_add(1, Ordering::Relaxed);
+        let started = Instant::now();
+        match self.guarded.try_lock() {
+            Ok(guard) => {
+                self.counters.record_lock_wait(elapsed_micros(started));
+                Ok(AgentdNeuronOwnerLockGuardV2 {
+                    guard,
+                    counters: &self.counters,
+                    acquired_at: Instant::now(),
+                })
+            }
+            Err(TryLockError::WouldBlock) => {
                 self.counters
                     .owner_busy_rejections
                     .fetch_add(1, Ordering::Relaxed);
-                AgentdNeuronControlErrorV2::OwnerBusy
+                Err(AgentdNeuronControlErrorV2::OwnerBusy)
             }
-            TryLockError::Poisoned(_) => {
+            Err(TryLockError::Poisoned(_)) => {
                 self.counters
                     .owner_poisoned_failures
                     .fetch_add(1, Ordering::Relaxed);
-                AgentdNeuronControlErrorV2::OwnerPoisoned
+                Err(AgentdNeuronControlErrorV2::OwnerPoisoned)
             }
-        })
+        }
     }
 
     fn observe_locked(

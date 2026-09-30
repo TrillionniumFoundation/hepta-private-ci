@@ -74,6 +74,20 @@ impl NeuronAdmissionGuard for BoundConfiguration<'_> {
 pub struct AgentdNeuronOperationalCountersV2 {
     pub owner_busy_rejections: u64,
     pub owner_poisoned_failures: u64,
+    /// Every serialized owner acquisition attempt, including immediate busy
+    /// and poisoned outcomes.
+    pub owner_lock_attempts: u64,
+    /// Successful serialized owner acquisitions.
+    pub owner_lock_acquired: u64,
+    /// Cumulative elapsed time between acquisition attempt and successful
+    /// ownership. The current owner uses `try_lock`; busy calls are represented
+    /// by `owner_busy_rejections` rather than hidden wait time.
+    pub owner_lock_wait_micros_total: u64,
+    pub owner_lock_wait_micros_max: u64,
+    /// Cumulative and maximum time spent inside the serialized owner section,
+    /// including provider effects and durable reconciliation.
+    pub owner_lock_hold_micros_total: u64,
+    pub owner_lock_hold_micros_max: u64,
     pub entry_rejections_before_runtime: u64,
     pub stale_invocation_rejections: u64,
     pub runtime_admission_denials: u64,

@@ -31,3 +31,7 @@ mod durable_state_tests;
 #[cfg(test)]
 #[path = "neuron_runtime_v2_decision_cell_fixture.rs"]
 mod decision_cell_tests;
+
+#[cfg(test)]
+#[path = "neuron_runtime_v2_lock_metrics_tests.rs"]
+mod lock_metrics_tests;

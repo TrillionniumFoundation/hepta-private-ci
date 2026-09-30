@@ -156,6 +156,12 @@ where
 struct AgentdNeuronCounterStoreV2 {
     owner_busy_rejections: AtomicU64,
     owner_poisoned_failures: AtomicU64,
+    owner_lock_attempts: AtomicU64,
+    owner_lock_acquired: AtomicU64,
+    owner_lock_wait_micros_total: AtomicU64,
+    owner_lock_wait_micros_max: AtomicU64,
+    owner_lock_hold_micros_total: AtomicU64,
+    owner_lock_hold_micros_max: AtomicU64,
     entry_rejections_before_runtime: AtomicU64,
     stale_invocation_rejections: AtomicU64,
     runtime_admission_denials: AtomicU64,
@@ -168,10 +174,35 @@ struct AgentdNeuronCounterStoreV2 {
 }
 
 impl AgentdNeuronCounterStoreV2 {
+    fn record_lock_wait(&self, elapsed: u64) {
+        self.owner_lock_acquired.fetch_add(1, Ordering::Relaxed);
+        self.owner_lock_wait_micros_total
+            .fetch_add(elapsed, Ordering::Relaxed);
+        self.owner_lock_wait_micros_max
+            .fetch_max(elapsed, Ordering::Relaxed);
+    }
+
+    fn record_lock_hold(&self, elapsed: u64) {
+        self.owner_lock_hold_micros_total
+            .fetch_add(elapsed, Ordering::Relaxed);
+        self.owner_lock_hold_micros_max
+            .fetch_max(elapsed, Ordering::Relaxed);
+    }
+
     fn snapshot(&self) -> AgentdNeuronOperationalCountersV2 {
         AgentdNeuronOperationalCountersV2 {
             owner_busy_rejections: self.owner_busy_rejections.load(Ordering::Relaxed),
             owner_poisoned_failures: self.owner_poisoned_failures.load(Ordering::Relaxed),
+            owner_lock_attempts: self.owner_lock_attempts.load(Ordering::Relaxed),
+            owner_lock_acquired: self.owner_lock_acquired.load(Ordering::Relaxed),
+            owner_lock_wait_micros_total: self
+                .owner_lock_wait_micros_total
+                .load(Ordering::Relaxed),
+            owner_lock_wait_micros_max: self.owner_lock_wait_micros_max.load(Ordering::Relaxed),
+            owner_lock_hold_micros_total: self
+                .owner_lock_hold_micros_total
+                .load(Ordering::Relaxed),
+            owner_lock_hold_micros_max: self.owner_lock_hold_micros_max.load(Ordering::Relaxed),
             entry_rejections_before_runtime: self
                 .entry_rejections_before_runtime
                 .load(Ordering::Relaxed),
@@ -184,6 +215,49 @@ impl AgentdNeuronCounterStoreV2 {
             recovery_pending: self.recovery_pending.load(Ordering::Relaxed),
             recovery_errors: self.recovery_errors.load(Ordering::Relaxed),
         }
+    }
+}
+
+struct AgentdNeuronOwnerLockGuardV2<'a, W, P, G>
+where
+    W: AnchorWitnessStore,
+    P: DurableNeuronInferenceControlPort,
+{
+    guard: MutexGuard<'a, GuardedOwnerV2<W, P, G>>,
+    counters: &'a AgentdNeuronCounterStoreV2,
+    acquired_at: Instant,
+}
+
+impl<W, P, G> std::ops::Deref for AgentdNeuronOwnerLockGuardV2<'_, W, P, G>
+where
+    W: AnchorWitnessStore,
+    P: DurableNeuronInferenceControlPort,
+{
+    type Target = GuardedOwnerV2<W, P, G>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.guard
+    }
+}
+
+impl<W, P, G> std::ops::DerefMut for AgentdNeuronOwnerLockGuardV2<'_, W, P, G>
+where
+    W: AnchorWitnessStore,
+    P: DurableNeuronInferenceControlPort,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.guard
+    }
+}
+
+impl<W, P, G> Drop for AgentdNeuronOwnerLockGuardV2<'_, W, P, G>
+where
+    W: AnchorWitnessStore,
+    P: DurableNeuronInferenceControlPort,
+{
+    fn drop(&mut self) {
+        self.counters
+            .record_lock_hold(elapsed_micros(self.acquired_at));
     }
 }
 

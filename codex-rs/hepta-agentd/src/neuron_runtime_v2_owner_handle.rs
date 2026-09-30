@@ -43,7 +43,11 @@ impl AgentdNeuronHandleV2 {
     }
 
     /// Administrative local reconciliation. This never dispatches model work.
-    pub fn reconcile(&self) -> Result<(), NeuronRuntimeV2Error> {
+    ///
+    /// This boundary is crate-private by design. External product callers hold
+    /// only preparation and guarded-result capabilities; administrative truth
+    /// and recovery are exposed by `AgentdNeuronGenerationControllerV2`.
+    pub(crate) fn reconcile(&self) -> Result<(), NeuronRuntimeV2Error> {
         self.owner.reconcile()
     }
 
@@ -53,7 +57,7 @@ impl AgentdNeuronHandleV2 {
     /// This postcondition is intentionally stronger than the compatibility
     /// `reconcile()` method: daemon start, seal and generation handoff must not
     /// open an execution gate while exact recovery is still required.
-    pub fn reconcile_control(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+    pub(crate) fn reconcile_control(&self) -> Result<(), AgentdNeuronControlErrorV2> {
         self.owner.reconcile_control()?;
         let snapshot = self.owner.operational_snapshot_control()?;
         if snapshot.pending_operation_code.is_some() || snapshot.pending_witness_count != 0 {
@@ -64,7 +68,10 @@ impl AgentdNeuronHandleV2 {
     }
 
     /// Query exact operation truth through the same serialized product owner.
-    pub fn query_operation(
+    ///
+    /// Unguarded truth is an administrative capability and is therefore only
+    /// reachable through this crate's generation controller.
+    pub(crate) fn query_operation(
         &self,
         tick_id: &StableId,
         input_digest: Digest32,
@@ -72,7 +79,7 @@ impl AgentdNeuronHandleV2 {
         self.owner.query_operation(tick_id, input_digest)
     }
 
-    pub fn query_operation_control(
+    pub(crate) fn query_operation_control(
         &self,
         tick_id: &StableId,
         input_digest: Digest32,
@@ -81,8 +88,8 @@ impl AgentdNeuronHandleV2 {
     }
 
     /// Derive the canonical input digest and query the exact operation through
-    /// the same serialized owner. This is the preferred host integration path.
-    pub fn query_input_operation(
+    /// the same serialized owner. This is controller-only administrative truth.
+    pub(crate) fn query_input_operation(
         &self,
         input: &NeuronTickInputV1,
     ) -> Result<NeuronOperationStatusV2, NeuronRuntimeV2Error> {
@@ -92,7 +99,7 @@ impl AgentdNeuronHandleV2 {
     /// Converge provider truth without closing a proven-unexecuted reservation.
     /// This is the serving/startup-safe recovery boundary; the report omits the
     /// model result and grants no result-use authority.
-    pub fn recover_operation(
+    pub(crate) fn recover_operation(
         &self,
         input: &NeuronTickInputV1,
     ) -> Result<AgentdNeuronRecoveryReportV2, AgentdNeuronControlErrorV2> {
@@ -120,17 +127,17 @@ impl AgentdNeuronHandleV2 {
 
     /// Advisory capacity through the same serialized product owner. Admission
     /// remains authoritative and may reject payload-specific work sooner.
-    pub fn capacity_snapshot(&self) -> Result<NeuronRuntimeCapacityV2, NeuronRuntimeV2Error> {
+    pub(crate) fn capacity_snapshot(&self) -> Result<NeuronRuntimeCapacityV2, NeuronRuntimeV2Error> {
         self.owner.capacity_snapshot()
     }
 
-    pub fn operational_snapshot(
+    pub(crate) fn operational_snapshot(
         &self,
     ) -> Result<AgentdNeuronOperationalSnapshotV2, AgentdNeuronControlErrorV2> {
         self.owner.operational_snapshot_control()
     }
 
-    pub fn operational_counters(&self) -> AgentdNeuronOperationalCountersV2 {
+    pub(crate) fn operational_counters(&self) -> AgentdNeuronOperationalCountersV2 {
         self.owner.operational_counters()
     }
 
