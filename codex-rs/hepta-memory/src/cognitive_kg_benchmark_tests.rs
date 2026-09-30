@@ -5,6 +5,7 @@ use std::time::Instant;
 use codex_hepta_kg::KnowledgeRelationQueryV2;
 use codex_hepta_kg::query_relations_with_work;
 use codex_hepta_types::StableId;
+use pretty_assertions::assert_eq;
 use serde_json::json;
 use tempfile::TempDir;
 use tokio::sync::Barrier;
@@ -36,11 +37,18 @@ const DEFAULT_CONTENTION_READERS: usize = 4;
 const DEFAULT_CONTENTION_ROUNDS: usize = 10;
 
 fn configured_count(name: &str, default: usize, maximum: usize) -> usize {
-    std::env::var(name)
-        .ok()
-        .and_then(|value| value.parse::<usize>().ok())
-        .filter(|value| *value > 0 && *value <= maximum)
-        .unwrap_or(default)
+    match std::env::var(name) {
+        Err(std::env::VarError::NotPresent) => default,
+        Err(error) => panic!("invalid benchmark setting {name}: {error}"),
+        Ok(raw) => {
+            let value = raw.parse::<usize>().expect("integer benchmark setting");
+            assert!(
+                (1..=maximum).contains(&value),
+                "out-of-range benchmark setting {name}"
+            );
+            value
+        }
+    }
 }
 
 fn facts() -> KgFactSetDraft {
@@ -465,6 +473,14 @@ async fn qualification_knowledge_graph_capacity_receipt() {
         "postContentionGeneration": post_contention_generation,
         "logicalNodes": logical_counts.0,
         "logicalEdges": logical_counts.1,
+        "canonicalNodeCount": canonical_generation.nodes.len(),
+        "canonicalEdgeCount": canonical_generation.edges.len(),
+        "canonicalSupportCount": canonical_generation
+            .nodes
+            .iter()
+            .map(|node| node.supports.len())
+            .chain(canonical_generation.edges.iter().map(|edge| edge.supports.len()))
+            .sum::<usize>(),
         "revisionEntityRows": revision_fact_counts.0,
         "revisionRelationRows": revision_fact_counts.1,
         "compactGenerationWitnessRows": compact_generation_rows,
@@ -482,12 +498,14 @@ async fn qualification_knowledge_graph_capacity_receipt() {
                 .saturating_mul(1_000_000_000_000)
                 / total_write_ns.max(1),
         },
+        "queryTiming": "owner_product_retrieval_including_prepared_index",
         "queryNs": {
             "p50": percentile_ns(&query_ns, 50),
             "p95": percentile_ns(&query_ns, 95),
             "p99": percentile_ns(&query_ns, 99),
         },
         "boundedQueryWork": {
+            "implementation": "full_scan_reference_v2",
             "returnedEdges": bounded_query_result.edges.len(),
             "omittedEdges": bounded_query_result.omitted_count,
             "validatedNodes": bounded_query_work.validated_nodes,
@@ -542,3 +560,6 @@ async fn qualification_knowledge_graph_capacity_receipt() {
         serde_json::to_string(&receipt).expect("serialize KG performance receipt")
     );
 }
+
+#[path = "cognitive_kg_history_tests.rs"]
+mod history;

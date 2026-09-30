@@ -3,9 +3,8 @@ use std::collections::BTreeSet;
 use std::future::Future;
 
 use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_kg::KnowledgeGenerationV2;
 use codex_hepta_kg::KnowledgeRelationQueryV2;
-use codex_hepta_kg::query_relations;
+use codex_hepta_kg::VerifiedKnowledgeGenerationV2;
 use codex_hepta_types::StableId;
 use serde::Serialize;
 use sqlx::Row;
@@ -46,7 +45,14 @@ pub(crate) const MAX_RETRIEVAL_OWNER_CHANNELS: usize = 7;
 
 // Scratch space for one SQLite read transaction, never shared across requests.
 // Each selected scope/generation is materialized once across relation channels.
-type RetrievalGenerations = BTreeMap<(String, i64), KnowledgeGenerationV2>;
+struct RetrievalGeneration {
+    verified: VerifiedKnowledgeGenerationV2,
+    compact_supports: Option<BTreeMap<String, (String, i64)>>,
+}
+
+// The owner/store is fixed by the surrounding SQLite read transaction. Never
+// reuse this derived view after the transaction or across correction/reopen.
+type RetrievalGenerations = BTreeMap<(String, i64), RetrievalGeneration>;
 
 const RRF_K: u64 = 60;
 const RRF_SCALE: u64 = 1_000_000;
@@ -797,19 +803,41 @@ impl CognitiveStore {
                 continue;
             };
 
-            let generation =
-                match generations.entry((seed.projection_scope.clone(), seed.generation)) {
-                    std::collections::btree_map::Entry::Vacant(entry) => entry.insert(
-                        load_canonical_generation_tx(
-                            transaction,
-                            &seed.projection_scope,
-                            seed.generation,
-                        )
-                        .await?,
-                    ),
-                    std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
-                };
-            if generation.generation_digest.to_string() != generation_sha256.as_str() {
+            let generation = match generations
+                .entry((seed.projection_scope.clone(), seed.generation))
+            {
+                std::collections::btree_map::Entry::Vacant(entry) => {
+                    let loaded = load_canonical_generation_tx(
+                        transaction,
+                        &seed.projection_scope,
+                        seed.generation,
+                    )
+                    .await?;
+                    let verified = VerifiedKnowledgeGenerationV2::new(loaded).map_err(|error| {
+                        CognitiveStoreError::Corrupt(format!(
+                            "KG query view rejected generation: {error}"
+                        ))
+                    })?;
+                    let compact_supports = load_compact_edge_support_index_tx(
+                        transaction,
+                        &seed.projection_scope,
+                        seed.generation,
+                    )
+                    .await?;
+                    entry.insert(RetrievalGeneration {
+                        verified,
+                        compact_supports,
+                    })
+                }
+                std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
+            };
+            if generation
+                .verified
+                .generation()
+                .generation_digest
+                .to_string()
+                != generation_sha256.as_str()
+            {
                 return Err(CognitiveStoreError::Corrupt(
                     "KG product query generation digest diverged from persisted semantics"
                         .to_string(),
@@ -835,9 +863,10 @@ impl CognitiveStore {
                     kind.relation(),
                 )?],
                 None => generation
-                    .edges
+                    .verified
+                    .relation_kinds()
                     .iter()
-                    .map(|edge| edge.identity.relation.clone())
+                    .cloned()
                     .filter(|kind| !typed_kinds.contains(kind))
                     .collect::<BTreeSet<_>>()
                     .into_iter()
@@ -848,9 +877,9 @@ impl CognitiveStore {
             if relation_kinds.is_empty() {
                 continue;
             }
-            let query_result = query_relations(
-                generation,
-                KnowledgeRelationQueryV2 {
+            let query_result = generation
+                .verified
+                .query_relations(KnowledgeRelationQueryV2 {
                     query_id: StableId::new("query:cognitive-retrieval-graph-v2").map_err(
                         |error| {
                             CognitiveStoreError::Corrupt(format!(
@@ -858,7 +887,7 @@ impl CognitiveStore {
                             ))
                         },
                     )?,
-                    generation_digest: generation.generation_digest,
+                    generation_digest: generation.verified.generation().generation_digest,
                     seed_node_ids: vec![seed_node_id],
                     relation_kinds,
                     valid_at_unix_seconds: Some(now),
@@ -867,23 +896,17 @@ impl CognitiveStore {
                             "graph retrieval limit exceeds u32".to_string(),
                         )
                     })?,
-                },
-            )
-            .map_err(|error| {
-                CognitiveStoreError::Corrupt(format!(
-                    "persisted KG generation failed canonical V2 query: {error}"
-                ))
-            })?;
+                })
+                .map_err(|error| {
+                    CognitiveStoreError::Corrupt(format!(
+                        "persisted KG generation failed canonical V2 query: {error}"
+                    ))
+                })?;
             if query_result.omitted_count != 0 {
                 limit = RetrievalLimitObservation::LimitReached;
             }
 
-            let compact_supports = load_compact_edge_support_index_tx(
-                transaction,
-                &seed.projection_scope,
-                seed.generation,
-            )
-            .await?;
+            let compact_supports = &generation.compact_supports;
             for edge in query_result.edges {
                 for support in edge.supports {
                     let (memory_id, revision) = if let Some(index) = compact_supports.as_ref() {
