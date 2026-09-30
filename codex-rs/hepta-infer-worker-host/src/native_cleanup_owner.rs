@@ -84,6 +84,10 @@ impl NativeCleanupOwner {
         self.access(Access::Serve).await
     }
 
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "this async gate is the sole pool owner: admission and integrity maintenance must serialize through identity verification"
+    )]
     async fn access(&self, access: Access) -> Result<NativeCleanupStore> {
         if matches!(access, Access::Serve) && self.quarantined.load(Ordering::Acquire) {
             return Err("native cleanup owner is quarantined pending integrity maintenance".into());
