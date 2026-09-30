@@ -62,11 +62,6 @@ impl DurableQuarantineStore {
         owner_id: String,
         owner_generation: u64,
     ) -> Result<Self, DurableQuarantineError> {
-        use sqlx::sqlite::SqliteConnectOptions;
-        use sqlx::sqlite::SqliteJournalMode;
-        use sqlx::sqlite::SqlitePoolOptions;
-        use sqlx::sqlite::SqliteSynchronous;
-
         if !path.is_absolute() || !valid_identifier(&owner_id) || owner_generation == 0 {
             return Err(DurableQuarantineError::InvalidStore(
                 "invalid quarantine store identity",
@@ -79,16 +74,7 @@ impl DurableQuarantineStore {
                 ))
             })?;
         }
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(std::time::Duration::from_secs(5));
-        let pool = SqlitePoolOptions::new()
-            .max_connections(4)
-            .connect_with(options)
+        let pool = crate::sqlite::open_durable_pool(path)
             .await
             .map_err(quarantine_sqlx)?;
         let store = Self {
