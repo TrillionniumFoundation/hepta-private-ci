@@ -2,7 +2,7 @@
 
 本报告记录 2026-09-30 UTC（北京时间 2026-10-01）的仓库审计和修复。审计入口基线为 `db5e9da4d4c7340eb6370964a68a76a35226a610`；唯一有效模块交付路线为 PR #1011。PR #1051 保留为历史比较材料，不作为并行合并路线。本轮修复候选将在该基线上形成草稿堆叠 PR；最终提交身份和执行证据由交付记录绑定。
 
-**结论：详细技术开发文档已经存在，独立评估、持久化恢复和消费者链条也已具有具体源码实现。本次对抗审计发现并修复了信任时效、统计置信边界、持久状态一致性、checkpoint 前缀、holdout 泄漏及资格控制面等实质问题。源码修复和已通过的本地检查不能代替最终 SHA 的完整资格，也不能签发真实宿主、长期学习收益或发布资格。** 本报告及全部评估、恢复和资格回执均保持 `DENY_ALL`，发布姿态保持 `NO_GO`。
+**结论：详细技术开发文档已经存在，独立评估、持久化恢复和消费者链条也已具有具体源码实现。本次对抗审计发现并修复了信任时效、统计置信边界、持久状态一致性、checkpoint 前缀、holdout 泄漏、消费者兼容特性隔离及资格控制面等实质问题。源码修复和已通过的本地检查不能代替最终 SHA 的完整资格，也不能签发真实宿主、长期学习收益或发布资格。** 本报告及全部评估、恢复和资格回执均保持 `DENY_ALL`，发布姿态保持 `NO_GO`。
 
 ## 1. 审计范围和判定方法
 
@@ -70,6 +70,7 @@ P1 表示可能破坏资格、统计或耐久性合约的缺陷；优先级并�
 | locked-file CAS 接受非规范语义状态 | 外层 digest 可以绑定错误的 journal head、sequence、predecessor、record 或 use digest；内存看到的状态与持久 payload 重开后可能分歧 | [fenced_holdout_replay.rs](../../../codex-rs/hepta-intelligence-eval/src/fenced_holdout_replay.rs) 将 live CAS admission 和 replay 统一到同一 canonical transition。非规范初始状态及 append 在文件写入前拒绝，原状态/长度保持不变 |
 | checkpoint 掩盖原始 journal 的等长分叉前缀 | checkpoint 本身真实，不能证明当前源 journal 前缀就是 checkpoint 所概括的原始 bytes | [attempt_checkpoint_prefix.rs](../../../codex-rs/hepta-intelligence-eval/src/attempt_checkpoint_prefix.rs) 对 checkpoint frontier 之前的 framed bytes 做有界流式校验，验证 event count 与 rolling state digest，再恢复 reducer 并 replay tail |
 | 恢复可见 tail 后未先建立耐久性 | outcome-unknown sync 后完整 tail 可能可读；仅可读不等于新 anchor 可以确认其已经耐久 | ordinary/checkpoint journal recovery 在确认恢复 frontier 前执行 `sync_all`，失败返回 `Indeterminate`，保留 reopen/reconciliation 要求 |
+| Shadow fixture 将 raw 兼容特性带入 workspace 默认构建 | Shadow 的 dev-dependency 开启 `trusted-inprocess-eval`，经 Cargo feature unification 扩大正常产品构建的公开 API；最终 inventory 检查发现违反隔离合约 | 移除该 feature，迁移数值/因果链和 API-link fixture 至默认 `RecordedProductEvaluationRunnerV1`。真实 locked journal、分开保留的文件 anchor 和 typed archive 覆盖七阶段及关闭重开；保留原数值和 `DENY_ALL` 断言，不增加 allowlist |
 | final-holdout decision 跨 fold 进入训练 | 单 fold lineage/model digest 合法仍可能将真正 final-holdout decision 作为另一 fold 的训练标签；重算模型 digest 不能洗掉泄漏 | [temporal_cross_fit.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_cross_fit.rs) 全局收集 final-holdout decision identities 并禁止其进入任一 fold training；普通 cross-fit 训练共享及合法早期非最终 holdout 仍保留 |
 
 这些修复没有证明 exchangeability、cluster independence、无隐藏混杂或真实 observation provenance。此类条件仍须由 preregistered assumptions 和独立外部证据支持；fixed-analysis clustered intervals 也不成为 anytime-valid 或 adaptive-stopping guarantee。
@@ -104,7 +105,9 @@ P1 表示可能破坏资格、统计或耐久性合约的缺陷；优先级并�
 - `same_length_divergent_journal_prefix_cannot_hide_behind_an_authentic_checkpoint`；
 - `checkpoint_recovery_and_continued_append_remain_equivalent_to_ordinary_replay`；
 - `final_holdout_decisions_cannot_supply_another_folds_training_labels`；
-- `complete_input_budgets_reject_before_any_fold_fitting`。
+- `complete_input_budgets_reject_before_any_fold_fitting`；
+- Shadow `lane_e_causal_candidate_chain_is_digest_bound_and_deny_all`，包含 recorded 七阶段、archive bytes digest 和完整 history/anchor 重开等价；
+- `lane_e_public_operation_surface_is_linkable`，默认入口不要求启用 raw compatibility feature。
 
 普通合法 cross-fit 及 continued append 的正例与拒绝例一同保留。编译负例必须因所声明的 public API/type boundary 失败；无关 compiler error 不能作为边界成立的证据。
 
@@ -131,13 +134,17 @@ P1 表示可能破坏资格、统计或耐久性合约的缺陷；优先级并�
 |---|---|
 | `learning.eval` 全部默认测试 | **223 项全部通过，零跳过**，包括四项缓存/严格回放等价与篡改回归 |
 | Agentd 本轮 scoped filters | **6 项通过**；这是评估相关 scoped consumer 验证，不是整个 Agentd/workspace 全量验收 |
+| Shadow qualification 全包测试 | **38 项通过，1 项显式 ignored parent-only worker**；父进程跨进程测试通过，未新增 skip。新文件 anchor fixture 仅在本次 Linux 宿主执行，不证明跨平台或独立管理员生产存储资格 |
 | Python 资格/控制面回归 | **182 项通过** |
 | default/compatibility API boundary | **通过**，含针对具体边界的 compiler-negative fixtures |
+| compatibility manifest isolation | **197 份 product manifests 检查通过**，`fixtureIsolated=true`；inventory 本身不等于 compatibility regression 已执行 |
+| Bazel dependency lock update | **`just bazel-lock-update` 通过**，Cargo/Bazel 锁文件无需变化；补齐 Shadow Bazel test 已有 `ed25519-dalek` direct dependency。该结果不是 Bazel test 通过 |
 | production library 严格 Clippy | **通过** |
 | 文档文件/heading-anchor 检查 | **通过（15 documents）**，含本报告及索引链接 |
 | `learning.eval` strict all-target Clippy | **通过，零警告**；129 处 fixture `expect` 按 Result/Option 分别替换为保留失败上下文的显式 panic，全部断言保留，没有放宽 lint |
 | evaluator/intelligence/Agentd 三包 Rust formatting | **通过**；既有格式整理为独立机械提交，随后按 CI 原范围执行 `cargo fmt -- --check` |
 | evaluator/intelligence/Agentd 三包 strict all-target Clippy | **未通过**：共享依赖 `hepta-operations` 两处绕过 `codex-state` SQLite shim 的连接构造及一处 `collapsible_if` 阻断。未绕过 deny list；现有 shim 的五连接策略与该 store 的四连接合约不同，正确迁移需要依赖/锁文件和该模块的容量策略审查 |
+| Shadow strict all-target Clippy | **未通过**：未修改的 `hepta-ndu/src/lib.rs` deprecated re-export 阻断。未放宽 warning gate；本轮 Shadow 数值/集成/API 测试通过不消除此共享依赖 lint 义务 |
 | 完整 workspace 测试 | 未作为本次 scoped 结果宣称通过 |
 | default-production measured coverage >=85% | 待最终候选的覆盖率证据 |
 | exact head / ordered-parent synthetic merge | 待最终候选的 commit-addressed CI artifacts |
@@ -168,13 +175,15 @@ P1 表示可能破坏资格、统计或耐久性合约的缺陷；优先级并�
 
 ## 10. 剩余可执行工作和终止标准
 
-本轮存储性能优化和对应独立复审已收敛，确认的模块缺陷均已落实修复。交付仍需将 map/status 绑定至不可变源码观察，并保留完整源码资格、共享依赖 lint 和外部证据的未闭合状态。新的 docs 或 lexical facts 不能直接设置 `sourceQualifiedByThisRun`。
+本轮存储性能优化和对应独立复审已收敛；最终控制面 inventory 又识别并修复 Shadow transitive compatibility feature 泄漏，再执行全包 Shadow 测试和默认 API 边界检查。当前 scoped 复审未发现新的模块阻断问题，确认的模块缺陷均已落实修复。交付仍需将 map/status 绑定至不可变源码观察，并保留完整源码资格、共享依赖 lint 和外部证据的未闭合状态。新的 docs 或 lexical facts 不能直接设置 `sourceQualifiedByThisRun`。
 
 项目级规范仍有一项未闭合的跨 registry 关系：[MODULES.json](../MODULES.json) 的 `learning.eval.writes=[]`，而 [DATA_AUTHORITY.json](../../data/DATA_AUTHORITY.json) 将 `ndu_well_posedness_certificate_v1`、`operator_applicability_certificate_v1`、`regularity_profile_v1`、`support_audit_receipt_v1`、`candidate_evaluation_receipt_v1`、`conformance_receipt_v1`、`algorithm_fault_receipt_v1` 的 schema owner 和 authoritative writer 指定为 `learning.eval`。两者未机读说明空 bootstrap 列表与 qualification 目标域的关系，现有全局验证器也未比较两侧 writer 集合。本轮不改变任何 registry authority；后续须由项目规范协调明确该关系和一致性验证。这些目标域声明不证明已部署实现，更不授予生产写入权限。
 
 额外执行的全局检查也未闭合：`hepta-docs.py verify` 因当前 checkout 缺少历史 Git 对象 `b621768b70a09d56626bb8a2c331e3dc424e6a4d` 而阻断，这是历史对象/环境可用性问题，不是此次文档修改引入的源码回归；`hepta-lane-e-closure.py verify` 返回 11 项 findings，包括 operator operation 闭世界集合漂移、traceability case 集合/OP-03 旧函数映射及八项 Agentd legacy learning-writer 边界。此次 `learning.eval` matrix 的既有 operation/status 集合与五个新增 public recorded source entries 已通过 scoped 验证；全局 findings 保留为跨模块规范/调用链协调义务，未扩大修改 operator 或 Agentd legacy runtime writer，也未宣称全局文档/Lane E gate 通过。
 
 本轮更新了源码/资格控制面 inventory 与验证器；trusted CI 资格仍要求将对应 bootstrap control-plane 变更独立重堆叠、审阅并与 trusted base 的字节身份对齐。仅在模块候选中出现修复不能宣称已经通过可信控制面的最终资格。
+
+Shadow 严格 lint 另被未修改的 [hepta-ndu/src/lib.rs](../../../codex-rs/hepta-ndu/src/lib.rs) deprecated re-export 阻断；其 API 迁移需由 NDU 模块处理，未以移除 deny warnings 或忽略依赖解决。
 
 共享依赖的三包 lint 阻断定位于 [destination_dedupe.rs](../../../codex-rs/hepta-operations/src/destination_dedupe.rs) 和 [durable_store.rs](../../../codex-rs/hepta-operations/src/durable_store.rs)。后续应由该 store 的连接/容量合约审查决定如何迁入集中 SQLite shim，同时更新依赖和 Bazel/Cargo 锁文件；仅改写调用名或添加 lint exception 无法修复规约。
 
