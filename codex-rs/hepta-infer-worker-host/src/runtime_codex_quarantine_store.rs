@@ -706,7 +706,7 @@ mod durable_store_tests {
             Some(quarantine.clone())
         );
         let key = SigningKey::from_bytes(&rand::random());
-        let mut resolution = QuarantineResolutionV1 {
+        let resolution = QuarantineResolutionV1 {
             schema_version: 1,
             signer_id: "independent-quarantine-authority".to_string(),
             resolution_id: "resolution:durable".to_string(),

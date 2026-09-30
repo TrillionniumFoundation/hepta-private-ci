@@ -518,7 +518,7 @@ fn read_bounded(path: &Path, maximum: usize) -> Result<Vec<u8>> {
 
 #[cfg(target_os = "linux")]
 fn canonical_proc_text(mut value: Vec<u8>) -> Vec<u8> {
-    while value.last().is_some_and(|byte| byte.is_ascii_whitespace()) {
+    while value.last().is_some_and(u8::is_ascii_whitespace) {
         value.pop();
     }
     value

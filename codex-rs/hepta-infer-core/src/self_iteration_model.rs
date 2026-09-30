@@ -34,7 +34,9 @@ pub struct SelfIterationModelRequestV1 {
 impl SelfIterationModelRequestV1 {
     pub fn validate(&self, now_ms: u64) -> Result<(), SelfIterationModelErrorV1> {
         if self.envelope_digest.is_zero()
-            || self.candidate_digest.is_some_and(|digest| digest.is_zero())
+            || self
+                .candidate_digest
+                .is_some_and(codex_hepta_types::Digest32::is_zero)
             || self.prompt.is_empty()
             || self.prompt.len() > MAX_SELF_ITERATION_MODEL_PROMPT_BYTES
             || self.deadline_ms <= now_ms

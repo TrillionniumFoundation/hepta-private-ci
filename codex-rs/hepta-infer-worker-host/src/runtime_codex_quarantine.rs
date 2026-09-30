@@ -786,7 +786,7 @@ mod tests {
             .new_operation_constraints
             .as_mut()
             .unwrap()
-            .operation_id = quarantine.operation_id.clone();
+            .operation_id = quarantine.operation_id;
         assert!(matches!(
             proposal.signing_bytes(),
             Err(QuarantineProtocolError::UnsafeNewOperation)

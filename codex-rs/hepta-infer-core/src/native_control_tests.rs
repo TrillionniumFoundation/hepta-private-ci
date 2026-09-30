@@ -619,7 +619,7 @@ fn two_phase_pre_effect_abort_survives_reopen_and_holds_capacity_until_owner_ack
             token,
             "run.1".to_string(),
             3,
-            binding.clone(),
+            binding,
             "final-use fence changed".to_string(),
         )
         .expect("prepare abort");
@@ -766,7 +766,7 @@ fn terminal_outbox_is_atomic_with_observation_and_replayable() {
     let mut observed = output(NativeRunStatus::Completed, Some(5));
     observed.owner_authority = NativeOwnerAuthority::ObservedReady;
     let settled = control.settle_native("r1", observed).unwrap();
-    let publication = settled.terminal_publication.clone().unwrap();
+    let publication = settled.terminal_publication.unwrap();
     assert_eq!(publication.phase, NativeTerminalPublicationPhase::Succeeded);
     assert!(publication.terminal_observed);
     assert!(publication.pending());

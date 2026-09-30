@@ -39,7 +39,7 @@ fn fixture() -> (tempfile::TempDir, UnixListener, UnixFinalUseTrustPort) {
     }
     let text_digest = |path| {
         let mut bytes = std::fs::read(path).expect("proc identity");
-        while bytes.last().is_some_and(|byte| byte.is_ascii_whitespace()) {
+        while bytes.last().is_some_and(u8::is_ascii_whitespace) {
             bytes.pop();
         }
         format!("{:x}", Sha256::digest(&bytes))
