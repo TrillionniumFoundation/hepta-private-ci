@@ -651,6 +651,95 @@ fn two_phase_pre_effect_abort_survives_reopen_and_holds_capacity_until_owner_ack
     std::fs::remove_file(path).unwrap();
 }
 
+#[test]
+fn owner_reconciliation_cursor_wraps_without_selecting_unknown_effects_or_recreating_tokens() {
+    let path = path("abort-cursor");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut pending = Vec::new();
+    for id in ["abort-a", "abort-b", "unknown-effect"] {
+        control.reserve_native(request(id), 3).unwrap();
+        let (_, token) = control
+            .dispatch_native_with_pre_effect_abort(id, dispatch())
+            .unwrap();
+        if id != "unknown-effect" {
+            pending.push(
+                control
+                    .prepare_native_abort_before_effect(
+                        token,
+                        format!("owner-{id}"),
+                        4,
+                        "7".repeat(64),
+                        "not sent".to_string(),
+                    )
+                    .unwrap(),
+            );
+        }
+    }
+    drop(control);
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        control.next_native_owner_reconciliation(""),
+        Some(pending[0].clone())
+    );
+    assert_eq!(
+        control.next_native_owner_reconciliation("abort-a"),
+        Some(pending[1].clone())
+    );
+    assert_eq!(
+        control.next_native_owner_reconciliation("abort-b"),
+        Some(pending[0].clone())
+    );
+    assert_eq!(
+        control.next_native_owner_reconciliation("unknown-effect"),
+        Some(pending[0].clone())
+    );
+    assert_eq!(
+        control.native_record("unknown-effect").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+}
+
+#[test]
+fn cancellation_cannot_displace_a_pending_abort_proof_or_release_its_slot() {
+    let path = path("abort-cancel");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let pending = control
+        .prepare_native_abort_before_effect(
+            token,
+            "owner-r1".to_string(),
+            4,
+            "7".repeat(64),
+            "not sent".to_string(),
+        )
+        .unwrap();
+    let cancelled = control.cancel_native("r1").unwrap();
+    assert_eq!(cancelled.state, NativeReservationState::AbortPending);
+    assert_eq!(cancelled.pre_effect_abort, pending.pre_effect_abort);
+    assert!(cancelled.cancel_requested);
+    assert_eq!(control.cancel_native("r1").unwrap(), cancelled);
+    assert_eq!(
+        control.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        control.next_native_owner_reconciliation(""),
+        Some(cancelled.clone())
+    );
+    let proof = cancelled.pre_effect_abort.unwrap().proof_digest;
+    let confirmed = control
+        .confirm_native_abort_before_effect("r1", &proof)
+        .unwrap();
+    assert_eq!(confirmed.state, NativeReservationState::Released);
+    assert!(confirmed.observation.is_none());
+    control.reserve_native(request("r2"), 1).unwrap();
+}
+
 fn terminal_owner() -> NativeTerminalOwnerBinding {
     NativeTerminalOwnerBinding {
         run_id: "agent-run-1".to_string(),

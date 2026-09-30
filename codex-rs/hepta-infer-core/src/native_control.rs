@@ -791,6 +791,33 @@ impl DurableInferenceControl {
         self.native.records.get(request_id)
     }
 
+    /// Select one pending owner acknowledgement after the cursor, wrapping once.
+    /// No token is recreated and unresolved records retain their local slot.
+    pub fn next_native_owner_reconciliation(
+        &self,
+        after_request_id: &str,
+    ) -> Option<NativeRunRecord> {
+        self.native
+            .records
+            .range::<str, _>((
+                std::ops::Bound::Excluded(after_request_id),
+                std::ops::Bound::Unbounded,
+            ))
+            .chain(self.native.records.range::<str, _>((
+                std::ops::Bound::Unbounded,
+                std::ops::Bound::Included(after_request_id),
+            )))
+            .map(|(_, record)| record)
+            .find(|record| {
+                record.state == NativeReservationState::AbortPending
+                    || record
+                        .terminal_publication
+                        .as_ref()
+                        .is_some_and(NativeTerminalPublication::pending)
+            })
+            .cloned()
+    }
+
     pub(super) fn commit_native_archive(
         &mut self,
         request_id: &str,
@@ -1096,7 +1123,12 @@ impl NativeJournal {
                     return Err(Error::InvalidTransition);
                 }
                 record.cancel_requested = true;
-                record.state = NativeReservationState::Cancelling;
+                // A proven unsent dispatch still needs its original cross-owner
+                // abort acknowledgement. Cancellation cannot turn that proof
+                // into an ordinary execution observation or make it unrecoverable.
+                if record.state != NativeReservationState::AbortPending {
+                    record.state = NativeReservationState::Cancelling;
+                }
             }
             Event::Stop { reason, .. } => {
                 if record.state != NativeReservationState::Reserved
