@@ -213,10 +213,71 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  port-acceptance:
+    name: Reopen executable port acceptance matrix
+    needs: [identity, qualify]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.identity.outputs.source }}
+          persist-credentials: false
+      - name: Download exact-head product pilot
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: kernel-authority-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ needs.identity.outputs.source }}-exact-head-product-pilot
+          path: ${{ runner.temp }}/authority-port-acceptance/pilot
+      - name: Download exact-head product-process recovery
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: kernel-authority-closure-${{ github.run_id }}-${{ github.run_attempt }}-${{ needs.identity.outputs.source }}-exact-head-product-process
+          path: ${{ runner.temp }}/authority-port-acceptance/process
+      - name: Reopen raw logs and project lifecycle obligations
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/authority-port-acceptance"
+          cmp "$root/pilot/identity.json" "$root/process/identity.json"
+          python3 -B qualification/kernel-authority/port_acceptance.py \
+            --identity "$root/pilot/identity.json" \
+            --pilot-dir "$root/pilot/product-pilot/product-paths" \
+            --product-process-dir "$root/process/product-process" \
+            --output "$root/port-acceptance.json"
+          python3 -B - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "authority-port-acceptance"
+          value = json.loads((root / "port-acceptance.json").read_text())
+          if value["schema"] != "hepta.kernel-authority-port-acceptance.v2":
+              raise SystemExit("port acceptance schema mismatch")
+          if value["nativeEvidence"] != "pilot-and-product-process-raw-logs-reopened":
+              raise SystemExit("port acceptance did not reopen both evidence classes")
+          if value["productProcessVerified"] is not True:
+              raise SystemExit("product-process recovery was not verified")
+          if any(value[field] is not False for field in (
+              "productionTrustProved", "independentAcceptance",
+              "activationGranted", "releaseGranted",
+          )):
+              raise SystemExit("port acceptance cannot grant production authority")
+          PY
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Retain executable port acceptance matrix
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: kernel-authority-port-acceptance-${{ github.run_id }}-${{ github.run_attempt }}-${{ needs.identity.outputs.source }}
+          path: ${{ runner.temp }}/authority-port-acceptance
+          if-no-files-found: error
+          retention-days: 14
+
   merge-gate:
     name: Production closure gate
     if: always()
-    needs: [identity, qualify]
+    needs: [identity, qualify, port-acceptance]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -225,6 +286,7 @@ jobs:
         env:
           IDENTITY_RESULT: ${{ needs.identity.result }}
           QUALIFY_RESULT: ${{ needs.qualify.result }}
+          PORT_ACCEPTANCE_RESULT: ${{ needs.port-acceptance.result }}
           SOURCE: ${{ needs.identity.outputs.source }}
           SOURCE_TREE: ${{ needs.identity.outputs.source_tree }}
           BASE: ${{ needs.identity.outputs.base }}
@@ -232,6 +294,7 @@ jobs:
           set -euo pipefail
           test "$IDENTITY_RESULT" = success
           test "$QUALIFY_RESULT" = success
+          test "$PORT_ACCEPTANCE_RESULT" = success
           test "${#SOURCE}" -eq 40
           test "${#SOURCE_TREE}" -eq 40
           test "${#BASE}" -eq 40
