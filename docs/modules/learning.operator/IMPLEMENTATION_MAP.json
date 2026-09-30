@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "72c1631b18c2a892cb63be48196d3eaed9dc90bb",
-    "tree": "25efa1f97e7fbe4457cf2aaeb5e9b2af95328737"
+    "commit": "fca52075211f0b64292391fda0ad5db40e6c1b30",
+    "tree": "1d2c594e4d449216e79ce94601fad00a7832db12"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -311,8 +311,10 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/profiles.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "tests": [],
-      "state": "authoritative_canonical_identity_implemented",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/profiles.rs::tests::world_model_profile_digest_binds_sensor_core_identity"
+      ],
+      "state": "authoritative_canonical_identity_with_sensor_binding_implemented",
       "authority": "none",
       "sourcePathExists": true
     },
@@ -503,6 +505,7 @@
     "monotonicShadowTimeline": true,
     "realProductShadowE2EInAuthoritativeGate": true,
     "timeAndResidentMemoryQualificationDefined": true,
+    "worldModelSensorIdentityBound": true,
     "mapOnlyObservationFreshnessEnforced": true
   },
   "sourceRoot": [
@@ -510,8 +513,8 @@
   ],
   "sourceIdentityPolicy": "exact_observation_with_map_only_successor_v2",
   "observedAtHead": {
-    "commit": "72c1631b18c2a892cb63be48196d3eaed9dc90bb",
-    "tree": "25efa1f97e7fbe4457cf2aaeb5e9b2af95328737"
+    "commit": "fca52075211f0b64292391fda0ad5db40e6c1b30",
+    "tree": "1d2c594e4d449216e79ce94601fad00a7832db12"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
