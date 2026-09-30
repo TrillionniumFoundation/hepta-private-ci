@@ -26,6 +26,9 @@ use crate::CognitiveStoreError;
 use crate::DurableCognitiveSnapshot;
 use crate::RetrievalObservation;
 
+/// Migration alias retained for source compatibility, but it no longer creates
+/// unlimited work control. Every caller must provide the host-owned control.
+#[deprecated(note = "use execute_owner_observation_controlled with explicit work control")]
 pub fn execute_owner_observation(
     observation: &RetrievalObservation,
     cut: &DurableCognitiveSnapshot,
@@ -33,6 +36,7 @@ pub fn execute_owner_observation(
     request_digest: Digest32,
     acquired_at_unix_ms: u64,
     lease_expires_unix_ms: u64,
+    work: &codex_hepta_memory_retrieval::RecallWorkControlV1,
 ) -> Result<OwnerRetrievalExecutionV1, CognitiveStoreError> {
     execute_owner_observation_inner(
         observation,
@@ -41,7 +45,7 @@ pub fn execute_owner_observation(
         request_digest,
         acquired_at_unix_ms,
         lease_expires_unix_ms,
-        /*work*/ None,
+        Some(work),
     )
 }
 
