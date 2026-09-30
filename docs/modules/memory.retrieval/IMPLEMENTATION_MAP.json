@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "aadd55658d2e50f1418a55e73bfbce6d0ca00ee9",
-    "tree": "b03dbd4a9134259dc2be7842ed15f89513d1bc55"
+    "commit": "3d09b79102d138d6ee0d767e5b6239a3cd57cc4b",
+    "tree": "96d71228731670a4aab2acf695ee7b0e64423d5a"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -163,13 +163,34 @@
       ]
     },
     {
+      "operation": "validate_durable_decision_append_v1",
+      "nativeSymbol": "validate_durable_decision_append_v1",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/lifecycle_append.rs",
+      "state": "source_implemented_monotonic_transition_guard_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/tests/lifecycle_append_api.rs"
+      ]
+    },
+    {
+      "operation": "append_durable_decision_checked_v1",
+      "nativeSymbol": "append_durable_decision_checked_v1",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/lifecycle_append.rs",
+      "state": "source_implemented_checked_single_port_append_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/tests/lifecycle_append_api.rs"
+      ]
+    },
+    {
       "operation": "validate_vector_publication_successor_v1",
       "nativeSymbol": "VectorIndexPublicationV1::validate_successor",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/vector_publication.rs",
       "state": "source_implemented_durable_publication_contract_not_product_qualified",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-memory-retrieval/src/vector_publication_tests.rs"
+        "codex-rs/hepta-memory-retrieval/src/vector_publication_tests.rs",
+        "codex-rs/hepta-memory-retrieval/tests/vector_publication_sequence.rs"
       ]
     },
     {
@@ -196,16 +217,28 @@
       "operation": "append_retrieval_lifecycle_projection_v1",
       "nativeSymbol": "append_retrieval_lifecycle_projection_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
-      "state": "source_implemented_single_port_append_not_product_qualified",
+      "state": "source_implemented_compatibility_only_raw_append_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs"
+      ]
+    },
+    {
+      "operation": "append_retrieval_lifecycle_projection_checked_v1",
+      "nativeSymbol": "append_retrieval_lifecycle_projection_checked_v1",
+      "sourcePath": "codex-rs/hepta-agentd/src/retrieval_delivery_append.rs",
+      "state": "source_implemented_product_checked_append_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/retrieval_delivery_append.rs",
+        "codex-rs/hepta-memory-retrieval/tests/lifecycle_append_api.rs"
       ]
     }
   ],
   "repositoryControlledGaps": [
     "Obtain green exact-head, current-main and ordered-parent synthetic-merge receipts for the final source snapshot, including blocking CI, Agentd process qualification, repository integrity, package tests, all-target Clippy, formatting, clean source and CodeQL.",
     "Qualify Agentd on a named protected host. Durable external frontier recovery, protected launcher isolation and real-process lifecycle kill-point tests remain external gates.",
+    "Bind the checked lifecycle append to the selected durable backend and prove uncertain-commit reconciliation; repository source now enforces monotonic identity, frontier, fence, terminal and quarantine transitions.",
     "Prove a killable worker boundary with enforced CPU, RSS, allocation and wall-time limits; cooperative cancellation and bounded permits are not hard isolation.",
     "Compose and qualify a real text encoder plus durable vector-index publisher before enabling Vector; compatibility remains the only activation mode.",
     "Execute the recovery matrix and nine-stage E2E matrix with real processes, at least 100 samples per case, and actual allocation, SQLite, CPU/RSS, contention and worker-exit counters against approved SLOs.",
@@ -248,6 +281,7 @@
     "codex-rs/hepta-agentd/src/cognitive_retrieval_provider.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_transport.rs",
     "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
+    "codex-rs/hepta-agentd/src/retrieval_delivery_append.rs",
     "codex-rs/hepta-agentd/src/retrieval_product_mode.rs",
     "codex-rs/hepta-agentd/src/cognitive_retrieval_bootstrap.rs",
     "codex-rs/hepta-agentd/src/main.rs",
@@ -267,6 +301,12 @@
     "preparationOwner": "codex-hepta-learning-ledger:RetrievalPrepared/tag-10",
     "nativeOperationOwner": "codex-hepta-infer-core:NativeRunRecord",
     "lifecyclePort": "codex-hepta-memory-retrieval:DurableDecisionPortV1",
+    "checkedAppend": "codex-hepta-agentd:append_retrieval_lifecycle_projection_checked_v1",
+    "transitionValidator": "codex-hepta-memory-retrieval:validate_durable_decision_append_v1",
+    "rawAppendProductAllowed": false,
+    "globalFrontierMustAdvanceExactlyOne": true,
+    "writerFenceMayNotRegress": true,
+    "quarantineMayRegressToPrepared": false,
     "dispatchUnknownState": "DispatchOutcomeUnknown",
     "unknownOutcomePolicy": "exact_operation_reconciliation_only",
     "blindReplayAllowed": false,
@@ -281,8 +321,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "aadd55658d2e50f1418a55e73bfbce6d0ca00ee9",
-    "tree": "b03dbd4a9134259dc2be7842ed15f89513d1bc55"
+    "commit": "3d09b79102d138d6ee0d767e5b6239a3cd57cc4b",
+    "tree": "96d71228731670a4aab2acf695ee7b0e64423d5a"
   },
   "observedSourcePaths": [
     ".github/workflows",
@@ -320,20 +360,72 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/blocking-ci.yml",
+      "object": "60c27b0e076038a4703224813b5f93dc8e43cd2f"
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "object": "b64f8085947af5fedda264313c0b68cbb0feb71d"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-calibration.yml",
+      "object": "a7f676a4fabcdfacb5a8cd36d0abf12a4756fc96"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-convergence.yml",
+      "object": "9feae6d95c46e81fdf42dab3e3c5bf52cd66aa15"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-maintenance.yml",
+      "object": "7be467149959ebb1050d84b86f3cb1e36a715460"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "object": "47cf32ce506ab97d2e9d6ac49950a991c739319f"
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "object": "87271c6105dd0c6ae13cb6634d144bd1113465f2"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "object": "60643fd78acc383703606d34d7f70be9f952a67d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+      "object": "4ca643d118a2d6c528d87288be07f518d065abaf"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "object": "af61ce9087e69d6c61fb667ae83ccfe27351abc4"
     },
     {
       "path": "codex-rs/hepta-agentd/src/retrieval_delivery.rs",
       "object": "ce5a4f07763908a4f947b5ee90c63dbd053f07af"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/retrieval_delivery_append.rs",
+      "object": "3177946553fcd9e105e4d616529cc5a2267e0ce7"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/retrieval_delivery_tests.rs",
       "object": "0f26c6af1771978681738a0ceb0ab0758f4c0a58"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/retrieval_executor.rs",
+      "object": "f6bac40ddfd6643ebb43636c7b3de1927ada38c5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/retrieval_product_mode.rs",
+      "object": "82cf37197273cc9a8f0367e004c1dbfead9b6adf"
+    },
+    {
       "path": "codex-rs/hepta-memory-retrieval",
-      "object": "0853646e8310fd33c1bf0408f8a9fe7afaaa8a33"
+      "object": "6f81c304c03f914b35a122b44f8bcdd5b122b782"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/Cargo.toml",
+      "object": "12dc96f710447f2078a9f7b6bd6201858e4bf352"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/decision.rs",
@@ -368,12 +460,32 @@
       "object": "f94d1ce6d22415f5033e661f9a7a858c1a0f2c47"
     },
     {
+      "path": "codex-rs/hepta-memory-retrieval/src/lib.rs",
+      "object": "9b0c69e1eb378254179f3900f9d497ccd8a5126c"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/lifecycle.rs",
+      "object": "668d2212dd7c23d1dfa3446838c8b12778be312a"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/lifecycle_append.rs",
+      "object": "29fbfa3d1bad8d3f4e04b6adbd3fa74b10be8f24"
+    },
+    {
       "path": "codex-rs/hepta-memory-retrieval/src/product.rs",
       "object": "fb8097f3463edc7a1926c5becac2f184dd31ded7"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/product_tests.rs",
       "object": "7f45125ca055634087607747df72a7128e0b53ff"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/semantics.rs",
+      "object": "ba93a25d3886570ac84cda124f8d9c0404b62c37"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/semantics_tests.rs",
+      "object": "32d886610c98f2bd4cba020ec4e0810a9f2f1b2d"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/v2.rs",
@@ -392,12 +504,108 @@
       "object": "740355a90857638609ef26bb413e96c89ea01cf9"
     },
     {
+      "path": "codex-rs/hepta-memory-retrieval/src/vector_publication.rs",
+      "object": "e20b2e2c56122a0212fce46931e1531545f56c36"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/vector_publication_tests.rs",
+      "object": "085dc1f75d4d7a6c2ba23908bb5618c1b8641204"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/work.rs",
+      "object": "37ae02d4c7cea4e1e63f43c6fdcaf97661bee6da"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/work_tests.rs",
+      "object": "fbec2dbcc828090d343e3cb848b258392800c357"
+    },
+    {
       "path": "codex-rs/hepta-memory-retrieval/tests/controlled_api.rs",
       "object": "80c01252b87a73b64ae393b8d27bdb0edc87cc00"
     },
     {
+      "path": "codex-rs/hepta-memory-retrieval/tests/lifecycle_api.rs",
+      "object": "cd889ad950cda1d4fa479c63a2c8c58258157fd3"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/tests/lifecycle_append_api.rs",
+      "object": "67d48268cdad0349f118d8d47b5e1fc1b962f60c"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/tests/proposition_api.rs",
+      "object": "a43bcafca07863889eaa53acc8db513471625db1"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/tests/vector_publication_sequence.rs",
+      "object": "3569b670c37f8c8379c31b8488f636558daf2d7c"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/CONTROLLED_API.md",
+      "object": "faaf51c3fa5dfaaa434b523361c8de276d6b117b"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/PRODUCT_ADMISSION.md",
+      "object": "5be946f41438da495b06188abcf2a1cdc66fcfe6"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/QUALIFICATION_IDENTITY.md",
+      "object": "6140feacf975eabe697c57325766391265233b08"
+    },
+    {
+      "path": "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
+      "object": "f8be74e861c4d2bc2358af3500e84d6567c62bd6"
+    },
+    {
       "path": "docs/modules/memory.retrieval/TECHNICAL.md",
       "object": "14c128c2391ef4d11513c6eac65b81a061111632"
+    },
+    {
+      "path": "qualification/memory-retrieval/product-composition.json",
+      "object": "db0327077c0d66cf70d964e7ef97fd25fa1c9578"
+    },
+    {
+      "path": "qualification/memory-retrieval/production-qualification.json",
+      "object": "851dbc314566aae1d0889b1193797524d73fd1a9"
+    },
+    {
+      "path": "qualification/memory-retrieval/qualification-policy.json",
+      "object": "6c2f82f764de5a14b47bd70273d17322bb15f2ef"
+    },
+    {
+      "path": "qualification/memory-retrieval/recovery-matrix.json",
+      "object": "0d4a5bfb818956e2dc3e32ca3ff2ce5ce5a57c90"
+    },
+    {
+      "path": "scripts/hepta_memory_retrieval_policy.py",
+      "object": "c0b39fb157ea68cc990cea1287b337cbe5077f11"
+    },
+    {
+      "path": "scripts/hepta_memory_retrieval_qualification.py",
+      "object": "3c0742cd370e0949522d8ce092ab24f8569579d1"
+    },
+    {
+      "path": "scripts/hepta_memory_retrieval_refresh_map.py",
+      "object": "d60f0e865f1ef4b4ff34dbb7893cad9a2bd178d4"
+    },
+    {
+      "path": "scripts/hepta_memory_retrieval_status.py",
+      "object": "8cfe104cdd41aea348ddbf7f21116a2352809143"
+    },
+    {
+      "path": "scripts/tests/test_hepta_memory_retrieval_policy.py",
+      "object": "cda9bbb82b2aec7b032d765859c86df512f86804"
+    },
+    {
+      "path": "scripts/tests/test_hepta_memory_retrieval_qualification.py",
+      "object": "858d130dd0ddcca6e14222bb4f7b2a0da88a348d"
+    },
+    {
+      "path": "scripts/tests/test_hepta_memory_retrieval_refresh_map.py",
+      "object": "9a702b2e8f12a5bc94f5728e86b92e809c888c14"
+    },
+    {
+      "path": "scripts/tests/test_hepta_memory_retrieval_status.py",
+      "object": "23cc87316d0f122e94b46c08a33b481855f1909b"
     }
   ],
   "observedMissingPaths": []
