@@ -4,9 +4,9 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::fs;
 use std::fs::File;
+use std::net::SocketAddr;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
-use std::net::SocketAddr;
 use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -73,7 +73,7 @@ impl ArtifactOwnerBootstrapV1 {
 
         let listen_address = required(&config, "listen")?
             .parse::<SocketAddr>()
-            .map_err(|_| ArtifactOwnerConfigError::InvalidValue("listen"))?;
+            .map_err(|_| invalid_value("listen"))?;
         if !listen_address.ip().is_loopback() {
             return Err(ArtifactOwnerConfigError::NonLoopbackTransport);
         }
@@ -81,7 +81,7 @@ impl ArtifactOwnerBootstrapV1 {
         validate_secure_regular_file(&authz_path)?;
         let backup_root = required_absolute_path(&config, "backup_root")?;
         if backup_root.starts_with(&root) || root.starts_with(&backup_root) {
-            return Err(ArtifactOwnerConfigError::InvalidValue("backup_root"));
+            return Err(invalid_value("backup_root"));
         }
 
         let registry_id = parse_id(required(&config, "registry_id")?)?;
@@ -132,7 +132,7 @@ impl ArtifactOwnerBootstrapV1 {
 
         let storage_binding = parse_digest(required(&config, "storage_binding")?)?;
         if storage_binding.is_zero() {
-            return Err(ArtifactOwnerConfigError::InvalidValue("storage_binding"));
+            return Err(invalid_value("storage_binding"));
         }
         let withdrawal_registry = load_withdrawal_registry(&config)?;
         if withdrawal_registry.scope_digest() != Some(withdrawal_scope_digest) {
@@ -144,7 +144,7 @@ impl ArtifactOwnerBootstrapV1 {
             Some(path) => {
                 let path = PathBuf::from(path);
                 if !path.is_absolute() {
-                    return Err(ArtifactOwnerConfigError::InvalidValue(
+                    return Err(invalid_value(
                         "required_current_head_file",
                     ));
                 }
@@ -158,7 +158,7 @@ impl ArtifactOwnerBootstrapV1 {
             .transpose()?
             .unwrap_or(2 * 1024 * 1024);
         if !(4096..=4 * 1024 * 1024).contains(&maximum_request_bytes) {
-            return Err(ArtifactOwnerConfigError::InvalidValue(
+            return Err(invalid_value(
                 "maximum_request_bytes",
             ));
         }
@@ -245,7 +245,7 @@ fn parse_signers(
         });
     }
     if signers.is_empty() {
-        return Err(ArtifactOwnerConfigError::InvalidValue(prefix));
+        return Err(invalid_value(prefix));
     }
     Ok(signers)
 }
@@ -290,7 +290,7 @@ fn load_withdrawal_registry(
             read_dataset_withdrawal_snapshot(File::open(path)?, receipt)
                 .map_err(|error| ArtifactOwnerConfigError::Withdrawal(error.to_string()))
         }
-        _ => Err(ArtifactOwnerConfigError::InvalidValue("withdrawal_mode")),
+        _ => Err(invalid_value("withdrawal_mode")),
     }
 }
 
@@ -436,12 +436,12 @@ fn validate_secure_regular_file(path: &Path) -> Result<(), ArtifactOwnerConfigEr
 
 fn required<'a>(
     values: &'a BTreeMap<String, String>,
-    name: &'static str,
+    name: &str,
 ) -> Result<&'a str, ArtifactOwnerConfigError> {
     values
         .get(name)
         .map(String::as_str)
-        .ok_or(ArtifactOwnerConfigError::Missing(name))
+        .ok_or_else(|| ArtifactOwnerConfigError::Missing(name.to_owned()))
 }
 
 fn optional<'a>(values: &'a BTreeMap<String, String>, name: &str) -> Option<&'a str> {
@@ -450,13 +450,17 @@ fn optional<'a>(values: &'a BTreeMap<String, String>, name: &str) -> Option<&'a 
 
 fn required_absolute_path(
     values: &BTreeMap<String, String>,
-    name: &'static str,
+    name: &str,
 ) -> Result<PathBuf, ArtifactOwnerConfigError> {
     let path = PathBuf::from(required(values, name)?);
     if !path.is_absolute() {
-        return Err(ArtifactOwnerConfigError::InvalidValue(name));
+        return Err(invalid_value(name));
     }
     Ok(path)
+}
+
+fn invalid_value(name: &str) -> ArtifactOwnerConfigError {
+    ArtifactOwnerConfigError::InvalidValue(name.to_owned())
 }
 
 fn parse_id(value: &str) -> Result<StableId, ArtifactOwnerConfigError> {
@@ -528,8 +532,8 @@ const fn decode_nibble(value: u8) -> Option<u8> {
 #[derive(Debug)]
 pub enum ArtifactOwnerConfigError {
     Io(std::io::Error),
-    Missing(&'static str),
-    InvalidValue(&'static str),
+    Missing(String),
+    InvalidValue(String),
     InvalidEntry(String),
     InvalidPath,
     InsecurePermissions,
