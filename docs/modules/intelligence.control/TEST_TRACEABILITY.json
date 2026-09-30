@@ -502,12 +502,163 @@
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_worker_watchdog.rs",
       "package": "codex-hepta-agentd",
       "executionStatus": "pending"
+    },
+    {
+      "name": "canonical_facade_rejects_ports_that_ignore_their_stage_budget",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "canonical_total_budget_includes_currentness_before_owner_calls",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "canonical_total_budget_includes_selected_and_terminal_handoff_fences",
+      "sourcePath": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "independent_context_boundary_rehashes_mutable_advisory_semantics",
+      "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "independent_context_boundary_rejects_another_decision_stage",
+      "sourcePath": "codex-rs/hepta-intelligence/tests/canonical_candidate_closure.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "cached_terminal_reconciles_agentd_without_contacting_model",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "unavailable_terminal_control_preserves_exact_native_observation",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "reconciliation_only_cannot_create_a_native_reservation",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_recovery_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "intelligence_admission_cannot_name_a_different_canonical_run",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "cancelled_checkout_returns_the_same_journal_owner",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_control_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "unicode_byte_limit_is_exact_and_rejection_never_splits_a_character",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_collector_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "empty_messages_have_bounded_item_identity_state",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_collector_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "contradictory_completion_and_duplicate_full_item_ids_fail_atomically",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_collector_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "streamed_and_completed_text_replace_one_item_without_duplicate_output",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_observation_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "done_only_item_and_terminal_fallback_are_bound_to_the_exact_turn",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_observation_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "multiple_message_ranges_preserve_first_seen_order_until_a_full_terminal_projection",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_observation_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "aggregate_completion_limit_failure_keeps_partial_output_and_nonterminal_status",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_observation_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "recovered_output_requires_a_full_history_view_and_rejects_partial_views_atomically",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_collector_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "duplicate_recovery_turn_ids_cannot_substitute_output_after_input_authentication",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_recovery_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "absent_or_empty_recovery_turn_id_has_no_output_projection",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_recovery_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "same_source_delivery_cannot_be_grafted_with_another_valid_serialization",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_pipeline_tests.rs",
+      "package": "codex-hepta-intelligence",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "only_matching_physical_and_agentd_terminal_phases_reach_outcome_evidence",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_product_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "conflicting_terminal_phases_stop_outcome_evidence_and_preserve_physical_truth",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_product_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "nonterminal_physical_or_agentd_observations_cannot_reach_outcome_evidence",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_product_tests.rs",
+      "package": "codex-hepta-infer-worker-host",
+      "executionStatus": "pending"
     }
   ],
   "qualificationOnlyTests": [
     {
       "name": "real_owner_product_path_records_decision_outcome_and_reopens",
       "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "package": "codex-hepta-agentd",
+      "requiredFeature": "qualification-legacy-learning-write",
+      "executionStatus": "pending"
+    },
+    {
+      "name": "qualification_appends_reject_mutated_prepared_decision_before_ledger_write",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_product_qualification_integrity_tests.rs",
       "package": "codex-hepta-agentd",
       "requiredFeature": "qualification-legacy-learning-write",
       "executionStatus": "pending"

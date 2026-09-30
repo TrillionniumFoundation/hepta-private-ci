@@ -1,6 +1,6 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
-  "schemaVersion": 3,
+  "schema": "hepta.intelligence-control-source-declaration.v1",
+  "schemaVersion": 1,
   "module": "intelligence.control",
   "owner": "intelligence-platform",
   "deputy": "qualification-plane",
@@ -276,7 +276,9 @@
       "symbols": [
         "NativeIntelligenceProductHostV1",
         "record_decision_before_dispatch_v1",
-        "reconciliation_required"
+        "reconciliation_required",
+        "local_terminal_receipt_v1",
+        "phase != expected_phase"
       ]
     },
     {
@@ -298,7 +300,8 @@
       "symbols": [
         "pub fn validate(&self)",
         "admitted_exercise",
-        "prepare_prompt_delivery_with_tokenizer_v1"
+        "prepare_prompt_delivery_with_tokenizer_v1",
+        "admitted_delivery_digest"
       ]
     },
     {
@@ -352,6 +355,29 @@
       "sourcePath": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
       "symbols": [
         "compile_and_stage_with_tokenizer"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_intelligence_control.rs",
+      "symbols": [
+        "NativeIntelligenceControlOwnerV1",
+        "fn checkout",
+        "impl Drop"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_output_collector.rs",
+      "symbols": [
+        "NativeOutputCollectorV1",
+        "fn completed",
+        "fn turn_completed",
+        "MAX_OUTPUT_ITEMS"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbols": [
+        "unique_reconciled_output_turn"
       ]
     }
   ],

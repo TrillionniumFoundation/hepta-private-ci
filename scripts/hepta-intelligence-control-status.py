@@ -199,6 +199,13 @@ def source_text(relative: str) -> str:
 
 def validate_declarations() -> tuple[dict[str, Any], dict[str, Any]]:
     implementation, trace = (load_json(DOCS / name) for name in NAMES)
+    if (
+        implementation.get("schema")
+        != "hepta.intelligence-control-source-declaration.v1"
+        or type(implementation.get("schemaVersion")) is not int
+        or implementation["schemaVersion"] != 1
+    ):
+        raise ValueError("unsupported intelligence source declaration schema")
     for value in (implementation, trace):
         identity = value["sourceIdentity"]
         if (

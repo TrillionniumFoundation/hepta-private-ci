@@ -22,9 +22,15 @@ Callers migrate to `prepare_prompt_delivery_with_tokenizer_v1`,
 `compile_prompt_registry_with_tokenizer_v2` or
 `AgentdPromptPipelineOwner::compile_and_stage_with_tokenizer` and pass the exact
 tokenizer for the admitted model profile. Its digest must match that profile;
-serialization counts the complete delivered bytes, including envelope overhead,
+serialization counts the complete source envelope, including its overhead,
 against both the compiled budget and maximum context size. A sum of source
 fragment token costs cannot replace this complete-payload count.
+
+The registry path subsequently extracts developer fragments for staging. Its
+source-envelope count does not include the final provider's model framing; the
+host's final serializer must enforce that complete physical request budget
+separately. The direct canonical prepared-delivery path retains the payload it
+validates.
 
 The previous no-tokenizer entrypoints retain their signatures for source
 migration but reject preparation with `PromptPipelineErrorV1::MissingExactTokenizer`.
@@ -34,6 +40,12 @@ reinterpret this error as a fallback authorization. Historical receipts and
 counts are not upgraded into current serialization proof by changing their
 declared token count. Exact-head consumer compilation and prompt-budget tests
 must run after migration; source presence alone grants no product acceptance.
+
+Public registry compilation fields are compatibility views of a sealed owner
+result. Validation retains the original payload serialization, admitted exercise,
+compatible snapshot and aggregate identity. Rehashing substituted fields or
+grafting a different valid same-registry compilation cannot change that lineage;
+such changes fail with `Integrity` rather than alter staged developer fragments.
 
 ## Durable compatibility
 
@@ -45,6 +57,15 @@ schema values fail as corruption rather than falling back to a permissive state.
 
 `DurableOperationClock` changes clock ownership, not the persisted timestamp
 format. Values remain Unix milliseconds and rollback remains fail-closed.
+
+Completed native message text supplements the retained live trace by item
+identity; a terminal summary does not duplicate the corresponding streamed
+message. Recovered `ThreadRead` output requires a complete `itemsView: full`
+turn, and summary or unloaded views return reconciliation errors without
+authorizing replay.
+Duplicate recovered turn IDs are rejected before output projection. A physical
+terminal that conflicts with the Agentd terminal phase remains pending
+reconciliation and cannot produce an acknowledged Outcome.
 
 ## Upgrade procedure
 

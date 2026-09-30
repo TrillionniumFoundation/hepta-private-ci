@@ -42,6 +42,8 @@ REQUIRED_PARTITION_PATHS = {
 
 
 def partition_for(path: str) -> str:
+    if path.startswith(("scripts/", "docs/", ".github/workflows/")):
+        return "E"
     if path.startswith("codex-rs/hepta-intelligence/"):
         return "A"
     if path.startswith("codex-rs/hepta-agentd/"):

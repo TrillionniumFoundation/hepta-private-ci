@@ -119,12 +119,26 @@ Prompt delivery requires an actual host-owned `ExactTokenizerV2` through
 `compile_prompt_registry_with_tokenizer_v2` or
 `AgentdPromptPipelineOwner::compile_and_stage_with_tokenizer`. Serialization
 checks the tokenizer identity against the selected model profile and counts the
-complete serialized byte payload, including its envelope overhead. It enforces
+complete serialized source payload, including its envelope overhead. It enforces
 both the compiled token budget and the model's maximum context size. Summed
 source-fragment token costs are not an exact count of this payload. Legacy
 entrypoints without a tokenizer preserve their signatures but fail closed with
 `MissingExactTokenizer` or its existing error wrapper; see the
 [source migration contract](COMPATIBILITY.md#exact-tokenizer-admission).
+
+Registry compilation validates its binary source envelope. Agentd staging then
+extracts developer fragments; the host's final serializer must independently
+count and admit the complete provider request and its model framing. The direct
+canonical prepared-delivery path retains its validated payload. Neither the
+registry-envelope count nor fragment cost sums prove the final staged request
+fits its physical budget.
+
+`PromptRegistryCompiledContextV2::validate` compares public payload bytes with
+the retained immutable serialization and reserializes the selected deliveries.
+It also seals the admitted exercise, compatible snapshot and complete delivery
+aggregate. Recomputed public hashes cannot substitute delivery bytes, an exercise
+or snapshot, or graft another valid same-registry compilation onto the original
+private owner lineage.
 
 ### Multiscale DecisionCell integration target
 
@@ -275,6 +289,16 @@ provider evidence remain `Indeterminate`. Never retry a physical effect under
 a new ID to make uncertainty disappear. Recovery, drain, cancellation and
 release are not interchangeable states.
 
+Live native completion summaries supplement the retained, exact-thread/turn
+message trace by item identity without duplicating streamed text. Recovered
+`ThreadRead` output has no retained stream and requires `itemsView: full`;
+summary or unloaded views fail closed as reconciliation errors without replay
+authority.
+The recovered turn ID must identify exactly one turn in that response before
+output is selected. Outcome evidence also requires the Agentd terminal phase to
+match the observed physical terminal; a conflicting pair remains reconciliation
+work and cannot be hidden by a learning acknowledgement.
+
 ## 9. Security, privacy and threat controls
 
 Owned registry threat entries: none. Applicable controls still include authority,
@@ -346,6 +370,12 @@ apply; no default CLI fabricates owner/evidence sources.
 declarations. They explicitly identify requirement support scope, package,
 source file and test, including integration tests outside `src`. They are not
 an automatically promoted count of functions or a complete repository inventory.
+
+The implementation declaration uses the dedicated
+`hepta.intelligence-control-source-declaration.v1` schema. The global document
+verifier invokes this module's declaration validator on the exact tracked files;
+it does not reinterpret the declaration as a historical generic V3 map, invent a
+`sourceBase` anchor or promote pending package execution to product completion.
 
 `scripts/hepta-intelligence-control-status.py --check-tracked` validates them.
 The companion Python tests reject wrong-head, failed/queued, changed-checkout,

@@ -13,6 +13,7 @@ product callers; migration refreshes these objects without granting execution.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -1188,6 +1189,89 @@ def public_rust_functions(root: str) -> set[str]:
     return functions
 
 
+INTELLIGENCE_DECLARATION_SCHEMA = "hepta.intelligence-control-source-declaration.v1"
+
+
+def verify_registered_source_declaration(
+    row: dict, module: dict, candidate: dict
+) -> list[str]:
+    """Adapt the named pending declaration without inventing historical anchors."""
+    if (
+        row.get("schema") != INTELLIGENCE_DECLARATION_SCHEMA
+        or type(row.get("schemaVersion")) is not int
+        or row["schemaVersion"] != 1
+        or row.get("module") != "intelligence.control"
+        or module["id"] != "intelligence.control"
+    ):
+        raise ValueError("unregistered source declaration schema/module")
+    if validate_claim_types(row):
+        raise ValueError("source declaration cannot issue execution claims")
+    if (
+        row.get("sourceIdentity")
+        != {
+            "policy": "ci_exact_head_artifact_v2",
+            "commit": "CI_EXACT_HEAD",
+            "lane": "tracked",
+            "executionStatus": "pending",
+            "commitMustEqualCheckoutHead": True,
+        }
+        or row["sourceIdentity"]["commitMustEqualCheckoutHead"] is not True
+    ):
+        raise ValueError("source declaration identity must remain exact-head pending")
+    roots = [binding["path"] for binding in module["rootBindings"]]
+    if row.get("declaredRoots") != roots or resolve_source_roots(ROOT, module) != roots:
+        raise ValueError("source declaration roots differ from registry")
+    status = row.get("statusMatrix")
+    false_fields = (
+        "nativeBuildVerified",
+        "exactHeadExecuted",
+        "syntheticMergeExecuted",
+        "defaultBinaryProfileComposed",
+        "realProcessProviderE2E",
+        "targetHostQualified",
+        "independentAcceptance",
+        "activation",
+        "release",
+        "allRequirementsClosed",
+    )
+    if not isinstance(status, dict) or any(
+        status.get(field) is not False for field in false_fields
+    ):
+        raise ValueError(
+            "source declaration cannot establish execution, acceptance or release"
+        )
+    verifier_path = "scripts/hepta-intelligence-control-status.py"
+    if row.get("validatedAndProjectedBy") != verifier_path:
+        raise ValueError("source declaration names an unregistered verifier")
+    verifier = checked_source_path(ROOT, verifier_path)
+    spec = importlib.util.spec_from_file_location(
+        "hepta_intelligence_source_declaration", verifier
+    )
+    if spec is None or spec.loader is None:
+        raise ValueError("source declaration verifier unavailable")
+    owner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(owner)
+    implementation, trace = owner.validate_declarations()
+    if implementation != row:
+        raise ValueError("source declaration changed during owner validation")
+    paths = {
+        verifier_path,
+        row["technicalGuide"],
+        "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+        "docs/modules/intelligence.control/TEST_TRACEABILITY.json",
+    }
+    paths.update(binding["sourcePath"] for binding in row["sourceBindings"])
+    paths.update(
+        test["sourcePath"]
+        for test in trace["ordinaryProductTests"] + trace["qualificationOnlyTests"]
+    )
+    for path in paths:
+        if not checked_source_path(ROOT, path).is_file():
+            raise ValueError(f"missing declaration source/evidence: {path}")
+    require_tracked_paths(candidate["commit"], sorted(paths))
+    return sorted(paths)
+
+
 def verify(
     *,
     require_current_source: bool = True,
@@ -1207,7 +1291,9 @@ def verify(
             (expected_tree, "expected-tree"),
         ):
             if value is not None and re.fullmatch(r"[0-9a-f]{40}", value) is None:
-                raise ValueError(f"--{label} must be an exact 40-character Git object id")
+                raise ValueError(
+                    f"--{label} must be an exact 40-character Git object id"
+                )
         if expected_sha is not None and candidate["commit"] != expected_sha:
             raise ValueError(
                 f"expected candidate SHA {expected_sha}, observed {candidate['commit']}"
@@ -1232,10 +1318,17 @@ def verify(
     candidate_bound_maps = 0
     exact_observed_fallback_maps = 0
     provenance_anchored_exact_blob_maps = 0
+    tracked_source_declaration_maps = 0
     for module in modules:
         mid = module["id"]
         try:
             row = load(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
+            if row.get("schema") == INTELLIGENCE_DECLARATION_SCHEMA:
+                checked_paths.update(
+                    verify_registered_source_declaration(row, module, candidate)
+                )
+                tracked_source_declaration_maps += 1
+                continue
             validate_claim_types(row)
             validate_closed_world_bindings(row)
             if (
@@ -1434,6 +1527,7 @@ def verify(
                 "candidateSource": candidate,
                 "currentSourceIdentityRequired": True,
                 "candidateBoundMaps": candidate_bound_maps,
+                "trackedSourceDeclarationMaps": tracked_source_declaration_maps,
                 "exactObservedFallbackMaps": exact_observed_fallback_maps,
                 "provenanceAnchoredExactBlobMaps": provenance_anchored_exact_blob_maps,
                 "legacyProvenanceOnlyMaps": [],
@@ -1475,7 +1569,9 @@ def main():
         parser.error("--require-current-source applies only to verify")
     if args.modules is not None and args.command != "migrate":
         parser.error("--module applies only to migrate")
-    if (args.expected_sha is not None or args.expected_tree is not None) and args.command != "verify":
+    if (
+        args.expected_sha is not None or args.expected_tree is not None
+    ) and args.command != "verify":
         parser.error("--expected-sha/--expected-tree apply only to verify")
     if args.command == "migrate":
         migrate(args.modules)
