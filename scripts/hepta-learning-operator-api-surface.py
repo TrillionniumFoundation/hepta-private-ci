@@ -32,21 +32,44 @@ fn main() {
 COMPATIBILITY_PASS = """
 use codex_hepta_bellman_operator::compatibility::{
     fit_tabular_operator,
+    fit_tabular_operator_verified_v3,
     fit_transition_model,
     verify_tabular_operator_plan_v2,
+    verify_tabular_operator_plan_v3,
+    verify_world_model_dataset_v3,
 };
 fn main() {
     let _ = fit_tabular_operator;
+    let _ = fit_tabular_operator_verified_v3;
     let _ = fit_transition_model;
     let _ = verify_tabular_operator_plan_v2;
+    let _ = verify_tabular_operator_plan_v3;
+    let _ = verify_world_model_dataset_v3;
 }
 """
 
 DEFAULT_FAIL = {
     "raw-fitter": "use codex_hepta_bellman_operator::fit_tabular_operator; fn main() { let _ = fit_tabular_operator; }\n",
+    "bounded-raw-fitter": "use codex_hepta_bellman_operator::fit_tabular_operator_bounded_v2; fn main() { let _ = fit_tabular_operator_bounded_v2; }\n",
+    "direct-v3-tabular-verifier": "use codex_hepta_bellman_operator::verify_tabular_operator_plan_v3; fn main() { let _ = verify_tabular_operator_plan_v3; }\n",
+    "direct-v3-tabular-fitter": "use codex_hepta_bellman_operator::fit_tabular_operator_verified_v3; fn main() { let _ = fit_tabular_operator_verified_v3; }\n",
+    "direct-v3-world-verifier": "use codex_hepta_bellman_operator::verify_world_model_dataset_v3; fn main() { let _ = verify_world_model_dataset_v3; }\n",
+    "direct-v3-world-fitter": "use codex_hepta_bellman_operator::fit_transition_model_verified_v3; fn main() { let _ = fit_transition_model_verified_v3; }\n",
     "compatibility-module": "use codex_hepta_bellman_operator::compatibility::fit_tabular_operator; fn main() { let _ = fit_tabular_operator; }\n",
     "activation-port": "use codex_hepta_bellman_operator::activate_operator; fn main() { let _ = activate_operator; }\n",
     "publish-port": "use codex_hepta_bellman_operator::publish_operator; fn main() { let _ = publish_operator; }\n",
+}
+
+EXPECTED_DIAGNOSTIC_TOKENS = {
+    "raw-fitter": ("fit_tabular_operator",),
+    "bounded-raw-fitter": ("fit_tabular_operator_bounded_v2",),
+    "direct-v3-tabular-verifier": ("verify_tabular_operator_plan_v3",),
+    "direct-v3-tabular-fitter": ("fit_tabular_operator_verified_v3",),
+    "direct-v3-world-verifier": ("verify_world_model_dataset_v3",),
+    "direct-v3-world-fitter": ("fit_transition_model_verified_v3",),
+    "compatibility-module": ("compatibility",),
+    "activation-port": ("activate_operator",),
+    "publish-port": ("publish_operator",),
 }
 
 
@@ -114,16 +137,11 @@ def main() -> None:
 
     for name, source in DEFAULT_FAIL.items():
         completed = check(source, compatibility=False)
-        rejected = completed.returncode != 0
         diagnostic = completed.stderr
-        relevant = name.split("-")[0] in diagnostic.lower() or any(
-            token in diagnostic
-            for token in (
-                "fit_tabular_operator",
-                "compatibility",
-                "activate_operator",
-                "publish_operator",
-            )
+        rejected = completed.returncode != 0
+        relevant = any(
+            token.lower() in diagnostic.lower()
+            for token in EXPECTED_DIAGNOSTIC_TOKENS[name]
         )
         passed = rejected and relevant
         results.append(
@@ -140,9 +158,10 @@ def main() -> None:
             )
 
     payload = {
-        "schema": "hepta.learning-operator-api-surface.v1",
-        "schemaVersion": 1,
+        "schema": "hepta.learning-operator-api-surface.v2",
+        "schemaVersion": 2,
         "defaultCompatibilityFeatureEnabled": False,
+        "defaultDirectV3FitAllowed": False,
         "results": results,
         "passed": all(bool(row["passed"]) for row in results),
     }
