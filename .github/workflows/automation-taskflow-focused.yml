@@ -35,28 +35,74 @@ permissions:
 
 jobs:
   focused:
+    name: focused (${{ matrix.lane }})
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      EXPECTED_SHA: ${{ matrix.lane == 'base-merge' && github.sha || github.event.pull_request.head.sha || github.sha }}
+      CARGO_BUILD_JOBS: "2"
     defaults:
       run:
         working-directory: codex-rs
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
           persist-credentials: false
+      - name: Bind exact source and merge candidate
+        working-directory: .
+        env:
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          if [ "$LANE" = base-merge ]; then
+            test "$(git --no-replace-objects show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+            expected_tree="$(git --no-replace-objects merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            test "$(git --no-replace-objects rev-parse 'HEAD^{tree}')" = "$expected_tree"
+          fi
       - name: Rustfmt changed automation owners
         run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve verified sandboxed V8 artifacts
+        working-directory: .
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
       - name: Check automation, operations and Agentd
-        run: cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+        run: cargo check --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
       - name: Verify privileged caller closure
-        run: python3 ../scripts/verify_hepta_callers.py verify --root ..
-      - name: Test kernel operation contract
-        run: cargo test -p codex-hepta-operations
-      - name: Test durable automation causal chain
-        run: cargo test -p codex-hepta-automation --test durable_causal_chain
-      - name: Test automation package
-        run: cargo test -p codex-hepta-automation
+        working-directory: .
+        run: |
+          python3 scripts/verify_hepta_callers.py self-test
+          python3 -m unittest -v scripts.test_hepta_caller_receiver_scope
+          python3 scripts/verify_hepta_callers.py verify --root .
+      - name: Test operations and durable automation package
+        run: just test --locked -p codex-hepta-operations -p codex-hepta-automation --test-threads=2
       - name: Test automation qualification profile
-        run: cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+        run: just test --locked -p codex-hepta-automation --features taskflow-structural-qualification --test-threads=2
       - name: Test Agentd library
-        run: cargo test -p codex-hepta-agentd --lib
+        run: just test --locked -p codex-hepta-agentd --lib --test-threads=1
+      - name: Check unchanged candidate after execution
+        if: always()
+        working-directory: .
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code

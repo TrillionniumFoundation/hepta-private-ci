@@ -318,7 +318,7 @@ The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is ex
 
 ## 6. Data authority, persistence and migrations
 
-The current schema v20 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables, including the durable lifecycle and effect additions introduced through v16:
+The current schema v21 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables, including the durable lifecycle and effect additions introduced through v16:
 
 - `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
 - `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, bounded terminal-observer continuation cursor, recovery phase and terminal receipt.
@@ -332,7 +332,7 @@ The current schema v20 retains the original `automation_tasks`, `automation_runs
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive through schema v20. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs; v15 adds append-only reconciliation evidence for pre-v14 dispatch-unknown rows; v16 persists the opaque App Server terminal-observer cursor; v17 adds kernel-operation destination dedupe; v18 persists timer lifecycle; v19 converges the owner schema; and v20 adds append-only Neural Circuit activation and choice evidence. V20 records activation/round, circuit and compiled-TaskFlow identities, causal/policy/parameter digests, an externally owned Fleet lease reference with bounded resource projections, and the exact durable decision receipt/selected port. It does not create a second resource authority or general cyclic executor. A binary that does not understand schema v20 must not replace the current owner against an upgraded store.
+Migrations are additive through schema v21. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation; v14 freezes the schedule revision on claimed legacy runs; v15 adds append-only reconciliation evidence for pre-v14 dispatch-unknown rows; v16 persists the opaque App Server terminal-observer cursor; v17 adds kernel-operation destination dedupe; v18 persists timer lifecycle; v19 converges the owner schema; and v20 adds append-only Neural Circuit activation and choice evidence. V20 records activation/round, circuit and compiled-TaskFlow identities, causal/policy/parameter digests, an externally owned Fleet lease reference with bounded resource projections, and the exact durable decision receipt/selected port. It does not create a second resource authority or general cyclic executor. Migration v21 persists the owner-scoped, length-framed provider effect key before contact and reuses it across local attempts and restarts. Pre-v21 attempts retain their original identity bytes with a null key; the reference HTTP host quarantines them from lookup and retry because provider key/payload alone cannot prove which Agent owns an old unscoped acknowledgement. They require independently established owner/provider isolation evidence before reconciliation. A binary that does not understand schema v21 must not replace the current owner against an upgraded store.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -432,6 +432,12 @@ Consumed-nonce and revocation state is durably opened under
 directory with Unix mode 0700. Each execute/reconcile call refreshes the external
 revocation head and rejects a rolled-back epoch/revision. Preserve this directory
 when restarting or restoring the owner; deleting it is not a supported retry.
+The same directory retains the immutable `provider-profile.sha256` pin. The host
+binds its Agent, destination, independently attested provider contract, final-use
+trust and canonical revocation-feed path before opening authority state. A changed
+profile is rejected. Missing pin plus any pre-existing authority entry is rejected,
+including a restored `authority.json` whose lock was lost; that state requires
+independent recovery evidence and cannot be silently adopted by a new endpoint.
 Exact wire bytes must fit the exported protocol payload bound and match the
 durable payload digest. Restart recovery uses the original attempt and provider
 logical-effect key through lookup; it cannot authorize redispatch.

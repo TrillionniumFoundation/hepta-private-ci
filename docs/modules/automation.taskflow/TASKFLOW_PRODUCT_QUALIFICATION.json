@@ -50,7 +50,11 @@
     "durableProviderAttempt": true,
     "restartLookup": true,
     "noBlindRedispatch": true,
-    "sourceCompositionComplete": true
+    "sourceCompositionComplete": true,
+    "durableOwnerScopedProviderIdentity": true,
+    "providerProfilePinnedBeforeAuthorityOpen": true,
+    "legacyKeylessAttemptsQuarantined": true,
+    "unpinnedInitializedAuthorityQuarantined": true
   },
   "targetHostEvidence": {
     "status": "required_not_embedded_in_repository",
@@ -107,9 +111,14 @@
   "authorityGranted": false,
   "note": "This file separates repository source composition from external target-host qualification. Null target-host fields are required evidence slots and must never be inferred from unit tests or source presence.",
   "subsequentAudit": {
-    "status": "source_reviewed_exact_candidate_validation_pending",
+    "status": "source_optimized_external_exact_candidate_validation_required",
     "historicalSourceObservationRetained": true,
-    "executedChecksRecorded": false,
-    "semantics": "The scope corrections and operating contract are source-reviewed documentation. This file records no test pass for subsequent audit optimizations and does not extend the historical source observation to their changed objects."
+    "runtimeSourceCommit": "f0d3e5203ac9756d7d8958f15e53242b88a78359",
+    "runtimeSourceTree": "d860886e67b6bf255b4530693e8d0f989bc6fb02",
+    "executionEvidenceOwner": "GitHub Actions checks for the published candidate and its main merge",
+    "localRustTestsPassed": false,
+    "localClippyPassed": false,
+    "localBuildBlocker": "workspace disk exhausted before module tests/type checks completed",
+    "semantics": "This candidate hardens repository code. Historical source observations do not cover its changed runtime objects. Hosted statuses are external evidence; this file grants no target-host, deployment, acceptance, activation or release qualification."
   }
 }
