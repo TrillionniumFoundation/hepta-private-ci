@@ -1,0 +1,65 @@
+name: Hepta NDU public API compatibility
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-ndu-public-api.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-ndu-public-api.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-ndu-public-api-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Resolve immutable baseline
+        id: baseline
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$BASE_SHA" ] || ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            BASE_SHA=$(git rev-parse refs/remotes/origin/main)
+          fi
+          echo "sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+      - name: Install pinned semver checker
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-semver-checks@0.50.0
+          checksum: true
+      - name: Compile legacy V1 consumer fixture
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-ndu --test public_api_compat --locked
+      - name: Reject public API breaking changes
+        working-directory: codex-rs
+        run: >-
+          cargo semver-checks check-release
+          --manifest-path hepta-ndu/Cargo.toml
+          --baseline-rev ${{ steps.baseline.outputs.sha }}
+          --release-type patch
