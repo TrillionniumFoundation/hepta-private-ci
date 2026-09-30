@@ -18,7 +18,7 @@ concurrency:
 jobs:
   author:
     if: github.ref == 'refs/heads/work/objective-compiler-production-convergence-20260927'
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 120
     env:
       CARGO_INCREMENTAL: "0"
