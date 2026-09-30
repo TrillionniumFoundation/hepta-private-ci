@@ -2,7 +2,9 @@ use codex_hepta_contracts::AgentId;
 use pretty_assertions::assert_eq;
 
 use super::*;
+use crate::SupervisordMutation;
 
+#[cfg(unix)]
 #[test]
 fn emergency_kill_preserves_the_ambiguous_request_and_both_are_queryable() {
     let dir = tempfile::tempdir().expect("owner directory");

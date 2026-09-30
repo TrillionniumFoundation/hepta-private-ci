@@ -1,5 +1,6 @@
 //! Bounded journal slots retain an ambiguous operation during emergency containment.
 
+#[cfg(unix)]
 use std::fs::File;
 use std::io::ErrorKind;
 use std::path::Path;
@@ -7,6 +8,7 @@ use std::path::PathBuf;
 
 use crate::DurableMutationStatusV1;
 use crate::MutationJournalError;
+#[cfg(unix)]
 use crate::SupervisordMutation;
 
 const EMERGENCY_DIRECTORY: &str = "supervisor-emergency-control";
@@ -16,6 +18,7 @@ pub(crate) struct OwnedStatus {
     pub(crate) status: DurableMutationStatusV1,
 }
 
+#[cfg(unix)]
 pub(crate) fn admission_root(
     run_root: &Path,
     operation: SupervisordMutation,
@@ -78,6 +81,6 @@ fn validate_directory(root: &Path) -> Result<(), MutationJournalError> {
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "mutation_journal_slots_tests.rs"]
 mod tests;
