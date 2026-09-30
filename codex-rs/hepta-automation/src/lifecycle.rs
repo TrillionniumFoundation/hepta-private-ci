@@ -6,8 +6,11 @@
 //! revision and deterministic occurrence identity, then keeps queue admission
 //! distinct from terminal execution.
 
+use crate::AutomationMissedRunPolicy;
+
+use crate::AutomationOverlapPolicy;
+
 use codex_hepta_contracts::Sha256Digest;
-use serde::Deserialize;
 use serde::Serialize;
 use sqlx::Row;
 
@@ -22,14 +25,6 @@ const ZERO_DIGEST: &str = "00000000000000000000000000000000000000000000000000000
 const MAX_CATCH_UP: u16 = 1_024;
 const MAX_RECOVERY_SCAN: usize = 1_024;
 const MAX_TERMINAL_SCAN_CURSOR_BYTES: usize = 2_048;
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum AutomationMissedRunPolicy {
-    Skip,
-    Coalesce,
-    CatchUp { max_occurrences: u16 },
-}
 
 impl AutomationMissedRunPolicy {
     fn db_parts(self) -> (&'static str, u16) {
@@ -59,16 +54,6 @@ impl AutomationMissedRunPolicy {
             _ => Ok(()),
         }
     }
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum AutomationOverlapPolicy {
-    /// Do not materialize the next occurrence until this occurrence is terminal.
-    Forbid,
-    /// Advance recurrence after durable Core admission while retaining this
-    /// occurrence as non-terminal until its terminal observer settles it.
-    Allow,
 }
 
 impl AutomationOverlapPolicy {

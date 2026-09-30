@@ -16,8 +16,10 @@ workspace = true
 [dependencies]
 codex-hepta-contracts = { workspace = true }
 codex-hepta-fleet = { workspace = true }
-codex-hepta-automation = { workspace = true }
+codex-hepta-automation = { path = "../hepta-automation", default-features = false }
 serde = { workspace = true, features = ["derive"] }
 
 [dev-dependencies]
+# Runtime-qualified protocol tests use the real owner; transport builds do not.
+codex-hepta-automation = { workspace = true }
 serde_json = { workspace = true }

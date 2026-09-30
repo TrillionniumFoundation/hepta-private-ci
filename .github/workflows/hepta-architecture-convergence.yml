@@ -239,12 +239,19 @@ jobs:
             echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
           fi
           exit "$locked_status"
+      - name: Client-only product boundary and wire compatibility
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
+        run: |
+          set -euo pipefail
+          # Separate production profile: default test builds may unify server features.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/client-profile-tree.json" -- python3 scripts/hepta_architecture_graph.py --check-client-profile
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/client-profile.json" -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --no-default-features --lib
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/automation-wire.json" --minimum-tests 2 -- just test --locked -p codex-hepta-automation --no-default-features --lib
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/evidence-wire.json" --minimum-tests 2 -- just test --locked -p codex-hepta-evidence --no-default-features --lib
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
           set -euo pipefail
-          # Separate production profile: default test builds may unify server features.
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/client-profile.json" -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --no-default-features --lib
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
       - name: Durable operation and external-effect recovery
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'

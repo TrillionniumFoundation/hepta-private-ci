@@ -430,13 +430,18 @@ This receipt records repository source bindings for the current documentation ca
 
 ### Exact profile boundary
 
-The client-only Cargo profile omits the Agentd server/components/App Server
-composition. It is not yet SQL-free: client protocol DTOs still depend on the
-Automation crate, and client evidence-return types still depend on the Evidence
-crate; those crates retain their durable-storage dependencies. A shorter list of
-direct imports or re-exporting them through `agent-components` does not remove
-that transitive build surface. Any further profile split must preserve these wire
-types, current durable owners and Cargo/Bazel behavior together.
+The client-only Cargo profile omits Agentd server/components/App Server and the
+transitive Automation/Evidence storage implementations. Their existing public
+DTO identities and serde formats stay in their owning crates; disabling defaults
+selects storage-free values, not duplicate protocol or authority implementations.
+Both owner crates retain `runtime` in their default features. Default Agentd
+explicitly enables those runtime features; no migration or persistent format changes.
+
+`python3 scripts/hepta_architecture_graph.py --check-client-profile` resolves the
+actual normal/build Cargo tree and rejects SQL/state owners or runtime feature
+re-enablement, including transitive feature unification. Dev-dependency features
+are deliberately not evidence for a production client. The native architecture
+lane compiles the client independently and exercises both DTO-only library suites.
 
 ### Client-only Cargo composition
 

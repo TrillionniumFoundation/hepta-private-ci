@@ -17,6 +17,8 @@ doctest = false
 default = ["server", "production-cognitive-write"]
 # Disabling defaults leaves the existing bounded control client, not a daemon.
 server = [
+    "codex-hepta-evidence/runtime",
+    "codex-hepta-automation/runtime",
     "dep:anyhow",
     "dep:codex-app-server-client",
     "dep:codex-app-server-protocol",
@@ -92,9 +94,9 @@ tokio = { workspace = true, features = [
 ] }
 tokio-util = { optional = true, workspace = true }
 
-codex-hepta-automation = { workspace = true }
+codex-hepta-automation = { path = "../hepta-automation", default-features = false }
 codex-hepta-contracts = { workspace = true }
-codex-hepta-evidence = { workspace = true }
+codex-hepta-evidence = { path = "../hepta-evidence", default-features = false }
 
 [dev-dependencies]
 # Restore the qualification-only ledger writer for Agentd tests through the

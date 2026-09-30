@@ -78,6 +78,10 @@
     },
     {
       "fromModule": "runtime.agentd",
+      "toModule": "automation.taskflow"
+    },
+    {
+      "fromModule": "runtime.agentd",
       "toModule": "cognitive.types"
     },
     {
@@ -204,6 +208,15 @@
       "toLayer": 5,
       "toModule": "intelligence.control",
       "toPackage": "codex-hepta-intelligence"
+    },
+    {
+      "dependencyKind": "dev",
+      "fromLayer": 3,
+      "fromModule": "runtime.agentd",
+      "fromPackage": "codex-hepta-agent-protocol",
+      "toLayer": 2,
+      "toModule": "automation.taskflow",
+      "toPackage": "codex-hepta-automation"
     },
     {
       "dependencyKind": "dev",

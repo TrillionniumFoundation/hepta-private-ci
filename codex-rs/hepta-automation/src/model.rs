@@ -7,8 +7,11 @@ use serde::Serialize;
 use uuid::Uuid;
 
 // Leaves room for the strict 64-KiB agentd control frame envelope.
+#[cfg(feature = "runtime")]
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
+#[cfg(feature = "runtime")]
 const MIN_INTERVAL_MS: u64 = 1_000;
+#[cfg(feature = "runtime")]
 const MAX_INTERVAL_MS: u64 = 366 * 24 * 60 * 60 * 1_000;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -60,6 +63,7 @@ pub enum AutomationSchedule {
     FixedInterval { interval_ms: u64 },
 }
 
+#[cfg(feature = "runtime")]
 impl AutomationSchedule {
     pub(crate) fn validate(self) -> Result<(), AutomationError> {
         match self {
@@ -83,6 +87,7 @@ pub enum AutomationTaskState {
     Completed,
 }
 
+#[cfg(feature = "runtime")]
 impl AutomationTaskState {
     pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
         match value {
@@ -124,6 +129,7 @@ impl AutomationTaskDraft {
         }
     }
 
+    #[cfg(feature = "runtime")]
     pub(crate) fn validate(&self) -> Result<(), AutomationError> {
         self.schedule.validate()?;
         let prompt_len = self.prompt.len();
@@ -258,6 +264,7 @@ pub enum AutomationTick {
     },
 }
 
+#[cfg(feature = "runtime")]
 pub(crate) fn client_message_id(
     agent_id: &AgentId,
     task_id: AutomationTaskId,

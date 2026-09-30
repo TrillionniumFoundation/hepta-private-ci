@@ -27,10 +27,9 @@ use codex_hepta_operations::OperationIntentV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use serde::Deserialize;
-use serde::Serialize;
 use thiserror::Error;
 
+use crate::AuthorizedEffectIntent;
 use crate::AutomationStore;
 use crate::TaskFlowCommand;
 use crate::TaskFlowError;
@@ -49,30 +48,6 @@ const MAX_AUTHORIZED_EFFECT_DEPENDENCIES: usize = 128;
 const MAX_EFFECT_ID_BYTES: usize = 256;
 const MAX_FINAL_USE_ID_BYTES: usize = 128;
 const ZERO_DIGEST: &str = "0000000000000000000000000000000000000000000000000000000000000000";
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct AuthorizedEffectDependency {
-    pub step_id: String,
-    pub state_digest: Sha256Digest,
-}
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct AuthorizedEffectIntent {
-    pub run_id: String,
-    pub step_id: String,
-    pub attempt: u32,
-    pub operation_id: String,
-    pub subject_id: String,
-    pub destination_id: String,
-    pub payload_digest: Sha256Digest,
-    pub final_use_scope_digest: Sha256Digest,
-    pub policy_generation: u64,
-    pub expected_predecessor_digest: Option<Sha256Digest>,
-    pub dependencies: Vec<AuthorizedEffectDependency>,
-    pub compensation_for: Option<String>,
-}
 
 impl AuthorizedEffectIntent {
     pub fn digest(&self) -> Result<Sha256Digest, TaskFlowError> {
@@ -1532,6 +1507,7 @@ fn validate_receipt_digest(digest: &Sha256Digest) -> Result<(), AuthorizedEffect
 #[cfg(test)]
 mod intent_tests {
     use super::*;
+    use crate::AuthorizedEffectDependency;
 
     fn dependency(id: &str, label: &[u8]) -> AuthorizedEffectDependency {
         AuthorizedEffectDependency {

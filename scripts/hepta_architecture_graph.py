@@ -24,10 +24,23 @@ OUTPUT = Path("docs/modules/COMPILE_GRAPH.json")
 
 
 def cargo_metadata(root: Path) -> dict[str, Any]:
-    return json.loads(subprocess.check_output([
-        "cargo", "metadata", "--locked", "--no-deps", "--format-version=1",
-        "--manifest-path", str(root / "codex-rs/Cargo.toml"),
-    ], cwd=root, text=True))
+    return json.loads(
+        subprocess.check_output(
+            [
+                "cargo",
+                "metadata",
+                "--locked",
+                "--no-deps",
+                "--format-version=1",
+                "--manifest-path",
+                str(root / "codex-rs/Cargo.toml"),
+            ],
+            cwd=root,
+            text=True,
+        )
+    )
+
+
 def load_inputs(root: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     metadata = cargo_metadata(root)
     matrix = json.loads((root / MATRIX).read_text(encoding="utf-8"))
@@ -95,6 +108,8 @@ def _edge_row(
 def _dedupe_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     unique = {json.dumps(row, sort_keys=True): row for row in rows}
     return [unique[key] for key in sorted(unique)]
+
+
 def build_report(
     metadata: dict[str, Any],
     matrix: dict[str, Any],
@@ -127,7 +142,8 @@ def build_report(
     if missing:
         raise ValueError(f"manifest packages missing from Cargo metadata: {missing}")
     unbound = sorted(
-        name for name in metadata_packages
+        name
+        for name in metadata_packages
         if name.startswith("codex-hepta-") and name not in packages
     )
     if unbound:
@@ -173,8 +189,7 @@ def build_report(
     layer_violations = [
         row
         for row in production_rows
-        if row["fromPackage"] != row["toPackage"]
-        and row["fromLayer"] <= row["toLayer"]
+        if row["fromPackage"] != row["toPackage"] and row["fromLayer"] <= row["toLayer"]
     ]
     package_edges = {
         (row["fromPackage"], row["toPackage"])
@@ -250,6 +265,8 @@ def build_report(
         "externalHostConsumers": external_rows,
         "violations": violations,
     }
+
+
 def render_report(report: dict[str, Any]) -> str:
     return json.dumps(report, indent=2, sort_keys=True) + "\n"
 
@@ -272,14 +289,87 @@ def apply(root: Path, *, check: bool) -> dict[str, Any]:
     return report
 
 
+def validate_client_profile_tree(text: str) -> dict[str, Any]:
+    """Check resolved normal/build features, never the all-feature metadata union."""
+    packages: dict[str, set[str]] = {}
+    for line in text.splitlines():
+        identity, separator, features = line.partition("|")
+        if not separator or not identity.strip():
+            raise ValueError("invalid client Cargo tree row")
+        name = identity.split()[0]
+        enabled = {item for item in features.removesuffix(" (*)").split(",") if item}
+        packages.setdefault(name, set()).update(enabled)
+    if "codex-hepta-agentd" not in packages:
+        raise ValueError("client Cargo tree omitted the actual Agentd root")
+    forbidden = {
+        name
+        for name in packages
+        if name
+        in {
+            "codex-state",
+            "codex-core",
+            "codex-app-server",
+            "codex-hepta-agent-components",
+            "codex-hepta-operations",
+        }
+        or name.startswith(("sqlx", "rusqlite", "libsqlite3-sys"))
+    }
+    for name, feature in (
+        ("codex-hepta-agentd", "server"),
+        ("codex-hepta-automation", "runtime"),
+        ("codex-hepta-evidence", "runtime"),
+    ):
+        if feature in packages.get(name, set()):
+            forbidden.add(f"{name}/{feature}")
+    if forbidden:
+        raise ValueError(
+            "client profile links runtime/store code: " + ", ".join(sorted(forbidden))
+        )
+    return {
+        "status": "PASS_HEPTA_CLIENT_PROFILE",
+        "root": "codex-hepta-agentd",
+        "edges": ["normal", "build"],
+        "packages": sorted(packages),
+        "features": {name: sorted(values) for name, values in sorted(packages.items())},
+    }
+
+
+def check_client_profile(root: Path) -> dict[str, Any]:
+    tree = subprocess.check_output(
+        [
+            "cargo",
+            "tree",
+            "--locked",
+            "--manifest-path",
+            str(root / "codex-rs/Cargo.toml"),
+            "-p",
+            "codex-hepta-agentd",
+            "--no-default-features",
+            "--edges",
+            "normal,build",
+            "--prefix",
+            "none",
+            "--format",
+            "{p}|{f}",
+        ],
+        cwd=root,
+        text=True,
+    )
+    return validate_client_profile_tree(tree)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--write", action="store_true")
+    mode.add_argument("--check-client-profile", action="store_true")
     parser.add_argument("--root", type=Path, default=ROOT)
     args = parser.parse_args(argv)
     try:
+        if args.check_client_profile:
+            print(json.dumps(check_client_profile(args.root.resolve()), sort_keys=True))
+            return 0
         report = apply(args.root.resolve(), check=args.check)
     except (
         OSError,
