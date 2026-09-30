@@ -215,36 +215,11 @@ impl CognitiveSourceOutboxTarget {
         format!("{}:{}", id.source_id.as_str(), id.revision)
     }
 
-    async fn exact_count(
-        &self,
-        draft: &SourceDraft,
-        source_id: &SourceEventId,
-    ) -> Result<i64, sqlx::Error> {
-        let content_sha256 = Sha256Digest::for_bytes(&draft.content);
-        let (scope_kind, workspace_sha256) = draft.scope.database_parts();
-        sqlx::query_scalar(
-            "SELECT COUNT(*) FROM source_ledger
-             WHERE source_id = ? AND source_revision = 1 AND owner_agent_id = ?
-               AND scope_kind = ? AND workspace_sha256 IS ? AND source_kind = ?
-               AND content = ? AND content_sha256 = ? AND observed_at_unix_seconds = ?",
-        )
-        .bind(source_id.as_str())
-        .bind(self.store.owner_agent_id().as_str())
-        .bind(scope_kind)
-        .bind(workspace_sha256)
-        .bind(draft.kind.as_str())
-        .bind(&draft.content)
-        .bind(content_sha256.as_str())
-        .bind(draft.observed_at_unix_seconds)
-        .fetch_one(&self.store.pool)
-        .await
-    }
-
     pub async fn observe_terminal(
         &self,
         request: &ProductionDispatchRequest,
     ) -> CognitiveSourceTerminalObservation {
-        let (draft, _expected_predecessor) = match self.decode_request(request) {
+        let (draft, expected_predecessor) = match self.decode_request(request) {
             Ok(value) => value,
             Err(reason) => return CognitiveSourceTerminalObservation::Quarantined { reason },
         };
@@ -253,34 +228,54 @@ impl CognitiveSourceOutboxTarget {
                 reason: error.to_string(),
             };
         }
+        // This destination is create-only. A request that expects an existing
+        // predecessor can never apply, including when the same source content
+        // was already published by a different, predecessor-free operation.
+        if expected_predecessor.is_some() {
+            return CognitiveSourceTerminalObservation::NotApplied;
+        }
         let source_id = SourceEventId::for_event(
             self.store.owner_agent_id(),
             &draft.scope,
             draft.kind,
             &draft.event_key,
         );
-        match self.exact_count(&draft, &source_id).await {
-            Ok(1) => {
-                return CognitiveSourceTerminalObservation::Applied {
-                    receipt: Self::receipt(&SourceRevisionId::new(source_id)),
-                };
-            }
-            Ok(_) => {}
-            Err(error) => {
-                return CognitiveSourceTerminalObservation::Unavailable {
-                    reason: error.to_string(),
-                };
-            }
-        }
-
-        let same_identity: Result<i64, sqlx::Error> = sqlx::query_scalar(
-            "SELECT COUNT(*) FROM source_ledger WHERE source_id = ? AND source_revision = 1",
+        let content_sha256 = Sha256Digest::for_bytes(&draft.content);
+        let (scope_kind, workspace_sha256) = draft.scope.database_parts();
+        // Both counts must come from one SQLite read cut. Separate queries
+        // can see absence first and an exact late commit second, incorrectly
+        // quarantining that valid commit as different semantics.
+        let counts: Result<(i64, i64), sqlx::Error> = sqlx::query_as(
+            "SELECT COALESCE(SUM(CASE
+                 WHEN owner_agent_id = ? AND scope_kind = ?
+                  AND workspace_sha256 IS ? AND source_kind = ?
+                  AND content = ? AND content_sha256 = ?
+                  AND observed_at_unix_seconds = ? THEN 1 ELSE 0 END), 0),
+                COUNT(*)
+             FROM source_ledger WHERE source_id = ? AND source_revision = 1",
         )
+        .bind(self.store.owner_agent_id().as_str())
+        .bind(scope_kind)
+        .bind(workspace_sha256)
+        .bind(draft.kind.as_str())
+        .bind(&draft.content)
+        .bind(content_sha256.as_str())
+        .bind(draft.observed_at_unix_seconds)
         .bind(source_id.as_str())
         .fetch_one(&self.store.pool)
         .await;
-        match same_identity {
-            Ok(0) => CognitiveSourceTerminalObservation::NotApplied,
+        match counts {
+            Ok((1, 1)) => CognitiveSourceTerminalObservation::Applied {
+                receipt: Self::receipt(&SourceRevisionId::new(source_id)),
+            },
+            // Absence is a point-in-time observation, not a durable negative
+            // receipt: an in-flight dispatch may still publish this source.
+            // Preserve Indeterminate at the source until a positive terminal
+            // row or an independently durable no-effect witness is available.
+            Ok((0, 0)) => CognitiveSourceTerminalObservation::Unavailable {
+                reason: "destination has no terminal source receipt; an in-flight dispatch may still apply"
+                    .to_string(),
+            },
             Ok(_) => CognitiveSourceTerminalObservation::Quarantined {
                 reason: "destination source identity exists with different semantics".to_string(),
             },
@@ -309,6 +304,15 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
             if let Err(error) = self.store.authorize(&self.access, &draft.scope) {
                 return ProductionTargetOutcome::Rejected {
                     reason: error.to_string(),
+                };
+            }
+
+            // Validate CAS before exact-content replay. Matching row content
+            // must not make a changed operation predecessor appear applied.
+            if expected_predecessor.is_some() {
+                return ProductionTargetOutcome::NotApplied {
+                    reason: "destination predecessor/CAS mismatch: create-only source identity requires no predecessor"
+                        .to_string(),
                 };
             }
 
@@ -376,18 +380,6 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
                 }
             }
 
-            // source_ledger is create-only: the authoritative predecessor for
-            // an absent source identity is None. Compare the operation CAS
-            // expectation while holding the same BEGIN IMMEDIATE transaction
-            // that will publish the destination row.
-            if expected_predecessor.is_some() {
-                return ProductionTargetOutcome::NotApplied {
-                    reason:
-                        "destination predecessor/CAS mismatch: source identity has no predecessor"
-                            .to_string(),
-                };
-            }
-
             let id = match self
                 .store
                 .append_source_tx(&mut transaction, &self.access, &draft)
@@ -431,7 +423,8 @@ impl FinalUseProductionOutboxTarget for CognitiveSourceOutboxTarget {
                 }
                 CognitiveSourceTerminalObservation::NotApplied => {
                     ProductionTerminalObservation::NotApplied {
-                        reason: "destination has no committed source row".to_string(),
+                        reason: "create-only destination rejects the requested predecessor"
+                            .to_string(),
                     }
                 }
                 CognitiveSourceTerminalObservation::Quarantined { reason } => {
