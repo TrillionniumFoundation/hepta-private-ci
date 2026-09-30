@@ -12,9 +12,9 @@ remains false.**
 Callers supply semantic values, not a value plus a caller-authored digest.
 `TrainingProfileV1` binds objective, sensor core, dataset generation, minimum
 samples per cell, maximum error and runtime limits. `WorldModelProfileV1` binds
-objective, dataset generation, minimum support, one-step and multistep
-calibration limits, OOD false-acceptance, drift and runtime limits. Both derive
-their profile and runtime digests internally.
+objective, sensor core, dataset generation, minimum support, one-step and
+multistep calibration limits, OOD false-acceptance, drift and runtime limits.
+Both derive their profile and runtime digests internally.
 
 Raw V1/V2 structural fitters remain available only through the non-default
 `qualification-unverified-input` feature. They are compatibility fixtures, not
@@ -24,14 +24,18 @@ final-use authority.
 
 | State | Concrete representation | Required property |
 |---|---|---|
-| Canonical profile | `TrainingProfileV1` / `WorldModelProfileV1` | Complete semantic field set and internally derived identity. |
+| Canonical profile | `TrainingProfileV1` / `WorldModelProfileV1` | Complete semantic field set, sensor representation and internally derived identity. |
 | Owner-authenticated source | `DatasetSnapshotReceiptV3` plus signed freeze/row evidence | Exact active source set, authority epoch, objective and row semantics. |
-| Current capability issue | `FinalUseFenceV1` + `FinalUseWitnessV1` | Ledger head, dataset frontier, generation, authority epoch, stop epoch and absolute deadline all match. |
+| Current capability issue | `FinalUseFenceV1` + `FinalUseWitnessV1` | Ledger head, dataset frontier, generation, authority epoch, stop epoch and absolute deadline all match; issuance time is retained. |
 | Single-use capability | `FinalUseTabularCapabilityV1` / `FinalUseWorldModelCapabilityV1` | Opaque, non-`Clone`, owner-borrowed capability. |
-| Current immediately before fit | `fit_*_final_use_v1` | Owner snapshot and ledger membership revalidated; stop, deadline and cancellation checked. |
+| Current immediately before fit | `fit_*_final_use_v1` | Owner snapshot and ledger membership revalidated; stop, exclusive deadline, clock monotonicity and cancellation checked. |
 | Immutable candidate | `FinalUse*CandidateV1` | Artifact/profile/generation identity remains canonical. |
 | Current immediately before selection | second owner/currentness verification | A fit cannot be published from a stale generation or revoked source. |
 | Independently selected read-only artifact | `OpaquePinnedTabularArtifactV1` / `OpaquePinnedWorldModelV1` | Selection, trust, registry, authority and stop epochs are exact. |
+
+The absolute deadline is an exclusive bound: issue, use or publish observed
+exactly at the deadline fails closed. A final-use witness observed before the
+capability's retained issuance time is a clock regression.
 
 `WorkControlV1` supplies cooperative cancellation to every resource-metered
 long loop. `OperatorResourceBudgetV1` supplies absolute operation, resident-byte

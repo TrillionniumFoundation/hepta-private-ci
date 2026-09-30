@@ -133,6 +133,7 @@ impl TrainingProfileV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WorldModelProfileV1 {
     objective_digest: Digest32,
+    sensor_core_digest: Digest32,
     dataset_generation: u64,
     minimum_support: u32,
     maximum_one_step_calibration_error: FixedQ32,
@@ -148,6 +149,7 @@ impl WorldModelProfileV1 {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         objective_digest: Digest32,
+        sensor_core_digest: Digest32,
         dataset_generation: u64,
         minimum_support: u32,
         maximum_one_step_calibration_error: FixedQ32,
@@ -157,6 +159,7 @@ impl WorldModelProfileV1 {
         runtime_limits: OperatorResourceBudgetV1,
     ) -> Result<Self, OperatorProfileErrorV1> {
         require_digest(objective_digest, "objective")?;
+        require_digest(sensor_core_digest, "sensor core")?;
         if dataset_generation == 0 {
             return Err(OperatorProfileErrorV1::DatasetGeneration);
         }
@@ -176,6 +179,7 @@ impl WorldModelProfileV1 {
         let runtime_profile_digest = runtime_digest(runtime_limits);
         let mut bytes = b"hepta.learning-operator.world-model-profile.v1\0".to_vec();
         bytes.extend_from_slice(objective_digest.as_array());
+        bytes.extend_from_slice(sensor_core_digest.as_array());
         bytes.extend_from_slice(&dataset_generation.to_be_bytes());
         bytes.extend_from_slice(&minimum_support.to_be_bytes());
         bytes.extend_from_slice(&maximum_one_step_calibration_error.raw().to_be_bytes());
@@ -186,6 +190,7 @@ impl WorldModelProfileV1 {
         let profile_digest = Digest32::of_bytes(&bytes);
         Ok(Self {
             objective_digest,
+            sensor_core_digest,
             dataset_generation,
             minimum_support,
             maximum_one_step_calibration_error,
@@ -201,6 +206,11 @@ impl WorldModelProfileV1 {
     #[must_use]
     pub const fn objective_digest(&self) -> Digest32 {
         self.objective_digest
+    }
+
+    #[must_use]
+    pub const fn sensor_core_digest(&self) -> Digest32 {
+        self.sensor_core_digest
     }
 
     #[must_use]
@@ -275,4 +285,43 @@ fn runtime_digest(value: OperatorResourceBudgetV1) -> Digest32 {
     bytes.extend_from_slice(&value.max_estimated_bytes.to_be_bytes());
     bytes.extend_from_slice(&value.max_elapsed_micros.to_be_bytes());
     Digest32::of_bytes(&bytes)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+
+    #[test]
+    fn world_model_profile_digest_binds_sensor_core_identity() {
+        let left = WorldModelProfileV1::new(
+            digest("objective"),
+            digest("sensor-a"),
+            1,
+            1,
+            FixedQ32::ZERO,
+            FixedQ32::ZERO,
+            ProbabilityQ32::from_raw(0).unwrap(),
+            FixedQ32::ZERO,
+            OperatorResourceBudgetV1::qualification_default(),
+        )
+        .unwrap();
+        let right = WorldModelProfileV1::new(
+            digest("objective"),
+            digest("sensor-b"),
+            1,
+            1,
+            FixedQ32::ZERO,
+            FixedQ32::ZERO,
+            ProbabilityQ32::from_raw(0).unwrap(),
+            FixedQ32::ZERO,
+            OperatorResourceBudgetV1::qualification_default(),
+        )
+        .unwrap();
+        assert_ne!(left.sensor_core_digest(), right.sensor_core_digest());
+        assert_ne!(left.digest(), right.digest());
+    }
 }
