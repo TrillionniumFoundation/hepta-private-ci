@@ -608,13 +608,14 @@ impl AgentdState {
             })?;
 
         match outcome {
-            crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
+            crate::AgentdIntelligenceProductOutcomeV1::Ready(mut prepared) => {
                 // Owner preparation is asynchronous. Revalidate the durable
                 // signed Objective and Fleet fence again after it completes,
                 // twice as the compatibility path does at its final boundary.
                 let first_now = self.require_current_run_start(record)?;
                 let second_now = self.require_current_run_start(record)?;
                 let now_ms = first_now.max(second_now);
+                prepared.bind_to_objective_deadline(record.admission.deadline_unix_micros);
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
@@ -820,4 +821,4 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
 
 #[cfg(test)]
 #[path = "state_isolation_tests.rs"]
-mod isolation_tests;
+pub(crate) mod isolation_tests;

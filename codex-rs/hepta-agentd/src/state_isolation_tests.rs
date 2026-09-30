@@ -27,7 +27,7 @@ use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
 use crate::RunPhase;
 
-fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+pub(crate) fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;

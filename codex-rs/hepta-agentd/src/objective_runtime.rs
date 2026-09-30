@@ -7,6 +7,7 @@
 //! ephemeral runtime coordinator. No effect authority is granted here.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -72,7 +73,28 @@ pub(crate) struct ObjectiveRuntimeHost {
 
 struct ObjectiveHostState {
     journal: DurableRunStartStore,
+    replay_frontier: ObjectiveReplayFrontier,
+}
+
+#[derive(Default)]
+struct ObjectiveReplayFrontier {
     highest_sequences: BTreeMap<(String, u64), u64>,
+    consumed_messages: BTreeSet<(String, u64, String)>,
+}
+
+impl ObjectiveReplayFrontier {
+    fn consume(&mut self, authentication: &RunStartAuthenticationV1) {
+        let issuer = authentication.issuer_id.to_string();
+        self.highest_sequences
+            .entry((issuer.clone(), authentication.key_epoch))
+            .and_modify(|value| *value = (*value).max(authentication.sequence))
+            .or_insert(authentication.sequence);
+        self.consumed_messages.insert((
+            issuer,
+            authentication.key_epoch,
+            authentication.message_id.to_string(),
+        ));
+    }
 }
 
 impl ObjectiveRuntimeHost {
@@ -93,13 +115,13 @@ impl ObjectiveRuntimeHost {
             .map_err(|error| invalid(&format!("objective profile: {error}")))?;
         let profile_digest = profile.profile_digest();
         let journal = open_run_start_store(identity, profile_digest, checkpoint_file)?;
-        let highest_sequences = replay_frontier(&journal)?;
+        let replay_frontier = replay_frontier(&journal)?;
         Ok(Self {
             profile,
             profile_digest,
             state: Mutex::new(ObjectiveHostState {
                 journal,
-                highest_sequences,
+                replay_frontier,
             }),
         })
     }
@@ -135,7 +157,11 @@ impl ObjectiveRuntimeHost {
             {
                 continue;
             }
-            require_current_admission_proof(&record.admission, &self.profile)?;
+            if !admission_proof_matches_current_profile(&record.admission, &self.profile) {
+                // Retained historical bytes stay inert after a profile or
+                // compiler upgrade, without blocking unrelated current runs.
+                continue;
+            }
             if authentication_is_current(record, &trust, agentd.identity(), now_ms)? {
                 if agentd.canonical_intelligence_enabled() {
                     // A RunStart publication predates the seven-owner handoff.
@@ -292,17 +318,7 @@ impl ObjectiveRuntimeHost {
                                 .ok_or_else(|| {
                                     invalid("durable objective conflict publication disappeared")
                                 })?;
-                            let key = (
-                                record.authentication.issuer_id.to_string(),
-                                record.authentication.key_epoch,
-                            );
-                            state
-                                .highest_sequences
-                                .entry(key)
-                                .and_modify(|value| {
-                                    *value = (*value).max(record.authentication.sequence)
-                                })
-                                .or_insert(record.authentication.sequence);
+                            state.replay_frontier.consume(&record.authentication);
                             return Ok(ObjectiveStartResult::Conflict {
                                 run_id: request.body.run_id,
                                 conflict_digest: conflict.conflict_digest.to_string(),
@@ -319,15 +335,7 @@ impl ObjectiveRuntimeHost {
                         .map_err(store_error)?
                         .cloned()
                         .ok_or_else(|| invalid("durable objective publication disappeared"))?;
-                    let key = (
-                        record.authentication.issuer_id.to_string(),
-                        record.authentication.key_epoch,
-                    );
-                    state
-                        .highest_sequences
-                        .entry(key)
-                        .and_modify(|value| *value = (*value).max(record.authentication.sequence))
-                        .or_insert(record.authentication.sequence);
+                    state.replay_frontier.consume(&record.authentication);
                     (published.publication, record)
                 }
             }
@@ -396,23 +404,28 @@ fn require_current_admission_proof(
     admission: &codex_hepta_learning_ledger::RunStartAdmissionBindingV1,
     profile: &ValidatedAdmissionProfileV1,
 ) -> Result<(), AgentdError> {
-    let proof = admission
-        .objective_admission_proof
-        .as_ref()
-        .ok_or_else(|| invalid("legacy objective admission requires an authorized new revision"))?;
-    let key = profile.reuse_key();
-    if admission.profile_id != profile.profile().profile_id
-        || admission.profile_revision != key.profile_revision
-        || admission.profile_digest != key.profile_digest
-        || proof.profile_digest() != key.profile_digest
-        || proof.admitted_source_digest() != admission.admitted_source_digest
-        || proof.compiler_contract_digest() != key.compiler_contract_digest
-    {
+    if !admission_proof_matches_current_profile(admission, profile) {
         return Err(invalid(
-            "durable objective proof does not match the current compiler profile",
+            "durable objective proof does not match the current compiler profile; an authorized new revision is required",
         ));
     }
     Ok(())
+}
+
+fn admission_proof_matches_current_profile(
+    admission: &codex_hepta_learning_ledger::RunStartAdmissionBindingV1,
+    profile: &ValidatedAdmissionProfileV1,
+) -> bool {
+    let Some(proof) = admission.objective_admission_proof.as_ref() else {
+        return false;
+    };
+    let key = profile.reuse_key();
+    admission.profile_id == profile.profile().profile_id
+        && admission.profile_revision == key.profile_revision
+        && admission.profile_digest == key.profile_digest
+        && proof.profile_digest() == key.profile_digest
+        && proof.admitted_source_digest() == admission.admitted_source_digest
+        && proof.compiler_contract_digest() == key.compiler_contract_digest
 }
 
 fn objective_execution_binding(
@@ -572,21 +585,22 @@ fn open_run_start_store(
         .map_err(store_error)
 }
 
-fn replay_frontier(
-    journal: &DurableRunStartStore,
-) -> Result<BTreeMap<(String, u64), u64>, AgentdError> {
-    let mut highest: BTreeMap<(String, u64), u64> = BTreeMap::new();
+fn replay_frontier(journal: &DurableRunStartStore) -> Result<ObjectiveReplayFrontier, AgentdError> {
+    let mut frontier = ObjectiveReplayFrontier::default();
     for (authentication, _) in journal.authentication_records().map_err(store_error)? {
-        let key = (
+        let message_key = (
             authentication.issuer_id.to_string(),
             authentication.key_epoch,
+            authentication.message_id.to_string(),
         );
-        highest
-            .entry(key)
-            .and_modify(|value| *value = (*value).max(authentication.sequence))
-            .or_insert(authentication.sequence);
+        if frontier.consumed_messages.contains(&message_key) {
+            return Err(invalid(
+                "durable objective signed message identity was consumed twice",
+            ));
+        }
+        frontier.consume(authentication);
     }
-    Ok(highest)
+    Ok(frontier)
 }
 
 fn require_replay_admission(
@@ -594,26 +608,33 @@ fn require_replay_admission(
     authentication: &RunStartAuthenticationV1,
     run_id: &StableId,
 ) -> Result<(), AgentdError> {
-    let key = (
-        authentication.issuer_id.to_string(),
-        authentication.key_epoch,
-    );
-    let Some(highest) = state.highest_sequences.get(&key) else {
-        return Ok(());
-    };
-    if authentication.sequence > *highest {
-        return Ok(());
-    }
     let exact = state
         .journal
         .index_entry(run_id)
         .map_err(store_error)?
         .is_some_and(|entry| &entry.authentication == authentication);
     if exact {
-        Ok(())
-    } else {
-        Err(invalid("objective signed sequence was already consumed"))
+        return Ok(());
     }
+    let issuer = authentication.issuer_id.to_string();
+    if state.replay_frontier.consumed_messages.contains(&(
+        issuer.clone(),
+        authentication.key_epoch,
+        authentication.message_id.to_string(),
+    )) {
+        return Err(invalid(
+            "objective signed message identity was already consumed",
+        ));
+    }
+    if state
+        .replay_frontier
+        .highest_sequences
+        .get(&(issuer, authentication.key_epoch))
+        .is_some_and(|highest| authentication.sequence <= *highest)
+    {
+        return Err(invalid("objective signed sequence was already consumed"));
+    }
+    Ok(())
 }
 
 fn authentication_is_current(

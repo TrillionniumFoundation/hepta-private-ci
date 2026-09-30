@@ -573,6 +573,15 @@ pub struct PreparedAgentdIntelligenceRunV1 {
 }
 
 impl PreparedAgentdIntelligenceRunV1 {
+    /// Freeze the authenticated objective's deadline across asynchronous owner
+    /// preparation and exact retries. The worker budget bounds computation,
+    /// while the destination's immutable admission bounds the run lifetime.
+    pub(crate) fn bind_to_objective_deadline(&mut self, deadline_unix_micros: u64) {
+        let deadline_ms = deadline_unix_micros / 1_000;
+        self.run_snapshot.deadline_ms = deadline_ms;
+        self.context_attachment.deadline_ms = deadline_ms;
+    }
+
     #[must_use]
     pub fn run_snapshot(&self) -> crate::AgentRunSnapshot {
         self.run_snapshot.clone()
@@ -740,7 +749,7 @@ impl StdError for AgentdIntelligenceLedgerError {}
 
 #[cfg(test)]
 #[path = "intelligence_product_tests.rs"]
-mod tests;
+pub(crate) mod tests;
 
 #[cfg(test)]
 #[path = "intelligence_evaluation_tests.rs"]

@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use std::sync::Mutex;
 
 use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
@@ -6,11 +7,16 @@ use codex_hepta_learning_ledger::RunStartCheckpointV1;
 use codex_hepta_learning_ledger::RunStartJournal;
 use codex_hepta_learning_ledger::RunStartSnapshotV1;
 use codex_hepta_learning_ledger::RunStartStoreError;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use super::*;
 use crate::AgentRunCoordinator;
 use crate::RuntimeComposition;
+
+#[cfg(unix)]
+#[path = "objective_runtime_recovery_tests.rs"]
+mod recovery;
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
@@ -72,11 +78,12 @@ fn record(
     }
 }
 
-struct TestCheckpoint(Mutex<RunStartCheckpointV1>);
+#[derive(Clone)]
+struct TestCheckpoint(Arc<Mutex<RunStartCheckpointV1>>);
 
 impl TestCheckpoint {
     fn new() -> Self {
-        Self(Mutex::new(RunStartCheckpointV1::ZERO))
+        Self(Arc::new(Mutex::new(RunStartCheckpointV1::ZERO)))
     }
 }
 
@@ -117,12 +124,12 @@ fn state_with(record: RunStartRecordV1) -> (TempDir, ObjectiveHostState) {
     journal
         .append_run_start(Digest32::ZERO, record)
         .expect("append record");
-    let highest_sequences = replay_frontier(&journal).expect("frontier");
+    let replay_frontier = replay_frontier(&journal).expect("frontier");
     (
         temp,
         ObjectiveHostState {
             journal,
-            highest_sequences,
+            replay_frontier,
         },
     )
 }
@@ -144,6 +151,136 @@ fn durable_authentication_frontier_allows_only_exact_replay() {
     assert!(
         require_replay_admission(&state, &newer.authentication, &newer.snapshot.run_id).is_ok()
     );
+}
+
+#[test]
+fn signed_message_identity_cannot_be_reused_with_a_higher_sequence() {
+    let first = record(
+        "run.message.first",
+        7,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    let (_temp, state) = state_with(first.clone());
+    let mut other = record(
+        "run.message.other",
+        8,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    other.authentication.message_id = first.authentication.message_id.clone();
+    assert!(
+        require_replay_admission(&state, &other.authentication, &other.snapshot.run_id).is_err()
+    );
+    assert!(
+        require_replay_admission(&state, &first.authentication, &first.snapshot.run_id).is_ok()
+    );
+    other.authentication.key_epoch += 1;
+    assert!(
+        require_replay_admission(&state, &other.authentication, &other.snapshot.run_id).is_ok()
+    );
+}
+
+#[test]
+fn consumed_message_frontier_survives_compaction_and_owner_recovery() {
+    let temp = TempDir::new().expect("temp");
+    let root = temp.path().join("run-start");
+    let checkpoint = TestCheckpoint::new();
+    let mut journal = DurableRunStartStore::open(
+        root.clone(),
+        digest("binding"),
+        /*max_records_per_segment*/ 2,
+        Box::new(checkpoint.clone()),
+    )
+    .expect("create journal");
+    let first = record(
+        "run.message.compacted",
+        7,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    for value in [
+        first.clone(),
+        record(
+            "run.message.second",
+            8,
+            RunStartObjectiveDispositionV1::Compiled,
+        ),
+        record(
+            "run.message.active",
+            9,
+            RunStartObjectiveDispositionV1::Compiled,
+        ),
+    ] {
+        journal
+            .append_run_start(journal.head_digest(), value)
+            .expect("append");
+    }
+    assert_eq!(
+        journal
+            .compact_expired_prefix(100_000_001)
+            .expect("compact"),
+        1
+    );
+    assert!(
+        journal
+            .get(&first.snapshot.run_id)
+            .expect("read compacted payload")
+            .is_none()
+    );
+    drop(journal);
+    let journal = DurableRunStartStore::open(
+        root,
+        digest("binding"),
+        /*max_records_per_segment*/ 2,
+        Box::new(checkpoint),
+    )
+    .expect("recover checkpointed owner");
+    let state = ObjectiveHostState {
+        replay_frontier: replay_frontier(&journal).expect("recover replay frontier"),
+        journal,
+    };
+    let mut reused = record(
+        "run.message.reused",
+        10,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    reused.authentication.message_id = first.authentication.message_id.clone();
+    assert!(
+        require_replay_admission(&state, &reused.authentication, &reused.snapshot.run_id).is_err()
+    );
+    assert!(
+        require_replay_admission(&state, &first.authentication, &first.snapshot.run_id).is_ok()
+    );
+    assert!(
+        resolve_authenticated_replay(
+            &state,
+            &first.authentication,
+            &first.snapshot.run_id,
+            100_001,
+            first.snapshot.generation,
+            first.snapshot.fence_digest,
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn recovery_rejects_conflicting_durable_message_identities() {
+    let first = record(
+        "run.message.original",
+        7,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    let (_temp, mut state) = state_with(first.clone());
+    let mut reused = record(
+        "run.message.conflicting",
+        8,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    reused.authentication.message_id = first.authentication.message_id;
+    state
+        .journal
+        .append_run_start(state.journal.head_digest(), reused)
+        .expect("raw owner fixture");
+    assert!(replay_frontier(&state.journal).is_err());
 }
 
 #[test]
@@ -384,7 +521,7 @@ fn exact_publication_replay_retains_original_result_without_new_admission() {
         .journal
         .append_run_start(state.journal.head_digest(), later)
         .unwrap();
-    state.highest_sequences = replay_frontier(&state.journal).unwrap();
+    state.replay_frontier = replay_frontier(&state.journal).unwrap();
     let head = state.journal.head_digest();
 
     // The original observation is at 1s. A later clock must not readmit the
@@ -538,7 +675,7 @@ fn exact_conflict_replay_retains_terminal_outcome_without_recompilation() {
             },
         )
         .unwrap();
-    state.highest_sequences = replay_frontier(&state.journal).unwrap();
+    state.replay_frontier = replay_frontier(&state.journal).unwrap();
     let head = state.journal.head_digest();
     match resolve_authenticated_replay(&state, &authentication, &run_id, 99_999, 3, digest("fence"))
         .unwrap()

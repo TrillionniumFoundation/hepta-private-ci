@@ -773,6 +773,12 @@ fn validate_record_compat(
         return Err(RunStartStoreError::InvalidSnapshot("admission"));
     }
     let snapshot = &record.snapshot;
+    if snapshot.authority_epoch == 0 {
+        return Err(RunStartStoreError::InvalidSnapshot("authorityEpoch"));
+    }
+    if snapshot.generation == 0 {
+        return Err(RunStartStoreError::InvalidSnapshot("generation"));
+    }
     for (name, digest) in [
         ("scopeDigest", record.authentication.scope_digest),
         ("signedBodyDigest", record.authentication.signed_body_digest),

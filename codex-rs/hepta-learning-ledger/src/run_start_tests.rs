@@ -163,6 +163,29 @@ impl Drop for Fixture {
 }
 
 #[test]
+fn run_start_rejects_zero_authority_epoch_or_generation_before_publication() {
+    for field in ["authorityEpoch", "generation"] {
+        let fixture = Fixture::new();
+        let mut journal = fixture.create();
+        let mut invalid = record("run.invalid-lifecycle", b"objective");
+        match field {
+            "authorityEpoch" => invalid.snapshot.authority_epoch = 0,
+            "generation" => invalid.snapshot.generation = 0,
+            _ => unreachable!(),
+        }
+        assert_eq!(
+            journal.append(Digest32::ZERO, invalid),
+            Err(RunStartStoreError::InvalidSnapshot(field)),
+        );
+        assert_eq!(journal.head_anchor(), RunStartAnchor::ZERO);
+        assert!(must(journal.records()).is_empty());
+        drop(journal);
+        let recovered = must(fixture.recover(RunStartRecovery::Unacknowledged));
+        assert!(must(recovered.records()).is_empty());
+    }
+}
+
+#[test]
 fn durable_run_start_roundtrip_replays_exact_objective_bytes() {
     let fixture = Fixture::new();
     let mut journal = fixture.create();
