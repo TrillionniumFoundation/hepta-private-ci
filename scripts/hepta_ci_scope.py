@@ -29,6 +29,7 @@ PACKAGE_GROUPS = {
     "hepta-learning-ledger": {"learning"},
     "hepta-learning-artifacts": {"learning"},
     "hepta-intelligence-eval": {"learning"},
+    "hepta-bellman-operator": {"learning"},
     "hepta-objective": {"objective", "learning"},
     "hepta-prompt-optimizer": {"objective", "learning"},
     "hepta-plasticity": {"learning", "lifecycle"},
@@ -82,6 +83,19 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         parts = PurePosixPath(path).parts
         if not path or path.startswith("/") or ".." in parts or "\\" in path or "\x00" in path:
             raise ValueError(f"invalid repository path: {path!r}")
+
+        # The operator's checked-in contracts, qualification projections and
+        # exact-source tooling are executable admission inputs. They must drive
+        # the learning gate even when the changed file is Markdown or JSON.
+        if (
+            path.startswith("docs/modules/learning.operator/")
+            or path.startswith("qualification/lane-e/")
+            or path.startswith("scripts/hepta-learning-operator-")
+            or path.startswith("scripts/hepta-lane-e-")
+        ):
+            selected.add("learning")
+            derived = True
+            continue
 
         if path in DERIVED_ONLY_DOCS or path.startswith(
             "qualification/module-execution-dossiers/detail/"
