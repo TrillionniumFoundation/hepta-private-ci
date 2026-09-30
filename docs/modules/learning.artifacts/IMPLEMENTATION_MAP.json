@@ -58,7 +58,7 @@
       "designOperation": "write_candidate_payload",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "d25f9e2a3070b3cf13aebfd5259611c4d66e1956"
+      "sourceBlob": "57a11a3b5fbce6246d00b50bfe49b231a37db4e7"
     },
     {
       "operation": "load_pinned_candidate",
@@ -136,7 +136,7 @@
       "designOperation": "publication_begin",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "eef46b0ab4d27214cad511ac2b0152a5b05a24b3"
+      "sourceBlob": "8569d50c78126fa74b86b8a05dbeabe79d2e2e2f"
     },
     {
       "operation": "publication_checkpoint",
@@ -149,7 +149,7 @@
       "designOperation": "publication_checkpoint",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "e18ef529b0c62f90ff89f9eabd6f56d445023a52"
     },
     {
       "operation": "authenticated_current_head",
@@ -162,7 +162,7 @@
       "designOperation": "authenticated_current_head",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "e18ef529b0c62f90ff89f9eabd6f56d445023a52"
     },
     {
       "operation": "authenticated_current_registry_view",
@@ -175,7 +175,7 @@
       "designOperation": "authenticated_current_registry_view",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "sourceBlob": "0f90f34b7dc32036476f4600b94fc45177c45032"
     },
     {
       "operation": "owner_writer_fence",
@@ -188,7 +188,7 @@
       "designOperation": "owner_writer_fence",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "e18ef529b0c62f90ff89f9eabd6f56d445023a52"
     },
     {
       "operation": "lifecycle_journal_append",
@@ -253,7 +253,7 @@
       "designOperation": "owner_service_open",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "sourceBlob": "0f90f34b7dc32036476f4600b94fc45177c45032"
     },
     {
       "operation": "owner_service_publish",
@@ -266,7 +266,7 @@
       "designOperation": "owner_service_publish",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "sourceBlob": "0f90f34b7dc32036476f4600b94fc45177c45032"
     },
     {
       "operation": "recover_current_registry",
@@ -279,7 +279,7 @@
       "designOperation": "recover_current_registry",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "e18ef529b0c62f90ff89f9eabd6f56d445023a52"
     },
     {
       "operation": "recover_registry_by_head",
@@ -292,7 +292,7 @@
       "designOperation": "recover_registry_by_head",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "e18ef529b0c62f90ff89f9eabd6f56d445023a52"
     },
     {
       "operation": "current_head_restart_anchor",
@@ -305,7 +305,7 @@
       "designOperation": "current_head_restart_anchor",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "e18ef529b0c62f90ff89f9eabd6f56d445023a52"
     },
     {
       "operation": "independent_selection_verify",
@@ -354,9 +354,9 @@
       "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
     }
   ],
-  "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",
+  "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered publication, opaque verified writer-fence and durable-withdrawal capabilities, a real signed-request learning-artifactd process, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host physical durability and independently governed selection/release remain separate",
   "repositoryControlledGaps": [
-    "Execute exact unified-candidate source binding, build and owner recovery qualification after cross-family composition."
+    "Execute exact-head and synthetic-merge qualification for this rebound unified candidate across declared stable/MSRV and x86_64/ARM64 profiles; no repository gate may infer external target-host or operator acceptance."
   ],
   "hostIntegrationRequirements": [
     "Persist ArtifactPublicationTransactionSnapshotV1 under the product writer fence before treating a phase as durable.",
@@ -444,7 +444,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "6c602a9ebf4042e39acba109635d17d64d434dcf"
+      "object": "7b5aa79b2715870f1d9e19d569c3580d635fb5dd"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
@@ -468,11 +468,11 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
-      "object": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "object": "e18ef529b0c62f90ff89f9eabd6f56d445023a52"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
-      "object": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "object": "0f90f34b7dc32036476f4600b94fc45177c45032"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
@@ -480,7 +480,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/publication.rs",
-      "object": "eef46b0ab4d27214cad511ac2b0152a5b05a24b3"
+      "object": "8569d50c78126fa74b86b8a05dbeabe79d2e2e2f"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/registry.rs",
@@ -496,7 +496,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/storage.rs",
-      "object": "d25f9e2a3070b3cf13aebfd5259611c4d66e1956"
+      "object": "57a11a3b5fbce6246d00b50bfe49b231a37db4e7"
     },
     {
       "path": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
@@ -504,7 +504,7 @@
     },
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "c693b6e0a78375b78e70d1243661819446c74fb7"
+      "object": "be98b9b24940fa7663df714af2881ba32490bac5"
     }
   ]
 }
