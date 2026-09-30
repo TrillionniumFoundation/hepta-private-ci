@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.learning-plasticity-exact-mapping-overlay.v1",
+  "schemaVersion": 1,
+  "module": "learning.plasticity",
+  "trackedMap": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+  "productCallerState": "control_engineering_parameter_and_topology_iteration_coordinators_source_composed_through_state_held_agentd_named_producer_not_target_host_qualified",
+  "productionImplementation": false,
+  "operations": [
+    {
+      "operation": "generator_coverage_receipt",
+      "nativeSymbol": "build_generator_coverage_draft_v1",
+      "sourcePath": "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs",
+      "state": "source_implemented_expected_actual_gap_scale_frontier_and_observer_bound",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs::tests::coverage_binds_expected_signals_gaps_scales_and_observer",
+        "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs::tests::empty_signal_and_empty_scale_profiles_have_distinct_terminals",
+        "codex-rs/hepta-plasticity/src/generator_coverage_v1.rs::tests::every_omitted_expected_parameter_requires_one_reason"
+      ]
+    },
+    {
+      "operation": "control_engineering_parameter_iteration",
+      "nativeSymbol": "ControlEngineeringPlasticityCoordinatorV1::submit_parameter_iteration",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_iteration_coordinator.rs",
+      "state": "source_implemented_non_test_frozen_iteration_envelope_independent_observer_named_agentd_submission_create_only_terminal_receipt",
+      "authority": "proposal_only",
+      "tests": [
+        "codex-rs/hepta-agentd/src/plasticity_iteration_coordinator.rs::tests::iteration_key_changes_with_generation_and_proposal",
+        "codex-rs/hepta-agentd/src/plasticity_iteration_coordinator.rs::tests::receipt_directory_requires_canonical_absolute_directory",
+        "codex-rs/hepta-agentd/src/plasticity_iteration_coordinator.rs::tests::invalid_detached_coverage_cannot_enter_receipt_store"
+      ]
+    },
+    {
+      "operation": "control_engineering_topology_iteration",
+      "nativeSymbol": "ControlEngineeringTopologyCoordinatorV1::submit_topology_iteration",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_topology_iteration_coordinator.rs",
+      "state": "source_implemented_non_test_frozen_iteration_envelope_independent_observer_named_agentd_submission_create_only_terminal_receipt",
+      "authority": "proposal_only",
+      "tests": [
+        "codex-rs/hepta-agentd/src/plasticity_topology_iteration_coordinator.rs::tests::topology_iteration_key_binds_envelope_generation_and_proposal",
+        "codex-rs/hepta-agentd/src/plasticity_topology_iteration_coordinator.rs::tests::receipt_directory_requires_absolute_canonical_root"
+      ]
+    },
+    {
+      "operation": "agentd_context_bounded_plasticity_runtime",
+      "nativeSymbol": "PlasticityRuntimeRequestContextV1",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "state": "source_implemented_separate_bounded_lanes_deadline_cancellation_aggregate_byte_work_quota_spawn_blocking_and_stage_timing",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::plasticity_runtime_queue_capacity_is_bounded",
+        "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::plasticity_runtime_context_rejects_expired_cancelled_and_unbounded_work",
+        "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::plasticity_aggregate_quota_spans_parameter_and_topology_work",
+        "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::plasticity_static_cache_is_exact_and_bounded"
+      ]
+    },
+    {
+      "operation": "plasticity_storage_domain_identity",
+      "nativeSymbol": "build_plasticity_storage_domain_receipt_v1",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_storage_security.rs",
+      "state": "source_implemented_no_follow_exact_inode_parent_fsync_and_host_declared_independent_rollback_domain_receipt",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/plasticity_storage_security.rs::tests::create_open_and_parent_sync_preserve_exact_identity",
+        "codex-rs/hepta-agentd/src/plasticity_storage_security.rs::tests::symlink_and_hardlink_alias_fail_closed",
+        "codex-rs/hepta-agentd/src/plasticity_storage_security.rs::tests::rollback_domains_must_be_independently_identified"
+      ]
+    }
+  ],
+  "repositoryControlledGaps": [
+    "Run the read-only source-head and deterministic synthetic-merge lanes in one workflow run and bind their receipts into one readiness manifest.",
+    "Run the same workflow after integration on the real main merge SHA; PR-head evidence is not final-merge evidence."
+  ],
+  "externalEvidenceGates": [
+    "Target-host execution with proposal registries and anchor/fence journals physically placed in independently controlled rollback domains.",
+    "Power-loss, filesystem, container-volume and snapshot/restore crash matrix with exact durable-byte and recovery telemetry.",
+    "Independent semantic/security review and operator incident-recovery exercise.",
+    "Target-host topology apply/recovery canary with production telemetry.",
+    "Promotion, activation and release."
+  ],
+  "claimBoundary": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  }
+}
