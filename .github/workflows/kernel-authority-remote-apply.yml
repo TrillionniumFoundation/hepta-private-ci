@@ -1,4 +1,4 @@
-name: Kernel authority render verified closure workflow
+name: Kernel authority persist verified closure workflow
 
 on:
   push:
@@ -8,14 +8,14 @@ on:
       - '.kernel-authority-staging/full.part*'
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: kernel-authority-render-verified-closure-workflow
+  group: kernel-authority-persist-verified-closure-workflow
   cancel-in-progress: true
 
 jobs:
-  render:
+  persist:
     runs-on: ubuntu-slim
     timeout-minutes: 10
     steps:
@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           path: staging
-          persist-credentials: false
+          persist-credentials: true
       - name: Checkout exact patch base
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -31,12 +31,13 @@ jobs:
           fetch-depth: 1
           path: target
           persist-credentials: false
-      - name: Verify payload and render exact workflow bytes
+      - name: Verify payload and persist exact workflow bytes
         shell: bash
         env:
           EXPECTED_HEAD: 0b4e14d786e962306be424792d15f9d2c2078134
           PATCH_SHA256: 3f177e1a86f77d0282630d88da77fbb5c9d152b4c6bfb088292768625cda9038
           PATCH_GZIP_SHA256: a36e308baf5e34ee08ce7063b48e928a24fdcfc7bdf14a6574e9851188186a50
+          WORKFLOW_SHA256: fb16f9449fe50007fd41bcc8db92009d55c0a8142f13949d8dbfabb1772c15f4
         run: |
           set -euo pipefail
           cd "$GITHUB_WORKSPACE"
@@ -51,8 +52,16 @@ jobs:
           git apply --index --check ../patch.diff
           git apply --index ../patch.diff
           git diff --cached --check
-          test "$(git diff --cached --name-only -- .github/workflows/kernel-authority-production-closure.yml)" = ".github/workflows/kernel-authority-production-closure.yml"
-          printf 'WORKFLOW_SHA256=%s\n' "$(sha256sum .github/workflows/kernel-authority-production-closure.yml | cut -d' ' -f1)"
-          printf '%s\n' 'BEGIN_KERNEL_AUTHORITY_WORKFLOW_B64'
-          base64 -w0 .github/workflows/kernel-authority-production-closure.yml
-          printf '\n%s\n' 'END_KERNEL_AUTHORITY_WORKFLOW_B64'
+          printf '%s  %s\n' "$WORKFLOW_SHA256" .github/workflows/kernel-authority-production-closure.yml | sha256sum --check --strict
+
+          cp .github/workflows/kernel-authority-production-closure.yml \
+            ../staging/.kernel-authority-staging/rendered-production-closure.yml
+          cd ../staging
+          printf '%s  %s\n' "$WORKFLOW_SHA256" .kernel-authority-staging/rendered-production-closure.yml | sha256sum --check --strict
+          git add .kernel-authority-staging/rendered-production-closure.yml
+          git diff --cached --check
+          test "$(git diff --cached --name-only)" = ".kernel-authority-staging/rendered-production-closure.yml"
+          git config user.name 'OpenAI Codex'
+          git config user.email 'codex@openai.com'
+          git commit -m 'chore(kernel.authority): persist verified closure workflow bytes'
+          git push origin HEAD:refs/heads/automation/kernel-authority-remaining-four-20260929
