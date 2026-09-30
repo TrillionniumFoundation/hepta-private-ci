@@ -171,4 +171,300 @@ pub fn train_discrete_ndu_fbsde_v1(
         reverse_slices.reverse();
 
         maximum_update = 0.0;
-        for ²È="25¥±Ñ•È¡ñ¥¹‘•áðÍ¹…ÁÍ¡½Ð¹ÑÉ…©•Ñ½É¥•Íl©¥¹‘•át¹™½±€ôô9‘Õ‰Í‘•½±‘XÄèéQÉ…¥¸¤(€€€€€€€€¹½±±•Ð ¤ì(€€€±•Ð¡½±‘½ÕÐèY•ŒñÕÍ¥é”ø€ô½É‘•É•(€€€€€€€€¹¥Ñ•È ¤(€€€€€€€€¹½Á¥• ¤(€€€€€€€€¹™¥±Ñ•È¡ñ¥¹‘•áðÍ¹…ÁÍ¡½Ð¹ÑÉ…©•Ñ½É¥•Íl©¥¹‘•át¹™½±€ôô9‘Õ‰Í‘•½±‘XÄèé!½±‘½ÕÐ¤(€€€€€€€€¹½±±•Ð ¤ì(€€€±•Ðµ•ÑÉ¥Ì€ôÉ•™•É•¹•}µ•ÑÉ¥Ì¡Í¹…ÁÍ¡½Ð°Á½±¥ä°…¹‘¥‘…Ñ”°€™ÑÉ…¥¸°€™¡½±‘½ÕÐ¤üì(€€€¥˜µ•ÑÉ¥Ì€„ô…¹‘¥‘…Ñ”¹µ•ÑÉ¥Ìì(€€€€€€€É•ÑÕÉ¸ÉÈ¡9‘Õ‰Í‘•QÉ…¥¹¥¹ÉÉ½Èèé…¹‘¥‘…Ñ•5¥Íµ…Ñ ¤ì(€€€ô((€€€±•ÐµÕÐÁ…å±½…€ôˆ‰¡•ÁÑ„¹¹‘Ô¹™‰Í‘”¹É•™•É•¹”µÉ•Á±…ä¹ØÅpÀˆ¹Ñ½}Ù•Œ ¤ì(€€€™½È‘¥•ÍÐ¥¸l(€€€€€€€…¹‘¥‘…Ñ”¹…¹‘¥‘…Ñ•}‘¥•ÍÐ°(€€€€€€€…¹‘¥‘…Ñ”¹‘…Ñ…Í•Ñ}‘¥•ÍÐ°(€€€€€€€…ÉÑ¥™…Ñ}‰åÑ•Í}‘¥•ÍÐ°(€€€€€€€Á½±¥ä¹‘¥•ÍÐ°(€€€tì(€€€€€€€Á…å±½…¹•áÑ•¹‘}™É½µ}Í±¥”¡‘¥•ÍÐ¹…Í}…ÉÉ…ä ¤¤ì(€€€ô(€€€…ÁÁ•¹‘}µ•ÑÉ¥Ì ™µÕÐÁ…å±½…°€™µ•ÑÉ¥Ì¤ì(€€€±•ÐÉ••¥ÁÑ}‘¥•ÍÐ€ô¥•ÍÐÌÈèé½™}‰åÑ•Ì ™Á…å±½…¤ì(€€€=¬¡9‘Õ‰Í‘•I•™•É•¹•I••¥ÁÑXÄì(€€€€€€€…¹‘¥‘…Ñ•}‘¥•ÍÐè…¹‘¥‘…Ñ”¹…¹‘¥‘…Ñ•}‘¥•ÍÐ°(€€€€€€€‘…Ñ…Í•Ñ}‘¥•ÍÐè…¹‘¥‘…Ñ”¹‘…Ñ…Í•Ñ}‘¥•ÍÐ°(€€€€€€€…ÉÑ¥™…Ñ}‰åÑ•Í}‘¥•ÍÐ°(€€€€€€€µ•ÑÉ¥Ì°(€€€€€€€É••¥ÁÑ}‘¥•ÍÐ°(€€€€€€€…ÕÑ¡½É¥ÑäèÕÑ¡½É¥ÑåA½ÍÑÕÉ”èé9e}10°(€€€ô¤)ô((¼¼¼	¥¹‘Ì…±É•…‘äµÉ•¥ÍÑ•É•¥µµÕÑ…‰±”…ÉÑ¥™…Ð‰åÑ•ÌÑ¼Ñ¡”…‘µ¥ÑÑ•½•™™¥¥•¹Ð(¼¼¼ÁÉ½™¥±”…¹É•…Ñ•ÌÑ¡”•á¥ÍÑ¥¹œÁÉ¥µ…ÉähÁÉ½©•Ñ¥½¸ÕÍ•‰äÑ¡”ÍÑ½¡…ÍÑ¥Œ(¼¼¼…‘µ¥ÍÍ¥½¸Á…Ñ ¸Q¡¥Ì™Õ¹Ñ¥½¸‘½•Ì¹½ÐÉ•¥ÍÑ•È°Í•±•Ð½È…Ñ¥Ù…Ñ”‰åÑ•Ì¸)ÁÕˆ™¸‰¥¹‘}¹‘Õ}™‰Í‘•}ÁÕ‰±¥…Ñ¥½¹}ØÄ (€€€…¹‘¥‘…Ñ”è€™9‘Õ‰Í‘•QÉ…¥¹¥¹…¹‘¥‘…Ñ•XÄ°(€€€É•¥ÍÑ•É•‘}…ÉÑ¥™…Ñ}‰åÑ•Í}‘¥•ÍÐè¥•ÍÐÌÈ°(€€€½•™™¥¥•¹Ñ}ÁÉ½™¥±”è€™‘µ¥ÑÑ•‘9‘Õ½•™™¥¥•¹ÑAÉ½™¥±•XÄ°(€€€é}½¹Ù•ÉÍ¥½¹}ÁÉ½™¥±”è€™‘µ¥ÑÑ•‘i½¹Ù•ÉÍ¥½¹AÉ½™¥±•XÄ°(€€€¹½Ý}Õ¹¥á}µÌèÔØÐ°(¤€´øI•ÍÕ±Ðð¡9‘Õ‰Í‘•AÕ‰±¥…Ñ¥½¹	¥¹‘¥¹XÄ°9‘Õ½•™™¥¥•¹ÑAÉ½©•Ñ¥½¹XÄ¤°9‘Õ‰Í‘•QÉ…¥¹¥¹ÉÉ½Èøì(€€€¥˜…¹‘¥‘…Ñ”¹…ÕÑ¡½É¥Ñä¹É…¹ÑÍ}…¹ä ¤ì(€€€€€€€É•ÑÕÉ¸ÉÈ¡9‘Õ‰Í‘•QÉ…¥¹¥¹ÉÉ½ÈèéÕÑ¡½É¥Ñä¤ì(€€€ô(€€€¥˜É•¥ÍÑ•É•‘}…ÉÑ¥™…Ñ}‰åÑ•Í}‘¥•ÍÐ¹¥Í}é•É¼ ¤(€€€€€€€ñðÉ•¥ÍÑ•É•‘}…ÉÑ¥™…Ñ}‰åÑ•Í}‘¥•ÍÐ€„ô…¹‘¥‘…Ñ”¹…ÉÑ¥™…Ñ}‰åÑ•Í}‘¥•ÍÐ(€€€ì(€€€€€€€É•ÑÕÉ¸ÉÈ¡9‘Õ‰Í‘•QÉ…¥¹¥¹ÉÉ½ÈèéÉÑ¥™…Ñ5¥Íµ…Ñ ¤ì(€€€ô(€€€¥˜½•™™¥¥•¹Ñ}ÁÉ½™¥±”¹¹½Éµ…±¥é…Ñ¥½¹}‘¥•ÍÐ ¤€„ô…¹‘¥‘…Ñ”¹¹½Éµ…±¥é…Ñ¥½¹}‘¥•ÍÐ(€€€€€€€ñð½•™™¥¥•¹Ñ}ÁÉ½™¥±”¹ÉÕ¹Ñ¥µ•}ÑÕÁ±•}‘¥•ÍÐ ¤€„ô…¹‘¥‘…Ñ”¹ÉÕ¹Ñ¥µ•}ÑÕÁ±•}‘¥•ÍÐ(€€€€€€€ñð½•™™¥¥•¹Ñ}ÁÉ½™¥±”¹Õ¹¥ÑÍ}‘¥•ÍÐ ¤€„ô…¹‘¥‘…Ñ”¹Õ¹¥ÑÍ}‘¥•ÍÐ(€€€€€€€ñð½•™™¥¥•¹Ñ}ÁÉ½™¥±”¹½Ù…É¥…¹•}ÁÉ½™¥±•}‘¥•ÍÐ ¤(€€€€€€€€€€€€„ô…¹‘¥‘…Ñ”¹½Ù…É¥…¹•}ÁÉ½™¥±•}‘¥•ÍÐ(€€€€€€€ñð½•™™¥¥•¹Ñ}ÁÉ½™¥±”¹‘É¥Ù•É}‘¥µ•¹Í¥½¸ ¤€„ô…¹‘¥‘…Ñ”¹‘É¥Ù•É}‘¥µ•¹Í¥½¸(€€€€€€€ñð½•™™¥¥•¹Ñ}ÁÉ½™¥±”¹ÕÑ¥±¥Ñå}‘¥µ•¹Í¥½¸ ¤€„ô…¹‘¥‘…Ñ”¹ÕÑ¥±¥Ñå}‘¥µ•¹Í¥½¸(€€€ì(€€€€€€€É•ÑÕÉ¸ÉÈ¡9‘Õ‰Í‘•QÉ…¥¹¥¹ÉÉ½ÈèéAÉ½™¥±•5¥Íµ…Ñ ¤ì(€€€ô(€€€¥˜¹½Ý}Õ¹¥á}µÌ€øô½•™™¥¥•¹Ñ}ÁÉ½™¥±”¹•áÁ¥É•Í}Õ¹¥á}µÌ ¤ì(€€€€€€€É•ÑÕÉ¸ÉÈ¡9‘Õ‰Í‘•QÉ…¥¹¥¹ÉÉ½ÈèéáÁ¥É•¤ì(€€€ô(€€€±•Ð™¥ÉÍÐ€ô…¹‘¥‘…Ñ”(€€€€€€€€¹Ñ¥µ•}Í±¥•Ì(€€€€€€€€¹™¥ÉÍÐ ¤(€€€€€€€€¹½­}½È¡9‘Õ‰Í‘•QÉ…¥¹¥¹ÉÉ½Èèé%¹Ù…±¥‘!½É¥é½¸¤üì(€€€±•Ðè€ô™¥ÉÍÐ(€€€€€€€€¹é}ÄÈÐ(€€€€€€€€¹¥Ñ•È ¤(€€€€€€€€¹µ…À¡ñÉ½ÝðÉ½Ü¹¥Ñ•È ¤¹µ…À¡ñÙ…±Õ•ðÄÈÑ}Ñ½}˜ØÐ ©Ù…±Õ”¤¤¹½±±•Ð ¤¤(€€€€€€€€¹½±±•Ð ¤ì(€€€±•Ð•ÍÑ¥µ…Ñ”€ôiÍÑ¥µ…Ñ•XÄì(€€€€€€€è°(€€€€€€€½Ù…É¥…¹•}ÁÉ½™¥±•}‘¥•ÍÐè…¹‘¥‘…Ñ”¹½Ù…É¥…¹•}ÁÉ½™¥±•}‘¥•ÍÐ°(€€€€€€€½¹‘¥Ñ¥½¹}•ÍÑ¥µ…Ñ”è™¥ÉÍÐ¹½¹‘¥Ñ¥½¹}•ÍÑ¥µ…Ñ”°(€€€€€€€¥¹É•µ•¹Ñ}•¥•¹Ù…±Õ•}±½Ý•É}•ÍÑ¥µ…Ñ”è™¥ÉÍÐ¹¥¹É•µ•¹Ñ}•¥•¹Ù…±Õ•}±½Ý•É}•ÍÑ¥µ…Ñ”°(€€€€€€€µ…á¥µÕµ}É•±…Ñ¥Ù•}É•Í¥‘Õ…°è™¥ÉÍÐ¹µ…á¥µÕµ}É•±…Ñ¥Ù•}É•Í¥‘Õ…°°(€€€€€€€•Ù¥‘•¹•}‘¥•ÍÐèÁÉ¥µ…Éå}ÁÉ½©•Ñ¥½¹}Í½ÕÉ•}‘¥•ÍÐ¡…¹‘¥‘…Ñ”°™¥ÉÍÐ¤°(€€€€€€€…ÕÑ¡½É¥ÑäèÕÑ¡½É¥ÑåA½ÍÑÕÉ”èé9e}10°(€€€ôì(€€€±•ÐÁÉ½©•Ñ¥½¸€ôÁÉ½©•Ñ}é}•ÍÑ¥µ…Ñ•}Ñ½}½•™™¥¥•¹Ñ}ÄÈÐ (€€€€€€€€™•ÍÑ¥µ…Ñ”°(€€€€€€€½•™™¥¥•¹Ñ}ÁÉ½™¥±”°(€€€€€€€é}½¹Ù•ÉÍ¥½¹}ÁÉ½™¥±”°(€€€€€€€¹½Ý}Õ¹¥á}µÌ°(€€€€¤(€€€€¹µ…Á}•ÉÈ¡µ…Á}½•™™¥¥•¹Ñ}ÁÉ½™¥±”¤üì((€€€±•Ð…ÉÑ¥™…Ñ}µ…¹¥™•ÍÑ}‘¥•ÍÐ€ô½•™™¥¥•¹Ñ}ÁÉ½™¥±”¹…ÉÑ¥™…Ñ}µ…¹¥™•ÍÑ}‘¥•ÍÐ ¤ì(€€€±•ÐµÕÐÁ…å±½…€ôˆ‰¡•ÁÑ„¹¹‘Ô¹™‰Í‘”¹ÁÕ‰±¥…Ñ¥½¸µ‰¥¹‘¥¹œ¹ØÅpÀˆ¹Ñ½}Ù•Œ ¤ì(€€€™½È‘¥•ÍÐ¥¸l(€€€€€€€…ÉÑ¥™…Ñ}µ…¹¥™•ÍÑ}‘¥•ÍÐ°(€€€€€€€É•¥ÍÑ•É•‘}…ÉÑ¥™…Ñ}‰åÑ•Í}‘¥•ÍÐ°(€€€€€€€½•™™¥¥•¹Ñ}ÁÉ½™¥±”¹‘¥•ÍÐ ¤°(€€€€€€€ÁÉ½©•Ñ¥½¸¹½ÕÑÁÕÑ}‘¥•ÍÐ°(€€€€€€€…¹‘¥‘…Ñ”¹…¹‘¥‘…Ñ•}‘¥•ÍÐ°(€€€tì(€€€€€€€Á…å±½…¹•áÑ•¹‘}™É½µ}Í±¥”¡‘¥•ÍÐ¹…Í}…ÉÉ…ä ¤¤ì(€€€ô(€€€±•ÐÁÕ‰±¥…Ñ¥½¹}‘¥•ÍÐ€ô¥•ÍÐÌÈèé½™}‰åÑ•Ì ™Á…å±½…¤ì(€€€=¬  (€€€€€€€9‘Õ‰Í‘•AÕ‰±¥…Ñ¥½¹	¥¹‘¥¹XÄì(€€€€€€€€€€€…ÉÑ¥™…Ñ}µ…¹¥™•ÍÑ}‘¥•ÍÐ°(€€€€€€€€€€€…ÉÑ¥™…Ñ}‰åÑ•Í}‘¥•ÍÐèÉ•¥ÍÑ•É•‘}…ÉÑ¥™…Ñ}‰åÑ•Í}‘¥•ÍÐ°(€€€€€€€€€€€½•™™¥¥•¹Ñ}ÁÉ½™¥±•}‘¥•ÍÐè½•™™¥¥•¹Ñ}ÁÉ½™¥±”¹‘¥•ÍÐ ¤°(€€€€€€€€€€€ÁÉ¥µ…Éå}ÁÉ½©•Ñ¥½¹}‘¥•ÍÐèÁÉ½©•Ñ¥½¸¹½ÕÑÁÕÑ}‘¥•ÍÐ°(€€€€€€€€€€€…¹‘¥‘…Ñ•}‘¥•ÍÐè…¹‘¥‘…Ñ”¹…¹‘¥‘…Ñ•}‘¥•ÍÐ°(€€€€€€€€€€€ÁÕ‰±¥…Ñ¥½¹}‘¥•ÍÐ°(€€€€€€€€€€€…ÕÑ¡½É¥ÑäèÕÑ¡½É¥ÑåA½ÍÑÕÉ”èé9e}10°(€€€€€€€ô°(€€€€€€€ÁÉ½©•Ñ¥½¸°(€€€€¤¤)ô((¼¼¼½µÁ½Í•Ì…ÕÑ¡•¹Ñ¥…Ñ•¥¹‘•Á•¹‘•¹Ð•Ù¥‘•¹”¥‘•¹Ñ¥Ñ¥•Ì…¹½‰Í•ÉÙ•Í¡…‘½Ü(¼¼¼Ù½±Õµ”¥¹Ñ¼„9e}10ÍÑ…”µ•±¥¥‰¥±¥ÑäÉ••¥ÁÐ¸%Ð¹•Ù•È…Ñ¥Ù…Ñ•Ì„(¼¼¼ÝÉ¥Ñ•È¸ÁÉ½‘ÕÐ½Ý¹•ÈµÕÍÐ…ÕÑ¡•¹Ñ¥…Ñ”Ñ¡”ÍÕÁÁ±¥••Ù¥‘•¹”‘¥•ÍÑÌ¸)ÁÕˆ™¸•Ù…±Õ…Ñ•}¹‘Õ}™‰Í‘•}Í¡…‘½Ý}…Ñ•}ØÄ (€€€Á½±¥äè€™9‘Õ‰Í‘•M¡…‘½ÝA½±¥åXÄ°(€€€•Ù¥‘•¹”è€™9‘Õ‰Í‘•M¡…‘½ÝÙ¥‘•¹•XÄ°(¤€´øI•ÍÕ±Ðñ9‘Õ‰Í‘•M¡…‘½Ý…Ñ•I••¥ÁÑXÄ°9‘Õ‰Í‘•QÉ…¥¹¥¹ÉÉ½Èøì(€€€¥˜Á½±¥ä¹Á½±¥å}‘¥•ÍÐ¹¥Í}é•É¼ ¤(€€€€€€€ñðÁ½±¥ä¹µ¥¹¥µÕµ}…‘Ù¥Í½Éå}•Á¥Í½‘•Ì€ôô€À(€€€€€€€ñðÁ½±¥ä¹µ¥¹¥µÕµ}…‘Ù¥Í½Éå}‘•¥Í¥½¹Ì€ôô€À(€€€€€€€ñðÁ½±¥ä¹µ¥¹¥µÕµ}É•ÍÑÉ¥Ñ•‘}•Á¥Í½‘•Ì€ðÁ½±¥ä¹µ¥¹¥µÕµ}…‘Ù¥Í½Éå}•Á¥Í½‘•Ì(€€€€€€€ñðÁ½±¥ä¹µ¥¹¥µÕµ}É•ÍÑÉ¥Ñ•‘}‘•¥Í¥½¹Ì€ðÁ½±¥ä¹µ¥¹¥µÕµ}…‘Ù¥Í½Éå}‘•¥Í¥½¹Ì(€€€€€€€ñð•Ù¥‘•¹”¹…¹‘¥‘…Ñ•}‘¥•ÍÐ¹¥Í}é•É¼ ¤(€€€€€€€ñð•Ù¥‘•¹”¹É•™•É•¹•}É••¥ÁÑ}‘¥•ÍÐ¹¥Í}é•É¼ ¤(€€€€€€€ñð•Ù¥‘•¹”¹Ý¥¹‘½Ý}ÍÑ…ÉÑ}Õ¹¥á}µÌ€øô•Ù¥‘•¹”¹Ý¥¹‘½Ý}•¹‘}Õ¹¥á}µÌ(€€€ì(€€€€€€€É•ÑÕÉ¸ÉÈ¡9‘Õ‰Í‘•QÉ…¥¹¥¹ÉÉ½ÈèéM¡…‘½ÝÙ¥‘•¹”¤ì(€€€ô(€€€±•Ð¥¹‘•Á•¹‘•¹Ð€ôl(€€€€€€€•Ù¥‘•¹”¹½¹Ù•É•¹•}…•ÁÑ…¹•}‘¥•ÍÐ°(€€€€€€€•Ù¥‘•¹”¹…±¥‰É…Ñ¥½¹}…•ÁÑ…¹•}‘¥•ÍÐ°(€€€€€€€•Ù¥‘•¹”¹ÕÑ¥±¥Ñå}¥µÁÉ½Ù•µ•¹Ñ}…•ÁÑ…¹•}‘¥•ÍÐ°(€€€€€€€•Ù¥‘•¹”¹É•É•ÍÍ¥½¹}…•ÁÑ…¹•}‘¥•ÍÐ°(€€€tì(€€€±•Ð…±±}¥¹‘•Á•¹‘•¹Ð€ô¥¹‘•Á•¹‘•¹Ð¹¥Ñ•È ¤¹…±°¡ñ‘¥•ÍÑð€…‘¥•ÍÐ¹¥Í}é•É¼ ¤¤ì(€€€±•Ð™…¥±ÕÉ•Í}½¬€ô•Ù¥‘•¹”¹½‰Í•ÉÙ•‘}™…¥±ÕÉ•}½Õ¹Ð€ðôÁ½±¥ä¹µ…á¥µÕµ}™…¥±ÕÉ•Ìì(€€€±•Ð…‘Ù¥Í½Éå}Ù½±Õµ”€ô•Ù¥‘•¹”¹½‰Í•ÉÙ•‘}•Á¥Í½‘•}½Õ¹Ð€øôÁ½±¥ä¹µ¥¹¥µÕµ}…‘Ù¥Í½Éå}•Á¥Í½‘•Ì(€€€€€€€€˜˜•Ù¥‘•¹”¹½‰Í•ÉÙ•‘}‘•¥Í¥½¹}½Õ¹Ð€øôÁ½±¥ä¹µ¥¹¥µÕµ}…‘Ù¥Í½Éå}‘•¥Í¥½¹Ìì(€€€±•ÐÉ•ÍÑÉ¥Ñ•‘}Ù½±Õµ”€ô(€€€€€€€•Ù¥‘•¹”¹½‰Í•ÉÙ•‘}•Á¥Í½‘•}½Õ¹Ð€øôÁ½±¥ä¹µ¥¹¥µÕµ}É•ÍÑÉ¥Ñ•‘}•Á¥Í½‘•Ì(€€€€€€€€€€€€˜˜•Ù¥‘•¹”¹½‰Í•ÉÙ•‘}‘•¥Í¥½¹}½Õ¹Ð€øôÁ½±¥ä¹µ¥¹¥µÕµ}É•ÍÑÉ¥Ñ•‘}‘•¥Í¥½¹Ìì(€€€±•ÐÍÑ…”€ô¥˜…±±}¥¹‘•Á•¹‘•¹Ð(€€€€€€€€˜˜™…¥±ÕÉ•Í}½¬(€€€€€€€€˜˜É•ÍÑÉ¥Ñ•‘}Ù½±Õµ”(€€€€€€€€˜˜€…•Ù¥‘•¹”¹Ñ…É•Ñ}¡½ÍÑ}É••¥ÁÑ}‘¥•ÍÐ¹¥Í}é•É¼ ¤(€€€ì(€€€€€€€9‘Õ‰Í‘•M¡…‘½ÝMÑ…•XÄèéI•ÍÑÉ¥Ñ•‘]É¥Ñ•±¥¥‰±”(€€€ô•±Í”¥˜…±±}¥¹‘•Á•¹‘•¹Ð€˜˜™…¥±ÕÉ•Í}½¬€˜˜…‘Ù¥Í½Éå}Ù½±Õµ”ì(€€€€€€€9‘Õ‰Í‘•M¡…‘½ÝMÑ…•XÄèé‘Ù¥Í½Éå±¥¥‰±”(€€€ô•±Í”ì(€€€€€€€9‘Õ‰Í‘•M¡…‘½ÝMÑ…•XÄèéM¡…‘½Ý=¹±ä(€€€ôì((€€€±•Ð•Ù¥‘•¹•}‘¥•ÍÐ€ô…¹½¹¥…±}Í¡…‘½Ý}•Ù¥‘•¹•}‘¥•ÍÐ¡•Ù¥‘•¹”¤ì(€€€±•ÐµÕÐÁ…å±½…€ôˆ‰¡•ÁÑ„¹¹‘Ô¹™‰Í‘”¹Í¡…‘½Üµ…Ñ”¹ØÅpÀˆ¹Ñ½}Ù•Œ ¤ì(€€€Á…å±½…¹•áÑ•¹‘}™É½µ}Í±¥”¡Á½±¥ä¹Á½±¥å}‘¥•ÍÐ¹…Í}…ÉÉ…ä ¤¤ì(€€€Á…å±½…¹•áÑ•¹‘}™É½µ}Í±¥”¡•Ù¥‘•¹•}‘¥•ÍÐ¹…Í}…ÉÉ…ä ¤¤ì(€€€Á…å±½…¹ÁÕÍ ¡µ…Ñ ÍÑ…”ì(€€€€€€€9‘Õ‰Í‘•M¡…‘½ÝMÑ…•XÄèéM¡…‘½Ý=¹±ä€ôø€À°(€€€€€€€9‘Õ‰Í‘•M¡…‘½ÝMÑ…•XÄèé‘Ù¥Í½Éå±¥¥‰±”€ôø€Ä°(€€€€€€€9‘Õ‰Í‘•M¡…‘½ÝMÑ…•XÄèéI•ÍÑÉ¥Ñ•‘]É¥Ñ•±¥¥‰±”€ôø€È°(€€€ô¤ì(€€€±•ÐÉ••¥ÁÑ}‘¥•ÍÐ€ô¥•ÍÐÌÈèé½™}‰åÑ•Ì ™Á…å±½…¤ì(€€€=¬¡9‘Õ‰Í‘•M¡…‘½Ý…Ñ•I••¥ÁÑXÄì(€€€€€€€ÍÑ…”°(€€€€€€€…¹‘¥‘…Ñ•}‘¥•ÍÐè•Ù¥‘•¹”¹…¹‘¥‘…Ñ•}‘¥•ÍÐ°(€€€€€€€•Ù¥‘•¹•}‘¥•ÍÐ°(€€€€€€€É••¥ÁÑ}‘¥•ÍÐ°(€€€€€€€…ÕÑ¡½É¥ÑäèÕÑ¡½É¥ÑåA½ÍÑÕÉ”èé9e}10°(€€€€€€€ÁÉ½‘ÕÑ¥½¹}…Ñ¥Ù…Ñ¥½¸è™…±Í”°(€€€ô¤)ô((
+        for index in &ordered {
+            for time_index in 0..horizon {
+                for utility in 0..utility_dimension {
+                    maximum_update = maximum_update.max(
+                        (current[*index][time_index][utility]
+                            - previous[*index][time_index][utility])
+                            .abs(),
+                    );
+                }
+            }
+        }
+        maximum_update = finite(maximum_update)?;
+        epochs = u32::try_from(epoch + 1).map_err(|_| NduFbsdeTrainingError::Arithmetic)?;
+        converged_slices = reverse_slices;
+        previous = current;
+        if maximum_update <= policy.specification.convergence_tolerance {
+            break;
+        }
+    }
+
+    if converged_slices.len() != horizon
+        || maximum_update > policy.specification.convergence_tolerance
+    {
+        return Err(NduFbsdeTrainingError::DidNotConverge);
+    }
+
+    let time_slices = quantize_slices(
+        &converged_slices,
+        policy.specification.maximum_absolute_value,
+    )?;
+    let mut candidate =
+        candidate_without_metrics(snapshot, policy, covariance_profile, time_slices);
+    candidate.metrics = evaluate_candidate_metrics(
+        snapshot,
+        policy,
+        &candidate,
+        &train,
+        &holdout,
+        maximum_update,
+        epochs,
+    )?;
+    enforce_candidate_thresholds(policy, &candidate.metrics)?;
+    candidate.artifact_bytes_digest = Digest32::of_bytes(&encode_candidate_artifact(&candidate));
+    candidate.candidate_digest = candidate_receipt_digest(&candidate);
+    validate_candidate_identity(snapshot, policy, &candidate)?;
+    Ok(candidate)
+}
+
+/// Independently replays the quantized artifact and metrics without using the
+/// floating-point fit state. A metric, artifact or identity substitution fails
+/// closed and cannot produce a reference receipt.
+pub fn reference_evaluate_ndu_fbsde_v1(
+    snapshot: &NduFbsdeDatasetSnapshotV1,
+    policy: &AdmittedNduFbsdeTrainingPolicyV1,
+    candidate: &NduFbsdeTrainingCandidateV1,
+) -> Result<NduFbsdeReferenceReceiptV1, NduFbsdeTrainingError> {
+    validate_dataset(snapshot)?;
+    validate_policy(&policy.specification)?;
+    if canonical_policy_digest(&policy.specification) != policy.digest {
+        return Err(NduFbsdeTrainingError::PolicyMismatch("policy_digest"));
+    }
+    validate_candidate_identity(snapshot, policy, candidate)?;
+    if candidate.runtime_tuple_digest != policy.specification.runtime_tuple_digest
+        || candidate.units_digest != policy.specification.units_digest
+        || candidate.artifact_bytes_digest
+            != Digest32::of_bytes(&encode_candidate_artifact(candidate))
+    {
+        return Err(NduFbsdeTrainingError::CandidateMismatch);
+    }
+
+    let ordered = ordered_trajectory_indices(snapshot)?;
+    let train: Vec<usize> = ordered
+        .iter()
+        .copied()
+        .filter(|index| snapshot.trajectories[*index].fold == NduFbsdeFoldV1::Train)
+        .collect();
+    let holdout: Vec<usize> = ordered
+        .iter()
+        .copied()
+        .filter(|index| snapshot.trajectories[*index].fold == NduFbsdeFoldV1::Holdout)
+        .collect();
+    let metrics = reference_metrics(snapshot, policy, candidate, &train, &holdout)?;
+    if metrics != candidate.metrics {
+        return Err(NduFbsdeTrainingError::CandidateMismatch);
+    }
+
+    let receipt_digest = reference_receipt_digest(
+        candidate.candidate_digest,
+        snapshot.dataset_digest,
+        candidate.artifact_bytes_digest,
+        &metrics,
+    );
+    Ok(NduFbsdeReferenceReceiptV1 {
+        candidate_digest: candidate.candidate_digest,
+        dataset_digest: snapshot.dataset_digest,
+        artifact_bytes_digest: candidate.artifact_bytes_digest,
+        metrics,
+        receipt_digest,
+        authority: AuthorityPosture::DENY_ALL,
+    })
+}
+
+/// Binds a candidate to the exact registered artifact bytes and projects the
+/// first Z slice through the already admitted coefficient/Z profiles. This is
+/// publication evidence only; it never registers, selects or activates.
+pub fn bind_ndu_fbsde_publication_v1(
+    candidate: &NduFbsdeTrainingCandidateV1,
+    registered_artifact_bytes_digest: Digest32,
+    coefficient_profile: &AdmittedNduCoefficientProfileV1,
+    z_conversion_profile: &AdmittedZConversionProfileV1,
+    now_unix_ms: u64,
+) -> Result<
+    (NduFbsdePublicationBindingV1, NduCoefficientProjectionV1),
+    NduFbsdeTrainingError,
+> {
+    require_digest(registered_artifact_bytes_digest, "registered_artifact")?;
+    if candidate.authority.grants_any() {
+        return Err(NduFbsdeTrainingError::Authority);
+    }
+    if candidate.artifact_bytes_digest != registered_artifact_bytes_digest
+        || candidate.artifact_bytes_digest
+            != Digest32::of_bytes(&encode_candidate_artifact(candidate))
+        || candidate.candidate_digest != candidate_receipt_digest(candidate)
+    {
+        return Err(NduFbsdeTrainingError::ArtifactMismatch);
+    }
+    if candidate.normalization_digest != coefficient_profile.normalization_digest()
+        || candidate.runtime_tuple_digest != coefficient_profile.runtime_tuple_digest()
+        || candidate.covariance_profile_digest
+            != coefficient_profile.covariance_profile_digest()
+        || candidate.units_digest != coefficient_profile.units_digest()
+        || candidate.driver_dimension != coefficient_profile.driver_dimension()
+        || candidate.utility_dimension != coefficient_profile.utility_dimension()
+        || coefficient_profile.z_conversion_profile_digest()
+            != z_conversion_profile.digest()
+    {
+        return Err(NduFbsdeTrainingError::ProfileMismatch);
+    }
+    let first = candidate
+        .time_slices
+        .first()
+        .ok_or(NduFbsdeTrainingError::CandidateMismatch)?;
+    let estimate = ZEstimateV1 {
+        z: first
+            .z_q24
+            .iter()
+            .map(|row| row.iter().map(|value| q24_to_f64(*value)).collect())
+            .collect(),
+        covariance_profile_digest: candidate.covariance_profile_digest,
+        condition_estimate: first.condition_estimate,
+        increment_eigenvalue_lower_estimate: first.increment_eigenvalue_lower_estimate,
+        maximum_relative_residual: first.maximum_relative_residual,
+        evidence_digest: primary_projection_source_digest(candidate, first),
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    let projection = project_z_estimate_to_coefficient_q24(
+        &estimate,
+        coefficient_profile,
+        z_conversion_profile,
+        now_unix_ms,
+    )
+    .map_err(map_coefficient_profile)?;
+    if projection.authority.grants_any() {
+        return Err(NduFbsdeTrainingError::Authority);
+    }
+
+    let publication_digest = publication_binding_digest(
+        coefficient_profile.artifact_manifest_digest(),
+        candidate.artifact_bytes_digest,
+        coefficient_profile.digest(),
+        projection.output_digest,
+        candidate.candidate_digest,
+    );
+    let binding = NduFbsdePublicationBindingV1 {
+        artifact_manifest_digest: coefficient_profile.artifact_manifest_digest(),
+        artifact_bytes_digest: candidate.artifact_bytes_digest,
+        coefficient_profile_digest: coefficient_profile.digest(),
+        primary_projection_digest: projection.output_digest,
+        candidate_digest: candidate.candidate_digest,
+        publication_digest,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    Ok((binding, projection))
+}
+
+/// Evaluates independent shadow evidence into a monotone eligibility stage.
+/// Missing independent acceptances keep the candidate in shadow; no stage ever
+/// carries production activation or effect authority.
+pub fn evaluate_ndu_fbsde_shadow_gate_v1(
+    policy: &NduFbsdeShadowPolicyV1,
+    evidence: &NduFbsdeShadowEvidenceV1,
+) -> Result<NduFbsdeShadowGateReceiptV1, NduFbsdeTrainingError> {
+    require_digest(policy.policy_digest, "shadow_policy")?;
+    require_digest(evidence.candidate_digest, "candidate")?;
+    require_digest(evidence.reference_receipt_digest, "reference_receipt")?;
+    if policy.minimum_advisory_episodes == 0
+        || policy.minimum_advisory_decisions == 0
+        || policy.minimum_restricted_episodes < policy.minimum_advisory_episodes
+        || policy.minimum_restricted_decisions < policy.minimum_advisory_decisions
+    {
+        return Err(NduFbsdeTrainingError::ShadowEvidence);
+    }
+    if evidence.window_start_unix_ms == 0
+        || evidence.window_end_unix_ms <= evidence.window_start_unix_ms
+    {
+        return Err(NduFbsdeTrainingError::ShadowEvidence);
+    }
+
+    let independent_acceptance = !evidence.convergence_acceptance_digest.is_zero()
+        && !evidence.calibration_acceptance_digest.is_zero()
+        && !evidence.utility_improvement_acceptance_digest.is_zero()
+        && !evidence.regression_acceptance_digest.is_zero();
+    let advisory_volume = evidence.observed_episode_count >= policy.minimum_advisory_episodes
+        && evidence.observed_decision_count >= policy.minimum_advisory_decisions;
+    let restricted_volume = evidence.observed_episode_count >= policy.minimum_restricted_episodes
+        && evidence.observed_decision_count >= policy.minimum_restricted_decisions;
+    let within_failure_budget = evidence.observed_failure_count <= policy.maximum_failures;
+
+    let stage = if independent_acceptance
+        && advisory_volume
+        && restricted_volume
+        && within_failure_budget
+        && !evidence.target_host_receipt_digest.is_zero()
+    {
+        NduFbsdeShadowStageV1::RestrictedWriteEligible
+    } else if independent_acceptance && advisory_volume && within_failure_budget {
+        NduFbsdeShadowStageV1::AdvisoryEligible
+    } else {
+        NduFbsdeShadowStageV1::ShadowOnly
+    };
+    let evidence_digest = canonical_shadow_evidence_digest(evidence);
+    let receipt_digest = shadow_gate_receipt_digest(
+        policy.policy_digest,
+        evidence.candidate_digest,
+        evidence_digest,
+        stage,
+    );
+    Ok(NduFbsdeShadowGateReceiptV1 {
+        stage,
+        candidate_digest: evidence.candidate_digest,
+        evidence_digest,
+        receipt_digest,
+        authority: AuthorityPosture::DENY_ALL,
+        production_activation: false,
+    })
+}
+
+fn reference_receipt_digest(
+    candidate_digest: Digest32,
+    dataset_digest: Digest32,
+    artifact_bytes_digest: Digest32,
+    metrics: &NduFbsdeMetricsV1,
+) -> Digest32 {
+    let mut payload = b"hepta.ndu.fbsde.reference-receipt.v1\0".to_vec();
+    payload.extend_from_slice(candidate_digest.as_array());
+    payload.extend_from_slice(dataset_digest.as_array());
+    payload.extend_from_slice(artifact_bytes_digest.as_array());
+    append_metrics(&mut payload, metrics);
+    Digest32::of_bytes(&payload)
+}
+
+fn publication_binding_digest(
+    artifact_manifest_digest: Digest32,
+    artifact_bytes_digest: Digest32,
+    coefficient_profile_digest: Digest32,
+    primary_projection_digest: Digest32,
+    candidate_digest: Digest32,
+) -> Digest32 {
+    Digest32::of_parts(&[
+        b"hepta.ndu.fbsde.publication-binding.v1\0",
+        artifact_manifest_digest.as_array(),
+        artifact_bytes_digest.as_array(),
+        coefficient_profile_digest.as_array(),
+        primary_projection_digest.as_array(),
+        candidate_digest.as_array(),
+    ])
+}
+
+fn shadow_gate_receipt_digest(
+    policy_digest: Digest32,
+    candidate_digest: Digest32,
+    evidence_digest: Digest32,
+    stage: NduFbsdeShadowStageV1,
+) -> Digest32 {
+    let stage_tag = [match stage {
+        NduFbsdeShadowStageV1::ShadowOnly => 0,
+        NduFbsdeShadowStageV1::AdvisoryEligible => 1,
+        NduFbsdeShadowStageV1::RestrictedWriteEligible => 2,
+    }];
+    Digest32::of_parts(&[
+        b"hepta.ndu.fbsde.shadow-gate-receipt.v1\0",
+        policy_digest.as_array(),
+        candidate_digest.as_array(),
+        evidence_digest.as_array(),
+        &stage_tag,
+    ])
+}
