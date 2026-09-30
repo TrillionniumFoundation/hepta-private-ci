@@ -3,14 +3,14 @@ name: Cognitive store authoring snapshot
 on:
   push:
     branches:
-      - codex/cognitive-store-full-closure-20260927
+      - automation/cognitive-store-lockfile-20260930
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: cognitive-store-authoring-snapshot
+  group: cognitive-store-authoring-snapshot-lockfile
   cancel-in-progress: true
 
 jobs:
