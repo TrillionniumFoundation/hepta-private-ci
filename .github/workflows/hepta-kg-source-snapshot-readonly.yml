@@ -54,6 +54,36 @@ jobs:
             "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})" \
             | tee "$artifact_dir/source-identity.txt"
 
+      - name: Preserve exact tracked development source
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact_dir="$RUNNER_TEMP/kg-development-artifact"
+          git archive --format=tar.gz \
+            --output="$artifact_dir/kg-tracked-source.tar.gz" \
+            HEAD -- \
+            .github/kg-run-finalize.sh \
+            .github/workflows/hepta-kg-abc-execution.yml \
+            .github/workflows/hepta-knowledge-graph-qualification.yml \
+            .github/workflows/hepta-kg-remaining-four-closure.yml \
+            .github/workflows/hepta-kg-source-snapshot-readonly.yml \
+            codex-rs/Cargo.toml \
+            codex-rs/Cargo.lock \
+            codex-rs/rust-toolchain.toml \
+            codex-rs/hepta-kg \
+            codex-rs/hepta-memory \
+            codex-rs/hepta-types \
+            codex-rs/hepta-contracts \
+            codex-rs/hepta-prompt-registry \
+            codex-rs/hepta-prompt-optimizer \
+            codex-rs/hepta-agentd \
+            docs/modules/knowledge.graph \
+            qualification/knowledge-graph \
+            qualification/module-execution-dossiers/detail/knowledge.graph.md \
+            scripts
+          sha256sum "$artifact_dir/kg-tracked-source.tar.gz" \
+            > "$artifact_dir/kg-tracked-source.sha256"
+
       - name: Check patch cleanliness
         shell: bash
         run: git diff --check
