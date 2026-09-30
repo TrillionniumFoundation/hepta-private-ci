@@ -13,6 +13,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[3]
 PRODUCT_CALLER_SCHEMA = "hepta.secrets-heptabao-product-caller.v1"
+PRODUCT_CALLER_CONFIG = ROOT / "docs/modules/secrets.heptabao/PRODUCT_CALLER_CONFIG_V1.json"
 PRODUCT_CALLER_FIELDS = {
     "schema",
     "callerId",
@@ -108,6 +109,24 @@ def load_product_caller(path_text: str) -> tuple[dict[str, Any] | None, str | No
         "single_host_multi_process",
     }:
         raise SystemExit("unsupported product caller deployment topology")
+
+    if not PRODUCT_CALLER_CONFIG.is_file():
+        raise SystemExit("product caller configuration does not exist")
+    if sha256(PRODUCT_CALLER_CONFIG) != value["configurationDigest"]:
+        raise SystemExit("product caller configuration digest does not match exact config source")
+    configuration = json.loads(PRODUCT_CALLER_CONFIG.read_text(encoding="utf-8"))
+    if configuration.get("binaryTarget") != value["binaryTarget"]:
+        raise SystemExit("product caller and configuration binary targets differ")
+    deadlines = configuration.get("deadlines")
+    if not isinstance(deadlines, dict) or not (
+        deadlines.get("consumerTimeoutMs", 0)
+        < deadlines.get("forwardExecutionLeaseMs", 0)
+        < deadlines.get("absoluteOperationDeadlineMs", 0)
+    ):
+        raise SystemExit("product caller deadline contract is not strictly ordered")
+    recovery = configuration.get("recoveryWorker")
+    if not isinstance(recovery, dict) or recovery.get("claimMode") != "just_in_time":
+        raise SystemExit("product caller recovery must use just-in-time claims")
 
     source = ROOT / value["sourcePath"]
     if not source.is_file():
@@ -257,7 +276,10 @@ def main() -> None:
     product_caller, product_caller_manifest_sha256 = load_product_caller(
         args.product_caller_manifest
     )
-    product_composed = product_caller is not None
+    product_caller_source_bound = product_caller is not None
+    # A repository-owned constructor and binary target prove reviewable caller
+    # source, not that a normal process instantiated its dependencies and ran.
+    product_composed = False
     readiness = {
         "sourcePresent": True,
         "sourceImmutable": identity_closed,
@@ -271,6 +293,7 @@ def main() -> None:
             and args.candidate_role == "synthetic-merge"
         ),
         "storageProfileQualified": False,
+        "productCallerSourceBound": product_caller_source_bound,
         "productComposed": product_composed,
         "targetHostQualified": False,
         "activated": False,
@@ -323,13 +346,15 @@ def main() -> None:
         "buildSurface": "single_complete",
         "identityClosed": identity_closed,
         "readinessDimensions": readiness,
+        "productCallerSourceBound": product_caller_source_bound,
         "productCaller": product_caller,
         "productCallerManifestSha256": product_caller_manifest_sha256,
         "productionQualified": production_qualified,
         "mergeReady": production_qualified,
         "nonclaims": [
             "A green source qualification does not select or activate a production process.",
-            "Product composition requires a repository-owned, source-bound caller manifest.",
+            "A repository-owned caller manifest proves source binding, not runtime composition or deployment.",
+            "Product composition requires exact-candidate evidence that a normal process constructed and ran AuthBus, provider, consumer, metrics, recovery and shutdown wiring.",
             "No production qualification is emitted without separately governed storage, target-host and operator gates.",
             "No result from another SHA, workflow run or workflow attempt is accepted.",
             "SQLite source presence is not storage-profile or target-host qualification.",
