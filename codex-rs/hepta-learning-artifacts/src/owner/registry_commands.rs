@@ -38,6 +38,95 @@ pub struct PublishArtifactCommandV1 {
 }
 
 impl PublishArtifactCommandV1 {
+    #[must_use]
+    pub fn encode(&self) -> Vec<u8> {
+        let manifest = &self.manifest.manifest;
+        let head = &self.signed_current_head;
+        format!(
+            concat!(
+                "schema={PUBLISH_SCHEMA}\n",
+                "operation_id={}\n",
+                "expected_withdrawal_head={}\n",
+                "expected_registry_predecessor_head={}\n",
+                "artifact_id={}\n",
+                "kind={}\n",
+                "generation={}\n",
+                "provenance_mode={}\n",
+                "source_dataset_digests={}\n",
+                "lineage_digests={}\n",
+                "predecessor_ids={}\n",
+                "rollback_predecessor={}\n",
+                "bytes_digest={}\n",
+                "encoded_size_bytes={}\n",
+                "training_code_digest={}\n",
+                "runtime_tuple_digest={}\n",
+                "device_profile_digest={}\n",
+                "objective_class_digest={}\n",
+                "compatibility_digest={}\n",
+                "schema_profile_digest={}\n",
+                "normalization_digest={}\n",
+                "producer_id={}\n",
+                "created_at={}\n",
+                "expires_at={}\n",
+                "payload_hex={}\n",
+                "head_withdrawal_scope_digest={}\n",
+                "head_binding={}\n",
+                "head_registry_id={}\n",
+                "head_generation={}\n",
+                "head_digest={}\n",
+                "head_predecessor_head_digest={}\n",
+                "head_authority_epoch={}\n",
+                "head_signer_id={}\n",
+                "head_signing_key_digest={}\n",
+                "head_issued_at={}\n",
+                "head_expires_at={}\n",
+                "head_signature={}\n",
+                "now={}\n"
+            ),
+            self.operation_id,
+            self.expected_withdrawal_head,
+            self.expected_registry_predecessor_head,
+            manifest.artifact_id,
+            encode_kind(manifest.kind),
+            manifest.generation.get(),
+            encode_provenance(manifest.provenance_mode),
+            encode_digest_list(&manifest.source_dataset_digests),
+            encode_digest_list(&manifest.lineage_digests),
+            encode_id_list(&manifest.predecessor_ids),
+            manifest
+                .rollback_predecessor
+                .as_ref()
+                .map_or("-", StableId::as_str),
+            manifest.bytes_digest,
+            manifest.encoded_size_bytes,
+            manifest.training_code_digest,
+            manifest.runtime_tuple_digest,
+            manifest.device_profile_digest,
+            manifest.objective_class_digest,
+            manifest.compatibility_digest,
+            manifest.schema_profile_digest,
+            manifest.normalization_digest,
+            manifest.producer_id,
+            manifest.created_at,
+            manifest.expires_at,
+            encode_hex(&self.payload),
+            head.withdrawal_scope_digest,
+            head.binding,
+            head.witness.registry_id,
+            head.witness.generation.get(),
+            head.witness.head_digest,
+            head.witness.predecessor_head_digest,
+            head.witness.authority_epoch,
+            head.witness.signer_id,
+            head.witness.signing_key_digest,
+            head.witness.issued_at,
+            head.witness.expires_at,
+            encode_hex(&head.signature),
+            self.now,
+        )
+        .into_bytes()
+    }
+
     pub fn decode(bytes: &[u8]) -> Result<Self, ArtifactOwnerCommandDecodeError> {
         let values = parse_key_values(bytes, PUBLISH_SCHEMA)?;
         let payload = decode_hex(required(&values, "payload_hex")?)?;
@@ -122,6 +211,30 @@ pub struct InstallWithdrawalSnapshotCommandV1 {
 }
 
 impl InstallWithdrawalSnapshotCommandV1 {
+    #[must_use]
+    pub fn encode(&self) -> Vec<u8> {
+        format!(
+            concat!(
+                "schema={INSTALL_WITHDRAWAL_SCHEMA}\n",
+                "snapshot_path={}\n",
+                "binding={}\n",
+                "scope_digest={}\n",
+                "head_digest={}\n",
+                "file_digest={}\n",
+                "records={}\n",
+                "encoded_bytes={}\n"
+            ),
+            self.snapshot_path.display(),
+            self.receipt.binding,
+            self.receipt.scope_digest,
+            self.receipt.head_digest,
+            self.receipt.file_digest,
+            self.receipt.records,
+            self.receipt.encoded_bytes,
+        )
+        .into_bytes()
+    }
+
     pub fn decode(bytes: &[u8]) -> Result<Self, ArtifactOwnerCommandDecodeError> {
         let values = parse_key_values(bytes, INSTALL_WITHDRAWAL_SCHEMA)?;
         let snapshot_path = PathBuf::from(required(&values, "snapshot_path")?);
@@ -140,6 +253,62 @@ impl InstallWithdrawalSnapshotCommandV1 {
             },
         })
     }
+}
+
+fn encode_kind(kind: ArtifactKind) -> &'static str {
+    match kind {
+        ArtifactKind::Prompt => "prompt",
+        ArtifactKind::Policy => "policy",
+        ArtifactKind::Model => "model",
+        ArtifactKind::Workflow => "workflow",
+        ArtifactKind::Skill => "skill",
+        ArtifactKind::Parameters => "parameters",
+        ArtifactKind::Topology => "topology",
+        ArtifactKind::Code => "code",
+        ArtifactKind::ExternalAdapter => "external_adapter",
+        ArtifactKind::SensorCore => "sensor_core",
+    }
+}
+
+fn encode_provenance(mode: ProvenanceModeV1) -> &'static str {
+    match mode {
+        ProvenanceModeV1::DatasetDerived => "dataset_derived",
+        ProvenanceModeV1::DatasetIndependent => "dataset_independent",
+    }
+}
+
+fn encode_digest_list(values: &[Digest32]) -> String {
+    if values.is_empty() {
+        "-".to_owned()
+    } else {
+        values
+            .iter()
+            .map(ToString::to_string)
+            .collect::<Vec<_>>()
+            .join(",")
+    }
+}
+
+fn encode_id_list(values: &[StableId]) -> String {
+    if values.is_empty() {
+        "-".to_owned()
+    } else {
+        values
+            .iter()
+            .map(StableId::as_str)
+            .collect::<Vec<_>>()
+            .join(",")
+    }
+}
+
+fn encode_hex(bytes: &[u8]) -> String {
+    const DIGITS: &[u8; 16] = b"0123456789abcdef";
+    let mut output = String::with_capacity(bytes.len() * 2);
+    for byte in bytes {
+        output.push(DIGITS[(byte >> 4) as usize] as char);
+        output.push(DIGITS[(byte & 0x0f) as usize] as char);
+    }
+    output
 }
 
 fn parse_signed_head(
