@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 use std::cell::RefCell;
 use std::fs;
 use std::rc::Rc;
@@ -236,4 +237,124 @@ fn checkpoint_newer_than_independent_journal_anchor_is_rejected() {
         .map(|_| ()),
         Err(ProductEvaluationAttemptJournalErrorV1::Corrupt)
     );
+}
+
+#[test]
+fn same_length_divergent_journal_prefix_cannot_hide_behind_an_authentic_checkpoint() {
+    let journal_file = NamedTempFile::new().expect("journal file");
+    let divergent_file = NamedTempFile::new().expect("divergent journal file");
+    let checkpoint_file = NamedTempFile::new().expect("checkpoint file");
+    let binding = digest("same-length-prefix-binding");
+    let mut journal = LockedFileProductEvaluationAttemptJournalV1::create(
+        journal_file.reopen().expect("journal handle"),
+        binding,
+    )
+    .expect("journal");
+    journal
+        .append(intent("attempt:a"))
+        .expect("canonical intent");
+    let frontier = journal.byte_len() as usize;
+    let mut authority = CheckpointAuthority::default();
+    journal
+        .checkpoint_into(
+            checkpoint_file.reopen().expect("checkpoint handle"),
+            &mut authority,
+        )
+        .expect("checkpoint");
+    journal
+        .append(intent("attempt:c"))
+        .expect("canonical post-checkpoint tail");
+    let retained = journal.anchor().expect("retained anchor");
+    drop(journal);
+
+    let mut divergent = LockedFileProductEvaluationAttemptJournalV1::create(
+        divergent_file.reopen().expect("divergent handle"),
+        binding,
+    )
+    .expect("divergent journal");
+    divergent
+        .append(intent("attempt:b"))
+        .expect("different valid intent");
+    assert_eq!(divergent.byte_len() as usize, frontier);
+    drop(divergent);
+    let original = fs::read(journal_file.path()).expect("original journal");
+    let mut substituted = fs::read(divergent_file.path()).expect("valid divergent prefix");
+    substituted.extend_from_slice(&original[frontier..]);
+    assert_eq!(substituted.len(), original.len());
+    fs::write(journal_file.path(), substituted).expect("substitute only journal prefix");
+
+    assert_eq!(
+        LockedFileProductEvaluationAttemptJournalV1::recover_with_anchor(
+            journal_file.reopen().expect("ordinary recovery"),
+            binding,
+            retained,
+        )
+        .map(|_| ()),
+        Err(ProductEvaluationAttemptJournalErrorV1::Corrupt)
+    );
+    assert_eq!(
+        LockedFileProductEvaluationAttemptJournalV1::recover_with_checkpoint(
+            journal_file.reopen().expect("checkpoint recovery"),
+            checkpoint_file.reopen().expect("checkpoint handle"),
+            binding,
+            retained,
+            &mut authority,
+        )
+        .map(|_| ()),
+        Err(ProductEvaluationAttemptJournalErrorV1::Corrupt)
+    );
+}
+
+#[test]
+fn checkpoint_recovery_and_continued_append_remain_equivalent_to_ordinary_replay() {
+    let journal_file = NamedTempFile::new().expect("journal file");
+    let checkpoint_file = NamedTempFile::new().expect("checkpoint file");
+    let binding = digest("checkpoint-replay-equivalence");
+    let mut journal = LockedFileProductEvaluationAttemptJournalV1::create(
+        journal_file.reopen().expect("journal handle"),
+        binding,
+    )
+    .expect("journal");
+    advance_to_pending(&mut journal, "attempt:a");
+    let mut authority = CheckpointAuthority::default();
+    journal
+        .checkpoint_into(
+            checkpoint_file.reopen().expect("checkpoint handle"),
+            &mut authority,
+        )
+        .expect("checkpoint");
+    journal.append(intent("attempt:b")).expect("tail");
+    let retained = journal.anchor().expect("retained");
+    drop(journal);
+    let mut recovered = LockedFileProductEvaluationAttemptJournalV1::recover_with_checkpoint(
+        journal_file.reopen().expect("journal recovery"),
+        checkpoint_file.reopen().expect("checkpoint recovery"),
+        binding,
+        retained,
+        &mut authority,
+    )
+    .expect("checkpoint recovery");
+    publish(&mut recovered, "attempt:a");
+    recovered
+        .append(transition(
+            "attempt:b",
+            ProductEvaluationAttemptPhaseV1::HoldoutConsumed,
+            "unused",
+        ))
+        .expect("continue admitted tail");
+    let expected_anchor = recovered.anchor().expect("continued anchor");
+    let expected_a = recovered.history(&id("attempt:a")).expect("history a");
+    let expected_b = recovered.history(&id("attempt:b")).expect("history b");
+    let expected_pending = recovered.pending(None, 8).expect("pending");
+    drop(recovered);
+    let mut ordinary = LockedFileProductEvaluationAttemptJournalV1::recover_with_anchor(
+        journal_file.reopen().expect("ordinary recovery"),
+        binding,
+        expected_anchor,
+    )
+    .expect("ordinary replay after continued checkpoint recovery");
+    assert_eq!(ordinary.anchor(), Ok(expected_anchor));
+    assert_eq!(ordinary.history(&id("attempt:a")), Ok(expected_a));
+    assert_eq!(ordinary.history(&id("attempt:b")), Ok(expected_b));
+    assert_eq!(ordinary.pending(None, 8), Ok(expected_pending));
 }

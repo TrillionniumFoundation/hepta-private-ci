@@ -199,6 +199,10 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
         if !anchor_seen || file.metadata().map_err(io_error)?.len() != length {
             return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
         }
+        // A complete tail may have survived an outcome-unknown sync. Establish
+        // file durability before an anchored recovery acknowledges its frontier.
+        file.sync_all()
+            .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
         // Legacy prefixes remain readable, including a prefix that did not
         // reserve enough space. New admission is refused while existing work
         // may spend the remaining bytes; migration never rewrites consumption.

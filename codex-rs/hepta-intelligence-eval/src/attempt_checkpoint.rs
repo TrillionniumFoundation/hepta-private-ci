@@ -17,6 +17,9 @@ use super::*;
 const CHECKPOINT_MAGIC: &[u8; 8] = b"HEPTACP1";
 const MAX_CHECKPOINT_BYTES: u64 = MAX_BYTES;
 
+#[path = "attempt_checkpoint_prefix.rs"]
+mod prefix;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct CheckpointRecord {
     binding: Digest32,
@@ -173,6 +176,10 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
             return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
         }
 
+        // The snapshot authenticates reducer state, not arbitrary bytes at
+        // the same file offset. Hash the skipped prefix without replaying its
+        // reducer so checkpoint and ordinary recovery see the same journal.
+        prefix::verify(&mut file, &header, record)?;
         let (mut attempts, mut plan_owners, mut capacity, snapshot_events) =
             decode_snapshot(snapshot)?;
         if snapshot_events != retained.event_count {
@@ -225,6 +232,8 @@ impl LockedFileProductEvaluationAttemptJournalV1 {
         if !anchor_seen || file.metadata().map_err(io_error)?.len() != length {
             return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
         }
+        file.sync_all()
+            .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
         Ok(Self {
             file,
             binding,
@@ -262,17 +271,16 @@ fn encode_snapshot(
     Ok(output)
 }
 
+type DecodedAttemptSnapshot = (
+    AttemptEvents,
+    BTreeMap<[u8; 32], StableId>,
+    AttemptCapacity,
+    u64,
+);
+
 fn decode_snapshot(
     bytes: &[u8],
-) -> Result<
-    (
-        AttemptEvents,
-        BTreeMap<[u8; 32], StableId>,
-        AttemptCapacity,
-        u64,
-    ),
-    ProductEvaluationAttemptJournalErrorV1,
-> {
+) -> Result<DecodedAttemptSnapshot, ProductEvaluationAttemptJournalErrorV1> {
     let mut input = Input::new(bytes);
     let attempt_count = input.u32()? as usize;
     let mut attempts = AttemptEvents::new();

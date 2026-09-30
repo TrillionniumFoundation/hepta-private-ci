@@ -1,4 +1,5 @@
 use super::*;
+use crate::ProductEvaluationAttemptPhaseV1;
 use std::cell::RefCell;
 use std::rc::Rc;
 use tempfile::NamedTempFile;
@@ -226,12 +227,24 @@ fn anchored_near_capacity_rejects_new_work_but_preserves_the_reserved_lifecycle(
     assert!(journal.pending(None, 1).expect("pending").is_empty());
 
     drop(journal);
-    let mut recovered = AnchoredProductEvaluationAttemptJournalV1::recover(
+    // Qualification limits are owner policy, not journal wire state. Reopen
+    // the real backend with the same stricter policy before rebuilding the
+    // wrapper; production recovery intentionally uses the normal hard limits.
+    let retained = authority.0.borrow().value.expect("retained anchor");
+    let backend = LockedFileProductEvaluationAttemptJournalV1::recover_with_qualification_limits(
         temp.reopen().expect("reopen"),
         binding,
-        authority,
+        COMPLETE_LIFECYCLE_BYTES,
+        COMPLETE_LIFECYCLE_EVENTS,
     )
     .expect("recover exact full-capacity history");
+    assert_eq!(backend.anchor(), Ok(retained));
+    let mut recovered = AnchoredProductEvaluationAttemptJournalV1 {
+        journal: backend,
+        authority,
+        retained,
+        poisoned: false,
+    };
     assert_eq!(
         recovered.history(&id("a")).expect("history").len(),
         COMPLETE_LIFECYCLE_EVENTS
