@@ -30,6 +30,7 @@ SECURITY_REVIEW = ROOT / "docs/modules/auth.authbus/SECURITY_REVIEW.md"
 VERIFICATION_MATRIX = ROOT / "docs/modules/auth.authbus/VERIFICATION_MATRIX.md"
 SLO = ROOT / "docs/modules/auth.authbus/SLO.md"
 PERFORMANCE_CONTRACT = ROOT / "docs/modules/auth.authbus/PERFORMANCE_QUALIFICATION.json"
+PRODUCTION_ACCEPTANCE_CONTRACT = ROOT / "docs/modules/auth.authbus/PRODUCTION_ACCEPTANCE.json"
 
 REQUIRED_FAULTS = {
     "sqlite-before-commit-sigkill",
@@ -61,6 +62,7 @@ DOCS = [
     VERIFICATION_MATRIX,
     SLO,
     PERFORMANCE_CONTRACT,
+    PRODUCTION_ACCEPTANCE_CONTRACT,
 ]
 
 
@@ -130,7 +132,7 @@ def validate_map(mapping: dict[str, Any]) -> None:
         raise ValueError("source map must not claim activation or release")
 
     operations = mapping.get("operations")
-    if not isinstance(operations, list) or len(operations) < 20:
+    if not isinstance(operations, list) or len(operations) < 21:
         raise ValueError("implementation map is missing AuthBus operations")
     operation_names: set[str] = set()
     for index, row in enumerate(operations):
@@ -297,6 +299,59 @@ def validate_performance_contract() -> dict[str, Any]:
     }
 
 
+def validate_production_acceptance_contract() -> dict[str, Any]:
+    contract = load_json(PRODUCTION_ACCEPTANCE_CONTRACT)
+    if contract.get("schema") != "hepta.authbus.production-acceptance-contract.v1":
+        raise ValueError("production acceptance contract schema mismatch")
+    if contract.get("module") != "auth.authbus":
+        raise ValueError("production acceptance contract names the wrong module")
+    if contract.get("sourceActivation") is not False:
+        raise ValueError("source production acceptance must remain fail-closed")
+    evidence = contract.get("requiredEvidence")
+    if not isinstance(evidence, list):
+        raise ValueError("production acceptance evidence list is missing")
+    names = {
+        str(row.get("name"))
+        for row in evidence
+        if isinstance(row, dict) and isinstance(row.get("name"), str)
+    }
+    required_names = {
+        "exactHead",
+        "syntheticMerge",
+        "targetHost",
+        "performance",
+        "kmsHsm",
+        "keyRotationRevocation",
+        "backupRestore",
+        "dualOwnerMount",
+        "activationPlan",
+        "rollbackPlan",
+    }
+    if names != required_names:
+        raise ValueError("production acceptance evidence set is incomplete")
+    signature = contract.get("signaturePolicy")
+    if (
+        not isinstance(signature, dict)
+        or signature.get("algorithm") != "ed25519"
+        or signature.get("principalsMustDiffer") is not True
+    ):
+        raise ValueError("production acceptance signature policy is not fail-closed")
+    activation = contract.get("activationSemantics")
+    if (
+        not isinstance(activation, dict)
+        or activation.get("verifiedOutput") != "approved_for_canary"
+        or activation.get("productionActivated") is not False
+        or activation.get("release") is not False
+    ):
+        raise ValueError("production acceptance activation semantics are unsafe")
+    return {
+        "schema": contract["schema"],
+        "requiredEvidence": sorted(required_names),
+        "contractSha256": sha256(PRODUCTION_ACCEPTANCE_CONTRACT),
+        "sourceActivation": False,
+    }
+
+
 def candidate_identity(kind: str, expected_commit: str | None) -> dict[str, Any]:
     commit = run("git", "rev-parse", "HEAD")
     tree = run("git", "rev-parse", "HEAD^{tree}")
@@ -337,6 +392,7 @@ def main() -> None:
         product = validate_product_contract(mapping)
         crash = validate_crash_matrix()
         performance = validate_performance_contract()
+        production_acceptance = validate_production_acceptance_contract()
         candidate = candidate_identity(args.candidate_kind, args.expected_commit)
     except (KeyError, TypeError, ValueError) as error:
         raise SystemExit(f"AuthBus evidence projection failed: {error}") from error
@@ -366,6 +422,7 @@ def main() -> None:
     bound_map["productCallerProjection"] = product
     bound_map["crashConsistencyProjection"] = crash
     bound_map["performanceQualificationProjection"] = performance
+    bound_map["productionAcceptanceProjection"] = production_acceptance
 
     current_projection = {
         "schema": "hepta.authbus.current-implementation-projection.v2",
@@ -396,6 +453,7 @@ def main() -> None:
         "productCallerContract": product,
         "crashConsistencyMatrix": crash,
         "performanceQualification": performance,
+        "productionAcceptance": production_acceptance,
         "targetHostEvidenceRequired": True,
         "independentSecurityAcceptance": False,
         "activation": False,
@@ -409,6 +467,7 @@ def main() -> None:
         "syntheticMergeRequired": args.candidate_kind != "main_head",
         "targetHostQualification": "pending_external_execution",
         "kmsHsmComposition": "pending_external_execution",
+        "productionAcceptance": "pending_signed_external_evidence",
         "independentSecurityAcceptance": False,
         "operatorActivation": False,
         "canaryPromotion": False,
