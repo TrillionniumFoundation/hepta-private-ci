@@ -6,8 +6,12 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from platform_types_strict_json import MAX_RAW_BYTES, parse_strict_json, assert_unsigned_integer_tokens
 
 ROOT = Path(__file__).resolve().parents[3]
 VECTOR_PATH = ROOT / "codex-rs/hepta-types/PLATFORM_TYPES_WIRE_CONFORMANCE_V1.json"
@@ -265,51 +269,52 @@ def topology_digest(value: Any) -> str:
     return computed
 
 
-def no_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError("duplicate_key")
-        result[key] = value
-    return result
-
-
-def raw_depth(value: str) -> int:
-    depth = maximum = 0
-    quoted = escaped = False
-    for character in value:
-        if quoted:
-            if escaped:
-                escaped = False
-            elif character == "\\":
-                escaped = True
-            elif character == '"':
-                quoted = False
-        elif character == '"':
-            quoted = True
-        elif character in "[{":
-            depth += 1
-            maximum = max(maximum, depth)
-        elif character in "]}":
-            depth -= 1
-    return maximum
+def raw_protocol_digest(raw: str, protocol: str) -> Any:
+    value = parse_strict_json(raw)
+    if protocol == "PromptDeliveryObservationV2":
+        assert_unsigned_integer_tokens(raw)
+        return prompt_digest(value)
+    if protocol == "RuntimeTopologyCandidateV1":
+        return topology_digest(value)
+    if protocol == "parser":
+        return value
+    raise ValueError(f"unknown raw protocol: {protocol}")
 
 
 def verify_raw_invalid(vector: dict[str, Any]) -> None:
     raw = vector["rawJson"]
     expected = vector["expectedError"]
     try:
-        if expected == "depth_exceeded" and raw_depth(raw) > 16:
-            raise ValueError("depth_exceeded")
-        value = json.loads(raw, object_pairs_hook=no_duplicate_pairs)
-        if expected == "canonical_integer":
-            canonical_u64(value.get("baseline_generation"), "baseline_generation", positive=True)
+        raw_protocol_digest(raw, vector["protocol"])
         raise AssertionError(f"raw invalid vector accepted: {vector['id']}")
     except ValueError as error:
         if expected not in str(error):
             raise AssertionError(
                 f"{vector['id']}: expected {expected!r}, got {error!r}"
             ) from error
+
+
+def verify_strict_json_boundaries() -> None:
+    for raw in ('{"x":1,"\\u0078":2}', '{"outer":{"x":1,"x":2}}', '[{"x":1,"x":2}]'):
+        try:
+            parse_strict_json(raw)
+        except ValueError as error:
+            if str(error) != "duplicate_key":
+                raise AssertionError(f"wrong duplicate rejection: {error}") from error
+        else:
+            raise AssertionError(f"decoded duplicate object key accepted: {raw}")
+    for raw in ('[{"x":1},{"x":2}]', '{"x":{"x":1}}', '{"x":"\\\"x\\\":1"}'):
+        parse_strict_json(raw)
+    parse_strict_json('[-0,1.0,1e0]')
+    assert_unsigned_integer_tokens('["-0","1.0","1e0",0,1]')
+    parse_strict_json("0" + " " * (MAX_RAW_BYTES - 1))
+    try:
+        parse_strict_json("0" + " " * MAX_RAW_BYTES)
+    except ValueError as error:
+        if str(error) != "size_exceeded":
+            raise AssertionError(f"wrong size rejection: {error}") from error
+    else:
+        raise AssertionError("strict JSON admitted oversized raw input")
 
 
 def verify_prompt_capacity() -> None:
@@ -359,6 +364,7 @@ def main() -> int:
             )
     for vector in document["rawInvalidVectors"]:
         verify_raw_invalid(vector)
+    verify_strict_json_boundaries()
     verify_prompt_capacity()
     print(
         "platform.types prompt/topology Python conformance: ok "

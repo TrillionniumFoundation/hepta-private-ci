@@ -636,4 +636,74 @@ mod tests {
             ))
         );
     }
+
+    #[test]
+    fn manifest_codecs_reject_numeric_enum_tokens_and_lone_surrogates() {
+        let random = String::from_utf8(
+            encode_random_stream_manifest_v1_json(&random_manifest()).expect("encode random"),
+        )
+        .expect("utf8");
+        for (field, original) in [
+            ("algorithm_namespace", "utility.ndu"),
+            ("generator_id", "chacha20-counter"),
+        ] {
+            let changed = random.replace(
+                &format!("\"{field}\":\"{original}\""),
+                &format!("\"{field}\":\"7\""),
+            );
+            assert_eq!(
+                decode_random_stream_manifest_v1_json(changed.as_bytes()),
+                Err(PlatformManifestWireError::Manifest(
+                    ManifestContractErrorV1::InvalidEnum(field)
+                ))
+            );
+        }
+        let sensor = String::from_utf8(
+            encode_sensor_calibration_manifest_v1_json(&sensor_manifest()).expect("encode sensor"),
+        )
+        .expect("utf8");
+        for surrogate in ["\\ud800", "\\udc00"] {
+            let changed = random.replace(
+                "\"generator_version\":\"1.0.0\"",
+                &format!("\"generator_version\":\"{surrogate}\""),
+            );
+            assert!(decode_random_stream_manifest_v1_json(changed.as_bytes()).is_err());
+            for (field, original) in [
+                ("clock_domain", "monotonic-host-clock"),
+                ("unit", "metres-per-second"),
+            ] {
+                let changed = sensor.replace(
+                    &format!("\"{field}\":\"{original}\""),
+                    &format!("\"{field}\":\"{surrogate}\""),
+                );
+                assert!(decode_sensor_calibration_manifest_v1_json(changed.as_bytes()).is_err());
+            }
+        }
+    }
+
+    #[test]
+    fn manifest_product_decoders_reject_shared_raw_vectors() {
+        let document: serde_json::Value = serde_json::from_str(include_str!(
+            "../../hepta-types/MANIFEST_V1_CONFORMANCE.json"
+        ))
+        .expect("manifest conformance vectors");
+        for vector in document["rawInvalidVectors"]
+            .as_array()
+            .expect("raw vectors")
+        {
+            let id = vector["id"].as_str().expect("vector id");
+            let raw = vector["rawJson"].as_str().expect("raw JSON").as_bytes();
+            let rejected = match vector["kind"].as_str().expect("vector kind") {
+                "random_stream_manifest_v1" => decode_random_stream_manifest_v1_json(raw).is_err(),
+                "external_system_manifest_v1" => {
+                    decode_external_system_manifest_v1_json(raw).is_err()
+                }
+                "sensor_calibration_manifest_v1" => {
+                    decode_sensor_calibration_manifest_v1_json(raw).is_err()
+                }
+                kind => panic!("{id}: unexpected vector kind {kind}"),
+            };
+            assert!(rejected, "{id}: invalid raw manifest accepted");
+        }
+    }
 }

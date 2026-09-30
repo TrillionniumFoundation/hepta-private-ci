@@ -32,7 +32,7 @@
   },
   "$defs": {
     "stableId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
-    "enumToken": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z][a-z0-9._:-]*[a-z0-9]$|^[a-z0-9]$" },
+    "enumToken": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z][a-z0-9._:-]*[a-z0-9]$|^[a-z]$" },
     "nonzeroDigest": { "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^(?!0{64}$)[0-9a-f]{64}$" },
     "u64String": { "type": "string", "minLength": 1, "maxLength": 20, "pattern": "^(0|[1-9][0-9]*)$" }
   }

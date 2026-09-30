@@ -3,6 +3,8 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+// The shared parser rejects each decoded duplicate key within its object.
+import {MAX_RAW_BYTES, parseStrictJson, assertUnsignedIntegerTokens} from "./platform_types_strict_json.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const VECTORS = JSON.parse(
@@ -185,37 +187,44 @@ function topologyDigest(input) {
   assert(computed === stored, "candidate digest");
   return computed;
 }
-function maxDepth(raw) {
-  let depth = 0; let maximum = 0; let quoted = false; let escaped = false;
-  for (const character of raw) {
-    if (quoted) {
-      if (escaped) escaped = false;
-      else if (character === "\\") escaped = true;
-      else if (character === '"') quoted = false;
-    } else if (character === '"') quoted = true;
-    else if (character === "[" || character === "{") { depth += 1; maximum = Math.max(maximum, depth); }
-    else if (character === "]" || character === "}") depth -= 1;
+function rawProtocolDigest(raw, protocol) {
+  const value = parseStrictJson(raw);
+  if (protocol === "PromptDeliveryObservationV2") {
+    assertUnsignedIntegerTokens(raw);
+    return promptDigest(value);
   }
-  return maximum;
-}
-function hasDuplicateObjectKey(raw) {
-  const matches = [...raw.matchAll(/"((?:\\.|[^"\\])*)"\s*:/g)].map((item) => item[1]);
-  return new Set(matches).size !== matches.length;
+  if (protocol === "RuntimeTopologyCandidateV1") return topologyDigest(value);
+  if (protocol === "parser") return value;
+  throw new Error(`unknown raw protocol: ${protocol}`);
 }
 function verifyRawInvalid(vector) {
-  const raw = vector.rawJson;
-  if (vector.expectedError === "duplicate_key") {
-    assert(hasDuplicateObjectKey(raw), `${vector.id}: duplicate key not detected`); return;
+  try {
+    rawProtocolDigest(vector.rawJson, vector.protocol);
+  } catch (error) {
+    assert(String(error.message).includes(vector.expectedError), `${vector.id}: wrong rejection ${error.message}`);
+    return;
   }
-  if (vector.expectedError === "depth_exceeded") {
-    assert(maxDepth(raw) > 16, `${vector.id}: depth not exceeded`); return;
+  throw new Error(`${vector.id}: raw invalid vector accepted`);
+}
+function verifyStrictJsonBoundaries() {
+  for (const raw of [
+    '{"x":1,"\\u0078":2}',
+    '{"outer":{"x":1,"x":2}}',
+    '[{"x":1,"x":2}]',
+  ]) {
+    let rejected = false;
+    try { parseStrictJson(raw); } catch (error) { rejected = error.message === "duplicate_key"; }
+    assert(rejected, `decoded duplicate object key accepted: ${raw}`);
   }
-  if (vector.expectedError === "canonical_integer") {
-    const value = JSON.parse(raw); let failed = false;
-    try { canonicalU64(value.baseline_generation, "baseline_generation", true); } catch { failed = true; }
-    assert(failed, `${vector.id}: canonical integer accepted`); return;
+  for (const raw of ['[{"x":1},{"x":2}]', '{"x":{"x":1}}', '{"x":"\\\"x\\\":1"}']) {
+    parseStrictJson(raw);
   }
-  throw new Error(`${vector.id}: unknown expected error`);
+  parseStrictJson('[-0,1.0,1e0]');
+  assertUnsignedIntegerTokens('["-0","1.0","1e0",0,1]');
+  parseStrictJson("0" + " ".repeat(MAX_RAW_BYTES - 1));
+  let rejected = false;
+  try { parseStrictJson("0" + " ".repeat(MAX_RAW_BYTES)); } catch (error) { rejected = error.message === "size_exceeded"; }
+  assert(rejected, "strict JSON admitted oversized raw input");
 }
 function verifyPromptCapacity() {
   for (const count of [1, 4095, 4096, 4097, 8192, 8193]) {
@@ -243,5 +252,6 @@ for (const vector of VECTORS.validVectors) {
   assert(actual === vector.expectedHptcSha256, `${vector.id}: digest mismatch ${actual}`);
 }
 for (const vector of VECTORS.rawInvalidVectors) verifyRawInvalid(vector);
+verifyStrictJsonBoundaries();
 verifyPromptCapacity();
 console.log(`platform.types prompt/topology JavaScript conformance: ok (${VECTORS.validVectors.length} valid, ${VECTORS.rawInvalidVectors.length} raw invalid, 6 capacity boundaries)`);

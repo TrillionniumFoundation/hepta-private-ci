@@ -20,7 +20,11 @@
         "provider_request_digest": "2393429a406f72713f04dceab858ac03a88a051576680a500e91e5eb468c3f56",
         "delivered": false,
         "rejected_reason": "provider.rate_limited",
-        "observed_token_positions": [1, 4, 9],
+        "observed_token_positions": [
+          1,
+          4,
+          9
+        ],
         "truncation_observed": true,
         "legacy_v1_digest": "24ea7fc3f71b6412a07d72ac08e83bcfe4aa18021b1e273467c8edfe508238af"
       },
@@ -65,13 +69,37 @@
       "id": "topology-u64-too-long",
       "protocol": "RuntimeTopologyCandidateV1",
       "expectedError": "canonical_integer",
-      "rawJson": "{\"kind\":\"runtime_topology_candidate_v1\",\"baseline_generation\":\"184467440737095516150\"}"
+      "rawJson": "{\"kind\":\"runtime_topology_candidate_v1\",\"proposal_digest\":\"ecd1378bc9dc130008f00d58db5d26f60db55934a49b949af7e6f6a8da2a2beb\",\"candidate_id\":\"candidate-8\",\"candidate_digest\":\"8a2396058d95d3c0efde025d3e34ec1524d0ffa3a10f2fb8f6457cdb35a195d8\",\"baseline_generation\":\"184467440737095516150\",\"candidate_generation\":\"8\",\"selected_topology_digest\":\"fa232b9dc6dac7e96f45b416ccb6a69c9943b1834979ebf3bdd6fadc2dac649f\",\"evaluation_digest\":\"efe77b201dc216c0edf435a227df2b2898d3f6ea1ff16e5d4d0d4ec0cf593271\",\"rollback_predecessor_digest\":\"fa232b9dc6dac7e96f45b416ccb6a69c9943b1834979ebf3bdd6fadc2dac649f\",\"changed\":true,\"deltas\":[{\"module_id\":\"module.alpha\",\"operation\":\"add\",\"related_module_ids\":[],\"predecessor_digest\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"candidate_digest\":\"27e3ad1bd5794e7c5639704ab86fe63a6f01387f14c3380b6a009dd6b5616d5a\",\"evidence_digest\":\"ff2f2ce7f9577786db39d3dcb0e2b93bf0f583bb0daffbe04fa65b97c4e1b6d7\"}]}"
     },
     {
       "id": "parser-depth-17",
       "protocol": "parser",
       "expectedError": "depth_exceeded",
       "rawJson": "[[[[[[[[[[[[[[[[[0]]]]]]]]]]]]]]]]]"
+    },
+    {
+      "id": "prompt-escaped-duplicate-key",
+      "protocol": "PromptDeliveryObservationV2",
+      "expectedError": "duplicate_key",
+      "rawJson": "{\"kind\":\"prompt_delivery_observation_v2\",\"\\u006bind\":\"prompt_delivery_observation_v2\",\"compilation_id\":\"compilation-42\",\"provider_request_digest\":\"2393429a406f72713f04dceab858ac03a88a051576680a500e91e5eb468c3f56\",\"delivered\":false,\"rejected_reason\":\"provider.rate_limited\",\"observed_token_positions\":[1,4,9],\"truncation_observed\":true,\"legacy_v1_digest\":\"24ea7fc3f71b6412a07d72ac08e83bcfe4aa18021b1e273467c8edfe508238af\"}"
+    },
+    {
+      "id": "prompt-position-float",
+      "protocol": "PromptDeliveryObservationV2",
+      "expectedError": "unsigned_integer_token",
+      "rawJson": "{\"kind\":\"prompt_delivery_observation_v2\",\"compilation_id\":\"compilation-42\",\"provider_request_digest\":\"2393429a406f72713f04dceab858ac03a88a051576680a500e91e5eb468c3f56\",\"delivered\":false,\"rejected_reason\":\"provider.rate_limited\",\"observed_token_positions\":[1.0,4,9],\"truncation_observed\":true,\"legacy_v1_digest\":\"24ea7fc3f71b6412a07d72ac08e83bcfe4aa18021b1e273467c8edfe508238af\"}"
+    },
+    {
+      "id": "prompt-position-exponent",
+      "protocol": "PromptDeliveryObservationV2",
+      "expectedError": "unsigned_integer_token",
+      "rawJson": "{\"kind\":\"prompt_delivery_observation_v2\",\"compilation_id\":\"compilation-42\",\"provider_request_digest\":\"2393429a406f72713f04dceab858ac03a88a051576680a500e91e5eb468c3f56\",\"delivered\":false,\"rejected_reason\":\"provider.rate_limited\",\"observed_token_positions\":[1e0,4,9],\"truncation_observed\":true,\"legacy_v1_digest\":\"24ea7fc3f71b6412a07d72ac08e83bcfe4aa18021b1e273467c8edfe508238af\"}"
+    },
+    {
+      "id": "prompt-position-negative-zero",
+      "protocol": "PromptDeliveryObservationV2",
+      "expectedError": "unsigned_integer_token",
+      "rawJson": "{\"kind\":\"prompt_delivery_observation_v2\",\"compilation_id\":\"compilation-42\",\"provider_request_digest\":\"2393429a406f72713f04dceab858ac03a88a051576680a500e91e5eb468c3f56\",\"delivered\":false,\"rejected_reason\":\"provider.rate_limited\",\"observed_token_positions\":[-0,4,9],\"truncation_observed\":true,\"legacy_v1_digest\":\"24ea7fc3f71b6412a07d72ac08e83bcfe4aa18021b1e273467c8edfe508238af\"}"
     }
   ]
 }

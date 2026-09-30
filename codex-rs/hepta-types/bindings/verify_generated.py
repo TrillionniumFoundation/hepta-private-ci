@@ -8,6 +8,16 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "generated/python"))
 import hepta_platform_types_v1 as binding
 
+class FalseLengthString(str):
+    def __len__(self):
+        return 1
+
+
+class FalseZeroByte(bytes):
+    def __getitem__(self, index):
+        return 0
+
+
 assert binding.STABLE_ID_MAX_BYTES == 128
 assert binding.validate_id_profile("a" * 128, "Stable") == "a" * 128
 try:
@@ -18,6 +28,13 @@ else:
     raise SystemExit("generated Python binding admitted a 129-byte StableId")
 assert binding.validate_id_profile("schema:numeric-signal", "Schema") == "schema:numeric-signal"
 assert binding.validate_id_profile("normalization:identity", "Normalization") == "normalization:identity"
+for value in (None, 0, b"stable-id", object(), FalseLengthString("a" * 129)):
+    try:
+        binding.validate_id_profile(value, "Stable")
+    except ValueError:
+        pass
+    else:
+        raise SystemExit("generated Python binding admitted a non-string identifier")
 for value, variant in (("plátform.types", "Module"), ("platform.-types", "Module"), ("schema:naïve", "Schema")):
     try:
         binding.validate_id_profile(value, variant)
@@ -26,6 +43,14 @@ for value, variant in (("plátform.types", "Module"), ("platform.-types", "Modul
     else:
         raise SystemExit(f"generated Python binding admitted non-Rust identifier grammar: {variant} {value!r}")
 binding.admit_authority_wire_v1(b"\x00")
+binding.admit_authority_wire_v1(bytearray(b"\x00"))
+for raw in ([False], [0.0], [0], "\x00", FalseZeroByte(b"\x01")):
+    try:
+        binding.admit_authority_wire_v1(raw)
+    except ValueError:
+        pass
+    else:
+        raise SystemExit("generated Python binding admitted a non-byte authority wire")
 for target, key, value in (
     (binding.ID_PROFILES["Schema"], "prefix", "artifact:"),
     (binding.AUTHORITY_WIRE_V1["bits"], "runtime", 7),

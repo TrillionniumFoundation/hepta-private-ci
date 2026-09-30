@@ -7,8 +7,12 @@ import datetime as dt
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from platform_types_strict_json import assert_unsigned_integer_tokens, parse_strict_json
 
 ROOT = Path(__file__).resolve().parents[3]
 VECTOR_PATH = ROOT / "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json"
@@ -18,7 +22,7 @@ U64_MAX = (1 << 64) - 1
 I64_MIN = -(1 << 63)
 I64_MAX = (1 << 63) - 1
 STABLE_ID = re.compile(r"^[A-Za-z0-9._:-]+$")
-ENUM_TOKEN = re.compile(r"^[a-z][a-z0-9._:-]*[a-z0-9]$|^[a-z0-9]$")
+ENUM_TOKEN = re.compile(r"^[a-z][a-z0-9._:-]*[a-z0-9]$|^[a-z]$")
 DIGEST = re.compile(r"^[0-9a-f]{64}$")
 U64_TEXT = re.compile(r"^(0|[1-9][0-9]*)$")
 I64_TEXT = re.compile(r"^(0|-?[1-9][0-9]*)$")
@@ -110,7 +114,11 @@ def stable_id(value: Any, name: str) -> str:
 def bounded_text(value: Any, name: str, maximum: int) -> str:
     if not isinstance(value, str) or not value or "\0" in value:
         raise ValueError(f"{name}: text")
-    if len(value.encode()) > maximum:
+    try:
+        encoded = value.encode()
+    except UnicodeEncodeError as error:
+        raise ValueError(f"{name}: text") from error
+    if len(encoded) > maximum:
         raise ValueError(f"{name}: text bound")
     return value
 
@@ -331,6 +339,12 @@ def semantic_digest(value: dict[str, Any]) -> str:
     return hptc(type_id, fields)
 
 
+def semantic_digest_from_raw_json(raw: str) -> str:
+    value = parse_strict_json(raw)
+    assert_unsigned_integer_tokens(raw)
+    return semantic_digest(value)
+
+
 def verify_schema_anchors(document: dict[str, Any]) -> None:
     expected = {
         "random-stream-manifest-v1.schema.json": RANDOM_KEYS,
@@ -362,6 +376,8 @@ def main() -> None:
         actual = semantic_digest(vector["json"])
         if actual != vector["expectedHptcSha256"]:
             raise SystemExit(f"{vector['id']}: semantic digest mismatch: {actual}")
+        if semantic_digest_from_raw_json(json.dumps(vector["json"])) != actual:
+            raise SystemExit(f"{vector['id']}: raw semantic digest mismatch")
     for vector in document["invalidVectors"]:
         try:
             semantic_digest(vector["json"])
@@ -372,10 +388,19 @@ def main() -> None:
                 ) from error
         else:
             raise SystemExit(f"{vector['id']}: invalid manifest accepted")
+    for vector in document.get("rawInvalidVectors", []):
+        try:
+            semantic_digest_from_raw_json(vector["rawJson"])
+        except ValueError as error:
+            if vector["expectedError"] not in str(error):
+                raise SystemExit(f"{vector['id']}: wrong raw rejection {error!s}") from error
+        else:
+            raise SystemExit(f"{vector['id']}: invalid raw manifest accepted")
     print(
         "platform.types Python manifest codec: "
         f"{len(document['validVectors'])} accepted, "
-        f"{len(document['invalidVectors'])} rejected"
+        f"{len(document['invalidVectors'])} rejected, "
+        f"{len(document.get('rawInvalidVectors', []))} raw rejected"
     )
 
 

@@ -518,6 +518,41 @@ mod tests {
     }
 
     #[test]
+    fn strict_json_compares_decoded_keys_within_each_object() {
+        for raw in [
+            r#"{"x":1,"\u0078":2}"#,
+            r#"{"outer":{"x":1,"x":2}}"#,
+            r#"[{"x":1,"x":2}]"#,
+        ] {
+            assert_eq!(
+                decode_json::<serde_json::Value>(raw.as_bytes()),
+                Err(PlatformTypesWireError::DuplicateKey)
+            );
+        }
+        for raw in [
+            r#"[{"x":1},{"x":2}]"#,
+            r#"{"x":{"x":1}}"#,
+            r#"{"x":"\"x\":1"}"#,
+        ] {
+            assert_eq!(
+                decode_json::<serde_json::Value>(raw.as_bytes()).expect("distinct object keys"),
+                serde_json::from_str::<serde_json::Value>(raw).expect("valid JSON")
+            );
+        }
+    }
+
+    #[test]
+    fn prompt_unsigned_positions_reject_non_integer_number_lexemes() {
+        for number in ["1.0", "1e0", "-0"] {
+            let raw = PROMPT.replace("[1,4,9]", &format!("[{number},4,9]"));
+            assert_eq!(
+                decode_prompt_delivery_v2_json(raw.as_bytes()),
+                Err(PlatformTypesWireError::InvalidJson)
+            );
+        }
+    }
+
+    #[test]
     fn missing_nullable_fields_are_not_silently_defaulted() {
         let missing = PROMPT.replace(
             ",\"legacy_v1_digest\":\"24ea7fc3f71b6412a07d72ac08e83bcfe4aa18021b1e273467c8edfe508238af\"",

@@ -19,6 +19,11 @@ validateIdProfile("a".repeat(128), "Stable");
 }
 validateIdProfile("schema:numeric-signal", "Schema");
 validateIdProfile("normalization:identity", "Normalization");
+for (const value of [new String("stable-id"), {toString: () => "stable-id", includes: () => false}]) {
+  let rejected = false;
+  try { validateIdProfile(value, "Stable"); } catch (_) { rejected = true; }
+  if (!rejected) throw new Error("generated JavaScript binding admitted a non-string identifier");
+}
 for (const [value, variant] of [["plátform.types", "Module"], ["platform.-types", "Module"], ["schema:naïve", "Schema"]]) {
   let rejected = false;
   try { validateIdProfile(value, variant); } catch (_) { rejected = true; }

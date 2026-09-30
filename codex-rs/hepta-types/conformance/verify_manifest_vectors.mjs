@@ -5,6 +5,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertUnsignedIntegerTokens, parseStrictJson } from "./platform_types_strict_json.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const VECTOR_PATH = path.join(ROOT, "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json");
@@ -14,7 +15,7 @@ const U64_MAX = (1n << 64n) - 1n;
 const I64_MIN = -(1n << 63n);
 const I64_MAX = (1n << 63n) - 1n;
 const STABLE_ID = /^[A-Za-z0-9._:-]+$/;
-const ENUM_TOKEN = /^(?:[a-z][a-z0-9._:-]*[a-z0-9]|[a-z0-9])$/;
+const ENUM_TOKEN = /^(?:[a-z][a-z0-9._:-]*[a-z0-9]|[a-z])$/;
 const DIGEST = /^[0-9a-f]{64}$/;
 const U64_TEXT = /^(?:0|[1-9][0-9]*)$/;
 const I64_TEXT = /^(?:0|-?[1-9][0-9]*)$/;
@@ -70,7 +71,7 @@ function stableId(value, name) {
 }
 
 function boundedText(value, name, maximum) {
-  if (typeof value !== "string" || value.length === 0 || value.includes("\0")) {
+  if (typeof value !== "string" || value.length === 0 || value.includes("\0") || !value.isWellFormed()) {
     fail(`${name}: text`);
   }
   if (utf8Length(value) > maximum) fail(`${name}: text bound`);
@@ -103,14 +104,14 @@ function i64Text(value, name) {
   return parsed;
 }
 
-function leapYear(year) {
+function isLeap(year) {
   return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
 }
 
 function daysInMonth(year, month) {
   if ([1, 3, 5, 7, 8, 10, 12].includes(month)) return 31;
   if ([4, 6, 9, 11].includes(month)) return 30;
-  if (month === 2) return leapYear(year) ? 29 : 28;
+  if (month === 2) return isLeap(year) ? 29 : 28;
   return 0;
 }
 
@@ -307,6 +308,12 @@ function semanticDigest(value) {
   return hptc(projection[0], projection[1]);
 }
 
+function semanticDigestFromRawJson(raw) {
+  const value = parseStrictJson(raw);
+  assertUnsignedIntegerTokens(raw);
+  return semanticDigest(value);
+}
+
 function verifySchemaAnchors(document) {
   const expected = new Map([
     ["random-stream-manifest-v1.schema.json", RANDOM_KEYS],
@@ -339,6 +346,7 @@ for (const vector of document.validVectors) {
   if (vector.kind !== vector.json?.kind) fail(`${vector.id}: kind mismatch`);
   const actual = semanticDigest(vector.json);
   if (actual !== vector.expectedHptcSha256) fail(`${vector.id}: semantic digest mismatch: ${actual}`);
+  if (semanticDigestFromRawJson(JSON.stringify(vector.json)) !== actual) fail(`${vector.id}: raw semantic digest mismatch`);
 }
 for (const vector of document.invalidVectors) {
   try {
@@ -351,7 +359,18 @@ for (const vector of document.invalidVectors) {
   }
   fail(`${vector.id}: invalid manifest accepted`);
 }
+for (const vector of document.rawInvalidVectors ?? []) {
+  try {
+    semanticDigestFromRawJson(vector.rawJson);
+  } catch (error) {
+    if (!String(error.message).includes(vector.expectedError)) {
+      fail(`${vector.id}: wrong raw rejection ${error.message}; expected ${vector.expectedError}`);
+    }
+    continue;
+  }
+  fail(`${vector.id}: invalid raw manifest accepted`);
+}
 console.log(
   `platform.types Node manifest codec: ${document.validVectors.length} accepted, `
-  + `${document.invalidVectors.length} rejected`,
+  + `${document.invalidVectors.length} rejected, ${document.rawInvalidVectors?.length ?? 0} raw rejected`,
 );

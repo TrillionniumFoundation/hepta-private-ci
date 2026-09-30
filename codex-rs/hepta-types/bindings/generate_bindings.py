@@ -40,14 +40,14 @@ def numeric_profile(profile_id: str) -> dict:
     return dict(row)
 
 def admit_authority_wire_v1(raw: bytes) -> None:
-    if len(raw) != AUTHORITY_WIRE_V1["encodedBytes"]:
+    if type(raw) not in (bytes, bytearray) or len(raw) != AUTHORITY_WIRE_V1["encodedBytes"]:
         raise ValueError("authority wire V1 must be exactly one byte")
     if raw[0] != AUTHORITY_WIRE_V1["trustedMask"]:
         raise ValueError("authority grant bits are not representable by platform.types")
 
 def validate_id_profile(value: str, variant: str) -> str:
-    encoded = value.encode("utf-8")
-    if not encoded or len(encoded) > STABLE_ID_MAX_BYTES or "\\0" in value:
+    # Every admitted profile is ASCII, so its character and UTF-8 byte bounds agree.
+    if type(value) is not str or not value or len(value) > STABLE_ID_MAX_BYTES or "\\0" in value:
         raise ValueError("identifier bound")
     row = ID_PROFILES.get(variant)
     if row is None:
@@ -81,7 +81,6 @@ def render_javascript(spec: dict) -> str:
     packed = min_json(spec)
     return f'''// GENERATED from bindings/PLATFORM_TYPES_BINDINGS_V1.json; DO NOT EDIT.
 const SPEC = {packed};
-const UTF8 = new TextEncoder();
 export const STABLE_ID_MAX_BYTES = SPEC.stableIdMaxBytes;
 export const ID_PROFILES = Object.freeze(Object.fromEntries(SPEC.idProfiles.map((row) => [row.variant, Object.freeze(row)])));
 export const AUTHORITY_WIRE_V1 = Object.freeze({{...SPEC.authorityWireV1, bits: Object.freeze({{...SPEC.authorityWireV1.bits}})}});
@@ -100,8 +99,8 @@ export function admitAuthorityWireV1(raw) {{
   if (raw[0] !== AUTHORITY_WIRE_V1.trustedMask) throw new Error("authority grant bits are not representable by platform.types");
 }}
 export function validateIdProfile(value, variant) {{
-  const encoded = UTF8.encode(value);
-  if (encoded.length === 0 || encoded.length > STABLE_ID_MAX_BYTES || value.includes("\\0")) throw new Error("identifier bound");
+  // Every admitted profile is ASCII, so its character and UTF-8 byte bounds agree.
+  if (typeof value !== "string" || value.length === 0 || value.length > STABLE_ID_MAX_BYTES || value.includes("\\0")) throw new Error("identifier bound");
   if (typeof variant !== "string" || !Object.hasOwn(ID_PROFILES, variant)) throw new Error("unknown identifier profile");
   const row = ID_PROFILES[variant];
   if (variant === "Stable") {{
