@@ -5,6 +5,12 @@
 //! schema admission and bounded incremental decoding. None of these values
 //! transport authority: consumers must validate an independently issued grant
 //! at the effect boundary.
+//!
+//! Production callers should enter through [`HardenedWireSession`]. The lower
+//! framing, compatibility and test primitives remain public for staged legacy
+//! migration, protocol tooling and qualification, but they are not an alternate
+//! production owner and do not by themselves establish canonical authenticated
+//! application payloads.
 
 #![forbid(unsafe_code)]
 
@@ -17,6 +23,7 @@ mod envelope_v2;
 mod feed;
 mod frame;
 mod frame_header;
+mod hardened_session;
 mod managed_session;
 mod record_stream;
 mod registry;
@@ -57,6 +64,8 @@ pub use frame_header::MAX_WIRE_IDENTITY_BYTES;
 pub use frame_header::ValidatedFrameHeader;
 pub use frame_header::WIRE_HEADER_BYTES;
 pub use frame_header::WIRE_MAGIC;
+pub use hardened_session::HardenedWireSession;
+pub use hardened_session::HardenedWireSessionError;
 pub use managed_session::ManagedAuthenticatedWireSession;
 pub use managed_session::ManagedSessionError;
 pub use managed_session::SessionLifecycleState;
