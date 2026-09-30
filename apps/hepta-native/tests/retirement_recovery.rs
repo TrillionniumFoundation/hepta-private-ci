@@ -113,6 +113,40 @@ fn old_live_backup_cannot_override_newer_retirement_evidence() {
 }
 
 #[test]
+fn a_closed_checkpoint_cannot_replace_a_committed_archive_with_changed_evidence() {
+    let temp = private_tempdir();
+    let path = temp.path().join("operations.json");
+    let record = unknown("operation.changed-archive");
+    let mut journal = OperationJournal::open(&path).unwrap();
+    journal.upsert(record.clone()).unwrap();
+    journal.close_observation(&record.key).unwrap();
+    let mut changed = journal.find(&record.key).unwrap().clone();
+    changed.payload_digest = "9".repeat(64);
+    journal.compact_closed_history(0).unwrap();
+    drop(journal);
+    let schema = "hepta.native-operation-journal.v5";
+    let operations = vec![changed];
+    let retired_operation_digests = Vec::<String>::new();
+    let checksum =
+        sha256_hex(serde_json::to_vec(&(schema, &operations, &retired_operation_digests)).unwrap());
+    snapshot::write_private_json(
+        &path,
+        &serde_json::json!({
+            "schema": schema,
+            "operations": operations,
+            "retired_operation_digests": retired_operation_digests,
+            "checksum": checksum,
+        }),
+    );
+    assert!(
+        OperationJournal::open(&path)
+            .unwrap_err()
+            .to_string()
+            .contains("differs from its durable archive")
+    );
+}
+
+#[test]
 fn referenced_retirement_directory_cannot_be_deleted_to_reset_capacity() {
     let temp = private_tempdir();
     let path = temp.path().join("operations.json");

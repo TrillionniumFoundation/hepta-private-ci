@@ -31,7 +31,7 @@ pub fn validate_stable_id(value: &str, name: &'static str) -> Result<(), ShellEr
 
 pub fn validate_digest(value: &str, name: &'static str) -> Result<(), ShellError> {
     if value.len() != 64
-        || value == "0".repeat(64)
+        || value == "0000000000000000000000000000000000000000000000000000000000000000"
         || !value
             .bytes()
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))

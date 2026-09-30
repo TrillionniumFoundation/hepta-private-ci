@@ -23,6 +23,10 @@ use crate::model::sha256_hex;
 use crate::model::validate_digest;
 use crate::private_state::PrivateStateRoot;
 
+#[path = "retirement_membership.rs"]
+mod membership;
+pub(crate) use membership::RetirementMembership;
+
 const HEAD_SCHEMA: &str = "hepta.native-retirement.v3";
 const SEGMENT_SCHEMA: &str = "hepta.native-retirement.v2";
 const LEGACY_SCHEMA: &str = "hepta.native-retirement.v1";
@@ -448,6 +452,15 @@ impl RetirementStore {
         let Some(Some(digest)) = self.lookup_entry(identity)? else {
             return Ok(None);
         };
+        self.read_archived_record(identity, &digest).map(Some)
+    }
+
+    fn read_archived_record(
+        &self,
+        identity: &str,
+        digest: &str,
+    ) -> Result<OperationRecord, ShellError> {
+        self.root.verify()?;
         let bytes = crate::file_input::read_bytes(
             &self.root.path().join(format!("record-{digest}.json")),
             RECORD_BYTES,
@@ -469,7 +482,7 @@ impl RetirementStore {
                 "archived record identity or phase mismatch".to_owned(),
             ));
         }
-        Ok(Some(record))
+        Ok(record)
     }
 
     fn lookup_entry(&self, identity: &str) -> Result<Option<Option<String>>, ShellError> {
