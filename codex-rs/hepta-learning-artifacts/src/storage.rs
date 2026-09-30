@@ -38,7 +38,7 @@ use crate::StateChange;
 use crate::limits::MAX_DURABLE_ARTIFACT_RECORDS;
 
 const MAX_SNAPSHOT: usize = 8 * 1024 * 1024;
-const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
+pub(crate) const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
 const MAX_HEAD: usize = 4096;
 const MAGIC: &str = "HEPTAR01";
 const HEAD_MAGIC: &str = "HEPTAH01";
@@ -430,7 +430,7 @@ pub fn read_candidate_payload(
     Ok(bytes)
 }
 
-fn eligible_manifest<'a>(
+pub(crate) fn eligible_manifest<'a>(
     registry: &'a ArtifactRegistry,
     artifact: &StableId,
 ) -> Result<&'a ArtifactManifest, ArtifactStorageError> {
@@ -442,7 +442,10 @@ fn eligible_manifest<'a>(
         .ok_or(ArtifactStorageError::Unavailable)
 }
 
-fn validate_payload(manifest: &ArtifactManifest, bytes: &[u8]) -> Result<(), ArtifactStorageError> {
+pub(crate) fn validate_payload(
+    manifest: &ArtifactManifest,
+    bytes: &[u8],
+) -> Result<(), ArtifactStorageError> {
     if bytes.is_empty() || bytes.len() > MAX_PAYLOAD {
         return Err(ArtifactStorageError::Capacity);
     }

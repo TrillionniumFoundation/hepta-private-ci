@@ -43,14 +43,15 @@ use crate::RegistryHeadWitnessV1;
 use crate::RegistrySnapshotReceipt;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
-use crate::read_candidate_payload;
-use crate::read_registry_head_witness;
 use crate::read_registry_snapshot;
 use crate::storage::encode_head_witness;
 use crate::storage::encode_snapshot;
 use crate::validate_registry_head_witness;
+#[cfg(test)]
 use crate::write_candidate_payload_beneath;
+#[cfg(test)]
 use crate::write_registry_head_witness_beneath;
+#[cfg(test)]
 use crate::write_registry_snapshot_beneath;
 
 const MAX_TRUSTED_SIGNERS: usize = 32;
@@ -579,28 +580,18 @@ impl LearningArtifactOwnerHost {
             "{}-{}.bin",
             manifest.artifact_id, manifest.bytes_digest
         ));
-        match write_candidate_payload_beneath(
-            &self.root,
-            &relative,
-            staged_registry,
-            &manifest.artifact_id,
+        crate::storage::validate_payload(
+            crate::storage::eligible_manifest(staged_registry, &manifest.artifact_id)?,
             bytes,
-        ) {
-            Ok(digest) => {
-                transaction.record_payload_durable(digest, bytes.len() as u64)?;
-            }
-            Err(crate::ArtifactStorageError::AlreadyExists) => {
-                let loaded = read_candidate_payload(
-                    File::open(self.root.join(&relative))?,
-                    staged_registry,
-                    &manifest.artifact_id,
-                )?;
-                transaction
-                    .record_payload_durable(Digest32::of_bytes(&loaded), loaded.len() as u64)?;
-            }
-            Err(error) => return Err(error.into()),
-        }
-        records::sync_parent(&self.root.join(&relative))?;
+        )?;
+        let mut validated = transaction.clone();
+        validated.record_payload_durable(Digest32::of_bytes(bytes), bytes.len() as u64)?;
+        records::write_record_with_limit(
+            &crate::storage::resolve_beneath_trusted_root(&self.root, &relative)?,
+            bytes,
+            crate::storage::MAX_PAYLOAD,
+        )?;
+        *transaction = validated;
         self.persist_checkpoint(transaction)?;
         Ok(relative)
     }
@@ -626,23 +617,16 @@ impl LearningArtifactOwnerHost {
             "{}-{}.snapshot",
             expected.head_digest, expected.file_digest
         ));
-        let receipt =
-            match write_registry_snapshot_beneath(&self.root, &relative, registry, binding) {
-                Ok(receipt) => receipt,
-                Err(crate::ArtifactStorageError::AlreadyExists) => {
-                    let reopened =
-                        read_registry_snapshot(File::open(self.root.join(&relative))?, expected)?;
-                    if reopened.snapshot().head_digest != expected.head_digest {
-                        return Err(ArtifactOwnerHostError::CheckpointMismatch);
-                    }
-                    expected
-                }
-                Err(error) => return Err(error.into()),
-            };
-        records::sync_parent(&self.root.join(&relative))?;
-        transaction.record_registry_durable(registry, receipt, withdrawal_registry, now)?;
+        let mut validated = transaction.clone();
+        validated.record_registry_durable(registry, expected, withdrawal_registry, now)?;
+        records::write_record_with_limit(
+            &crate::storage::resolve_beneath_trusted_root(&self.root, &relative)?,
+            &encoded,
+            encoded.len(),
+        )?;
+        *transaction = validated;
         self.persist_checkpoint(transaction)?;
-        Ok(receipt)
+        Ok(expected)
     }
 
     /// Publish an authenticated immutable head record and the canonical witness
@@ -657,6 +641,18 @@ impl LearningArtifactOwnerHost {
     ) -> Result<RegistryHeadWitnessReceipt, ArtifactOwnerHostError> {
         self.require_current_writer(now)?;
         let current = self.discover_current_head(now)?;
+        if current.as_ref().is_some_and(|current| {
+            signed.witness.head_digest == current.signed.witness.head_digest
+                && signed != &current.signed
+        }) {
+            return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+        }
+        if current
+            .as_ref()
+            .is_some_and(|current| signed.witness.issued_at < current.signed.witness.issued_at)
+        {
+            return Err(ArtifactOwnerHostError::CurrentHeadContext);
+        }
         let expected_predecessor = transaction.intent().expected_registry_predecessor_head;
         let requirement = match current.as_ref() {
             Some(current) if current.signed.witness.head_digest == signed.witness.head_digest => {
@@ -718,28 +714,11 @@ impl LearningArtifactOwnerHost {
             signed.witness.generation.get(),
             verified.witness_digest
         ));
-        let receipt = match write_registry_head_witness_beneath(
-            &self.root,
-            &relative,
-            &signed.witness,
-            &requirement,
-            signed.binding,
-        ) {
-            Ok(receipt) => receipt,
-            Err(crate::ArtifactStorageError::AlreadyExists) => {
-                let reopened = read_registry_head_witness(
-                    File::open(self.root.join(&relative))?,
-                    expected_receipt,
-                    &requirement,
-                )?;
-                if reopened != signed.witness {
-                    return Err(ArtifactOwnerHostError::CurrentHeadConflict);
-                }
-                expected_receipt
-            }
-            Err(error) => return Err(error.into()),
-        };
-        records::sync_parent(&self.root.join(&relative))?;
+        records::write_record_with_limit(
+            &crate::storage::resolve_beneath_trusted_root(&self.root, &relative)?,
+            &encoded,
+            encoded.len(),
+        )?;
         self.persist_signed_head_record(signed)?;
         let discovered = self
             .discover_current_head(now)?
@@ -747,12 +726,9 @@ impl LearningArtifactOwnerHost {
         if discovered.signed != *signed {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
-        if receipt != expected_receipt {
-            return Err(ArtifactOwnerHostError::CheckpointMismatch);
-        }
         *transaction = validated;
         self.persist_checkpoint(transaction)?;
-        Ok(receipt)
+        Ok(expected_receipt)
     }
 
     pub fn acknowledge(
@@ -2321,3 +2297,7 @@ mod tests {
 #[cfg(test)]
 #[path = "owner_host_adversarial_tests.rs"]
 mod adversarial_tests;
+
+#[cfg(test)]
+#[path = "owner_atomic_storage_tests.rs"]
+mod atomic_storage_tests;
