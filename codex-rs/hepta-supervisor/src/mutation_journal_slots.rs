@@ -51,12 +51,20 @@ pub(crate) fn lookup(
     {
         return Ok(Some(owned));
     }
-    Ok(crate::read_mutation_status(run_root)?
-        .filter(|status| status.request_id == request_id)
-        .map(|status| OwnedStatus {
+    if let Some(status) =
+        crate::read_mutation_status(run_root)?.filter(|status| status.request_id == request_id)
+    {
+        return Ok(Some(OwnedStatus {
             root: run_root.to_path_buf(),
             status,
-        }))
+        }));
+    }
+    for root in [run_root.join(EMERGENCY_DIRECTORY), run_root.to_path_buf()] {
+        if let Some(status) = crate::mutation_history::lookup(&root, request_id)? {
+            return Ok(Some(OwnedStatus { root, status }));
+        }
+    }
+    Ok(None)
 }
 
 pub(crate) fn read_emergency(run_root: &Path) -> Result<Option<OwnedStatus>, MutationJournalError> {

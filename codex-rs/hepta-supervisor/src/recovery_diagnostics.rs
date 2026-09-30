@@ -88,7 +88,7 @@ pub fn diagnose_recovery(
             .map(|owned| owned.map(|owned| owned.status)),
     ] {
         match outcome {
-            Ok(Some(status)) if status.phase != crate::DurableMutationPhaseV1::Committed => {
+            Ok(Some(status)) if !status.phase.terminal() => {
                 diagnostic.agent_id = Some(status.agent_id.to_string());
                 diagnostic.recovery_required = true;
                 push_blocker(

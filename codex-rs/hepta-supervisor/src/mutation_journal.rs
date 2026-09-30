@@ -39,9 +39,14 @@ pub enum DurableMutationPhaseV1 {
     Committed,
     Ambiguous,
     RequiresOperator,
+    NoEffect,
 }
 
 impl DurableMutationPhaseV1 {
+    pub fn terminal(self) -> bool {
+        matches!(self, Self::Committed | Self::NoEffect)
+    }
+
     fn unresolved(self) -> bool {
         matches!(
             self,
@@ -174,6 +179,17 @@ impl DurableMutationStatusV1 {
                     .is_some_and(|(applied, snapshot)| applied > 0 && snapshot >= applied)
                     && self.observed_state_digest.as_deref().is_some_and(digest)
             }
+            DurableMutationPhaseV1::NoEffect => {
+                self.operation == SupervisordMutation::Start
+                    && self.applied_state_revision.is_none()
+                    && self.read_snapshot_epoch.is_none()
+                    && self.observed_state_digest.as_deref().is_some_and(digest)
+                    && self
+                        .detail
+                        .as_deref()
+                        .and_then(|detail| detail.strip_prefix("verified-before-spawn:"))
+                        .is_some_and(digest)
+            }
             DurableMutationPhaseV1::Ambiguous | DurableMutationPhaseV1::RequiresOperator => self
                 .detail
                 .as_ref()
@@ -265,6 +281,10 @@ pub fn prepare_mutation(
         if current.phase.unresolved() {
             return Err(MutationJournalError::Unresolved);
         }
+        crate::mutation_history::preserve(run_root, &current)?;
+    }
+    if crate::mutation_history::lookup(run_root, request_id)?.is_some() {
+        return Err(MutationJournalError::IdentityConflict);
     }
     write_mutation_status(run_root, &next)?;
     Ok(next)
@@ -301,7 +321,7 @@ pub fn commit_mutation(
     observed_state_digest: &str,
 ) -> Result<DurableMutationStatusV1, MutationJournalError> {
     update(run_root, idempotency_key, |current| {
-        if current.phase == DurableMutationPhaseV1::Committed {
+        if current.phase.terminal() {
             return Ok(current.clone());
         }
         if current.phase != DurableMutationPhaseV1::EffectStarted {
@@ -326,7 +346,7 @@ pub fn mark_mutation_ambiguous(
     detail: &str,
 ) -> Result<DurableMutationStatusV1, MutationJournalError> {
     update(run_root, idempotency_key, |current| {
-        if current.phase == DurableMutationPhaseV1::Committed {
+        if current.phase.terminal() {
             return Ok(current.clone());
         }
         current.with_state(
@@ -339,12 +359,35 @@ pub fn mark_mutation_ambiguous(
     })
 }
 
+pub(crate) fn resolve_before_spawn(
+    run_root: &Path,
+    idempotency_key: &Sha256Digest,
+    observed_state_digest: &str,
+    proof: &Sha256Digest,
+) -> Result<DurableMutationStatusV1, MutationJournalError> {
+    update(run_root, idempotency_key, |current| {
+        if current.phase.terminal() {
+            return Ok(current.clone());
+        }
+        current.with_state(
+            DurableMutationPhaseV1::NoEffect,
+            Some(observed_state_digest.to_string()),
+            None,
+            None,
+            Some(format!("verified-before-spawn:{}", proof.as_str())),
+        )
+    })
+}
+
 pub fn require_mutation_operator(
     run_root: &Path,
     idempotency_key: &Sha256Digest,
     detail: &str,
 ) -> Result<DurableMutationStatusV1, MutationJournalError> {
     update(run_root, idempotency_key, |current| {
+        if current.phase.terminal() {
+            return Ok(current.clone());
+        }
         current.with_state(
             DurableMutationPhaseV1::RequiresOperator,
             current.observed_state_digest.clone(),
@@ -412,7 +455,7 @@ where
     Ok(next)
 }
 
-fn write_mutation_status(
+pub(super) fn write_mutation_status(
     run_root: &Path,
     status: &DurableMutationStatusV1,
 ) -> Result<(), MutationJournalError> {

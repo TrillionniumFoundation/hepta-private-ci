@@ -120,6 +120,9 @@ mod execution;
 #[path = "daemon_mutation.rs"]
 mod mutation;
 #[cfg(unix)]
+#[path = "daemon_no_effect.rs"]
+mod no_effect;
+#[cfg(unix)]
 #[path = "daemon_registration.rs"]
 mod registration;
 #[cfg(unix)]

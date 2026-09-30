@@ -27,7 +27,7 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
     assert_eq!(unsafe { libc::geteuid() }, 0);
     let fixture = tempfile::tempdir_in("/var/lib/hepta-private-ci")?;
     let cgroup = format!("hepta-runtime-native-{}", uuid::Uuid::new_v4().simple());
-    let agent = AgentId::parse(&uuid::Uuid::new_v4().to_string())?;
+    let agent = AgentId::parse(uuid::Uuid::new_v4().to_string())?;
     let workspace = fixture.path().join("workspace");
     std::fs::create_dir(&workspace)?;
     let registry = FleetRegistry::initialize(HeptaFleetRoot::parse(fixture.path().join("fleet"))?)?;
@@ -76,6 +76,7 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
     let owner = Arc::clone(&host);
     tokio::task::spawn_blocking(move || {
         runtime.block_on(async move {
+            assert!(owner.prove_never_spawned(&spec.agent_id)?.is_some());
             let execution = owner.prepare_agent(&spec)?;
             let held = owner.store.execution_hold(&execution.id).await?;
             let held = held.ok_or("prepared execution was not durable before spawn")?;
@@ -117,6 +118,7 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
             assert!(!child.wait()?.success());
             assert!(owner.finish_exit(&execution.id)?);
             owner.validate_retirement(&spec.agent_id)?;
+            assert!(owner.prove_never_spawned(&spec.agent_id)?.is_none());
             assert_eq!(
                 owner
                     .store

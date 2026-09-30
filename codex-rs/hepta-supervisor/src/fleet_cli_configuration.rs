@@ -59,12 +59,10 @@ pub(super) async fn allow(
                 if FleetRegistry::open_existing(root.clone())
                     .and_then(|registry| registry.resolve_release(&agent, &release))
                     .is_ok()
-                {
-                    if let Ok(Ok(snapshot)) =
+                    && let Ok(Ok(snapshot)) =
                         tokio::time::timeout_at(deadline, client.snapshot(agent.clone())).await
-                    {
-                        return Ok(serde_json::to_value(snapshot)?);
-                    }
+                {
+                    return Ok(serde_json::to_value(snapshot)?);
                 }
                 if Instant::now() >= deadline {
                     return Err(error.into());
@@ -115,19 +113,18 @@ pub(super) async fn retire(
                 // never repeat the rename after a lost configuration response.
                 let durable = FleetRegistry::open_existing(root.clone())
                     .and_then(|registry| registry.retired_agent_path(&agent));
-                if let Ok(Some(archive)) = durable {
-                    if let Ok(Ok(Some(owner_archive))) = tokio::time::timeout_at(
+                if let Ok(Some(archive)) = durable
+                    && let Ok(Ok(Some(owner_archive))) = tokio::time::timeout_at(
                         deadline,
                         client.retired_agent_status(agent.clone()),
                     )
                     .await
-                    {
-                        anyhow::ensure!(
-                            owner_archive == archive,
-                            "retirement owner/archive mismatch"
-                        );
-                        break archive;
-                    }
+                {
+                    anyhow::ensure!(
+                        owner_archive == archive,
+                        "retirement owner/archive mismatch"
+                    );
+                    break archive;
                 }
                 if Instant::now() >= deadline {
                     return Err(error.into());

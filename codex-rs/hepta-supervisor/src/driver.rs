@@ -116,6 +116,16 @@ pub enum Adoption<P> {
 pub trait ProcessDriver {
     type Process: ManagedProcess;
 
+    /// Prove that this Agent has never crossed this driver's physical spawn
+    /// admission. A missing PID or a stopped historical execution is not such
+    /// proof. Drivers without durable native evidence must return None.
+    fn prove_never_spawned(
+        &mut self,
+        _agent: &AgentId,
+    ) -> Result<Option<Sha256Digest>, ProcessDriverError> {
+        Ok(None)
+    }
+
     /// Prepare a newly registered agent's installed workload boundary before
     /// publishing it into the live owner. Existing drivers need no extra setup.
     fn prepare_agent_registration(

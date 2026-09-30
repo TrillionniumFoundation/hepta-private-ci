@@ -20,6 +20,8 @@ mod capacity_refresh;
 #[cfg(feature = "durable-store")]
 mod durable_execution;
 #[cfg(feature = "durable-store")]
+mod durable_execution_history;
+#[cfg(feature = "durable-store")]
 mod durable_grant_tx;
 #[cfg(feature = "durable-store")]
 mod durable_grants;

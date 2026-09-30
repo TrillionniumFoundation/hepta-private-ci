@@ -33,6 +33,8 @@ mod containment;
 mod environment;
 #[path = "local_fleet_maintenance.rs"]
 mod maintenance;
+#[path = "local_fleet_no_effect.rs"]
+mod no_effect;
 #[path = "local_fleet_runtime.rs"]
 mod runtime;
 #[path = "local_fleet_trust.rs"]

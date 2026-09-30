@@ -4,7 +4,6 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 
-use crate::DurableMutationPhaseV1;
 use crate::MAX_SUPERVISORD_ROSTER;
 use crate::ProcessDriver;
 use crate::Supervisor;
@@ -140,7 +139,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         if ordinary
             .into_iter()
             .chain(emergency)
-            .any(|status| status.phase != DurableMutationPhaseV1::Committed)
+            .any(|status| !status.phase.terminal())
         {
             return Err(SupervisorError::Invalid(
                 "configuration cannot replace unresolved mutation evidence".to_string(),

@@ -93,7 +93,7 @@ pub(super) async fn run(args: impl Iterator<Item = OsString>) -> anyhow::Result<
         "init" => {
             args.finished()?;
             let registry = FleetRegistry::initialize(root.clone())?;
-            with_offline_fleet_registry(root, |registry| registry.load())?;
+            with_offline_fleet_registry(root, codex_hepta_fleet::FleetRegistry::load)?;
             json!({"fleetRoot": registry.layout().fleet_root().as_path()})
         }
         "register" => {
@@ -194,20 +194,17 @@ async fn control(
                 Err(error) => loop {
                     // Query the exact local durable manifest and owner slot;
                     // never repeat a registration after an uncertain response.
-                    if let Ok(registry) = FleetRegistry::open_existing(root.clone()) {
-                        if registry
+                    if let Ok(registry) = FleetRegistry::open_existing(root.clone())
+                        && registry
                             .load_agent(&manifest.agent_id)
                             .is_ok_and(|record| record.manifest == manifest)
-                        {
-                            if let Ok(Ok(agent)) = tokio::time::timeout_at(
-                                deadline,
-                                client.snapshot(manifest.agent_id.clone()),
-                            )
-                            .await
-                            {
-                                break agent;
-                            }
-                        }
+                        && let Ok(Ok(agent)) = tokio::time::timeout_at(
+                            deadline,
+                            client.snapshot(manifest.agent_id.clone()),
+                        )
+                        .await
+                    {
+                        break agent;
                     }
                     if tokio::time::Instant::now() >= deadline {
                         return Err(error.into());
@@ -357,7 +354,8 @@ async fn control(
                                         );
                                     }
                                     DurableMutationPhaseV1::Ambiguous
-                                    | DurableMutationPhaseV1::RequiresOperator => {
+                                    | DurableMutationPhaseV1::RequiresOperator
+                                    | DurableMutationPhaseV1::NoEffect => {
                                         anyhow::bail!(
                                             "mutation requestId={request_id} remains {:?}; inspect mutation-status before operator recovery: {error}",
                                             status.phase

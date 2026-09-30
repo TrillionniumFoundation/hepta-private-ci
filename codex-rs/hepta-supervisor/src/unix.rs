@@ -242,6 +242,18 @@ impl ManagedProcess for UnixManagedProcess {
 impl ProcessDriver for UnixProcessDriver {
     type Process = UnixManagedProcess;
 
+    fn prove_never_spawned(
+        &mut self,
+        agent: &AgentId,
+    ) -> Result<Option<codex_hepta_contracts::Sha256Digest>, ProcessDriverError> {
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let Some(host) = &self.local_host {
+            return host.prove_never_spawned(agent);
+        }
+        let _ = agent;
+        Ok(None)
+    }
+
     fn prepare_agent_registration(
         &mut self,
         record: &codex_hepta_fleet::AgentRecord,

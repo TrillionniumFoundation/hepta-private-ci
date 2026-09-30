@@ -179,6 +179,13 @@ pub(super) async fn handle_mutation<D: ProcessDriver>(
                 Some(actual),
             );
         }
+        crate::DurableMutationPhaseV1::NoEffect => {
+            return error_payload(
+                "mutation_resolved_without_effect",
+                "the original request was resolved before spawn; choose a new request ID",
+                Some(actual),
+            );
+        }
         crate::DurableMutationPhaseV1::EffectStarted
         | crate::DurableMutationPhaseV1::Ambiguous
         | crate::DurableMutationPhaseV1::RequiresOperator => {
@@ -341,7 +348,7 @@ pub(super) async fn reconcile_ordinary_mutation<D: ProcessDriver>(
     mutation_request_id: u64,
 ) -> SupervisordPayload {
     let agent_id = fence.agent_id.clone();
-    let supervisor = state.supervisor.lock().await;
+    let mut supervisor = state.supervisor.lock().await;
     let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
         Ok(actual) => actual,
         Err(error) => {
@@ -380,12 +387,22 @@ pub(super) async fn reconcile_ordinary_mutation<D: ProcessDriver>(
     if status.agent_id != agent_id || status.request_id != mutation_request_id {
         return SupervisordPayload::OrdinaryMutationStatus { status: None };
     }
-    if status.phase != crate::DurableMutationPhaseV1::Committed {
+    match super::no_effect::reconcile(&state, &mut supervisor, &run_root, &status, &actual) {
+        Ok(Some(status)) => {
+            return SupervisordPayload::OrdinaryMutationStatus {
+                status: Some(status),
+            };
+        }
+        Ok(None) => {}
+        Err(error) => return safe_rejection(error, Some(actual), /*mutation_started*/ false),
+    }
+    if !status.phase.terminal() {
         let _ = state.block_recovery_observation(agent_id.clone());
     }
     let reconciled = match status.phase {
         crate::DurableMutationPhaseV1::Prepared
         | crate::DurableMutationPhaseV1::Committed
+        | crate::DurableMutationPhaseV1::NoEffect
         | crate::DurableMutationPhaseV1::RequiresOperator => Ok(status),
         crate::DurableMutationPhaseV1::EffectStarted | crate::DurableMutationPhaseV1::Ambiguous => {
             let ambiguous = crate::mark_mutation_ambiguous(

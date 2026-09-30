@@ -84,13 +84,13 @@ fn authority_bundle_and_digest_are_an_atomic_pair() {
             OsString::from("--fleet-root"),
             absolute_fleet(&temp),
             OsString::from("--authority-bundle"),
-            path.clone(),
+            path,
         ],
         vec![
             OsString::from("--fleet-root"),
             absolute_fleet(&temp),
             OsString::from("--authority-bundle-sha256"),
-            digest.clone(),
+            digest,
         ],
     ] {
         let error = parse_options_from(arguments)

@@ -34,3 +34,8 @@ CREATE INDEX IF NOT EXISTS fleet_execution_pending_idx
 CREATE UNIQUE INDEX IF NOT EXISTS fleet_execution_containment_live_idx
     ON fleet_execution_holds(boot_identity, containment_dev, containment_ino)
     WHERE state != 'stopped';
+CREATE INDEX IF NOT EXISTS fleet_execution_history_principal_idx
+    ON fleet_execution_holds(json_extract(context_json, '$.principal_id'));
+CREATE INDEX IF NOT EXISTS fleet_execution_invalid_principal_idx
+    ON fleet_execution_holds(execution_id)
+    WHERE json_type(context_json, '$.principal_id') IS NOT 'text';
