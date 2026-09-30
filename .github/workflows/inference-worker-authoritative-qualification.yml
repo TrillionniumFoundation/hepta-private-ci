@@ -134,7 +134,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PAYLOAD_DIR: ${{ runner.temp }}/inference-worker-materialized-source
-          COMMIT_MESSAGE: inference.worker: materialize runtime closure as ordinary source
+          COMMIT_MESSAGE: "inference.worker: materialize runtime closure as ordinary source"
         run: |
           set -euo pipefail
           test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | awk '{print $1}')" = "$EXPECTED_TARGET_SHA"
