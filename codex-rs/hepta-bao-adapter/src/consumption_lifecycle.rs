@@ -308,6 +308,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         reservation_id: String,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if !identifier(&reservation_id) {
             return Err(LeaseRegistryErrorV1::InvalidInput);
         }
@@ -363,6 +364,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         reservation_id: &str,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -406,6 +408,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         receipt: BaoSecretReceipt,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         validate_receipt_for_request(&receipt, None)?;
         let current = self
             .state
@@ -449,6 +452,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         succeeded: bool,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if !succeeded {
             return self.mark_consumption_indeterminate(operation_id);
         }
@@ -492,6 +496,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         evidence_sha256: [u8; 32],
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if evidence_sha256 == [0; 32] {
             return Err(LeaseRegistryErrorV1::InvalidInput);
         }
@@ -541,6 +546,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -573,6 +579,7 @@ impl DurableLeaseRegistryV1 {
         evidence_sha256: [u8; 32],
         observed_cost: u64,
     ) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if !provider_error_code(error_code) || evidence_sha256 == [0; 32] || observed_cost == 0 {
             return Err(LeaseRegistryErrorV1::InvalidInput);
         }
@@ -623,6 +630,7 @@ impl DurableLeaseRegistryV1 {
         code: &str,
         evidence_sha256: [u8; 32],
     ) -> Result<BaoConsumptionOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         if evidence_sha256 == [0; 32]
             || !matches!(
                 code,
@@ -679,6 +687,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<BaoSecretReceipt, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
@@ -716,6 +725,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<BaoConsumptionOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_writable()?;
         let current = self
             .state
             .consumptions
