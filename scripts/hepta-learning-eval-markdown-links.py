@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import os
 from pathlib import Path
 import re
 import shlex
@@ -34,7 +35,13 @@ def markdown_lines(path: Path) -> Iterator[tuple[int, str]]:
     fence: str | None = None
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         stripped = line.lstrip()
-        marker = "```" if stripped.startswith("```") else "~~~" if stripped.startswith("~~~") else None
+        marker = (
+            "```"
+            if stripped.startswith("```")
+            else "~~~"
+            if stripped.startswith("~~~")
+            else None
+        )
         if marker is not None:
             if fence is None:
                 fence = marker
@@ -116,16 +123,40 @@ def markdown_anchors(path: Path) -> set[str]:
     return anchors
 
 
-def resolve_local_target(source: Path, destination: str, root: Path) -> tuple[Path, str]:
+def reject_symlink_components(target: Path, root: Path) -> None:
+    """Reject every lexical path component before any symlink is dereferenced."""
+    relative = target.relative_to(root)
+    cursor = root
+    for part in relative.parts:
+        cursor /= part
+        if cursor.is_symlink():
+            raise ValueError(
+                f"target path contains symlink {cursor.relative_to(root)}"
+            )
+
+
+def resolve_local_target(
+    source: Path, destination: str, root: Path
+) -> tuple[Path, str]:
     parsed = urlsplit(destination)
     path_text = unquote(parsed.path)
     anchor = unquote(parsed.fragment).lower()
-    target = root / path_text.lstrip("/") if path_text.startswith("/") else source.parent / path_text if path_text else source
-    target = target.resolve(strict=False)
+    if path_text.startswith("/"):
+        candidate = root / path_text.lstrip("/")
+    elif path_text:
+        candidate = source.parent / path_text
+    else:
+        candidate = source
+
+    # abspath normalizes `.` and `..` without dereferencing symlinks. Checking
+    # lexical components before resolve is essential: resolving first would make
+    # `is_symlink()` observe the target rather than the link itself.
+    target = Path(os.path.abspath(candidate))
     try:
         target.relative_to(root)
     except ValueError as error:
         raise ValueError(f"links outside the repository: {destination}") from error
+    reject_symlink_components(target, root)
     return target, anchor
 
 
@@ -133,7 +164,15 @@ def validate_markdown_links(paths: Iterable[Path], root: Path = ROOT) -> None:
     root = root.resolve(strict=True)
     anchors: dict[Path, set[str]] = {}
     failures: list[str] = []
-    for source in sorted({path.resolve(strict=True) for path in paths}):
+    sources: set[Path] = set()
+    for path in paths:
+        if path.is_symlink():
+            raise ValueError(
+                f"Markdown source is a symlink: {path.relative_to(root)}"
+            )
+        sources.add(path.resolve(strict=True))
+
+    for source in sorted(sources):
         if source.suffix.lower() not in {".md", ".markdown"}:
             continue
         for line_number, line in markdown_lines(source):
@@ -144,17 +183,25 @@ def validate_markdown_links(paths: Iterable[Path], root: Path = ROOT) -> None:
             for raw in targets:
                 try:
                     destination = link_destination(raw)
-                    if not destination or destination.startswith("//") or SCHEME_RE.match(destination):
+                    if (
+                        not destination
+                        or destination.startswith("//")
+                        or SCHEME_RE.match(destination)
+                    ):
                         continue
                     target, anchor = resolve_local_target(source, destination, root)
                     if not target.exists():
                         raise ValueError(f"missing target {target.relative_to(root)}")
-                    if target.is_symlink():
-                        raise ValueError(f"target is a symlink {target.relative_to(root)}")
+                    if not target.is_file() and anchor:
+                        raise ValueError(
+                            f"anchor target is not a file {target.relative_to(root)}"
+                        )
                     if anchor and target.suffix.lower() in {".md", ".markdown"}:
                         known = anchors.setdefault(target, markdown_anchors(target))
                         if anchor not in known:
-                            raise ValueError(f"missing anchor #{anchor} in {target.relative_to(root)}")
+                            raise ValueError(
+                                f"missing anchor #{anchor} in {target.relative_to(root)}"
+                            )
                 except (OSError, ValueError) as error:
                     failures.append(f"{source.relative_to(root)}:{line_number}: {error}")
     if failures:
