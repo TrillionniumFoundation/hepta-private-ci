@@ -11,6 +11,10 @@ use codex_hepta_matrix_protocol::MatrixDeviceId;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_protocol::MatrixHomeserverUrl;
 use codex_hepta_matrix_protocol::MatrixRoomId;
+use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
+use codex_hepta_matrix_protocol::MatrixSyncDecisionV2;
+use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
+use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
 use codex_hepta_matrix_protocol::MatrixTransactionId;
 use codex_hepta_matrix_protocol::MatrixUserId;
 use codex_hepta_matrix_protocol::outbox_id;
@@ -22,6 +26,7 @@ use codex_hepta_matrix_sdk::MatrixOutboundTransport;
 use codex_hepta_matrix_sdk::MatrixSdkPaths;
 use codex_hepta_matrix_sdk::MatrixSendFuture;
 use codex_hepta_matrix_sdk::MatrixSidecarConfig;
+use codex_hepta_matrix_sdk::MatrixSidecarConfigError;
 use codex_hepta_matrix_sdk::MatrixTimelineEvent;
 use codex_hepta_matrix_sdk::MatrixTransportError;
 use codex_hepta_matrix_sdk::OutboxDispatchConfig;
@@ -408,8 +413,13 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
             .retry_scheduled,
         1
     );
+    let next_attempt_at_ms = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("retry record disappeared")?
+        .next_attempt_at_ms;
     assert_eq!(
-        dispatch_outbox_once(&store, &transport, &config, &cancel, 20)
+        dispatch_outbox_once(&store, &transport, &config, &cancel, next_attempt_at_ms)
             .await?
             .sent,
         1
@@ -460,7 +470,14 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(after_response_loss.state, OutboxState::RetryScheduled);
     assert_eq!(after_response_loss.sent_event_id, None);
 
-    let second = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
+    let second = dispatch_outbox_once(
+        &store,
+        &transport,
+        &config,
+        &cancel,
+        after_response_loss.next_attempt_at_ms,
+    )
+    .await?;
     assert_eq!(second.sent, 1);
     assert_eq!(
         transport.txn_ids()?,
@@ -481,7 +498,8 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
 }
 
 #[tokio::test]
-async fn transient_failures_use_bounded_backoff_and_then_become_terminal() -> TestResult {
+async fn unknown_send_result_exhausts_retry_budget_without_claiming_terminal_failure() -> TestResult
+{
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
     let layout = layout(&temp, &agent_id)?;
@@ -512,39 +530,75 @@ async fn transient_failures_use_bounded_backoff_and_then_become_terminal() -> Te
         .outbox_for_txn(&original.stable_txn_id)
         .await?
         .ok_or("first retry record disappeared")?;
-    assert_eq!(first_retry.next_attempt_at_ms, 20);
     assert_eq!(
-        dispatch_outbox_once(&store, &transport, &config, &cancel, 20)
-            .await?
-            .retry_scheduled,
+        first_retry.next_attempt_at_ms,
+        first_retry.updated_at_ms + 10
+    );
+    assert_eq!(
+        dispatch_outbox_once(
+            &store,
+            &transport,
+            &config,
+            &cancel,
+            first_retry.next_attempt_at_ms
+        )
+        .await?
+        .retry_scheduled,
         1
     );
     let second_retry = store
         .outbox_for_txn(&original.stable_txn_id)
         .await?
         .ok_or("second retry record disappeared")?;
-    assert_eq!(second_retry.next_attempt_at_ms, 40);
     assert_eq!(
-        dispatch_outbox_once(&store, &transport, &config, &cancel, 40)
-            .await?
-            .permanent_failure,
+        second_retry.next_attempt_at_ms,
+        second_retry.updated_at_ms + 20
+    );
+    assert_eq!(
+        dispatch_outbox_once(
+            &store,
+            &transport,
+            &config,
+            &cancel,
+            second_retry.next_attempt_at_ms
+        )
+        .await?
+        .needs_reconciliation,
         1
     );
-    let terminal = store
+    let unresolved = store
         .outbox_for_txn(&original.stable_txn_id)
         .await?
-        .ok_or("terminal outbox record disappeared")?;
-    assert_eq!(terminal.state, OutboxState::PermanentFailure);
-    assert_eq!(terminal.attempts, 3);
+        .ok_or("unresolved outbox record disappeared")?;
+    assert_eq!(
+        (
+            unresolved.state,
+            unresolved.attempts,
+            unresolved.sent_event_id
+        ),
+        (OutboxState::InFlight, 3, None)
+    );
+    let markers = store.unresolved_outbox(/*limit*/ 10).await?;
+    assert_eq!(markers.len(), 1);
+    assert_eq!(
+        (markers[0].stable_txn_id.clone(), markers[0].attempts),
+        (original.stable_txn_id.clone(), 3)
+    );
     assert_eq!(
         transport.txn_ids()?,
         vec![
             original.stable_txn_id.clone(),
             original.stable_txn_id.clone(),
-            original.stable_txn_id
+            original.stable_txn_id.clone()
         ]
     );
     store.close().await;
+    let reopened = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+    assert_eq!(reopened.unresolved_outbox(/*limit*/ 10).await?, markers);
+    let after_reopen =
+        dispatch_outbox_once(&reopened, &transport, &config, &cancel, 10_000).await?;
+    assert_eq!((after_reopen.claimed, transport.txn_ids()?.len()), (0, 3));
+    reopened.close().await;
     Ok(())
 }
 
@@ -580,3 +634,87 @@ fn sdk_store_paths_are_private_and_per_agent() -> TestResult {
     }
     Ok(())
 }
+
+#[cfg(unix)]
+#[test]
+fn sdk_store_directory_links_cannot_redirect_creation_or_permissions() -> TestResult {
+    use std::os::unix::fs::PermissionsExt;
+    use std::os::unix::fs::symlink;
+
+    for component in ["matrix", "matrix-sdk-0.18", "state", "cache"] {
+        let temp = TempDir::new()?;
+        let owner = agent(FIRST_AGENT)?;
+        let agent_layout = layout(&temp, &owner)?;
+        let sdk_root = agent_layout.matrix_root().join("matrix-sdk-0.18");
+        let blocked = match component {
+            "matrix" => agent_layout.matrix_root().to_path_buf(),
+            "matrix-sdk-0.18" => sdk_root,
+            "state" | "cache" => sdk_root.join(component),
+            _ => unreachable!(),
+        };
+        fs::create_dir_all(blocked.parent().ok_or("missing parent")?)?;
+        let outside = temp.path().join("other-agent-store");
+        fs::create_dir(&outside)?;
+        fs::set_permissions(&outside, fs::Permissions::from_mode(0o755))?;
+        fs::write(outside.join("sentinel"), b"other Agent state")?;
+        symlink(&outside, &blocked)?;
+
+        assert_eq!(
+            MatrixSdkPaths::prepare(&agent_layout, &sidecar_config(&owner)?),
+            Err(MatrixSidecarConfigError::Unavailable),
+            "must reject linked {component} before creating or chmodding targets"
+        );
+        assert_eq!(
+            (
+                fs::read(outside.join("sentinel"))?,
+                fs::read_dir(&outside)?.count(),
+                fs::metadata(&outside)?.permissions().mode() & 0o777
+            ),
+            (b"other Agent state".to_vec(), 1, 0o755)
+        );
+    }
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn sdk_database_and_journal_links_are_rejected_before_sqlite_open() -> TestResult {
+    use std::os::unix::fs::symlink;
+
+    for (directory, database) in [
+        ("state", "matrix-sdk-state.sqlite3"),
+        ("state", "matrix-sdk-crypto.sqlite3"),
+        ("cache", "matrix-sdk-event-cache.sqlite3"),
+    ] {
+        for suffix in ["", "-wal", "-shm", "-journal"] {
+            for hard_link in [false, true] {
+                let temp = TempDir::new()?;
+                let owner = agent(FIRST_AGENT)?;
+                let agent_layout = layout(&temp, &owner)?;
+                let config = sidecar_config(&owner)?;
+                let paths = MatrixSdkPaths::prepare(&agent_layout, &config)?;
+                let outside = temp.path().join("other-agent.sqlite3");
+                fs::write(&outside, b"other Agent database")?;
+                let blocked = paths
+                    .root()
+                    .join(directory)
+                    .join(format!("{database}{suffix}"));
+                if hard_link {
+                    fs::hard_link(&outside, &blocked)?;
+                } else {
+                    symlink(&outside, &blocked)?;
+                }
+                assert_eq!(
+                    MatrixSdkPaths::prepare(&agent_layout, &config),
+                    Err(MatrixSidecarConfigError::Unavailable),
+                    "linked database/journal must not enter SQLite"
+                );
+                assert_eq!(fs::read(&outside)?, b"other Agent database");
+            }
+        }
+    }
+    Ok(())
+}
+
+#[path = "support/outbound_boundaries.rs"]
+mod outbound_boundaries;
