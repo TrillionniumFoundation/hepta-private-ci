@@ -1,0 +1,97 @@
+{
+  "fault_scenarios": [
+    "stalled_process_driver",
+    "stalled_filesystem",
+    "enospc",
+    "fsync_latency",
+    "hung_child",
+    "daemon_sigkill",
+    "system_manager_restart",
+    "spawn_before_lease_crash",
+    "pid_reuse_exact_identity_rejection",
+    "torn_write",
+    "rename_failure",
+    "directory_fsync_failure",
+    "restart_window_clock_rollback",
+    "stop_original_deadline_restart",
+    "upgrade_each_durable_cut",
+    "rollback_each_durable_cut",
+    "authority_rotation",
+    "authority_revocation"
+  ],
+  "fleet": {
+    "matrix_companions": "product_configuration",
+    "real_processes_required": 256,
+    "registered_agents": 256
+  },
+  "hosts": [
+    {
+      "architectures": [
+        "x86_64",
+        "aarch64"
+      ],
+      "filesystems": [
+        "ext4",
+        "xfs"
+      ],
+      "os": "linux"
+    },
+    {
+      "architectures": [
+        "arm64"
+      ],
+      "filesystems": [
+        "apfs"
+      ],
+      "os": "macos"
+    }
+  ],
+  "module": "runtime.supervisor",
+  "profile_id": "runtime-supervisor-target-host-v1",
+  "receipt_validator": "scripts/hepta_supervisor_external_receipt.py",
+  "refactor_trigger": "Any required target host exceeding a frozen SLO requires a collect-effect-apply or per-Agent ownership design review before activation.",
+  "schema_version": 1,
+  "slo": {
+    "busy_rejection_rate": {
+      "operator": "lte",
+      "value": 0.01
+    },
+    "max_watchdog_missed_intervals": {
+      "operator": "lte",
+      "value": 4
+    },
+    "mutation_admission_p99_ms": {
+      "operator": "lte",
+      "value": 250
+    },
+    "operation_indeterminate_rate": {
+      "operator": "lte",
+      "value": 0.001
+    },
+    "projection_age_p99_ms": {
+      "operator": "lte",
+      "value": 500
+    },
+    "recovery_tail_p99_ms": {
+      "operator": "lte",
+      "value": 10000
+    },
+    "tick_lateness_p99_ms": {
+      "operator": "lte",
+      "value": 100
+    },
+    "unrelated_agent_mutation_p99_ms": {
+      "operator": "lte",
+      "value": 1000
+    }
+  },
+  "status": "qualification_requirement_not_execution_evidence",
+  "workloads": [
+    "healthy_mixed_lifecycle_status_tick",
+    "concurrent_unrelated_agent_mutations",
+    "drain_restart_upgrade_rollback_mix",
+    "ten_percent_crash_wave",
+    "fifty_percent_crash_wave",
+    "one_hundred_percent_crash_wave"
+  ]
+}

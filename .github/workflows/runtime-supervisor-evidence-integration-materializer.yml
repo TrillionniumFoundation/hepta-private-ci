@@ -1,0 +1,187 @@
+name: Runtime supervisor lifecycle evidence integrator
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-full-qualification-20260930
+    paths:
+      - .github/workflows/runtime-supervisor-evidence-integration-materializer.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-evidence-integration-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  integrate:
+    name: Integrate and qualify lifecycle evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out current candidate branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Wire durable evidence into the exact lifecycle boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path("codex-rs/hepta-supervisor/src")
+
+          witness = root / "process_exit_witness.rs"
+          text = witness.read_text(encoding="utf-8")
+          text = text.replace(
+              "    fn compute_witness_id(&self)",
+              "    pub(crate) fn compute_witness_id(&self)",
+          ).replace(
+              "    fn compute_record_digest(&self)",
+              "    pub(crate) fn compute_record_digest(&self)",
+          )
+          witness.write_text(text, encoding="utf-8")
+
+          observation = root / "recovery_observation.rs"
+          text = observation.read_text(encoding="utf-8")
+          pattern = re.compile(
+              r"    fn compute_observation_id\(&self\) -> Result<Sha256Digest, RecoveryObservationError> \{.*?\n    \}\n\n    fn compute_record_digest",
+              re.S,
+          )
+          replacement = '''    fn compute_observation_id(&self) -> Result<Sha256Digest, RecoveryObservationError> {
+              let mut material = self.clone();
+              material.observation_id = Sha256Digest::for_bytes(b"pending");
+              material.record_sha256 = Sha256Digest::for_bytes(b"pending");
+              let payload = serde_json::to_vec(&material)?;
+              Ok(Sha256Digest::from_sha256_output(Sha256::digest(
+                  [RECOVERY_OBSERVATION_DOMAIN, payload.as_slice()].concat(),
+              )))
+          }
+
+          fn compute_record_digest'''
+          text, count = pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit("recovery observation digest function marker changed")
+          observation.write_text(text, encoding="utf-8")
+
+          lib = root / "lib.rs"
+          text = lib.read_text(encoding="utf-8")
+          marker = "mod model;\n"
+          modules = "mod mutation_journal;\nmod process_exit_witness;\nmod recovery_observation;\n"
+          if modules not in text:
+              if marker not in text:
+                  raise SystemExit("lib module marker changed")
+              text = text.replace(marker, marker + modules, 1)
+          export_marker = "pub use model::TickReport;\n"
+          exports = '''pub use mutation_journal::DurableMutationPhaseV1;
+          pub use mutation_journal::DurableMutationStatusV1;
+          pub use mutation_journal::MUTATION_JOURNAL_FILE;
+          pub use mutation_journal::MUTATION_JOURNAL_SCHEMA_VERSION;
+          pub use mutation_journal::MutationJournalError;
+          pub use mutation_journal::commit_mutation;
+          pub use mutation_journal::mark_mutation_ambiguous;
+          pub use mutation_journal::mark_mutation_effect_started;
+          pub use mutation_journal::prepare_mutation;
+          pub use mutation_journal::read_mutation_status;
+          pub use mutation_journal::require_mutation_operator;
+          pub use process_exit_witness::PROCESS_EXIT_WITNESS_FILE;
+          pub use process_exit_witness::PROCESS_EXIT_WITNESS_SCHEMA_VERSION;
+          pub use process_exit_witness::ProcessExitWitnessError;
+          pub use process_exit_witness::ProcessExitWitnessPhaseV1;
+          pub use process_exit_witness::ProcessExitWitnessV1;
+          pub use process_exit_witness::consume_process_exit_witness;
+          pub use process_exit_witness::read_process_exit_witness;
+          pub use process_exit_witness::record_process_exit;
+          pub use recovery_observation::PRODUCTION_RECOVERY_OBSERVATION_FILE;
+          pub use recovery_observation::PRODUCTION_RECOVERY_OBSERVATION_SCHEMA_VERSION;
+          pub use recovery_observation::ProductionRecoveryObservationV1;
+          pub use recovery_observation::RecoveryObservationError;
+          pub use recovery_observation::RecoveryReplayDecisionV1;
+          pub use recovery_observation::publish_production_recovery_observation;
+          pub use recovery_observation::replay_production_recovery_observation;
+          '''
+          if "pub use mutation_journal::DurableMutationPhaseV1;" not in text:
+              if export_marker not in text:
+                  raise SystemExit("lib export marker changed")
+              text = text.replace(export_marker, export_marker + exports, 1)
+          lib.write_text(text, encoding="utf-8")
+
+          tick = root / "tick.rs"
+          text = tick.read_text(encoding="utf-8")
+          import_marker = "use crate::restart_lineage::RestartRecoveryRole;\n"
+          if import_marker not in text:
+              import_marker = "use crate::restart_lineage::RestartProcessWitness;\n"
+          if "use crate::process_exit_witness;" not in text:
+              if import_marker not in text:
+                  raise SystemExit("tick import marker changed")
+              text = text.replace(
+                  import_marker,
+                  import_marker + "use crate::process_exit_witness;\n",
+                  1,
+              )
+          witness_marker = "        let unpublished_launch = slot.exit_lease_removal.as_ref()\n"
+          witness_code = '''        let exit_witness = process_exit_witness::record_process_exit(
+              record.layout.run_root(),
+              agent_id,
+              runtime.generation,
+              runtime.spawn_generation,
+              &runtime.release_id,
+              &runtime.identity,
+              exit.success,
+              exit.code,
+          )
+          .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+          '''
+          if "let exit_witness = process_exit_witness::record_process_exit" not in text:
+              if witness_marker not in text:
+                  raise SystemExit("tick exit witness marker changed")
+              text = text.replace(witness_marker, witness_code + witness_marker, 1)
+          consume_marker = "        slot.event(generation, SupervisorEventKind::Exited(exit));\n        Ok(())\n"
+          consume_code = '''        process_exit_witness::consume_process_exit_witness(
+              record.layout.run_root(),
+              &exit_witness.witness_id,
+          )
+          .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+          slot.event(generation, SupervisorEventKind::Exited(exit));
+          Ok(())
+          '''
+          if "&exit_witness.witness_id" not in text:
+              if consume_marker not in text:
+                  raise SystemExit("tick witness consumption marker changed")
+              text = text.replace(consume_marker, consume_code, 1)
+          tick.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Format and qualify exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          cargo fmt --all
+          cargo fmt --all -- --check
+          cargo test -p codex-hepta-supervisor --lib --all-features
+          cargo clippy -p codex-hepta-supervisor --all-targets --all-features -- -D warnings
+
+      - name: Commit only qualified source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/runtime-supervisor-evidence-integration-materializer.yml
+          git diff --check
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add \
+            codex-rs/hepta-supervisor/src/lib.rs \
+            codex-rs/hepta-supervisor/src/mutation_journal.rs \
+            codex-rs/hepta-supervisor/src/process_exit_witness.rs \
+            codex-rs/hepta-supervisor/src/recovery_observation.rs \
+            codex-rs/hepta-supervisor/src/tick.rs \
+            .github/workflows/runtime-supervisor-evidence-integration-materializer.yml
+          git commit -m "feat(supervisor): integrate durable lifecycle evidence"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

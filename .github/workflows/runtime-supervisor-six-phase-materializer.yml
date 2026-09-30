@@ -1,0 +1,216 @@
+name: Runtime supervisor six-phase materializer
+
+on:
+  push:
+    branches:
+      - codex/runtime-supervisor-six-phase-closure-20260930-r4
+    paths:
+      - scripts/runtime_supervisor_six_phase_materialize.py
+      - scripts/runtime_supervisor_six_phase_followup.py
+      - .github/workflows/runtime-supervisor-six-phase-materializer.yml
+  workflow_dispatch:
+
+# This is a one-shot authoring lane. The successful source-bearing commit removes
+# this workflow and every other runtime.supervisor materializer before pushing.
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-supervisor-six-phase-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  RUST_BACKTRACE: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  materialize-and-qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+          clean: true
+
+      - name: Bind immutable input
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+          mkdir -p .hepta-evidence/runtime-supervisor-six-phase
+          {
+            printf 'input_sha=%s\n' "$GITHUB_SHA"
+            printf 'input_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'branch=%s\n' "$GITHUB_REF_NAME"
+            printf 'workflow_sha=%s\n' "$GITHUB_WORKFLOW_SHA"
+            printf 'run_id=%s\n' "$GITHUB_RUN_ID"
+            printf 'run_attempt=%s\n' "$GITHUB_RUN_ATTEMPT"
+          } > .hepta-evidence/runtime-supervisor-six-phase/input-identity.txt
+
+      - name: Install process prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component clippy,rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$channel" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/hepta-supervisor-six-phase-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Materialize reviewed source closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/runtime_supervisor_six_phase_materialize.py \
+            scripts/runtime_supervisor_six_phase_followup.py
+          python3 scripts/runtime_supervisor_six_phase_materialize.py
+          python3 scripts/runtime_supervisor_six_phase_followup.py
+          git diff --check
+          git status --short | tee .hepta-evidence/runtime-supervisor-six-phase/materialized-status.txt
+
+      - name: Verify compile graph and runtime wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          lib=codex-rs/hepta-supervisor/src/lib.rs
+          grep -Fxq 'mod mutation_journal;' "$lib"
+          grep -Fxq 'mod process_exit_witness;' "$lib"
+          grep -Fxq 'mod recovery_observation;' "$lib"
+          grep -Fq 'pub use mutation_journal::DurableMutationStatusV1;' "$lib"
+          grep -Fq 'pub use process_exit_witness::ProcessExitWitnessV1;' "$lib"
+          grep -Fq 'pub use recovery_observation::ProductionRecoveryObservationV1;' "$lib"
+          grep -Fq 'process_exit_witness::record_process_exit' codex-rs/hepta-supervisor/src/tick.rs
+          grep -Fq 'process_exit_witness::read_process_exit_witness' codex-rs/hepta-supervisor/src/recovery.rs
+          grep -Fq 'publish_production_recovery_observation' codex-rs/hepta-supervisor/src/daemon_execution.rs
+          grep -Fq 'prepare_mutation' codex-rs/hepta-supervisor/src/daemon_execution.rs
+
+      - name: Format exact supervisor source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-supervisor -- --check
+          git diff --check
+
+      - name: Run default supervisor regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test \
+            --manifest-path codex-rs/Cargo.toml \
+            --locked \
+            -p codex-hepta-supervisor \
+            --lib \
+            2>&1 | tee .hepta-evidence/runtime-supervisor-six-phase/cargo-test-default.log
+
+      - name: Run all supervisor qualification targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test \
+            --manifest-path codex-rs/Cargo.toml \
+            --locked \
+            -p codex-hepta-supervisor \
+            --all-targets \
+            --features qualification,offline-authority-tools \
+            2>&1 | tee .hepta-evidence/runtime-supervisor-six-phase/cargo-test-all-targets.log
+
+      - name: Run strict supervisor Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy \
+            --manifest-path codex-rs/Cargo.toml \
+            --locked \
+            -p codex-hepta-supervisor \
+            --all-targets \
+            --features qualification,offline-authority-tools \
+            -- -D warnings \
+            2>&1 | tee .hepta-evidence/runtime-supervisor-six-phase/cargo-clippy.log
+
+      - name: Validate repository qualification policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v \
+            scripts.test_hepta_supervisor_ci \
+            scripts.test_hepta_supervisor_ci_v3 \
+            scripts.test_hepta_supervisor_evidence \
+            scripts.test_hepta_supervisor_workflow \
+            scripts.test_hepta_supervisor_status \
+            scripts.test_hepta_supervisor_external_receipt \
+            2>&1 | tee .hepta-evidence/runtime-supervisor-six-phase/policy-tests.log
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+      - name: Remove all one-shot authoring machinery
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/runtime-supervisor-evidence-integration-materializer.yml
+          rm -f .github/workflows/runtime-supervisor-six-phase-materializer.yml
+          rm -f .github/workflows/runtime-supervisor-six-phase-self-hosted-materializer.yml
+          rm -f .github/workflows/runtime-supervisor-six-phase-macos-materializer.yml
+          rm -f .github/workflows/runtime-supervisor-six-phase-fleet-materializer.yml
+          rm -f .github/workflows/runtime-supervisor-source-rebind-materializer.yml
+          rm -f scripts/runtime_supervisor_six_phase_materialize.py
+          rm -f scripts/runtime_supervisor_six_phase_followup.py
+          git diff --check
+          test ! -e scripts/runtime_supervisor_six_phase_materialize.py
+          test ! -e scripts/runtime_supervisor_six_phase_followup.py
+          if grep -R -n -E '^  contents: write$' .github/workflows/runtime-supervisor-*.yml; then
+            echo 'runtime.supervisor qualification must be read-only after source materialization' >&2
+            exit 1
+          fi
+
+      - name: Commit qualified ordinary source candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote_sha="$(git ls-remote origin "refs/heads/$GITHUB_REF_NAME" | awk '{print $1}')"
+          test "$remote_sha" = "$GITHUB_SHA"
+          git config user.name "OpenAI"
+          git config user.email "openai@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git diff --cached --stat | tee .hepta-evidence/runtime-supervisor-six-phase/candidate-stat.txt
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "feat(supervisor): close lifecycle and mutation evidence"
+          {
+            printf 'candidate_sha=%s\n' "$(git rev-parse HEAD)"
+            printf 'candidate_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'parent_sha=%s\n' "$GITHUB_SHA"
+            printf 'source_complete=true\n'
+            printf 'ci_source_writer_present=false\n'
+          } > .hepta-evidence/runtime-supervisor-six-phase/output-identity.txt
+          git push origin "HEAD:$GITHUB_REF_NAME"
+
+      - name: Retain materialization diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-six-phase-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/runtime-supervisor-six-phase/*
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 30

@@ -82,12 +82,22 @@ pub struct ProcessObservation {
 ///
 /// Every method must return promptly and must never wait for process exit or health.
 pub trait ManagedProcess: Send {
+    /// Immutable setup failure after process ownership was acquired. A driver
+    /// must return the owned handle rather than discard it on such a failure.
+    /// The lifecycle owner must quarantine it before publishing readiness and
+    /// retain it until exact exit and durable cleanup have been observed.
+    fn initialization_failure(&self) -> Option<&str> {
+        None
+    }
+
     fn poll(&mut self, max_logs: usize) -> Result<ProcessObservation, ProcessDriverError>;
     fn request_drain(&mut self) -> Result<(), ProcessDriverError>;
     fn request_stop(&mut self) -> Result<(), ProcessDriverError>;
     fn kill(&mut self) -> Result<(), ProcessDriverError>;
 }
 
+/// Acquisition result, not a readiness or successful-initialization receipt.
+/// Inspect `ManagedProcess::initialization_failure` after retaining ownership.
 pub struct SpawnedProcess<P> {
     pub identity: ProcessIdentity,
     pub process: P,

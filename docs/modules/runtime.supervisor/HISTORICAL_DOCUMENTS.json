@@ -1,0 +1,91 @@
+{
+  "current_sources": [
+    "docs/modules/runtime.supervisor/TECHNICAL.md",
+    "docs/modules/runtime.supervisor/CAPABILITY_STATUS.json",
+    "docs/modules/runtime.supervisor/CURRENT_STATUS.md",
+    "docs/modules/runtime.supervisor/PRODUCTION_BOUNDARY.md"
+  ],
+  "documents": [
+    {
+      "as_of_date": "2026-09-27",
+      "normative": false,
+      "path": "ADOPTED_RELEASE_REPAIR_20260927.md",
+      "status": "historical",
+      "superseded_by": [
+        "TECHNICAL.md",
+        "PROCESS_OWNERSHIP.md",
+        "CAPABILITY_STATUS.json"
+      ]
+    },
+    {
+      "as_of_date": "2026-09-27",
+      "normative": false,
+      "path": "ADOPTION_CONTROL_REPAIR_20260927.md",
+      "status": "historical",
+      "superseded_by": [
+        "TECHNICAL.md",
+        "PROCESS_LIFETIME.md",
+        "PROCESS_OWNERSHIP.md",
+        "CAPABILITY_STATUS.json"
+      ]
+    },
+    {
+      "as_of_date": "2026-09-27",
+      "normative": false,
+      "path": "COMPANION_RECOVERY_REPAIR_20260927.md",
+      "status": "historical",
+      "superseded_by": [
+        "TECHNICAL.md",
+        "RECOVERY_AND_QUALIFICATION.md",
+        "CAPABILITY_STATUS.json"
+      ]
+    },
+    {
+      "as_of_date": "2026-09-27",
+      "normative": false,
+      "path": "EXIT_FINALIZATION_RETRY_20260927.md",
+      "status": "historical",
+      "superseded_by": [
+        "TECHNICAL.md",
+        "PROCESS_OWNERSHIP.md",
+        "CAPABILITY_STATUS.json"
+      ]
+    },
+    {
+      "as_of_date": "2026-09-27",
+      "normative": false,
+      "path": "MAIN_CONTROL_RETRY_REPAIR_20260927.md",
+      "status": "historical",
+      "superseded_by": [
+        "TECHNICAL.md",
+        "RESTART_CANCELLATION.md",
+        "CAPABILITY_STATUS.json"
+      ]
+    },
+    {
+      "as_of_date": "2026-09-27",
+      "normative": false,
+      "path": "QUALIFICATION_REPAIR_20260927.md",
+      "status": "historical",
+      "superseded_by": [
+        "TECHNICAL.md",
+        "QUALIFICATION_EVIDENCE_V2.md",
+        "CAPABILITY_STATUS.json"
+      ]
+    },
+    {
+      "as_of_date": "2026-09-28",
+      "normative": false,
+      "path": "RESTART_LINEAGE_REPAIR_20260928.md",
+      "status": "historical",
+      "superseded_by": [
+        "TECHNICAL.md",
+        "RESTART_CANCELLATION.md",
+        "CAPABILITY_STATUS.json"
+      ]
+    }
+  ],
+  "module": "runtime.supervisor",
+  "policy": "Historical repair records are preserved for audit lineage but never override current normative source, capability or qualification status.",
+  "schema_version": 1
+}

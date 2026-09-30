@@ -1,8 +1,11 @@
+//! Restore the companion budget before process adoption can charge it again.
+//! The canonical main-process budget is independent; its projection must never
+//! be copied from the legacy companion journal into the live Agent slot.
+
 use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentRecord;
-use codex_hepta_fleet::ReleaseId;
 
 use crate::ProcessDriver;
 use crate::Supervisor;
@@ -13,10 +16,62 @@ use crate::restart_journal::read_restart_journal;
 use crate::restart_journal::restore_window;
 use crate::restart_journal::unix_millis_now;
 use crate::restart_journal::write_restart_journal;
-use crate::restart_policy::clear_restart_budget;
+use crate::restart_policy::RESTART_BACKOFF_MAX;
+use crate::restart_policy::RESTART_BACKOFF_MIN;
 use crate::runtime::AgentSlot;
+use crate::runtime::MatrixCompanionSlot;
+
+/// Validated, normalized durable state staged before any adoption side effect.
+/// Applying this snapshot uses the caller's monotonic clock and cannot fail.
+pub(crate) struct MatrixRestartRecovery {
+    window: DurableRestartWindow,
+    observed_unix_millis: u64,
+}
 
 impl<D: ProcessDriver> Supervisor<D> {
+    pub(crate) fn prepare_matrix_restart_recovery(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        record: &AgentRecord,
+    ) -> Result<(), SupervisorError> {
+        let Some(journal) = read_restart_journal(record.layout.run_root())? else {
+            return Ok(());
+        };
+        if journal.agent_id != *agent_id {
+            return Err(SupervisorError::CorruptLease(format!(
+                "restart budget journal belongs to {} instead of {agent_id}",
+                journal.agent_id
+            )));
+        }
+        let observed_unix_millis = unix_millis_now()?;
+        let (attempts, _, wall, _) =
+            restore_window(&journal.matrix, Instant::now(), observed_unix_millis);
+        let window = DurableRestartWindow {
+            attempts,
+            window_started_unix_millis: wall,
+        };
+        if window != journal.matrix {
+            // Normalize a clock rollback durably before adopting a process.
+            // A second daemon restart must not reopen the old, smaller budget.
+            let normalized = RestartBudgetJournal::new(
+                agent_id.clone(),
+                journal.release_id,
+                DurableRestartWindow::empty(),
+                window.clone(),
+            )?;
+            write_restart_journal(record.layout.run_root(), &normalized)?;
+        }
+        // Do not clear charges solely because the committed release differs.
+        // Exact lease adoption may still recover an in-flight target release.
+        // Carrying the remaining window is conservative; erasing it is not.
+        slot.matrix.recovery_budget = Some(MatrixRestartRecovery {
+            window,
+            observed_unix_millis,
+        });
+        Ok(())
+    }
+
     pub(crate) fn persist_restart_budget(
         &self,
         agent_id: &AgentId,
@@ -31,109 +86,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     "agent {agent_id} has restart state without an active release"
                 ))
             })?;
-        self.persist_restart_budget_for_release(agent_id, slot, release_id)
-    }
-
-    pub(crate) fn reset_restart_budget_for_release(
-        &self,
-        agent_id: &AgentId,
-        slot: &mut AgentSlot<D::Process>,
-        release_id: ReleaseId,
-    ) -> Result<(), SupervisorError> {
-        reset_slot_restart_budget(slot);
-        self.persist_restart_budget_for_release(agent_id, slot, release_id)
-    }
-
-    pub(crate) fn reset_restart_budget(
-        &self,
-        agent_id: &AgentId,
-        slot: &mut AgentSlot<D::Process>,
-    ) -> Result<(), SupervisorError> {
-        let release_id = slot
-            .active_release
-            .as_ref()
-            .map(|release| release.release_id().clone())
-            .ok_or_else(|| {
-                SupervisorError::Invalid(format!(
-                    "agent {agent_id} has no active release for restart reset"
-                ))
-            })?;
-        self.reset_restart_budget_for_release(agent_id, slot, release_id)
-    }
-
-    pub(crate) fn restore_restart_budget(
-        &self,
-        agent_id: &AgentId,
-        slot: &mut AgentSlot<D::Process>,
-        record: &AgentRecord,
-        now: Instant,
-    ) -> Result<(), SupervisorError> {
-        let Some(journal) = read_restart_journal(record.layout.run_root())? else {
-            return Ok(());
-        };
-        if journal.agent_id != *agent_id {
-            return Err(SupervisorError::CorruptLease(format!(
-                "restart budget journal belongs to {} instead of {agent_id}",
-                journal.agent_id
-            )));
-        }
-        let Some(release_id) = slot
-            .active_release
-            .as_ref()
-            .map(|release| release.release_id().clone())
-        else {
-            reset_slot_restart_budget(slot);
-            return Ok(());
-        };
-        if journal.release_id != release_id {
-            return self.reset_restart_budget_for_release(agent_id, slot, release_id);
-        }
-
-        let now_unix_millis = unix_millis_now()?;
-        let (main_attempts, main_started, main_wall, main_exhausted) =
-            restore_window(&journal.main, now, now_unix_millis);
-        let (matrix_attempts, matrix_started, matrix_wall, matrix_exhausted) =
-            restore_window(&journal.matrix, now, now_unix_millis);
-        slot.restart_attempt = main_attempts;
-        slot.restart_window_started_at = main_started;
-        slot.restart_window_started_unix_millis = main_wall;
-        slot.restart_retry_at = None;
-        slot.restart_automatic = false;
-        slot.restart_after_exit = false;
-        slot.restart_exhausted = main_exhausted;
-        slot.matrix.restart_attempt = matrix_attempts;
-        slot.matrix.restart_window_started_at = matrix_started;
-        slot.matrix.restart_window_started_unix_millis = matrix_wall;
-        slot.matrix.retry_at = None;
-        slot.matrix.restart_after_exit = false;
-        slot.matrix.restart_exhausted = matrix_exhausted;
-
-        let normalized_main = DurableRestartWindow {
-            attempts: main_attempts,
-            window_started_unix_millis: main_wall,
-        };
-        let normalized_matrix = DurableRestartWindow {
-            attempts: matrix_attempts,
-            window_started_unix_millis: matrix_wall,
-        };
-        if normalized_main != journal.main || normalized_matrix != journal.matrix {
-            self.persist_restart_budget_for_release(agent_id, slot, release_id)?;
-        }
-        Ok(())
-    }
-
-    fn persist_restart_budget_for_release(
-        &self,
-        agent_id: &AgentId,
-        slot: &AgentSlot<D::Process>,
-        release_id: ReleaseId,
-    ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let journal = RestartBudgetJournal::new(
             agent_id.clone(),
             release_id,
-            // Main-process attempts and pending intent are owned by the
-            // canonical restart-budget port, not this Matrix projection.
             DurableRestartWindow::empty(),
             DurableRestartWindow {
                 attempts: slot.matrix.restart_attempt,
@@ -144,23 +100,37 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 }
 
-fn reset_slot_restart_budget<P>(slot: &mut AgentSlot<P>) {
-    slot.restart_pending = false;
-    clear_restart_budget(
-        &mut slot.restart_attempt,
-        &mut slot.restart_window_started_at,
-    );
-    slot.restart_window_started_unix_millis = None;
-    slot.restart_retry_at = None;
-    slot.restart_automatic = false;
-    slot.restart_after_exit = false;
-    slot.restart_exhausted = false;
-    clear_restart_budget(
-        &mut slot.matrix.restart_attempt,
-        &mut slot.matrix.restart_window_started_at,
-    );
-    slot.matrix.restart_window_started_unix_millis = None;
-    slot.matrix.retry_at = None;
-    slot.matrix.restart_after_exit = false;
-    slot.matrix.restart_exhausted = false;
+impl<P> MatrixCompanionSlot<P> {
+    pub(crate) fn apply_restart_recovery(&mut self, now: Instant) {
+        let Some(recovery) = self.recovery_budget.take() else {
+            return;
+        };
+        let (attempts, started, wall, exhausted) =
+            restore_window(&recovery.window, now, recovery.observed_unix_millis);
+        self.restart_attempt = attempts;
+        self.restart_window_started_at = started;
+        self.restart_window_started_unix_millis = wall;
+        self.restart_after_exit = false;
+        self.restart_exhausted = exhausted;
+        // This journal has no durable next-eligible timestamp. Reapply the full
+        // backoff instead of allowing a daemon restart to accelerate a retry.
+        self.retry_at = None;
+        if attempts > 0 && !exhausted {
+            let shift = attempts.saturating_sub(1).min(7);
+            let delay = RESTART_BACKOFF_MIN
+                .checked_mul(1_u32 << shift)
+                .unwrap_or(RESTART_BACKOFF_MAX)
+                .min(RESTART_BACKOFF_MAX);
+            self.retry_at = now.checked_add(delay);
+            self.restart_exhausted = self.retry_at.is_none();
+        }
+        if self.restart_exhausted {
+            self.degraded = true;
+            self.last_error = Some("Matrix restart budget exhausted during recovery".to_string());
+        }
+    }
 }
+
+#[cfg(test)]
+#[path = "restart_state_tests.rs"]
+mod tests;

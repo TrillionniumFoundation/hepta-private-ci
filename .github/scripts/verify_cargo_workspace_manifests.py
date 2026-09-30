@@ -53,7 +53,10 @@ MANIFEST_FEATURE_EXCEPTIONS = {
     },
     "codex-rs/hepta-supervisor/Cargo.toml": {
         "default": (),
+        "qualification": (),
         "production-authority": (),
+        "production-verifier": ("production-authority",),
+        "offline-authority-tools": ("production-verifier",),
     },
 }
 OPTIONAL_DEPENDENCY_EXCEPTIONS = set()

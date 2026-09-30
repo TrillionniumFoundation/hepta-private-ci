@@ -1,0 +1,191 @@
+name: Runtime supervisor target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact immutable commit to test
+        required: true
+        type: string
+      lane:
+        description: Evidence lane
+        required: true
+        default: source-head
+        type: choice
+        options: [source-head, final-merge]
+      source_sha:
+        description: Original source-head SHA
+        required: true
+        type: string
+      base_sha:
+        description: Frozen base SHA
+        required: true
+        type: string
+      merge_candidate_sha:
+        description: Deterministic ordered-parent merge SHA
+        required: true
+        type: string
+      final_merge_sha:
+        description: Real main merge SHA; required for final-merge lane
+        required: false
+        type: string
+      target_os:
+        description: Labelled target operating system
+        required: true
+        type: choice
+        options: [linux, macos]
+      fault_driver:
+        description: Absolute operator-installed fault-driver path
+        required: true
+        default: /opt/hepta/bin/runtime-supervisor-target-fault-driver
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  RUST_BACKTRACE: "1"
+
+jobs:
+  target-host:
+    name: Target host (${{ inputs.target_os }}, ${{ inputs.lane }})
+    runs-on:
+      - self-hosted
+      - runtime-supervisor-target
+      - ${{ inputs.target_os }}
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact requested identity and lane
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          LANE: ${{ inputs.lane }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          BASE_SHA: ${{ inputs.base_sha }}
+          MERGE_CANDIDATE_SHA: ${{ inputs.merge_candidate_sha }}
+          FINAL_MERGE_SHA: ${{ inputs.final_merge_sha }}
+        run: |
+          set -euo pipefail
+          sha='^[0-9a-f]{40}$'
+          [[ "$CANDIDATE_SHA" =~ $sha ]]
+          [[ "$SOURCE_SHA" =~ $sha ]]
+          [[ "$BASE_SHA" =~ $sha ]]
+          [[ "$MERGE_CANDIDATE_SHA" =~ $sha ]]
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          if [ "$LANE" = source-head ]; then
+            test "$CANDIDATE_SHA" = "$SOURCE_SHA"
+            test -z "$FINAL_MERGE_SHA"
+          else
+            [[ "$FINAL_MERGE_SHA" =~ $sha ]]
+            test "$CANDIDATE_SHA" = "$FINAL_MERGE_SHA"
+          fi
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          mkdir -p "$RUNNER_TEMP/runtime-supervisor-target"
+          {
+            printf 'candidate_sha=%s\n' "$CANDIDATE_SHA"
+            printf 'source_sha=%s\n' "$SOURCE_SHA"
+            printf 'base_sha=%s\n' "$BASE_SHA"
+            printf 'merge_candidate_sha=%s\n' "$MERGE_CANDIDATE_SHA"
+            printf 'final_merge_sha=%s\n' "$FINAL_MERGE_SHA"
+            printf 'workflow_sha=%s\n' "${GITHUB_WORKFLOW_SHA}"
+            printf 'workflow_run_id=%s\n' "${GITHUB_RUN_ID}"
+            git show -s --format='commit=%H%ntree=%T%nparents=%P' HEAD
+          } > "$RUNNER_TEMP/runtime-supervisor-target/identity.txt"
+          printf 'CARGO_TARGET_DIR=%s/runtime-supervisor-target-cargo\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'HEPTA_VERIFIER_TARGET_DIR=%s/runtime-supervisor-target-verifier\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Install exact candidate toolchain
+        run: |
+          set -euo pipefail
+          channel="$(python3 -c 'import tomllib; print(tomllib.load(open("codex-rs/rust-toolchain.toml", "rb"))["toolchain"]["channel"])')"
+          rustup toolchain install "$channel" --profile minimal --component clippy,rustfmt
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$channel" >> "$GITHUB_ENV"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Verify source truth and receipt validators
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_supervisor_status.py check
+          python3 -m unittest -v \
+            scripts.test_hepta_supervisor_status \
+            scripts.test_hepta_supervisor_external_receipt \
+            scripts.test_hepta_supervisor_ci_v3 \
+            scripts.test_hepta_supervisor_workflow \
+            > "$RUNNER_TEMP/runtime-supervisor-target/validator-tests.log" 2>&1
+      - name: Build verifier-only final daemon
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_supervisor_artifact_gate.py \
+            > "$RUNNER_TEMP/runtime-supervisor-target/artifact-gate.log" 2>&1
+          sha256sum "$HEPTA_VERIFIER_TARGET_DIR/release/hepta-supervisord" \
+            > "$RUNNER_TEMP/runtime-supervisor-target/binary.sha256"
+          sha256sum codex-rs/Cargo.lock \
+            > "$RUNNER_TEMP/runtime-supervisor-target/Cargo.lock.sha256"
+      - name: Run repository-native host baselines
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-supervisor --features qualification \
+            --test supervisor_hol_qualification \
+            --retries 0 --test-threads=1 --status-level all \
+            --final-status-level none --success-output never --no-fail-fast \
+            > "$RUNNER_TEMP/runtime-supervisor-target/hol-baseline.log" 2>&1
+          just test --locked -p codex-hepta-supervisor --features qualification \
+            --test sigkill_crash_matrix \
+            --retries 0 --test-threads=1 --status-level all \
+            --final-status-level none --success-output never --no-fail-fast \
+            > "$RUNNER_TEMP/runtime-supervisor-target/sigkill-baseline.log" 2>&1
+      - name: Execute complete operator target-host fault matrix
+        env:
+          FAULT_DRIVER: ${{ inputs.fault_driver }}
+          LANE: ${{ inputs.lane }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          BASE_SHA: ${{ inputs.base_sha }}
+          MERGE_CANDIDATE_SHA: ${{ inputs.merge_candidate_sha }}
+          TESTED_SHA: ${{ inputs.candidate_sha }}
+          FINAL_MERGE_SHA: ${{ inputs.final_merge_sha }}
+        run: |
+          set -euo pipefail
+          test "${FAULT_DRIVER#/}" != "$FAULT_DRIVER"
+          test -f "$FAULT_DRIVER"
+          test -x "$FAULT_DRIVER"
+          args=(
+            execute
+            --profile "$GITHUB_WORKSPACE/docs/modules/runtime.supervisor/TARGET_HOST_PROFILE.json"
+            --binary "$HEPTA_VERIFIER_TARGET_DIR/release/hepta-supervisord"
+            --output "$RUNNER_TEMP/runtime-supervisor-target/target-receipt.json"
+            --lane "$LANE"
+            --source-sha "$SOURCE_SHA"
+            --base-sha "$BASE_SHA"
+            --merge-candidate-sha "$MERGE_CANDIDATE_SHA"
+            --tested-sha "$TESTED_SHA"
+            --workflow-sha "$GITHUB_WORKFLOW_SHA"
+            --workflow-run-id "$GITHUB_RUN_ID"
+            --cargo-lock-sha256 "$(cut -d' ' -f1 "$RUNNER_TEMP/runtime-supervisor-target/Cargo.lock.sha256")"
+          )
+          if [ -n "$FINAL_MERGE_SHA" ]; then
+            args+=(--final-merge-sha "$FINAL_MERGE_SHA")
+          fi
+          "$FAULT_DRIVER" "${args[@]}"
+          python3 scripts/hepta_supervisor_external_receipt.py target \
+            "$RUNNER_TEMP/runtime-supervisor-target/target-receipt.json"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Retain target-host evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-supervisor-target-${{ github.run_id }}-${{ github.run_attempt }}-${{ inputs.target_os }}-${{ inputs.lane }}
+          path: ${{ runner.temp }}/runtime-supervisor-target/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
