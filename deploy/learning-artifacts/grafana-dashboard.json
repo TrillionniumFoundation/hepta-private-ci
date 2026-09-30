@@ -1,0 +1,118 @@
+{
+  "title": "learning.artifacts owner",
+  "uid": "hepta-learning-artifacts",
+  "schemaVersion": 39,
+  "timezone": "browser",
+  "refresh": "30s",
+  "tags": [
+    "hepta",
+    "learning.artifacts"
+  ],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Oldest pending attempt (s)",
+      "targets": [
+        {
+          "expr": "hepta_learning_artifact_oldest_pending_attempt_age_seconds"
+        }
+      ],
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Drain age (s)",
+      "targets": [
+        {
+          "expr": "hepta_learning_artifact_drain_age_seconds"
+        }
+      ],
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Persistence unknown",
+      "targets": [
+        {
+          "expr": "increase(hepta_learning_artifact_persistence_unknown_total[5m])"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Recovery failures / withdrawal blocks",
+      "targets": [
+        {
+          "expr": "increase(hepta_learning_artifact_recovery_reconciliation_failures_total[5m])",
+          "legendFormat": "recovery failures"
+        },
+        {
+          "expr": "increase(hepta_learning_artifact_withdrawal_blocks_total[5m])",
+          "legendFormat": "withdrawal blocks"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Publication outcomes",
+      "targets": [
+        {
+          "expr": "increase(hepta_learning_artifact_publications_succeeded_total[5m])",
+          "legendFormat": "succeeded"
+        },
+        {
+          "expr": "increase(hepta_learning_artifact_publications_failed_total[5m])",
+          "legendFormat": "failed"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Retention bytes",
+      "targets": [
+        {
+          "expr": "hepta_learning_artifact_pinned_bytes",
+          "legendFormat": "pinned"
+        },
+        {
+          "expr": "hepta_learning_artifact_pending_physical_erase_bytes",
+          "legendFormat": "pending physical erase"
+        }
+      ],
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      }
+    }
+  ]
+}
