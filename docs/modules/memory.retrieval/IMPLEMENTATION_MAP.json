@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3d09b79102d138d6ee0d767e5b6239a3cd57cc4b",
-    "tree": "96d71228731670a4aab2acf695ee7b0e64423d5a"
+    "commit": "5b629e4c362a599c2609f0e7a80e8e2c4d5088a7",
+    "tree": "f36b50df208685691d97bd16bdc74d626c6c63db"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -238,7 +238,7 @@
   "repositoryControlledGaps": [
     "Obtain green exact-head, current-main and ordered-parent synthetic-merge receipts for the final source snapshot, including blocking CI, Agentd process qualification, repository integrity, package tests, all-target Clippy, formatting, clean source and CodeQL.",
     "Qualify Agentd on a named protected host. Durable external frontier recovery, protected launcher isolation and real-process lifecycle kill-point tests remain external gates.",
-    "Bind the checked lifecycle append to the selected durable backend and prove uncertain-commit reconciliation; repository source now enforces monotonic identity, frontier, fence, terminal and quarantine transitions.",
+    "Bind the checked lifecycle append to the selected durable backend and prove uncertain-commit reconciliation; repository source now enforces exact committed-record idempotency plus monotonic identity, frontier, fence, terminal and quarantine transitions.",
     "Prove a killable worker boundary with enforced CPU, RSS, allocation and wall-time limits; cooperative cancellation and bounded permits are not hard isolation.",
     "Compose and qualify a real text encoder plus durable vector-index publisher before enabling Vector; compatibility remains the only activation mode.",
     "Execute the recovery matrix and nine-stage E2E matrix with real processes, at least 100 samples per case, and actual allocation, SQLite, CPU/RSS, contention and worker-exit counters against approved SLOs.",
@@ -321,8 +321,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "3d09b79102d138d6ee0d767e5b6239a3cd57cc4b",
-    "tree": "96d71228731670a4aab2acf695ee7b0e64423d5a"
+    "commit": "5b629e4c362a599c2609f0e7a80e8e2c4d5088a7",
+    "tree": "f36b50df208685691d97bd16bdc74d626c6c63db"
   },
   "observedSourcePaths": [
     ".github/workflows",
@@ -421,7 +421,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-retrieval",
-      "object": "6f81c304c03f914b35a122b44f8bcdd5b122b782"
+      "object": "3753ba286b70e2180277d146c0b4b6bd6a38badf"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/Cargo.toml",
@@ -469,7 +469,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/lifecycle_append.rs",
-      "object": "29fbfa3d1bad8d3f4e04b6adbd3fa74b10be8f24"
+      "object": "1842fe8f6b804c726030666775578063d42e10e7"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/src/product.rs",
@@ -529,7 +529,7 @@
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/tests/lifecycle_append_api.rs",
-      "object": "67d48268cdad0349f118d8d47b5e1fc1b962f60c"
+      "object": "75639e656b6b06f2532659f9f87d3b2402f92e54"
     },
     {
       "path": "codex-rs/hepta-memory-retrieval/tests/proposition_api.rs",
@@ -553,7 +553,7 @@
     },
     {
       "path": "docs/modules/memory.retrieval/RECOVERY_AND_OUTBOX.md",
-      "object": "f8be74e861c4d2bc2358af3500e84d6567c62bd6"
+      "object": "012cc4941b6fdd2693a85685a60fde01e68853f8"
     },
     {
       "path": "docs/modules/memory.retrieval/TECHNICAL.md",
