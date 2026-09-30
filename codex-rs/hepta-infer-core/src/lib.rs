@@ -279,3 +279,12 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+mod self_iteration_model;
+pub use self_iteration_model::MAX_SELF_ITERATION_MODEL_PROMPT_BYTES;
+pub use self_iteration_model::MAX_SELF_ITERATION_MODEL_RESPONSE_BYTES;
+pub use self_iteration_model::SelfIterationModelAssessmentV1;
+pub use self_iteration_model::SelfIterationModelErrorV1;
+pub use self_iteration_model::SelfIterationModelPortV1;
+pub use self_iteration_model::SelfIterationModelRequestV1;
+pub use self_iteration_model::SelfIterationModelRoleV1;
