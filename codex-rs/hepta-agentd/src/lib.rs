@@ -509,11 +509,21 @@ use event_buffer::EventBuffer;
 use state::AgentdState;
 
 #[cfg(feature = "server")]
+pub use self_iteration::AgentdGovernedParameterCandidateAssemblerV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdGovernedParameterGenerationCompilerV1;
+#[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationCanaryVerdictV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationCandidateAssemblerV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationCandidateV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationHandleV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationIndependentOwnersV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationModelCycleV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationPhaseV1;
 #[cfg(feature = "server")]

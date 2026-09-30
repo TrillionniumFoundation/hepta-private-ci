@@ -22,6 +22,17 @@ use crate::AgentdSignedEvaluationV1;
 mod contracts;
 pub use contracts::*;
 
+#[path = "self_iteration_cycle.rs"]
+mod cycle;
+pub use cycle::AgentdSelfIterationCandidateAssemblerV1;
+pub use cycle::AgentdSelfIterationIndependentOwnersV1;
+pub use cycle::AgentdSelfIterationModelCycleV1;
+
+#[path = "self_iteration_parameter_factory.rs"]
+mod parameter_factory;
+pub use parameter_factory::AgentdGovernedParameterCandidateAssemblerV1;
+pub use parameter_factory::AgentdGovernedParameterGenerationCompilerV1;
+
 #[path = "self_iteration_payload.rs"]
 mod payload;
 pub use payload::self_iteration_canary_payload_v1;
