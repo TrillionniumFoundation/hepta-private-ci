@@ -10,10 +10,11 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_DIRECTORY = ROOT / ".github/workflows"
+PROTECTED_WORKFLOW = "channel-matrix-protected-production.yml"
 EXPECTED_WORKFLOWS = (
     "channel-matrix-materialize.yml",
     "channel-matrix-preserve-unknown.yml",
-    "channel-matrix-protected-production.yml",
+    PROTECTED_WORKFLOW,
 )
 RESULT_SCHEMA = "hepta.channel-matrix-workflow-policy.v1"
 MAX_WORKFLOW_BYTES = 512 * 1024
@@ -32,6 +33,30 @@ FORBIDDEN_PATTERNS = {
         r"(?m)^\s*persist-credentials:\s*(?:true|['\"]true['\"])\s*$"
     ),
 }
+PROTECTED_CANDIDATE_EXECUTION_PATTERNS = {
+    "candidate_actions_checkout": re.compile(
+        r"(?m)^\s*ref:\s*\$\{\{\s*env\.CANDIDATE_SHA\s*\}\}\s*$"
+    ),
+    "candidate_git_checkout": re.compile(
+        r"(?m)\bgit\s+(?:checkout|switch)\b[^\n]*\$CANDIDATE_SHA"
+    ),
+    "candidate_worktree": re.compile(
+        r"(?m)\bgit\s+worktree\s+add\b[^\n]*\$CANDIDATE_SHA"
+    ),
+    "candidate_script_execution": re.compile(
+        r"(?m)\b(?:python3?|bash|sh)\b[^\n]*(?:\$CANDIDATE_SHA|candidate-checkout)"
+    ),
+}
+PROTECTED_MARKERS = (
+    "if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/main'",
+    "environment: channel-matrix-production-qualification",
+    "VERIFIER_SHA: ${{ github.sha }}",
+    "ref: ${{ env.VERIFIER_SHA }}",
+    'git merge-base --is-ancestor "$CANDIDATE_SHA" "$VERIFIER_SHA"',
+    '"candidateCodeExecuted": False',
+    "scripts/channel_matrix_production_bundle.py",
+    "production-qualification",
+)
 CHECKOUT = re.compile(r"(?m)^\s*(?:-\s+)?uses:\s*actions/checkout@[^ \n]+\s*$")
 
 
@@ -94,6 +119,28 @@ def validate_workflow(path: Path) -> dict[str, Any]:
     }
 
 
+def validate_protected_workflow(path: Path) -> dict[str, Any]:
+    row = validate_workflow(path)
+    text = _stable_text(path)
+    missing = [marker for marker in PROTECTED_MARKERS if marker not in text]
+    if missing:
+        raise ValueError(f"protected production workflow lacks marker: {missing[0]}")
+    violations = [
+        name
+        for name, pattern in PROTECTED_CANDIDATE_EXECUTION_PATTERNS.items()
+        if pattern.search(text)
+    ]
+    if violations:
+        raise ValueError(
+            "protected production workflow executes candidate code: "
+            + ",".join(violations)
+        )
+    row["protectedEnvironment"] = True
+    row["trustedVerifierOnly"] = True
+    row["candidateCodeExecuted"] = False
+    return row
+
+
 def validate_directory(directory: Path = WORKFLOW_DIRECTORY) -> dict[str, Any]:
     resolved = directory.resolve(strict=True)
     if directory.is_symlink() or not resolved.is_dir() or resolved != directory.absolute():
@@ -110,21 +157,14 @@ def validate_directory(directory: Path = WORKFLOW_DIRECTORY) -> dict[str, Any]:
         raise ValueError(
             f"closed channel.matrix workflow inventory mismatch: {observed!r}"
         )
-    workflows = [validate_workflow(resolved / name) for name in observed]
-    production = next(
-        row for row in workflows if row["path"].endswith("channel-matrix-protected-production.yml")
-    )
-    production_text = _stable_text(resolved / "channel-matrix-protected-production.yml")
-    for marker in (
-        "workflow_dispatch:",
-        "environment: channel-matrix-production-qualification",
-        "self-hosted",
-        "production-qualification",
-        "scripts/channel_matrix_production_bundle.py",
-    ):
-        if marker not in production_text:
-            raise ValueError(f"protected production workflow lacks marker: {marker}")
-    production["protectedEnvironment"] = True
+    workflows = []
+    for name in observed:
+        path = resolved / name
+        workflows.append(
+            validate_protected_workflow(path)
+            if name == PROTECTED_WORKFLOW
+            else validate_workflow(path)
+        )
     return {
         "schema": RESULT_SCHEMA,
         "result": "pass",

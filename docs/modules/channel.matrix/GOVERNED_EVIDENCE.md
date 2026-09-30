@@ -202,9 +202,15 @@ python3 scripts/channel_matrix_production_bundle.py \
 
 A valid bundle may set `productionQualified = true`; it always keeps
 `authorityGranted`, `activation`, `promotion` and `release` false. The manual
-`channel.matrix protected production qualification` workflow runs only in the
-protected `channel-matrix-production-qualification` environment on a labeled
-self-hosted runner. It checks out the exact candidate without credentials,
-reads candidate-specific evidence from a protected external mount, validates the
-three signatures and closed manifests, and uploads only bounded validation
-receipts. It never receives signing keys and cannot edit, commit or push source.
+`channel.matrix protected production qualification` workflow may run only from
+`refs/heads/main` in the protected `channel-matrix-production-qualification`
+environment on a labeled self-hosted runner. It checks out and executes only the
+trusted verifier revision from `main`, requires the candidate commit/tree to
+already be an ancestor of that trusted revision, and never checks out or
+executes candidate code. The verifier/profile/workflow commit and tree are bound
+into retained receipts separately from the qualified candidate identity.
+
+The workflow reads candidate-specific evidence from a protected external mount,
+validates the three signatures and closed manifests, and uploads only bounded
+validation receipts. It receives no signing keys and cannot edit, commit or push
+source.

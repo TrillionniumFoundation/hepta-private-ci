@@ -36,6 +36,14 @@ class WorkflowPolicyTests(unittest.TestCase):
             set(policy.EXPECTED_WORKFLOWS),
         )
         self.assertTrue(all(not item["sourceMutationAllowed"] for item in row["workflows"]))
+        protected = next(
+            item
+            for item in row["workflows"]
+            if Path(item["path"]).name == policy.PROTECTED_WORKFLOW
+        )
+        self.assertTrue(protected["protectedEnvironment"])
+        self.assertTrue(protected["trustedVerifierOnly"])
+        self.assertFalse(protected["candidateCodeExecuted"])
 
     def test_write_permissions_and_source_mutation_fail_closed(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -68,6 +76,50 @@ class WorkflowPolicyTests(unittest.TestCase):
             )
             with self.assertRaises(ValueError):
                 policy.validate_workflow(path)
+
+    def test_protected_runner_never_checks_out_or_executes_candidate_code(self):
+        source = (
+            ROOT / ".github/workflows" / policy.PROTECTED_WORKFLOW
+        ).read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary).resolve() / policy.PROTECTED_WORKFLOW
+            path.write_text(
+                source.replace(
+                    "ref: ${{ env.VERIFIER_SHA }}",
+                    "ref: ${{ env.CANDIDATE_SHA }}",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                policy.validate_protected_workflow(path)
+            path.write_text(
+                source.replace(
+                    'git merge-base --is-ancestor "$CANDIDATE_SHA" "$VERIFIER_SHA"',
+                    'git checkout "$CANDIDATE_SHA"',
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                policy.validate_protected_workflow(path)
+
+    def test_protected_runner_is_main_only(self):
+        source = (
+            ROOT / ".github/workflows" / policy.PROTECTED_WORKFLOW
+        ).read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary).resolve() / policy.PROTECTED_WORKFLOW
+            path.write_text(
+                source.replace(
+                    " && github.ref == 'refs/heads/main'",
+                    "",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                policy.validate_protected_workflow(path)
 
 
 if __name__ == "__main__":
