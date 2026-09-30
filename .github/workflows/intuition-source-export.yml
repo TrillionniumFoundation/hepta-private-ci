@@ -69,7 +69,7 @@ jobs:
           import hashlib
           import pathlib
 
-          expected = "d9988033416a6bf64588b593c34496abba4d3f66a20df57d749a6308500ca3dc"
+          expected = "65975856ab09997a83bc4587639c6f3e49b07f5c5c9fafb283d01c1a2efce920"
           parts = [
               pathlib.Path(f".git/part-{index:03d}.patchpart").read_bytes()
               for index in range(3)
@@ -136,22 +136,52 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          (cd codex-rs && cargo fmt --all)
-          python3 scripts/intuition_legacy_consumers.py
-          python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
+          diagnostics="$RUNNER_TEMP/intuition-authoring-commands"
+          mkdir -p "$diagnostics"
+
+          run_checked() {
+            local name="$1"
+            shift
+            printf '=== %s ===\n' "$name" | tee "$diagnostics/$name.log"
+            set +e
+            "$@" 2>&1 | tee -a "$diagnostics/$name.log"
+            local status=${PIPESTATUS[0]}
+            set -e
+            printf '\nexit_code=%s\n' "$status" | tee -a "$diagnostics/$name.log"
+            return "$status"
+          }
+
+          run_checked cargo-fmt bash -lc 'cd codex-rs && cargo fmt --all'
+          run_checked legacy-consumers python3 scripts/intuition_legacy_consumers.py
+          run_checked python-tests python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
 
       - name: Run final-use and existing policy regressions
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-intuition
-          cargo test --locked -p codex-hepta-intelligence intuition
-          cargo test --locked -p codex-hepta-agentd --test intuition_policy_final_use_v4
-          cargo test --locked -p codex-hepta-agentd --test intuition_policy_commit_boundary
-          cargo test --locked -p codex-hepta-agentd --lib intuition_policy
-          cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
-          cargo fmt --all -- --check
+          diagnostics="$RUNNER_TEMP/intuition-authoring-commands"
+          mkdir -p "$diagnostics"
+
+          run_checked() {
+            local name="$1"
+            shift
+            printf '=== %s ===\n' "$name" | tee "$diagnostics/$name.log"
+            set +e
+            "$@" 2>&1 | tee -a "$diagnostics/$name.log"
+            local status=${PIPESTATUS[0]}
+            set -e
+            printf '\nexit_code=%s\n' "$status" | tee -a "$diagnostics/$name.log"
+            return "$status"
+          }
+
+          run_checked intuition-tests cargo test --locked -p codex-hepta-intuition
+          run_checked intelligence-intuition-tests cargo test --locked -p codex-hepta-intelligence intuition
+          run_checked final-use-v4 cargo test --locked -p codex-hepta-agentd --test intuition_policy_final_use_v4
+          run_checked commit-boundary cargo test --locked -p codex-hepta-agentd --test intuition_policy_commit_boundary
+          run_checked agentd-lib cargo test --locked -p codex-hepta-agentd --lib intuition_policy
+          run_checked agentd-clippy cargo clippy --locked -p codex-hepta-agentd --lib --tests -- -D warnings
+          run_checked final-fmt cargo fmt --all -- --check
 
       - name: Publish one clean source commit with exact lease
         shell: bash
@@ -189,6 +219,9 @@ jobs:
           cp .git/intuition-source.patch "$output/source.patch" 2>/dev/null || true
           cp .git/intuition-source.patch.sha256 "$output/source.patch.sha256" 2>/dev/null || true
           cp .git/intuition-source.patch.recovery "$output/source.patch.recovery" 2>/dev/null || true
+          if test -d "$RUNNER_TEMP/intuition-authoring-commands"; then
+            cp -R "$RUNNER_TEMP/intuition-authoring-commands" "$output/commands"
+          fi
 
       - name: Upload failure diagnostics
         if: failure()
