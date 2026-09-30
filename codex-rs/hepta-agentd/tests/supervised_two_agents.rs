@@ -8,6 +8,8 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::bail;
 use anyhow::ensure;
+use codex_hepta_agentd::AgentdClient;
+use codex_hepta_agentd::MemoryFederationScopeKind;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_memory::CognitiveAccess;
@@ -51,6 +53,40 @@ async fn two_supervised_real_agentd_processes_are_fault_isolated() -> Result<()>
     assert_eq!(health_a.home_root, layout_a.home_root());
     assert_eq!(health_b.home_root, layout_b.home_root());
     assert_ne!(health_a.run_root, health_b.run_root);
+
+    let capabilities_before = client_b.memory_federation_list(16).await?;
+    let misrouted = AgentdClient::new(
+        layout_b.agentd_control_socket().to_path_buf(),
+        agent_a.clone(),
+        1,
+    )?;
+    assert!(
+        misrouted
+            .memory_federation_grant(agent_a.clone(), MemoryFederationScopeKind::AgentPrivate, 60,)
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        client_b.memory_federation_list(16).await?,
+        capabilities_before
+    );
+
+    // Path validation alone cannot bind the receiver: even the expected
+    // canonical filename may be a symlink to another Agent's live socket.
+    let socket_a = layout_a.agentd_control_socket();
+    let parked_socket_a = socket_a.with_extension("parked");
+    std::fs::rename(socket_a, &parked_socket_a)?;
+    std::os::unix::fs::symlink(layout_b.agentd_control_socket(), socket_a)?;
+    let symlink_result = client_a
+        .memory_federation_grant(agent_a.clone(), MemoryFederationScopeKind::AgentPrivate, 60)
+        .await;
+    std::fs::remove_file(socket_a)?;
+    std::fs::rename(parked_socket_a, socket_a)?;
+    assert!(symlink_result.is_err());
+    assert_eq!(
+        client_b.memory_federation_list(16).await?,
+        capabilities_before
+    );
 
     let ingress_a = client_a.session_ingress().await?;
     let ingress_b = client_b.session_ingress().await?;
