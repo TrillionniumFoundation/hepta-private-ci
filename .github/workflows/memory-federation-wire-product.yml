@@ -31,10 +31,12 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Verify canonical V2 product adapter
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
           cargo fmt --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml -- --check
           cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml -p codex-hepta-memory-federation --lib
           cargo test --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --lib
@@ -42,3 +44,11 @@ jobs:
           cargo clippy --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --all-targets -- -D warnings
           cargo run --locked --manifest-path codex-rs/hepta-memory-federation-wire/Cargo.toml --bin memory_federation_capacity_probe -- "$RUNNER_TEMP/memory-federation-capacity.json"
           test -s "$RUNNER_TEMP/memory-federation-capacity.json"
+
+      - name: Retain capacity diagnostics for the verified source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-capacity-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/memory-federation-capacity.json
+          if-no-files-found: error
+          retention-days: 30

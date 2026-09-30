@@ -21,12 +21,12 @@ use super::body::decode_response_v2;
 use super::body::encode_query_v2;
 use super::body::encode_response_v2;
 use super::body::validate_response_for_query;
-use super::body::validate_response_shape;
 use super::context::FederationAuthenticatedTransportV1;
 use super::context::FederationProductProfileV1;
 use super::context::FederationTransportContextVerifierV1;
 use super::error::FederationProductErrorV1;
 use super::packet::FederationProductPacketV1;
+use super::packet::require_profile_packet_bound;
 
 /// Query admitted only after the selected transport context, authenticated
 /// frame and canonical V2 body have all been checked.
@@ -131,10 +131,14 @@ where
                 None
             }
         };
-        let wire_admission = self.wire.admit(
+        let wire_admission = self.wire.admit_with_reply_check(
             transport.peer_id(),
             packet.authenticated_frame(),
             now_unix_ms,
+            |frame| {
+                require_profile_packet_bound(frame, &[], &self.profile)
+                    .map_err(|_| crate::FederationHostError::OutboundFrameRejected)
+            },
         )?;
         match (wire_admission, preflight_query) {
             (FederationHostAdmissionV1::Query(wire), Some(query)) => Ok(
@@ -167,6 +171,9 @@ where
         now_unix_ms: u64,
     ) -> Result<Vec<u8>, FederationProductErrorV1> {
         validate_response_for_query(&response, &admitted.query)?;
+        if now_unix_ms >= response.expires_unix_ms {
+            return Err(FederationV2Error::ResponseExpired.into());
+        }
         if response.expires_unix_ms > admitted.wire.response_expiry_ceiling_unix_ms()
             || response.expires_unix_ms > admitted.transport_expires_unix_ms
         {
@@ -184,9 +191,15 @@ where
             Digest32::of_bytes(&body),
             frontier,
         )?;
-        let frame = self
-            .wire
-            .complete_query(admitted.wire, result, now_unix_ms)?;
+        let frame = self.wire.complete_query_with_frame_check(
+            admitted.wire,
+            result,
+            now_unix_ms,
+            |frame| {
+                require_profile_packet_bound(frame, &body, &self.profile)
+                    .map_err(|_| crate::FederationHostError::OutboundFrameRejected)
+            },
+        )?;
         FederationProductPacketV1::new(frame, body)?.encode()
     }
 
@@ -254,11 +267,15 @@ where
             generation_vector_digest: query.generation_vector_digest,
             maximum_results: query.maximum_results,
         };
-        let frame = self.wire.begin_query(
+        let frame = self.wire.begin_query_with_frame_check(
             &query.peer_id,
             wire_query,
             now_unix_ms,
             query.deadline_unix_ms,
+            |frame| {
+                require_profile_packet_bound(frame, &body, &self.profile)
+                    .map_err(|_| crate::FederationClientError::OutboundFrameRejected)
+            },
         )?;
         FederationProductPacketV1::new(frame, body)?.encode()
     }
@@ -336,7 +353,6 @@ where
         {
             return Err(FederationProductErrorV1::ResponseBindingMismatch);
         }
-        validate_response_shape(&response)?;
         if now_unix_ms >= response.expires_unix_ms {
             return Err(FederationV2Error::ResponseExpired.into());
         }

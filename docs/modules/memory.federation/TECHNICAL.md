@@ -29,10 +29,12 @@ Plane `adapter`, kind `service`, state model `read_only_remote` and architecture
 Declared exclusive target roots:
 
 - `codex-rs/hepta-memory-federation`
+- `codex-rs/hepta-memory-federation-wire`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-memory-federation`
+- `codex-rs/hepta-memory-federation-wire`
 
 Non-authoritative implementation evidence roots:
 
@@ -279,6 +281,7 @@ For `memory.federation`, this document grants no runtime, production, model, pro
 - Owner/deputy: `cognitive-platform` / `security-authority`.
 - Allowed write paths:
 - `codex-rs/hepta-memory-federation/**`
+- `codex-rs/hepta-memory-federation-wire/**` (authenticated protocol and product-adapter source; candidate only).
 - Development predecessors:
 - `MEM-0-TYPES`
 - Activation predecessors:
@@ -330,5 +333,6 @@ The following additional work packages are source-planning envelopes introduced 
 The bootstrap source-location obligation for `memory.federation` is implemented by work package `MEM-3-FEDERATION` in:
 
 - `codex-rs/hepta-memory-federation`
+- `codex-rs/hepta-memory-federation-wire`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

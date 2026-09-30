@@ -12,6 +12,7 @@ pub const MAX_FEDERATION_PRODUCT_PACKET_BYTES: usize =
 
 const PACKET_MAGIC: [u8; 4] = *b"HFP1";
 const PACKET_VERSION: u16 = 1;
+const PACKET_HEADER_BYTES: usize = 14;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederationProductPacketV1 {
@@ -49,8 +50,9 @@ impl FederationProductPacketV1 {
             .map_err(|_| FederationProductErrorV1::PacketOversize)?;
         let body_len =
             u32::try_from(self.body.len()).map_err(|_| FederationProductErrorV1::PacketOversize)?;
-        let mut bytes =
-            Vec::with_capacity(4 + 2 + 4 + self.authenticated_frame.len() + 4 + self.body.len());
+        let mut bytes = Vec::with_capacity(
+            PACKET_HEADER_BYTES + self.authenticated_frame.len() + self.body.len(),
+        );
         bytes.extend_from_slice(&PACKET_MAGIC);
         bytes.extend_from_slice(&PACKET_VERSION.to_be_bytes());
         bytes.extend_from_slice(&frame_len.to_be_bytes());
@@ -90,6 +92,21 @@ impl FederationProductPacketV1 {
         reader.require_eof()?;
         Self::new(authenticated_frame, body)
     }
+}
+
+pub(super) fn require_profile_packet_bound(
+    frame: &[u8],
+    body: &[u8],
+    profile: &FederationProductProfileV1,
+) -> Result<(), FederationProductErrorV1> {
+    if PACKET_HEADER_BYTES
+        .saturating_add(frame.len())
+        .saturating_add(body.len())
+        > profile.maximum_packet_bytes()
+    {
+        return Err(FederationProductErrorV1::PacketOversize);
+    }
+    Ok(())
 }
 
 pub(super) fn require_body_bound(bytes: &[u8]) -> Result<(), FederationProductErrorV1> {

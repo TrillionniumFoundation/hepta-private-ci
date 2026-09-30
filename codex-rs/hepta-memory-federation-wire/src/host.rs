@@ -245,6 +245,19 @@ where
         payload: &[u8],
         now_unix_ms: u64,
     ) -> Result<FederationHostAdmissionV1, FederationHostError> {
+        self.admit_with_reply_check(transport_peer_id, payload, now_unix_ms, |_| Ok(()))
+    }
+
+    pub(crate) fn admit_with_reply_check<F>(
+        &mut self,
+        transport_peer_id: &StableId,
+        payload: &[u8],
+        now_unix_ms: u64,
+        check_reply: F,
+    ) -> Result<FederationHostAdmissionV1, FederationHostError>
+    where
+        F: FnOnce(&[u8]) -> Result<(), FederationHostError>,
+    {
         let (schemas, codec) = registered_codec_v1().map_err(|_| FederationHostError::Codec)?;
         let frame = decode_registered_frame_v1(&schemas, &codec, payload)
             .map_err(|_| FederationHostError::Codec)?;
@@ -308,6 +321,7 @@ where
                     now_unix_ms,
                     verified.expires_unix_ms(),
                 )?;
+                check_reply(&reply)?;
                 FederationHostAdmissionV1::Reply(reply)
             }
             FederationWireMessageV1::Response(_) | FederationWireMessageV1::CancelAck(_) => {
@@ -324,6 +338,19 @@ where
         result: FederationHostQueryResultV1,
         now_unix_ms: u64,
     ) -> Result<Vec<u8>, FederationHostError> {
+        self.complete_query_with_frame_check(admitted, result, now_unix_ms, |_| Ok(()))
+    }
+
+    pub(crate) fn complete_query_with_frame_check<F>(
+        &mut self,
+        admitted: AdmittedFederationQueryV1,
+        result: FederationHostQueryResultV1,
+        now_unix_ms: u64,
+        check_frame: F,
+    ) -> Result<Vec<u8>, FederationHostError>
+    where
+        F: FnOnce(&[u8]) -> Result<(), FederationHostError>,
+    {
         // Admission is not perpetual authority. A live outbound signing key
         // cannot authorize a response to a request whose inbound credential was
         // revoked, rotated or expired while the owner read was in progress.
@@ -368,6 +395,7 @@ where
             now_unix_ms,
             admitted.response_expiry_ceiling_unix_ms,
         )?;
+        check_frame(&response)?;
         self.commit_recovery(next_recovery)?;
         Ok(response)
     }
@@ -473,6 +501,7 @@ where
 #[derive(Debug)]
 pub enum FederationHostError {
     Codec,
+    OutboundFrameRejected,
     InvalidOutboundCredential,
     MissingOutboundCredential,
     PeerCapacityExhausted,
@@ -492,6 +521,9 @@ impl fmt::Display for FederationHostError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Codec => formatter.write_str("authenticated federation codec rejected the frame"),
+            Self::OutboundFrameRejected => {
+                formatter.write_str("outbound federation frame exceeds the product packet profile")
+            }
             Self::InvalidOutboundCredential => {
                 formatter.write_str("outbound credential selector is invalid")
             }

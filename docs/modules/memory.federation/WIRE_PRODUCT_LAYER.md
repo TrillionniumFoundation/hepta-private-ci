@@ -54,6 +54,12 @@ this is a protocol/adapter candidate, not usable cross-host product recall.
 
 ## Failure and recovery semantics
 
+- Outbound query, response and cancellation-reply packet lengths are checked
+  against the selected product profile before pending/terminal/replay state
+  commits. Rejection preserves the prior durable snapshot and replay slots.
+- An owner response already expired at completion is rejected before terminal
+  persistence. Response shape and digest validation performed by body decoding
+  is reused by client preflight.
 - Lock contention before network entry reports unavailable coverage; after
   entry it reports indeterminate coverage and retains pending intent.
 - Durable query preparation precedes exchange. A fresh local clock rejects

@@ -5,7 +5,6 @@ use std::sync::atomic::Ordering;
 use std::sync::mpsc;
 use std::task::Context;
 use std::task::Poll;
-use std::task::Wake;
 use std::task::Waker;
 use std::time::Duration;
 
@@ -167,15 +166,9 @@ fn query() -> FederatedQueryV2 {
     }
 }
 
-struct NoopWake;
-
-impl Wake for NoopWake {
-    fn wake(self: Arc<Self>) {}
-}
-
 fn poll_once<F: Future + ?Sized>(future: Pin<&mut F>) -> Poll<F::Output> {
-    let waker = Waker::from(Arc::new(NoopWake));
-    future.poll(&mut Context::from_waker(&waker))
+    let waker = Waker::noop();
+    future.poll(&mut Context::from_waker(waker))
 }
 
 #[test]

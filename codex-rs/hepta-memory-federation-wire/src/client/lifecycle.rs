@@ -122,12 +122,33 @@ where
         now_unix_ms: u64,
         expiry_ceiling_unix_ms: u64,
     ) -> Result<Vec<u8>, FederationClientError> {
+        self.begin_query_with_frame_check(
+            receiver_peer_id,
+            query,
+            now_unix_ms,
+            expiry_ceiling_unix_ms,
+            |_| Ok(()),
+        )
+    }
+
+    pub(crate) fn begin_query_with_frame_check<F>(
+        &mut self,
+        receiver_peer_id: &StableId,
+        query: FederationQueryMessageV1,
+        now_unix_ms: u64,
+        expiry_ceiling_unix_ms: u64,
+        check_frame: F,
+    ) -> Result<Vec<u8>, FederationClientError>
+    where
+        F: FnOnce(&[u8]) -> Result<(), FederationClientError>,
+    {
         let sealed = self.seal_outbound(
             receiver_peer_id,
             FederationWireMessageV1::Query(query.clone()),
             now_unix_ms,
             expiry_ceiling_unix_ms,
         )?;
+        check_frame(&sealed.payload)?;
         let mut next = self.clone_recovery(now_unix_ms)?;
         next.begin_attempt(
             receiver_peer_id,
