@@ -29,8 +29,9 @@ on:
       - 'scripts/verify_channel_matrix_candidate.py'
       - 'tests/fixtures/run-hermetic-synapse.sh'
       - 'justfile'
-  workflow_dispatch: {}
 
+# Candidate code is never run from a privileged/manual default-branch context.
+# Protected production only validates detached, independently signed evidence.
 permissions:
   contents: read
 
@@ -39,22 +40,33 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  REQUESTED_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
-  GITHUB_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
+  SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  REQUESTED_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+  GITHUB_MERGE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
   FINAL_MERGE_SHA: ${{ github.event_name == 'push' && github.sha || '' }}
-  EVENT_KIND: ${{ github.event_name == 'push' && 'main_push' || github.event_name }}
-  PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+  EVENT_KIND: ${{ github.event_name == 'push' && 'main_push' || 'pull_request' }}
   PYTHONDONTWRITEBYTECODE: '1'
   CARGO_INCREMENTAL: '0'
   CARGO_BUILD_JOBS: '2'
 
 jobs:
-  source-head:
-    name: Matrix source-head contract
+  qualify:
+    name: Matrix ${{ matrix.lane }} contract
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - lane: source-head
+            stage: source-head
+            artifact: source-head
+            evidence: matrix-source-head
+          - lane: base-merge
+            stage: base-merge
+            artifact: base-merge
+            evidence: matrix-base-merge
     steps:
       - name: Checkout exact source candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -68,160 +80,91 @@ jobs:
           rustup component add rustfmt clippy
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends sqlite3 libsqlite3-dev binutils
-          mkdir -p "$RUNNER_TEMP/matrix-source-head"
+          mkdir -p "$RUNNER_TEMP/${{ matrix.evidence }}"
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Resolve immutable identities
+      - name: Resolve immutable lane identity
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           base="$REQUESTED_BASE_SHA"
-          if test -z "$base"; then base="$(git rev-parse origin/main)"; fi
+          test -n "$base"
           test "$(git rev-parse "$base^{commit}")" = "$base"
+          tested="$SOURCE_SHA"
+          if test '${{ matrix.lane }}' = base-merge; then
+            tree="$(git merge-tree --write-tree "$base" "$SOURCE_SHA")"
+            export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
+            export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+            tested="$(printf '%s\n' 'channel.matrix deterministic merge candidate' | git -c user.name='channel.matrix exact candidate' -c user.email='channel-matrix@invalid' commit-tree "$tree" -p "$base" -p "$SOURCE_SHA")"
+            git checkout --detach "$tested"
+            test "$(git rev-parse HEAD^{tree})" = "$tree"
+          fi
           echo "BASE_SHA=$base" >> "$GITHUB_ENV"
-      - name: Bind tracked source provenance and exact bytes
+          echo "TESTED_SHA=$tested" >> "$GITHUB_ENV"
+          echo "EVIDENCE_DIR=$RUNNER_TEMP/${{ matrix.evidence }}" >> "$GITHUB_ENV"
+      - name: Verify bounded source-head provenance scanner
+        if: matrix.lane == 'source-head'
+        run: python3 -m unittest scripts.tests.test_channel_matrix_source_provenance -v
+      - name: Bind tracked source-head provenance and exact bytes
+        if: matrix.lane == 'source-head'
         run: |
           set -euo pipefail
-          evidence="$RUNNER_TEMP/matrix-source-head"
-          python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$SOURCE_SHA" --output "$evidence/candidate.json"
-          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$SOURCE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane source-head --output "$evidence/source.json"
-          python3 scripts/channel_matrix_source_provenance.py --expected-sha "$SOURCE_SHA" --stage source-head --output "$evidence/source-provenance.json"
+          python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$TESTED_SHA" --output "$EVIDENCE_DIR/candidate.json"
+          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$TESTED_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane source-head --output "$EVIDENCE_DIR/source.json"
+          python3 scripts/channel_matrix_source_provenance.py --expected-sha "$TESTED_SHA" --stage source-head --output "$EVIDENCE_DIR/source-provenance.json"
       - name: Execute locked source-head qualification
+        if: matrix.lane == 'source-head'
         run: |
           set -uo pipefail
-          evidence="$RUNNER_TEMP/matrix-source-head"
           result=0
           for label in compile api-compile-fail focused-tests clippy format; do
-            python3 scripts/channel_matrix_evidence_v2.py run --directory "$evidence" --label "$label" || result=1
+            python3 scripts/channel_matrix_evidence_v2.py run --directory "$EVIDENCE_DIR" --label "$label" || result=1
           done
-          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$SOURCE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane source-head --output "$evidence/source-after.json" || result=1
-          python3 scripts/channel_matrix_status.py --directory "$evidence" || result=1
-          python3 scripts/channel_matrix_qualification.py --directory "$evidence" || result=1
+          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$TESTED_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane source-head --output "$EVIDENCE_DIR/source-after.json" || result=1
+          python3 scripts/channel_matrix_status.py --directory "$EVIDENCE_DIR" || result=1
+          python3 scripts/channel_matrix_qualification.py --directory "$EVIDENCE_DIR" || result=1
           if test "$result" -eq 0; then job_status=success; else job_status=failure; fi
-          python3 scripts/channel_matrix_evidence_v2.py manifest --directory "$evidence" --job-status "$job_status" || result=1
+          python3 scripts/channel_matrix_evidence_v2.py manifest --directory "$EVIDENCE_DIR" --job-status "$job_status" || result=1
           exit "$result"
-      - name: Retain source-head evidence
+      - name: Verify bounded base-merge provenance scanner
+        if: matrix.lane == 'base-merge'
+        run: python3 -m unittest scripts.tests.test_channel_matrix_source_provenance -v
+      - name: Bind tracked base-merge provenance and exact bytes
+        if: matrix.lane == 'base-merge'
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$TESTED_SHA" --output "$EVIDENCE_DIR/candidate.json"
+          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$TESTED_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane base-merge --output "$EVIDENCE_DIR/source.json"
+          python3 scripts/channel_matrix_source_provenance.py --expected-sha "$TESTED_SHA" --stage base-merge --output "$EVIDENCE_DIR/source-provenance.json"
+      - name: Execute locked base-merge qualification
+        if: matrix.lane == 'base-merge'
+        run: |
+          set -uo pipefail
+          result=0
+          for label in compile api-compile-fail focused-tests clippy format; do
+            python3 scripts/channel_matrix_evidence_v2.py run --directory "$EVIDENCE_DIR" --label "$label" || result=1
+          done
+          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$TESTED_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane base-merge --output "$EVIDENCE_DIR/source-after.json" || result=1
+          python3 scripts/channel_matrix_status.py --directory "$EVIDENCE_DIR" || result=1
+          python3 scripts/channel_matrix_qualification.py --directory "$EVIDENCE_DIR" || result=1
+          if test "$result" -eq 0; then job_status=success; else job_status=failure; fi
+          python3 scripts/channel_matrix_evidence_v2.py manifest --directory "$EVIDENCE_DIR" --job-status "$job_status" || result=1
+          exit "$result"
+      - name: Retain immutable lane evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: channel-matrix-source-head-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/matrix-source-head/
-          if-no-files-found: error
-          retention-days: 30
-
-  deterministic-merge:
-    name: Matrix deterministic-merge contract
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
-    steps:
-      - name: Checkout exact source candidate
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Install exact-candidate prerequisites
-        run: |
-          set -euo pipefail
-          rustup component add rustfmt clippy
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends sqlite3 libsqlite3-dev binutils
-          mkdir -p "$RUNNER_TEMP/matrix-base-merge"
-      - name: Install pinned repository test tools
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-      - name: Materialize deterministic base merge
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          base="$REQUESTED_BASE_SHA"
-          if test -z "$base"; then base="$(git rev-parse origin/main)"; fi
-          tree="$(git merge-tree --write-tree "$base" "$SOURCE_SHA")"
-          export GIT_AUTHOR_NAME='channel.matrix exact candidate'
-          export GIT_AUTHOR_EMAIL='channel-matrix@invalid'
-          export GIT_AUTHOR_DATE='2000-01-01T00:00:00Z'
-          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
-          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-          export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
-          merge="$(printf '%s\n' 'channel.matrix deterministic merge candidate' | git commit-tree "$tree" -p "$base" -p "$SOURCE_SHA")"
-          git checkout --detach "$merge"
-          test "$(git rev-parse HEAD^{tree})" = "$tree"
-          echo "BASE_SHA=$base" >> "$GITHUB_ENV"
-          echo "MERGE_SHA=$merge" >> "$GITHUB_ENV"
-      - name: Bind tracked merge provenance and exact bytes
-        run: |
-          set -euo pipefail
-          evidence="$RUNNER_TEMP/matrix-base-merge"
-          python3 scripts/verify_channel_matrix_candidate.py --expected-sha "$MERGE_SHA" --output "$evidence/candidate.json"
-          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$MERGE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane base-merge --output "$evidence/source.json"
-          python3 scripts/channel_matrix_source_provenance.py --expected-sha "$MERGE_SHA" --stage base-merge --output "$evidence/source-provenance.json"
-      - name: Execute locked merge qualification
-        run: |
-          set -uo pipefail
-          evidence="$RUNNER_TEMP/matrix-base-merge"
-          result=0
-          for label in compile api-compile-fail focused-tests clippy format; do
-            python3 scripts/channel_matrix_evidence_v2.py run --directory "$evidence" --label "$label" || result=1
-          done
-          python3 scripts/channel_matrix_evidence_v2.py snapshot --expected-sha "$MERGE_SHA" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --lane base-merge --output "$evidence/source-after.json" || result=1
-          python3 scripts/channel_matrix_status.py --directory "$evidence" || result=1
-          python3 scripts/channel_matrix_qualification.py --directory "$evidence" || result=1
-          if test "$result" -eq 0; then job_status=success; else job_status=failure; fi
-          python3 scripts/channel_matrix_evidence_v2.py manifest --directory "$evidence" --job-status "$job_status" || result=1
-          exit "$result"
-      - name: Retain deterministic-merge evidence
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: channel-matrix-base-merge-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/matrix-base-merge/
-          if-no-files-found: error
-          retention-days: 30
-
-  paired-acceptance:
-    name: Matrix paired repository receipt
-    if: needs.source-head.result == 'success' && needs.deterministic-merge.result == 'success'
-    needs: [source-head, deterministic-merge]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - name: Checkout exact source candidate
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ env.SOURCE_SHA }}
-          persist-credentials: false
-      - name: Download source-head evidence
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: channel-matrix-source-head-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/pair/source-head
-      - name: Download deterministic-merge evidence
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: channel-matrix-base-merge-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/pair/base-merge
-      - name: Require one exact paired receipt
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/pair/result"
-          python3 scripts/channel_matrix_pair_acceptance_v2.py --source-head "$RUNNER_TEMP/pair/source-head" --base-merge "$RUNNER_TEMP/pair/base-merge" --output "$RUNNER_TEMP/pair/result/paired-qualification.json"
-          sha256sum "$RUNNER_TEMP/pair/result/paired-qualification.json" > "$RUNNER_TEMP/pair/result/paired-qualification.sha256"
-      - name: Retain paired receipt
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: channel-matrix-paired-qualification-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/pair/result/
+          name: channel-matrix-${{ matrix.artifact }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/${{ matrix.evidence }}/
           if-no-files-found: error
           retention-days: 30
 
   readiness:
-    name: Matrix readiness manifest
+    name: Matrix paired receipt and readiness manifest
     if: always()
-    needs: [source-head, deterministic-merge, paired-acceptance]
+    needs: [qualify]
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -231,15 +174,25 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Resolve base, workflow and GitHub merge identities
+      - name: Bind pull-request synthetic merge identity
+        if: github.event_name == 'pull_request'
+        env:
+          EVENT_PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          test -n "$EVENT_PR_NUMBER"
+          test -n "$GITHUB_MERGE_SHA"
+          git fetch --no-tags origin "+refs/pull/$EVENT_PR_NUMBER/merge:refs/remotes/pull/$EVENT_PR_NUMBER/merge"
+          observed="$(git rev-parse "refs/remotes/pull/$EVENT_PR_NUMBER/merge^{commit}")"
+          test "$observed" = "$GITHUB_MERGE_SHA"
+      - name: Resolve base and workflow identities
         run: |
           set -euo pipefail
           base="$REQUESTED_BASE_SHA"
-          if test -z "$base"; then base="$(git rev-parse origin/main)"; fi
+          test -n "$base"
+          test "$(git rev-parse "$base^{commit}")" = "$base"
+          test "$(git rev-parse "$GITHUB_MERGE_SHA^{commit}")" = "$GITHUB_MERGE_SHA"
           workflow_sha="$(git rev-parse "$SOURCE_SHA:.github/workflows/channel-matrix-preserve-unknown.yml")"
-          if test -n "$PR_NUMBER"; then
-            git fetch --no-tags origin "+refs/pull/$PR_NUMBER/merge:refs/remotes/pull/$PR_NUMBER/merge" || true
-          fi
           echo "BASE_SHA=$base" >> "$GITHUB_ENV"
           echo "WORKFLOW_SHA=$workflow_sha" >> "$GITHUB_ENV"
       - name: Download source-head evidence
@@ -254,20 +207,20 @@ jobs:
         with:
           name: channel-matrix-base-merge-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/readiness/base-merge
-      - name: Download paired repository receipt
-        continue-on-error: true
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: channel-matrix-paired-qualification-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/readiness/paired
-      - name: Generate one non-mixable readiness manifest
+      - name: Generate one non-mixable receipt, manifest and status bundle
         run: |
           set +e
-          mkdir -p "$RUNNER_TEMP/readiness/result"
-          python3 scripts/channel_matrix_readiness.py --source-head "$RUNNER_TEMP/readiness/source-head" --base-merge "$RUNNER_TEMP/readiness/base-merge" --paired "$RUNNER_TEMP/readiness/paired/paired-qualification.json" --event-kind "$EVENT_KIND" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --github-merge-sha "$GITHUB_MERGE_SHA" --final-merge-sha "$FINAL_MERGE_SHA" --workflow-sha "$WORKFLOW_SHA" --output "$RUNNER_TEMP/readiness/result/readiness-manifest.json"
-          status=$?
-          if test -f "$RUNNER_TEMP/readiness/result/readiness-manifest.json"; then
-            sha256sum "$RUNNER_TEMP/readiness/result/readiness-manifest.json" > "$RUNNER_TEMP/readiness/result/readiness-manifest.sha256"
+          result="$RUNNER_TEMP/readiness/result"
+          mkdir -p "$result/status-bundle"
+          pair="$result/paired-qualification.json"
+          manifest="$result/readiness-manifest.json"
+          status=0
+          python3 scripts/channel_matrix_pair_acceptance_v2.py --source-head "$RUNNER_TEMP/readiness/source-head" --base-merge "$RUNNER_TEMP/readiness/base-merge" --output "$pair" || status=1
+          if test -f "$pair"; then sha256sum "$pair" > "$result/paired-qualification.sha256"; fi
+          python3 scripts/channel_matrix_readiness.py --source-head "$RUNNER_TEMP/readiness/source-head" --base-merge "$RUNNER_TEMP/readiness/base-merge" --paired "$pair" --event-kind "$EVENT_KIND" --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" --github-merge-sha "$GITHUB_MERGE_SHA" --final-merge-sha "$FINAL_MERGE_SHA" --workflow-sha "$WORKFLOW_SHA" --output "$manifest" || status=1
+          if test -f "$manifest"; then sha256sum "$manifest" > "$result/readiness-manifest.sha256"; fi
+          if test "$status" -eq 0; then
+            python3 scripts/channel_matrix_readiness_projection.py --manifest "$manifest" --output-dir "$result/status-bundle" || status=1
           fi
           exit "$status"
       - name: Retain readiness manifest
@@ -282,18 +235,14 @@ jobs:
   candidate-required:
     name: Matrix repository qualification required
     if: always()
-    needs: [source-head, deterministic-merge, paired-acceptance, readiness]
+    needs: [qualify, readiness]
     runs-on: ubuntu-24.04
     steps:
       - name: Require both lanes, paired receipt and readiness manifest
         env:
-          SOURCE_RESULT: ${{ needs.source-head.result }}
-          MERGE_RESULT: ${{ needs.deterministic-merge.result }}
-          PAIR_RESULT: ${{ needs.paired-acceptance.result }}
+          SOURCE_RESULT: ${{ needs.qualify.result }}
           READINESS_RESULT: ${{ needs.readiness.result }}
         run: |
           set -euo pipefail
           test "$SOURCE_RESULT" = success
-          test "$MERGE_RESULT" = success
-          test "$PAIR_RESULT" = success
           test "$READINESS_RESULT" = success
