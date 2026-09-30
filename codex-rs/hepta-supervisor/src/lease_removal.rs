@@ -51,7 +51,9 @@ impl ProcessLeaseRemoval {
         run_root: &Path,
         expected: &ProcessLease,
     ) -> Result<(), SupervisorError> {
-        self.finish_with(run_root, expected, sync_directory)
+        self.finish_with(run_root, expected, |path| {
+            sync_directory(path, "process_lease")
+        })
     }
 
     fn finish_with(
