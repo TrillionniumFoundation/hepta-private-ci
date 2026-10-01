@@ -1,5 +1,6 @@
 //! Trust mapping for two enforced operational controllers under one administrator.
 //! The fixed evaluator has no Generator private-key field or read/sign path.
+use super::cycle_approval::ApprovedCycle;
 use super::files::Access;
 use super::files::ReviewResult;
 use super::files::read_root;
@@ -68,10 +69,15 @@ pub(super) struct IndependentTrust {
     pub evaluator_controller: StableId,
     pub root: LearningTrustRootV1,
     pub distribution: SignedLearningTrustDistributionV1,
+    pub cycle: Option<ApprovedCycle>,
     keys: [SigningKey; 2],
 }
 impl IndependentTrust {
-    pub(super) fn open(path: &Path, now: u64) -> ReviewResult<Self> {
+    pub(super) fn open_for_cycle(
+        path: &Path,
+        now: u64,
+        approval_path: Option<&Path>,
+    ) -> ReviewResult<Self> {
         let status = std::fs::read_to_string("/proc/self/status")?;
         if status
             .lines()
@@ -83,7 +89,7 @@ impl IndependentTrust {
             return Err("fixed evaluator requires the actual root owner".into());
         }
         let bytes = read_root(path, 16 * 1024, Access::Private)?;
-        let config: IndependentTrustConfig = serde_json::from_slice(&bytes)?;
+        let mut config: IndependentTrustConfig = serde_json::from_slice(&bytes)?;
         if config.schema != "hepta.fixed-custody-evaluator-trust.v1"
             || config.generator_uid == 0
             || config.valid_from > now
@@ -103,6 +109,20 @@ impl IndependentTrust {
             return Err("generator and evaluator must be distinct immutable programs".into());
         }
         let config_digest = Digest32::of_bytes(&bytes);
+        let cycle = approval_path
+            .map(|approval| {
+                ApprovedCycle::open(approval, &config, config_digest, evaluator_program, now)
+            })
+            .transpose()?;
+        if let Some(approval) = &cycle {
+            let reviewer = config
+                .independent_reviewer
+                .as_mut()
+                .ok_or("original reviewer absent")?;
+            reviewer.program_path = approval.value.reviewer_program_path.clone();
+            reviewer.program_digest = approval.value.reviewer_program_digest.clone();
+        }
+        let approval_digest = cycle.as_ref().map_or(Digest32::ZERO, |a| a.digest);
         let launcher = program_digest(Path::new("/usr/bin/setpriv"))?;
         let manager = program_digest(Path::new("/usr/bin/systemd-run"))?;
         let generator_controller=StableId::new(format!("bounded-generator.{}",Digest32::of_bytes(&[generator_program.as_array().as_slice(),config.generator_uid.to_be_bytes().as_slice(),launcher.as_array(),manager.as_array(),b"clear-groups;all-caps-zero;no-new-privileges;cgroup-memory-256MiB-pids16-cpu100;protected-eval-custody"].concat())))?;
@@ -112,6 +132,11 @@ impl IndependentTrust {
                 &[
                     evaluator_program.as_array().as_slice(),
                     config_digest.as_array(),
+                    if cycle.is_some() {
+                        approval_digest.as_array().as_slice()
+                    } else {
+                        &[]
+                    },
                     b"root-private-outcome-custody;no-arbitrary-outcome-or-sign-api"
                 ]
                 .concat()
@@ -120,12 +145,26 @@ impl IndependentTrust {
         let scope: Digest32 = config.scope_digest.parse()?;
         let objective: Digest32 = config.objective_digest.parse()?;
         let root_key = SigningKey::from_bytes(&read_seed(&config.root_key_path)?);
+        if cycle
+            .as_ref()
+            .is_some_and(|a| a.previous_root_key != root_key.verifying_key().to_bytes())
+        {
+            return Err(
+                "successor approval previous distribution is not original admitted root".into(),
+            );
+        }
         let observer_key = SigningKey::from_bytes(&read_seed(&config.observer_key_path)?);
         let evaluator_key = SigningKey::from_bytes(&read_seed(&config.evaluator_key_path)?);
         let generator_public: [u8; 32] =
             read_root(&config.generator_verifying_key_path, 32, Access::Immutable)?
                 .try_into()
                 .map_err(|_| "generator public key must contain 32 bytes")?;
+        let authenticated_at = cycle
+            .as_ref()
+            .map_or(config.valid_from, |a| a.value.effective_at_ms);
+        let credential_expires = cycle
+            .as_ref()
+            .map_or(config.expires_at, |a| a.value.expires_at_ms);
         let mut signers = Vec::new();
         for (name, role, public, controller) in [
             (
@@ -161,8 +200,8 @@ impl IndependentTrust {
                     signing_key_digest: Digest32::of_bytes(&public),
                     scope_digest: scope,
                     authority_epoch: config.authority_epoch,
-                    authenticated_at: config.valid_from,
-                    expires_at: config.expires_at,
+                    authenticated_at,
+                    expires_at: credential_expires,
                 },
                 controller_id: controller,
                 verifying_key: public,
@@ -186,7 +225,7 @@ impl IndependentTrust {
             let public: [u8; 32] = read_root(&reviewer.public_key_path, 32, Access::Immutable)?
                 .try_into()
                 .map_err(|_| "reviewer public key width")?;
-            let controller=StableId::new(format!("fixed-no-custody-reviewer.{}",Digest32::of_bytes(&[reviewer_program.as_array().as_slice(),reviewer.uid.to_be_bytes().as_slice(),reviewer.gid.to_be_bytes().as_slice(),launcher.as_array(),manager.as_array(),b"no-sudo;no-caps;no-groups;no-new-privileges;read-only-anchored-cut;denied-gold-and-other-keys"].concat())))?;
+            let controller=StableId::new(format!("fixed-no-custody-reviewer.{}",Digest32::of_bytes(&[reviewer_program.as_array().as_slice(),if cycle.is_some(){approval_digest.as_array().as_slice()}else{&[]},reviewer.uid.to_be_bytes().as_slice(),reviewer.gid.to_be_bytes().as_slice(),launcher.as_array(),manager.as_array(),b"no-sudo;no-caps;no-groups;no-new-privileges;read-only-anchored-cut;denied-gold-and-other-keys"].concat())))?;
             signers.push(TrustedLearningSignerV1 {
                 principal: AuthenticatedPrincipalV1 {
                     principal_id: StableId::new("fixed-no-custody-reviewer")?,
@@ -201,8 +240,8 @@ impl IndependentTrust {
                     signing_key_digest: Digest32::of_bytes(&public),
                     scope_digest: scope,
                     authority_epoch: config.authority_epoch,
-                    authenticated_at: config.valid_from,
-                    expires_at: config.expires_at,
+                    authenticated_at,
+                    expires_at: credential_expires,
                 },
                 controller_id: controller,
                 verifying_key: public,
@@ -221,8 +260,10 @@ impl IndependentTrust {
         let mut distribution = SignedLearningTrustDistributionV1 {
             distribution: LearningTrustDistributionV1 {
                 distribution_id: StableId::new("fixed-custody-learning-distribution")?,
-                generation: 1,
-                effective_at: config.valid_from,
+                generation: cycle.as_ref().map_or(1, |a| a.value.generation),
+                effective_at: cycle
+                    .as_ref()
+                    .map_or(config.valid_from, |a| a.value.effective_at_ms),
                 trust: LearningEvidenceTrustV1 {
                     scope_digest: scope,
                     objective_digest: objective,
@@ -231,15 +272,25 @@ impl IndependentTrust {
                 },
             },
             root_id: root.root_id.clone(),
-            issued_at: config.valid_from,
-            expires_at: config.expires_at,
+            issued_at: cycle
+                .as_ref()
+                .map_or(config.valid_from, |a| a.value.effective_at_ms),
+            expires_at: cycle
+                .as_ref()
+                .map_or(config.expires_at, |a| a.value.expires_at_ms),
             signature: [0; 64],
         };
         distribution.signature = root_key.sign(&distribution.signing_bytes()?).to_bytes();
-        let activated = activate_learning_trust(&root, distribution.clone(), None, now)?;
+        let activated = activate_learning_trust(
+            &root,
+            distribution.clone(),
+            cycle.as_ref().map(|a| &a.previous_trust),
+            now,
+        )?;
         Ok(Self {
             root,
             distribution,
+            cycle,
             config,
             config_digest,
             activated,

@@ -1,5 +1,8 @@
 //! Genuine controller-separated calibration: user Generator, fixed root custody Eval.
 //! These are offline executions, never canonical inference.control qualification.
+use super::cycle_publication::PublicationContext;
+use super::cycle_publication::PublicationTarget;
+use super::cycle_publication::publish;
 use super::events::EventBindings;
 use super::events::ExecutedPolicy;
 use super::events::decision;
@@ -8,7 +11,6 @@ use super::execution_service;
 use super::files::Access;
 use super::files::ReviewResult;
 use super::files::create_private;
-use super::files::mutable_file;
 use super::files::read_root;
 use super::files::root_directory;
 use super::generator_wire::GeneratorBatch;
@@ -25,7 +27,6 @@ use super::observations::validate_observation;
 use crate::DatasetFreezePlanV2;
 use crate::DurableLedger;
 use crate::LearningEvidenceRoleV1;
-use crate::LedgerRecovery;
 use crate::LedgerWitnessStore;
 use crate::LedgerWriter;
 use crate::dataset_freeze_signing_payload_v2;
@@ -60,17 +61,33 @@ struct Request {
     baseline_weights_path: PathBuf,
     predecessor_descriptor_path: Option<PathBuf>,
     receipt_path: PathBuf,
+    /// A new immutable cycle publication beneath the existing admitted root.
+    /// Changing the trust configuration would change the durable ledger binding.
+    #[serde(default)]
+    publication_directory: Option<PathBuf>,
+    #[serde(default)]
+    cycle_program_approval_path: Option<PathBuf>,
 }
 pub(super) fn run(path: &Path) -> ReviewResult<()> {
     let request_bytes = read_root(path, 32 * 1024, Access::Private)?;
     let request: Request = serde_json::from_slice(&request_bytes)?;
-    if request.schema != "hepta.fixed-custody-calibration-request.v1"
+    if ![
+        "hepta.fixed-custody-calibration-request.v1",
+        "hepta.fixed-custody-calibration-request.v2",
+    ]
+    .contains(&request.schema.as_str())
+        || (request.schema.ends_with(".v2") != request.cycle_program_approval_path.is_some())
+        || (request.cycle_program_approval_path.is_some() && request.operation != "review")
         || !["initialize", "review"].contains(&request.operation.as_str())
     {
         return Err("fixed custody request schema/operation".into());
     }
     let now = now_ms()?;
-    let trust = IndependentTrust::open(&request.trust_config_path, now)?;
+    let trust = IndependentTrust::open_for_cycle(
+        &request.trust_config_path,
+        now,
+        request.cycle_program_approval_path.as_deref(),
+    )?;
     let ledger_directory = root_directory(&request.ledger_directory)?;
     let witness_directory = root_directory(&request.witness_directory)?;
     root_directory(&request.work_directory)?;
@@ -103,6 +120,16 @@ pub(super) fn run(path: &Path) -> ReviewResult<()> {
         );
         return Ok(());
     }
+    let publication_target =
+        PublicationTarget::open(&trust, request.publication_directory.as_deref())?;
+    let mut writer = super::cycle_writer::open_existing(super::cycle_writer::ExistingHistory {
+        trust: &trust,
+        binding,
+        ledger_path: &ledger_path,
+        witness_path: &witness_path,
+        ledger_directory: &ledger_directory,
+        witness_directory: &witness_directory,
+    })?;
     let predecessor_before = request
         .predecessor_descriptor_path
         .as_ref()
@@ -142,6 +169,10 @@ pub(super) fn run(path: &Path) -> ReviewResult<()> {
             Digest32::of_bytes(&request_bytes).as_array(),
             trust.config_digest.as_array(),
             trust.evaluator_program.as_array(),
+            trust
+                .cycle
+                .as_ref()
+                .map_or(&[][..], |a| a.digest.as_array().as_slice()),
             candidate.manifest.as_array(),
             baseline.manifest.as_array(),
             source.as_array(),
@@ -241,21 +272,6 @@ pub(super) fn run(path: &Path) -> ReviewResult<()> {
     if batch.rows.len() != executions.len() * 2 {
         return Err("generator decisions omit or add calibration policies".into());
     }
-    let witness = LedgerWitnessStore::recover(mutable_file(&witness_path)?, binding)?;
-    let anchor = witness.frontier()?.anchor;
-    let recovery = if anchor.sequence == 0 && anchor.chain_digest.is_zero() {
-        LedgerRecovery::Unacknowledged
-    } else {
-        LedgerRecovery::Acknowledged(anchor)
-    };
-    let ledger = DurableLedger::recover(mutable_file(&ledger_path)?, binding, 4096, recovery)?;
-    let mut writer = LedgerWriter::from_durable(
-        ledger,
-        witness,
-        trust.activated.clone(),
-        &ledger_directory,
-        &witness_directory,
-    )?;
     let snapshot = writer.snapshot()?;
     let before = snapshot.head_digest;
     let mut head = before;
@@ -422,13 +438,7 @@ pub(super) fn run(path: &Path) -> ReviewResult<()> {
     )?;
     let dataset = writer.freeze_dataset(plan, &evidence, now_ms()?)?;
     verify_dataset_snapshot_receipt_against_ledger_v3(&dataset, &snapshot, now_ms()?)?;
-    if let Some(reviewer) = &trust.config.independent_reviewer {
-        use super::generator_wire::encode_hex;
-        use super::transfer::FixedCalibrationCutV1;
-        use super::transfer::FixedCalibrationPublicationV1;
-        use super::transfer::ReviewDatasetWireV1;
-        use super::transfer::ReviewEvidenceWireV1;
-        use super::transfer::ReviewTrustWireV1;
+    if let Some(target) = publication_target {
         let row = &batch.rows[0];
         let execution = &executions[0];
         let generated: NativeObservation = serde_json::from_str(&row.observation_line)?;
@@ -445,65 +455,30 @@ pub(super) fn run(path: &Path) -> ReviewResult<()> {
             },
             execution.source_digest,
         )?;
-        let generator_evidence = generator_evidence(&contract, row, batch.issued_at_ms)?;
-        let ledger_bytes = read_root(&ledger_path, 8 * 1024 * 1024, Access::Private)?;
-        let cut = FixedCalibrationCutV1 {
-            schema: "hepta.signed-calibration-cut.v1".to_owned(),
-            observer_program_digest: trust.evaluator_program.to_string(),
-            ledger_binding_digest: binding.to_string(),
-            ledger_file_digest: Digest32::of_bytes(&ledger_bytes).to_string(),
-            acknowledged_sequence: snapshot
-                .records()
-                .last()
-                .ok_or("empty calibration ledger")?
-                .sequence
-                .get(),
-            acknowledged_head: snapshot.head_digest.to_string(),
-            candidate_manifest_digest: candidate.manifest.to_string(),
-            baseline_manifest_digest: baseline.manifest.to_string(),
-            candidate_weights_digest: candidate.weights.to_string(),
-            baseline_weights_digest: baseline.weights.to_string(),
-            audit_digest: audit.to_string(),
-            dataset: ReviewDatasetWireV1::from_native(&dataset),
-            generator_payload_hex: encode_hex(&decision_signing_payload_v2(&fact)?),
-            generator_evidence: ReviewEvidenceWireV1::from_native(&generator_evidence),
-            freeze_evidence: ReviewEvidenceWireV1::from_native(&evidence),
-        };
-        let cut_bytes = cut.signing_payload()?;
-        let observer_evidence = trust.sign(
-            LearningEvidenceRoleV1::Observer,
-            StableId::new(format!("calibration.cut.{audit}"))?,
-            &cut_bytes,
-            signing_time,
-            now_ms()?,
+        let generated_evidence = generator_evidence(&contract, row, batch.issued_at_ms)?;
+        let cycle = super::cycle_publication::native_scope(
+            &trust,
+            source,
+            &executions,
+            &candidate,
+            &baseline,
         )?;
-        let publication = FixedCalibrationPublicationV1 {
-            cut,
-            observer_evidence: ReviewEvidenceWireV1::from_native(&observer_evidence),
-            trust: ReviewTrustWireV1::from_native(&trust.root, &trust.distribution),
-        };
-        let directory = root_directory(&reviewer.publication_directory)?;
-        for (name, bytes) in [
-            ("ledger-readonly.bin", ledger_bytes),
-            (
-                "signed-calibration-cut.json",
-                serde_json::to_vec(&publication)?,
-            ),
-        ] {
-            let path = reviewer.publication_directory.join(name);
-            if path.exists() {
-                if read_root(&path, 8 * 1024 * 1024, Access::Immutable)? != bytes {
-                    return Err("existing signed calibration publication changed".into());
-                }
-            } else {
-                let file = create_private(&path, &bytes)?;
-                std::os::unix::fs::chown(&path, Some(0), Some(reviewer.gid))?;
-                use std::os::unix::fs::PermissionsExt;
-                file.set_permissions(std::fs::Permissions::from_mode(0o640))?;
-                file.sync_all()?;
-                directory.sync_all()?;
-            }
-        }
+        publish(PublicationContext {
+            trust: &trust,
+            target: &target,
+            binding,
+            audit,
+            candidate: &candidate,
+            baseline: &baseline,
+            snapshot: &snapshot,
+            dataset: &dataset,
+            freeze: &evidence,
+            generator_fact: &fact,
+            generator: &generated_evidence,
+            ledger_bytes: read_root(&ledger_path, 8 * 1024 * 1024, Access::Private)?,
+            signing_time,
+            cycle,
+        })?;
     }
     let predecessor_after = request
         .predecessor_descriptor_path

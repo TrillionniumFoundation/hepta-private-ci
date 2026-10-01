@@ -216,3 +216,12 @@ pub use review_host::read_root_review_input;
 mod calibration_cut;
 pub use calibration_cut::CalibrationCutBindingV1;
 pub use calibration_cut::calibration_cut_signing_payload_v1;
+
+mod calibration_cycle;
+pub use calibration_cycle::CalibrationCycleScopeV2;
+pub use calibration_cycle::calibration_cycle_cut_signing_payload_v2;
+
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::CalibrationCycleScopeWireV2;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::FixedCalibrationPublicationV2;

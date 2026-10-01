@@ -1,9 +1,11 @@
 //! Fixed no-custody evaluator: only its own key and authenticated readonly cuts.
 use crate::CalibrationPreflightDispositionV1;
 use crate::SignedCalibrationPreflightRequestV1;
-use crate::calibration_preflight_signing_payload_v1;
-use crate::decide_with_signed_calibration_preflight_v1;
-use codex_hepta_learning_ledger::FixedCalibrationPublicationV1;
+use crate::fixed_calibration_cycle_evaluator::decide_profile;
+use crate::fixed_calibration_cycle_evaluator::preflight_payload;
+use crate::fixed_calibration_cycle_evaluator::profile_matches;
+use crate::fixed_calibration_cycle_evaluator::read_publication;
+use crate::fixed_calibration_cycle_evaluator::result_schema;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LedgerAnchor;
 use codex_hepta_learning_ledger::ReviewEvidenceWireV1;
@@ -46,6 +48,8 @@ struct Config {
     scope_digest: String,
     minimum_primary_improvement_q32: i64,
     inaccessible_paths: Vec<PathBuf>,
+    #[serde(default)]
+    current_program_approval_digest: Option<String>,
 }
 fn now_ms() -> HostResult<u64> {
     Ok(u64::try_from(
@@ -158,7 +162,7 @@ pub fn run_fixed_calibration_evaluator(path: &Path) -> HostResult<()> {
         &std::env::current_exe()?,
         128 * 1024 * 1024,
     )?);
-    if config.schema != "hepta.fixed-calibration-evaluator-config.v1"
+    if !profile_matches(&config.schema, None)
         || program != config.program_digest.parse::<Digest32>()?
         || config.inaccessible_paths.len() != 5
     {
@@ -167,9 +171,20 @@ pub fn run_fixed_calibration_evaluator(path: &Path) -> HostResult<()> {
     for inaccessible in &config.inaccessible_paths {
         match File::open(inaccessible){Err(e) if e.kind()==std::io::ErrorKind::PermissionDenied=>(),_=>return Err("fixed evaluator can access gold/another key or the denial is not permission-enforced".into())}
     }
-    let publication: FixedCalibrationPublicationV1 = serde_json::from_slice(
-        &read_root_review_input(&config.publication_path, 4 * 1024 * 1024)?,
-    )?;
+    let (publication, cycle) = read_publication(&read_root_review_input(
+        &config.publication_path,
+        4 * 1024 * 1024,
+    )?)?;
+    if !profile_matches(&config.schema, Some(cycle.is_some())) {
+        return Err("evaluator config/publication profile mismatch".into());
+    }
+    if cycle
+        .as_ref()
+        .map(|v| v.current_program_approval_digest.to_string())
+        != config.current_program_approval_digest
+    {
+        return Err("current evaluator frozen original program approval mismatch".into());
+    }
     let cut = &publication.cut;
     if cut.schema != "hepta.signed-calibration-cut.v1"
         || cut.observer_program_digest != config.observer_program_digest
@@ -190,9 +205,17 @@ pub fn run_fixed_calibration_evaluator(path: &Path) -> HostResult<()> {
         .iter()
         .find(|s| s.principal.principal_id.as_str() == "fixed-no-custody-reviewer")
         .ok_or("no fixed reviewer admitted")?
-        .principal
         .clone();
     let trust = activate_learning_trust(&root, distribution, None, now)?;
+    crate::fixed_calibration_cycle_evaluator::verify_actual_reviewer(
+        &reviewer,
+        program,
+        &root.verifying_key,
+        config.uid,
+        config.gid,
+        cycle.as_ref(),
+    )?;
+    let reviewer = reviewer.principal;
     let signing = key(&config.private_key_path, config.uid)?;
     if Digest32::of_bytes(signing.verifying_key().as_bytes()) != reviewer.signing_key_digest {
         return Err("evaluator owns a different key than the root-admitted reviewer".into());
@@ -212,9 +235,19 @@ pub fn run_fixed_calibration_evaluator(path: &Path) -> HostResult<()> {
     )?;
     let dataset = cut.dataset.native()?;
     let cut_binding = cut.binding()?;
-    let cut_payload = cut.signing_payload()?;
+    let cut_payload = cycle.as_ref().map_or_else(
+        || cut.signing_payload(),
+        |c| {
+            Ok(
+                codex_hepta_learning_ledger::calibration_cycle_cut_signing_payload_v2(
+                    &cut_binding,
+                    c,
+                ),
+            )
+        },
+    )?;
     let margin = FixedQ32::from_raw(config.minimum_primary_improvement_q32);
-    let payload = calibration_preflight_signing_payload_v1(&cut_payload, margin)?;
+    let payload = preflight_payload(&cut_payload, margin, cycle.is_some())?;
     let mut evidence = SignedLearningEvidenceV1 {
         evidence_id: StableId::new(format!("fixed.calibration.review.{}", cut.audit_digest))?,
         principal_id: reviewer.principal_id.clone(),
@@ -235,7 +268,7 @@ pub fn run_fixed_calibration_evaluator(path: &Path) -> HostResult<()> {
     let generator = cut.generator_evidence.native()?;
     let observer = publication.observer_evidence.native()?;
     let producer = cut.freeze_evidence.native()?;
-    let decision = decide_with_signed_calibration_preflight_v1(
+    let decision = decide_profile(
         SignedCalibrationPreflightRequestV1 {
             snapshot: &snapshot,
             dataset: &dataset,
@@ -247,6 +280,7 @@ pub fn run_fixed_calibration_evaluator(path: &Path) -> HostResult<()> {
             producer: &producer,
             evaluator: &evidence,
         },
+        cycle.as_ref(),
         trust.verifier(),
         now,
     )?;
@@ -260,7 +294,7 @@ pub fn run_fixed_calibration_evaluator(path: &Path) -> HostResult<()> {
         "product_runner_signed_qualification_receipt",
         "independent_selector_exact_tuple_acceptance",
     ];
-    let output = serde_json::json!({"schema":"hepta.fixed-independent-calibration-evaluation.v1","disposition":match decision.disposition{CalibrationPreflightDispositionV1::Rejected=>"rejected",CalibrationPreflightDispositionV1::RequiresFinalQualification=>"requires_final_qualification"},"candidate_correct":decision.candidate_correct,"baseline_correct":decision.baseline_correct,"labeled_pairs":decision.labeled_pairs,"observed_improvement_q32":decision.observed_improvement.raw(),"minimum_primary_improvement_q32":margin.raw(),"dataset_digest":decision.dataset_digest.to_string(),"evaluation_evidence_digest":decision.evidence_digest.to_string(),"evaluator_signed_evidence":ReviewEvidenceWireV1::from_native(&evidence),"evaluator_uid":config.uid,"evaluator_gid":config.gid,"evaluator_cgroup":cgroup,"evaluator_groups_empty":true,"evaluator_capabilities_zero":true,"evaluator_no_new_privileges":true,"denied_gold_and_other_keys":config.inaccessible_paths.len(),"pairwise_generator_observer_evaluator_verified":true,"producer_evaluator_separation_verified":true,"ledger_and_dataset_verified":true,"policy_config_digest":Digest32::of_bytes(&config_bytes).to_string(),"qualification_missing":missing,"qualified":false,"authority_grants_any":false,"holdout_consumed":false,"production_activation":false});
+    let output = serde_json::json!({"schema":result_schema(cycle.is_some()),"calibration_cycle":cycle.as_ref().map(codex_hepta_learning_ledger::CalibrationCycleScopeWireV2::from_native),"disposition":match decision.disposition{CalibrationPreflightDispositionV1::Rejected=>"rejected",CalibrationPreflightDispositionV1::RequiresFinalQualification=>"requires_final_qualification"},"candidate_correct":decision.candidate_correct,"baseline_correct":decision.baseline_correct,"labeled_pairs":decision.labeled_pairs,"observed_improvement_q32":decision.observed_improvement.raw(),"minimum_primary_improvement_q32":margin.raw(),"dataset_digest":decision.dataset_digest.to_string(),"evaluation_evidence_digest":decision.evidence_digest.to_string(),"evaluator_signed_evidence":ReviewEvidenceWireV1::from_native(&evidence),"evaluator_uid":config.uid,"evaluator_gid":config.gid,"evaluator_cgroup":cgroup,"evaluator_groups_empty":true,"evaluator_capabilities_zero":true,"evaluator_no_new_privileges":true,"denied_gold_and_other_keys":config.inaccessible_paths.len(),"pairwise_generator_observer_evaluator_verified":true,"producer_evaluator_separation_verified":true,"ledger_and_dataset_verified":true,"policy_config_digest":Digest32::of_bytes(&config_bytes).to_string(),"qualification_missing":missing,"qualified":false,"authority_grants_any":false,"holdout_consumed":false,"production_activation":false});
     if Digest32::of_bytes(&read_root_review_input(
         &config.ledger_path,
         8 * 1024 * 1024,
@@ -286,12 +320,12 @@ pub(crate) fn read_fixed_calibration_result(
     }
     let config: Config = serde_json::from_slice(config_bytes)?;
     let output: serde_json::Value = serde_json::from_slice(result_bytes)?;
-    if config.schema != "hepta.fixed-calibration-evaluator-config.v1"
+    if !profile_matches(&config.schema, None)
         || config.program_digest.parse::<Digest32>()? != evaluator_program
         || config.uid == 0
         || config.gid == 0
         || config.inaccessible_paths.len() != 5
-        || output["schema"] != "hepta.fixed-independent-calibration-evaluation.v1"
+        || output["schema"] != result_schema(config.schema.ends_with(".v2"))
         || output["policy_config_digest"] != Digest32::of_bytes(config_bytes).to_string()
         || output["evaluator_uid"] != config.uid
         || output["evaluator_gid"] != config.gid
@@ -309,7 +343,30 @@ pub(crate) fn read_fixed_calibration_result(
         return Err("fixed reviewer identity".into());
     }
     let publication_bytes = read_root_review_input(&config.publication_path, 4 * 1024 * 1024)?;
-    let publication: FixedCalibrationPublicationV1 = serde_json::from_slice(&publication_bytes)?;
+    let (publication, cycle) = read_publication(&publication_bytes)?;
+    if !profile_matches(&config.schema, Some(cycle.is_some())) {
+        return Err("evaluator config/publication profile mismatch".into());
+    }
+    let expected_cycle = cycle
+        .as_ref()
+        .map(codex_hepta_learning_ledger::CalibrationCycleScopeWireV2::from_native)
+        .map(serde_json::to_value)
+        .transpose()?
+        .unwrap_or(serde_json::Value::Null);
+    if output
+        .get("calibration_cycle")
+        .unwrap_or(&serde_json::Value::Null)
+        != &expected_cycle
+    {
+        return Err("original evaluator signed cycle scope mismatch".into());
+    }
+    if cycle
+        .as_ref()
+        .map(|v| v.current_program_approval_digest.to_string())
+        != config.current_program_approval_digest
+    {
+        return Err("current evaluator frozen original program approval mismatch".into());
+    }
     let cut = &publication.cut;
     if cut.schema != "hepta.signed-calibration-cut.v1"
         || cut.observer_program_digest != config.observer_program_digest
@@ -331,6 +388,21 @@ pub(crate) fn read_fixed_calibration_result(
         );
     }
     let (root, distribution) = publication.trust.native()?;
+    let reviewer = distribution
+        .distribution
+        .trust
+        .signers
+        .iter()
+        .find(|s| s.principal.principal_id.as_str() == "fixed-no-custody-reviewer")
+        .ok_or("current reviewer missing")?;
+    crate::fixed_calibration_cycle_evaluator::verify_actual_reviewer(
+        reviewer,
+        evaluator_program,
+        &root.verifying_key,
+        config.uid,
+        config.gid,
+        cycle.as_ref(),
+    )?;
     let trust = activate_learning_trust(&root, distribution, None, now)?;
     let before = read_root_review_input(&config.ledger_path, 8 * 1024 * 1024)?;
     if Digest32::of_bytes(&before) != cut.ledger_file_digest.parse::<Digest32>()? {
@@ -352,7 +424,7 @@ pub(crate) fn read_fixed_calibration_result(
     let producer = cut.freeze_evidence.native()?;
     let generator_payload = decode_review_payload_hex(&cut.generator_payload_hex)?;
     let margin = FixedQ32::from_raw(config.minimum_primary_improvement_q32);
-    let decision = decide_with_signed_calibration_preflight_v1(
+    let decision = decide_profile(
         SignedCalibrationPreflightRequestV1 {
             snapshot: &snapshot,
             dataset: &dataset,
@@ -364,6 +436,7 @@ pub(crate) fn read_fixed_calibration_result(
             producer: &producer,
             evaluator: &evidence,
         },
+        cycle.as_ref(),
         trust.verifier(),
         now,
     )?;

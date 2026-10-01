@@ -2,6 +2,7 @@
 //! a model: passing this gate still requires the final-holdout product runner.
 use codex_hepta_learning_ledger::AuthenticatedOutcomeTerminality;
 use codex_hepta_learning_ledger::CalibrationCutBindingV1;
+use codex_hepta_learning_ledger::CalibrationCycleScopeV2;
 use codex_hepta_learning_ledger::DatasetFreezePlanV2;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -10,6 +11,7 @@ use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerSnapshot;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::calibration_cut_signing_payload_v1;
+use codex_hepta_learning_ledger::calibration_cycle_cut_signing_payload_v2;
 use codex_hepta_learning_ledger::dataset_freeze_signing_payload_v2;
 use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_against_ledger_v3;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
@@ -94,23 +96,62 @@ pub fn decide_with_signed_calibration_preflight_v1(
     verifier: &LearningEvidenceVerifierV1,
     now: u64,
 ) -> Result<SignedCalibrationPreflightDecisionV1, CalibrationPreflightError> {
+    decide_current_cycle(request, None, verifier, now)
+}
+/// V2 verifies the full original ledger/dataset and a signed complete current
+/// cycle. It never interprets repeated source tasks as independent samples.
+pub fn decide_with_signed_calibration_cycle_v2(
+    request: SignedCalibrationPreflightRequestV1<'_>,
+    cycle: &CalibrationCycleScopeV2,
+    verifier: &LearningEvidenceVerifierV1,
+    now: u64,
+) -> Result<SignedCalibrationPreflightDecisionV1, CalibrationPreflightError> {
+    decide_current_cycle(request, Some(cycle), verifier, now)
+}
+pub fn calibration_cycle_preflight_signing_payload_v2(
+    cut: &[u8],
+    margin: FixedQ32,
+) -> Result<Vec<u8>, CalibrationPreflightError> {
+    if cut.len() > 4 * 1024 * 1024 || margin < FixedQ32::ZERO {
+        return Err(CalibrationPreflightError::Binding(
+            "bounded cycle calibration policy",
+        ));
+    }
+    let mut payload = b"hepta.intelligence-eval.signed-calibration-cycle-preflight.v2".to_vec();
+    payload.extend_from_slice(Digest32::of_bytes(cut).as_array());
+    payload.extend_from_slice(&margin.raw().to_be_bytes());
+    Ok(payload)
+}
+fn decide_current_cycle(
+    request: SignedCalibrationPreflightRequestV1<'_>,
+    cycle: Option<&CalibrationCycleScopeV2>,
+    verifier: &LearningEvidenceVerifierV1,
+    now: u64,
+) -> Result<SignedCalibrationPreflightDecisionV1, CalibrationPreflightError> {
     let generator = verifier.verify(
         LearningEvidenceRoleV1::Generator,
         request.generator,
         request.generator_payload,
         now,
     )?;
-    let cut_payload = calibration_cut_signing_payload_v1(request.cut_binding);
+    let cut_payload = cycle.map_or_else(
+        || calibration_cut_signing_payload_v1(request.cut_binding),
+        |scope| calibration_cycle_cut_signing_payload_v2(request.cut_binding, scope),
+    );
     let observer = verifier.verify(
         LearningEvidenceRoleV1::Observer,
         request.observer,
         &cut_payload,
         now,
     )?;
-    let payload = calibration_preflight_signing_payload_v1(
-        &cut_payload,
-        request.minimum_primary_improvement,
-    )?;
+    let payload = if cycle.is_some() {
+        calibration_cycle_preflight_signing_payload_v2(
+            &cut_payload,
+            request.minimum_primary_improvement,
+        )?
+    } else {
+        calibration_preflight_signing_payload_v1(&cut_payload, request.minimum_primary_improvement)?
+    };
     let evaluator = verifier.verify(
         LearningEvidenceRoleV1::Evaluator,
         request.evaluator,
@@ -185,9 +226,12 @@ pub fn decide_with_signed_calibration_preflight_v1(
     }
     let mut auth = request.generator.signing_bytes();
     auth.extend_from_slice(&request.generator.signature);
-    let first = request
-        .snapshot
-        .records()
+    let current_records = crate::calibration_cycle_scope::current_records(
+        request.snapshot,
+        request.cut_binding,
+        cycle,
+    )?;
+    let first = current_records
         .first()
         .ok_or(CalibrationPreflightError::Binding("empty signed ledger"))?;
     if !matches!(&first.event,LedgerEvent::AuthenticatedDecisionV2(v) if v.authentication_digest==Digest32::of_bytes(&auth))
@@ -200,7 +244,7 @@ pub fn decide_with_signed_calibration_preflight_v1(
     let mut decisions = BTreeMap::new();
     let mut counts = [0u64; 2];
     let mut correct = [0u64; 2];
-    for record in request.snapshot.records() {
+    for record in current_records {
         match &record.event {
             LedgerEvent::AuthenticatedDecisionV2(v) => {
                 if v.generator_id != generator.principal().principal_id

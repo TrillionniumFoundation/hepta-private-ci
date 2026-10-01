@@ -10,12 +10,15 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+mod calibration_cycle_scope;
 mod calibration_preflight;
 pub use calibration_preflight::CalibrationPreflightDispositionV1;
 pub use calibration_preflight::CalibrationPreflightError;
 pub use calibration_preflight::SignedCalibrationPreflightDecisionV1;
 pub use calibration_preflight::SignedCalibrationPreflightRequestV1;
+pub use calibration_preflight::calibration_cycle_preflight_signing_payload_v2;
 pub use calibration_preflight::calibration_preflight_signing_payload_v1;
+pub use calibration_preflight::decide_with_signed_calibration_cycle_v2;
 pub use calibration_preflight::decide_with_signed_calibration_preflight_v1;
 mod closure;
 mod durable_holdout;
@@ -435,6 +438,8 @@ pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
 mod signed_qualification_e2e_tests;
 
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_calibration_cycle_evaluator;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_calibration_host;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_calibration_host::initialize_fixed_evaluator_key;
@@ -442,7 +447,11 @@ pub use fixed_calibration_host::initialize_fixed_evaluator_key;
 pub use fixed_calibration_host::run_fixed_calibration_evaluator;
 
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_calibration_cycle_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_product_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_cycle_host::run_fixed_calibration_cycle;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_product_source;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
@@ -470,3 +479,6 @@ mod paired_supervised_tests;
 
 #[cfg(test)]
 mod paired_supervised_boundary_tests;
+
+#[cfg(test)]
+mod calibration_cycle_tests;

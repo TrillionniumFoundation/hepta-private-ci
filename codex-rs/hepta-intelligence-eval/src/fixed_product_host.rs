@@ -47,7 +47,7 @@ fn source(source: &Source, maximum: u64) -> HostResult<Vec<u8>> {
     }
     Ok(bytes)
 }
-fn root_boundary() -> HostResult<()> {
+pub(crate) fn root_boundary() -> HostResult<()> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     for field in ["Uid:", "Gid:"] {
         let values = status
@@ -79,7 +79,7 @@ fn root_boundary() -> HostResult<()> {
     }
     Ok(())
 }
-fn private_parent(path: &Path) -> HostResult<File> {
+pub(crate) fn private_parent(path: &Path) -> HostResult<File> {
     let parent = path.parent().ok_or("report parent")?;
     if !path.is_absolute()
         || path
