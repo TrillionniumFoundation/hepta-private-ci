@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs). V1 compatibility surfaces include `CompilationRequest`, `ContextCompilationReceipt`, `CompilationRequirementsV1`, `compile`, `compile_candidate_bound` and `compile_with_requirements`. The normative verified V2 surface is implemented in [src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs) and includes `verify_admission_snapshot_v2`, `verify_admission_snapshot_successor_v2`, `verify_admission_v2`, `compile_v2`, `record_serialization`, `build_attachment`, `prepare_delivery_v2` and `observe_delivery`, typed admission snapshots/evidence, exact-tokenizer and serializer adapters, an opaque pre-dispatch safety witness, and provider-invocation evidence validation. The implementation map uses strict module-local source provenance anchored at commit `1ab65444213e47617d16b7fd03f6e141c4a8a400` / tree `ce640923f09262b664856da31369ae6b3d5fbc1c`; verification checks that anchor identity, ancestry and mapped-source/test drift. Source presence still does not prove product composition, independent qualification or provider execution. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md).
+The registered primary source is [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs). V1 compatibility surfaces include `CompilationRequest`, `ContextCompilationReceipt`, `CompilationRequirementsV1`, `compile`, `compile_candidate_bound` and `compile_with_requirements`. The normative verified V2 surface is implemented in [src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs) and includes `verify_admission_snapshot_v2`, `verify_admission_snapshot_successor_v2`, `verify_admission_v2`, `compile_v2`, `record_serialization`, `build_attachment`, `prepare_delivery_v2` and `observe_delivery`, typed admission snapshots/evidence, exact-tokenizer and serializer adapters, an opaque pre-dispatch safety witness, and provider-invocation evidence validation. The [implementation map](IMPLEMENTATION_MAP.json) records module-local source provenance; verification checks its anchor identity, ancestry and mapped-source/test drift. Source presence still does not prove product composition, independent qualification or provider execution. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -96,6 +96,14 @@ Configuration is immutable for one process generation. Changes affecting authori
 ### Normative verified V2 execution path
 
 The V2 source path is deliberately stronger than a digest-only receipt chain:
+
+Verified candidate admissions and attachments retain their complete authenticated
+revocation frontiers. Every handoff checks the same scope and authority domain,
+nondecreasing time and epoch, an identical revoked set at the same epoch, and
+retention of all earlier revocations at later epochs. An empty selection still
+requires the compilation's original scope and domain. The compatibility wire
+codec also rejects token counts above its bound, below the selected item count,
+or nonzero counts for an empty selection.
 
 1. `ContextAdmissionSnapshotV2` is authenticated by a `ContextAdmissionVerifierV2`, producing a non-forgeable-by-struct-literal `VerifiedAdmissionSnapshotV2`. The snapshot is bound to request scope and authority domain, declares a complete cumulative revocation set and is bounded to 4096 revoked admission ids. `verify_admission_snapshot_successor_v2` binds the predecessor snapshot and rejects scope/domain drift, frontier rollback and removal of any previously revoked admission; an oversized cumulative set fails closed rather than pruning history.
 2. Every candidate, including evidence, carries `VerifiedAdmissionV2` bound to item id, role, content/source/generation digests, request scope, authority domain, verifier-authenticated secret classification, verifier identity, expiry and the snapshot/revocation epoch at which it was verified. Secret status is not a candidate-side caller boolean, and a verified admission classified as secret is rejected before compilation. A trusted instruction is not represented by a caller-supplied admission digest.
