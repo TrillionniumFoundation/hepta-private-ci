@@ -1,4 +1,5 @@
 use super::*;
+use crate::native_app_server::NativeBoundaryStatus;
 use crate::native_app_server::NativeWorkerConfig;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
@@ -153,6 +154,92 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
         terminal
     );
     drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn cached_legacy_completed_after_cancel_is_denied_without_replay_or_journal_rewrite() {
+    let (driver, path) = fixture("cancelled-cached-terminal");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let request = request(&driver);
+    let source_admission_digest = request.payload_digest.clone();
+    control.reserve_native(request, 1).unwrap();
+    control
+        .dispatch_native(
+            "r1",
+            NativeDispatch {
+                thread_id: "thread-1".to_string(),
+                model_provider: "provider".to_string(),
+                context_digest: "a".repeat(64),
+                owner_context_digest: None,
+                codex_payload_digest: Some("b".repeat(64)),
+                codex_request_digest: Some("c".repeat(64)),
+                app_server_version: Some("1".to_string()),
+                protocol_id: Some("codex.app-server.v2".to_string()),
+                codex_source_admission_digest: Some(source_admission_digest),
+                codex_home_digest: Some("d".repeat(64)),
+                codex_connection_id: Some(1),
+                codex_session_id: Some("session".to_string()),
+                codex_deadline_ms: Some(1),
+                codex_authority_epoch: Some(1),
+                codex_revocation_revision: Some(1),
+                codex_revocation_head_sha256: Some("e".repeat(64)),
+                codex_authority_witness_sha256: Some("f".repeat(64)),
+            },
+        )
+        .unwrap();
+    control.native_started("r1", "turn-1".to_string()).unwrap();
+    control.cancel_native("r1").unwrap();
+    // Older workers could settle this legal journal sequence as success.
+    let legacy_terminal = NativeRunOutput {
+        thread_id: "thread-1".to_string(),
+        turn_id: "turn-1".to_string(),
+        model: "model".to_string(),
+        model_provider: "provider".to_string(),
+        status: NativeRunStatus::Completed,
+        boundary_status: NativeBoundaryStatus::Succeeded,
+        output: "observed completed output".to_string(),
+        observed_output_tokens: Some(42),
+        terminal_observed: true,
+        owner_authority: NativeOwnerAuthority::ObservedReady,
+        stop_reason: None,
+        codex_terminal_correlation_digest: Some("1".repeat(64)),
+    };
+    assert!(legacy_terminal.succeeded());
+    let historical_record = control
+        .settle_native("r1", legacy_terminal.clone())
+        .unwrap();
+    drop(control);
+
+    let journal_bytes = std::fs::read(&path).unwrap();
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&historical_record));
+    let expected = NativeRunOutput {
+        boundary_status: NativeBoundaryStatus::Cancelled,
+        stop_reason: Some(
+            "durable cancellation was requested before terminal observation".to_string(),
+        ),
+        ..legacy_terminal
+    };
+    // No authorizer is attached and the owner socket does not exist: this path
+    // must use only the cached terminal, even on a repeated inspection.
+    for _ in 0..2 {
+        let output = driver
+            .run(
+                &mut reopened,
+                admission(),
+                "prompt".to_string(),
+                None,
+                &CancellationToken::new(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(output, expected);
+        assert!(!output.succeeded());
+        assert_eq!(reopened.native_record("r1"), Some(&historical_record));
+        assert_eq!(std::fs::read(&path).unwrap(), journal_bytes);
+    }
+    drop(reopened);
     std::fs::remove_file(path).unwrap();
 }
 

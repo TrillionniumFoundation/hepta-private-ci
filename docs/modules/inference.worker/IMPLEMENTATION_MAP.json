@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "a897c20aa50d2c97d5dfa0e7078f8f8ab05c577f",
+    "tree": "dd3b2bb14d7310929a8adf1291cd2ca7c0b16846"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -31,6 +31,11 @@
         {
           "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
           "kind": "manifest_and_resource_binding",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_memory_tests.rs",
+          "kind": "unknown_transient_accounting_and_terminal_cleanup",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
@@ -75,9 +80,14 @@
           "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
           "kind": "matching_native_events_and_usage",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_recovery_tests.rs",
+          "kind": "reopen_usage_boundary_and_terminal_ack",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen and duplicate paths consume the journal without invoking the provider again.",
+      "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen uses exact-owner thread/read without provider replay, preserves observed facts, and retries bound Agentd terminal publication from durable terminal records.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -98,9 +108,14 @@
           "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
           "kind": "drain_and_unload",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_memory_tests.rs",
+          "kind": "unknown_transient_accounting_and_terminal_cleanup",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Drains and unloads only the exact admitted generation and releases acquired resources.",
+      "sourceSemantics": "Unloads only an already idle model in the admitted generation. Expired or revoked grants do not prevent known cleanup; active or driver-unknown fences prevent blind unload retries.",
       "operation": "unload",
       "nativeSymbol": "pub fn unload_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
@@ -109,7 +124,7 @@
   ],
   "repositoryControlledGaps": [
     "Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.",
-    "Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss."
+    "Qualify cross-generation recovery and recovery after ephemeral App Server history loss, and authenticated later missing token usage. Same-generation exact-owner thread/read terminal reconciliation is implemented; transport loss never proves zero usage or safe replay."
   ],
   "externalEvidenceGates": [
     "identified real weights/tokenizer/runtime/device",

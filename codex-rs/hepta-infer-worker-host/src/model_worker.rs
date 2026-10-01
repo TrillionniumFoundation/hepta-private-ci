@@ -3,17 +3,6 @@
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
-use std::str::FromStr;
-
-use codex_hepta_infer_core::NeuronFeatureObservationV1;
-use codex_hepta_infer_core::NeuronFeatureReceiptV1;
-use codex_hepta_infer_core::NeuronFeatureRequestV1;
-use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
-use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
-use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
 
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
@@ -43,6 +32,9 @@ pub struct ResourceGrant {
     pub revoked: bool,
     pub maximum_models: usize,
     pub maximum_active_requests: usize,
+    /// Aggregate retained model bytes plus additional invocation transient
+    /// bytes. Drivers must enforce the physical allocation bound themselves;
+    /// post-invocation observations cannot prevent an allocation or OOM.
     pub maximum_memory_bytes: u64,
     pub semantic_digest: String,
 }
@@ -64,6 +56,8 @@ pub struct WorkerRequest {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DriverModelHandle {
     pub opaque_id: String,
+    /// Retained bytes attributable to this model after load, excluding other
+    /// models and per-invocation transient allocations.
     pub observed_memory_bytes: u64,
 }
 
@@ -73,6 +67,8 @@ pub struct DriverRunObservation {
     pub succeeded: bool,
     pub output_digest: Option<String>,
     pub consumed_tokens: u32,
+    /// Retained bytes attributable to this model after the invocation. The
+    /// worker accounts the largest observation until confirmed unload.
     pub observed_memory_bytes: u64,
 }
 
@@ -132,6 +128,7 @@ pub enum Error {
     DeadlineExpired,
     ActiveRequests,
     DriverFailure(String),
+    DriverUnavailable,
     MissingTerminalOutput,
     ArithmeticOverflow,
     FeatureLimit,
@@ -147,6 +144,9 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Executes model lifecycle operations and reports actual observations.
+/// A driver error or nonterminal run does not prove that resources or execution
+/// have stopped; the worker preserves the corresponding local fence.
 pub trait ModelDriver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
     fn run(
@@ -161,6 +161,7 @@ pub trait ModelDriver {
 struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
+    resident_memory_bytes: u64,
     active_requests: usize,
 }
 
@@ -171,7 +172,13 @@ pub struct InferenceWorker<D: ModelDriver> {
     grant: ResourceGrant,
     driver: D,
     models: BTreeMap<String, LoadedModel>,
-    active_requests: BTreeMap<String, String>,
+    // Request slots also retain observed feature transient peaks until that
+    // request is known terminal. A nonterminal observation does not establish
+    // that its additional allocations have been released. These are budget
+    // charges, not physical allocation reservations.
+    active_requests: BTreeMap<String, u64>,
+    driver_fenced: bool,
+    resource_fenced: bool,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -194,6 +201,8 @@ impl<D: ModelDriver> InferenceWorker<D> {
             driver,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
+            driver_fenced: false,
+            resource_fenced: false,
         })
     }
 
@@ -215,11 +224,27 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
-            return Err(Error::ModelCapacity);
+        let accounted_memory = self.accounted_memory_bytes()?;
+        let handle = match self.driver.load(&manifest) {
+            Ok(handle) => handle,
+            Err(error) => {
+                self.driver_fenced = true;
+                return Err(error);
+            }
+        };
+        let admission = validate_identity(&handle.opaque_id, "model handle").and_then(|()| {
+            accounted_memory
+                .checked_add(handle.observed_memory_bytes)
+                .filter(|total| *total <= self.grant.maximum_memory_bytes)
+                .map(|_| ())
+                .ok_or(Error::ModelCapacity)
+        });
+        if let Err(error) = admission {
+            if let Err(cleanup_error) = self.driver.unload(handle) {
+                self.driver_fenced = true;
+                return Err(cleanup_error);
+            }
+            return Err(error);
         }
         let observation = ModelLoadObservation {
             model_id: manifest.model_id.clone(),
@@ -232,6 +257,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             manifest.model_id.clone(),
             LoadedModel {
                 manifest,
+                resident_memory_bytes: handle.observed_memory_bytes,
                 handle,
                 active_requests: 0,
             },
@@ -279,7 +305,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 status: ExecutionStatus::Cancelled,
                 output_digest: None,
                 consumed_tokens: 0,
-                observed_memory_bytes: loaded.handle.observed_memory_bytes,
+                observed_memory_bytes: loaded.resident_memory_bytes,
                 terminal_observed: true,
             });
         }
@@ -288,19 +314,25 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .active_requests
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
-        self.active_requests
-            .insert(request.request_id.clone(), model_id.to_string());
+        self.active_requests.insert(
+            request.request_id.clone(),
+            /*unknown_transient_bytes*/ 0,
+        );
         let observed = self.driver.run(&loaded.handle, &request);
-        self.active_requests.remove(&request.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
+        if observed.terminal_observed {
+            self.active_requests.remove(&request.request_id);
+            loaded.active_requests = loaded.active_requests.saturating_sub(1);
+        }
+        self.observe_memory(
+            model_id,
+            observed.observed_memory_bytes,
+            /*transient_bytes*/ 0,
+        )?;
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
             return Err(Error::TokenLimit);
-        }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
             (ExecutionStatus::Indeterminate, None, false)
@@ -331,19 +363,30 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })
     }
 
+    /// Release a known idle model even after its grant expires or is revoked.
+    /// An uncertain driver or active execution still requires external
+    /// reconciliation; cleanup never retries an unknown unload outcome.
     pub fn unload_model(
         &mut self,
-        now_ms: u64,
+        _now_ms: u64,
         model_id: &str,
     ) -> Result<ModelUnloadObservation, Error> {
-        self.validate_current_grant(now_ms)?;
+        if self.driver_fenced {
+            return Err(Error::DriverUnavailable);
+        }
         validate_identity(model_id, "model")?;
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        if let Err(error) = self.driver.unload(loaded.handle.clone()) {
+            self.driver_fenced = true;
+            return Err(error);
+        }
+        self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
+        if self.models.is_empty() {
+            self.resource_fenced = false;
+        }
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -352,7 +395,45 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.driver_fenced {
+            return Err(Error::DriverUnavailable);
+        }
+        if self.resource_fenced {
+            return Err(Error::ModelCapacity);
+        }
         validate_grant(now_ms, &self.grant)
+    }
+
+    fn accounted_memory_bytes(&self) -> Result<u64, Error> {
+        self.models
+            .values()
+            .map(|model| model.resident_memory_bytes)
+            .chain(self.active_requests.values().copied())
+            .try_fold(0_u64, |total, bytes| {
+                total.checked_add(bytes).ok_or(Error::ModelCapacity)
+            })
+    }
+
+    fn observe_memory(
+        &mut self,
+        model_id: &str,
+        observed_memory_bytes: u64,
+        transient_bytes: u64,
+    ) -> Result<(), Error> {
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        loaded.resident_memory_bytes = loaded.resident_memory_bytes.max(observed_memory_bytes);
+        let within_limit = self
+            .accounted_memory_bytes()
+            .ok()
+            .and_then(|accounted| accounted.checked_add(transient_bytes))
+            .is_some_and(|peak| peak <= self.grant.maximum_memory_bytes);
+        if !within_limit {
+            // Keep known handles available for cleanup, but admit no further
+            // work until every model has actually been released.
+            self.resource_fenced = true;
+            return Err(Error::ModelCapacity);
+        }
+        Ok(())
     }
 }
 
@@ -439,278 +520,14 @@ fn validate_digest(value: &str, field: &'static str) -> Result<(), Error> {
     Ok(())
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct NeuronFeatureRequest {
-    pub authorization: WorkerRequest,
-    pub encoder_digest: String,
-    pub head_digest: String,
-    pub weights_digest: String,
-    pub input_digest: String,
-    pub feature_vector_q24: Vec<i64>,
-    pub expected_output_width: usize,
-}
+#[path = "model_worker_features.rs"]
+mod neuron_features;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct DriverNeuronFeatureObservation {
-    pub terminal_observed: bool,
-    pub succeeded: bool,
-    pub encoder_digest: String,
-    pub head_digest: String,
-    pub drive_q24: Vec<i64>,
-    pub prediction_q24: Vec<i64>,
-    pub observed_memory_bytes: u64,
-    pub transient_allocation_bytes: u64,
-    pub queue_age_micros: u64,
-    pub latency_micros: u64,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct NeuronFeatureExecutionObservation {
-    pub request_id: String,
-    pub reservation_id: String,
-    pub worker_generation: u64,
-    pub manifest: ModelManifest,
-    pub encoder_digest: String,
-    pub head_digest: String,
-    pub input_digest: String,
-    pub status: ExecutionStatus,
-    pub drive_q24: Vec<i64>,
-    pub prediction_q24: Vec<i64>,
-    pub observed_memory_bytes: u64,
-    pub transient_allocation_bytes: u64,
-    pub queue_age_micros: u64,
-    pub latency_micros: u64,
-    pub terminal_observed: bool,
-}
-
-/// Executes the frozen encoder/head feature path for an already loaded model.
-/// The driver must report the actual encoder/head identities and resource
-/// measurements observed for this invocation.
-pub trait NeuronFeatureDriver: ModelDriver {
-    fn run_neuron_features(
-        &mut self,
-        handle: &DriverModelHandle,
-        request: &NeuronFeatureRequest,
-    ) -> Result<DriverNeuronFeatureObservation, Error>;
-}
-
-impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
-    pub fn run_neuron_features(
-        &mut self,
-        now_ms: u64,
-        model_id: &str,
-        request: NeuronFeatureRequest,
-    ) -> Result<NeuronFeatureExecutionObservation, Error> {
-        self.validate_current_grant(now_ms)?;
-        validate_identity(model_id, "model")?;
-        validate_request(now_ms, &request.authorization)?;
-        validate_neuron_feature_request(&request)?;
-        if self
-            .active_requests
-            .contains_key(&request.authorization.request_id)
-        {
-            return Err(Error::RequestCapacity);
-        }
-        let request_limit = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
-        if self.active_requests.len() >= request_limit {
-            return Err(Error::RequestCapacity);
-        }
-        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
-        if request.authorization.model_digest != loaded.manifest.model_digest
-            || request.authorization.reservation_model_digest != loaded.manifest.model_digest
-            || request.weights_digest != loaded.manifest.weights_digest
-        {
-            return Err(Error::ModelMismatch);
-        }
-        let payload_digest = canonical_neuron_feature_payload_digest(&request);
-        if request.authorization.payload_digest != payload_digest
-            || request.authorization.lease_payload_digest != payload_digest
-        {
-            return Err(Error::PayloadMismatch);
-        }
-        if request.authorization.cancelled {
-            return Ok(NeuronFeatureExecutionObservation {
-                request_id: request.authorization.request_id,
-                reservation_id: request.authorization.reservation_id,
-                worker_generation: self.generation,
-                manifest: loaded.manifest.clone(),
-                encoder_digest: request.encoder_digest,
-                head_digest: request.head_digest,
-                input_digest: request.input_digest,
-                status: ExecutionStatus::Cancelled,
-                drive_q24: Vec::new(),
-                prediction_q24: Vec::new(),
-                observed_memory_bytes: loaded.handle.observed_memory_bytes,
-                transient_allocation_bytes: 0,
-                queue_age_micros: 0,
-                latency_micros: 0,
-                terminal_observed: true,
-            });
-        }
-
-        loaded.active_requests = loaded
-            .active_requests
-            .checked_add(1)
-            .ok_or(Error::ArithmeticOverflow)?;
-        self.active_requests.insert(
-            request.authorization.request_id.clone(),
-            model_id.to_string(),
-        );
-        let observed = self.driver.run_neuron_features(&loaded.handle, &request);
-        self.active_requests
-            .remove(&request.authorization.request_id);
-        loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            return Err(Error::ModelCapacity);
-        }
-        let status = if !observed.terminal_observed {
-            ExecutionStatus::Indeterminate
-        } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
-            ExecutionStatus::Succeeded
-        } else {
-            ExecutionStatus::Failed
-        };
-        Ok(NeuronFeatureExecutionObservation {
-            request_id: request.authorization.request_id,
-            reservation_id: request.authorization.reservation_id,
-            worker_generation: self.generation,
-            manifest: loaded.manifest.clone(),
-            encoder_digest: observed.encoder_digest,
-            head_digest: observed.head_digest,
-            input_digest: request.input_digest,
-            status,
-            drive_q24: observed.drive_q24,
-            prediction_q24: observed.prediction_q24,
-            observed_memory_bytes: observed.observed_memory_bytes,
-            transient_allocation_bytes: observed.transient_allocation_bytes,
-            queue_age_micros: observed.queue_age_micros,
-            latency_micros: observed.latency_micros,
-            terminal_observed: observed.terminal_observed,
-        })
-    }
-}
-
-impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
-    /// Execute the worker path and project the observed result into the
-    /// inference-control-owned typed receipt.
-    pub fn run_neuron_features_receipt(
-        &mut self,
-        now_ms: u64,
-        model_id: &str,
-        request: NeuronFeatureRequest,
-    ) -> Result<NeuronFeatureReceiptV1, Error> {
-        let request_copy = request.clone();
-        let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        let generation =
-            Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
-        let control_request = NeuronFeatureRequestV1 {
-            request_id: StableId::new(request_copy.authorization.request_id)
-                .map_err(|_| Error::FeatureContract)?,
-            generation,
-            model_id: StableId::new(observed.manifest.model_id.clone())
-                .map_err(|_| Error::FeatureContract)?,
-            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
-            head_digest: parse_digest32(&request_copy.head_digest)?,
-            weights_digest: parse_digest32(&request_copy.weights_digest)?,
-            input_digest: parse_digest32(&request_copy.input_digest)?,
-            feature_vector_q24: request_copy.feature_vector_q24,
-            expected_output_width: request_copy.expected_output_width,
-        };
-        let runtime_tuple = NeuronModelRuntimeTupleV1 {
-            model_id: control_request.model_id.clone(),
-            model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
-            weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
-            tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
-            preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
-            quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
-            runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
-            device_digest: parse_digest32(&observed.manifest.device_digest)?,
-        };
-        let status = match observed.status {
-            ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
-            ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
-            ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
-            ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
-        };
-        build_neuron_feature_receipt_v1(
-            &control_request,
-            runtime_tuple,
-            NeuronFeatureObservationV1 {
-                encoder_digest: parse_digest32(&observed.encoder_digest)?,
-                head_digest: parse_digest32(&observed.head_digest)?,
-                drive_q24: observed.drive_q24,
-                prediction_q24: observed.prediction_q24,
-                observed_memory_bytes: observed.observed_memory_bytes,
-                transient_allocation_bytes: observed.transient_allocation_bytes,
-                queue_age_micros: observed.queue_age_micros,
-                latency_micros: observed.latency_micros,
-                status,
-            },
-        )
-        .map_err(|_| Error::FeatureContract)
-    }
-}
-
-fn parse_digest32(value: &str) -> Result<Digest32, Error> {
-    Digest32::from_str(value).map_err(|_| Error::FeatureContract)
-}
-
-pub fn canonical_neuron_feature_payload_digest(request: &NeuronFeatureRequest) -> String {
-    let mut bytes = b"hepta.infer-worker.neuron-feature-request.v1".to_vec();
-    bytes.extend_from_slice(request.authorization.model_digest.as_bytes());
-    bytes.extend_from_slice(request.encoder_digest.as_bytes());
-    bytes.extend_from_slice(request.head_digest.as_bytes());
-    bytes.extend_from_slice(request.weights_digest.as_bytes());
-    bytes.extend_from_slice(request.input_digest.as_bytes());
-    bytes.extend_from_slice(&(request.feature_vector_q24.len() as u64).to_be_bytes());
-    for value in &request.feature_vector_q24 {
-        bytes.extend_from_slice(&value.to_be_bytes());
-    }
-    bytes.extend_from_slice(&(request.expected_output_width as u64).to_be_bytes());
-    Digest32::of_bytes(&bytes).to_string()
-}
-
-fn validate_neuron_feature_request(value: &NeuronFeatureRequest) -> Result<(), Error> {
-    validate_digest(&value.encoder_digest, "encoder")?;
-    validate_digest(&value.head_digest, "head")?;
-    validate_digest(&value.weights_digest, "weights")?;
-    validate_digest(&value.input_digest, "neuron input")?;
-    if value.feature_vector_q24.is_empty()
-        || value.feature_vector_q24.len() > MAX_NEURON_FEATURES
-        || value.expected_output_width == 0
-        || value.expected_output_width > MAX_NEURON_FEATURES
-        || value
-            .feature_vector_q24
-            .iter()
-            .any(|item| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(item))
-    {
-        return Err(Error::FeatureLimit);
-    }
-    Ok(())
-}
-
-fn validate_neuron_feature_output(
-    request: &NeuronFeatureRequest,
-    value: &DriverNeuronFeatureObservation,
-) -> Result<(), Error> {
-    if value.encoder_digest != request.encoder_digest
-        || value.head_digest != request.head_digest
-        || value.drive_q24.len() != request.expected_output_width
-        || value.prediction_q24.len() != request.expected_output_width
-        || value
-            .drive_q24
-            .iter()
-            .chain(&value.prediction_q24)
-            .any(|item| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(item))
-    {
-        return Err(Error::FeatureOutputMismatch);
-    }
-    validate_digest(&value.encoder_digest, "encoder")?;
-    validate_digest(&value.head_digest, "head")?;
-    Ok(())
-}
+pub use neuron_features::DriverNeuronFeatureObservation;
+pub use neuron_features::NeuronFeatureDriver;
+pub use neuron_features::NeuronFeatureExecutionObservation;
+pub use neuron_features::NeuronFeatureRequest;
+pub use neuron_features::canonical_neuron_feature_payload_digest;
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]

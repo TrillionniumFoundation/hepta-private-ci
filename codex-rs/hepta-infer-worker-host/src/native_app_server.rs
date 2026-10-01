@@ -80,6 +80,15 @@ use tokio::time::timeout;
 use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
+#[path = "native_dispatch.rs"]
+mod native_dispatch;
+use native_dispatch::verify_persisted_dispatch_binding;
+#[path = "native_output.rs"]
+mod native_output;
+use native_output::NativeOutputProjection;
+#[path = "native_recovery.rs"]
+mod native_recovery;
+
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
@@ -359,16 +368,8 @@ impl AppServerModelDriver {
             .find(|turn| turn.id == turn_id)
             .ok_or("reconciled terminal receipt turn disappeared")?;
 
-        let mut output_text = String::new();
-        for item in &turn.items {
-            if let ThreadItem::AgentMessage { text, .. } = item {
-                if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output_text.len()) {
-                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Err("reconciled output byte limit exceeded".into());
-                }
-                output_text.push_str(text);
-            }
-        }
+        let mut projection = NativeOutputProjection::default();
+        projection.complete_items(&turn.items)?;
         let (status, boundary_status) = match receipt.status {
             AdapterStatus::Succeeded => {
                 (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
@@ -390,7 +391,7 @@ impl AppServerModelDriver {
             model_provider: dispatch.model_provider.clone(),
             status,
             boundary_status,
-            output: output_text,
+            output: projection.text(),
             observed_output_tokens: None,
             terminal_observed: true,
             owner_authority: NativeOwnerAuthority::Unverified,
@@ -405,6 +406,7 @@ impl AppServerModelDriver {
                     .to_string(),
             ),
         };
+        native_recovery::retain_observed_facts(&mut output, record);
         let _ =
             verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
         downgrade_for_owner_loss(&mut output);
@@ -643,18 +645,9 @@ impl AppServerModelDriver {
         verify_persisted_dispatch_binding(
             control,
             request_id,
-            payload_digest,
+            &adapter_intent,
             request_receipt.request_digest,
-            source_admission_digest,
-            codex_home_digest,
-            connection_id,
-            &started.thread.session_id,
-            adapter_intent.deadline_ms,
-            authority_epoch,
-            revocation_revision,
-            &revocation_head_digest,
-            &authority_witness,
-            &app_server_version,
+            &verified_use,
         )?;
 
         if let Some(binding) = intelligence {
@@ -769,7 +762,11 @@ impl AppServerModelDriver {
             return Err("cancelled before model dispatch".into());
         }
 
-        let send_budget = remaining_before(adapter_intent.deadline_ms)?.min(RPC_TIMEOUT);
+        let (send_budget, pre_effect_abort) = native_recovery::send_budget_before_effect(
+            control,
+            pre_effect_abort,
+            adapter_intent.deadline_ms,
+        )?;
         let entered_use = match verified_use.enter(&authority_binding) {
             Ok(entered) if entered.matches(&authority_binding) => entered,
             Ok(_) => {
@@ -900,30 +897,33 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut output_projection = NativeOutputProjection::default();
         let result = self
             .observe(
                 &mut client,
-                &mut output,
+                (&mut output, &mut output_projection),
                 deadline,
                 cancellation,
                 Some(&owner),
                 &binding,
             )
             .await;
+        // Materialize at observation boundaries, not for every interleaved
+        // delta, so bounded output cannot induce quadratic full-text copying.
+        output.output = output_projection.text();
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -943,13 +943,14 @@ impl AppServerModelDriver {
             let _ = self
                 .observe(
                     &mut client,
-                    &mut output,
+                    (&mut output, &mut output_projection),
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
                     &binding,
                 )
                 .await;
+            output.output = output_projection.text();
             loss_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
@@ -990,16 +991,6 @@ impl AppServerModelDriver {
             let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
                 .await;
             downgrade_for_owner_loss(&mut output);
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
-                && let Err(error) =
-                    commit_intelligence_terminal(&owner, binding, revision, &output).await
-            {
-                let note = format!("Agentd terminal reconciliation required: {error}");
-                output.stop_reason = Some(match output.stop_reason.take() {
-                    Some(existing) => format!("{existing}; {note}"),
-                    None => note,
-                });
-            }
         }
         Ok(output)
     }
@@ -1007,12 +998,13 @@ impl AppServerModelDriver {
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
-        output: &mut NativeRunOutput,
+        output_state: (&mut NativeRunOutput, &mut NativeOutputProjection),
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
         binding: &CodexTurnBinding,
     ) -> std::result::Result<(), String> {
+        let (output, output_projection) = output_state;
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
             let event = tokio::select! {
@@ -1029,7 +1021,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, output_projection, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1144,50 +1136,6 @@ async fn send_authorized_turn_start(
             params,
         })
         .await
-}
-
-fn verify_persisted_dispatch_binding(
-    control: &DurableInferenceControl,
-    request_id: &str,
-    payload_digest: Digest32,
-    request_digest: Digest32,
-    source_admission_digest: Digest32,
-    codex_home_digest: Digest32,
-    connection_id: u64,
-    session_id: &str,
-    deadline_ms: u64,
-    authority_epoch: u64,
-    revocation_revision: u64,
-    revocation_head_digest: &str,
-    authority_witness: &str,
-    app_server_version: &str,
-) -> Result<()> {
-    let dispatch = control
-        .native_record(request_id)
-        .and_then(|record| record.dispatch.as_ref())
-        .ok_or("runtime.codex dispatch binding was not durably published")?;
-    let payload_digest = payload_digest.to_string();
-    let request_digest = request_digest.to_string();
-    let source_admission_digest = source_admission_digest.to_string();
-    let codex_home_digest = codex_home_digest.to_string();
-    let exact = dispatch.codex_payload_digest.as_deref() == Some(payload_digest.as_str())
-        && dispatch.codex_request_digest.as_deref() == Some(request_digest.as_str())
-        && dispatch.codex_source_admission_digest.as_deref()
-            == Some(source_admission_digest.as_str())
-        && dispatch.codex_home_digest.as_deref() == Some(codex_home_digest.as_str())
-        && dispatch.codex_connection_id == Some(connection_id)
-        && dispatch.codex_session_id.as_deref() == Some(session_id)
-        && dispatch.codex_deadline_ms == Some(deadline_ms)
-        && dispatch.codex_authority_epoch == Some(authority_epoch)
-        && dispatch.codex_revocation_revision == Some(revocation_revision)
-        && dispatch.codex_revocation_head_sha256.as_deref() == Some(revocation_head_digest)
-        && dispatch.codex_authority_witness_sha256.as_deref() == Some(authority_witness)
-        && dispatch.app_server_version.as_deref() == Some(app_server_version)
-        && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
-    if !exact {
-        return Err("durable runtime.codex dispatch binding changed before physical send".into());
-    }
-    Ok(())
 }
 
 fn unix_time_ms() -> Result<u64> {
@@ -1332,44 +1280,6 @@ async fn require_intelligence_handoff(
     Ok(run.revision)
 }
 
-async fn commit_intelligence_terminal(
-    owner: &AgentdClient,
-    binding: &NativeIntelligenceRunBinding,
-    expected_revision: u64,
-    output: &NativeRunOutput,
-) -> Result<()> {
-    if !output.terminal_observed
-        || !matches!(output.owner_authority, NativeOwnerAuthority::ObservedReady)
-        || output.codex_terminal_correlation_digest.is_none()
-    {
-        return Err("intelligence terminal publication requires exact observed correlation and current owner authority".into());
-    }
-    let phase = match output.status {
-        NativeRunStatus::Completed => AgentRunPhase::Succeeded,
-        NativeRunStatus::Failed => AgentRunPhase::Failed,
-        NativeRunStatus::Interrupted => AgentRunPhase::Cancelled,
-        NativeRunStatus::Indeterminate => {
-            return Err("cannot commit a nonterminal intelligence observation".into());
-        }
-    };
-    let receipt = owner
-        .run_observe_terminal(
-            binding.run_id.clone(),
-            expected_revision,
-            phase,
-            /*terminal_observed*/ true,
-        )
-        .await?;
-    if receipt.phase != phase
-        || !receipt.terminal_observed
-        || receipt.context_digest.as_deref() != Some(binding.context_digest.as_str())
-        || receipt.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
-    {
-        return Err("Agentd terminal receipt lost the intelligence handoff binding".into());
-    }
-    Ok(())
-}
-
 async fn verify_owner_health(
     output: &mut NativeRunOutput,
     health: impl Future<Output = std::result::Result<HealthSnapshot, AgentdError>>,
@@ -1419,6 +1329,7 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    projection: &mut NativeOutputProjection,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
@@ -1429,14 +1340,24 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server output witness: {error}"))?;
+            projection.append_delta(&delta.item_id, &delta.delta)?;
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server output witness: {error}"))?;
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                projection.complete_item(id, text)?;
             }
-            output.output.push_str(&delta.delta);
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
+            adapt_observed_event(&binding.intent, &binding.turn_id, observed)
+                .map_err(|error| format!("invalid App Server usage witness: {error}"))?;
             let observed_tokens = u64::try_from(usage.token_usage.total.output_tokens)
                 .map_err(|_| "invalid negative provider usage".to_string())?;
             if output
@@ -1453,6 +1374,10 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            // Completed items are canonical output, including valid provider
+            // responses that emitted no text deltas. Summary items supplement
+            // earlier observed messages rather than replacing the whole turn.
+            projection.complete_items(&completed.turn.items)?;
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;

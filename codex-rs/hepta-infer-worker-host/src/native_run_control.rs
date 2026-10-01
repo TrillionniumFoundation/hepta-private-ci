@@ -123,10 +123,18 @@ impl AppServerModelDriver {
                 .as_ref()
                 .filter(|output| output.terminal_observed)
             {
-                return Ok(output.clone());
+                let mut output = output.clone();
+                super::native_recovery::retain_observed_facts(&mut output, &record);
+                if let Some(binding) = intelligence {
+                    self.publish_intelligence_terminal(binding, &output).await?;
+                }
+                return Ok(output);
             }
             if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
                 let settled = control.settle_native(&record.request.request_id, reconciled)?;
+                if let (Some(binding), Some(output)) = (intelligence, &settled.observation) {
+                    self.publish_intelligence_terminal(binding, output).await?;
+                }
                 return settled.observation.ok_or_else(|| {
                     "durable reconciliation omitted its normalized observation".into()
                 });
@@ -175,6 +183,11 @@ impl AppServerModelDriver {
                     control.cancel_native(&request_id)?;
                 }
                 let settled = control.settle_native(&request_id, output)?;
+                if let (Some(binding), Some(output)) = (intelligence, &settled.observation)
+                    && output.terminal_observed
+                {
+                    self.publish_intelligence_terminal(binding, output).await?;
+                }
                 settled.observation.ok_or_else(|| {
                     "durable execution settlement omitted its normalized observation".into()
                 })
