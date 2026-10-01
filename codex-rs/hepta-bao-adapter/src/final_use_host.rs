@@ -68,6 +68,7 @@ pub use consumer_registration::BaoConsumerObserverCallback;
 pub use consumer_registration::BaoOperationConsumerCallback;
 pub use consumer_registration::BaoOperationConsumerPreparer;
 pub use consumer_registration::BaoPreparedConsumerCallback;
+pub use consumer_registration::BaoReceiptConsumerPreparer;
 pub use consumer_registration::RegisteredBaoConsumer;
 
 const OPERATION_DURATION_SAMPLE_LIMIT: usize = 256;

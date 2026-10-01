@@ -38,7 +38,7 @@ impl RoleConnection {
     ) -> Result<R, ConsumerPortError> {
         if self.peer_uid == rustix::process::geteuid().as_raw()
             || self.timeout_ms == 0
-            || self.timeout_ms > 2_000
+            || self.timeout_ms > 5_000
         {
             return Err(ConsumerPortError::Invalid);
         }

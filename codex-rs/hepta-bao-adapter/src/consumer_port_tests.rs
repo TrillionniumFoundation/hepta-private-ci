@@ -54,6 +54,7 @@ impl Fixture {
             acknowledgement_signing_key_file: signing_key_file,
             acknowledgement_verifying_key: key.verifying_key().to_bytes(),
             request_timeout_ms: 500,
+            receipt_policy: None,
             shutdown_drain_ms: 1_000,
         };
         let port = ConsumerPortConfig {

@@ -58,11 +58,17 @@ mod secret_boundary_v1;
 mod sqlite_owner;
 
 #[cfg(target_os = "linux")]
+pub use consumer_port::ConsumerEvidenceClient;
+#[cfg(target_os = "linux")]
+pub use consumer_port::ConsumerEvidenceConfig;
+#[cfg(target_os = "linux")]
 pub use consumer_port::ConsumerPortClient;
 #[cfg(target_os = "linux")]
 pub use consumer_port::ConsumerPortConfig;
 #[cfg(target_os = "linux")]
 pub use consumer_port::ConsumerPortError;
+#[cfg(target_os = "linux")]
+pub use consumer_port::ConsumerReceiptPolicy;
 #[cfg(target_os = "linux")]
 pub use consumer_port::CredentialConsumerServiceConfig;
 #[cfg(target_os = "linux")]
@@ -97,6 +103,7 @@ pub use final_use_host::BaoOperationMetricsV1;
 pub use final_use_host::BaoPreparedConsumerCallback;
 pub use final_use_host::BaoProductErrorClassV1;
 pub use final_use_host::BaoProductHostError;
+pub use final_use_host::BaoReceiptConsumerPreparer;
 pub use final_use_host::BaoRecoveryBatchReportV1;
 pub use final_use_host::BaoRecoveryWorkerMetricsV1;
 pub use final_use_host::BaoSqliteProductRuntimeConfigV1;

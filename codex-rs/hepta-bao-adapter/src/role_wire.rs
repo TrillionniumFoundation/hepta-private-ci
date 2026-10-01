@@ -98,6 +98,9 @@ pub(crate) enum AuthorityRequest {
     OriginalStatus {
         original_operation_id: String,
     },
+    OriginalDetails {
+        original_operation_id: String,
+    },
 }
 
 #[derive(Deserialize, Serialize)]
@@ -112,6 +115,10 @@ pub(crate) enum AuthorityResponse {
     },
     Grant {
         grant: SignedFinalUseGrant,
+    },
+    OriginalDetails {
+        operation: Box<crate::ApprovedSecretOperation>,
+        revocations: FinalUseRevocations,
     },
     OriginalAdmitted {
         grant_sha256: [u8; 32],

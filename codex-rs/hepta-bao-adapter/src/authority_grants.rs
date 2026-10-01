@@ -195,4 +195,26 @@ impl AuthorityRoleOwner {
         })
         .transpose()
     }
+    pub async fn original_details(
+        &self,
+        operation: &str,
+    ) -> Result<Option<crate::ApprovedSecretOperation>, ConsumerPortError> {
+        // Both records are immutable; Status verifies all retained projections
+        // and signatures before the original full pair can leave this owner.
+        if self.original_status(operation).await?.is_none() {
+            return Ok(None);
+        }
+        let row = sqlx::query("SELECT g.grant_json,b.approval_json FROM authority_role_original_begin b JOIN authority_role_grant g USING(original_operation_id) WHERE original_operation_id=?")
+            .bind(operation).fetch_one(&self.pool).await.map_err(unavailable)?;
+        let grant: Vec<u8> = row.try_get("grant_json").map_err(unavailable)?;
+        let approval: Vec<u8> = row.try_get("approval_json").map_err(unavailable)?;
+        if grant.len() > 16_384 || approval.len() > 16_384 {
+            return Err(ConsumerPortError::Unavailable);
+        }
+        Ok(Some(crate::ApprovedSecretOperation {
+            original_operation_id: operation.to_owned(),
+            grant: serde_json::from_slice(&grant).map_err(unavailable)?,
+            approval: serde_json::from_slice(&approval).map_err(unavailable)?,
+        }))
+    }
 }

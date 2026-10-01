@@ -33,6 +33,8 @@ pub struct CredentialConsumerServiceConfig {
     pub acknowledgement_verifying_key: [u8; 32],
     pub request_timeout_ms: u64,
     pub shutdown_drain_ms: u64,
+    #[serde(default)]
+    pub receipt_policy: Option<super::ConsumerReceiptPolicy>,
 }
 
 impl CredentialConsumerServiceConfig {
@@ -83,6 +85,19 @@ pub async fn serve_credential_consumer(
         CredentialConsumerOwner::open(&config.database_path, config.acknowledgement_verifying_key)
             .await?,
     );
+    let receipt_role = match &config.receipt_policy {
+        Some(policy) => Some(
+            super::consumer_receipt_role::ReceiptConsumerRole::open(
+                policy.clone(),
+                &config,
+                Arc::clone(&owner),
+                &key,
+                credential.len(),
+            )
+            .await?,
+        ),
+        None => None,
+    };
     let service = crate::local_service::LocalServiceConfig {
         socket_path: config.socket_path.clone(),
         ipc_group_gid: config.ipc_group_gid,
@@ -96,6 +111,7 @@ pub async fn serve_credential_consumer(
         owner,
         credential,
         key,
+        receipt_role,
     });
     crate::local_service::serve(service, role, endpoint, shutdown).await
 }
@@ -105,13 +121,87 @@ struct CredentialConsumerRole {
     owner: Arc<CredentialConsumerOwner>,
     credential: Zeroizing<Vec<u8>>,
     key: SigningKey,
+    receipt_role: Option<super::consumer_receipt_role::ReceiptConsumerRole>,
 }
 
 impl crate::local_service::LocalServiceOwner for CredentialConsumerRole {
     async fn handle(&self, _peer_uid: u32, request: &[u8]) -> Result<Vec<u8>, ConsumerPortError> {
         let request: ConsumerRequest = serde_json::from_slice(request).map_err(unavailable)?;
         let response = match request {
+            ConsumerRequest::PrepareReceipt {
+                intent,
+                receipt,
+                lifetime_limit_ms,
+            } => {
+                let role = self
+                    .receipt_role
+                    .as_ref()
+                    .ok_or(ConsumerPortError::Rejected)?;
+                if intent.consumer_id != self.config.consumer_id {
+                    return Err(ConsumerPortError::Rejected);
+                }
+                match role
+                    .prepare(&intent, &receipt, lifetime_limit_ms, &self.key)
+                    .await
+                {
+                    Ok(token) => ConsumerResponse::Prepared { token },
+                    Err(ConsumerPortError::Conflict) => ConsumerResponse::Conflict,
+                    Err(ConsumerPortError::Rejected) => ConsumerResponse::Rejected,
+                    Err(_) => ConsumerResponse::Unknown,
+                }
+            }
+            ConsumerRequest::AuthenticatePrepared { token, proof } => {
+                let role = self
+                    .receipt_role
+                    .as_ref()
+                    .ok_or(ConsumerPortError::Rejected)?;
+                if token.preparation.intent.consumer_id != self.config.consumer_id {
+                    return Err(ConsumerPortError::Rejected);
+                }
+                match role
+                    .authenticate(&token, &proof, &self.credential, &self.key)
+                    .await
+                {
+                    Ok(receipt) => ConsumerResponse::Confirmed { receipt },
+                    Err(ConsumerPortError::Conflict) => ConsumerResponse::Conflict,
+                    Err(ConsumerPortError::Rejected) => ConsumerResponse::Rejected,
+                    Err(_) => ConsumerResponse::Unknown,
+                }
+            }
+            ConsumerRequest::ReceiptStatus { intent } => {
+                if intent.consumer_id != self.config.consumer_id {
+                    return Err(ConsumerPortError::Rejected);
+                }
+                let role = self
+                    .receipt_role
+                    .as_ref()
+                    .ok_or(ConsumerPortError::Rejected)?;
+                match role.status(&intent).await {
+                    Ok(Some(receipt)) => ConsumerResponse::Confirmed { receipt },
+                    Ok(None) => ConsumerResponse::Unknown,
+                    Err(ConsumerPortError::Conflict) => ConsumerResponse::Conflict,
+                    Err(_) => ConsumerResponse::Unknown,
+                }
+            }
+            ConsumerRequest::Settlement {
+                operation_id,
+                reservation_id,
+            } => {
+                let role = self
+                    .receipt_role
+                    .as_ref()
+                    .ok_or(ConsumerPortError::Rejected)?;
+                match role.settlement(&operation_id, &reservation_id).await {
+                    Ok(evidence) => ConsumerResponse::Settlement { evidence },
+                    Err(ConsumerPortError::Conflict) => ConsumerResponse::Conflict,
+                    Err(ConsumerPortError::Rejected) => ConsumerResponse::Rejected,
+                    Err(_) => ConsumerResponse::Unknown,
+                }
+            }
             ConsumerRequest::Authenticate { intent, proof } => {
+                if self.receipt_role.is_some() {
+                    return Err(ConsumerPortError::Rejected);
+                }
                 if intent.consumer_id != self.config.consumer_id {
                     return Err(ConsumerPortError::Rejected);
                 }

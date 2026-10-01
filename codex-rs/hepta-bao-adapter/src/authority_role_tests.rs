@@ -48,6 +48,7 @@ impl Fixture {
             },
             database_path: directory.path().join("authority.sqlite"),
             runtime_uid: 992,
+            consumer_uid: None,
             operator_uid: 981,
             issuer_id: "secrets-native-issuer".into(),
             issuer_signing_key_file: issuer_file,

@@ -26,12 +26,18 @@ pub async fn serve_secrets_authority(
 impl LocalServiceOwner for AuthorityRoleOwner {
     async fn handle(&self, peer_uid: u32, request: &[u8]) -> Result<Vec<u8>, ConsumerPortError> {
         let request: AuthorityRequest = serde_json::from_slice(request).map_err(unavailable)?;
-        if peer_uid != self.config.runtime_uid
-            && !matches!(
-                request,
-                AuthorityRequest::Time | AuthorityRequest::Frontier { .. }
-            )
-        {
+        let permitted = peer_uid == self.config.runtime_uid
+            || (peer_uid == self.config.operator_uid
+                && matches!(
+                    request,
+                    AuthorityRequest::Time | AuthorityRequest::Frontier { .. }
+                ))
+            || (Some(peer_uid) == self.config.consumer_uid
+                && matches!(
+                    request,
+                    AuthorityRequest::Time | AuthorityRequest::OriginalDetails { .. }
+                ));
+        if !permitted {
             return Err(ConsumerPortError::Rejected);
         }
         let result = async {
@@ -92,6 +98,15 @@ impl LocalServiceOwner for AuthorityRoleOwner {
                         approval_sha256,
                     })
                 }
+                AuthorityRequest::OriginalDetails {
+                    original_operation_id,
+                } => match self.original_details(&original_operation_id).await? {
+                    Some(operation) => Ok(AuthorityResponse::OriginalDetails {
+                        operation: Box::new(operation),
+                        revocations: self.frontier().await?.1,
+                    }),
+                    None => Ok(AuthorityResponse::Unknown),
+                },
                 AuthorityRequest::OriginalStatus {
                     original_operation_id,
                 } => match self.original_status(&original_operation_id).await? {

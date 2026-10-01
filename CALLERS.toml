@@ -60,7 +60,13 @@ required_boundary_ids = [
   "secrets_operator_service_boot",
   "secrets_original_authorization",
   "secrets_original_durable_begin",
-  "secrets_operator_independent_approval"
+  "secrets_operator_independent_approval",
+  "secrets_consumer_service_boot",
+  "secrets_consumer_receipt_preflight",
+  "secrets_consumer_credential_effect",
+  "secrets_consumer_settlement",
+  "secrets_runtime_settlement_request",
+  "bao_receipt_consumer_registration"
 ]
 
 [[boundary]]
@@ -247,7 +253,7 @@ id = "final_use_approval_trust"
 symbol = "FinalUseApprovalVerifier::new"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["impl FinalUseApprovalVerifier", "pub fn new(", "InvalidTrust"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/authority_role_config.rs", "codex-rs/hepta-bao-adapter/src/operator_approval.rs", "codex-rs/hepta-bao-adapter/src/role_client.rs"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/authority_role_config.rs", "codex-rs/hepta-bao-adapter/src/operator_approval.rs", "codex-rs/hepta-bao-adapter/src/role_client.rs", "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs"]
 caller_markers = ["FinalUseApprovalVerifier::new"]
 
 [[boundary]]
@@ -637,3 +643,55 @@ definition_markers = ["pub async fn approve", "verify_grant", "self.config.froze
 product_callers = ["codex-rs/hepta-bao-adapter/src/operator_role.rs"]
 caller_markers = ["self.approve", "OperatorRequest::Approve"]
 call_pattern = "self\\s*\\.\\s*approve\\s*\\("
+
+[[boundary]]
+id = "secrets_consumer_service_boot"
+symbol = "serve_credential_consumer"
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_server.rs"
+definition_markers = ["pub async fn serve_credential_consumer", "ReceiptConsumerRole::open", "LocalServiceConfig"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["serve_credential_consumer", "CredentialConsumerServiceConfig::load_root_owned"]
+
+[[boundary]]
+id = "secrets_consumer_receipt_preflight"
+symbol = "ReceiptConsumerRole::prepare"
+call_pattern = 'role\s*\.\s*prepare\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs"
+definition_markers = ["pub async fn prepare", "OriginalDetails", "retain_preparation"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_server.rs"]
+caller_markers = ["PrepareReceipt", ".prepare(&intent, &receipt, lifetime_limit_ms, &self.key)"]
+
+[[boundary]]
+id = "secrets_consumer_credential_effect"
+symbol = "ReceiptConsumerRole::authenticate"
+call_pattern = 'role\s*\.\s*authenticate\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs"
+definition_markers = ["pub async fn authenticate", "verify_proof", "acknowledge("]
+product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_server.rs"]
+caller_markers = ["AuthenticatePrepared", "role", ".authenticate("]
+
+[[boundary]]
+id = "secrets_consumer_settlement"
+symbol = "ReceiptConsumerRole::settlement"
+call_pattern = 'role\s*\.\s*settlement\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_settlement.rs"
+definition_markers = ["pub async fn settlement", "receipt_status", "credential_settlement_binding", "commit_receipt"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_server.rs"]
+caller_markers = ["ConsumerRequest::Settlement", "role.settlement"]
+
+[[boundary]]
+id = "secrets_runtime_settlement_request"
+symbol = "ConsumerEvidenceClient::completed_original"
+call_pattern = '(?:client|self)\s*\.\s*completed_original\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_evidence_client.rs"
+definition_markers = ["pub fn completed_original", "ConsumerRequest::Settlement", "settlement_verifying_key"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["ConsumerEvidenceClient::new", "completed_original"]
+
+[[boundary]]
+id = "bao_receipt_consumer_registration"
+symbol = "RegisteredBaoConsumer::for_prepared_receipts"
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_registration.rs"
+definition_markers = ["pub fn for_prepared_receipts", "receipt_preparer = Some", "Self::for_operations"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_port.rs"]
+caller_markers = ["RegisteredBaoConsumer::for_prepared_receipts", "prepare_receipt"]

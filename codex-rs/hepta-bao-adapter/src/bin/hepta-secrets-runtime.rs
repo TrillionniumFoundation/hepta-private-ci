@@ -13,9 +13,14 @@ async fn main() -> std::process::ExitCode {
     let command = arguments.next();
     let configuration = arguments.next();
     let operation = arguments.next();
-    if arguments.next().is_some() || configuration.is_none() {
+    let reservation = arguments.next();
+    if arguments.next().is_some()
+        || configuration.is_none()
+        || (reservation.is_some()
+            && command.as_deref() != Some(std::ffi::OsStr::new("settlement-original")))
+    {
         eprintln!(
-            "usage: hepta-secrets-runtime serve-consumer|serve-authority|serve-operator /etc/hepta-secrets/role.json\n       hepta-secrets-runtime authorize-original|original-status /etc/hepta-secrets/client.json ORIGINAL_ID"
+            "usage: hepta-secrets-runtime serve-consumer|serve-authority|serve-operator /etc/hepta-secrets/role.json\n       hepta-secrets-runtime authorize-original|original-status /etc/hepta-secrets/client.json ORIGINAL_ID\n       hepta-secrets-runtime settlement-original /etc/hepta-secrets/evidence.json ORIGINAL_ID RESERVATION_ID"
         );
         return std::process::ExitCode::from(64);
     }
@@ -51,6 +56,21 @@ async fn main() -> std::process::ExitCode {
                     shutdown,
                 )
                 .await
+            }
+            Some("settlement-original") => {
+                let operation = operation.as_deref().and_then(std::ffi::OsStr::to_str).ok_or(ConsumerPortError::Invalid)?;
+                let reservation = reservation.as_deref().and_then(std::ffi::OsStr::to_str).ok_or(ConsumerPortError::Invalid)?;
+                let client = codex_hepta_bao_adapter::ConsumerEvidenceClient::new(
+                    codex_hepta_bao_adapter::ConsumerEvidenceConfig::load_root_owned(path)?)?;
+                let signed = client.completed_original(operation, reservation)?;
+                // This output is public signed metadata, never the credential.
+                let claims = signed.claims;
+                let output = serde_json::json!({"issuer_id":claims.issuer_id.as_str(), "key_epoch":claims.key_epoch.get(),
+                    "reservation_id":claims.reservation_id.as_str(), "operation_id":claims.operation_id.as_str(),
+                    "observed_cost":claims.observed_cost, "terminal_evidence_digest":claims.terminal_evidence_digest.as_array(),
+                    "observed_at_ms":claims.observed_at_ms, "expires_at_ms":claims.expires_at_ms, "signature":signed.signature.to_vec()});
+                println!("{output}");
+                Ok(())
             }
             Some("authorize-original" | "original-status") => {
                 let operation = operation

@@ -26,6 +26,8 @@ pub struct SecretsAuthorityServiceConfig {
     pub(crate) database_path: PathBuf,
     pub(crate) runtime_uid: u32,
     pub(crate) operator_uid: u32,
+    #[serde(default)]
+    pub(crate) consumer_uid: Option<u32>,
     pub(crate) issuer_id: String,
     pub(crate) issuer_signing_key_file: PathBuf,
     pub(crate) issuer_verifying_key: [u8; 32],
@@ -64,7 +66,21 @@ impl SecretsAuthorityServiceConfig {
             || self.service.service_uid == self.runtime_uid
             || self.service.service_uid == self.operator_uid
             || self.service.service_uid != rustix::process::geteuid().as_raw()
-            || self.service.allowed_peer_uids != [self.runtime_uid, self.operator_uid]
+            || self.consumer_uid.is_some_and(|uid| {
+                [
+                    self.runtime_uid,
+                    self.operator_uid,
+                    self.service.service_uid,
+                ]
+                .contains(&uid)
+            })
+            || self.service.allowed_peer_uids != {
+                let mut peers = vec![self.runtime_uid, self.operator_uid];
+                if let Some(uid) = self.consumer_uid {
+                    peers.push(uid);
+                }
+                peers
+            }
             || self.issuer_verifying_key == self.time_verifying_key
             || self.issuer_verifying_key == self.approver_verifying_key
             || self.time_verifying_key == self.approver_verifying_key

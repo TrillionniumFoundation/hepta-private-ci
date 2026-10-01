@@ -70,6 +70,22 @@ impl ConsumerIntent {
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "command", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum ConsumerRequest {
+    PrepareReceipt {
+        intent: ConsumerIntent,
+        receipt: crate::BaoSecretReceipt,
+        lifetime_limit_ms: u64,
+    },
+    AuthenticatePrepared {
+        token: super::consumer_receipt_wire::SignedPreparedCredentialUse,
+        proof: [u8; 32],
+    },
+    ReceiptStatus {
+        intent: ConsumerIntent,
+    },
+    Settlement {
+        operation_id: String,
+        reservation_id: String,
+    },
     Authenticate {
         intent: ConsumerIntent,
         proof: [u8; 32],
@@ -129,6 +145,12 @@ impl SignedConsumerAcknowledgement {
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum ConsumerResponse {
+    Prepared {
+        token: super::consumer_receipt_wire::SignedPreparedCredentialUse,
+    },
+    Settlement {
+        evidence: super::consumer_settlement::SettlementAttestation,
+    },
     Confirmed {
         receipt: SignedConsumerAcknowledgement,
     },

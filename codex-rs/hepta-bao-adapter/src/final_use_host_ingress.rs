@@ -17,7 +17,9 @@ impl BaoFinalUseHost {
         if self
             .consumers
             .get(&request.consumer_id)
-            .is_some_and(|registration| registration.operation_preparer.is_some())
+            .is_some_and(|registration| {
+                registration.operation_preparer.is_some() || registration.receipt_preparer.is_some()
+            })
         {
             return Err(BaoFinalUseHostError::InvalidConsumerConfiguration);
         }
@@ -68,7 +70,8 @@ impl BaoFinalUseHost {
                 .consumers
                 .get(&request.consumer_id)
                 .ok_or(BaoProductHostError::ConsumerProfileRequired)?;
-            if registration.operation_preparer.is_some() {
+            if registration.operation_preparer.is_some() || registration.receipt_preparer.is_some()
+            {
                 return Err(BaoProductHostError::ConsumerProfileRequired);
             }
             let configuration = registration

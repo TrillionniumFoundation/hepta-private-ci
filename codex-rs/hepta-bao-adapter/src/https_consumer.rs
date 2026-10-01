@@ -372,6 +372,14 @@ pub(crate) async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
             });
         }
     };
+    // The independent producer can obtain a newer protected sample while
+    // signing. Validate that evidence against a sample observed after its
+    // actual creation, rather than signing caller-selected time in the past.
+    let validation_attestation = evidence.trusted_time().map_err(pending)?;
+    let time = authbus
+        .observe_trusted_time_attestation(&validation_attestation)
+        .await
+        .map_err(|error| pending(error.into()))?;
     #[cfg(all(test, unix))]
     crate::saga_crash::cut("settlement.before");
     if let Err(error) = authbus.settle(&issuer, &signed, time).await {

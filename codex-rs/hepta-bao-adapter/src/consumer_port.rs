@@ -17,12 +17,30 @@ use crate::BaoFinalUseHostError;
 use crate::BaoPreparedConsumerCallback;
 use crate::RegisteredBaoConsumer;
 
+#[path = "consumer_evidence_client.rs"]
+mod consumer_evidence_client;
 #[path = "consumer_owner.rs"]
 mod consumer_owner;
+#[path = "consumer_receipt_owner.rs"]
+mod consumer_receipt_owner;
+#[path = "consumer_receipt_policy.rs"]
+mod consumer_receipt_policy;
+#[path = "consumer_receipt_role.rs"]
+mod consumer_receipt_role;
+#[path = "consumer_receipt_wire.rs"]
+mod consumer_receipt_wire;
 #[path = "consumer_server.rs"]
 mod consumer_server;
 #[path = "consumer_transport.rs"]
 mod consumer_transport;
+pub use consumer_evidence_client::ConsumerEvidenceClient;
+pub use consumer_evidence_client::ConsumerEvidenceConfig;
+#[path = "consumer_receipt_client.rs"]
+mod consumer_receipt_client;
+#[path = "consumer_settlement.rs"]
+mod consumer_settlement;
+pub use consumer_receipt_policy::ConsumerReceiptPolicy;
+
 #[path = "consumer_wire.rs"]
 mod consumer_wire;
 
@@ -72,9 +90,16 @@ impl std::fmt::Debug for ConsumerPortConfig {
 /// Owns no consumer signing key or credential. The final callback receives the
 /// already-verified KV secret only long enough to authenticate the original
 /// operation to the separately enrolled consumer process.
+#[derive(Clone, Copy)]
+enum ConsumerProtocol {
+    Legacy,
+    ReceiptBound,
+}
+
 pub struct ConsumerPortClient {
     config: ConsumerPortConfig,
     configuration_sha256: [u8; 32],
+    protocol: ConsumerProtocol,
     operation_deadlines: Arc<Mutex<BTreeMap<String, Instant>>>,
 }
 
@@ -118,9 +143,24 @@ impl ConsumerPortClient {
         .map_err(|_| ConsumerPortError::Invalid)?;
         Ok(Self {
             config,
+            protocol: ConsumerProtocol::Legacy,
             configuration_sha256: Digest32::of_bytes(&encoding).into_array(),
             operation_deadlines: Arc::new(Mutex::new(BTreeMap::new())),
         })
+    }
+
+    /// Select the receipt-bound production protocol. V1 configuration identity
+    /// remains byte-for-byte unchanged for retained legacy operations.
+    pub fn new_receipt_bound(config: ConsumerPortConfig) -> Result<Self, ConsumerPortError> {
+        let mut client = Self::new(config)?;
+        let encoding = serde_json::to_vec(&(
+            "hepta.secrets.credential-consumer.configuration.v2",
+            &client.config,
+        ))
+        .map_err(|_| ConsumerPortError::Invalid)?;
+        client.configuration_sha256 = Digest32::of_bytes(&encoding).into_array();
+        client.protocol = ConsumerProtocol::ReceiptBound;
+        Ok(client)
     }
 
     pub fn configuration_sha256(&self) -> [u8; 32] {
@@ -158,21 +198,33 @@ impl ConsumerPortClient {
     pub fn registration(self: &Arc<Self>) -> Result<RegisteredBaoConsumer, BaoFinalUseHostError> {
         let preparation = Arc::clone(self);
         let observation = Arc::clone(self);
-        RegisteredBaoConsumer::for_prepared_operations(
-            self.config.consumer_id.clone(),
-            self.configuration_sha256,
+        let observer: crate::BaoConsumerObserverCallback =
             Arc::new(move |operation_id, semantic| {
-                preparation.prepare(operation_id, semantic).map_err(|_| ())
-            }),
-            Arc::new(move |operation_id, semantic| {
-                // A missing row or unavailable consumer never proves no effect.
-                // Only the pinned independent signature confirms success.
                 Ok(match observation.observe(operation_id, semantic) {
                     Ok(true) => BaoConsumerObservationV1::Succeeded,
                     Ok(false) | Err(_) => BaoConsumerObservationV1::Unknown,
                 })
-            }),
-        )
+            });
+        match self.protocol {
+            ConsumerProtocol::Legacy => RegisteredBaoConsumer::for_prepared_operations(
+                self.config.consumer_id.clone(),
+                self.configuration_sha256,
+                Arc::new(move |operation_id, semantic| {
+                    preparation.prepare(operation_id, semantic).map_err(|_| ())
+                }),
+                observer,
+            ),
+            ConsumerProtocol::ReceiptBound => RegisteredBaoConsumer::for_prepared_receipts(
+                self.config.consumer_id.clone(),
+                self.configuration_sha256,
+                Arc::new(move |operation_id, semantic, receipt| {
+                    preparation
+                        .prepare_receipt(operation_id, semantic, receipt)
+                        .map_err(|_| ())
+                }),
+                observer,
+            ),
+        }
     }
 
     fn prepare(
@@ -213,7 +265,9 @@ impl ConsumerPortClient {
                 ConsumerResponse::Confirmed { receipt } => {
                     receipt.verify(&intent, &key).map_err(|_| ())
                 }
-                ConsumerResponse::Unknown
+                ConsumerResponse::Prepared { .. }
+                | ConsumerResponse::Settlement { .. }
+                | ConsumerResponse::Unknown
                 | ConsumerResponse::Rejected
                 | ConsumerResponse::Conflict => Err(()),
             }
@@ -231,14 +285,23 @@ impl ConsumerPortClient {
             self.config.service_uid,
             Duration::from_millis(self.config.timeout_ms),
         )?;
-        match connection.exchange(&ConsumerRequest::Status {
-            intent: intent.clone(),
-        })? {
+        let request = match self.protocol {
+            ConsumerProtocol::Legacy => ConsumerRequest::Status {
+                intent: intent.clone(),
+            },
+            ConsumerProtocol::ReceiptBound => ConsumerRequest::ReceiptStatus {
+                intent: intent.clone(),
+            },
+        };
+        match connection.exchange(&request)? {
             ConsumerResponse::Confirmed { receipt } => {
                 receipt.verify(&intent, &self.config.acknowledgement_verifying_key)?;
                 Ok(true)
             }
             ConsumerResponse::Unknown => Ok(false),
+            ConsumerResponse::Prepared { .. } | ConsumerResponse::Settlement { .. } => {
+                Err(ConsumerPortError::Unavailable)
+            }
             ConsumerResponse::Rejected => Err(ConsumerPortError::Rejected),
             ConsumerResponse::Conflict => Err(ConsumerPortError::Conflict),
         }
@@ -263,3 +326,7 @@ impl ConsumerPortClient {
 #[cfg(test)]
 #[path = "consumer_port_tests.rs"]
 pub(crate) mod tests;
+
+#[cfg(test)]
+#[path = "consumer_receipt_tests.rs"]
+mod receipt_tests;

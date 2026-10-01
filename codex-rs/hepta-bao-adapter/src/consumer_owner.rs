@@ -22,14 +22,14 @@ use super::consumer_wire::SignedConsumerAcknowledgement;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./consumer_migrations");
 
 pub(super) struct CredentialConsumerOwner {
-    pool: SqlitePool,
-    public_key: [u8; 32],
-    fenced: AtomicBool,
+    pub(super) pool: SqlitePool,
+    pub(super) public_key: [u8; 32],
+    pub(super) fenced: AtomicBool,
 }
 
-struct UncertainCommit<'a> {
-    owner: &'a CredentialConsumerOwner,
-    armed: bool,
+pub(super) struct UncertainCommit<'a> {
+    pub(super) owner: &'a CredentialConsumerOwner,
+    pub(super) armed: bool,
 }
 impl Drop for UncertainCommit<'_> {
     fn drop(&mut self) {
@@ -84,6 +84,15 @@ impl CredentialConsumerOwner {
         signing_key: &SigningKey,
     ) -> Result<SignedConsumerAcknowledgement, ConsumerPortError> {
         intent.verify_proof(credential, proof)?;
+        self.acknowledge(intent, signing_key).await
+    }
+
+    pub(super) async fn acknowledge(
+        &self,
+        intent: &ConsumerIntent,
+        signing_key: &SigningKey,
+    ) -> Result<SignedConsumerAcknowledgement, ConsumerPortError> {
+        intent.validate()?;
         if signing_key.verifying_key().to_bytes() != self.public_key {
             return Err(ConsumerPortError::Unavailable);
         }

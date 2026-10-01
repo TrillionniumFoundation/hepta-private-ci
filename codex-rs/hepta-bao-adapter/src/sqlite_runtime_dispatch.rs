@@ -108,6 +108,7 @@ impl BaoFinalUseHost {
                 semantic_sha256,
                 callback,
                 registration.operation_preparer.clone(),
+                registration.receipt_preparer.clone(),
                 admission,
                 grant,
                 request,
@@ -128,6 +129,7 @@ impl BaoFinalUseHost {
         semantic_sha256: [u8; 32],
         callback: BaoOperationConsumerCallback,
         preparer: Option<BaoOperationConsumerPreparer>,
+        receipt_preparer: Option<BaoReceiptConsumerPreparer>,
         admission: &BaoAuthBusAdmission,
         grant: &SignedFinalUseGrant,
         request: &BaoReadRequest,
@@ -151,7 +153,7 @@ impl BaoFinalUseHost {
 
         let prepared_consumer = Arc::new(Mutex::new(None::<BaoPreparedConsumerCallback>));
         let preparation_slot = Arc::clone(&prepared_consumer);
-        let use_prepared_consumer = preparer.is_some();
+        let use_prepared_consumer = preparer.is_some() || receipt_preparer.is_some();
         let saga_result = crate::authbus_saga::consume_kv_v2_with_authbus_saga(
             client,
             authbus,
@@ -240,12 +242,22 @@ impl BaoFinalUseHost {
                             .prepare_consumption_delivery(
                                 &operation_id,
                                 current.revision,
-                                receipt,
+                                receipt.clone(),
                                 digest,
                                 clock_now_for_saga(&clock)?,
                             )
                             .await?;
-                        if let Some(prepare) = preparer {
+                        if let Some(prepare) = receipt_preparer {
+                            let consumer = prepare(&operation_id, semantic_sha256, &receipt)
+                                .map_err(|_| {
+                                    BaoAuthBusError::Evidence(
+                                        "receipt-bound consumer preparation unavailable",
+                                    )
+                                })?;
+                            *preparation_slot.lock().map_err(|_| {
+                                BaoAuthBusError::Evidence("consumer preparation owner unavailable")
+                            })? = Some(consumer);
+                        } else if let Some(prepare) = preparer {
                             let consumer =
                                 prepare(&operation_id, semantic_sha256).map_err(|_| {
                                     BaoAuthBusError::Evidence(

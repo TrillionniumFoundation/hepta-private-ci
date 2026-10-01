@@ -28,6 +28,7 @@ pub struct RegisteredBaoConsumer {
     pub(super) configuration_sha256: Option<[u8; 32]>,
     pub(super) operation_callback: Option<BaoOperationConsumerCallback>,
     pub(super) operation_preparer: Option<BaoOperationConsumerPreparer>,
+    pub(super) receipt_preparer: Option<BaoReceiptConsumerPreparer>,
     pub(super) observer: Option<BaoConsumerObserverCallback>,
 }
 
@@ -52,6 +53,7 @@ impl RegisteredBaoConsumer {
             configuration_sha256: None,
             operation_callback: None,
             operation_preparer: None,
+            receipt_preparer: None,
             observer: None,
         })
     }
@@ -73,6 +75,7 @@ impl RegisteredBaoConsumer {
             configuration_sha256: Some(configuration_sha256),
             operation_callback: Some(callback),
             operation_preparer: None,
+            receipt_preparer: None,
             observer: Some(observer),
         })
     }
@@ -96,6 +99,24 @@ impl RegisteredBaoConsumer {
         Ok(registration)
     }
 
+    /// Bind the actual provider receipt during preflight. The returned callback
+    /// still has exactly one synchronous first consumer effect.
+    pub fn for_prepared_receipts(
+        id: String,
+        configuration_sha256: [u8; 32],
+        preparer: BaoReceiptConsumerPreparer,
+        observer: BaoConsumerObserverCallback,
+    ) -> Result<Self, BaoFinalUseHostError> {
+        let mut registration = Self::for_operations(
+            id,
+            configuration_sha256,
+            Arc::new(|_, _, _| Err(())),
+            observer,
+        )?;
+        registration.receipt_preparer = Some(preparer);
+        Ok(registration)
+    }
+
     pub fn id(&self) -> &str {
         &self.id
     }
@@ -104,3 +125,11 @@ impl RegisteredBaoConsumer {
 pub type BaoPreparedConsumerCallback = Box<dyn FnOnce(&[u8]) -> Result<(), ()> + Send + 'static>;
 pub type BaoOperationConsumerPreparer =
     Arc<dyn Fn(&str, [u8; 32]) -> Result<BaoPreparedConsumerCallback, ()> + Send + Sync + 'static>;
+
+/// Prepare the independently authenticated consumer with the actual immutable receipt.
+pub type BaoReceiptConsumerPreparer = Arc<
+    dyn Fn(&str, [u8; 32], &BaoSecretReceipt) -> Result<BaoPreparedConsumerCallback, ()>
+        + Send
+        + Sync
+        + 'static,
+>;
