@@ -35,6 +35,8 @@ use crate::framing::frame_part;
 
 #[path = "local_lease_outbox_dispatch_settlement.rs"]
 mod dispatch_settlement;
+#[path = "local_lease_outbox_observer_origin.rs"]
+mod observer_origin;
 
 pub const LOCAL_LEASE_OUTBOX_NAMESPACE: &str = "local_development_only";
 pub const LOCAL_LEASE_OUTBOX_SCHEMA_VERSION: u32 = 1;
@@ -2501,7 +2503,7 @@ impl LocalLeaseOutbox {
 
         let sequence = next_event_sequence(&mut transaction, &self.lease_id).await?;
         let previous = event_head(&mut transaction, &self.lease_id).await?;
-        let event_id = journal_row_id("event", &self.lease_id, sequence);
+        let event_id = observer_origin::observer_event_id(&self.lease_id, sequence);
         let digest = event_digest(
             &self.lease_id,
             sequence,
@@ -4157,6 +4159,13 @@ async fn verify_event_chain(
         let payload_json: String = row
             .try_get("payload_json")
             .map_err(crate::cognitive_store::unavailable)?;
+        observer_origin::verify_observer_event_origin(
+            lease_id,
+            sequence,
+            &event_id,
+            &kind,
+            &payload_json,
+        )?;
         let payload_sha256 = digest_from_row(row, "payload_sha256")?;
         if Sha256Digest::for_bytes(payload_json.as_bytes()) != payload_sha256 {
             return Err(corrupt("event payload digest mismatch"));
@@ -4561,6 +4570,13 @@ fn checked_event_row(
         previous_sha256: digest_from_row(row, "previous_sha256")?,
         event_sha256: digest_from_row(row, "event_sha256")?,
     };
+    observer_origin::verify_observer_event_origin(
+        lease_id,
+        event.sequence,
+        &event.event_id,
+        &event.kind,
+        &event.payload_json,
+    )?;
     if Sha256Digest::for_bytes(event.payload_json.as_bytes()) != event.payload_sha256 {
         return Err(corrupt("incremental event payload digest mismatch"));
     }

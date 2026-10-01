@@ -85,7 +85,13 @@ impl LocalLeaseOutbox {
                 .ok_or_else(|| corrupt("dispatch settlement terminal event is missing"))?;
                 if current != state
                     || latest.kind != kind
-                    || latest.payload_json != state.as_str()
+                    || !observer_origin::is_observer_event(
+                        &self.lease_id,
+                        latest.sequence,
+                        &latest.event_id,
+                        &latest.kind,
+                        &latest.payload_json,
+                    )
                     || latest.generation != self.generation
                     || latest.fencing_token != self.fencing_token
                 {

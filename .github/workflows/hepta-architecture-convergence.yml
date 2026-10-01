@@ -203,6 +203,12 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
+      - name: Cognitive context concurrency and recovery image regressions
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true' || steps.scope.outputs.lifecycle == 'true')
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cognitive-context.json" --minimum-tests 1 -- just test --locked --lib -p codex-hepta-agentd --no-tests fail -E 'test(cognitive_) | test(production_writer_host)'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/sqlite-recovery.json" --minimum-tests 1 -- just test --locked --lib -p codex-state --no-tests fail -E 'test(sqlite_recovery)'
       - name: Selected-artifact adoption and explicit rollback
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
         run: |

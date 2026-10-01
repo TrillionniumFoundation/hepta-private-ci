@@ -274,6 +274,7 @@ async fn observer_before_ack_preserves_actual_target_transport_and_immutable_ter
             .reconcile("observer-first", state)
             .await
             .expect("same terminal replay");
+        assert!(terminal.event_id.starts_with("observed-event:"));
         let counts = writer
             .lease
             .snapshot_counts()
@@ -434,6 +435,152 @@ async fn same_terminal_races_do_not_relax_authority_fences_or_generic_receipt_re
     ));
     assert_eq!(
         writer.lease.snapshot_counts().await.expect("counts"),
+        counts
+    );
+}
+
+#[tokio::test]
+async fn generic_literal_receipts_cannot_impersonate_observers_for_different_actual_acks() {
+    for outcome in terminal_cases() {
+        let fixture = make_fixture().await;
+        let writer = &fixture.writer;
+        let (request, claim) = prepare_dispatch(writer, "literal-receipt-origin").await;
+        let generic = match &outcome {
+            ProductionTargetOutcome::Committed { .. } => writer
+                .apply("literal-receipt-origin", "committed")
+                .await
+                .expect("allowed generic receipt literal"),
+            ProductionTargetOutcome::NotApplied { .. }
+            | ProductionTargetOutcome::Rejected { .. } => writer
+                .reject("literal-receipt-origin", "rejected")
+                .await
+                .expect("allowed generic reason literal"),
+            ProductionTargetOutcome::Indeterminate { .. } => panic!("terminal fixture"),
+        };
+        assert!(generic.event_id.starts_with("event:"));
+        let replay = match &outcome {
+            ProductionTargetOutcome::Committed { .. } => writer
+                .apply("literal-receipt-origin", "committed")
+                .await
+                .expect("exact generic receipt replay"),
+            ProductionTargetOutcome::NotApplied { .. }
+            | ProductionTargetOutcome::Rejected { .. } => writer
+                .reject("literal-receipt-origin", "rejected")
+                .await
+                .expect("exact generic reason replay"),
+            ProductionTargetOutcome::Indeterminate { .. } => panic!("terminal fixture"),
+        };
+        assert_eq!(replay, generic);
+        let counts = writer.lease.snapshot_counts().await.expect("counts");
+        assert!(matches!(
+            writer
+                .settle_dispatch_outcome(request, "literal-receipt-origin", claim, outcome)
+                .await,
+            Err(ProductionWriterError::Local(
+                LocalLeaseOutboxError::IllegalTransition(_)
+            ))
+        ));
+        assert_eq!(
+            writer.lease.snapshot_counts().await.expect("counts"),
+            counts
+        );
+    }
+}
+
+#[tokio::test]
+async fn legacy_terminal_history_and_new_observer_origin_survive_store_and_writer_reopen() {
+    let Fixture {
+        _temp: temp,
+        writer,
+        revoked: _revoked,
+    } = make_fixture().await;
+    let owner = writer.owner_agent_id().clone();
+    let authority = writer.authority.clone();
+    let verifier = Arc::clone(writer.live_verifier.as_ref().expect("retained verifier"));
+    let (legacy_request, legacy_claim) = prepare_dispatch(&writer, "legacy-terminal").await;
+    // This is exactly the legacy observer encoding: canonical terminal text
+    // in an ordinary event ID. Origin cannot be inferred from those bytes.
+    let legacy = writer
+        .apply("legacy-terminal", "committed")
+        .await
+        .expect("legacy terminal encoding");
+    let (observed_request, observed_claim) = prepare_dispatch(&writer, "observed-terminal").await;
+    let observed = writer
+        .reconcile("observed-terminal", LocalReconcileOutcome::Committed)
+        .await
+        .expect("new observer terminal");
+    assert!(legacy.event_id.starts_with("event:"));
+    assert!(observed.event_id.starts_with("observed-event:"));
+    let counts = writer.lease.snapshot_counts().await.expect("counts");
+    drop(writer);
+
+    let store = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("full owner verification accepts legacy and observer event origins");
+    let reopened = ProductionDurableWriter::open_with_live_verifier(
+        store,
+        authority,
+        verifier,
+        "reconciliation:race",
+        /*generation*/ 1,
+    )
+    .await
+    .expect("writer reopen");
+    assert_eq!(
+        reopened
+            .status("legacy-terminal")
+            .await
+            .expect("legacy status"),
+        LocalOutcomeState::Committed
+    );
+    assert_eq!(
+        reopened
+            .status("observed-terminal")
+            .await
+            .expect("observer status"),
+        LocalOutcomeState::Committed
+    );
+    let exact_legacy_ack = reopened
+        .settle_dispatch_outcome(
+            legacy_request.clone(),
+            "legacy-terminal",
+            legacy_claim.clone(),
+            ProductionTargetOutcome::Committed {
+                receipt: "committed".to_string(),
+            },
+        )
+        .await
+        .expect("legacy exact-payload ACK remains valid");
+    assert_eq!(exact_legacy_ack.local_event_id, legacy.event_id);
+    assert!(matches!(
+        reopened
+            .settle_dispatch_outcome(
+                legacy_request,
+                "legacy-terminal",
+                legacy_claim,
+                terminal_cases()[0].clone()
+            )
+            .await,
+        Err(ProductionWriterError::Local(
+            LocalLeaseOutboxError::IllegalTransition(_)
+        ))
+    ));
+    let outcome = terminal_cases()[0].clone();
+    let receipt = reopened
+        .settle_dispatch_outcome(
+            observed_request.clone(),
+            "observed-terminal",
+            observed_claim,
+            outcome.clone(),
+        )
+        .await
+        .expect("new observer provenance remains usable after reopen");
+    assert_eq!(
+        receipt,
+        expected_dispatch(observed_request, outcome, observed.event_id)
+    );
+    assert_eq!(
+        reopened.lease.snapshot_counts().await.expect("counts"),
         counts
     );
 }

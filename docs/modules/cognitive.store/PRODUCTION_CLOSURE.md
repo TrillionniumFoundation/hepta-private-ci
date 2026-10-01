@@ -65,6 +65,33 @@ If authority fails before commit, the entire semantic transaction rolls back.
 The external verifier must provide current revocation semantics; source code
 cannot manufacture those semantics or atomically freeze an external authority.
 
+### Public terminal receipt contract
+
+`ProductionDispatchReceipt.target_receipt` and `target_reason` preserve the actual
+destination reply. `local_event_id` names the verified durable local event; it
+does not assert that this event persisted the returned transport payload. New
+observer-settlement events use the `observed-event:` ID namespace, with the
+corresponding `reconcile_committed`, `reconcile_rejected` or
+`reconcile_still_indeterminate` kind and canonical outcome payload. Normal ACK
+and generic apply/reject events retain the `event:` namespace.
+
+A matching normal ACK may reuse a previously persisted observer terminal event
+despite a different transport payload only after verifying that new observer
+origin, matching terminal kind/canonical outcome and the same current fence.
+Opposite terminal results, stale authority/fences and different actual ACK
+replays remain errors. Legacy `event:` history remains readable, but a literal
+`committed` or `rejected` payload cannot establish observer origin and receives
+no different-ACK exception. Exact-payload replay retains its normal idempotence.
+
+The observer settlement stores the terminal classification, not its raw observed
+receipt or reason. The returned transport fields and the durable event must
+therefore be interpreted separately. Reconciliation observes existing work and
+never redispatches it; a missing source row remains unresolved rather than proving
+that an in-flight mutation cannot commit. For `ProductionCognitiveMutationReceiptV1`,
+public digest/validation checks establish consistency, while producer
+authentication and retained owner evidence establish receipt provenance. Neither
+receipt form creates execution authority.
+
 ## 3. Reopen and rollback-sensitive recovery
 
 Ordinary `DurableCognitiveStore::open` is the bounded read/bootstrap path. It
@@ -141,6 +168,15 @@ correction CAS, non-resurrection and rollback. Run scoped Clippy, formatting,
 caller proof and module-document/implementation-map checks against the exact
 candidate. Test invocations are not pass receipts.
 
+The [technical guide's integration/recovery commands](TECHNICAL.md#12-verification-and-qualification)
+select Agentd `cognitive_` / `production_writer_host` library tests and state
+`sqlite_recovery` library tests
+with an empty-test failure policy. Architecture convergence configures them in
+its source-head/base-merge lanes under the existing native-execution and
+effects/learning/lifecycle selection conditions, retaining command records or
+an exact-tree reuse decision. Their addition is not a successful execution
+receipt and does not replace Agentd product-host integration qualification.
+
 The focused native owner workflow runs strict Clippy for
 `codex-hepta-cognitive-store` and `codex-hepta-memory` with `--no-deps` and
 `-D warnings`. It compiles dependencies while limiting lint qualification to
@@ -171,7 +207,9 @@ continuing new arrivals cannot prevent prior rows from being revisited. The curs
 resets on writer restart and carries no durable authority. The Agentd host also
 rotates across at most 256 destinations through a clone-shared cursor. Concurrent
 normal ACK and reconciliation settle only verified matching terminal outcomes;
-opposite results, stale fences and different actual receipt replays remain errors. A missing source row remains unresolved until a trusted
+the public terminal receipt contract above defines the new observer-origin
+exception without weakening actual ACK replay checks. Opposite results and
+stale fences remain errors. A missing source row remains unresolved until a trusted
 terminal observation exists. Cross-cache forget settlement, physical erasure and
 canonical shadow promotion also require their own evidence.
 
