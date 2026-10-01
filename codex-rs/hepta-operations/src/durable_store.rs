@@ -135,7 +135,7 @@ impl DurableOperationStore {
         self.pool.close().await;
     }
 
-    fn now_millis(&self) -> Result<i64, DurableOperationError> {
+    pub(crate) fn now_millis(&self) -> Result<i64, DurableOperationError> {
         self.clock.now_unix_millis()
     }
 
@@ -1704,12 +1704,18 @@ async fn verify_quick_check(pool: &SqlitePool) -> Result<(), DurableOperationErr
     Ok(())
 }
 
-async fn ensure_clock_not_behind(
+pub(crate) async fn ensure_clock_not_behind(
     tx: &mut Transaction<'_, Sqlite>,
     now: i64,
 ) -> Result<(), DurableOperationError> {
     let latest: Option<i64> = sqlx::query_scalar(
-        "SELECT MAX(updated_at_ms) FROM operation_ledger WHERE terminal_at_ms IS NULL",
+        "SELECT MAX(updated_at_ms) FROM (
+             SELECT updated_at_ms FROM operation_ledger WHERE terminal_at_ms IS NULL
+             UNION ALL
+             SELECT o.updated_at_ms FROM cross_owner_outbox o
+             JOIN operation_ledger l ON l.scope_id = o.scope_id
+               AND l.operation_id = o.operation_id AND l.destination = o.destination
+             WHERE l.terminal_at_ms IS NULL)",
     )
     .fetch_one(&mut **tx)
     .await

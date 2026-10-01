@@ -1,6 +1,4 @@
 use std::time::Duration;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -38,12 +36,13 @@ impl DurableOperationStore {
             .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
         let mut intent = operation.intent;
         let semantic_digest = intent.semantic_digest();
-        let now = now_millis()?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
+        let now = self.now_millis()?;
+        crate::durable_store::ensure_clock_not_behind(&mut tx, now).await?;
         // The pre-read supplies only immutable intent fields. Compare their
         // complete semantic identity inside the transaction before using them.
         let candidate = sqlx::query(
@@ -70,9 +69,7 @@ impl DurableOperationStore {
         let ledger_updated: i64 = candidate.try_get("ledger_updated").map_err(unavailable)?;
         let outbox_updated: i64 = candidate.try_get("outbox_updated").map_err(unavailable)?;
         if now < ledger_updated || now < outbox_updated {
-            return Err(DurableOperationError::Unavailable(
-                "exact claim clock precedes durable state".to_owned(),
-            ));
+            return Err(DurableOperationError::ClockRollback);
         }
         let operation_state: String = candidate.try_get("operation_state").map_err(unavailable)?;
         let operation_state = DurableOperationState::parse(&operation_state)?;
@@ -182,17 +179,13 @@ fn to_i64(value: u64) -> Result<i64, DurableOperationError> {
     i64::try_from(value).map_err(|_| DurableOperationError::Capacity)
 }
 
-fn now_millis() -> Result<i64, DurableOperationError> {
-    let millis = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?
-        .as_millis();
-    i64::try_from(millis).map_err(|_| DurableOperationError::Capacity)
-}
-
 fn unavailable(error: sqlx::Error) -> DurableOperationError {
     DurableOperationError::Unavailable(error.to_string())
 }
+
+#[cfg(test)]
+#[path = "durable_claim_clock_tests.rs"]
+mod clock_tests;
 
 #[cfg(test)]
 mod recovery_tests {

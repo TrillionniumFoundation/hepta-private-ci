@@ -1,8 +1,6 @@
 //! Release an unused claim without inventing a destination outcome.
 
 use std::time::Duration;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 
 use sqlx::Row;
 
@@ -24,14 +22,6 @@ impl DurableOperationStore {
         if !(1..=3_600_000).contains(&delay) {
             return Err(DurableOperationError::Invalid("pre-dispatch retry delay"));
         }
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|error| DurableOperationError::Unavailable(error.to_string()))?
-            .as_millis();
-        let now = i64::try_from(now).map_err(|_| DurableOperationError::Capacity)?;
-        let eligible = now
-            .checked_add(i64::try_from(delay).map_err(|_| DurableOperationError::Capacity)?)
-            .ok_or(DurableOperationError::Capacity)?;
         let fence = i64::try_from(claim.fence).map_err(|_| DurableOperationError::Capacity)?;
         let next_fence = fence
             .checked_add(1)
@@ -44,6 +34,11 @@ impl DurableOperationStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
+        let now = self.now_millis()?;
+        crate::durable_store::ensure_clock_not_behind(&mut tx, now).await?;
+        let eligible = now
+            .checked_add(i64::try_from(delay).map_err(|_| DurableOperationError::Capacity)?)
+            .ok_or(DurableOperationError::Capacity)?;
         let row = sqlx::query(
             "SELECT l.revision FROM operation_ledger l
              JOIN cross_owner_outbox o ON o.scope_id = l.scope_id
