@@ -22,6 +22,8 @@ use profile::Role;
 use profile::Source;
 #[path = "initial_cpu_publication.rs"]
 mod publication;
+#[path = "initial_cpu_renewal.rs"]
+mod renewal;
 #[path = "initial_cpu_role.rs"]
 mod role;
 #[path = "initial_cpu_selection.rs"]
@@ -36,6 +38,8 @@ struct Deployment {
     profile: Source,
     evaluation_config: Source,
     independent_report: Source,
+    #[serde(default)]
+    renewal: Option<renewal::Renewal>,
 }
 struct Inputs {
     descriptor: Source,
@@ -47,6 +51,7 @@ struct Inputs {
     native: codex_hepta_neuron::SparseConfig,
     artifacts: [LearningArtifactManifestV2; 3],
     payloads: [Vec<u8>; 3],
+    renewal: Option<renewal::VerifiedRenewal>,
 }
 impl Inputs {
     fn read(path: &Path, pin: Digest32) -> HostResult<Self> {
@@ -56,12 +61,20 @@ impl Inputs {
         };
         let descriptor_bytes = descriptor.read(32 * 1024)?;
         let deployment: Deployment = serde_json::from_slice(&descriptor_bytes)?;
-        if deployment.schema != "hepta.cpu-neuron.initial-product-current-inputs.v1" {
+        if !matches!(
+            (deployment.schema.as_str(), deployment.renewal.is_some()),
+            ("hepta.cpu-neuron.initial-product-current-inputs.v1", false)
+                | ("hepta.cpu-neuron.renewed-product-current-inputs.v1", true)
+        ) {
             return Err("initial deployment schema".into());
         }
         let profile: Profile = serde_json::from_slice(&deployment.profile.read(64 * 1024)?)?;
         let now = now_ms()?;
         profile.validate(now)?;
+        let renewal = deployment
+            .renewal
+            .map(|renewal| renewal.verify(&profile, &deployment.profile))
+            .transpose()?;
         let evidence = inspect_initial_neuron_operational_evidence(
             &deployment.evaluation_config.path,
             digest(&deployment.evaluation_config.digest)?,
@@ -202,6 +215,7 @@ impl Inputs {
             native,
             artifacts,
             payloads,
+            renewal,
         };
         inputs.revalidate()?;
         Ok(inputs)
@@ -213,12 +227,41 @@ impl Inputs {
             return Err("current deployment changed".into());
         }
         self.profile_source.read(64 * 1024)?;
+        if let Some(renewal) = &self.renewal {
+            renewal.revalidate()?;
+        }
         Ok(())
+    }
+    fn storage_binding(&self) -> Digest32 {
+        let profile = self
+            .renewal
+            .as_ref()
+            .map(|renewal| &renewal.original_profile.digest)
+            .unwrap_or(&self.profile_source.digest);
+        Digest32::of_bytes(
+            format!(
+                "hepta.cpu-neuron.initial-owner.storage.v1:{}:{profile}",
+                self.profile.registry_id
+            )
+            .as_bytes(),
+        )
+    }
+    fn trust(&self) -> HostResult<ArtifactOwnerTrustV1> {
+        self.profile.trust_from(
+            self.renewal
+                .as_ref()
+                .map(|renewal| renewal.historical_start)
+                .unwrap_or(self.profile.frozen_at_ms),
+        )
+    }
+    fn selector_verifier(&self) -> HostResult<ArtifactSelectionVerifierV1> {
+        self.profile
+            .selector_verifier_with_owner_trust(&self.trust()?)
     }
     fn current(&self) -> HostResult<ReadOnlyArtifactCurrentOwnerV1> {
         Ok(ReadOnlyArtifactCurrentOwnerV1::open(
             &self.profile.owner_root,
-            self.profile.trust()?,
+            self.trust()?,
             self.profile.withdrawals()?,
             now_ms()?,
         )?)
@@ -249,10 +292,33 @@ fn public(value: &str) -> HostResult<[u8; 32]> {
 }
 
 pub fn publish_initial_cpu_anchor(path: &Path, pin: Digest32) -> HostResult<Value> {
-    publication::publish(Inputs::read(path, pin)?)
+    let inputs = Inputs::read(path, pin)?;
+    if inputs.renewal.is_some() {
+        return Err("initial publication cannot renew an installed history".into());
+    }
+    publication::publish(inputs)
 }
 pub fn select_initial_cpu_anchor(path: &Path, pin: Digest32) -> HostResult<Value> {
-    selection::select(Inputs::read(path, pin)?)
+    let inputs = Inputs::read(path, pin)?;
+    if inputs.renewal.is_some() {
+        return Err("initial selection cannot renew an installed history".into());
+    }
+    selection::select(inputs)
+}
+
+pub fn publish_renewed_cpu_operational(path: &Path, pin: Digest32) -> HostResult<Value> {
+    let inputs = Inputs::read(path, pin)?;
+    if inputs.renewal.is_none() {
+        return Err("renewal requires original protected history and new evidence".into());
+    }
+    publication::publish(inputs)
+}
+pub fn select_renewed_cpu_operational(path: &Path, pin: Digest32) -> HostResult<Value> {
+    let inputs = Inputs::read(path, pin)?;
+    if inputs.renewal.is_none() {
+        return Err("renewal selection requires original protected history".into());
+    }
+    selection::select(inputs)
 }
 
 /// Protected input locations supplied by the installed product compiler. Paths

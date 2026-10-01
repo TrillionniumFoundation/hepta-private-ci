@@ -8,9 +8,10 @@ use codex_hepta_neuron::NeuronRuntimeConfigV1;
 use codex_hepta_neuron::SparseConfig;
 use codex_hepta_types::Generation;
 use serde::Deserialize;
+use serde::Serialize;
 use std::path::PathBuf;
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Source {
     pub path: PathBuf,
@@ -25,7 +26,7 @@ impl Source {
         Ok(bytes)
     }
 }
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Role {
     pub id: String,
@@ -35,7 +36,7 @@ pub(super) struct Role {
     pub credential_digest: String,
     pub private_key_path: PathBuf,
 }
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Profile {
     pub schema: String,
@@ -62,7 +63,7 @@ pub(super) struct Profile {
     pub calibration: Calibration,
     pub resources: Resources,
 }
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Native {
     pub top_k: usize,
@@ -75,7 +76,7 @@ pub(super) struct Native {
     pub threshold_max_q24: i64,
     pub eligibility_decay_q24: i64,
 }
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Calibration {
     pub valid_from_sequence: u64,
@@ -90,7 +91,7 @@ pub(super) struct Calibration {
     pub maximum_ece_ppm: u32,
     pub maximum_false_acceptance_ppm: u32,
 }
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Resources {
     pub p95_latency_micros: u64,
@@ -110,12 +111,18 @@ impl Profile {
         ))
     }
     pub(super) fn trust(&self) -> HostResult<ArtifactOwnerTrustV1> {
+        self.trust_from(self.frozen_at_ms)
+    }
+    pub(super) fn trust_from(&self, historical_start: u64) -> HostResult<ArtifactOwnerTrustV1> {
+        if historical_start == 0 || historical_start > self.frozen_at_ms {
+            return Err("Root owner historical signing window".into());
+        }
         let signer = TrustedArtifactSignerV1 {
             signer_id: id(&self.owner.id)?,
             verifying_key: public(&self.owner.public_key_hex)?,
             minimum_authority_epoch: 1,
             maximum_authority_epoch: 1,
-            valid_from: self.frozen_at_ms,
+            valid_from: historical_start,
             expires_at: self.expires_at_ms,
             revoked_at: None,
         };
@@ -133,6 +140,12 @@ impl Profile {
         })
     }
     pub(super) fn selector_verifier(&self) -> HostResult<ArtifactSelectionVerifierV1> {
+        self.selector_verifier_with_owner_trust(&self.trust()?)
+    }
+    pub(super) fn selector_verifier_with_owner_trust(
+        &self,
+        owner: &ArtifactOwnerTrustV1,
+    ) -> HostResult<ArtifactSelectionVerifierV1> {
         Ok(ArtifactSelectionVerifierV1::new(
             ArtifactSelectionTrustV1 {
                 registry_id: id(&self.registry_id)?,
@@ -151,16 +164,22 @@ impl Profile {
                     revoked_at: None,
                 }],
             },
-            &self.trust()?,
+            owner,
         )?)
     }
     pub(super) fn validate(&self, now: u64) -> HostResult<()> {
+        self.validate_identity()?;
+        if self.frozen_at_ms > now || self.expires_at_ms <= now {
+            return Err("fixed CPU current authority expired or not issued".into());
+        }
+        Ok(())
+    }
+    pub(super) fn validate_identity(&self) -> HostResult<()> {
         if self.schema != "hepta.cpu-neuron.fixed-initial-product-profile.v1"
             || self.generation != 1
             || self.predecessor.is_some()
             || self.frozen_at_ms == 0
-            || self.frozen_at_ms > now
-            || self.expires_at_ms <= now
+            || self.expires_at_ms <= self.frozen_at_ms
             || self.expires_at_ms - self.frozen_at_ms > 86_400_000
             || self.owner.uid != 0
             || self.owner.gid != 0

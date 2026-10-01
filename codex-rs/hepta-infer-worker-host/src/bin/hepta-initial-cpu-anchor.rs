@@ -16,6 +16,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "select-initial-operational" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::select_initial_cpu_anchor(path, pin)?
         }
+        "publish-renewed-operational" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::publish_renewed_cpu_operational(
+                path, pin,
+            )?
+        }
+        "select-renewed-operational" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::select_renewed_cpu_operational(
+                path, pin,
+            )?
+        }
         _ => return Err("unsupported initial operational purpose".into()),
     };
     println!("{}", serde_json::to_string(&report)?);

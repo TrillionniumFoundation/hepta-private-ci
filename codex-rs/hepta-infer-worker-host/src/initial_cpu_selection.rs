@@ -28,7 +28,7 @@ pub(super) fn select(inputs: Inputs) -> HostResult<Value> {
     let now = now_ms()?;
     let current = owner.current_registry_view(now)?;
     let mut wire = Selections {
-        schema: "hepta.cpu-neuron.initial-independent-selections.v1".into(),
+        schema: schema(&inputs).into(),
         profile_digest: inputs.profile_source.digest.clone(),
         evidence_digest: inputs.evidence.authentication_digest().to_string(),
         registry_head: current.receipt().head_digest.to_string(),
@@ -41,7 +41,7 @@ pub(super) fn select(inputs: Inputs) -> HostResult<Value> {
             .min(inputs.profile.expires_at_ms),
         signatures: std::array::from_fn(|_| String::new()),
     };
-    let verifier = inputs.profile.selector_verifier()?;
+    let verifier = inputs.selector_verifier()?;
     for index in 0..3 {
         let mut signed = selection(&inputs, &wire, index, &current)?;
         let payload = read_root_review_input(
@@ -141,7 +141,7 @@ pub(super) fn admission(
     clock: Arc<dyn AuthorityClock>,
 ) -> HostResult<AgentdNeuronArtifactAdmissionV1> {
     let wire: Selections = serde_json::from_slice(&source.read(16 * 1024)?)?;
-    if wire.schema != "hepta.cpu-neuron.initial-independent-selections.v1"
+    if wire.schema != schema(inputs)
         || wire.profile_digest != inputs.profile_source.digest
         || wire.evidence_digest != inputs.evidence.authentication_digest().to_string()
         || wire.issued_at < inputs.profile.frozen_at_ms
@@ -168,7 +168,7 @@ pub(super) fn admission(
     let mut admission = AgentdNeuronArtifactAdmissionV1::from_read_only_owner(
         Arc::new(Mutex::new(owner)),
         &inputs.profile.owner_root,
-        inputs.profile.selector_verifier()?,
+        inputs.selector_verifier()?,
         NeuronSelectedArtifactsV1 {
             model,
             calibration,
@@ -187,4 +187,12 @@ pub(super) fn admission(
     inputs.revalidate()?;
     source.read(16 * 1024)?;
     Ok(admission)
+}
+
+fn schema(inputs: &Inputs) -> &'static str {
+    if inputs.renewal.is_some() {
+        "hepta.cpu-neuron.fresh-operational-independent-selections.v1"
+    } else {
+        "hepta.cpu-neuron.initial-independent-selections.v1"
+    }
 }

@@ -63,35 +63,53 @@ pub(super) struct OriginalHead {
     pub(super) head: String,
 }
 impl OriginalHead {
+    pub(super) fn historical(
+        &self,
+        source: &Source,
+        profile: &Profile,
+        binding: Digest32,
+    ) -> HostResult<SignedCurrentArtifactHeadV1> {
+        if self.time.profile_digest != source.digest
+            || digest(&self.time.evidence_digest)?.is_zero()
+            || self.time.issued_at < profile.frozen_at_ms
+            || self.time.issued_at > now_ms()?
+            || self.time.issued_at > self.time.expires_at
+            || self.time.expires_at > profile.expires_at_ms
+        {
+            return Err("original retained Root head context changed".into());
+        }
+        self.signed(profile, binding)
+    }
     pub(super) fn native(
         &self,
         inputs: &Inputs,
         binding: Digest32,
     ) -> HostResult<SignedCurrentArtifactHeadV1> {
         self.time.validate(inputs)?;
+        self.signed(&inputs.profile, binding)
+    }
+    fn signed(
+        &self,
+        profile: &Profile,
+        binding: Digest32,
+    ) -> HostResult<SignedCurrentArtifactHeadV1> {
         let signed = SignedCurrentArtifactHeadV1 {
-            withdrawal_scope_digest: inputs
-                .profile
-                .withdrawals()?
-                .scope_digest()
-                .ok_or("scope")?,
+            withdrawal_scope_digest: profile.withdrawals()?.scope_digest().ok_or("scope")?,
             binding,
             witness: RegistryHeadWitnessV1 {
-                registry_id: id(&inputs.profile.registry_id)?,
+                registry_id: id(&profile.registry_id)?,
                 generation: Generation::new(self.generation)?,
                 head_digest: digest(&self.head)?,
                 predecessor_head_digest: self.predecessor.parse()?,
                 authority_epoch: 1,
-                signer_id: id(&inputs.profile.owner.id)?,
-                signing_key_digest: Digest32::of_bytes(&public(
-                    &inputs.profile.owner.public_key_hex,
-                )?),
+                signer_id: id(&profile.owner.id)?,
+                signing_key_digest: Digest32::of_bytes(&public(&profile.owner.public_key_hex)?),
                 issued_at: self.time.issued_at,
                 expires_at: self.time.expires_at,
             },
             signature: self.time.signature()?,
         };
-        ed25519_dalek::VerifyingKey::from_bytes(&public(&inputs.profile.owner.public_key_hex)?)?
+        ed25519_dalek::VerifyingKey::from_bytes(&public(&profile.owner.public_key_hex)?)?
             .verify_strict(
                 &signed.signing_bytes(),
                 &Signature::from_bytes(&signed.signature),
@@ -103,7 +121,10 @@ pub(super) fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 pub(super) fn directory(inputs: &Inputs) -> HostResult<()> {
-    let directory = &inputs.profile.original_owner_state;
+    directory_for_profile(&inputs.profile)
+}
+pub(super) fn directory_for_profile(profile: &Profile) -> HostResult<()> {
+    let directory = &profile.original_owner_state;
     for ancestor in directory.ancestors() {
         let meta = std::fs::symlink_metadata(ancestor)?;
         if !meta.is_dir() || meta.uid() != 0 || meta.mode() & 0o022 != 0 {

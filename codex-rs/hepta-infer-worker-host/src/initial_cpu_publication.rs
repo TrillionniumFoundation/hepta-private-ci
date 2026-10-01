@@ -8,13 +8,10 @@ use ed25519_dalek::Signer;
 pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
     let key = role::actual_role(&inputs, &inputs.profile.owner)?;
     state::directory(&inputs)?;
-    let binding = Digest32::of_bytes(
-        format!(
-            "hepta.cpu-neuron.initial-owner.storage.v1:{}:{}",
-            inputs.profile.registry_id, inputs.profile_source.digest
-        )
-        .as_bytes(),
-    );
+    let binding = inputs.storage_binding();
+    if let Some(renewal) = &inputs.renewal {
+        renewal.validate_original_root_floor()?;
+    }
     let lease_time = match state::read::<OriginalTimeSignature>(&inputs, "lease.json")? {
         Some(time) => time,
         None => {
@@ -40,7 +37,10 @@ pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
         }
     };
     lease_time.validate(&inputs)?;
-    let mut required = None;
+    let mut required = inputs
+        .renewal
+        .as_ref()
+        .map(|renewal| renewal.retained.clone());
     for index in 0..3 {
         let original = state::read::<OriginalHead>(&inputs, &format!("head-{index}.json"))?;
         let done = state::read::<String>(&inputs, &format!("done-{index}"))?;
@@ -64,15 +64,20 @@ pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
             return Err("original acknowledged head missing".into());
         }
     }
-    let mut service = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+    let config = LearningArtifactOwnerServiceConfigV1 {
         root: inputs.profile.owner_root.clone(),
-        trust: inputs.profile.trust()?,
+        trust: inputs.trust()?,
         writer_lease: lease(&inputs, &lease_time)?,
         required_current_head: required,
         withdrawal_registry: inputs.profile.withdrawals()?,
         storage_binding: binding,
         now: now_ms()?,
-    })?;
+    };
+    let mut service = if inputs.renewal.is_some() {
+        LearningArtifactOwnerService::open_for_fresh_evidence_publication(config)?
+    } else {
+        LearningArtifactOwnerService::open(config)?
+    };
     let mut receipts = Vec::new();
     for index in 0..3 {
         inputs.revalidate()?;
@@ -204,11 +209,15 @@ pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
         if !metadata.is_dir() || metadata.uid() != 0 || directory.canonicalize()? != directory {
             return Err("Root public artifact directory boundary".into());
         }
-        std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o755))?;
+        let mut permissions_changed = metadata.mode() & 0o777 != 0o755;
+        if permissions_changed {
+            std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o755))?;
+        }
         if name != "writer" {
+            let budget = MAX_DURABLE_ARTIFACT_RECORDS * if name == "transactions" { 6 } else { 2 };
             for (index, entry) in std::fs::read_dir(&directory)?.enumerate() {
-                if index >= 64 {
-                    return Err("initial public artifact capacity".into());
+                if index >= budget {
+                    return Err("durable public artifact capacity".into());
                 }
                 let path = entry?.path();
                 let metadata = std::fs::symlink_metadata(&path)?;
@@ -219,11 +228,16 @@ pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
                 {
                     return Err("Root public artifact file boundary".into());
                 }
-                std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644))?;
-                std::fs::File::open(path)?.sync_all()?;
+                if metadata.mode() & 0o777 != 0o644 {
+                    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644))?;
+                    std::fs::File::open(path)?.sync_all()?;
+                    permissions_changed = true;
+                }
             }
         }
-        std::fs::File::open(directory)?.sync_all()?;
+        if permissions_changed {
+            std::fs::File::open(directory)?.sync_all()?;
+        }
     }
     inputs.revalidate()?;
     let current = inputs.current()?.current_registry_view(now_ms()?)?;
@@ -235,7 +249,7 @@ pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
         return Err("initial CURRENT lacks eligible exact artifacts".into());
     }
     Ok(
-        serde_json::json!({"schema":"hepta.cpu-neuron.initial-root-publication.v1","profile_digest":inputs.profile_source.digest,
+        serde_json::json!({"schema":if inputs.renewal.is_some() {"hepta.cpu-neuron.fresh-operational-publication.v1"} else {"hepta.cpu-neuron.initial-root-publication.v1"},"profile_digest":inputs.profile_source.digest,
         "independent_evidence_digest":inputs.evidence.authentication_digest().to_string(),"generation":1,"qualified_predecessor":null,
         "current_head":current.receipt().head_digest.to_string(),"publications":receipts,"primary_superiority":false,"holdout_consumed":false,"production_activation":false}),
     )
@@ -253,7 +267,11 @@ fn lease(inputs: &Inputs, time: &OriginalTimeSignature) -> HostResult<SignedArti
         signer_id: id(&inputs.profile.owner.id)?,
         signing_key_digest: Digest32::of_bytes(&public(&inputs.profile.owner.public_key_hex)?),
         authority_epoch: 1,
-        lease_generation: 1,
+        lease_generation: inputs
+            .renewal
+            .as_ref()
+            .map(|renewal| renewal.lease_generation)
+            .unwrap_or(1),
         issued_at: time.issued_at,
         expires_at: time.expires_at,
         signature: time.signature()?,
