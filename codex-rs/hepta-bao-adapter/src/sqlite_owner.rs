@@ -323,6 +323,8 @@ mod sqlite_owner_lease_projection;
 use sqlite_owner_lease_projection::*;
 #[path = "sqlite_owner_validation.rs"]
 mod sqlite_owner_validation;
+pub(crate) use sqlite_owner_validation::prepare_private_storage;
+pub(crate) use sqlite_owner_validation::secure_database_file;
 use sqlite_owner_validation::*;
 #[path = "sqlite_owner_encoding.rs"]
 mod sqlite_owner_encoding;

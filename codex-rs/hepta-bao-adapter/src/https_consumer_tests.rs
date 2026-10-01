@@ -29,6 +29,10 @@ use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
 use tokio_rustls::TlsAcceptor;
 
+#[cfg(target_os = "linux")]
+#[path = "prepared_consumer_saga_tests.rs"]
+mod prepared_consumer_saga_tests;
+
 #[path = "sqlite_recovery_runtime_tests.rs"]
 mod sqlite_recovery_runtime_tests;
 

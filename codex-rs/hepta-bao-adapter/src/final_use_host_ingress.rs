@@ -14,6 +14,13 @@ impl BaoFinalUseHost {
         request: &BaoReadRequest,
     ) -> Result<BaoSecretReceipt, BaoFinalUseHostError> {
         let consumer = self.approved_consumer(grant, approval, &request.consumer_id)?;
+        if self
+            .consumers
+            .get(&request.consumer_id)
+            .is_some_and(|registration| registration.operation_preparer.is_some())
+        {
+            return Err(BaoFinalUseHostError::InvalidConsumerConfiguration);
+        }
         match client
             .consume_kv_v2_guarded(
                 &self.authority,
@@ -61,6 +68,9 @@ impl BaoFinalUseHost {
                 .consumers
                 .get(&request.consumer_id)
                 .ok_or(BaoProductHostError::ConsumerProfileRequired)?;
+            if registration.operation_preparer.is_some() {
+                return Err(BaoProductHostError::ConsumerProfileRequired);
+            }
             let configuration = registration
                 .configuration_sha256
                 .ok_or(BaoProductHostError::ConsumerProfileRequired)?;

@@ -1,34 +1,6 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-#[test]
-fn deadline_contract_enforces_strict_ordering() {
-    let config = BaoSqliteProductRuntimeConfigV1::default();
-    assert!(
-        BaoExecutionDeadlineContractV1::default()
-            .validate(&config)
-            .is_ok()
-    );
-
-    let invalid = BaoExecutionDeadlineContractV1 {
-        consumer_timeout_ms: config.forward_execution_lease_ms,
-        ..BaoExecutionDeadlineContractV1::default()
-    };
-    assert!(matches!(
-        invalid.validate(&config),
-        Err(BaoFinalUseHostError::InvalidRuntimeConfiguration)
-    ));
-}
-
-#[test]
-fn shutdown_budget_is_bounded() {
-    let contract = BaoExecutionDeadlineContractV1::default();
-    assert!(contract.accepts_new_work_during_shutdown(29_999));
-    assert!(!contract.accepts_new_work_during_shutdown(30_000));
-    assert_eq!(contract.remaining_operation_budget_ms(239_000), 1_000);
-    assert_eq!(contract.remaining_operation_budget_ms(300_000), 0);
-}
-
 #[cfg(unix)]
 #[tokio::test]
 async fn composition_validates_original_sweep_limit_before_single_claim_normalization() {
@@ -92,13 +64,7 @@ async fn composition_validates_original_sweep_limit_before_single_claim_normaliz
             ..Default::default()
         };
         assert_eq!(
-            compose_hepta_secrets_runtime(
-                Arc::clone(&host),
-                Arc::clone(&owner),
-                config,
-                BaoExecutionDeadlineContractV1::default(),
-            )
-            .err(),
+            compose_hepta_secrets_runtime(Arc::clone(&host), Arc::clone(&owner), config,).err(),
             Some(BaoFinalUseHostError::InvalidRuntimeConfiguration)
         );
     }
@@ -107,13 +73,8 @@ async fn composition_validates_original_sweep_limit_before_single_claim_normaliz
             recovery_batch_limit,
             ..Default::default()
         };
-        let runtime = compose_hepta_secrets_runtime(
-            Arc::clone(&host),
-            Arc::clone(&owner),
-            config,
-            BaoExecutionDeadlineContractV1::default(),
-        )
-        .unwrap();
+        let runtime =
+            compose_hepta_secrets_runtime(Arc::clone(&host), Arc::clone(&owner), config).unwrap();
         assert_eq!(runtime.max_claims_per_sweep, recovery_batch_limit);
     }
     owner.close().await;

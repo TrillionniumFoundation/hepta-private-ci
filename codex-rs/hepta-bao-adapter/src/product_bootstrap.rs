@@ -20,53 +20,6 @@ use crate::SqliteBaoProductRuntimeMetricsV1;
 use crate::SqliteBaoProductRuntimeV1;
 use codex_hepta_authbus::AuthBusAuthorityHost;
 
-const MAX_ABSOLUTE_OPERATION_DEADLINE_MS: u64 = 15 * 60 * 1_000;
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct BaoExecutionDeadlineContractV1 {
-    pub consumer_timeout_ms: u64,
-    pub absolute_operation_deadline_ms: u64,
-    pub shutdown_drain_deadline_ms: u64,
-}
-
-impl Default for BaoExecutionDeadlineContractV1 {
-    fn default() -> Self {
-        Self {
-            consumer_timeout_ms: 60_000,
-            absolute_operation_deadline_ms: 240_000,
-            shutdown_drain_deadline_ms: 30_000,
-        }
-    }
-}
-
-impl BaoExecutionDeadlineContractV1 {
-    fn validate(
-        self,
-        runtime: &BaoSqliteProductRuntimeConfigV1,
-    ) -> Result<(), BaoFinalUseHostError> {
-        if self.consumer_timeout_ms == 0
-            || self.consumer_timeout_ms >= runtime.forward_execution_lease_ms
-            || runtime.forward_execution_lease_ms >= self.absolute_operation_deadline_ms
-            || runtime.recovery_lease_ms >= self.absolute_operation_deadline_ms
-            || self.absolute_operation_deadline_ms > MAX_ABSOLUTE_OPERATION_DEADLINE_MS
-            || self.shutdown_drain_deadline_ms == 0
-            || self.shutdown_drain_deadline_ms >= self.absolute_operation_deadline_ms
-        {
-            return Err(BaoFinalUseHostError::InvalidRuntimeConfiguration);
-        }
-        Ok(())
-    }
-
-    pub fn remaining_operation_budget_ms(self, elapsed_ms: u64) -> u64 {
-        self.absolute_operation_deadline_ms
-            .saturating_sub(elapsed_ms)
-    }
-
-    pub fn accepts_new_work_during_shutdown(self, elapsed_ms: u64) -> bool {
-        elapsed_ms < self.shutdown_drain_deadline_ms
-    }
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct BaoJustInTimeRecoveryMetricsV1 {
     pub sweeps: u64,
@@ -90,17 +43,12 @@ struct BaoJustInTimeRecoveryMetricsOwnerV1 {
 pub struct HeptaSecretsProductRuntimeV1 {
     runtime: SqliteBaoProductRuntimeV1,
     max_claims_per_sweep: u32,
-    deadline: BaoExecutionDeadlineContractV1,
     jit_metrics: Mutex<BaoJustInTimeRecoveryMetricsOwnerV1>,
 }
 
 impl HeptaSecretsProductRuntimeV1 {
     pub fn runtime(&self) -> &SqliteBaoProductRuntimeV1 {
         &self.runtime
-    }
-
-    pub fn deadline_contract(&self) -> BaoExecutionDeadlineContractV1 {
-        self.deadline
     }
 
     /// Claims one due row, executes/reconciles it, and only then asks for the
@@ -187,10 +135,8 @@ pub fn compose_hepta_secrets_runtime(
     host: Arc<BaoFinalUseHost>,
     owner: Arc<SqliteBaoOwnerV1>,
     mut runtime_config: BaoSqliteProductRuntimeConfigV1,
-    deadline: BaoExecutionDeadlineContractV1,
 ) -> Result<HeptaSecretsProductRuntimeV1, BaoFinalUseHostError> {
     runtime_config.validate()?;
-    deadline.validate(&runtime_config)?;
     let max_claims_per_sweep = runtime_config.recovery_batch_limit;
     // The production caller never leases a batch. The outer loop above controls
     // throughput while this inner runtime claims and consumes one row at a time.
@@ -199,7 +145,6 @@ pub fn compose_hepta_secrets_runtime(
     Ok(HeptaSecretsProductRuntimeV1 {
         runtime,
         max_claims_per_sweep,
-        deadline,
         jit_metrics: Mutex::new(Default::default()),
     })
 }

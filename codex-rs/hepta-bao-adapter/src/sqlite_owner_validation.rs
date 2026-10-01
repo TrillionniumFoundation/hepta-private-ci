@@ -3,7 +3,7 @@
 use super::*;
 
 #[cfg(unix)]
-pub(super) fn prepare_private_storage(path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
+pub(crate) fn prepare_private_storage(path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
     use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::OpenOptionsExt;
@@ -65,12 +65,12 @@ pub(super) fn prepare_private_storage(path: &Path) -> Result<(), SqliteBaoOwnerE
 }
 
 #[cfg(not(unix))]
-pub(super) fn prepare_private_storage(_path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
+pub(crate) fn prepare_private_storage(_path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
     Err(SqliteBaoOwnerErrorV1::UnsupportedPlatform)
 }
 
 #[cfg(unix)]
-pub(super) fn secure_database_file(path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
+pub(crate) fn secure_database_file(path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
     use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::OpenOptionsExt;
     use std::os::unix::fs::PermissionsExt;
@@ -109,7 +109,7 @@ pub(super) fn secure_database_file(path: &Path) -> Result<(), SqliteBaoOwnerErro
 }
 
 #[cfg(not(unix))]
-pub(super) fn secure_database_file(_path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
+pub(crate) fn secure_database_file(_path: &Path) -> Result<(), SqliteBaoOwnerErrorV1> {
     Err(SqliteBaoOwnerErrorV1::UnsupportedPlatform)
 }
 

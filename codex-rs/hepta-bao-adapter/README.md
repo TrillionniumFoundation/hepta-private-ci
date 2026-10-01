@@ -1,4 +1,110 @@
-# Authorized HeptaBao HTTPS consumer
+# Durable Bao runtime and credential consumer
+
+The SQLite runtime owns each original operation and never re-enters the provider
+or consumer during reconciliation. Quota admission, final-use authority and
+independent approval remain required. The JSON owner supports reference tests
+and migration; production SQLite uses the shared durable connection policy.
+
+## Independent credential consumer on Linux
+
+`hepta-secrets-runtime serve-consumer /etc/hepta-secrets-private-ci/consumer.json`
+starts the concrete credential-consumer service. The configuration must be a
+root-owned regular file in root-owned directories, with no group or other write
+permission and no other read permission. Unknown JSON fields are rejected.
+
+The installed roles for the local product qualification are:
+
+| Role | UID / GID | Private state | Socket / public pin |
+| --- | --- | --- | --- |
+| OpenBao provider | 993 / 977 | `/var/lib/hepta-bao-provider` | pinned TLS at `127.0.0.1:18200` |
+| Secrets runtime | 992 / 976 | `/var/lib/hepta-secrets-runtime` | consumer UID and ACK public key in root policy |
+| Credential consumer | 983 / 972 | `/var/lib/hepta-secrets-consumer/private` | `/run/hepta-secrets-consumer/consumer.sock` |
+
+The consumer's credential and 32-byte Ed25519 seed are separate regular files,
+owned by UID 983, with mode `0600`, a single link and no symlink. The private
+directory uses `0700`. Neither file is shared with the runtime. The runtime
+receives only the independently installed consumer public key and the frozen
+credential reference digest.
+
+For socket access, run the consumer with primary process group 976. Its socket
+directory must be owned by UID 983 / GID 976 with mode `0750`; the service creates
+the socket with mode `0660`. The Linux kernel peer UID must equal the configured
+runtime UID 992. Workload requests cannot select another consumer or peer.
+
+The root configuration has these concrete fields:
+
+```json
+{
+  "schema_version": 1,
+  "consumer_id": "hepta.private-ci.credential-health",
+  "socket_path": "/run/hepta-secrets-consumer/consumer.sock",
+  "ipc_group_gid": 976,
+  "allowed_caller_uid": 992,
+  "database_path": "/var/lib/hepta-secrets-consumer/owner/consumer.sqlite",
+  "credential_file": "/var/lib/hepta-secrets-consumer/private/credential",
+  "credential_sha256": "replace with the 32-byte JSON integer array for the frozen KV version",
+  "acknowledgement_signing_key_file": "/var/lib/hepta-secrets-consumer/private/ack-signing-key",
+  "acknowledgement_verifying_key": "replace with the independently generated 32-byte JSON integer array",
+  "request_timeout_ms": 2000,
+  "shutdown_drain_ms": 5000
+}
+```
+
+The two explanatory strings must be replaced with actual byte arrays before
+loading. Private key material is never part of this configuration.
+
+```ini
+[Service]
+User=hepta-secrets-consumer
+Group=hepta-secrets-runtime
+UMask=0077
+RuntimeDirectory=hepta-secrets-consumer
+RuntimeDirectoryMode=0750
+ExecStart=/opt/hepta-secrets/current/hepta-secrets-runtime serve-consumer /etc/hepta-secrets-private-ci/consumer.json
+TimeoutStopSec=10
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/hepta-secrets-consumer /run/hepta-secrets-consumer
+```
+
+The consumer authenticates an operation-bound HMAC using its actual credential,
+then commits an immutable original-operation ACK under SQLite FULL durability.
+Only after that commit does it send its independently signed ACK. Requests carry
+the HMAC proof rather than secret bytes. The runtime verifies that signature,
+the original operation and semantic digest, and the pinned peer UID.
+
+The prepared runtime callback connects and checks the peer before final-use
+entry. Its first nonblocking write crosses the effect boundary synchronously;
+it never waits or retries that initial write. The remaining write, framed read
+and ACK verification share the original deadline. A lost reply remains Unknown;
+Status reads the same original signed ACK and cannot authenticate again. Missing
+Status never proves absence of an effect or permits quota release.
+
+SIGTERM stops admission immediately. Existing requests share a bounded physical
+join and pool close. A timed-out transaction fences new authentication while
+original Status remains available. The admission guard only bounds in-flight
+ports; durable operation identity remains owned by the SQLite runtime.
+
+## Qualification boundary
+
+Native tests exercise an independent consumer process, real credential
+authentication, signature rejection, private file and kernel-peer boundaries,
+cross-restart original ACKs, cancellation and physical shutdown. Another native
+test joins the provider TLS fixture, AuthBus, production SQLite runtime and this
+independent consumer, then queries the original terminal result after both
+external processes have stopped. A TLS fixture does not establish installed
+OpenBao daemon qualification.
+
+The consumer component is a production entry point. Installed runtime ingress,
+independent authority/evidence producers and their protected clock/frontier must
+be qualified together before activating provider operations. Dynamic issue,
+renew, revoke and the remaining provider capabilities stay closed until their
+individual production consumers and restart behavior are implemented and
+qualified. No configuration-only deadline DTO represents implemented execution.
+
+## Existing bounded integration APIs
 
 The legacy `resolve` and `assess_secret_boundary_v1` remain metadata-only;
 `PROVIDER_DISPATCH_ENABLED` remains false for that API. A caller-provided
@@ -108,90 +214,3 @@ malformed response, wrong version and digest mismatch never invoke the
 consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
 `lease_lifecycle.rs` now provides a durable metadata-only lifecycle owner for issue/renew/revoke intents and observations. It enforces operation-id idempotency, semantic-conflict rejection, explicit Unknown states, restart recovery and provider-observation reconciliation. It deliberately does not dispatch provider mutation APIs: the OpenBao compatibility registry still marks dynamic lease issuance/renew/revoke as a blocking partial surface, so provider-native mutation remains fail-closed until that endpoint contract is qualified.
-
-## Verification
-
-Targeted tests cover a real loopback TLS exchange, exact request headers and
-version, forged signature rejection, nonce replay rejection, provider denial,
-revocation during a network wait, incorrect trust root and response bounds.
-Kernel tests cover signed-field changes, wrong issuer, expiry and epoch fences.
-Run `just test -p codex-hepta-bao-adapter -p codex-hepta-contracts` in the normal
-workspace and the repository formatting/lint gates before merging.
-
-For the separate real service check, build this crate's `consume_secret`
-example and the supervisor's `hepta-final-use-signer` binary with
-`--features production-authority`, then run:
-
-```text
-python codex-rs/hepta-bao-adapter/qa/real_service_smoke.py \
-  --service-checkout /absolute/HeptaBao \
-  --server /absolute/heptabao-server \
-  --consumer /absolute/consume_secret \
-  --signer /absolute/hepta-final-use-signer \
-  --work-dir /absolute/new-private-test-directory
-```
-
-This fixture requires Python `cryptography`, `openssl`, and the reviewed Bao
-checkout's `qa/single-node/smoke.py`. It initializes a new isolated service
-with synthetic credentials, signs grants in the separate process, verifies
-consumer receipts, rejects replay across consumer process restarts, rejects
-forged signatures and denied provider tokens, and reads again after killing
-and unsealing the real service. It leaves only synthetic owner-protected test
-state and writes `result.json` containing scenario names and digest metadata.
-It never connects to an existing production service.
-
-## Recorded candidate verification
-
-[Validation status](qa/evidence/validation-20260908.json) separates the initial
-20 real service checks, 28 source-linked behavioral cases, and source-linked
-all-target Clippy from the normal workspace gates. Clippy reported one existing
-`provider_effect.rs` warning under Rust 1.98; no new-source warnings remained.
-The global/module/readiness document verifiers passed.
-
-The initial normal locked three-package `just test` reached contracts compilation after
-363 compilation log entries, then was interrupted because the shared disk
-remained full. It executed zero tests and is recorded as `blocked_space`, with
-no compiler error observed. The normal workspace signer build was not started;
-the independently built signer had already passed the real process fixture.
-Cargo metadata updated only 17 dependency edges without changing package
-versions, sources or checksums.
-
-After the approved HTTP client migration, the normal locked workspace run
-executed 243 tests: 237 passed and six existing shared-client TLS
-classification/fallback tests failed. All 132 contracts tests, 18 adapter
-tests, the new isolated transport test, and ten CA subprocess tests passed.
-An independent checkout of the prior source `91bcc46` reproduced all six
-failures both with inherited environment and with only the application CA
-environment variables removed. Their cause remains unresolved; this is not
-an all-pass workspace gate and the CA hypothesis was not established.
-
-The new consumer then built successfully in the normal workspace and passed
-[all 20 real service checks again](qa/evidence/real-consumer-http-client-20260908.json).
-Its binary digest begins `f160211f`; the receipt records the full digest,
-tested source tree `4f1a0be353ddcb5617de193487f11c72de9c9206`, and unchanged
-issuer and Bao binary identities. That tree precedes final formatting and
-evidence edits; the binary is not claimed to come from the final commit.
-Normal Cargo metadata changed three added and one removed dependency edges,
-with no dependency version/source/checksum changes. The resolved graph has
-zero disallowed first-party `reqwest` owners under the existing deny rules;
-the full `cargo-deny` command and current-head CI remain separate gates.
-The required scoped `just fix` completed without warnings. Its only manual
-lint correction was a test-only type alias; final formatting and documentation
-did not change the recorded production source hashes. Tests were not rerun
-after lint/format cleanup.
-
-The local Bazel lock update was blocked. Automatic approval review rejected
-an attempted telemetry request with an unauthorized unknown metadata payload.
-The safer retry disabled that telemetry through documented environment inputs,
-then encountered LLVM archive ownership extraction errors and a cancelled
-network approval. `MODULE.bazel.lock` was not fabricated or marked synchronized.
-Separately, the downloaded diagnostics for
-[GitHub workflow run 34169739488](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/34169739488)
-verified that the old source `20ede7c31dfc162bf231d50c875416f3d83714dc` passed
-the real Bazel check/update/check commands, including
-`mod deps --lockfile_mode=error`; all three commands exited zero and generated
-no lock change. That old-source result does not validate the subsequent HTTP
-client dependency migration, which requires its own current-head CI check.
-The full formatter was also blocked at the Bazel/Starlark step because
-`dotslash` was unavailable; Rust and Python formatting completed. These open
-workspace gates remain separate from the bounded integration results.

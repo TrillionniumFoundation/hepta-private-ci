@@ -15,6 +15,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod authbus_saga;
+#[cfg(target_os = "linux")]
+mod consumer_port;
 mod final_use_host;
 mod https_consumer;
 mod lease_lifecycle;
@@ -25,14 +27,29 @@ mod saga_crash;
 mod secret_boundary_v1;
 mod sqlite_owner;
 
+#[cfg(target_os = "linux")]
+pub use consumer_port::ConsumerPortClient;
+#[cfg(target_os = "linux")]
+pub use consumer_port::ConsumerPortConfig;
+#[cfg(target_os = "linux")]
+pub use consumer_port::ConsumerPortError;
+#[cfg(target_os = "linux")]
+pub use consumer_port::CredentialConsumerServiceConfig;
+#[cfg(target_os = "linux")]
+pub use consumer_port::OriginalOperationBudget;
+#[cfg(target_os = "linux")]
+pub use consumer_port::serve_credential_consumer;
+
 pub use final_use_host::BaoConsumerCallback;
 pub use final_use_host::BaoConsumerObservationV1;
 pub use final_use_host::BaoConsumerObserverCallback;
 pub use final_use_host::BaoFinalUseHost;
 pub use final_use_host::BaoFinalUseHostError;
 pub use final_use_host::BaoOperationConsumerCallback;
+pub use final_use_host::BaoOperationConsumerPreparer;
 pub use final_use_host::BaoOperationLatencyMetricsV1;
 pub use final_use_host::BaoOperationMetricsV1;
+pub use final_use_host::BaoPreparedConsumerCallback;
 pub use final_use_host::BaoProductErrorClassV1;
 pub use final_use_host::BaoProductHostError;
 pub use final_use_host::BaoRecoveryBatchReportV1;
@@ -68,7 +85,6 @@ pub use lease_lifecycle::ProviderLeaseObservationV1;
 pub use lease_lifecycle::SecretLeaseMetadataV1;
 pub use lease_lifecycle::SecretLeaseStateV1;
 
-pub use product_bootstrap::BaoExecutionDeadlineContractV1;
 pub use product_bootstrap::BaoJustInTimeRecoveryMetricsV1;
 pub use product_bootstrap::HeptaSecretsProductRuntimeV1;
 pub use product_bootstrap::compose_hepta_secrets_runtime;

@@ -107,6 +107,7 @@ impl BaoFinalUseHost {
                 &operation_id,
                 semantic_sha256,
                 callback,
+                registration.operation_preparer.clone(),
                 admission,
                 grant,
                 request,
@@ -126,6 +127,7 @@ impl BaoFinalUseHost {
         operation_id: &str,
         semantic_sha256: [u8; 32],
         callback: BaoOperationConsumerCallback,
+        preparer: Option<BaoOperationConsumerPreparer>,
         admission: &BaoAuthBusAdmission,
         grant: &SignedFinalUseGrant,
         request: &BaoReadRequest,
@@ -147,6 +149,9 @@ impl BaoFinalUseHost {
         let success_clock = Arc::clone(&self.clock);
         let success_operation = operation_id.to_owned();
 
+        let prepared_consumer = Arc::new(Mutex::new(None::<BaoPreparedConsumerCallback>));
+        let preparation_slot = Arc::clone(&prepared_consumer);
+        let use_prepared_consumer = preparer.is_some();
         let saga_result = crate::authbus_saga::consume_kv_v2_with_authbus_saga(
             client,
             authbus,
@@ -240,12 +245,28 @@ impl BaoFinalUseHost {
                                 clock_now_for_saga(&clock)?,
                             )
                             .await?;
+                        if let Some(prepare) = preparer {
+                            let consumer =
+                                prepare(&operation_id, semantic_sha256).map_err(|_| {
+                                    BaoAuthBusError::Evidence(
+                                        "consumer port preparation unavailable",
+                                    )
+                                })?;
+                            *preparation_slot.lock().map_err(|_| {
+                                BaoAuthBusError::Evidence("consumer preparation owner unavailable")
+                            })? = Some(consumer);
+                        }
                         Ok(())
                     }
                 },
                 consumer: move |secret: &[u8], _receipt: &BaoSecretReceipt| {
                     self.ensure_revocation_fresh().map_err(|_| ())?;
-                    callback(operation_id, semantic_sha256, secret)
+                    if use_prepared_consumer {
+                        let consumer = prepared_consumer.lock().map_err(|_| ())?.take().ok_or(())?;
+                        consumer(secret)
+                    } else {
+                        callback(operation_id, semantic_sha256, secret)
+                    }
                 },
                 consumer_succeeded: move |_receipt: &BaoSecretReceipt| {
                     let owner = Arc::clone(&success_owner);
