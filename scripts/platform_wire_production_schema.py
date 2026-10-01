@@ -103,7 +103,8 @@ def hexd(v, p, n):
 def read(path, limit):
     if path.is_symlink():
         raise ValueError("symlinked input")
-    raw = path.read_bytes()
+    with path.open("rb") as stream:
+        raw = stream.read(limit + 1)
     if not raw or len(raw) > limit:
         raise ValueError("input byte limit")
     return json.loads(raw, object_pairs_hook=unique_object), hashlib.sha256(

@@ -274,7 +274,8 @@ def intake() -> None:
 def read_json(path: Path, limit: int) -> tuple[object, bytes]:
     if path.is_symlink():
         raise ValueError(f"symlinked evidence rejected: {path.name}")
-    raw = path.read_bytes()
+    with path.open("rb") as stream:
+        raw = stream.read(limit + 1)
     if len(raw) > limit:
         raise ValueError(f"evidence exceeds limit: {path.name}")
     return json.loads(raw), raw

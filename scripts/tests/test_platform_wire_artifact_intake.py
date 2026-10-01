@@ -15,6 +15,7 @@ import zipfile
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import platform_wire_performance_intake as shared
 import platform_wire_production_intake as production
+import platform_wire_production_schema as production_schema
 
 
 PERFORMANCE = {
@@ -37,6 +38,34 @@ class ArtifactIntakeTests(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
         self.destination = self.root / "input"
+
+    def test_json_readers_bound_allocation_before_rejecting_oversize_evidence(self):
+        for reader in (shared.read_json, production_schema.read):
+            with self.subTest(reader=reader.__module__):
+                reads = []
+
+                class ObservedStream(BytesIO):
+                    def read(self, size=-1):
+                        reads.append(size)
+                        return super().read(size)
+
+                with patch.object(
+                    Path, "open", return_value=ObservedStream(b" " * 1024)
+                ):
+                    with self.assertRaises(ValueError):
+                        reader(self.root / "evidence.json", 64)
+                self.assertEqual(reads, [65])
+
+    def test_bounded_json_readers_preserve_raw_bytes_and_digest(self):
+        raw = b'{"source": "fixture"}\n'
+        path = self.root / "evidence.json"
+        path.write_bytes(raw)
+        expected = {"source": "fixture"}
+        self.assertEqual(shared.read_json(path, len(raw)), (expected, raw))
+        self.assertEqual(
+            production_schema.read(path, len(raw)),
+            (expected, hashlib.sha256(raw).hexdigest()),
+        )
 
     def test_valid_production_and_performance_archives_preserve_exact_files(self):
         for limits in (PERFORMANCE, production.LIMITS):
