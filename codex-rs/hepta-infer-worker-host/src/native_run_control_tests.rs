@@ -7,6 +7,8 @@ use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+#[path = "native_intelligence_recovery_boundary_tests.rs"]
+mod intelligence_recovery_boundary_tests;
 #[cfg(unix)]
 #[path = "native_intelligence_recovery_tests.rs"]
 mod intelligence_recovery_tests;

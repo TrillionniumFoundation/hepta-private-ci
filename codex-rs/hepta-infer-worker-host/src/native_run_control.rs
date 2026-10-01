@@ -15,6 +15,10 @@ use super::Result;
 
 #[path = "native_intelligence_recovery.rs"]
 mod intelligence_recovery;
+#[path = "native_intelligence_recovery_boundary.rs"]
+mod intelligence_recovery_boundary;
+#[cfg(test)]
+use intelligence_recovery_boundary::retain_intelligence_recovery_boundary_v1;
 
 enum NativeExecutionMode {
     ExecuteOrReconcile,
@@ -212,7 +216,11 @@ impl AppServerModelDriver {
                 let output = output.clone();
                 return Ok(output);
             }
-            if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
+            if let Some(mut reconciled) = self.reconcile_existing(&record, &prompt).await? {
+                if let Some(binding) = intelligence {
+                    self.revalidate_intelligence_recovery_v1(&record, binding, &mut reconciled)
+                        .await;
+                }
                 let settled = control.settle_native(&record.request.request_id, reconciled)?;
                 let output = settled
                     .observation

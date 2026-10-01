@@ -47,7 +47,8 @@ impl AppServerModelDriver {
             .await
             .map_err(|_| "terminal reconciliation run status unavailable")?
             .ok_or("Agentd run is unavailable during terminal reconciliation")?;
-        if self.config.generation.checked_add(1) != Some(run.generation)
+        if run.run_id != binding.run_id
+            || self.config.generation.checked_add(1) != Some(run.generation)
             || run.context_digest.as_deref() != Some(binding.context_digest.as_str())
             || run.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
         {
@@ -69,6 +70,12 @@ impl AppServerModelDriver {
         };
         super::super::commit_intelligence_terminal(&owner, binding, revision, output)
             .await
-            .map_err(|_| "terminal reconciliation observation projection unavailable")
+            .map_err(|error| {
+                if error.to_string() == super::super::LOCAL_CANCELLED {
+                    super::super::LOCAL_CANCELLED
+                } else {
+                    "terminal reconciliation observation projection unavailable"
+                }
+            })
     }
 }
