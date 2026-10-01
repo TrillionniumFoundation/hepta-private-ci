@@ -9,8 +9,13 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 required_boundary_ids = [
   "supervisor_authorized_boot",
   "memory_production_writer_open",
+  "cognitive_store_recovery_open",
+  "cognitive_production_mutation_capability",
   "agentd_production_writer_host",
   "agentd_production_operation_runtime",
+  "learning_artifact_owner_bootstrap",
+  "learning_artifact_owner_restart",
+  "learning_artifact_verified_current_view",
   "provider_effect_coordinator",
   "http_provider_effect_adapter",
   "final_use_open_state",
@@ -47,11 +52,6 @@ required_boundary_ids = [
   "final_use_async_dispatch_fence",
   "automation_taskflow_provider_effect_bridge",
   "final_use_guarded_effect",
-  "cognitive_store_recovery_open",
-  "cognitive_production_mutation_capability",
-  "learning_artifact_owner_bootstrap",
-  "learning_artifact_owner_restart",
-  "learning_artifact_verified_current_view",
   "prompt_registry_admit",
   "prompt_registry_payload",
   "prompt_registry_retire",
@@ -102,7 +102,7 @@ caller_markers = []
 [[boundary]]
 id = "agentd_production_operation_runtime"
 symbol = "AgentdProductionOperationRuntimeConfig::attach"
-call_pattern = 'operations\s*\.\s*attach\s*\('
+call_pattern = '\boperations\s*\.\s*attach\s*\('
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
 definition_markers = ["pub struct AgentdProductionOperationRuntimeConfig", "pub(crate) async fn attach", "recovered_host.writer.verify_current_authority"]
 product_callers = ["codex-rs/hepta-agentd/src/runtime.rs"]
@@ -321,7 +321,7 @@ caller_markers = []
 [[boundary]]
 id = "bao_registered_final_use_host"
 symbol = "BaoFinalUseHost::consume_kv_v2"
-call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
+call_pattern = '\.\s*consume_kv_v2\s*\('
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["pub struct BaoFinalUseHost", "pub async fn consume_kv_v2", "approval_verifier", "consumers"]
 product_callers = []
@@ -490,7 +490,7 @@ forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
-required = ["operations.attach", "attach_production_operations", "run_production_operation_reconciler"]
+required = ["operations.attach(", "production_writer_host.as_ref()", "attach_production_operations", "run_production_operation_reconciler"]
 forbidden = ["ProductionAuthorityToken::from_verified_bytes", "SigningKey::from_bytes"]
 
 [[protected_file]]
