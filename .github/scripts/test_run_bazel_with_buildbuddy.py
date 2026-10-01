@@ -12,6 +12,28 @@ import run_bazel_with_buildbuddy
 
 
 class RunBazelWithBuildBuddyTest(unittest.TestCase):
+    def test_explicit_pattern_file_is_not_replaced_or_deleted_by_transport(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as directory:
+            pattern_file = Path(directory) / "caller targets.txt"
+            pattern_file.write_text("//caller:original\n", encoding="utf-8")
+            args = [
+                "bazel",
+                "build",
+                f"--target_pattern_file={pattern_file}",
+                "--",
+                "//caller:extra",
+            ]
+            with run_bazel_with_buildbuddy.windows_target_patterns(
+                args, {"RUNNER_OS": "Windows"}
+            ) as (command, owned):
+                self.assertEqual(command, args)
+                self.assertIsNone(owned)
+            self.assertEqual(
+                pattern_file.read_text(encoding="utf-8"), "//caller:original\n"
+            )
+
     def github_env(
         self,
         temp_dir: str,

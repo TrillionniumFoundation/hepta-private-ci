@@ -307,6 +307,15 @@ def windows_target_patterns(args: Sequence[str], env: Mapping[str, str]):
         yield list(args), None
         return
     separator = args.index("--")
+    if any(
+        arg == "--target_pattern_file" or arg.startswith("--target_pattern_file=")
+        for arg in args[:separator]
+    ):
+        # A caller's pattern file owns its selection semantics. Let Bazel
+        # validate combinations with positional patterns instead of replacing
+        # that file with a wrapper-generated roster.
+        yield list(args), None
+        return
     targets = args[separator + 1 :]
     if not targets:
         yield list(args), None
