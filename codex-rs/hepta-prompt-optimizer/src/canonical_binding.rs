@@ -16,6 +16,7 @@ impl SelectedPromptPortfolioV1 {
     /// still match the result sealed by canonical portfolio selection.
     pub fn validate(&self) -> Result<(), CanonicalPromptError> {
         if self.selected.len() > MAX_CANONICAL_SELECTED_FACTORS
+            || self.selected_at_unix_ms == 0
             || self.receipt.factor_ids.len() > MAX_CANONICAL_SELECTED_FACTORS
             || self.receipt.authority.grants_any()
             || self.model_tuple.validate().is_err()
@@ -40,6 +41,7 @@ impl SelectedPromptPortfolioV1 {
         bytes.extend_from_slice(&self.receipt.expected_utility_q32.raw().to_be_bytes());
         bytes.extend_from_slice(&self.receipt.total_token_upper_bound.to_be_bytes());
         bytes.extend_from_slice(&self.receipt.valid_until_unix_ms.to_be_bytes());
+        bytes.extend_from_slice(&self.selected_at_unix_ms.to_be_bytes());
         bytes.extend_from_slice(self.receipt.receipt_digest.as_array());
         push_len(&mut bytes, self.selected.len());
         for binding in &self.selected {

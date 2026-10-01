@@ -366,7 +366,7 @@ pub(crate) fn canonical_selection(
             .expect("current owner prompt graph projection");
     let portfolio = select_portfolio_v1(
         &priced,
-        projection.generation(),
+        &projection,
         Vec::new(),
         &verifier,
         PromptPortfolioRequestV1 {

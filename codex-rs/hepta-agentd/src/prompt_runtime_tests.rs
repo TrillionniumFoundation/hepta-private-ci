@@ -838,7 +838,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
             .expect("current owner prompt graph projection");
     let portfolio = select_portfolio_v1(
         &priced,
-        projection.generation(),
+        &projection,
         Vec::new(),
         &verifier,
         PromptPortfolioRequestV1 {

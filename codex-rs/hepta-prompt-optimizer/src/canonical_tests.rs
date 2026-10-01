@@ -32,15 +32,15 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use ed25519_dalek::SigningKey;
 
-fn id(value: &str) -> StableId {
+pub(super) fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
 }
 
-fn digest(value: &str) -> Digest32 {
+pub(super) fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn model_tuple() -> PromptModelTupleV2 {
+pub(super) fn model_tuple() -> PromptModelTupleV2 {
     PromptModelTupleV2 {
         model_id: id("model:test"),
         model_version: "2026-09-21".to_owned(),
@@ -133,6 +133,7 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
         candidates: candidates.clone(),
         factor_graph_source_digest: digest("kg-source"),
         issued_registry_snapshot: snapshot,
+        sealed_input_digest: Digest32::ZERO,
     };
     let priced_rows = rows
         .into_iter()
@@ -168,6 +169,11 @@ fn priced(rows: Vec<(&str, &str, u32, i64)>) -> PricedPromptCandidatesV1 {
         rows: priced_rows,
         pricing_set_digest: digest("pricing-set"),
         authority: AuthorityPosture::DENY_ALL,
+        sealed_input_digest: Digest32::ZERO,
+        admission_trust_digest: digest("trust"),
+        admitted_at_unix_ms: 100,
+        admission_expires_at_unix_ms: 10_000,
+        admission_proofs: Vec::new(),
     }
 }
 
@@ -223,30 +229,139 @@ fn graph(
     .unwrap_or_else(|error| panic!("graph: {error}"))
 }
 
-fn verifier() -> LearningEvidenceVerifierV1 {
-    let signing = SigningKey::from_bytes(&[7; 32]);
-    let public = signing.verifying_key().to_bytes();
-    LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+pub(super) fn learning_trust() -> LearningEvidenceTrustV1 {
+    LearningEvidenceTrustV1 {
         scope_digest: digest("scope"),
         objective_digest: digest("objective"),
         authority_epoch: 1,
-        signers: vec![TrustedLearningSignerV1 {
+        signers: [
+            ("evaluator", 7, LearningEvidenceRoleV1::Evaluator),
+            ("prompt.optimizer", 8, LearningEvidenceRoleV1::Generator),
+        ].into_iter().map(|(principal, seed, role)| {
+            let public = SigningKey::from_bytes(&[seed; 32]).verifying_key().to_bytes();
+            TrustedLearningSignerV1 {
             principal: AuthenticatedPrincipalV1 {
-                principal_id: id("evaluator"),
-                credential_chain_digest: digest("credential"),
+                principal_id: id(principal),
+                credential_chain_digest: digest(&format!("credential:{principal}")),
                 signing_key_digest: Digest32::of_bytes(&public),
                 scope_digest: digest("scope"),
                 authority_epoch: 1,
                 authenticated_at: 1,
                 expires_at: 10_000,
             },
-            controller_id: id("controller:evaluator"),
+            controller_id: id(&format!("controller:{principal}")),
             verifying_key: public,
-            roles: vec![LearningEvidenceRoleV1::Evaluator],
+            roles: vec![role],
             revoked_at: None,
-        }],
-    })
+        }}).collect(),
+    }
+}
+
+pub(super) fn verifier() -> LearningEvidenceVerifierV1 {
+    LearningEvidenceVerifierV1::new(learning_trust())
     .unwrap_or_else(|error| panic!("verifier: {error}"))
+}
+
+fn sign_learning_evidence(
+    verifier: &LearningEvidenceVerifierV1,
+    seed: u8,
+    principal: &str,
+    role: LearningEvidenceRoleV1,
+    evidence_id: &str,
+    payload: &[u8],
+) -> SignedLearningEvidenceV1 {
+    let key = SigningKey::from_bytes(&[seed; 32]);
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: id(evidence_id),
+        principal_id: id(principal),
+        role,
+        trust_digest: verifier.trust_digest(),
+        scope_digest: verifier.scope_digest(),
+        objective_digest: verifier.objective_digest(),
+        authority_epoch: verifier.authority_epoch(),
+        issued_at: 100,
+        expires_at: 10_000,
+        payload_digest: Digest32::of_bytes(payload),
+        signature: [0; 64],
+    };
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence
+}
+
+pub(super) struct PricingFixture {
+    pub(super) completeness: CandidateSetCompletenessReceiptV1,
+    pub(super) completeness_evidence: SignedLearningEvidenceV1,
+    pub(super) evidence: Vec<PromptPricingEvidenceV1>,
+    pub(super) verifier: LearningEvidenceVerifierV1,
+    pub(super) policy: PromptPricingPolicyV1,
+}
+
+impl PricingFixture {
+    pub(super) fn price(self, candidates: EnumeratedPromptCandidatesV1) -> Result<PricedPromptCandidatesV1, CanonicalPromptError> {
+        price_factors_v1(candidates, &self.completeness, &self.completeness_evidence, self.evidence, &self.verifier, &self.policy, 100)
+    }
+}
+
+pub(super) fn authenticated_pricing_inputs(candidates: &EnumeratedPromptCandidatesV1, verifier: LearningEvidenceVerifierV1) -> PricingFixture {
+    let completeness = CandidateSetCompletenessReceiptV1 {
+        set_id: candidates.receipt.set_id.clone(),
+        state_digest: candidates.receipt.state_digest,
+        generator_id: id("prompt.optimizer"),
+        generator_code_digest: digest("generator-code"),
+        grammar_digest: candidates.receipt.selection_grammar_digest,
+        hard_filter_digest: digest("generator-filters"),
+        truncation_digest: digest("generator-truncation"),
+        candidates_digest: candidates.candidates_digest,
+        candidate_count: u32::try_from(candidates.candidates.len()).expect("bounded candidates"),
+        omitted_count_bound: candidates.omitted_count,
+        canonical_order_digest: candidates.canonical_order_digest,
+        complete_for_generator: true,
+    };
+    let completeness_evidence = sign_learning_evidence(
+        &verifier, 8, "prompt.optimizer", LearningEvidenceRoleV1::Generator,
+        "evidence:completeness", &candidate_completeness_signing_payload_v1(&completeness).expect("completeness payload"),
+    );
+    let evidence = candidates.candidates.iter().map(|candidate| {
+        let utility = FixedQ32::from_raw(if candidate.factor_id == id("factor:a") { 20 } else { 10 });
+        let mut evidence = PromptPricingEvidenceV1 {
+            factor_id: candidate.factor_id.clone(),
+            state_digest: candidates.receipt.state_digest,
+            model_tuple_digest: candidates.model_tuple.digest(),
+            expected_incremental_utility_q32: utility,
+            downside_q32: FixedQ32::ZERO,
+            confidence_lower_q32: utility,
+            confidence_upper_q32: utility,
+            support_count: 10,
+            latency_cost_micros: 0,
+            interference_ppm: 0,
+            context_crowding_cost_q32: FixedQ32::ZERO,
+            privacy_cost_q32: FixedQ32::ZERO,
+            instability_cost_q32: FixedQ32::ZERO,
+            future_context_option_cost_q32: FixedQ32::ZERO,
+            support_audit_digest: digest("pricing-support-audit"),
+            evidence: completeness_evidence.clone(),
+        };
+        evidence.evidence = sign_learning_evidence(
+            &verifier, 7, "evaluator", LearningEvidenceRoleV1::Evaluator,
+            &format!("evidence:pricing:{}", candidate.factor_id), &pricing_evidence_signing_payload_v1(&evidence),
+        );
+        evidence
+    }).collect();
+    PricingFixture {
+        completeness,
+        completeness_evidence,
+        evidence,
+        verifier,
+        policy: PromptPricingPolicyV1 {
+            policy_id: id("pricing-policy"),
+            token_cost_per_token_q32: FixedQ32::ZERO,
+            latency_cost_per_micro_q32: FixedQ32::ZERO,
+            interference_cost_per_ppm_q32: FixedQ32::ZERO,
+            downside_weight_q32: FixedQ32::ZERO,
+            minimum_support_count: 1,
+            maximum_interference_ppm: 1_000_000,
+        },
+    }
 }
 
 #[test]
@@ -263,7 +378,7 @@ fn prerequisite_bundle_can_select_negative_prerequisite_for_positive_bundle() {
             "factor:b",
         )],
     );
-    let selected = select_portfolio_v1(
+    let selected = select_from_validated_inputs(
         &priced,
         &graph,
         Vec::new(),
@@ -276,6 +391,7 @@ fn prerequisite_bundle_can_select_negative_prerequisite_for_positive_bundle() {
             requested_valid_until_unix_ms: 5_000,
         },
         100,
+        None,
     )
     .unwrap_or_else(|error| panic!("select bundle: {error}"));
 
@@ -307,7 +423,7 @@ fn hard_conflict_cannot_be_outweighed_by_positive_numeric_utility() {
             "factor:b",
         )],
     );
-    let selected = select_portfolio_v1(
+    let selected = select_from_validated_inputs(
         &priced,
         &graph,
         Vec::new(),
@@ -320,6 +436,7 @@ fn hard_conflict_cannot_be_outweighed_by_positive_numeric_utility() {
             requested_valid_until_unix_ms: 5_000,
         },
         100,
+        None,
     )
     .unwrap_or_else(|error| panic!("select conflict: {error}"));
     assert_eq!(selected.receipt.factor_ids, vec![id("factor:a")]);
@@ -421,6 +538,7 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
         optimality: PromptOptimalityDisclosureV1::HeuristicNoCertificate,
         registry_snapshot: snapshot,
         sealed_output_digest: Digest32::ZERO,
+        selected_at_unix_ms: 100,
     };
     selected.sealed_output_digest = selected.compute_output_digest();
     let live = exercise_v1(
@@ -457,7 +575,7 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
     assert!(!exercise.authority.grants_any());
 }
 
-fn registry_fixture(
+pub(super) fn registry_fixture(
     root: &std::path::Path,
     costs: &[u32],
 ) -> (
@@ -660,7 +778,7 @@ fn revoke_registry(
 fn canonical_selector_rejects_candidate_absent_from_complete_graph() {
     let priced = priced(vec![("factor:a", "realization:a", 1, 10)]);
     let missing_graph = graph(&[], Vec::new());
-    let error = select_portfolio_v1(
+    let error = select_from_validated_inputs(
         &priced,
         &missing_graph,
         Vec::new(),
@@ -673,6 +791,7 @@ fn canonical_selector_rejects_candidate_absent_from_complete_graph() {
             requested_valid_until_unix_ms: 5_000,
         },
         100,
+        None,
     )
     .expect_err("missing graph factor");
     assert_eq!(
@@ -681,7 +800,7 @@ fn canonical_selector_rejects_candidate_absent_from_complete_graph() {
     );
 }
 
-fn relation_grant(
+pub(super) fn relation_grant(
     binding: codex_hepta_contracts::FinalUseBinding,
     key: &SigningKey,
     now: u64,
@@ -778,9 +897,8 @@ fn relation_only_withdrawal_rejects_selected_portfolio_before_exercise() {
         },
     )
     .expect("enumerate current owner cut");
-    let mut priced = priced(vec![("factor:a", "realization:0", 1, 10)]);
-    priced.rows[0].binding = enumerated.candidates[0].clone();
-    priced.candidates = enumerated;
+    let pricing = authenticated_pricing_inputs(&enumerated, verifier());
+    let priced = pricing.price(enumerated).expect("authenticate current owner pricing");
     let source = registry
         .registry()
         .expect("registry")
@@ -793,7 +911,7 @@ fn relation_only_withdrawal_rejects_selected_portfolio_before_exercise() {
     .expect("projection");
     let selected = select_portfolio_v1(
         &priced,
-        projection.generation(),
+        &projection,
         Vec::new(),
         &verifier(),
         PromptPortfolioRequestV1 {
@@ -875,48 +993,54 @@ fn relation_only_withdrawal_rejects_selected_portfolio_before_exercise() {
     );
 }
 
-fn current_pair_pricing(registry: &PromptRegistry) -> PricedPromptCandidatesV1 {
-    let enumerated = enumerate_factors_v1(
-        registry,
-        PromptEnumerationRequestV1 {
+pub(super) fn current_enumeration(registry: &PromptRegistry, required_factor_ids: Vec<StableId>) -> EnumeratedPromptCandidatesV1 {
+    let mut request = enumeration_request();
+    request.required_factor_ids = required_factor_ids;
+    enumerate_factors_v1(registry, request).expect("enumerate current owner cut")
+}
+
+pub(super) fn enumeration_request() -> PromptEnumerationRequestV1 {
+    PromptEnumerationRequestV1 {
             set_id: id("set:source-cut"),
             objective_digest: digest("objective"),
             state_digest: digest("state"),
             generation_vector_digest: digest("generation-vector"),
             model_tuple: model_tuple(),
             now_unix_ms: 100,
-            required_factor_ids: vec![id("factor:a"), id("factor:b")],
+            required_factor_ids: vec![id("factor:a")],
             maximum_candidates: 8,
             selection_grammar_digest: digest("grammar"),
-        },
-    )
-    .expect("enumerate current owner cut");
-    let mut priced = priced(vec![
-        ("factor:a", "realization:0", 1, 20),
-        ("factor:b", "realization:b", 1, 10),
-    ]);
-    for row in &mut priced.rows {
-        row.binding = enumerated
-            .candidates
-            .iter()
-            .find(|candidate| candidate.factor_id == row.binding.factor_id)
-            .expect("factor binding")
-            .clone();
     }
-    priced.candidates = enumerated;
-    priced
 }
 
-#[test]
-fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal() {
-    use codex_hepta_prompt_registry::PromptFactorRelation;
-    use codex_hepta_prompt_registry::PromptFactorRelationKind;
-    use codex_hepta_prompt_registry::final_use_factor_relation_binding;
-    use codex_hepta_prompt_registry::final_use_factor_relation_revocation_binding;
+pub(super) fn selection_request() -> PromptPortfolioRequestV1 {
+    PromptPortfolioRequestV1 {
+        portfolio_id: id("portfolio:admission"),
+        graph_query_id: id("query:admission"),
+        token_budget: 8,
+        maximum_selected_factors: 2,
+        requested_valid_until_unix_ms: 5_000,
+    }
+}
 
-    let temp = tempfile::tempdir().expect("tempdir");
-    let (mut registry, _tuple, authority, key, now) =
-        registry_fixture(&temp.path().join("registry"), &[1]);
+pub(super) fn owner_projection(registry: &PromptRegistry) -> PromptFactorProjectionV1 {
+    codex_hepta_kg::build_prompt_factor_projection_v1(
+        Generation::new(1).expect("generation"), digest("generation-vector"),
+        &registry.factor_graph_source_v1(),
+    ).expect("sealed current owner projection")
+}
+
+pub(super) fn current_pair_pricing(registry: &PromptRegistry) -> PricedPromptCandidatesV1 {
+    let enumerated = current_enumeration(registry, vec![id("factor:a"), id("factor:b")]);
+    authenticated_pricing_inputs(&enumerated, verifier()).price(enumerated).expect("authenticate pair pricing")
+}
+
+pub(super) fn register_second_realized_factor(
+    registry: &mut DurablePromptRegistry,
+    authority: &FinalUseAuthority,
+    key: &SigningKey,
+    now: u64,
+) -> (StableId, Digest32) {
     let mut second = registry
         .registry()
         .expect("registry")
@@ -934,12 +1058,12 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     let evidence = digest("second-admission");
     let admission = relation_grant(
         final_use_admission_binding(&second, &actor, scope, evidence).expect("admission binding"),
-        &key,
+        key,
         now,
         "admission:source-cut:b",
     );
     registry
-        .admit_factor_final_use(&authority, &admission, &second.factor_id, scope, evidence)
+        .admit_factor_final_use(authority, &admission, &second.factor_id, scope, evidence)
         .expect("admit second factor");
     let admitted = registry
         .registry()
@@ -954,13 +1078,13 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     let realization_grant = relation_grant(
         final_use_realization_binding(&admitted, &actor, scope, &realization, None)
             .expect("realization binding"),
-        &key,
+        key,
         now,
         "realization:source-cut:b",
     );
     registry
         .register_realization_payload_final_use_v2(
-            &authority,
+            authority,
             &realization_grant,
             &actor,
             scope,
@@ -969,6 +1093,20 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
             None,
         )
         .expect("second realization");
+    (actor, scope)
+}
+
+#[test]
+fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal() {
+    use codex_hepta_prompt_registry::PromptFactorRelation;
+    use codex_hepta_prompt_registry::PromptFactorRelationKind;
+    use codex_hepta_prompt_registry::final_use_factor_relation_binding;
+    use codex_hepta_prompt_registry::final_use_factor_relation_revocation_binding;
+
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (mut registry, _tuple, authority, key, now) =
+        registry_fixture(&temp.path().join("registry"), &[1]);
+    let (actor, scope) = register_second_realized_factor(&mut registry, &authority, &key, now);
     let vector = digest("generation-vector");
     let before_source = registry
         .registry()
@@ -1013,7 +1151,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     let current = current_pair_pricing(registry.registry().expect("registry"));
     let old_portfolio = select_portfolio_v1(
         &before_priced,
-        before_graph.generation(),
+        &before_graph,
         Vec::new(),
         &verifier(),
         request.clone(),
@@ -1031,7 +1169,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     assert_eq!(
         select_portfolio_v1(
             &rebound,
-            before_graph.generation(),
+            &before_graph,
             Vec::new(),
             &verifier(),
             request.clone(),
@@ -1043,7 +1181,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     assert_eq!(
         select_portfolio_v1(
             &current,
-            before_graph.generation(),
+            &before_graph,
             Vec::new(),
             &verifier(),
             request.clone(),
@@ -1064,7 +1202,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     .expect("conflict projection");
     let constrained = select_portfolio_v1(
         &current,
-        conflict_graph.generation(),
+        &conflict_graph,
         Vec::new(),
         &verifier(),
         request.clone(),
@@ -1184,7 +1322,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     assert_eq!(
         select_portfolio_v1(
             &current,
-            conflict_graph.generation(),
+            &conflict_graph,
             Vec::new(),
             &verifier(),
             request.clone(),
@@ -1205,7 +1343,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     .expect("corrected projection");
     let mut corrected = select_portfolio_v1(
         &current,
-        corrected_graph.generation(),
+        &corrected_graph,
         Vec::new(),
         &verifier(),
         request,
