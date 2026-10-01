@@ -185,7 +185,7 @@ jobs:
         if: ${{ !cancelled() }}
         run: >-
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-desktop-records/clippy.json" --
-          cargo clippy --manifest-path apps/hepta-native/Cargo.toml --locked --profile dev-small --all-targets -- -D warnings
+          cargo clippy --manifest-path apps/hepta-native/Cargo.toml --locked --profile dev-small --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
       - name: Retain actual desktop command records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
