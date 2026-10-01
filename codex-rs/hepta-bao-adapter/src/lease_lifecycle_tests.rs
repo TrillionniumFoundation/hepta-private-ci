@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 fn registry() -> (tempfile::TempDir, DurableLeaseRegistryV1) {
     let directory = tempfile::tempdir().unwrap();
@@ -67,6 +68,36 @@ fn reused_operation_id_with_changed_semantics_conflicts() {
         registry.prepare_issue("op:issue:1".into(), [4; 32]),
         Err(LeaseRegistryErrorV1::OperationConflict)
     );
+}
+
+#[test]
+fn issue_rejects_non_active_provider_observations_without_durable_mutation() {
+    for state in [
+        SecretLeaseStateV1::RenewUnknown,
+        SecretLeaseStateV1::RevokeUnknown,
+        SecretLeaseStateV1::Revoked,
+        SecretLeaseStateV1::Expired,
+    ] {
+        let (directory, mut registry) = registry();
+        let prepared = registry
+            .prepare_issue("op:issue:1".into(), [3; 32])
+            .unwrap();
+        let path = directory.path().join("lease-registry.json");
+        let persisted = std::fs::read(&path).unwrap();
+        let mut lease = active_lease();
+        lease.state = state;
+        assert_eq!(
+            registry.reconcile(
+                "op:issue:1",
+                ProviderLeaseObservationV1::IssueApplied { lease }
+            ),
+            Err(LeaseRegistryErrorV1::InvalidInput)
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), persisted);
+        let reopened = DurableLeaseRegistryV1::open(path).unwrap();
+        assert_eq!(reopened.operation("op:issue:1"), Some(&prepared));
+        assert_eq!(reopened.lease("lease:db:1"), None);
+    }
 }
 
 #[test]
