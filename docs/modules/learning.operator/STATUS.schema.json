@@ -85,6 +85,21 @@
     "implementationProjection": {
       "type": "string",
       "minLength": 1
+    },
+    "registeredTransportCodecsImplemented": {
+      "type": "boolean"
+    },
+    "sealedQualificationConsumersImplemented": {
+      "type": "boolean"
+    },
+    "durableArtifactPersistenceAdapterImplemented": {
+      "type": "boolean"
+    },
+    "evaluatedReadonlyShadowLoaderImplemented": {
+      "type": "boolean"
+    },
+    "processRootTrustAndHostClockImplemented": {
+      "type": "boolean"
     }
   },
   "required": [
@@ -113,6 +128,11 @@
     "readinessManifest",
     "implementationProjection",
     "shadowCoordinatorImplemented",
-    "canonicalWireAdaptersImplemented"
+    "canonicalWireAdaptersImplemented",
+    "registeredTransportCodecsImplemented",
+    "sealedQualificationConsumersImplemented",
+    "durableArtifactPersistenceAdapterImplemented",
+    "evaluatedReadonlyShadowLoaderImplemented",
+    "processRootTrustAndHostClockImplemented"
   ]
 }

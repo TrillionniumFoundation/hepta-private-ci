@@ -20,8 +20,13 @@ The native structs are owner-local candidate profiles. Sharing a name with a
 registered V1 protocol does not establish canonical-JSON wire parity: the native
 applicability certificate commits profile digests, and the sensor manifest
 contains selected points, while the canonical schemas include additional
-profile, horizon, construction and lifecycle fields. No canonical wire adapter
-or wire round-trip proof is implemented here. `HEPTTB01` is a separate native
+profile, horizon, construction and lifecycle fields. The contracts crate now
+provides untrusted canonical V1 transport codecs and strict round-trip tests for
+the registered sensor, regularity and applicability schemas. There is no
+implicit conversion to native owner capabilities, and enum/member semantics
+still require their independent owners. `BellmanOperatorArtifactV1` is registered
+without a canonical field schema and is explicitly rejected by the codec.
+`HEPTTB01` is a separate native
 tabular payload, not `BellmanOperatorArtifactV1` canonical JSON.
 
 The sensor manifest, Bellman-reference receipt, legacy target-artifact and
@@ -74,7 +79,9 @@ configured authority and registry witnesses at each read.
 | build exact/reduced semantic sensor receipt | `build_sensor_core_qualified_v1` | `src/sensor_core_qualification.rs` | default implemented; finite-design geometry |
 | load a complete immutable tabular pin | `LoadedTabularOperatorV2::from_pinned_payload_v2` | `src/loaded.rs` | default implemented; one-time identity validation |
 | predict under the retained selection window | `SelectedTabularOperatorV1` / `OpaquePinnedWorldModelV1` | `src/final_use_selected.rs` | default selected wrappers; live owner refresh remains host-owned |
-| sequence shadow stages | `coordinate_learning_operator_shadow_v1` | `../hepta-agentd/src/learning_operator_coordinator.rs` | generic coordinator implemented; actual owner ports/runtime caller absent |
+| sequence shadow stages | `coordinate_learning_operator_shadow_v1` | `../hepta-agentd/src/learning_operator_coordinator.rs` | coordinator contract implemented; complete configured owner composition remains |
+| publish selected immutable tabular candidate | `LearningOperatorArtifactOwnerV1` / `AgentdIntelligenceProductRunnerV1::persist_learning_operator_candidate` | `../hepta-agentd/src/learning_operator_artifact_owner.rs`, `learning_operator_product_persistence.rs` | actual fenced storage, exact retry/status recovery; no install authority |
+| load and refresh a qualified shadow candidate | `EvaluatedTabularShadowConsumerV3` | `../hepta-agentd/src/learning_operator_shadow_loader.rs` | actual CURRENT/dual-ledger/selection refresh; not distinct-process or full rollback proof |
 
 ## Applicability and sensor core
 
@@ -186,11 +193,22 @@ The V1 applicability and regularity functions are deterministic structural valid
 
 ## Host and external obligations
 
-Repository-controlled work still includes real owner-port adapters and a named
-runtime caller for the generic shadow coordinator, plus canonical protocol wire
-adapters and their bounds/round-trip tests. Fixture-port coordinator tests and
-signed component E2E exercise distinct boundaries; they do not prove one composed
-default loop. The canonical status keeps `defaultLoopWired=false`.
+Real artifact-owner persistence, qualified V3 read-only shadow loading and a
+ProductRunner persistence entry are implemented. Remaining repository work is
+the configured caller and complete coordinator owner-port composition, including
+distinct-process shadow loading and exact predecessor rollback. Three registered
+untrusted transport codecs have bounds/round-trip tests; the Bellman field schema,
+enum/member semantics and context-bound native bridges remain. Fixture-port and
+component tests do not prove a composed default loop; `defaultLoopWired=false`.
+
+The new publication and qualified shadow interfaces use Unix microseconds;
+registered transport expiry uses Unix milliseconds. A migration must supply
+explicit owner context and checked conversion. The publication view does not
+issue an admitted manifest or selection. World row signatures attest rows and
+owner context, not independently measured calibration, future windows or
+retention. The optional plasticity process embedding now requires an explicit
+V2 descriptor with the independently retained root and root-signed distribution;
+V1 signer-only descriptors are not implicitly upgraded.
 
 A production integration must still provide:
 

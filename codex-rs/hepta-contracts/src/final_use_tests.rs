@@ -143,7 +143,7 @@ fn async_effect_entry_rechecks_revocation_and_consumes_the_token() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     assert!(entered.matches(&binding));
@@ -158,7 +158,7 @@ fn async_effect_entry_is_denied_if_revoked_after_claim_before_entry() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     assert_eq!(
@@ -847,7 +847,7 @@ fn replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small() {
     let claims = std::fs::read(directory.path().join("authority.claims")).unwrap();
     assert_eq!(claims.len(), 40);
 
-    let mut second = signed.clone();
+    let mut second = signed;
     second.grant.grant_id = "read-two".into();
     second.grant.nonce = [6; 32];
     second.signature = SigningKey::from_bytes(&[47; 32])

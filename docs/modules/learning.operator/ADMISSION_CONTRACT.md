@@ -6,9 +6,11 @@ assert mutable completion state. Exact candidate and workflow identities live in
 the qualification-generated readiness manifest.
 
 The default admission components use the existing ledger owner, evaluator,
-selector, artifact store and Agentd host. The generic shadow coordinator is
-implemented, but its real owner-port adapters and runtime caller remain
-repository integration work. It creates no additional authority.
+selector, artifact store and Agentd host. The shadow coordinator, real artifact
+publication adapter, qualified V3 read-only loader and ProductRunner persistence
+entry are implemented components. The complete configured runtime composition,
+distinct-process shadow stage and predecessor rollback remain integration work.
+Those components create no additional authority.
 Repository qualification can establish exact-source engineering and protocol
 evidence, while scientific efficacy, target-host capacity, operator acceptance,
 canary, promotion, activation and release remain external. **Activation remains
@@ -49,16 +51,26 @@ does not scan private function names.
 | Single-use capability | `FinalUseTabularCapabilityV1` / `FinalUseWorldModelCapabilityV1` | Opaque, non-`Clone`, owner-borrowed capability. |
 | Current immediately before fit | `fit_*_final_use_v1` | Durable owner and ledger membership revalidated; stop, deadline, clock and cancellation checked. |
 | Immutable candidate | `FinalUse*CandidateV1` | Artifact/profile/generation identity remains canonical. |
+| Product evaluation | sealed `ProductQualificationReceiptV1` | Runner-derived measurements, fenced holdout consumption and durable publication; exact signed input is reauthenticated at consumption. |
 | Current immediately before handoff | second owner/currentness verification | A stale generation or revoked source cannot be selected or persisted. |
 | Independently selected read-only artifact | `OpaquePinnedTabularArtifactV1` / `OpaquePinnedWorldModelV1` | Selection, trust, registry, authority and stop epochs are exact. |
 | Immutable payload load | `LoadedTabularOperatorV2` | Full artifact, producer, schema, profile, trust, registry and authority pin verified once. |
 | Selected prediction | `SelectedTabularOperatorV1` / `OpaquePinnedWorldModelV1` | Selection time window checked at every prediction; host refreshes live owner witnesses separately. |
+| Actual owner storage | `LearningOperatorArtifactOwnerV1` | Disjoint frozen training/evaluation records, sealed selection and externally admitted V3 manifest match the candidate; writes use the existing fenced owner service. |
+| Qualified shadow read | `EvaluatedTabularShadowConsumerV3` | Separate dataset bindings and exact runtime pin; refresh both ledgers, CURRENT and selection before/after prediction; failed refresh closes the handle. |
 
 The absolute deadline is exclusive: issue, use or handoff observed exactly at
 the deadline fails closed. A witness observed before retained capability
 issuance is a clock regression. The retained monotonic fit context also checks
 issuance time plus real elapsed work and final cancellation; stale supplied
-timestamps cannot extend the absolute deadline.
+timestamps cannot extend the absolute deadline or signed row/owner evidence TTL.
+Repeated loads from one selected opaque pin retain a shared monotonic observed
+time; an expired selection cannot be revived by a later backward timestamp.
+
+Final-use, actual publication and qualified shadow interfaces use Unix
+microseconds. The registered V1 transport's `expiresUnixMs` uses Unix milliseconds;
+its `horizonMicros` is a duration. A bridge requires explicit owner context and
+checked conversion, not a guessed unit or an interval substituted for a horizon.
 
 `WorkControlV1` is a cloneable monotonic cancellation token. Synchronous
 resource-metered loops explicitly install it. Any worker-thread or blocking-pool
@@ -78,9 +90,18 @@ freeze training → derive canonical profile → final-use fit
 → currentness/revocation check → exact predecessor rollback
 ```
 
-The coordinator currently has fixture-port state-machine tests. Signed component
-E2E exercises owners and the evaluated ranker separately; a real-port coordinator
-E2E and default runtime caller are still required.
+The coordinator currently has fixture-port state-machine tests. Real persistence
+and qualified loading are separately implemented and tested components; the
+ProductRunner exposes `persist_learning_operator_candidate` as its bounded owner
+entry. They are not an implementation of every coordinator port or a configured
+default loop. Signed component E2E and same-process loading do not establish the
+required distinct-process, complete-lifecycle coordinator test.
+
+The storage adapter distinguishes `OutcomeUnknown` from
+`PersistedButNotCurrent`. Preserve the exact owner request or known receipt and
+discover status without granting a retry. Storing admitted bytes does not install
+a model. A publication view exposes immutable candidate facts but cannot issue
+the independent selection, artifact manifest or its authorization.
 
 The coordinator has no publish, canary or activate port. A healthy current
 candidate ends as `QualifiedAndRolledBack`; a revoked candidate ends as
@@ -105,6 +126,12 @@ Legacy V1 read-only types that remain in the explicit default allowlist are
 limited to existing owner-bound adapters; no raw fitter is available by default.
 Their removal requires an independently reviewed consumer migration rather than
 a wildcard export change.
+
+Three registered V1 transport codecs are implemented in the contracts crate;
+their DTOs remain untrusted. The Bellman artifact field schema and lossless
+native profile bridges are still required. World-model calibration, window and
+retention values are host request inputs protected by bounds and commitments;
+row authentication does not independently measure them.
 
 ## Qualification and readiness
 

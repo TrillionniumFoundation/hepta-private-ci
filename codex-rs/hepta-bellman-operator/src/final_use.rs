@@ -22,6 +22,7 @@ use codex_hepta_types::StableId;
 use crate::OperatorDatasetBindingError;
 use crate::OperatorProfileErrorV1;
 use crate::OperatorResourceBudgetV1;
+use crate::OperatorWorkErrorV1;
 use crate::TABULAR_ARTIFACT_SCHEMA_V1;
 use crate::TABULAR_PAYLOAD_SCHEMA_V1;
 use crate::TabularOperatorArtifactV1;
@@ -221,6 +222,7 @@ pub enum FinalUseErrorV1 {
     Tabular(BudgetedTabularFitErrorV2),
     WorldModel(WorldModelV2Error),
     Payload(TabularPayloadError),
+    Work(OperatorWorkErrorV1),
     OwnerState(String),
     Binding(&'static str),
     SelectionBinding(&'static str),
@@ -243,6 +245,7 @@ impl StdError for FinalUseErrorV1 {
             Self::Tabular(error) => Some(error),
             Self::WorldModel(error) => Some(error),
             Self::Payload(error) => Some(error),
+            Self::Work(error) => Some(error),
             Self::OwnerState(_)
             | Self::Binding(_)
             | Self::SelectionBinding(_)
@@ -283,6 +286,12 @@ impl From<TabularPayloadError> for FinalUseErrorV1 {
     }
 }
 
+impl From<OperatorWorkErrorV1> for FinalUseErrorV1 {
+    fn from(value: OperatorWorkErrorV1) -> Self {
+        Self::Work(value)
+    }
+}
+
 #[derive(Debug)]
 pub struct TabularTrainingRequestV1 {
     artifact_id: StableId,
@@ -309,14 +318,22 @@ impl TabularTrainingRequestV1 {
                 "tabular request requires a nonempty complete grid",
             ));
         }
+        // Use exactly the signed-owner profile bounds before taking clones for
+        // canonicalization. Caller-owned spare allocation is not retained.
+        crate::validate_signed_tabular_shape_v3(
+            sensor_ids.len(),
+            action_ids.len(),
+            profile.minimum_samples_per_cell(),
+            samples.len(),
+        )?;
         Ok(Self {
             artifact_id,
             producer_id,
             generation,
             profile,
-            sensor_ids,
-            action_ids,
-            samples,
+            sensor_ids: sensor_ids.into_boxed_slice().into_vec(),
+            action_ids: action_ids.into_boxed_slice().into_vec(),
+            samples: samples.into_boxed_slice().into_vec(),
         })
     }
 
@@ -393,8 +410,27 @@ impl WorldModelTrainingRequestV1 {
             || retained_until == 0
             || retained_until > expires_at
             || samples.is_empty()
+            || samples.len() > crate::MAX_SIGNED_OPERATOR_ROWS
         {
             return Err(FinalUseErrorV1::Binding("invalid world-model request"));
+        }
+        if samples.iter().any(|row| {
+            !(-FixedQ32::ONE.raw()..=FixedQ32::ONE.raw()).contains(&row.outcome.raw())
+                || row.evidence_digest.is_zero()
+        }) {
+            return Err(FinalUseErrorV1::Binding("invalid world-model sample"));
+        }
+        if [
+            one_step_calibration_error,
+            multistep_calibration_error,
+            drift_score,
+        ]
+        .into_iter()
+        .any(|value| !(FixedQ32::ZERO..=FixedQ32::ONE).contains(&value))
+        {
+            return Err(FinalUseErrorV1::Binding(
+                "world-model measurements outside the unit interval",
+            ));
         }
         if one_step_calibration_error > profile.maximum_one_step_calibration_error()
             || multistep_calibration_error > profile.maximum_multistep_calibration_error()
@@ -422,7 +458,7 @@ impl WorldModelTrainingRequestV1 {
             change_point_digest,
             retained_until,
             expires_at,
-            samples,
+            samples: samples.into_boxed_slice().into_vec(),
         })
     }
 
@@ -470,6 +506,7 @@ pub struct FinalUseTabularCapabilityV1<'a> {
     budget: OperatorResourceBudgetV1,
     fence: FinalUseFenceV1,
     control: WorkControlV1,
+    issued_evidence: issued::IssuedEvidenceV1<'a>,
 }
 
 impl fmt::Debug for FinalUseTabularCapabilityV1<'_> {
@@ -491,6 +528,7 @@ pub struct FinalUseWorldModelCapabilityV1<'a> {
     budget: OperatorResourceBudgetV1,
     fence: FinalUseFenceV1,
     control: WorkControlV1,
+    issued_evidence: issued::IssuedEvidenceV1<'a>,
 }
 
 impl fmt::Debug for FinalUseWorldModelCapabilityV1<'_> {
@@ -539,6 +577,10 @@ pub fn issue_tabular_final_use_capability_v1<'a>(
         witness.observed_at_unix_micros,
     )?;
     let _ = verified.admission_stage();
+    let issued_evidence = issued::IssuedEvidenceV1::new(
+        verified.into_verified_evidence(),
+        request.profile.runtime_limits(),
+    )?;
     Ok(FinalUseTabularCapabilityV1 {
         owner,
         receipt: receipt.clone(),
@@ -549,6 +591,7 @@ pub fn issue_tabular_final_use_capability_v1<'a>(
         plan,
         fence,
         control,
+        issued_evidence,
     })
 }
 
@@ -583,6 +626,11 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
             "world-model request does not name the training owner's trust",
         ));
     }
+    if witness.observed_at_unix_micros > request.retained_until
+        || witness.observed_at_unix_micros > request.expires_at
+    {
+        return Err(WorldModelV2Error::Expired.into());
+    }
     let row_payload = world_model_training_signing_payload_v2(
         &request.model_id,
         &request.samples,
@@ -601,6 +649,10 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
         witness.observed_at_unix_micros,
     )?;
     let _ = verified.admission_stage();
+    let issued_evidence = issued::IssuedEvidenceV1::new(
+        verified.into_verified_evidence(),
+        request.profile.runtime_limits(),
+    )?;
     Ok(FinalUseWorldModelCapabilityV1 {
         owner,
         receipt: receipt.clone(),
@@ -610,6 +662,7 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
         plan,
         fence,
         control,
+        issued_evidence,
     })
 }
 
@@ -684,6 +737,9 @@ impl FinalUseTabularCandidateV1 {
             selection_digest: selection.selection_digest,
             selected_at_unix_micros: selection.observed_at_unix_micros,
             expires_at_unix_micros: selection.expires_at_unix_micros,
+            clock: Arc::new(selected::SelectionUseClockV1::new(
+                selection.observed_at_unix_micros,
+            )),
         })
     }
 }
@@ -696,6 +752,7 @@ pub struct OpaquePinnedTabularArtifactV1 {
     selection_digest: Digest32,
     selected_at_unix_micros: u64,
     expires_at_unix_micros: u64,
+    clock: Arc<selected::SelectionUseClockV1>,
 }
 
 impl fmt::Debug for OpaquePinnedTabularArtifactV1 {
@@ -756,6 +813,9 @@ impl FinalUseWorldModelCandidateV1 {
             selection_digest: selection.selection_digest,
             selected_at_unix_micros: selection.observed_at_unix_micros,
             expires_at_unix_micros: selection.expires_at_unix_micros,
+            clock: Arc::new(selected::SelectionUseClockV1::new(
+                selection.observed_at_unix_micros,
+            )),
         })
     }
 }
@@ -766,6 +826,7 @@ pub struct OpaquePinnedWorldModelV1 {
     selection_digest: Digest32,
     selected_at_unix_micros: u64,
     expires_at_unix_micros: u64,
+    clock: Arc<selected::SelectionUseClockV1>,
 }
 
 impl fmt::Debug for OpaquePinnedWorldModelV1 {
@@ -804,10 +865,11 @@ pub fn fit_tabular_final_use_v1(
         &capability.row_evidence,
         use_now,
     )?;
+    let _ = verified_at_use.admission_stage();
+    drop(verified_at_use);
     let fit = with_work_control_v1(&capability.control, || {
         fit_tabular_operator_bounded_v2(capability.plan.clone(), capability.plan_budget())
     })?;
-    let _ = verified_at_use.admission_stage();
     if fit.artifact.training_profile_digest != capability.plan.training_profile_digest
         || fit.artifact.generation != capability.fence.expected_generation
     {
@@ -834,6 +896,24 @@ pub fn fit_tabular_final_use_v1(
         publish_now,
     )?;
     let _ = verified_at_publish.admission_stage();
+    let mut publication_evidence = issued::IssuedEvidenceV1::new(
+        verified_at_publish.into_verified_evidence(),
+        capability.budget,
+    )?;
+    let final_now = effective_now(publish_witness.observed_at_unix_micros)?;
+    if final_now < publish_now {
+        return Err(FinalUseErrorV1::ClockRegression);
+    }
+    validate_temporal_current(
+        capability.owner,
+        &capability.fence,
+        &capability.control,
+        publish_witness,
+        final_now,
+    )?;
+    // Owner materialization and signature verification above are real work.
+    // Revalidate their sealed receipts without repeating hashing or signatures.
+    publication_evidence.revalidate(final_now)?;
     Ok(FinalUseTabularCandidateV1 {
         artifact: fit.artifact,
         payload: payload.into(),
@@ -843,7 +923,7 @@ pub fn fit_tabular_final_use_v1(
         authority_epoch: capability.fence.expected_authority_epoch,
         stop_epoch: capability.fence.expected_stop_epoch,
         fit_receipt_digest: fit.receipt_digest,
-        published_at_unix_micros: publish_now,
+        published_at_unix_micros: final_now,
     })
 }
 
@@ -875,11 +955,15 @@ pub fn fit_world_model_final_use_v1(
         &capability.row_evidence,
         use_now,
     )?;
+    let _ = verified_at_use.admission_stage();
+    drop(verified_at_use);
     let fit = with_work_control_v1(&capability.control, || {
         fit_world_model_v2(capability.plan.clone(), capability.plan_budget())
     })?;
-    let _ = verified_at_use.admission_stage();
     let publish_now = effective_now(publish_witness.observed_at_unix_micros)?;
+    if publish_now > fit.retained_until || publish_now > fit.expires_at {
+        return Err(WorldModelV2Error::Expired.into());
+    }
     validate_current(
         capability.owner,
         &capability.receipt,
@@ -899,6 +983,10 @@ pub fn fit_world_model_final_use_v1(
         publish_now,
     )?;
     let _ = verified_at_publish.admission_stage();
+    let mut publication_evidence = issued::IssuedEvidenceV1::new(
+        verified_at_publish.into_verified_evidence(),
+        capability.budget,
+    )?;
     if fit.training_profile_digest != capability.plan.training_profile_digest
         || fit.generation != capability.fence.expected_generation
     {
@@ -906,21 +994,56 @@ pub fn fit_world_model_final_use_v1(
             "world-model fit escaped the canonical final-use identity",
         ));
     }
+    let final_now = effective_now(publish_witness.observed_at_unix_micros)?;
+    if final_now < publish_now {
+        return Err(FinalUseErrorV1::ClockRegression);
+    }
+    validate_temporal_current(
+        capability.owner,
+        &capability.fence,
+        &capability.control,
+        publish_witness,
+        final_now,
+    )?;
+    publication_evidence.revalidate(final_now)?;
+    if final_now > fit.retained_until || final_now > fit.expires_at {
+        return Err(WorldModelV2Error::Expired.into());
+    }
     Ok(FinalUseWorldModelCandidateV1 {
         artifact: fit,
         ledger_head_digest: capability.fence.expected_ledger_head_digest,
         stop_epoch: capability.fence.expected_stop_epoch,
-        published_at_unix_micros: publish_now,
+        published_at_unix_micros: final_now,
     })
 }
 
 impl FinalUseTabularCapabilityV1<'_> {
+    pub(super) fn revalidate_issued_at(
+        &mut self,
+        witness: &FinalUseWitnessV1,
+        now: u64,
+    ) -> Result<(), FinalUseErrorV1> {
+        validate_temporal_current(self.owner, &self.fence, &self.control, witness, now)?;
+        self.issued_evidence.revalidate(now)
+    }
     const fn plan_budget(&self) -> OperatorResourceBudgetV1 {
         self.budget
     }
 }
 
 impl FinalUseWorldModelCapabilityV1<'_> {
+    pub(super) fn revalidate_issued_at(
+        &mut self,
+        witness: &FinalUseWitnessV1,
+        now: u64,
+    ) -> Result<(), FinalUseErrorV1> {
+        validate_temporal_current(self.owner, &self.fence, &self.control, witness, now)?;
+        self.issued_evidence.revalidate(now)?;
+        if now > self.plan.retained_until || now > self.plan.expires_at {
+            return Err(WorldModelV2Error::Expired.into());
+        }
+        Ok(())
+    }
     const fn plan_budget(&self) -> OperatorResourceBudgetV1 {
         self.budget
     }
@@ -972,15 +1095,7 @@ fn validate_current(
     witness: &FinalUseWitnessV1,
     now: u64,
 ) -> Result<(), FinalUseErrorV1> {
-    if witness.stop_requested || control.is_cancelled() {
-        return Err(FinalUseErrorV1::Stopped);
-    }
-    if now < witness.observed_at_unix_micros {
-        return Err(FinalUseErrorV1::ClockRegression);
-    }
-    if now >= fence.absolute_deadline_unix_micros {
-        return Err(FinalUseErrorV1::DeadlineExceeded);
-    }
+    validate_temporal_current(owner, fence, control, witness, now)?;
     if witness.ledger_head_digest != fence.expected_ledger_head_digest
         || witness.dataset_generation != fence.expected_dataset_generation
         || witness.generation != fence.expected_generation
@@ -1006,6 +1121,28 @@ fn validate_current(
             "durable owner currentness changed at final use",
         ));
     }
+    Ok(())
+}
+
+fn validate_temporal_current(
+    owner: &LedgerWriter,
+    fence: &FinalUseFenceV1,
+    control: &WorkControlV1,
+    witness: &FinalUseWitnessV1,
+    now: u64,
+) -> Result<(), FinalUseErrorV1> {
+    if witness.stop_requested || control.is_cancelled() {
+        return Err(FinalUseErrorV1::Stopped);
+    }
+    if now < witness.observed_at_unix_micros {
+        return Err(FinalUseErrorV1::ClockRegression);
+    }
+    if now >= fence.absolute_deadline_unix_micros {
+        return Err(FinalUseErrorV1::DeadlineExceeded);
+    }
+    owner
+        .revalidate_trust_at(now)
+        .map_err(|error| FinalUseErrorV1::OwnerState(error.to_string()))?;
     Ok(())
 }
 
@@ -1043,6 +1180,16 @@ fn validate_selection(
 mod selected;
 pub use selected::SelectedTabularOperatorV1;
 
+#[path = "final_use_issued.rs"]
+mod issued;
+#[path = "final_use_publication.rs"]
+mod publication;
+pub use publication::TabularCandidatePublicationViewV1;
+
 #[cfg(test)]
 #[path = "final_use_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "final_use_request_tests.rs"]
+mod request_tests;

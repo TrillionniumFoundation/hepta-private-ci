@@ -18,6 +18,10 @@ use crate::RegistrySnapshotReceipt;
 use crate::read_candidate_payload;
 use crate::read_registry_snapshot;
 
+#[path = "pinned_currentness.rs"]
+mod currentness;
+pub use currentness::VerifiedCurrentRegistryUseWindowV1;
+
 /// A complete candidate pin supplied with an independently retained snapshot
 /// receipt. The receipt must not be reconstructed from the file being checked.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -139,6 +143,7 @@ pub struct VerifiedCurrentRegistryViewV1 {
     registry: ArtifactRegistry,
     witness_digest: Digest32,
     trust_digest: Digest32,
+    use_window: VerifiedCurrentRegistryUseWindowV1,
 }
 
 impl VerifiedCurrentRegistryViewV1 {
@@ -147,12 +152,14 @@ impl VerifiedCurrentRegistryViewV1 {
         registry: ArtifactRegistry,
         witness_digest: Digest32,
         trust_digest: Digest32,
+        use_window: VerifiedCurrentRegistryUseWindowV1,
     ) -> Self {
         Self {
             receipt,
             registry,
             witness_digest,
             trust_digest,
+            use_window,
         }
     }
 
@@ -169,6 +176,16 @@ impl VerifiedCurrentRegistryViewV1 {
     #[must_use]
     pub const fn trust_digest(&self) -> Digest32 {
         self.trust_digest
+    }
+
+    /// Retain the actual authenticated head's time facts across consumption.
+    #[must_use]
+    pub const fn use_window(&self) -> VerifiedCurrentRegistryUseWindowV1 {
+        self.use_window
+    }
+
+    pub fn revalidate_at(&self, now: u64) -> Result<(), crate::ArtifactOwnerHostError> {
+        self.use_window.revalidate_at(now)
     }
 
     pub(crate) fn registry(&self) -> &ArtifactRegistry {
@@ -273,7 +290,15 @@ impl RevalidatingCandidate {
         current: RegistrySnapshotReceipt,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        let registry = read_registry_snapshot(snapshot, current)?;
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        let registry = read_registry_snapshot(snapshot, current).map_err(|error| {
+            // A failed file refresh must close the cached consumer even when
+            // validation cannot reach the authenticated-frontier checks.
+            self.unavailable = true;
+            PinnedCandidateLoadError::Storage(error)
+        })?;
         self.with_verified_registry(current, registry, consume)
     }
 }

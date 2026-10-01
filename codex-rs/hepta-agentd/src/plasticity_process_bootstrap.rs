@@ -22,16 +22,20 @@ use std::sync::RwLock;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_artifacts::read_registry_snapshot;
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
 use codex_hepta_learning_ledger::DatasetSnapshotV2;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::LearningTrustDistributionV1;
+use codex_hepta_learning_ledger::LearningTrustRootV1;
 use codex_hepta_learning_ledger::LedgerAnchor;
 use codex_hepta_learning_ledger::LedgerRecovery;
+use codex_hepta_learning_ledger::SignedLearningTrustDistributionV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_learning_ledger::activate_learning_trust;
 use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
 use codex_hepta_ndu::NduProjectionJournalV1;
 use codex_hepta_neuron::InhibitoryEdge;
@@ -63,13 +67,13 @@ use crate::resume_agentd_plasticity_writer_v1;
 use crate::resume_agentd_topology_writer_v1;
 
 // A descriptor/recovery failure is terminal for this optional organ; callers must never\n// reinterpret it as permission to create a fresh, unanchored proposal history.
-const DESCRIPTOR_SCHEMA: &str = "hepta.agentd.plasticity-bootstrap.v1";
+const DESCRIPTOR_SCHEMA: &str = "hepta.agentd.plasticity-bootstrap.v2";
 const MAX_DESCRIPTOR_BYTES: u64 = 1_048_576;
 const MAX_NDU_JOURNAL_BYTES: u64 = 2 * 1_048_576;
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct ProcessBootstrapDescriptorV1 {
+struct ProcessBootstrapDescriptorV2 {
     schema: String,
     agent_id: String,
     spawn_generation: u64,
@@ -81,7 +85,7 @@ struct ProcessBootstrapDescriptorV1 {
     ndu: NduDescriptorV1,
     neuron: NeuronDescriptorV1,
     signal_bindings: Vec<SignalBindingDescriptorV1>,
-    trust: TrustDescriptorV1,
+    trust: TrustDescriptorV2,
     owner_policy: OwnerPolicyDescriptorV1,
     parameter_registry: RegistryDescriptorV1,
     topology_registry: RegistryDescriptorV1,
@@ -225,7 +229,24 @@ struct TrustedSignerDescriptorV1 {
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct TrustDescriptorV1 {
+struct TrustRootDescriptorV2 {
+    root_id: String,
+    verifying_key_hex: String,
+    valid_from: u64,
+    expires_at: u64,
+    revoked_at: Option<u64>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct TrustDescriptorV2 {
+    root: TrustRootDescriptorV2,
+    distribution_id: String,
+    generation: u64,
+    effective_at: u64,
+    issued_at: u64,
+    expires_at: u64,
+    distribution_signature_hex: String,
     scope_digest: String,
     objective_digest: String,
     authority_epoch: u64,
@@ -265,7 +286,7 @@ struct RegistryDescriptorV1 {
 /// Load one exact, host-selected process bootstrap.  The descriptor itself is not
 /// authority: every durable owner and independent witness is reopened and checked
 /// by its native implementation before a runtime owner is returned.
-pub fn load_plasticity_process_bootstrap_v1(
+pub fn load_plasticity_process_bootstrap_v2(
     path: &Path,
     expected_descriptor_digest: Digest32,
     identity: &AgentdIdentity,
@@ -277,7 +298,7 @@ pub fn load_plasticity_process_bootstrap_v1(
         "plasticity bootstrap descriptor",
     )?;
     verify_descriptor_bytes(&bytes, expected_descriptor_digest)?;
-    let descriptor: ProcessBootstrapDescriptorV1 = serde_json::from_slice(&bytes)?;
+    let descriptor: ProcessBootstrapDescriptorV2 = serde_json::from_slice(&bytes)?;
     if descriptor.schema != DESCRIPTOR_SCHEMA {
         return invalid("plasticity bootstrap descriptor schema mismatch");
     }
@@ -291,6 +312,13 @@ pub fn load_plasticity_process_bootstrap_v1(
     validate_process_path_separation(&descriptor)?;
 
     let objective_digest = digest(&descriptor.objective_digest, "objective digest")?;
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|_| AgentdError::Invalid("host clock precedes Unix epoch".to_string()))?;
+    let now = u64::try_from(now.as_micros())
+        .map_err(|_| AgentdError::Invalid("host clock exceeds microsecond bounds".to_string()))?;
+    // Authenticate trust before any mutable owner store is opened/created.
+    let trust = build_activated_trust(&descriptor.trust, objective_digest, now)?;
     let artifacts = load_artifacts(&descriptor.artifacts)?;
     let ledger = load_ledger(&descriptor.ledger)?;
     let dataset = build_dataset_receipt(&descriptor.dataset)?;
@@ -402,7 +430,6 @@ pub fn load_plasticity_process_bootstrap_v1(
         AgentdError::Invalid(format!("invalid owner evidence composition: {error}"))
     })?;
 
-    let verifier = build_verifier(&descriptor.trust, objective_digest)?;
     let owner_policy = build_owner_policy(&descriptor.owner_policy)?;
     let (parameter_writer, parameter_anchor_store) =
         open_parameter_writer(&descriptor.parameter_registry)?;
@@ -415,7 +442,7 @@ pub fn load_plasticity_process_bootstrap_v1(
         ledger,
         Box::new(owner_evidence),
         owner_policy,
-        verifier,
+        trust,
         parameter_writer,
         parameter_anchor_store,
         topology_writer,
@@ -549,10 +576,11 @@ fn signal_binding(
     })
 }
 
-fn build_verifier(
-    descriptor: &TrustDescriptorV1,
+fn build_activated_trust(
+    descriptor: &TrustDescriptorV2,
     objective_digest: Digest32,
-) -> Result<LearningEvidenceVerifierV1, AgentdError> {
+    now: u64,
+) -> Result<ActivatedLearningTrustV1, AgentdError> {
     let trust_objective = digest(&descriptor.objective_digest, "trust objective")?;
     if trust_objective != objective_digest {
         return invalid("learning evidence trust objective mismatch");
@@ -579,17 +607,42 @@ fn build_verifier(
             })
         })
         .collect::<Result<Vec<_>, AgentdError>>()?;
-    LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+    let trust = LearningEvidenceTrustV1 {
         scope_digest: digest(&descriptor.scope_digest, "trust scope")?,
         objective_digest: trust_objective,
         authority_epoch: descriptor.authority_epoch,
         signers,
+    };
+    let root = LearningTrustRootV1 {
+        root_id: stable_id(&descriptor.root.root_id, "learning root id")?,
+        scope_digest: trust.scope_digest,
+        verifying_key: parse_hex_32(&descriptor.root.verifying_key_hex, "learning root key")?,
+        valid_from: descriptor.root.valid_from,
+        expires_at: descriptor.root.expires_at,
+        revoked_at: descriptor.root.revoked_at,
+    };
+    let signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: stable_id(&descriptor.distribution_id, "learning distribution id")?,
+            generation: descriptor.generation,
+            effective_at: descriptor.effective_at,
+            trust,
+        },
+        root_id: root.root_id.clone(),
+        issued_at: descriptor.issued_at,
+        expires_at: descriptor.expires_at,
+        signature: parse_hex_64(
+            &descriptor.distribution_signature_hex,
+            "distribution signature",
+        )?,
+    };
+    activate_learning_trust(&root, signed, None, now).map_err(|error| {
+        AgentdError::Invalid(format!("invalid root-signed learning trust: {error}"))
     })
-    .map_err(|error| AgentdError::Invalid(format!("invalid learning evidence trust: {error}")))
 }
 
 fn verify_owner_policy_bindings(
-    descriptor: &ProcessBootstrapDescriptorV1,
+    descriptor: &ProcessBootstrapDescriptorV2,
     artifacts: &ArtifactRegistry,
     dataset: &DatasetSnapshotReceiptV3,
 ) -> Result<(), AgentdError> {
@@ -750,7 +803,7 @@ fn open_topology_writer(
 }
 
 fn validate_process_path_separation(
-    descriptor: &ProcessBootstrapDescriptorV1,
+    descriptor: &ProcessBootstrapDescriptorV2,
 ) -> Result<(), AgentdError> {
     let paths = [
         descriptor.ledger.path.as_path(),
@@ -891,6 +944,18 @@ fn parse_hex_32(value: &str, label: &str) -> Result<[u8; 32], AgentdError> {
     digest(value, label).map(Digest32::into_array)
 }
 
+fn parse_hex_64(value: &str, label: &str) -> Result<[u8; 64], AgentdError> {
+    if value.len() != 128 || !value.is_ascii() {
+        return invalid(label);
+    }
+    let mut result = [0u8; 64];
+    for (index, byte) in result.iter_mut().enumerate() {
+        *byte = u8::from_str_radix(&value[index * 2..index * 2 + 2], 16)
+            .map_err(|_| AgentdError::Invalid(label.to_string()))?;
+    }
+    Ok(result)
+}
+
 fn invalid<T>(message: &str) -> Result<T, AgentdError> {
     Err(AgentdError::Invalid(message.to_string()))
 }
@@ -901,11 +966,93 @@ mod tests {
 
     #[test]
     fn descriptor_digest_rejects_byte_substitution() {
-        let original = b"{\"schema\":\"hepta.agentd.plasticity-bootstrap.v1\"}";
+        let original = b"{\"schema\":\"hepta.agentd.plasticity-bootstrap.v2\"}";
         let expected = Digest32::of_bytes(original);
         assert!(verify_descriptor_bytes(original, expected).is_ok());
         assert!(verify_descriptor_bytes(b"tampered", expected).is_err());
         assert!(verify_descriptor_bytes(original, Digest32::ZERO).is_err());
+    }
+
+    fn signed_trust_descriptor() -> TrustDescriptorV2 {
+        use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+        use ed25519_dalek::Signer;
+        use ed25519_dalek::SigningKey;
+        let root_key = SigningKey::from_bytes(&[77; 32]);
+        let signer_key = SigningKey::from_bytes(&[11; 32]);
+        let scope = Digest32::of_bytes(b"descriptor-scope");
+        let objective = Digest32::of_bytes(b"descriptor-objective");
+        let principal = AuthenticatedPrincipalV1 {
+            principal_id: StableId::new("descriptor-generator").unwrap(),
+            credential_chain_digest: Digest32::of_bytes(b"descriptor-credential"),
+            signing_key_digest: Digest32::of_bytes(&signer_key.verifying_key().to_bytes()),
+            scope_digest: scope,
+            authority_epoch: 7,
+            authenticated_at: 1,
+            expires_at: 100,
+        };
+        let trust = LearningEvidenceTrustV1 {
+            scope_digest: scope,
+            objective_digest: objective,
+            authority_epoch: 7,
+            signers: vec![TrustedLearningSignerV1 {
+                principal: principal.clone(),
+                controller_id: principal.principal_id.clone(),
+                verifying_key: signer_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Generator],
+                revoked_at: None,
+            }],
+        };
+        let mut signed = SignedLearningTrustDistributionV1 {
+            distribution: LearningTrustDistributionV1 {
+                distribution_id: StableId::new("descriptor-distribution").unwrap(),
+                generation: 1,
+                effective_at: 20,
+                trust,
+            },
+            root_id: StableId::new("descriptor-root").unwrap(),
+            issued_at: 10,
+            expires_at: 90,
+            signature: [0; 64],
+        };
+        signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+        let hex = |bytes: &[u8]| {
+            bytes
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect::<String>()
+        };
+        serde_json::from_value(serde_json::json!({
+            "root": { "root_id": "descriptor-root", "verifying_key_hex": hex(&root_key.verifying_key().to_bytes()),
+                "valid_from": 1, "expires_at": 100, "revoked_at": null },
+            "distribution_id": "descriptor-distribution", "generation": 1,
+            "effective_at": 20, "issued_at": 10, "expires_at": 90,
+            "distribution_signature_hex": hex(&signed.signature), "scope_digest": scope.to_string(),
+            "objective_digest": objective.to_string(), "authority_epoch": 7,
+            "signers": [{ "principal": { "principal_id": principal.principal_id.as_str(),
+                "credential_chain_digest": principal.credential_chain_digest.to_string(),
+                "signing_key_digest": principal.signing_key_digest.to_string(), "scope_digest": scope.to_string(),
+                "authority_epoch": 7, "authenticated_at": 1, "expires_at": 100 },
+                "controller_id": principal.principal_id.as_str(), "verifying_key_hex": hex(&signer_key.verifying_key().to_bytes()),
+                "roles": ["generator"], "revoked_at": null }]
+        })).unwrap()
+    }
+
+    #[test]
+    fn process_trust_requires_current_root_signature_and_rejects_bare_signers() {
+        let descriptor = signed_trust_descriptor();
+        let objective = Digest32::of_bytes(b"descriptor-objective");
+        assert!(build_activated_trust(&descriptor, objective, 50).is_ok());
+        assert!(build_activated_trust(&descriptor, objective, 90).is_err());
+        let mut changed = signed_trust_descriptor();
+        changed.authority_epoch += 1;
+        assert!(build_activated_trust(&changed, objective, 50).is_err());
+        let mut changed = signed_trust_descriptor();
+        changed.root.verifying_key_hex = Digest32::of_bytes(b"substituted-root").to_string();
+        assert!(build_activated_trust(&changed, objective, 50).is_err());
+        assert!(serde_json::from_value::<TrustDescriptorV2>(serde_json::json!({
+            "scope_digest": descriptor.scope_digest, "objective_digest": descriptor.objective_digest,
+            "authority_epoch": descriptor.authority_epoch, "signers": []
+        })).is_err());
     }
 
     #[cfg(unix)]

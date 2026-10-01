@@ -8,6 +8,8 @@ import hashlib
 import importlib
 import json
 import os
+import re
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -20,6 +22,341 @@ STAGE = importlib.import_module("hepta-learning-operator-stage")
 RECEIPT = importlib.import_module("hepta-learning-operator-receipt")
 READINESS = importlib.import_module("hepta-learning-operator-readiness")
 EVIDENCE = importlib.import_module("hepta-learning-operator-evidence")
+CONTRACT = importlib.import_module("hepta-learning-operator-contract")
+
+
+class QualificationRunnerTests(unittest.TestCase):
+    def authoritative_source(self):
+        return (
+            Path(__file__).with_name("hepta-learning-operator-authoritative.sh")
+        ).read_text(encoding="utf-8")
+
+    def test_authoritative_runner_installs_every_pinned_execution_tool(self):
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github/workflows/learning-operator-authoritative.yml"
+        ).read_text(encoding="utf-8")
+        CONTRACT.verify_qualification_tools(workflow)
+        for tool in ("cargo-llvm-cov@0.9.1", "just@1.51.0", "nextest@0.9.103"):
+            with self.subTest(tool=tool), self.assertRaises(SystemExit):
+                CONTRACT.verify_qualification_tools(workflow.replace(tool, "missing"))
+
+    def test_product_dependency_changes_trigger_operator_audit(self):
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github/workflows/hepta-learning-operator-audit.yml"
+        ).read_text(encoding="utf-8")
+        CONTRACT.verify_product_ci_scope(workflow)
+        for root in MAP.PRODUCT_DEPENDENCY_ROOTS:
+            with self.subTest(root=root), self.assertRaises(SystemExit):
+                CONTRACT.verify_product_ci_scope(workflow.replace(f"- '{root}/**'", ""))
+
+    def test_v8_provisioning_runs_before_native_qualification(self):
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github/workflows/learning-operator-authoritative.yml"
+        ).read_text(encoding="utf-8")
+        CONTRACT.verify_v8_provisioning(workflow)
+        for token in (
+            "run: python3 scripts/hepta_ci_v8.py",
+            "CODEX_REPO_ROOT: ${{ github.workspace }}",
+            "PYTHONPATH: scripts",
+        ):
+            with self.subTest(token=token), self.assertRaises(SystemExit):
+                CONTRACT.verify_v8_provisioning(workflow.replace(token, "missing"))
+        step = re.search(
+            r"(?ms)^      - name: Prepare checksum-verified V8 archive and binding\n.*?(?=^      - name:)",
+            workflow,
+        ).group()
+        for changed in (
+            workflow.replace(step, "") + step,
+            workflow.replace(
+                step, step.replace("        env:", "        if: false\n        env:")
+            ),
+        ):
+            with self.subTest(workflow=changed), self.assertRaises(SystemExit):
+                CONTRACT.verify_v8_provisioning(changed)
+
+    def test_v8_resolver_controls_are_mapped_and_trigger_operator_audit(self):
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github/workflows/hepta-learning-operator-audit.yml"
+        ).read_text(encoding="utf-8")
+        mapped = MAP.mapped_paths({})
+        controls = {
+            "scripts/hepta_ci_v8.py": "scripts/hepta_ci_v8.py",
+            "scripts/test_hepta_ci_v8.py": "scripts/test_hepta_ci_v8.py",
+            "scripts/codex_package": "scripts/codex_package/**",
+        }
+        for path, trigger in controls.items():
+            with self.subTest(path=path):
+                self.assertIn(path, mapped)
+                with self.assertRaises(SystemExit):
+                    CONTRACT.verify_product_ci_scope(
+                        workflow.replace(f"- '{trigger}'", "")
+                    )
+
+    def test_status_projection_rejects_numeric_boolean_imitation(self):
+        status_raw = CONTRACT.read(CONTRACT.STATUS_PATH)
+        status = json.loads(status_raw)
+        implementation = CONTRACT.load_json(CONTRACT.MAP_PATH)
+        implementation["statusProjectionSha256"] = CONTRACT.sha256_text(status_raw)
+        original_load = CONTRACT.load_json
+        original_read = CONTRACT.read
+
+        def check(row):
+            with (
+                mock.patch.object(
+                    CONTRACT,
+                    "load_json",
+                    side_effect=lambda path: (
+                        row if path == CONTRACT.MAP_PATH else original_load(path)
+                    ),
+                ),
+                mock.patch.object(
+                    CONTRACT,
+                    "read",
+                    side_effect=lambda path: (
+                        status_raw
+                        if path == CONTRACT.STATUS_PATH
+                        else original_read(path)
+                    ),
+                ),
+            ):
+                CONTRACT.verify_status_projection(status)
+
+        check(implementation)
+        for key in (
+            "activation",
+            "shadowCoordinatorImplemented",
+            "defaultProductLoopWired",
+        ):
+            old = implementation["claimBoundary"][key]
+            for value in (int(old), float(old)):
+                with self.subTest(key=key, type=type(value).__name__):
+                    tampered = copy.deepcopy(implementation)
+                    tampered["claimBoundary"][key] = value
+                    with self.assertRaises(SystemExit):
+                        check(tampered)
+        for value in (0, 0.0):
+            with self.subTest(
+                key="productionImplementation", type=type(value).__name__
+            ):
+                tampered = copy.deepcopy(implementation)
+                tampered["productionImplementation"] = value
+                with self.assertRaises(SystemExit):
+                    check(tampered)
+
+    def test_actual_unit_stage_executes_owner_libraries_and_json_feature_variant(self):
+        source = self.authoritative_source()
+        body = (
+            "run_stage unit_tests "
+            + source.split("run_stage unit_tests ", 1)[1].split(
+                "\nrun_stage product_integration ", 1
+            )[0]
+        )
+        with tempfile.TemporaryDirectory() as raw:
+            output = Path(raw) / "commands"
+            env = dict(os.environ, OPERATOR_COMMAND_LOG=str(output), EVIDENCE=raw)
+            subprocess.run(
+                [
+                    "bash",
+                    "-c",
+                    'run_stage() { shift 3; "$@"; }\n'
+                    'just() { printf "%s\\n" "$*" >> "$OPERATOR_COMMAND_LOG"; }\n'
+                    "export -f just\n" + body,
+                ],
+                env=env,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            commands = [shlex.split(line) for line in output.read_text().splitlines()]
+        expected = {
+            "codex-hepta-contracts",
+            "codex-hepta-types",
+            "codex-hepta-learning-ledger",
+            "codex-hepta-learning-artifacts",
+            "codex-hepta-intelligence-eval",
+            "codex-hepta-intelligence",
+        }
+        self.assertTrue(
+            any(
+                expected.issubset(
+                    {
+                        row[index + 1]
+                        for index, value in enumerate(row[:-1])
+                        if value == "-p"
+                    }
+                )
+                and "--lib" in row
+                for row in commands
+            )
+        )
+        self.assertTrue(
+            any(
+                "learning_operator_protocol::tests" in row
+                and "serde_json/preserve_order,serde_json/arbitrary_precision,serde_json/raw_value"
+                in row
+                for row in commands
+            )
+        )
+        self.assertTrue(any("learning_operator_" in row for row in commands))
+        self.assertTrue(
+            any("intelligence_product::evaluation_tests" in row for row in commands)
+        )
+        for selector in ("plasticity_runtime::", "plasticity_process_bootstrap::"):
+            self.assertTrue(
+                any(
+                    selector in row
+                    and "codex-hepta-agentd" in row
+                    and "--lib" in row
+                    and "--no-tests=fail" in row
+                    for row in commands
+                )
+            )
+
+    def test_actual_product_stage_executes_daemon_process_tests(self):
+        source = self.authoritative_source()
+        body = (
+            "run_stage product_integration "
+            + source.split("run_stage product_integration ", 1)[1].split(
+                "\nrun_stage mutation ", 1
+            )[0]
+        )
+        with tempfile.TemporaryDirectory() as raw:
+            output = Path(raw) / "commands"
+            subprocess.run(
+                [
+                    "bash",
+                    "-c",
+                    'run_stage() { shift 3; "$@"; }\n'
+                    'just() { printf "%s\\n" "$*" >> "$OPERATOR_COMMAND_LOG"; }\n'
+                    "export -f just\n" + body,
+                ],
+                env=dict(os.environ, OPERATOR_COMMAND_LOG=str(output), EVIDENCE=raw),
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            commands = [shlex.split(line) for line in output.read_text().splitlines()]
+        self.assertTrue(
+            any(
+                all(
+                    token in row
+                    for token in (
+                        "codex-hepta-agentd",
+                        "qualification-cognitive-write",
+                        "--test",
+                        "plasticity_process_e2e",
+                        "--no-tests=fail",
+                    )
+                )
+                for row in commands
+            )
+        )
+
+    def test_synthetic_stage_resolves_merged_v8_and_executes_host_tests(self):
+        function = re.search(
+            r"(?ms)^qualify_synthetic_merge\(\) \(\n.*?^\)",
+            self.authoritative_source(),
+        ).group()
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "merge").mkdir()
+            (root / "evidence").mkdir()
+            output = root / "commands"
+            subprocess.run(
+                [
+                    "bash",
+                    "-c",
+                    'set -e\ngit() { if [[ "$1 ${2:-}" == "worktree add" ]]; then mkdir -p "$SYNTH_DIR"; fi; printf "fixture\\n"; }\n'
+                    "cargo() { return 0; }\n"
+                    'just() { test "${RUSTY_V8_ARCHIVE:-}" = /fixture/merged-v8.a '
+                    '&& test "${RUSTY_V8_SRC_BINDING_PATH:-}" = /fixture/merged-binding.rs '
+                    '|| return 32; printf "%s\\n" "$*" >> "$OPERATOR_COMMAND_LOG"; }\n'
+                    'python3() { if [[ "$1" == scripts/hepta_ci_v8.py ]]; then '
+                    'test "$CODEX_REPO_ROOT" = "$PWD" && test "$PYTHONPATH" = scripts '
+                    '&& test -z "${RUSTY_V8_ARCHIVE:-}" && test -z "${RUSTY_V8_SRC_BINDING_PATH:-}" '
+                    "|| return 31; "
+                    'printf "RUSTY_V8_ARCHIVE=/fixture/merged-v8.a\\nRUSTY_V8_SRC_BINDING_PATH=/fixture/merged-binding.rs\\n" '
+                    '> "$GITHUB_ENV"; fi; }\n'
+                    + function
+                    + "\nqualify_synthetic_merge\n"
+                    + 'test "$(cat "$SYNTH_DIR/.hepta-evidence/learning-operator-synthetic-v8.env")" '
+                    + '= "$(printf "RUSTY_V8_ARCHIVE=/fixture/merged-v8.a\\nRUSTY_V8_SRC_BINDING_PATH=/fixture/merged-binding.rs")"\n',
+                ],
+                env=dict(
+                    os.environ,
+                    ROOT=raw,
+                    SYNTH_DIR=str(root / "merge"),
+                    BASE_SHA="fixture",
+                    SOURCE_SHA="fixture",
+                    EVIDENCE="evidence",
+                    OPERATOR_COMMAND_LOG=str(output),
+                    RUSTY_V8_ARCHIVE="/fixture/stale-source-v8.a",
+                    RUSTY_V8_SRC_BINDING_PATH="/fixture/stale-source-binding.rs",
+                ),
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            commands = [shlex.split(line) for line in output.read_text().splitlines()]
+        for selector in (
+            "plasticity_runtime::",
+            "plasticity_process_bootstrap::",
+            "plasticity_process_e2e",
+        ):
+            self.assertTrue(
+                any(
+                    selector in row
+                    and "codex-hepta-agentd" in row
+                    and "--no-tests=fail" in row
+                    for row in commands
+                )
+            )
+
+    def test_receipt_emit_failure_cannot_be_masked_by_a_successful_verify(self):
+        source = self.authoritative_source()
+        runner = re.search(r"(?ms)^run_stage\(\) \{\n.*?^\}", source).group()
+        receipt = re.search(
+            r"(?ms)^emit_qualification_receipt\(\) \(\n.*?^\)", source
+        ).group()
+        with tempfile.TemporaryDirectory() as raw:
+            output = Path(raw) / "recorded"
+            verified = Path(raw) / "verified"
+            log = Path(raw) / "stage.log"
+            harness = (
+                'record_stage() { printf "%s\\n" "$@" > "$OPERATOR_STAGE_ARGS"; }\n'
+                'python3() { if [[ "$2" == emit ]]; then return 23; fi; '
+                'printf "verify ran\\n" > "$OPERATOR_VERIFY_MARKER"; return 0; }\n'
+                "SOURCE_SHA=source SOURCE_TREE=tree WORKFLOW_PATH=workflow WORKFLOW_BLOB=blob\n"
+                "BASE_SHA=base SYNTHETIC_SHA=merge SYNTHETIC_TREE=merged TARGET=fixture\n"
+                "EVIDENCE_ARGS=()\n"
+                + runner
+                + "\n"
+                + receipt
+                + "\n"
+                + 'run_stage exact_source_receipt "$OPERATOR_STAGE_LOG" purpose emit_qualification_receipt\n'
+            )
+            subprocess.run(
+                ["bash", "-c", harness],
+                env=dict(
+                    os.environ,
+                    EVIDENCE=raw,
+                    OPERATOR_STAGE_LOG=str(log),
+                    OPERATOR_STAGE_ARGS=str(output),
+                    OPERATOR_VERIFY_MARKER=str(verified),
+                ),
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            arguments = output.read_text().splitlines()
+            self.assertEqual(arguments[1], "failed")
+            self.assertEqual(arguments[3], "emit_qualification_receipt ")
+            self.assertEqual(arguments[5], "23")
+            self.assertFalse(verified.exists())
 
 
 class OperatorEvidenceTests(unittest.TestCase):
@@ -59,6 +396,12 @@ class OperatorEvidenceTests(unittest.TestCase):
         )
         for path in source_paths:
             self.write(path, "{}\n" if path.endswith(".json") else "fixture\n")
+        # Workspace compilation also reads crates outside the operator map.
+        self.write("unmapped_dependency.rs", "committed dependency\n")
+        self.write(
+            "codex-rs/hepta-bellman-operator/Cargo.toml",
+            '[package]\nname = "fixture"\nversion = "0.1.0"\n',
+        )
         self.write(
             str(self.canonical.relative_to(self.root)),
             json.dumps(
@@ -391,6 +734,90 @@ class OperatorEvidenceTests(unittest.TestCase):
         with self.assertRaises(subprocess.CalledProcessError):
             MAP.verify(self.map_path, expected_sha=self.source, expected_tree=self.tree)
 
+    def test_unmapped_tracked_changes_invalidate_current_source_qualification(self):
+        for staged in (False, True):
+            with self.subTest(staged=staged):
+                self.write("unmapped_dependency.rs", "changed after qualification\n")
+                if staged:
+                    self.git("add", "unmapped_dependency.rs")
+                # Recomputing the report cannot bind compiled dependencies to
+                # an unchanged HEAD while the actual checkout has changed.
+                READINESS.emit(self.readiness_args)
+                payload = json.loads(self.output.read_text())
+                self.assertFalse(payload["engineeringQualified"])
+                self.assertFalse(payload["identity_verified"])
+                READINESS.verify_path(self.output)
+                with self.assertRaises(ValueError):
+                    READINESS.verify_path(self.output, require_qualified=True)
+                self.git("restore", "--staged", "--worktree", "unmapped_dependency.rs")
+
+    def test_hidden_index_flags_cannot_preserve_current_source_qualification(self):
+        for flag in ("assume-unchanged", "skip-worktree"):
+            with self.subTest(flag=flag):
+                self.git("update-index", "--" + flag, "unmapped_dependency.rs")
+                self.write("unmapped_dependency.rs", "hidden altered dependency\n")
+                self.assertEqual(
+                    self.git("status", "--porcelain", "--untracked-files=no"), ""
+                )
+                READINESS.emit(self.readiness_args)
+                payload = json.loads(self.output.read_text())
+                self.assertFalse(payload["engineeringQualified"])
+                self.assertFalse(payload["identity_verified"])
+                with self.assertRaises(ValueError):
+                    READINESS.verify_path(self.output, require_qualified=True)
+                self.git("update-index", "--no-" + flag, "unmapped_dependency.rs")
+                self.git("restore", "unmapped_dependency.rs")
+
+    def test_untracked_cargo_inputs_cannot_preserve_current_source_qualification(self):
+        for source_path in (
+            "codex-rs/hepta-bellman-operator/src/bin/injected.rs",
+            "codex-rs/hepta-bellman-operator/build.rs",
+            "codex-rs/hepta-bellman-operator/tests/injected.rs",
+            "codex-rs/hepta-bellman-operator/.cargo/config.toml",
+        ):
+            for ignored in (False, True):
+                with self.subTest(path=source_path, ignored=ignored):
+                    if ignored:
+                        (self.root / ".git/info/exclude").write_text(
+                            source_path + "\n", encoding="utf-8"
+                        )
+                    self.write(
+                        source_path,
+                        '[build]\nrustflags = ["--cfg", "unreviewed"]\n'
+                        if source_path.endswith(".toml")
+                        else "fn main() {}\n",
+                    )
+                    self.assertEqual(
+                        self.git("status", "--porcelain", "--untracked-files=no"), ""
+                    )
+                    READINESS.emit(self.readiness_args)
+                    payload = json.loads(self.output.read_text())
+                    self.assertFalse(payload["engineeringQualified"])
+                    self.assertFalse(payload["identity_verified"])
+                    self.assertTrue(
+                        any(
+                            "untracked source/config inputs" in row
+                            for row in payload["identity_errors"]
+                        )
+                    )
+                    READINESS.verify_path(self.output)
+                    with self.assertRaises(ValueError):
+                        READINESS.verify_path(self.output, require_qualified=True)
+                    (self.root / source_path).unlink()
+                    (self.root / ".git/info/exclude").write_text("", encoding="utf-8")
+
+    def test_generated_evidence_and_target_outputs_do_not_change_source_identity(self):
+        for output_path in (
+            ".hepta-evidence/generated-consumer/src/main.rs",
+            ".hepta-evidence/mutation-runs/config.toml",
+            "target/debug/build/generated.rs",
+            "codex-rs/target/debug/build/generated.rs",
+        ):
+            self.write(output_path, "generated output\n")
+        READINESS.emit(self.readiness_args)
+        self.assertTrue(json.loads(self.output.read_text())["engineeringQualified"])
+        READINESS.verify_path(self.output, require_qualified=True)
+
     def test_readiness_cannot_mix_another_targets_qualified_receipt(self):
         payload = json.loads(self.output.read_text())
         payload["target_triple"] = "different-target"
@@ -431,6 +858,30 @@ class OperatorEvidenceTests(unittest.TestCase):
         stage["exitCode"] = 8
         with self.assertRaises(ValueError):
             STAGE.verify_value(stage, "unit_tests")
+
+    def test_receipt_rejects_numeric_claims_even_after_aggregate_rehash(self):
+        path = self.root / self.receipt_args.output
+        original = json.loads(path.read_text())
+        RECEIPT.verify(path)
+        variants = [("schemaVersion", 3.0)]
+        for key, boolean in original["claimBoundary"].items():
+            variants.extend([(key, int(boolean)), (key, float(boolean))])
+        for key, numeric in variants:
+            with self.subTest(field=key, type=type(numeric).__name__):
+                tampered = copy.deepcopy(original)
+                if key == "schemaVersion":
+                    tampered[key] = numeric
+                else:
+                    tampered["claimBoundary"][key] = numeric
+                tampered.pop("aggregateEvidenceSha256")
+                tampered["aggregateEvidenceSha256"] = hashlib.sha256(
+                    RECEIPT.canonical_bytes(tampered)
+                ).hexdigest()
+                path.write_text(json.dumps(tampered))
+                with self.assertRaisesRegex(
+                    ValueError, "schema or module|claim boundary"
+                ):
+                    RECEIPT.verify(path)
 
 
 if __name__ == "__main__":

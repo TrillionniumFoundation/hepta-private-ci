@@ -37,6 +37,9 @@ use crate::load_pinned_candidate;
 
 const MAX_TRUSTED_SELECTORS: usize = 32;
 
+#[path = "selection_currentness.rs"]
+mod currentness;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedArtifactSelectorV1 {
     pub selector_id: StableId,
@@ -121,7 +124,7 @@ impl SignedArtifactSelectionV1 {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct VerifiedArtifactSelectionV1 {
     pin: PinnedCandidateSpec,
     selection_digest: Digest32,
@@ -268,6 +271,9 @@ impl ArtifactSelectionVerifierV1 {
         {
             return Err(ArtifactSelectionError::OwnerTrustMismatch);
         }
+        current
+            .revalidate_at(now)
+            .map_err(|_| ArtifactSelectionError::CurrentHeadMismatch)?;
         if signed.registry_id != self.trust.registry_id
             || signed.withdrawal_scope_digest != self.trust.withdrawal_scope_digest
             || signed.authority_epoch < self.trust.minimum_authority_epoch
@@ -556,6 +562,23 @@ mod tests {
             registry,
             digest("witness"),
             owner_verifier.trust_digest(),
+            crate::VerifiedCurrentRegistryUseWindowV1::from_verified_head(
+                &crate::RegistryHeadWitnessV1 {
+                    registry_id: id("registry"),
+                    generation: must(Generation::new(1)),
+                    head_digest: digest("head"),
+                    predecessor_head_digest: Digest32::ZERO,
+                    authority_epoch: 1,
+                    signer_id: owner_trust.head_signers[0].signer_id.clone(),
+                    signing_key_digest: Digest32::of_bytes(
+                        &owner_trust.head_signers[0].verifying_key,
+                    ),
+                    issued_at: 1,
+                    expires_at: 100,
+                },
+                &owner_trust.head_signers[0],
+                20,
+            ),
         )
     }
 

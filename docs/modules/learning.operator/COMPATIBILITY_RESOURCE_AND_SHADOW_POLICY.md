@@ -26,7 +26,9 @@ shadow → exact predecessor rollback. There is no implicit downgrade.
 Native V2 digest commitments bind complete source inputs and minimum-support
 policy. Existing correctly pinned `HEPTTB01` bytes remain readable subject to
 current owner admission. Native structs are separate from canonical-JSON
-protocols; canonical wire adapters and round-trip tests remain work.
+protocols. Three bounded untrusted registered transport codecs and round-trip
+tests are implemented. Bellman canonical field-schema definition and native
+context/semantic admission bridges remain work.
 
 ## Resource boundaries
 

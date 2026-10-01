@@ -86,6 +86,7 @@ pub use legacy::preflight_signed_tabular_v3;
 pub use legacy::prepare_terminal_cell_from_owner_v3;
 pub use legacy::validate_applicability_certificate;
 pub use legacy::validate_applicability_with_signed_evidence_v2;
+pub(crate) use legacy::validate_signed_tabular_shape_v3;
 pub use legacy::validate_tabular_artifact_v1;
 
 // The final-use implementation needs these owner-bound primitives internally,
@@ -246,6 +247,7 @@ pub use final_use::OpaquePinnedTabularArtifactV1;
 pub use final_use::OpaquePinnedWorldModelV1;
 pub use final_use::SelectedTabularOperatorV1;
 pub use final_use::SelectionCurrentnessV1;
+pub use final_use::TabularCandidatePublicationViewV1;
 pub use final_use::TabularTrainingRequestV1;
 pub use final_use::WorldModelTrainingRequestV1;
 

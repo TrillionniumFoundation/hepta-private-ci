@@ -29,7 +29,14 @@ mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
+pub mod learning_operator_artifact_owner;
+#[cfg(test)]
+mod learning_operator_artifact_test_support;
 pub mod learning_operator_coordinator;
+pub mod learning_operator_shadow_loader;
+mod learning_operator_source_binding;
+#[cfg(test)]
+mod learning_operator_test_support;
 mod neuron_runtime;
 mod objective_runtime;
 mod plasticity_anchor_journal;
@@ -197,7 +204,7 @@ pub use plasticity_host::PlasticityOwnerEvidenceQueryV1;
 pub use plasticity_host::PlasticityOwnerEvidenceResolverV1;
 pub use plasticity_host::VerifiedPlasticityOwnerEvidenceV1;
 pub use plasticity_host::bootstrap_agentd_plasticity_writer_v1;
-pub use plasticity_host::propose_agentd_plasticity_v1;
+pub(crate) use plasticity_host::propose_agentd_plasticity_v1;
 pub use plasticity_host::reopen_agentd_plasticity_writer_v1;
 pub use plasticity_host::resolve_agentd_plasticity_admission_v1;
 pub use plasticity_host::resolve_agentd_plasticity_owner_evidence_set_v1;
@@ -212,7 +219,7 @@ pub use plasticity_owner_evidence::plasticity_eligibility_digest_v1;
 pub use plasticity_owner_evidence::plasticity_modulator_broadcast_digest_v1;
 pub use plasticity_owner_evidence::plasticity_modulator_digest_v1;
 pub use plasticity_owner_evidence::plasticity_parameter_signal_digest_v1;
-pub use plasticity_process_bootstrap::load_plasticity_process_bootstrap_v1;
+pub use plasticity_process_bootstrap::load_plasticity_process_bootstrap_v2;
 pub use plasticity_runtime::PlasticityRuntimeBootstrapV1;
 pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;
 pub use plasticity_runtime::PlasticityRuntimeHandleV1;
@@ -244,3 +251,5 @@ pub use topology_plasticity_host::rollover_agentd_topology_writer_v1;
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 use state::AgentdState;
+#[cfg(test)]
+mod product_qualification_test_support;

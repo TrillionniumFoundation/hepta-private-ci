@@ -26,7 +26,7 @@ TARGET="$(rustc -vV | awk '/^host:/ {print $2}')"
 ZERO_SHA="0000000000000000000000000000000000000000"
 SYNTHETIC_SHA="${ZERO_SHA}"
 SYNTHETIC_TREE="${ZERO_SHA}"
-export SOURCE_SHA SOURCE_TREE FROZEN_SOURCE_SHA OBSERVATION_HEAD_SHA BASE_SHA TARGET
+export ROOT SOURCE_SHA SOURCE_TREE FROZEN_SOURCE_SHA OBSERVATION_HEAD_SHA BASE_SHA TARGET
 
 record_stage() {
   local stage="$1"
@@ -126,7 +126,7 @@ commands = {
     "documentation_schema": "verify canonical STATUS, documents, schema and exact-source implementation projection",
     "default_api_surface": "compile independent default pass/fail and feature compatibility consumers",
     "compile": "cargo check all targets and build the operator for the rustc host",
-    "unit_tests": "operator tests, lifecycle state-space and payload replay rejection",
+    "unit_tests": "operator and cross-owner library tests, wire codec feature parity, lifecycle state-space and payload replay rejection",
     "product_integration": "fresh-process load plus ledger/evaluation/selection/ranker/revocation/rollback E2E",
     "mutation": "executed source mutation suite",
     "coverage": "source-bound llvm coverage threshold",
@@ -179,6 +179,7 @@ run_stage documentation_schema "${EVIDENCE}/documentation-schema.log" \
     python3 scripts/hepta-learning-operator-contract.py verify
     python3 scripts/test_hepta_lane_e_closure.py
     python3 scripts/test_hepta_learning_operator_evidence.py
+    python3 scripts/test_hepta_ci_v8.py
   '
 
 run_stage default_api_surface "${EVIDENCE}/default-api-surface.log" \
@@ -199,14 +200,28 @@ run_stage compile "${EVIDENCE}/compile.log" \
   '
 
 run_stage unit_tests "${EVIDENCE}/unit-tests.log" \
-  "operator, lifecycle, semantic sensor receipt and payload replay tests" \
+  "operator and cross-owner libraries, canonical wire feature parity, lifecycle and payload replay tests" \
   bash -lc '
     set -euo pipefail
     just test --locked \
       -p codex-hepta-bellman-operator --features qualification-unverified-input --lib
     just test --locked \
-      -p codex-hepta-agentd --lib learning_operator_coordinator::tests \
+      -p codex-hepta-contracts -p codex-hepta-types \
+      -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts \
+      -p codex-hepta-intelligence-eval -p codex-hepta-intelligence --lib
+    just test --locked -p codex-hepta-contracts --lib \
+      learning_operator_protocol::tests \
+      --features serde_json/preserve_order,serde_json/arbitrary_precision,serde_json/raw_value \
       --test-threads=1
+    just test --locked \
+      -p codex-hepta-agentd --lib learning_operator_ \
+      --test-threads=1
+    just test --locked -p codex-hepta-agentd --lib \
+      intelligence_product::evaluation_tests --test-threads=1 --no-tests=fail
+    just test --locked -p codex-hepta-agentd --lib \
+      plasticity_runtime:: --test-threads=1 --no-tests=fail
+    just test --locked -p codex-hepta-agentd --lib \
+      plasticity_process_bootstrap:: --test-threads=1 --no-tests=fail
     just test --locked \
       -p codex-hepta-bellman-operator --features qualification-unverified-input \
       mutation_persisted_payload_cannot_reuse_the_selected_pin \
@@ -225,6 +240,8 @@ run_stage product_integration "${EVIDENCE}/product-integration.log" \
       -p codex-hepta-agentd --lib \
       evaluated_load_uses_real_owner_training_selection_revocation_and_rollback \
       --test-threads=1
+    just test --locked -p codex-hepta-agentd --features qualification-cognitive-write \
+      --test plasticity_process_e2e --test-threads=1 --no-tests=fail
   '
 
 run_stage mutation "${EVIDENCE}/mutation.log" \
@@ -268,18 +285,11 @@ run_stage static_quality "${EVIDENCE}/static-quality.log" \
   '
 
 SYNTH_DIR="${RUNNER_TEMP:-/tmp}/learning-operator-synthetic-${GITHUB_RUN_ID:-local}"
-rm -rf "${SYNTH_DIR}"
-set +e
-git worktree add --detach "${SYNTH_DIR}" "${BASE_SHA}" >/dev/null 2>&1
-WORKTREE_RC=$?
-set -u
-if [[ "${WORKTREE_RC}" -ne 0 ]]; then
-  : > "${EVIDENCE}/deterministic-merge.log"
-  record_stage deterministic_merge failed "unable to create deterministic merge worktree" \
-    "ordered-parent synthetic merge qualification" "${EVIDENCE}/deterministic-merge.log" "${WORKTREE_RC}"
-else
-  (
+qualify_synthetic_merge() (
     set -euo pipefail
+    trap 'git -C "${ROOT}" worktree remove --force "${SYNTH_DIR}" >/dev/null 2>&1 || true' EXIT
+    rm -rf "${SYNTH_DIR}"
+    git worktree add --detach "${SYNTH_DIR}" "${BASE_SHA}"
     cd "${SYNTH_DIR}"
     git -c user.name=hepta-learning-operator-ci \
       -c user.email=hepta-learning-operator-ci@users.noreply.github.com \
@@ -294,6 +304,20 @@ else
     test "$(git rev-parse "${SYNTHETIC_SHA_LOCAL}^1")" = "${BASE_SHA}"
     test "$(git rev-parse "${SYNTHETIC_SHA_LOCAL}^2")" = "${SOURCE_SHA}"
     git reset --hard "${SYNTHETIC_SHA_LOCAL}"
+    # Resolve against the actual merge lock and helper, rather than carrying
+    # source-head V8 overrides into a potentially different merged workspace.
+    mkdir -p .hepta-evidence
+    V8_ENV_LOCAL="${PWD}/.hepta-evidence/learning-operator-synthetic-v8.env"
+    : > "${V8_ENV_LOCAL}"
+    unset RUSTY_V8_ARCHIVE RUSTY_V8_SRC_BINDING_PATH
+    CODEX_REPO_ROOT="${PWD}" PYTHONPATH=scripts GITHUB_ENV="${V8_ENV_LOCAL}" \
+      python3 scripts/hepta_ci_v8.py
+    while IFS='=' read -r name value; do
+      case "${name}" in
+        RUSTY_V8_ARCHIVE|RUSTY_V8_SRC_BINDING_PATH) export "${name}=${value}" ;;
+        *) printf 'unexpected V8 environment key: %s\n' "${name}" >&2; exit 1 ;;
+      esac
+    done < "${V8_ENV_LOCAL}"
     python3 scripts/hepta-learning-operator-contract.py verify
     python3 scripts/hepta-learning-operator-api-surface.py \
       --output ".hepta-evidence/learning-operator-synthetic-api.json"
@@ -304,31 +328,38 @@ else
     just test --locked \
       -p codex-hepta-bellman-operator --features qualification-unverified-input --lib
     just test --locked \
-      -p codex-hepta-agentd --lib learning_operator_coordinator::tests \
+      -p codex-hepta-contracts -p codex-hepta-types \
+      -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts \
+      -p codex-hepta-intelligence-eval -p codex-hepta-intelligence --lib
+    just test --locked -p codex-hepta-contracts --lib \
+      learning_operator_protocol::tests \
+      --features serde_json/preserve_order,serde_json/arbitrary_precision,serde_json/raw_value \
       --test-threads=1
+    just test --locked \
+      -p codex-hepta-agentd --lib learning_operator_ \
+      --test-threads=1
+    just test --locked -p codex-hepta-agentd --lib \
+      intelligence_product::evaluation_tests --test-threads=1 --no-tests=fail
+    just test --locked -p codex-hepta-agentd --lib \
+      plasticity_runtime:: --test-threads=1 --no-tests=fail
+    just test --locked -p codex-hepta-agentd --lib \
+      plasticity_process_bootstrap:: --test-threads=1 --no-tests=fail
     just test --locked \
       -p codex-hepta-agentd --lib \
       evaluated_load_uses_real_owner_training_selection_revocation_and_rollback \
       --test-threads=1
+    just test --locked -p codex-hepta-agentd --features qualification-cognitive-write \
+      --test plasticity_process_e2e --test-threads=1 --no-tests=fail
     printf "SYNTHETIC_SHA=%s\nSYNTHETIC_TREE=%s\n" \
       "${SYNTHETIC_SHA_LOCAL}" "${SYNTHETIC_TREE_LOCAL}" \
       > "${ROOT}/${EVIDENCE}/synthetic.env"
-  ) 2>&1 | tee "${EVIDENCE}/deterministic-merge.log"
-  SYNTH_PIPELINE_STATUS=("${PIPESTATUS[@]}")
-  SYNTH_RC="${SYNTH_PIPELINE_STATUS[0]}"
-  if [[ "${SYNTH_PIPELINE_STATUS[1]}" -ne 0 ]]; then
-    SYNTH_RC="${SYNTH_PIPELINE_STATUS[1]}"
-  fi
-  if [[ "${SYNTH_RC}" -eq 0 ]]; then
-    # shellcheck disable=SC1090
-    source "${EVIDENCE}/synthetic.env"
-    record_stage deterministic_merge passed "" \
-      "ordered-parent synthetic merge qualification" "${EVIDENCE}/deterministic-merge.log" "${SYNTH_RC}"
-  else
-    record_stage deterministic_merge failed "synthetic merge qualification exited ${SYNTH_RC}" \
-      "ordered-parent synthetic merge qualification" "${EVIDENCE}/deterministic-merge.log" "${SYNTH_RC}"
-  fi
-  git worktree remove --force "${SYNTH_DIR}" >/dev/null 2>&1 || true
+)
+run_stage deterministic_merge "${EVIDENCE}/deterministic-merge.log" \
+  "ordered-parent synthetic merge, contract, compile and cross-owner tests" \
+  qualify_synthetic_merge
+if stage_passed "${STAGES}/deterministic_merge.json"; then
+  # shellcheck disable=SC1090
+  source "${EVIDENCE}/synthetic.env"
 fi
 
 emit_gate() {
@@ -364,17 +395,8 @@ emit_gate static-quality static_quality "strict clippy and formatting" "${EVIDEN
 emit_gate synthetic-merge deterministic_merge "deterministic ordered-parent merge qualification" "${EVIDENCE}/deterministic-merge.log"
 
 PRE_RECEIPT_STAGES="source_identity,documentation_schema,default_api_surface,compile,unit_tests,product_integration,mutation,coverage,resource_performance,static_quality,deterministic_merge"
-if python3 scripts/hepta-learning-operator-stage.py verify \
-  --directory "${STAGES}" --required "${PRE_RECEIPT_STAGES}"; then
-  WORKFLOW_PATH="${QUALIFICATION_WORKFLOW_PATH:-.github/workflows/learning-operator-authoritative.yml}"
-  WORKFLOW_BLOB="$(git rev-parse "${SOURCE_SHA}:${WORKFLOW_PATH}")"
-  EVIDENCE_ARGS=()
-  for path in "${GATES}"/*.json; do
-    name="$(basename "${path}" .json)"
-    EVIDENCE_ARGS+=(--evidence "${name}=${path}")
-  done
-  set +e
-  {
+emit_qualification_receipt() (
+    set -euo pipefail
     python3 scripts/hepta-learning-operator-receipt.py emit \
       --source-sha "${SOURCE_SHA}" \
       --source-tree "${SOURCE_TREE}" \
@@ -396,25 +418,23 @@ if python3 scripts/hepta-learning-operator-stage.py verify \
       --path "${EVIDENCE}/qualification-manifest.json" \
       --expected-source-sha "${SOURCE_SHA}" \
       --expected-source-tree "${SOURCE_TREE}"
-  } 2>&1 | tee "${EVIDENCE}/exact-source-receipt.log"
-  RECEIPT_PIPELINE_STATUS=("${PIPESTATUS[@]}")
-  RECEIPT_RC="${RECEIPT_PIPELINE_STATUS[0]}"
-  if [[ "${RECEIPT_PIPELINE_STATUS[1]}" -ne 0 ]]; then
-    RECEIPT_RC="${RECEIPT_PIPELINE_STATUS[1]}"
-  fi
-  set -u
-  if [[ "${RECEIPT_RC}" -eq 0 ]]; then
-    record_stage exact_source_receipt passed "" \
-      "emit and verify exact-source qualification manifest" "${EVIDENCE}/exact-source-receipt.log" "${RECEIPT_RC}"
-  else
-    record_stage exact_source_receipt failed "qualification receipt exited ${RECEIPT_RC}" \
-      "emit and verify exact-source qualification manifest" "${EVIDENCE}/exact-source-receipt.log" "${RECEIPT_RC}"
-  fi
+)
+if python3 scripts/hepta-learning-operator-stage.py verify \
+  --directory "${STAGES}" --required "${PRE_RECEIPT_STAGES}"; then
+  WORKFLOW_PATH="${QUALIFICATION_WORKFLOW_PATH:-.github/workflows/learning-operator-authoritative.yml}"
+  WORKFLOW_BLOB="$(git rev-parse "${SOURCE_SHA}:${WORKFLOW_PATH}")"
+  EVIDENCE_ARGS=()
+  for path in "${GATES}"/*.json; do
+    name="$(basename "${path}" .json)"
+    EVIDENCE_ARGS+=(--evidence "${name}=${path}")
+  done
+  run_stage exact_source_receipt "${EVIDENCE}/exact-source-receipt.log" \
+    "emit and verify exact-source qualification manifest" emit_qualification_receipt
 else
   printf 'receipt not run because prerequisite stages are non-passing\n' \
     > "${EVIDENCE}/exact-source-receipt.log"
   record_stage exact_source_receipt not_run "prerequisite stage failed or was not run" \
-    "emit and verify exact-source qualification manifest" "${EVIDENCE}/exact-source-receipt.log"
+    "emit_qualification_receipt " "${EVIDENCE}/exact-source-receipt.log"
 fi
 
 WORKFLOW_PATH="${QUALIFICATION_WORKFLOW_PATH:-.github/workflows/learning-operator-authoritative.yml}"

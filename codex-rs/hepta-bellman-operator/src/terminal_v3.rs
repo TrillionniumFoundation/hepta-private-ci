@@ -10,16 +10,20 @@ use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
 use codex_hepta_learning_ledger::dataset_freeze_signing_payload_v2;
 use codex_hepta_learning_ledger::verify_signed_independent_roles_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use std::time::Instant;
+
+use super::owner_terminal::fit_terminal_cell_at;
+use super::owner_terminal::terminal_effective_now;
 
 use crate::FrozenTerminalCellV1;
 use crate::TabularOperatorArtifactV1;
 use crate::TerminalCellError;
 use crate::TerminalCellProfileV1;
-use crate::fit_terminal_cell_from_owner_v1;
 use crate::freeze_terminal_cell_from_owner_v1;
 
 /// Preparing this value reads real owner records but does not authorize fitting.
@@ -92,7 +96,7 @@ impl<'a> PreparedTerminalCellV3<'a> {
         &self,
         rows: &SignedLearningEvidenceV1,
         now: u64,
-    ) -> Result<(), TerminalCellError> {
+    ) -> Result<(VerifiedLearningEvidenceV1, VerifiedLearningEvidenceV1), TerminalCellError> {
         if now < self.admitted_at {
             return Err(TerminalCellError::Unsupported(
                 "terminal V3 clock regression",
@@ -127,13 +131,13 @@ impl<'a> PreparedTerminalCellV3<'a> {
                 &freeze_payload,
                 now,
             )
-            .map_err(|_| TerminalCellError::Unsupported("terminal V3 evaluator signature"))?;
+            .map_err(TerminalCellError::SignedEvidence)?;
         let observer = verifier
             .verify(LearningEvidenceRoleV1::Observer, rows, &self.payload, now)
-            .map_err(|_| TerminalCellError::Unsupported("terminal V3 observer signature"))?;
+            .map_err(TerminalCellError::SignedEvidence)?;
         verify_signed_independent_roles_v1(&evaluator, &observer, now)
-            .map_err(|_| TerminalCellError::Unsupported("terminal V3 controller separation"))?;
-        Ok(())
+            .map_err(TerminalCellError::SignedEvidence)?;
+        Ok((evaluator, observer))
     }
 }
 
@@ -142,8 +146,38 @@ pub fn fit_terminal_cell_verified_v3(
     verified: VerifiedTerminalCellV3<'_>,
     now: u64,
 ) -> Result<TabularOperatorArtifactV1, TerminalCellError> {
+    let started = Instant::now();
+    fit_terminal_cell_verified_at(verified, now, || terminal_effective_now(now, &started))
+}
+
+pub(super) fn fit_terminal_cell_verified_at(
+    verified: VerifiedTerminalCellV3<'_>,
+    now: u64,
+    mut effective_now: impl FnMut() -> Result<u64, TerminalCellError>,
+) -> Result<TabularOperatorArtifactV1, TerminalCellError> {
     verified.prepared.revalidate(&verified.rows, now)?;
-    fit_terminal_cell_from_owner_v1(verified.prepared.owner, verified.prepared.frozen, now)
+    let (artifact, finished_at) = fit_terminal_cell_at(
+        verified.prepared.owner,
+        &verified.prepared.frozen,
+        now,
+        &mut effective_now,
+    )?;
+    // Root, dataset and both signed projections must still be valid after the
+    // real synchronous fit. Elapsed time never refreshes an authority witness.
+    let (evaluator, observer) = verified.prepared.revalidate(&verified.rows, finished_at)?;
+    let final_at = effective_now()?;
+    if final_at < finished_at {
+        return Err(TerminalCellError::ClockRegression);
+    }
+    verified.prepared.owner.revalidate_trust_at(final_at)?;
+    let verifier = verified.prepared.owner.verifier();
+    verifier
+        .revalidate(&evaluator, final_at)
+        .map_err(TerminalCellError::SignedEvidence)?;
+    verifier
+        .revalidate(&observer, final_at)
+        .map_err(TerminalCellError::SignedEvidence)?;
+    Ok(artifact)
 }
 
 fn freeze_plan(dataset: &DatasetSnapshotReceiptV3) -> DatasetFreezePlanV2 {
@@ -160,6 +194,7 @@ fn verify_freeze(
     evidence: &SignedLearningEvidenceV1,
     now: u64,
 ) -> Result<(), TerminalCellError> {
+    owner.revalidate_trust_at(now)?;
     let expected = owner.freeze_dataset(freeze_plan(dataset), evidence, now)?;
     if expected != *dataset {
         return Err(TerminalCellError::Unsupported(

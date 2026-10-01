@@ -45,7 +45,7 @@ fn tabular_candidate() -> FinalUseTabularCandidateV1 {
         authority_epoch: 7,
         stop_epoch: 3,
         fit_receipt_digest: digest("fit-receipt"),
-        published_at_unix_micros: 51,
+        published_at_unix_micros: 51_000_000,
     }
 }
 
@@ -60,8 +60,8 @@ fn selection(artifact_digest: Digest32) -> SelectionCurrentnessV1 {
         Generation::new(1).expect("fixture generation"),
         /*authority_epoch*/ 7,
         /*stop_epoch*/ 3,
-        /*observed_at_unix_micros*/ 52,
-        /*expires_at_unix_micros*/ 60,
+        /*observed_at_unix_micros*/ 52_000_000,
+        /*expires_at_unix_micros*/ 60_000_000,
         /*stop_requested*/ false,
     )
     .expect("host selection fixture")
@@ -73,15 +73,13 @@ fn selected_tabular_load_and_repeated_predictions_retain_selection_window() {
     let current = selection(candidate.artifact_digest());
     let selected = candidate.pin_for_selection(current).expect("select");
     assert!(matches!(
-        selected.load(/*now*/ 51),
+        selected.load(/*now*/ 51_000_000),
         Err(FinalUseErrorV1::ClockRegression)
     ));
-    assert!(matches!(
-        selected.load(/*now*/ 60),
-        Err(FinalUseErrorV1::SelectionBinding(_))
-    ));
-    let loaded = selected.load(/*now*/ 52).expect("load in selected window");
-    for now in [52, 59] {
+    let loaded = selected
+        .load(/*now*/ 52_000_000)
+        .expect("load in selected window");
+    for now in [52_000_000, 59_000_000] {
         let predicted = loaded
             .predict(&id("sensor"), &id("action"), now)
             .expect("predict");
@@ -89,12 +87,48 @@ fn selected_tabular_load_and_repeated_predictions_retain_selection_window() {
         assert!(!predicted.authority.grants_any());
     }
     assert!(matches!(
-        loaded.predict(&id("sensor"), &id("action"), /*now*/ 51),
+        loaded.predict(&id("sensor"), &id("action"), /*now*/ 51_000_000),
         Err(FinalUseErrorV1::ClockRegression)
     ));
     assert!(matches!(
-        loaded.predict(&id("sensor"), &id("action"), /*now*/ 60),
+        loaded.predict(&id("sensor"), &id("action"), /*now*/ 60_000_000),
         Err(FinalUseErrorV1::SelectionBinding(_))
+    ));
+    assert!(matches!(
+        selected.load(/*now*/ 60_000_000),
+        Err(FinalUseErrorV1::SelectionBinding(_))
+    ));
+}
+
+#[test]
+fn selected_tabular_clock_cannot_reset_across_loads_or_revive_after_expiry() {
+    let candidate = tabular_candidate();
+    let current = selection(candidate.artifact_digest());
+    let selected = candidate.pin_for_selection(current).expect("select");
+    let first = selected.load(/*now*/ 52_000_000).expect("first load");
+    let second = selected.load(/*now*/ 54_000_000).expect("second load");
+    first
+        .predict(&id("sensor"), &id("action"), /*now*/ 56_000_000)
+        .expect("first prediction");
+    assert!(matches!(
+        second.predict(&id("sensor"), &id("action"), /*now*/ 55_000_000),
+        Err(FinalUseErrorV1::ClockRegression)
+    ));
+    assert!(matches!(
+        selected.load(/*now*/ 55_000_000),
+        Err(FinalUseErrorV1::ClockRegression)
+    ));
+    assert!(matches!(
+        second.predict(&id("sensor"), &id("action"), /*now*/ 60_000_000),
+        Err(FinalUseErrorV1::SelectionBinding(_))
+    ));
+    assert!(matches!(
+        first.predict(&id("sensor"), &id("action"), /*now*/ 59_000_000),
+        Err(FinalUseErrorV1::ClockRegression)
+    ));
+    assert!(matches!(
+        selected.load(/*now*/ 59_000_000),
+        Err(FinalUseErrorV1::ClockRegression)
     ));
 }
 
@@ -133,8 +167,8 @@ fn selected_world_model_expires_with_selection_before_model_retention() {
             ood_false_acceptance: ProbabilityQ32::ZERO,
             drift_score: FixedQ32::ZERO,
             change_point_digest: digest("change-point"),
-            retained_until: 100,
-            expires_at: 200,
+            retained_until: 100_000_000,
+            expires_at: 200_000_000,
             samples: vec![WorldModelSampleV1 {
                 sample_id: id("observation"),
                 state_id: id("sensor"),
@@ -151,7 +185,7 @@ fn selected_world_model_expires_with_selection_before_model_retention() {
         artifact,
         ledger_head_digest: digest("ledger"),
         stop_epoch: 3,
-        published_at_unix_micros: 51,
+        published_at_unix_micros: 51_000_000,
     };
     let current = selection(candidate.artifact_digest());
     let selected = candidate.pin_for_selection(current).expect("select");
@@ -167,15 +201,19 @@ fn selected_world_model_expires_with_selection_before_model_retention() {
     );
     assert!(
         selected
-            .predict(&id("sensor"), &id("action"), /*now*/ 59)
+            .predict(&id("sensor"), &id("action"), /*now*/ 59_000_000)
             .is_ok()
     );
     assert!(matches!(
-        selected.predict(&id("sensor"), &id("action"), /*now*/ 51),
+        selected.predict(&id("sensor"), &id("action"), /*now*/ 51_000_000),
         Err(FinalUseErrorV1::ClockRegression)
     ));
     assert!(matches!(
-        selected.predict(&id("sensor"), &id("action"), /*now*/ 60),
+        selected.predict(&id("sensor"), &id("action"), /*now*/ 60_000_000),
         Err(FinalUseErrorV1::SelectionBinding(_))
+    ));
+    assert!(matches!(
+        selected.predict(&id("sensor"), &id("action"), /*now*/ 59_000_000),
+        Err(FinalUseErrorV1::ClockRegression)
     ));
 }

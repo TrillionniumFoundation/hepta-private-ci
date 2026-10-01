@@ -372,6 +372,7 @@ def verify(
     value = json.loads(path.read_text(encoding="utf-8"))
     require(
         value.get("schema") == "hepta.learning-operator-qualification-manifest.v3"
+        and type(value.get("schemaVersion")) is int
         and value.get("schemaVersion") == 3
         and value.get("module") == "learning.operator",
         "qualification manifest schema or module mismatch",
@@ -501,15 +502,20 @@ def verify(
         value.get("independentAcceptanceIdentity") is None,
         "independent acceptance identity must be absent",
     )
+    boundary = value.get("claimBoundary")
+    expected_boundary = {
+        "repositoryQualificationEvidence": True,
+        "singleUseFinalUseCapabilities": True,
+        "defaultShadowOnlyCoordinator": True,
+        "activation": False,
+        "release": False,
+    }
     require(
-        value.get("claimBoundary")
-        == {
-            "repositoryQualificationEvidence": True,
-            "singleUseFinalUseCapabilities": True,
-            "defaultShadowOnlyCoordinator": True,
-            "activation": False,
-            "release": False,
-        },
+        isinstance(boundary, dict)
+        and boundary.keys() == expected_boundary.keys()
+        and all(
+            boundary[key] is expected for key, expected in expected_boundary.items()
+        ),
         "qualification claim boundary drift",
     )
     require(source.get("authoritativeCandidate") is True, "source candidate role drift")

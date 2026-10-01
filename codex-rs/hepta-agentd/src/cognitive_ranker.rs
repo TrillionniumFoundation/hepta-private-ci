@@ -288,4 +288,4 @@ mod tests;
 
 #[cfg(all(test, unix))]
 #[path = "cognitive_ranker_evaluated_tests.rs"]
-mod evaluated_tests;
+pub(crate) mod evaluated_tests;

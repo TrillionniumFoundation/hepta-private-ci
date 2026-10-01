@@ -7,9 +7,71 @@ use super::OpaquePinnedWorldModelV1;
 use crate::LoadedTabularOperatorV2;
 use crate::TabularOperatorPredictionV1;
 use crate::world_model_v2::WorldModelPredictionV2;
+use crate::world_model_v2::WorldModelV2Error;
 use crate::world_model_v2::predict_world_model_v2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::Instant;
+
+#[derive(Debug)]
+struct SelectionClockAnchorV1 {
+    observed_at_unix_micros: u64,
+    instant: Instant,
+}
+
+/// A conservative local clock; it cannot refresh owner or selector authority.
+#[derive(Debug)]
+pub(super) struct SelectionUseClockV1 {
+    last_host_observed_at_unix_micros: AtomicU64,
+    anchor: Mutex<SelectionClockAnchorV1>,
+}
+
+impl SelectionUseClockV1 {
+    pub(super) fn new(selected_at: u64) -> Self {
+        Self {
+            last_host_observed_at_unix_micros: AtomicU64::new(selected_at),
+            anchor: Mutex::new(SelectionClockAnchorV1 {
+                observed_at_unix_micros: selected_at,
+                instant: Instant::now(),
+            }),
+        }
+    }
+
+    fn observe(&self, host_now: u64) -> Result<u64, FinalUseErrorV1> {
+        if host_now
+            < self
+                .last_host_observed_at_unix_micros
+                .fetch_max(host_now, Ordering::AcqRel)
+        {
+            return Err(FinalUseErrorV1::ClockRegression);
+        }
+        let mut anchor = self
+            .anchor
+            .lock()
+            .map_err(|_| FinalUseErrorV1::Binding("selection clock state unavailable"))?;
+        let instant = Instant::now();
+        let elapsed = u64::try_from(instant.duration_since(anchor.instant).as_micros())
+            .map_err(|_| FinalUseErrorV1::DeadlineExceeded)?;
+        let advanced = anchor
+            .observed_at_unix_micros
+            .checked_add(elapsed)
+            .ok_or(FinalUseErrorV1::DeadlineExceeded)?;
+        if host_now > advanced {
+            // Only a forward host observation can move the anchor. Equal or
+            // frozen host values retain elapsed time, including submicrosecond
+            // fractions, rather than repeatedly resetting the monotonic origin.
+            anchor.observed_at_unix_micros = host_now;
+            anchor.instant = instant;
+            Ok(host_now)
+        } else {
+            Ok(advanced)
+        }
+    }
+}
 
 impl OpaquePinnedTabularArtifactV1 {
     #[must_use]
@@ -20,18 +82,21 @@ impl OpaquePinnedTabularArtifactV1 {
     /// Load only within the selected window. The returned value retains the
     /// window and checks it again on every prediction; it exposes no raw loader.
     pub fn load(&self, now: u64) -> Result<SelectedTabularOperatorV1, FinalUseErrorV1> {
-        validate_selected_window(
+        let (loaded, _) = during_selected_window(
             self.selected_at_unix_micros,
             self.expires_at_unix_micros,
-            now,
+            || self.clock.observe(now),
+            |_| {
+                LoadedTabularOperatorV2::from_pinned_payload_v2(self.payload.as_ref(), &self.pin)
+                    .map_err(Into::into)
+            },
         )?;
-        let loaded =
-            LoadedTabularOperatorV2::from_pinned_payload_v2(self.payload.as_ref(), &self.pin)?;
         Ok(SelectedTabularOperatorV1 {
             loaded,
             selection_digest: self.selection_digest,
             selected_at_unix_micros: self.selected_at_unix_micros,
             expires_at_unix_micros: self.expires_at_unix_micros,
+            clock: Arc::clone(&self.clock),
         })
     }
 }
@@ -46,6 +111,7 @@ pub struct SelectedTabularOperatorV1 {
     selection_digest: Digest32,
     selected_at_unix_micros: u64,
     expires_at_unix_micros: u64,
+    clock: Arc<SelectionUseClockV1>,
 }
 
 impl SelectedTabularOperatorV1 {
@@ -60,12 +126,13 @@ impl SelectedTabularOperatorV1 {
         action: &StableId,
         now: u64,
     ) -> Result<TabularOperatorPredictionV1, FinalUseErrorV1> {
-        validate_selected_window(
+        let (prediction, _) = during_selected_window(
             self.selected_at_unix_micros,
             self.expires_at_unix_micros,
-            now,
+            || self.clock.observe(now),
+            |_| self.loaded.predict(sensor, action).map_err(Into::into),
         )?;
-        self.loaded.predict(sensor, action).map_err(Into::into)
+        Ok(prediction)
     }
 }
 
@@ -81,14 +148,40 @@ impl OpaquePinnedWorldModelV1 {
         action_id: &StableId,
         now: u64,
     ) -> Result<WorldModelPredictionV2, FinalUseErrorV1> {
-        validate_selected_window(
+        let (prediction, finished_at) = during_selected_window(
             self.selected_at_unix_micros,
             self.expires_at_unix_micros,
-            now,
+            || self.clock.observe(now),
+            |effective_now| {
+                predict_world_model_v2(
+                    &self.artifact,
+                    state_id,
+                    action_id,
+                    &self.pin,
+                    effective_now,
+                )
+                .map_err(Into::into)
+            },
         )?;
-        predict_world_model_v2(&self.artifact, state_id, action_id, &self.pin, now)
-            .map_err(Into::into)
+        if finished_at > self.artifact.retained_until || finished_at > self.artifact.expires_at {
+            return Err(WorldModelV2Error::Expired.into());
+        }
+        Ok(prediction)
     }
+}
+
+fn during_selected_window<T>(
+    selected_at: u64,
+    expires_at: u64,
+    effective_now: impl Fn() -> Result<u64, FinalUseErrorV1>,
+    operation: impl FnOnce(u64) -> Result<T, FinalUseErrorV1>,
+) -> Result<(T, u64), FinalUseErrorV1> {
+    let started_at = effective_now()?;
+    validate_selected_window(selected_at, expires_at, started_at)?;
+    let value = operation(started_at)?;
+    let finished_at = effective_now()?;
+    validate_selected_window(selected_at, expires_at, finished_at)?;
+    Ok((value, finished_at))
 }
 
 fn validate_selected_window(
@@ -106,3 +199,7 @@ fn validate_selected_window(
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "final_use_selected_tests.rs"]
+mod tests;

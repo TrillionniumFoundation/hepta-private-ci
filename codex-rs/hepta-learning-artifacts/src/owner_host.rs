@@ -41,6 +41,7 @@ use crate::RegistryHeadRequirementV1;
 use crate::RegistryHeadWitnessReceipt;
 use crate::RegistryHeadWitnessV1;
 use crate::RegistrySnapshotReceipt;
+use crate::VerifiedCurrentRegistryUseWindowV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 use crate::read_candidate_payload;
@@ -257,7 +258,26 @@ impl ArtifactOwnerVerifierV1 {
             registry,
             verified.witness_digest,
             verified.trust_digest,
+            self.current_use_window(&verified, requirement.now)?,
         ))
+    }
+
+    fn current_use_window(
+        &self,
+        verified: &VerifiedCurrentArtifactHeadV1,
+        now: u64,
+    ) -> Result<VerifiedCurrentRegistryUseWindowV1, ArtifactOwnerHostError> {
+        let signer = self
+            .head_signers
+            .get(&verified.signed.witness.signer_id)
+            .ok_or(ArtifactOwnerHostError::UnknownSigner)?;
+        let window = VerifiedCurrentRegistryUseWindowV1::from_verified_head(
+            &verified.signed.witness,
+            signer,
+            now,
+        );
+        window.revalidate_at(now)?;
+        Ok(window)
     }
 
     fn verify_writer_lease(
@@ -870,6 +890,7 @@ impl LearningArtifactOwnerHost {
             registry,
             current.witness_digest,
             current.trust_digest,
+            self.verifier.current_use_window(&current, now)?,
         ))
     }
 

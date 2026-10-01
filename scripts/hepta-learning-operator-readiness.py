@@ -156,6 +156,56 @@ def artifact_hashes(evidence: Path, output: Path) -> dict[str, str]:
     return result
 
 
+def untracked_compilation_inputs() -> list[str]:
+    """Find source/config additions, including ignored Cargo autodiscovery inputs.
+
+    Generated evidence and build outputs remain allowed. Source directories and
+    crate-local build/config paths are scanned without Git ignore filtering so
+    an info/exclude rule cannot hide a new bin, test or build script.
+    """
+    tracked = MAP.git("ls-files", "-z", "--", "codex-rs").split("\0")
+    crates = {Path(path).parent for path in tracked if path.endswith("/Cargo.toml")}
+    source_paths = {
+        str(crate / child)
+        for crate in crates | {Path("."), Path("codex-rs")}
+        for child in (
+            "src",
+            "tests",
+            "examples",
+            "benches",
+            "build.rs",
+            "Cargo.toml",
+            "Cargo.lock",
+            ".cargo/config",
+            ".cargo/config.toml",
+            ".config/nextest.toml",
+            "rust-toolchain",
+            "rust-toolchain.toml",
+        )
+    }
+    additions = {
+        path
+        for path in MAP.git(
+            "ls-files", "--others", "-z", "--", *sorted(source_paths)
+        ).split("\0")
+        if path
+    }
+    # Also catch a new nonignored crate/manifest outside the known source roots.
+    for raw in MAP.git("ls-files", "--others", "--exclude-standard", "-z").split("\0"):
+        path = Path(raw)
+        if (
+            raw
+            and not {"target", ".hepta-evidence"}.intersection(path.parts)
+            and (
+                path.suffix in {".rs", ".toml", ".bzl", ".bazel"}
+                or path.name
+                in {"Cargo.lock", "BUILD", "WORKSPACE", "justfile", "rust-toolchain"}
+            )
+        ):
+            additions.add(raw)
+    return sorted(additions)
+
+
 def identity_errors(value: dict) -> list[str]:
     errors = []
     source, base = value["source_head_sha"], value["base_sha"]
@@ -171,7 +221,7 @@ def identity_errors(value: dict) -> list[str]:
             KeyError,
             TypeError,
         ) as error:
-            errors.append(f"{label}: {type(error).__name__}")
+            errors.append(f"{label}: {type(error).__name__}: {error}")
 
     def require(condition, message):
         if not condition:
@@ -187,6 +237,24 @@ def identity_errors(value: dict) -> list[str]:
         )
         require(
             MAP.git("rev-parse", "HEAD") == source, "source is not the checked-out head"
+        )
+        require(
+            not MAP.git("status", "--porcelain", "--untracked-files=no"),
+            "tracked checkout differs from the checked-out source",
+        )
+        # Git otherwise hides edits marked assume-unchanged or skip-worktree.
+        # Such a checkout cannot witness the exact source compiled by the gates.
+        require(
+            not any(
+                row[0].islower() or row.startswith("S ")
+                for row in MAP.git("ls-files", "-v").splitlines()
+                if row
+            ),
+            "tracked checkout contains hidden worktree/index entries",
+        )
+        require(
+            not untracked_compilation_inputs(),
+            "untracked source/config inputs can change the compiled source",
         )
         require(
             MAP.git("rev-parse", f"{base}^{{commit}}") == base, "base commit unknown"

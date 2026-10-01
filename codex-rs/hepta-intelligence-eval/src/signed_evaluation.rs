@@ -55,6 +55,13 @@ pub struct VerifiedEvaluationAuthenticationV2 {
 }
 
 impl VerifiedEvaluationAuthenticationV2 {
+    pub(crate) fn bind_observer_signature(mut self, signature: &[u8; 64]) -> Self {
+        let mut bytes = self.authentication_digest.as_array().to_vec();
+        bytes.extend_from_slice(signature);
+        self.authentication_digest = Digest32::of_bytes(&bytes);
+        self
+    }
+
     #[must_use]
     pub fn generator(&self) -> &VerifiedLearningEvidenceV1 {
         &self.generator
@@ -135,7 +142,7 @@ pub fn authenticate_evaluation_evidence_v2(
     authenticate(bundle, evidence, verifier, &payload, now)
 }
 
-pub fn decide_with_signed_evidence_v2(
+pub(crate) fn decide_with_signed_evidence_v2(
     bundle: IndependentEvaluationBundleV1,
     roles: Vec<MetricRoleContractV2>,
     evidence: &SignedEvaluationEvidenceV1,

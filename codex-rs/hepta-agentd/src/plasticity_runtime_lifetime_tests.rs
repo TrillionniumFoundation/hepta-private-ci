@@ -26,6 +26,7 @@ use codex_hepta_learning_artifacts::ArtifactEvent;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactManifest;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::CandidateSetCompleteness;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
@@ -34,11 +35,15 @@ use codex_hepta_learning_ledger::EpisodeDecision;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::LearningTrustDistributionV1;
+use codex_hepta_learning_ledger::LearningTrustRootV1;
 use codex_hepta_learning_ledger::LedgerAnchor;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::SignedLearningTrustDistributionV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_learning_ledger::activate_learning_trust;
 use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
 use codex_hepta_ndu::NduProjectionJournalV1;
 use codex_hepta_ndu::NduProjectionKindV1;
@@ -282,7 +287,11 @@ impl SigningFixture {
     }
 
     fn verifier(&self, objective_digest: Digest32) -> LearningEvidenceVerifierV1 {
-        LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        self.activated_trust(objective_digest).verifier().clone()
+    }
+
+    fn activated_trust(&self, objective_digest: Digest32) -> ActivatedLearningTrustV1 {
+        let trust = LearningEvidenceTrustV1 {
             scope_digest: digest("plasticity-scope"),
             objective_digest,
             authority_epoch: 7,
@@ -303,8 +312,30 @@ impl SigningFixture {
                     revoked_at: None,
                 })
                 .collect(),
-        })
-        .expect("verifier")
+        };
+        let key = SigningKey::from_bytes(&[77; 32]);
+        let root = LearningTrustRootV1 {
+            root_id: id("plasticity-runtime-root"),
+            scope_digest: trust.scope_digest,
+            verifying_key: key.verifying_key().to_bytes(),
+            valid_from: 1,
+            expires_at: 100,
+            revoked_at: None,
+        };
+        let mut signed = SignedLearningTrustDistributionV1 {
+            distribution: LearningTrustDistributionV1 {
+                distribution_id: id("plasticity-runtime-distribution"),
+                generation: 1,
+                effective_at: 10,
+                trust,
+            },
+            root_id: root.root_id.clone(),
+            issued_at: 5,
+            expires_at: 90,
+            signature: [0; 64],
+        };
+        signed.signature = key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+        activate_learning_trust(&root, signed, None, 50).unwrap()
     }
 
     fn sign(
@@ -925,13 +956,16 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         ledger,
         Box::new(resolver(&sources)),
         sources.owner_policy.clone(),
-        verifier,
+        signing.activated_trust(sources.objective_digest),
         parameter_writer,
         parameter_anchor_store,
         topology_writer,
         topology_anchor_store,
     )
-    .expect("runtime bootstrap");
+    .expect("runtime bootstrap")
+    .with_test_clock(Arc::new(super::clock::ControlledPlasticityRuntimeClockV1(
+        std::sync::atomic::AtomicU64::new(50),
+    )));
     let state = daemon.state();
     let owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, Some(bootstrap))
         .expect("compose daemon plasticity owner");
@@ -999,13 +1033,16 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         recovered_ledger,
         Box::new(resolver(&sources)),
         sources.owner_policy.clone(),
-        signing.verifier(sources.objective_digest),
+        signing.activated_trust(sources.objective_digest),
         parameter_writer,
         parameter_anchor_store,
         topology_writer,
         topology_anchor_store,
     )
-    .expect("restart bootstrap");
+    .expect("restart bootstrap")
+    .with_test_clock(Arc::new(super::clock::ControlledPlasticityRuntimeClockV1(
+        std::sync::atomic::AtomicU64::new(50),
+    )));
     let restarted_owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(
         &restarted_state,
         Some(restarted_bootstrap),

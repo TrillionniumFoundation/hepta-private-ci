@@ -18,7 +18,13 @@ use codex_hepta_learning_ledger::CandidateSetCompleteness;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::EpisodeDecision;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningTrustDistributionV1;
+use codex_hepta_learning_ledger::LearningTrustRootV1;
 use codex_hepta_learning_ledger::LedgerEvent;
+use codex_hepta_learning_ledger::SignedLearningTrustDistributionV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
 use codex_hepta_ndu::NduProjectionJournalV1;
 use codex_hepta_ndu::NduProjectionKindV1;
@@ -31,6 +37,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use serde_json::json;
 
@@ -296,19 +303,73 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         SigningKey::from_bytes(&[22; 32]),
         SigningKey::from_bytes(&[33; 32]),
     ];
-    let trust_signers = keys
+    let trust_now = u64::try_from(
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)?
+            .as_micros(),
+    )?;
+    let trusted_signers: Vec<_> = keys
         .iter()
         .enumerate()
-        .map(|(index, key)| {
-            let principal = AuthenticatedPrincipalV1 {
+        .map(|(index, key)| TrustedLearningSignerV1 {
+            principal: AuthenticatedPrincipalV1 {
                 principal_id: id(&format!("plasticity-process-signer-{index}")),
                 credential_chain_digest: digest(&format!("plasticity-process-credential-{index}")),
                 signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
                 scope_digest: trust_scope,
                 authority_epoch: 7,
-                authenticated_at: 10,
-                expires_at: 100,
-            };
+                authenticated_at: trust_now - 1_000_000,
+                expires_at: trust_now + 600_000_000,
+            },
+            controller_id: id(&format!("plasticity-process-controller-{index}")),
+            verifying_key: key.verifying_key().to_bytes(),
+            roles: vec![match index {
+                0 => LearningEvidenceRoleV1::Generator,
+                1 => LearningEvidenceRoleV1::Observer,
+                _ => LearningEvidenceRoleV1::Evaluator,
+            }],
+            revoked_at: None,
+        })
+        .collect();
+    let trust_root_key = SigningKey::from_bytes(&[77; 32]);
+    let trust_root = LearningTrustRootV1 {
+        root_id: id("plasticity-process-root"),
+        scope_digest: trust_scope,
+        verifying_key: trust_root_key.verifying_key().to_bytes(),
+        valid_from: trust_now - 2_000_000,
+        expires_at: trust_now + 600_000_000,
+        revoked_at: None,
+    };
+    let mut distribution = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("plasticity-process-distribution"),
+            generation: 1,
+            effective_at: trust_now - 1_000_000,
+            trust: LearningEvidenceTrustV1 {
+                scope_digest: trust_scope,
+                objective_digest,
+                authority_epoch: 7,
+                signers: trusted_signers.clone(),
+            },
+        },
+        root_id: trust_root.root_id.clone(),
+        issued_at: trust_now - 2_000_000,
+        expires_at: trust_now + 600_000_000,
+        signature: [0; 64],
+    };
+    distribution.signature = trust_root_key
+        .sign(&distribution.signing_bytes()?)
+        .to_bytes();
+    let distribution_signature_hex: String = distribution
+        .signature
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    let trust_signers = keys
+        .iter()
+        .enumerate()
+        .map(|(index, key)| {
+            let principal = &trusted_signers[index].principal;
             let role = match index {
                 0 => "generator",
                 1 => "observer",
@@ -331,7 +392,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
 
     let descriptor_path = root.join("plasticity-bootstrap.json");
     let descriptor = json!({
-        "schema": "hepta.agentd.plasticity-bootstrap.v1",
+        "schema": "hepta.agentd.plasticity-bootstrap.v2",
         "agent_id": agent.agent_id.as_str(),
         "spawn_generation": 1,
         "queue_capacity": 8,
@@ -415,6 +476,15 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 .iter().map(|value| value.raw()).collect::<Vec<_>>(),
         }],
         "trust": {
+            "root": { "root_id": trust_root.root_id.as_str(),
+                "verifying_key_hex": hex32(trust_root.verifying_key),
+                "valid_from": trust_root.valid_from, "expires_at": trust_root.expires_at,
+                "revoked_at": null },
+            "distribution_id": distribution.distribution.distribution_id.as_str(),
+            "generation": distribution.distribution.generation,
+            "effective_at": distribution.distribution.effective_at,
+            "issued_at": distribution.issued_at, "expires_at": distribution.expires_at,
+            "distribution_signature_hex": distribution_signature_hex,
             "scope_digest": trust_scope.to_string(),
             "objective_digest": objective_digest.to_string(),
             "authority_epoch": 7,

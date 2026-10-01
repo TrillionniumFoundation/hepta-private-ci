@@ -30,9 +30,10 @@ use crate::IndependentEvaluationBundleV1;
 use crate::IndependentEvaluationDispositionV1;
 use crate::LongitudinalTimeEvidenceV1;
 use crate::MetricRoleContractV2;
+use crate::ProductQualificationReceiptV1;
+use crate::ProductTimingEvidenceV1;
 use crate::SignedEvaluationError;
 use crate::SignedEvaluationEvidenceV1;
-use crate::decide_with_signed_longitudinal_evidence_v3;
 use crate::future_window_signing_payload_v1;
 use crate::longitudinal_evaluation_signing_payload_v3;
 
@@ -71,10 +72,14 @@ pub struct SelfEvolutionSelectionReceiptV1 {
     pub no_change_baseline_digest: Digest32,
     pub dataset_digest: Digest32,
     pub ledger_head_digest: Digest32,
+    pub product_qualification_digest: Digest32,
+    pub publication_digest: Digest32,
+    pub temporal_execution_digest: Digest32,
     pub evaluation_evidence_digest: Digest32,
     pub evaluation_authentication_digest: Digest32,
     pub evaluation_trust_digest: Digest32,
     pub frozen_plan_digest: Digest32,
+    pub evaluation_frozen_at_unix_micros: u64,
     pub minimum_dataset_records: u32,
     pub minimum_future_window_micros: u64,
     pub authority: AuthorityPosture,
@@ -112,6 +117,12 @@ pub struct VerifiedSelfEvolutionSelectionV1 {
 }
 
 impl VerifiedSelfEvolutionSelectionV1 {
+    /// The independently signed freeze time bound by the product qualification.
+    #[must_use]
+    pub const fn evaluation_frozen_at_unix_micros(&self) -> u64 {
+        self.receipt.evaluation_frozen_at_unix_micros
+    }
+
     /// Check current host-owned trust and every actor's validity at consumption.
     /// The token is not a perpetual capability after key rotation or revocation.
     pub fn revalidate(
@@ -201,6 +212,7 @@ impl VerifiedSelfEvolutionRollbackV1 {
 pub fn prepare_self_evolution_selection_v1(
     policy: &SelfEvolutionSelectionPolicyV1,
     request: SelfEvolutionSelectionRequestV1,
+    qualification: &ProductQualificationReceiptV1,
     evaluation_bundle: IndependentEvaluationBundleV1,
     metric_roles: Vec<MetricRoleContractV2>,
     evaluation_evidence: &SignedEvaluationEvidenceV1,
@@ -226,15 +238,19 @@ pub fn prepare_self_evolution_selection_v1(
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
 
-    let evaluation = decide_with_signed_longitudinal_evidence_v3(
-        evaluation_bundle.clone(),
-        metric_roles.clone(),
-        evaluation_evidence,
-        longitudinal_time,
-        policy.minimum_future_window_micros,
-        verifier,
-        now,
-    )?;
+    let evaluation = qualification
+        .revalidate_consumption(
+            &evaluation_bundle,
+            &metric_roles,
+            evaluation_evidence,
+            ProductTimingEvidenceV1::SystemLongitudinal {
+                timing: longitudinal_time,
+                minimum_window_micros: policy.minimum_future_window_micros,
+            },
+            verifier,
+            now,
+        )
+        .map_err(|_| SelfEvolutionSelectionError::BindingMismatch)?;
     if evaluation.decision.disposition
         != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
     {
@@ -292,10 +308,14 @@ pub fn prepare_self_evolution_selection_v1(
         no_change_baseline_digest: policy.no_change_baseline_digest,
         dataset_digest: dataset_receipt.snapshot.dataset_digest,
         ledger_head_digest: dataset_receipt.snapshot.ledger_head_digest,
+        product_qualification_digest: qualification.evidence_digest,
+        publication_digest: qualification.publication_digest,
+        temporal_execution_digest: qualification.temporal_execution_digest,
         evaluation_evidence_digest: evaluation.decision.evidence_digest,
         evaluation_authentication_digest: evaluation.authentication_digest,
         evaluation_trust_digest: evaluation.trust_digest,
         frozen_plan_digest: evaluation_bundle.frozen_plan.plan_digest,
+        evaluation_frozen_at_unix_micros: longitudinal_time.frozen_unix_micros,
         minimum_dataset_records: policy.minimum_dataset_records,
         minimum_future_window_micros: policy.minimum_future_window_micros,
         authority: AuthorityPosture::DENY_ALL,
@@ -330,6 +350,9 @@ pub fn selection_signing_payload_v1(
         receipt.no_change_baseline_digest,
         receipt.dataset_digest,
         receipt.ledger_head_digest,
+        receipt.product_qualification_digest,
+        receipt.publication_digest,
+        receipt.temporal_execution_digest,
         receipt.evaluation_evidence_digest,
         receipt.evaluation_authentication_digest,
         receipt.evaluation_trust_digest,
@@ -340,6 +363,7 @@ pub fn selection_signing_payload_v1(
     }
     bytes.extend_from_slice(&receipt.minimum_dataset_records.to_be_bytes());
     bytes.extend_from_slice(&receipt.minimum_future_window_micros.to_be_bytes());
+    bytes.extend_from_slice(&receipt.evaluation_frozen_at_unix_micros.to_be_bytes());
     Ok(bytes)
 }
 
@@ -466,6 +490,7 @@ fn validate_receipt(
         || receipt.minimum_dataset_records == 0
         || receipt.minimum_dataset_records > MAX_DATASET_RECORDS
         || receipt.minimum_future_window_micros == 0
+        || receipt.evaluation_frozen_at_unix_micros == 0
     {
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
@@ -560,10 +585,14 @@ mod tests {
             no_change_baseline_digest: digest("baseline-bytes"),
             dataset_digest: digest("dataset"),
             ledger_head_digest: digest("ledger"),
+            product_qualification_digest: digest("product-qualification"),
+            publication_digest: digest("publication"),
+            temporal_execution_digest: digest("execution"),
             evaluation_evidence_digest: digest("evaluation"),
             evaluation_authentication_digest: digest("authentication"),
             evaluation_trust_digest: digest("trust"),
             frozen_plan_digest: digest("plan"),
+            evaluation_frozen_at_unix_micros: 10,
             minimum_dataset_records: 10,
             minimum_future_window_micros: 1_000,
             authority: AuthorityPosture::DENY_ALL,

@@ -9,12 +9,15 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
+use std::time::Instant;
 
 use codex_hepta_learning_ledger::AuthenticatedOutcomeTerminality;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::LearningTrustDistributionError;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
+use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -63,6 +66,10 @@ impl FrozenTerminalCellV1 {
 #[derive(Debug)]
 pub enum TerminalCellError {
     Ledger(ProductionLedgerError),
+    TrustDistribution(LearningTrustDistributionError),
+    SignedEvidence(SignedEvidenceError),
+    ClockRegression,
+    TimeOverflow,
     Unsupported(&'static str),
     Fit(StrictLearnedOperatorError),
 }
@@ -71,10 +78,55 @@ impl fmt::Display for TerminalCellError {
         write!(f, "{self:?}")
     }
 }
-impl Error for TerminalCellError {}
+impl Error for TerminalCellError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::Ledger(error) => Some(error),
+            Self::TrustDistribution(error) => Some(error),
+            Self::SignedEvidence(error) => Some(error),
+            Self::Fit(error) => Some(error),
+            Self::Unsupported(_) | Self::ClockRegression | Self::TimeOverflow => None,
+        }
+    }
+}
+
+impl crate::ClassifyOperatorAdmissionFailure for TerminalCellError {
+    fn disposition(&self) -> crate::OperatorFailureDispositionV1 {
+        use crate::OperatorFailureScopeV1 as Scope;
+        use crate::OperatorRecoveryActionV1 as Action;
+        match self {
+            Self::Ledger(_)
+            | Self::TrustDistribution(_)
+            | Self::SignedEvidence(_)
+            | Self::ClockRegression
+            | Self::TimeOverflow => crate::OperatorFailureDispositionV1 {
+                scope: Scope::Consumer,
+                action: Action::StopConsumer,
+            },
+            Self::Unsupported(_) => crate::OperatorFailureDispositionV1 {
+                scope: Scope::Request,
+                action: Action::CorrectRequest,
+            },
+            Self::Fit(_) => crate::OperatorFailureDispositionV1 {
+                scope: Scope::Candidate,
+                action: Action::RejectCandidate,
+            },
+        }
+    }
+}
 impl From<ProductionLedgerError> for TerminalCellError {
     fn from(value: ProductionLedgerError) -> Self {
         Self::Ledger(value)
+    }
+}
+impl From<LearningTrustDistributionError> for TerminalCellError {
+    fn from(value: LearningTrustDistributionError) -> Self {
+        Self::TrustDistribution(value)
+    }
+}
+impl From<SignedEvidenceError> for TerminalCellError {
+    fn from(value: SignedEvidenceError) -> Self {
+        Self::SignedEvidence(value)
     }
 }
 
@@ -84,6 +136,7 @@ pub fn freeze_terminal_cell_from_owner_v1(
     mut profile: TerminalCellProfileV1,
     now: u64,
 ) -> Result<FrozenTerminalCellV1, TerminalCellError> {
+    owner.revalidate_trust_at(now)?;
     // Each supported episode needs a decision and an outcome. Check this
     // necessary support budget before owner materialization or sorting.
     if dataset.snapshot.objective_digest != profile.objective_digest
@@ -223,6 +276,31 @@ pub fn fit_terminal_cell_from_owner_v1(
     frozen: FrozenTerminalCellV1,
     now: u64,
 ) -> Result<TabularOperatorArtifactV1, TerminalCellError> {
+    let started = Instant::now();
+    fit_terminal_cell_at(owner, &frozen, now, || {
+        terminal_effective_now(now, &started)
+    })
+    .map(|(artifact, _)| artifact)
+}
+
+pub(super) fn terminal_effective_now(
+    observed_at: u64,
+    started: &Instant,
+) -> Result<u64, TerminalCellError> {
+    let elapsed = u64::try_from(started.elapsed().as_micros())
+        .map_err(|_| TerminalCellError::TimeOverflow)?;
+    observed_at
+        .checked_add(elapsed)
+        .ok_or(TerminalCellError::TimeOverflow)
+}
+
+pub(super) fn fit_terminal_cell_at(
+    owner: &LedgerWriter,
+    frozen: &FrozenTerminalCellV1,
+    now: u64,
+    mut effective_now: impl FnMut() -> Result<u64, TerminalCellError>,
+) -> Result<(TabularOperatorArtifactV1, u64), TerminalCellError> {
+    owner.revalidate_trust_at(now)?;
     if now < frozen.frozen_at {
         return Err(TerminalCellError::Unsupported(
             "fit predates dataset freeze",
@@ -231,5 +309,18 @@ pub fn fit_terminal_cell_from_owner_v1(
     // Correction or withdrawal between freeze and fitting
     // rejects the candidate rather than quietly training on a stale dataset.
     owner.revalidate_dataset_snapshot(&frozen.dataset, now)?;
-    fit_tabular_operator_strict_v2(frozen.plan).map_err(TerminalCellError::Fit)
+    let artifact =
+        fit_tabular_operator_strict_v2(frozen.plan.clone()).map_err(TerminalCellError::Fit)?;
+    let finished_at = effective_now()?;
+    if finished_at < now {
+        return Err(TerminalCellError::ClockRegression);
+    }
+    owner.revalidate_trust_at(finished_at)?;
+    owner.revalidate_dataset_snapshot(&frozen.dataset, finished_at)?;
+    let final_at = effective_now()?;
+    if final_at < finished_at {
+        return Err(TerminalCellError::ClockRegression);
+    }
+    owner.revalidate_trust_at(final_at)?;
+    Ok((artifact, final_at))
 }

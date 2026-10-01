@@ -17,7 +17,7 @@ pub fn preflight_signed_tabular_v3(
     )
 }
 
-fn validate_shape(
+pub(crate) fn validate_shape(
     sensors: usize,
     actions: usize,
     minimum: usize,

@@ -62,13 +62,19 @@ jobs:
       - name: Install pinned qualification tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: cargo-llvm-cov@0.9.1
+          tool: cargo-llvm-cov@0.9.1,just@1.51.0,nextest@0.9.103
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
           components: clippy,rustfmt,llvm-tools-preview
+
+      - name: Prepare checksum-verified V8 archive and binding
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
 
       - name: Run exact-source and deterministic synthetic-merge qualification
         shell: bash

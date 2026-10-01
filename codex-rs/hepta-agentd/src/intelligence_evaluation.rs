@@ -13,11 +13,14 @@ use codex_hepta_intelligence::CurrentOwnerStateV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::ProductEvaluationError;
+use codex_hepta_intelligence_eval::ProductQualificationReceiptV1;
+use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
 use codex_hepta_intelligence_eval::SignedEvaluationError;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
 use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningTrustDistributionError;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::Digest32;
@@ -26,6 +29,8 @@ use codex_hepta_types::StableId;
 /// Data supplied by the evaluator. Every field is checked again at its use site.
 #[derive(Clone, Debug)]
 pub struct AgentdSignedEvaluationV1 {
+    /// Genuine fenced estimator execution and durable evidence publication.
+    pub qualification: ProductQualificationReceiptV1,
     pub bundle: IndependentEvaluationBundleV1,
     pub roles: Vec<MetricRoleContractV2>,
     pub evidence: SignedEvaluationEvidenceV1,
@@ -47,7 +52,11 @@ pub struct AgentdEvaluationBindingV1 {
 pub fn intelligence_evaluation_binding_payload_v1(
     binding: &AgentdEvaluationBindingV1,
     evidence: &SignedEvaluationEvidenceV1,
+    qualification: &ProductQualificationReceiptV1,
 ) -> Result<Vec<u8>, AgentdIntelligenceEvaluationError> {
+    qualification
+        .validate_integrity()
+        .map_err(AgentdIntelligenceEvaluationError::Qualification)?;
     let digests = [
         binding.objective_digest,
         binding.snapshot_digest,
@@ -57,7 +66,7 @@ pub fn intelligence_evaluation_binding_payload_v1(
     if digests.iter().any(|digest| digest.is_zero()) {
         return Err(AgentdIntelligenceEvaluationError::Binding);
     }
-    let mut bytes = b"hepta.agentd.evaluation-use.v1\0".to_vec();
+    let mut bytes = b"hepta.agentd.evaluation-use.v2\0".to_vec();
     for id in [&binding.run_id, &binding.selected_candidate_id] {
         let length = u64::try_from(id.as_str().len())
             .map_err(|_| AgentdIntelligenceEvaluationError::Binding)?;
@@ -65,6 +74,13 @@ pub fn intelligence_evaluation_binding_payload_v1(
         bytes.extend_from_slice(id.as_str().as_bytes());
     }
     for digest in digests {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    for digest in [
+        qualification.evidence_digest,
+        qualification.publication_digest,
+        qualification.temporal_execution_digest,
+    ] {
         bytes.extend_from_slice(digest.as_array());
     }
     for signed in [&evidence.generator_plan, &evidence.evaluator_bundle] {
@@ -88,6 +104,9 @@ impl AgentdEvaluationSessionV1 {
         candidate: &StableId,
         now: u64,
     ) -> Result<Digest32, AgentdIntelligenceEvaluationError> {
+        self.trust
+            .revalidate_at(now)
+            .map_err(AgentdIntelligenceEvaluationError::Trust)?;
         if input.run_id != self.run_id
             || input.stage != CanonicalStageV1::EvaluationAdmitted
             || self.current_owner.owner_id.as_str() != "learning.eval"
@@ -105,7 +124,11 @@ impl AgentdEvaluationSessionV1 {
             candidate_set_digest: input.candidate_set_digest,
             selected_candidate_id: candidate.clone(),
         };
-        let payload = intelligence_evaluation_binding_payload_v1(&binding, &self.signed.evidence)?;
+        let payload = intelligence_evaluation_binding_payload_v1(
+            &binding,
+            &self.signed.evidence,
+            &self.signed.qualification,
+        )?;
         let verified = self
             .trust
             .verifier()
@@ -121,14 +144,18 @@ impl AgentdEvaluationSessionV1 {
         {
             return Err(AgentdIntelligenceEvaluationError::Binding);
         }
-        let result = decide_with_signed_evidence_v2(
-            self.signed.bundle,
-            self.signed.roles,
-            &self.signed.evidence,
-            self.trust.verifier(),
-            now,
-        )
-        .map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
+        let result = self
+            .signed
+            .qualification
+            .revalidate_consumption(
+                &self.signed.bundle,
+                &self.signed.roles,
+                &self.signed.evidence,
+                ProductTimingEvidenceV1::Qualification,
+                self.trust.verifier(),
+                now,
+            )
+            .map_err(AgentdIntelligenceEvaluationError::Qualification)?;
         if result.decision.authority.grants_any()
             || result.decision.disposition
                 != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
@@ -148,8 +175,10 @@ impl AgentdEvaluationSessionV1 {
 pub enum AgentdIntelligenceEvaluationError {
     Binding,
     Ineligible,
+    Trust(LearningTrustDistributionError),
     Evidence(SignedEvidenceError),
     Evaluation(SignedEvaluationError),
+    Qualification(ProductEvaluationError),
 }
 
 impl fmt::Display for AgentdIntelligenceEvaluationError {

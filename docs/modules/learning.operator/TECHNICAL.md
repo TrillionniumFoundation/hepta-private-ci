@@ -21,9 +21,12 @@ in Markdown.
 At the current contract boundary the default loader is
 `LoadedTabularOperatorV2`, and the evaluated read-only ranker is implemented.
 `coordinate_learning_operator_shadow_v1` implements the shadow coordination
-contract, but its owner-port adapters and default runtime caller remain
-repository integration work. Fresh-process loading and signed component protocol
-E2E are required gates; coordinator state-machine tests use fixture ports.
+contract. The real artifact-owner persistence adapter, qualified V3 read-only
+loader and `AgentdIntelligenceProductRunnerV1::persist_learning_operator_candidate`
+entry exist. The configured default caller and complete owner-port composition,
+including a distinct-process shadow load and exact predecessor rollback, remain
+integration work. Coordinator state-machine tests still use fixture ports;
+component loading or persistence does not prove the entire runtime lifecycle.
 Those facts do not establish
 longitudinal product benefit: `productExecutionProved`, production writer
 authority, independent acceptance, target-host acceptance, canary, promotion,
@@ -53,8 +56,9 @@ The declared and resolved source root is:
 
 - `codex-rs/hepta-bellman-operator`
 
-The product composition boundary additionally includes the explicitly mapped
-Agentd ranker admission and shadow coordinator. The generated implementation
+The product composition boundary additionally includes Agentd ranker admission,
+the shadow coordinator, artifact-owner persistence, qualified V3 shadow loading
+and the contracts crate's three untrusted transport codecs. The generated implementation
 projection binds each source, document, workflow and qualification-control
 object to the exact candidate SHA and tree. The checked-in
 `IMPLEMENTATION_MAP.json` is navigation metadata, not a substitute for an
@@ -121,9 +125,15 @@ unverified object or restart blindly. A verified persisted object is cleaned up
 when later work expires, and unverified cleanup remains a recovery error. Host
 clock and receipt expiry are checked at each port; terminal audit binds selection
 reason, storage and rollback evidence.
-The current coordinator has fixture-port state-machine tests. Its real durable
-owner adapters, fresh-process load port and runtime invocation must be composed
-and exercised together before the default product loop can be marked wired.
+The current coordinator has fixture-port state-machine tests. Its real
+`LearningOperatorArtifactOwnerV1` adapter uses the existing fenced owner service
+for exact create-only publication, retry and read-only status reconciliation.
+`EvaluatedTabularShadowConsumerV3` loads admitted bytes with distinct training and
+evaluation sources and checks current owner, selection, trust and deadline before
+and after each prediction. The ProductRunner exposes a bounded persistence entry.
+These are implemented components, not a configured implementation of every
+`LearningOperatorShadowPortsV1` stage. Distinct-process loading, complete runtime
+invocation and verified predecessor rollback still require one composed test.
 
 ### 4.1 Final-use capability model
 
@@ -227,6 +237,16 @@ profile derives its narrower targets directly from owner facts. Applicability an
 regularity signatures authenticate exact attestations rather than measuring the
 claimed geometry, rank, calibration or scientific assumptions.
 
+World-model row signatures bind the model ID, exact samples, frozen dataset and
+owner-trust context. They do not attest the host-supplied train/holdout/future
+window identities, calibration, OOD/drift, change-point or retention values.
+Range checks and artifact commitments protect those inputs but do not measure
+them or establish future-window efficacy. The Holder reference still consumes
+supplied reward/continuation cells; registered local-model integration,
+continuous monotone reconstruction, certified hull OOD and branch/state/action
+trunk fitting remain unimplemented profiles. A simpler reference may replace a
+neural profile only after meeting the same independent acceptance bounds.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts include Bellman/operator artifacts, regularity assessments,
@@ -235,13 +255,17 @@ Consumed contracts include frozen dataset snapshots, authenticated decisions
 and outcomes, artifact registry views, unlearning lineage, sensor-core manifests
 and qualification evidence.
 
-Canonical wire parity is a target contract requirement. Current native candidate
-structs are owner-local profiles, not canonical-JSON adapters: applicability uses
+Canonical wire parity is a target contract requirement. The contracts crate now
+implements strict bounded untrusted V1 codecs for the registered sensor,
+regularity and applicability protocols. Unknown fields, duplicate keys,
+noncanonical numbers/ordering, reserved serde members and unsupported versions
+reject. Current native candidate structs remain owner-local profiles: applicability uses
 profile digests and a scalar interval, while registered wire schemas require
 profile objects, horizon and jump-policy fields; native sensor manifests contain
-points rather than the wire lifecycle envelope. Wire bounds, unknown-field
-rejection and round-trip proof remain repository adapter work. Native canonical
-ordering, digest binding and `HEPTTB01` payload validation have focused tests.
+points rather than the wire lifecycle envelope. Lossless context-bound native
+bridges and semantic owner admission remain work. `BellmanOperatorArtifactV1`
+is registered without a precise field schema and dispatch explicitly rejects it.
+Native ordering, digest binding and `HEPTTB01` validation have focused tests.
 No existing V1 wire schema is redefined by the native profiles.
 
 Sensor/reference/target and tabular-training commitments use V2 digest domains
@@ -267,6 +291,28 @@ The module owns no authoritative store. It reads immutable owner-issued ledger,
 artifact, unlearning and qualification facts. Candidate persistence is delegated
 to `learning.artifacts` through create-only identities; selection and registry
 currentness remain external owner facts.
+
+The real publication adapter binds the candidate's borrowed
+`TabularCandidatePublicationViewV1` to an externally admitted V3 manifest; the
+view cannot issue that manifest or a selection. It preserves known storage or
+unknown-write recovery facts after late expiry. The qualified shadow loader
+refreshes both ledgers, the artifact owner's CURRENT source and independent
+selection; a failed refresh permanently closes that handle pending re-admission.
+
+| Interface | Time unit and boundary |
+|---|---|
+| Final-use fence/witness, candidate publication and shadow-run fields | Unix microseconds; deadlines are exclusive and retained monotonic elapsed work prevents stale-clock extension. |
+| Real publication adapter and qualified V3 shadow consumer | Unix microseconds sampled from the host, with monotonic elapsed checks; submitted timestamps do not supply current time. |
+| Registered V1 transport `expiresUnixMs` | Unix milliseconds; conversion needs explicit owner context and checked arithmetic. |
+| Registered applicability `horizonMicros` and native `control_interval_millis` | Duration microseconds and duration milliseconds respectively; neither supplies the other's complete horizon/profile semantics. |
+
+The optional plasticity process bootstrap now requires
+`hepta.agentd.plasticity-bootstrap.v2` through
+`load_plasticity_process_bootstrap_v2`. Its host descriptor explicitly supplies
+the retained root key/validity and root-signed distribution identity, generation,
+effective/issued/expiry times and signature. Existing V1 signer-only descriptors
+are rejected; they are not automatically relabeled or self-signed as V2. Host
+placement and retention of that root remain external configuration obligations.
 
 Projection state is rebuildable from declared sources and never becomes a new
 source of truth. Retention and deletion preserve lineage and prevent resurrection
@@ -298,7 +344,7 @@ mutation, coverage or performance diagnostics. Any failed, missing, cancelled or
 not-run required stage forces `mergeReady=false` and
 `productionQualified=false` in the single readiness manifest.
 
-## 9. Security and privacy
+## 9. Security, privacy and threat controls
 
 The posture is least authority, bounded input, typed contracts, digest binding
 and independent evidence. Credentials do not enter general logs, datasets,
@@ -309,7 +355,7 @@ Negative tests cover denied capabilities, stale/revoked grants, replay with
 payload drift, unknown fields, oversized input, scope escape, secret/provider
 leakage, clock regression and deadline equality.
 
-## 10. Performance and capacity
+## 10. Performance, capacity and hot-path policy
 
 Structural maxima are source bounds, not shipping capacity claims. Regression
 qualification records time, process RSS checkpoints and model-estimated bytes
@@ -376,7 +422,112 @@ operator acceptance, canary, promotion, activation and release require external
 owners and exact-candidate receipts. Repository qualification cannot issue them;
 activation remains false.
 
-Repository work still includes canonical wire adapters, real owner ports and the
-default coordinator caller, plus successful qualification of the unified source
+Repository work still includes native-to-wire owner context, the missing
+`BellmanOperatorArtifactV1` field schema, remaining coordinator owner stages and
+the configured default caller, plus successful qualification of the unified source
 and deterministic merge candidate. Component E2E and a generic coordinator are
 necessary engineering evidence, but do not close that composition obligation.
+
+## 14. Activation, compatibility and retirement
+
+Candidate fitting, independent evaluation, selection and artifact publication
+have separate identities and owners. Publication into a qualification store
+does not activate a runtime policy. Keep `STATUS.json` acceptance fields false
+until the corresponding independent owner supplies exact-candidate receipts.
+The shadow experiment restores the exact predecessor rather than selecting a
+newly reconstructed approximation of it.
+
+Digest-domain, semantic-profile, training-source or runtime changes create a
+new candidate identity and require new qualification. Read existing `HEPTTB01`
+payloads only with their original complete pins and current owner witnesses;
+do not reinterpret them as registered Bellman JSON. Compatibility-only raw APIs
+cannot satisfy the default final-use contract. Withdrawal, deletion, authority
+rotation or a failed currentness refresh closes the consumer; cached bytes do
+not restore eligibility.
+
+## 15. Definition of module completion
+
+Assess implementation and acceptance separately. The bounded deterministic
+reference, tabular estimation, discrete world model, owner-bound final-use
+capabilities and immutable read consumers have source implementations. Those
+components do not implement every algorithm in the Holder specification.
+In particular, tabular cell means are not the branch/state-trunk/action-trunk
+neural operator, and finite candidate coverage is not continuous-domain coverage.
+
+| Completion requirement | Evidence needed |
+|---|---|
+| Bounded candidate algorithms | Current default/compatibility tests, arithmetic, resource, integrity and adversarial regressions |
+| Cross-owner qualification | Estimator-derived sealed qualification, actual fenced holdout consumption, durable publication and use-time authentication |
+| Artifact lifecycle | Real owner persistence/reconciliation and qualified V3 read-only loading are implemented; distinct-process loading and exact predecessor rollback still need one complete lifecycle receipt. |
+| Registered wire compatibility | Three registered untrusted codecs are implemented; the Bellman field schema, precise enum/member semantics and context-bound native bridges remain required. |
+| Default runtime composition | ProductRunner persistence entry exists; a configured caller exercising every owner port in one durable shadow lifecycle remains required. |
+| Scientific and host acceptance | Independent applicability/calibration, future-calendar benefit and accepted-host capacity receipts |
+
+The remaining algorithmic scope is concrete:
+
+- The reference consumes supplied reward/continuation cells. Local-model
+  simulation/integration, monotone interpolation and antithetic paths from the
+  Holder specification are not implemented by that interface.
+- Sensor qualification measures a finite candidate set. It does not establish
+  continuous-domain fill, a hull/OOD certificate or anisotropic reconstruction.
+- Tabular estimation implements complete cell statistics and support. Neural
+  branch/state/action trunks, action-gap losses, residual amplification/support
+  diagnostics and optimizer training controls are not implemented. The design
+  permits a qualified simpler reference, which still needs the corresponding
+  independent error and applicability evidence.
+- Discrete world-model statistics and integrity are implemented. Independent
+  reward/risk heads, actual one/multi-step calibration, change-point and future
+  retention measurements, and prediction-error modulation remain outstanding.
+
+Do not compute a completion percentage from the number of mapped symbols or
+test passes. A missing lifecycle edge or acceptance receipt remains a missing
+requirement regardless of how many component tests pass. The three implemented
+untrusted transport views leave Bellman schema definition, native bridges and
+semantic owner admission outstanding; `canonicalWireAdaptersImplemented`
+therefore remains false.
+
+## 16. V8.2 pre-coding implementation-readiness overlay
+
+`learning.operator` belongs to `LANE-E-LEARNING` under
+[PARALLEL_DEVELOPMENT.md](../../readiness/PARALLEL_DEVELOPMENT.md), with
+`offline_worker`, immutable candidate state, `FP-LEARNING-OFFLINE` and
+`PERF-OFFLINE` execution profiles. Its integration checkpoints use the
+[learning evaluation specification](../../readiness/LEARNING_EVALUATION_EXECUTION.md)
+and the [source/branch policy](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md).
+Record the actual Git candidate, owned paths, registry versions, input digests,
+deadline and rollback predecessor before qualifying a runtime composition.
+
+The contracts crate's `learning_operator_protocol` module implements untrusted
+canonical transport views for the registered sensor, regularity and
+applicability V1 schemas. Its tests read the actual contract/protocol registries,
+check field order and byte bounds, and reject unknown/duplicate fields,
+noncanonical bytes, protocol relabeling and unsupported versions. The artifact
+identity is registered without a field schema; dispatch returns
+`MissingCanonicalSchema` instead of treating `HEPTTB01` as canonical JSON.
+Enum values and bounded-object members are not defined by these registries;
+transport preserves them without issuing native or scientific admission.
+
+Run `just test -p codex-hepta-contracts --locked --lib -E
+'test(learning_operator_protocol::tests)'` for this transport checkpoint and the
+focused Bellman/operator, coordinator and real owner tests in
+[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for their separate behavior. Run
+`python3 scripts/hepta-implementation-dossiers.py verify` from the repository
+root after changing this overlay. Compilation and fixture success establish
+the tested engineering behavior; a source harness does not establish a named
+Agentd runtime, durable crash/reopen behavior or independent future-window
+acceptance. The ledger, artifact owner, evaluator and selector retain their
+existing writer and decision boundaries. Unknown persistence or rollback
+identity stops the operation and preserves recovery facts; activation, promotion
+and release still require the applicable independent owner decisions.
+
+## 17. Source implementation receipt
+
+The source root, mapped symbols and historical navigation observation are in
+`IMPLEMENTATION_MAP.json`. Exact executed source/tree, command, test filters,
+exit status and raw-log hashes belong to the generated qualification receipts.
+The retained adversarial audit in
+[qualification/lane-e](../../../qualification/lane-e/learning-operator-adversarial-audit-20261001.md)
+records local observations and their limits. Historical observations do not
+qualify later edits. Whole Agentd, Bazel, PR-head, deterministic merge and actual
+post-merge builds each require their own successful evidence; a small source
+harness is evidence only for the code it compiles and exercises.

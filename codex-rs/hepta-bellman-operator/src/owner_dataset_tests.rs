@@ -31,6 +31,15 @@ static NEXT: AtomicU64 = AtomicU64::new(0);
 #[path = "owner_dataset_expiry_tests.rs"]
 mod expiry_tests;
 
+#[path = "owner_trust_window_tests.rs"]
+mod trust_window_tests;
+
+#[path = "owner_terminal_trust_tests.rs"]
+mod terminal_trust_tests;
+
+#[path = "owner_capability_issuance_tests.rs"]
+mod capability_issuance_tests;
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap()
 }
@@ -57,14 +66,14 @@ fn signer(name: &str, seed: u8, role: LearningEvidenceRoleV1) -> TrustedLearning
     }
 }
 
-fn activated_trust() -> ActivatedLearningTrustV1 {
+fn activated_trust_until(expires_at: u64) -> ActivatedLearningTrustV1 {
     let key = SigningKey::from_bytes(&[99; 32]);
     let root = LearningTrustRootV1 {
         root_id: id("root"),
         scope_digest: hash("scope"),
         verifying_key: key.verifying_key().to_bytes(),
         valid_from: 1,
-        expires_at: 200,
+        expires_at: expires_at.checked_mul(2).unwrap().max(200),
         revoked_at: None,
     };
     let mut signed = SignedLearningTrustDistributionV1 {
@@ -80,12 +89,21 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
                     signer("generator", 1, LearningEvidenceRoleV1::Generator),
                     signer("observer", 2, LearningEvidenceRoleV1::Observer),
                     signer("evaluator", 3, LearningEvidenceRoleV1::Evaluator),
-                ],
+                ]
+                .into_iter()
+                .map(|mut signer| {
+                    signer.principal.expires_at = expires_at
+                        .checked_add((expires_at / 10).max(10))
+                        .unwrap()
+                        .max(100);
+                    signer
+                })
+                .collect(),
             },
         },
         root_id: root.root_id.clone(),
         issued_at: 15,
-        expires_at: 90,
+        expires_at,
         signature: [0; 64],
     };
     signed.signature = key.sign(&signed.signing_bytes().unwrap()).to_bytes();
@@ -124,6 +142,14 @@ struct Fixture {
 }
 impl Fixture {
     fn new() -> Self {
+        Self::with_candidates(vec![id("action"), id("abstain")])
+    }
+
+    fn with_candidates(candidates: Vec<StableId>) -> Self {
+        Self::with_candidates_and_expiry(candidates, 90)
+    }
+
+    fn with_candidates_and_expiry(candidates: Vec<StableId>, expires_at: u64) -> Self {
         let serial = NEXT.fetch_add(1, Ordering::Relaxed);
         let root = std::env::temp_dir().join(format!(
             "hepta-owner-dataset-{}-{serial}",
@@ -141,75 +167,30 @@ impl Fixture {
         let ledger = DurableLedger::create(file("ledger"), hash("binding"), 64).unwrap();
         let witness = LedgerWitnessStore::create(file("witness"), hash("binding")).unwrap();
         let directory = File::open(&root).unwrap();
-        let mut owner =
-            LedgerWriter::from_durable(ledger, witness, activated_trust(), &directory, &directory)
-                .unwrap();
-        let candidates = vec![id("action"), id("abstain")];
-        let decision = ProductionDecisionV2 {
-            record_id: id("decision"),
-            episode_id: id("episode"),
-            run_snapshot_digest: hash("run"),
-            objective_digest: hash("objective"),
-            policy_digest: hash("policy"),
-            candidate_ids: candidates.clone(),
-            selected_candidate_id: id("action"),
-            selected_propensity: ProbabilityQ32::ONE,
-            completeness: CandidateSetCompletenessReceiptV1 {
-                set_id: id("set"),
-                state_digest: hash("state"),
-                generator_id: id("generator"),
-                generator_code_digest: hash("code"),
-                grammar_digest: hash("grammar"),
-                hard_filter_digest: hash("filter"),
-                truncation_digest: hash("truncation"),
-                candidates_digest: candidate_ids_digest_v2(&candidates),
-                candidate_count: 2,
-                omitted_count_bound: 0,
-                canonical_order_digest: candidate_order_digest_v2(&candidates),
-                complete_for_generator: true,
-            },
-            support_digest: hash("decision-support"),
-        };
-        let signed = sign(
-            &owner,
-            "generator",
-            1,
-            LearningEvidenceRoleV1::Generator,
-            &decision_signing_payload_v2(&decision).unwrap(),
-        );
-        let append = owner
-            .append_decision(Digest32::ZERO, decision, &signed, 50)
-            .unwrap();
-        let outcome = AuthenticatedOutcomeV1 {
-            record_id: id("outcome-record"),
-            outcome_id: id("outcome"),
-            episode_id: id("episode"),
-            observer: signer("observer", 2, LearningEvidenceRoleV1::Observer).principal,
-            observed_at: Some(40),
-            value: Some(FixedQ32::from_raw(20)),
-            unit_profile_digest: hash("unit"),
-            support_digest: hash("outcome-support"),
-            watermark: OutcomeWatermarkV1 {
-                latest_observable_at: 45,
-                expected_delay_profile_digest: hash("delay"),
-                terminality: OutcomeTerminalityV1::Terminal,
-                censoring_reason: None,
-                correction_predecessor: None,
-                finalized_at: Some(46),
-            },
-        };
-        let signed = sign(
-            &owner,
-            "observer",
-            2,
-            LearningEvidenceRoleV1::Observer,
-            &outcome_signing_payload_v2(&outcome),
-        );
-        owner
-            .append_outcome(append.chain_digest, outcome, &signed, 50)
-            .unwrap();
+        let mut owner = LedgerWriter::from_durable(
+            ledger,
+            witness,
+            activated_trust_until(expires_at),
+            &directory,
+            &directory,
+        )
+        .unwrap();
+        append_fixture_episode(&mut owner, candidates, "action", "", expires_at);
         Self { owner, root }
     }
+    fn terminal() -> Self {
+        let candidates = vec![id("action"), id("abstain")];
+        let mut fixture = Self::with_candidates_and_expiry(candidates.clone(), 90_000_000);
+        append_fixture_episode(
+            &mut fixture.owner,
+            candidates,
+            "abstain",
+            "-abstain",
+            90_000_000,
+        );
+        fixture
+    }
+
     fn dataset(&self) -> (DatasetSnapshotReceiptV3, SignedLearningEvidenceV1) {
         let plan = DatasetFreezePlanV2 {
             snapshot_id: id("dataset"),
@@ -233,6 +214,83 @@ impl Drop for Fixture {
     fn drop(&mut self) {
         let _ = fs::remove_dir_all(&self.root);
     }
+}
+
+fn append_fixture_episode(
+    owner: &mut LedgerWriter,
+    candidates: Vec<StableId>,
+    selected_action: &str,
+    suffix: &str,
+    expires_at: u64,
+) {
+    let decision = ProductionDecisionV2 {
+        record_id: id(&format!("decision{suffix}")),
+        episode_id: id(&format!("episode{suffix}")),
+        run_snapshot_digest: hash("run"),
+        objective_digest: hash("objective"),
+        policy_digest: hash("policy"),
+        candidate_ids: candidates.clone(),
+        selected_candidate_id: id(selected_action),
+        selected_propensity: ProbabilityQ32::ONE,
+        completeness: CandidateSetCompletenessReceiptV1 {
+            set_id: id(&format!("set{suffix}")),
+            state_digest: hash("state"),
+            generator_id: id("generator"),
+            generator_code_digest: hash("code"),
+            grammar_digest: hash("grammar"),
+            hard_filter_digest: hash("filter"),
+            truncation_digest: hash("truncation"),
+            candidates_digest: candidate_ids_digest_v2(&candidates),
+            candidate_count: u32::try_from(candidates.len()).unwrap(),
+            omitted_count_bound: 0,
+            canonical_order_digest: candidate_order_digest_v2(&candidates),
+            complete_for_generator: true,
+        },
+        support_digest: hash("decision-support"),
+    };
+    let signed = sign(
+        owner,
+        "generator",
+        1,
+        LearningEvidenceRoleV1::Generator,
+        &decision_signing_payload_v2(&decision).unwrap(),
+    );
+    let append = owner
+        .append_decision(owner.snapshot().unwrap().head_digest, decision, &signed, 50)
+        .unwrap();
+    let mut observer = signer("observer", 2, LearningEvidenceRoleV1::Observer).principal;
+    observer.expires_at = expires_at
+        .checked_add((expires_at / 10).max(10))
+        .unwrap()
+        .max(100);
+    let outcome = AuthenticatedOutcomeV1 {
+        record_id: id(&format!("outcome-record{suffix}")),
+        outcome_id: id(&format!("outcome{suffix}")),
+        episode_id: id(&format!("episode{suffix}")),
+        observer,
+        observed_at: Some(40),
+        value: Some(FixedQ32::from_raw(20)),
+        unit_profile_digest: hash("unit"),
+        support_digest: hash("outcome-support"),
+        watermark: OutcomeWatermarkV1 {
+            latest_observable_at: 45,
+            expected_delay_profile_digest: hash("delay"),
+            terminality: OutcomeTerminalityV1::Terminal,
+            censoring_reason: None,
+            correction_predecessor: None,
+            finalized_at: Some(46),
+        },
+    };
+    let signed = sign(
+        owner,
+        "observer",
+        2,
+        LearningEvidenceRoleV1::Observer,
+        &outcome_signing_payload_v2(&outcome),
+    );
+    owner
+        .append_outcome(append.chain_digest, outcome, &signed, 50)
+        .unwrap();
 }
 
 fn plan(receipt: &DatasetSnapshotReceiptV3) -> TabularOperatorPlanV1 {
@@ -510,8 +568,12 @@ fn full_v3_qualification_path_profile() {
 
 #[test]
 fn world_final_use_request_cannot_relabel_authoritative_training_trust() {
-    let fixture = Fixture::new();
+    // Public issuance now checks actual elapsed time after owner verification.
+    // Seconds-long signed TTLs isolate trust substitution from expiration.
+    let fixture =
+        Fixture::with_candidates_and_expiry(vec![id("action"), id("abstain")], 90_000_000);
     let (receipt, freeze) = fixture.dataset();
+    let freeze = trust_window_tests::sign_until_at(freeze, 3, 95_000_000);
     let model_id = id("world-model");
     let samples: Vec<_> = receipt
         .snapshot
@@ -537,6 +599,7 @@ fn world_final_use_request_cannot_relabel_authoritative_training_trust() {
         LearningEvidenceRoleV1::Observer,
         &row_payload,
     );
+    let row = trust_window_tests::sign_until_at(row, 2, 95_000_000);
     let profile = crate::WorldModelProfileV1::new(
         hash("objective"),
         hash("sensors"),
@@ -565,8 +628,8 @@ fn world_final_use_request_cannot_relabel_authoritative_training_trust() {
             ProbabilityQ32::ZERO,
             FixedQ32::ZERO,
             hash("change-point"),
-            /*retained_until*/ 70,
-            /*expires_at*/ 80,
+            /*retained_until*/ 70_000_000,
+            /*expires_at*/ 80_000_000,
             samples.clone(),
         )
         .expect("request")
@@ -581,7 +644,7 @@ fn world_final_use_request_cannot_relabel_authoritative_training_trust() {
     )
     .expect("fence");
     let witness = crate::FinalUseWitnessV1::new(
-        /*observed_at_unix_micros*/ 50,
+        /*observed_at_unix_micros*/ 50_000_000,
         receipt.snapshot.ledger_head_digest,
         receipt.snapshot.eligible_frontier,
         Generation::new(1).expect("generation"),

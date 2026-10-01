@@ -94,7 +94,7 @@ pub fn issue_tabular_final_use_capability_v1<'a>(
         absolute_deadline_unix_micros,
         &fit_context,
     )?;
-    let inner = with_fit_context_v1(&fit_context, || {
+    let mut inner = with_fit_context_v1(&fit_context, || {
         final_use::issue_tabular_final_use_capability_v1(
             owner,
             receipt,
@@ -111,6 +111,12 @@ pub fn issue_tabular_final_use_capability_v1<'a>(
         absolute_deadline_unix_micros,
         &fit_context,
     )?;
+    let now = effective_now(
+        issued_at_unix_micros,
+        issued_at_unix_micros,
+        fit_context.elapsed_micros(),
+    )?;
+    inner.revalidate_issued_at(witness, now)?;
     Ok(FinalUseTabularCapabilityV1 {
         inner,
         fit_context,
@@ -144,7 +150,7 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
         absolute_deadline_unix_micros,
         &fit_context,
     )?;
-    let inner = with_fit_context_v1(&fit_context, || {
+    let mut inner = with_fit_context_v1(&fit_context, || {
         final_use::issue_world_model_final_use_capability_v1(
             owner,
             receipt,
@@ -161,6 +167,12 @@ pub fn issue_world_model_final_use_capability_v1<'a>(
         absolute_deadline_unix_micros,
         &fit_context,
     )?;
+    let now = effective_now(
+        issued_at_unix_micros,
+        issued_at_unix_micros,
+        fit_context.elapsed_micros(),
+    )?;
+    inner.revalidate_issued_at(witness, now)?;
     Ok(FinalUseWorldModelCapabilityV1 {
         inner,
         fit_context,

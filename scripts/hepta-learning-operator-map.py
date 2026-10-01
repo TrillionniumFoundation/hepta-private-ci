@@ -31,6 +31,21 @@ SOURCE_SUFFIXES = {
     ".yaml",
     ".yml",
 }
+# These owners/types participate in the product admission and durable load
+# chain even when their files do not appear as an operator operation callee.
+PRODUCT_DEPENDENCY_ROOTS = (
+    "codex-rs/hepta-agentd",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-intelligence",
+    "codex-rs/hepta-intelligence-eval",
+    "codex-rs/hepta-learning-artifacts",
+    "codex-rs/hepta-learning-ledger",
+    "codex-rs/hepta-types",
+)
+# The V8 provisioner imports this package; targets and artifact checksums are
+# resolved from these controls plus the already bound workspace Cargo.lock.
+EXECUTION_CONTROL_ROOTS = ("scripts/codex_package",)
+EXECUTION_CONTROL_PATHS = ("scripts/hepta_ci_v8.py", "scripts/test_hepta_ci_v8.py")
 
 
 def git(*args: str) -> str:
@@ -122,7 +137,13 @@ def mapped_paths(row: dict[str, object]) -> list[str]:
         "codex-rs/Cargo.toml",
         "codex-rs/.config/nextest.toml",
         "codex-rs/Cargo.lock",
+        "codex-rs/rust-toolchain.toml",
+        "justfile",
+        "BUILD.bazel",
+        ".gitattributes",
         "defs.bzl",
+        "docs/contracts/CONTRACTS.json",
+        "docs/contracts/PROTOCOL_SCHEMAS.json",
         "codex-rs/hepta-bellman-operator/BUILD.bazel",
         "codex-rs/hepta-bellman-operator/Cargo.toml",
         "codex-rs/hepta-bellman-operator/src/authoritative_lib.rs",
@@ -140,6 +161,7 @@ def mapped_paths(row: dict[str, object]) -> list[str]:
         "docs/modules/learning.operator/OPERATIONS_RUNBOOK.md",
         "qualification/module-execution-dossiers/detail/learning.operator.md",
         ".github/workflows/learning-operator-authoritative.yml",
+        ".github/workflows/hepta-learning-operator-audit.yml",
         ".github/workflows/blocking-ci.yml",
         "scripts/hepta-learning-operator-api-surface.py",
         "scripts/hepta-learning-operator-authoritative.sh",
@@ -152,6 +174,9 @@ def mapped_paths(row: dict[str, object]) -> list[str]:
         "scripts/hepta-learning-operator-stage.py",
         "scripts/test_hepta_lane_e_closure.py",
         "scripts/test_hepta_learning_operator_evidence.py",
+        *PRODUCT_DEPENDENCY_ROOTS,
+        *EXECUTION_CONTROL_ROOTS,
+        *EXECUTION_CONTROL_PATHS,
     }
     value = row.get("technicalGuide")
     if isinstance(value, str) and value:

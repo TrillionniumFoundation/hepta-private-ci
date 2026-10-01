@@ -4,17 +4,35 @@ on:
   pull_request:
     paths:
       - 'codex-rs/hepta-bellman-operator/**'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-contracts/**'
+      - 'codex-rs/hepta-intelligence/**'
+      - 'codex-rs/hepta-intelligence-eval/**'
+      - 'codex-rs/hepta-learning-artifacts/**'
+      - 'codex-rs/hepta-learning-ledger/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/rust-toolchain.toml'
       - 'codex-rs/.config/nextest.toml'
-      - 'codex-rs/hepta-agentd/tests/terminal_cell_owner.rs'
-      - 'codex-rs/hepta-agentd/src/learning_operator_coordinator*.rs'
+      - 'justfile'
+      - 'BUILD.bazel'
+      - '.gitattributes'
+      - 'docs/contracts/CONTRACTS.json'
+      - 'docs/contracts/PROTOCOL_SCHEMAS.json'
       - 'docs/modules/learning.operator/**'
       - 'defs.bzl'
       - 'scripts/hepta-learning-operator*'
       - 'scripts/hepta_lane_e_contract.py'
       - 'scripts/test_hepta_learning_operator_evidence.py'
+      - 'scripts/hepta_ci_v8.py'
+      - 'scripts/test_hepta_ci_v8.py'
+      - 'scripts/codex_package/**'
       - 'scripts/hepta-lane-e-closure.py'
       - 'scripts/test_hepta_lane_e_closure.py'
       - '.github/workflows/hepta-learning-operator-audit.yml'
+      - '.github/workflows/learning-operator-authoritative.yml'
+      - '.github/workflows/blocking-ci.yml'
   push:
     branches:
       - 'audit/learning-operator-*'
@@ -87,6 +105,12 @@ jobs:
   owner:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+      RUST_BACKTRACE: 1
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -98,9 +122,62 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Prepare checksum-verified V8 archive and binding
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Agentd all-target compilation
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-agentd --all-targets
       - name: Authenticated owner freeze, fitting, reload and withdrawal
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-agentd --test terminal_cell_owner
+      - name: Operator owner ports and sealed product evaluation
+        working-directory: codex-rs
+        run: |
+          just test --locked -p codex-hepta-agentd --lib \
+            learning_operator_ --test-threads=1 --no-tests=fail
+          just test --locked -p codex-hepta-agentd --lib \
+            intelligence_product::evaluation_tests --test-threads=1 --no-tests=fail
+
+      - name: Signed process root trust and actual runtime clock
+        working-directory: codex-rs
+        run: |
+          just test --locked -p codex-hepta-agentd --lib \
+            plasticity_runtime:: --test-threads=1 --no-tests=fail
+          just test --locked -p codex-hepta-agentd --lib \
+            plasticity_process_bootstrap:: --test-threads=1 --no-tests=fail
+          just test --locked -p codex-hepta-agentd --features qualification-cognitive-write --test plasticity_process_e2e --test-threads=1 --no-tests=fail
+
+  cross-owner:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Protocol bounds, identity capacity, trust validity and sealed owner chains
+        working-directory: codex-rs
+        run: |
+          just test --locked \
+            -p codex-hepta-contracts -p codex-hepta-types \
+            -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts \
+            -p codex-hepta-intelligence-eval -p codex-hepta-intelligence --lib
+      - name: Canonical wire codec with unified JSON features
+        working-directory: codex-rs
+        run: |
+          just test --locked -p codex-hepta-contracts --lib \
+            learning_operator_protocol::tests \
+            --features serde_json/preserve_order,serde_json/arbitrary_precision,serde_json/raw_value \
+            --test-threads=1
 
 # These jobs measure the narrow audit candidate. Existing repository, Lane E,
 # head/merge and independent acceptance gates remain mandatory and separate.

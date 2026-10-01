@@ -15,6 +15,7 @@ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
 use codex_hepta_learning_ledger::dataset_freeze_signing_payload_v2;
 #[cfg(any(test, feature = "qualification-unverified-input"))]
 use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
@@ -58,14 +59,8 @@ pub struct VerifiedTabularOperatorPlanV2 {
 /// ```
 pub struct VerifiedTabularOperatorPlanV3<'a> {
     plan: TabularOperatorPlanV1,
-    #[cfg_attr(
-        not(any(test, feature = "qualification-unverified-input")),
-        expect(
-            dead_code,
-            reason = "retains the authenticated owner borrow; default final use revalidates its own capability"
-        )
-    )]
     admission: OwnerAdmission<'a>,
+    verified_evidence: (VerifiedLearningEvidenceV1, VerifiedLearningEvidenceV1),
 }
 
 #[derive(Clone, Debug)]
@@ -87,14 +82,8 @@ pub struct VerifiedWorldModelDatasetV3<'a> {
         )
     )]
     samples: Vec<WorldModelSampleV1>,
-    #[cfg_attr(
-        not(feature = "qualification-unverified-input"),
-        expect(
-            dead_code,
-            reason = "retains the authenticated owner borrow; default final use revalidates its own capability"
-        )
-    )]
     admission: OwnerAdmission<'a>,
+    verified_evidence: (VerifiedLearningEvidenceV1, VerifiedLearningEvidenceV1),
 }
 
 struct OwnerAdmission<'a> {
@@ -131,7 +120,15 @@ impl VerifiedTabularOperatorPlanV2 {
     }
 }
 
-impl VerifiedTabularOperatorPlanV3<'_> {
+impl<'a> VerifiedTabularOperatorPlanV3<'a> {
+    pub(crate) fn into_verified_evidence(
+        self,
+    ) -> (
+        &'a LedgerWriter,
+        (VerifiedLearningEvidenceV1, VerifiedLearningEvidenceV1),
+    ) {
+        (self.admission.owner, self.verified_evidence)
+    }
     #[must_use]
     pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
         OperatorAdmissionStageV1::SourceAuthenticated
@@ -163,7 +160,15 @@ impl VerifiedWorldModelDatasetV2 {
     }
 }
 
-impl VerifiedWorldModelDatasetV3<'_> {
+impl<'a> VerifiedWorldModelDatasetV3<'a> {
+    pub(crate) fn into_verified_evidence(
+        self,
+    ) -> (
+        &'a LedgerWriter,
+        (VerifiedLearningEvidenceV1, VerifiedLearningEvidenceV1),
+    ) {
+        (self.admission.owner, self.verified_evidence)
+    }
     #[must_use]
     pub const fn admission_stage(&self) -> OperatorAdmissionStageV1 {
         OperatorAdmissionStageV1::SourceAuthenticated
@@ -228,8 +233,12 @@ pub fn verify_tabular_operator_plan_v3<'a>(
         row_evidence: row_evidence.clone(),
         admitted_at: now,
     };
-    admission.revalidate(&payload, now)?;
-    Ok(VerifiedTabularOperatorPlanV3 { plan, admission })
+    let verified_evidence = admission.revalidate(&payload, now)?;
+    Ok(VerifiedTabularOperatorPlanV3 {
+        plan,
+        admission,
+        verified_evidence,
+    })
 }
 
 /// Revalidate expiry, current ledger membership and signer epoch at use, not
@@ -295,11 +304,12 @@ pub fn verify_world_model_dataset_v3<'a>(
         row_evidence: row_evidence.clone(),
         admitted_at: now,
     };
-    admission.revalidate(&payload, now)?;
+    let verified_evidence = admission.revalidate(&payload, now)?;
     Ok(VerifiedWorldModelDatasetV3 {
         model_id,
         samples,
         admission,
+        verified_evidence,
     })
 }
 
@@ -332,10 +342,18 @@ pub fn fit_transition_model_verified_v3(
 }
 
 impl OwnerAdmission<'_> {
-    fn revalidate(&self, payload: &[u8], now: u64) -> Result<(), OperatorDatasetBindingError> {
+    fn revalidate(
+        &self,
+        payload: &[u8],
+        now: u64,
+    ) -> Result<(VerifiedLearningEvidenceV1, VerifiedLearningEvidenceV1), OperatorDatasetBindingError>
+    {
         if now < self.admitted_at {
             return Err(OperatorDatasetBindingError::ClockRegression);
         }
+        self.owner
+            .revalidate_trust_at(now)
+            .map_err(|error| owner_failure(OwnerDatasetOperationV1::RevalidateTrust, error))?;
         let plan = DatasetFreezePlanV2 {
             snapshot_id: self.receipt.snapshot.snapshot_id.clone(),
             objective_digest: self.receipt.snapshot.objective_digest,
@@ -373,7 +391,7 @@ impl OwnerAdmission<'_> {
             now,
         )?;
         verify_signed_independent_roles_v1(&evaluator, &observer, now)?;
-        Ok(())
+        Ok((evaluator, observer))
     }
 }
 
@@ -423,6 +441,7 @@ pub use row_commitment::world_model_training_signing_payload_v2;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum OwnerDatasetOperationV1 {
+    RevalidateTrust,
     FreezeDataset,
     ReadDatasetRecords,
     Snapshot,

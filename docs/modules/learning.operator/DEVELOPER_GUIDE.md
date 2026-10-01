@@ -34,8 +34,13 @@ shadow coordinator, default runtime composition and external acceptance.
 
 The generic `coordinate_learning_operator_shadow_v1` enforces stage ordering
 when a host supplies its ports. Its current tests use fixture ports; real owner
-adapters and a default runtime caller remain repository integration work. Signed
-component E2E exercises the ledger/evaluator/selector/ranker separately.
+publication is implemented by `LearningOperatorArtifactOwnerV1`, reached through
+`AgentdIntelligenceProductRunnerV1::persist_learning_operator_candidate`.
+`EvaluatedTabularShadowConsumerV3` provides qualified read-only loading with
+separate training/evaluation sources and currentness refresh. Those components
+still need the remaining coordinator ports, a configured runtime caller,
+distinct-process shadow loading and exact predecessor rollback composed together.
+Signed component E2E exercises the ledger/evaluator/selector/ranker separately.
 
 Direct V3 verify/fit primitives and structural V1/V2 fitters are available only
 under `qualification-unverified-input`, in `compatibility`. They are diagnostic
@@ -43,10 +48,30 @@ and migration surfaces, not the default capability path. Existing V1 payload
 pins and immutable predictors remain exported for named owner-bound adapters;
 they do not establish current selection or runtime authority.
 
-Canonical JSON adapters remain separate work. Native profile names do not imply
-wire parity with registered protocols. Existing correctly pinned `HEPTTB01`
+`codex-hepta-contracts::learning_operator_protocol` provides untrusted canonical
+V1 transport codecs for the registered sensor, regularity and applicability
+schemas. Dispatch requires the protocol identity and version; strict decoding
+rejects unknown fields and noncanonical bytes. Its SHA-256 commits transport
+fields, not a signer, owner capability or scientific qualification. Enum values
+and nested profile member semantics remain undefined in the registry. The
+registered `BellmanOperatorArtifactV1` has no canonical field schema and is
+explicitly rejected. Native profile names do not imply wire parity: conversion
+still needs measured profiles, horizon and lifecycle context from their owners.
+Existing correctly pinned `HEPTTB01`
 payloads can be read, while new V2 source commitments require new independent
 admission; there is no implicit digest-version downgrade.
+
+The final-use, real publication and qualified shadow APIs use Unix microseconds;
+registered transport expiry uses Unix milliseconds. Supply explicit owner context
+and checked unit conversion; do not equate an interval with a horizon/profile.
+World-model row signatures cover rows and their owner context, not independent
+measurement of request-supplied calibration, future-window or retention fields.
+
+Plasticity process embeddings migrate explicitly to
+`hepta.agentd.plasticity-bootstrap.v2` and `load_plasticity_process_bootstrap_v2`.
+Supply the independently retained root key/validity and exact root-signed trust
+distribution, including generation, effective/issued/expiry times and signature.
+V1 signer-only descriptors reject; do not synthesize a root or signature from them.
 
 ## Local checks
 
@@ -57,9 +82,12 @@ recipe for routine Rust tests:
 python3 scripts/hepta-lane-e-closure.py self-test
 python3 scripts/hepta-lane-e-closure.py verify
 python3 scripts/hepta-learning-operator-contract.py verify
+python3 scripts/hepta-implementation-dossiers.py verify
+just test -p codex-hepta-contracts --locked --lib -E 'test(learning_operator_protocol::tests)'
 just test -p codex-hepta-bellman-operator --locked
 just test -p codex-hepta-agentd --lib -E 'test(cognitive_ranker::evaluated_tests)'
 just test -p codex-hepta-agentd --lib -E 'test(learning_operator_coordinator::tests)'
+just test -p codex-hepta-agentd --lib -E 'test(learning_operator_artifact_owner::tests) | test(learning_operator_shadow_loader::tests) | test(learning_operator_source_binding::tests)'
 ```
 
 Exact-source CI independently records documentation, API consumer checks,

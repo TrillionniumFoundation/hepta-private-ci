@@ -58,7 +58,10 @@ impl StableId {
     pub fn new(value: impl Into<String>) -> Result<Self, IdentityError> {
         let value = value.into();
         validate_id_profile_raw(&value, IdProfileV1::Stable)?;
-        let value = BoundedText::new(value).map_err(IdentityError::Bounded)?;
+        // A short caller-owned String may retain an arbitrarily large spare
+        // allocation. Own only the validated bytes so identifier storage stays
+        // bounded for downstream resource accounting.
+        let value = BoundedText::try_from_str(&value).map_err(IdentityError::Bounded)?;
         Ok(Self(value))
     }
 

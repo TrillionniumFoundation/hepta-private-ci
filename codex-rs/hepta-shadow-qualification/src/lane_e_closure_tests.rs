@@ -297,6 +297,8 @@ fn evaluation_inputs(outcome_digest: Digest32) -> TemporalComparisonInputsV1 {
         });
     }
     TemporalComparisonInputsV1 {
+        training_snapshot_id: None,
+        window_snapshots: Vec::new(),
         training,
         targets,
         candidate_observations,

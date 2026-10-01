@@ -65,7 +65,7 @@ fn tabular_row_evidence_expiring_during_fit_rejects_publication_before_deadline(
         &fixture.owner,
         &tabular_training_signing_payload_v2(&input, &receipt, &fixture.owner).unwrap(),
     );
-    for publish_now in [50, 56] {
+    for (publish_now, final_now) in [(50, 50), (50, 56), (56, 56)] {
         let request = crate::TabularTrainingRequestV1::new(
             input.artifact_id.clone(),
             input.producer_id.clone(),
@@ -90,10 +90,14 @@ fn tabular_row_evidence_expiring_during_fit_rejects_publication_before_deadline(
         let calls = Cell::new(0);
         let result = final_use::fit_tabular_final_use_v1(capability, &witness, &witness, |_| {
             calls.set(calls.get() + 1);
-            Ok(if calls.get() == 1 { 50 } else { publish_now })
+            Ok(match calls.get() {
+                1 => 50,
+                2 => publish_now,
+                _ => final_now,
+            })
         });
-        assert_eq!(calls.get(), 2);
-        if publish_now == 50 {
+        assert_eq!(calls.get(), if publish_now == 50 { 3 } else { 2 });
+        if final_now == 50 {
             assert!(result.is_ok());
         } else {
             assert!(matches!(
@@ -145,7 +149,7 @@ fn world_row_evidence_expiring_during_fit_rejects_publication_before_deadline() 
         crate::OperatorResourceBudgetV1::qualification_default(),
     )
     .unwrap();
-    for publish_now in [50, 56] {
+    for (publish_now, final_now) in [(50, 50), (50, 56), (56, 56)] {
         let request = crate::WorldModelTrainingRequestV1::new(
             model_id.clone(),
             Generation::new(1).unwrap(),
@@ -181,10 +185,14 @@ fn world_row_evidence_expiring_during_fit_rejects_publication_before_deadline() 
         let result =
             final_use::fit_world_model_final_use_v1(capability, &witness, &witness, |_| {
                 calls.set(calls.get() + 1);
-                Ok(if calls.get() == 1 { 50 } else { publish_now })
+                Ok(match calls.get() {
+                    1 => 50,
+                    2 => publish_now,
+                    _ => final_now,
+                })
             });
-        assert_eq!(calls.get(), 2);
-        if publish_now == 50 {
+        assert_eq!(calls.get(), if publish_now == 50 { 3 } else { 2 });
+        if final_now == 50 {
             assert!(result.is_ok());
         } else {
             assert!(matches!(

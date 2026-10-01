@@ -16,8 +16,8 @@ use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
 use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
 use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
@@ -115,17 +115,21 @@ impl PlasticityRuntimeHandleV1 {
     }
 }
 
+#[path = "plasticity_runtime_clock.rs"]
+mod clock;
+
 /// Immutable construction envelope consumed exactly once by Agentd runtime
 /// composition. Creating this value does not start a second owner or grant
 /// proposal authority; the real daemon creates the bounded channel and retains
 /// the resulting owner/handle pair for its generation.
 pub struct PlasticityRuntimeBootstrapV1 {
+    clock: Arc<dyn clock::PlasticityRuntimeClockV1>,
     capacity: usize,
     artifacts: ArtifactRegistry,
     ledger: DurableLedger,
     owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
     owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
-    verifier: LearningEvidenceVerifierV1,
+    trust: ActivatedLearningTrustV1,
     parameter_writer: AnchoredPlasticityWriterV1,
     parameter_anchor_store: AgentdPlasticityAnchorStoreV1,
     topology_writer: AgentdTopologyWriterV1,
@@ -140,7 +144,7 @@ impl PlasticityRuntimeBootstrapV1 {
         ledger: DurableLedger,
         owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
         owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
-        verifier: LearningEvidenceVerifierV1,
+        trust: ActivatedLearningTrustV1,
         parameter_writer: AnchoredPlasticityWriterV1,
         parameter_anchor_store: AgentdPlasticityAnchorStoreV1,
         topology_writer: AgentdTopologyWriterV1,
@@ -148,12 +152,13 @@ impl PlasticityRuntimeBootstrapV1 {
     ) -> Result<Self, AgentdError> {
         validate_plasticity_runtime_capacity(capacity)?;
         Ok(Self {
+            clock: Arc::new(clock::SystemPlasticityRuntimeClockV1::new()?),
             capacity,
             artifacts,
             ledger,
             owner_evidence_resolver,
             owner_evidence_policy,
-            verifier,
+            trust,
             parameter_writer,
             parameter_anchor_store,
             topology_writer,
@@ -161,32 +166,41 @@ impl PlasticityRuntimeBootstrapV1 {
         })
     }
 
+    #[cfg(test)]
+    fn with_test_clock(mut self, clock: Arc<dyn clock::PlasticityRuntimeClockV1>) -> Self {
+        self.clock = clock;
+        self
+    }
+
     pub(crate) fn into_channel(
         self,
     ) -> Result<(PlasticityRuntimeHandleV1, PlasticityRuntimeOwnerV1), AgentdError> {
-        plasticity_runtime_channel_v1(
+        let (handle, mut owner) = plasticity_runtime_channel_v1(
             self.capacity,
             self.artifacts,
             self.ledger,
             self.owner_evidence_resolver,
             self.owner_evidence_policy,
-            self.verifier,
+            self.trust,
             self.parameter_writer,
             self.parameter_anchor_store,
             self.topology_writer,
             self.topology_anchor_store,
-        )
+        )?;
+        owner.clock = self.clock;
+        Ok((handle, owner))
     }
 }
 
 /// Exact mutable owner retained for the lifetime of the Agentd generation.
 pub struct PlasticityRuntimeOwnerV1 {
+    clock: Arc<dyn clock::PlasticityRuntimeClockV1>,
     receiver: mpsc::Receiver<PlasticityRuntimeCommandV1>,
     artifacts: ArtifactRegistry,
     ledger: DurableLedger,
     owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
     owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
-    verifier: LearningEvidenceVerifierV1,
+    trust: ActivatedLearningTrustV1,
     parameter_writer: AnchoredPlasticityWriterV1,
     parameter_anchor_store: AgentdPlasticityAnchorStoreV1,
     topology_writer: AgentdTopologyWriterV1,
@@ -200,7 +214,7 @@ pub fn plasticity_runtime_channel_v1(
     ledger: DurableLedger,
     owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
     owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
-    verifier: LearningEvidenceVerifierV1,
+    trust: ActivatedLearningTrustV1,
     parameter_writer: AnchoredPlasticityWriterV1,
     parameter_anchor_store: AgentdPlasticityAnchorStoreV1,
     topology_writer: AgentdTopologyWriterV1,
@@ -211,12 +225,13 @@ pub fn plasticity_runtime_channel_v1(
     Ok((
         PlasticityRuntimeHandleV1 { sender },
         PlasticityRuntimeOwnerV1 {
+            clock: Arc::new(clock::SystemPlasticityRuntimeClockV1::new()?),
             receiver,
             artifacts,
             ledger,
             owner_evidence_resolver,
             owner_evidence_policy,
-            verifier,
+            trust,
             parameter_writer,
             parameter_anchor_store,
             topology_writer,
@@ -292,6 +307,11 @@ impl PlasticityRuntimeOwnerV1 {
                     now,
                     response,
                 } => {
+                    let now = clock::admission_time(self.clock.as_ref(), now);
+                    let Ok(now) = now else {
+                        let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
+                        continue;
+                    };
                     if !ready {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
                         continue;
@@ -302,7 +322,7 @@ impl PlasticityRuntimeOwnerV1 {
                         &self.ledger,
                         self.owner_evidence_resolver.as_ref(),
                         &self.owner_evidence_policy,
-                        &self.verifier,
+                        &self.trust,
                         &mut self.parameter_writer,
                         &mut self.parameter_anchor_store,
                         now,
@@ -315,7 +335,12 @@ impl PlasticityRuntimeOwnerV1 {
                     now,
                     response,
                 } => {
-                    if !ready {
+                    let now = clock::admission_time(self.clock.as_ref(), now);
+                    let Ok(now) = now else {
+                        let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
+                        continue;
+                    };
+                    if !ready || !self.trust.is_current_at(now) {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
                         continue;
                     }
@@ -323,7 +348,7 @@ impl PlasticityRuntimeOwnerV1 {
                         *request,
                         &self.artifacts,
                         &self.ledger,
-                        &self.verifier,
+                        self.trust.verifier(),
                         &mut self.topology_writer,
                         &mut self.topology_anchor_store,
                         now,

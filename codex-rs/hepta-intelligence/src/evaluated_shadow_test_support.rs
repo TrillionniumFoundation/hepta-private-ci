@@ -568,6 +568,8 @@ fn provider_inputs(snapshot_id: StableId) -> Provider {
     Provider {
         manifest: digest("test-holdout"),
         inputs: Some(TemporalComparisonInputsV1 {
+            training_snapshot_id: None,
+            window_snapshots: Vec::new(),
             training,
             targets,
             candidate_observations,

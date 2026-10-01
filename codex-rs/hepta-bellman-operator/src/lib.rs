@@ -140,6 +140,7 @@ pub use terminal_v3::VerifiedTerminalCellV3;
 pub use terminal_v3::fit_terminal_cell_verified_v3;
 pub use terminal_v3::prepare_terminal_cell_from_owner_v3;
 pub use training_preflight::preflight_signed_tabular_v3;
+pub(crate) use training_preflight::validate_shape as validate_signed_tabular_shape_v3;
 
 const MAX_SAMPLES: usize = 16_384;
 const SCALE: i128 = 1_i128 << 32;

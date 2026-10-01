@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
-use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
+use codex_hepta_agentd::load_plasticity_process_bootstrap_v2;
 use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::ffi::OsString;
@@ -167,7 +167,7 @@ fn main() -> anyhow::Result<()> {
             plasticity_bootstrap_descriptor_digest,
         ) {
             (Some(path), Some(expected_digest)) => {
-                let bootstrap = load_plasticity_process_bootstrap_v1(
+                let bootstrap = load_plasticity_process_bootstrap_v2(
                     &path,
                     expected_digest,
                     config.identity(),

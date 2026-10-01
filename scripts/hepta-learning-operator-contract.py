@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import json
 import re
 import subprocess
@@ -19,6 +20,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 STATUS_PATH = "docs/modules/learning.operator/STATUS.json"
 MAP_PATH = "docs/modules/learning.operator/IMPLEMENTATION_MAP.json"
+MAPPER = importlib.import_module("hepta-learning-operator-map")
 
 
 def read(path: str) -> str:
@@ -121,7 +123,7 @@ def verify_status() -> dict[str, Any]:
         and status.get("shadowCoordinatorImplemented") is True
         and status.get("defaultLoopWired") is False
         and status.get("canonicalWireAdaptersImplemented") is False,
-        "shadow coordinator implemented; runtime owner ports and wire adapters remain uncomposed",
+        "shadow coordinator and partial real adapters implemented; complete default runtime and native wire admission remain uncomposed",
     )
     require(
         status.get("explicitReadConsumerComposed") is True
@@ -129,6 +131,14 @@ def verify_status() -> dict[str, Any]:
         and status.get("productShadowProtocolE2EInAuthoritativeGate") is True,
         "implemented protocol evidence status",
     )
+    for key in (
+        "registeredTransportCodecsImplemented",
+        "sealedQualificationConsumersImplemented",
+        "durableArtifactPersistenceAdapterImplemented",
+        "evaluatedReadonlyShadowLoaderImplemented",
+        "processRootTrustAndHostClockImplemented",
+    ):
+        require(status.get(key) is True, f"implemented component status: {key}")
     for key in (
         "productExecutionProved",
         "productionImplementation",
@@ -350,6 +360,11 @@ def verify_status_projection(status: dict[str, Any]) -> None:
         "explicitReadConsumerComposed": "explicitReadConsumerComposed",
         "shadowCoordinatorImplemented": "shadowCoordinatorImplemented",
         "canonicalWireAdaptersImplemented": "canonicalWireAdaptersImplemented",
+        "registeredTransportCodecsImplemented": "registeredTransportCodecsImplemented",
+        "sealedQualificationConsumersImplemented": "sealedQualificationConsumersImplemented",
+        "durableArtifactPersistenceAdapterImplemented": "durableArtifactPersistenceAdapterImplemented",
+        "evaluatedReadonlyShadowLoaderImplemented": "evaluatedReadonlyShadowLoaderImplemented",
+        "processRootTrustAndHostClockImplemented": "processRootTrustAndHostClockImplemented",
         "defaultLoopWired": "defaultProductLoopWired",
         "freshProcessLoadInAuthoritativeGate": "freshProcessLoadInAuthoritativeGate",
         "productShadowProtocolE2EInAuthoritativeGate": "productShadowProtocolE2EInAuthoritativeGate",
@@ -359,17 +374,20 @@ def verify_status_projection(status: dict[str, Any]) -> None:
         "release": "release",
     }.items():
         require(
-            status.get(status_key) == boundary.get(map_key),
+            type(status.get(status_key)) is type(boundary.get(map_key))
+            and status.get(status_key) == boundary.get(map_key),
             f"status/map disagreement: {status_key}",
         )
     require(
-        implementation.get("productionImplementation")
+        type(implementation.get("productionImplementation"))
+        is type(status.get("productionImplementation"))
+        and implementation.get("productionImplementation")
         == status.get("productionImplementation"),
         "top-level production implementation status",
     )
     require(
         implementation.get("productCallerState")
-        == "explicit_read_consumer_and_shadow_coordinator_implemented_owner_ports_uncomposed"
+        == "explicit_read_and_sealed_qualification_consumers_real_persistence_api_and_shadow_loader_implemented_full_default_loop_uncomposed"
         and status.get("explicitReadConsumerComposed") is True
         and status.get("shadowCoordinatorImplemented") is True
         and status.get("defaultLoopWired") is False,
@@ -433,6 +451,69 @@ def verify_documents() -> None:
     )
 
 
+def verify_qualification_tools(workflow: str) -> None:
+    installed = {
+        tool.strip()
+        for declaration in re.findall(r"^\s+tool:\s*([^\n]+)$", workflow, re.MULTILINE)
+        for tool in declaration.split(",")
+    }
+    for tool in ("cargo-llvm-cov@0.9.1", "just@1.51.0", "nextest@0.9.103"):
+        require(
+            tool in installed,
+            f"authoritative qualification runner missing pinned {tool}",
+        )
+
+
+def verify_product_ci_scope(workflow: str) -> None:
+    for root in (*MAPPER.PRODUCT_DEPENDENCY_ROOTS, *MAPPER.EXECUTION_CONTROL_ROOTS):
+        require(
+            f"- '{root}/**'" in workflow,
+            f"operator audit trigger omits product dependency {root}",
+        )
+    for path in (
+        "codex-rs/Cargo.toml",
+        "codex-rs/Cargo.lock",
+        "codex-rs/rust-toolchain.toml",
+        "justfile",
+        "BUILD.bazel",
+        ".gitattributes",
+        "docs/contracts/CONTRACTS.json",
+        "docs/contracts/PROTOCOL_SCHEMAS.json",
+        ".github/workflows/learning-operator-authoritative.yml",
+        *MAPPER.EXECUTION_CONTROL_PATHS,
+    ):
+        require(
+            f"- '{path}'" in workflow,
+            f"operator audit trigger omits execution control {path}",
+        )
+
+
+def verify_v8_provisioning(workflow: str) -> None:
+    provisioning = [
+        step
+        for step in re.finditer(
+            r"(?ms)^      - name: [^\n]+\n.*?(?=^      - (?:name:|uses:)|\Z)",
+            workflow,
+        )
+        if re.search(
+            r"(?m)^        run: python3 scripts/hepta_ci_v8\.py$", step.group()
+        )
+    ]
+    require(len(provisioning) == 1, "one actual V8 provisioner step is required")
+    setup = provisioning[0]
+    require(
+        "CODEX_REPO_ROOT: ${{ github.workspace }}" in setup.group()
+        and "PYTHONPATH: scripts" in setup.group()
+        and re.search(r"(?m)^        if:", setup.group()) is None,
+        "V8 provisioning must unconditionally bind the source workspace and resolver",
+    )
+    execution = workflow.find("bash scripts/hepta-learning-operator-authoritative.sh")
+    require(
+        execution >= 0 and setup.start() < execution,
+        "V8 provisioning must precede native qualification execution",
+    )
+
+
 def verify_schema_and_wiring() -> None:
     compatibility = load_json(
         "docs/modules/learning.operator/SCHEMA_COMPATIBILITY.json"
@@ -459,6 +540,9 @@ def verify_schema_and_wiring() -> None:
         "read-only reusable workflow",
     )
     require("qualification-result" in workflow, "stable final qualification check")
+    verify_qualification_tools(workflow)
+    verify_v8_provisioning(workflow)
+    verify_product_ci_scope(read(".github/workflows/hepta-learning-operator-audit.yml"))
     authoritative = read("scripts/hepta-learning-operator-authoritative.sh")
     for token in (
         "hepta-learning-operator-api-surface.py",

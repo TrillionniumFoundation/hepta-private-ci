@@ -5,3 +5,8 @@ codex-rs/hepta-shadow-qualification/fixtures/live_product_oracle_v2_2f704.json t
 # SQLx checksums and generated projection comparisons use the exact stored bytes.
 codex-rs/hepta-evidence/migrations/*.sql text eol=lf
 codex-rs/hepta-supervisor/fixtures/robrix-control-v2/** text eol=lf
+# Retained execution evidence preserves the exact stdout/stderr bytes and hashes.
+# Whitespace in raw logs is data; source/document whitespace checks still apply.
+qualification/lane-e/learning-operator-audit-20261001/*.log whitespace=-blank-at-eol
+qualification/lane-e/learning-operator-audit-20261001-round2/*.log whitespace=-blank-at-eol
+qualification/lane-e/learning-operator-audit-20261001-round2/**/*.log whitespace=-blank-at-eol
