@@ -32,6 +32,7 @@ use crate::CurrentCognitiveRegistry;
 use crate::PinnedCognitiveRanker;
 use crate::cognitive_context::CognitiveContextError;
 use crate::cognitive_context::read_with_retrieval_context_and_learning;
+use crate::cognitive_context_delivery::ContextDeliveryPlan;
 use crate::cognitive_context_delivery::PendingContextDelivery;
 use crate::cognitive_context_issuer::ContextPlanIssuer;
 use crate::cognitive_sensor_id;
@@ -164,18 +165,16 @@ async fn current_withdrawal_after_draft_rejects_publication_without_ledger_appen
     .unwrap();
     let (_ledger_directory, sink) = sink();
     let sink = Arc::new(sink);
-    read.delivery = Some(PendingContextDelivery {
+    read.delivery = Some(PendingContextDelivery::new(ContextDeliveryPlan {
         sink: Arc::clone(&sink),
         owner: owner(),
         body_generation: 1,
         request_id: 88,
         assignment: observation("withdrawn-before-publication"),
-        delivered_candidates: Vec::new(),
-        context_exposed: false,
-        published_context_digest: None,
+        planned_candidates: Vec::new(),
         downstream_policy_digest: None,
         delivery_propensity: ProbabilityQ32::ONE,
-    });
+    }));
     let predecessor = registry.snapshot().head_digest;
     registry
         .append(ArtifactEvent::Revoke(StateChange {

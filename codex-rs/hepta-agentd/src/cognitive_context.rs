@@ -34,6 +34,7 @@ use crate::CognitiveContextPlan;
 use crate::CognitiveContextRevalidation;
 use crate::CognitiveContextSnapshot;
 use crate::cognitive_context_delivery::CompletedContextRead;
+use crate::cognitive_context_delivery::ContextDeliveryPlan;
 use crate::cognitive_context_delivery::PendingContextDelivery;
 use crate::cognitive_context_issuer::ContextEnvelope;
 use crate::cognitive_context_issuer::ContextPlanIssuer;
@@ -464,26 +465,16 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
                     .ok_or(CognitiveContextError::RetrievalLearningUnavailable)
             })
             .collect::<Result<Vec<RetrievalCandidateIdentityV1>, _>>()?;
-        let context_exposed = !delivered_candidates.is_empty();
-        let published_context_digest = if context_exposed {
-            Some(Digest32::of_bytes(&serde_json::to_vec(&response).map_err(
-                |error| CognitiveStoreError::Invalid(error.to_string()),
-            )?))
-        } else {
-            None
-        };
-        Some(PendingContextDelivery {
+        Some(PendingContextDelivery::new(ContextDeliveryPlan {
             sink: std::sync::Arc::clone(sink),
             owner: owner.clone(),
             body_generation,
             request_id,
             assignment,
-            delivered_candidates,
-            context_exposed,
-            published_context_digest,
+            planned_candidates: delivered_candidates,
             downstream_policy_digest,
             delivery_propensity,
-        })
+        }))
     } else {
         None
     };

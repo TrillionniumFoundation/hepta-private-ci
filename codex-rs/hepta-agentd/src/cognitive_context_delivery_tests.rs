@@ -12,6 +12,7 @@ use codex_hepta_types::ProbabilityQ32;
 
 use crate::cognitive_context::CognitiveContextError;
 use crate::cognitive_context::read_with_retrieval_context_and_learning;
+use crate::cognitive_context_delivery::ContextDeliveryPlan;
 use crate::cognitive_context_delivery::PendingContextDelivery;
 use crate::cognitive_context_issuer::ContextPlanIssuer;
 use crate::cognitive_context_issuer::PlannedContextRead;
@@ -48,18 +49,16 @@ async fn early_expiry_or_capacity_refusal_does_not_append_exposure_fact() {
         .unwrap();
         // Reuse the native learning sink's explicit assignment fixture. This
         // isolates issuance/append ordering from HNMF selection and socket I/O.
-        read.delivery = Some(PendingContextDelivery {
+        read.delivery = Some(PendingContextDelivery::new(ContextDeliveryPlan {
             sink: Arc::clone(&sink),
             owner: owner(),
             body_generation: 1,
             request_id: 77,
             assignment: observation("publication-boundary"),
-            delivered_candidates: Vec::new(),
-            context_exposed: false,
-            published_context_digest: None,
+            planned_candidates: Vec::new(),
             downstream_policy_digest: None,
             delivery_propensity: ProbabilityQ32::ONE,
-        });
+        }));
         let issuer = ContextPlanIssuer::default();
         if scenario == "expired" {
             read.planned = PlannedContextRead::new(
@@ -118,6 +117,9 @@ async fn early_expiry_or_capacity_refusal_does_not_append_exposure_fact() {
             ));
         }
         let snapshot = sink.writer.lock().unwrap().snapshot().unwrap();
-        assert_eq!(snapshot.records().len(), usize::from(scenario == "issued"));
+        assert!(
+            snapshot.records().is_empty(),
+            "preparing a response cannot observe a transport write"
+        );
     }
 }
