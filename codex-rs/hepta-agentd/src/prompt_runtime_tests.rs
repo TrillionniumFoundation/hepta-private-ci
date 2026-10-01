@@ -776,7 +776,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         .candidates
         .iter()
         .map(|candidate| {
-            let mut evidence = PromptPricingEvidenceV1 {
+            let pricing = PromptPricingEvidenceV1 {
                 factor_id: candidate.factor_id.clone(),
                 state_digest: candidates.receipt.state_digest,
                 model_tuple_digest: candidates.model_tuple.digest(),
@@ -794,13 +794,18 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
                 support_audit_digest: digest("prompt-pricing-fixture-support"),
                 evidence: completeness_evidence.clone(),
             };
-            evidence.evidence = sign_learning_evidence(
+            let mut evidence = PromptPricingEvidenceV2 {
+                pricing,
+                candidate_set_digest: candidates.receipt.receipt_digest,
+                binding_digest: candidate.binding_digest,
+            };
+            evidence.pricing.evidence = sign_learning_evidence(
                 &verifier,
                 &evaluator_key,
                 "prompt-evaluator:fixture",
                 LearningEvidenceRoleV1::Evaluator,
                 &format!("evidence:pricing:{}", candidate.factor_id),
-                &pricing_evidence_signing_payload_v1(&evidence),
+                &pricing_evidence_signing_payload_v2(&evidence),
                 logical_now,
             );
             evidence
@@ -839,7 +844,7 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
     let portfolio = select_portfolio_v1(
         &priced,
         &projection,
-        Vec::new(),
+        &[],
         &verifier,
         PromptPortfolioRequestV1 {
             portfolio_id: id("portfolio:agentd-product"),

@@ -262,7 +262,7 @@ pub(super) fn verifier() -> LearningEvidenceVerifierV1 {
     .unwrap_or_else(|error| panic!("verifier: {error}"))
 }
 
-fn sign_learning_evidence(
+pub(super) fn sign_learning_evidence(
     verifier: &LearningEvidenceVerifierV1,
     seed: u8,
     principal: &str,
@@ -291,7 +291,7 @@ fn sign_learning_evidence(
 pub(super) struct PricingFixture {
     pub(super) completeness: CandidateSetCompletenessReceiptV1,
     pub(super) completeness_evidence: SignedLearningEvidenceV1,
-    pub(super) evidence: Vec<PromptPricingEvidenceV1>,
+    pub(super) evidence: Vec<PromptPricingEvidenceV2>,
     pub(super) verifier: LearningEvidenceVerifierV1,
     pub(super) policy: PromptPricingPolicyV1,
 }
@@ -323,7 +323,7 @@ pub(super) fn authenticated_pricing_inputs(candidates: &EnumeratedPromptCandidat
     );
     let evidence = candidates.candidates.iter().map(|candidate| {
         let utility = FixedQ32::from_raw(if candidate.factor_id == id("factor:a") { 20 } else { 10 });
-        let mut evidence = PromptPricingEvidenceV1 {
+        let pricing = PromptPricingEvidenceV1 {
             factor_id: candidate.factor_id.clone(),
             state_digest: candidates.receipt.state_digest,
             model_tuple_digest: candidates.model_tuple.digest(),
@@ -341,9 +341,14 @@ pub(super) fn authenticated_pricing_inputs(candidates: &EnumeratedPromptCandidat
             support_audit_digest: digest("pricing-support-audit"),
             evidence: completeness_evidence.clone(),
         };
-        evidence.evidence = sign_learning_evidence(
+        let mut evidence = PromptPricingEvidenceV2 {
+                pricing,
+                candidate_set_digest: candidates.receipt.receipt_digest,
+                binding_digest: candidate.binding_digest,
+            };
+            evidence.pricing.evidence = sign_learning_evidence(
             &verifier, 7, "evaluator", LearningEvidenceRoleV1::Evaluator,
-            &format!("evidence:pricing:{}", candidate.factor_id), &pricing_evidence_signing_payload_v1(&evidence),
+            &format!("evidence:pricing:{}", candidate.factor_id), &pricing_evidence_signing_payload_v2(&evidence),
         );
         evidence
     }).collect();
@@ -381,7 +386,7 @@ fn prerequisite_bundle_can_select_negative_prerequisite_for_positive_bundle() {
     let selected = select_from_validated_inputs(
         &priced,
         &graph,
-        Vec::new(),
+        &[],
         &verifier(),
         PromptPortfolioRequestV1 {
             portfolio_id: id("portfolio:bundle"),
@@ -426,7 +431,7 @@ fn hard_conflict_cannot_be_outweighed_by_positive_numeric_utility() {
     let selected = select_from_validated_inputs(
         &priced,
         &graph,
-        Vec::new(),
+        &[],
         &verifier(),
         PromptPortfolioRequestV1 {
             portfolio_id: id("portfolio:conflict"),
@@ -781,7 +786,7 @@ fn canonical_selector_rejects_candidate_absent_from_complete_graph() {
     let error = select_from_validated_inputs(
         &priced,
         &missing_graph,
-        Vec::new(),
+        &[],
         &verifier(),
         PromptPortfolioRequestV1 {
             portfolio_id: id("portfolio:missing-factor"),
@@ -912,7 +917,7 @@ fn relation_only_withdrawal_rejects_selected_portfolio_before_exercise() {
     let selected = select_portfolio_v1(
         &priced,
         &projection,
-        Vec::new(),
+        &[],
         &verifier(),
         PromptPortfolioRequestV1 {
             portfolio_id: id("portfolio:relation-revocation"),
@@ -1152,7 +1157,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     let old_portfolio = select_portfolio_v1(
         &before_priced,
         &before_graph,
-        Vec::new(),
+        &[],
         &verifier(),
         request.clone(),
         100,
@@ -1170,7 +1175,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
         select_portfolio_v1(
             &rebound,
             &before_graph,
-            Vec::new(),
+            &[],
             &verifier(),
             request.clone(),
             100
@@ -1182,7 +1187,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
         select_portfolio_v1(
             &current,
             &before_graph,
-            Vec::new(),
+            &[],
             &verifier(),
             request.clone(),
             100
@@ -1203,7 +1208,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     let constrained = select_portfolio_v1(
         &current,
         &conflict_graph,
-        Vec::new(),
+        &[],
         &verifier(),
         request.clone(),
         100,
@@ -1323,7 +1328,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
         select_portfolio_v1(
             &current,
             &conflict_graph,
-            Vec::new(),
+            &[],
             &verifier(),
             request.clone(),
             100
@@ -1344,7 +1349,7 @@ fn current_enumeration_rejects_graphs_before_relation_insertion_and_withdrawal()
     let mut corrected = select_portfolio_v1(
         &current,
         &corrected_graph,
-        Vec::new(),
+        &[],
         &verifier(),
         request,
         100,

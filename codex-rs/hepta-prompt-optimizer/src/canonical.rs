@@ -40,6 +40,15 @@ mod input_binding;
 
 use input_binding::verify_pricing_admission;
 
+#[path = "canonical_evidence.rs"]
+mod evidence;
+
+pub use evidence::PromptPairUtilityEvidenceV2;
+pub use evidence::PromptPricingEvidenceV2;
+pub use evidence::pair_utility_evidence_signing_payload_v2;
+pub use evidence::pricing_evidence_signing_payload_v2;
+use evidence::translate_pricing_confidence_bound;
+
 pub const MAX_CANONICAL_PROMPT_FACTORS: usize = 128;
 pub const MAX_CANONICAL_SELECTED_FACTORS: usize = 16;
 pub const MAX_CANONICAL_INTERACTION_EDGES: u32 = 512;
@@ -368,7 +377,7 @@ pub fn price_factors_v1(
     candidates: EnumeratedPromptCandidatesV1,
     completeness: &CandidateSetCompletenessReceiptV1,
     completeness_evidence: &SignedLearningEvidenceV1,
-    pricing_evidence: Vec<PromptPricingEvidenceV1>,
+    pricing_evidence: Vec<PromptPricingEvidenceV2>,
     verifier: &LearningEvidenceVerifierV1,
     policy: &PromptPricingPolicyV1,
     now_unix_ms: u64,
@@ -403,15 +412,15 @@ pub fn price_factors_v1(
         .iter()
         .map(|candidate| (candidate.factor_id.clone(), candidate))
         .collect::<BTreeMap<_, _>>();
-    let mut evidence_rows = BTreeMap::<StableId, PromptPricingEvidenceV1>::new();
+    let mut evidence_rows = BTreeMap::<StableId, PromptPricingEvidenceV2>::new();
     for evidence in pricing_evidence {
-        if !by_factor.contains_key(&evidence.factor_id) {
+        if !by_factor.contains_key(&evidence.pricing.factor_id) {
             return Err(CanonicalPromptError::UnknownFactor(
-                evidence.factor_id.to_string(),
+                evidence.pricing.factor_id.to_string(),
             ));
         }
         if evidence_rows
-            .insert(evidence.factor_id.clone(), evidence)
+            .insert(evidence.pricing.factor_id.clone(), evidence)
             .is_some()
         {
             return Err(CanonicalPromptError::DuplicatePricingEvidence);
@@ -423,8 +432,14 @@ pub fn price_factors_v1(
         let evidence = evidence_rows.remove(&candidate.factor_id).ok_or_else(|| {
             CanonicalPromptError::MissingPricingEvidence(candidate.factor_id.to_string())
         })?;
+        if evidence.candidate_set_digest != candidates.receipt.receipt_digest
+            || evidence.binding_digest != candidate.binding_digest
+        {
+            return Err(CanonicalPromptError::InvalidPricingEvidence(candidate.factor_id.to_string()));
+        }
+        let payload = pricing_evidence_signing_payload_v2(&evidence);
+        let evidence = evidence.pricing;
         validate_pricing_evidence(&candidates, &evidence, policy)?;
-        let payload = pricing_evidence_signing_payload_v1(&evidence);
         let evaluator = verifier
             .verify(
                 LearningEvidenceRoleV1::Evaluator,
@@ -469,8 +484,8 @@ pub fn price_factors_v1(
                 .map_err(|_| CanonicalPromptError::Arithmetic)?;
         }
         let confidence_interval = PromptConfidenceIntervalV1 {
-            lower_q32: evidence.confidence_lower_q32,
-            upper_q32: evidence.confidence_upper_q32,
+            lower_q32: translate_pricing_confidence_bound(evidence.confidence_lower_q32, evidence.expected_incremental_utility_q32, net)?,
+            upper_q32: translate_pricing_confidence_bound(evidence.confidence_upper_q32, evidence.expected_incremental_utility_q32, net)?,
             support_count: evidence.support_count,
             support_audit_digest: evidence.support_audit_digest,
         };
@@ -621,7 +636,7 @@ pub struct PromptPortfolioRequestV1 {
 pub fn select_portfolio_v1(
     priced: &PricedPromptCandidatesV1,
     factor_graph: &PromptFactorProjectionV1,
-    pair_evidence: Vec<PromptPairUtilityEvidenceV1>,
+    pair_evidence: &[PromptPairUtilityEvidenceV2],
     verifier: &LearningEvidenceVerifierV1,
     request: PromptPortfolioRequestV1,
     now_unix_ms: u64,
@@ -674,7 +689,7 @@ pub fn select_portfolio_v1(
 fn select_from_validated_inputs(
     priced: &PricedPromptCandidatesV1,
     graph: &KnowledgeGenerationV2,
-    pair_evidence: Vec<PromptPairUtilityEvidenceV1>,
+    pair_evidence: &[PromptPairUtilityEvidenceV2],
     verifier: &LearningEvidenceVerifierV1,
     request: PromptPortfolioRequestV1,
     now_unix_ms: u64,
@@ -777,16 +792,25 @@ fn select_from_validated_inputs(
     }
     validate_requires_acyclic(&known, &requires)?;
 
+    let by_factor = priced
+        .rows
+        .iter()
+        .map(|row| (row.binding.factor_id.clone(), row))
+        .collect::<BTreeMap<_, _>>();
     let mut pair_rows = BTreeMap::<(StableId, StableId), FixedQ32>::new();
     let mut pair_evidence_digests = Vec::new();
     let mut pair_admission_proofs = Vec::new();
     let mut admission_expires_at = priced.admission_expires_at_unix_ms;
-    for evidence in pair_evidence {
+    for context in pair_evidence {
+        let evidence = &context.pair;
         let key = pair_key(&evidence.left_factor_id, &evidence.right_factor_id);
         let Some((validity_digest, _)) = numeric_edges.get(&key) else {
             return Err(CanonicalPromptError::UnexpectedPairEvidence);
         };
         if evidence.left_factor_id >= evidence.right_factor_id
+            || context.model_tuple_digest != priced.candidates.model_tuple.digest()
+            || by_factor.get(&evidence.left_factor_id).is_none_or(|row| row.binding.binding_digest != context.left_binding_digest)
+            || by_factor.get(&evidence.right_factor_id).is_none_or(|row| row.binding.binding_digest != context.right_binding_digest)
             || evidence.state_digest != priced.candidates.receipt.state_digest
             || evidence.graph_generation_digest != graph.generation_digest
             || evidence.edge_validity_digest != *validity_digest
@@ -796,7 +820,7 @@ fn select_from_validated_inputs(
         {
             return Err(CanonicalPromptError::InvalidPairEvidence);
         }
-        let payload = pair_utility_evidence_signing_payload_v1(&evidence);
+        let payload = pair_utility_evidence_signing_payload_v2(context);
         let verified = verifier
             .verify(
                 LearningEvidenceRoleV1::Evaluator,
@@ -832,11 +856,6 @@ fn select_from_validated_inputs(
         }
     }
 
-    let by_factor = priced
-        .rows
-        .iter()
-        .map(|row| (row.binding.factor_id.clone(), row))
-        .collect::<BTreeMap<_, _>>();
     let mut selected = BTreeSet::<StableId>::new();
     loop {
         if selected.len() >= request.maximum_selected_factors {
@@ -1551,3 +1570,7 @@ mod tests;
 #[cfg(test)]
 #[path = "canonical_adversarial_tests.rs"]
 mod adversarial_tests;
+
+#[cfg(test)]
+#[path = "canonical_evidence_tests.rs"]
+mod evidence_tests;
