@@ -3,8 +3,6 @@
 use codex_hepta_agentd::AgentRunPhase;
 use codex_hepta_agentd::AgentRunReceipt;
 use codex_hepta_agentd::AgentdClient;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
 use tokio::time::Instant;
 use tokio::time::timeout_at;
 
@@ -17,6 +15,8 @@ use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::RPC_TIMEOUT;
 use super::Result;
+use super::input::bounded_diagnostic;
+use super::input::validate_intelligence_binding;
 use super::unix_time_ms;
 
 pub(super) struct IntelligenceObservation<'a> {
@@ -46,7 +46,11 @@ async fn read_intelligence_run(
     )
     .await
     .map_err(|_| "owning intelligence status check timed out".to_string())?
-    .map_err(|error| format!("owning intelligence status check failed: {error}"))?
+    .map_err(|error| {
+        bounded_diagnostic(format_args!(
+            "owning intelligence status check failed: {error}"
+        ))
+    })?
     .ok_or_else(|| "owning intelligence run disappeared".to_string())
 }
 
@@ -106,7 +110,11 @@ pub(super) async fn reconcile_intelligence_terminal(
     }
     commit_intelligence_terminal(owner, generation, binding, run.revision, output)
         .await
-        .map_err(|error| format!("Agentd recovered terminal reconciliation required: {error}"))
+        .map_err(|error| {
+            bounded_diagnostic(format_args!(
+                "Agentd recovered terminal reconciliation required: {error}"
+            ))
+        })
 }
 
 fn verify_intelligence_recovery_receipt(
@@ -267,12 +275,9 @@ pub(super) async fn reconcile_intelligence_start_unknown(
             .await
     {
         let reason = output.stop_reason.take().unwrap_or_default();
-        output.stop_reason = Some(
-            format!("{reason}; Agentd reconciliation remains required: {error}")
-                .chars()
-                .take(1024)
-                .collect(),
-        );
+        output.stop_reason = Some(bounded_diagnostic(format_args!(
+            "{reason}; Agentd reconciliation remains required: {error}"
+        )));
     }
     output
 }
@@ -282,19 +287,7 @@ pub(super) async fn require_intelligence_handoff(
     generation: u64,
     binding: &NativeIntelligenceRunBinding,
 ) -> Result<u64> {
-    if binding.run_id.is_empty()
-        || binding.expected_revision == 0
-        || binding.context_digest.is_empty()
-        || binding.envelope_digest.is_empty()
-    {
-        return Err("invalid intelligence execution binding".into());
-    }
-    StableId::new(binding.run_id.clone())?;
-    let context: Digest32 = binding.context_digest.parse()?;
-    let envelope: Digest32 = binding.envelope_digest.parse()?;
-    if context.is_zero() || envelope.is_zero() {
-        return Err("zero intelligence binding".into());
-    }
+    validate_intelligence_binding(binding)?;
     let run = owner
         .run_status(binding.run_id.clone())
         .await?

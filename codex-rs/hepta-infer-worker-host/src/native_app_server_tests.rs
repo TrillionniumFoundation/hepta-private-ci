@@ -118,7 +118,7 @@ fn lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread() {
     )
     .unwrap()
     .expect("exact turn/started must reconcile");
-    assert_eq!(recovered.id, "turn-recovered");
+    assert_eq!(recovered, StableId::new("turn-recovered").unwrap());
 
     assert!(
         exact_reconciled_turn(

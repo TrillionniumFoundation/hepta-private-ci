@@ -271,43 +271,42 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
     std::fs::remove_file(path).unwrap();
 }
 
-#[test]
-fn intelligence_handoff_is_committed_to_native_admission_identity() {
-    let socket = std::path::Path::new("/tmp/native-owner.sock");
-    let none = native_source_payload_digest("prompt", &None, socket, 5000, None).unwrap();
+#[tokio::test]
+async fn malformed_intelligence_binding_is_rejected_before_journal_admission() {
+    let (driver, path) = fixture("unbounded-intelligence");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let before = std::fs::read(&path).unwrap();
     let original = NativeIntelligenceRunBinding {
-        run_id: "intelligence-run".to_string(),
+        run_id: "run-a".to_string(),
         expected_revision: 2,
         context_digest: "a".repeat(64),
         envelope_digest: "b".repeat(64),
     };
-    let bound =
-        native_source_payload_digest("prompt", &None, socket, 5000, Some(&original)).unwrap();
-    assert_ne!(none, bound);
-    for field in 0..4 {
-        let mut changed = original.clone();
+    for field in 0..5 {
+        let mut invalid = original.clone();
         match field {
-            0 => changed.run_id.push_str("-other"),
-            1 => changed.expected_revision += 1,
-            2 => changed.context_digest = "c".repeat(64),
-            _ => changed.envelope_digest = "d".repeat(64),
+            0 => invalid.run_id = "r".repeat(1024),
+            1 => invalid.run_id = "run/invalid".to_string(),
+            2 => invalid.context_digest = "c".repeat(1024),
+            3 => invalid.envelope_digest = "d".repeat(1024),
+            _ => invalid.expected_revision = 0,
         }
-        assert_ne!(
-            bound,
-            native_source_payload_digest("prompt", &None, socket, 5000, Some(&changed)).unwrap()
+        assert!(
+            driver
+                .run_intelligence(
+                    &mut control,
+                    admission(),
+                    "prompt".to_string(),
+                    None,
+                    invalid,
+                    &CancellationToken::new(),
+                )
+                .await
+                .is_err()
         );
+        assert_eq!(control.native_record("r1"), None);
+        assert_eq!(std::fs::read(&path).unwrap(), before);
     }
-    assert_eq!(
-        none,
-        digest(
-            &serde_json::to_vec(&(
-                "hepta.native-request.v1",
-                "prompt",
-                Option::<String>::None,
-                socket,
-                5000_u128,
-            ))
-            .unwrap()
-        )
-    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
 }

@@ -6,7 +6,6 @@
 use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
-use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -55,7 +54,6 @@ use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::EnteredUseToken;
 use codex_hepta_contracts::FinalUseBinding;
-use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 pub use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
@@ -67,17 +65,25 @@ use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::IdProfileV1;
 use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
+pub use crate::native_authority_port::TurnStartAuthorityFuture;
+pub use crate::native_authority_port::TurnStartAuthorizer;
+
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_input.rs"]
+mod input;
 #[path = "native_intelligence.rs"]
 mod intelligence_owner;
 #[path = "native_observation.rs"]
 mod observation;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+use input::app_server_version_valid;
+use input::bounded_diagnostic;
 use intelligence_owner::IntelligenceObservation;
 use intelligence_owner::apply_intelligence_failure;
 use intelligence_owner::commit_intelligence_terminal;
@@ -135,15 +141,6 @@ async fn pause_before_final_revalidation_for_test() {
 }
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
-
-pub type TurnStartAuthorityFuture<'a> =
-    Pin<Box<dyn Future<Output = Result<VerifiedUseToken>> + Send + 'a>>;
-
-/// Host-owned final-use port. runtime.codex can request a claim for the exact
-/// final binding, but it cannot construct a VerifiedUseToken itself.
-pub trait TurnStartAuthorizer: Send + Sync {
-    fn claim<'a>(&'a self, binding: FinalUseBinding) -> TurnStartAuthorityFuture<'a>;
-}
 
 /// Local operator-selected connection, fenced by the existing Agent identity.
 pub struct NativeWorkerConfig {
@@ -273,15 +270,18 @@ impl AppServerModelDriver {
             _ => return Ok(None),
         };
         let observed_home = match client.codex_home() {
-            Some(home) => home.to_string(),
+            Some(home) => home,
             None => {
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Ok(None);
             }
         };
+        if let Some(version) = client.server_version() {
+            validate_app_server_version(version)?;
+        }
         let expected_home_digest: Digest32 = codex_home_digest.parse()?;
         if Digest32::of_bytes(observed_home.as_bytes()) != expected_home_digest
-            || Some(observed_home.as_str()) != health.home_root.to_str()
+            || Some(observed_home) != health.home_root.to_str()
             || client.server_version() != Some(app_server_version)
         {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
@@ -504,9 +504,8 @@ impl AppServerModelDriver {
         .await??;
         let codex_home = client
             .codex_home()
-            .ok_or("App Server initialize response omitted codex home")?
-            .to_string();
-        if Some(codex_home.as_str()) != health.home_root.to_str() {
+            .ok_or("App Server initialize response omitted codex home")?;
+        if Some(codex_home) != health.home_root.to_str() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("App Server home does not match the owning Agent".into());
         }
@@ -514,8 +513,9 @@ impl AppServerModelDriver {
         let connection_id = client.connection_id();
         let app_server_version = client
             .server_version()
-            .ok_or("App Server initialize response omitted server version")?
-            .to_string();
+            .ok_or("App Server initialize response omitted server version")?;
+        validate_app_server_version(app_server_version)?;
+        let app_server_version = app_server_version.to_string();
         let started: ThreadStartResponse = timeout(
             RPC_TIMEOUT,
             client.request_typed(ClientRequest::ThreadStart {
@@ -535,6 +535,13 @@ impl AppServerModelDriver {
         if started.model != self.config.model {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
+        }
+        for identity in [
+            &started.thread.id,
+            &started.thread.session_id,
+            &started.model_provider,
+        ] {
+            StableId::with_profile(identity, IdProfileV1::Stable)?;
         }
         // Recheck the actual generation after connecting and creating the
         // ephemeral thread. Only now acquire the retrieval result that will be
@@ -695,12 +702,9 @@ impl AppServerModelDriver {
             {
                 Ok(receipt) => receipt,
                 Err(error) => {
-                    let reason: String = format!(
+                    let reason = bounded_diagnostic(format_args!(
                         "Agentd dispatch acknowledgement unknown before physical send: {error}"
-                    )
-                    .chars()
-                    .take(1024)
-                    .collect();
+                    ));
                     control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                     return Err(reason.into());
@@ -729,7 +733,9 @@ impl AppServerModelDriver {
         let post_health = match owner.health().await {
             Ok(health) => health,
             Err(error) => {
-                let reason = format!("owner health failed before final-use entry: {error}");
+                let reason = bounded_diagnostic(format_args!(
+                    "owner health failed before final-use entry: {error}"
+                ));
                 control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
@@ -738,7 +744,9 @@ impl AppServerModelDriver {
         let current_ingress = match owner.session_ingress().await {
             Ok(ingress) => ingress,
             Err(error) => {
-                let reason = format!("owner ingress failed before final-use entry: {error}");
+                let reason = bounded_diagnostic(format_args!(
+                    "owner ingress failed before final-use entry: {error}"
+                ));
                 control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
@@ -752,7 +760,7 @@ impl AppServerModelDriver {
             unix_time_ms()?,
             adapter_intent.deadline_ms,
         ) {
-            let reason: String = error.to_string().chars().take(1024).collect();
+            let reason = bounded_diagnostic(format_args!("{error}"));
             control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(reason.into());
@@ -765,11 +773,9 @@ impl AppServerModelDriver {
             let revalidated = match owner.revalidate_cognitive_context(snapshot).await {
                 Ok(revalidated) => revalidated,
                 Err(error) => {
-                    let reason: String =
-                        format!("cognitive final-use revalidation failed: {error}")
-                            .chars()
-                            .take(1024)
-                            .collect();
+                    let reason = bounded_diagnostic(format_args!(
+                        "cognitive final-use revalidation failed: {error}"
+                    ));
                     let stopped = control.abort_native_before_effect(pre_effect_abort, reason);
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                     stopped?;
@@ -819,7 +825,7 @@ impl AppServerModelDriver {
         let send_budget = match remaining_before(adapter_intent.deadline_ms) {
             Ok(budget) => budget.min(RPC_TIMEOUT),
             Err(error) => {
-                let reason = error.to_string();
+                let reason = bounded_diagnostic(format_args!("{error}"));
                 control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
@@ -834,7 +840,9 @@ impl AppServerModelDriver {
                 return Err(reason.into());
             }
             Err(error) => {
-                let reason = format!("kernel.authority final-use entry denied: {error}");
+                let reason = bounded_diagnostic(format_args!(
+                    "kernel.authority final-use entry denied: {error}"
+                ));
                 control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(reason.into());
@@ -848,8 +856,8 @@ impl AppServerModelDriver {
             send_authorized_turn_start(&mut client, entered_use, turn_params),
         )
         .await;
-        let turn = match response {
-            Ok(Ok(response)) => response.turn,
+        let turn_id = match response {
+            Ok(Ok(response)) => StableId::with_profile(&response.turn.id, IdProfileV1::Stable)?,
             Ok(Err(RemoteObservedTypedRequestError::Server { observed })) => {
                 let receipt = adapt_observed_server_rejection(&adapter_intent, &observed)?;
                 let reason: String = observed.error().message.chars().take(1024).collect();
@@ -886,9 +894,9 @@ impl AppServerModelDriver {
                             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                             return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_revision, indeterminate_start_output(
                                 started,
-                                format!(
+                                bounded_diagnostic(format_args!(
                                     "turn/start returned an accepted-or-unknown JSON-RPC error ({reason}); reconciliation found no exact turn; do not replay"
-                                ),
+                                )),
                             )).await);
                         }
                     }
@@ -902,9 +910,9 @@ impl AppServerModelDriver {
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                     return Ok(reconcile_intelligence_start_unknown(&owner, intelligence, intelligence_revision, indeterminate_start_output(
                         started,
-                        format!(
+                        bounded_diagnostic(format_args!(
                             "turn/start transport outcome unknown ({error}); reconciliation found no exact turn; do not replay"
-                        ),
+                        )),
                     )).await);
                 }
             }
@@ -923,11 +931,11 @@ impl AppServerModelDriver {
         };
         let binding = CodexTurnBinding {
             intent: adapter_intent,
-            turn_id: StableId::new(turn.id.clone())?,
+            turn_id: turn_id.clone(),
         };
         let mut output = NativeRunOutput {
             thread_id: started.thread.id,
-            turn_id: turn.id,
+            turn_id: turn_id.as_str().to_string(),
             model: started.model,
             model_provider: started.model_provider,
             status: NativeRunStatus::Indeterminate,
@@ -1025,16 +1033,14 @@ impl AppServerModelDriver {
                     )
                     .await
             {
-                let note = format!("Agentd indeterminate reconciliation required: {error}");
-                output.stop_reason = Some(
-                    match output.stop_reason.take() {
-                        Some(existing) => format!("{existing}; {note}"),
-                        None => note,
-                    }
-                    .chars()
-                    .take(1024)
-                    .collect(),
-                );
+                output.stop_reason = Some(match output.stop_reason.take() {
+                    Some(existing) => bounded_diagnostic(format_args!(
+                        "{existing}; Agentd indeterminate reconciliation required: {error}"
+                    )),
+                    None => bounded_diagnostic(format_args!(
+                        "Agentd indeterminate reconciliation required: {error}"
+                    )),
+                });
             }
         }
         if output.terminal_observed {
@@ -1079,16 +1085,14 @@ impl AppServerModelDriver {
                 )
                 .await
             {
-                let note = format!("Agentd terminal reconciliation required: {error}");
-                output.stop_reason = Some(
-                    match output.stop_reason.take() {
-                        Some(existing) => format!("{existing}; {note}"),
-                        None => note,
-                    }
-                    .chars()
-                    .take(1024)
-                    .collect(),
-                );
+                output.stop_reason = Some(match output.stop_reason.take() {
+                    Some(existing) => bounded_diagnostic(format_args!(
+                        "{existing}; Agentd terminal reconciliation required: {error}"
+                    )),
+                    None => bounded_diagnostic(format_args!(
+                        "Agentd terminal reconciliation required: {error}"
+                    )),
+                });
             }
         }
         Ok(output)
@@ -1152,13 +1156,22 @@ impl AppServerModelDriver {
                     )
                     .await
                     .map_err(|_| "approval rejection timed out".to_string())?
-                    .map_err(|error| error.to_string())?;
+                    .map_err(|error| bounded_diagnostic(format_args!("{error}")))?;
                 }
                 AppServerEvent::Lagged { .. } => return Err("provider events lost".to_string()),
-                AppServerEvent::Disconnected { message } => return Err(message.clone()),
+                AppServerEvent::Disconnected { message } => {
+                    return Err(bounded_diagnostic(format_args!("{message}")));
+                }
             }
         }
     }
+}
+
+fn validate_app_server_version(version: &str) -> Result<()> {
+    if !app_server_version_valid(version) {
+        return Err(codex_hepta_codex_adapter::Error::InvalidAppServerVersion.into());
+    }
+    Ok(())
 }
 
 fn final_use_binding(
@@ -1326,7 +1339,7 @@ fn indeterminate_start_output(started: ThreadStartResponse, reason: String) -> N
 async fn reconcile_turn_start(
     client: &mut RemoteAppServerClient,
     thread_id: &str,
-) -> Result<Option<codex_app_server_protocol::Turn>> {
+) -> Result<Option<StableId>> {
     let deadline = Instant::now() + TURN_START_RECONCILE_GRACE;
     loop {
         let event = match timeout_at(deadline, client.next_observed_event()).await {
@@ -1364,7 +1377,7 @@ async fn reconcile_turn_start(
 fn exact_reconciled_turn(
     thread_id: &str,
     observed: &RemoteAppServerObservedEvent,
-) -> std::result::Result<Option<codex_app_server_protocol::Turn>, String> {
+) -> std::result::Result<Option<StableId>, String> {
     let AppServerEvent::ServerNotification(notification) = observed.event() else {
         return Ok(None);
     };
@@ -1373,7 +1386,9 @@ fn exact_reconciled_turn(
             if started.turn.status != TurnStatus::InProgress {
                 return Err("turn/started carried a non-in-progress status".to_string());
             }
-            Ok(Some(started.turn.clone()))
+            StableId::with_profile(&started.turn.id, IdProfileV1::Stable)
+                .map(Some)
+                .map_err(|error| format!("invalid turn/started identity: {error}"))
         }
         _ => Ok(None),
     }
@@ -1385,7 +1400,7 @@ async fn verify_owner_health(
     deadline: Instant,
 ) -> std::result::Result<(), String> {
     if let NativeOwnerAuthority::Lost { reason } = &output.owner_authority {
-        return Err(reason.clone());
+        return Err(bounded_diagnostic(format_args!("{reason}")));
     }
     let checked = timeout_at(deadline.min(Instant::now() + RPC_TIMEOUT), health).await;
     let failure = match checked {
@@ -1394,10 +1409,10 @@ async fn verify_owner_health(
             return Ok(());
         }
         Ok(Ok(_)) => "owning Agent is no longer ready or is fenced".to_string(),
-        Ok(Err(error)) => format!("owner health check failed: {error}"),
+        Ok(Err(error)) => bounded_diagnostic(format_args!("owner health check failed: {error}")),
         Err(_) => "owner health check timed out".to_string(),
     };
-    let reason: String = failure.chars().take(1024).collect();
+    let reason = failure;
     output.owner_authority = NativeOwnerAuthority::Lost {
         reason: reason.clone(),
     };

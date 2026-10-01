@@ -3,8 +3,8 @@
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
-use sha2::Digest;
-use sha2::Sha256;
+use codex_hepta_types::IdProfileV1;
+use codex_hepta_types::StableId;
 use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
@@ -20,15 +20,9 @@ pub struct NativeAdmission {
     pub maximum_in_flight: usize,
 }
 
-/// Exact Agentd intelligence handoff that must already be attached before a
-/// physical App Server turn can start.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct NativeIntelligenceRunBinding {
-    pub run_id: String,
-    pub expected_revision: u64,
-    pub context_digest: String,
-    pub envelope_digest: String,
-}
+pub use super::input::NativeIntelligenceRunBinding;
+pub(super) use super::input::digest;
+use super::input::native_source_payload_digest;
 
 impl AppServerModelDriver {
     /// Reserves before any provider call, journals dispatch before `turn/start`,
@@ -93,6 +87,7 @@ impl AppServerModelDriver {
         {
             return Err("context query must contain 1..2048 bytes".into());
         }
+        StableId::with_profile(&admission.request_id, IdProfileV1::Stable)?;
         let request = NativeRequest {
             request_id: admission.request_id,
             principal_id: self.config.agent_id.to_string(),
@@ -195,40 +190,6 @@ impl AppServerModelDriver {
             }
         }
     }
-}
-
-fn native_source_payload_digest(
-    prompt: &str,
-    context_query: &Option<String>,
-    socket: &std::path::Path,
-    timeout_ms: u128,
-    intelligence: Option<&NativeIntelligenceRunBinding>,
-) -> Result<String> {
-    let bytes = match intelligence {
-        None => serde_json::to_vec(&(
-            "hepta.native-request.v1",
-            prompt,
-            context_query,
-            socket,
-            timeout_ms,
-        ))?,
-        Some(binding) => serde_json::to_vec(&(
-            "hepta.native-intelligence-request.v2",
-            prompt,
-            context_query,
-            socket,
-            timeout_ms,
-            &binding.run_id,
-            binding.expected_revision,
-            &binding.context_digest,
-            &binding.envelope_digest,
-        ))?,
-    };
-    Ok(digest(&bytes))
-}
-
-pub(super) fn digest(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
 }
 
 #[cfg(test)]

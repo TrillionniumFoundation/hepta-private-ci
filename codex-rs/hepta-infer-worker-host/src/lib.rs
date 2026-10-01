@@ -12,6 +12,7 @@ pub mod model_worker;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;
+mod native_authority_port;
 
 use std::error::Error as StdError;
 use std::fmt;

@@ -14,6 +14,8 @@ use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use sha2::Digest;
+use sha2::Sha256;
 
 #[path = "model_worker_validation.rs"]
 mod validation;
@@ -718,18 +720,19 @@ fn parse_digest32(value: &str) -> Result<Digest32, Error> {
 }
 
 pub fn canonical_neuron_feature_payload_digest(request: &NeuronFeatureRequest) -> String {
-    let mut bytes = b"hepta.infer-worker.neuron-feature-request.v1".to_vec();
-    bytes.extend_from_slice(request.authorization.model_digest.as_bytes());
-    bytes.extend_from_slice(request.encoder_digest.as_bytes());
-    bytes.extend_from_slice(request.head_digest.as_bytes());
-    bytes.extend_from_slice(request.weights_digest.as_bytes());
-    bytes.extend_from_slice(request.input_digest.as_bytes());
-    bytes.extend_from_slice(&(request.feature_vector_q24.len() as u64).to_be_bytes());
+    let mut hasher = Sha256::new();
+    hasher.update(b"hepta.infer-worker.neuron-feature-request.v1");
+    hasher.update(request.authorization.model_digest.as_bytes());
+    hasher.update(request.encoder_digest.as_bytes());
+    hasher.update(request.head_digest.as_bytes());
+    hasher.update(request.weights_digest.as_bytes());
+    hasher.update(request.input_digest.as_bytes());
+    hasher.update((request.feature_vector_q24.len() as u64).to_be_bytes());
     for value in &request.feature_vector_q24 {
-        bytes.extend_from_slice(&value.to_be_bytes());
+        hasher.update(value.to_be_bytes());
     }
-    bytes.extend_from_slice(&(request.expected_output_width as u64).to_be_bytes());
-    Digest32::of_bytes(&bytes).to_string()
+    hasher.update((request.expected_output_width as u64).to_be_bytes());
+    Digest32::from_array(hasher.finalize().into()).to_string()
 }
 
 fn validate_neuron_feature_request(value: &NeuronFeatureRequest) -> Result<(), Error> {

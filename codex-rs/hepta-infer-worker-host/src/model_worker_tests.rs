@@ -231,6 +231,16 @@ fn neuron_feature_request() -> NeuronFeatureRequest {
 }
 
 #[test]
+fn neuron_feature_payload_preserves_published_v1_digest() {
+    // Independently computed with Python hashlib over the original V1 byte
+    // layout, including signed big-endian Q24 values and 64-bit widths.
+    assert_eq!(
+        canonical_neuron_feature_payload_digest(&neuron_feature_request()),
+        "55546b4b54085cf7497be38cd38ceb97b446a1987d4bfa71d2ac7629ba09e117"
+    );
+}
+
+#[test]
 fn executes_authenticated_neuron_feature_tuple_from_loaded_manifest() {
     let mut worker =
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())

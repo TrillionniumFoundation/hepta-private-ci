@@ -23,8 +23,8 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::time::timeout;
 
-use crate::native_app_server::TurnStartAuthorityFuture;
-use crate::native_app_server::TurnStartAuthorizer;
+use crate::native_authority_port::TurnStartAuthorityFuture;
+use crate::native_authority_port::TurnStartAuthorizer;
 
 const AUTHORITY_PORT_SCHEMA_VERSION: u32 = 1;
 const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
@@ -116,6 +116,7 @@ impl UnixFinalUseAuthorizer {
 
     #[cfg(unix)]
     async fn request_grant(&self, binding: &FinalUseBinding) -> Result<IssuerResponse> {
+        validate_final_use_binding(binding)?;
         validate_issuer_socket(&self.issuer_socket, self.issuer_uid)?;
         let request = IssuerRequest {
             schema_version: AUTHORITY_PORT_SCHEMA_VERSION,
@@ -180,6 +181,29 @@ struct IssuerResponse {
     revocations: FinalUseRevocations,
     grant: Option<SignedFinalUseGrant>,
     denial_reason: Option<String>,
+}
+
+#[cfg(unix)]
+fn validate_final_use_binding(binding: &FinalUseBinding) -> Result<()> {
+    if [&binding.subject_id, &binding.destination_id]
+        .iter()
+        .any(|identifier| {
+            identifier.is_empty()
+                || identifier.len() > 128
+                || !identifier
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+        })
+        || [
+            binding.request_sha256,
+            binding.scope_sha256,
+            binding.payload_sha256,
+        ]
+        .contains(&[0; 32])
+    {
+        return Err("invalid final-use binding".into());
+    }
+    Ok(())
 }
 
 fn sync_revocations(authority: &FinalUseAuthority, candidate: FinalUseRevocations) -> Result<()> {
