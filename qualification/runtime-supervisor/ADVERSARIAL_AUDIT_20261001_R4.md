@@ -208,5 +208,12 @@ all-target strict Clippy 均通过；完整 fmt 后 46 个无关 formatter-only 
 新增测试曾在编译中发现宏导入歧义，显式导入 pretty_assertions 后纠正，原失败日志保留。
 两次独立源码复审未再发现具体实现缺陷；当前执行和验收状态保持 pending / false。
 
-补修完整源码与验证输入为 `74eda6dbe9a63c043c60e7c468fa353b64bb3854`，tree `2d2015f0c02ab6a2362ae5860a67ec0d34331ad7`。
+首次补修源码与验证输入为 `74eda6dbe9a63c043c60e7c468fa353b64bb3854`，tree `2d2015f0c02ab6a2362ae5860a67ec0d34331ad7`。
 当前 source map 绑定该观察；首次修复源码、本地具名执行和 7c CI 的身份均保留。
+
+在 d74cde5bf1262172086a05f381034ceb64438dd1 的实际 recovery scope 中，
+Fleet mandatory 已为三项，但 receipt validator 的有效样本仍只含两个 publication
+测试，导致前置 suite 报错，六 native lanes 全部 skipped、零 Rust 执行。
+现有效样本加入从 registry_tests 源码核对的 canonical sweep 精确身份，
+并对全部三项执行既有 missing / prefix / wrong-binary 反例；生产门槛保持三项。
+这次真实 scope 失败日志由 run 36930763804 和 36930754188 保留，不能算原生通过。

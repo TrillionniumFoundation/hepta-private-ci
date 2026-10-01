@@ -55,6 +55,13 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
         return names
 
     def test_fleet_library_receipts_require_each_source_publication_repair(self):
+        canonical = (
+            "workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths"
+        )
+        self.assertIn(
+            canonical,
+            self.source_test_names("codex-rs/hepta-fleet/src/registry_tests.rs"),
+        )
         required = tuple(
             f"release::{module}::{name}"
             for file, module in (
@@ -62,8 +69,11 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
                 ("release_publish_tests.rs", "publish_tests"),
             )
             for name in self.source_test_names("codex-rs/hepta-fleet/src/" + file)
-        )
+        ) + (f"registry::tests::{canonical}",)
         fleet_binary = "codex-hepta-fleet"
+        self.assertEqual(
+            required, self.plan.required_binary_tests["fleet-library"][fleet_binary]
+        )
         binaries = {fleet_binary: required}
         evidence = self.validate_lane("fleet-library", binaries)
         self.assertEqual(evidence["required_tests"], len(required))
