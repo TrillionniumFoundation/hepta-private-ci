@@ -428,6 +428,286 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         self.commit("marker unchanged but source changed")
         self.reject()
 
+    def detached_identity(self, tree=None):
+        tree = tree or self.anchor["tree"]
+        return {
+            "commit": self.git("commit-tree", tree, "-m", "detached provenance"),
+            "tree": tree,
+        }
+
+    def exact_blob_row_with_detached_provenance(self):
+        row = self.rows["alpha"]
+        row["sourceIdentityPolicy"] = "candidate_or_exact_observation_v1"
+        row["mappingSourceIdentityMode"] = "exact_blob"
+        row["sourceBase"] = self.detached_identity()
+        row["observedAtHead"] = copy.deepcopy(self.anchor)
+        row["observedSourcePaths"] = ["src/alpha"]
+        row["operations"][0]["sourceBlob"] = self.git(
+            "rev-parse", "HEAD:src/alpha/lib.rs"
+        )
+        return row
+
+    def test_exact_blob_detached_provenance_keeps_current_ancestry_strict(self):
+        row = self.exact_blob_row_with_detached_provenance()
+        provenance = copy.deepcopy(row["sourceBase"])
+        self.change_maps()
+        self.verify()
+        self.migrate(["alpha"])
+        self.assertEqual(
+            maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")["sourceBase"],
+            provenance,
+        )
+        self.commit("normalize detached provenance map")
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        row["observedAtHead"] = self.detached_identity(
+            self.git("rev-parse", "HEAD^{tree}")
+        )
+        self.rows["alpha"] = row
+        self.change_maps()
+        with self.assertRaisesRegex(SystemExit, "outside candidate ancestry"):
+            self.verify()
+
+    def test_exact_blob_detached_provenance_rejects_wrong_tree(self):
+        row = self.exact_blob_row_with_detached_provenance()
+        row["sourceBase"]["tree"] = "0" * 40
+        self.change_maps()
+        with self.assertRaisesRegex(SystemExit, "source tree mismatch"):
+            self.verify()
+
+    def test_detached_provenance_cannot_transfer_execution_claim_to_changed_source(
+        self,
+    ):
+        row = self.exact_blob_row_with_detached_provenance()
+        row["claimBoundary"]["productExecutionProved"] = True
+        self.change_maps()
+        self.verify()
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let _changed = 1; }\n")
+        self.commit("change code after execution observation")
+        before = self.map_bytes()
+        with self.assertRaisesRegex(maps.SourceDrift, "mapped source/evidence changed"):
+            self.migrate(["alpha"])
+        self.assertEqual(self.map_bytes(), before)
+
+    def test_detached_provenance_keeps_all_current_evidence_bound(self):
+        row = self.exact_blob_row_with_detached_provenance()
+        row["operations"][0]["tests"] = ["tests/native.rs"]
+        row["operations"][0]["delegatedCallees"] = [{"sourcePath": "host/caller.rs"}]
+        self.write("host/product.rs", "fn product() {}\n")
+        row["productCallers"] = [{"sourcePath": "host/product.rs"}]
+        current = self.commit("add current caller evidence")
+        row["observedAtHead"] = current
+        row["sourceObjects"] = maps.current_source_objects(row)
+        self.change_maps()
+        self.verify()
+        for path in (
+            "src/alpha/lib.rs",
+            "tests/native.rs",
+            "host/caller.rs",
+            "host/product.rs",
+        ):
+            with self.subTest(path=path):
+                original = (self.root / path).read_text()
+                self.write(path, original + "// current evidence drift\n")
+                self.commit("change bound evidence")
+                self.reject()
+                self.write(path, original)
+                self.commit("restore current evidence")
+                self.verify()
+
+    def test_detached_provenance_keeps_rust_workspace_inputs_bound(self):
+        root = "codex-rs/alpha"
+        self.write(root + "/lib.rs", "pub fn calculate() {}\n")
+        self.write("codex-rs/Cargo.toml", '[workspace]\nmembers = ["alpha"]\n')
+        self.write("codex-rs/Cargo.lock", "# current workspace dependency\n")
+        self.modules[0]["rootBindings"] = [{"path": root}]
+        self.write("docs/modules/MODULES.json", {"modules": self.modules})
+        current = self.commit("add rust workspace observation")
+        row = self.exact_blob_row_with_detached_provenance()
+        row["declaredRoots"] = [root]
+        row["resolvedRoots"] = [root]
+        row["operations"][0]["sourcePath"] = root + "/lib.rs"
+        row["operations"][0]["sourceBlob"] = self.git(
+            "rev-parse", "HEAD:" + root + "/lib.rs"
+        )
+        row["observedAtHead"] = current
+        observed = [root, "codex-rs/Cargo.toml", "codex-rs/Cargo.lock"]
+        row["observedSourcePaths"] = observed
+        self.change_maps()
+        self.verify()
+        for path in ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock"):
+            with self.subTest(path=path):
+                row["observedSourcePaths"] = [
+                    value for value in observed if value != path
+                ]
+                self.change_maps()
+                with self.assertRaisesRegex(
+                    SystemExit, "omit Rust workspace build inputs"
+                ):
+                    self.verify()
+        row["observedSourcePaths"] = observed
+        self.change_maps()
+        self.verify()
+        self.write("codex-rs/Cargo.lock", "# changed workspace dependency\n")
+        self.commit("change workspace input")
+        self.reject()
+
+    def test_detached_path_only_requires_explicit_source_navigation_migration(self):
+        self.rows["alpha"]["sourceBase"] = self.detached_identity()
+        self.change_maps()
+        with self.assertRaisesRegex(SystemExit, "outside candidate ancestry"):
+            self.verify()
+        current = maps.current_source_base()
+        beta_before = self.map_bytes()["beta"]
+        self.migrate(["alpha"])
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertEqual(row["sourceBase"], current)
+        self.assertFalse(maps.validate_claim_types(row))
+        self.assertEqual(self.map_bytes()["beta"], beta_before)
+        self.commit("explicit navigation re-observation")
+        self.verify()
+
+    def test_every_execution_claim_blocks_detached_navigation_rebind(self):
+        original = copy.deepcopy(self.rows["alpha"])
+        detached = self.detached_identity()
+        for field in maps.EXECUTION_CLAIMS:
+            for container in (None, "claimBoundary", "completion"):
+                with self.subTest(field=field, container=container):
+                    row = copy.deepcopy(original)
+                    row["sourceBase"] = detached
+                    target = row if container is None else row.setdefault(container, {})
+                    target[field] = True
+                    self.rows["alpha"] = row
+                    self.change_maps()
+                    before = self.map_bytes()
+                    with self.assertRaises(maps.NonAncestorObservation):
+                        self.migrate(["alpha"])
+                    self.assertEqual(self.map_bytes(), before)
+
+    def test_detached_navigation_migration_does_not_repair_invalid_identities(self):
+        original = copy.deepcopy(self.rows["alpha"])
+        for case in ("source tree", "missing source", "observed tree"):
+            with self.subTest(case=case):
+                row = copy.deepcopy(original)
+                row["sourceBase"] = self.detached_identity()
+                if case == "source tree":
+                    row["sourceBase"]["tree"] = "0" * 40
+                elif case == "missing source":
+                    row["sourceBase"]["commit"] = "0" * 40
+                else:
+                    row["observedAtHead"] = dict(self.anchor, tree="0" * 40)
+                self.rows["alpha"] = row
+                self.change_maps()
+                before = self.map_bytes()
+                with self.assertRaises((ValueError, subprocess.CalledProcessError)):
+                    self.migrate(["alpha"])
+                self.assertEqual(self.map_bytes(), before)
+
+    def test_detached_navigation_migration_git_error_is_not_reobservation(self):
+        self.rows["alpha"]["sourceBase"] = self.detached_identity()
+        self.change_maps()
+        before = self.map_bytes()
+        original = maps.git
+
+        def fail_ancestry(*args, **kwargs):
+            if args[:2] == ("merge-base", "--is-ancestor"):
+                raise subprocess.CalledProcessError(128, "git merge-base")
+            return original(*args, **kwargs)
+
+        with patch.object(maps, "git", side_effect=fail_ancestry):
+            with self.assertRaises(subprocess.CalledProcessError):
+                self.migrate(["alpha"])
+        self.assertEqual(self.map_bytes(), before)
+
+    def test_qualified_status_blocks_detached_source_or_observation_rebind(self):
+        original = copy.deepcopy(self.rows["alpha"])
+        for mode in ("path_only", "exact_blob"):
+            with self.subTest(mode=mode):
+                self.rows["alpha"] = copy.deepcopy(original)
+                if mode == "exact_blob":
+                    row = self.exact_blob_row_with_detached_provenance()
+                    row["observedAtHead"] = self.detached_identity()
+                else:
+                    row = self.rows["alpha"]
+                    row["sourceBase"] = self.detached_identity()
+                row["productCallerState"] = "not_composed"
+                row["status"] = {
+                    "implemented": True,
+                    "composed": False,
+                    "qualified": True,
+                }
+                self.change_maps()
+                before = self.map_bytes()
+                with self.assertRaises(maps.NonAncestorObservation):
+                    self.migrate(["alpha"])
+                self.assertEqual(self.map_bytes(), before)
+
+    def test_status_booleans_are_validated_before_navigation_migration(self):
+        original = copy.deepcopy(self.rows["alpha"])
+        for field in ("implemented", "composed", "qualified"):
+            for value in ("false", 1, None):
+                with self.subTest(field=field, value=value):
+                    row = copy.deepcopy(original)
+                    row["sourceBase"] = self.detached_identity()
+                    row["status"] = {
+                        "implemented": True,
+                        "composed": False,
+                        "qualified": False,
+                    }
+                    row["status"][field] = value
+                    self.rows["alpha"] = row
+                    self.change_maps()
+                    before = self.map_bytes()
+                    with self.assertRaisesRegex(
+                        ValueError, "invalid implemented/composed/qualified status"
+                    ):
+                        self.migrate(["alpha"])
+                    self.assertEqual(self.map_bytes(), before)
+
+    def test_false_qualified_status_reobserves_navigation_without_promotion(self):
+        row = self.rows["alpha"]
+        row["sourceBase"] = self.detached_identity()
+        row["productCallerState"] = "not_composed"
+        row["status"] = {"implemented": True, "composed": False, "qualified": False}
+        self.change_maps()
+        self.migrate(["alpha"])
+        refreshed = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertIs(refreshed["status"]["qualified"], False)
+        self.assertFalse(maps.validate_claim_types(refreshed))
+        self.commit("refresh navigation without qualification")
+        self.verify()
+
+    def test_true_claim_cannot_repair_invalid_exact_bindings(self):
+        original = copy.deepcopy(self.rows["alpha"])
+        for binding in ("operation blob", "source objects", "exact manifest"):
+            with self.subTest(binding=binding):
+                self.rows["alpha"] = copy.deepcopy(original)
+                row = self.exact_blob_row_with_detached_provenance()
+                row["claimBoundary"]["productExecutionProved"] = True
+                if binding == "operation blob":
+                    row["operations"][0]["sourceBlob"] = "0" * 40
+                elif binding == "source objects":
+                    row["sourceObjects"] = [{"path": "src/alpha", "object": "0" * 40}]
+                else:
+                    row["exactSourceEvidence"] = {
+                        "kind": "path_blob_manifest_v1",
+                        "entries": [{"path": "src/alpha/lib.rs", "blobSha": "0" * 40}],
+                    }
+                self.change_maps()
+                self.reject()
+                before = self.map_bytes()
+                with self.assertRaises(ValueError):
+                    self.migrate(["alpha"])
+                self.assertEqual(self.map_bytes(), before)
+                # A false navigation placeholder may still be refreshed. The
+                # migration cannot turn that refresh into executable evidence.
+                row["claimBoundary"]["productExecutionProved"] = False
+                self.change_maps()
+                self.migrate(["alpha"])
+                refreshed = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+                self.assertFalse(maps.validate_claim_types(refreshed))
+                self.commit("refresh false navigation bindings")
+                self.verify()
+
     def test_composed_writer_rejects_missing_closed_world_bindings(self):
         row = self.rows["alpha"]
         row["productionWriterState"] = "owner_service_composed"

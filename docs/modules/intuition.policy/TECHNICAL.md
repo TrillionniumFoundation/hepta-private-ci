@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `a787e99f607e3cbb0197114f4e16a56328d036a44b45737e70304d436b7e7997`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `74e036b3d34ac73f36fd163d9b8fca476543b038e89059630910400f2f299ae6`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,7 +13,7 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | Canonical dispositions recheck seven owners, RunStart authority and deadlines after writer waits; selected runs retain original evaluation proofs; body/launch and Fleet lifecycle generations remain distinct; outward V1 is unchanged. |
+| `admission_receipt` | `source_partial` | Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; exact retries require reconciliation; outward V1 is unchanged. |
 | `authority_read` | `source_present` | Owner files use bounded checked-handle reads; full fences and evaluator-session construction bind one immutable authenticated seven-owner manifest to the request snapshot; live stages still reread current input. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
@@ -59,6 +59,8 @@ Selected preparation retains the original signed evaluation session and exact in
 The same boundaries enforce the original RunStart deadline for every disposition and the canonical run deadline for selected results. The source deadline is converted from microseconds to milliseconds with checked ceiling arithmetic and uses the existing coordinator's elapsed-deadline rejection. Holding a valid entitlement or policy qualification does not extend the request's deadline.
 
 Canonical body generation identifies the process launch and must equal AgentdIdentity.spawn_generation. Durable RunStart generation identifies the current Fleet lifecycle: Starting → Running advances that generation. The daemon rechecks current RunStart authority and the launch/current objective fence before the trusted provider builds owner inputs; it does not equate the lifecycle counter with body/launch identity. Restart and complete typed-domain migration remain separate gaps.
+
+With any canonical/policy composition configured, an exact durable RunStart IdempotentReplay returns agentd.intuition.service.durable_handoff_reconciliation_required before the provider or policy executes again. An existing in-process admitted run likewise returns run_admission_replay_requires_reconciliation before rebuilding owner inputs. This isolates retries while durable handoff remains missing; it does not reconstruct the original policy receipt, resume dispatch or provide outward acknowledgement replay.
 
 ## 1. Identity, mission and ownership
 
@@ -288,6 +290,8 @@ Current focused test sources (source references, not pass receipts):
 - `codex-rs/hepta-agentd/src/intelligence_authority_read_tests.rs` and `intelligence_authority_snapshot_tests.rs`: bounded file reads and two authenticated-manifest coherence/next-boundary tests.
 - `codex-rs/hepta-agentd/src/intelligence_evaluation_owner_pin_tests.rs`: two actual-consumer regressions for pre-worker stale-owner rejection and a signed manifest replacement that cannot launder an earlier evaluator key.
 - `codex-rs/hepta-agentd/src/intelligence_candidate_bound_tests.rs`: product/compatibility raw-count preflight before cloning or worker use.
+- `codex-rs/hepta-agentd/src/intelligence_objective_replay_tests.rs`: three signed product fixtures for Running lifecycle 2/body 1, stale lifecycle/fence/body rejection, and exact durable publication replay with changed provider material rejected before a second append.
+- `codex-rs/hepta-agentd/src/intelligence_objective_host_replay_tests.rs`: actual signed ObjectiveRuntimeHost publication, concurrent exact retries and reopened durable owner reject before the provider runs again; no original-receipt reconstruction or process-kill recovery is claimed.
 - `scripts/intuition_golden_vectors.py`: five independent Python digest encodings and 512 seeded owner-separation mutations over the deterministic fixture.
 
 In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.

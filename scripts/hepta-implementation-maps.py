@@ -80,7 +80,8 @@ def git(*args: str, input_text: str | None = None) -> str:
     return p.stdout.strip()
 
 
-def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
+def checked_provenance_identity(value) -> dict[str, str]:
+    """Validate immutable object identity without claiming candidate ancestry."""
     if not isinstance(value, dict) or any(
         not isinstance(value.get(key), str)
         or not re.fullmatch(r"[0-9a-f]{40}", value[key])
@@ -92,8 +93,21 @@ def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
         raise ValueError("source identity does not identify a commit")
     if git("rev-parse", f"{commit}^{{tree}}") != tree:
         raise ValueError("source tree mismatch")
-    git("merge-base", "--is-ancestor", commit, candidate["commit"])
     return {"commit": commit, "tree": tree}
+
+
+def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
+    """A current source observation must belong to the candidate history."""
+    identity = checked_provenance_identity(value)
+    try:
+        git("merge-base", "--is-ancestor", identity["commit"], candidate["commit"])
+    except subprocess.CalledProcessError as exc:
+        if exc.returncode != 1:
+            raise
+        raise NonAncestorObservation(
+            "source observation is outside candidate ancestry: " + identity["commit"]
+        ) from exc
+    return identity
 
 
 def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
@@ -179,6 +193,10 @@ class SourceDrift(ValueError):
     """Valid historical provenance that needs an explicit source rebind."""
 
 
+class NonAncestorObservation(SourceDrift):
+    """A valid object/tree pair cannot serve as the current observation."""
+
+
 def require_tracked_paths(commit: str, paths: list[str], *, historical=False) -> None:
     """Batch ordinary object queries; retain exact handling of newline paths.
 
@@ -224,10 +242,14 @@ def verify_source_identity(
     policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
     if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
         raise ValueError(f"unknown source identity policy: {policy}")
-    source = checked_identity(row.get("sourceBase"), candidate)
     mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
     if mapping_mode not in {"path_only", "exact_blob"}:
         raise ValueError(f"unknown mapping source identity mode: {mapping_mode}")
+    source = (
+        checked_provenance_identity(row.get("sourceBase"))
+        if mapping_mode == "exact_blob"
+        else checked_identity(row.get("sourceBase"), candidate)
+    )
     paths = evidence_paths(row, roots)
     # In exact-blob mode ``sourceBase`` is immutable integration provenance,
     # not the current-source observation. Currentness is proved independently
@@ -402,6 +424,39 @@ def validate_path_blob_manifest(row: dict, mid: str, failures: list[str]) -> Non
         failures.append(f"{mid}: exact source manifest omits mapped paths {missing}")
 
 
+def validate_current_blob_bindings(row: dict, candidate: dict[str, str]) -> None:
+    """Check existing exact bindings before retaining any executable claim."""
+    if row.get("mappingSourceIdentityMode", "path_only") == "exact_blob":
+        for op in row.get("operations", []):
+            if not isinstance(op, dict):
+                raise ValueError("invalid operation record")
+            source, source_blob = op.get("sourcePath"), op.get("sourceBlob")
+            if (
+                not isinstance(source, str)
+                or not source
+                or not isinstance(source_blob, str)
+                or re.fullmatch(r"[0-9a-f]{40}", source_blob) is None
+            ):
+                raise ValueError(f"invalid exact source blob: {op.get('operation')}")
+            checked_source_path(ROOT, source)
+            if git("rev-parse", f"{candidate['commit']}:{source}") != source_blob:
+                raise ValueError(f"source blob drift: {op.get('operation')}")
+    evidence = row.get("exactSourceEvidence")
+    if "exactSourceEvidence" in row and not isinstance(evidence, dict):
+        raise ValueError("exact source manifest")
+    if isinstance(evidence, dict) and evidence.get("kind") == "path_blob_manifest_v1":
+        failures: list[str] = []
+        validate_path_blob_manifest(row, row.get("module", "unknown"), failures)
+        if failures:
+            raise ValueError("; ".join(failures))
+    source_objects = row.get("sourceObjects")
+    if source_objects is not None:
+        if not isinstance(source_objects, list) or not source_objects:
+            raise ValueError("source objects")
+        if source_objects != current_source_objects(row):
+            raise ValueError("stale source objects")
+
+
 def _ephemeral_untracked_artifact(path: str) -> bool:
     """Ignore interpreter cache bytes without ignoring hidden source files."""
     parts = Path(path).parts
@@ -567,7 +622,18 @@ def validate_claim_types(row: dict) -> bool:
         for name in BOOLEAN_CLAIMS.intersection(claim):
             if type(claim[name]) is not bool:
                 raise ValueError(f"{name} must be boolean")
-    return any(claim.get(name) is True for claim in claims for name in EXECUTION_CLAIMS)
+    status = row.get("status")
+    if "status" in row and (
+        not isinstance(status, dict)
+        or any(
+            type(status.get(field)) is not bool
+            for field in ("implemented", "composed", "qualified")
+        )
+    ):
+        raise ValueError("invalid implemented/composed/qualified status")
+    return bool(status and status["qualified"]) or any(
+        claim.get(name) is True for claim in claims for name in EXECUTION_CLAIMS
+    )
 
 
 def canonical_product_callers(callers: list) -> list[dict]:
@@ -609,9 +675,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     """
     if validate_claim_types(row):
         # Rebinding navigation cannot transfer old executable evidence to new code.
-        verify_source_identity(
-            row, resolve_source_roots(ROOT, module), current_source_base()
-        )
+        candidate = current_source_base()
+        verify_source_identity(row, resolve_source_roots(ROOT, module), candidate)
+        validate_current_blob_bindings(row, candidate)
     roots = [x["path"] for x in module["rootBindings"]]
     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
     if isinstance(declared, str):
@@ -790,7 +856,13 @@ def migrate(selected_modules: list[str] | None = None):
         row = load(str(path.relative_to(ROOT)))
         if row.get("module", mid) != mid:
             raise SystemExit(f"{mid}: identity")
-        anchor = checked_identity(row.get("sourceBase"), source_base)
+        # An explicit navigation migration may refresh a detached observation,
+        # but cannot repair corrupt objects/trees or transfer executable claims.
+        # migrate_map verifies the old source binding first whenever any such
+        # claim is true. Preflight both identities before any drift is handled.
+        anchor = checked_provenance_identity(row.get("sourceBase"))
+        if "observedAtHead" in row:
+            checked_provenance_identity(row["observedAtHead"])
         mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
         migrated = migrate_map(row, by_id[mid], lanes, anchor)
         if "observedAtHead" in row:
@@ -1299,21 +1371,7 @@ def verify(
                     and not checked_source_path(ROOT, source).is_file()
                 ):
                     raise ValueError(f"missing source: {source}")
-                if mapping_mode == "exact_blob":
-                    source_blob = op.get("sourceBlob")
-                    if (
-                        not source
-                        or not isinstance(source_blob, str)
-                        or re.fullmatch(r"[0-9a-f]{40}", source_blob) is None
-                    ):
-                        raise ValueError(
-                            f"invalid exact source blob: {op['operation']}"
-                        )
-                    if (
-                        git("rev-parse", f"{candidate['commit']}:{source}")
-                        != source_blob
-                    ):
-                        raise ValueError(f"source blob drift: {op['operation']}")
+            validate_current_blob_bindings(row, candidate)
             checked_paths.update(
                 verify_source_identity(row, resolved, candidate, check_checkout=False)
             )
@@ -1365,20 +1423,7 @@ def verify(
                     row.get("productCallerState") != "not_composed"
                 ):
                     raise ValueError("composition status disagreement")
-            if (
-                row.get("exactSourceEvidence", {}).get("kind")
-                == "path_blob_manifest_v1"
-            ):
-                manifest_failures = []
-                validate_path_blob_manifest(row, mid, manifest_failures)
-                if manifest_failures:
-                    raise ValueError("; ".join(manifest_failures))
             source_objects = row.get("sourceObjects")
-            if source_objects is not None:
-                if not isinstance(source_objects, list) or not source_objects:
-                    raise ValueError("source objects")
-                if source_objects != current_source_objects(row):
-                    raise ValueError("stale source objects")
             if row.get("productCallerState", "not_composed") != "not_composed":
                 callers = row.get("productCallers")
                 if not isinstance(callers, list) or not callers:

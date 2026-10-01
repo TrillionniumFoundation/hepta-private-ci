@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `a787e99f607e3cbb0197114f4e16a56328d036a44b45737e70304d436b7e7997`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `74e036b3d34ac73f36fd163d9b8fca476543b038e89059630910400f2f299ae6`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,7 +13,7 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | Canonical dispositions recheck seven owners, RunStart authority and deadlines after writer waits; selected runs retain original evaluation proofs; body/launch and Fleet lifecycle generations remain distinct; outward V1 is unchanged. |
+| `admission_receipt` | `source_partial` | Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; exact retries require reconciliation; outward V1 is unchanged. |
 | `authority_read` | `source_present` | Owner files use bounded checked-handle reads; full fences and evaluator-session construction bind one immutable authenticated seven-owner manifest to the request snapshot; live stages still reread current input. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
@@ -134,6 +134,8 @@ Measured p50/p95/p99 values must come from execution artifacts bound to a named 
 
 The canonical body is pinned to the process launch (identity.spawn_generation), while RunStart records the current Fleet lifecycle generation. Starting → Running advances the latter. Current RunStart authority and the launch/current objective fence are checked before provider construction; the two generation domains are not equated. This correction does not complete durable restart reconciliation or the remaining typed-domain migration.
 
+Exact RunStart IdempotentReplay with a configured canonical/policy composition is quarantined before the provider or policy is rerun; the existing-run admission guard also precedes provider construction. Both return stable typed reconciliation-required errors. This is retry isolation, not durable reconciliation, original-receipt restoration or resumed dispatch.
+
 ## 6. Concrete verification cases
 
 Existing test sources specify hard veto, legality, complete-set/count/order binding, OOD, calibration, validity windows, deterministic/randomized assignment, profile/risk semantics, stable errors, bounded values and commitment mutation checks. Their presence is not a passing result.
@@ -148,6 +150,8 @@ Additional committed test sources include:
 - `intelligence_authority_snapshot_tests.rs`: a full fence cannot combine rows from two signed manifests; the next fence and live stage checks reread current input;
 - `intelligence_evaluation_owner_pin_tests.rs`: typed pre-worker stale-owner rejection and actual product evaluation rejection after a signed manifest B-to-A replacement; all owner identity/generation/implementation/key/key-epoch/authority/frontier pins remain snapshot-bound;
 - `intelligence_candidate_bound_tests.rs`: raw legal/intuition count preflight before signed input or worker use, with separate product 127 and compatibility 128 maxima; reaching Busy checks capacity only, not full product authentication;
+- `intelligence_objective_replay_tests.rs`: three signed product fixtures with actual Fleet Starting→Running and ObjectiveRuntimeHost publication; current lifecycle 2/body 1 admits, stale lifecycle/fence/body cannot append, and exact journal replay with changed policy material leaves provider count and complete ledger/witness bytes unchanged; reopened ledger contains one original record. These fixtures have not yet been executed on the new candidate;
+- `intelligence_objective_host_replay_tests.rs`: one actual signed ObjectiveRuntimeHost fixture for concurrent exact retries and reopened durable owner, retaining provider count 1 and complete ledger/witness bytes. It proves only the specified retry-isolation behavior if executed, not original-receipt restoration or process-kill recovery;
 - `trust_distribution_tests.rs`: admitted distribution expiry and scheduled root revocation remain checked at use;
 - `intelligence_product_tests.rs`, `intelligence_product_signed_tests.rs` and `intelligence_evaluation_tests.rs`: canonical default-production profile routing, signed product and evaluation distribution-lifetime regressions;
 - host unit tests: eleven pin-binding mutations and prepared-time edge cases;

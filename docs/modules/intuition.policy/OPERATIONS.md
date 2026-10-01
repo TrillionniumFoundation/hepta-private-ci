@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `a787e99f607e3cbb0197114f4e16a56328d036a44b45737e70304d436b7e7997`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `74e036b3d34ac73f36fd163d9b8fca476543b038e89059630910400f2f299ae6`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -13,7 +13,7 @@ All four production completion predicates remain false. Current execution identi
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
 | `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
-| `admission_receipt` | `source_partial` | Canonical dispositions recheck seven owners, RunStart authority and deadlines after writer waits; selected runs retain original evaluation proofs; body/launch and Fleet lifecycle generations remain distinct; outward V1 is unchanged. |
+| `admission_receipt` | `source_partial` | Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; exact retries require reconciliation; outward V1 is unchanged. |
 | `authority_read` | `source_present` | Owner files use bounded checked-handle reads; full fences and evaluator-session construction bind one immutable authenticated seven-owner manifest to the request snapshot; live stages still reread current input. |
 | `startup_profile` | `source_present` | Strict typed profile resolved at AgentdState startup, included in configuration identity and enforced before compatibility returns. |
 | `telemetry` | `source_partial` | Existing Codex metrics and tracing with bounded static reason codes; no deployed audit/exporter acceptance. |
@@ -61,6 +61,8 @@ Every canonical disposition must also meet the original RunStart deadline; selec
 A full owner fence verifies one signed manifest and checks all seven owners against that immutable view. Evaluator-session construction validates that same request snapshot and derives learning.eval from the same verified bytes; an independently current older signer/key epoch cannot satisfy a newer snapshot. Each new final-use boundary constructs a new view; the live stage oracle still reads current signed input separately. This eliminates six repeated file/crypto operations per full fence and prevents combining owner rows from different manifests. It is an operation-count change, not a claimed combined request-latency measurement.
 
 Keep body/launch and Fleet lifecycle generations distinct. Body generation binds identity.spawn_generation; RunStart carries current lifecycle generation and the launch/current objective fence. Validate current RunStart before rebuilding owner inputs. A transition from Starting to Running must not force body identity to adopt the later lifecycle counter.
+
+For configured canonical/policy products, an exact RunStart publication retry fails closed with agentd.intuition.service.durable_handoff_reconciliation_required before rebuilding the provider or committing policy. An already admitted in-process run also requires reconciliation. Preserve the existing publication and any known policy receipt; do not regenerate provider material, mint a different Decision identity or automatically redispatch. Recovery of the original authenticated handoff and outward receipt remains unimplemented.
 
 The canonical serving gate now emits bounded OpenTelemetry metrics and a tracing span through the process-global Codex telemetry clients. That source integration does not by itself establish deployed entitlement integration, a configured exporter endpoint, dashboard delivery, alert routing, diagnostic audit delivery or operator acceptance. Those remain separate release gates.
 
