@@ -5,28 +5,30 @@
 本轮修订分支为 `work/ui-native-adversarial-audit-20261001`。
 实现冻结身份以 CURRENT_SOURCE/CANDIDATE 中的 SHA/tree 为准。
 
-当前普通源码为 `a1abe5b2a083213c095cdabaf4b3048144e3cad0`，tree 为
-`6269ea8bf6f01c77a3025881e636096a4111b330`，仍是未完整验收的实现候选。新修复在 macOS 对同一打开句柄检查
-扩展 ACL 与 ownership-enforcement，覆盖私有根/child、journal、更新暂存和
-shared authority store。权限迁移、写入/截断和原子替换前均拒绝 ACE；既有
-不安全目标被保留。Unix authority 文件使用 NONBLOCK 后继续严格类型检查，
-避免 FIFO 等待 writer。Windows registrar 夹具通过 typed C# probe 固定
-Marshal.SizeOf(Type) 调用，保留实际布局 offsets 与 owned .lnk roundtrip。
-生产流程不删除 ACL，不放宽 owner/type/link/权限、final-use 或 update fence。
+当前普通源码为 `b5378e29d0fe191225abe853d848b498552f5850`，tree 为
+`ebcaf42f71715ed540cc04123bbeafd82abace48`，仍是未完整验收的实现候选。本次仅修正两个 macOS
+夹具的前提与预期：FileSynced 后根替换会在权限复验时拒绝提交，保留旧快照；
+既有私有 staging 文件明确为 0600，并断言三个指定 replacement cut 确实执行。
+原 error、original/replacement bytes 断言保留。Darwin 同句柄 ACL/ownership、
+Unix NONBLOCK、Windows typed registrar、final-use 与 update fence 均保持。
 
-CURRENT_SOURCE.json 绑定 415 Git blobs、32 selection paths、16 本地
-Cargo 依赖，inventory SHA256 为 `347ef5027e1d804d4b999da612733ef0f93708142c1e9ba8029f24115dbf42e2`。新源需要重新执行完整套件、
-lint、release、负向编译和七主体 CI；production/deployment/release 均为 false。
+CURRENT_SOURCE.json 绑定 415 Git blobs、32 selection paths、16 本地 Cargo
+依赖，inventory SHA256 为 `60476beaffc1e4b28ae7a120a48987945ceeb18c96b1417b70ece80d7fa2b2c3`。production、deployment、
+release 均为 false，必须重新取得完整同源资格。
 
-新源实际 Linux 应用 243/243 通过（2.472 s，三项独立 scale ignored），strict
-app Clippy 通过（7.75 s），Python 实际运行 238 项（237 通过，一项仅 Windows
-真实 NTFS junction 在 Linux 跳过，12.484 s）；结构检查绑定 415/32/16 清单。独立 source-equivalent
-owner 诊断通过 194 项 Linux contracts 测试（含两个 FIFO）与严格 Clippy；
-其缩小 workspace 不等于完整四个 owner 或真实跨平台 qualification。新增
-Darwin/Windows fixture 仍需新同次 CI。
-新源三个 release 二进制实际 locked/offline 构建通过（317 s）；binary self-test
-和七项真实 child-fault 检查通过，effect/activation/release 授权仍为 false。
-这些是 Linux 本地诊断，不是实体 GUI 或新完整跨平台验收。
+新源 Linux just test/nextest 243/243 通过（2.534 s，三项独立 scale ignored），
+strict app Clippy 通过（4.03 s）；Python 实际 238 项（237 通过，Windows-only
+真实 NTFS junction 在 Linux 跳过一项，13.695 s）。locked/offline 三个 release binary 的构建
+检查通过（0.40 s，复用未变化的生产 artifact）；self-test 与七项真实 child-fault
+检查通过。effect/activation/release 授权保持 false；这是本地诊断。
+
+历史 A1 源 `a1abe5b2a083213c095cdabaf4b3048144e3cad0` 的 F5 run 36827460737 两个 macOS
+主体实际通过 strict lint 和 14 项 native ACL，但应用套件均在上述两个旧夹具
+失败；因此 shared-owner ACL/FIFO、release、负向编译和 packaging 均未到达。
+精确本地诊断及失败见 [A1 不可变记录](history/20261001-a1abe-verification.json)
+和 [Mac 原始失败子记录](history/20261001-a1abe-macos-failure.json)。F5 与 8f
+不同候选分别保留，pending 不是通过，不继承历史通过给新源。实际失败已撤销
+之前的复审停点，并驱动这次普通源码修复。
 
 历史 703e9bf 源在干净 review head AE 上实际通过 Linux 应用 243/243
 （三项独立 scale ignored，4.803 s）、Python 238 项（237 pass/一项 Windows
@@ -43,7 +45,7 @@ macOS cfg/FIFO、Windows PATH/registrar ABI。其 Linux debug 应用 243/243
 skip，20.778 s）、map 104/104（22.123 s）、package/portal 36/36（0.167 s）、
 投影 7 项、strict application Clippy（150 s）和完整符号 ACK 1/1（3.020 s）
 均属历史诊断，保存在
-[EBD 不可变历史记录](history/20261001-ebd04-verification.json)。该历史清单的
+[EBD 不可变历史记录](history/20261001-ebd04-verification.json)。该 EBD 冻结源码 inventory 的
 SHA256 为 `ec5658b2f11bc46010bb33e460fc8b287465c6a95fcd96c6248aebde8e083d36`。
 run 36822033441 已终止且整体失败：identity、Linux head/merge 各 18 checks
 （含真实 virtual GUI lifecycle）、storage 48 traces 与硬预算通过；macOS 完整

@@ -4,8 +4,8 @@
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`
 **Convergence branch:** `work/ui-native-adversarial-audit-20261001`
-**Immutable implementation source:** `a1abe5b2a083213c095cdabaf4b3048144e3cad0`
-**Implementation tree:** `6269ea8bf6f01c77a3025881e636096a4111b330`
+**Immutable implementation source:** `b5378e29d0fe191225abe853d848b498552f5850`
+**Implementation tree:** `ebcaf42f71715ed540cc04123bbeafd82abace48`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The product source is frozen at the
@@ -54,7 +54,8 @@ The convergence chain is a normal Git history:
 10. historical test-profile hashing repair `0c176c9d4df6055418529389bf0f749f74ac1a69`;
 11. historical checkout/strict-platform/registrar ABI repair `ebd04a7ed458aa5feaba69525f48f3623c4db033`;
 12. historical Unix executable/Windows authority fixture repair `703e9bf2871b26d646f1c4d748e0b0061f70ad3c`;
-13. current Darwin private-permissions, Unix authority FIFO and Windows typed registrar-probe repair `a1abe5b2a083213c095cdabaf4b3048144e3cad0`.
+13. historical Darwin private-permissions, Unix authority FIFO and Windows typed registrar-probe repair `a1abe5b2a083213c095cdabaf4b3048144e3cad0`;
+14. current Darwin private-state fixture admission repair `b5378e29d0fe191225abe853d848b498552f5850`.
 
 Patch capsules, apply-once workflows and CI-created product commits are not
 source delivery. The sole module workflow has `contents: read`, checks explicit
@@ -83,6 +84,16 @@ and Windows. Native Unix Read opens do not chmod private owner-only files
 remain readable subject to content and identity validation. A trusted principal
 can still add a link after validation; these checks do not create domain
 authority or an OS-wide ownership guarantee.
+
+Private state requires a trusted filesystem and mount configuration that enforce
+advertised owner and permission semantics. An absolute path does not establish
+filesystem locality. Linux verifies UID, mode, type, links and identity; remote
+named ACLs and mount policies need their own deployment qualification. For
+example, [NFSv4 section 6.3.2](https://www.rfc-editor.org/rfc/rfc7530.html#section-6.3.2)
+derives mode from selected principals, while the Linux
+[CIFS documentation](https://www.kernel.org/doc/html/latest/admin-guide/cifs/usage.html)
+describes mount options that disable client permission checking. Current local
+POSIX execution does not establish privacy for those configurations.
 
 On macOS, `codex_utils_private_state::verify_private_permissions` checks the
 same opened descriptor through the Darwin ACL API and typed `fstatfs`. Private
@@ -457,22 +468,35 @@ acceptance or release authorization.
 
 ## 13. Remaining gates
 
-Current source adds the Darwin permission cuts described in section 3, Unix
-authority FIFO rejection and the typed Windows registrar layout probe. Its
-415 Git blobs, 32 selection paths and 16 local dependencies are bound by
-CURRENT_SOURCE.json with inventory SHA256
-`347ef5027e1d804d4b999da612733ef0f93708142c1e9ba8029f24115dbf42e2`.
-Current-source Linux diagnostics passed application 243/243 in 2.472 s (three
-separate scale entries ignored) and strict all-target/all-feature application
-Clippy in 7.75 s. Python ran 238 tests in 12.484 s: 237 passed and the one
-Windows-only real NTFS junction case was skipped on Linux. The structural checker binds the 415/32/16 inventory. A separate
-source-equivalent owner diagnostic passed 194/194 Linux contracts tests,
-including both bounded FIFO cases, and strict Clippy; its reduced workspace is
-not the complete four-owner or platform qualification subject. New Darwin and
-Windows fixtures still require the exact target CI.
-Three release binaries built with locked/offline resolution in 317 s; the
-binary self-test and seven real child-fault checks passed. All effect, activation
-and release authorization flags remain false; this is a Linux local diagnostic.
+The current ordinary implementation source is `b5378e29d0fe191225abe853d848b498552f5850`, tree
+`ebcaf42f71715ed540cc04123bbeafd82abace48`. It retains the Darwin same-descriptor ACL/ownership checks,
+nonblocking Unix authority-file admission and typed Windows registrar probe.
+Two macOS fixtures now match their actual admission contract: a root replaced
+after file sync preserves the old snapshot; the existing staging destination is
+created with 0600 permissions and every requested replacement cut must execute.
+All original error and original/replacement-byte assertions remain enforced.
+
+CURRENT_SOURCE.json binds 415 Git blobs, 32 selection paths and 16 local Cargo
+dependencies, inventory SHA256 `60476beaffc1e4b28ae7a120a48987945ceeb18c96b1417b70ece80d7fa2b2c3`. This fixture-only source
+repair requires fresh exact-source qualification; production, deployment and
+release flags remain false.
+
+Fresh Linux application just test/nextest passed 243/243 in 2.534 s (three
+separate scale entries ignored); strict all-target/all-feature Clippy passed in
+4.03 s. Python ran 238 tests in 13.695 s: 237 passed and one Windows-only real
+NTFS junction case was skipped on Linux. A locked/offline three-binary release build passed in 0.40 s, reusing
+unchanged production artifacts; self-test and seven actual child-fault checks
+passed. Effect, activation and release authorization remain false. These local
+diagnostics do not establish target-host or complete seven-subject acceptance.
+
+Historical A1 source `a1abe5b2a083213c095cdabaf4b3048144e3cad0` passed Linux application 243/243,
+Python 237/238 with one Windows-only junction skip and isolated owner 194/194.
+Its F5 run 36827460737 actually passed strict macOS lint and all 14 native ACL
+fixtures, but both application suites failed two older fixture assumptions.
+Shared-owner ACL/FIFO cases were not reached after application failure. The
+failure and local diagnostics are retained in [20261001-a1abe-verification.json](history/20261001-a1abe-verification.json);
+the distinct F5 and 8f CI candidates remain separate, and pending subjects are
+not passes. This actual failure supersedes the prior review stop.
 
 Historical source 703e9bf passed both Linux platform subjects (18 checks each),
 both macOS subjects and storage (48 traces and all hard budgets) in run

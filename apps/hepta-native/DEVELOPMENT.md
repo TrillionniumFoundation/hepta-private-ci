@@ -1,30 +1,34 @@
 # hepta-native developer guide
 
-The current ordinary implementation source is `a1abe5b2a083213c095cdabaf4b3048144e3cad0`, tree
-`6269ea8bf6f01c77a3025881e636096a4111b330`. It adds same-descriptor macOS extended-ACL and ownership-enforcement
-checks for native private state and shared authority stores, rejects Unix
-authority-store FIFOs without blocking, and fixes the Windows registrar fixture's
-ambiguous PowerShell `Marshal.SizeOf` overload through a typed C# probe. Existing
-owner/mode/link checks, final-use authority, update fences, native layout offsets
-and the owned shortcut property-store roundtrip remain enforced.
+The current ordinary implementation source is `b5378e29d0fe191225abe853d848b498552f5850`, tree
+`ebcaf42f71715ed540cc04123bbeafd82abace48`. It retains the Darwin same-descriptor ACL/ownership checks,
+nonblocking Unix authority-file admission and typed Windows registrar probe.
+Two macOS fixtures now match their actual admission contract: a root replaced
+after file sync preserves the old snapshot; the existing staging destination is
+created with 0600 permissions and every requested replacement cut must execute.
+All original error and original/replacement-byte assertions remain enforced.
 
-CURRENT_SOURCE.json binds 415 Git blobs, 32 selection paths and 16
-local Cargo dependencies, inventory SHA256 `347ef5027e1d804d4b999da612733ef0f93708142c1e9ba8029f24115dbf42e2`. Complete tests, strict
-lint, release, compiler-negative boundaries and seven-subject CI must execute
-for this new source. Historical success does not qualify it; all production,
-deployment and release flags remain false.
+CURRENT_SOURCE.json binds 415 Git blobs, 32 selection paths and 16 local Cargo
+dependencies, inventory SHA256 `60476beaffc1e4b28ae7a120a48987945ceeb18c96b1417b70ece80d7fa2b2c3`. This fixture-only source
+repair requires fresh exact-source qualification; production, deployment and
+release flags remain false.
 
-Current-source Linux diagnostics passed application 243/243 in 2.472 s (three
-separate scale entries ignored) and strict all-target/all-feature application
-Clippy in 7.75 s. Python ran 238 tests in 12.484 s: 237 passed and the one
-Windows-only real NTFS junction case was skipped on Linux. The structural checker binds the 415/32/16 inventory. A separate
-source-equivalent owner diagnostic passed 194/194 Linux contracts tests,
-including both bounded FIFO cases, and strict Clippy; its reduced workspace is
-not the complete four-owner or platform qualification subject. New Darwin and
-Windows fixtures still require the exact target CI.
-Three release binaries built with locked/offline resolution in 317 s; the
-binary self-test and seven real child-fault checks passed. All effect, activation
-and release authorization flags remain false; this is a Linux local diagnostic.
+Fresh Linux application just test/nextest passed 243/243 in 2.534 s (three
+separate scale entries ignored); strict all-target/all-feature Clippy passed in
+4.03 s. Python ran 238 tests in 13.695 s: 237 passed and one Windows-only real
+NTFS junction case was skipped on Linux. A locked/offline three-binary release build passed in 0.40 s, reusing
+unchanged production artifacts; self-test and seven actual child-fault checks
+passed. Effect, activation and release authorization remain false. These local
+diagnostics do not establish target-host or complete seven-subject acceptance.
+
+Historical A1 source `a1abe5b2a083213c095cdabaf4b3048144e3cad0` passed Linux application 243/243,
+Python 237/238 with one Windows-only junction skip and isolated owner 194/194.
+Its F5 run 36827460737 actually passed strict macOS lint and all 14 native ACL
+fixtures, but both application suites failed two older fixture assumptions.
+Shared-owner ACL/FIFO cases were not reached after application failure. The
+failure and local diagnostics are retained in [20261001-a1abe-verification.json](../../docs/modules/ui.native/history/20261001-a1abe-verification.json);
+the distinct F5 and 8f CI candidates remain separate, and pending subjects are
+not passes. This actual failure supersedes the prior review stop.
 
 Historical source `703e9bf2871b26d646f1c4d748e0b0061f70ad3c` has fresh clean-review-head Linux diagnostics:
 application 243/243 (three separate scale entries ignored, 4.803 s), Python 238
@@ -238,6 +242,16 @@ the actual opened child's owner and ACL. The shared utility's read/write
 `open_file` also applies mutable-file checks, protecting its contracts callers.
 An admission check cannot prevent a trusted principal from adding a later
 hardlink. Preserve target-OS root replacement, ACL drift and alias regressions.
+
+Private state requires a trusted filesystem and mount configuration that enforce
+advertised owner and permission semantics. An absolute path does not establish
+filesystem locality. Linux verifies UID, mode, type, links and identity; remote
+named ACLs and mount policies need their own deployment qualification. For
+example, [NFSv4 section 6.3.2](https://www.rfc-editor.org/rfc/rfc7530.html#section-6.3.2)
+derives mode from selected principals, while the Linux
+[CIFS documentation](https://www.kernel.org/doc/html/latest/admin-guide/cifs/usage.html)
+describes mount options that disable client permission checking. Current local
+POSIX execution does not establish privacy for those configurations.
 
 On macOS, `codex_utils_private_state::verify_private_permissions` checks the
 same opened descriptor through the Darwin ACL API and typed `fstatfs`. Private

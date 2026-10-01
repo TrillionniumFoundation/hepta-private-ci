@@ -2,8 +2,8 @@
   "schema": "hepta.ui.native.delivery.v4",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
   "convergenceBranch": "work/ui-native-adversarial-audit-20261001",
-  "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-  "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+  "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
+  "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
   "ordinarySourceHistory": {
     "baseline": "6f145464d9d58233c59aafe262a1250a5ea873a8",
     "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
@@ -18,7 +18,8 @@
     "testExecutableHashingRepair": "0c176c9d4df6055418529389bf0f749f74ac1a69",
     "sourceCheckoutIdentityRepair": "ebd04a7ed458aa5feaba69525f48f3623c4db033",
     "platformQualificationRepair": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
-    "darwinPrivatePermissionsRepair": "a1abe5b2a083213c095cdabaf4b3048144e3cad0"
+    "darwinPrivatePermissionsRepair": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+    "macosPrivateAdmissionFixtureRepair": "b5378e29d0fe191225abe853d848b498552f5850"
   },
   "implemented": {
     "exactActiveOperationIndex": true,
@@ -117,79 +118,80 @@
   "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261001.md",
   "localAuditVerification": {
     "scope": "Current implementation source diagnostics; pending fields cannot inherit historical source passes",
-    "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-    "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+    "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
+    "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
     "applicationTests": {
-      "status": "passed-current-source-local-diagnostic",
+      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
+      "executionHeadSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
+      "acceptedQualification": false,
+      "status": "passed-current-source-Linux-local-diagnostic",
+      "runner": "just test / cargo nextest",
+      "buildProfile": "debug",
       "passed": 243,
       "failed": 0,
-      "ignoredStorageScaleTests": 3,
-      "elapsedSeconds": 2.472,
-      "buildProfile": "debug",
-      "executionPlatform": "Linux",
-      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
-      "executionHeadSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-      "implementationFilesMatchFrozenGit": true,
-      "rawLogSha256": "c3b493aba7f9cbd83095c1b4436837fc8090456a50fc533fd928e6d7e2039dd3",
-      "acceptedQualification": false
+      "skippedIndependentScaleEntries": 3,
+      "testSeconds": 2.534,
+      "rawLog": {
+        "path": "/tmp/hepta-native-macos-fixture-frozen-nextest.log",
+        "sha256": "91afa8aa46b4a38ce16194549bb18a207b96ab12ab66351c040a4497e5a07fc6"
+      }
     },
     "ownerTests": {
-      "status": "source-equivalent-isolated-Linux-contracts-diagnostic-passed",
-      "passed": 194,
-      "failed": 0,
-      "skipped": 0,
-      "elapsedSeconds": 1.085,
-      "fifoRegressionTests": 2,
-      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
-      "sourceFilesCompared": 61,
-      "comparedSourceFilesUnchangedAfterFixAndTests": true,
-      "completeWorkspaceOwnersExecuted": false,
-      "macOSFixturesExecuted": false,
-      "windowsFixturesExecuted": false,
-      "isolatedStrictClippyPassed": true,
-      "isolatedJustFixPassed": true,
-      "scope": "Reduced owner workspace and lock graph; seven unrelated nextest member overrides omitted only in the isolated copy; not an exact platform qualification subject",
-      "acceptedQualification": false
+      "status": "pending-current-source-execution"
     },
     "strictClippy": {
-      "status": "passed-current-source-application-local-diagnostic",
+      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
+      "executionHeadSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
+      "acceptedQualification": false,
+      "status": "passed-current-source-Linux-local-diagnostic",
       "allTargets": true,
       "allFeatures": true,
-      "denyWarnings": true,
-      "elapsedSeconds": 7.75,
-      "executionPlatform": "Linux",
-      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-      "rawLogSha256": "db3100a4efdc8de1a4560ee30c2d72224899af249dcb593d9a3757f4e0acd9f0",
-      "completeWorkspaceOwnerClippyPassed": false,
-      "acceptedQualification": false
+      "warningsDenied": true,
+      "seconds": 4.03,
+      "rawLog": {
+        "path": "/tmp/hepta-native-macos-fixture-frozen-clippy.log",
+        "sha256": "eb53d443f19690755d9bae2866068b30fcc64548ea35e0c422fb302dd813a9a4"
+      }
     },
     "pythonTests": {
-      "status": "passed-current-source-local-diagnostic",
-      "ran": 238,
+      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
+      "executionHeadSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
+      "acceptedQualification": false,
+      "status": "passed-current-source-Linux-local-diagnostic",
+      "total": 238,
       "passed": 237,
       "failed": 0,
-      "platformSkips": 1,
-      "skipScope": "Windows-only real NTFS junction on Linux",
-      "elapsedSeconds": 12.484,
-      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-      "rawLogSha256": "4f38ea6558f44c6ecf140004967994b1e20bd81ed08e6d70bf584fdf78fdba36",
-      "acceptedQualification": false
+      "skipped": 1,
+      "skipReason": "Windows-only actual NTFS junction fixture does not execute on Linux",
+      "seconds": 13.695,
+      "rawLog": {
+        "path": "/tmp/hepta-native-macos-fixture-python.log",
+        "sha256": "22cc502e5ab6f080fd561f69402224acec5268d126a231a2d059a56a49421f22"
+      }
     },
     "releaseMixedStorageDiagnostics": {
       "status": "pending-current-source-and-syscall-evidence",
       "acceptedQualification": false
     },
     "releaseBinaries": {
+      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
+      "executionHeadSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
+      "acceptedQualification": false,
       "status": "passed-current-source-Linux-local-diagnostic",
-      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
-      "buildHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
       "buildProfile": "release",
       "lockedOfflineBuild": true,
-      "buildSeconds": 317,
+      "buildSeconds": 0.4,
       "built": 3,
+      "unchangedProductionArtifactsReused": true,
+      "ordinarySourceChangeScope": "Two test fixtures only; production source and dependency bytes unchanged",
       "binaries": {
         "hepta-native": {
           "sha256": "e4c4cedec53e1b994005ff53bc551cdd66897446f171ebec3532ddec10a130f0",
@@ -204,37 +206,44 @@
           "bytes": 6392504
         }
       },
-      "rawBuildLogSha256": "d42d59459b42d18c8585333061ebee3598a110f11de7a66792e5293c1125957e",
+      "rawBuildLog": {
+        "path": "/tmp/hepta-native-macos-fixture-release-build.log",
+        "sha256": "8ccb246cfebe27f6575dfb59054f36f933b11f90996645020581c927a9e4ece4"
+      },
       "binarySelfTestPassed": true,
-      "selfTestReceiptSha256": "35d24d29b9a2cd6d54846ff452c113c90ed59d6a1e46f88077aa8f2bb0625f13",
+      "selfTestReceipt": {
+        "path": "/tmp/hepta-native-macos-fixture-self-test.json",
+        "sha256": "35d24d29b9a2cd6d54846ff452c113c90ed59d6a1e46f88077aa8f2bb0625f13"
+      },
       "realChildFaultChecksPassed": 7,
-      "realChildFaultReceiptSha256": "5f1b581a84717e5359cb0f717eb095257cb001c247e35f2bf4d47a2a41a4d0e7",
+      "realChildFaultReceipt": {
+        "path": "/tmp/hepta-native-macos-fixture-crash-test.json",
+        "sha256": "5f1b581a84717e5359cb0f717eb095257cb001c247e35f2bf4d47a2a41a4d0e7"
+      },
       "physicalGuiAcceptance": false,
       "effectAuthorityGranted": false,
       "activationAuthorityGranted": false,
-      "releaseAuthorityGranted": false,
-      "acceptedQualification": false
+      "releaseAuthorityGranted": false
     },
     "compileNegativeVerification": {
-      "status": "passed-clean-review-head-local-diagnostic",
-      "executionHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
-      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-      "cases": 3,
-      "allPrivacyDiagnosticsObserved": true,
-      "allExpectedExitCodes": true,
-      "allDependencyResolutionPinned": true,
-      "rawReceiptSha256": "38cfd95b6e7fc768c68ad70d74ad11bfe32e86f7962f1573160868b615218b2c",
+      "status": "pending-clean-review-head-execution",
       "acceptedQualification": false
     },
     "sourceStructuralVerification": {
-      "status": "structural-pass",
-      "passed": true,
-      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
-      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
-      "rawLogSha256": "a72f9c118ff3e0c4a8f00fd31dcc41da1b7fc5a1feb0fdb1cfe84b5a925e970b",
+      "implementationSourceSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "implementationSourceTree": "ebcaf42f71715ed540cc04123bbeafd82abace48",
+      "executionHeadSha": "b5378e29d0fe191225abe853d848b498552f5850",
+      "scope": "Current frozen product Git bytes; worktree metadata publication in progress; local diagnostic only",
       "acceptedQualification": false,
-      "cleanReviewHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
-      "cleanReviewHeadRawLogSha256": "0d472370625ab45269621560c78ab3b0f384e3f3ab1dab8e70e0489841c93a3a"
+      "status": "passed-current-source-precommit-metadata-check",
+      "sourceFileCount": 415,
+      "selectionPaths": 32,
+      "localCargoDependencies": 16,
+      "inventorySha256": "60476beaffc1e4b28ae7a120a48987945ceeb18c96b1417b70ece80d7fa2b2c3",
+      "rawReceipt": {
+        "path": "/tmp/hepta-native-macos-fixture-precommit-structural.json",
+        "sha256": "1523f2a8a78ce88050d3a76458fe0e2d981253cc95e9c2f0dae211d4e8ac84f9"
+      }
     },
     "projectionVerification": {
       "status": "pending-current-source-execution"
@@ -247,28 +256,7 @@
       "acceptedQualification": false
     },
     "globalModuleDocsVerification": {
-      "status": "failed-outside-ui-native-on-clean-review-head",
-      "executionHeadSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
-      "globalExitCode": 1,
-      "failedOtherModules": [
-        "automation.taskflow",
-        "cognitive.read",
-        "intelligence.control",
-        "kernel.authority",
-        "kernel.operations",
-        "knowledge.graph",
-        "learning.operator",
-        "learning.plasticity",
-        "memory.federation",
-        "memory.retrieval",
-        "platform.types",
-        "runtime.supervisor",
-        "utility.ndu"
-      ],
-      "strictNativeAdapterPassed": true,
-      "otherModuleRulesOrSourceAnchorsRelaxed": false,
-      "docsRawLogSha256": "40ba14c589927a0ec112049af416db1145392e818762e1091f6cdbd900ae2759",
-      "mapsRawLogSha256": "fee7a4fc49d009e2848d05543879e04604b261b1b9d42e7e5e09b42aa9098ade",
+      "status": "pending-final-clean-check",
       "acceptedQualification": false
     },
     "workflowEntryValidation": {
@@ -276,20 +264,7 @@
       "remoteSevenSubjectQualificationPassed": false
     },
     "ciQualificationPassed": false,
-    "physicalPlatformAcceptanceComplete": false,
-    "localBuildResourceDiagnostics": {
-      "cachedLinkAttemptPassed": false,
-      "cachedLinkLogSha256": "c1db09834c4891da76e97aa47a0afc3e689823c289e708d3a9c80413399a7be9",
-      "subsequentBuildPassed": false,
-      "subsequentBuildLogSha256": "125abefc52cad6cf9acf2307bf0d2b68131966ff5aa909bdaf35155a522fc583",
-      "observedDiskExhaustion": true,
-      "observedGitIndexWriteFailure": true,
-      "observedLinkerBusError": true,
-      "onlyTaskOwnedReproducibleCargoCacheCleaned": true,
-      "freshApplicationAndReleaseBuildsPassed": true,
-      "productSourceChangedToHideBuildFailure": false,
-      "acceptedQualification": false
-    }
+    "physicalPlatformAcceptanceComplete": false
   },
   "historicalLocalAuditVerification": [
     {
@@ -796,6 +771,13 @@
       "sha256": "b53f2ffbbe9f9ba9e68bc338b49f3e8ca07991af0bdc683ea58272a36b15aecd",
       "implementationSourceSha": "703e9bf2871b26d646f1c4d748e0b0061f70ad3c",
       "implementationSourceTree": "d549e3e492093810b685c7d65d58d6983566a82b",
+      "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261001-a1abe-verification.json",
+      "sha256": "98baa9fca3872bc7f08d7c2db255050144be7d7865e08ffbec490a42588dbc29",
+      "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
       "evidenceRole": "historical-only; does not qualify current implementation source"
     }
   ]

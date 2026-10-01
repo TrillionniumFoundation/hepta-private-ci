@@ -1,0 +1,530 @@
+{
+  "schema": "hepta.ui-native.linux-ci-followup-summary.v1",
+  "classification": "historical-exact-source-ci-evidence",
+  "observedAt": "2026-10-01T07:17:59.788639+00:00",
+  "implementationSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+  "implementationSourceTree": "6269ea8bf6f01c77a3025881e636096a4111b330",
+  "candidateSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+  "candidateTree": "b690b267b21ae590e9a53644efe128390539e631",
+  "baseSha": "9be52d267d02a76f73e8a94fd086191c351d1c70",
+  "runId": 36827460737,
+  "runAttempt": 1,
+  "currentSourceQualificationInherited": false,
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false,
+  "storage": {
+    "jobId": 110258187998,
+    "status": "completed",
+    "conclusion": "success",
+    "url": null,
+    "artifactId": 11146546415,
+    "artifactName": "ui-native-storage-f5c898eaf9d3cec2bd4cfe39e839bac16ca99502-attempt-1",
+    "artifactZip": {
+      "path": "/workspace/scratch/0643a11f4b6a/attachments/c430ec8a-74f7-4138-9868-a6553e136389/github-actions-artifact-11146546415.zip",
+      "bytes": 435633,
+      "sha256": "a8b3f00ccc8e37502114a7ca2b480d7e809e4fa6462102f6e42f13f2cf1b5358"
+    },
+    "artifactPending": false,
+    "sourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+    "budgetCandidateBlobSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+    "budget": {
+      "path": "/dev/shm/hepta-ui-native-ci-storage-36827460737/STORAGE_BUDGETS.json",
+      "bytes": 2346,
+      "sha256": "a0585c9a71e62c7fc003632a25cc0589540de2f68221ed7090627fdbfd7aa001"
+    },
+    "jobOutcomes": {
+      "active": "success",
+      "candidateSha": "f5c898eaf9d3cec2bd4cfe39e839bac16ca99502",
+      "compile": "success",
+      "retired": "success",
+      "runAttempt": "1",
+      "runId": "36827460737",
+      "schema": "hepta.ui-native-storage-job-outcomes.v1",
+      "sourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "validate": "success",
+      "workflowSha": "3ef7e4e4571e91960bd9a56b9db7d9ea8181a7d6"
+    },
+    "originalQualification": {
+      "path": "/dev/shm/hepta-ui-native-ci-storage-36827460737/qualification.json",
+      "bytes": 308675,
+      "sha256": "571f4174249488913ba641201c1d4d4bec17633629a60cbdbb95f6a9aa3bdc11"
+    },
+    "rawActive": {
+      "path": "/dev/shm/hepta-ui-native-ci-storage-36827460737/active.json",
+      "bytes": 212406,
+      "sha256": "b2a1f7ed000b7ce0ee4cb47a239b08478d7d7dc9bd6d4d0771de01d291af790a"
+    },
+    "rawRetired": {
+      "path": "/dev/shm/hepta-ui-native-ci-storage-36827460737/retired.json",
+      "bytes": 31939,
+      "sha256": "a165d8f937b4cb7e5c8f21e60c7ac127a59444fd1aa9496832e3d8cf65e9adbe"
+    },
+    "independentValidator": {
+      "exitCode": 0,
+      "status": "pass",
+      "storageQualified": true,
+      "exactSourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "validatorSourceSha256": "5eff68ae1694a05ca5aff8e54a8102da7b249af2d3754569b2cb7c064e64a9d5",
+      "validatorMatchesCandidateGitBlob": true,
+      "allPercentilesAndProcessIdentityBindingsVerified": true,
+      "all48TraceFileHashesAndSizesVerified": true,
+      "allHardBudgetsVerified": true,
+      "originalAndIndependentReceiptObjectsEqual": true,
+      "command": [
+        "python3",
+        "/dev/shm/hepta-ui-native-ci-storage-36827460737/qualify_hepta_ui_native_storage.py",
+        "--budgets",
+        "/dev/shm/hepta-ui-native-ci-storage-36827460737/STORAGE_BUDGETS.json",
+        "--active",
+        "/dev/shm/hepta-ui-native-ci-storage-36827460737/active.json",
+        "--retired",
+        "/dev/shm/hepta-ui-native-ci-storage-36827460737/retired.json",
+        "--trace-prefix",
+        "/dev/shm/hepta-ui-native-ci-storage-36827460737/active.strace",
+        "--source-sha",
+        "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+        "--emit",
+        "/dev/shm/hepta-ui-native-ci-storage-36827460737/independent-qualification.json"
+      ],
+      "receipt": {
+        "path": "/dev/shm/hepta-ui-native-ci-storage-36827460737/independent-qualification.json",
+        "bytes": 308675,
+        "sha256": "571f4174249488913ba641201c1d4d4bec17633629a60cbdbb95f6a9aa3bdc11"
+      },
+      "log": {
+        "path": "/dev/shm/hepta-ui-native-ci-storage-36827460737/independent-qualification.log",
+        "bytes": 308675,
+        "sha256": "571f4174249488913ba641201c1d4d4bec17633629a60cbdbb95f6a9aa3bdc11"
+      }
+    },
+    "durabilitySyscalls": {
+      "fsyncOrFdatasyncCalls": 13245,
+      "stateTransitions": 12288,
+      "traceFiles": [
+        {
+          "bytes": 502,
+          "path": "active.strace.9384",
+          "sha256": "a6ceaa6ad549981644758a173efc63decc8617a569eb8f9947e2aa4bc960bd66"
+        },
+        {
+          "bytes": 22,
+          "path": "active.strace.9385",
+          "sha256": "29d50c6fb633dc49972d8ca854afcecf7e4bb5f479cb870f89ccdf6ff854bf31"
+        },
+        {
+          "bytes": 22,
+          "path": "active.strace.9386",
+          "sha256": "29d50c6fb633dc49972d8ca854afcecf7e4bb5f479cb870f89ccdf6ff854bf31"
+        },
+        {
+          "bytes": 22,
+          "path": "active.strace.9387",
+          "sha256": "29d50c6fb633dc49972d8ca854afcecf7e4bb5f479cb870f89ccdf6ff854bf31"
+        },
+        {
+          "bytes": 22,
+          "path": "active.strace.9388",
+          "sha256": "29d50c6fb633dc49972d8ca854afcecf7e4bb5f479cb870f89ccdf6ff854bf31"
+        },
+        {
+          "bytes": 110,
+          "path": "active.strace.9389",
+          "sha256": "b49d0f0def1a6fa70d3ead8c9a5f9b28efb75392c42e2bb50165393676293c7a"
+        },
+        {
+          "bytes": 543,
+          "path": "active.strace.9390",
+          "sha256": "fa0e90e2d925849bdf911181a4b7bda084ea54a65f8fca85eb13e098316bc331"
+        },
+        {
+          "bytes": 10083542,
+          "path": "active.strace.9391",
+          "sha256": "bc5b87d04638168f989ff4d32aab4621f4571e2ad8804dae4119adc5d521e660"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9399",
+          "sha256": "8ec4e8b341518037c13ab770f70ca9604a0cf1662f48536cef4b35a44c7767f4"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9400",
+          "sha256": "d2bec211cd7489fef20ca1fa3e791fda1d4e0e1e0aef640cf7b24cca33cc619b"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9401",
+          "sha256": "3694cebd6b4cba30a23405214cfa7a2ae09cbca03ce1e08f1c9ae40486c4ba20"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9402",
+          "sha256": "3e3504707208d74f5172289938021280cef3c216c1724fc09ae240800576bdb3"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9403",
+          "sha256": "8da7224a2c16685c36ae359b7208ad4f4fc95a34c8b2f784be7bb0c11c11d376"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9404",
+          "sha256": "8ef9b0172b7c62eb3546b8155c5b69bdcfc1fd8f2dfac2d2889a54d0e7987020"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9405",
+          "sha256": "fa187ceddf44ee721f5c33d1c2f63b128b8a8bd32b129c194bc97892c7ab5c5c"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9406",
+          "sha256": "c3389bbf3f7ef0d620144e2759d543a29b169fdbbcf5fafec3f825ab5cc74d37"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9407",
+          "sha256": "a5899780405deced41a1a1995dd49f943d5cf45f15f1a9f6b75dfd65e2d9490b"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9408",
+          "sha256": "f975c35071f1426fdd696f287faa885c42762a8202b6453f6feeb9e026204477"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9409",
+          "sha256": "6d8ac6c358df08aeeecf1da121075bbe119f8e47c9149b62fa0562d57517edeb"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9410",
+          "sha256": "638b4648eff7fde762a0168c17bac3e34d38fd78866c607a5c64dcc3d620f21c"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9411",
+          "sha256": "470ff9b83410523325c427490e197e282effe9d7d2372d81513cf0f7bc06108e"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9412",
+          "sha256": "4c348c31fa93bdfb8cddaf2f2c52e665f356563866595b134b9764a5f4ad7fa1"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9413",
+          "sha256": "57616a3c5891ff7d442e4fa5d98c3c9553bf14ac874f653a6d080d506cb609f6"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9414",
+          "sha256": "f12b1429f8b824470ee346a996ddfcd7ebd15f5ca74aa11b36e09502dda7e0db"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9415",
+          "sha256": "a5a7ba74da76f107f77863c5d1c9123924897a2c9f9691f0a34d6ce0a5caf62e"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9416",
+          "sha256": "52cb49f9f6702fb819dcb3ac952b405d26534fc7a7320888c041eb6e905c762c"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9417",
+          "sha256": "34e3b66a92e4eb40cafcfc9a2e5a3b1b0175444af01bd77dc077372704e6fd77"
+        },
+        {
+          "bytes": 211,
+          "path": "active.strace.9418",
+          "sha256": "f64a7deb1d9f1e15c49f45b8c6cb8affb9d2a5b4e6f5785d3f4c714a5a16ddad"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9419",
+          "sha256": "526e7a638ec7cabcf5c0e43dbf24e16679c94ca13b3f8b81234e592252628e24"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9420",
+          "sha256": "0aae6f00ce27fa0aeeeab3a7e85c3dd003dd5da2534707915dea1fedd214077b"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9421",
+          "sha256": "6fc7ca62cf00cc2accd6b1d8010da1d5fbb0dd7e98ce67cb5ab88e82e03827af"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9422",
+          "sha256": "c66da33bdcfa79872f6030e4e7776122a257d6a811920ffe055610c9b3f4aae3"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9423",
+          "sha256": "877498e2606941ab2cda83e2876025a82a4de39f2c06ce01327b013d15e39b08"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9424",
+          "sha256": "60be5b66eef29b9a8a4c7be5b4b016200d96e6d2b959dda419b5a1ef14457642"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9425",
+          "sha256": "83618bd5cabb99410506c28994975120733248b573912c6b14179c6d9b90046d"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9426",
+          "sha256": "cf986fc2c8decf309480f8c5f560a28169a1df57f155d273e4ea96501a145593"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9427",
+          "sha256": "acd3b3d89a43b6c87488728663d0d23f8e754653323c5aebf56b2d3878a4910c"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9428",
+          "sha256": "5606e0c4120b9cc658cb7bea6d57fa1aa6400ca4f83f578a4a7887f9695683a4"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9429",
+          "sha256": "7b71e02ad553d3e663323944703254c0aa822ffcd28804bfbe64c060af8b4cc1"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9430",
+          "sha256": "0cf5f55e0e38714c9e66ade0205c11db6c66939cba814f8efb630cf8937fae44"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9431",
+          "sha256": "3720ad9cdfd5d552bf6c325011a123ee6160bf31db2cd2802f516c235d826d00"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9432",
+          "sha256": "f0a20dd9cdb620fce60f5c3892b4fac5cf2cb594d68955b6a6af5ba941383eef"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9433",
+          "sha256": "97b6d0b98dadcc1ef5886917f6973d868cce6ebff7fc2c74a5e12d6e5f6cc28f"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9434",
+          "sha256": "ecf832c7c20291350437880839bc36f2cc265021e465225de81cbd11e8868654"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9435",
+          "sha256": "a20f41fa50397d872ba893caaf7c7b6b2bc62b1a3952f58b935f9f7a5dbee8fd"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9436",
+          "sha256": "321860c59ff1917b6b34870df3d6ea60ba010253b791a8353dd55b60dc87d177"
+        },
+        {
+          "bytes": 542,
+          "path": "active.strace.9437",
+          "sha256": "849441157d724b260ef609a071ef244cdf726faf6d1260cdf7d6ccc8ff09bfb0"
+        },
+        {
+          "bytes": 212,
+          "path": "active.strace.9438",
+          "sha256": "242218a456a3beb6e5961aa17e8c4157debc798800043b3fd7597bf138f3459e"
+        }
+      ],
+      "writeBytes": 392186549,
+      "writeBytesPerTransition": 31917
+    },
+    "activeMeasurements": {
+      "activeRecords": 4096,
+      "freshProcessOpenP95Milliseconds": 39.06375,
+      "historyPageMaxRetainedJsonBytes": 28417,
+      "historyPageP95Milliseconds": 0.245652,
+      "historyPageSize": 64,
+      "measurementScope": {
+        "buildProfile": "release",
+        "historyPageBytes": "serialized-retained-receipts-not-allocator-accounting",
+        "open": "fresh-process-os-page-cache-uncontrolled"
+      },
+      "mutationP50Milliseconds": 1.675908,
+      "mutationP95Milliseconds": 2.7324450000000002,
+      "mutationP99Milliseconds": 31.61646,
+      "peakRssMiB": 26,
+      "previousSnapshotBytes": 2599483,
+      "processSampleCount": 20,
+      "root": "/home/runner/work/_temp/ui-native-storage-roots/hepta-ui-native-active-9390-1790838825584153492",
+      "schema": "hepta.ui-native-storage-active-evidence.v1",
+      "snapshotBytes": 2608315,
+      "sourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "totalStorageBytes": 5207798,
+      "transitions": 12288,
+      "walBytes": 0
+    },
+    "retirementMeasurements": {
+      "authorityBatchSize": 1024,
+      "authorityFixtureBuildMilliseconds": 2750.3818340000003,
+      "authorityMinimumPrefixesPerSegment": 228,
+      "authorityMixedPrefixSegments": 977,
+      "combinedJournal": {
+        "activeRecords": 4096,
+        "freshProcessOpenP95Milliseconds": 346.735968,
+        "historyPageMaxRetainedJsonBytes": 28417,
+        "historyPageP95Milliseconds": 0.031897,
+        "historyPageSize": 64,
+        "measurementScope": {
+          "buildProfile": "release",
+          "historyPageBytes": "serialized-retained-receipts-not-allocator-accounting",
+          "open": "fresh-process-os-page-cache-uncontrolled"
+        },
+        "peakRssMiB": 33,
+        "processSampleCount": 20,
+        "retiredIdentities": 1000000,
+        "schema": "hepta.ui-native-storage-combined-evidence.v1",
+        "sourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0"
+      },
+      "deterministicRebuild": true,
+      "expectedIndexedHeadSha256": "a437b567ef1c9757305487f41331d5beb33ad2c19155ff11d0e675ce3fd7e44a",
+      "freshProcessIndexRebuildP95Milliseconds": 2007.931553,
+      "freshProcessOpenP95Milliseconds": 0.310838,
+      "measurementScope": {
+        "authoritySegments": "mixed-prefix-chronological-legacy-identity-batches",
+        "buildProfile": "release",
+        "open": "fresh-process-os-page-cache-uncontrolled",
+        "rebuild": "fresh-process-mixed-prefix-authority-chain-with-no-derived-assets"
+      },
+      "peakRssMiB": 33,
+      "processSampleCount": 20,
+      "retiredIdentities": 1000000,
+      "retirementSegments": 977,
+      "root": "/home/runner/work/_temp/ui-native-storage-roots/hepta-ui-native-retired-9447-1790838864045463624",
+      "schema": "hepta.ui-native-storage-retirement-evidence.v1",
+      "sourceSha": "a1abe5b2a083213c095cdabaf4b3048144e3cad0",
+      "totalStorageBytes": 144415688
+    },
+    "budgetCeilings": {
+      "path": "STORAGE_BUDGETS.json",
+      "performance": {
+        "activePeakRssMiB": 256,
+        "activeRecordsSubject": 4096,
+        "coldStartP95Milliseconds": 2000,
+        "freshProcessSamples": 20,
+        "historyPageP95Milliseconds": 25,
+        "historyPageRetainedSerializedBytes": 2097152,
+        "maximumWriteAmplificationBytesPerStateTransition": 262144,
+        "millionRetiredIndexRebuildP95Milliseconds": 30000,
+        "millionRetiredPeakRssMiB": 256,
+        "mutationP50Milliseconds": 25,
+        "mutationP95Milliseconds": 100,
+        "mutationP99Milliseconds": 250,
+        "retiredIdentitiesSubject": 1000000
+      },
+      "sha256": "a0585c9a71e62c7fc003632a25cc0589540de2f68221ed7090627fdbfd7aa001",
+      "structural": {
+        "checkpointWalEntries": 128,
+        "maxActiveRecords": 4096,
+        "maxSnapshotBytes": 8388608,
+        "maxWalBytes": 4194304,
+        "maxWalFrameBytes": 131072,
+        "maximumHistoryPageSize": 256,
+        "retirementIndexBucketEntries": 65536,
+        "retirementIndexBuckets": 256,
+        "retirementIndexCacheEntries": 65536,
+        "retirementRecordBytes": 32768,
+        "retirementSegmentBytes": 524288,
+        "retirementSegmentEntries": 1024,
+        "uiHistoryPageSize": 64
+      }
+    },
+    "limitations": [
+      "Linux hosted-runner evidence is not physical desktop acceptance",
+      "Fresh processes do not control or evict the operating-system page cache",
+      "Performance ceilings apply to optimized release-profile test harnesses",
+      "History retained JSON bytes measure receipt payload, not total allocator activity",
+      "storage qualification alone does not authorize production, deployment or release"
+    ],
+    "storageQualifiedAtHistoricalSource": true,
+    "currentSourceQualificationInherited": false,
+    "productionQualified": false,
+    "deploymentQualified": false,
+    "releaseAuthorized": false
+  },
+  "linuxPlatforms": {
+    "head": {
+      "status": "in_progress",
+      "artifactPending": true,
+      "subjectQualifiedAtHistoricalSource": false,
+      "jobId": 110258188224,
+      "conclusion": null
+    },
+    "merge": {
+      "status": "in_progress",
+      "artifactPending": true,
+      "subjectQualifiedAtHistoricalSource": false,
+      "jobId": 110258188267,
+      "conclusion": null
+    }
+  },
+  "terminalJobSnapshot": [
+    {
+      "jobId": 110256249278,
+      "name": "ui.native / immutable source identity",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "jobId": 110258187998,
+      "name": "ui.native / Linux / exact implementation storage scale",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "jobId": 110258188135,
+      "name": "ui.native / Windows / head",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "jobId": 110258188139,
+      "name": "ui.native / macOS / merge",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "jobId": 110258188176,
+      "name": "ui.native / Windows / merge",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "jobId": 110258188213,
+      "name": "ui.native / macOS / head",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "jobId": 110258188224,
+      "name": "ui.native / Linux / head",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "jobId": 110258188267,
+      "name": "ui.native / Linux / merge",
+      "status": "in_progress",
+      "conclusion": null
+    }
+  ],
+  "workflowSha": "3ef7e4e4571e91960bd9a56b9db7d9ea8181a7d6",
+  "storageQualifiedAtHistoricalSource": true
+}
