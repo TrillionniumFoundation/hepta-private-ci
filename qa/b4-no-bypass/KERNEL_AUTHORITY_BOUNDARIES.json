@@ -36,7 +36,6 @@
         "open_state_dir_with_issuer_keys": "final_use_open_state",
         "with_verified_effect": "final_use_guarded_effect",
         "with_verified_use_async": "final_use_async_dispatch_fence",
-        "open_state_dir_with_recovered_trust": "final_use_open_state",
         "enter_verified_use": "final_use_delivery_raw"
       },
       "nonPrivilegedMethods": [
@@ -161,8 +160,7 @@
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
-        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
-        "codex-rs/hepta-supervisor/src/local_model_authority.rs"
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
       ]
     },
     {
@@ -274,8 +272,7 @@
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-contracts/src/final_use_control.rs",
-        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
-        "codex-rs/hepta-supervisor/src/local_model_authority.rs"
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
       ]
     },
     {
@@ -403,9 +400,7 @@
         "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_clock\\s*\\(",
         "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_trust\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-supervisor/src/local_fleet_host.rs"
-      ]
+      "allowedCallers": []
     },
     {
       "id": "authority_lease_put",
@@ -415,9 +410,7 @@
         "\\.\\s*put_lease\\s*\\(",
         "AuthorityLeaseRegistry\\s*::\\s*put_lease\\s*\\("
       ],
-      "allowedCallers": [
-        "codex-rs/hepta-supervisor/src/local_fleet_host.rs"
-      ]
+      "allowedCallers": []
     },
     {
       "id": "authority_lease_revoke",
