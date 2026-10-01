@@ -30,11 +30,19 @@ use crate::SpawnedProcess;
 use crate::Supervisor;
 use crate::TickReport;
 
+#[path = "tick_control_deadline_tests.rs"]
+mod deadline_tests;
+
 #[derive(Default)]
 struct Faults {
+    main_drain_failures: u32,
+    main_stop_failures: u32,
     main_kill_failures: u32,
     main_poll_failures: u32,
     matrix_kill_failures: u32,
+    matrix_poll_failures: u32,
+    main_drains: usize,
+    main_stops: usize,
     main_kills: usize,
     matrix_kills: usize,
 }
@@ -94,15 +102,35 @@ impl ManagedProcess for Process {
             faults.main_poll_failures -= 1;
             return Err(ProcessDriverError::new("one-shot main poll failure"));
         }
+        if self.role == FakeRole::Matrixd && faults.matrix_poll_failures > 0 {
+            faults.matrix_poll_failures -= 1;
+            return Err(ProcessDriverError::new("one-shot Matrix poll failure"));
+        }
         drop(faults);
         self.inner.poll(max_logs)
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
+        if self.role == FakeRole::Agentd {
+            let mut faults = self.faults.lock().expect("fault state");
+            faults.main_drains += 1;
+            if faults.main_drain_failures > 0 {
+                faults.main_drain_failures -= 1;
+                return Err(ProcessDriverError::new("one-shot main drain failure"));
+            }
+        }
         self.inner.request_drain()
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
+        if self.role == FakeRole::Agentd {
+            let mut faults = self.faults.lock().expect("fault state");
+            faults.main_stops += 1;
+            if faults.main_stop_failures > 0 {
+                faults.main_stop_failures -= 1;
+                return Err(ProcessDriverError::new("one-shot main stop failure"));
+            }
+        }
         self.inner.request_stop()
     }
 
