@@ -250,3 +250,9 @@ watchdog 和失败后的 listener 释放确保测试不残留阻塞线程。共�
 SLO。两秒只读投影新鲜度、已经开始的 owner callback、跨 daemon 清理见证、
 原子恢复观察和每 Agent 调度隔离缺口保持原状态。能力状态仍为 12 implemented、
 2 partial、2 not implemented；目标主机和独立验收、激活、发布均未建立。
+
+本次传输修复源码为 `9e27dab1e445ab04c0e7ea6b68a2dd89e5bc9ab0`，tree
+`adb9bf639b274b8cbeed8db00c5488921fbb22be`。三个复杂修改 stage 分别为
+452、170、83 changed lines，API tree 与本地 tree 逐阶段一致。默认
+Supervisor/Fleet 与 qualification/offline Supervisor 的 all-target strict
+Clippy 均通过，完整 fmt 后只还原 46 个无关 formatter-only 路径。

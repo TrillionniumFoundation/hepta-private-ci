@@ -128,9 +128,9 @@
   "mappingSourceIdentityMode": "exact_blob",
   "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
   "observedAtHead": {
-    "commit": "462adb4973c14c958cb696fdf5789ca34fed0a6e",
-    "tree": "a9edf57af51a27064e1e631154501789934205af",
-    "interpretation": "Reviewed correction of the valid Fleet receipt test sample: all three exact mandatory cases are source-checked and each has missing, prefix and wrong-binary rejection coverage. CI plan thresholds and the complete codex-rs tree are unchanged from d74. Actual d74 recovery scope failed before native execution, so all six native lanes were skipped; no Rust pass is credited. Old 7c failures and local execution bindings remain frozen. New actual exact-head/platform CI is pending. This source observation preserves immutable sourceBase, existing ownership and gaps, and transfers no target-host, independent acceptance, activation or release claim."
+    "commit": "9e27dab1e445ab04c0e7ea6b68a2dd89e5bc9ab0",
+    "tree": "adb9bf639b274b8cbeed8db00c5488921fbb22be",
+    "interpretation": "Reviewed source-only exact-peer Unix control transport under one existing 200 ms monotonic exchange budget: connect, peer-PID verification before request bytes, partial write, half-close and bounded first-line read share an absolute deadline; partial progress does not renew it, and timeout is neither Drain acknowledgement nor process-exit proof. All mapped objects below belong to this source commit/tree; historical 7c4e0ab, d74cde5 and d0169ba execution records do not validate these new transport bytes. The observed historical d0169ba macOS default-library failure remains a failure with its exact failing leaf awaiting raw logs; it is not credited to this source. Current actual exact-head/platform execution is pending. Immutable sourceBase, existing ownership, gaps, capability and acceptance boundaries are preserved; this observation transfers no target-host qualification, independent acceptance, activation or release claim."
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",

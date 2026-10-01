@@ -156,9 +156,19 @@
           "path": "codex-rs/hepta-supervisor/src/unix_peer_identity_tests.rs",
           "kind": "native_kernel_peer_identity_and_forged_health_rejection",
           "command": "just test -p codex-hepta-supervisor --lib unix::peer_identity_tests"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/unix_control_io_tests.rs",
+          "kind": "exact_peer_absolute_exchange_deadline_and_bounded_frame",
+          "command": "just test --locked -p codex-hepta-supervisor --lib unix::control_io::tests"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/unix_control_io_linux_tests.rs",
+          "kind": "linux_only_full_accept_queue_deadline_with_outer_watchdog",
+          "command": "just test --locked -p codex-hepta-supervisor --lib unix::control_io::linux_tests"
         }
       ],
-      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused.",
+      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused. Agentd and Matrix Health use one existing 200 ms monotonic budget for each Unix control exchange, including nonblocking connect, kernel peer-PID validation before any request byte, partial writes, half-close and bounded response reads. Successful partial progress and interrupted I/O cannot renew the absolute deadline; a probe error or timeout publishes false through the existing health worker. The four common transport regressions are exact mandatory library identities; the full-accept-queue regression is Linux-only and is not a macOS requirement. This is not an entire adoption or lifecycle SLO, an immediate read-projection refresh, per-Agent scheduling isolation or preemption of intrinsically stuck kernel/path/filesystem calls.",
       "operation": "observe_health",
       "nativeSymbol": "pub fn tick(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -190,9 +200,19 @@
           "path": "codex-rs/hepta-supervisor/src/recovery_control_tests.rs",
           "kind": "bound_release_drain_retry_and_independent_signed_recovery",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/unix_control_io_tests.rs",
+          "kind": "exact_peer_absolute_exchange_deadline_and_bounded_frame",
+          "command": "just test --locked -p codex-hepta-supervisor --lib unix::control_io::tests"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/unix_control_io_linux_tests.rs",
+          "kind": "linux_only_full_accept_queue_deadline_with_outer_watchdog",
+          "command": "just test --locked -p codex-hepta-supervisor --lib unix::control_io::linux_tests"
         }
       ],
-      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut. Recovery of an exact journaled Stop preserves its original durable deadline; a transient bound-control driver failure retains the staged control and does not skip independent signed-intent recovery. Complete crash-cut lineage and the atomic recovery-observation envelope remain open.",
+      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut. Recovery of an exact journaled Stop preserves its original durable deadline; a transient bound-control driver failure retains the staged control and does not skip independent signed-intent recovery. Complete crash-cut lineage and the atomic recovery-observation envelope remain open. The typed Agentd Drain exchange uses one existing 200 ms monotonic budget across nonblocking connect, kernel peer-PID validation before request bytes, partial writes, half-close and bounded response reads; partial progress cannot renew it. Linux accept-backlog EAGAIN is a failed connection and cannot be treated as a successful handshake. Transport timeout, absence or an incomplete reply never establishes Drain acknowledgement or process exit, never releases an owned handle and does not undo a request already delivered. The original durable control deadline and escalation remain decisive. Common transport tests apply on Linux/macOS; the accept-queue regression is Linux-only. This per-exchange budget is not an entire Stop/adoption SLO and does not make intrinsic kernel/path/filesystem stalls preemptible.",
       "operation": "drain",
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -646,9 +666,9 @@
     "scripts/just-shell.py"
   ],
   "observedAtHead": {
-    "commit": "462adb4973c14c958cb696fdf5789ca34fed0a6e",
-    "tree": "a9edf57af51a27064e1e631154501789934205af",
-    "interpretation": "Reviewed correction of the valid Fleet receipt test sample: all three exact mandatory cases are source-checked and each has missing, prefix and wrong-binary rejection coverage. CI plan thresholds and the complete codex-rs tree are unchanged from d74. Actual d74 recovery scope failed before native execution, so all six native lanes were skipped; no Rust pass is credited. Old 7c failures and local execution bindings remain frozen. New actual exact-head/platform CI is pending. This source observation preserves immutable sourceBase, existing ownership and gaps, and transfers no target-host, independent acceptance, activation or release claim."
+    "commit": "9e27dab1e445ab04c0e7ea6b68a2dd89e5bc9ab0",
+    "tree": "adb9bf639b274b8cbeed8db00c5488921fbb22be",
+    "interpretation": "Reviewed source-only exact-peer Unix control transport under one existing 200 ms monotonic exchange budget: connect, peer-PID verification before request bytes, partial write, half-close and bounded first-line read share an absolute deadline; partial progress does not renew it, and timeout is neither Drain acknowledgement nor process-exit proof. All mapped objects below belong to this source commit/tree; historical 7c4e0ab, d74cde5 and d0169ba execution records do not validate these new transport bytes. The observed historical d0169ba macOS default-library failure remains a failure with its exact failing leaf awaiting raw logs; it is not credited to this source. Current actual exact-head/platform execution is pending. Immutable sourceBase, existing ownership, gaps, capability and acceptance boundaries are preserved; this observation transfers no target-host qualification, independent acceptance, activation or release claim."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "productCallers": [
@@ -727,7 +747,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "9ded4d63097bbb1e1dcae4d7dbd36ddfec006fa0"
+      "object": "a1acfe0d30490369721cafbbc536de1035a185fa"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/automatic_restart_event_tests.rs",
@@ -939,7 +959,19 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix.rs",
-      "object": "bb972c9f041d61f84c0964a4885088eeced229ed"
+      "object": "1469a0ba50756a54539ea860b5b67fd913c55698"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_control_io.rs",
+      "object": "b5d9d5e898abd49b17d340304fa3f04df1a56a33"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_control_io_linux_tests.rs",
+      "object": "f58beac3029a3e60890d65c5877c80d9e64bea60"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_control_io_tests.rs",
+      "object": "89a8e787841c0fc30be643c0a24cb788d83ae6fb"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix_peer_identity.rs",
@@ -987,7 +1019,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/OWNER_AND_READ_ISOLATION.md",
-      "object": "9cae9e5687d56aba72f3b8401b4738d3f52d0cff"
+      "object": "a754ed90cd99335b6300b1f6a0be9060abc4ed1b"
     },
     {
       "path": "docs/modules/runtime.supervisor/PROCESS_LIFETIME.md",
@@ -995,7 +1027,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/PROCESS_OWNERSHIP.md",
-      "object": "b4be87d502252d82271e317152655e88afa64e98"
+      "object": "cd008b8eedd8c73e24f6659f6190d66991d554c9"
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_BOUNDARY.md",
@@ -1031,7 +1063,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
-      "object": "ba2eb9ee51d08893573284c46f6719f2bdea3b06"
+      "object": "6d0b539ef839380b0058bb687709f5d2594bd097"
     },
     {
       "path": "justfile",
@@ -1059,7 +1091,7 @@
     },
     {
       "path": "scripts/hepta_supervisor_ci_v3.py",
-      "object": "0b9b7841c039a65dbd8c71fd04d4566d2bc248d5"
+      "object": "0f40dd1e6cedfe8ad4202ed3fce891df94f4133a"
     },
     {
       "path": "scripts/hepta_workflow_integrity.py",
@@ -1083,7 +1115,7 @@
     },
     {
       "path": "scripts/test_hepta_supervisor_ci_v3.py",
-      "object": "2f2c87ad211f0bc46c2b7bbeb01cb918b098cab5"
+      "object": "aa7df7e99ad89599c14f19194b00ae6ffa404044"
     },
     {
       "path": "scripts/test_hepta_supervisor_workflow.py",
