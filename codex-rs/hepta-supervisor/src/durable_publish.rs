@@ -174,7 +174,7 @@ fn publish_same_directory(staging: &Path, destination: &Path, component: &str) -
         )
     })?;
     crate::durability::check(component, "directory_sync")?;
-    std::fs::File::open(parent)?.sync_all()
+    crate::directory_io::sync_directory(parent)
 }
 
 #[cfg(windows)]

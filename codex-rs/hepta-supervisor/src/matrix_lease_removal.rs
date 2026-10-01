@@ -39,7 +39,7 @@ impl MatrixProcessLeaseRemoval {
     ) -> Result<(), SupervisorError> {
         self.finish_with(path, expected, |parent| {
             #[cfg(unix)]
-            std::fs::File::open(parent)?.sync_all()?;
+            crate::directory_io::sync_directory(parent)?;
             #[cfg(not(unix))]
             let _ = parent;
             Ok(())

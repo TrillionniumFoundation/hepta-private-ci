@@ -231,10 +231,25 @@ pub fn read_request(path: Option<&Path>) -> Result<SignRequest, ExternalSignerEr
                     "request path must be a regular, non-symlink file".to_string(),
                 ));
             }
-            let file = File::open(path).map_err(ExternalSignerError::KeyIo)?;
-            file.take((MAX_SIGNING_REQUEST_BYTES + 1) as u64)
-                .read_to_end(&mut bytes)
-                .map_err(ExternalSignerError::KeyIo)?;
+            if metadata.len() > MAX_SIGNING_REQUEST_BYTES as u64 {
+                return Err(ExternalSignerError::RequestTooLarge);
+            }
+            let mut file =
+                crate::regular_file_io::open_regular_file(path, MAX_SIGNING_REQUEST_BYTES as u64)
+                    .map_err(ExternalSignerError::KeyIo)?;
+            let read = crate::regular_file_io::read_bounded(
+                &mut file,
+                &mut bytes,
+                MAX_SIGNING_REQUEST_BYTES as u64,
+            );
+            if bytes.len() > MAX_SIGNING_REQUEST_BYTES {
+                bytes.zeroize();
+                return Err(ExternalSignerError::RequestTooLarge);
+            }
+            if let Err(error) = read {
+                bytes.zeroize();
+                return Err(ExternalSignerError::KeyIo(error));
+            }
         }
     }
     if bytes.len() > MAX_SIGNING_REQUEST_BYTES {

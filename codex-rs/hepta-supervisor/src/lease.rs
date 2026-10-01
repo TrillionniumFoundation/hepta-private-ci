@@ -1,5 +1,3 @@
-#[cfg(unix)]
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::ErrorKind;
 use std::path::Path;
@@ -282,7 +280,7 @@ pub(crate) fn remove_matrix_lease(
 #[cfg(unix)]
 fn sync_directory(path: &Path, component: &str) -> Result<(), SupervisorError> {
     crate::durability::check(component, "directory_sync")?;
-    File::open(path)?.sync_all()?;
+    crate::directory_io::sync_directory(path)?;
     Ok(())
 }
 
