@@ -23,6 +23,8 @@ mod archive_store;
 pub mod feature;
 #[path = "native_control.rs"]
 pub mod native;
+#[path = "durable_writer_lock.rs"]
+mod writer_lock;
 pub use archive::NativeHistoryMaintenanceReceipt;
 
 const MAX_RECORDS: usize = 16_384;
@@ -180,6 +182,7 @@ impl From<std::io::Error> for Error {
 pub struct DurableInferenceControl {
     path: PathBuf,
     file: File,
+    _lifecycle_writer_lock: File,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
     features: feature::FeatureJournal,
@@ -197,6 +200,8 @@ impl DurableInferenceControl {
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)?;
         }
+        // Hold the stable owner lock before opening or replaying a replaceable journal.
+        let (path, lifecycle_writer_lock) = writer_lock::acquire(&path)?;
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
         #[cfg(unix)]
@@ -278,6 +283,7 @@ impl DurableInferenceControl {
         Ok(Self {
             path,
             file,
+            _lifecycle_writer_lock: lifecycle_writer_lock,
             records,
             native,
             features,
