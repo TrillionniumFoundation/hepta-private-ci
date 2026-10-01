@@ -110,6 +110,45 @@ fn random_stream_manifest_rejects_zero_seed_invalid_range_and_enum_tokens() {
 }
 
 #[test]
+fn random_stream_enum_bounds_reject_large_borrowed_tokens_and_preserve_the_boundary() {
+    let construct = |namespace: &str, generator: &str| {
+        RandomStreamManifestV1::new(
+            id("manifest"),
+            digest("seed"),
+            namespace,
+            id("episode"),
+            id("decision"),
+            id("stream"),
+            /*counter_start*/ 0,
+            /*counter_end_exclusive*/ 1,
+            generator,
+            "1",
+        )
+    };
+    let boundary = "a".repeat(MAX_MANIFEST_ENUM_BYTES_V1);
+    let accepted = construct(&boundary, &boundary).expect("maximum-size enum tokens");
+    assert_eq!(
+        (accepted.algorithm_namespace(), accepted.generator_id()),
+        (boundary.as_str(), boundary.as_str())
+    );
+    accepted
+        .semantic_digest()
+        .expect("bounded tokens remain hashable");
+
+    let large = "a".repeat(MAX_MANIFEST_ENUM_BYTES_V1 * 1024);
+    for token in [large.clone(), format!("{large}?a")] {
+        assert_eq!(
+            construct(&token, "generator"),
+            Err(ManifestContractErrorV1::InvalidEnum("algorithm_namespace"))
+        );
+        assert_eq!(
+            construct("utility.ndu", &token),
+            Err(ManifestContractErrorV1::InvalidEnum("generator_id"))
+        );
+    }
+}
+
+#[test]
 fn external_system_manifest_rejects_unknown_classes_timestamps_and_zero_witnesses() {
     assert_eq!(
         ExternalSystemClassV1::from_id("container_host"),

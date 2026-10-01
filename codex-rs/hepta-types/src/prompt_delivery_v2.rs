@@ -61,7 +61,7 @@ impl PromptDeliveryObservationV2 {
         truncation_observed: bool,
         legacy_v1_digest: Option<Digest32>,
     ) -> Result<Self, PromptDeliveryErrorV2> {
-        let value = Self {
+        let mut value = Self {
             compilation_id,
             provider_request_digest,
             delivered,
@@ -71,6 +71,15 @@ impl PromptDeliveryObservationV2 {
             legacy_v1_digest,
         };
         value.validate()?;
+        // A bounded position count must not retain an arbitrarily large
+        // caller reservation. Validate first, preserving all rejection rules.
+        value.observed_token_positions = value.observed_token_positions.map(|positions| {
+            if positions.capacity() > MAX_PROMPT_V2_TOKEN_POSITIONS {
+                positions.into_boxed_slice().into_vec()
+            } else {
+                positions
+            }
+        });
         Ok(value)
     }
 
@@ -355,5 +364,77 @@ mod tests {
         )
         .expect("changed");
         assert_ne!(baseline_digest, changed.semantic_digest().expect("digest"));
+    }
+
+    #[test]
+    fn v2_constructor_bounds_retained_capacity_without_changing_semantics() {
+        let expected = PromptDeliveryObservationV2::new(
+            id("compilation"),
+            digest("request"),
+            /*delivered*/ true,
+            /*rejected_reason*/ None,
+            Some(vec![1, 4, 9]),
+            /*truncation_observed*/ false,
+            /*legacy_v1_digest*/ None,
+        )
+        .expect("expected observation");
+        let mut positions = Vec::with_capacity(MAX_PROMPT_V2_TOKEN_POSITIONS * 16);
+        positions.extend_from_slice(&[1, 4, 9]);
+        let observed = PromptDeliveryObservationV2::new(
+            id("compilation"),
+            digest("request"),
+            /*delivered*/ true,
+            /*rejected_reason*/ None,
+            Some(positions),
+            /*truncation_observed*/ false,
+            /*legacy_v1_digest*/ None,
+        )
+        .expect("bounded observation");
+        assert_eq!(observed, expected);
+        assert_eq!(observed.semantic_digest(), expected.semantic_digest());
+        assert!(
+            observed
+                .observed_token_positions
+                .as_ref()
+                .expect("positions")
+                .capacity()
+                <= MAX_PROMPT_V2_TOKEN_POSITIONS
+        );
+        assert_eq!(
+            PromptDeliveryObservationV2::new(
+                id("compilation"),
+                digest("request"),
+                /*delivered*/ true,
+                /*rejected_reason*/ None,
+                Some(Vec::with_capacity(MAX_PROMPT_V2_TOKEN_POSITIONS * 16)),
+                /*truncation_observed*/ false,
+                /*legacy_v1_digest*/ None,
+            ),
+            Err(PromptDeliveryErrorV2::EmptyTokenPositions)
+        );
+    }
+
+    #[test]
+    fn v2_constructor_reuses_within_bound_position_capacity() {
+        let mut positions = Vec::with_capacity(MAX_PROMPT_V2_TOKEN_POSITIONS);
+        positions.extend_from_slice(&[1, 4, 9]);
+        let pointer = positions.as_ptr();
+        let capacity = positions.capacity();
+        let observed = PromptDeliveryObservationV2::new(
+            id("compilation"),
+            digest("request"),
+            /*delivered*/ true,
+            /*rejected_reason*/ None,
+            Some(positions),
+            /*truncation_observed*/ false,
+            /*legacy_v1_digest*/ None,
+        )
+        .expect("observation");
+        let positions = observed
+            .observed_token_positions
+            .as_ref()
+            .expect("positions");
+        assert_eq!(positions.as_ptr(), pointer);
+        assert_eq!(positions.capacity(), capacity);
     }
 }

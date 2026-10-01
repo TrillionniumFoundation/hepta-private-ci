@@ -830,6 +830,7 @@ fn bounded_enum(
 ) -> Result<BoundedText<MAX_MANIFEST_ENUM_BYTES_V1>, ManifestContractErrorV1> {
     let bytes = value.as_bytes();
     if bytes.is_empty()
+        || bytes.len() > MAX_MANIFEST_ENUM_BYTES_V1
         || !bytes[0].is_ascii_lowercase()
         || !bytes[bytes.len() - 1].is_ascii_alphanumeric()
         || bytes.iter().any(|byte| {

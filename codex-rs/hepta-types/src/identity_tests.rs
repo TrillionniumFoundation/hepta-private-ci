@@ -53,6 +53,31 @@ fn id_profiles_and_namespaces_are_explicit_and_canonical() {
 }
 
 #[test]
+fn namespace_qualification_checks_the_combined_bound_before_scanning_local_content() {
+    let namespace = IdNamespaceV1::new("platform.types").expect("namespace");
+    let maximum_local = MAX_STABLE_ID_BYTES - namespace.as_str().len() - 1;
+    let local = "a".repeat(maximum_local);
+    let expected = validate_id(
+        &format!("{}:{local}", namespace.as_str()),
+        IdProfileV1::Namespaced,
+    )
+    .expect("identifier at its byte ceiling");
+    assert_eq!(namespace.qualify(&local), Ok(expected));
+    assert_eq!(namespace.qualify("a:b"), Err(IdentityError::NonCanonical));
+
+    let long = "a".repeat(MAX_STABLE_ID_BYTES * 1024);
+    for local in [long.clone(), format!("{long}:")] {
+        assert_eq!(
+            namespace.qualify(&local),
+            Err(IdentityError::Bounded(BoundedValueError::TooLarge {
+                actual: namespace.as_str().len() + 1 + local.len(),
+                maximum: MAX_STABLE_ID_BYTES,
+            }))
+        );
+    }
+}
+
+#[test]
 fn stable_profile_exhaustively_matches_the_v1_ascii_alphabet() {
     for byte in 1_u8..=127 {
         let value = String::from(char::from(byte));

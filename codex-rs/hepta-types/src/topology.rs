@@ -113,6 +113,10 @@ impl RuntimeTopologyDeltaV1 {
 }
 
 impl RuntimeTopologyCandidateV1 {
+    /// Maximum delta count and maximum related-module count for each delta.
+    /// Validated owners also use this bound for retained collection capacity.
+    pub const MAX_DELTAS_V1: usize = MAX_RUNTIME_TOPOLOGY_DELTAS_V1;
+
     pub fn validate(&self) -> Result<(), RuntimeTopologyContractErrorV1> {
         for (name, digest) in [
             ("proposal", self.proposal_digest),

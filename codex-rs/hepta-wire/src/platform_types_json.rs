@@ -32,8 +32,20 @@ pub const MAX_CANONICAL_U64_DECIMAL_BYTES_V1: usize = 20;
 pub struct ValidatedRuntimeTopologyCandidateV1(RuntimeTopologyCandidateV1);
 
 impl ValidatedRuntimeTopologyCandidateV1 {
-    pub fn new(value: RuntimeTopologyCandidateV1) -> Result<Self, PlatformTypesWireError> {
+    pub fn new(mut value: RuntimeTopologyCandidateV1) -> Result<Self, PlatformTypesWireError> {
         value.validate().map_err(PlatformTypesWireError::Topology)?;
+        // Keep the validated owner bounded even when a small or empty DTO
+        // arrives with arbitrarily large caller reservations.
+        for delta in &mut value.deltas {
+            if delta.related_module_ids.capacity() > RuntimeTopologyCandidateV1::MAX_DELTAS_V1 {
+                delta.related_module_ids = std::mem::take(&mut delta.related_module_ids)
+                    .into_boxed_slice()
+                    .into_vec();
+            }
+        }
+        if value.deltas.capacity() > RuntimeTopologyCandidateV1::MAX_DELTAS_V1 {
+            value.deltas = value.deltas.into_boxed_slice().into_vec();
+        }
         Ok(Self(value))
     }
 
@@ -484,6 +496,65 @@ mod tests {
         assert_eq!(
             decode_runtime_topology_candidate_v1_json(&encoded).expect("roundtrip"),
             value
+        );
+    }
+
+    #[test]
+    fn validated_topology_bounds_retained_capacity_without_changing_semantics() {
+        let expected = decode_runtime_topology_candidate_v1_json(TOPOLOGY.as_bytes())
+            .expect("expected topology");
+        let mut raw = expected.as_inner().clone();
+        let mut deltas = Vec::with_capacity(RuntimeTopologyCandidateV1::MAX_DELTAS_V1 * 16);
+        deltas.append(&mut raw.deltas);
+        raw.deltas = deltas;
+        raw.deltas[0].related_module_ids =
+            Vec::with_capacity(RuntimeTopologyCandidateV1::MAX_DELTAS_V1 * 16);
+        let observed = ValidatedRuntimeTopologyCandidateV1::new(raw).expect("bounded topology");
+        assert_eq!(observed, expected);
+        assert_eq!(
+            observed.as_inner().content_digest(),
+            expected.as_inner().content_digest()
+        );
+        assert!(observed.as_inner().deltas.capacity() <= RuntimeTopologyCandidateV1::MAX_DELTAS_V1);
+        assert!(
+            observed.as_inner().deltas[0].related_module_ids.capacity()
+                <= RuntimeTopologyCandidateV1::MAX_DELTAS_V1
+        );
+
+        let mut raw = expected.into_inner();
+        raw.changed = false;
+        raw.deltas = Vec::with_capacity(RuntimeTopologyCandidateV1::MAX_DELTAS_V1 * 16);
+        raw.candidate_digest = raw.content_digest().expect("empty topology digest");
+        let expected = raw.clone();
+        let observed = ValidatedRuntimeTopologyCandidateV1::new(raw).expect("empty topology");
+        assert_eq!(observed.as_inner(), &expected);
+        assert!(observed.as_inner().deltas.capacity() <= RuntimeTopologyCandidateV1::MAX_DELTAS_V1);
+    }
+
+    #[test]
+    fn validated_topology_reuses_within_bound_collection_capacity() {
+        let mut raw = decode_runtime_topology_candidate_v1_json(TOPOLOGY.as_bytes())
+            .expect("topology")
+            .into_inner();
+        let mut deltas = Vec::with_capacity(RuntimeTopologyCandidateV1::MAX_DELTAS_V1);
+        deltas.append(&mut raw.deltas);
+        raw.deltas = deltas;
+        raw.deltas[0].related_module_ids =
+            Vec::with_capacity(RuntimeTopologyCandidateV1::MAX_DELTAS_V1);
+        let deltas_pointer = raw.deltas.as_ptr();
+        let deltas_capacity = raw.deltas.capacity();
+        let related_pointer = raw.deltas[0].related_module_ids.as_ptr();
+        let related_capacity = raw.deltas[0].related_module_ids.capacity();
+        let observed = ValidatedRuntimeTopologyCandidateV1::new(raw).expect("topology");
+        assert_eq!(observed.as_inner().deltas.as_ptr(), deltas_pointer);
+        assert_eq!(observed.as_inner().deltas.capacity(), deltas_capacity);
+        assert_eq!(
+            observed.as_inner().deltas[0].related_module_ids.as_ptr(),
+            related_pointer
+        );
+        assert_eq!(
+            observed.as_inner().deltas[0].related_module_ids.capacity(),
+            related_capacity
         );
     }
 
