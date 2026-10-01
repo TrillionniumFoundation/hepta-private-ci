@@ -57,6 +57,13 @@ fn spontaneous_navigation_and_same_url_reloads_invalidate_authority() {
             .validate_observation(observation.page_generation, "digest", URL_A)
             .is_err()
     );
+    assert!(
+        authority
+            .observe(URL_A, "https://example.com", |_, _| "digest".to_string())
+            .is_err()
+    );
+    authority.load_changed(LoadPhase::Started, URL_A);
+    authority.load_changed(LoadPhase::Complete, URL_A);
     let observation = authority
         .observe(URL_A, "https://example.com", |_, _| "digest".to_string())
         .unwrap();
@@ -157,6 +164,125 @@ fn pending_navigation_cannot_authorize_the_previous_complete_document() {
     assert!(
         authority
             .observe(URL_A, "https://example.com", |_, _| "digest".to_string())
+            .is_ok()
+    );
+}
+
+#[test]
+fn unsolicited_navigation_cannot_reauthorize_the_previous_complete_document() {
+    let mut authority = DocumentAuthority::default();
+    authority
+        .observe(URL_A, "https://example.com", |_, _| "first".to_string())
+        .unwrap();
+    authority.navigation_requested(URL_B).unwrap();
+    assert!(
+        authority
+            .observe(URL_A, "https://example.com", |_, _| "second".to_string())
+            .is_err()
+    );
+    authority.load_changed(LoadPhase::Complete, URL_A);
+    assert!(
+        authority
+            .observe(URL_A, "https://example.com", |_, _| "second".to_string())
+            .is_err()
+    );
+    authority.load_changed(LoadPhase::Started, URL_A);
+    authority.url_changed(URL_B);
+    authority.load_changed(LoadPhase::Complete, URL_B);
+    assert!(
+        authority
+            .observe(URL_B, "https://example.com", |_, _| "second".to_string())
+            .is_ok()
+    );
+}
+
+#[test]
+fn superseded_operation_stays_fenced_until_the_new_target_completes() {
+    let mut authority = DocumentAuthority::default();
+    let attempt = authority.begin_navigation(URL_A, "about:blank").unwrap();
+    authority.navigation_requested(URL_B).unwrap();
+    assert!(
+        authority
+            .observe(URL_A, "https://example.com", |_, _| "digest".to_string())
+            .is_err()
+    );
+    authority.load_changed(LoadPhase::Started, URL_A);
+    authority.load_changed(LoadPhase::Started, URL_A);
+    authority.load_changed(LoadPhase::Complete, URL_A);
+    assert!(
+        authority
+            .observe(URL_A, "https://example.com", |_, _| "digest".to_string())
+            .is_err()
+    );
+    authority.url_changed(URL_B);
+    authority.load_changed(LoadPhase::Complete, URL_B);
+    assert!(
+        authority
+            .observe(URL_B, "https://example.com", |_, _| "digest".to_string())
+            .is_ok()
+    );
+    assert!(!authority.navigation_complete(&attempt, URL_A, LoadPhase::Complete));
+}
+
+#[test]
+fn startup_blank_load_is_bootstrappable_but_pending_web_navigation_is_not() {
+    let mut authority = DocumentAuthority::default();
+    authority.navigation_requested("about:blank").unwrap();
+    authority.load_changed(LoadPhase::Started, "about:blank");
+    assert!(authority.bootstrap_allowed("about:blank"));
+    authority.load_changed(LoadPhase::Complete, "about:blank");
+    assert!(authority.bootstrap_allowed("about:blank"));
+    authority.navigation_requested(URL_A).unwrap();
+    assert!(!authority.bootstrap_allowed("about:blank"));
+    authority.load_changed(LoadPhase::Complete, "about:blank");
+    assert!(!authority.bootstrap_allowed("about:blank"));
+}
+
+#[test]
+fn stale_history_callbacks_cannot_replace_an_accepted_navigation_target() {
+    let mut authority = DocumentAuthority::default();
+    authority
+        .observe(URL_A, "https://example.com", |_, _| "first".to_string())
+        .unwrap();
+    authority.navigation_requested(URL_B).unwrap();
+    authority.url_changed(URL_A);
+    authority.load_changed(LoadPhase::Started, URL_A);
+    authority.load_changed(LoadPhase::Complete, URL_A);
+    assert!(
+        authority
+            .observe(URL_A, "https://example.com", |_, _| "second".to_string())
+            .is_err()
+    );
+    authority.url_changed(URL_B);
+    authority.load_changed(LoadPhase::Complete, URL_B);
+    assert!(
+        authority
+            .observe(URL_B, "https://example.com", |_, _| "second".to_string())
+            .is_ok()
+    );
+}
+
+#[test]
+fn unexpected_load_progress_fences_in_flight_dom_completion_and_new_observations() {
+    let mut authority = DocumentAuthority::default();
+    authority
+        .observe(URL_A, "https://example.com", |_, _| "first".to_string())
+        .unwrap();
+    authority.consume_observation();
+    let dispatch_epoch = authority.navigation_epoch;
+    authority.load_changed(LoadPhase::InProgress, URL_A);
+    assert!(authority.navigation_epoch > dispatch_epoch);
+    authority.load_changed(LoadPhase::Complete, URL_A);
+    assert!(
+        authority
+            .observe(URL_A, "https://example.com", |_, _| "second".to_string())
+            .is_err()
+    );
+    authority.load_changed(LoadPhase::Started, URL_A);
+    authority.load_changed(LoadPhase::Complete, URL_A);
+    assert!(
+        authority
+            .observe(URL_A, "https://example.com", |_, _| "second".to_string())
             .is_ok()
     );
 }

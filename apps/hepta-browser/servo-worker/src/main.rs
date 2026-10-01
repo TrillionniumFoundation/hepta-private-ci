@@ -335,6 +335,9 @@ impl Browser {
                 .borrow()
                 .bootstrap_allowed(current_url.as_str());
         if !bootstrap {
+            if self.webview.load_status() != LoadStatus::Complete {
+                return Err("current document is not settled for this effect".to_string());
+            }
             self.document_authority.borrow().validate_observation(
                 page_generation,
                 string_field(&frame.payload, "documentDigest")?,

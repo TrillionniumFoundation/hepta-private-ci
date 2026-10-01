@@ -35,6 +35,11 @@ struct PendingNavigation {
     completed: bool,
 }
 
+struct DocumentTransition {
+    target: String,
+    started: bool,
+}
+
 #[derive(Default)]
 pub(crate) struct DocumentAuthority {
     page_generation: u64,
@@ -43,6 +48,9 @@ pub(crate) struct DocumentAuthority {
     effect_started: bool,
     observation: Option<PageObservation>,
     pending_navigation: Option<PendingNavigation>,
+    // Losing an operation's completion witness does not make the old document
+    // stable. Keep document admission fenced independently of that operation.
+    transition: Option<DocumentTransition>,
 }
 
 impl DocumentAuthority {
@@ -55,10 +63,11 @@ impl DocumentAuthority {
         if self.exhausted || self.page_generation >= MAX_SAFE_INTEGER {
             return Err("document observation generation exhausted".to_string());
         }
-        if self
-            .pending_navigation
-            .as_ref()
-            .is_some_and(|pending| !pending.completed)
+        if self.transition.is_some()
+            || self
+                .pending_navigation
+                .as_ref()
+                .is_some_and(|pending| !pending.completed)
         {
             return Err("navigation completion has not been observed".to_string());
         }
@@ -75,7 +84,14 @@ impl DocumentAuthority {
     }
 
     pub(crate) fn bootstrap_allowed(&self, url: &str) -> bool {
-        !self.exhausted && !self.effect_started && self.page_generation == 0 && url == "about:blank"
+        !self.exhausted
+            && !self.effect_started
+            && self.page_generation == 0
+            && url == "about:blank"
+            && self
+                .transition
+                .as_ref()
+                .is_none_or(|transition| transition.target == "about:blank")
     }
 
     pub(crate) fn validate_observation(
@@ -120,6 +136,10 @@ impl DocumentAuthority {
             started: false,
             completed: false,
         });
+        self.transition = Some(DocumentTransition {
+            target: target.to_string(),
+            started: false,
+        });
         Ok(attempt)
     }
 
@@ -132,7 +152,12 @@ impl DocumentAuthority {
             pending.awaiting_request = false;
             return Ok(());
         }
-        self.invalidate_navigation()
+        self.invalidate_navigation()?;
+        self.transition = Some(DocumentTransition {
+            target: target.to_string(),
+            started: false,
+        });
+        Ok(())
     }
 
     pub(crate) fn url_changed(&mut self, url: &str) {
@@ -140,9 +165,17 @@ impl DocumentAuthority {
         if self
             .pending_navigation
             .as_ref()
-            .is_none_or(|pending| pending.attempt.target != url)
+            .is_none_or(|pending| pending.completed || pending.attempt.target != url)
         {
             let _ = self.invalidate_navigation();
+        }
+        // A history callback for the previous URL must not overwrite the
+        // accepted request's target and thereby release its document fence.
+        if self.transition.is_none() {
+            self.transition = Some(DocumentTransition {
+                target: url.to_string(),
+                started: false,
+            });
         }
     }
 
@@ -157,8 +190,28 @@ impl DocumentAuthority {
                 } else {
                     let _ = self.invalidate_navigation();
                 }
+                if let Some(transition) = self.transition.as_mut() {
+                    // Servo may still expose the source URL at Started. The
+                    // accepted request's target is only matched at Complete.
+                    transition.started = true;
+                } else {
+                    self.transition = Some(DocumentTransition {
+                        target: url.to_string(),
+                        started: true,
+                    });
+                }
             }
-            LoadPhase::InProgress => {}
+            LoadPhase::InProgress => {
+                if self.transition.is_none() {
+                    // A missing or reordered Started notification must not
+                    // leave an in-flight DOM action on the old document epoch.
+                    let _ = self.invalidate_navigation();
+                    self.transition = Some(DocumentTransition {
+                        target: url.to_string(),
+                        started: false,
+                    });
+                }
+            }
             LoadPhase::Complete => {
                 if let Some(pending) = self.pending_navigation.as_mut()
                     && pending.started
@@ -166,6 +219,13 @@ impl DocumentAuthority {
                 {
                     pending.completed = true;
                     pending.awaiting_request = false;
+                }
+                if self
+                    .transition
+                    .as_ref()
+                    .is_some_and(|transition| transition.started && transition.target == url)
+                {
+                    self.transition = None;
                 }
             }
         }
