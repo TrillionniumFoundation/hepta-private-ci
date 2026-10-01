@@ -34,6 +34,10 @@ namespace Hepta.Native.WindowsIdentity {
         [DllImport("ole32.dll", ExactSpelling = true)]
         static extern int PropVariantClear(ref PropVariant value);
 
+        public static int SizeOfPropVariant() {
+            return Marshal.SizeOf(typeof(PropVariant));
+        }
+
         public static string ReadAppUserModelId(string path) {
             object link = new ShellLink();
             var value = new PropVariant();
@@ -63,7 +67,7 @@ namespace Hepta.Native.WindowsIdentity {
 Add-Type -TypeDefinition ($env:HEPTA_REGISTRAR_SOURCE + "`n" + $probe)
 $variantType = [Hepta.Native.WindowsIdentity.PropVariant]
 $expectedSize = if ([IntPtr]::Size -eq 8) { 24 } else { 16 }
-if ([System.Runtime.InteropServices.Marshal]::SizeOf($variantType) -ne $expectedSize) {
+if ([Hepta.Native.WindowsIdentity.RegistrarRoundTripProbe]::SizeOfPropVariant() -ne $expectedSize) {
     throw 'PROPVARIANT size differs from the native SDK layout'
 }
 if ([System.Runtime.InteropServices.Marshal]::OffsetOf($variantType, 'valueType').ToInt32() -ne 0 -or
