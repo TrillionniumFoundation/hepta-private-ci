@@ -141,6 +141,20 @@ optimizer 候选数限制现先于建图集合和查询，避免超限请求消�
 conflict 继续是硬共选排除，substitute 是硬冗余排除。
 complement 只绑定观测及回执，不凭关系标签制造未校准的数值收益。
 
+### 4.5 严格来源映射的旧分支锚点
+
+旧 knowledge.graph map 的 sourceBase / observedAtHead 为
+`8914a46dfc5984532f03dd2d559bf547ca4f1e69`。
+GitHub 对 main `997e7be` 的比较确认它是分歧分支而非 main 祖先：
+merge base 为 `a126987b84737dbc2ee2592442a314117bddb4a2`，ahead 1 / behind 45。
+这是基线已有的来源登记问题，不是 shallow checkout 缺少对象的唯一后果。
+保留该锚点不能通过严格 `checked_identity`；仅导入它不会改变真实祖先关系。
+
+本次明确重新登记已审阅真实候选提交 `2529aca01da6ece370e2c5447504acc52a969e53`
+及其准确 tree，并使用原生 migrate 刷新当前文件对象和观察路径。
+旧记录保留于 Git 历史和本报告，不通过 Git replace 或伪造提交制造 ancestry。
+此操作只恢复当前源码导航与对象绑定，不续期旧测试、生产或部署证据。
+
 ## 5. 保留的信任边界与未声称完成的工作
 
 裸 `KnowledgeGenerationV2` 的字段和内容摘要不能认证提交者或来源事实。
