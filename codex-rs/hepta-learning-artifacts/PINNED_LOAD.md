@@ -60,7 +60,12 @@ prefix (including longer-fork rejection), exact manifest and ancestor
 eligibility before invoking the read-only consumer. It does not reread or
 retrain the immutable payload.
 
-Every failed refresh closes that consumer permanently. Restoring an old snapshot
-cannot revive it: explicit admission of a new consumer is required. The host
+Every refresh rejected by `with_current` closes that consumer permanently,
+including a panicking consumer. Obtaining an authenticated view happens before
+that method: when CURRENT discovery or verification fails, the host must discard
+the cached consumer itself. The Agentd ranking host enforces this by taking the
+consumer out of its cache before requesting CURRENT and restoring it only after
+successful use. Restoring an old snapshot cannot revive a closed consumer:
+explicit admission of a new consumer is required. The host
 still owns latest-view discovery, publication/use serialization, body generation
 and the final effect boundary. Cached output is not a future-use capability.

@@ -191,8 +191,9 @@ impl fmt::Debug for VerifiedCurrentRegistryViewV1 {
 /// registry views. This is not selection authority. A trusted artifact CURRENT
 /// service must issue a verified view before *each* use.
 ///
-/// Any refresh failure permanently closes this consumer, including I/O errors.
-/// The host must explicitly reload; an old backup cannot revive the cache.
+/// Any rejected `with_current` refresh permanently closes this consumer.
+/// If obtaining an authenticated view fails before that call, the host must
+/// discard this consumer too; an old backup cannot revive a closed cache.
 #[derive(Debug)]
 pub struct RevalidatingCandidate {
     candidate: LoadedPinnedCandidate,
@@ -273,7 +274,11 @@ impl RevalidatingCandidate {
         current: RegistrySnapshotReceipt,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        let registry = read_registry_snapshot(snapshot, current)?;
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        let registry =
+            read_registry_snapshot(snapshot, current).inspect_err(|_| self.unavailable = true)?;
         self.with_verified_registry(current, registry, consume)
     }
 }

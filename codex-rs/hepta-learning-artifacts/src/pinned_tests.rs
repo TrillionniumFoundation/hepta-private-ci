@@ -378,3 +378,28 @@ fn cached_consumer_rejects_new_scope_and_corrupt_current_file_without_calling_co
         );
     }
 }
+
+#[test]
+fn panicking_consumer_permanently_closes_the_cache() {
+    let directory = TestDirectory::new("cached-panic");
+    let selected = manifest("policy", 1, None, b"value");
+    let mut registry = ArtifactRegistry::new();
+    register(&mut registry, "register", selected.clone());
+    write_payload(&directory, &registry, &selected, b"value");
+    let receipt = write_snapshot(&directory, &registry);
+    let mut cached = RevalidatingCandidate::new(must(load(&directory, receipt, selected)));
+    let (file, current) = write_view(&directory, &registry, "current");
+
+    let panic = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        cached.with_unverified_current(file, current, |_| panic!("consumer failed"))
+    }));
+    assert!(panic.is_err());
+    assert_eq!(
+        cached.with_unverified_current(
+            must(File::open(directory.path("snapshot"))),
+            receipt,
+            |_| panic!("closed cache reached consumer")
+        ),
+        Err::<(), _>(PinnedCandidateLoadError::Unavailable)
+    );
+}
