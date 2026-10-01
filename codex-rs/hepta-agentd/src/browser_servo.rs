@@ -1067,8 +1067,10 @@ mod tests {
 
         let result = call.join().expect("call thread").expect("Browser result");
         assert_eq!(result["status"], "indeterminate");
+        // This observes a durable revocation write after the fence releases,
+        // not a one-second filesystem latency guarantee.
         revoked_rx
-            .recv_timeout(Duration::from_secs(1))
+            .recv_timeout(Duration::from_secs(/*secs*/ 30))
             .expect("revocation unblocked")
             .expect("revocation succeeded");
         revoke.join().expect("revocation thread");

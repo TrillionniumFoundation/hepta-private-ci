@@ -58,8 +58,17 @@ runs:
         SHA="$(printf '%s for PR %s\n' "$MESSAGE" "$PR_NUMBER" | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
         [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]
         git checkout --detach "$SHA"
+        # Normalize both index and worktree to the immutable synthetic commit.
+        # Some checkout/filter combinations otherwise leave controlled merge
+        # differences visible as local modifications and make the read-only
+        # qualification lane fail on its own candidate construction.
+        git reset --hard "$SHA"
+        git clean -ffd
+        git update-index --refresh
         test "$(git rev-parse HEAD)" = "$SHA"
         test "$(git rev-parse HEAD^{tree})" = "$TREE"
         test "$(git rev-list --parents -n 1 HEAD)" = "$SHA $BASE_SHA $SOURCE_SHA"
+        git diff --exit-code
+        git diff --cached --exit-code
         printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
         printf 'tree=%s\n' "$TREE" >> "$GITHUB_OUTPUT"

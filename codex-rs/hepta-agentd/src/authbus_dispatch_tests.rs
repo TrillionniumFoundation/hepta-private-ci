@@ -370,16 +370,22 @@ async fn revocation_during_queue_request_prevents_success_ack() {
 
 #[tokio::test]
 async fn ready_generation_and_owner_private_trust_are_required_before_admission() {
-    let fixture = Fixture::new().await;
-    let mut unconfigured = Fixture::new().await;
-    Arc::get_mut(&mut unconfigured.state)
+    let mut fixture = Fixture::new().await;
+    // Exercise an absent host without bootstrapping a second durable owner.
+    // Restore the same host so every rejected request shares the final empty-ledger check.
+    let host = Arc::get_mut(&mut fixture.state)
         .expect("exclusive test state")
         .authbus
-        .take();
+        .take()
+        .expect("attached fixture host");
     assert!(
-        submit(&unconfigured.state, unconfigured.request(1))
+        submit(&fixture.state, fixture.request(/*sequence*/ 1))
             .await
             .is_err()
+    );
+    assert!(
+        fixture.state.authbus.set(host).is_ok(),
+        "restore the original fixture host"
     );
     std::fs::set_permissions(&fixture.trust_file, std::fs::Permissions::from_mode(0o644)).unwrap();
     assert!(

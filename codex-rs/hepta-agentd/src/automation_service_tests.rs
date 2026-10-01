@@ -334,13 +334,15 @@ async fn cancellation_preserves_in_flight_queue_ack_before_scheduler_exit() {
         stop.clone(),
         Duration::from_millis(1),
     ));
-    timeout(Duration::from_secs(2), queue.entered.notified())
+    // Admission and acknowledgment persist real owner state; these waits bound
+    // the fixture rather than imposing a two-second filesystem latency SLO.
+    timeout(Duration::from_secs(/*secs*/ 30), queue.entered.notified())
         .await
         .expect("queue admission");
     stop.cancel();
     assert!(timeout(Duration::from_millis(30), &mut task).await.is_err());
     queue.release.notify_one();
-    timeout(Duration::from_secs(2), task)
+    timeout(Duration::from_secs(/*secs*/ 30), task)
         .await
         .expect("bounded drain")
         .expect("task join")

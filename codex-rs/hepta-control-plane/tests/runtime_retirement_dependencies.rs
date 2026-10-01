@@ -13,12 +13,19 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+fn must<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("fixture setup failed: {error:?}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid identity")
+    must(StableId::new(value))
 }
 
 fn generation() -> Generation {
-    Generation::new(1).expect("valid generation")
+    must(Generation::new(1))
 }
 
 fn abi(name: &str, dependencies: &[&str]) -> RuntimeModuleAbiV1 {
@@ -42,20 +49,18 @@ fn abi(name: &str, dependencies: &[&str]) -> RuntimeModuleAbiV1 {
 fn select(registry: &mut RuntimeModuleRegistryV1, value: RuntimeModuleAbiV1) {
     let module = value.module_id.clone();
     let epoch = value.generation;
-    registry.register_candidate(value).expect("register");
-    registry.enter_shadow(&module, epoch).expect("shadow");
-    registry.enter_canary(&module, epoch).expect("canary");
-    registry
-        .promote_after_handoff(
-            &module,
-            epoch,
-            RuntimeModulePromotionWitnessV1 {
-                selection_digest: Digest32::of_bytes(b"fixture-selection"),
-                canary_digest: Digest32::of_bytes(b"fixture-canary"),
-                handoff_digest: Digest32::ZERO,
-            },
-        )
-        .expect("select stateless fixture");
+    must(registry.register_candidate(value));
+    must(registry.enter_shadow(&module, epoch));
+    must(registry.enter_canary(&module, epoch));
+    must(registry.promote_after_handoff(
+        &module,
+        epoch,
+        RuntimeModulePromotionWitnessV1 {
+            selection_digest: Digest32::of_bytes(b"fixture-selection"),
+            canary_digest: Digest32::of_bytes(b"fixture-canary"),
+            handoff_digest: Digest32::ZERO,
+        },
+    ));
 }
 
 #[test]

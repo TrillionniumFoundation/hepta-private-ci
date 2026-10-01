@@ -5,6 +5,11 @@ name = "codex-hepta-control-plane"
 version.workspace = true
 publish = false
 
+
+[features]
+default = []
+qualification-failpoints = []
+
 [lib]
 name = "codex_hepta_control_plane"
 path = "src/lib.rs"
@@ -24,3 +29,19 @@ ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+
+
+[[bin]]
+name = "planner_store_process_fixture"
+path = "src/bin/planner_store_process_fixture.rs"
+required-features = ["qualification-failpoints"]
+
+[[test]]
+name = "planner_durable_hardening"
+path = "tests/planner_durable_hardening.rs"
+required-features = ["qualification-failpoints"]
+
+[[test]]
+name = "planner_store_process_recovery"
+path = "tests/planner_store_process_recovery.rs"
+required-features = ["qualification-failpoints"]

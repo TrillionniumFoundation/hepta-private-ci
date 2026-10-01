@@ -4,19 +4,21 @@
   "module": "control.runtime",
   "owner": "runtime-control",
   "deputy": "security-authority",
+  "canonicalStatusSource": "docs/modules/control.runtime/CURRENT_STATE.json",
   "technicalGuide": "docs/modules/control.runtime/TECHNICAL.md",
   "executionSpecification": "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
+  "convergenceGuide": "docs/readiness/CONTROL_RUNTIME_CONVERGENCE.md",
   "sourceRoot": [
     "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
+  "productCallerState": "read_only_agentd_composed_global_effect_uncomposed",
   "productionWriterState": "not_composed",
   "operations": [
     {
       "operation": "collect_snapshot",
       "nativeSymbol": "codex_hepta_control_plane::collect_snapshot",
-      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_hardening.rs",
       "inputs": [
         "SnapshotRequestV1",
         "OwnerSummaryV1 list"
@@ -24,23 +26,28 @@
       "outputs": [
         "GlobalStateSnapshotV1"
       ],
-      "state": "source_implemented",
+      "state": "source_candidate_guarded_public_entry",
       "authority": "deny_all",
       "tests": [
         {
-          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
-          "symbol": "missing_or_stale_required_owner_blocks_global_planning"
+          "path": "codex-rs/hepta-control-plane/src/planner_hardening_tests.rs",
+          "symbol": "supplied_owner_must_belong_to_the_exact_required_set"
         }
       ],
       "designOperation": "collect_snapshot",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "collect_snapshot"
+        }
+      ],
       "sourcePathExists": true
     },
     {
       "operation": "prepare_plan",
       "nativeSymbol": "codex_hepta_control_plane::prepare_plan",
-      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_hardening.rs",
       "inputs": [
         "GlobalStateSnapshotV1",
         "PlanningRequestV1"
@@ -48,9 +55,21 @@
       "outputs": [
         "PreparedPlanInputV1"
       ],
-      "state": "source_implemented",
+      "state": "source_candidate_guarded_public_entry",
       "authority": "deny_all",
       "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_hardening_tests.rs",
+          "symbol": "planning_time_cannot_precede_snapshot_collection"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_hardening_tests.rs",
+          "symbol": "owner_age_is_rechecked_at_plan_use"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_hardening_tests.rs",
+          "symbol": "abstain_cannot_carry_an_effect_payload"
+        },
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
           "symbol": "essential_floor_survives_overload_before_ndu_evaluation"
@@ -62,37 +81,55 @@
       ],
       "designOperation": "prepare_plan",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "prepare_plan"
+        }
+      ],
       "sourcePathExists": true
     },
     {
       "operation": "bind_ndu_plan_evaluation_v1",
       "nativeSymbol": "codex_hepta_control_plane::bind_ndu_plan_evaluation_v1",
-      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_hardening.rs",
       "inputs": [
         "NduPlanEvaluationInputV1"
       ],
       "outputs": [
         "NduPlanEvaluationV1"
       ],
-      "state": "source_implemented_owner_port_adapter",
+      "state": "source_candidate_owner_port_adapter",
       "authority": "deny_all",
       "ownerBoundary": "utility.ndu computes the opaque evaluation digest; control.runtime binds only the consumed projection",
       "tests": [
         {
           "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
           "symbol": "tampered_ndu_binding_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_hardening_tests.rs",
+          "symbol": "ndu_result_cardinality_is_bounded_before_sorting_or_indexing"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_hardening_tests.rs",
+          "symbol": "ndu_evaluated_and_rejected_sets_share_one_candidate_budget"
         }
       ],
       "designOperation": "bind_ndu_plan_evaluation_v1",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "bind_ndu_plan_evaluation_v1"
+        }
+      ],
       "sourcePathExists": true
     },
     {
       "operation": "finalize_plan",
       "nativeSymbol": "codex_hepta_control_plane::finalize_plan",
-      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_hardening.rs",
       "inputs": [
         "GlobalStateSnapshotV1",
         "PreparedPlanInputV1",
@@ -102,7 +139,7 @@
       "outputs": [
         "FeasiblePlanReceiptV1"
       ],
-      "state": "source_implemented",
+      "state": "source_candidate_guarded_public_entry",
       "authority": "deny_all",
       "tests": [
         {
@@ -120,13 +157,18 @@
       ],
       "designOperation": "finalize_plan",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "finalize_plan"
+        }
+      ],
       "sourcePathExists": true
     },
     {
       "operation": "request_execution_grants",
       "nativeSymbol": "codex_hepta_control_plane::request_execution_grants",
-      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_hardening.rs",
       "inputs": [
         "current GlobalStateSnapshotV1",
         "PreparedPlanInputV1",
@@ -136,7 +178,7 @@
       "outputs": [
         "GrantRequestSetV1"
       ],
-      "state": "source_implemented_request_only",
+      "state": "source_candidate_request_only",
       "authority": "deny_all",
       "nonClaim": "GrantRequestSetV1 is not a capability or execution acknowledgement",
       "tests": [
@@ -159,7 +201,44 @@
       ],
       "designOperation": "request_execution_grants",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner.rs",
+          "symbol": "request_execution_grants"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "plan_authenticated_observed_context",
+      "nativeSymbol": "codex_hepta_control_plane::plan_authenticated_observed_context",
+      "sourcePath": "codex-rs/hepta-control-plane/src/authenticated_context.rs",
+      "inputs": [
+        "authenticated owner identity and generation",
+        "exact record identities, revisions and content digests",
+        "request, retrieval and ranker binding digest",
+        "canonical encoded context"
+      ],
+      "outputs": [
+        "ObservedContextPlanV1"
+      ],
+      "state": "source_candidate_product_adapter",
+      "authority": "deny_all",
+      "ownerBoundary": "Agentd owns the process-local monotonic final-use lease and canonical read path",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+          "symbol": "validate_plan_lease"
+        }
+      ],
+      "designOperation": "authenticated_context_final_use",
+      "mappingClass": "product_adapter",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_context.rs",
+          "symbol": "plan_observed_context"
+        }
+      ],
       "sourcePathExists": true
     },
     {
@@ -173,17 +252,17 @@
         "bounded hash-chain bytes",
         "selected plan projection"
       ],
-      "state": "source_implemented_owner_local_durability_reference",
+      "state": "source_candidate_owner_local_reference",
       "authority": "none",
       "nonClaim": "not an activated production store or external-effect ledger",
       "tests": [
         {
-          "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
-          "symbol": "hash_chain_round_trips_and_preserves_selected_pointer"
+          "path": "codex-rs/hepta-control-plane/src/planner_journal.rs",
+          "symbol": "raw_append_cannot_select_an_unrecorded_decision"
         },
         {
-          "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
-          "symbol": "truncation_and_tampering_fail_closed"
+          "path": "codex-rs/hepta-control-plane/src/planner_journal.rs",
+          "symbol": "reopen_rejects_a_structurally_valid_illegal_transition"
         },
         {
           "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
@@ -192,7 +271,211 @@
       ],
       "designOperation": "PlannerJournalV1",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal_core.rs",
+          "symbol": "PlannerJournalV1"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "PlannerStoreV1",
+      "nativeSymbol": "codex_hepta_control_plane::PlannerStoreV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "inputs": [
+        "complete canonical envelope",
+        "stable operation identity",
+        "non-zero external checkpoint anchor"
+      ],
+      "outputs": [
+        "durable framed record",
+        "checkpoint and backup verification",
+        "RecoveryRequired handle state after uncertain mutation",
+        "closed recovery projection for typed execution records"
+      ],
+      "state": "source_candidate_not_product_activated",
+      "authority": "none",
+      "nonClaim": "independent anchor owner, two-process target-host recovery and production writer are not established",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "uncertain_append_poison_is_enforced_by_the_handle"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "poisoned_handle_cannot_verify_a_stale_checkpoint_projection"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "generic_append_rejects_reserved_execution_records_without_poisoning"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "complete_frame_prefix_with_missing_body_fails_closed"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "semantic_compaction_preserves_non_snapshot_identity_history"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "crash_after_frame_write_reopens_idempotently"
+        }
+      ],
+      "designOperation": "PlannerStoreV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_core.rs",
+          "symbol": "PlannerStoreV1"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "execute_planner_request_v1",
+      "nativeSymbol": "codex_hepta_control_plane::execute_planner_request_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_execution_durable.rs",
+      "inputs": [
+        "GrantRequestV1",
+        "independent authority consumer",
+        "effect executor",
+        "durable dispatch-claim and terminal-receipt sink"
+      ],
+      "outputs": [
+        "PlannerTerminalReceiptV1 or fail-closed reconciliation requirement"
+      ],
+      "state": "source_candidate_boundary_uncomposed",
+      "authority": "external_consumer_only",
+      "ownerBoundary": "control.runtime persists and validates the claim/receipt state; the named authority owns authorization and revalidation; the effect owner owns execution and reconciliation",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "current_authority_claims_before_execution_and_records_terminal_receipt"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "repeated_request_never_replays_after_a_durable_claim"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "revocation_after_claim_stops_before_executor"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "reopened_terminal_without_claim_is_rejected_before_authority_or_effect"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "reopened_terminal_must_match_the_original_claim_grant"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs",
+          "symbol": "valid_terminal_receipt_without_a_durable_claim_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs",
+          "symbol": "forged_terminal_receipt_digest_is_rejected_before_store_mutation"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs",
+          "symbol": "conclusive_terminal_receipt_cannot_be_replaced"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs",
+          "symbol": "poisoned_store_cannot_return_a_stale_conclusive_dispatch"
+        }
+      ],
+      "designOperation": "execute_planner_request_v1",
+      "mappingClass": "owner_boundary",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+          "symbol": "PlannerAuthorityConsumerV1"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+          "symbol": "PlannerEffectExecutorV1"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+          "symbol": "PlannerDispatchClaimSinkV1"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "reconcile_planner_request_v1",
+      "nativeSymbol": "codex_hepta_control_plane::reconcile_planner_request_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_execution_durable.rs",
+      "inputs": [
+        "previously claimed operation identity",
+        "effect owner reconciliation port"
+      ],
+      "outputs": [
+        "reconciliation receipt without redispatch"
+      ],
+      "state": "source_candidate_boundary_uncomposed",
+      "authority": "external_consumer_only",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "indeterminate_effect_is_reconciled_without_replaying_dispatch"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "reconciliation_without_a_durable_claim_is_rejected"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+          "symbol": "conclusive_reconciliation_still_requires_the_original_grant"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_reconciliation_controller_tests.rs",
+          "symbol": "pending_controller_recovers_a_bare_claim_and_later_converges"
+        }
+      ],
+      "designOperation": "reconcile_planner_request_v1",
+      "mappingClass": "owner_boundary",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+          "symbol": "PlannerEffectExecutorV1::reconcile"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "OrganHostV1::dispatch_once_with_receipt",
+      "nativeSymbol": "codex_hepta_control_plane::OrganHostV1::dispatch_once_with_receipt",
+      "sourcePath": "codex-rs/hepta-control-plane/src/organ_runtime.rs",
+      "inputs": [
+        "exact host generation",
+        "source/output route",
+        "bounded payload"
+      ],
+      "outputs": [
+        "complete admitted-target identity and disposition set",
+        "exact successful-prefix output digests"
+      ],
+      "state": "source_candidate_read_only_reference",
+      "authority": "deny_all",
+      "nonClaim": "trusted in-process handlers are not a sandbox and blocking/model/plugin work is not admitted",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs",
+          "symbol": "failed_fanout_preserves_the_exact_successful_prefix_digest"
+        }
+      ],
+      "designOperation": "organ_fanout_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/organ_runtime_core.rs",
+          "symbol": "OrganHostV1::dispatch_once"
+        }
+      ],
       "sourcePathExists": true
     }
   ],
@@ -206,16 +489,25 @@
     "NduPlanEvaluationV1",
     "FeasiblePlanReceiptV1",
     "GrantRequestSetV1",
-    "PlannerJournalEntryV1"
+    "PlannerJournalEntryV1",
+    "PlannerStoreRecordV1",
+    "PlannerTerminalReceiptV1",
+    "OrganFanoutReceiptV1"
   ],
   "completion": {
     "specification": "complete",
     "nativePlanningKernel": "candidate_implemented",
-    "ownerLocalDurabilityReference": "candidate_implemented",
+    "authenticatedReadOnlyProductCaller": "source_composed_candidate",
+    "ownerLocalJournal": "candidate_implemented",
+    "ownerLocalDurabilityStore": "candidate_implemented_not_activated",
+    "authorityExecutionBoundary": "candidate_implemented_not_product_composed",
+    "organFanoutEvidence": "candidate_implemented_not_product_composed",
     "canonicalExternalProtocolAdmission": "not_established",
-    "productionCaller": "not_established",
+    "productionEffectCaller": "not_established",
     "productionWriter": "not_established",
-    "exactHeadQualification": "required",
+    "exactHeadQualification": "required_current_head",
+    "fixedMergeQualification": "required_current_head",
+    "targetHostRecovery": "not_established",
     "independentAcceptanceState": "not_established",
     "activationState": "not_established",
     "releaseState": "not_established"
@@ -232,24 +524,140 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "readOnlyAgentdCallerComposed": true,
+    "globalEffectCallerComposed": false,
     "productionImplementation": false,
     "productExecutionProved": false,
+    "targetHostRecoveryProved": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false,
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "ee19c8cee13bb11709925c65268d1cdaa55ac350",
+    "tree": "74f619b0ffa9b604e766fb7c6781e144e76e3dfa"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Complete exact-head and deterministic synthetic-merge qualification for the current pull-request head.",
+    "Compose the dispatch-claim boundary through the named production authority and effect owners without adding a parallel executor.",
+    "Run two-process abnormal-exit, storage-fault, stale-lock, backup rollback and semantic-compaction recovery on the named target host.",
+    "Keep target-host recovery and externally governed acceptance gates false until their independent evidence exists."
   ],
   "externalEvidenceGates": [
+    "target-host multi-process recovery",
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "nativeSymbol": "read_with_retrieval_context_and_learning",
+      "state": "authenticated_read_only_planning_source_composed"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "nativeSymbol": "revalidate_with_retrieval_context",
+      "state": "complete_plan_receipt_and_monotonic_lease_final_use_source_composed"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "object": "1d1042dcec1e7dc0501f116c4e88c865264e70c1"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane",
+      "object": "cd666b77492259191b9d6c99d5db9c3bd6fcfeca"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/authenticated_context.rs",
+      "object": "06521d306a2d0ba48326a07ddf71ef20ebaeb957"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/organ_runtime.rs",
+      "object": "8bfc041ab200e1786c8872c6d2c7bef7d5d4fbd7"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/organ_runtime_core.rs",
+      "object": "fe7f29cc636f7cc572f815dcc90e07c911b116b5"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner.rs",
+      "object": "f87cdc467bb7284b132bd629aa1315b9a28fd85d"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "object": "8526bf8b9afcd46c25c66fe173d341c222212999"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_execution.rs",
+      "object": "b289758fd673dac873fc47a7bcee86aaff51157e"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_execution_durable.rs",
+      "object": "2dec78b90370fbd562cf5b457f4df53a5e2c3f5a"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_execution_recovery_tests.rs",
+      "object": "0a7ca946b6714d5bed07de8cbfa3d9222d4cf73c"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_hardening.rs",
+      "object": "3d490713739c141053ef1fa46becd472ef6eab3c"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_hardening_tests.rs",
+      "object": "65936afbc3559b4325377ce6cdd168858140288a"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_journal.rs",
+      "object": "7ae504a80acb5dae0728119da3ea3982716d0bc4"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_journal_core.rs",
+      "object": "6d7b5f9c72ee16db15cc4bdf3bb6846faa9ac78e"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
+      "object": "1b020d5e7636b7ec18e89f6f4b272702f437809d"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_reconciliation_controller_tests.rs",
+      "object": "08d0ff370d6f1fb54e8f9038ac2b9923c9556577"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "object": "cb22e903422fafeb3c1ea5604a14c97a89ff9980"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_store_core.rs",
+      "object": "dd0d0108d0832091811bf49af50f95fde61ec001"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+      "object": "4a7a24e44d5057ec3261d7fddcacb6826cd1e811"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+      "object": "958cfa417bc3779943382e9e5032683521cede37"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/tests/organ_fanout_receipts.rs",
+      "object": "ec291ee3d31a7ad044f7a0399f94b6ffeed3c6f2"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/tests/planner_durable_hardening.rs",
+      "object": "1ef00ffb445b369ea7037f24ebace597409f3eb0"
+    },
+    {
+      "path": "docs/modules/control.runtime/TECHNICAL.md",
+      "object": "0e59818e3ded859ae03ce5d9effaea8e9c0ff8bc"
+    }
+  ],
+  "observedAtHead": {
+    "commit": "ee19c8cee13bb11709925c65268d1cdaa55ac350",
+    "tree": "74f619b0ffa9b604e766fb7c6781e144e76e3dfa"
+  }
 }

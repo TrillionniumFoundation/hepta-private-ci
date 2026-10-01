@@ -51,7 +51,7 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
-        let temp = tempfile::tempdir()?;
+        let temp = super::test_paths::socket_test_dir()?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
         let registry = FleetRegistry::initialize(fleet_root.clone())?;

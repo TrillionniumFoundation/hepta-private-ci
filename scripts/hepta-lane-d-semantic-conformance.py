@@ -19,6 +19,7 @@ REQUIRED_DOCS = (
     "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
     "docs/readiness/NDU_SYSTEM_EXECUTION.md",
     "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
+    "docs/modules/control.runtime/CURRENT_STATE.json",
     "docs/readiness/LANE_D_MATURITY.json",
     "docs/readiness/LANE_D_PROTOCOLS.json",
     "docs/readiness/LANE_D_GAP_CLOSURE.json",
@@ -306,25 +307,40 @@ def verify() -> int:
         "positive protocol authority",
     )
 
+    control_state = load("docs/modules/control.runtime/CURRENT_STATE.json")
+    need(
+        control_state.get("canonicalStatusSource") is True,
+        "control.runtime canonical state source",
+    )
+    control_subsystems = control_state.get("subsystems", {})
+    need(
+        control_subsystems.get("boundedPlanner", {}).get("productCallsiteIntegrated")
+        is True
+        and control_subsystems.get("authenticatedAgentdFinalUse", {}).get(
+            "productCallsiteIntegrated"
+        )
+        is True
+        and control_subsystems.get("authorityExecutionLoop", {}).get(
+            "productCallsiteIntegrated"
+        )
+        is False,
+        "control.runtime product-callsite truth boundary",
+    )
+
     maturity = load("docs/readiness/LANE_D_MATURITY.json")
     need(maturity.get("authorityDelta") == "none", "maturity authority delta")
     need(
         {row["module"] for row in maturity["modules"]} == set(MODULES),
         "maturity module closure",
     )
+    implementation_maps = {module: load(MAPS[module]) for module in MODULES}
     for row in maturity["modules"]:
         module = row["module"]
         product_caller = row["dimensions"]["productCaller"]["state"]
-        if module == "objective.compiler":
-            need(
-                product_caller == "source_composed_authenticated_agentd_not_activated",
-                f"truth boundary {module} productCaller",
-            )
-        else:
-            need(
-                product_caller == "not_established",
-                f"truth boundary {module} productCaller",
-            )
+        need(
+            product_caller == implementation_maps[module].get("productCallerState"),
+            f"truth boundary {module} productCaller",
+        )
         for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",

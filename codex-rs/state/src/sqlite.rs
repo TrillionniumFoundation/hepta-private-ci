@@ -297,6 +297,12 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        Self::open_durable_evidence_pool_at(path).await
+    }
+
+    /// Owner-neutral entry point for evidence stores that already own an exact
+    /// database path but must still use the centralized SQLite connection shim.
+    pub async fn open_durable_evidence_pool_at(path: &Path) -> Result<SqlitePool, Error> {
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -307,6 +313,23 @@ impl SqliteConfig {
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
             .max_connections(5)
+            .connect_with(options)
+            .await
+    }
+
+    /// Open a single-connection transient in-memory database through the same
+    /// centralized shim. This is suitable for compiled-schema comparison only;
+    /// it must never be used as an authority or recovery owner.
+    pub async fn open_private_memory_pool() -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(":memory:")
+            .create_if_missing(true)
+            .journal_mode(SqliteJournalMode::Memory)
+            .synchronous(SqliteSynchronous::Full)
+            .foreign_keys(true)
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(1)
             .connect_with(options)
             .await
     }

@@ -72,7 +72,7 @@ async fn fixture(
     RetrievalExecutionContextV1,
     String,
 ) {
-    let temp = tempfile::tempdir().unwrap();
+    let temp = crate::test_paths::socket_test_dir().unwrap();
     let fleet = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet).unwrap();
     let owner = AgentId::parse(format!("00000000-0000-4000-8000-{suffix:012}")).unwrap();

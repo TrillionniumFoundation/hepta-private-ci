@@ -167,6 +167,12 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
+The [pending-dispatch recovery guide](PENDING_RECOVERY.md) documents the implemented
+bounded inventory and `reconcile_pending_dispatches_v1` driver, including exact
+request/grant binding, repeated-reopen transitions and per-item failure handling.
+The driver only queries the effect owner; product scheduling, the exact request
+ledger and the real effect adapter require product composition.
+
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
 ## 9. Security, privacy and threat controls
@@ -203,6 +209,12 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs); named case: `typed_controller_and_plant_replay_the_explicit_euler_q24_golden`.
 - [codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs); named case: `blocking_and_higher_priority_interference_are_included`.
+
+The [implementation map](IMPLEMENTATION_MAP.json) binds the current planner,
+durable store, execution, pending-recovery and organ operations to source symbols
+and named regression cases. [CURRENT_STATE.json](CURRENT_STATE.json) records the
+separate source, product-callsite and external-evidence stages; these source
+references do not certify a test pass.
 
 In `codex-rs`, run `just test -p codex-hepta-control-plane`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) separately labels target acceptance designs.
 
@@ -340,3 +352,13 @@ The bootstrap source-location obligation for `control.runtime` is implemented by
 - `codex-rs/hepta-control-plane`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+The [2026-10-01 adversarial audit](ADVERSARIAL_AUDIT.md) records reproduced recovery/admission defects, their corrections, subsystem completion boundaries and remaining qualification/product work. It does not advance the canonical maturity stages.
+
+PlannerStore keeps both kernel-lock rendezvous files (`planner-store.owner.lock`
+and `planner-store.lock`) across close and crash. Diagnostic PID text is not an
+ownership token. The kernel lock serializes open and restore; restore retains
+its destination lock while replacing files and opening the verified log. Do not
+unlink or replace lock files while any owner can open the directory. Root access
+remains owner-local and trusted. Upgrade historical file-token implementations
+with all owners stopped; concurrent mixed-lock generations are not qualified.

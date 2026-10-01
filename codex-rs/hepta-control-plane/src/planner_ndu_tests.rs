@@ -53,7 +53,7 @@ fn fixture() -> (
             objective_digest: digest("objective"),
             body_generation: generation,
             configuration_digest: digest("configuration"),
-            observed_at_micros: 99,
+            observed_at_micros: 100,
             expires_at_micros: 200,
             readiness: OwnerReadinessV1::Ready,
             source_frontier_digest: digest("observed-state"),

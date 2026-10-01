@@ -26,6 +26,22 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
         validate_immutable_regular_file(path, /*executable*/ true)?;
     }
     let reopened = FleetRegistry::open_existing(root)?;
+    let release_root = installed
+        .program
+        .parent()
+        .and_then(Path::parent)
+        .ok_or("release root")?;
+    validate_physical_directory(release_root, /*immutable*/ true)?;
+    #[cfg(unix)]
+    {
+        set_mode(release_root, /*mode*/ 0o755)?;
+        assert!(matches!(
+            resolve_catalog_release(reopened.layout().releases_root(), &release_id),
+            Err(FleetRegistryError::Corrupt(_))
+        ));
+        set_mode(release_root, /*mode*/ 0o555)?;
+        resolve_catalog_release(reopened.layout().releases_root(), &release_id)?;
+    }
     assert!(matches!(
         reopened.install_release(release_id, &source, Vec::new()),
         Err(FleetRegistryError::Invalid(_))

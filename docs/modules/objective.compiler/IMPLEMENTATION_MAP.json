@@ -144,11 +144,19 @@
       "tests": [
         {
           "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
-          "symbol": "registered scalar, enum and action implication fixtures"
+          "symbol": "interval_intersection_returns_a_witness_and_ignores_soft_constraints"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
+          "symbol": "finite_enum_inclusion_and_exclusion_are_intersected"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
+          "symbol": "positive_closure_enables_only_forced_actions_and_terminates_cycles"
         },
         {
           "path": "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
-          "symbol": "bounded exhaustive feasibility fixtures"
+          "symbol": "all_three_action_graphs_match_truth_table_and_have_minimal_conflicts"
         }
       ],
       "designOperation": "check_feasibility_v1",
@@ -349,8 +357,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "ee92c461dad49c00e7c417c9e87a81337cdb3348",
+    "tree": "667b4710043dc69314f55ad4f94c162a9e38b717"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",

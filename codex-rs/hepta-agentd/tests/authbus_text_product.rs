@@ -77,7 +77,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &[],
         /*revoked*/ false,
     )?;
-    let checkpoint_root = tempfile::tempdir()?;
+    let checkpoint_root = support::test_paths::socket_test_dir()?;
     std::fs::set_permissions(
         checkpoint_root.path(),
         std::fs::Permissions::from_mode(0o700),

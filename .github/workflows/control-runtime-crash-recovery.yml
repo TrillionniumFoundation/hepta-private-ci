@@ -1,0 +1,179 @@
+name: control.runtime crash and recovery regression
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'codex-rs/hepta-control-plane/**'
+      - 'docs/modules/control.runtime/**'
+      - 'docs/readiness/CONTROL_RUNTIME_*.md'
+      - 'scripts/control_runtime_validate_state.py'
+      - '.github/workflows/control-runtime-crash-recovery.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-runtime-crash-recovery-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
+jobs:
+  source-and-process-recovery:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Record immutable candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/control-runtime-recovery-evidence"
+          mkdir -p "$evidence"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+          git rev-parse HEAD > "$evidence/commit.txt"
+          git rev-parse HEAD^{tree} > "$evidence/tree.txt"
+          rustc --version > "$evidence/rustc.txt"
+          cargo --version > "$evidence/cargo.txt"
+          printf '%s\n' "$RUNNER_OS" > "$evidence/runner-os.txt"
+          printf '%s\n' "$RUNNER_ARCH" > "$evidence/runner-arch.txt"
+      - name: Install Linux native prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+      - name: Canonical state validation
+        id: state
+        continue-on-error: true
+        run: >-
+          python3 scripts/control_runtime_validate_state.py
+          --output "$RUNNER_TEMP/control-runtime-recovery-evidence/state.json"
+      - name: Verify exact workspace lockfile
+        id: lock
+        continue-on-error: true
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/control-runtime-recovery-evidence"
+          # A committed Cargo.lock is a reproducibility input, not a request to
+          # upgrade every compatible transitive dependency. `--locked` proves
+          # the manifests and exact lock agree without rewriting reviewed pins.
+          cargo metadata --locked --format-version 1 --no-deps \
+            > "$evidence/cargo-metadata.json"
+          if command -v sha256sum >/dev/null 2>&1; then
+            sha256sum Cargo.lock > "$evidence/Cargo.lock.sha256"
+          else
+            shasum -a 256 Cargo.lock > "$evidence/Cargo.lock.sha256"
+          fi
+          printf '%s\n' clean > "$evidence/lockfile-status.txt"
+          printf 'status=clean\n' >> "$GITHUB_OUTPUT"
+      - name: Formatting
+        id: fmt
+        continue-on-error: true
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-control-plane -- --check
+      - name: Full control-plane regression suite
+        id: tests
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-control-plane
+          --features qualification-failpoints
+      - name: Abnormal process and restore regressions
+        id: process
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-control-plane
+          --features qualification-failpoints
+          --test planner_store_process_recovery -- --nocapture
+      - name: Durable execution hardening regressions
+        id: durable
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-control-plane
+          --features qualification-failpoints
+          --test planner_durable_hardening -- --nocapture
+      - name: Fanout evidence and continuation regressions
+        id: fanout
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked -p codex-hepta-control-plane
+          --features qualification-failpoints
+          --test organ_fanout_receipts -- --nocapture
+      - name: All-target compilation
+        id: check
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked --all-targets -p codex-hepta-control-plane
+          --features qualification-failpoints
+      - name: Strict lint
+        id: lint
+        continue-on-error: true
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked --all-targets -p codex-hepta-control-plane
+          --features qualification-failpoints -- -D warnings
+      - name: Require exact lockfile, every regression, and unchanged tracked source
+        if: always()
+        env:
+          STATE_RESULT: ${{ steps.state.outcome }}
+          LOCK_RESULT: ${{ steps.lock.outcome }}
+          LOCK_STATUS: ${{ steps.lock.outputs.status }}
+          FMT_RESULT: ${{ steps.fmt.outcome }}
+          TEST_RESULT: ${{ steps.tests.outcome }}
+          PROCESS_RESULT: ${{ steps.process.outcome }}
+          DURABLE_RESULT: ${{ steps.durable.outcome }}
+          FANOUT_RESULT: ${{ steps.fanout.outcome }}
+          CHECK_RESULT: ${{ steps.check.outcome }}
+          LINT_RESULT: ${{ steps.lint.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if ! git diff --exit-code || ! git diff --cached --exit-code; then
+            git status --short
+            git diff --stat
+            git diff --name-only
+            exit 1
+          fi
+          test "$STATE_RESULT" = success
+          test "$LOCK_RESULT" = success
+          test "$LOCK_STATUS" = clean
+          test "$FMT_RESULT" = success
+          test "$TEST_RESULT" = success
+          test "$PROCESS_RESULT" = success
+          test "$DURABLE_RESULT" = success
+          test "$FANOUT_RESULT" = success
+          test "$CHECK_RESULT" = success
+          test "$LINT_RESULT" = success
+      - name: Preserve exact recovery evidence and lock diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-recovery-${{ env.SOURCE_SHA }}-${{ matrix.os }}
+          path: ${{ runner.temp }}/control-runtime-recovery-evidence
+          if-no-files-found: error
+          retention-days: 30

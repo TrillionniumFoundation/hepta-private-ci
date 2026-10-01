@@ -28,7 +28,7 @@ use crate::LifecycleSnapshot;
 use crate::RunPhase;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
-    let temp = tempfile::tempdir()?;
+    let temp = crate::test_paths::socket_test_dir()?;
     let root = temp.path().canonicalize()?;
     fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;
     let fleet_path = root.join("fleet");

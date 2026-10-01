@@ -102,3 +102,12 @@ filter = 'package(codex-hepta-learning-ledger) & test(signed_product_history_cur
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+# Agentd cases share a host's durable I/O and spawn real per-agent processes.
+# Limit local case fanout while retaining each case's concurrency and watchdogs.
+[test-groups.hepta_agentd_runtime_local]
+max-threads = 2
+
+[[profile.local.overrides]]
+filter = 'package(codex-hepta-agentd)'
+test-group = 'hepta_agentd_runtime_local'
