@@ -302,7 +302,13 @@ def rust_file_command(path: str, *, check: bool) -> Command:
     ]
     if check:
         args.append("--check")
-    return Command((*args, "--", "./" + path), REPO_ROOT)
+    source = (REPO_ROOT / path).resolve()
+    if not source.is_relative_to(REPO_ROOT.resolve()):
+        raise ValueError("Rust formatting source escapes repository")
+    # rustup selects a pinned toolchain from the process working directory,
+    # not the filename passed to rustfmt. Preserve the owning crate's context.
+    directory = manifest.parent if manifest is not None else source.parent
+    return Command((*args, "--", str(source)), directory)
 
 
 def formatting_configuration_changed(path: str, base: str | None = None) -> bool:
