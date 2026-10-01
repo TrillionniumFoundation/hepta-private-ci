@@ -399,3 +399,6 @@ fn a_full_registry_can_recover_an_incomplete_tail() -> Result<(), Box<dyn StdErr
     assert_eq!(std::fs::read(&fixture.path)?, valid_bytes);
     Ok(())
 }
+
+#[path = "durable_registry_final_gate_tests.rs"]
+mod final_gate_tests;
