@@ -25,6 +25,7 @@ use super::super::lifecycle::active_model_provider_policies;
 use super::ModelProviderAttemptEnvelope;
 use super::ModelProviderPolicyContext;
 use super::PreparedEphemeralModelInput;
+use super::TEST_ABSOLUTE_CWD;
 use super::bytes_sha256;
 use super::resolve_ephemeral_model_input as resolve_ephemeral_model_input_with_policies;
 use crate::config::Config;
@@ -57,7 +58,7 @@ impl EphemeralModelInputContributor for ProposalContributor {
         }
         assert_eq!(input.thread_id, "thread-1");
         assert_eq!(input.turn_id, "turn-1");
-        assert_eq!(input.cwd, Path::new("/workspace"));
+        assert_eq!(input.cwd, Path::new(TEST_ABSOLUTE_CWD));
         assert_eq!(input.request_kind, ModelProviderRequestKind::Turn);
         assert_eq!(input.provider_id, "provider-1");
         assert_eq!(input.model, "model-1");
@@ -174,7 +175,7 @@ async fn active_local_turn_resolves_one_fresh_attempt_input() {
         &registry,
         (&stores.0, &stores.1, &stores.2),
         ModelProviderRequestKind::Turn,
-        Some(PathBuf::from("/workspace")),
+        Some(PathBuf::from(TEST_ABSOLUTE_CWD)),
     );
     let attempt = attempt(&context, true);
 
@@ -205,7 +206,7 @@ async fn inactive_and_excluded_scopes_never_invoke_proposers() {
         &inactive_registry,
         (&stores.0, &stores.1, &stores.2),
         ModelProviderRequestKind::Turn,
-        Some(PathBuf::from("/workspace")),
+        Some(PathBuf::from(TEST_ABSOLUTE_CWD)),
     );
     assert!(
         resolve_ephemeral_model_input(&inactive, &attempt(&inactive, true), Some(128_000))
@@ -219,7 +220,7 @@ async fn inactive_and_excluded_scopes_never_invoke_proposers() {
         &active_registry,
         (&stores.0, &stores.1, &stores.2),
         ModelProviderRequestKind::Prewarm,
-        Some(PathBuf::from("/workspace")),
+        Some(PathBuf::from(TEST_ABSOLUTE_CWD)),
     );
     assert!(
         resolve_ephemeral_model_input(&excluded, &attempt(&excluded, true), Some(128_000))
@@ -270,7 +271,7 @@ async fn inactive_contributors_and_zero_claimants_return_none() {
         &registry,
         (&stores.0, &stores.1, &stores.2),
         ModelProviderRequestKind::Turn,
-        Some(PathBuf::from("/workspace")),
+        Some(PathBuf::from(TEST_ABSOLUTE_CWD)),
     );
 
     assert!(
@@ -298,7 +299,7 @@ async fn context_drift_fails_before_invoking_contributors() {
         &registry,
         (&stores.0, &stores.1, &stores.2),
         ModelProviderRequestKind::Turn,
-        Some(PathBuf::from("/workspace")),
+        Some(PathBuf::from(TEST_ABSOLUTE_CWD)),
     );
     let attempt = attempt(&context, true);
     context.turn_id = "drifted-turn".to_string();
@@ -338,7 +339,7 @@ async fn multiple_claimants_fail_before_request_finalization() {
         &registry,
         (&stores.0, &stores.1, &stores.2),
         ModelProviderRequestKind::Turn,
-        Some(PathBuf::from("/workspace")),
+        Some(PathBuf::from(TEST_ABSOLUTE_CWD)),
     );
     let result =
         resolve_ephemeral_model_input(&context, &attempt(&context, true), Some(128_000)).await;

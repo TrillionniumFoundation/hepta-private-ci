@@ -294,6 +294,13 @@ fn content_digest_mismatch() -> ModelProviderPolicyError {
 }
 
 #[cfg(test)]
+const TEST_ABSOLUTE_CWD: &str = if cfg!(windows) {
+    r"C:\workspace"
+} else {
+    "/workspace"
+};
+
+#[cfg(test)]
 mod tests {
     use std::path::Path;
 
@@ -320,7 +327,7 @@ mod tests {
             base_logical_request_sha256: base_sha256,
             thread_id: "thread-1",
             turn_id: "turn-1",
-            cwd: Path::new("/workspace"),
+            cwd: Path::new(TEST_ABSOLUTE_CWD),
             request_kind,
             provider_id: "provider-1",
             model: "model-1",
@@ -408,7 +415,11 @@ mod tests {
         );
         assert_eq!(
             binding.authority_sha256().as_str(),
-            "d669cee6b7fe804741de414f68db6ef1f98d4cdb6efeab0e9155225d8d2418a6"
+            if cfg!(windows) {
+                "9da177e1fc00634200e614f38ce4502c4d1fde7f26c440f70e960481fe4f0e80"
+            } else {
+                "d669cee6b7fe804741de414f68db6ef1f98d4cdb6efeab0e9155225d8d2418a6"
+            }
         );
     }
 
