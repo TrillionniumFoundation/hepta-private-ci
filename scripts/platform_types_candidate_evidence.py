@@ -19,9 +19,12 @@ from platform_types_candidate_support import (
     utc_now,
     write_object,
 )
+from platform_types_fuzz_evidence import validate_fuzz_summary
 
 PUBLIC_API_INVENTORY = ROOT / "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json"
-DETAILED_IMPLEMENTATION_MAP = ROOT / "docs/modules/platform.types/IMPLEMENTATION_MAP.json"
+DETAILED_IMPLEMENTATION_MAP = (
+    ROOT / "docs/modules/platform.types/IMPLEMENTATION_MAP.json"
+)
 
 
 def _github() -> dict[str, str | None]:
@@ -86,10 +89,18 @@ def _nonnegative_integer(value: Any) -> bool:
     return isinstance(value, int) and not isinstance(value, bool) and value >= 0
 
 
+def _validate_coverage_fuzz(value: dict[str, Any], record: dict[str, Any]) -> None:
+    try:
+        validate_fuzz_summary(value, resolve_record_path(record).parent)
+    except (ValueError, OSError, KeyError, TypeError) as error:
+        raise CandidateBundleError(
+            f"coverage-guided fuzz evidence is invalid: {error}"
+        ) from error
+
+
 def _validate_registry_benchmark(value: dict[str, Any]) -> None:
     if (
-        value.get("schema")
-        != "hepta.platform-types.registry-lookup-benchmark.v1"
+        value.get("schema") != "hepta.platform-types.registry-lookup-benchmark.v1"
         or value.get("schemaVersion") != 1
         or not _nonnegative_integer(value.get("iterationsPerLookup"))
         or value.get("iterationsPerLookup") == 0
@@ -97,11 +108,9 @@ def _validate_registry_benchmark(value: dict[str, Any]) -> None:
     ):
         raise CandidateBundleError("registry workload evidence header is invalid")
     cases = value.get("cases")
-    if (
-        not isinstance(cases, list)
-        or [case.get("entryCount") for case in cases if isinstance(case, dict)]
-        != [8, 256]
-    ):
+    if not isinstance(cases, list) or [
+        case.get("entryCount") for case in cases if isinstance(case, dict)
+    ] != [8, 256]:
         raise CandidateBundleError(
             "registry workload matrix must contain exact 8 and 256 entry cases"
         )
@@ -135,9 +144,7 @@ def _validate_generated_map_binding(
         "commit": identity["candidateSha"],
         "tree": identity["candidateTree"],
         "publicApiInventorySha256": sha256_file(PUBLIC_API_INVENTORY),
-        "detailedImplementationMapSha256": sha256_file(
-            DETAILED_IMPLEMENTATION_MAP
-        ),
+        "detailedImplementationMapSha256": sha256_file(DETAILED_IMPLEMENTATION_MAP),
     }
     if binding != expected:
         raise CandidateBundleError(
@@ -199,8 +206,7 @@ def write_receipt(args: Any) -> None:
         raise CandidateBundleError("Git provenance did not pass for this candidate")
     if api_diff.get("status") != "passed" or api_diff.get("breaking") is not False:
         raise CandidateBundleError("rustdoc public API semver gate did not pass")
-    if fuzz.get("status") != "passed":
-        raise CandidateBundleError("coverage-guided fuzz did not pass")
+    _validate_coverage_fuzz(fuzz, fuzz_record)
     if (
         catalog.get("schema") != "hepta.platform-types.protocol-catalog.v2"
         or catalog.get("schemaVersion") != 2
@@ -217,9 +223,7 @@ def write_receipt(args: Any) -> None:
         raise CandidateBundleError("generated implementation map schema mismatch")
     if generated_map.get("module") != "platform.types":
         raise CandidateBundleError("generated implementation map module mismatch")
-    if generated_map.get("exportCount") != properties.get(
-        "generatedMapExportCount"
-    ):
+    if generated_map.get("exportCount") != properties.get("generatedMapExportCount"):
         raise CandidateBundleError("generated implementation map export mismatch")
     if generated_map.get("operationCount") != properties.get(
         "generatedMapOperationCount"
@@ -229,9 +233,7 @@ def write_receipt(args: Any) -> None:
         "generatedImplementationMapSha256"
     ):
         raise CandidateBundleError("generated implementation map digest mismatch")
-    map_binding = _validate_generated_map_binding(
-        generated_map, properties, identity
-    )
+    map_binding = _validate_generated_map_binding(generated_map, properties, identity)
 
     write_object(
         args.output,

@@ -6,8 +6,13 @@ import json
 import shutil
 
 from platform_types_candidate_support import (
-    CandidateBundleError, ROOT, exact_identity, identity_sha256, sha256_file,
-    utc_now, write_object,
+    CandidateBundleError,
+    ROOT,
+    exact_identity,
+    identity_sha256,
+    sha256_file,
+    utc_now,
+    write_object,
 )
 
 DOCS = (
@@ -58,6 +63,8 @@ PROVENANCE = DOCS + (
     "scripts/platform_types_apply_closure_repair.py",
     "scripts/platform_types_candidate_bundle.py",
     "scripts/platform_types_candidate_evidence.py",
+    "scripts/platform_types_fuzz_corpus.py",
+    "scripts/platform_types_fuzz_evidence.py",
     "scripts/platform_types_candidate_render.py",
     "scripts/platform_types_independent_review.py",
     "scripts/test_platform_types_independent_review.py",
@@ -108,51 +115,60 @@ def render_bundle(args: Any) -> None:
             f"{'' if text.endswith(chr(10)) else chr(10)}``````\n",
             encoding="utf-8",
         )
-        rows.append({
-            "sourcePath": relative,
-            "sourceSha256": sha256_file(source),
-            "sourceBytes": source.stat().st_size,
-            "renderedPath": str(target.relative_to(output)),
-            "renderedSha256": sha256_file(target),
-            "renderedBytes": target.stat().st_size,
-        })
+        rows.append(
+            {
+                "sourcePath": relative,
+                "sourceSha256": sha256_file(source),
+                "sourceBytes": source.stat().st_size,
+                "renderedPath": str(target.relative_to(output)),
+                "renderedSha256": sha256_file(target),
+                "renderedBytes": target.stat().st_size,
+            }
+        )
     generated_rows = []
     for name in GENERATED:
         source = candidate_root / name
         if not source.is_file():
-            raise CandidateBundleError(f"missing generated protocol projection: {source}")
+            raise CandidateBundleError(
+                f"missing generated protocol projection: {source}"
+            )
         target = generated_output / name
         shutil.copyfile(source, target)
-        generated_rows.append({
-            "sourcePath": str(source.relative_to(ROOT)),
-            "sourceSha256": sha256_file(source),
-            "sourceBytes": source.stat().st_size,
-            "renderedPath": str(target.relative_to(output)),
-            "renderedSha256": sha256_file(target),
-            "renderedBytes": target.stat().st_size,
-        })
+        generated_rows.append(
+            {
+                "sourcePath": str(source.relative_to(ROOT)),
+                "sourceSha256": sha256_file(source),
+                "sourceBytes": source.stat().st_size,
+                "renderedPath": str(target.relative_to(output)),
+                "renderedSha256": sha256_file(target),
+                "renderedBytes": target.stat().st_size,
+            }
+        )
     provenance = {
         name: {"sha256": sha256_file(_file(name)), "bytes": _file(name).stat().st_size}
         for name in PROVENANCE
     }
-    write_object(output / "manifest.json", {
-        "schema": "hepta.platform-types.candidate-document-bundle.v2",
-        "schemaVersion": 2,
-        "module": "platform.types",
-        "candidateKind": identity["kind"],
-        "candidateIdentity": identity,
-        "candidateIdentitySha256": identity_sha256(identity),
-        "generatedAtUtc": utc_now(),
-        "documentCount": len(rows),
-        "documents": rows,
-        "generatedProjectionCount": len(generated_rows),
-        "generatedProjections": generated_rows,
-        "provenanceFiles": provenance,
-        "authoritativeQualification": False,
-        "nonClaims": {
-            "productionActivation": "not_claimed",
-            "externalAcceptance": "not_claimed",
-            "promotion": "not_claimed",
-            "release": "not_claimed",
+    write_object(
+        output / "manifest.json",
+        {
+            "schema": "hepta.platform-types.candidate-document-bundle.v2",
+            "schemaVersion": 2,
+            "module": "platform.types",
+            "candidateKind": identity["kind"],
+            "candidateIdentity": identity,
+            "candidateIdentitySha256": identity_sha256(identity),
+            "generatedAtUtc": utc_now(),
+            "documentCount": len(rows),
+            "documents": rows,
+            "generatedProjectionCount": len(generated_rows),
+            "generatedProjections": generated_rows,
+            "provenanceFiles": provenance,
+            "authoritativeQualification": False,
+            "nonClaims": {
+                "productionActivation": "not_claimed",
+                "externalAcceptance": "not_claimed",
+                "promotion": "not_claimed",
+                "release": "not_claimed",
+            },
         },
-    })
+    )
