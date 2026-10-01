@@ -32,6 +32,14 @@ impl LocalFleetHost {
             // The next generation is read from the actual durable grant. A
             // revoked/expired grant is never recreated from the hold DTO.
             if hold.state == "running" {
+                // Reopen/lost reply reads the exact original committed
+                // witness. Its acknowledgement and the next renewal share
+                // one transaction; no extra per-tick fsync is introduced.
+                let observed = self
+                    .store
+                    .pending_local_renewal(&hold.context.execution_id)
+                    .await
+                    .map_err(host_error)?;
                 let grant = self
                     .store
                     .allocation_grant(&hold.context.allocation_id)
@@ -49,16 +57,15 @@ impl LocalFleetHost {
                         observation.host.valid_until_ms,
                     )?;
                     self.store
-                        .mutate_lease_authorized(
+                        .stage_local_renewal_authorized(
                             &FleetAuthorityPort::new(self.authority.verifier()),
                             lease_id,
                             revision,
-                            &grant.allocation_id,
-                            grant.lease_generation,
-                            grant.authority_epoch,
-                            &grant.semantic_digest,
-                            DurableLeaseDispositionV1::Renew {
+                            &hold.context.execution_id,
+                            codex_hepta_fleet::LocalRenewalRequestV1 {
+                                expected_grant: &grant,
                                 expires_at_ms: observation.host.valid_until_ms,
+                                observed_pending: observed.as_ref(),
                             },
                         )
                         .await
