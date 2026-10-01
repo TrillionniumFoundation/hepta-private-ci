@@ -35,6 +35,10 @@ use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+#[expect(
+    clippy::expect_used,
+    reason = "test-only intuition fixture identities are fixed valid inputs"
+)]
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("id")
 }

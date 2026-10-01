@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from hepta_module_source_roots import resolve_source_roots
+from hepta_module_source_roots import registered_source_roots, resolve_source_roots
 
 
 class SourceRootTests(unittest.TestCase):
@@ -57,6 +57,51 @@ class SourceRootTests(unittest.TestCase):
             "rootBindings": [{"path": "adapter"}, {"path": "missing"}],
         }
         self.assertEqual(resolve_source_roots(self.root, module), ["adapter"])
+
+    def test_registered_inventory_preserves_aliases_and_missing_target_modules(self):
+        registry_path = self.root / "docs/modules/MODULES.json"
+        registry_path.parent.mkdir(parents=True)
+        registry_path.write_text(
+            json.dumps(
+                {
+                    "modules": [
+                        self.module,
+                        {"id": "future.owner", "rootBindings": [{"path": "missing"}]},
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.assertEqual(
+            registered_source_roots(self.root),
+            {
+                "runtime.fixture": ["implementation", "legacy/callee.rs", "adapter"],
+                "future.owner": [],
+            },
+        )
+
+    def test_registered_inventory_rejects_duplicate_json_identity_and_nested_roots(
+        self,
+    ):
+        registry_path = self.root / "docs/modules/MODULES.json"
+        registry_path.parent.mkdir(parents=True)
+        for modules in (
+            [self.module, self.module],
+            [
+                self.module,
+                {"id": "other.owner", "rootBindings": [{"path": "implementation"}]},
+            ],
+            [self.module, {"id": "other.owner", "rootBindings": [{"path": "legacy"}]}],
+        ):
+            with self.subTest(modules=modules):
+                registry_path.write_text(
+                    json.dumps({"modules": modules}), encoding="utf-8"
+                )
+                with self.assertRaisesRegex(ValueError, "duplicate|ambiguous"):
+                    registered_source_roots(self.root)
+        registry_path.write_text('{"modules": [], "modules": []}', encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "duplicate binding key"):
+            registered_source_roots(self.root)
 
     def test_migration_uses_aliases_without_changing_evidence_or_claims(self):
         spec = importlib.util.spec_from_file_location(

@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tomllib
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -145,6 +146,9 @@ class WorkflowDependencyTests(unittest.TestCase):
         for target in (
             "optional_module_restart",
             "runtime_shutdown_outcomes",
+            "helper_dispatch",
+            "--bin hepta-agentd-browser",
+            "supervised_two_agents",
             "retirement_recovery",
             "operation_timer_fence",
             "destination_recovery_binding",
@@ -155,6 +159,15 @@ class WorkflowDependencyTests(unittest.TestCase):
             with self.subTest(target=target):
                 self.assertIn(target, process)
         self.assertIn("just test --locked", self.jobs["catalog-admission"])
+        manifest = tomllib.loads(
+            (ROOT / "codex-rs/hepta-agentd/Cargo.toml").read_text()
+        )
+        browser = next(
+            target
+            for target in manifest["bin"]
+            if target["name"] == "hepta-agentd-browser"
+        )
+        self.assertTrue(browser.get("test", True))
         self.assertIn("refresh-derived --check", self.jobs["derived-projections"])
         self.assertIn("cargo fmt", self.jobs["owner-formatting"])
         self.assertIn("-- --check", self.jobs["owner-formatting"])

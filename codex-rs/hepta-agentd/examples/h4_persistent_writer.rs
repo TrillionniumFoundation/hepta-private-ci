@@ -644,6 +644,10 @@ async fn main() -> HarnessResult<()> {
 }
 
 #[cfg(test)]
+#[allow(
+    clippy::expect_used,
+    reason = "qualification example tests deliberately fail on invalid fixture setup or owner assertions"
+)]
 mod tests {
     use super::*;
     use codex_hepta_memory::ProductionDispatchFuture;

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "laneId": "LANE-G-ENGINEERING",
   "module": "control.engineering",
@@ -930,7 +930,7 @@
   "sourceRoot": [
     "tools/hepta-engineering-control"
   ],
-  "sourceBaseRole": "integration_baseline",
+  "sourceBaseRole": "actual_integrated_main_provenance_anchor_not_execution_receipt",
   "currentCandidateIdentityAuthority": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
@@ -944,8 +944,8 @@
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "observedAtHead": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+    "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4"
   },
   "observedSourcePaths": [
     "tools/hepta-engineering-control"
@@ -1086,6 +1086,24 @@
     {
       "path": "tools/hepta-engineering-control/test_worker_lifecycle.py",
       "object": "caa8a8f49cd8b671010632e616dcdcfac2000e87"
+    }
+  ],
+  "historicalReintegrationSources": [
+    {
+      "path": "qualification/module-source-origins/20261001-round3/control.engineering.integrated-main.json",
+      "observedCommit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "observedTree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "mapBlob": "4dd8c5a5f55f44d50e6f407528f14bc92f77d1c4",
+      "snapshotSha256": "90e824221952e77c76135c13ad234ccd3a78935ac93a6c3beb48d363d76b8f89",
+      "role": "historical_source_navigation_only"
+    },
+    {
+      "path": "qualification/module-source-origins/20261001-round3/control.engineering.prior-audit.json",
+      "observedCommit": "64e38ca5786027fcc789aad36131875e581175ac",
+      "observedTree": "ca02e56d4e0cfed587bd46f9057a2fc1354315bd",
+      "mapBlob": "d4b90e393fddde6d4e14cc83b2b84c5bd3bd33b8",
+      "snapshotSha256": "49737538c3f35c6588aeb724bb52a215370ed8e94e7b186964bd6ddb35f5236d",
+      "role": "historical_source_navigation_only"
     }
   ]
 }

@@ -273,7 +273,18 @@ impl RevalidatingCandidate {
         current: RegistrySnapshotReceipt,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        let registry = read_registry_snapshot(snapshot, current)?;
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        let registry = match read_registry_snapshot(snapshot, current) {
+            Ok(registry) => registry,
+            Err(error) => {
+                // This raw-file fixture also owns refresh acquisition. Mirror
+                // the host's permanent cache closure on acquisition failures.
+                self.unavailable = true;
+                return Err(error.into());
+            }
+        };
         self.with_verified_registry(current, registry, consume)
     }
 }

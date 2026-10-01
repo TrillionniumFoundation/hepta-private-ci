@@ -303,7 +303,7 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     verify_dataset_snapshot_receipt_v3(request.dataset, now).map_err(E::Dataset)?;
     let qualification = request.qualification;
     qualification
-        .validate_integrity()
+        .validate_current(ledger.verifier(), now)
         .map_err(E::Qualification)?;
     if qualification.decision.trust_digest != ledger.verifier().trust_digest()
         || request.dataset.snapshot.dataset_digest != qualification.dataset_digest

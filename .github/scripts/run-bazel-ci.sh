@@ -398,7 +398,8 @@ if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
 fi
 
 bazel_console_log="$(mktemp)"
-trap 'rm -f "$bazel_console_log"' EXIT
+bazel_target_pattern_file=""
+trap 'rm -f "$bazel_console_log"; if [[ -n "$bazel_target_pattern_file" ]]; then rm -f "$bazel_target_pattern_file"; fi' EXIT
 
 bazel_run_args=(
   "${bazel_args[@]}"
@@ -414,6 +415,40 @@ bazel_run_args+=("--config=${ci_config}")
 if (( ${#post_config_bazel_args[@]} > 0 )); then
   bazel_run_args+=("${post_config_bazel_args[@]}")
 fi
+
+bazel_target_args=(-- "${bazel_targets[@]}")
+if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
+  case "${bazel_args[0]}" in
+    build | test | coverage)
+      # Keep headroom for the Python launcher, toolchain environment flags,
+      # and quoting under Windows' native command-line length limit. Query
+      # and other commands do not accept this build/test target-file flag.
+      bazel_target_argv_size=0
+      bazel_target_file_compatible=1
+      for target in "${bazel_targets[@]}"; do
+        bazel_target_argv_size=$((bazel_target_argv_size + ${#target} + 3))
+        # Bazel's file parser strips # comments, trims each line, and skips
+        # empty lines. Keep argv for any input it would reinterpret.
+        if [[ -z "$target" || "$target" == *'#'* || "$target" == *$'\n'* || "$target" == *$'\r'* || "$target" == [[:space:][:cntrl:]]* || "$target" == *[[:space:][:cntrl:]] ]]; then
+          bazel_target_file_compatible=0
+        fi
+      done
+      if (( bazel_target_argv_size > 8192 && bazel_target_file_compatible == 1 )); then
+        bazel_target_pattern_file="$(mktemp)"
+        # printf is a Bash builtin: writing the original ordered list does
+        # not spawn another native process with the same oversized argv.
+        printf '%s\n' "${bazel_targets[@]}" > "$bazel_target_pattern_file"
+        # run_bazel disables MSYS argument conversion, so Bazel needs the
+        # native path explicitly. Retain the POSIX path for trap cleanup.
+        bazel_native_target_pattern_file="$(cygpath -m "$bazel_target_pattern_file")"
+        bazel_run_args+=("--target_pattern_file=${bazel_native_target_pattern_file}")
+        # Bazel rejects a target-pattern file together with argv patterns.
+        bazel_target_args=(--)
+      fi
+      ;;
+  esac
+fi
+
 set +e
 # Work around Bazel 9 remote repo contents cache / overlay materialization
 # failures seen in CI (for example "is not a symlink" or permission errors
@@ -422,8 +457,7 @@ set +e
 run_bazel_with_startup_args \
   --noexperimental_remote_repo_contents_cache \
   "${bazel_run_args[@]}" \
-  -- \
-  "${bazel_targets[@]}" \
+  "${bazel_target_args[@]}" \
   2>&1 | tee "$bazel_console_log"
 bazel_status=${PIPESTATUS[0]}
 set -e

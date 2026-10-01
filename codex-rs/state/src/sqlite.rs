@@ -17,11 +17,11 @@ use sqlx::Connection;
 use sqlx::Error;
 use sqlx::SqlitePool;
 use sqlx::migrate::Migrator;
-use sqlx::sqlite::SqliteAutoVacuum;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqliteJournalMode;
 use sqlx::sqlite::SqlitePoolOptions;
 use sqlx::sqlite::SqliteSynchronous;
+use std::num::NonZeroU32;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -280,14 +280,42 @@ impl SqliteConfig {
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
             .synchronous(SqliteSynchronous::Normal)
-            .auto_vacuum(SqliteAutoVacuum::Incremental)
             .busy_timeout(Duration::from_secs(5))
             .log_statements(LevelFilter::Off);
+        // auto_vacuum changes database-global state and takes a writer lock
+        // even when INCREMENTAL is already selected. Apply it only to a new
+        // zero-page database, before WAL creates its header. Pool reconnects
+        // must not turn otherwise read-only SELECTs into implicit writers.
+        // Existing NONE/FULL/INCREMENTAL databases retain their vacuum mode;
+        // changing an existing layout is explicit owner maintenance.
+        let mut initialization = options.connect().await?;
+        let initialize = async {
+            // A deferred read snapshot binds the empty-page decision to the
+            // setting. BEGIN IMMEDIATE would itself create page one before
+            // auto_vacuum can select the new database's layout.
+            let mut initial_layout = initialization.begin().await?;
+            let pages: i64 = sqlx::query_scalar("PRAGMA page_count")
+                .fetch_one(&mut *initial_layout)
+                .await?;
+            if pages == 0 {
+                sqlx::query("PRAGMA auto_vacuum=INCREMENTAL")
+                    .execute(&mut *initial_layout)
+                    .await?;
+            }
+            initial_layout.commit().await?;
+            sqlx::query("PRAGMA journal_mode=WAL")
+                .execute(&mut initialization)
+                .await?;
+            Ok::<(), Error>(())
+        }
+        .await;
+        let close = initialization.close().await;
+        initialize?;
+        close?;
         SqlitePoolOptions::new()
             .max_connections(5)
-            .connect_with(options)
+            .connect_with(options.journal_mode(SqliteJournalMode::Wal))
             .await
     }
 
@@ -297,18 +325,9 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5))
-            .log_statements(LevelFilter::Off);
-        SqlitePoolOptions::new()
-            .max_connections(5)
-            .connect_with(options)
-            .await
+        let connections =
+            NonZeroU32::try_from(5_u32).map_err(|error| Error::Protocol(error.to_string()))?;
+        open_durable_sqlite_pool(path, connections).await
     }
 
     /// Checkpoint a private recovery candidate after all validation handles close.
@@ -381,3 +400,44 @@ impl SqliteConfig {
             .await
     }
 }
+
+/// Open an owner-managed durable SQLite store with a nonzero concurrency bound.
+///
+/// WAL, FULL synchronous writes, foreign keys and the five-second busy timeout
+/// are fixed by this shim. The owning store supplies its migration and corruption
+/// policy; this entrypoint never applies rebuildable state-database recovery.
+pub async fn open_durable_sqlite_pool(
+    path: &Path,
+    max_connections: NonZeroU32,
+) -> Result<SqlitePool, Error> {
+    let options = SqliteConnectOptions::new()
+        .filename(path)
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .synchronous(SqliteSynchronous::Full)
+        .foreign_keys(true)
+        .busy_timeout(Duration::from_secs(5))
+        .log_statements(LevelFilter::Off);
+    SqlitePoolOptions::new()
+        .max_connections(max_connections.get())
+        .connect_with(options)
+        .await
+}
+
+/// Open an isolated single-connection in-memory schema reference.
+///
+/// This accepts neither a filename nor arbitrary connection options. References
+/// contain compiled schema only and cannot become a second durable data owner.
+pub async fn open_sqlite_schema_reference_pool() -> Result<SqlitePool, Error> {
+    let options = SqliteConnectOptions::new()
+        .in_memory(true)
+        .log_statements(LevelFilter::Off);
+    SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect_with(options)
+        .await
+}
+
+#[cfg(test)]
+#[path = "sqlite_connection_tests.rs"]
+mod connection_tests;

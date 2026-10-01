@@ -10,12 +10,9 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::collections::VecDeque;
 use std::fmt;
-use std::fs::File;
-use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
-use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::PoisonError;
@@ -49,6 +46,12 @@ use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
+
+#[path = "prompt_runtime_file.rs"]
+mod file;
+
+use file::PromptDirectory;
+use file::PromptFile;
 
 pub const AGENTD_PROMPT_REGISTRY_MAX_RECORDS: usize = 16_384;
 const MAX_STAGED_TURNS: usize = 256;
@@ -825,42 +828,34 @@ struct StoredObservation {
 }
 
 struct PromptRuntimeStore {
-    root: PathBuf,
-    _lock: File,
+    root: PromptDirectory,
+    _lock: PromptFile,
     #[cfg(test)]
     fail_directory_sync_after_rename_once: AtomicBool,
 }
 
 impl PromptRuntimeStore {
     fn open(directory: &Path) -> Result<(Self, PromptRuntimeState), AgentdPromptRuntimeError> {
-        prepare_state_directory(directory)?;
-        let lock_path = directory.join(LOCK_FILE);
-        let lock = OpenOptions::new()
-            .create(true)
-            .truncate(false)
-            .read(true)
-            .write(true)
-            .open(&lock_path)
-            .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
-        set_private_file_permissions(&lock_path)?;
-        lock.try_lock()
+        let root = PromptDirectory::open(directory)?;
+        let lock = root.open_mutable(LOCK_FILE)?;
+        lock.file
+            .try_lock()
             .map_err(|_| AgentdPromptRuntimeError::StateLocked)?;
         let store = Self {
-            root: directory.to_path_buf(),
+            root,
             _lock: lock,
             #[cfg(test)]
             fail_directory_sync_after_rename_once: AtomicBool::new(false),
         };
-        let state_path = directory.join(STATE_FILE);
-        if !state_path.exists() {
+        let Some(mut source) = store.root.open_existing(STATE_FILE)? else {
             return Ok((store, PromptRuntimeState::default()));
-        }
+        };
         let mut bytes = Vec::new();
-        File::open(&state_path)
-            .map_err(|_| AgentdPromptRuntimeError::Unavailable)?
+        (&mut source.file)
             .take(MAX_DURABLE_STATE_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+        source.verify_read_snapshot(&store.root)?;
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_DURABLE_STATE_BYTES {
             return Err(AgentdPromptRuntimeError::CorruptState);
         }
@@ -871,25 +866,22 @@ impl PromptRuntimeStore {
     }
 
     fn persist(&self, state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeError> {
+        self._lock.verify(&self.root)?;
         let stored = stored_state(state);
         let bytes =
             serde_json::to_vec(&stored).map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_DURABLE_STATE_BYTES {
             return Err(AgentdPromptRuntimeError::CapacityExceeded);
         }
-        let next_path = self.root.join(NEXT_FILE);
-        let mut next = OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(&next_path)
+        let mut next = self.root.open_mutable(NEXT_FILE)?;
+        next.file
+            .set_len(0)
             .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
-        set_private_file_permissions(&next_path)?;
-        next.write_all(&bytes)
-            .and_then(|()| next.sync_all())
+        next.file
+            .write_all(&bytes)
+            .and_then(|()| next.file.sync_all())
             .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
-        std::fs::rename(&next_path, self.root.join(STATE_FILE))
-            .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+        self.root.publish(&next, STATE_FILE)?;
         #[cfg(test)]
         if self
             .fail_directory_sync_after_rename_once
@@ -897,7 +889,7 @@ impl PromptRuntimeStore {
         {
             return Err(AgentdPromptRuntimeError::IndeterminateDurability);
         }
-        sync_state_directory(&self.root)
+        self.root.sync_all()
     }
 }
 
@@ -1163,56 +1155,6 @@ fn decode_terminal_outcome(
 
 fn parse_id(value: String) -> Result<StableId, AgentdPromptRuntimeError> {
     StableId::new(value).map_err(|_| AgentdPromptRuntimeError::CorruptState)
-}
-
-fn prepare_state_directory(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
-    if let Err(error) = std::fs::create_dir(path)
-        && error.kind() != std::io::ErrorKind::AlreadyExists
-    {
-        return Err(AgentdPromptRuntimeError::Unavailable);
-    }
-    let metadata =
-        std::fs::symlink_metadata(path).map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
-    if !metadata.is_dir() || metadata.file_type().is_symlink() {
-        return Err(AgentdPromptRuntimeError::CorruptState);
-    }
-    set_private_directory_permissions(path)
-}
-
-#[cfg(unix)]
-fn set_private_directory_permissions(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
-    use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))
-        .map_err(|_| AgentdPromptRuntimeError::Unavailable)
-}
-
-#[cfg(not(unix))]
-fn set_private_directory_permissions(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
-    Ok(())
-}
-
-#[cfg(unix)]
-fn set_private_file_permissions(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
-    use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
-        .map_err(|_| AgentdPromptRuntimeError::Unavailable)
-}
-
-#[cfg(not(unix))]
-fn set_private_file_permissions(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
-    Ok(())
-}
-
-#[cfg(unix)]
-fn sync_state_directory(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
-    File::open(path)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|_| AgentdPromptRuntimeError::IndeterminateDurability)
-}
-
-#[cfg(not(unix))]
-fn sync_state_directory(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
-    Ok(())
 }
 
 fn validate_thread_id(thread_id: &str) -> Result<(), AgentdPromptRuntimeError> {

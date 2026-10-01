@@ -367,7 +367,7 @@ This receipt is source-navigation evidence for the current durable candidate; ru
 | destination CAS/observer | `CognitiveSourceOutboxTarget` | `codex-rs/hepta-memory/src/production_cognitive_source_target.rs` | predecessor/lost-ack tests |
 | Agentd host primitive | `AgentdProductionWriterHost` | `codex-rs/hepta-agentd/src/production_writer_host.rs` | explicit final-use/grant composition |
 | Agentd runtime composition | `AgentdConfig::with_production_operations` + `runtime::run` | `codex-rs/hepta-agentd/src/config.rs`, `runtime.rs` | lifecycle task cleanup/fail-closed default |
-| second current-main consumer | `AutomationStore::dispatch_authorized_effect` | `codex-rs/hepta-automation/src/authorized_effect.rs` | automation authorized-effect tests |
+| second current-main consumer | `AutomationStore::execute_authorized_taskflow_effect` | `codex-rs/hepta-automation/src/authorized_effect.rs` | automation authorized-effect tests |
 | reference ledger | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | reference oracle |
 | reference outbox | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | reference oracle |
 
