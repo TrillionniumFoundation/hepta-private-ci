@@ -3,24 +3,54 @@ name: automation-taskflow-focused
 on:
   push:
     branches:
-      - work/automation-taskflow-durable-causal-chain
+      - main
     paths:
       - codex-rs/hepta-automation/**
       - codex-rs/hepta-agentd/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
       - codex-rs/hepta-types/**
+      - codex-rs/agent-protocol/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/model-provider/**
+      - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
+      - justfile
+      - scripts/run-nextest.py
+      - .github/workflows/automation-taskflow-focused.yml
+  pull_request:
+    paths:
+      - codex-rs/hepta-automation/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-operations/**
+      - codex-rs/hepta-types/**
+      - codex-rs/agent-protocol/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/model-provider/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - justfile
+      - scripts/run-nextest.py
       - .github/workflows/automation-taskflow-focused.yml
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: taskflow-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   focused:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     defaults:
       run:
         working-directory: codex-rs
@@ -28,17 +58,20 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Rustfmt changed automation owners
-        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
+        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -p codex-model-provider -- --check
       - name: Check automation, operations and Agentd
-        run: cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+        run: cargo check --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -p codex-model-provider
       - name: Test kernel operation contract
-        run: cargo test -p codex-hepta-operations
-      - name: Test durable automation causal chain
-        run: cargo test -p codex-hepta-automation --test durable_causal_chain
+        run: just test --locked -p codex-hepta-operations
       - name: Test automation package
-        run: cargo test -p codex-hepta-automation
+        run: just test --locked -p codex-hepta-automation
       - name: Test automation qualification profile
-        run: cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+        run: just test --locked -p codex-hepta-automation --features taskflow-structural-qualification
+      - name: Test provider-effect adapter
+        run: just test --locked -p codex-model-provider --lib
       - name: Test Agentd library
-        run: cargo test -p codex-hepta-agentd --lib
+        run: just test --locked -p codex-hepta-agentd --lib

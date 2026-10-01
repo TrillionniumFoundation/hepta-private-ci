@@ -8,7 +8,6 @@
 //! model-provider factory does not create the attested effect adapter.
 
 use std::fmt;
-use std::net::IpAddr;
 use std::time::Duration;
 
 use codex_hepta_contracts::ProviderEffectAck;
@@ -34,6 +33,7 @@ use http::HeaderMap;
 use http::HeaderName;
 use http::HeaderValue;
 use serde::Deserialize;
+use url::Host;
 use url::Url;
 
 /// Header carrying the stable occurrence identity to a provider adapter.
@@ -584,13 +584,13 @@ fn validate_effect_endpoint(raw: &str) -> Result<Url, String> {
         return Err("effect endpoint URL must not contain credentials".to_string());
     }
     let host = url
-        .host_str()
+        .host()
         .ok_or_else(|| "effect endpoint URL must contain a host".to_string())?;
-    let loopback = host.eq_ignore_ascii_case("localhost")
-        || host
-            .parse::<IpAddr>()
-            .map(|address| address.is_loopback())
-            .unwrap_or(false);
+    let loopback = match host {
+        Host::Domain(host) => host.eq_ignore_ascii_case("localhost"),
+        Host::Ipv4(address) => address.is_loopback(),
+        Host::Ipv6(address) => address.is_loopback(),
+    };
     if url.scheme() != "https" && !(url.scheme() == "http" && loopback) {
         return Err("effect endpoints must use HTTPS except loopback fixtures".to_string());
     }
@@ -821,6 +821,25 @@ mod tests {
         assert_eq!(
             adapter.lookup(&intent().key).await,
             ProviderEffectLookup::Unknown
+        );
+    }
+
+    #[test]
+    fn attested_http_adapter_accepts_ipv6_loopback_fixture_only() {
+        let config = attested_fixture_config("http://[::1]:9", "ipv6-loopback-contract", 1, 14);
+        let adapter = HttpProviderEffectAdapter::new(config).expect("IPv6 loopback fixture");
+        assert_eq!(
+            adapter.capability(),
+            ProviderEffectIdempotencyCapability::KeyAndStatusLookup
+        );
+        let mut config = adapter.config().clone();
+        config.dispatch_url = "http://[2001:db8::1]:9/dispatch".to_string();
+        config.lookup_url_template = "http://[2001:db8::1]:9/status/{key}".to_string();
+        assert_eq!(
+            config
+                .contract_sha256()
+                .expect_err("non-loopback HTTP remains forbidden"),
+            "effect endpoints must use HTTPS except loopback fixtures"
         );
     }
 
