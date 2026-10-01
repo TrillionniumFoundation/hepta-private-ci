@@ -50,6 +50,7 @@ use crate::MemoryRevisionDraft;
 use crate::QueuedReceipt;
 use crate::SourceDraft;
 use crate::StableMemoryId;
+use crate::cognitive_intelligence_writer::MemoryCorrectionTarget;
 use crate::local_lease_outbox::InheritedQueuedReceipt;
 use crate::local_lease_outbox::dispatch_operation_digest;
 #[cfg(test)]
@@ -1608,8 +1609,10 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .correct_with_kg_tx(
                     &mut transaction,
                     access,
-                    memory_id,
-                    expected_revision,
+                    MemoryCorrectionTarget {
+                        memory_id,
+                        expected_revision,
+                    },
                     source,
                     draft,
                     facts,
