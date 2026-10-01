@@ -119,6 +119,7 @@ pub struct NduSolverTerminationReceipt {
     pub disposition: SolveDisposition,
     pub iterations: u32,
     pub terminal_residual_raw: i64,
+    /// Maximum residual over the initial state and all emitted iterations.
     pub maximum_residual_raw: i64,
     pub projection_count: u32,
     pub predecessor_digest: Digest32,

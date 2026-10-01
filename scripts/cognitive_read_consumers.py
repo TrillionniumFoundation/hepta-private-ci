@@ -49,7 +49,7 @@ COMPOSITION = (
     (
         "product_read",
         "codex-rs/hepta-agentd/src/cognitive_context.rs",
-        "pub(crate) async fn read_with_retrieval_context_and_learning(",
+        "pub(crate) async fn read_prepared_with_retrieval_context_and_learning(",
     ),
     (
         "owner_cut_view",

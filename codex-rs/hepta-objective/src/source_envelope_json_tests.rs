@@ -316,7 +316,6 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
     for (pointer, invalid) in [
         ("/locale", json!("é".repeat(17))),
-        ("/structuredIntent/legalActionClasses", json!([])),
         (
             "/structuredIntent/legalActionClasses",
             json!(vec!["read"; 129]),
@@ -333,6 +332,16 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
             Err(ObjectiveSourceJsonError::Structure(_))
         ));
     }
+    // Empty caller actions are valid: the semantic compiler supplies intrinsic
+    // abstain. Strict JSON decoding must preserve that structural contract.
+    let mut empty_actions = original.clone();
+    empty_actions["structuredIntent"]["legalActionClasses"] = json!([]);
+    let mut expected = decode_source_envelope_json_v1(SOURCE.as_bytes()).unwrap();
+    expected.structured_intent.legal_action_classes.clear();
+    assert_eq!(
+        decode_source_envelope_json_v1(&serde_json::to_vec(&empty_actions).unwrap()),
+        Ok(expected)
+    );
     let mut source = original;
     let predicates = source["structuredIntent"]["successPredicates"]
         .as_array_mut()
