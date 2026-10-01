@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "0c223d31ed46c6ab336b05ea01efa10aa603df69",
-    "tree": "41f98b9e16a769c11d37bbcd85163680fdb21eac"
+    "commit": "8de1cedb08adaf136f79cb937d7c01a0964368b3",
+    "tree": "18d16f0bf1ae608065812364c9891f884fb9d1e3"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -258,11 +258,11 @@
     },
     {
       "path": ".github/workflows/cognitive-read-qualification.yml",
-      "object": "ca06430d6d18d2c08774714572efc5798f3c577a"
+      "object": "ea20848ffe885a48a59977f62b8b8c7c3da078bd"
     },
     {
       "path": "codex-rs/Cargo.lock",
-      "object": "fe6322d19eaa649c000914f13eaea1295d5574e4"
+      "object": "48979c0148a52da702a2b101fe4539d5ac9e0ff0"
     },
     {
       "path": "codex-rs/Cargo.toml",
@@ -270,15 +270,15 @@
     },
     {
       "path": "codex-rs/hepta-agent-protocol/src/cognitive_preparation.rs",
-      "object": "f4c33a9b57fec8b1fc4c6b1f518e4bc66a79d26f"
+      "object": "ed8e8d6a2352e6ad6b3e53aaaba68c2bda43cfe5"
     },
     {
       "path": "codex-rs/hepta-agent-protocol/src/cognitive_preparation_tests.rs",
-      "object": "968120b917786b18a7d78b704646537063369f80"
+      "object": "4e472a1d88fbdee3c8862db79881f9c2a3128aa6"
     },
     {
       "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
-      "object": "eaa4c1ec5a4a078356b5c588c8711ec85f346f8b"
+      "object": "7d73de30e5033640ef0defc20f1042e20029998e"
     },
     {
       "path": "codex-rs/hepta-agentd/BUILD.bazel",
@@ -769,6 +769,42 @@
       "object": "7629438e67ad3a76cb7542b07631232e5412853b"
     },
     {
+      "path": "codex-rs/hepta-operations/BUILD.bazel",
+      "object": "09644c462fe5124bd0ac1a1f6e8f38dd8a74d7a6"
+    },
+    {
+      "path": "codex-rs/hepta-operations/Cargo.toml",
+      "object": "af2e656fcacea8db6ea84d8bdc8715f3aa62e739"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/destination_dedupe.rs",
+      "object": "216f5200fb864dab7fd43ed073515a0bb0aea37f"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/destination_dedupe_tests.rs",
+      "object": "d2980982fcb88ba944faa746a399bb8250e869d3"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/durable_store.rs",
+      "object": "e84fda6bd45fd7f65cf79706ee6b826ba26d8607"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "object": "06108e9a116327c8ed98281bcf45283959005f22"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/exact_claim_tests.rs",
+      "object": "e270c00192353076d1d2a05e3cd92348a9081b49"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/fault_tests.rs",
+      "object": "d803dd5de2e098980441da30b4031154aeb16f3b"
+    },
+    {
+      "path": "codex-rs/hepta-operations/tests/destination_recovery_binding.rs",
+      "object": "e0c5faa35642c79e4918649ea2a0bfa1645e9dc5"
+    },
+    {
       "path": "defs.bzl",
       "object": "418f561912b10fc8f2a929807097fe6d48114e51"
     },
@@ -782,7 +818,7 @@
     },
     {
       "path": "docs/modules/cognitive.read/ADVERSARIAL_AUDIT_20261001.md",
-      "object": "fb8541917280d37211e5df7e6e2f4f1cb59865f1"
+      "object": "d0940ecd8954df68ff30c48624f45a73cc07f61b"
     },
     {
       "path": "docs/modules/cognitive.read/COMPATIBILITY.md",
@@ -838,7 +874,7 @@
     },
     {
       "path": "docs/modules/compact.engine/IMPLEMENTATION_MAP.json",
-      "object": "73dfca05f55748f9c7a35d8d3d5d33a3a5af982c"
+      "object": "019fda22544569dd6d9bbb6188d3e29efc2c8462"
     },
     {
       "path": "docs/modules/context.compiler/COGNITIVE_READ_INGRESS.md",
@@ -846,7 +882,7 @@
     },
     {
       "path": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
-      "object": "1d5107fbd267a369f5dc0a6d56ee7af65dcb75b9"
+      "object": "b8bd8d135a2ef17a2982f3c5ba79f8e0e23d1289"
     },
     {
       "path": "docs/modules/context.compiler/TECHNICAL.md",
@@ -854,23 +890,31 @@
     },
     {
       "path": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
-      "object": "25c1295285622a5d11c493340edf0a4f36cf3347"
+      "object": "7d26bb20c63079da8d42507de0ddccce65a1819a"
     },
     {
       "path": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
-      "object": "706ebbfb15f6cc91d038c8e0972631e3248bcadc"
+      "object": "688751f74b14c71c1552bb43c6eae35a4e06ac13"
     },
     {
       "path": "docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json",
-      "object": "62c577df418ca74a455746e32d65a288cef1da63"
+      "object": "09e879f473c4a9002562f92861bb7fd6c3a82865"
     },
     {
       "path": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
-      "object": "8c51b2ae69d66cf53ed6790d4c95594a7bdaead3"
+      "object": "64ae4572141c3577fa62b2a0a456ea569b3f1b6a"
     },
     {
       "path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
-      "object": "3ee69b231c89a335c1914bdfb119d8443e8a34bb"
+      "object": "dbb4fb525d39d36ef12f6e0ae5845b09af0f96d8"
+    },
+    {
+      "path": "qualification/cognitive-read/audit-20261001/FINAL_PYTHON_99_OBSERVATION.json",
+      "object": "66fbb1ecde9cd11e65cdd9ebcdf9b8e8fbfc7e26"
+    },
+    {
+      "path": "qualification/cognitive-read/audit-20261001/FINAL_RUST_BUILD_OBSERVATIONS.json",
+      "object": "cd4fe5d42878596b06928ad19744f1825783cbe9"
     },
     {
       "path": "qualification/cognitive-read/audit-20261001/LOCAL_REGRESSION.json",
@@ -887,6 +931,26 @@
     {
       "path": "qualification/cognitive-read/audit-20261001/SQLITE_SCOPE_INDEX_OBSERVATION.json",
       "object": "149eb5a6d3264cb5ca21f9007c0f37f74803f0ff"
+    },
+    {
+      "path": "qualification/cognitive-read/audit-20261001/final-combined-fix-enospc.txt",
+      "object": "9f43b7a348149ac68b228b02d21796d25d9786e7"
+    },
+    {
+      "path": "qualification/cognitive-read/audit-20261001/final-combined-fix-link-error.txt",
+      "object": "b5d3419163fe7424d250614fdbc86e4232282003"
+    },
+    {
+      "path": "qualification/cognitive-read/audit-20261001/final-operations-tests.txt",
+      "object": "912c1df36df9f7c8e8e799747ccda5d2957206b6"
+    },
+    {
+      "path": "qualification/cognitive-read/audit-20261001/final-python99-terminal-summary.txt",
+      "object": "aa4ec5ba50706fd2ec989b8d3b920fe4561a7539"
+    },
+    {
+      "path": "qualification/cognitive-read/audit-20261001/final-receipt-bound-tests.txt",
+      "object": "6ed9d1b3b77c9149a1bd5b403d7d2b78825e91b7"
     },
     {
       "path": "qualification/cognitive-read/audit-20261001/focused-nextest.txt",
@@ -918,7 +982,7 @@
     },
     {
       "path": "scripts/cognitive_read_full_evidence.py",
-      "object": "1badb348dd23ec827259f7140b385b742d6aa13d"
+      "object": "981e22e41094da8521e305acaf10ae80c37a9cba"
     },
     {
       "path": "scripts/cognitive_read_release_evidence.py",
@@ -958,7 +1022,7 @@
     },
     {
       "path": "scripts/test_cognitive_read_full_evidence.py",
-      "object": "63d2f93061434fad87138920e0e54ef59dac2dae"
+      "object": "7efbfe1ea71bd6ea571f2615433146218f442091"
     },
     {
       "path": "scripts/test_cognitive_read_full_gate_integrity.py",
@@ -1002,7 +1066,7 @@
     },
     {
       "role": "control_protocol",
-      "blobSha": "eaa4c1ec5a4a078356b5c588c8711ec85f346f8b",
+      "blobSha": "7d73de30e5033640ef0defc20f1042e20029998e",
       "sourcePath": "codex-rs/hepta-agent-protocol/src/lib.rs",
       "nativeSymbol": "CognitiveContextRevalidate {"
     },
@@ -1031,8 +1095,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "0c223d31ed46c6ab336b05ea01efa10aa603df69",
-    "tree": "41f98b9e16a769c11d37bbcd85163680fdb21eac"
+    "commit": "8de1cedb08adaf136f79cb937d7c01a0964368b3",
+    "tree": "18d16f0bf1ae608065812364c9891f884fb9d1e3"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "revision_bound_shadow_v2_source_candidate",
@@ -1252,6 +1316,15 @@
     "codex-rs/hepta-ndu/src/preference.rs",
     "codex-rs/hepta-ndu/src/preference_tests.rs",
     "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
+    "codex-rs/hepta-operations/BUILD.bazel",
+    "codex-rs/hepta-operations/Cargo.toml",
+    "codex-rs/hepta-operations/src/destination_dedupe.rs",
+    "codex-rs/hepta-operations/src/destination_dedupe_tests.rs",
+    "codex-rs/hepta-operations/src/durable_store.rs",
+    "codex-rs/hepta-operations/src/durable_store_tests.rs",
+    "codex-rs/hepta-operations/src/exact_claim_tests.rs",
+    "codex-rs/hepta-operations/src/fault_tests.rs",
+    "codex-rs/hepta-operations/tests/destination_recovery_binding.rs",
     "defs.bzl",
     "docs/contracts/CONTRACTS.json",
     "docs/modules/CARGO_BINDINGS.json",
@@ -1278,10 +1351,17 @@
     "docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json",
     "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
     "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+    "qualification/cognitive-read/audit-20261001/FINAL_PYTHON_99_OBSERVATION.json",
+    "qualification/cognitive-read/audit-20261001/FINAL_RUST_BUILD_OBSERVATIONS.json",
     "qualification/cognitive-read/audit-20261001/LOCAL_REGRESSION.json",
     "qualification/cognitive-read/audit-20261001/REMOTE_EXACT_HEAD_35DC_FAILURES.json",
     "qualification/cognitive-read/audit-20261001/SECOND_ITERATION_OBSERVATIONS.json",
     "qualification/cognitive-read/audit-20261001/SQLITE_SCOPE_INDEX_OBSERVATION.json",
+    "qualification/cognitive-read/audit-20261001/final-combined-fix-enospc.txt",
+    "qualification/cognitive-read/audit-20261001/final-combined-fix-link-error.txt",
+    "qualification/cognitive-read/audit-20261001/final-operations-tests.txt",
+    "qualification/cognitive-read/audit-20261001/final-python99-terminal-summary.txt",
+    "qualification/cognitive-read/audit-20261001/final-receipt-bound-tests.txt",
     "qualification/cognitive-read/audit-20261001/focused-nextest.txt",
     "qualification/cognitive-read/audit-20261001/prompt-isolated-second.txt",
     "qualification/cognitive-read/audit-20261001/python-regressions-second.txt",
