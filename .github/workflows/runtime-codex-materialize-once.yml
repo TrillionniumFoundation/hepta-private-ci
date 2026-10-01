@@ -1,0 +1,68 @@
+name: runtime.codex P0 materialize alternate runner
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-p0-durable-convergence-20260930
+    paths:
+      - .github/workflows/runtime-codex-materialize-once.yml
+
+permissions:
+  contents: write
+
+# Repository-wide group shared with the canonical materializer. This run
+# replaces a queued canonical run; the two source writers can never overlap.
+concurrency:
+  group: runtime-codex-p0-materialize-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Execute canonical one-shot materializer
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path(".github/workflows/runtime-codex-p0-materialize.yml")
+          text = source.read_text(encoding="utf-8")
+          marker = (
+              "      - name: Materialize, verify and publish immutable source\n"
+              "        shell: bash\n"
+              "        run: |\n"
+          )
+          if text.count(marker) != 1:
+              raise SystemExit("canonical materializer run block is not unique")
+          body = text.split(marker, 1)[1]
+          output = []
+          for number, line in enumerate(body.splitlines(), start=1):
+              if line.startswith("          "):
+                  output.append(line[10:])
+              elif not line.strip():
+                  output.append("")
+              else:
+                  raise SystemExit(
+                      f"canonical materializer escaped its YAML block at line {number}: {line!r}"
+                  )
+          Path("/tmp/runtime-codex-canonical-materializer.sh").write_text(
+              "\n".join(output) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          exec bash /tmp/runtime-codex-canonical-materializer.sh

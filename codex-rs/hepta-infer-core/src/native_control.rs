@@ -4,6 +4,8 @@
 
 use std::collections::BTreeMap;
 
+use codex_hepta_types::Digest32;
+use rand::RngCore;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -104,6 +106,7 @@ impl NativeRunOutput {
 pub enum NativeReservationState {
     Reserved,
     Dispatching,
+    AbortPending,
     Running,
     Cancelling,
     Indeterminate,
@@ -171,11 +174,77 @@ pub struct NativeDispatch {
 pub struct NativePreEffectAbortToken {
     request_id: String,
     dispatch_revision: u64,
+    abort_nonce: [u8; 32],
 }
 
 impl std::fmt::Debug for NativePreEffectAbortToken {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter.write_str("NativePreEffectAbortToken([LOCAL ONLY])")
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativePreEffectAbortRecord {
+    pub owner_run_id: String,
+    pub owner_dispatch_revision: u64,
+    pub dispatch_binding_digest: String,
+    pub commitment_digest: String,
+    pub abort_nonce_hex: String,
+    pub proof_digest: String,
+    pub reason: String,
+}
+
+impl NativePreEffectAbortToken {
+    pub fn commitment_digest(
+        &self,
+        owner_run_id: &str,
+        dispatch_binding_digest: &str,
+    ) -> Result<String, Error> {
+        validate_identity(owner_run_id, "native abort owner run")?;
+        validate_digest(dispatch_binding_digest, "native abort dispatch binding")?;
+        Ok(pre_effect_abort_digest(
+            b"hepta.runtime.codex.pre-effect-abort.commitment.v1",
+            owner_run_id,
+            dispatch_binding_digest,
+            &self.abort_nonce,
+            None,
+        ))
+    }
+
+    fn proof_record(
+        &self,
+        owner_run_id: String,
+        owner_dispatch_revision: u64,
+        dispatch_binding_digest: String,
+        reason: String,
+    ) -> Result<NativePreEffectAbortRecord, Error> {
+        validate_identity(&owner_run_id, "native abort owner run")?;
+        validate_digest(&dispatch_binding_digest, "native abort dispatch binding")?;
+        if owner_dispatch_revision == 0
+            || reason.trim().is_empty()
+            || reason.len() > 512
+            || reason.as_bytes().contains(&0)
+        {
+            return Err(Error::InvalidIdentity("native pre-effect abort"));
+        }
+        let commitment_digest = self.commitment_digest(&owner_run_id, &dispatch_binding_digest)?;
+        let proof_digest = pre_effect_abort_digest(
+            b"hepta.runtime.codex.pre-effect-abort.proof.v1",
+            &owner_run_id,
+            &dispatch_binding_digest,
+            &self.abort_nonce,
+            Some(&reason),
+        );
+        Ok(NativePreEffectAbortRecord {
+            owner_run_id,
+            owner_dispatch_revision,
+            dispatch_binding_digest,
+            commitment_digest,
+            abort_nonce_hex: encode_abort_nonce(&self.abort_nonce),
+            proof_digest,
+            reason,
+        })
     }
 }
 
@@ -210,6 +279,8 @@ pub struct NativeRunRecord {
     /// A locally proven pre-dispatch stop releases a slot without pretending
     /// to have observed a provider terminal event or zero token consumption.
     pub pre_dispatch_stop: Option<String>,
+    #[serde(default)]
+    pub pre_effect_abort: Option<NativePreEffectAbortRecord>,
     #[serde(default)]
     pub dispatch_rejection: Option<NativeDispatchRejection>,
     pub observation: Option<NativeRunOutput>,
@@ -250,6 +321,14 @@ enum Event {
     AbortBeforeEffect {
         request_id: String,
         reason: String,
+    },
+    PrepareAbortBeforeEffect {
+        request_id: String,
+        abort: NativePreEffectAbortRecord,
+    },
+    ConfirmAbortBeforeEffect {
+        request_id: String,
+        proof_digest: String,
     },
     Observe {
         request_id: String,
@@ -328,11 +407,14 @@ impl DurableInferenceControl {
         dispatch: NativeDispatch,
     ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
         let record = self.dispatch_native(request_id, dispatch)?;
+        let mut abort_nonce = [0_u8; 32];
+        rand::rng().fill_bytes(&mut abort_nonce);
         Ok((
             record.clone(),
             NativePreEffectAbortToken {
                 request_id: request_id.to_string(),
                 dispatch_revision: record.revision,
+                abort_nonce,
             },
         ))
     }
@@ -364,6 +446,62 @@ impl DurableInferenceControl {
             Event::AbortBeforeEffect {
                 request_id: token.request_id.clone(),
                 reason,
+            },
+        )
+    }
+
+    /// Durably commit that this process will not cross the external effect
+    /// boundary, while retaining the slot until Agentd acknowledges the same
+    /// exact abort proof. Recovery can replay this owner reconciliation safely.
+    pub fn prepare_native_abort_before_effect(
+        &mut self,
+        token: NativePreEffectAbortToken,
+        owner_run_id: String,
+        owner_dispatch_revision: u64,
+        dispatch_binding_digest: String,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        let record = self
+            .native
+            .records
+            .get(&token.request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state != NativeReservationState::Dispatching
+            || record.revision != token.dispatch_revision
+            || record.turn_id.is_some()
+            || record.observation.is_some()
+            || record.dispatch_rejection.is_some()
+            || record.cancel_requested
+            || record.pre_effect_abort.is_some()
+        {
+            return Err(Error::InvalidTransition);
+        }
+        let abort = token.proof_record(
+            owner_run_id,
+            owner_dispatch_revision,
+            dispatch_binding_digest,
+            reason,
+        )?;
+        self.commit_native(
+            &token.request_id,
+            Event::PrepareAbortBeforeEffect {
+                request_id: token.request_id.clone(),
+                abort,
+            },
+        )
+    }
+
+    pub fn confirm_native_abort_before_effect(
+        &mut self,
+        request_id: &str,
+        proof_digest: &str,
+    ) -> Result<NativeRunRecord, Error> {
+        validate_digest(proof_digest, "native pre-effect abort proof")?;
+        self.commit_native(
+            request_id,
+            Event::ConfirmAbortBeforeEffect {
+                request_id: request_id.to_string(),
+                proof_digest: proof_digest.to_string(),
             },
         )
     }
@@ -549,6 +687,7 @@ impl NativeJournal {
                     turn_id: None,
                     cancel_requested: false,
                     pre_dispatch_stop: None,
+                    pre_effect_abort: None,
                     dispatch_rejection: None,
                     observation: None,
                 },
@@ -563,6 +702,8 @@ impl NativeJournal {
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
             | Event::AbortBeforeEffect { request_id, .. }
+            | Event::PrepareAbortBeforeEffect { request_id, .. }
+            | Event::ConfirmAbortBeforeEffect { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
@@ -727,6 +868,7 @@ impl NativeJournal {
                     || record.observation.is_some()
                     || record.dispatch_rejection.is_some()
                     || record.cancel_requested
+                    || record.pre_effect_abort.is_some()
                     || reason.is_empty()
                     || reason.len() > 4096
                 {
@@ -735,8 +877,75 @@ impl NativeJournal {
                 record.pre_dispatch_stop = Some(reason);
                 record.state = NativeReservationState::Released;
             }
+            Event::PrepareAbortBeforeEffect { abort, .. } => {
+                if record.state != NativeReservationState::Dispatching
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || record.dispatch_rejection.is_some()
+                    || record.cancel_requested
+                    || record.pre_effect_abort.is_some()
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                validate_identity(&abort.owner_run_id, "native abort owner run")?;
+                validate_digest(
+                    &abort.dispatch_binding_digest,
+                    "native abort dispatch binding",
+                )?;
+                validate_digest(&abort.commitment_digest, "native abort commitment")?;
+                validate_digest(&abort.proof_digest, "native abort proof")?;
+                if abort.owner_dispatch_revision == 0
+                    || abort.abort_nonce_hex.len() != 64
+                    || !abort
+                        .abort_nonce_hex
+                        .bytes()
+                        .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+                    || abort.reason.trim().is_empty()
+                    || abort.reason.len() > 512
+                    || abort.reason.as_bytes().contains(&0)
+                {
+                    return Err(Error::InvalidIdentity("native pre-effect abort"));
+                }
+                let nonce = decode_abort_nonce(&abort.abort_nonce_hex)?;
+                if pre_effect_abort_digest(
+                    b"hepta.runtime.codex.pre-effect-abort.commitment.v1",
+                    &abort.owner_run_id,
+                    &abort.dispatch_binding_digest,
+                    &nonce,
+                    None,
+                ) != abort.commitment_digest
+                    || pre_effect_abort_digest(
+                        b"hepta.runtime.codex.pre-effect-abort.proof.v1",
+                        &abort.owner_run_id,
+                        &abort.dispatch_binding_digest,
+                        &nonce,
+                        Some(&abort.reason),
+                    ) != abort.proof_digest
+                {
+                    return Err(Error::Conflict);
+                }
+                record.pre_effect_abort = Some(abort);
+                record.state = NativeReservationState::AbortPending;
+            }
+            Event::ConfirmAbortBeforeEffect { proof_digest, .. } => {
+                if record.state != NativeReservationState::AbortPending
+                    || record
+                        .pre_effect_abort
+                        .as_ref()
+                        .is_none_or(|abort| abort.proof_digest != proof_digest)
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                record.pre_dispatch_stop = record
+                    .pre_effect_abort
+                    .as_ref()
+                    .map(|abort| abort.reason.clone());
+                record.state = NativeReservationState::Released;
+            }
             Event::Observe { output, .. } => {
-                if record.dispatch_rejection.is_some() {
+                if record.dispatch_rejection.is_some() || record.pre_effect_abort.is_some() {
                     return Err(Error::InvalidTransition);
                 }
                 apply_observation(record, output)?;
@@ -747,6 +956,61 @@ impl NativeJournal {
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
         Ok(())
+    }
+}
+
+fn pre_effect_abort_digest(
+    domain: &[u8],
+    owner_run_id: &str,
+    dispatch_binding_digest: &str,
+    nonce: &[u8; 32],
+    reason: Option<&str>,
+) -> String {
+    let mut bytes = Vec::new();
+    push_abort_part(&mut bytes, domain);
+    push_abort_part(&mut bytes, owner_run_id.as_bytes());
+    push_abort_part(&mut bytes, dispatch_binding_digest.as_bytes());
+    push_abort_part(&mut bytes, nonce);
+    if let Some(reason) = reason {
+        push_abort_part(&mut bytes, reason.as_bytes());
+    }
+    Digest32::of_bytes(&bytes).to_string()
+}
+
+fn push_abort_part(output: &mut Vec<u8>, value: &[u8]) {
+    let length = u64::try_from(value.len()).expect("bounded native abort part");
+    output.extend_from_slice(&length.to_be_bytes());
+    output.extend_from_slice(value);
+}
+
+fn encode_abort_nonce(nonce: &[u8; 32]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut output = String::with_capacity(64);
+    for byte in nonce {
+        output.push(char::from(HEX[usize::from(byte >> 4)]));
+        output.push(char::from(HEX[usize::from(byte & 0x0f)]));
+    }
+    output
+}
+
+fn decode_abort_nonce(value: &str) -> Result<[u8; 32], Error> {
+    if value.len() != 64 {
+        return Err(Error::InvalidIdentity("native abort nonce"));
+    }
+    let mut nonce = [0_u8; 32];
+    for (index, pair) in value.as_bytes().chunks_exact(2).enumerate() {
+        let high = abort_hex_nibble(pair[0]).ok_or(Error::InvalidIdentity("native abort nonce"))?;
+        let low = abort_hex_nibble(pair[1]).ok_or(Error::InvalidIdentity("native abort nonce"))?;
+        nonce[index] = (high << 4) | low;
+    }
+    Ok(nonce)
+}
+
+fn abort_hex_nibble(value: u8) -> Option<u8> {
+    match value {
+        b'0'..=b'9' => Some(value - b'0'),
+        b'a'..=b'f' => Some(value - b'a' + 10),
+        _ => None,
     }
 }
 
