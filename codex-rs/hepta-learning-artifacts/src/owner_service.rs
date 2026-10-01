@@ -205,6 +205,10 @@ impl LearningArtifactOwnerService {
                         if recovery.checkpoint.phase
                             == ArtifactPublicationPhaseV1::Acknowledged =>
                     {
+                        // Acknowledgement may be durable even when its parent
+                        // sync failed before publish_inner updated the cache.
+                        // Reconcile the authoritative CURRENT before reopening.
+                        self.registry = self.host.recover_current_registry(request.now)?;
                         self.recovery_required = None;
                     }
                     Some(_) => {}

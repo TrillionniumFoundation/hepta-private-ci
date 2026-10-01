@@ -265,3 +265,117 @@ fn different_producer_or_scope_cannot_resume_an_existing_owner_operation() {
         assert_eq!(effect_inventory(&directory.0), effects);
     }
 }
+
+#[cfg(target_os = "linux")]
+#[test]
+fn checkpoint_write_failure_preserves_the_proven_phase_and_allows_exact_retry() {
+    let executable = std::env::current_exe().fixture("test executable");
+    let status = std::process::Command::new("bash")
+        .arg("-c")
+        .arg("trap '' XFSZ; exec \"$@\"")
+        .arg("checkpoint-fault-worker")
+        .arg(executable)
+        .args([
+            "--exact",
+            "owner_host::transaction_binding_tests::checkpoint_size_fault_worker",
+            "--ignored",
+            "--nocapture",
+        ])
+        .status()
+        .fixture("checkpoint fault worker");
+    assert!(status.success());
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+#[ignore = "subprocess fixture runs with an isolated file-size fault"]
+fn checkpoint_size_fault_worker() {
+    use std::process::Command;
+
+    let directory = TestDir::new();
+    let key = signer();
+    let scope = withdrawal_scope();
+    let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope.clone());
+    let owner = LearningArtifactOwnerHost::open(
+        &directory.0,
+        trust(&key, scope.digest()),
+        lease(&key, scope.digest()),
+        /*now*/ 20,
+    )
+    .fixture("owner");
+    let operation_id = id(&"checkpoint-fault-".repeat(7));
+    let admission = admit_manifest_at_withdrawal_head_v3(
+        &withdrawals,
+        withdrawals.head_digest(),
+        manifest(),
+        /*now*/ 20,
+    )
+    .fixture("admission");
+    let mut registry = ArtifactRegistry::new();
+    let mut transaction = owner
+        .begin_publication(
+            operation_id.clone(),
+            admission,
+            &withdrawals,
+            &registry,
+            Digest32::ZERO,
+            /*now*/ 20,
+        )
+        .fixture("prepared");
+    owner
+        .stage_compatibility_registration(&transaction, &mut registry, /*now*/ 20)
+        .fixture("projection");
+    let before = transaction.snapshot();
+    let checkpoint = checkpoint_from_snapshot(&before, owner.writer_lease_digest());
+    assert!(encode_checkpoint(&checkpoint).len() > 512);
+    let pid = std::process::id().to_string();
+    let limits = Command::new("prlimit")
+        .args(["--pid", &pid, "--fsize", "--noheadings", "--output", "SOFT"])
+        .output()
+        .fixture("original limit");
+    assert!(limits.status.success());
+    let original = String::from_utf8(limits.stdout).fixture("limit text");
+    assert!(
+        Command::new("prlimit")
+            .args(["--pid", &pid, "--fsize=512:"])
+            .status()
+            .fixture("apply limit")
+            .success()
+    );
+    let result =
+        owner.ensure_payload_durable(&mut transaction, &registry, b"payload", /*now*/ 20);
+    let restored = format!("--fsize={}:", original.trim());
+    assert!(
+        Command::new("prlimit")
+            .args(["--pid", &pid, &restored])
+            .status()
+            .fixture("restore limit")
+            .success()
+    );
+    assert!(matches!(result, Err(ArtifactOwnerHostError::Indeterminate)));
+    assert_eq!(transaction.snapshot(), before);
+    let recovered = owner
+        .recover_publication(&operation_id)
+        .fixture("recovery")
+        .fixture("prepared exists");
+    assert_eq!(
+        recovered.checkpoint.phase,
+        ArtifactPublicationPhaseV1::Prepared
+    );
+    let payloads = fs::read_dir(directory.0.join("payloads"))
+        .fixture("payloads")
+        .collect::<Result<Vec<_>, _>>()
+        .fixture("payload inventory");
+    assert_eq!(payloads.len(), 1);
+    assert_eq!(
+        fs::read(payloads[0].path()).fixture("durable payload effect"),
+        b"payload"
+    );
+    owner
+        .ensure_payload_durable(&mut transaction, &registry, b"payload", /*now*/ 20)
+        .fixture("exact retry after limit restoration");
+    assert_eq!(
+        transaction.phase(),
+        ArtifactPublicationPhaseV1::PayloadDurable
+    );
+}

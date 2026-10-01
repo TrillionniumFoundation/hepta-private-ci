@@ -503,6 +503,24 @@ impl LearningArtifactOwnerHost {
         {
             return Err(ArtifactOwnerHostError::WriterLeaseContext);
         }
+        let existing = self.recover_publication(&operation_id)?;
+        if existing.is_none() {
+            let current_predecessor = match self.discover_current_head(now)? {
+                Some(current) => {
+                    current
+                        .signed
+                        .witness
+                        .generation
+                        .next()
+                        .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?;
+                    current.signed.witness.head_digest
+                }
+                None => self.verifier.trust.genesis_predecessor_head_digest,
+            };
+            if expected_registry_predecessor_head != current_predecessor {
+                return Err(ArtifactOwnerHostError::RegistryPredecessorMismatch);
+            }
+        }
         let transaction = ArtifactPublicationTransactionV1::begin(
             operation_id,
             admission,
@@ -511,6 +529,11 @@ impl LearningArtifactOwnerHost {
             expected_registry_predecessor_head,
             now,
         )?;
+        if existing.is_some_and(|recovery| {
+            recovery.checkpoint.intent_digest != transaction.intent().intent_digest
+        }) {
+            return Err(ArtifactOwnerHostError::IdentityConflict);
+        }
         self.validate_parent_provenance(&transaction.intent().admission, registry)?;
         // Reject invalid projection, predecessor or exhausted registry capacity
         // before creating an admission or a durable Prepared operation.
@@ -595,8 +618,8 @@ impl LearningArtifactOwnerHost {
             bytes,
             crate::storage::MAX_PAYLOAD,
         )?;
+        self.persist_checkpoint(&validated)?;
         *transaction = validated;
-        self.persist_checkpoint(transaction)?;
         Ok(relative)
     }
 
@@ -635,8 +658,8 @@ impl LearningArtifactOwnerHost {
             &encoded,
             encoded.len(),
         )?;
+        self.persist_checkpoint(&validated)?;
         *transaction = validated;
-        self.persist_checkpoint(transaction)?;
         Ok(expected)
     }
 
@@ -737,8 +760,8 @@ impl LearningArtifactOwnerHost {
         if discovered.signed != *signed {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
+        self.persist_checkpoint(&validated)?;
         *transaction = validated;
-        self.persist_checkpoint(transaction)?;
         Ok(expected_receipt)
     }
 
@@ -758,8 +781,10 @@ impl LearningArtifactOwnerHost {
         {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
-        let receipt = transaction.acknowledge(withdrawal_registry, now)?;
-        self.persist_checkpoint(transaction)?;
+        let mut validated = transaction.clone();
+        let receipt = validated.acknowledge(withdrawal_registry, now)?;
+        self.persist_checkpoint(&validated)?;
+        *transaction = validated;
         Ok(receipt)
     }
 
@@ -1072,11 +1097,13 @@ impl LearningArtifactOwnerHost {
                 self.verifier
                     .verify_signed_head(&candidate, &historical_requirement, false)?;
             predecessor = candidate.witness.head_digest;
-            minimum_generation = candidate
-                .witness
-                .generation
-                .next()
-                .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?;
+            if by_predecessor.contains_key(&predecessor) {
+                minimum_generation = candidate
+                    .witness
+                    .generation
+                    .next()
+                    .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?;
+            }
             minimum_epoch = candidate.witness.authority_epoch;
             minimum_issued_at = candidate.witness.issued_at;
             consumed += 1;
@@ -2372,3 +2399,7 @@ mod rotation_tests;
 #[cfg(test)]
 #[path = "owner_transaction_binding_tests.rs"]
 mod transaction_binding_tests;
+
+#[cfg(test)]
+#[path = "owner_generation_tests.rs"]
+mod generation_tests;

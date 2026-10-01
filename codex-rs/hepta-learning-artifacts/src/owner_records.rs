@@ -267,6 +267,23 @@ impl LearningArtifactOwnerHost {
         {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
+        // An acknowledgement's no-replace link may be visible even when the
+        // following parent-directory sync failed. An exact terminal retry must
+        // finish that durability boundary before returning the stable receipt.
+        let path = self.checkpoint_path(
+            &checkpoint.operation_id,
+            ArtifactPublicationPhaseV1::Acknowledged,
+        );
+        if read_small_record(&path, MAX_SMALL_RECORD_BYTES)? != encode_checkpoint(checkpoint) {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&path)?
+            .sync_all()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
+        sync_parent(&path)?;
         Ok(())
     }
 }

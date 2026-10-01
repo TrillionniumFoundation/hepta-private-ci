@@ -1,6 +1,7 @@
 use super::super::tests::*;
 use super::*;
 
+use ed25519_dalek::Signer;
 use pretty_assertions::assert_eq;
 
 use crate::CreateOnlyArtifactFile;
@@ -31,7 +32,7 @@ fn register_manifest(
         /*now*/ 20,
     )
     .fixture("valid admission");
-    let transaction = owner
+    let mut transaction = owner
         .begin_publication(
             id(operation),
             admission,
@@ -44,6 +45,36 @@ fn register_manifest(
     owner
         .stage_compatibility_registration(&transaction, registry, /*now*/ 20)
         .fixture("valid compatibility registration");
+    owner
+        .ensure_payload_durable(&mut transaction, registry, b"payload", /*now*/ 20)
+        .fixture("published payload");
+    owner
+        .ensure_registry_durable(
+            &mut transaction,
+            registry,
+            withdrawals,
+            digest("binding"),
+            20,
+        )
+        .fixture("published registry");
+    let key = signer();
+    let mut signed = signed_head(
+        &key,
+        withdrawals.scope_digest().fixture("scope"),
+        registry.snapshot().head_digest,
+    );
+    signed.witness.generation =
+        Generation::new(u64::try_from(registry.records().len()).fixture("head generation count"))
+            .fixture("head generation");
+    signed.witness.predecessor_head_digest =
+        transaction.intent().expected_registry_predecessor_head;
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    owner
+        .ensure_witness_durable(&mut transaction, &signed, withdrawals, /*now*/ 20)
+        .fixture("published CURRENT");
+    owner
+        .acknowledge(&mut transaction, withdrawals, /*now*/ 20)
+        .fixture("publication acknowledged");
     transaction
 }
 
