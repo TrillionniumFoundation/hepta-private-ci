@@ -108,6 +108,15 @@ pub trait FinalHoldoutCasStoreV1 {
         expected: Option<Digest32>,
         next: &FinalHoldoutCasRecordV1,
     ) -> Result<(), FinalHoldoutCasStoreError>;
+
+    /// Optional native journal already validated by this backend's canonical
+    /// replay. The private journal state cannot be reconstructed from unchecked
+    /// receipt fields. Recovery must compare its complete snapshot with `load`
+    /// and restore the owner's admission limit before using it. The default
+    /// preserves strict snapshot replay for stores without such a cache.
+    fn canonical_journal_cache(&self, _binding: Digest32) -> Option<FinalHoldoutJournalV1> {
+        None
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -217,11 +226,22 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         fence.validate()?;
         let current = store.load(binding)?.ok_or(FencedHoldoutError::Missing)?;
         current.validate(binding)?;
-        let journal = FinalHoldoutJournalV1::from_snapshot_with_record_limit(
-            current.journal.clone(),
-            MAX_RECORDS,
-        )
-        .map_err(|_| FencedHoldoutError::Corrupt)?;
+        let journal = match store.canonical_journal_cache(binding) {
+            Some(mut cached) => {
+                if cached.snapshot() != current.journal {
+                    return Err(FencedHoldoutError::Corrupt);
+                }
+                cached
+                    .adopt_record_limit(MAX_RECORDS)
+                    .map_err(|_| FencedHoldoutError::Corrupt)?;
+                cached
+            }
+            None => FinalHoldoutJournalV1::from_snapshot_with_record_limit(
+                current.journal.clone(),
+                MAX_RECORDS,
+            )
+            .map_err(|_| FencedHoldoutError::Corrupt)?,
+        };
 
         let record = if fence == current.fence {
             current
@@ -279,6 +299,10 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
                 Err(FencedHoldoutError::Indeterminate)
             }
         }
+    }
+
+    pub(crate) const fn binding(&self) -> Digest32 {
+        self.binding
     }
 
     #[must_use]
@@ -383,3 +407,7 @@ impl From<FinalHoldoutCasStoreError> for FencedHoldoutError {
 #[cfg(test)]
 #[path = "fenced_holdout_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "fenced_holdout_cache_tests.rs"]
+mod cache_tests;

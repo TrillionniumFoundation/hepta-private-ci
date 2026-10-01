@@ -13,15 +13,18 @@ use codex_hepta_agent_components::intelligence::CurrentOwnerStateV1;
 use codex_hepta_agent_components::intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_agent_components::intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_agent_components::intelligence_eval::MetricRoleContractV2;
-use codex_hepta_agent_components::intelligence_eval::SignedEvaluationError;
+use codex_hepta_agent_components::intelligence_eval::SignedEligibilityAdmissionError;
 use codex_hepta_agent_components::intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_agent_components::intelligence_eval::decide_with_signed_evidence_v2;
+use codex_hepta_agent_components::intelligence_eval::admit_signed_eligibility_v2;
 use codex_hepta_agent_components::learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_agent_components::learning_ledger::SignedEvidenceError;
 use codex_hepta_agent_components::learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_agent_components::types::Digest32;
 use codex_hepta_agent_components::types::StableId;
+
+#[path = "intelligence_outcome_evaluation.rs"]
+mod outcome_use;
 
 /// Data supplied by the evaluator. Every field is checked again at its use site.
 #[derive(Clone, Debug)]
@@ -88,7 +91,8 @@ impl AgentdEvaluationSessionV1 {
         candidate: &StableId,
         now: u64,
     ) -> Result<Digest32, AgentdIntelligenceEvaluationError> {
-        if input.run_id != self.run_id
+        if !self.trust.is_current_at(now)
+            || input.run_id != self.run_id
             || input.stage != CanonicalStageV1::EvaluationAdmitted
             || self.current_owner.owner_id.as_str() != "learning.eval"
             || self.signed.bundle.objective_digest != input.objective_digest
@@ -121,23 +125,27 @@ impl AgentdEvaluationSessionV1 {
         {
             return Err(AgentdIntelligenceEvaluationError::Binding);
         }
-        let result = decide_with_signed_evidence_v2(
+        let binding_digest = Digest32::of_bytes(&payload);
+        let result = admit_signed_eligibility_v2(
             self.signed.bundle,
             self.signed.roles,
             &self.signed.evidence,
             self.trust.verifier(),
+            binding_digest,
             now,
         )
         .map_err(AgentdIntelligenceEvaluationError::Evaluation)?;
-        if result.decision.authority.grants_any()
-            || result.decision.disposition
+        if result.authority.grants_any()
+            || result.decision.decision.authority.grants_any()
+            || result.decision.decision.disposition
                 != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         {
             return Err(AgentdIntelligenceEvaluationError::Ineligible);
         }
-        let mut receipt = b"hepta.agentd.evaluation-consumption.v1\0".to_vec();
-        receipt.extend_from_slice(Digest32::of_bytes(&payload).as_array());
-        receipt.extend_from_slice(result.authentication_digest.as_array());
+        let mut receipt = b"hepta.agentd.evaluation-consumption.v2\0".to_vec();
+        receipt.extend_from_slice(binding_digest.as_array());
+        receipt.extend_from_slice(result.evidence_digest.as_array());
+        receipt.extend_from_slice(result.decision.authentication_digest.as_array());
         receipt.extend_from_slice(self.trust.distribution_digest().as_array());
         receipt.extend_from_slice(&self.signed.use_attestation.signature);
         Ok(Digest32::of_bytes(&receipt))
@@ -149,7 +157,7 @@ pub enum AgentdIntelligenceEvaluationError {
     Binding,
     Ineligible,
     Evidence(SignedEvidenceError),
-    Evaluation(SignedEvaluationError),
+    Evaluation(SignedEligibilityAdmissionError),
 }
 
 impl fmt::Display for AgentdIntelligenceEvaluationError {

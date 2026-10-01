@@ -12,11 +12,11 @@ use crate::EvaluationClaimScopeV1;
 use crate::FinalHoldoutCasStoreV1;
 use crate::FinalHoldoutProviderV1;
 use crate::ProductEvaluationError;
-use crate::ProductEvaluationRunnerV1;
 use crate::ProductFrozenEvaluationPlanV1;
 use crate::ProductTemporalEvaluationReceiptV1;
 use crate::SignedEvaluationError;
 use crate::TemporalEvaluationPlan;
+use crate::product_runner::ProductEvaluationRunnerV1;
 
 /// Values from the custody owner's durable, immutable plan registration.
 /// These are neither filesystem timestamps nor caller-selected future dates.

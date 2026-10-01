@@ -4,6 +4,7 @@ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_r
 
 codex_rust_crate(
     name = "hepta-agentd",
+    compile_data = ["//codex-rs/hepta-intelligence-eval:selected_host_shared_fixture_sources"],
     crate_features = [
         "server",
         "production-cognitive-write",
@@ -23,6 +24,7 @@ rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
+    compile_data = ["//codex-rs/hepta-intelligence-eval:selected_host_shared_fixture_sources"],
     crate_features = [
         "server",
         "production-cognitive-write",

@@ -47,6 +47,12 @@ use crate::decide_with_signed_longitudinal_evidence_v3;
 use crate::evaluate_temporal_holdout;
 use crate::freeze_cross_fold_plan_v2;
 
+#[path = "product_qualification_receipt.rs"]
+mod qualification_receipt;
+pub use qualification_receipt::ProductQualificationReceiptV1;
+use qualification_receipt::product_qualification_evidence_digest;
+use qualification_receipt::product_qualification_seal;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ProductMetricSourceV1 {
     Ips,
@@ -299,50 +305,6 @@ pub enum ProductTimingEvidenceV1<'a> {
     },
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ProductQualificationReceiptV1 {
-    pub temporal_execution_digest: Digest32,
-    pub candidate_id: StableId,
-    pub evaluator: AuthenticatedPrincipalV1,
-    pub generator: AuthenticatedPrincipalV1,
-    pub objective_digest: Digest32,
-    pub dataset_digest: Digest32,
-    pub snapshot_ids: Vec<StableId>,
-    pub claim_scope: EvaluationClaimScopeV1,
-    pub decision: SignedEvaluationDecisionV1,
-    pub publication_digest: Digest32,
-    pub evidence_digest: Digest32,
-    pub authority: AuthorityPosture,
-    receipt_seal: Digest32,
-}
-
-impl ProductQualificationReceiptV1 {
-    pub fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
-        if self.temporal_execution_digest.is_zero()
-            || self.objective_digest.is_zero()
-            || self.dataset_digest.is_zero()
-            || self.publication_digest.is_zero()
-            || self.decision.decision.evidence_digest.is_zero()
-            || self.decision.trust_digest.is_zero()
-            || self.decision.authentication_digest.is_zero()
-            || self.snapshot_ids.is_empty()
-            || self.authority.grants_any()
-            || self.decision.decision.authority.grants_any()
-            || self.decision.decision.candidate_id != self.candidate_id
-        {
-            return Err(ProductEvaluationError::Integrity("qualification receipt"));
-        }
-        let expected = product_qualification_evidence_digest(self);
-        if self.evidence_digest != expected || self.receipt_seal != product_qualification_seal(self)
-        {
-            return Err(ProductEvaluationError::Integrity(
-                "qualification receipt seal",
-            ));
-        }
-        Ok(())
-    }
-}
-
 pub struct ProductEvaluationRunnerV1<S> {
     holdout: FencedFinalHoldoutOwnerV1<S>,
 }
@@ -552,63 +514,6 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         receipt.receipt_seal = product_qualification_seal(&receipt);
         receipt.validate_integrity()?;
         Ok(receipt)
-    }
-}
-
-fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification.v4".to_vec();
-    for digest in [
-        receipt.temporal_execution_digest,
-        receipt.objective_digest,
-        receipt.dataset_digest,
-        receipt.decision.decision.evidence_digest,
-        receipt.decision.trust_digest,
-        receipt.decision.authentication_digest,
-        receipt.publication_digest,
-    ] {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    push_id(&mut bytes, &receipt.candidate_id);
-    let decision = &receipt.decision.decision;
-    push_id(&mut bytes, &decision.evaluation_id);
-    push_id(&mut bytes, &decision.candidate_id);
-    push_id(&mut bytes, &decision.baseline_id);
-    bytes.push(match decision.disposition {
-        crate::IndependentEvaluationDispositionV1::EligibleForIndependentSelection => 0,
-        crate::IndependentEvaluationDispositionV1::Ineligible => 1,
-        crate::IndependentEvaluationDispositionV1::InsufficientEvidence => 2,
-    });
-    push_ids(&mut bytes, &decision.failed_metrics);
-    push_principal(&mut bytes, &receipt.evaluator);
-    push_principal(&mut bytes, &receipt.generator);
-    bytes.push(match receipt.claim_scope {
-        EvaluationClaimScopeV1::Qualification => 0,
-        EvaluationClaimScopeV1::SystemLongitudinal => 1,
-    });
-    push_ids(&mut bytes, &receipt.snapshot_ids);
-    bytes.push(u8::from(receipt.authority.grants_any()));
-    bytes.push(u8::from(receipt.decision.decision.authority.grants_any()));
-    Digest32::of_bytes(&bytes)
-}
-
-fn product_qualification_seal(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v1".to_vec();
-    bytes.extend_from_slice(product_qualification_evidence_digest(receipt).as_array());
-    bytes.extend_from_slice(receipt.evidence_digest.as_array());
-    Digest32::of_bytes(&bytes)
-}
-
-fn push_principal(bytes: &mut Vec<u8>, principal: &AuthenticatedPrincipalV1) {
-    push_id(bytes, &principal.principal_id);
-    bytes.extend_from_slice(principal.credential_chain_digest.as_array());
-    bytes.extend_from_slice(principal.signing_key_digest.as_array());
-    bytes.extend_from_slice(principal.scope_digest.as_array());
-    for value in [
-        principal.authority_epoch,
-        principal.authenticated_at,
-        principal.expires_at,
-    ] {
-        bytes.extend_from_slice(&value.to_be_bytes());
     }
 }
 

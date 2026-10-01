@@ -56,6 +56,9 @@ use crate::freeze_dataset_receipt_v3;
 use crate::validate_candidate_set_completeness;
 use crate::verify_dataset_snapshot_receipt_v3;
 
+#[path = "production_active_trust.rs"]
+mod active_trust;
+
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -324,7 +327,7 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         let payload = decision_signing_payload_v2(&request)?;
-        let verified = self.trust.verifier().verify(
+        let verified = self.verify_current_evidence(
             LearningEvidenceRoleV1::Generator,
             evidence,
             &payload,
@@ -370,7 +373,7 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         let payload = outcome_signing_payload_v2(&outcome);
-        let verified = self.trust.verifier().verify(
+        let verified = self.verify_current_evidence(
             LearningEvidenceRoleV1::Observer,
             evidence,
             &payload,
@@ -429,7 +432,7 @@ impl LedgerWriter {
             .sort_by_key(|allocation| allocation.target_id.clone());
         let finalized = finalize_credit_batch(batch.clone(), now)?;
         let payload = credit_batch_signing_payload_v2(&batch, finalized.batch_digest);
-        let verified = self.trust.verifier().verify(
+        let verified = self.verify_current_evidence(
             LearningEvidenceRoleV1::CreditAllocator,
             evidence,
             &payload,
@@ -509,7 +512,7 @@ impl LedgerWriter {
         }
 
         let payload = unlearning_signing_payload_v1(&request);
-        let verified = self.trust.verifier().verify(
+        let verified = self.verify_current_evidence(
             LearningEvidenceRoleV1::UnlearningAuthority,
             evidence,
             &payload,
@@ -660,7 +663,7 @@ impl LedgerWriter {
     ) -> Result<DatasetSnapshotReceiptV3, ProductionLedgerError> {
         let snapshot = self.backend.snapshot()?;
         let payload = dataset_freeze_signing_payload_v2(&snapshot, &plan)?;
-        let verified = self.trust.verifier().verify(
+        let verified = self.verify_current_evidence(
             LearningEvidenceRoleV1::Evaluator,
             evidence,
             &payload,

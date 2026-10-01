@@ -115,6 +115,10 @@ fn trust_root_key() -> SigningKey {
 }
 
 fn activated_trust() -> ActivatedLearningTrustV1 {
+    activated_trust_until(/*expires_at*/ 90)
+}
+
+fn activated_trust_until(expires_at: u64) -> ActivatedLearningTrustV1 {
     let root_key = trust_root_key();
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
@@ -133,11 +137,18 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
         },
         root_id: root.root_id.clone(),
         issued_at: 15,
-        expires_at: 90,
+        expires_at,
         signature: [0; 64],
     };
-    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
-    activate_learning_trust(&root, signed, None, 50).unwrap()
+    signed.signature = root_key
+        .sign(
+            &signed
+                .signing_bytes()
+                .unwrap_or_else(|error| panic!("production trust signing bytes: {error:?}")),
+        )
+        .to_bytes();
+    activate_learning_trust(&root, signed, /*previous*/ None, /*now*/ 50)
+        .unwrap_or_else(|error| panic!("production trust activation: {error:?}"))
 }
 
 fn seed(name: &str) -> u8 {
@@ -206,9 +217,14 @@ impl Fixture {
     }
 
     fn writer(&self) -> LedgerWriter {
-        let ledger = DurableLedger::create(self.file("ledger"), binding(), 64).unwrap();
-        let witness = LedgerWitnessStore::create(self.file("witness"), binding()).unwrap();
-        let trust = activated_trust();
+        self.writer_with_trust(activated_trust())
+    }
+
+    fn writer_with_trust(&self, trust: ActivatedLearningTrustV1) -> LedgerWriter {
+        let ledger = DurableLedger::create(self.file("ledger"), binding(), /*max_records*/ 64)
+            .unwrap_or_else(|error| panic!("production ledger creation: {error:?}"));
+        let witness = LedgerWitnessStore::create(self.file("witness"), binding())
+            .unwrap_or_else(|error| panic!("production witness creation: {error:?}"));
         let ledger_directory = self.directory();
         let witness_directory = self.directory();
         LedgerWriter::from_durable(
@@ -218,7 +234,7 @@ impl Fixture {
             &ledger_directory,
             &witness_directory,
         )
-        .unwrap()
+        .unwrap_or_else(|error| panic!("production writer creation: {error:?}"))
     }
 }
 
@@ -937,5 +953,7 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
 #[path = "production_growth_tests.rs"]
 mod growth;
 
+#[path = "production_active_trust_tests.rs"]
+mod active_trust_tests;
 #[path = "production_retrieval_preparation_tests.rs"]
 mod retrieval_preparation;

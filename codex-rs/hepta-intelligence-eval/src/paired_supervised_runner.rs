@@ -16,12 +16,12 @@ use crate::PairedObservationCutV1;
 use crate::PairedSupervisedErrorV1;
 use crate::PairedSupervisedEstimateV1;
 use crate::ProductEvaluationError;
-use crate::ProductEvaluationRunnerV1;
 use crate::ProductProviderErrorV1;
 use crate::SignedEvaluationError;
 use crate::paired_observation_cut_signing_payload_v1;
 use crate::paired_supervised_estimate::estimate_paired_cut;
 use crate::paired_supervised_host_clock::PairedHostClockV1;
+use crate::product_runner::ProductEvaluationRunnerV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SignedPairedObservationCutV1 {

@@ -1,4 +1,5 @@
 //! Synthetic native fixtures only; no production holdout or signing material.
+use crate::product_runner::ProductEvaluationRunnerV1;
 use crate::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::FixedQ32;

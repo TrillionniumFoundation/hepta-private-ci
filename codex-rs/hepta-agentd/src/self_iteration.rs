@@ -4,7 +4,7 @@
 use std::sync::Arc;
 
 use codex_hepta_agent_components::intelligence_eval::IndependentEvaluationDispositionV1;
-use codex_hepta_agent_components::intelligence_eval::decide_with_signed_evidence_v2;
+use codex_hepta_agent_components::intelligence_eval::admit_signed_eligibility_v2;
 use codex_hepta_agent_components::learning_artifacts::IterationEnvelopeV1;
 use codex_hepta_agent_components::learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
@@ -115,6 +115,9 @@ impl SelfIterationOwner {
         request: AgentdSelfIterationCandidateV1,
         now: u64,
     ) -> Result<AgentdSelfIterationRecordV1, AgentdError> {
+        if !self.trust.is_current_at(now) {
+            return Err(invalid("self-iteration learning trust is not current"));
+        }
         let payload = self_iteration_candidate_payload_v1(&request)?;
         let frozen_digest = Digest32::of_bytes(&payload);
         let exact_recovery = self.journal.record().is_some_and(|previous| {
@@ -262,6 +265,9 @@ impl SelfIterationOwner {
         signed: AgentdSignedEvaluationV1,
         now: u64,
     ) -> Result<AgentdSelfIterationRecordV1, AgentdError> {
+        if !self.trust.is_current_at(now) {
+            return Err(invalid("self-iteration learning trust is not current"));
+        }
         let current = self
             .current
             .as_mut()
@@ -283,17 +289,22 @@ impl SelfIterationOwner {
             return Err(invalid("evaluation candidate binding"));
         }
         let expected_evaluator = signed.bundle.evaluator.clone();
-        let result = decide_with_signed_evidence_v2(
+        let admitted = admit_signed_eligibility_v2(
             signed.bundle,
             signed.roles,
             &signed.evidence,
             self.trust.verifier(),
+            frozen_digest,
             now,
         )
         .map_err(|error| invalid(error.to_string()))?;
-        if result.decision.authority.grants_any() {
+        if admitted.authority.grants_any()
+            || admitted.consumer_binding_digest != frozen_digest
+            || admitted.decision.decision.authority.grants_any()
+        {
             return Err(invalid("evaluation granted authority"));
         }
+        let result = admitted.decision;
         let evaluator = self
             .trust
             .verifier()

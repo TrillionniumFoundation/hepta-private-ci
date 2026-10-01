@@ -14,7 +14,6 @@ use crate::IndependentEvaluationBundleV1;
 use crate::MetricRoleContractV2;
 use crate::PairedSupervisedErrorV1;
 use crate::ProductEvaluationError;
-use crate::ProductEvaluationRunnerV1;
 use crate::ProductPairedEvaluationReceiptV1;
 use crate::ProductQualificationContextV1;
 use crate::ProductQualificationEvidenceSinkV1;
@@ -24,6 +23,7 @@ use crate::SignedEvaluationEvidenceV1;
 use crate::decide_independently_v2;
 use crate::evaluation_signing_payload_v2;
 use crate::paired_supervised_host_clock::PairedHostClockV1;
+use crate::product_runner::ProductEvaluationRunnerV1;
 
 /// This domain binds the distinct profile and original paired execution. Old
 /// temporal/OPE Evaluator signatures cannot be reused as paired signatures.

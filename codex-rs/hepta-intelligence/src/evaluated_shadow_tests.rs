@@ -2,6 +2,7 @@ use super::*;
 use crate::LaneFStageV1;
 use crate::PipelineDispositionV1;
 use codex_hepta_intuition::RiskClass;
+use codex_hepta_learning_ledger::ActivatedLearningTrustV1;
 use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::DurableLedgerError;
@@ -11,6 +12,7 @@ use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use pretty_assertions::assert_eq;
 use std::fs;
@@ -107,35 +109,104 @@ fn witness_path(path: &std::path::Path) -> std::path::PathBuf {
 }
 
 fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
+    ledger_at_with_trust(path, fixture.trust_activation())
+}
+
+fn ledger_at_with_trust(path: &std::path::Path, trust: ActivatedLearningTrustV1) -> LedgerWriter {
     let file = OpenOptions::new()
         .create_new(true)
         .read(true)
         .write(true)
         .open(path)
-        .unwrap();
+        .unwrap_or_else(|error| panic!("evaluated shadow ledger file: {error:?}"));
     let ledger = DurableLedger::create(
         file,
         digest("host-authorized-ledger"),
         /*max_records*/ 1,
     )
-    .unwrap();
+    .unwrap_or_else(|error| panic!("evaluated shadow ledger creation: {error:?}"));
     let witness = OpenOptions::new()
         .create_new(true)
         .read(true)
         .write(true)
         .open(witness_path(path))
-        .unwrap();
-    let witness = LedgerWitnessStore::create(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
-    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+        .unwrap_or_else(|error| panic!("evaluated shadow witness file: {error:?}"));
+    let witness = LedgerWitnessStore::create(witness, digest("host-authorized-ledger"))
+        .unwrap_or_else(|error| panic!("evaluated shadow witness creation: {error:?}"));
+    let directory = path
+        .parent()
+        .unwrap_or_else(|| panic!("evaluated shadow ledger has a parent directory"));
+    let ledger_directory = std::fs::File::open(directory)
+        .unwrap_or_else(|error| panic!("evaluated shadow ledger directory: {error:?}"));
+    let witness_directory = std::fs::File::open(directory)
+        .unwrap_or_else(|error| panic!("evaluated shadow witness directory: {error:?}"));
     LedgerWriter::from_durable(
         ledger,
         witness,
-        fixture.trust_activation(),
+        trust,
         &ledger_directory,
         &witness_directory,
     )
-    .unwrap()
+    .unwrap_or_else(|error| panic!("evaluated shadow writer creation: {error:?}"))
+}
+
+#[test]
+fn expired_owner_distribution_blocks_evaluated_shadow_before_ports_or_durable_writes()
+-> Result<(), Box<dyn std::error::Error>> {
+    for now in [50, 51] {
+        let fixture = Fixture::new();
+        let candidate_payload = evaluated_candidate_signing_payload_v2(
+            &fixture.qualification,
+            &fixture.bytes,
+            fixture.run.snapshot.learning_artifact_generation,
+        )?;
+        fixture.verifier.verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &fixture.candidate_evidence,
+            &candidate_payload,
+            now,
+        )?;
+        let request = fixture.request();
+        let decision = evaluated_shadow_production_decision_v2(
+            &request.run,
+            &request.intuition,
+            &request.episode_id,
+            &fixture.qualification.generator.principal_id,
+            fixture.dataset.snapshot.dataset_digest,
+            fixture.candidate_evidence.payload_digest,
+        )?;
+        fixture.verifier.verify(
+            LearningEvidenceRoleV1::Generator,
+            &fixture.decision_evidence,
+            &decision_signing_payload_v2(&decision)?,
+            now,
+        )?;
+        let temp = tempfile::tempdir()?;
+        let path = temp.path().join("ledger");
+        let mut ledger =
+            ledger_at_with_trust(&path, fixture.trust_activation_until(/*expires_at*/ 50));
+        let mut ports = Ports::new(&fixture);
+        let before = (fs::read(&path)?, fs::read(witness_path(&path))?);
+        let frontier = ledger.witness_frontier()?;
+        let result = run_evaluated_shadow_v1(request, &mut ledger, &mut ports, now);
+        if now == 50 {
+            assert!(result?.learning.is_some());
+            assert_eq!(ports.calls.len(), 7);
+            assert_eq!(ledger.records()?.len(), 1);
+        } else {
+            assert!(matches!(
+                result,
+                Err(EvaluatedShadowError::Ledger(
+                    ProductionLedgerError::Binding("learning trust is not current")
+                ))
+            ));
+            assert!(ports.calls.is_empty());
+            assert!(ledger.records()?.is_empty());
+            assert_eq!(ledger.witness_frontier()?, frontier);
+            assert_eq!((fs::read(&path)?, fs::read(witness_path(&path))?), before);
+        }
+    }
+    Ok(())
 }
 
 #[test]
@@ -232,9 +303,18 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
 
 #[test]
 fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
-    let mutations: [fn(&mut Fixture); 10] = [
+    let mutations: [fn(&mut Fixture); 13] = [
         |f| f.qualification.publication_digest = digest("tampered publication"),
         |f| f.qualification.decision.authentication_digest = digest("tampered authentication"),
+        |f| f.qualification.decision.decision.evaluation_id = id("replacement-evaluation"),
+        |f| f.qualification.decision.decision.baseline_id = id("replacement-baseline"),
+        |f| {
+            f.qualification
+                .decision
+                .decision
+                .failed_metrics
+                .push(id("replacement-metric"))
+        },
         |f| f.candidate_evidence.signature[0] ^= 1,
         |f| f.decision_evidence.signature[0] ^= 1,
         |f| {
@@ -263,6 +343,65 @@ fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
         assert!(ledger.records().unwrap().is_empty());
         assert_eq!(fs::read(path).unwrap(), before);
     }
+}
+
+#[test]
+fn signed_ineligible_product_receipt_cannot_be_changed_to_eligible() {
+    let mut fixture = Fixture::with_minimum_improvement(FixedQ32::ONE);
+    assert_eq!(
+        fixture.qualification.decision.decision.disposition,
+        IndependentEvaluationDispositionV1::Ineligible
+    );
+    assert!(fixture.qualification.validate_integrity().is_ok());
+    let original_payload = evaluated_candidate_signing_payload_v2(
+        &fixture.qualification,
+        &fixture.bytes,
+        fixture.run.snapshot.learning_artifact_generation,
+    )
+    .unwrap_or_else(|error| panic!("original ineligible candidate payload: {error:?}"));
+    assert!(
+        fixture
+            .verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &fixture.candidate_evidence,
+                &original_payload,
+                50,
+            )
+            .is_ok(),
+        "the existing candidate signature is valid for the original ineligible receipt"
+    );
+    fixture.qualification.decision.decision.disposition =
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection;
+    fixture
+        .qualification
+        .decision
+        .decision
+        .failed_metrics
+        .clear();
+    let mut ports = Ports::new(&fixture);
+    let temp = tempfile::tempdir()
+        .unwrap_or_else(|error| panic!("ineligible consumer directory: {error:?}"));
+    let path = temp.path().join("ledger");
+    let mut ledger = ledger_at(&path, &fixture);
+    let before = fs::read(&path)
+        .unwrap_or_else(|error| panic!("ineligible consumer ledger baseline: {error:?}"));
+    assert!(matches!(
+        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, 50),
+        Err(EvaluatedShadowError::Qualification(_))
+    ));
+    assert!(ports.calls.is_empty());
+    assert!(
+        ledger
+            .records()
+            .unwrap_or_else(|error| panic!("ineligible consumer ledger records: {error:?}"))
+            .is_empty()
+    );
+    assert_eq!(
+        fs::read(path)
+            .unwrap_or_else(|error| panic!("unchanged ineligible consumer ledger: {error:?}")),
+        before
+    );
 }
 
 #[test]
@@ -297,13 +436,13 @@ fn tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports() {
         }
         let mut ports = Ports::new(&fixture);
         let temp = tempfile::tempdir().unwrap();
-        let mut ledger = ledger_at(&temp.path().join("ledger"), &fixture);
-        let result = run_evaluated_shadow_v1(
-            fixture.request(),
-            &mut ledger,
-            &mut ports,
-            if case == 2 { 95 } else { 50 },
-        );
+        let now = if case == 2 { 95 } else { 50 };
+        // Keep owner authority current so this case still isolates the expired
+        // candidate signature, independently of distribution expiry admission.
+        let trust = fixture.trust_activation_until(/*expires_at*/ 100);
+        assert!(trust.is_current_at(now));
+        let mut ledger = ledger_at_with_trust(&temp.path().join("ledger"), trust);
+        let result = run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, now);
         if case != 2 {
             assert!(matches!(
                 result,
