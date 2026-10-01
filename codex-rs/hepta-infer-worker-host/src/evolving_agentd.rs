@@ -32,6 +32,11 @@ use crate::native_app_server::NativeWorkerConfig;
 pub const HOST_CONFIG_ENV: &str = "HEPTA_SELF_ITERATION_HOST_CONFIG";
 pub const HOST_CONFIG_DIGEST_ENV: &str = "HEPTA_SELF_ITERATION_HOST_CONFIG_DIGEST";
 
+#[path = "calibration_reference_batch.rs"]
+mod calibration_reference_batch;
+use calibration_reference_batch::CalibrationReferenceBatch;
+pub use calibration_reference_batch::CalibrationReferenceBatchConfigV1;
+
 /// A checksum-pinned installer descriptor. The environment is supplied by the
 /// immutable installed release manifest, never model/request data.
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -55,6 +60,8 @@ pub struct SelfIterationHostConfigV1 {
     pub final_use_authority_config: PathBuf,
     pub proposal_timeout_seconds: u64,
     pub status_file: PathBuf,
+    #[serde(default)]
+    pub calibration_reference_batch: Option<CalibrationReferenceBatchConfigV1>,
 }
 
 pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
@@ -90,7 +97,7 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
             cancellation.clone(),
         )
         .map_err(|error| invalid(error.to_string()))?;
-        run_model_owner(&mut model, installed, identity, cancellation).await
+        run_model_owner(&mut model, installed, identity, pin, cancellation).await
     })
 }
 
@@ -199,13 +206,19 @@ async fn run_model_owner(
     model: &mut AppServerSelfIterationModelPortV1,
     installed: SelfIterationHostConfigV1,
     identity: AgentdIdentity,
+    host_pin: Digest32,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
     let mut interval = tokio::time::interval(Duration::from_secs(60));
     interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+    let mut reference_batch = installed
+        .calibration_reference_batch
+        .clone()
+        .map(|descriptor| CalibrationReferenceBatch::open(descriptor, &identity, host_pin))
+        .transpose()?;
     let client = AgentdClient::new(
-        identity.control_socket,
-        identity.agent_id,
+        identity.control_socket.clone(),
+        identity.agent_id.clone(),
         identity.spawn_generation,
     )?;
     let mut proposal_attempted = false;
@@ -219,6 +232,7 @@ async fn run_model_owner(
         tokio::select! { _ = cancellation.cancelled() => return Ok(()), _ = interval.tick() => {} }
         // Serial owner maintenance runs at startup and while idle. The future
         // retires its exact bounded native obligations before the next turn.
+        let native_admission_blocked;
         match model.maintain_native_control(Duration::from_secs(5)).await {
             Ok(receipt) => {
                 let pending = receipt.aborts_unresolved > 0
@@ -253,6 +267,7 @@ async fn run_model_owner(
                     })),
                     "diagnostic": receipt.cleanup_error.map(|error| error.chars().take(2048).collect::<String>()),
                 });
+                native_admission_blocked = pending;
                 publish_status(&installed.status_file, &status)?;
             }
             Err(error) => {
@@ -264,14 +279,42 @@ async fn run_model_owner(
                 continue;
             }
         }
-        if proposal_attempted {
-            continue;
-        }
         let health = match client.health().await {
             Ok(health) => health,
             Err(_) => continue,
         };
         if !health.ready || health.fenced {
+            continue;
+        }
+        if let Some(batch) = reference_batch.as_mut() {
+            match batch
+                .run_step(
+                    model,
+                    &identity,
+                    installed.proposal_timeout_seconds,
+                    &cancellation,
+                    native_admission_blocked,
+                )
+                .await
+            {
+                Ok(reference) => {
+                    status["calibration_reference"] = reference;
+                }
+                Err(error) => {
+                    status["calibration_reference"] = serde_json::json!({"state":"pending_native_recovery","diagnostic":error.to_string(),"qualified":false,"holdout_consumed":false});
+                }
+            }
+            publish_status(&installed.status_file, &status)?;
+            if status["calibration_reference"]["state"] == "pending_native_recovery"
+                || status["calibration_reference"]["unresolved_native_operations"]
+                    .as_u64()
+                    .is_some_and(|n| n > 0)
+                || cancellation.is_cancelled()
+            {
+                continue;
+            }
+        }
+        if native_admission_blocked || proposal_attempted {
             continue;
         }
         let readiness = inspect_self_iteration_artifacts_v1(
